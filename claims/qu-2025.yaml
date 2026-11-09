@@ -1,0 +1,1093 @@
+# Claims for Qü, Tai, Hall, Tu, Eckstein, Mishchanchuk, Lin, Chase, MacAskill, Collins, Gershman
+# & Wilbrecht (2025), "Nucleus accumbens dopamine release reflects Bayesian inference during
+# instrumental learning", PLoS Comput Biol 21(7) e1013226, on dandiset 001340.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read. The version of record as served by Europe PMC (PMC12233953, "vor-update-to-uncorrected-
+# proof", publication update 2025-07-07), full text with Results, figure legends, Table 1, Materials
+# and methods, and the Supporting information legends (S1 to S8 Fig) and the published peer review
+# history. The supporting figures themselves are images and are not in the text; only their
+# legends are, so claims from S1 to S8 Fig rest on the legends and on the Results sentences that
+# cite them. No PDF was supplied. The bioRxiv preprint (10.1101/2023.11.10.566306) is also under
+# paper/; it was not used, and no claim or method rests on it.
+#
+# Code. The paper links github.com/Wilbrecht-Lab/cogmodels, read at commit 589555c ("preliminary
+# codebase", 2025-02-20). It holds the cognitive models (RL4p, RLCF, RLFQ3p, RL_meta, PearceHall,
+# RFLR, BIfp, BRLfwr, BRLfw, BRLwrp and others), their maximum-likelihood fitting, simulation
+# ("generate", a fresh task; "emulate", the model choosing on a mouse's sessions), parameter
+# recovery and model identification drivers (utils_test.py), and a plot of stay probability by
+# two-trial history. It holds no behavioural preprocessing, no photometry preprocessing, and none
+# of the neural analyses (DA-PT, the RPE regressions, cross-validation, the LMER models). Choices
+# the code settles, used below:
+# - Fits are per mouse over all its sessions (fit_model_per_subject), L-BFGS-B with the code's
+#   bounds, tol 1e-6, one start drawn from the Methods' initial distributions; seed 230 is a
+#   standard choice that cannot change an outcome. AIC = 2k + 2 NLL per mouse, k the number of
+#   fitted parameters.
+# - Miss trials (no choice, Decision -1) are left out of the likelihood and give a stickiness
+#   term of 0 on the next trial. At each new session the belief returns to 0.5 and Q values and
+#   BRL weights to their initial values (gam = 1).
+# - Parameter bounds. beta, phi >= 0; learning rates, zeta, psi, alpha_nu in [0, 1]; q in
+#   [0.001, 1]; RFLR tau >= 1e-4, RFLR phi unbounded and beta fixed at 1 (as the Methods say).
+#   rho_2 = 1e-4, rho_1 = 0.75 and BRLfwr w1 starts at 0.75.
+# - PearceHall has beta, alpha+, alpha-, phi, psi and zeta (k = 6), with alpha_nu a latent that
+#   starts at 1 and Q values at 0. Table 1 lists alpha+, alpha-, phi, alpha_nu and zeta; the
+#   code's list is used, as Eq 2 applies beta to every model and Eq 16 names psi.
+# - RL_meta has 7 parameters as in Table 1; omega starts at 0 and alpha-_t at alpha-.
+# - Parameter recovery and model identification simulate 500 sessions per model of 500 trials,
+#   one session each, with parameters drawn uniformly between the minimum and maximum fitted
+#   over the mice, a 75-0 task, and blocks of 8 to 15 rewards (the default of generate()).
+# Where the code and the Methods disagree, the Methods are followed and the code is a variant:
+# - RLFQ3p forgetting. The Methods say zeta = (alpha+ + alpha-)/2; Table 1 and the code
+#   (RL_Forgetting3p) use zeta = 1 - (alpha+ + alpha-)/2. Both are run.
+# - BIfp pseudo-RPE. The Methods define it as the difference between observed and expected
+#   reward, read here as r - [rho_1 b(c) + rho_2 (1 - b(c))], with b(c) the belief that the
+#   chosen port is correct. The code's latent is r - b(c)/2 (BIModel.calc_q). Both are run.
+# - Simulations. The Methods say 1000 simulated data sets per model; S2 Fig legend says 500
+#   runs; the code uses 500. The Methods' task has blocks of 7 to 23 rewards; the code's
+#   simulations use 8 to 15. Both are run.
+#
+# Data the paper describes. Five male C57Bl/6 mice (bred in-house, 104 to 167 days old) with AAV
+# dLight (dLight1.3b or dLight1.2) and optic fibres in nucleus accumbens core. A two-armed bandit
+# with three nose-poke ports: a centre poke starts a trial, then a left or right poke is the
+# choice. In the "full task" the correct port gives 2 ul water with probability 0.75 and the
+# other port never does; the correct port switches, uncued, after a number of rewards drawn
+# uniformly from 7 to 23. Each mouse ran 14 daily full-task sessions, recorded in a left
+# hemisphere, right hemisphere, no recording sequence. Photometry with a Neurophotometrics
+# FP3001 at 20 Hz, 470 nm dLight channel and 415 nm isosbestic channel. Measured per trial. the
+# choice, the reward, the correct port, and event times centre in (CI), centre out (CO), side in,
+# outcome (O), zeroth side out (SO0), first side out (SO1), last side out (SOf). The paper
+# reports 34 sessions with valid dopamine recordings, 30,707 trials in total, and 20,952 trials
+# after cleaning. The dataset's title and description on DANDI were not read further than to
+# know it is meant to hold these behaviour and photometry recordings (Data Availability).
+#
+# Definitions used by several criteria, all from the paper unless marked.
+# - Correct choice. The choice of the port that is rewarded in the current block. A block switch
+#   is the first trial of a new block. Stay and switch compare the choice at t with t-1; the
+#   first trial of a session is neither (code, add_switch). Trials with no choice are dropped
+#   from behavioural measures (Methods, Task behavior analysis).
+# - Timing measures (Methods, Task behavior analysis). MVMT = CI(t) - SOf(t-1); center_dur =
+#   CO - CI; port_dur = SO1 - O; SO_lat = SO1 - SO0.
+# - Z(DA) (Methods, Fiber Photometry, Neural data analysis). Trends of both channels removed
+#   with airPLS, a robust linear regression of 415 nm onto 470 nm subtracted from 470 nm, then
+#   z-scored per session. The airPLS settings and the robust regression's loss are not given.
+#   If the dataset holds processed dLight, it is used; otherwise these steps with standard
+#   settings, recorded as a deviation. Aligned to outcome by interpolation and de-based by
+#   subtracting its value at outcome time.
+# - DA-PT (Results, Predictions from BRLfwr and BIfp, paragraph 4; Fig 4B legend). The maximum
+#   of de-based Z(DA) in the 1 s after outcome on rewarded trials, the minimum on unrewarded
+#   trials.
+# - Sessions for neural analyses. The 34 sessions with valid recordings. The Methods select
+#   them by visual inspection and an AUC-ROC above 0.9 between the rescaled 415 nm baseline and
+#   the 470 nm recording, with no sharp discontinuities; visual inspection cannot be redone. If
+#   the dataset marks the sessions, those are used; otherwise the AUC-ROC rule, read as the
+#   ROC AUC separating 470 nm samples from rescaled 415 nm samples, and the count of sessions
+#   kept is reported.
+# - Cleaned trials (Methods, Neural data analysis). center_dur <= 0.8 s, port_dur <= 6 s,
+#   MVMT <= 3 s, and SO_lat not above a limit that the Methods give twice and differently
+#   ("SO_lat01 > 1" and "gaps longer than 6s"); readings 1 s and 6 s. Rows with missing neural
+#   or behavioural entries dropped.
+# - Model RPE (Methods, Computational modeling; code). Each model fitted to the mouse's choices
+#   as above, then run on the mouse's own choices and rewards with its fitted parameters; the
+#   RPE of trial t is r_t - Q_t(c_t) (code, sim latent rpe). BIfp as above.
+# - Three-trial histories (Results, Bayesian models and complex RL models, paragraph 2). t-3 is
+#   A (rewarded) or a (unrewarded); t-2 and t-1 are A/a when at the port of t-3 and B/b when at
+#   the other port. Switch probability at t compares t with t-1.
+# - Tolerances. 10% of the value when the paper gives no uncertainty; the paper's 95% CI when it
+#   gives one, with the tolerance the larger distance from the value to a bound and the
+#   criterion asking the result to lie inside the interval itself; the paper's ± for the
+#   relative AIC values. Counts of mice and sessions are exact.
+# - Readings. Where a claim lists readings of a reported number, it matches if it matches under
+#   any of them. Where a claim lists readings of a method detail, its outcome is the one all
+#   readings give, and it is methods_underspecified when they differ.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001340"
+paper: doi:10.1371/journal.pcbi.1013226
+claims:
+- id: data-composition
+  statement: The data are choice behaviour of 5 male mice over 14 full-task sessions each, with
+    dLight photometry from nucleus accumbens core in a left, right, no-recording sequence.
+  source: Methods, Quantification and statistical analysis; Fig 1B legend
+  quote: We included n = 5 subjects with 14 sessions each
+  expected:
+  - quantity: mice
+    value: 5
+    tolerance: 0
+  - quantity: full-task sessions per mouse
+    value: 14
+    tolerance: 0
+  criterion: Reproduced when the dataset holds 5 mice with 14 full-task sessions each and
+    photometry in about two of every three sessions; partially reproduced when it holds the 5
+    mice with fewer sessions or only the recorded sessions. The counts found are reported.
+- id: perf-after-pretraining
+  statement: Just after pretraining mice chose the high-probability port 72.9% of the time on
+    average (95% CI 0.669 to 0.767).
+  source: Results, Mice rapidly adapt to block switches in the 2ABT, paragraph 1
+  quote: Just after pre-training, mice chose the high reward probability port 72.9% (95% CI
+    ... of the time on average
+  statistics:
+  - test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 0.669
+      high: 0.767
+  expected:
+  - quantity: fraction of correct choices just after pretraining
+    value: 0.729
+    tolerance: 0.06
+  criterion: The fraction of trials with a correct choice. Readings of "just after
+    pre-training" (a) the first full-task session, (b) all 14 full-task sessions (the sentence
+    says "on average" and is followed by the change over sessions); and of the average (i)
+    pooled over trials, (ii) the mean of the mice's fractions. Reproduced when one reading
+    lies inside [0.669, 0.767].
+- id: fig1f-performance-increase
+  statement: Over the 14 sessions performance rose steadily, with a positive linear regression
+    slope of 0.0026 per session (t = 2.743, p = 0.008).
+  source: Results, Mice rapidly adapt to block switches in the 2ABT, paragraph 1; Fig 1F
+  quote: Over the course of 14 training sessions, performance steadily increased ( Fig 1F ,
+    linear regression slope coefficient 0.0026, t statistic
+  statistics:
+  - test: linear regression, slope on session
+    statistic: t = 2.743
+    p: 0.008
+    ci:
+      level: 0.95
+      low: 0.001
+      high: 0.005
+  expected:
+  - quantity: slope of fraction correct per session
+    value: 0.0026
+    tolerance: 0.0024
+  criterion: OLS of the fraction of correct choices on session number (1 to 14). Readings of
+    the unit (a) one value per mouse and session, 70 points (t = 2.743 gives p = 0.008 at 68
+    degrees of freedom, which fits this reading), (b) one value per trial. Reproduced when,
+    under one reading, the slope lies inside [0.001, 0.005] with p < 0.05; partially reproduced
+    when the slope is positive with p < 0.05 outside that interval.
+- id: trials-to-switch
+  statement: After a block switch mice took 2.49 trials on average to switch to the new
+    correct port in the first 7 sessions, and 2.36 trials in sessions 8 to 14.
+  source: Results, Mice rapidly adapt to block switches in the 2ABT, paragraph 1; S1 Fig
+  quote: In the first 7 sessions, mice took 2.49 trials on average (95% CI ... to switch to the
+    correct port after a block switch. In the 8-14th session this reduced to 2.36 trials on
+    average
+  statistics:
+  - about: sessions 1 to 7
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 2.39
+      high: 2.59
+  - about: sessions 8 to 14
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 2.28
+      high: 2.45
+  expected:
+  - quantity: trials to switch, sessions 1 to 7
+    value: 2.49
+    tolerance: 0.1
+  - quantity: trials to switch, sessions 8 to 14
+    value: 2.36
+    tolerance: 0.09
+  criterion: Per block switch, the trial (counted from the block switch) of the first choice
+    of the new correct port (S1 Fig legend, trial2sw). Readings of the count (a) the first
+    trial of the new block is 1, (b) it is 0 (Fig 2F legend calls the switch trial 0); and of
+    the average (i) over block switches pooled, (ii) the mean of the mice's means. Reproduced
+    when, under one reading, both values lie in their intervals ([2.39, 2.59] and [2.28,
+    2.45]); partially reproduced when the later sessions are lower under that reading but a
+    value lies outside its interval.
+- id: trials-to-commit
+  statement: Mice switched to and committed to the correct port for 3 or more trials after an
+    average of 3.12 trials (95% CI 3.00 to 3.26), following the first 7 sessions.
+  source: Results, Mice rapidly adapt to block switches in the 2ABT, paragraph 1; S1 Fig legend
+  quote: Mice switched and committed to the correct port for 3 or more trials (average 3.12
+    trials
+  statistics:
+  - test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 3.0
+      high: 3.26
+  expected:
+  - quantity: trials to commit to the correct port
+    value: 3.12
+    tolerance: 0.14
+  criterion: Per block switch, the trial (counted from the block switch) of the first correct
+    choice followed by 2 more correct choices (S1 Fig legend, trial2asymp). The sentence cites
+    S4 Fig, whose legend is about LMER lags; S1 Fig is the one that defines the measure.
+    Readings of "following the first 7 sessions" (a) sessions 8 to 14, (b) sessions 1 to 7;
+    of the count, (i) first trial of the new block is 1, (ii) it is 0; of the average, pooled
+    over blocks or the mean of the mice's means. Reproduced when one reading lies inside [3.00,
+    3.26].
+- id: figs1-switch-measures-decrease
+  statement: The number of trials to switch and to commit to the correct port fell over blocks
+    within a session and over sessions.
+  source: S1 Fig legend
+  quote: A downward trend for both measures suggests learning and faster switches across
+    different reward blocks within session. Second column x-axis shows that the switch
+    measures decreased as the number of training sessions increased
+  criterion: trial2sw and trial2asymp as in trials-to-switch and trials-to-commit, per block
+    switch. The paper reports no test. Reproduced when the OLS slope of each measure on block
+    number within session and on session number is negative; the slopes and their p-values
+    are reported. Partially reproduced when two or three of the four slopes are negative.
+- id: fig1e-stay-after-omission
+  statement: The probability of repeating the last choice fell after one unrewarded outcome
+    (RR against RU) and fell further after two (RU against UU), with Fisher's exact test
+    statistics of 6.47 and 3.98.
+  source: Results, Mice rapidly adapt to block switches in the 2ABT, paragraph 2; Fig 1E
+  quote: We found a significant reduction in the probability of repeating the previous choice
+    after one unrewarded outcome (RR vs. RU, Fisher's exact test ... Moreover, mice reduced
+    their stay rate at the chosen port after two consecutive unrewarded outcomes compared to
+    one unrewarded outcome (RU vs. UU, Fisher's exact test
+  statistics:
+  - about: RR against RU
+    test: Fisher's exact test
+    statistic: "6.47"
+    p: 0.0001
+    p_relation: "<"
+  - about: Cohen's d, RR against RU
+    test: Cohen's d, 95% CI
+    ci:
+      level: 0.95
+      low: 0.6
+      high: 0.65
+  - about: RU against UU
+    test: Fisher's exact test
+    statistic: "3.98"
+    p: 0.0001
+    p_relation: "<"
+  - about: Cohen's d, RU against UU
+    test: Cohen's d, 95% CI
+    ci:
+      level: 0.95
+      low: 0.64
+      high: 0.7
+  expected:
+  - quantity: Fisher statistic (odds ratio), RR against RU
+    value: 6.47
+    tolerance: 0.65
+  - quantity: Fisher statistic (odds ratio), RU against UU
+    value: 3.98
+    tolerance: 0.4
+  - quantity: Cohen's d, RR against RU
+    value: 0.6242
+    tolerance: 0.026
+  - quantity: Cohen's d, RU against UU
+    value: 0.6715
+    tolerance: 0.032
+  - quantity: RR trials
+    value: 23607
+    tolerance: 2361
+  - quantity: RU trials
+    value: 5719
+    tolerance: 572
+  - quantity: UR trials
+    value: 9428
+    tolerance: 943
+  - quantity: UU trials
+    value: 8520
+    tolerance: 852
+  criterion: Trials t whose choices at t-2 and t-1 were at the same port (Results; the code's
+    two-trial history plot uses Decision(t-1) == Decision(t-2) and Trial > 2), classed by the
+    outcomes at t-2, t-1; stay is the choice at t equal to t-1. The paper lists the counts as
+    "RR, RU, UR, RU"; the fourth is read as UU. Fisher's exact test on the 2 x 2 table of
+    history against stay or switch, its statistic read as the odds ratio (scipy); Cohen's d
+    on the 0/1 stay indicators of the two groups with pooled SD. All 14 sessions of the 5
+    mice, trials pooled. Reproduced when both tests give p < 1e-4 with stay lower in the
+    second group, and the odds ratios and d values are within tolerance; partially reproduced
+    when the tests hold and some values are off. The counts are reported against the paper's.
+- id: figs6a-decaying-history-weights
+  statement: Logistic regressions fitted to each mouse show weights of past choice-outcome
+    history that decay for more distant trials, consistently across mice.
+  source: S6 Fig A legend; Results, Mice rapidly adapt to block switches in the 2ABT, paragraph 3
+  quote: we fitted logistic regression models to individual mice behavior data and identified
+    consistent patterns of decaying choice outcome weights for more distant outcome histories
+  criterion: Per mouse, the S6 Fig A model following Beron et al. 2022, choice at t on lagged
+    choice (coded -1/1), reward, and their product; this is the code's LR class (formula
+    Decision ~ C_iback + R_iback + C_iback:R_iback), whose default of 4 lags is used, as the
+    legend gives none. Fitted with a binomial GLM (code). Reproduced when in every mouse the
+    lag-1 choice-by-reward weight is positive and the largest of the four, and the mean over
+    mice falls from lag 1 to lag 4; partially reproduced when this holds in 3 or 4 mice. The
+    S6 Fig B blocking model is described but no result is stated, so it has no claim.
+- id: fig2c-bayesian-beat-rl4p
+  statement: Both Bayesian models fit behaviour better than the standard RL model RL4p, with
+    relative AIC of -536.57 (BIfp) and -530.59 (BRLfwr).
+  source: Results, Cognitive model fitting confirms, paragraphs 4 and 5; Fig 2C
+  quote: 'With RL4p as a baseline, we found that both BRLfwr and BIfp significantly improved
+    the AIC measure compared to the RL4p model (BIfp: Δ AIC = − 536.57 ± 59.48 , BRLfwr: Δ AIC
+    = − 530.59 ± 61.86 )'
+  statistics:
+  - about: BRLfwr against RL4p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.018
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: BIfp against RL4p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.015
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  expected:
+  - quantity: relative AIC, BIfp
+    value: -536.57
+    tolerance: 59.48
+  - quantity: relative AIC, BRLfwr
+    value: -530.59
+    tolerance: 61.86
+  criterion: Models fitted per mouse to all its sessions as in the opening comment; relative
+    AIC per mouse = AIC(model) - AIC(RL4p), averaged over the 5 mice (the ± is read as the
+    stated spread; whether it is an SD or SEM is not said). Test, a t-test of the 5 relative
+    AICs against 0 (equivalent to a paired t-test), Holm-corrected. The family and the sides
+    are not given; readings (a) the six models against RL4p named in the sentence
+    (BRLfwr, BIfp, RFLR, RLFQ3p, RL_meta, PearceHall), (b) those and RLCF; (i) two-sided,
+    (ii) one-sided. Reproduced when both mean relative AICs are within tolerance and both
+    corrected p < 0.05; partially reproduced when both are negative with corrected p < 0.05
+    but a value is outside tolerance.
+- id: fig2c-complex-rl-beat-rl4p
+  statement: The complex RL models also fit behaviour better than RL4p, with relative AIC of
+    -652.53 (RFLR), -677.84 (RL_meta), -656.44 (PearceHall) and -646.45 (RLFQ3p).
+  source: Results, Cognitive model fitting confirms, paragraphs 4 and 5; Fig 2C
+  quote: Additionally, other complex RL models also outperformed the RL4p model ( Δ AIC = −
+    652.53 ± 49.26 , − 677.84 ± 65.69 , − 656.44 ± 62.16 , − 646.45 ± 53.62 for RFLR, RL_meta,
+    PearceHall, and RLFQ3p respectively
+  statistics:
+  - about: RFLR against RL4p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.004
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: RLFQ3p against RL4p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.006
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: RL_meta against RL4p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.009
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: PearceHall against RL4p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.009
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  expected:
+  - quantity: relative AIC, RFLR
+    value: -652.53
+    tolerance: 49.26
+  - quantity: relative AIC, RL_meta
+    value: -677.84
+    tolerance: 65.69
+  - quantity: relative AIC, PearceHall
+    value: -656.44
+    tolerance: 62.16
+  - quantity: relative AIC, RLFQ3p
+    value: -646.45
+    tolerance: 53.62
+  depends_on:
+  - fig2c-bayesian-beat-rl4p
+  criterion: As in fig2c-bayesian-beat-rl4p, same test, family readings and sides. RLFQ3p is
+    run with both forgetting rules (Methods, and Table 1 and code). Reproduced when all four
+    means are within tolerance and all corrected p < 0.05; partially reproduced when all are
+    negative with corrected p < 0.05 but a value is outside tolerance.
+- id: fig2c-rlcf
+  statement: RLCF fits behaviour better than RL4p (relative AIC -361.92) but worse than BIfp
+    (by 174.64), and BRLfwr is significantly better than RLCF.
+  source: Results, Cognitive model fitting confirms, paragraphs 4 and 5; Fig 2C
+  quote: 'The RLCF also explained the mouse behavior better than the RL4p model (RLCF: Δ AIC =
+    − 361.92 ± 70.52 ), with a higher relative AIC on average than the BIfp model ( Δ AIC =
+    174.64 ± 47.83 )'
+  statistics:
+  - about: BRLfwr against RLCF
+    test: parametric t-test on relative AIC across subjects
+    p: 0.02
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  expected:
+  - quantity: relative AIC, RLCF against RL4p
+    value: -361.92
+    tolerance: 70.52
+  - quantity: AIC, RLCF minus BIfp
+    value: 174.64
+    tolerance: 47.83
+  depends_on:
+  - fig2c-bayesian-beat-rl4p
+  criterion: As in fig2c-bayesian-beat-rl4p. BRLfwr against RLCF is a t-test of the per-mouse
+    AIC differences, Holm-corrected within the family of the five BRLfwr comparisons of the
+    sentence (RL_meta, PearceHall, RFLR, RLFQ3p, RLCF), two-sided or one-sided as readings.
+    Reproduced when both values are within tolerance and the corrected p < 0.05 with BRLfwr
+    lower; partially reproduced when the signs hold and a value is outside tolerance.
+- id: fig2c-no-bayes-vs-complex-rl
+  statement: Behaviour alone cannot tell whether the Bayesian models or the complex RL models
+    are better; BRLfwr does not differ significantly from RL_meta, PearceHall, RFLR or RLFQ3p.
+  source: Results, Cognitive model fitting confirms, paragraph 5
+  quote: However, there was not sufficient discriminative power to identify whether Bayesian
+    models or any member of the complex RL models was superior
+  statistics:
+  - about: BRLfwr against RL_meta
+    test: parametric t-test on relative AIC across subjects
+    p: 0.39
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: BRLfwr against PearceHall
+    test: parametric t-test on relative AIC across subjects
+    p: 0.679
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: BRLfwr against RFLR
+    test: parametric t-test on relative AIC across subjects
+    p: 0.679
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  - about: BRLfwr against RLFQ3p
+    test: parametric t-test on relative AIC across subjects
+    p: 0.679
+    corrected: Holm-Bonferroni
+    n: 5 mice
+  depends_on:
+  - fig2c-bayesian-beat-rl4p
+  criterion: A claim of absence, judged on the paper's test. Two-sided t-tests of the five
+    per-mouse AIC differences of BRLfwr against each of RL_meta, PearceHall, RFLR and RLFQ3p,
+    Holm-corrected in the family of the five comparisons the sentence lists (with RLCF).
+    Reproduced when all four corrected p >= 0.05; not reproduced when any is below. The mean
+    differences are reported either way. The paper does not say whether its t-tests are one- or
+    two-sided; the one-sided tests are shown as a variant.
+- id: fig2b-model-identifiability
+  statement: In model identification, the Bayesian model and the hybrid BRL are poorly told
+    apart, and so are the complex RL models (RL_meta, RLFQ3p, RFLR), but the families can be
+    told apart and the standard RL model RL4p can be rejected.
+  source: Results, Cognitive model fitting confirms, paragraph 4; Fig 2B
+  quote: This revealed relatively poor identifiability between the Bayesian model and the
+    hybril BRL, as well as poor identifiability between the complex RL models (RL_meta,
+    RLFQ3p, RFLR). These results indicate that the 2ABT cannot be used to discriminate within
+    each family of model on the basis of behavioral data, but can discriminate across families
+  criterion: The 8 models (RL4p, RLCF, RFLR, BRLfwr, BIfp, RLFQ3p, RL_meta, PearceHall), each
+    simulated from parameters drawn uniformly over the range fitted to the mice, each
+    simulated set fitted with all 8, the best by lowest AIC, and the confusion matrix P(fit j
+    | simulated i) (Methods, Model identification). Simulation readings (a) Methods, 1000
+    sets per model on the 7 to 23 reward blocks; (b) code, 500 sets of 500 trials on 8 to 15
+    reward blocks. The paper gives no threshold for "poor" or "can discriminate"; read as
+    (1) BIfp and BRLfwr each send more of their row to the other than any non-Bayesian model
+    takes, and at least one of the two has a diagonal below 0.5; (2) the same within RL_meta,
+    RLFQ3p and RFLR; (3) for every row, the summed probability on its own family (Bayesian =
+    BIfp, BRLfwr; complex RL = RL_meta, RLFQ3p, RFLR, PearceHall; RL4p and RLCF each alone) is
+    above 0.5; (4) the RL4p row's diagonal is its largest entry and no other row gives RL4p
+    more than 0.2. Reproduced when all four hold; partially reproduced when (3) and (4) hold.
+    The full matrix is shown.
+- id: figs2-parameter-recovery
+  statement: Parameters are recovered well for the Bayesian models such as BRLfwr, while
+    RL_meta, the most complex model with 7 parameters, has poor parameter identifiability.
+  source: S2 Fig legend; Results, Bayesian models and complex RL models, paragraph 4; Methods,
+    Model fitting and comparison
+  quote: However, RL_meta was also the most complex model with 7 parameters, with poor
+    parameter identifiability ( S2 Fig ). One might therefore argue that that the Bayesian
+    model BRLfwr was better because it exhibited good parameter recovery
+  criterion: For each model, parameters drawn uniformly between the minimum and maximum fitted
+    over the mice (S2 Fig legend), behaviour simulated and refitted; Pearson r between true
+    and fitted values per parameter, after dropping fitted values more than 6 SD from the
+    mean true value as the legend and code do. Simulation readings as in
+    fig2b-model-identifiability. The Methods' sentence that all three model classes recover
+    parameters with high correlation conflicts with poor identifiability for RL_meta; the
+    claim follows the Results. No threshold is given; read as good when every parameter has
+    r >= 0.7 and poor when at least one has r < 0.5. Reproduced when BRLfwr is good and
+    RL_meta is poor; partially reproduced when one of the two holds. All r values are shown.
+- id: brlfw-alpha-zero
+  statement: In the unrestricted BRL model (BRLfw) the fitted learning rate alpha was zero for
+    most subjects, making it equivalent to BIfp in this task.
+  source: Methods, Computational modeling, paragraph on BIfp
+  quote: Interestingly, the best fitted parameter for α in the unrestricted BRL version (BRLfw)
+    above was zero for most subjects
+  criterion: BRLfw as in the code (BRL_fw, both weights updated, Eqs 7 and 8, initial weights
+    0.75 and 1e-4), fitted per mouse. Zero is read as the lower bound to the optimiser's
+    precision (alpha < 1e-6). Reproduced when this holds in at least 3 of the 5 mice. The
+    fitted values are reported.
+- id: figs8-brlwrp-no-difference
+  statement: A BRL model with fitted initial reward weight and reward probability (BRLwrp)
+    does not differ from BRLfwr in explaining behaviour or dopamine.
+  source: S8 Fig legend; Methods, Computational modeling, paragraph on BRL
+  quote: No statistical differences were observed between BRLfwr and BRLwrp in their ability
+    to explain mice behavior and dopamine data
+  depends_on:
+  - fig4f-bayesian-rpe-fit
+  criterion: A claim of absence. BRLwrp as in the code (BRL_wrp, wr0 and p_rew fitted). The
+    test is not named; read as the paper's model comparison tests. For behaviour, a
+    two-sided t-test of the 5 per-mouse AIC differences, p >= 0.05; for dopamine, the 95%
+    bootstrapped CI of the Δllk_CV difference (as in fig4f-bayesian-rpe-fit) contains 0.
+    Reproduced when both hold; not reproduced when either finds a difference. Effect sizes are
+    reported. The Methods cite S8 Fig for a different comparison, BRLfwr against the
+    unrestricted BRL (BRLfw, "which we found to perform just as well"); the claim follows the
+    legend, and the same tests of BRLfw against BRLfwr are shown as a variant.
+- id: figs7-no-change-across-sessions
+  statement: Models fitted to single sessions show no sustained, consistent change in model
+    fitness across the full-task sessions, so no change of strategy across days.
+  source: S7 Fig legend; Discussion, paragraph 6
+  quote: We did not find evidence of any significant and consistent increase in model fitness
+    across multiple sessions
+  criterion: A claim of absence; the paper names no test. Each model fitted per mouse and
+    session (behaviour, Discussion paragraph 6). The legend does not say whether "model
+    fitness" is relative to RL4p or absolute; readings (a) per session relative AIC to RL4p,
+    (b) per session AIC divided by the number of trials with a choice; for BIfp and BRLfwr.
+    Read as an OLS of the 70 per-session values on session number, for each Bayesian model.
+    Reproduced when neither slope is negative (improving) with p < 0.05; not reproduced when
+    either is. The slopes are reported under both readings.
+- id: fig2f-adaptation-after-switch
+  statement: BRLfwr and RLCF adapt to block switches faster than RL4p, resembling the mice.
+  source: Results, Bayesian models and complex RL models, paragraph 1; Fig 2F
+  quote: we observed that BRLfwr and RLCF predicted faster adaptation to block switches
+    compared to RL4p, resembling the adaptation rate of mouse switching behavior
+  criterion: P(correct) by trial after block switch, block trials 0 to 10 (the code's
+    behaviour plot uses blockTrial <= 10, the first trial of a new block being 0). Model
+    behaviour readings (a) the code's emulate, the model choosing on each mouse's sessions with
+    its fitted parameters; (b) the code's generate, fresh sessions with each mouse's
+    parameters, on 7 to 23 or 8 to 15 reward blocks. Measure, the mean P(correct) over block
+    trials 0 to 10. Reproduced when BRLfwr and RLCF each exceed RL4p and are each closer to
+    the mice's mean than RL4p is.
+- id: fig3b-sse
+  statement: Against mouse switch probabilities after each three-trial history, the models'
+    errors are RL4p 0.8270, RLCF 0.2748, BRLfwr 0.1796, RFLR 0.1537, PearceHall 0.1084 and
+    RL_meta 0.0787; RL4p fits worst.
+  source: Results, Bayesian models and complex RL models, paragraph 3; Fig 3A and 3B
+  quote: We then compared the average mouse switch probability after each outcome history
+    against the mean predictions of the three different cognitive models ( Fig 3B ; sum of
+    squared errors (SSE)
+  expected:
+  - quantity: SSE, BRLfwr
+    value: 0.1796
+    tolerance: 0.018
+  - quantity: SSE, RL4p
+    value: 0.827
+    tolerance: 0.0827
+  - quantity: SSE, RLCF
+    value: 0.2748
+    tolerance: 0.0275
+  - quantity: SSE, RFLR
+    value: 0.1537
+    tolerance: 0.0154
+  - quantity: SSE, RL_meta
+    value: 0.0787
+    tolerance: 0.0079
+  - quantity: SSE, PearceHall
+    value: 0.1084
+    tolerance: 0.0108
+  criterion: Histories as defined in the opening comment, every history with trials. SSE
+    over histories of (mouse switch probability - model switch probability) squared.
+    Readings of the mouse value (a) pooled over trials, (b) the mean of the mice's values;
+    of the model value (i) the fitted model's predicted probability of switching on each
+    mouse trial, averaged per history, (ii) the switch rate of emulated choices. Reproduced
+    when, under one reading, all six SSEs are within tolerance and RL4p is largest; partially
+    reproduced when RL4p is largest but some values are outside tolerance.
+- id: fig3a-both-port-contexts
+  statement: After histories with rewards at both ports in the last 3 trials, mice rarely
+    switched (0.2143) and BRLfwr predicted a similar rate (0.1801), while RL4p overestimated it
+    (0.4328); RLCF gave 0.2248 and RFLR 0.2778.
+  source: Results, Bayesian models and complex RL models, paragraph 3; Fig 3A
+  quote: Since these outcome contexts occurred only around block switches, mice usually stayed
+    at the newly rewarded ports (mean switch rate ... BRLfwr showed a similarly low switch rate
+    after these contexts (0.1801), whereas RL4p model predicted a high average switch rate of
+    0.4328
+  expected:
+  - quantity: mouse switch rate
+    value: 0.2143
+    tolerance: 0.0214
+  - quantity: BRLfwr switch rate
+    value: 0.1801
+    tolerance: 0.018
+  - quantity: RL4p switch rate
+    value: 0.4328
+    tolerance: 0.0433
+  - quantity: RLCF switch rate
+    value: 0.2248
+    tolerance: 0.0225
+  - quantity: RFLR switch rate
+    value: 0.2778
+    tolerance: 0.0278
+  depends_on:
+  - fig3b-sse
+  criterion: The contexts are the histories with at least one A and at least one B (rewards at
+    both ports, e.g. ABb, AaB). Readings of the mean (a) pooled over trials of those contexts,
+    (b) the mean over contexts, (c) the mean of the mice's values; model values as in
+    fig3b-sse. Reproduced when, under one reading, all five are within tolerance; partially
+    reproduced when RL4p is the highest and BRLfwr is within 0.05 of the mice but values are
+    outside tolerance.
+- id: fig3c-aic-around-switch
+  statement: Around block switches (first 5 trials after a switch) BRLfwr and the dynamic RL
+    models fit similarly better than RL4p, with relative AIC of -163.68 (BRLfwr), -163.92
+    (RL_meta) and -158.91 (PearceHall).
+  source: Results, Bayesian models and complex RL models, paragraph 4; Fig 3C
+  quote: 'We found similar Δ AIC results for BRLfwr and dynamic RL models (BRLfwr: −163.6763,
+    RL_meta: −163.9207, PearceHall: −158.9066)'
+  expected:
+  - quantity: relative AIC around switch, BRLfwr
+    value: -163.6763
+    tolerance: 16.37
+  - quantity: relative AIC around switch, RL_meta
+    value: -163.9207
+    tolerance: 16.39
+  - quantity: relative AIC around switch, PearceHall
+    value: -158.9066
+    tolerance: 15.89
+  criterion: The models fitted to all trials, the AIC taken over the first 5 trials after each
+    block switch (Results). Readings (a) block trials 0 to 4 or 1 to 5; (b) 2k - 2 log L on
+    those trials, or -2 log L alone; (c) the mean of the per-mouse relative AICs or their sum.
+    Reproduced when, under one reading, all three are within tolerance; partially reproduced
+    when all three are negative and within 10% of each other but outside tolerance.
+- id: rl4p-learning-rates
+  statement: The best-fitting RL4p model has large learning rates, alpha+ 0.85 and alpha-
+    0.73 on average.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 6
+  quote: In our dataset, the best fitting RL4p model had an average α + of 0.85 (95% CI ...
+    and average α − of 0.73
+  statistics:
+  - about: alpha+
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 0.77
+      high: 0.94
+  - about: alpha-
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 0.71
+      high: 0.75
+  expected:
+  - quantity: RL4p alpha+
+    value: 0.85
+    tolerance: 0.09
+  - quantity: RL4p alpha-
+    value: 0.73
+    tolerance: 0.02
+  criterion: RL4p fitted per mouse as in the opening comment; the mean of the 5 mice's
+    values. The narrow CI for alpha- may come from per-session fits; reading (b) is the mean
+    over per-mouse-and-session fits. Reproduced when, under one reading, both lie inside
+    their intervals; partially reproduced when both are above 0.5 but outside.
+- id: fig4bc-reward-omission
+  statement: Rewards are followed by an increase of NAc dLight signal (estimate 1.6345) and
+    omissions by a decrease (estimate -1.5840).
+  source: Results, Predictions from BRLfwr and BIfp, paragraphs 1 and 2; Fig 4B and 4C
+  quote: After mice received a water reward, we observed a dLight dopamine signal (Z(DA))
+    increase on average (estimate ... When reward was omitted at the peripheral port, we
+    observed a reduction (OLS estimate
+  statistics:
+  - about: reward
+    test: OLS coefficient
+    p: 0.00001
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: 1.613
+      high: 1.656
+  - about: omission
+    test: OLS coefficient
+    p: 0.00001
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: -1.604
+      high: -1.564
+  expected:
+  - quantity: reward coefficient
+    value: 1.6345
+    tolerance: 0.022
+  - quantity: omission coefficient
+    value: -1.584
+    tolerance: 0.02
+  criterion: The OLS with the four factors of the Results (switch, choice laterality relative
+    to the recorded hemisphere, reward, omission), read as DA ~ 0 + reward + omission + switch
+    + contralateral, the coding under which both a reward and an omission estimate exist. The
+    paper prints the reward estimate once as -1.6345 with the CI [1.613, 1.656]; it is read as
+    positive. Readings of the response (a) DA-PT, (b) the mean de-based Z(DA) over 0 to 1 s;
+    of the trials (i) cleaned trials, (ii) all trials of the 34 sessions with valid DA.
+    Reproduced when, under one reading, both coefficients are inside their CIs with p < 1e-5;
+    partially reproduced when the signs hold with p < 1e-5 but values are outside.
+- id: fig4bc-switch-effect
+  statement: Outcome dopamine is shifted upward on switch trials (coefficient 0.5030); reward
+    responses are larger when mice have just switched ports, and omission dips are larger
+    when they stayed.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 2; Fig 4B and 4C
+  quote: We observed a significant Z(DA) difference (OLS coefficient estimate for switch
+  statistics:
+  - test: OLS coefficient
+    p: 0.00001
+    p_relation: "<"
+    ci:
+      level: 0.95
+      low: 0.454
+      high: 0.552
+  expected:
+  - quantity: switch coefficient
+    value: 0.503
+    tolerance: 0.049
+  depends_on:
+  - fig4bc-reward-omission
+  criterion: The same OLS and readings as fig4bc-reward-omission. Reproduced when, under one
+    reading, the switch coefficient lies in [0.454, 0.552] with p < 1e-5 and the mean response
+    of rewarded switch trials exceeds rewarded stay trials while unrewarded stay trials are
+    more negative than unrewarded switch trials; partially reproduced when the signs hold and
+    the coefficient is outside its interval.
+- id: fig4bc-no-laterality
+  statement: Choice laterality relative to the recorded hemisphere has no significant effect on
+    outcome dopamine (p = 0.523).
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 2; Fig 4B and 4C
+  quote: There was no significant effect of hemisphere (laterality, contra or ipsi relative to
+    reward port) on NAc dopamine release (p = 0.523)
+  statistics:
+  - test: OLS coefficient
+    p: 0.523
+  depends_on:
+  - fig4bc-reward-omission
+  criterion: A claim of absence, judged on the paper's test, the laterality coefficient of the
+    four-factor OLS of fig4bc-reward-omission. Reproduced when its p >= 0.05 under the
+    readings of that claim; not reproduced when it is below. The coefficient is reported.
+- id: fig4de-port-duration
+  statement: The duration of the outcome dopamine response follows the time the mouse stays at
+    the reward port, with the trough after omissions reached just after the mouse leaves.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 3; Fig 4D and 4E
+  quote: When we visualized single trial dopamine traces around "outcome" events, we found that
+    the temporal span of the dopamine response qualitatively aligned with the amount of time
+    mice stayed at the peripheral reward port
+  criterion: The paper shows this only qualitatively, in heatmaps sorted by port_dur. Read as
+    (1) on rewarded trials, the Spearman correlation between port_dur and the time after
+    outcome at which de-based Z(DA) first falls below half its peak after the peak is
+    positive with p < 0.05; (2) on unrewarded trials, the Spearman correlation between
+    port_dur and the time of the minimum in 0 to 6 s after outcome is positive with p < 0.05,
+    and the median of (trough time - port_dur) lies between 0 and 1 s. Cleaned trials of the
+    34 sessions, pooled. Reproduced when all hold; partially reproduced when (1) and the
+    correlation of (2) hold.
+- id: trial-cleaning-counts
+  statement: After trial cleaning 20,952 trials (about 68% of the data) remain across 34
+    sessions with valid dopamine recordings.
+  source: Methods, Neural data analysis, paragraph 2
+  quote: After this cleaning, we were left with 20952 trials ( ~ 68 % of the dataset) across 34
+    sessions with valid dopamine recordings
+  expected:
+  - quantity: cleaned trials
+    value: 20952
+    tolerance: 2095
+  - quantity: sessions with valid recordings
+    value: 34
+    tolerance: 0
+  criterion: Sessions and cleaning as in the opening comment, under both SO_lat limits.
+    Reproduced when, under one reading, the session count is 34 and the trial count within
+    tolerance; partially reproduced when the trial count is within tolerance with another
+    session count.
+- id: fig4f-bayesian-rpe-fit
+  statement: RPEs of BIfp and BRLfwr explain outcome dopamine better than RL4p RPEs and better
+    than RLCF, RLFQ3p, RL_meta and PearceHall, by cross-validated log-likelihood.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 4; Fig 4F
+  quote: we found that both BIfp and BRLfwr models yielded larger relative log-likelihood ( Δ
+    llk CV ) than the RL4p baseline, evaluated on cross validation sets (70-30) for each animal
+    ... Both Bayesian models also outperformed other complex RL models on this measure
+  statistics:
+  - about: BRLfwr
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 60.84
+      high: 102.79
+  - about: BIfp
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 65.71
+      high: 217.5
+  - about: RLCF
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: -47.03
+      high: 4.64
+  - about: RLFQ3p
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 4.98
+      high: 33.31
+  - about: RL_meta
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 7.96
+      high: 33.9
+  - about: PearceHall
+    test: 95% bootstrapped confidence interval
+    ci:
+      level: 0.95
+      low: 6.04
+      high: 32.83
+  expected:
+  - quantity: Δllk_CV, BRLfwr
+    value: 80.58
+    tolerance: 22.21
+  - quantity: Δllk_CV, BIfp
+    value: 118.64
+    tolerance: 98.86
+  - quantity: Δllk_CV, RLCF
+    value: -19.23
+    tolerance: 27.8
+  - quantity: Δllk_CV, RLFQ3p
+    value: 18.85
+    tolerance: 14.46
+  - quantity: Δllk_CV, RL_meta
+    value: 22.54
+    tolerance: 14.58
+  - quantity: Δllk_CV, PearceHall
+    value: 19.5
+    tolerance: 13.46
+  depends_on:
+  - trial-cleaning-counts
+  criterion: Cleaned trials of the 34 sessions. Per model, the Methods' regression
+    outcome_DA_PT ~ rpe:rpe_pos + rpe:rpe_neg + port_dur:rpe_pos + port_dur:rpe_neg +
+    ego_action + session_num + log__MVMT + log__center_dur, by OLS (Gaussian likelihood),
+    with rpe the model RPE of the opening comment, rpe_pos and rpe_neg indicators of rpe >= 0
+    and < 0, ego_action the choice contralateral or ipsilateral to the recorded hemisphere,
+    session_num numeric, natural logs. Per animal, 70% of trials to fit and 30% to test,
+    test log-likelihood with the training residual variance; Δllk_CV = llk(model) -
+    llk(RL4p) on the same split. Not given ("featurized covariates", the split, the number of
+    splits, the unit of the bootstrap); readings (a) random trial splits, 100 repeats per
+    animal, Δ summed over animals per repeat, bootstrap over repeats; (b) the same with Δ
+    per animal and bootstrap over animals and repeats; (c) splits by session. BIfp RPE and
+    RLFQ3p forgetting with both variants of the opening comment. Reproduced when, under every
+    reading, BRLfwr and BIfp have Δllk_CV > 0 with CI above 0 and each exceeds RLCF, RLFQ3p,
+    RL_meta and PearceHall, and under one reading the six values lie inside the paper's
+    intervals. Partially reproduced when this order holds but no reading puts the values inside
+    the intervals, or when one Bayesian model meets the order.
+- id: figs3-other-metrics
+  statement: Relative AIC, relative BIC, cross-validated R2 and cross-validated log-likelihood
+    of the dopamine regressions all favour the Bayesian models' RPEs.
+  source: S3 Fig legend; Methods, Neural data analysis, paragraph 2
+  quote: All metrics converged on favoring Bayesian model predictions of dopamine at outcome
+    phase
+  depends_on:
+  - fig4f-bayesian-rpe-fit
+  criterion: The regressions of fig4f-bayesian-rpe-fit; AIC and BIC from the fit to all
+    cleaned trials per animal, R2 and log-likelihood from the test sets, each relative to
+    RL4p. Reproduced when, for every metric, BIfp and BRLfwr are better than RL4p and than
+    each of RLCF, RLFQ3p, RL_meta and PearceHall; partially reproduced when this holds for at
+    least two metrics.
+- id: fig4g-history-decrease
+  statement: On consecutive stay trials, dopamine responses to reward decrease as recent
+    rewards accumulate (from aaa to AAA) but do not flatten to no response.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 5; Fig 4G
+  quote: As mice encountered more rewards in their recent history, dLight dopamine responses to
+    reward gradually decreased (consistent with decreased RPE) but did not completely flatten
+    to no response
+  criterion: Rewarded trials t with t-3, t-2, t-1 and t at the same port (Fig 4G legend), by
+    the outcomes at t-3 to t-1 (aaa to AAA). Cleaned trials. The paper reports no test. Read
+    as (1) the Spearman correlation between the number of rewards in the history (0 to 3) and
+    DA-PT is negative with p < 0.05; (2) on AAA trials the mean de-based Z(DA) over 0 to 1 s
+    (DA-PT of a rewarded trial cannot fall below 0, so it cannot show flattening) has a 95%
+    bootstrapped CI above 0. Reproduced when both hold.
+- id: fig4h-rpe-only-llk
+  statement: OLS models predicting dopamine from each model's RPE alone fit best for BRLfwr
+    (cross-validated log-likelihood -985.89, against -991.80 to -995.02 for the RL models).
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 5; Fig 4H
+  quote: We compared the model fitness across different cognitive models with cross validated
+    log-likelihood (BRLfwr ... Indeed, BRLfwr RPE predictions achieved the highest model
+    fitness to dopamine data
+  expected:
+  - quantity: llk_CV, BRLfwr
+    value: -985.89
+    tolerance: 98.59
+  - quantity: llk_CV, RL4p
+    value: -991.8
+    tolerance: 99.18
+  - quantity: llk_CV, RLCF
+    value: -992.87
+    tolerance: 99.29
+  - quantity: llk_CV, PearceHall
+    value: -993.81
+    tolerance: 99.38
+  - quantity: llk_CV, RLFQ3p
+    value: -994.74
+    tolerance: 99.47
+  - quantity: llk_CV, RL_meta
+    value: -995.02
+    tolerance: 99.5
+  depends_on:
+  - fig4f-bayesian-rpe-fit
+  criterion: Per model, an OLS of DA-PT on the model RPE only, with cross-validation as in
+    fig4f-bayesian-rpe-fit. Not given; readings of the RPE terms (a) rpe:rpe_pos +
+    rpe:rpe_neg, (b) one rpe slope; of the trials (i) the Fig 4G subset (rewarded consecutive
+    stay trials), (ii) all cleaned trials. Reproduced when, under every reading, BRLfwr has
+    the highest llk_CV of the six and, under one reading, the six values are within tolerance
+    (10% is loose here, as the values differ by under 1%); partially reproduced when the order
+    holds and no reading gives the values. BIfp, which the sentence omits, is shown.
+- id: fig4h-nonnegative-rpe-aaa
+  statement: BRLfwr and BIfp predict a small but non-negative RPE on rewarded stay trials after
+    consecutive rewards, as dopamine shows, while RL_meta and PearceHall drive the RPE toward
+    zero as rewards accumulate.
+  source: Results, Predictions from BRLfwr and BIfp, paragraphs 6 and 7; Fig 4H
+  quote: This also allowed the best fitting BRLfwr and BIfp model to predict a small but
+    non-negative RPE response on rewarded stay trials ( Fig 4H )
+  depends_on:
+  - fig4g-history-decrease
+  criterion: On the Fig 4G trials, mean model RPE per history. Reproduced when on AAA trials
+    the mean RPE of BRLfwr and of BIfp is above 0 and above that of each of RL4p, RLCF,
+    RLFQ3p, RL_meta and PearceHall; partially reproduced when one of the two Bayesian models
+    meets this.
+- id: fig4-consistent-after-reward
+  statement: Among trials following a reward at t-1, the dopamine response is consistent
+    whatever the more distant history, and only BRLfwr captures this.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 7; Fig 4G and 4H
+  quote: Furthermore, we observed that among trials after an immediate past trial reward, the
+    dopamine response was highly consistent, independent of more distant outcome histories.
+    Only BRLfwr captured this phenomenon qualitatively
+  depends_on:
+  - fig4g-history-decrease
+  criterion: The Fig 4G trials with A at t-1 (aaA, AaA, aAA, AAA). No test is given. Read as
+    (1) a one-way ANOVA of DA-PT across the four histories has p >= 0.05; (2) the range (max
+    - min) of the four mean model RPEs, divided by the model's range over all eight histories,
+    is smallest for BRLfwr among BRLfwr, BIfp, RL4p, RLCF, RLFQ3p, RL_meta and PearceHall.
+    Reproduced when both hold; partially reproduced when (1) holds alone.
+- id: fig4i-lmer-switch
+  statement: On switch trials, past rewards at the chosen port reduce outcome dopamine (slope
+    -0.128) and past rewards at the other port increase it (slope 0.126).
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 8; Fig 4I
+  quote: LMER fitting revealed a significantly negative effect of R_chosen on dopamine at
+    outcome phase during animal switch trials (slope estimate ... and a significantly positive
+    effect of R_unchosen on dopamine during animal switch trials
+  statistics:
+  - about: R_chosen, switch trials
+    test: linear mixed effects model (lme4)
+    p: 0.02
+    ci:
+      level: 0.95
+      low: -0.195
+      high: -0.062
+  - about: R_unchosen, switch trials
+    test: linear mixed effects model (lme4)
+    p: 0.03
+    ci:
+      level: 0.95
+      low: 0.035
+      high: 0.217
+  expected:
+  - quantity: R_chosen slope, switch trials
+    value: -0.128
+    tolerance: 0.067
+  - quantity: R_unchosen slope, switch trials
+    value: 0.126
+    tolerance: 0.091
+  criterion: Cleaned trials. R_chosen is the number of rewarded trials among t-1 to t-4 at the
+    port chosen at t, R_unchosen at the other port; Reward the outcome at t; Switch and Stay
+    indicators of trial t. The Methods' lme4 formula DA ~ Reward:Switch + R_chosen:Switch +
+    Switch + R_unchosen:Switch + 1 + Reward:Stay + R_chosen:Stay + R_unchosen:Stay, each term
+    with a by-Subject random effect. Not given; readings of the random part (a) (term |
+    Subject) for each term, (b) uncorrelated random slopes (0 + term | Subject) plus (1 |
+    Subject); of DA, (i) DA-PT, (ii) mean de-based Z(DA) over 0 to 1 s; Wald CIs. Reproduced
+    when, under one reading, both slopes have the paper's sign with CI excluding 0 and lie in
+    the paper's intervals; partially reproduced when the signs hold with CI excluding 0 but a
+    value lies outside.
+- id: fig4j-lmer-stay
+  statement: On stay trials, past rewards at the chosen port reduce outcome dopamine (slope
+    -0.09), as all models predict.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 8; Fig 4J
+  quote: All models predicted a negative relationship between R_chosen and RPE signal, matching
+    the dopamine observation (slope estimate
+  statistics:
+  - test: linear mixed effects model (lme4)
+    p: 0.01
+    ci:
+      level: 0.95
+      low: -0.11
+      high: -0.07
+  expected:
+  - quantity: R_chosen slope, stay trials
+    value: -0.09
+    tolerance: 0.02
+  depends_on:
+  - fig4i-lmer-switch
+  - fig4i-model-runchosen
+  criterion: The same model and readings as fig4i-lmer-switch, the R_chosen:Stay term; model
+    predictions as in fig4i-model-runchosen. Reproduced when, under one reading, the slope is
+    negative with CI excluding 0 inside [-0.11, -0.07] and every model's R_chosen:Stay
+    coefficient is negative; partially reproduced when the data slope holds outside its
+    interval.
+- id: fig4i-model-runchosen
+  statement: On switch trials BIfp, BRLfwr and RLCF predict a positive effect of past rewards
+    at the other port on the RPE, while the other RL models predict little or none.
+  source: Results, Predictions from BRLfwr and BIfp, paragraph 8; Fig 4I right
+  quote: On animal switch trials, both BIfp, BRLfwr, and RLCF predicted a positive effect of
+    R_unchosen, but other RL models predicted little to no effect
+  criterion: Model RPEs regressed with the fixed part of the fig4i-lmer-switch formula by OLS,
+    without subject effects (Methods, Linear mixed effects modeling). The Methods speak of
+    model simulated data with a uniform sample size per simulated session; readings (a) the
+    code's generate with each mouse's fitted parameters, one simulated session per real
+    session of the same length, on 7 to 23 or 8 to 15 reward blocks; (b) RPEs of the models
+    run on the mice's own trials. "Little to no effect" is read as not significantly positive
+    at p < 0.05, or below half the smallest of the three positive coefficients. Reproduced
+    when, under every reading, the R_unchosen:Switch coefficient is positive with p < 0.05 for
+    BIfp, BRLfwr and RLCF and "little to no" for RL4p, RLFQ3p, RL_meta and PearceHall.
+- id: figs5-per-animal
+  statement: Dopamine results are qualitatively consistent across animals; per-animal
+    regressions on switch trials resemble the Bayesian model predictions in all but one
+    animal, and switch-stay differences in outcome responses are consistent across animals.
+  source: S5 Fig legend
+  quote: All but one animal showed a strong qualitative resemblance to Bayesian model
+    predictions for Switch trials
+  depends_on:
+  - fig4i-lmer-switch
+  criterion: Per animal, OLS with the fixed part of the fig4i-lmer-switch formula. Read as
+    resemblance when the R_chosen:Switch coefficient is negative and R_unchosen:Switch is
+    positive, the sign pattern BRLfwr and BIfp predict. Reproduced when 4 of the 5 animals
+    show it and, in at least 4 animals, mean DA-PT of rewarded switch trials exceeds rewarded
+    stay trials and unrewarded stay trials are below unrewarded switch trials (S5 Fig A);
+    partially reproduced when 3 animals show the regression pattern.
+- id: reward-switch-reward-count
+  statement: Only 94 trials start a reward, switch, reward sequence, out of 30,707 trials.
+  source: Discussion, paragraph 5
+  quote: Yet in our dataset, there are only 94 trials initiating such sequences out of 30,707
+    trials in total
+  expected:
+  - quantity: trials starting a reward-switch-reward sequence
+    value: 94
+    tolerance: 9.4
+  - quantity: trials in total
+    value: 30707
+    tolerance: 3071
+  criterion: A trial rewarded at one port followed, in the same session, by a choice of the
+    other port that is rewarded. Readings of the trial set (a) the 34 sessions with valid
+    recordings (20,952 is about 68% of 30,707, which fits this), (b) all recorded sessions,
+    (c) all 70 sessions. Reproduced when, under one reading, both counts are within tolerance.
+- id: figs4-lmer-feature-sets
+  statement: In cross-validated R2 of dopamine regressions, the 3R+Sw feature set (Reward,
+    R_chosen and R_unchosen, each split by switch and stay trials) captures a similar level of
+    variance to L0:R, the standard set of trial-back choice and reward interactions; 4 lags were
+    used at the expense of about 1% of variance explained.
+  source: S4 Fig legend; Methods, Linear mixed effects modeling
+  quote: Together we found that 3R+Sw was enough to capture similar levels of variance compared
+    to L0:R. We used 4 lags because it allows us to capture a relatively high amount of past
+    outcome levels, with only the expense of 1% variance explained
+  depends_on:
+  - fig4i-lmer-switch
+  criterion: Cleaned trials, DA-PT as the output (the legend keeps dopamine as the output
+    variable). Feature sets from the S4 Fig legend, L0:R (choice, reward and their interaction
+    for each trial back) and 3R+Sw (the fixed part of the fig4i-lmer-switch formula). Not given
+    (the regression type, the cross-validation scheme, the lags compared, and what the 1% is
+    measured against); readings (a) OLS with the 70-30 splits of fig4f-bayesian-rpe-fit, (b)
+    the LMER of fig4i-lmer-switch with the same splits; lags 1 to 8. Read "similar" as a
+    cross-validated R2 of 3R+Sw at 4 lags within 0.01 of L0:R at 4 lags, and the 1% as the R2
+    of 3R+Sw at 4 lags within 0.01 of its best over lags, or of L0:R's best. Reproduced when
+    both hold under every reading; partially reproduced when the first holds. All R2 values
+    are shown.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2c-no-bayes-vs-complex-rl. The paper does not say whether its t-tests are one- or two-sided; the one-sided tests are now shown as a variant of the absence test.
+  - figs8-brlwrp-no-difference. The Methods cite S8 Fig for BRLfwr against the unrestricted BRL (BRLfw), the legend for BRLwrp; the conflict is named and BRLfw against BRLfwr is shown as a variant.
+  - figs7-no-change-across-sessions. The legend does not say whether model fitness is relative to RL4p or absolute; both readings are now listed, and the Discussion is cited for the fits being behavioural.
+  - fig4f-bayesian-rpe-fit. The criterion listed expected values but never used them; it now asks the values to lie inside the paper's intervals under one reading, with the order alone as partial.
+  - fig4h-rpe-only-llk. Same, the expected values now enter the verdict.
+  - fig4h-nonnegative-rpe-aaa. The statement said the RL models drive the RPE toward zero; the paper says this of RL_meta and PearceHall (paragraph 6), so the statement now names them.
+  - fig4j-lmer-stay. Its criterion uses the model regressions of fig4i-model-runchosen, which is now in depends_on.
+  - figs4-lmer-feature-sets. Added; S4 Fig had no claim. Its criterion names the readings the legend leaves open.
+  - Open. Several qualitative claims (fig2b, figs2, fig4de, fig4g, fig4-consistent-after-reward, fig4i-model-runchosen, figs4) rest on thresholds and tests the paper does not give; each is named as a reading in its criterion, and the outcomes depend on them.
+  - Open. rl4p-learning-rates reading (b), per-session fits, is a guess from the narrow CI and not from the text; it is kept as a reading.
+  - Checked against github.com/Wilbrecht-Lab/cogmodels at 589555c. The code choices in the opening comment (fitting, bounds, RLFQ3p forgetting, BIfp latent, BRL weights, LR formula and 4 lags, 500 x 500-trial simulations on 8 to 15 reward blocks, 6 SD outlier rule, stay plot) match the code.

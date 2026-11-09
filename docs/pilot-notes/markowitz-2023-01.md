@@ -1,0 +1,84 @@
+# 000559, Markowitz et al. 2023
+
+Seven claims reproduced, three partially, two not reproduced and twelve
+blocked, all on the dandiset. Round 1 gave its own outcome for each claim from
+the notebook with its conclusions removed and agreed with 23 of the 24; it gave
+not reproduced for `fig3e-learner-count`, whose criterion defines only the
+reproduced case of nine learners, and the author changed that claim from
+partially reproduced to not reproduced. Round 1 also found that the shuffle in
+`fig2e-dlight-predicts-future-usage` permuted missing dLight peaks, which made
+the null conservative; with the fix the claim stayed partially reproduced,
+significant at 6 of 10 values of n up to 190. Round 2 agreed with all 24 and
+nothing was proposed, so there was no third round. The paper reports that
+dopamine in the dorsolateral striatum of freely moving mice relates to the use
+of behavioural syllables and their sequences, and that pairing a syllable with
+optogenetic dopamine release (Opto-DA) increases its use. The relation of
+dLight to speed across timescales, dLight differences across syllables and
+their decoding, the across-syllable relations to syllable count and transition
+entropy, the prediction of future usage, the DMS transient rate and usage
+prediction, Opto-DA learning, the cumulative counts, the learner count and the
+correlation between stimulation and post sessions were tested. The four claims
+that compare stimulation with catch trials are blocked as
+`metadata_insufficient`, the food-reward transients as `data_missing`, and
+seven claims as `other`, not attempted for time, though their data are in the
+dandiset. Some outcomes rest on weak ground: in
+`fig1h-syllable-dlight-differs` H = 266.40 against the paper's 209.29 while n =
+518 matches, and neither the quality filter nor the post-session rule explains
+the gap; `ed7-dms-no-usage-prediction` is not reproduced by this attempt's
+lagged test, which finds DMS stronger than DLS and probably differs from the
+paper's, while Extended Data Fig. 7 has no lagged test and the attempt's DMS
+across-syllable count test agrees with the paper (r = 0.026, P = 0.170); the 7
+learners against 9 are all among the nine the paper's code printed, with no
+single cause found; and for `fig3l-no-kinematic-effect` and
+`fig3m-long-stim-velocity` the criterion taken literally gives not reproduced
+and partially reproduced. The author used the open access full text, and took
+analysis parameters where the Methods are silent and the nine learner mice,
+for comparison only, from the paper's code at commit 14ed714.
+
+The dandiset was converted by CatalystNeuro (catalystneuro/datta-lab-to-nwb).
+The closed-loop files mark stimulation onsets but not catch trials; the
+conversion kept only the stimulated detections, so Fig. 3i, 3l, 3m and 4f
+cannot be tested, and a substitute selection shows stimulation-catch
+differences in 9 of 12 no-opsin controls, with stimulations a median 0.593 of
+detections per mouse where the Methods give 75 %. No file states the genotype
+or opsin of a mouse: Opto-DA (Ai32) and no-opsin control mice are told apart
+only by the stimulation site, and the dLight+ChrimsonR mice only by their
+subject names. Session type and session number are not stored and must be
+inferred from free-text descriptions, dates and stimulation pulses, and five
+files with stimulation are described as recording sessions. The re-referenced,
+z-scored dLight trace used by every photometry analysis is not stored, nor the
+regression fit needed to recompute it. The dandiset holds 224 DLS photometry
+files without stimulation (210 with syllables, 193 of them not habituation
+sessions, 177 of those passing the quality criteria), where the Methods give
+379 experiments; for the dLight+ChrimsonR mice only the 250-ms closed-loop
+sessions are present; and the food-reward sessions and consumption times of
+Fig. 2a are missing. Other findings: every closed-loop file states a 635-nm
+stimulator, including the Ai32 (ChR2) mice, which the Methods say were
+stimulated with 470-nm light; the dLight-only mice carry the subject
+description "wild-type DAT-IRES-Cre and Ai32 mice"; in 28 photometry and 547
+closed-loop files the syllable timestamps are not ascending, in 573 of these
+575 because the rows are rotated with one backward step, which is at least
+0.95 of the session length in 558 files, and sorting restores a regular 30-Hz
+clock; two closed-loop files of mouse 3155 store every syllable frame twice
+(53,822 and 53,862 repeated timestamps); 14 files of dLight+ChrimsonR mice
+hold empty syllable series; and 111 behaviour-only files and the sessions that
+fail the paper's quality criteria (16 DLS and 11 DMS) are included with no
+flag saying which were excluded from the paper.
+
+A first survey of metadata in all files timed out after an hour and a second
+took 46 minutes, as h5py serializes threads, so the notebook uses processes;
+it ran in 763 s in the first clean run and 13.3 minutes after round 2. Round 1
+also led to leaving habituation sessions out of every photometry analysis,
+which moved most DLS numbers but no outcome. Round 2 found the README run time
+and some statements unsupported by the outputs, and in checking them the
+author found the rotated-clock finding inexact and corrected it, adding the
+finding on repeated frames. Untracked files in the repository root that the
+author did not create were left alone. The author's points on the protocol: no
+blocking reason for a claim not attempted for time; no rule for which reason
+to give when a selection fails a control check; a criterion that defines only
+the reproduced case; a clock check whose contrast assumed a direction and came
+out reversed because dLight dips at syllable onset; whether the paper's own
+data deposit may fill what the conversion dropped; a default 10% tolerance on
+a test statistic that grows with sample size; whether a reference list used
+only for comparison makes a claim `with_inputs`; and a notebook that streams
+1,723 files and takes about 13 minutes, over the 10-minute aim.

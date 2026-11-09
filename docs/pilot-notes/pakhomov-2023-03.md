@@ -1,0 +1,93 @@
+# 001025, Pakhomov et al. 2023
+
+No claim reproduced, none partially, four not reproduced and ten blocked, two
+for missing data and eight as `other`. The first verification round agreed with
+all 14 outcomes as they stood, though it gave the eight `other` claims as
+blocked for missing data, and the second with all 14, and nothing was proposed
+after the second, so there was no third round. It pins version 0.240605.1826,
+the only published version. The paper, Pakhomov, Gudvangen, Mangalanathan,
+Kondratiev, Redondo and Semenov, "Next generation CANCAN focusing for remote
+stimulation by nanosecond electric pulses", measures electroporation of CHO-K1
+cells as uptake of YO-PRO-1 dye, in single cells between two electrodes after
+unipolar and bipolar pulses (Fig. 4) and in monolayers under a quadrupole array
+of four 1.5-mm needles, a small array and a large one, given packets of 600-ns
+pulses (Figs. 5 to 9: train or packet rotation, packet number, voltage, packet
+shape and the array's height above the cells). The claims were written from the accepted author manuscript
+(PMC10247516), without the PDF, so the voltages printed beside the curves of
+Fig. 7 were not read; the paper has no supplement and links no code. The
+dataset holds only the voltage series of Fig. 7, so only its four claims could
+be tested, all on electrodes found by fitting four dark disks in each image and
+ROIs placed from their centre. `fig7a-amplitude-scales-uptake` is not
+reproduced, its 5.6 over 2.4 kV ratios being 5.99, 5.65 and 7.25 at the
+periphery, half-way and centre, none of 18 readings within tolerance; with the
+median inside the needle footprints subtracted, which the criterion excludes,
+they are 13.37, 15.87 and 15.16. `fig7b-targeting-independent-of-amplitude` is
+not reproduced on the assumed main reading of the ROI layout, one of 20 voltage
+pairs differing (108.6% against 136.9%, p = 0.0037), while 10 of 36 readings
+give no significant pair; `fig7cd-holds-for-large-array` is not reproduced on
+the main reading and the camera pixel size (232.6% against 126.0%, p = 0.0494,
+2 dishes against 3), 27 of 36 readings and the footprint pixel size finding no
+difference; and `discussion-independent-of-array-size` follows from these two.
+The Fig. 4 claims are blocked because the single-cell time-lapse images are
+in no dandiset that cites the paper, and the claims of Figs. 5, 6, 8 and 9 as `other`,
+their images appearing to be in dandisets 000686, 000875, 001027 and 001028.
+The author's first run gave the same outcomes. The author asked a reader
+nothing at first, so the answer and author-answers runs changed nothing. Round
+1 found that the no-background reading may misread the paper, whose Section 2.2
+corrects for background (F - F0), that the 8.4 mm scale reading puts the end
+ROIs on the needles, that the end ROIs fall inside the paper's 5% exclusion
+zone even at the camera scale, that the packet is assumed, that the Packet 2
+dishes of Figs. 8 and 9 could be set against the paper and that fig7b had no
+leave-one-out; in reply a reader is asked about the background in
+`questions/001025.yaml`, the 8.4 mm scale was dropped, and a needle-footprint
+measurement, an exclusion-zone variant, a Packet 2 section and a leave-one-out
+(p = 0.0012 to 0.0116) were added. Round 2 found sentences the outputs did not
+support (the other dandisets said to hold the figures with no cell querying
+them, the footprints called consistent with 0.65 um, a chance of 0.64 from 20
+tests taken as independent, a trough "near 45%" where 40.9% is printed, two
+centre values not named, and a dropped qualifier on Fig. 8), all corrected,
+with a cell reading the four dandisets from the archive and a simulation giving
+0.47; the second revision also ran the footprint pixel size as a variant, under
+which fig7cd finds no difference (p = 0.57), and kept the camera scale. The
+author's run took about 67 min, two development errors being fixed and no final
+step failing; the notebook ran in 8.5 min at first, 545 s after the
+author-answers run, 788 s after round 1 and 629 s at the end.
+
+The dandiset holds only the 21 monolayer images of Figure 7; the images of
+Figures 5, 6, 8 and 9 appear, from their titles and descriptions, to be in
+four other dandisets that cite the paper (000686, 000875, 001027 and 001028),
+which the dandiset does not mention, and the single-cell time-lapse data of
+Figure 4 are in no dandiset that cites the paper. No pixel size is given (the
+ImageSeries resolution attribute is 96 or 1), the array is not stated, and the
+electrode positions, electrode labels and the paper's ROI measurements are not
+included; the array can be inferred from the electrode spacing, and it matches
+the protocol in every file. At the 0.65 um pixel of the named camera and
+objective the large array's electrode centres are 9.2 mm apart on the diagonal,
+against the paper's 8.4 mm, and the needle footprints imply a larger pixel
+still (0.679 um small, 0.750 um large). Figure 7 states n = 3 for every
+voltage, while the dandiset has 4 dishes at 2.4 kV, 3 at 3.2, 4.0, 4.8 and 5.6
+kV on the small array, and for the large array only 4.8 kV (2 dishes) and 6.4
+kV (3 dishes). Subject ids do not identify dishes: sub-15 and sub-25 each hold
+two dishes imaged on different days under different protocols, so the archive
+counts 19 subjects for 21 dishes. 7 of the 21 files name no detector, objective
+or channel, and the 5 large-array files hold a second channel labelled DAPI
+that the paper does not describe. The session descriptions name the CANCAN
+protocol with 12.5% decrements but not the packet, inferred as Packet 2 from
+the title and Figure 7. The images have a dark floor of 33 to 81 a.u. that
+varies between dishes and sessions, and the 4.0 kV 1Px4 dishes read 614.9 a.u.
+at the periphery and 718.8 a.u. in the centre, against about 120 and 215 to
+235 a.u. for Packet 2 in Section 3.4, so the paper's a.u. do not appear to be
+the raw image values, or these are not the Figure 8 dishes. Questions are put
+to the paper's authors: whether a background was subtracted before the fold
+changes and normalisations, how the 92 and 224 ROIs were laid out, what the
+pixel size of the stitched images is, and how the 8.4 mm diagonal is measured.
+
+The author's points on the protocol: the paper's data are split over several
+dandisets in one archive, where `data: elsewhere` covers only another archive
+and `data_missing` means public nowhere, so those claims were blocked as
+`other` with the dandiset named; it does not say whether judging absence on
+the paper's test alone overrides the readings of the ROI layout, and step 1.6
+was applied; it gives no guidance for image data without annotations, where
+the author places the ROIs, and electrode detection and pixel size were treated
+as method choices with overlays shown; and the clock check does not apply to
+single time-point images, which the notebook says.

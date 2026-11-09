@@ -1,0 +1,1623 @@
+# Claims for Daume, Kaminski, Schjetnan, Salimpour, Khan, Kyzar, Reed, Anderson, Valiante,
+# Mamelak & Rutishauser (2024), "Control of working memory by phase-amplitude coupling of human
+# hippocampal neurons", Nature 629, 393-401, on dandiset 000673.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (open access, CC BY) as served by Europe PMC (PMC11078732),
+# full text with Results, Methods, figure legends and Extended Data Fig. 1 to 9 legends, and the
+# Supplementary Information PDF (41586_2024_7309_MOESM1_ESM: Supplementary Tables S1 to S5 and the
+# Supplementary Discussion). The Peer Review File (MOESM3) is in the text too; the Reporting
+# Summary (MOESM2) came through empty and nothing here rests on it. The text of Supplementary
+# Table S4 is garbled (its model formula is lost); its rows (Intercept, SC, Load1, SC:Load1 for
+# hippocampus and amygdala) were read from the text that survives.
+#
+# Code read: github.com/rutishauserlab/SBCAT-release-NWB at commit a25e8cc3 (2025-01-21), the
+# repository the paper links (also Zenodo 10.5281/zenodo.10494533). It holds sample code only:
+# loading the NWB files, behaviour metrics (NWB_QA_graphs.m), category cell selection
+# (NWB_calcSelective_SB.m), the LFP PAC comodulogram with Tort's modulation index
+# (cfc_tort_comodulogram.m, NWB_samplePAC_LFP.m), the PAC neuron GLMs for one example neuron
+# (plot_PAC_neuron.m, NWB_samplePAC_SU.m), spike sorting metrics, and a simulation of signal and
+# noise axes (helpers/internal/geometry). It holds no code for single-trial PAC, the mixed-effects
+# GLMs, spike-field coherence, noise correlations on the data, population decoding, or the
+# cluster statistics. Where the code settles a detail it is cited as "code" below.
+#
+# Data the paper used (as the paper reports it). 36 patients (21 female, 15 male, 40.47 +/- 13.76
+# years), 44 sessions, with Behnke-Fried hybrid depth electrodes (8 microwires per bundle) in the
+# hippocampus, amygdala, pre-SMA, dACC and vmPFC (left and right), recorded at Cedars-Sinai,
+# Toronto Western and Johns Hopkins. 1,454 single neurons (360 hippocampus, 496 amygdala, 204
+# pre-SMA, 188 dACC, 206 vmPFC) sorted with OSort, and 1,922 microwire LFP channels (586, 421, 283,
+# 325, 307); the LFP was low-passed at 175 Hz and downsampled to 400 Hz after spike waveforms were
+# interpolated out. Task: a Sternberg working memory task of 140 trials, 70 load 1 and 70 load 3,
+# with pictures from five categories (faces, animals, cars or tools, fruits, landscapes); each
+# picture 2 s on screen, then a 2.55 to 2.85 s maintenance period, then a probe (match or
+# non-match) answered by button press. The code reads, from each session's trials table, the
+# timestamps of fixation, encoding 1 to 3, maintenance, probe and response, the picture IDs of
+# encoding 1 to 3 and the probe (the category is the first digit of the picture ID), the load,
+# probe_in_out and response_accuracy. The data availability statement names DANDI 000673, which
+# the dandiset's title and description match (44 sessions); it should hold every experiment of
+# the paper.
+#
+# General rules for the criteria below.
+# (G1) Unless a criterion says otherwise, a claim of an effect is reproduced when the paper's test,
+#      run as described, gives p < 0.05 (after the correction the paper applied) in the direction
+#      the paper reports, and every expected value is within tolerance; partially reproduced when
+#      the test holds and an expected value is out of tolerance; not reproduced when the test does
+#      not hold. A claim of absence follows the protocol: the paper's test, as written.
+# (G2) Tests. "Two-sided permutation-based t-test" is statcond.m (EEGLAB) with method 'perm',
+#      10,000 permutations, paired over neurons, channels, pairs or sessions unless the paper says
+#      unpaired (Methods, Statistics). Cluster tests are FieldTrip cluster-based permutation over
+#      frequencies, 10,000 permutations, alpha 0.025 per one-sided cluster, Bonferroni corrected
+#      for the number of tests named in the legend. The cluster-forming threshold and cluster
+#      statistic are not stated; FieldTrip's defaults (clusteralpha 0.05, maxsum) are the reading
+#      the citation implies and are used.
+# (G3) Windows. Maintenance is 0 to 2.5 s after maintenance onset (Methods, Task). Baseline is
+#      -0.9 to -0.3 s before picture 1 onset (Fig. 3b legend). Only correct trials unless stated.
+# (G4) Preferred trials of a category neuron are trials in which a picture of its preferred
+#      category was among the encoded pictures (code, NWB_calcSelective_SB.m, maintenance raster);
+#      in load 3 the three pictures are from three different categories (Methods, Task).
+#
+# Details the paper and code leave open, used in the criteria below. Where a detail could change
+# the outcome the readings are named, and the notebook runs each.
+# (O1) LFP artefact rejection. The Methods give the automated steps (amplitude z-scored per channel
+#      across all trials after capping at 6 s.d.; a trial is removed for a wire when any sample
+#      exceeds 4 s.d., or when the z-scored difference between every fourth sample exceeds 10
+#      s.d.), then visual inspection that cannot be repeated. The span z-scored is not stated.
+#      Readings are (a) the automated steps on the -0.5 to 3 s maintenance epochs; (b) the same on
+#      whole trials (fixation to response). The visual step is left out under both, a deviation.
+#      Whether the released LFP already excludes channels or trials is for the author to find.
+# (O2) Equal trial counts. Correct load 1 and load 3 trials are randomly subsampled to equal
+#      numbers per channel (Methods, PAC); the seed is a standard choice and cannot change the
+#      outcome much.
+# (O3) Band averages for LFP PAC. The code (NWB_samplePAC_LFP.m) takes theta as phase centre
+#      frequencies 4 and 6 Hz (2 Hz bandwidth, so 3 to 7 Hz) and high gamma as amplitude centres
+#      70 to 140 Hz in 5 Hz steps; low gamma is read the same way as centres 30 to 55 Hz. A
+#      channel's value is the mean z-scored MI over those pairs.
+# (O4) Surrogate null of the proportion of PAC channels (Fig. 2b). Not described beyond "trial-
+#      shuffled surrogates". Reading is that for each of the 200 surrogates of each channel the
+#      surrogate MI is z-scored with the normal fitted to all 200, and the null is the 200
+#      proportions of channels whose surrogate exceeds z 1.64 (200 surrogates give the printed
+#      minimum P of 0.005).
+# (O5) Single-trial PAC. The Methods do not say how it is computed. Readings are (a) Tort's MI
+#      (18 bins) computed on each trial's 0 to 2.5 s window, averaged over the theta and high-gamma
+#      pairs of O3, raw; (b) the same, z-scored across trials within each channel. GLM forms are
+#      from Supplementary Tables S2 and S3 (normal response; random intercepts for patient and
+#      for channel, or neuron-channel pair, nested in patient).
+# (O6) Firing rate units for comparisons with baseline and between conditions. Figures show the
+#      percentage change from baseline, the tests do not say. Readings are (a) rate in Hz; (b)
+#      percentage change from each neuron's baseline.
+# (O7) "Insufficient data in the incorrect condition". No minimum is given. Readings are a
+#      minimum of (a) one; (b) two; (c) three incorrect trials per neuron; the n each gives is
+#      reported against the paper's n.
+# (O8) SFC surrogates. The spike times are perturbed "by adding random noise" 500 times; the size
+#      of the noise is not given. Readings are (a) each spike moved to a uniformly random time
+#      within the same 0 to 2.5 s window; (b) each spike shifted by a uniform jitter of +/-250 ms
+#      (half a cycle at 2 Hz, the lowest frequency analysed).
+# (O9) PAC neuron FDR. "FDR corrected for all possible channel combinations". Readings are
+#      Benjamini-Hochberg over (a) all neuron-to-channel combinations of an area and load; (b) the
+#      channel combinations of each neuron.
+# (O10) Noise correlation averaging (Fig. 6a). Readings are (a) the mean over all correct trials
+#      of each pair; (b) the mean within each condition (preferred or not, by load), then across
+#      conditions.
+# (O11) Decoding. The Methods fix the decoder (linear SVM, fitcecoc one-versus-one, 80% train and
+#      20% test, z-scored maintenance rates, load 1 correct trials, trials subsampled to the
+#      smallest category, 500 repetitions, greedy ensembles) and the removal of noise correlations
+#      (trials shuffled per neuron within category). They do not fix (i) whether the intact and
+#      removed ensembles are built separately or the intact order is reused; (ii) the measure of
+#      Fig. 6c. Readings for (i) are (a) separate greedy ensembles; (b) the intact ensemble order
+#      used for both. For (ii) the measure is, per session, the mean accuracy gain at the steps
+#      where a PAC neuron was added before peak accuracy, averaged over the PAC neurons of the
+#      session, as Leavitt et al. (ref. 36) define it; the paper gives no other.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000673"
+paper: doi:10.1038/s41586-024-07309-z
+claims:
+- id: cohort-counts
+  statement: The study recorded 36 patients in 44 sessions, with 1,454 single neurons (360
+    hippocampus, 496 amygdala, 204 pre-SMA, 188 dACC, 206 vmPFC) and 1,922 microwire LFP channels
+    (586, 421, 283, 325 and 307).
+  source: Methods, Patients and Spike sorting; Results, Hippocampal PAC is modulated by WM load,
+    paragraph 1
+  quote: We isolated 360 neurons in the hippocampus, 496 in the amygdala, 204 in the pre-SMA, 188
+    in the dACC and 206 in the vmPFC. Of the LFP channels, 586 channels were in the hippocampus,
+    421 in the amygdala, 283 in the pre-SMA, 325 in the dACC and 307 in the vmPFC
+  expected:
+  - quantity: sessions
+    value: 44
+    tolerance: 0
+  - quantity: patients
+    value: 36
+    tolerance: 0
+  - quantity: single neurons, all areas
+    value: 1454
+    tolerance: 0
+  - quantity: LFP channels, all areas
+    value: 1922
+    tolerance: 0
+  criterion: Counts from the units and LFP electrode tables, with areas merged across hemispheres
+    as condenseAreas.m does. Tolerance is 0 because these are counts of the recordings the dataset
+    is said to hold, not estimates. Reproduced when every total and every per-area count matches exactly;
+    partially reproduced when all are within 2%.
+- id: fig1d-rt-load
+  statement: Patients responded more slowly in load 3 than in load 1 trials (1.46 s against 1.33
+    s).
+  source: Results, Main, paragraph 3; Figure 1d
+  quote: the participants responded slower (1.46 s versus 1.33 s; t 43 = 6.42, P < 0.001)
+  statistics:
+  - test: two-sided permutation-based t-test, 10,000 permutations
+    statistic: t43 = 6.42
+    p: 0.0001
+    n: 44 sessions
+  expected:
+  - quantity: RT, load 3
+    value: 1.46
+    tolerance: 0.146
+    unit: s
+  - quantity: RT, load 1
+    value: 1.33
+    tolerance: 0.133
+    unit: s
+  criterion: RT is response time minus probe onset (Fig. 1d legend; code). Per session the median
+    RT of correct trials in each load, as NWB_QA_graphs.m computes it; the values are the means
+    over sessions; the paired permutation t-test over 44 sessions (G2). The per-session mean RT
+    of correct trials is shown as a variant.
+- id: fig1d-accuracy-load
+  statement: Patients were less accurate in load 3 than in load 1 trials (91.60% against 95.71%).
+  source: Results, Main, paragraph 3; Figure 1d
+  quote: less accurately (91.60% versus 95.71%; t 43 = −4.45, P < 0.001) in load 3 trials compared
+    with load 1 trials
+  statistics:
+  - test: two-sided permutation-based t-test, 10,000 permutations
+    statistic: t43 = -4.45
+    p: 0.0001
+    n: 44 sessions
+  expected:
+  - quantity: accuracy, load 3
+    value: 91.6
+    tolerance: 9.16
+    unit: '%'
+  - quantity: accuracy, load 1
+    value: 95.71
+    tolerance: 9.57
+    unit: '%'
+  criterion: Per session the percentage of correct trials (response_accuracy) in each load; means
+    over sessions; paired permutation t-test over 44 sessions (G2).
+- id: behaviour-overall-accuracy
+  statement: Mean accuracy was 93.66 +/- 7.04% (s.d. over sessions), and 78.34 +/- 20.09% of
+    errors were false negatives.
+  source: Results, Main, paragraph 3
+  quote: Mean accuracy was 93.66 ± 7.04% (mean ± s.d.; 78.34 ± 20.09% of all errors were false
+    negatives)
+  expected:
+  - quantity: mean accuracy over sessions
+    value: 93.66
+    tolerance: 7.04
+    unit: '%'
+  - quantity: false negatives as a share of errors, mean over sessions
+    value: 78.34
+    tolerance: 20.09
+    unit: '%'
+  criterion: Tolerance is the s.d. the paper reports. A false negative is an incorrect response to
+    a match probe (probe_in_out = 1). Sessions without errors are left out of the second mean.
+- id: fig2a-theta-gamma-pac
+  statement: Across all recorded channels, PAC during maintenance was strongest between theta
+    phase (3-7 Hz) and the amplitude of a low (30-55 Hz) and a high (70-140 Hz) gamma band.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraph 1; Figure 2a
+  quote: PAC was strongest between the phase in the theta range (3–7 Hz) and the amplitude in two
+    different gamma-frequency bands ... a lower (30–55 Hz) and a higher gamma range (70–140 Hz)
+  criterion: Comodulogram as in cfc_tort_comodulogram.m (Methods, PAC; O1, O2) on the -0.5 to 3 s
+    epochs of subsampled correct trials of both loads, cut to 0 to 2.5 s, phase centres 2 to 14
+    Hz (2 Hz bandwidth), amplitude centres 30 to 150 Hz in 5 Hz steps (bandwidth twice the phase
+    centre), 18 bins, z-scored against 200 trial-shuffled surrogates; averaged over channels
+    (1,917 in the paper). Reproduced when the largest mean z lies at a phase centre of 4 or 6 Hz,
+    and the amplitude profile at those phase centres has a local maximum within 30 to 55 Hz and
+    another within 70 to 140 Hz.
+- id: fig2b-pac-channel-proportions
+  statement: 137 of 586 hippocampal channels showed significant theta-high-gamma PAC; the
+    proportions of such channels in the hippocampus, amygdala and vmPFC exceeded the
+    trial-shuffled null, while pre-SMA and dACC had few such channels.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraphs 1 and 2; Figure 2b
+  quote: For theta to high-gamma PAC, 137 out of 586 hippocampal channels showed significant PAC
+    across all correct trials from both load conditions
+  statistics:
+  - test: right-sided permutation test against trial-shuffled surrogates
+    p: 0.005
+    n: channels per area; hippocampus, amygdala and vmPFC
+  expected:
+  - quantity: significant hippocampal channels
+    value: 137
+    tolerance: 13.7
+  - quantity: significant amygdala channels
+    value: 130
+    tolerance: 13
+  - quantity: significant vmPFC channels
+    value: 40
+    tolerance: 4
+  - quantity: significant pre-SMA channels
+    value: 5
+    tolerance: 0.5
+  - quantity: significant dACC channels
+    value: 14
+    tolerance: 1.4
+  criterion: A channel has significant PAC when its mean z-scored MI over theta and high gamma
+    (O3), from all subsampled trials of both loads, exceeds 1.64 (Methods, PAC). The amygdala,
+    vmPFC, pre-SMA and dACC counts are the n of the load tests (Fig. 2c legend; t129, t39, t4,
+    t13). Reproduced when the hippocampal, amygdala and vmPFC proportions exceed the 99th
+    percentile of their surrogate null (O4) and the counts are within tolerance; partially
+    reproduced when the three exceed the null and a count is out of tolerance.
+- id: fig2c-hippocampus-load
+  statement: In the 137 hippocampal channels with significant PAC, theta-high-gamma PAC was weaker
+    in load 3 than in load 1 trials.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraph 1; Figure 2c (left)
+  quote: This comparison revealed significantly weaker theta–high-gamma PAC in load 3 compared with
+    load 1 trials ( t 136 = −4.26, P < 0.001
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t136 = -4.26
+    p: 0.0005
+    corrected: FDR over five brain areas
+    n: 137 channels
+  depends_on:
+  - fig2b-pac-channel-proportions
+  criterion: Per significant hippocampal channel, the mean z-scored MI over theta and high gamma
+    (O3) in load 1 and in load 3 (equal trial counts, O2), each z-scored against 200 surrogates
+    of its own load; paired permutation t-test over channels; Benjamini-Hochberg over the five
+    areas' p-values. Reproduced when the corrected p < 0.05 with load 1 higher.
+- id: fig2c-no-load-effect-other-areas
+  statement: Theta-high-gamma PAC did not differ between loads in the amygdala, vmPFC, pre-SMA or
+    dACC channels with significant PAC.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraph 2; Figure 2c (middle and
+    right)
+  quote: theta–high-gamma PAC did not differ significantly between the two load conditions in
+    neither of these two areas (Fig. 2c ; t 129 = 1.43, P = 0.38, Bayes factor (BF) 01 = 1.40;
+    and t 39 = 0.16, P = 0.87, BF 01 = 5.84, respectively)
+  statistics:
+  - about: amygdala
+    test: two-sided permutation-based t-test
+    statistic: t129 = 1.43
+    p: 0.38
+    corrected: FDR over five brain areas
+    n: 130 channels
+  - about: vmPFC
+    test: two-sided permutation-based t-test
+    statistic: t39 = 0.16
+    p: 0.87
+    corrected: FDR over five brain areas
+    n: 40 channels
+  - about: pre-SMA
+    test: two-sided permutation-based t-test
+    statistic: t4 = -0.16
+    p: 0.87
+    corrected: FDR over five brain areas
+    n: 5 channels
+  - about: dACC
+    test: two-sided permutation-based t-test
+    statistic: t13 = -0.82
+    p: 0.73
+    corrected: FDR over five brain areas
+    n: 14 channels
+  depends_on:
+  - fig2b-pac-channel-proportions
+  criterion: A claim of absence. The test of fig2c-hippocampus-load in each of the four areas, FDR
+    corrected over five areas. Reproduced when no area has corrected p < 0.05; not reproduced
+    when any has. The mean load difference of each area is reported.
+- id: edf2b-hippocampus-load-patients
+  statement: Averaging significant PAC channels within each patient, hippocampal PAC was again
+    stronger in load 1 than in load 3, and no other area showed a load difference.
+  source: Extended Data Fig. 2b legend
+  quote: Only in the hippocampus again, PAC was stronger for load 1 as compared to load 3 (n = 23
+    patients, p = 0.0049), observable in almost each single patient. No significant differences
+    were found between the load conditions in other regions
+  statistics:
+  - test: two-sided permutation-based t-test
+    p: 0.0049
+    n: 23 patients
+  depends_on:
+  - fig2c-hippocampus-load
+  criterion: Per patient (sessions of one patient pooled), the mean over significant channels of
+    each load's z-scored theta-high-gamma MI; paired permutation t-test over patients per area.
+    Reproduced when the hippocampus gives p < 0.05 with load 1 higher and no other area gives
+    p < 0.05; partially reproduced when the hippocampus holds and another area also differs.
+- id: edf2c-low-gamma-no-load-effect
+  statement: Theta-low-gamma (30-55 Hz) PAC did not differ between loads in any region.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraph 2; Extended Data Fig. 2c
+  quote: For PAC involving the low gamma band (30–55 Hz), there were no significant differences
+    between the load conditions in any of the regions
+  criterion: A claim of absence. As fig2c-hippocampus-load with low gamma (amplitude centres 30 to
+    55 Hz, O3) both for channel selection and for the load test (the paper's n are 148, 155, 10,
+    22 and 48 channels). The legend names no correction, so the test is run uncorrected; the
+    FDR-corrected result is shown as a variant. Reproduced when no area has p < 0.05; not reproduced
+    when any has.
+- id: tables1-slow-fast-theta
+  statement: Split into slow (2-5 Hz) and fast (5-9 Hz) theta, PAC differed between loads only in
+    the hippocampus and only with high gamma, most strongly for fast theta (t116 = -3.05, p =
+    0.0015; slow theta, t147 = -2.31, p = 0.0163).
+  source: Supplementary Table S1; Supplementary Discussion, Related work on role of theta
+  quote: PAC differed significantly only in the hippocampus and only for high gamma power combined
+    with either low or high theta frequency bands, with the strongest differences in the fast
+    theta band
+  statistics:
+  - about: hippocampus, fast theta to high gamma
+    test: two-sided permutation-based t-test, uncorrected
+    statistic: t(116) = -3.05
+    p: 0.0015
+  - about: hippocampus, slow theta to high gamma
+    test: two-sided permutation-based t-test, uncorrected
+    statistic: t(147) = -2.3141
+    p: 0.0163
+  criterion: The phase bands are not mapped to centre frequencies in the text. Readings are (a)
+    slow theta as phase centres 2 and 4 Hz and fast theta as 6 and 8 Hz of the comodulogram;
+    (b) bands filtered directly at 2-5 Hz and 5-9 Hz. Channels are selected per band
+    combination, as the differing n of Table S1 show. Reproduced when, under one reading, of the
+    area and band tests (19 in Table S1, since pre-SMA had no significant fast theta to high
+    gamma channel) only the two hippocampal high-gamma tests give p < 0.05, both with load 1
+    higher.
+- id: fig2f-rt-single-trial-pac
+  statement: In the hippocampus, stronger single-trial theta-high-gamma PAC went with faster RTs,
+    while no such relation held in the amygdala or vmPFC.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraph 2; Figure 2f; Supplementary
+    Table S2
+  quote: In the hippocampus, faster RTs were associated with stronger single-trial estimates of
+    TG-PAC
+  statistics:
+  - about: hippocampus, PAC term
+    test: mixed-effects GLM
+    statistic: estimate -49.07, t = -4.01
+    p: 6.0e-5
+    n: 137 channels
+  - about: amygdala, PAC term
+    test: mixed-effects GLM
+    statistic: estimate -5.15, t = -0.70
+    p: 0.48
+    n: 130 channels
+  - about: vmPFC, PAC term
+    test: mixed-effects GLM
+    statistic: estimate 24.51, t = 1.18
+    p: 0.24
+    n: 40 channels
+  depends_on:
+  - fig2b-pac-channel-proportions
+  criterion: Correct trials of the significant PAC channels; RT ~ 1 + PAC + load + PAC*load +
+    (1|patientID) + (1|patientID:channelID), normal response (Table S2), single-trial PAC under
+    each reading of O5. Reproduced when, under the readings, the hippocampal PAC term is negative
+    with p < 0.05 and the amygdala and vmPFC terms have p >= 0.05; methods_underspecified when the
+    readings disagree.
+- id: edf3-hippocampus-pac-controls
+  statement: The hippocampal load effect on PAC was not explained by theta or gamma power, theta
+    waveform asymmetry, theta-gamma phase-phase coupling, preferred phase or PAC peak frequency.
+  source: Results, Hippocampal PAC is modulated by WM load, paragraph 2; Extended Data Fig. 3b,
+    c, d, g, h
+  quote: we tested whether the differences in hippocampal PAC between loads could be explained by
+    changes in power, theta waveform shape, cross-frequency phase–phase coupling, preferred phase
+    or PAC peak frequency but did not find evidence for any of those factors
+  depends_on:
+  - fig2c-hippocampus-load
+  criterion: A claim of absence over the 137 channels, each with a two-sided paired permutation
+    t-test between loads (Extended Data Fig. 3 legend, panels b, c, d, h). Theta (3-7 Hz) and
+    gamma (70-140 Hz) power on the PAC trials, the paper's bands; the power estimate is not
+    stated, and readings are (a) the mean squared Hilbert amplitude from the PAC filters of O3,
+    (b) the Welch spectrum of the 0 to 2.5 s window averaged over each band; peak-to-trough and rise-to-decay asymmetry from the bycycle toolbox
+    with its default settings (the paper gives none); theta-high-gamma phase-phase coupling as
+    the n:m phase locking value of refs 73 and 83 (the ratio is not given; readings are the
+    ratio of the band centres, 5 to 105 Hz, and the ratio of each phase and amplitude centre pair
+    of O3, averaged); the load difference of preferred phase tested against zero, by a test the
+    paper does not name (the legend's t-tests cover panels a-f and h, not g), with readings (a)
+    a V test of the per-channel differences against 0, (b) a two-sided permutation t-test of the
+    differences wrapped to -180 to 180 degrees against 0; the peak frequency from a comodulogram with 0.5 Hz phase
+    steps. Reproduced when none of the tests gives p < 0.05; partially reproduced when one does;
+    not reproduced when more do. The asymmetries are also tested against 0.5.
+- id: edf3a-kappa-load
+  statement: The distribution of gamma amplitude over theta phase was wider (lower kappa) in load
+    3 than in load 1 across hippocampal PAC channels.
+  source: Extended Data Fig. 3a legend
+  quote: Across all PAC channels, kappa was significantly lower in load 3 compared to load 1 (n =
+    137 channels, t(136) = −3.7453, p = 0.0001) trials
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t(136) = -3.7453
+    p: 0.0001
+    n: 137 channels
+  depends_on:
+  - fig2b-pac-channel-proportions
+  criterion: Kappa is the von Mises concentration estimated (circ_kappa) from the 18-bin
+    distribution of high-gamma amplitude over theta phase, bins weighted by their normalized
+    amplitude; the estimator is not named, and circ_kappa of the CircStat toolbox is the
+    standard choice. Paired permutation t-test over channels.
+- id: edf3e-nesting
+  statement: 110 of the 137 hippocampal PAC channels (80.29%) showed theta-high-gamma nesting, and
+    PAC remained lower in load 3 than load 1 in those channels.
+  source: Extended Data Fig. 3e legend
+  quote: 110 of the 137 significant PAC channels (80.29%) in the hippocampus showed nesting between
+    high gamma and theta. When testing PAC between the load conditions after removing channels
+    that did not show significant nesting, PAC was still significantly lower in load 3 than 1 (n =
+    110; t(109) = −4.10; p = 0.0001)
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t(109) = -4.10
+    p: 0.0001
+    n: 110 channels
+  expected:
+  - quantity: channels with nesting
+    value: 110
+    tolerance: 11
+  depends_on:
+  - fig2c-hippocampus-load
+  criterion: Nesting as in the Methods (PAC, last paragraph) after Vaz et al.; a local maximum is a
+    sample of the averaged raw waveform larger than both neighbours. Reproduced when the load
+    test holds in the nested channels and the count is within tolerance.
+- id: edf3f-raw-mi-load
+  statement: Raw (not z-scored) theta-gamma MI was also larger in load 1 than in load 3 in the
+    hippocampal PAC channels.
+  source: Extended Data Fig. 3f legend
+  quote: Raw theta-gamma PAC was significantly larger in load 1 compared to load 3 (n = 137;
+    t(136) = −4.0264, p = 0.0001)
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t(136) = -4.0264
+    p: 0.0001
+    n: 137 channels
+  depends_on:
+  - fig2b-pac-channel-proportions
+- id: methods-spectral-slope
+  statement: The slope of the log-log power spectrum did not differ between load 1 and load 3
+    trials in hippocampal channels.
+  source: Methods, LFP preprocessing
+  quote: The slope of log–log power spectra did not differ significantly between load 1 and load 3
+    trials in hippocampal channels ( n = 586 channels; mean slope −1.7526 ± 0.3902 versus
+    −1.7517 ± 0.3928, t 585 = −0.86, P = 0.39)
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t585 = -0.86
+    p: 0.39
+    n: 586 channels
+  expected:
+  - quantity: mean slope, load 1
+    value: -1.7526
+    tolerance: 0.3902
+  - quantity: mean slope, load 3
+    value: -1.7517
+    tolerance: 0.3928
+  criterion: A claim of absence. The frequency range and the spectral estimate for the slope are
+    not given. Readings are a linear fit of log power on log frequency of the Welch spectrum of
+    the 0 to 2.5 s maintenance window over (a) 2 to 150 Hz; (b) 30 to 150 Hz. Tolerance is the
+    reported s.d. Reproduced when the paired permutation t-test gives p >= 0.05; not reproduced
+    when it gives p < 0.05.
+- id: category-cell-counts
+  statement: Category neurons were found above chance in the hippocampus (89, 24.72%), amygdala
+    (181, 36.49%) and vmPFC (37, 17.96%), but not in the pre-SMA and dACC.
+  source: Results, Category cells support WM maintenance, paragraph 1; Extended Data Fig. 4a
+  quote: We identified such cells at numbers higher than expected by chance within the
+    hippocampus (89 neurons (24.72%)), amygdala (181 neurons (36.49%)) and vmPFC (37 neurons
+    (17.96%)) but not within the pre-SMA and dACC
+  statistics:
+  - test: right-sided permutation test, 500 label shuffles
+    p: 0.002
+    corrected: Bonferroni over five areas (99th percentile)
+    n: hippocampus, amygdala and vmPFC
+  expected:
+  - quantity: hippocampal category neurons
+    value: 89
+    tolerance: 8.9
+  - quantity: amygdala category neurons
+    value: 181
+    tolerance: 18.1
+  - quantity: vmPFC category neurons
+    value: 37
+    tolerance: 3.7
+  - quantity: pre-SMA category neurons
+    value: 18
+    tolerance: 1.8
+  - quantity: dACC category neurons
+    value: 14
+    tolerance: 1.4
+  criterion: Selection as in NWB_calcSelective_SB.m, which matches the Methods. Spike rate 0.2 to
+    1.0 s after the onset of every encoding picture and of the probe, all trials; category is the
+    first digit of the picture ID; a permutation one-way ANOVA over categories (statcond, 2,000
+    permutations) with p < 0.05, then an unpaired permutation t-test (2,000) of the category with
+    the highest mean rate against all other presentations with two-sided p < 0.1 (one-sided 0.05).
+    Chance by shuffling category labels across presentations 500 times; significant above the
+    99th percentile. The pre-SMA and dACC counts are from Extended Data Fig. 4b. Reproduced when
+    the three areas exceed the 99th percentile, pre-SMA and dACC do not, and the counts are
+    within tolerance.
+- id: fig3b-persistent-activity
+  statement: MTL category neurons stayed above baseline during maintenance in both preferred and
+    non-preferred trials, and fired more when their preferred category was held in memory.
+  source: Results, Category cells support WM maintenance, paragraph 1; Figure 3b
+  quote: Category neurons ( n = 270) remained active (preferred (pref.) versus baseline (bsl), P =
+    0.0001; non-preferred (non-pref.), P = 0.0001) and retained their selectivity during the
+    maintenance period, with FRs higher for preferred compared with non-preferred categories ( P
+    = 0.001)
+  statistics:
+  - about: preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 270 neurons
+  - about: non-preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 270 neurons
+  - about: preferred against non-preferred
+    test: two-sided permutation-based t-test
+    statistic: t269 = 2.93
+    p: 0.001
+    n: 270 neurons
+  depends_on:
+  - category-cell-counts
+  criterion: Hippocampal and amygdala category neurons pooled; per neuron the mean maintenance
+    rate over correct preferred trials (G4), over correct non-preferred trials, and the mean
+    baseline rate over all correct trials (G3); paired permutation t-tests over neurons, under
+    both readings of O6 (for b the baseline is 0% by definition, so the first two tests are
+    one-sample tests against zero). Reproduced when all three tests give p < 0.05 with
+    maintenance above baseline and preferred above non-preferred under both readings.
+- id: edf4b-persistent-activity-by-area
+  statement: Persistent and selective maintenance activity of category neurons held in the
+    hippocampus and amygdala separately, but vmPFC category neurons returned to baseline and did
+    not differ between preferred and non-preferred trials.
+  source: Extended Data Fig. 4b legend
+  quote: The activity of category neurons in the vmPFC (right) during the delay period was not
+    significantly larger than that during baseline ... Also, their FRs did not differ
+    significantly between when the preferred and the non-preferred category of a cell was
+    maintained in WM (t(36) = 1.03, p = 0.32, BF 01 = 3.47)
+  statistics:
+  - about: hippocampus, preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 89 neurons
+  - about: hippocampus, non-preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 89 neurons
+  - about: amygdala, preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 181 neurons
+  - about: amygdala, non-preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 181 neurons
+  - about: hippocampus, preferred against non-preferred
+    test: two-sided permutation-based t-test
+    p: 0.025
+    n: 89 neurons
+  - about: amygdala, preferred against non-preferred
+    test: two-sided permutation-based t-test
+    p: 0.037
+    n: 181 neurons
+  - about: vmPFC, preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.12
+    n: 37 neurons
+  - about: vmPFC, non-preferred against baseline
+    test: two-sided permutation-based t-test
+    p: 0.26
+    n: 37 neurons
+  - about: vmPFC, preferred against non-preferred
+    test: two-sided permutation-based t-test
+    statistic: t(36) = 1.03
+    p: 0.32
+    n: 37 neurons
+  depends_on:
+  - category-cell-counts
+  criterion: The tests of fig3b-persistent-activity per area. Reproduced when, in the hippocampus
+    and amygdala, all three tests give p < 0.05 in the paper's direction, and in the vmPFC none
+    does (the vmPFC part is a claim of absence on the same tests); partially reproduced when one
+    of the two parts holds.
+- id: fig3c-category-load
+  statement: In preferred trials, MTL category neurons fired more during maintenance in load 1
+    than in load 3, while no load effect appeared in non-preferred trials.
+  source: Results, Category cells support WM maintenance, paragraph 2; Figure 3c; Extended Data
+    Fig. 5a
+  quote: The activity of category neurons in the MTL was modulated by load, with FRs higher in
+    load 1 than in load 3 in preferred trials ( t 269 = 2.65, P = 0.004; Fig. 3c ), but not in
+    non-preferred trials ( t 269 = −1.46, P = 0.14
+  statistics:
+  - about: preferred trials, load 1 against load 3
+    test: two-sided permutation-based t-test
+    statistic: t269 = 2.65
+    p: 0.004
+    n: 270 neurons
+  - about: non-preferred trials, load 1 against load 3
+    test: two-sided permutation-based t-test
+    statistic: t269 = -1.46
+    p: 0.14
+    n: 270 neurons
+  depends_on:
+  - category-cell-counts
+  criterion: Per neuron the mean maintenance rate in correct preferred load 1 and correct
+    preferred load 3 trials (G4), and the same for non-preferred trials; paired permutation
+    t-tests, both readings of O6. Reproduced when the preferred test gives p < 0.05 with load 1
+    higher and the non-preferred test gives p >= 0.05; partially reproduced when only the first
+    holds.
+- id: fig3d-category-correct-incorrect
+  statement: MTL category neurons fired more during maintenance in correct than in incorrect
+    trials.
+  source: Results, Category cells support WM maintenance, paragraph 2; Figure 3d
+  quote: FRs were higher in correct as compared to incorrect trials across both load conditions (
+    t 245 = 2.43, P = 0.02
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t245 = 2.43
+    p: 0.02
+    n: 246 neurons
+  expected:
+  - quantity: neurons with enough incorrect trials
+    value: 246
+    tolerance: 24.6
+  depends_on:
+  - category-cell-counts
+  criterion: Per neuron the mean maintenance rate over correct and over incorrect trials of both
+    loads. The trials are not specified; readings are (a) all trials; (b) preferred trials only.
+    Neurons without enough incorrect trials are left out (O7). Reproduced when, under a reading
+    of each, the paired permutation t-test gives p < 0.05 with correct higher; the n is reported.
+- id: category-no-rt-effect
+  statement: Category neuron maintenance rates did not differ between fast and slow RT trials in
+    the hippocampus or amygdala.
+  source: Results, Category cells support WM maintenance, paragraph 2
+  quote: There was no significant difference in the FRs between fast and slow RT trials (median
+    split; computed per load condition and then averaged across loads for the preferred category
+    and correct trials only; hippocampus, t 88 = 0.73, P = 0.47; amygdala, t 180 = 1.38, P =
+    0.18)
+  statistics:
+  - about: hippocampus
+    test: two-sided permutation-based t-test
+    statistic: t88 = 0.73
+    p: 0.47
+    n: 89 neurons
+  - about: amygdala
+    test: two-sided permutation-based t-test
+    statistic: t180 = 1.38
+    p: 0.18
+    n: 181 neurons
+  depends_on:
+  - category-cell-counts
+  criterion: A claim of absence. Correct preferred trials, median split of RT within each load,
+    fast and slow rates averaged over loads, paired permutation t-test per area. Reproduced when
+    both areas give p >= 0.05; not reproduced when either gives p < 0.05.
+- id: fig3f-gamma-sfc-preferred
+  statement: Hippocampal category neurons paired with PAC channels were more strongly phase-locked
+    to local high-gamma LFP when their preferred category was held in memory; no such effect held
+    in the amygdala, for non-PAC channels or in the theta band.
+  source: Results, Category cells support WM maintenance, paragraph 3; Figure 3f; Extended Data
+    Fig. 5e
+  quote: In the hippocampus, high-gamma-band SFC was significantly stronger in preferred trials than
+    in non-preferred trials for neuron-to-channel combinations that involved significant PAC
+    channels (cluster P = 0.004; Fig. 3f )
+  statistics:
+  - test: two-sided cluster-based permutation t-test
+    p: 0.004
+    corrected: Bonferroni over two MTL areas
+    n: 151 neuron-channel combinations
+  depends_on:
+  - category-cell-counts
+  - fig2b-pac-channel-proportions
+  criterion: SFC as in the Methods (SFC). LFP phase from 40 complex Morlet wavelets, 2 to 150 Hz
+    in log steps, 3 to 10 cycles in log steps, on -0.5 to 3 s epochs cut to 0 to 2.5 s; spikes in
+    correct trials subsampled to equal counts in the two conditions (at least 10 per condition),
+    500 subsamples, mean vector length averaged; computed within each load and averaged over
+    loads; z-scored within condition against 500 surrogates (O8). Pairs are each category neuron
+    with every significant PAC channel (fig2b) in the same bundle. Cluster test over the 40
+    frequencies (G2) with alpha 0.025/2. Reproduced when, under both readings of O8, the
+    hippocampus has a cluster with preferred above non-preferred that overlaps 70 to 140 Hz, and
+    the amygdala and the hippocampal non-PAC channel pairs have no gamma cluster.
+- id: fig3g-gamma-sfc-anova
+  statement: Gamma (70-140 Hz) SFC of hippocampal category neurons was stronger in preferred than
+    non-preferred trials in both loads, with no main effect of load and no interaction.
+  source: Figure 3g legend; Results, Category cells support WM maintenance, paragraph 3
+  quote: Gamma (70–140 Hz) SFC for hippocampal category neurons was stronger for preferred versus
+    non-preferred trials in both load conditions (main effect preference, F 1,150 = 16.23, P =
+    0.0001; load 1, P = 0.003; load 3, P = 0.004). No main effect of load ( P = 0.25) or
+    interaction ( P = 0.33) was found
+  statistics:
+  - about: main effect of preference
+    test: permutation-based 2 x 2 ANOVA
+    statistic: F1,150 = 16.23
+    p: 0.0001
+    n: 151 neuron-channel pairs
+  - about: load 1, preferred against non-preferred
+    test: two-sided permutation-based t-test
+    statistic: t150 = 3.14
+    p: 0.003
+  - about: load 3, preferred against non-preferred
+    test: two-sided permutation-based t-test
+    statistic: t150 = 2.88
+    p: 0.004
+  - about: main effect of load
+    test: permutation-based 2 x 2 ANOVA
+    p: 0.25
+  - about: interaction
+    test: permutation-based 2 x 2 ANOVA
+    p: 0.33
+  depends_on:
+  - fig3f-gamma-sfc-preferred
+  criterion: The SFC of fig3f, z-scored, averaged over the wavelets with centres in 70 to 140 Hz,
+    in each load and preference (not averaged over loads); a 2 x 2 repeated-measures permutation
+    ANOVA (statcond, paired) and paired t-tests per load. Reproduced when the preference effect
+    and both per-load tests give p < 0.05 with preferred higher, and load and interaction give
+    p >= 0.05; partially reproduced when the preference effect holds and another part does not.
+- id: edf5d-sfc-high-gamma-power
+  statement: The preferred against non-preferred difference in gamma SFC held only for spikes
+    during high hippocampal gamma power, not during low gamma power.
+  source: Results, Category cells support WM maintenance, paragraph 3; Extended Data Fig. 5d
+  quote: SFC was different between preferred and non-preferred trials only for spikes that
+    occurred during high ( t 150 = 3.06, P = 0.002) but not low high-gamma band power in the
+    hippocampus ( t 150 = 0.26, P = 0.85
+  statistics:
+  - about: high gamma power
+    test: two-sided permutation-based t-test
+    statistic: t150 = 3.06
+    p: 0.002
+    n: 151 neuron-channel pairs
+  - about: low gamma power
+    test: two-sided permutation-based t-test
+    statistic: t150 = 0.26
+    p: 0.85
+    n: 151 neuron-channel pairs
+  depends_on:
+  - fig3f-gamma-sfc-preferred
+  criterion: Gamma amplitude (70 to 140 Hz) at each spike, median split across trials per pair;
+    gamma SFC as in fig3g-gamma-sfc-anova for the spikes of each half, spike counts equalized.
+    Reproduced when the high-power test gives p < 0.05 with preferred higher and the low-power
+    test gives p >= 0.05.
+- id: edf5c-theta-sfc-null
+  statement: Theta-band (3-7 Hz) SFC of hippocampal category neurons with PAC channels showed no
+    effect of load or preference and no interaction.
+  source: Extended Data Fig. 5c legend; Results, Category cells support WM maintenance, paragraph
+    3
+  quote: When averaging theta band (3–7 Hz) SFC values for hippocampal category neurons paired
+    with significant PAC channels, we did not observe a significant main effect for load or
+    preference nor a significant interaction
+  depends_on:
+  - fig3f-gamma-sfc-preferred
+  criterion: A claim of absence. The ANOVA of fig3g-gamma-sfc-anova on the wavelets with centres
+    in 3 to 7 Hz. Reproduced when no effect gives p < 0.05.
+- id: edf5fg-gamma-sfc-all-channels-patients
+  statement: The gamma SFC preference effect of hippocampal category neurons held across all
+    channels, not only PAC channels, and at the patient level.
+  source: Extended Data Fig. 5f and 5g legends
+  quote: Patient-averaged gamma SFC was significantly higher for preferred trials, suggesting that
+    the effect was not driven by a few channels or patients (n = 19, t(18) = 2.8512, p = 0.005)
+  statistics:
+  - about: all channels, hippocampus
+    test: two-sided cluster-based permutation t-test
+    p: 0.007
+    corrected: Bonferroni over two MTL areas
+  - about: patient averages
+    test: two-sided permutation-based t-test
+    statistic: t(18) = 2.8512
+    p: 0.005
+    n: 19 patients
+  depends_on:
+  - fig3f-gamma-sfc-preferred
+  criterion: Panel f, the cluster test of fig3f with every channel of the bundle; panel g, gamma
+    SFC averaged over pairs within patient, paired test over patients. Reproduced when both give
+    p < 0.05 with preferred higher.
+- id: fig3h-pac-category-firing
+  statement: Trial by trial, single-trial theta-high-gamma PAC was weakly positively related to
+    the spike count of hippocampal category neurons, but not of amygdala category neurons.
+  source: Results, Category cells support WM maintenance, paragraph 4; Figure 3h; Supplementary
+    Table S3
+  quote: In the hippocampus, PAC was weakly but significantly positively correlated with the FR of
+    category neurons
+  statistics:
+  - about: hippocampus, SC term
+    test: mixed-effects GLM
+    statistic: estimate 0.002, t = 2.40
+    p: 0.017
+    n: 151 neuron-channel combinations
+  - about: amygdala, SC term
+    test: mixed-effects GLM
+    statistic: estimate -0.001, t = -0.75
+    p: 0.45
+    n: 423 neuron-channel combinations
+  depends_on:
+  - fig3f-gamma-sfc-preferred
+  criterion: Correct trials of each category neuron paired with each significant PAC channel of
+    its bundle; PAC ~ 1 + SC + load + SC*load + (1|patientID) + (1|patientID:neuron-channelID),
+    normal response (Table S3), SC the spike count in 0 to 2.5 s, single-trial PAC under each
+    reading of O5. The trials are not restricted in the text; readings are (a) all correct
+    trials; (b) correct preferred trials. Reproduced when, under the readings, the hippocampal SC
+    term is positive with p < 0.05 and the amygdala term has p >= 0.05; methods_underspecified
+    when they disagree.
+- id: pac-neuron-counts
+  statement: 79 of 212 hippocampal neurons (37.29%) and 163 of 358 amygdala neurons (45.53%)
+    qualified as PAC neurons, more than expected by chance.
+  source: Results, Category neurons are not PAC neurons, paragraph 1; Figure 4a, b
+  quote: In the hippocampus, 79 (37.29%) out of 212 available neurons ( P < 0.005; 200 permutations
+    ( Methods ); pre-processing steps removed broadband LFPs for some of the neurons and those
+    were therefore not part of this analysis) qualified as PAC neurons. In the amygdala, 163
+    (45.53%) out of 358 neurons ( P < 0.005) qualified as PAC neurons
+  statistics:
+  - about: hippocampus
+    test: permutation test, 200 trial re-pairings of spikes and LFP
+    p: 0.005
+    p_relation: <
+    n: 212 neurons
+  - about: amygdala
+    test: permutation test, 200 trial re-pairings of spikes and LFP
+    p: 0.005
+    p_relation: <
+    n: 358 neurons
+  expected:
+  - quantity: hippocampal PAC neurons
+    value: 79
+    tolerance: 7.9
+  - quantity: amygdala PAC neurons
+    value: 163
+    tolerance: 16.3
+  criterion: Selection as in plot_PAC_neuron.m and the Methods (Selection of PAC neurons). For each
+    MTL neuron and each LFP channel of its bundle, correct trials of one load, -0.5 to 3 s
+    epochs (the code uses -1.5 to 4 s; both are cut to 0 to 2.5 s); theta phase from a 3-7 Hz
+    pop_eegfiltnew filter and Hilbert transform; gamma amplitude from 7-cycle Morlet wavelets at
+    70 to 140 Hz in 5 Hz steps, each z-scored over the concatenated samples and averaged; median
+    split of gamma; 10 phase bins; spike counts in the 20 bins; Poisson GLMs (fitglme, Laplace)
+    with the bin's left phase edge as cos and sin terms; likelihood-ratio tests of model 1 against
+    models 2 and 3, both p < 0.01 after FDR (O9). A neuron qualifies through any channel in
+    either load. Chance from 200 runs with spikes and LFP paired from random trials. Artefact
+    trials as in O1. Reproduced when, under the readings, in both areas fewer than 5% of the 200
+    shuffled counts reach the observed count and the counts are within tolerance; partially reproduced when the
+    counts are out of tolerance and the shuffle test holds. The number of neurons with LFP in
+    their bundle is reported against 212 and 358.
+- id: pac-category-overlap
+  statement: The overlap of PAC and category neurons (28 of 79 in the hippocampus, 68 of 163 in
+    the amygdala) did not exceed that expected of independent populations.
+  source: Results, Category neurons are not PAC neurons, paragraph 2; Figure 4b
+  quote: In the hippocampus, 28 (35.44%) out of the 79 PAC neurons were both PAC neurons as well as
+    category neurons. In the amygdala, this was the case for 68 (41.72%) out of the 163 PAC
+    neurons (Fig. 4b ). The proportion of category neurons among PAC neurons was not
+    significantly higher than expected by independent subpopulations in any of the two regions
+    (both P > 0.05
+  statistics:
+  - test: test against independent subpopulations
+    p: 0.05
+    p_relation: '>'
+    n: 79 hippocampal and 163 amygdala PAC neurons
+  expected:
+  - quantity: hippocampal PAC neurons that are category neurons
+    value: 28
+    tolerance: 2.8
+  - quantity: amygdala PAC neurons that are category neurons
+    value: 68
+    tolerance: 6.8
+  depends_on:
+  - pac-neuron-counts
+  - category-cell-counts
+  criterion: A claim of absence. The test is not named. Readings are (a) a right-sided binomial
+    test of the overlap against the product of the two proportions among the analysed neurons;
+    (b) a right-sided hypergeometric (Fisher) test. Reproduced when the test gives p >= 0.05 in
+    both areas; not reproduced when it gives p < 0.05 in either.
+- id: edf7a-pac-neurons-no-category-decoding
+  statement: Category could be decoded from encoding-period rates of category neurons
+    (hippocampus 72.77%, amygdala 88.71%) but not from PAC neurons that are not category neurons
+    (26.06% and 25.86%, chance 20%).
+  source: Results, Category neurons are not PAC neurons, paragraph 2; Extended Data Fig. 7a
+  quote: the decoder was able to differentiate between the picture categories when it was trained
+    on FRs from the category neurons (hippocampus, 72.77%, P = 0.001; amygdala, 88.71%, P =
+    0.001; Extended Data Fig. 7a ). However, the decoder could not differentiate between the
+    categories when it was trained on FRs from PAC neurons that were not also category neurons in
+    both MTL areas (hippocampus, 26.06%, P = 0.16; amygdala, 25.86%, P = 0.15; chance level = 20%)
+  statistics:
+  - about: hippocampal category neurons
+    test: right-sided permutation test, 1,000 label shuffles
+    p: 0.001
+  - about: amygdala category neurons
+    test: right-sided permutation test, 1,000 label shuffles
+    p: 0.001
+  - about: hippocampal PAC-only neurons
+    test: right-sided permutation test, 1,000 label shuffles
+    p: 0.16
+  - about: amygdala PAC-only neurons
+    test: right-sided permutation test, 1,000 label shuffles
+    p: 0.15
+  expected:
+  - quantity: decoding accuracy, hippocampal category neurons
+    value: 72.77
+    tolerance: 7.28
+    unit: '%'
+  - quantity: decoding accuracy, amygdala category neurons
+    value: 88.71
+    tolerance: 8.87
+    unit: '%'
+  - quantity: decoding accuracy, hippocampal PAC-only neurons
+    value: 26.06
+    tolerance: 2.61
+    unit: '%'
+  - quantity: decoding accuracy, amygdala PAC-only neurons
+    value: 25.86
+    tolerance: 2.59
+    unit: '%'
+  depends_on:
+  - pac-neuron-counts
+  - category-cell-counts
+  criterion: Pseudo-populations across sessions (legend), linear SVM as in O11, trials per category
+    subsampled to the smallest count across neurons, 1,000 repetitions, accuracy the mean; null
+    from 1,000 label shuffles (Methods). The rate window is not stated beyond "during picture
+    presentation"; readings are (w1) 0.2 to 1.0 s after picture onset, the selection window;
+    (w2) 0 to 2 s, the whole presentation. Which encoding presentations enter is not stated;
+    readings are (a) all encoding pictures of both loads; (b) encoding 1 of load 1 trials. Reproduced when, under a reading,
+    category neurons decode above the null (p < 0.05) in both areas, PAC-only neurons do not, and
+    the accuracies are within tolerance; partially reproduced when the pattern holds without the
+    values.
+- id: fig4c-pac-neuron-firing-single-trial-pac
+  statement: Spike counts of hippocampal PAC neurons were positively related to single-trial
+    theta-high-gamma PAC on their selected channel; amygdala PAC neurons showed no relation.
+  source: Results, Properties of PAC neurons, paragraph 1; Figure 4c, d; Supplementary Table S4
+  quote: FRs of PAC neurons were positively correlated with single-trial estimates of TG-PAC in the
+    hippocampus ( c ; n = 79, P = 0.028, mixed-effects GLM), but not in the amygdala ( d ; n =
+    163, P = 0.98
+  statistics:
+  - about: hippocampus, SC term
+    test: mixed-effects GLM
+    statistic: estimate 0.0032, t = 2.19
+    p: 0.028
+    n: 79 neurons
+  - about: amygdala, SC term
+    test: mixed-effects GLM
+    statistic: estimate -3e-5, t = -0.02
+    p: 0.98
+    n: 163 neurons
+  depends_on:
+  - pac-neuron-counts
+  criterion: Correct trials, each PAC neuron with its selected channel (highest model 1 R2, Methods);
+    the GLM of fig3h-pac-category-firing with random intercepts for neuron-channel pair nested in
+    patient (Methods, Properties of PAC neurons), single-trial PAC under each reading of O5.
+    Reproduced when, under the readings, the hippocampal SC term is positive with p < 0.05 and the
+    amygdala term has p >= 0.05; methods_underspecified when they disagree.
+- id: fig4e-hippocampus-pac-neurons-accuracy
+  statement: Hippocampal PAC neurons fired above baseline during maintenance, more in correct than
+    in incorrect trials, and above baseline in correct trials only.
+  source: Results, Properties of PAC neurons, paragraph 1; Figure 4e
+  quote: Second, their FR was elevated throughout the maintenance period compared with the
+    baseline ( t 78 = 2.43, P = 0.01). Third, FRs varied as a function of accuracy (correct versus
+    incorrect trials ( t 62 = 3.82, P < 0.001
+  statistics:
+  - about: maintenance against baseline
+    test: two-sided permutation-based t-test
+    statistic: t78 = 2.43
+    p: 0.01
+    n: 79 neurons
+  - about: correct against incorrect
+    test: two-sided permutation-based t-test
+    statistic: t62 = 3.82
+    p: 0.0001
+    n: 63 neurons
+  - about: correct against baseline
+    test: two-sided permutation-based t-test
+    statistic: t62 = 2.67
+    p: 0.01
+    n: 63 neurons
+  - about: incorrect against baseline
+    test: two-sided permutation-based t-test
+    statistic: t62 = -0.98
+    p: 0.33
+    n: 63 neurons
+  expected:
+  - quantity: neurons with enough incorrect trials
+    value: 63
+    tolerance: 6.3
+  depends_on:
+  - pac-neuron-counts
+  criterion: Maintenance against baseline over all correct trials; correct against incorrect over
+    all trials of both loads, neurons without enough incorrect trials left out (O7); both
+    readings of O6. Reproduced when the first three tests give p < 0.05 in the paper's direction
+    and the incorrect against baseline test gives p >= 0.05; partially reproduced when the
+    correct against incorrect test holds and another part does not.
+- id: fig4g-hippocampus-pac-neurons-load
+  statement: Hippocampal PAC neuron rates did not differ between loads but were above baseline in
+    each load; they also did not differ between fast and slow RT trials.
+  source: Results, Properties of PAC neurons, paragraph 1; Figure 4g
+  quote: FRs were not significantly different between the two load conditions (load 3 − load 1,
+    t 78 = 1.38, P = 0.20), but FRs were elevated compared with the baseline in each condition
+    considered separately (load 1, t 78 = 2.14, P = 0.03; load 3, t 78 = 2.45, P = 0.01
+  statistics:
+  - about: load 3 against load 1
+    test: two-sided permutation-based t-test
+    statistic: t78 = 1.38
+    p: 0.2
+    n: 79 neurons
+  - about: load 1 against baseline
+    test: two-sided permutation-based t-test
+    statistic: t78 = 2.14
+    p: 0.03
+  - about: load 3 against baseline
+    test: two-sided permutation-based t-test
+    statistic: t78 = 2.45
+    p: 0.01
+  - about: fast against slow RT
+    test: two-sided permutation-based t-test
+    statistic: t78 = -0.07
+    p: 0.94
+  depends_on:
+  - pac-neuron-counts
+  criterion: Correct trials; the load and RT parts are claims of absence (RT median split within
+    load, averaged over loads). Reproduced when both baseline tests give p < 0.05 with
+    maintenance higher and the load and RT tests give p >= 0.05; partially reproduced when one
+    part fails.
+- id: fig4-amygdala-pac-neurons
+  statement: Amygdala PAC neurons fired above baseline during maintenance but did not differ
+    between correct and incorrect trials, loads, or fast and slow RT trials.
+  source: Results, Properties of PAC neurons, paragraph 2; Figure 4f, h
+  quote: PAC neurons in the amygdala also showed higher FRs during the maintenance period compared
+    with the baseline ( t 162 = 6.40, P < 0.001), but there were no significant differences
+    between correct and incorrect WM trials ( t 156 = −0.77, P = 0.45; Fig. 4f ), loads (load 3 −
+    load 1, t 162 = 0.26, P = 0.80
+  statistics:
+  - about: maintenance against baseline
+    test: two-sided permutation-based t-test
+    statistic: t162 = 6.40
+    p: 0.001
+    p_relation: <
+    n: 163 neurons
+  - about: correct against incorrect
+    test: two-sided permutation-based t-test
+    statistic: t156 = -0.77
+    p: 0.45
+    n: 156 neurons
+  - about: load 3 against load 1
+    test: two-sided permutation-based t-test
+    statistic: t162 = 0.26
+    p: 0.8
+  - about: fast against slow RT
+    test: two-sided permutation-based t-test
+    statistic: t162 = 1.87
+    p: 0.07
+  depends_on:
+  - pac-neuron-counts
+  criterion: As fig4e and fig4g for amygdala PAC neurons. Reproduced when the baseline test gives
+    p < 0.05 with maintenance higher and the three others give p >= 0.05; partially reproduced
+    when one part fails.
+- id: edf7bc-pac-neuron-local-sfc
+  statement: Local theta and gamma SFC of PAC neurons did not differ between loads in the
+    hippocampus or amygdala, though both exceeded shuffled surrogates.
+  source: Extended Data Fig. 7b, c legends
+  quote: Theta and gamma SFC between PAC neurons and local LFP recordings did not differ as a
+    function of load in ( b ) the hippocampus ... or ( c ) the amygdala ... Theta and gamma SFC,
+    however, were both significantly stronger than shuffled surrogates in both areas (all p =
+    0.0001)
+  statistics:
+  - about: hippocampus theta
+    test: two-sided permutation-based t-test
+    statistic: t(78) = -1.54
+    p: 0.13
+  - about: hippocampus gamma
+    test: two-sided permutation-based t-test
+    statistic: t(78) = -1.12
+    p: 0.27
+  - about: amygdala theta
+    test: two-sided permutation-based t-test
+    statistic: t(162) = -0.71
+    p: 0.47
+  - about: amygdala gamma
+    test: two-sided permutation-based t-test
+    statistic: t(162) = 0.76
+    p: 0.45
+  - about: against shuffled surrogates, all
+    test: two-sided permutation-based t-test
+    p: 0.0001
+  depends_on:
+  - pac-neuron-counts
+  criterion: SFC as in fig3f (at least 50 spikes per condition) between each PAC neuron and its
+    selected channel, per load, averaged over 3-7 Hz and 70-140 Hz. The load part is a claim of
+    absence. Reproduced when the four load tests give p >= 0.05 and the z-scored SFC exceeds
+    zero (the surrogate mean) with p < 0.05 in every band and area.
+- id: fig5b-hippocampus-vmpfc-theta-sfc-load
+  statement: Spikes of hippocampal PAC neurons were more strongly phase-locked to vmPFC theta LFP
+    (2.5-4.3 Hz) in load 3 than in load 1, with no such effect for other frequencies or for
+    pre-SMA and dACC LFPs.
+  source: Results, PAC neurons phase lock to the frontal cortex, paragraph 1; Figure 5b; Extended
+    Data Fig. 8a
+  quote: SFC was significantly stronger in load 3 compared with load 1 between spiking activity of
+    PAC neurons in the hippocampus and theta-band LFPs recorded in the vmPFC (Fig. 5b and Methods
+    ; cluster P < 0.001). We did not observe significant differences for other frequency bands,
+    nor for the other two frontal brain areas
+  statistics:
+  - test: two-sided cluster-based permutation t-test
+    p: 0.0001
+    corrected: Bonferroni over two MTL areas, three frontal areas and two cell populations
+    n: 175 connections
+  expected:
+  - quantity: hippocampal PAC neuron to vmPFC channel connections
+    value: 175
+    tolerance: 17.5
+  depends_on:
+  - pac-neuron-counts
+  criterion: SFC as in fig3f between each hippocampal PAC neuron and every LFP channel of each
+    frontal area in the same hemisphere, at least 50 spikes per load, per load (no averaging over
+    loads), both readings of O8; cluster test over 40 frequencies with alpha 0.025/12 (G2).
+    Reproduced when vmPFC has a cluster with load 3 higher that overlaps the paper's theta band
+    (3 to 7 Hz; the paper's cluster spans 2.5 to 4.3 Hz, Fig. 5e legend) and no other cluster, and pre-SMA and dACC have none; partially reproduced when the vmPFC theta cluster
+    holds and another cluster appears.
+- id: fig5cd-no-effect-category-amygdala
+  statement: Hippocampal category neurons showed no load difference in SFC to vmPFC LFP, and
+    amygdala PAC neurons showed none to the LFP of any frontal area.
+  source: Figure 5c, d legends; Results, PAC neurons phase lock to the frontal cortex, paragraph 1
+  quote: Category neurons from the hippocampus ( c ; n = 215) or PAC neurons from the amygdala ( d
+    ; n = 767) did not show significant SFC differences between loads relative to the vmPFC LFP
+  depends_on:
+  - fig5b-hippocampus-vmpfc-theta-sfc-load
+  criterion: A claim of absence. The test of fig5b for hippocampal category neurons and for
+    amygdala PAC neurons with vmPFC (and the other frontal areas for amygdala PAC neurons).
+    Reproduced when no cluster is significant at 0.025/12; not reproduced when one is.
+- id: fig5e-random-subsets
+  statement: The theta SFC load difference of hippocampal PAC neurons to vmPFC was larger than for
+    every one of 10,000 random sets of hippocampus-vmPFC connections.
+  source: Figure 5e legend; Results, PAC neurons phase lock to the frontal cortex, paragraph 1
+  quote: Hippocampal PAC cells ( n = 175, cyan line) yielded the strongest long-range theta SFC
+    difference between load 3 and load 1 trials among 10,000 random selections of
+    hippocampus–vmPFC connections ( P = 0.0001, right-sided permutation test)
+  statistics:
+  - test: right-sided permutation test, 10,000 random selections
+    p: 0.0001
+    n: 175 connections
+  depends_on:
+  - fig5b-hippocampus-vmpfc-theta-sfc-load
+  criterion: The t value of load 3 against load 1 for SFC averaged over 2.5 to 4.3 Hz, for the PAC
+    neuron connections and for 10,000 random sets of the same number of connections from all
+    hippocampal neurons. Reproduced when the PAC neuron t exceeds at least 95% of the random t
+    values.
+- id: fig5f-theta-sfc-rt
+  statement: Theta SFC between hippocampal PAC neurons and vmPFC was stronger in fast than in slow
+    RT trials; amygdala PAC neurons showed no such effect.
+  source: Results, PAC neurons phase lock to the frontal cortex, paragraph 1; Figure 5f
+  quote: theta SFC was stronger for fast compared with slow RTs for PAC neurons from the
+    hippocampus ( t 166 = 2.10, P = 0.03; Fig. 5f ), but not from the amygdala ( t 705 = 1.40, P
+    = 0.16)
+  statistics:
+  - about: hippocampus
+    test: two-sided permutation-based t-test
+    statistic: t166 = 2.10
+    p: 0.03
+    n: 167 connections
+  - about: amygdala
+    test: two-sided permutation-based t-test
+    statistic: t705 = 1.40
+    p: 0.16
+    n: 706 connections
+  depends_on:
+  - fig5b-hippocampus-vmpfc-theta-sfc-load
+  criterion: Median split of RT among correct trials within each load; SFC computed in fast and in
+    slow trials within each load and averaged over loads, averaged over 2.5 to 4.3 Hz; paired
+    permutation t-test over connections with enough spikes (the minimum is not stated for this
+    test; readings are 50 spikes per condition, as for SFC in general, and 10). Reproduced when
+    the hippocampal test gives p < 0.05 with fast higher and the amygdala test p >= 0.05.
+- id: edf8b-vmpfc-sfc-patients
+  statement: At the patient level, theta SFC between hippocampal PAC neurons and vmPFC was higher
+    in load 3 than in load 1.
+  source: Extended Data Fig. 8b legend
+  quote: At the patient-level, theta cross-regional SFC was significantly higher for load 3 than
+    load 1 trials, suggesting that the effect was not driven by a few channels or patients (n =
+    20; t(19) = −2.8297, p = 0.0071)
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t(19) = -2.8297
+    p: 0.0071
+    n: 20 patients
+  depends_on:
+  - fig5b-hippocampus-vmpfc-theta-sfc-load
+- id: edf8c-pac-against-category
+  statement: The load modulation of hippocampus-vmPFC theta SFC was stronger for PAC neurons than
+    for category neurons.
+  source: Extended Data Fig. 8c legend
+  quote: the load modulation of cross-regional theta SFC between hippocampal neurons and vmPFC
+    LFPs was significantly stronger for PAC than for category neurons ... t(376.07) = 3.3942, p =
+    0.0001; unpaired two-sided permutation t -test)
+  statistics:
+  - test: unpaired two-sided permutation t-test
+    statistic: t(376.07) = 3.3942
+    p: 0.0001
+    n: 175 PAC and 215 category neuron connections
+  depends_on:
+  - fig5b-hippocampus-vmpfc-theta-sfc-load
+  criterion: Per connection the load 3 minus load 1 SFC averaged over 2.5 to 4.3 Hz.
+- id: edf8de-narrow-spiking
+  statement: The load and RT effects on hippocampus-vmPFC theta SFC held for narrow-spiking PAC
+    neurons only, not broad-spiking ones.
+  source: Extended Data Fig. 8d, e legends
+  quote: we observed a significant difference in theta SFC between load 3 and load 1 only for the
+    narrow-spiking PAC neurons (trough-to-peak time <0.5 ms; n = 91 connections; cluster-p =
+    0.0001, left). No effect was found for broad-spiking PAC neurons (n = 84)
+  statistics:
+  - about: load, narrow-spiking
+    test: two-sided cluster-based permutation t-test
+    p: 0.0001
+    n: 91 connections
+  - about: RT, narrow-spiking
+    test: two-sided permutation-based t-test
+    statistic: t(90) = 3.02
+    p: 0.003
+    n: 91 connections
+  - about: RT, broad-spiking
+    test: two-sided permutation-based t-test
+    statistic: t(75) = -0.66
+    p: 0.52
+    n: 76 connections
+  depends_on:
+  - fig5b-hippocampus-vmpfc-theta-sfc-load
+  - fig5f-theta-sfc-rt
+  criterion: Narrow-spiking is a trough-to-peak time of the mean waveform below 0.5 ms. Reproduced
+    when the narrow-spiking load cluster and RT test give p < 0.05 and the broad-spiking tests do
+    not.
+- id: edf8fgh-frontal-controls
+  statement: Across all vmPFC neurons, neither within-region SFC nor SFC to hippocampal LFPs
+    differed between loads, and maintenance firing rates of all neurons in the pre-SMA, dACC and
+    vmPFC did not differ between correct and incorrect trials.
+  source: Extended Data Fig. 8f, g, h legends; Results, PAC neurons phase lock to the frontal
+    cortex, paragraph 1
+  quote: We did not find significant differences between the load conditions for ( f ) within-region
+    SFC or ( g ) cross-regional SFC to hippocampal LFPs across all neurons from the vmPFC ... FRs
+    for all neurons recorded in the three frontal areas were not significantly different between
+    correct and incorrect trials during the delay period
+  expected:
+  - quantity: pre-SMA neurons in the correct against incorrect test
+    value: 201
+    tolerance: 20.1
+  - quantity: dACC neurons in the correct against incorrect test
+    value: 180
+    tolerance: 18
+  - quantity: vmPFC neurons in the correct against incorrect test
+    value: 201
+    tolerance: 20.1
+  criterion: A claim of absence. Panels f and g, SFC as in fig5b-hippocampus-vmpfc-theta-sfc-load
+    (per load, at least 50 spikes per condition) for every vmPFC neuron with every vmPFC channel of
+    its bundle (f) and with every hippocampal channel of the same hemisphere (g), two-sided cluster
+    tests over the 40 frequencies (legend); the legend names no Bonferroni correction, so alpha is
+    0.025 per one-sided cluster (Methods, Statistics), with the 0.025/12 of fig5b shown as a
+    variant. Panel h, per neuron the mean maintenance rate over correct and over incorrect trials
+    of both loads, both readings of O6, neurons without enough incorrect trials left out (O7);
+    two-sided paired permutation t-test per area (legend). Reproduced when no cluster and no area
+    test gives p < 0.05; not reproduced when any does. The n of each area is reported against
+    the legend's n, which closes the quoted sentence (pre-SMA 201, dACC 180, vmPFC 201).
+- id: fig6a-noise-correlations
+  statement: Pairs of category and PAC neurons had positive noise correlations on average in both
+    the hippocampus (162 pairs) and amygdala (892 pairs), larger than after shuffling trials within
+    conditions.
+  source: Results, Information-enhancing noise correlations, paragraph 1; Figure 6a; Extended Data
+    Fig. 9a
+  quote: In both the hippocampus (162 pairs; t 161 = 5.26; P < 0.001) and the amygdala (892 pairs;
+    t 891 = 15.51; P < 0.001), pairs of category neurons and PAC neurons had on average positive
+    co-fluctuations of spike counts
+  statistics:
+  - about: hippocampus, against zero
+    test: two-sided permutation-based t-test
+    statistic: t161 = 5.26
+    p: 0.0001
+    n: 162 pairs
+  - about: amygdala, against zero
+    test: two-sided permutation-based t-test
+    statistic: t891 = 15.51
+    p: 0.0001
+    n: 892 pairs
+  - about: hippocampus, against within-condition trial shuffles
+    test: right-sided permutation test, 1,000 shuffles
+    p: 0.001
+    n: 162 pairs
+  expected:
+  - quantity: hippocampal category-PAC pairs
+    value: 162
+    tolerance: 16.2
+  - quantity: amygdala category-PAC pairs
+    value: 892
+    tolerance: 89.2
+  depends_on:
+  - pac-neuron-counts
+  - category-cell-counts
+  criterion: Spike counts in 200 ms bins sliding by 25 ms over 0 to 2.5 s (101 bins); per correct
+    trial the correlation across bins; averaged over trials (O10). Pairs of a category neuron and
+    a PAC neuron in the same session and area, not on the same wire. Shuffle as in the Methods
+    (trial labels shuffled within preferred or not and load, 1,000 times, mean over pairs).
+    Reproduced when, under both readings of O10, both areas give p < 0.05 above zero, the
+    hippocampal mean exceeds at least 95% of the shuffles, and the pair counts are within
+    tolerance.
+- id: edf9ef-non-category-pac-pairs
+  statement: Noise correlations stayed positive, and above shuffles, for pairs of category neurons
+    with PAC neurons that are not category neurons.
+  source: Extended Data Fig. 9e, f legends
+  quote: Bin-wise correlations among pairs of category neurons and PAC neurons that were not also
+    category neurons were significantly positive on average in hippocampus (n = 101, p = 0.0003)
+    and amygdala (n = 555, p = 0.0001)
+  statistics:
+  - about: hippocampus
+    test: two-sided permutation-based t-test
+    p: 0.0003
+    n: 101 pairs
+  - about: amygdala
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 555 pairs
+  - about: hippocampus against shuffles
+    test: right-sided permutation test
+    p: 0.0001
+  depends_on:
+  - fig6a-noise-correlations
+- id: fig6c-adding-pac-neurons
+  statement: In the hippocampus, adding single PAC neurons to the optimized decoding ensemble raised
+    category decoding when noise correlations were intact but not when they were removed.
+  source: Results, Information-enhancing noise correlations, paragraph 2; Figure 6c
+  quote: adding single PAC neurons to the optimized decoding ensemble significantly enhanced
+    category decoding when noise correlations were intact ( t 20 = 3.16, P < 0.001) but not when
+    they were removed ( t 20 = −0.12, P = 0.91, BF 01 = 4.37; intact versus removed, t 20 = 3.33,
+    P = 0.003
+  statistics:
+  - about: intact
+    test: two-sided permutation-based t-test
+    statistic: t20 = 3.16
+    p: 0.0007
+    n: 21 sessions
+  - about: removed
+    test: two-sided permutation-based t-test
+    statistic: t20 = -0.12
+    p: 0.91
+    n: 21 sessions
+  - about: intact against removed
+    test: two-sided permutation-based t-test
+    statistic: t20 = 3.33
+    p: 0.003
+    n: 21 sessions
+  depends_on:
+  - pac-neuron-counts
+  - category-cell-counts
+  criterion: Decoding of the category held in load 1 correct trials from hippocampal maintenance
+    rates of each session (O11), all hippocampal neurons of the session. The per-session gain of
+    O11 (ii), tested against zero for intact and removed and between them. Sessions with at
+    least one PAC neuron added before peak. Reproduced when, under both readings of O11 (i), the
+    intact gain is above zero and above the removed gain with p < 0.05 and the removed gain has
+    p >= 0.05; methods_underspecified when the readings disagree.
+- id: fig6d-removing-pac-neurons
+  statement: Removing all PAC neurons from the hippocampal ensembles reduced maximal decoding only
+    with intact noise correlations, while removing as many non-PAC neurons reduced it with intact
+    and removed correlations.
+  source: Results, Information-enhancing noise correlations, paragraph 3; Figure 6d
+  quote: PAC neurons enhanced the decodability of category, but only when noise correlations were
+    intact ( t 21 = 2.94; P = 0.004; FDR corrected for all comparisons; Fig. 6d ). Removing PAC
+    neurons from the ensemble after noise correlations were removed did not significantly change
+    the decoding performance ( t 21 = 1.36, P = 0.20
+  statistics:
+  - about: PAC removed, intact correlations
+    test: two-sided permutation-based t-test
+    statistic: t21 = 2.94
+    p: 0.004
+    corrected: FDR over all comparisons
+    n: 22 sessions
+  - about: PAC removed, removed correlations
+    test: two-sided permutation-based t-test
+    statistic: t21 = 1.36
+    p: 0.2
+    n: 22 sessions
+  - about: non-PAC removed, intact correlations
+    test: two-sided permutation-based t-test
+    p: 0.01
+    n: 22 sessions
+  - about: non-PAC removed, removed correlations
+    test: two-sided permutation-based t-test
+    statistic: t21 = 3.89
+    p: 0.0001
+    n: 22 sessions
+  depends_on:
+  - fig6c-adding-pac-neurons
+  criterion: Per session with at least one PAC neuron and at least two neurons left after removing
+    them, the maximal accuracy of greedy ensembles before and after removing all PAC neurons, for
+    intact and removed correlations; the non-PAC control removes as many random non-PAC neurons,
+    averaged over 500 draws; paired permutation t-tests, FDR (Benjamini-Hochberg) over "all
+    comparisons", which the paper does not list; readings are (a) the four tests of Fig. 6d;
+    (b) those four and the two of Fig. 6e.
+    Reproduced when, under both readings of O11 (i), the PAC intact test and both non-PAC tests
+    give p < 0.05 with decoding lower after removal and the PAC removed test gives p >= 0.05.
+- id: fig6e-decoding-difference
+  statement: The gain of intact over removed noise correlations in maximal decoding was smaller
+    after removing PAC neurons, but not after removing non-PAC neurons.
+  source: Results, Information-enhancing noise correlations, paragraph 3; Figure 6e
+  quote: the maximal differences between intact and removed noise correlations were larger when PAC
+    neurons were part of the ensembles as compared to being removed ( t 21 = 3.59, P < 0.001; Fig.
+    6e )
+  statistics:
+  - about: PAC neurons
+    test: two-sided permutation-based t-test
+    statistic: t21 = 3.59
+    p: 0.0007
+    n: 22 sessions
+  - about: non-PAC neurons
+    test: two-sided permutation-based t-test
+    statistic: t21 = -1.77
+    p: 0.1
+    n: 22 sessions
+  depends_on:
+  - fig6d-removing-pac-neurons
+  criterion: From the values of fig6d. Reproduced when the PAC test gives p < 0.05 (difference
+    larger with PAC neurons) and the non-PAC test gives p >= 0.05.
+- id: edf9g-non-category-pac-decoding
+  statement: Removing only PAC neurons that are not category neurons also lowered decoding with
+    intact noise correlations only.
+  source: Extended Data Fig. 9g legend
+  quote: Like for all PAC neurons, decoding performance was enhanced by nonCatPAC neurons only when
+    noise correlations were intact (n = 23 sessions, p = 0.0005)
+  statistics:
+  - test: two-sided permutation-based t-test
+    p: 0.0005
+    n: 23 sessions
+  depends_on:
+  - fig6d-removing-pac-neurons
+- id: edf9jk-amygdala-decoding
+  statement: In the amygdala, PAC neurons raised decoding with both intact and removed noise
+    correlations, and removing them lowered decoding in both cases, as for random cells.
+  source: Results, Information-enhancing noise correlations, paragraph 3; Extended Data Fig. 9j, k
+  quote: In the amygdala, adding single PAC neurons (n = 28) to the decoding ensemble did not only
+    enhance decodability when noise correlations were intact (p = 0.0001), but also when removed
+    (p = 0.049
+  statistics:
+  - about: adding, intact
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 28, printed after "PAC neurons" (sessions in the hippocampal panel)
+  - about: adding, removed
+    test: two-sided permutation-based t-test
+    p: 0.049
+  - about: adding, intact against removed
+    test: two-sided permutation-based t-test
+    p: 0.0009
+  - about: removing, intact
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 32 sessions
+  - about: removing, removed
+    test: two-sided permutation-based t-test
+    p: 0.0001
+    n: 32 sessions
+  depends_on:
+  - fig6c-adding-pac-neurons
+  criterion: The analyses of fig6c and fig6d on amygdala neurons. Reproduced when all five tests
+    give p < 0.05 in the paper's direction.
+- id: fig6g-signal-noise-angle
+  statement: The angle between the signal and noise axes was about 69 degrees with intact noise
+    correlations and became smaller after removing them.
+  source: Results, Information-enhancing noise correlations, paragraph 4; Figure 6g
+  quote: when noise correlations were intact, the signal–noise axis angle was around 69° (out of
+    maximally 90°). After removing noise correlations, this angle became significantly smaller,
+    as hypothesized ( t 31 = 2.77, P = 0.009
+  statistics:
+  - test: two-sided permutation-based t-test
+    statistic: t31 = 2.77
+    p: 0.009
+    n: 32 sessions
+  expected:
+  - quantity: signal-noise angle, intact
+    value: 69
+    tolerance: 6.9
+    unit: degrees
+  depends_on:
+  - fig6c-adding-pac-neurons
+  criterion: Per session with at least two hippocampal neurons, at the ensemble with the largest
+    intact minus removed decoding difference; signal axis orthogonal to each of the 10 binary SVM
+    hyperplanes (QR decomposition, as LinearClassifier_getSignalAxis.m); noise axis the first
+    principal component of the data across categories; angle as subspace() in the code (0 to 90
+    degrees), averaged over learners and 500 repetitions.
+- id: fig6h-projection-variance
+  statement: Removing PAC neurons raised the s.d. of responses projected on the signal axis, and
+    removing noise correlations raised it only while PAC neurons were in the ensemble.
+  source: Results, Information-enhancing noise correlations, paragraph 4; Figure 6h
+  quote: Removing PAC neurons from the ensembles significantly increased the s.d. of the projection
+    values (main effect for ensemble, F 1,18 = 12.55, P = 0.0013; Fig. 6h ). Moreover, the s.d.
+    of the projected values was larger when noise correlations were removed (main effect for
+    noise correlations, F 1,18 = 7.24, P = 0.014). This was only the case if PAC neurons were
+    part of the ensembles ( t 18 = −2.66, P = 0.014), and there was no significant difference
+    between intact and removed noise correlations when PAC neurons were removed ( t 18 = −1.69,
+    P = 0.11)
+  statistics:
+  - about: main effect of ensemble
+    test: permutation-based F-test (2 x 2 ANOVA)
+    statistic: F1,18 = 12.55
+    p: 0.0013
+    n: 19 sessions
+  - about: main effect of noise correlations
+    test: permutation-based F-test (2 x 2 ANOVA)
+    statistic: F1,18 = 7.24
+    p: 0.014
+    n: 19 sessions
+  - about: intact against removed, with PAC neurons
+    test: two-sided permutation-based t-test
+    statistic: t18 = -2.66
+    p: 0.014
+  - about: intact against removed, without PAC neurons
+    test: two-sided permutation-based t-test
+    statistic: t18 = -1.69
+    p: 0.11
+  depends_on:
+  - fig6g-signal-noise-angle
+  criterion: Per session with at least one hippocampal PAC neuron and two neurons left, the s.d. of
+    projections on the signal axis per class, averaged over classes, the 10 learners and 500
+    repetitions; 2 x 2 repeated-measures permutation ANOVA. Reproduced when both main effects
+    and the with-PAC test give p < 0.05 in the paper's direction and the without-PAC test gives
+    p >= 0.05.
+- id: fig6i-noise-correlations-rt
+  statement: Noise correlations of hippocampal PAC-category pairs in preferred trials were stronger
+    in fast than in slow RT trials, positive only in fast trials, and the RT difference held in
+    load 3 but not in load 1.
+  source: Results, Information-enhancing noise correlations, paragraph 5; Figure 6i
+  quote: In the hippocampus, noise correlations were significantly stronger for fast compared with
+    slow RT trials ( t 161 = 2.15, P = 0.028; Fig. 6i (left)
+  statistics:
+  - about: fast against slow
+    test: two-sided permutation-based t-test
+    statistic: t161 = 2.15
+    p: 0.028
+    n: 162 pairs
+  - about: fast against zero
+    test: two-sided permutation-based t-test
+    statistic: t161 = 4.10
+    p: 0.001
+    p_relation: <
+  - about: slow against zero
+    test: two-sided permutation-based t-test
+    statistic: t161 = 1.94
+    p: 0.06
+  - about: load 3, fast against slow
+    test: two-sided permutation-based t-test
+    statistic: t161 = 2.60
+    p: 0.009
+  - about: load 1, fast against slow
+    test: two-sided permutation-based t-test
+    statistic: t161 = 0.96
+    p: 0.34
+  depends_on:
+  - fig6a-noise-correlations
+  criterion: Correct trials with the category neuron's preferred category held; RT median split
+    within each load; correlations of fig6a averaged over the fast and over the slow trials of
+    each load, then over loads. Reproduced when the fast against slow test gives p < 0.05 with
+    fast higher; partially reproduced when that holds and the load split or the tests against
+    zero differ from the paper in significance.
+- id: edf9hil-noise-correlations-rt-controls
+  statement: The fast against slow difference was absent for non-preferred trials and in the
+    amygdala, and held at the patient level in the hippocampus.
+  source: Extended Data Fig. 9h, i, l legends
+  quote: Correlations for pairs of PAC and category neurons in preferred trials were averaged within
+    each patient and then compared between fast and slow RTs across all patients (n = 16, p =
+    0.0027)
+  statistics:
+  - about: hippocampus, non-preferred trials
+    test: two-sided permutation-based t-test
+    p: 0.9
+    n: 162 pairs
+  - about: hippocampus, patient level
+    test: two-sided permutation-based t-test
+    p: 0.0027
+    n: 16 patients
+  depends_on:
+  - fig6i-noise-correlations-rt
+  criterion: Reproduced when the patient-level test gives p < 0.05 with fast higher and the
+    hippocampal non-preferred and amygdala (884 pairs) preferred tests give p >= 0.05.
+- id: fig6j-specific-to-pac-pairs
+  statement: The fast against slow RT difference in noise correlations was larger for PAC-category
+    pairs than for random pairs of category neurons with non-PAC neurons.
+  source: Results, Information-enhancing noise correlations, paragraph 5; Figure 6j
+  quote: PAC-to-category neuron pairs showed a significantly stronger effect compared with most
+    randomly selected cell pairs ( P = 0.016; Fig. 6j )
+  statistics:
+  - test: right-sided permutation test
+    p: 0.016
+    n: 162 pairs
+  depends_on:
+  - fig6i-noise-correlations-rt
+  criterion: The fast minus slow mean correlation (as fig6i) of the 162 PAC-category pairs against
+    that of 162 random pairs of a category neuron with a non-PAC neuron of the same session and
+    area, redrawn 10,000 times (the number of draws is not stated; 10,000 is the paper's default
+    for permutations). Reproduced when fewer than 5% of draws reach the PAC pairs' value.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - cohort-counts. Gave the reason for the zero tolerance (counts of the recordings the dataset should hold), as the protocol asks for any tolerance other than 10%.
+  - fig2c-no-load-effect-other-areas. Marked the pre-SMA and dACC tests as FDR corrected over five areas; the Fig. 2c legend says the correction covers all five brain areas.
+  - tables1-slow-fast-theta. The criterion counted 20 area and band tests; Table S1 has 19, since pre-SMA had no significant fast theta to high gamma channel.
+  - edf3-hippocampus-pac-controls. The power estimate was not stated by the paper and was used without saying so; named it open with two readings. The test for the preferred-phase difference (panel g) was given as a V test, which the paper does not name (the legend's t-tests cover a-f and h); named it open with two readings.
+  - edf4b-persistent-activity-by-area. Added the preferred and non-preferred against baseline tests for the hippocampus and amygdala (all p = 0.0001, legend), which the criterion uses but the statistics left out.
+  - edf7a-pac-neurons-no-category-decoding. The rate window 0.2 to 1.0 s was presented as fixed; the paper says only "during picture presentation". Named it open with two readings.
+  - fig5b-hippocampus-vmpfc-theta-sfc-load. The cluster window "within 2 to 8 Hz" is not in the paper; the criterion now asks for a cluster overlapping the paper's theta band (3 to 7 Hz) and cites the reported 2.5 to 4.3 Hz.
+  - fig5cd-no-effect-category-amygdala. The statement now includes the Results' "or regions" for amygdala PAC neurons, which the criterion already tested.
+  - fig6d-removing-pac-neurons. The paper corrects "for all comparisons" without listing them; the criterion took the four tests of Fig. 6d as fixed. Named it open, with the four of 6d or those and the two of 6e.
+  - Added claim edf8fgh-frontal-controls (Extended Data Fig. 8f-h, cited in the Results as controls for non-specific global changes), which had no claim.
+  - Open, not settled. fig4-amygdala-pac-neurons. The paper gives n = 156 neurons for the amygdala correct against incorrect test (163 minus 7 excluded) but t156, which implies 157; the file keeps the legend's 156.
+  - Open, not settled. The code (SBCAT-release-NWB) was not available in this run, so the details the file attributes to it (median RT per session, the two-sided p < 0.1 post hoc test of category selection, the bin edges of the PAC neuron GLMs, the -1.5 to 4 s epochs, subspace() for the angle) were not checked against it.
+  - Open, not settled. G2 uses FieldTrip's default cluster-forming threshold (clusteralpha 0.05) and maxsum statistic, which the paper does not state; a different threshold could change cluster results.

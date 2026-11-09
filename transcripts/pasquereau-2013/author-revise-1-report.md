@@ -1,33 +1,30 @@
-I've worked through every point in the round-1 report. No outcome changed, and `python tools/entry.py all entries/001636-pasquereau-2013` passes with 0 check errors and a 175 s run. The re-run printed the same numbers as before, plus one new line, and the conclusions match them.
+I've worked through all the points in the round-1 report. The entry re-ran cleanly with `python tools/entry.py all` (check: 0 errors; notebook passes in about 5 min). Nothing is committed.
 
-**Outcomes**
-- **`false-positive-rate`:** I kept this as blocked (methods_underspecified) and recorded the disagreement; the verifier would call it not reproduced. Protocol step 5 says that when a computed false-positive rate is far from the paper's, the procedures differ and the outcome is blocked even though the analysis ran. The verifier's own reason, that a single run cannot tell a wrong claim from a different procedure, is the case that rule covers.
-- **Everything else:** the verifier agreed with all 27 other outcomes.
+**Outcomes:** none changed.
+- **27 of 28:** the verifier gave the same outcome I had.
+- **`false-positive-rate`:** the verifier would call it not reproduced; I kept it blocked (`methods_underspecified`) and recorded the disagreement. The protocol says that when your procedure's false-positive rate is far from the paper's, the procedures differ and the claim is blocked. The verifier's own reason is that the procedure is at fault, which is that case.
 
-**Added to the notebook**
-- **Monkey L check (asked for):** a table of torque-command excursions for every file. The 35 post-MPTP monkey L files with a command have 91 to 413 excursions each, starting 0.31 to 0.84 s after the lateral target, during the active movement. Only 1 of their 2048 trials has one in the hold window. In monkey V such excursions start in the hold window in 1811 and 3563 trials, against 1862 and 3649 labelled perturbations.
-- **Angle scale check (asked for):** active movements measured with our filter are within 2% of the files' own peak-velocity and amplitude columns (Spearman rho about 0.99) and match the 20 deg targets. So the small torque-evoked movements (3.09 deg against the paper's 10 deg) are in the data, not an artefact of our measure.
-- **Detection diagnostics (asked for):**
-  - Synthetic Poisson spike trains give the same false-positive rate (0.15 main, 0.49 for the t-test variant).
-  - The rate stays at 0.17 to 0.27 across baseline-rate quartiles and 0.21 to 0.24 across trial counts.
-  - Example mean SDFs are drawn with their thresholds.
-  - 14 cell-directions have no baseline spike and can never respond.
-  - A threshold calibrated to a 0.01 false-positive rate finds about 31% of M1 cells torque-related, further from the paper's 75% and 68%.
-  - Taking the first crossing anywhere in 0 to 200 ms as the onset removes 6 of 202 responses.
-- **Movement latency variants:** a causal velocity measure that cannot shift onsets earlier, and a version without the trials already moving before onset. 219 of 5413 perturbations have a 0 ms latency. Latencies are still shorter after MPTP (F = 743 to 1037); with only the middle torque-command size, the causal measure gives p = 0.25.
-- **Smaller additions:**
-  - `dsi-reduced`: a variant with categories set from the DSI value (p = 0.42), and the smallest expected count of the main table.
-  - `emg-duration-longer`: 63.6% of pre-MPTP EMG durations are 10 ms or less.
-  - `emg-m1-weak`: the m1/m2 ratios over sessions with m2 > 0 are now in the conclusion.
+**The draft changed during this revision.** Every asset of the draft was uploaded again between 23:00 and 23:10 UTC. My first good run read it mid-upload: 23 pre-MPTP monkey V files were missing and some monkey L files were read twice. I waited until the upload finished and ran it twice more. Both runs give exactly the numbers already in the record, so the re-upload changed nothing the analysis uses. I set `dataset: modified` to 23:10:32Z, the time the last run read, and noted the re-upload in the record, README and notebook header.
 
-**Corrected**
-- I deleted a stale duplicate conclusion under `torque-related-fractions` that gave different percentages (47% and 52%).
-- The conclusions for `emg-m2-larger`, `kinematics-slower` and `kinematic-latency-unchanged`, and the summary, now say these differences cannot be attributed to MPTP, because the torque command is about four times larger in most post-MPTP sessions.
-- The attempt record has updated notes, two new deviations (the DSI category rule and the onset reading), and the round recorded under `verifications` for all 28 claims.
+**What I fixed or added, by point:**
+1. **Header table:** the 16 claims blocked by the false-positive rate are now marked "run, blocked", not "yes", with a note saying why.
+2. **Antidromic latency:** the cell now prints each test against its threshold. The CSN p = 0.0190 is not below 0.0167, so the claim stays partially reproduced.
+3. **Torque-size confound:** I added pre against post comparisons at the same per-trial command step, which the verifier asked for.
+   - Movements: the change goes both ways depending on step and direction. Flexion is faster after MPTP at twice the smallest step; extension is slower at the smallest step.
+   - Latencies are not shorter after MPTP at matched steps.
+   - m2 is smaller after MPTP at matched steps, not larger (44.9 against 1.8, p = 0.004).
+   - EMG duration (p = 0.43) and onset (p = 0.087) do not differ.
+4. **Zero-phase filter:** on synthetic movements it reports onsets 14 ms early to 5 ms late, and the causal measure 1 to 13 ms late. 9 of 24 synthetic movements are wrongly flagged as moving before onset.
+5. **EMG noise and negative m2:** the cell now prints that m2 is zero or negative in 66 of 305 pre-MPTP channel-sessions. Among those with a detected response, m2 exceeds m1 in 76.7%.
+6. **DSI measurement choice:** stated in the helper's docstring and recorded as a deviation on `dsi-reduced` and `venus-dsi`.
+7. **EMG threshold variants:** these now keep responses that last to the end of the window. The new numbers are 20.8 against 50.1 ms (1.5 SD) and 23.4 against 50.1 ms (3 SD). The conclusion says the DSI chi-square p is approximate.
 
-**Not done**
-- **Torque actually applied:** this can't be checked. The archive has no torque-sensor channel, only `ElbowTorque`, which is described as the commands sent to the torque controller.
-- **`trial-correlations`:** still blocked. A single-trial latency definition chosen here would be a method the paper does not give.
-- **Plots:** the verifier asked for none.
+From "What I could not check":
+- **Spike windows:** every torque onset is at least 2968 ms after its trial's start and 1516 ms before its stop, so no analysis window is cut short.
+- **Per-cell table:** now printed (baseline rate, threshold, latency, sign and largest change per direction).
 
-The changes are in `stretch.py`, `reproduce_pasquereau_2013.ipynb` and `attempts/001636-pasquereau-2013-01.yaml`, not committed. The paper text is in `paper/`, which git ignores. An empty `scripts/` directory and some dotfiles were already untracked in the checkout; I left them alone.
+Conclusions, Summary, README and the attempt notes are updated to these numbers. The round is recorded under `verifications`, with the verifier's reasons closely paraphrased and my changes under `response`.
+
+**Not done:**
+- **Problem 8** (the paper's "2-tailed t-test" wording reads closer to the t-test variant): I added no question for a reader. Both readings are already shown and both give rates far above 0.03, so the answer cannot change an outcome.
+- **Problem 9:** needed no change; the count difference is already explained and within tolerance.

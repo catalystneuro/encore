@@ -1,0 +1,1279 @@
+# Claims for Claar, Rembado, Kuyat, Russo, Marks, Olsen & Koch (2023) on dandiset 000458.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23, protocol
+# pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record (eLife 12, RP84630, 2023), full text as served by Europe PMC
+# (paper/10.7554-elife.84630.txt), with Results, Discussion, Methods, all figure legends including
+# the figure supplement legends, the eLife assessment, the public reviews and the authors' response.
+# eLife has no separate supplementary text; the figure supplements are figures whose legends are in
+# the text. No PDF was supplied and none was needed. The bioRxiv preprint (10.1101/2022.07.22.501195,
+# the paper the dandiset names) is also under paper/ and was not used; the version of record replaces it.
+#
+# Code read: the paper links only the PCIst code, https://github.com/renzocom/PCIst, cited at commit
+# e495a0a (e495a0ae299e9d5056473659722e2258738e24ba, "fix default min_snr"), read at that commit. It
+# holds calc_PCIst (pci_st.py) and a Matlab port. The paper sets baseline window, response window,
+# min_snr, max_var and k; the other parameters are left at the function defaults (no average
+# reference, no baseline correction, no resampling, no embedding, n_steps = 100). The paper links no
+# analysis code of its own (spike sorting follows Siegle et al. 2021; modulated neurons follow McBride
+# et al. 2023; neither repository is linked here).
+#
+# Data the paper used, as it reports them. C57BL/6J mice, 37 implanted, 23 included after EEG quality
+# control (8 mice) and stimulation-artifact exclusion (8 sessions in 6 mice). Head-fixed on a running
+# wheel, in darkness. A 30-electrode skull EEG array (2.5 kHz), and in 26 of 37 mice up to three
+# Neuropixels probes (3a or 1.0; spike band 30 kHz, LFP band 2.5 kHz) in MO, ACA, SS, VIS and
+# somatomotor-related thalamic nuclei (SM-TH: AV, CL, MD, PO, RT, VAL, VPL, VPM, VM). A bipolar
+# stimulating electrode in MOs or SSp, layer 2/3 ("superficial") or layer 5/6 ("deep"); some mice
+# were stimulated at more than one site. Single biphasic, cathodic-first pulses, 200 us per phase,
+# 10 to 100 uA, 3.5 to 4.5 s apart; up to 120 pulses at each of three intensities per stage (360 in
+# all). Stages: awake (trials split into quiet wakefulness, wheel speed 0 cm/s from -0.5 to +0.5 s,
+# and running, speed above 0), isoflurane anesthesia (1 to 1.5% maintenance), and in 16 mice one or
+# two recovery stages within 1 h. Measured variables: EEG, Neuropixels LFP and sorted units with
+# CCFv3 area per channel, wheel position, stimulus times, isoflurane concentration. The dandiset
+# (DANDI:000458, version 0.230317.0039 in the paper's Data availability) is named for these
+# recordings.
+#
+# Details the paper leaves open that bear on most claims, with the readings it allows:
+# - Stimulus intensity. Three intensities were delivered per stage, but no analysis says which
+#   pulses it uses. The trial counts (anesthetized median 120 trials; quiet plus running about 118)
+#   indicate one intensity's 120 pulses per state. Readings: (a) the highest intensity; (b) the
+#   medium intensity, the one the Methods say was chosen to give visible evoked responses on most
+#   electrodes; (c) where the dataset marks which pulses the paper analysed, those.
+# - Awake trials for Figures 1 to 6 and 8B and 8C. Readings: (a) all awake trials (Figure 8C says
+#   awake includes quiet wakefulness and running trials); (b) quiet wakefulness only (the
+#   Discussion places the late ERP in quiet wakefulness).
+# - Unit of N. Counts often exceed 23 mice (Figure 1E has 12 + 18 = 30; Figure 4 says 24 animals;
+#   Figure 8B says 31 sessions across 24 mice), so N counts a mouse and stimulation site. Methods
+#   give MOs L2/3 N=10, MOs L5/6 N=11, SSp L2/3 N=8, SSp L5/6 N=11 mice. A claim is tested on one
+#   value per mouse and stimulation site unless its criterion says otherwise.
+# - Good EEG electrodes were chosen by visual inspection (23 +/- 4 of 30 kept). Readings: (a) the
+#   electrodes the dataset marks as good, if it does; (b) otherwise all electrodes not flagged, with
+#   the selection reported as a deviation.
+# - High-quality units follow "metrics described by Siegle et al., 2021", with no thresholds printed.
+#   Readings: (a) units the dataset marks as passing quality control; (b) the thresholds of Siegle
+#   et al. 2021, to be read from that paper. RS units have waveform duration > 0.4 ms, FS <= 0.4 ms.
+# - Stimulated cortex is the area holding the stimulating electrode, recorded by the probe within
+#   0.5 mm of it (MO for MOs stimulation, SS for SSp); non-stimulated regions are the other cortical
+#   areas recorded (MO, ACA, SS, VIS), ipsilateral. Cortical analyses use RS units unless stated.
+# - Paper statistics: Shapiro-Wilk normality test, then two-sided Student t-test (scipy ttest_ind)
+#   or paired t-test (ttest_rel), else Mann-Whitney U or Wilcoxon signed-rank (scipy defaults);
+#   ANOVA or Friedman for several groups, post hoc pairs corrected by Benjamini-Hochberg FDR. Text
+#   values are mean +/- SEM (normal data) or median [IQR]. Tolerances below follow the protocol:
+#   the SEM where the paper gives one, otherwise 10%.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000458"
+paper: doi:10.7554/elife.84630
+claims:
+- id: stim-depths
+  statement: Superficial stimulation sites lay 0.41 +/- 0.04 mm and deep sites 1.06 +/- 0.05 mm
+    below the brain surface.
+  source: Results, Global evoked responses are modulated by the depth of the cortical stimulation
+    site, paragraph 3
+  quote: "in layer 2/3 (superficial: 0.41±0.04 mm below the brain surface) or in layer 5/6 (deep:
+    1.06±0.05 mm below the brain surface"
+  expected:
+  - quantity: superficial stimulation depth, mean
+    value: 0.41
+    tolerance: 0.04
+    unit: mm
+  - quantity: deep stimulation depth, mean
+    value: 1.06
+    tolerance: 0.05
+    unit: mm
+  criterion: Mean over stimulation sites of the depth below the brain surface recorded for the
+    stimulating electrode. The Methods give per-group depths too (MOs L2/3 0.37 +/- 0.04, MOs L5/6
+    1.15 +/- 0.06, SSp L2/3 0.47 +/- 0.06, SSp L5/6 0.92 +/- 0.05 mm), which are reported as a
+    variant. Reproduced when both means are within tolerance.
+- id: eeg-good-electrodes
+  statement: After artifact masking and visual inspection, an average of 23 +/- 4 of the 30 EEG
+    electrodes per subject were kept as artifact-free.
+  source: Methods, Data processing, EEG
+  quote: leaving an average of 23±4 artifact-free electrodes out of 30 for each subject
+  expected:
+    quantity: artifact-free EEG electrodes per subject, mean
+    value: 23
+    tolerance: 4
+  criterion: Tested only if the dataset marks good or bad EEG electrodes; the paper's selection is
+    by eye and cannot be redone. The mean over subjects of the number marked good is compared with
+    23, tolerance the stated spread of 4.
+- id: fig1d-two-erp-peaks
+  statement: Deep (layer 5/6) stimulation in the awake state usually evokes an ERP with two
+    prominent peaks, near 25 ms and near 180 ms; the late component is not evident with
+    superficial stimulation, in MOs or SSp.
+  source: Results, Global evoked responses are modulated by the depth of the cortical stimulation
+    site, paragraph 3; Figure 1C and 1D
+  quote: "when we stimulated layer 5/6 during the awake period, we usually observed two prominent
+    peaks in the ERP: an initial response around 25 ms and a secondary peak at around 180 ms
+    post-stimulation ... The early component was preserved, whereas the second, late component was
+    not evident when stimulating superficially in either area"
+  criterion: The paper gives no peak detection method. ERP is the trial average of the
+    average-referenced EEG (0.1 to 100 Hz, third-order Butterworth, epochs -2 to +2 s, -2 to +2 ms
+    excluded; Methods, EEG and ERPs); global field power (GFP) is the SD across good electrodes at
+    each time, z-scored to -2 to 0 s (Methods, ERP magnitude and duration). Readings of a peak, in
+    windows taken from the paper's own phases (initial excitation 2 to 25 ms, rebound 150 to 300
+    ms, chosen to align with the ERP peaks; Results, paragraph before Figure 4) and from the
+    stated latencies; (a) a local maximum of the z-scored GFP above z = 3 within 2 to 50 ms and
+    another within 150 to 300 ms; (b) the same with windows 2 to 25 ms and 100 to 300 ms (the late
+    window of Figure 7G). Reproduced when, under one reading, more than half of deep sites show
+    both peaks and more than half of superficial sites show no late peak.
+- id: fig1-supp1-example
+  statement: In the example deep MOs session, the ERP lasts 1.01 s and has a magnitude of 11.13
+    SD.s.
+  source: Figure 1, figure supplement 1B legend
+  quote: The duration of this example is 1.01 s ... The magnitude of this example is 11.13 SD∙s
+  expected:
+  - quantity: ERP duration, example session
+    value: 1.01
+    tolerance: 0.101
+    unit: s
+  - quantity: ERP magnitude, example session
+    value: 11.13
+    tolerance: 1.113
+    unit: SD.s
+  criterion: Duration and magnitude as in fig1e-erp-duration. The paper names the example only as
+    the deep MOs subject of Figure 1C and 1D (bottom left); a session is accepted as the example if
+    it is a deep MOs session and it matches the paper's description, and the author reports how it
+    was identified. Reproduced when one deep MOs session matches both values under one reading of
+    duration and magnitude; blocked if no session can be identified as the example.
+- id: fig1e-erp-duration
+  statement: ERPs evoked by superficial stimulation were shorter than those evoked by deep
+    stimulation (0.4 +/- 0.0 against 0.5 +/- 0.1 s), but the difference was not significant.
+  source: Results, Global evoked responses are modulated by the depth of the cortical stimulation
+    site, paragraph 3; Figure 1E
+  quote: "The total duration of the ERP was shorter when stimulating superficial layers compared to
+    deep layers although not significant (mean ERP duration for superficial stimulation: 0.4±0.0 s;
+    deep stimulation: 0.5±0.1 s; Student’s two-tailed t-test, p=0.0843"
+  statistics:
+  - test: Student's two-tailed t-test
+    p: 0.0843
+    n: 12 superficial and 18 deep stimulation sessions
+  expected:
+  - quantity: mean ERP duration, superficial stimulation
+    value: 0.4
+    tolerance: 0.05
+    unit: s
+  - quantity: mean ERP duration, deep stimulation
+    value: 0.5
+    tolerance: 0.1
+    unit: s
+  criterion: The superficial SEM is printed as 0.0, so its tolerance is the printing precision
+    (half of 0.1 s). Per session, GFP of the awake ERP (as in fig1d-two-erp-peaks), z-scored to the
+    baseline -2 to 0 s; duration is the time the z-scored GFP exceeds z = 3 within 0 to +2 s
+    (Methods, ERP magnitude and duration). Open, with readings; (a) the total time above z = 3; (b)
+    the time from onset to the last sample above z = 3 (the legend of Figure 1, figure supplement 1
+    marks the duration by a single vertical line). A claim of absence for the depth effect,
+    judged on the paper's test, scipy ttest_ind (two-sided, equal variances) on per-session
+    durations. Reproduced when both means are within tolerance under one reading and the t-test
+    gives p >= 0.05 with superficial below deep; the p-value is reported either way.
+- id: fig1f-erp-magnitude
+  statement: ERPs evoked by superficial stimulation had a significantly smaller normalized
+    magnitude than those evoked by deep stimulation (3.3 +/- 0.8 against 6.2 +/- 0.9 SD.s).
+  source: Results, Global evoked responses are modulated by the depth of the cortical stimulation
+    site, paragraph 3; Figure 1F
+  quote: "When stimulating superficially, ERPs had a significantly smaller normalized magnitude
+    compared to stimulating deep layers (mean ERP magnitude for superficial stimulation: 3.3±0.8
+    SD∙s; deep stimulation: 6.2±0.9 SD∙s; Student’s two-tailed t-test, p=0.0354"
+  statistics:
+  - test: Student's two-tailed t-test
+    p: 0.0354
+    n: 12 superficial and 18 deep stimulation sessions
+  expected:
+  - quantity: mean ERP magnitude, superficial stimulation
+    value: 3.3
+    tolerance: 0.8
+    unit: SD.s
+  - quantity: mean ERP magnitude, deep stimulation
+    value: 6.2
+    tolerance: 0.9
+    unit: SD.s
+  criterion: Per session, z-scored GFP as in fig1e-erp-duration. The Methods and the figure
+    supplement legend differ on the magnitude; readings (a) the area between the z-scored GFP and
+    z = 3 where it is above 3, within 0 to +2 s, in SD.s (Figure 1, figure supplement 1B legend);
+    (b) that area divided by the area under the baseline window (-2 to 0 s), as the Methods text
+    says. Reproduced when, under one reading, both means are within tolerance and scipy ttest_ind
+    (two-sided) gives p < 0.05 with superficial smaller.
+- id: fig1-supp2-first-peak-flips
+  statement: The amplitude of the first ERP peak decays with distance from the stimulation site
+    and eventually flips sign, while the second component changes in a different spatial pattern.
+  source: Results, Global evoked responses are modulated by the depth of the cortical stimulation
+    site, paragraph 3; Figure 1, figure supplement 2
+  quote: The amplitude of the first peak in the ERP decays systematically when moving away from the
+    stimulation site until it eventually flips its sign, most likely reflecting volume conduction
+  criterion: The paper shows one deep MOs session as an interpolated map and gives no measure.
+    Signed ERP voltage at each good electrode at the time of the early GFP peak (2 to 50 ms), with
+    the sign set so that the electrode nearest the stimulation site is positive, against distance
+    from the stimulation site on the skull. Readings; (a) the example deep MOs session; (b) every
+    deep session. Reproduced when, under one reading (for (b) in more than half of sessions), the
+    Spearman correlation of signed amplitude with distance is negative with p < 0.05 and both
+    signs occur. Needs electrode and stimulation coordinates; blocked without them. The second
+    component's pattern is described, not tested.
+- id: fig2c-superficial-quiescence
+  statement: Stimulating superficial MOs evoked a local spike, LFP and CSD response followed by
+    quiescence of 94.2 +/- 16.1 ms in MO neurons, with minimal to no responses in other sampled
+    areas.
+  source: Results, The spiking response pattern of the stimulated cortex echoes the ERP, paragraph
+    2; Figure 2C and 2D to 2F, left
+  quote: Stimulating superficial MOs evoked a local spike, LFP and CSD response, followed by a period
+    of quiescence lasting 94.2±16.1 ms in MO neurons
+  expected:
+    quantity: quiescence after superficial MOs stimulation, MO neurons
+    value: 94.2
+    tolerance: 16.1
+    unit: ms
+  criterion: The paper does not define how quiescence is measured, and the Discussion gives a
+    different value for the same quantity (44.3 +/- 16.4 ms), so both values are readings of the
+    target. Population rate is the mean over MO RS units of the firing rate in the awake state,
+    one value per superficial MOs session. Readings of quiescence; (a) the time after the initial
+    excitation (after 25 ms) for which the population rate stays below its pre-stimulus mean; (b)
+    the time for which it stays at zero spikes. Bin width is not given; 1 ms and 5 ms bins are
+    both run. Reproduced when the session mean is within tolerance of 94.2 or of 44.3 (tolerance
+    16.4) under one reading. The part on other areas is not judged here; spiking outside the
+    stimulated area is tested in fig3d-magnitudes, where the paper finds superficial stimulation
+    did modulate non-stimulated LFP and CSD.
+- id: fig2c-deep-triphasic-cortex
+  statement: Stimulating deep MOs evokes in local cortex an initial excitation within 25 ms (peak
+    population rate 38.1 +/- 4.2 Hz), quiescence of 125.0 +/- 5.5 ms, and a longer rebound
+    excitation (peak 7.9 +/- 0.7 Hz).
+  source: Results, The spiking response pattern of the stimulated cortex echoes the ERP, paragraph
+    2; Figure 2C, right
+  quote: an initial excitation within 25 ms (peak population firing rate 38.1±4.2 Hz), followed by
+    quiescence (duration 125.0±5.5 ms) and a longer period of strong excitation (peak population
+    firing rate 7.9±0.7 Hz
+  expected:
+  - quantity: peak population rate, initial excitation, stimulated cortex
+    value: 38.1
+    tolerance: 4.2
+    unit: Hz
+  - quantity: quiescence duration, stimulated cortex
+    value: 125.0
+    tolerance: 5.5
+    unit: ms
+  - quantity: peak population rate, rebound, stimulated cortex
+    value: 7.9
+    tolerance: 0.7
+    unit: Hz
+  criterion: Population rate is the mean firing rate over RS units of the stimulated cortex, per
+    session, peak taken within 2 to 25 ms and within 150 to 300 ms (the paper's windows for
+    initial and rebound excitation). Quiescence as in fig2c-superficial-quiescence, readings (a)
+    and (b); the Discussion gives 127.8 +/- 4.1 ms for the same quantity, accepted as an
+    alternative target. Open; which sessions (readings, deep MOs sessions as in Figure 2, or all
+    deep sessions) and bin width (1 ms and 5 ms). Reproduced when all three values are within
+    tolerance under one combination of readings; partially reproduced when the triphasic sequence
+    (peak above baseline, a period below baseline, a second peak above baseline) holds in more
+    than half of deep sessions but a value is out of tolerance.
+- id: fig2f-thalamus-triphasic
+  statement: The triphasic pattern of deep stimulation is replicated, shifted in time, in SM-TH; a
+    brief excitation (peak 22.3 +/- 3.2 Hz), 74.6 +/- 15.5 ms of suppression, and rebound
+    excitation (peak 14.7 +/- 1.0 Hz). It is absent with superficial stimulation.
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 1; Figure 2F
+  quote: we observed a brief excitation (peak population firing rate 22.3±3.2 Hz), a 74.6±15.5 ms
+    long period of suppression, followed by rebound excitation (peak population firing rate
+    14.7±1.0 Hz). This is not the case when stimulating superficial layers
+  expected:
+  - quantity: peak population rate, initial excitation, SM-TH
+    value: 22.3
+    tolerance: 3.2
+    unit: Hz
+  - quantity: suppression duration, SM-TH
+    value: 74.6
+    tolerance: 15.5
+    unit: ms
+  - quantity: peak population rate, rebound, SM-TH
+    value: 14.7
+    tolerance: 1.0
+    unit: Hz
+  criterion: As fig2c-deep-triphasic-cortex, with all SM-TH units (thalamic units are not split
+    into RS and FS in Figure 2F), early peak within 2 to 25 ms and rebound peak within 75 to 300
+    ms (the late window of Figure 5F). The paper gives no measure for the absence of the pattern
+    with superficial stimulation; readings (a) no peak of the SM-TH population rate in 75 to 300 ms
+    above z = 3 of its pre-stimulus rate (the z = 3 threshold of the paper's ERP duration); (b) no
+    SM-TH unit significantly increased in 150 to 300 ms by the test of fig4ad-initial-excitation.
+    Reproduced when all three values are within tolerance under one combination of readings and
+    more than half of the superficial sessions show no rebound under that reading; partially
+    reproduced when the pattern holds but a value is out of tolerance.
+- id: fig3abc-decay-with-distance
+  statement: In the example deep MOs session, evoked LFP, CSD and spiking magnitudes are large near
+    the stimulation site (54.0, 51.4 and 30.9 SD.s in MO) and smaller in distant VIS (18.0, 4.8 and
+    1.8 SD.s).
+  source: Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 1;
+    Figure 3A to 3C
+  quote: The magnitude of the LFP near the stimulation site is greater than background activity
+    (54.0 SD∙s in MO) and decays with distance from the stimulation site (18.0 SD∙s in VIS
+  expected:
+  - quantity: LFP magnitude, MO, example
+    value: 54.0
+    tolerance: 5.4
+    unit: SD.s
+  - quantity: LFP magnitude, VIS, example
+    value: 18.0
+    tolerance: 1.8
+    unit: SD.s
+  - quantity: CSD magnitude, MO, example
+    value: 51.4
+    tolerance: 5.14
+    unit: SD.s
+  - quantity: CSD magnitude, VIS, example
+    value: 4.8
+    tolerance: 0.48
+    unit: SD.s
+  - quantity: spiking magnitude, MO, example
+    value: 30.9
+    tolerance: 3.09
+    unit: SD.s
+  - quantity: spiking magnitude, VIS, example
+    value: 1.8
+    tolerance: 0.18
+    unit: SD.s
+  depends_on:
+  - fig1-supp1-example
+  criterion: Magnitudes as in fig3d-magnitudes, for the session identified in fig1-supp1-example.
+    Reproduced when the MO value exceeds the VIS value for all three signals and all six values
+    are within tolerance under one combination of readings; partially reproduced when the ordering
+    holds but a value is out of tolerance.
+- id: fig3d-magnitudes
+  statement: Superficial stimulation modulated local LFP, CSD and spiking and non-local LFP and
+    CSD, but evoked no spiking outside the stimulated area; deep stimulation evoked LFP, CSD and
+    spiking both locally and in non-stimulated cortical regions.
+  source: Results, Global ERPs are associated with widespread evoked cortical activity, paragraph
+    2; Figure 3D
+  quote: Together, these data show that cortical stimulation evoked widespread changes in the LFP
+    and CSD, but only evoked ipsilateral cortical spiking outside of the stimulated area when
+    stimulating deep layers
+  statistics:
+  - about: superficial, stimulated region, LFP, CSD and spiking against background (each)
+    test: Wilcoxon signed-rank test
+    p: 0.0313
+    corrected: Benjamini-Hochberg FDR
+    n: 6 mice
+  - about: superficial, non-stimulated regions, LFP and CSD against background (each)
+    test: Wilcoxon signed-rank test
+    p: 0.0078
+    corrected: Benjamini-Hochberg FDR
+    n: 8 mice (legend, 17 regions in 7 mice)
+  - about: superficial, non-stimulated regions, spiking against background
+    test: Wilcoxon signed-rank test
+    p: 0.7422
+    corrected: Benjamini-Hochberg FDR
+    n: 8 mice (legend, 17 regions in 7 mice)
+  - about: deep, stimulated region, LFP, CSD and spiking against background (each)
+    test: Wilcoxon signed-rank test
+    p: 1.221E-4
+    corrected: Benjamini-Hochberg FDR
+    n: 14 mice (legend, 15 regions in 15 mice)
+  - about: deep, non-stimulated regions, LFP, CSD and spiking against background (each)
+    test: Wilcoxon signed-rank test
+    p: 3.052E-5
+    corrected: Benjamini-Hochberg FDR
+    n: legend, 35 regions in 16 mice
+  expected:
+  - quantity: superficial, stimulated, LFP magnitude, median
+    value: 19.8
+    tolerance: 1.98
+    unit: SD.s
+  - quantity: superficial, stimulated, CSD magnitude, median
+    value: 20.8
+    tolerance: 2.08
+    unit: SD.s
+  - quantity: superficial, stimulated, spiking magnitude, median
+    value: 1.8
+    tolerance: 0.18
+    unit: SD.s
+  - quantity: superficial, non-stimulated, LFP magnitude, median
+    value: 7.5
+    tolerance: 0.75
+    unit: SD.s
+  - quantity: superficial, non-stimulated, CSD magnitude, median
+    value: 3.9
+    tolerance: 0.39
+    unit: SD.s
+  - quantity: deep, stimulated, LFP magnitude, median
+    value: 68.5
+    tolerance: 6.85
+    unit: SD.s
+  - quantity: deep, stimulated, CSD magnitude, median
+    value: 95.1
+    tolerance: 9.51
+    unit: SD.s
+  - quantity: deep, stimulated, spiking magnitude, median
+    value: 29.3
+    tolerance: 2.93
+    unit: SD.s
+  - quantity: deep, non-stimulated, LFP magnitude, median
+    value: 34.2
+    tolerance: 3.42
+    unit: SD.s
+  - quantity: deep, non-stimulated, CSD magnitude, median
+    value: 14.9
+    tolerance: 1.49
+    unit: SD.s
+  - quantity: deep, non-stimulated, spiking magnitude, median
+    value: 4.4
+    tolerance: 0.44
+    unit: SD.s
+  criterion: Method from Methods, LFP, CSD, and population spiking magnitude, and Data processing.
+    LFP after artifact masking, downsampled to 1.25 kHz, first-order Butterworth high-pass
+    (cutoff not given; open, readings 0.1 Hz and 1 Hz), re-referenced to the median of channels in
+    the ACSF above the brain; CSD as the second spatial derivative after Chebyshev channel
+    rejection (+/- 7 SD), smoothing 8 ms in time and 26 then 4 channels in space; spiking as single
+    RS unit spike density functions (kernel not given; open, readings Gaussian SD 5 ms and 10 ms).
+    For a region, the spatial average of the rectified trial-averaged signal over its channels
+    (units) in all layers except layer 1, z-scored to the pre-stimulus baseline (window not given;
+    open, readings -2 to 0 s and -0.5 to 0 s), and its area under the curve from 0 to +0.5 s;
+    background by shuffling the onset time per trial 1000 times; magnitude is (AUC minus the mean
+    of the shuffled AUCs) over their SD. How onsets are shuffled is not given; readings, uniform
+    within the epoch (-2 to +2 s) and uniform over the recording. Each group of values is tested
+    against zero with the two-sided Wilcoxon signed-rank test (scipy), Benjamini-Hochberg FDR over
+    the tests. The unit of the test is open; the printed p-values (0.0313, 0.0078, 1.221E-4,
+    3.052E-5) are the smallest exact two-sided signed-rank values for n = 6, 8, 14 and 16, which
+    indicates one value per mouse; readings (a) one value per mouse, non-stimulated regions
+    averaged within mouse; (b) one value per region. Reproduced when, under one combination of
+    readings, every test the paper finds significant has corrected p < 0.05 with a positive
+    median, superficial non-stimulated spiking is not significant (claim of absence, judged on
+    this test), and all 11 medians are within tolerance; partially reproduced when the
+    significance pattern holds but a median is out of tolerance.
+- id: fig4-unit-counts
+  statement: Figure 4 rests on 870 RS units from stimulated and 4110 from non-stimulated cortex in
+    7 mice with superficial stimulation, and 2559 and 9363 in 17 mice with deep stimulation.
+  source: Figure 4 legend
+  quote: Panels A–C are derived from 870 RS neurons from stimulated cortex and 4110 RS neurons from
+    non-stimulated cortical regions in N=7 mice and panels D–F from 2559 RS neurons from stimulated
+    cortex and 9363 RS neurons from non-stimulated cortical regions in N=17 mice
+  expected:
+  - quantity: RS units, stimulated cortex, superficial
+    value: 870
+    tolerance: 87
+  - quantity: RS units, non-stimulated cortex, superficial
+    value: 4110
+    tolerance: 411
+  - quantity: RS units, stimulated cortex, deep
+    value: 2559
+    tolerance: 255.9
+  - quantity: RS units, non-stimulated cortex, deep
+    value: 9363
+    tolerance: 936.3
+  criterion: Counts of high-quality RS units (waveform duration > 0.4 ms) in stimulated and
+    non-stimulated ipsilateral cortex, summed over sessions of each depth. Reproduced when all four
+    are within tolerance and the session counts are 7 and 17.
+- id: fig4ad-initial-excitation
+  statement: In the initial excitation window (2 to 25 ms), the fraction of activated RS neurons is
+    always higher in stimulated cortex than elsewhere; across 24 animals an average of 0.5% (0 to
+    2.6%) of neurons in non-stimulated regions were modulated against 17.8% (0 to 83.3%) in
+    stimulated cortex, and about three times more cortical neurons respond to deep than to
+    superficial stimulation.
+  source: Results, Global ERPs are associated with widespread evoked cortical activity, paragraph
+    4; Figure 4A and 4D; Results, The spiking response pattern of the stimulated cortex echoes the
+    ERP, paragraph 2
+  quote: Indeed, across all 24 animals, only an average of 0.5% (minimum 0% and maximum 2.6%) of the
+    neurons was modulated in the initial excitation, compared to an average of 17.8% (minimum 0%
+    and maximum 83.3%) in stimulated cortex
+  expected:
+  - quantity: mean fraction modulated, 2 to 25 ms, non-stimulated regions
+    value: 0.5
+    tolerance: 0.05
+    unit: '%'
+  - quantity: max fraction modulated, 2 to 25 ms, non-stimulated regions
+    value: 2.6
+    tolerance: 0.26
+    unit: '%'
+  - quantity: mean fraction modulated, 2 to 25 ms, stimulated cortex
+    value: 17.8
+    tolerance: 1.78
+    unit: '%'
+  - quantity: max fraction modulated, 2 to 25 ms, stimulated cortex
+    value: 83.3
+    tolerance: 8.33
+    unit: '%'
+  criterion: Modulated neurons by the Methods (Significantly modulated neurons); per RS unit, spike
+    counts in the post-stimulus window and a pre-stimulus window of the same length, per trial,
+    two-sided Wilcoxon signed-rank test, Benjamini-Hochberg FDR at 0.05 over all RS units in all
+    areas of interest, sign from the mean change. Open, with readings; pre-stimulus window (a)
+    immediately before onset with the same length (-23 to 0 ms for 2 to 25 ms), (b) mirrored about
+    onset (-25 to -2 ms); FDR family (a) per session and window, (b) all sessions pooled per
+    window. Units with no spikes in either window are not modulated (a test that scipy cannot run
+    is counted as not significant, a standard choice). Fractions are per area per session; the
+    non-stimulated value is per non-stimulated region (readings, per region, or pooled over the
+    non-stimulated regions of a session). The "about three times" is the ratio of mean fractions of
+    significantly responding stimulated-cortex units, deep over superficial, in the 2 to 25 ms
+    window (reading (a)) or in any of the three windows (reading (b)), reproduced between 2 and 4.
+    Reproduced when, under one combination of readings, the fraction of significantly increased
+    units in stimulated cortex exceeds that in non-stimulated regions in every session (the paper's
+    "activated"), the means and maxima are within tolerance (minima 0)
+    and the ratio is between 2 and 4; partially reproduced when the ordering holds but values do
+    not.
+- id: fig4be-off-period
+  statement: In the off period (25 to 150 ms) very few neurons increased their spiking (mean 0.4%,
+    maximum 2.8%), spiking was significantly reduced in 18 of 22 subjects, and non-stimulated areas
+    showed decreases only with deep stimulation (mean 10.1%, maximum 55.7%).
+  source: Results, Global ERPs are associated with widespread evoked cortical activity, paragraph
+    4; Figure 4B and 4E
+  quote: There were very few neurons with increased spiking, regardless of stimulation depth and
+    area (mean 0.4%, minimum 0%, and maximum 2.8%; Figure 4B and E ). In contrast, spiking in 18/22
+    subjects was significantly reduced from baseline following either superficial or deep
+    stimulation. Interestingly, some non-stimulated areas showed decreased spiking but only in
+    response to deep stimulation (mean 10.1%, minimum 0%, and maximum 55.7%)
+  expected:
+  - quantity: mean fraction increased, 25 to 150 ms, all areas
+    value: 0.4
+    tolerance: 0.04
+    unit: '%'
+  - quantity: max fraction increased, 25 to 150 ms, all areas
+    value: 2.8
+    tolerance: 0.28
+    unit: '%'
+  - quantity: subjects with significantly reduced spiking, 25 to 150 ms
+    value: 18
+    tolerance: 1.8
+  - quantity: mean fraction decreased, 25 to 150 ms, non-stimulated areas, deep
+    value: 10.1
+    tolerance: 1.01
+    unit: '%'
+  - quantity: max fraction decreased, 25 to 150 ms, non-stimulated areas, deep
+    value: 55.7
+    tolerance: 5.57
+    unit: '%'
+  depends_on:
+  - fig4ad-initial-excitation
+  criterion: Modulated units as in fig4ad-initial-excitation, window 25 to 150 ms. "Spiking
+    significantly reduced" in a subject is open; readings (a) at least one RS unit of the
+    stimulated cortex significantly decreased; (b) at least one in any cortical area; (c) the
+    population count of the stimulated cortex lower after than before by the same signed-rank
+    test. The count of 22 subjects (against 24 elsewhere) is not explained and is reported.
+    Reproduced when, under one combination of readings, the five values are within tolerance and
+    no superficial session has decreased units in non-stimulated areas; partially reproduced when
+    the qualitative pattern (few increases, most subjects reduced, non-stimulated decreases only
+    with deep) holds.
+- id: fig4cf-rebound
+  statement: In the rebound window (150 to 300 ms), all 16 deep-stimulation subjects showed
+    significant rebound excitation in stimulated cortex against 1 of 6 superficial subjects; 6 of
+    16 deep subjects showed it in non-stimulated areas, and none of 7 superficial subjects did.
+  source: Results, Global ERPs are associated with widespread evoked cortical activity, paragraph
+    4; Figure 4C and 4F
+  quote: All 16 subjects who received deep stimulation showed significant rebound excitation in the
+    stimulated cortex, whereas only 1/6 superficial stimulation subjects did ( Figure 4C and F ).
+    Some subjects who received deep stimulation showed significant rebound excitation in the
+    non-stimulated areas (6/16; Figure 4F ), but it was nonexistent amongst the superficial
+    stimulation subjects (0/7
+  expected:
+  - quantity: deep subjects with rebound in stimulated cortex
+    value: 16
+    tolerance: 1.6
+  - quantity: superficial subjects with rebound in stimulated cortex
+    value: 1
+    tolerance: 0.1
+  - quantity: deep subjects with rebound in non-stimulated areas
+    value: 6
+    tolerance: 0.6
+  - quantity: superficial subjects with rebound in non-stimulated areas
+    value: 0
+    tolerance: 0
+  depends_on:
+  - fig4ad-initial-excitation
+  criterion: Modulated units as in fig4ad-initial-excitation, window 150 to 300 ms; a subject shows
+    rebound excitation in an area when at least one of its RS units there is significantly
+    increased (reading (a)); or (b) the population spike count of the area higher after than
+    before by the same signed-rank test, as reading (c) of fig4be-off-period. The paper defines a
+    subject's rebound in neither way. Counts are reported against the denominators found; the paper's denominators (16, 6, 7)
+    differ from Figure 4's N of 17 and 7. Reproduced when, under one reading, at least 90% of deep
+    subjects and at most a sixth of superficial subjects show rebound in stimulated cortex, the
+    non-stimulated deep count is within 10% of 6/16 as a fraction, and no superficial subject shows
+    it in non-stimulated areas.
+- id: fig4-supp1-fs-like-rs
+  statement: FS neurons behave like RS neurons in their modulation by stimulation depth and time
+    window.
+  source: Results, Global ERPs are associated with widespread evoked cortical activity, paragraph 3;
+    Figure 4, figure supplement 1
+  quote: We separately analyzed FS neurons and found they behave like RS neurons
+  expected:
+  - quantity: FS units, stimulated cortex, superficial
+    value: 180
+    tolerance: 18
+  - quantity: FS units, non-stimulated cortex, superficial
+    value: 585
+    tolerance: 58.5
+  - quantity: FS units, stimulated cortex, deep
+    value: 387
+    tolerance: 38.7
+  - quantity: FS units, non-stimulated cortex, deep
+    value: 1422
+    tolerance: 142.2
+  depends_on:
+  - fig4ad-initial-excitation
+  - fig4be-off-period
+  - fig4cf-rebound
+  criterion: The analyses of fig4ad, fig4be and fig4cf repeated on FS units (waveform duration <=
+    0.4 ms; FDR over FS units). The paper gives no test of likeness. Reproduced when the
+    qualitative findings of those three claims (stimulated above non-stimulated at 2 to 25 ms;
+    decreases dominate at 25 to 150 ms; rebound in stimulated cortex in most deep and few
+    superficial sessions) hold for FS units, and the unit counts (legend, 7 superficial and 16
+    deep mice) are within tolerance.
+- id: fig5a-thalamus-modulated
+  statement: SM-TH neurons were almost eight times more likely to be modulated by deep than by
+    superficial stimulation (37.9 +/- 20.6% against 5.0 +/- 4.1%).
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 1; Figure 5A
+  quote: "the neurons were almost eight times more likely to be modulated by deep than superficial
+    stimulation (superficial: 5.0±4.1% of SM-TH population, N=5; deep: 37.9±20.6%, N=14; Student’s
+    two-tailed t-test, p=0.0037"
+  statistics:
+  - test: Student's two-tailed t-test
+    p: 0.0037
+    n: 5 superficial and 14 deep sessions
+  expected:
+  - quantity: fraction of SM-TH units modulated, superficial
+    value: 5.0
+    tolerance: 4.1
+    unit: '%'
+  - quantity: fraction of SM-TH units modulated, deep
+    value: 37.9
+    tolerance: 20.6
+    unit: '%'
+  depends_on:
+  - fig4ad-initial-excitation
+  criterion: The spread is taken as the SEM, as the Methods say text values are mean +/- SEM. Units
+    are all high-quality SM-TH units (the legend does not restrict them to RS), tested as in
+    fig4ad-initial-excitation. The window "between 2 ms and 300 ms" is open; readings (a) one
+    window 2 to 300 ms against a matched pre-stimulus window; (b) a unit significantly increased or
+    decreased in any of the three windows 2 to 25, 25 to 150, 150 to 300 ms. Reproduced when,
+    under one reading, both means are within tolerance and scipy ttest_ind (two-sided) gives p <
+    0.05 with deep higher.
+- id: fig5c-burst-probability-depth
+  statement: Deep stimulation was significantly more likely than superficial stimulation to evoke
+    SM-TH bursts 75 to 300 ms after the stimulus (median 0.12 [0.02 to 0.2] against 0 [0 to 0.02]).
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 2; Figure 5C
+  quote: "deep stimulation had a significantly higher likelihood of evoking bursts (superficial
+    stimulation: median 0 [0–0.02 IQR]; deep stimulation: median 0.12 [0.02–0.2 IQR]; Mann-Whitney U
+    test, p=0.0258"
+  statistics:
+  - test: Mann-Whitney U test
+    p: 0.0258
+    n: 5 superficial and 14 deep sessions
+  expected:
+  - quantity: burst probability, superficial, median
+    value: 0
+    tolerance: 0
+  - quantity: burst probability, deep, median
+    value: 0.12
+    tolerance: 0.012
+  criterion: A burst is two or more consecutive spikes with inter-spike interval below 4 ms preceded
+    by at least 100 ms of silence (Results, paragraph 2 of CTC interactions), counted when its
+    first spike falls 75 to 300 ms after onset. The probability is the fraction of trials (Figure
+    5C legend); open whether (a) per session, the fraction of trials in which any SM-TH unit bursts,
+    or (b) the mean over SM-TH units of each unit's fraction of trials with a burst. Reproduced
+    when, under one reading, the deep median is within tolerance, the superficial median is 0, and
+    the two-sided Mann-Whitney U test (scipy) gives p < 0.05 with deep higher.
+- id: fig5e-early-latency
+  statement: During the initial excitation, stimulated cortical RS cells fired first (median
+    first-spike latency 4.4 +/- 0.9 ms), followed by the thalamus (11.4 +/- 2.8 ms), a mean
+    difference of 6.9 ms.
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 3; Figure 5E
+  quote: during the initial excitation, stimulated cortical RS cells had a median first-spike
+    latency of 4.4±0.9 ms, with the thalamic population following at 11.4±2.8 ms (mean latency
+    difference of 6.9 ms; paired t-test, p=4.838E-6
+  statistics:
+  - test: paired t-test
+    p: 4.838E-6
+    n: 13 mice with simultaneous cortical and SM-TH recordings
+  expected:
+  - quantity: first-spike latency, stimulated cortex
+    value: 4.4
+    tolerance: 0.9
+    unit: ms
+  - quantity: first-spike latency, SM-TH
+    value: 11.4
+    tolerance: 2.8
+    unit: ms
+  - quantity: mean latency difference, SM-TH minus cortex
+    value: 6.9
+    tolerance: 0.69
+    unit: ms
+  depends_on:
+  - fig4ad-initial-excitation
+  criterion: Responsive units are those significantly increased in the 2 to 25 ms window (as in
+    fig4ad-initial-excitation; RS units in stimulated cortex, all units in SM-TH). Per unit, the
+    first spike from 2 to 25 ms on each trial with a spike; per population, the median latency over
+    its units. Open; the per-unit summary over trials, readings median and mean. The Discussion
+    gives 6.7 ms for the difference, accepted as an alternative target. Reproduced when, under one
+    reading, the three values are within tolerance and the paired t-test (scipy ttest_rel) gives p
+    < 0.05 with SM-TH later.
+- id: fig5f-rebound-latency
+  statement: During the rebound, the order flips; SM-TH fires first (median latency 148.2 +/- 21.2
+    ms) and cortex follows (184.2 +/- 17.3 ms), a mean difference of -36.0 ms.
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 3; Figure 5F
+  quote: "During the rebound excitation window, the temporal relationship flipped: the thalamic
+    population had a median rebound spike latency of 148.2±21.2 ms, with cortex following at
+    184.2±17.3 ms (mean latency difference –36.0 ms; paired t-test, p=2.136E-4"
+  statistics:
+  - test: paired t-test
+    p: 2.136E-4
+    n: 13 mice with simultaneous cortical and SM-TH recordings
+  expected:
+  - quantity: rebound latency, SM-TH
+    value: 148.2
+    tolerance: 21.2
+    unit: ms
+  - quantity: rebound latency, stimulated cortex
+    value: 184.2
+    tolerance: 17.3
+    unit: ms
+  - quantity: mean latency difference, cortex minus SM-TH
+    value: 36.0
+    tolerance: 3.6
+    unit: ms
+  depends_on:
+  - fig5e-early-latency
+  criterion: As fig5e-early-latency, with the first spike in the late window. The window is 75 to
+    300 ms in the Figure 5F legend and 100 to 300 ms in the Figure 7G legend; both are run.
+    Responsive units are open; readings (a) significantly increased in 150 to 300 ms; (b)
+    significantly increased in the late window used. The Discussion gives 37.0 ms for the
+    difference, accepted as an alternative target. Reproduced when, under one combination of
+    readings, the three values are within tolerance and ttest_rel gives p < 0.05 with SM-TH earlier.
+- id: fig6a-csd-sink
+  statement: After deep MOs stimulation, a pronounced current sink near the border of layers 2/3
+    and 5 in MOs coincided with the thalamic rebound burst (about 180 ms), consistently across
+    subjects.
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 4; Figure 6A
+  quote: We observed a pronounced current sink near the border of layers 2/3 and 5 in MOs (near the
+    deep stimulation site) that coincided with the timing of the thalamic rebound burst (~180 ms).
+    This was consistent across subjects (N=9, Wilcoxon signed-rank test, p<0.05
+  statistics:
+  - test: Wilcoxon signed-rank test, per space-time bin
+    p: 0.05
+    p_relation: "<"
+    n: 9 mice
+  criterion: CSD as in fig3d-magnitudes, trial-averaged per session in MOs after deep MOs
+    stimulation. Each trace is mapped to 10 bins per layer by a non-linear transform (Methods,
+    Population CSD; the transform is not given, reading, linear interpolation within each layer's
+    CCF bounds); per bin, a two-sided Wilcoxon signed-rank test across sessions against zero at p <
+    0.05, uncorrected; isolated significant bins (not neighboured by significant bins in both space
+    and time) removed. Reproduced when a cluster of significant negative bins (sinks) lies within
+    the bins adjacent to the L2/3 to L5 border and spans about 180 ms (the paper's timing), inside
+    the rebound window 150 to 300 ms of Figure 4.
+- id: fig6-supp1-erp-deep-csd
+  statement: On single trials, EEG signals correlate more strongly with the CSD of deep than of
+    superficial cortical layers.
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 4; Figure 6, figure
+    supplement 1
+  quote: We also analyzed the correlation between the ERP and laminar CSD on a trial-by-trial basis
+    and found that the EEG signals correlated more strongly with CSD of deep compared to superficial
+    layers
+  depends_on:
+  - fig6a-csd-sink
+  criterion: The legend gives "time-resolved correlation of EEG with layer-specific CSD power"
+    across trials, Pearson and Spearman, N=9, and no test. Open; the EEG signal (readings, GFP;
+    the electrode nearest the stimulation site), CSD power (reading, squared CSD averaged over the
+    layer's bins) and the time resolution (reading, each sample from 0 to 0.5 s). Reproduced when,
+    under one reading, the mean over sessions of the across-trial correlation, averaged over 0 to
+    0.5 s, is higher for L5 and L6 than for L1 and L2/3 with both Pearson and Spearman.
+- id: fig6b-bursts-cortical-rate
+  statement: On a trial-by-trial basis, the fraction of bursting SM-TH neurons correlated with the
+    cortical population firing rate in the rebound window (8 of 13 mice significant, mean r 0.4 +/-
+    0.04).
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 5; Figure 6B
+  quote: "The fraction of bursting SM-TH neurons was correlated with the cortical population firing
+    rate (8/13 mice with a significant correlation [p<0.05], mean Pearson r value: 0.4±0.04"
+  expected:
+  - quantity: mice with significant correlation
+    value: 8
+    tolerance: 0.8
+  - quantity: mean Pearson r
+    value: 0.4
+    tolerance: 0.04
+  depends_on:
+  - fig5c-burst-probability-depth
+  criterion: Per deep session, per trial in 75 to 300 ms; the fraction of SM-TH units with a burst
+    (definition as in fig5c-burst-probability-depth) against the peak cortical population rate
+    (Figure 6B legend; mean over stimulated-cortex RS units, bin width open, readings 5 ms and 10
+    ms). Pearson r and its p per session; p < 0.05 counts a session as significant (the paper's
+    threshold). Reproduced when, under one reading, the mean r is within tolerance and the count
+    of significant sessions is within the tolerance of 8 of 13 (proportionally, if the number of
+    sessions differs).
+- id: fig6c-cortical-rate-late-erp
+  statement: The cortical population firing rate correlated trial by trial with the magnitude of
+    the late ERP component (9 of 13 mice significant, mean r 0.5 +/- 0.04).
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 5; Figure 6C
+  quote: "The cortical population firing rate was likewise correlated with the magnitude of the
+    second, late component in the ERP (9/13 mice with a significant correlation [p<0.05], mean
+    Pearson r value: 0.5±0.04"
+  expected:
+  - quantity: mice with significant correlation
+    value: 9
+    tolerance: 0.9
+  - quantity: mean Pearson r
+    value: 0.5
+    tolerance: 0.04
+  depends_on:
+  - fig6b-bursts-cortical-rate
+  criterion: As fig6b-bursts-cortical-rate, against the single-trial peak amplitude of the late ERP
+    component in 75 to 300 ms (Figure 6C legend). How the single-trial amplitude is taken is open;
+    readings (a) the peak of the single-trial GFP (SD across good electrodes); (b) the peak absolute
+    voltage at the electrode with the largest trial-averaged late component. Reproduced when, under
+    one reading, the mean r is within tolerance and the count of sessions with p < 0.05 is within
+    the tolerance of 9 of 13 (proportionally, if the number of sessions differs).
+- id: fig6-supp2-late-erp-bursts
+  statement: The late ERP component correlated trial by trial with the fraction of bursting SM-TH
+    neurons in every mouse (13 of 13, mean r 0.5 +/- 0.07), much more than with the SM-TH population
+    firing rate.
+  source: Results, CTC interactions underlie features of the ERPs, paragraph 5; Figure 6, figure
+    supplement 2
+  quote: "the late component in the ERP was significantly correlated with the fraction of bursting
+    SM-TH neurons (13/13 mice with a significant correlation [p<0.05], mean Pearson r value:
+    0.5±0.07 ... much more so than it was correlated with the SM-TH
+    population firing rate"
+  expected:
+  - quantity: mice with significant correlation, late ERP against SM-TH burst fraction
+    value: 13
+    tolerance: 1.3
+  - quantity: mean Pearson r, late ERP against SM-TH burst fraction
+    value: 0.5
+    tolerance: 0.07
+  depends_on:
+  - fig6b-bursts-cortical-rate
+  - fig6c-cortical-rate-late-erp
+  criterion: Late ERP amplitude as in fig6c-cortical-rate-late-erp, burst fraction as in
+    fig6b-bursts-cortical-rate, and peak SM-TH population rate (mean over SM-TH units) in 75 to 300
+    ms. The paper gives no test of "much more so". Reproduced when, under one reading, the mean r
+    with burst fraction is within tolerance, every session (or all but one, given the 13 against
+    12 discrepancy) has p < 0.05, and the mean r with the population rate is lower with fewer
+    significant sessions.
+- id: state-trial-counts
+  statement: Per animal, the state comparisons averaged a median of 97 quiet-wakefulness, 21
+    running and 120 anesthetized trials, across 17 animals.
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 1
+  quote: We then compared average responses from 97 (median, [86–104 IQR]) quiet wakefulness, 21
+    (median, [16–27 IQR]) active wakefulness, and 120 (median, [120–120 IQR]) anesthetized trials
+    across 17 animals
+  expected:
+  - quantity: quiet wakefulness trials per animal, median
+    value: 97
+    tolerance: 9.7
+  - quantity: running trials per animal, median
+    value: 21
+    tolerance: 2.1
+  - quantity: anesthetized trials per animal, median
+    value: 120
+    tolerance: 12
+  criterion: Trials split by wheel speed from -0.5 to +0.5 s; quiet when the speed is 0 cm/s
+    throughout (Methods, EEG ERPs), running when the average speed exceeds 0 (Results); speed from
+    the wheel's angular velocity (wheel radius from the dataset). Counts over the pulses of one
+    intensity (see the opening comment). The paper does not say which 17 animals Figure 7 uses;
+    readings (a) one deep-stimulation session per animal (17 matches the deep mice of Figure 4D to
+    4F, and the Figure 7 examples are deep MOs); (b) one session per animal with any stimulation
+    and an anesthetized stage. The Figure 7 claims use the same readings. Reproduced when, under
+    one reading of the intensity and the session set, the three medians are within tolerance.
+- id: fig7c-erp-duration-state
+  statement: ERP duration decreased from quiet wakefulness (0.5 +/- 0.1 s) to running (0.3 +/- 0.0
+    s) and anesthesia (0.3 +/- 0.0 s); the late component is diminished when running and absent
+    under anesthesia.
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 1; Figure 7C
+  quote: The second component in the ERP was diminished when running and nonexistent during
+    anesthesia; this was captured by the decrease in ERP duration (quiet wakefulness 0.5±0.1 s,
+    running 0.3±0.0 s, anesthetized 0.3±0.0 s; Friedman test
+  statistics:
+  - test: Friedman test, state effect
+    statistic: Q(2)=15.6
+    p: 4.002E-4
+    n: 17 animals
+  expected:
+  - quantity: ERP duration, quiet wakefulness, mean
+    value: 0.5
+    tolerance: 0.1
+    unit: s
+  - quantity: ERP duration, running, mean
+    value: 0.3
+    tolerance: 0.05
+    unit: s
+  - quantity: ERP duration, anesthetized, mean
+    value: 0.3
+    tolerance: 0.05
+    unit: s
+  depends_on:
+  - fig1e-erp-duration
+  - state-trial-counts
+  criterion: Duration as in fig1e-erp-duration (both readings), per animal and state. SEMs printed
+    as 0.0 take the printing precision as tolerance. Whether trial numbers were matched across
+    states for the ERP metrics is open (the Methods match them only for PCIst); readings,
+    unmatched and matched by random subsampling to the smallest state (seeded). Reproduced when,
+    under one combination of readings, the three means are within tolerance, the Friedman test
+    (scipy friedmanchisquare) gives p < 0.05, and quiet wakefulness is the longest.
+- id: fig7d-erp-magnitude-state
+  statement: ERP magnitude decreased from quiet wakefulness (6.1 +/- 0.9) to running (1.6 +/- 0.3)
+    and anesthesia (1.6 +/- 0.3).
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 1; Figure 7D
+  quote: the decrease in ERP magnitude (quiet wakefulness 6.1±0.9, running 1.6±0.3, anesthetized
+    1.6±0.3; Friedman test
+  statistics:
+  - test: Friedman test, state effect
+    statistic: Q(2)=17.4
+    p: 1.656E-4
+    n: 17 animals
+  expected:
+  - quantity: ERP magnitude, quiet wakefulness, mean
+    value: 6.1
+    tolerance: 0.9
+    unit: SD.s
+  - quantity: ERP magnitude, running, mean
+    value: 1.6
+    tolerance: 0.3
+    unit: SD.s
+  - quantity: ERP magnitude, anesthetized, mean
+    value: 1.6
+    tolerance: 0.3
+    unit: SD.s
+  depends_on:
+  - fig1f-erp-magnitude
+  - fig7c-erp-duration-state
+  criterion: Magnitude as in fig1f-erp-magnitude (both readings), trial matching as in
+    fig7c-erp-duration-state. Reproduced when, under one combination of readings, the three means
+    are within tolerance, the Friedman test gives p < 0.05, and quiet wakefulness is the largest.
+- id: fig7e-baseline-rates
+  statement: Baseline firing rates in stimulated cortex and SM-TH were higher during running and
+    lower during anesthesia than in quiet wakefulness (cortex 3.5, 5.2, 1.1 Hz; SM-TH 9.0, 16.4,
+    0.8 Hz).
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 2; Figure 7E
+  quote: In both regions, the baseline firing rates (measured during the pre-stimulus epoch) were
+    higher during running and lower during anesthesia compared to quiet wakefulness
+  statistics:
+  - about: stimulated cortex, state effect
+    test: one-way repeated measures ANOVA
+    statistic: F[2, 30]=66.3
+    p: 2.901E-9
+    n: 16 animals
+  - about: SM-TH, state effect
+    test: Friedman test
+    statistic: Q[2]=24.2
+    p: 5.689E-6
+    n: 13 animals
+  expected:
+  - quantity: stimulated cortex baseline rate, quiet wakefulness
+    value: 3.5
+    tolerance: 0.2
+    unit: Hz
+  - quantity: stimulated cortex baseline rate, running
+    value: 5.2
+    tolerance: 0.5
+    unit: Hz
+  - quantity: stimulated cortex baseline rate, anesthetized
+    value: 1.1
+    tolerance: 0.2
+    unit: Hz
+  - quantity: SM-TH baseline rate, quiet wakefulness
+    value: 9.0
+    tolerance: 1.4
+    unit: Hz
+  - quantity: SM-TH baseline rate, running
+    value: 16.4
+    tolerance: 1.5
+    unit: Hz
+  - quantity: SM-TH baseline rate, anesthetized
+    value: 0.8
+    tolerance: 0.4
+    unit: Hz
+  criterion: Per animal and state, the mean pre-stimulus firing rate of RS units in stimulated
+    cortex and of SM-TH units. The pre-stimulus epoch is open; readings (a) -2 to 0 s, the epoch the
+    Methods cut; (b) -0.5 to 0 s, the window that classifies the state. The Discussion prints other
+    values for the same quantities (cortex 3.3 +/- 0.2, 5.0 +/- 0.5, 1.1 +/- 0.2; SM-TH 9.4 +/- 1.5,
+    16.8 +/- 1.6, 0.8 +/- 0.4 Hz), accepted as alternative targets. Reproduced when, under one
+    reading, the six means are within tolerance of one set of values, the one-way RM ANOVA (cortex)
+    and Friedman test (SM-TH) give p < 0.05, and running > quiet > anesthetized in both regions.
+- id: fig7f-early-latency-state
+  statement: First-spike latencies of the initial excitation did not differ across states, in
+    cortex (4.5, 4.0, 4.6 ms) or SM-TH (11.5, 11.3, 10.9 ms); the region effect was significant.
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 2; Figure 7F
+  quote: The median first spike latencies for cortical and thalamic populations were the same when
+    looking at the initial excitation
+  statistics:
+  - about: state effect
+    test: two-way RM ANOVA
+    statistic: F[2, 24]=0.3
+    p: 0.6281
+    n: 13 animals (legend, 12)
+  - about: region effect
+    test: two-way RM ANOVA
+    statistic: F[1, 12]=89.3
+    p: 6.581E-7
+    n: 13 animals (legend, 12)
+  - about: state by region interaction
+    test: two-way RM ANOVA
+    statistic: F[2, 24]=0.5
+    p: 0.5062
+    n: 13 animals (legend, 12)
+  expected:
+  - quantity: cortex latency, quiet wakefulness
+    value: 4.5
+    tolerance: 0.3
+    unit: ms
+  - quantity: cortex latency, running
+    value: 4.0
+    tolerance: 0.2
+    unit: ms
+  - quantity: cortex latency, anesthetized
+    value: 4.6
+    tolerance: 0.4
+    unit: ms
+  - quantity: SM-TH latency, quiet wakefulness
+    value: 11.5
+    tolerance: 0.8
+    unit: ms
+  - quantity: SM-TH latency, running
+    value: 11.3
+    tolerance: 0.8
+    unit: ms
+  - quantity: SM-TH latency, anesthetized
+    value: 10.9
+    tolerance: 0.6
+    unit: ms
+  depends_on:
+  - fig5e-early-latency
+  criterion: Latencies as in fig5e-early-latency, per state. A claim of absence judged on the
+    paper's test, a two-way repeated-measures ANOVA (state by region) on per-animal median
+    latencies; reproduced when the state effect has p >= 0.05 and the region effect p < 0.05. The
+    six means are compared with their tolerances and reported either way.
+- id: fig7g-rebound-latency-state
+  statement: Rebound spike latencies in cortex and thalamus were earlier during running than in
+    quiet wakefulness (cortex 186.7 against 163.8 ms; SM-TH 156.0 against 123.1 ms), and were not
+    consistently timed during anesthesia.
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 2; Figure 7G
+  quote: However, the rebound spike latencies for cortex and thalamus were earlier during running
+    compared to quiet wakefulness
+  statistics:
+  - about: state effect
+    test: two-way RM ANOVA
+    statistic: F[2, 24]=31.4
+    p: 2.020E-7
+    n: 13 animals (legend, 12)
+  - about: region effect
+    test: two-way RM ANOVA
+    statistic: F[1, 12]=17.2
+    p: 1.349E-3
+    n: 13 animals (legend, 12)
+  - about: state by region interaction
+    test: two-way RM ANOVA
+    statistic: F[2, 24]=6.6
+    p: 0.053
+    n: 13 animals (legend, 12)
+  expected:
+  - quantity: cortex rebound latency, quiet wakefulness
+    value: 186.7
+    tolerance: 4.6
+    unit: ms
+  - quantity: cortex rebound latency, running
+    value: 163.8
+    tolerance: 5.0
+    unit: ms
+  - quantity: cortex rebound latency, anesthetized
+    value: 200.2
+    tolerance: 7.5
+    unit: ms
+  - quantity: SM-TH rebound latency, quiet wakefulness
+    value: 156.0
+    tolerance: 7.1
+    unit: ms
+  - quantity: SM-TH rebound latency, running
+    value: 123.1
+    tolerance: 3.9
+    unit: ms
+  - quantity: SM-TH rebound latency, anesthetized
+    value: 195.1
+    tolerance: 9.5
+    unit: ms
+  depends_on:
+  - fig5f-rebound-latency
+  criterion: Latencies as in fig5f-rebound-latency, per state; the late window of Figure 7G is 100
+    to 300 ms (75 to 300 ms is run as the variant). Two-way repeated-measures ANOVA (state by
+    region), post hoc pairs with Benjamini-Hochberg FDR. Reproduced when, under one reading, the
+    state effect has p < 0.05, running is earlier than quiet wakefulness in both regions by the
+    corrected post hoc test (paired t-tests, Methods, Statistics), and all six means are within
+    tolerance; partially reproduced when the state effect and the running against quiet order hold
+    but a mean is out of tolerance. The printed
+    interaction (F = 6.6 with p = 0.053) is internally odd for F(2, 24) and is reported, not judged.
+- id: fig7h-burst-probability-state
+  statement: The probability of evoked thalamic bursts decreased during running compared to quiet
+    wakefulness and was very low under anesthesia (medians 0.1, 0, 0).
+  source: Results, Behavioral states modulate the ERP and the cortico-thalamic interactions,
+    paragraph 2; Figure 7H
+  quote: "The probability of evoking thalamic bursts decreased during running compared to quiet
+    wakefulness and was very low (zero for many subjects) during anesthesia (N=13; median
+    probability: quiet wakefulness 0.1 [0.01–0.24 IQR], running 0 [0–0.07 IQR], anesthetized 0
+    [0–0.002 IQR]; Friedman test"
+  statistics:
+  - test: Friedman test, state effect
+    statistic: Q[2]=18.6
+    p: 9.142E-5
+    n: 13 animals
+  expected:
+  - quantity: burst probability, quiet wakefulness, median
+    value: 0.1
+    tolerance: 0.01
+  - quantity: burst probability, running, median
+    value: 0
+    tolerance: 0
+  - quantity: burst probability, anesthetized, median
+    value: 0
+    tolerance: 0
+  depends_on:
+  - fig5c-burst-probability-depth
+  criterion: Burst probability as in fig5c-burst-probability-depth (both readings), 75 to 300 ms,
+    per animal and state. The Discussion gives the quiet median as 9.5%, accepted as an alternative
+    target (tolerance 0.0095). Reproduced when, under one reading, the medians match, the Friedman
+    test gives p < 0.05, and quiet wakefulness is the highest.
+- id: fig8b-pcist-awake-anesthesia
+  statement: PCIst was higher in the awake than in the isoflurane-anesthetized state in all subjects
+    (45.5 +/- 3.6 against 16.5 +/- 2.4).
+  source: Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed
+    mice, paragraph 1; Figure 8B
+  quote: We found that PCI ST was higher during the awake state than during the isoflurane-anesthetized
+    state in all subjects (N=31; awake PCI ST 45.5±3.6; anesthetized PCI ST 16.5±2.4; paired t-test,
+    p=2.508E-11
+  statistics:
+  - test: paired t-test
+    p: 2.508E-11
+    n: 31 sessions across 24 mice
+  expected:
+  - quantity: PCIst, awake, mean
+    value: 45.5
+    tolerance: 3.6
+  - quantity: PCIst, anesthetized, mean
+    value: 16.5
+    tolerance: 2.4
+  criterion: PCIst from calc_PCIst of the PCIst code (commit e495a0a) on the ERP (trial average of
+    the average-referenced, filtered EEG of good electrodes), with the paper's parameters (Methods,
+    PCI state-transition); baseline window -0.8 to -0.002 s, response window 0.002 to 0.8 s,
+    min_snr 1.6, max_var 99, k 1.2; other parameters at the code's defaults (no avgref, no baseline
+    correction, no resampling, no embedding, n_steps 100). Times are passed in the same unit as
+    the windows. The value scales with the number of samples in the response window, and the paper
+    gives no rate other than the 2.5 kHz acquisition, so the EEG is used at 2.5 kHz. Trial numbers
+    matched within session between states (Methods, PCI state-transition); how is not given,
+    readings, random subsampling to the smaller count (seeded) and the first trials of each state.
+    Awake includes quiet and running trials (Figure 8C legend). Reproduced when, under one reading, both
+    means are within tolerance, ttest_rel gives p < 0.05, and awake exceeds anesthetized in every session
+    (in all but one, partially reproduced).
+- id: fig8c-pcist-depth
+  statement: In the awake state PCIst was significantly lower for superficial than for deep
+    stimulation (35.6 +/- 4.8 against 52.7 +/- 4.4).
+  source: Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed
+    mice, paragraph 2; Figure 8C
+  quote: "we found that PCI ST was, indeed, significantly lower for superficial than for deep
+    stimulation (superficial: N=13, awake PCI ST 35.6±4.8; deep: N=18, awake PCI ST 52.7±4.4;
+    Student’s two-tailed t-test, p=0.0179"
+  statistics:
+  - test: Student's two-tailed t-test
+    p: 0.0179
+    n: 13 superficial and 18 deep sessions
+  expected:
+  - quantity: awake PCIst, superficial, mean
+    value: 35.6
+    tolerance: 4.8
+  - quantity: awake PCIst, deep, mean
+    value: 52.7
+    tolerance: 4.4
+  depends_on:
+  - fig8b-pcist-awake-anesthesia
+  criterion: PCIst as in fig8b-pcist-awake-anesthesia on all awake trials of each session; whether
+    trials are matched here is open (readings, all awake trials, and matched to the session's
+    anesthetized count as in Figure 8B). Reproduced when, under one reading, both means are within
+    tolerance and ttest_ind (two-sided) gives p < 0.05 with superficial lower.
+- id: fig8d-pcist-three-states
+  statement: PCIst differed between all states; highest in quiet wakefulness (55.2 +/- 10.3),
+    lower when running (39.9 +/- 7.7), and lowest under anesthesia (14.0 +/- 5.8), with every
+    subject higher when running than under anesthesia.
+  source: Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed
+    mice, paragraph 2; Figure 8D; Discussion, Thalamo-cortical dynamics modulate perturbational
+    complexity in mice, paragraph 2
+  quote: PCI ST was significantly different for all states; the highest complexity ERPs were seen
+    when mice were in quiet wakefulness, slightly lower complexity ERPs during active wakefulness,
+    with the lowest complexity during anesthesia (N=8; quiet PCI ST 55.2±10.3, active wakefulness
+    39.9±7.7; anesthetized 14.0±5.8; one-way RM ANOVA
+  statistics:
+  - about: state effect
+    test: one-way RM ANOVA
+    statistic: F[2, 14]=28.3
+    p: 1.202E-5
+    n: 8 subjects with at least 30 running trials
+  expected:
+  - quantity: PCIst, quiet wakefulness, mean
+    value: 55.2
+    tolerance: 10.3
+  - quantity: PCIst, running, mean
+    value: 39.9
+    tolerance: 7.7
+  - quantity: PCIst, anesthetized, mean
+    value: 14.0
+    tolerance: 5.8
+  depends_on:
+  - fig8b-pcist-awake-anesthesia
+  - state-trial-counts
+  criterion: Sessions with at least 30 running trials; trial numbers matched within session across
+    the three states (on average 51), by random subsampling to the smallest count (seeded); PCIst
+    as in fig8b-pcist-awake-anesthesia. One-way RM ANOVA, post hoc paired t-tests with
+    Benjamini-Hochberg FDR (Methods, Statistics). Reproduced when the three means are within
+    tolerance, the state effect has p < 0.05, every corrected pair differs with quiet > running >
+    anesthetized, and running exceeds anesthesia in every session; partially reproduced when the
+    ordering and state effect hold but a pair is not significant.
+- id: fig8e-pcist-recovery
+  statement: After isoflurane was stopped, PCIst rose in all but one subject within the first 30 min
+    (32.7 +/- 4.9 against 14.3 +/- 2.3 anesthetized and 48.0 +/- 4.0 awake) and did not increase
+    further in the next 30 min (36.4 +/- 5.0).
+  source: Results, Thalamo-cortical interactions affect perturbational complexity in head-fixed
+    mice, paragraph 3; Figure 8E
+  quote: All but one subject showed an increase in PCI ST (reaching pre-anesthesia levels) in the
+    first 30 min after cessation of isoflurane, but the complexity did not increase further in the
+    subsequent 30 min
+  statistics:
+  - about: state effect
+    test: one-way RM ANOVA
+    statistic: F[3, 18]=11.6
+    p: 1.804E-4
+    n: 13 subjects (F[3, 18] implies 7 with all four states)
+  expected:
+  - quantity: PCIst, awake, mean
+    value: 48.0
+    tolerance: 4.0
+  - quantity: PCIst, anesthetized, mean
+    value: 14.3
+    tolerance: 2.3
+  - quantity: PCIst, recovery 0 to 30 min, mean
+    value: 32.7
+    tolerance: 4.9
+  - quantity: PCIst, recovery 30 to 60 min, mean
+    value: 36.4
+    tolerance: 5.0
+  depends_on:
+  - fig8b-pcist-awake-anesthesia
+  criterion: Sessions with recovery stages; PCIst per stage with trials matched within session.
+    Readings for the sample (a) all 13 sessions with a first recovery stage, the RM ANOVA on those
+    with all four stages; (b) only sessions with all four stages. One-way RM ANOVA, post hoc paired
+    t-tests with Benjamini-Hochberg FDR. "Reaching pre-anesthesia levels" is not judged; the paper gives
+    no test of it, and the awake against recovery 0 to 30 min post hoc pair is reported. Reproduced when, under one reading, the
+    four means are within tolerance, the state effect has p < 0.05, recovery 0 to 30 min exceeds
+    anesthesia in all but at most one session, and recovery 30 to 60 min does not differ from
+    recovery 0 to 30 min (corrected p >= 0.05).
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig6b-bursts-cortical-rate, fig6c-cortical-rate-late-erp, fig6-supp2-late-erp-bursts; removed the per-mouse Pearson p < 0.05 entries from statistics, since that threshold counts mice and is a method, not a result (protocol, statistics).
+  - fig6-supp2-late-erp-bursts; added the count of 13 significant mice to expected (tolerance 1.3), as the claim rests on it and the criterion already judged it.
+  - fig6b-bursts-cortical-rate, fig6c-cortical-rate-late-erp; the criteria accepted 7 to 9 and 8 to 10 significant sessions, wider than the expected tolerances (10%) with no reason given; aligned them with expected.
+  - fig4be-off-period; added the reported maximum of 2.8% increased units to expected, a number of the statement and quote that was missing.
+  - fig4ad-initial-excitation; the ordering test now uses the fraction of significantly increased units, as the paper says "activated" (significantly increased), not modulated.
+  - fig4cf-rebound; replaced the made-up reading "more than 5% of units" with a population spike-count signed-rank test, the same reading as fig4be-off-period (c); the paper defines a subject's rebound in neither way.
+  - fig2f-thalamus-triphasic; the superficial absence test used an unsourced mean plus 3 SD threshold without naming it as open; it now names two readings, the z = 3 threshold the paper uses for ERP duration and the paper's modulated-unit test.
+  - fig3abc-decay-with-distance, fig3d-magnitudes, fig7g-rebound-latency-state; removed the made-up leniency rules (4 of 6, 8 of 11, 4 of 6 values within tolerance); every expected value must now be within tolerance, otherwise partially reproduced.
+  - fig7g-rebound-latency-state; named the post hoc test as paired t-tests (Methods, Statistics).
+  - fig6a-csd-sink; the window 150 to 250 ms was not in the paper; replaced by timing near 180 ms (Results) within the rebound window 150 to 300 ms (Figure 4).
+  - fig2c-superficial-quiescence; the statement's "minimal to no responses in other sampled areas" had no test; the criterion now says it is not judged here and points to fig3d-magnitudes.
+  - state-trial-counts; the criterion restricted counts to deep-stimulation sessions without saying the paper does not state it; named the session set of Figure 7 as open with two readings, used by all Figure 7 claims.
+  - fig8b-pcist-awake-anesthesia; the Methods say trials were matched but not how; random subsampling is now one of two readings (the other, first trials of each state), and the outcome is under one reading.
+  - fig8e-pcist-recovery; removed an agent-made test of "reaching pre-anesthesia levels" (awake against recovery pair not differing); the paper gives no test, and the pair is reported only.
+  - fig7g-rebound-latency-state; the checker flags p 2.020E-7 as not found because it prints 2.02e-7; the text gives "p=2.020E-7" (Results, Behavioral states, paragraph 2), so the value is correct. Not changed.
+  - Open, not settled; Figure 5A gives 5.0 +/- 4.1% with N=5 as mean +/- SEM per the Methods, a large SEM; kept as printed.
+  - Open, not settled; fig1-supp2-first-peak-flips and fig6-supp1-erp-deep-csd use measures the paper does not give (Spearman of signed amplitude with distance; layer CSD power correlations), named as readings; their outcome rests on those readings.
+  - Open, not settled; the abstract says the cortical and thalamic off period and rebound are reduced during running and absent in anesthesia; the Results show this only as Figure 7B ("visibly modulated") with no number or test, so no claim was added.
