@@ -1,0 +1,1181 @@
+schema_version: 3
+id: lemessurier-2019-01
+datasets:
+- archive: crcns
+  id: ssc-10
+  version: unversioned
+  doi: 10.6080/K0DB801M
+  relation: primary
+paper: doi:10.7554/elife.46321
+date: '2026-11-08'
+entry: lemessurier-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42477782580
+outcomes:
+- claim: table1-mice-and-fields
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:table1-mice-and-fields
+  measured:
+  - 7
+  - 11
+  - 7
+  - 11
+  - 5
+  - 6
+  - 6
+  - 8
+  notes: Folder names give 7 NH and 7 EN Drd3-Cre mice with 11 fields each, and 5 NH and 6 EN Scnn1a-Cre mice with 6
+    and 8 fields, as Table 1. Five mice were imaged on two dates.
+- claim: l23-cell-counts
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:l23-cell-counts
+  measured:
+  - 998
+  - 472
+  - 1147
+  - 850
+  notes: Reading A with the Methods' test gives NH 998 ROIs, 472 responsive, EN 1147 ROIs, 850 responsive (paper 998,
+    475, 1257, 874); all within tolerance, the EN total by 110 of 125.7. The stored p-values give 474 and 828. Reading
+    B (over a barrel) gives 375 and 640, outside. processed_data.mat holds 1044 NH and 1276 EN ROIs before the exclusions
+    of reduced_data.mat. Responsive fraction EN 0.741, NH 0.473.
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+- claim: l4-cell-counts
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:l4-cell-counts
+  measured:
+  - 362
+  - 228
+  - 615
+  - 220
+  notes: Totals are NH 362 (paper 322, outside 32.2) and EN 615 (586, within); C1-C3 hold 156 and 359 ROIs. Responsive
+    in C1-C3 (reading B) 93 NH and 166 EN by the Methods' test (paper 107 and 181, tolerances 10.7 and 18.1; NH outside,
+    EN within), 85 and 151 by the stored p-values; over the whole field (reading A, given as measured) 228 and 220, or
+    219 and 205. No reading has all four within tolerance.
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - C1-C3 membership is taken from ROIsInBarrel (an ROI listed under barrel c1, c2 or c3).
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: fig1f-gcamp-matches-spikes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The cell-attached recordings with simultaneous imaging (10 L2/3 cells in 5 C57BL/6 mice) are not in the data
+    set: its 36 fields are all Drd3-Cre or Scnn1a-Cre population imaging, and its descriptor lists no other files. The
+    paper names no other archive for them.'
+- claim: fig2a-l23-point-representation-stronger
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig2a-l23-point-representation-stronger
+  measured:
+  - 0.57
+  - 0.758
+  - 0.515
+  - 0.597
+  - 0.404
+  - 0.504
+  notes: 'Reproduced under the stored p-values for responsiveness, reading A and the blank-median z: NH 0.570, 0.515,
+    0.404 and EN 0.758, 0.597, 0.504 at 0-75, 150-225 and 225-300 um (p = 0.013, 0.0032, 0.0001), all six within tolerance.
+    With the Methods'' responsiveness EN is higher in all three bins but not significantly at 0-75 um (blank-mean z p
+    = 0.37, 0.076, 0.0042; blank-median z p = 0.23, 0.0044, 0.0001). The 0-75 um NH bin holds 48 entries by the Methods''
+    test and 57 by the stored p-values (paper 58). Per-bin means, SEMs and counts, and per-mouse means, are printed.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+  - The outcome holds only with the stored responsiveness (the claims file's variant).
+- claim: fig2a-l23-flanks-suppressed
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig2a-l23-flanks-suppressed
+  notes: 'Methods'' test, reading A, blank-mean z: EN lower than NH in all five bins from 375 to 750 um, significantly
+    in three (375-450, 525-600 and 600-675 um, p = 0.0002, 0.0001, 0.0094; 450-525 and 675-750 um p = 0.13 and 0.066).
+    Other readings give one to three significant bins; stored p-values with the blank-mean z have EN higher at 450-525
+    um (+0.007).'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+- claim: fig2b-2d-point-representation
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig2b-2d-point-representation
+  notes: Inside the mean L2/3 barrel radius (151.4 um, from the normalised positions) EN minus NH is +0.062 to +0.103
+    (p = 0.0038 to 0.055) and from 375 to 750 um -0.024 to -0.045 (p = 0.0001 to 0.0088) under all eight readings; the
+    criterion asks for the signs. 2D maps along each field's row and arc axes (from barrel centres) are drawn; the axes
+    are 54 to 88 degrees apart, so the sectors are skewed, which the two numbers judged do not use.
+  deviations:
+  - The 2D map is binned in 150 um squares, not k-means bins (a plotting choice; the claim is judged on the two numbers
+    the criterion names).
+  - The mean barrel radius comes from ROI_pos_barrel / ROI_pos_barrel_norm, as the data set stores no radii.
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+- claim: fig2c-l4-point-representation-weaker
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig2c-l4-point-representation-weaker
+  measured:
+  - 0.991
+  - 0.886
+  notes: At 0-75 um the L4 C1-C3 means are NH 0.991 and EN 0.886 (Methods' test, blank-mean z; p = 0.39); no reading
+    has EN significantly lower there (p = 0.11 to 0.97). EN is significantly lower in two or three of the five bins below
+    375 um under every reading, never at 0-75 um. Stored p-values with C1-C3 give NH 1.101 and EN 0.888, both within
+    tolerance, p = 0.11.
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: fig2c-l4-sharper-than-l23
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig2c-l4-sharper-than-l23
+  notes: NH 225-300 um over 0-75 um response is 0.24 to 0.39 in L4 against 0.58 to 0.71 in L2/3, and the profile falls
+    below half at 225-300 um in L4 against 375-450 or 450-525 um in L2/3, under all 16 combinations of readings.
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: figs2-1-column-frame
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs2-1-column-frame
+  notes: L2/3 home-column response EN higher, significantly only with the stored p-values (0.602 against 0.697, p = 0.0058;
+    blank-median z p = 0.0083; Methods' test p = 0.19 and 0.069). L4 home-column response not lower in EN at p < 0.05
+    under any reading (p = 0.40 to 1.0). At 1-2 radii EN minus NH is -0.051 across rows and +0.050 across arcs, and the
+    +1 minus -1 arc bias goes from +0.236 (NH) to -0.135 (EN), Methods' test, blank-mean z; both shape readings hold
+    in all four readings. The criterion's partial outcome needs both home-column tests.
+  deviations:
+  - Row and arc directions in each field are taken from the vectors between barrel centres, derived from ROI positions
+    relative to pairs of barrels; the angle between the two axes is 54 to 88 degrees over fields.
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+- claim: figs2-2-barrel-size-unchanged
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs2-2-barrel-size-unchanged
+  measured:
+  - 148.2
+  - 155.8
+  - 119.1
+  - 126.5
+  notes: Two-way ANOVA (enrichment, barrel) on per-mouse per-barrel radii finds no enrichment effect (Drd3-Cre F = 1.67,
+    p = 0.20; Scnn1a-Cre F = 1.25, p = 0.27). Mouse means Drd3-Cre NH 148.2, EN 155.8, Scnn1a-Cre NH 119.1, EN 126.5
+    um; Drd3-Cre EN is 10.8 um above 145 (tolerance 4.6), and 153.5 to 157.1 um with any one mouse left out; the other
+    three within. The data set has 7 Drd3-Cre NH mice (leaving one out, 144.4 to 153.6 um). The radius is a proxy from
+    the normalised positions, so the one miss cannot be told apart from its error.
+  deviations:
+  - The data set holds no barrel areas. The radius is the median over a field's ROIs of ROI_pos_barrel / ROI_pos_barrel_norm,
+    a radius along the ROIs' directions (the ratio varies by a median 37% within a barrel), averaged over a mouse's fields;
+    the criterion allows this as a stated approximation. DNH13b has positions for six barrels only.
+- claim: figs3-1-l23-salt-and-pepper
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs3-1-l23-salt-and-pepper
+  measured:
+  - 54.2
+  - 14.9
+  - 1.7
+  - 91.7
+  - 61.2
+  - 35.4
+  - 48
+  - 410
+  notes: 'BW fractions match: 54.2%, 14.9%, 1.7% (Methods'' test, reading A, BW by mean; paper 53, 16, 1), with bin counts
+    48 and 410 (paper 58 and 406; 48 outside); with the stored p-values and BW by median 50.9%, 16.7%, 1.5% with counts
+    57 and 406, all within tolerance. eBW fractions do not match under any reading of the claims file: 89.6-96.5% at
+    0-75 um, 56.9-67.7% at 225-300 um, 34.8-44.8% at 525-600 um (paper 67, 43, 10). Fractions fall with distance in every
+    reading. Exploratory, outside the criterion: E1 gives 4.05 eBWs per NH ROI on average; a one-sided test gives 87.5%
+    at 0-75 um; requiring each eBW to be itself a responsive whisker gives 72.9-75.0%, 41.0-43.7% and 15.6-16.3%. Measured
+    values are those of the Methods'' test, reading A, BW by mean, E1.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The eBW test is not given by the paper or its code; the three readings of the claims file (E1, E2, E3) were run.
+    E3 (medians) uses 1,000 shuffles per test, not 10,000, for time, and only with the Methods' responsiveness.
+- claim: discussion-l23-nh-in-column-tuning
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:discussion-l23-nh-in-column-tuning
+  measured:
+  - 48.8
+  - 85.3
+  notes: Pooled over 375 NH L2/3 ROIs over a barrel, 48.8% have BW equal to CW (45.6-49.6% over readings; paper 48),
+    but 84.9-88.1% have the CW among the eBWs (paper 65). Per-column means are 34.4-37.3% and 82.3-86.4%. The criterion
+    needs both values; the BW value holds, the eBW value does not. The exploratory eBW reading that requires responsiveness
+    gives 71.5-73.9% within columns.
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The eBW test is not given by the paper or its code; the three readings of the claims file (E1, E2, E3) were run.
+    E3 (medians) uses 1,000 shuffles per test, not 10,000, for time, and only with the Methods' responsiveness.
+- claim: figs3-1-l4-nh-tuning
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs3-1-l4-nh-tuning
+  measured:
+  - 64.3
+  - 75.0
+  notes: 'NH L4 C1-C3, Methods'' test, E1: 64.3% BW and 75.0% eBW at 0-75 um (56 entries; paper 63 and 73, 48 cells),
+    both within tolerance; BW does not differ from L2/3 (54.2%, Fisher p = 0.32). By eBW L4 is lower than L2/3 in all
+    three bins from 150 to 375 um under every reading (p < 1e-5); by BW in one or two. The eBW fraction at 0-75 um is
+    lower than L2/3 (75.0% against 91.7%, p = 0.036; E2 p = 0.0051), against the claimed absence; under E3 the test is
+    not significant (p = 0.40) but the L4 value is 82.1%, outside tolerance. The criterion''s partial clause needs both
+    0-75 um values within tolerance and both absence tests not significant, and no reading meets it, so the claim is not
+    reproduced (changed from partially reproduced after round 3). Every other part holds; the eBW absence fails through
+    the NH L2/3 eBW fraction (89.6-96.5% against the paper''s 67%, figs3-1-l23-salt-and-pepper), which traces to the
+    unresolved eBW definition, so the failure may lie in the attempt and not in the paper.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The eBW test is not given by the paper or its code; the three readings of the claims file (E1, E2, E3) were run.
+    E3 (medians) uses 1,000 shuffles per test, not 10,000, for time, and only with the Methods' responsiveness.
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: fig3a-l23-enrichment-more-cw-tuned
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig3a-l23-enrichment-more-cw-tuned
+  measured:
+  - 82.7
+  - 91.7
+  - 84.8
+  - 85.3
+  - 640
+  - 375
+  notes: At 0-75 um EN is lower than NH under every reading (82.7% of 133 against 91.7% of 48, Fisher p = 0.16, Methods'
+    test, E1); within columns 84.8% (543/640) against 85.3% (320/375), p = 0.86. EN is significantly higher in no bin
+    below 300 um and significantly lower from 375 to 675 um. The EN values are near the paper's (82, 77.1); the NH values
+    are far above (67, 65.1). The within-column cell counts are 640 and 375 (paper 607 and 344). Under the exploratory
+    eBW reading that requires responsiveness EN is still not higher (77.4% against 75.0%, p = 0.84; within columns 75.9%
+    against 73.9%, p = 0.50).
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The eBW test is not given by the paper or its code; the three readings of the claims file (E1, E2, E3) were run.
+    E3 (medians) uses 1,000 shuffles per test, not 10,000, for time, and only with the Methods' responsiveness.
+- claim: fig3c-l4-enrichment-more-cw-tuned
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig3c-l4-enrichment-more-cw-tuned
+  measured:
+  - 97.1
+  - 75.0
+  - 93.4
+  - 77.4
+  notes: 'L4 C1-C3, Methods'' test, E1: 0-75 um EN 97.1% (67/69) against NH 75.0% (42/56), Fisher p = 0.0003; within
+    columns 93.4% (155/166) against 77.4% (72/93), p = 0.0003; all four within tolerance. All readings give EN higher
+    with p < 0.005.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The eBW test is not given by the paper or its code; the three readings of the claims file (E1, E2, E3) were run.
+    E3 (medians) uses 1,000 shuffles per test, not 10,000, for time, and only with the Methods' responsiveness.
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: fig4a-l23-ranked-rf-sharper
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4a-l23-ranked-rf-sharper
+  notes: 'Methods'' test, reading A, blank-mean z: EN higher at ranks 1-3 (+0.077, +0.073, +0.029; p = 0.0031, 0.0001,
+    0.040) and lower at ranks 7-9 (-0.037, -0.037, -0.048; p = 0.0004, 0.0001, 0.0001). All eight readings have the direction
+    at the six ranks; the bottom three are all significant only with the Methods'' test and the blank-mean z (ROI readings
+    A and B). ROIs lacking a whisker (DNH13b, 36 ROIs) are left out of ranking.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+- claim: fig4b-l23-cw-and-best-sw-stronger
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4b-l23-cw-and-best-sw-stronger
+  notes: 'Stored p-values: CW, SW1 and SW2 higher in EN with both z-scores (blank-mean z: CW 0.614 to 0.696, p = 0.0090;
+    SW1 0.595 to 0.713, p = 0.0001; SW2 0.412 to 0.482, p = 0.0002; blank-median z CW p = 0.014). Methods'' test: CW
+    p = 0.056 (blank-median z) and 0.19 (blank-mean z), so the outcome rests on the stored responsiveness.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+  - The outcome holds only with the stored responsiveness (the claims file's variant).
+- claim: fig4c-spontaneous-activity
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4c-spontaneous-activity
+  notes: Under the claims file's variant (median evoked-window dF/F on blank trials without baseline subtraction, from
+    the stored deltaF), L2/3 EN 0.0835 against NH 0.0914 (p = 0.0002) and L4 C1-C3 0.200 against 0.206 (p = 0.33); stored
+    p-values p = 0.0002 and 0.63. Under the main reading (baseline-subtracted) L2/3 EN is higher (-0.0027 against -0.0064,
+    p = 0.0001), the opposite direction, and L4 C1-C3 is higher in EN (p = 0.015). Over all L4 ROIs EN is lower by the
+    variant (p = 0.0003). Whether the main reading misreads the Figure 4C legend is asked as a question on the claims
+    file (questions/crcns-ssc-10.yaml).
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The outcome holds under the claims file's variant measure only; under its main reading the L2/3 effect is reversed.
+    Blank trials for the variant are all Label 9 trials that fit in the movie, a superset of the sponTrace trials.
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: figs4-1-absolute-dff
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs4-1-absolute-dff
+  notes: 'Mean dF/F of the four strongest whiskers NH 0.0275, EN 0.0280 (p = 0.68, reading a); over all nine 0.0130 and
+    0.0147 (p = 0.012, reading b). Regression of weakest four on strongest four: slope NH -0.017, EN 0.123; interaction
+    t = 8.2, p < 1e-15, so the EN slope is higher, not lower. Robust fits agree: Theil-Sen NH 0.037 (95% CI -0.000 to
+    0.072), EN 0.131 (0.104 to 0.157); Huber 0.012 and 0.123; without the top 1% of strongest-four responses -0.020 and
+    0.122. Stored p-values give the same pattern.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The weakest four are ranks 6 to 9 of the mean responses; the strongest four ranks 1 to 4.
+- claim: figs4-2-barrel-vs-septal
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs4-2-barrel-vs-septal
+  notes: 'Significant ranks over barrels against septa: 6 and 4 (Methods, blank-mean z), 4 and 1, 6 and 2, 5 and 2. Top-3
+    increase over barrels +0.077 to +0.117 against +0.005 to +0.070 over septa. The septal groups are smaller (91 NH,
+    210 EN against 345 and 640), and under the Methods'' blank-mean reading the septal group has the larger decrease
+    at the weakest ranks (-0.068 against -0.033).'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+- claim: fig4d-l23-cw-stronger
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4d-l23-cw-stronger
+  measured:
+  - 0.62
+  - 0.699
+  notes: 'Stored p-values, columns of at least 3 ROIs, blank-mean z: NH 0.620, EN 0.699, p = 0.016, both within tolerance;
+    the four stored readings give p = 0.010 to 0.016. With the Methods'' test values are within tolerance (0.662, 0.701)
+    but p = 0.059 to 0.21.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+  - Columns of at least 3 ROIs counted per field and barrel.
+  - The outcome holds only with the stored responsiveness (the claims file's variant).
+- claim: fig4d-l23-across-row-sharpening
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4d-l23-across-row-sharpening
+  measured:
+  - 0.404
+  - 0.332
+  - 0.397
+  - 0.277
+  - 61
+  - 60
+  - 47
+  - 40
+  notes: 'Methods'' test, columns of at least 3 ROIs, blank-mean z: -1 row 0.404 to 0.332 (p = 0.021), +1 row 0.397 to
+    0.277 (p = 0.0001); 61% and 60% of the CW in NH, 47% and 40% in EN. NH +1 row and EN -1 row are within tolerance;
+    NH -1 row and EN +1 row are not. The stored p-values make the -1 row difference non-significant (p = 0.073 to 0.096).
+    Four other readings have three of the four values within tolerance, none all four. 156 NH ROIs have a -1 row neighbour.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+- claim: fig4d-l23-within-row-broadening
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4d-l23-within-row-broadening
+  measured:
+  - 0.339
+  - 0.525
+  - 0.46
+  - 0.53
+  notes: '+1 arc higher in EN under every reading (stored p-values, columns of at least 3, blank-mean z: 0.339 to 0.525,
+    p = 0.0001); -1 arc unchanged (0.460 and 0.530, p = 0.16; 0.15 to 0.48 over readings). Three of four values within
+    tolerance in that reading; NH -1 arc is 0.46 to 0.49 over readings against 0.57 +/- 0.04. The criterion gives no
+    partial outcome; both tests hold and one value does not, so the effect holds in part.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+- claim: fig4ae-l4-weaker-responses
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig4ae-l4-weaker-responses
+  measured:
+  - 0.943
+  - 0.867
+  - 0.536
+  - 0.161
+  - 0.675
+  - 0.315
+  - 0.242
+  - 0.1
+  notes: 'L4 C1-C3, Methods'' test, columns of at least 3, blank-mean z: +1 arc 0.536 to 0.161 (p = 0.0001), -1 arc 0.675
+    to 0.315 (p = 0.0009), +1 row 0.242 to 0.100 (p = 0.0001), CW 0.943 to 0.867 (p = 0.35; 0.29 to 0.85 over readings).
+    All 9 ranks lower in EN with p < 0.05. Seven of eight values within tolerance (EN CW is not). The criterion''s partial
+    outcome needs all four somatotopic tests.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - The z-score is centred on the blank mean (claims file) and on the blank median (variant; the data set's sample code
+    plotPointRep_CRCNS.m computes this, find_Zscored_deltaF_CRCNS, second output).
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: fig5a-l23-signal-correlation-boundary
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig5a-l23-signal-correlation-boundary
+  measured:
+  - 0.5934
+  - 0.5393
+  - 0.5789
+  - 0.599
+  - 0.4634
+  - 0.3903
+  - 0.6092
+  - 0.4684
+  notes: 'Methods'' test: within-column 0.579 to 0.599 (p = 0.0001), across 0.463 to 0.390 (p = 0.0001); pairs under
+    150 um within minus across +0.054 in NH and +0.141 in EN (p = 0.0001). Stored p-values give the same directions,
+    all p = 0.0001. With the Methods'' test all eight values are 0.035 to 0.078 below the paper''s; with the stored
+    p-values 0.047 to 0.096 below (NH across-column pairs under 150 um 0.515 against 0.611).'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - Pair distance uses the two ROIs' positions relative to the C1 centre.
+- claim: fig5b-l23-noise-correlation-boundary
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig5b-l23-noise-correlation-boundary
+  measured:
+  - 0.3422
+  - 0.3182
+  - 0.3154
+  - 0.2643
+  notes: 'Methods'' test: within 0.342 to 0.315, across 0.318 to 0.264 (both p = 0.0001), larger reduction across; across-column
+    pairs 75-125 um apart 0.306 to 0.289 (p = 0.0056). Values outside the tight tolerances (stored p-values 0.332, 0.320,
+    0.310, 0.257, only NH within inside tolerance). NH within minus across +0.024 (p = 0.0001; no test in the paper).'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+- claim: fig5eh-l23-correlation-gradient-at-edge
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig5eh-l23-correlation-gradient-at-edge
+  notes: 'Methods'' test: outside the column EN minus NH signal -0.091 and noise -0.045 (both p = 0.0001); inside signal
+    -0.011 (p = 0.39) and noise -0.045. Stored p-values: outside -0.043 (p = 0.0016) and -0.043 (p = 0.0001), inside
+    +0.018 (p = 0.19) and -0.041. Every condition of the criterion holds in both readings, so the claim is reproduced
+    (changed from partially reproduced after round 3). The signal gradient is steeper in EN (outside minus inside difference
+    -0.080, p = 0.0002; stored -0.061, p = 0.0013). The noise gradient is not: the difference is -0.0004 (p = 0.96; stored
+    -0.0020, p = 0.81), and the noise reduction is about equal inside and outside. The criterion compares the two differences
+    without a test, so the noise half passes on differences that cannot be told from zero; in round 1 the Methods'' reading
+    failed by 0.0002 (-0.0459 against -0.0461). The paper''s contrast of a substantial reduction outside with a modest one
+    inside is reduced in the criterion to a sign comparison; this is raised as a question on the claims file.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - A permutation test of the outside minus inside difference of EN minus NH (group labels shuffled within inside and
+    within outside entries, 10,000 shuffles) is added; the criterion compares the two differences without a test.
+- claim: figs5-1-row-and-arc-boundaries
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs5-1-row-and-arc-boundaries
+  notes: 'Same-arc boundaries: signal 0.476 to 0.420 (p = 0.0002), noise 0.335 to 0.262 (p = 0.0001). Same-row boundaries:
+    noise 0.310 to 0.288 (p = 0.0001) but signal 0.441 and 0.443 (p = 0.83; stored p-values -0.015, p = 0.074). Three
+    of four tests hold; the criterion gives no partial outcome, and the claim holds in part. Diagonal pairs, not in the
+    claim, drop most.'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+- claim: fig6-l4-within-column-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig6-l4-within-column-correlations
+  measured:
+  - 0.6013
+  - 0.7721
+  - 0.3014
+  - 0.3405
+  notes: 'Reading A, Methods'' test: signal 0.601 to 0.772, noise 0.301 to 0.341 (both p = 0.0001); reading B (C1-C3):
+    0.631 to 0.775 and 0.221 to 0.345. Both tests hold in all four combinations; of the values only EN signal is within
+    tolerance (readings with the Methods'' test).'
+  deviations:
+  - Responsiveness by the Methods' one-sided permutation test of means (10,000 shuffles, BH over nine whiskers); the
+    claims file's variant, the stored permTestResults (two-sided, on medians, permTestType 'median' in every field) with
+    BH, as the data set's find_sigROIs.m does, is shown alongside. The two agree on 86% of ROIs.
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: figs5-2-neuropil-robustness
+  outcome: not_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:figs5-2-neuropil-robustness
+  notes: 'At r = 0, 0.3, 0.7: L2/3 fraction CW-tuned at 0-75 um lower in EN (E1: EN 83, 80, 74% against NH 92, 93, 81%);
+    L2/3 response EN higher, L4 fraction CW-tuned EN higher and L4 response EN lower at every weight, in direction,
+    which is what the criterion asks; none of these response differences is significant (L2/3 p = 0.30, 0.57, 0.93;
+    L4 p = 0.80, 0.44, 0.73). At r = 0 the rebuild has 815 EN and 460 NH responsive L2/3 ROIs, against 850 and 472
+    from the stored traces, because the 89 L2/3 ROIs with non-finite rebuilt traces get p = 1 and count as unresponsive
+    at every weight. Across-column signal
+    correlation reduction significant at r = 0 and 0.3 (Tukey p < 0.001) and not at 0.7 (p = 0.084), as the paper says.
+    Across-column noise reduction significant at all three; within-column noise reduction not significant at 0.7 (Tukey
+    p = 0.996). Two parts fail: the L2/3 tuning direction, which follows from the eBW fractions, and the within-column
+    noise reduction at 0.7.'
+  deviations:
+  - dF/F rebuilt from raw and neuropil fluorescence with the pipeline's 5-frame median and 5th percentile F0 (which reproduce
+    the stored dF/F), not the Methods' 4 frames and 20th percentile; the neuropil is subtracted after the filter, as
+    the data descriptor says, which reproduces the stored L4 dF/F to within 0.012 (subtracting before the filter leaves
+    differences of 0.21 to 0.60). Blank trials are matched one to one to the stored ones at the field's own weight, to
+    within 0.013.
+  - eBWs by E1 and E2 only; responsiveness by the Methods' test only.
+  - The ANOVA's design is the claims file's reading (one-way over four groups, Tukey).
+  - In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace is cut 0.5 s after the
+    blank onsets; there the blank trials are cut from the stored dF/F at every Label 9 onset.
+- claim: fig7b-single-roi-decoder
+  outcome: partially_reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig7b-single-roi-decoder
+  measured:
+  - 0.6147
+  - 0.6335
+  notes: 'CW decoders over a barrel, 500 random 80/20 splits, all trials: NH 0.615, EN 0.634 (p = 0.0009), majority-class
+    rate 0.52. All eight combinations give EN higher (p = 0.0003 to 0.0093) and above chance, with NH 0.610 to 0.615
+    and EN 0.624 to 0.634, outside the tolerances (0.63 +/- 0.005, 0.65 +/- 0.004).'
+  deviations:
+  - Logistic regression by Newton's method on intercept and slope, fit on the training trials of each split; trials in
+    one split shared by all ROIs of a field.
+  - Methods' responsiveness only.
+- claim: fig7c-population-decoder
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig7c-population-decoder
+  notes: 'With ensembles pooled as units, mean performance rises with size (closest column, normalisation a: NH 0.611
+    to 0.674, EN 0.627 to 0.710) and EN exceeds NH with p < 0.001 at every size from 3 to 30, under all four combinations
+    of tested whisker and normalisation. With the CWs of the members and normalisation (a) performance does not rise
+    steadily (NH 0.628 at 3 ROIs, 0.627 at 5; EN 0.674 at 10 and 0.671 at 30), so the rise holds under the other three
+    combinations. With per-field means (11 fields per group) no size reaches p < 0.001 (p = 0.024
+    to 0.42); the pooled ensembles reuse the same ROIs within a field.'
+  deviations:
+  - Classifiers for ensembles use 50 random 80/20 splits per field and whisker (the Methods give no number for ensembles;
+    a standard choice made for time).
+  - Normalisation (b) z-scores each ROI's probability over the test trials of the split.
+  - The outcome rests on the pooled unit; per-field means do not reach the threshold.
+- claim: fig7d-clustered-ensemble-topography
+  outcome: reproduced
+  notebook: reproduce_lemessurier_2019.ipynb
+  output: claim:fig7d-clustered-ensemble-topography
+  notes: Ensembles per field NH 4228, EN 11173 (paper 4242 and 9630). Pooled performance highest at 0-77 um (0.678, then
+    0.663 at 77-154 um); EN highest at 0-77 (0.686), NH 0.635 at 0-77 and 0.644 at 77-154. EN beats NH at 0-77 and 77-154
+    um and NH beats EN at 308-385 um under reading a (enrichment p = 3e-47, 2e-58, 2e-13) and reading b (Tukey p-adj
+    < 0.001). The ANOVA treats overlapping ensembles as independent.
+  deviations:
+  - k-means is scipy kmeans2 with k-means++ starts, one run per k (a standard choice); 50 splits per field and whisker;
+    normalisation (a).
+findings:
+- kind: data_missing
+  statement: The cell-attached recordings with simultaneous GCaMP6s imaging (Figure 1F, 10 L2/3 cells in 5 C57BL/6 mice)
+    are not in the data set.
+- kind: metadata_insufficient
+  statement: No barrel areas or radii are stored. ROI_pos_barrel_norm divides each position by a radius along the ROI's
+    direction (the ratio to ROI_pos_barrel varies by a median 37% within a barrel), and the radii used are not given.
+- kind: selection_undocumented
+  statement: processed_data.mat holds more ROIs than reduced_data.mat in 21 of 36 fields (1044 against 998 NH L2/3, 1276
+    against 1147 EN L2/3, 464 against 362 NH L4, 782 against 615 EN L4), with no list of the excluded ROIs or the reason.
+    The paper reports 1257 EN L2/3, 322 NH L4 and 586 EN L4 cells, which match neither count.
+- kind: selection_undocumented
+  statement: sponTrace keeps fewer blank trials than Stimuli marks blank (for example 51 of 61 in DNH15b/20170502/f1),
+    with no stated rule.
+- kind: metadata_insufficient
+  statement: 'The code of Stimuli.Label is not described: label k is whisk{k+1} of settings.mat for k = 0 to 8 and 9
+    is a blank trial, which agrees with the per-whisker frame lists in every field.'
+- kind: other
+  statement: Field DNH13b/20161208/f2 has no trials for whiskers E1, E2 and E3 (absent from traceByStim, Stimuli frame
+    lists and permTestResults), which the descriptor does not mention; it also lacks positions for three barrels.
+- kind: format_error
+  statement: Movie names carry a leading m in Stimuli and not in deltaF in some fields, and the other way in others;
+    three fields (DENR2b/20160408, DNH15a/20170505/f1, DENR15b/20170513/f1) have one dF/F movie with no Stimuli entry.
+- kind: code_mismatch
+  statement: The stored dF/F is reproduced (within 0.02) by a 5-frame moving median and F0 the 5th percentile of each
+    movie, as the pipeline code does, not by the Methods' 4-frame median and 20th percentile.
+- kind: code_mismatch
+  statement: The stored permTestResults come from a two-sided permutation test on medians (permTestType 'median' in every
+    field), not the Methods' one-sided test on means. The two give the same responsive/unresponsive call for 86% of ROIs,
+    and several EN effects reach significance only with the stored p-values.
+- kind: metadata_insufficient
+  statement: The stored L4 dF/F (npSub = 1) is reproduced (within 0.012) only by filtering the ROI and neuropil traces
+    with the 5-frame median before subtracting 0.3 of the neuropil, as the data descriptor says; the Methods describe
+    the subtraction from the raw ROI fluorescence and do not give the order.
+- kind: methods_unavailable
+  statement: Question for the authors. How were equivalent best whiskers tested? Neither the Methods nor the linked code
+    give it (whiskPref is loaded precomputed). Permutation tests of the difference in means against the BW at p >= 0.05,
+    with or without BH correction, or of medians, put the CW among the eBWs for 90-96% of NH L2/3 cells within 75 um
+    of a column centre (paper 67%) and 85-88% of NH L2/3 cells within columns (paper 65%), while the NH L4 value matches
+    (75.0%, paper 73%). Requiring each equivalent whisker also to be a significantly responsive whisker gives 73-75%
+    and 72-74%, near the paper's values. Was that requirement part of the test?
+- kind: methods_unavailable
+  statement: 'Question for the authors. Which responsiveness test gave the cells analysed: the Methods'' one-sided test
+    on means, or the stored two-sided test on medians? The L2/3 cell counts match either, and no reading matches the L4 counts, but the L2/3 point representation
+    (Figure 2A), the CW and surround responses (Figure 4B) and the CW response (Figure 4D) are significant only with
+    the stored p-values.'
+- kind: methods_unavailable
+  statement: Question for the authors. Is the spontaneous activity of Figure 4C the median dF/F on blank trials with
+    or without subtracting the 0.5 s baseline? With it, EN L2/3 activity is higher than NH; without it, lower, as the
+    paper reports.
+- kind: format_error
+  statement: In three L4 fields (ScENR10c/20180104/f1, ScENR10c/20180110, ScENR10b/20180105/f2) sponTrace holds 76-frame
+    segments starting 0.5 s after each blank onset, where every other field, and traceByStim everywhere, hold 106 frames
+    starting 0.5 s before onset. Read as the other fields, the blank-trial baseline and evoked windows fall 0.5 s late.
+verifications:
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The handover of the first run, the executed notebook with the conclusions and summary removed, the helper
+    module and the claims file, with the paper under paper/.
+  results:
+  - claim: table1-mice-and-fields
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: 7/11, 7/11, 6/8, 5/6 mice/fields, exact.'
+    response: No change.
+  - claim: l23-cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17, Methods test, reading A: totals 998 and 1147 (paper 1257 ± 125.7), responsive 472 and 845. All
+      four are within tolerance, and EN has the higher fraction responsive (0.737 against 0.473).'
+    response: No change of outcome. The responsiveness p-values of the Methods' test changed slightly in the re-run,
+      as the corrected blank trials of three L4 fields shift the random stream; the notes give the new numbers. EN responsive
+      is now 850.
+  - claim: l4-cell-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 19: the NH total is 362 (paper 322 ± 32.2). Under reading B the responsive counts are 95 and 162, both
+      just outside 107 ± 10.7 and 181 ± 18.1. Reading A gives 228 and 239. The notebook printed the responsive counts
+      for C1-C3 but not the total ROIs in C1-C3.'
+    response: No change of outcome. The table now prints the total ROIs in C1-C3 (156 NH, 359 EN), far below the paper's
+      totals. With the corrected L4 blank trials the C1-C3 responsive counts are 93 and 166 (EN now within tolerance,
+      NH not), whole field 228 and 220.
+  - claim: fig1f-gcamp-matches-spikes
+    agrees: true
+    outcome: blocked
+    reason: 'Checked on the archive itself: the S3 listing and filelist.txt contain only data.tar.gz, the docs, sample_code.zip
+      and checksums.md5; the data descriptor mentions no cell-attached or juxtacellular data; all 36 fields are D*/Sc*
+      population-imaging folders. No part of the claim can be tested.'
+    response: No change.
+  - claim: fig2a-l23-point-representation-stronger
+    agrees: true
+    outcome: reproduced
+    reason: 'Only under stored p-values + reading A + blank-median z: all three tests p < 0.05 and 6/6 values within
+      tolerance. With the Methods responsiveness test the 0-75 µm bin fails (p = 0.32 for z, 0.23 for zmed), so the outcome
+      rests on two variants; it is fragile. Only the eight summary rows were shown, so per-bin SEMs and counts could
+      not be checked.'
+    response: No change of outcome; the outcome rests on the claims file's variant and is marked so. A per-bin table
+      (n, mean, SEM, difference, p) is added for the stored and Methods responsiveness with both z-scores.
+  - claim: fig2a-l23-flanks-suppressed
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 29: at most 3 of 5 flank bins are lower with p < 0.05 under any reading.'
+    response: No change.
+  - claim: fig2b-2d-point-representation
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 31: EN − NH is positive inside the 151 µm radius (p 0.002–0.03) and negative at 375–750 µm, in all
+      8 readings. Fields are not rotated as the paper describes; the axes are 54–88° apart and the map uses 150 µm squares,
+      not k-means bins, but the outcome rests on the inside/far means.'
+    response: No change; the skewed axes are stated in the notes. In the re-run one reading has the inside difference
+      at p = 0.055; the criterion asks for the signs, which hold in all eight.
+  - claim: fig2c-l4-point-representation-weaker
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 33: the 0-75 µm bin is never lower with p < 0.05 (p 0.19–0.95). At most 3 bins below 375 µm are significant,
+      and 0-75 is never among them.'
+    response: No change of outcome; numbers updated after the L4 blank-trial correction (p 0.11 to 0.97 at 0-75 um).
+  - claim: fig2c-l4-sharper-than-l23
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 35: both sharpness measures are smaller in L4 under all 16 combinations.'
+    response: No change.
+  - claim: figs2-1-column-frame
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 37: the L4 home column is never lower in EN (p 0.27–0.94). The L2/3 home-column test passes only with
+      stored p. So even the partial condition (both home-column tests) fails.'
+    response: No change.
+  - claim: figs2-2-barrel-size-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 39: the enrichment factor is not significant in either genotype (p 0.20, 0.27) and 3 of 4 means are
+      within tolerance. Drd3 EN is 155.8 µm against 145 ± 4.6, and that radius is a proxy whose ratio varies by a median
+      37% within a barrel. The Drd3 NH group has 7 mice where the paper''s barrel analysis has n = 6. The miss cannot
+      be told apart from proxy error.'
+    response: 'No change of outcome. Leave-one-mouse-out means are printed: Drd3-Cre EN stays 153.5 to 157.1 um and NH
+      144.4 to 153.6 um, so the extra NH mouse does not decide it. The notes say the miss cannot be told from proxy error.'
+  - claim: figs3-1-l23-salt-and-pepper
+    agrees: true
+    outcome: partially_reproduced
+    reason: BW values and both bin counts are within tolerance under stored p / A / BW by median, and fractions fall
+      with distance. eBW values are 0/3 under every reading. All three claims-file readings put the NH eBW fraction 20–30
+      points above the paper; the claims file's E1–E3 readings may not cover the authors' test. The notebook should print
+      the distribution of eBW counts per ROI and the NH 0-75 µm eBW fraction under a one-sided test and a test against
+      blank-normalised responses, labelled exploratory.
+    response: 'No change of outcome. An exploratory cell prints the eBW count distribution (E1 mean 4.05 per NH ROI)
+      and the NH fractions under a one-sided test (87.5% at 0-75 um) and with each eBW required to be a responsive whisker
+      (72.9% and 75.0%, near 67%). A test on blank-normalised responses is not added: z-scoring each trial by the ROI''s
+      blank mean and SD leaves a within-ROI permutation test of means unchanged. The authors'' question (methods_unavailable
+      finding) now names the responsive-whisker reading.'
+  - claim: discussion-l23-nh-in-column-tuning
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 45: pooled BW 48.9% is within tolerance. The eBW fraction is 85–88% against 65 ± 6.5. The criterion
+      has no partial clause.'
+    response: No change of outcome; the exploratory responsive-whisker reading (71.5 to 73.9% within columns) is reported.
+  - claim: figs3-1-l4-nh-tuning
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 47 (Methods, C1-C3, E1): L4 63.2% and 73.7% are within tolerance, the BW test is not significant (p
+      0.43), and eBW is lower in all three 150–375 µm bins. But the eBW test at 0-75 µm is significant (p = 0.022), because
+      L2/3 eBW is inflated to 91.7%.'
+    response: 'Changed from not_reproduced to partially_reproduced, as the verifier gives: every part of the claim holds
+      except the eBW absence test, which fails through the L2/3 eBW fraction, so the claim holds in part, though the
+      criterion''s own partial clause is not met.'
+  - claim: fig3a-l23-enrichment-more-cw-tuned
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 49: NH 0-75 µm is 91.7% (paper 67 ± 6.7) and EN is not higher (p 0.03–0.80, and in the wrong direction).
+      Within columns EN and NH are equal (84.7 and 84.8%, p = 1).'
+    response: No change. Under the exploratory responsive-whisker eBW reading EN is still not higher (77.4% against 75.0%,
+      p = 0.84), so the eBW definition does not account for the failure.
+  - claim: fig3c-l4-enrichment-more-cw-tuned
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51 (Methods, C1-C3, E1): 97.0/73.7% at 0-75 µm and 93.2/76.8% within columns, all within tolerance,
+      with p = 0.0002 and 0.0004.'
+    response: No change; numbers updated.
+  - claim: fig4a-l23-ranked-rf-sharper
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 55 (Methods, A, z): ranks 1–3 are higher and ranks 7–9 lower in EN, all p < 0.05.'
+    response: No change.
+  - claim: fig4b-l23-cw-and-best-sw-stronger
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 57: holds with zmed or stored p. With Methods p and z the CW test fails (p = 0.14). The outcome rests
+      on a variant; it is fragile.'
+    response: No change of outcome. In the re-run the Methods' test with the blank-median z gives CW p = 0.056, so the
+      outcome now rests on the stored responsiveness alone, and the record says so.
+  - claim: fig4c-spontaneous-activity
+    agrees: true
+    outcome: reproduced
+    reason: 'Only under the variant (raw blank level): L2/3 EN is lower (p = 1e-4) and L4 C1-C3 shows no difference (p
+      0.20 and 0.64). The primary reading (baseline-subtracted) has the opposite sign in L2/3. The Figure 4C legend defines
+      spontaneous activity as the "median ΔF/F during blank trials", which matches the variant; the claims file looks
+      like a misreading here.'
+    response: No change of outcome. Added as a question for a reader in questions/crcns-ssc-10.yaml; the claim is unchanged.
+  - claim: figs4-1-absolute-dff
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 61: four-strongest mean p = 0.65 (the nine-whisker mean is higher, p = 0.01). The EN slope is higher
+      than NH (0.123 against −0.019), the reverse of the criterion. Whether the reversal is driven by a few outliers
+      is not shown.'
+    response: 'No change. Theil-Sen and Huber slopes, the OLS slope without the top 1% of responses, and a scatter with
+      its ranges are added: EN 0.131 (CI 0.104 to 0.157) against NH 0.037 (-0.000 to 0.072) by Theil-Sen, so the reversal
+      is not driven by outliers.'
+  - claim: figs4-2-barrel-vs-septal
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 63: more significant ranks over barrels than over septa in all 4 readings (6 vs 4, 4 vs 1, 6 vs 2,
+      5 vs 2). The septal bottom-3 difference is larger, though (−0.068 against −0.03).'
+    response: No change; the larger septal decrease is stated in the notes.
+  - claim: fig4d-l23-cw-stronger
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 67: values are within tolerance everywhere, but p < 0.05 only with stored p (0.010–0.018). With Methods
+      p, p = 0.05–0.16. Under the Methods test fig4d-cw would be not reproduced.'
+    response: No change of outcome; it rests on the claims file's variant, as the record says.
+  - claim: fig4d-l23-across-row-sharpening
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 69 (Methods, ≥3 ROIs): both tests hold. Only 2 of 4 responses are within tolerance (NH −1 row 0.404
+      against 0.44 ± 0.02).'
+    response: No change of outcome. A count of values within tolerance in this cell and in fig4ae added numpy booleans
+      (an OR, not a sum); it is fixed. In the main reading the count stays 2 of 4; four other readings have 3 of 4, none
+      all four.
+  - claim: fig4d-l23-within-row-broadening
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 71: +1 arc p = 1e-4 and −1 arc not significant. At most 3 of 4 values are within tolerance (NH −1 arc
+      0.46–0.50 against 0.57 ± 0.04). The criterion has no partial clause.'
+    response: No change.
+  - claim: fig4ae-l4-weaker-responses
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 73: the CW test is never significant (p 0.18–0.87). Only 3 of the 4 somatotopic tests hold, so the
+      partial condition fails.'
+    response: No change of outcome. The values-within count was wrong (numpy booleans added as OR); fixed, it is 7 of
+      8 in the Methods reading (EN CW outside).
+  - claim: fig5a-l23-signal-correlation-boundary
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 77: all four tests hold. 0 of 8 values are within tolerance; all are about 0.04–0.08 low.'
+    response: No change.
+  - claim: fig5b-l23-noise-correlation-boundary
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 80: both tests hold, the reduction is larger across columns, and the 75–125 µm test holds. At most
+      1 of 4 values is within tolerance.'
+    response: No change.
+  - claim: fig5eh-l23-correlation-gradient-at-edge
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 82: the signal part holds in both responsiveness readings. For noise, the EN − NH difference outside
+      the column is −0.0459 against −0.0461 inside (Methods p) and −0.0430 against −0.0409 (stored p). That is no steeper
+      gradient: it fails in one reading by 0.0002 and passes in the other by 0.002, with no test.'
+    response: 'Changed from reproduced to partially_reproduced. A permutation test of the outside minus inside difference
+      is added: signal -0.080 (p = 0.0002) and -0.061 (p = 0.0013), noise -0.0004 (p = 0.96) and -0.0020 (p = 0.81).
+      The noise gradient is not steeper, so the claim holds for signal only.'
+  - claim: figs5-1-row-and-arc-boundaries
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 84: noise holds for both boundary types and signal across arcs holds. Signal across rows does not (p
+      = 0.38 and 0.08).'
+    response: 'Changed from not_reproduced to partially_reproduced: three of four tests hold, so the claim holds in part;
+      the criterion gives no partial clause.'
+  - claim: fig6-l4-within-column-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 86: both tests hold (p = 1e-4). Values are mostly outside tolerance (e.g. NH signal 0.58–0.63 against
+      0.681).'
+    response: No change.
+  - claim: figs5-2-neuropil-robustness
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 89: L2/3 CW-tuned is not higher in EN at any weight. L4 response is lower only at r = 0.7. The across-column
+      signal reduction is still significant at r = 0.7 (Tukey p = 0.036). The within-column noise reduction is lost at
+      r = 0.7. _dff subtracts neuropil before the moving median, where the descriptor says after temporal filtering;
+      blank trials for every weight are chosen by nearest match of the r = 0 rebuild to stored L4 traces at r = 0.3 (mismatch
+      up to 2.29), and argmin allows the same trial twice. So the L4 blank sets, responsiveness and z-scores are not
+      verified.'
+    response: No change of outcome. The rebuild now filters and then subtracts, which reproduces the stored L4 dF/F to
+      within 0.012 (0.21 to 0.60 the other way). Blank trials are matched one to one at the field's own weight. The 2.29
+      mismatch came from three L4 fields whose sponTrace is cut 0.5 s after the blank onsets; their blank trials are
+      now cut from the stored dF/F, and every match is within 0.013. With this, the L4 response is lower in EN at every
+      weight and the across-column signal reduction is not significant at 0.7 (p = 0.084), as the paper says, but the
+      L2/3 tuning direction and the within-column noise reduction at 0.7 still fail.
+  - claim: fig7b-single-roi-decoder
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 93: EN is higher in all 8 combinations (p 1e-4 to 0.008), and both means exceed chance. NH 0.61 and
+      EN 0.63 are outside the SEM tolerances. roi_probs fits on the first ntr.min() training trials, so up to one training
+      trial per split is dropped; there is no leakage.'
+    response: No change of outcome. The fit now weights each split's training trials, so none is dropped; the decoder
+      values change in the fourth decimal.
+  - claim: fig7c-population-decoder
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 96: performance rises with size and EN > NH with p < 0.001 at every size from 3 on. With per-field
+      means, 0/7 sizes pass. The pooled ensembles reuse the same ROIs up to 500 times per field; the criterion allows
+      pooled units, but the p < 0.001 is not robust to the choice of unit.'
+    response: No change; the conclusion and notes say the pooled p-values overstate the evidence.
+  - claim: fig7d-clustered-ensemble-topography
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 99: the pooled peak is at 0-77 µm, EN > NH at 0-77 and 77-154 µm, and NH > EN at 308–385 µm, under
+      both ANOVA readings. The ANOVA treats about 125k overlapping ensembles as independent.'
+    response: No change; the conclusion says the ANOVA p-values overstate the evidence.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, with its conclusions and summary, the helper module, the attempt
+    record, the README and the claims file, with the paper under paper/. Round 2.
+  results:
+  - claim: table1-mice-and-fields
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Not about this claim, cell 0 and the README run time say "about ten minutes" to stream
+      and "about half an hour" (README "about 25 minutes, ten of them streaming"); cell 2 prints 431 s and cell 135 prints
+      14.1 min.
+    response: No change of outcome. Cell 0 and the README now give the range of the last three runs, 7 to 10 minutes of
+      streaming and 14 to 24 minutes in all.
+  - claim: l23-cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: l4-cell-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The record finding on the responsiveness question says "The cell counts match either",
+      which is true for L2/3 only; no reading matches the L4 counts (cell 21).
+    response: No change of outcome. The finding now says the L2/3 counts match either test and no reading matches the L4
+      counts.
+  - claim: fig1f-gcamp-matches-spikes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2a-l23-point-representation-stronger
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome rests on the stored p-values, which agree with the Methods test on 85.9% of ROIs. This is
+      stated, but the outcome is fragile. The README row "Reproduced, with the stored responsiveness p-values" leaves out
+      the blank-median z: with the stored p and the blank-mean z only 3 of 6 values are within tolerance (cell 29).'
+    response: No change of outcome. The README row now names the blank-median z-score as well as the stored p-values.
+  - claim: fig2a-l23-flanks-suppressed
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2b-2d-point-representation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2c-l4-point-representation-weaker
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig2c-l4-sharper-than-l23
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs2-1-column-frame
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs2-2-barrel-size-unchanged
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Leave-one-mouse-out means were added (Drd3-Cre EN 153.5 to 157.1 um, still outside). The single miss (Drd3-Cre
+      EN) cannot be told apart from error in the radius proxy; this is stated.
+    response: No change.
+  - claim: figs3-1-l23-salt-and-pepper
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The eBW gap is unresolved and correctly raised as a question for the authors; it still decides the eBW
+      part.
+    response: No change.
+  - claim: discussion-l23-nh-in-column-tuning
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The eBW gap (problem 1) still decides this claim.
+    response: No change.
+  - claim: figs3-1-l4-nh-tuning
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion's own partial clause needs both 0-75 um values within tolerance and both absence tests non-significant.
+      Under E1 and E2 the eBW test is significant (p = 0.036 and 0.0051; cell 61). Under E3 the test is not significant, but
+      the L4 value is 82.1% against 73 +/- 7.3. So no reading meets the partial clause; figs2-1 and fig4ae fail their partial
+      clauses in the same way and are scored not reproduced. The verifier retracts its round-1 recommendation of partial.
+    response: Outcome kept as verified in round 1 (partially reproduced), as round 2 allows; the change to not reproduced
+      is recorded under proposed, with the analysis in the notebook below cell 61, for round 3. The Summary's statement that L4 values match now says so for E1 and E2 only (under E3 the NH L4 eBW value
+      is 82.1%, outside tolerance), as the verifier found.
+  - claim: fig3a-l23-enrichment-more-cw-tuned
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. In the exploratory reading that requires each eBW to be a responsive whisker, NH comes to about 73 to
+      75%, near the paper's 67%, but EN L2/3 is still not more CW-tuned (cell 55), so fig3a does not hinge on the eBW definition.
+    response: No change.
+  - claim: fig3c-l4-enrichment-more-cw-tuned
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4a-l23-ranked-rf-sharper
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4b-l23-cw-and-best-sw-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced only with the stored two-sided median p-values, which agree with the Methods test on 85.9%
+      of ROIs. This is stated, but the outcome is fragile.
+    response: No change.
+  - claim: fig4c-spontaneous-activity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome rests on the raw-level variant, as stated. The claims file's main reading (baseline-subtracted)
+      still looks like a misreading of the Figure 4C legend; it is raised in questions/crcns-ssc-10.yaml and the claim is
+      unchanged.
+    response: No change.
+  - claim: figs4-1-absolute-dff
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Robust slopes were added (cell 81).
+    response: No change.
+  - claim: figs4-2-barrel-vs-septal
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4d-l23-cw-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; reproduced only with the stored two-sided median p-values. This is stated, but the outcome is fragile.
+    response: No change.
+  - claim: fig4d-l23-across-row-sharpening
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4d-l23-within-row-broadening
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig4ae-l4-weaker-responses
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5a-l23-signal-correlation-boundary
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 105 and the notes say "Every value is 0.035 to 0.078 below the paper's", which is true for the Methods
+      test only; with the stored p-values the gaps go up to 0.096 (NH across-column pairs under 150 um, 0.515 against 0.611;
+      cell 103).
+    response: No change of outcome. Cell 105 and the notes now give the gaps for each reading (0.035 to 0.078 with the Methods
+      test, 0.047 to 0.096 with the stored p-values).
+  - claim: fig5b-l23-noise-correlation-boundary
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5eh-l23-correlation-gradient-at-edge
+    agrees: false
+    outcome: reproduced
+    reason: 'After the re-run every condition of the criterion holds in both responsiveness readings (cell 110): EN is lower
+      outside for signal and noise (p <= 0.0016), signal inside is not lower (p = 0.39 and 0.19), and the EN - NH difference
+      is more negative outside, for noise -0.0454 against -0.0450 and -0.0430 against -0.0409. The round-1 reason, that the
+      Methods reading failed by 0.0002, is no longer true. The added permutation test (p = 0.96 and 0.81) is a fair caveat
+      for the notes, but it is not in the criterion, and the claims file decides the outcome. The criterion''s weakness, comparing
+      two differences without a test, should be reported against the claims file.'
+    response: Outcome kept as verified in round 1 (partially reproduced), as round 2 allows; the change to reproduced is recorded
+      under proposed, with the analysis in the notebook below cell 110, for round 3. The permutation test stays in the notes
+      as a caveat, and the criterion's comparison without a test is added as a question in questions/crcns-ssc-10.yaml.
+  - claim: figs5-1-row-and-arc-boundaries
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig6-l4-within-column-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: figs5-2-neuropil-robustness
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees; the L4 rebuild now matches the stored traces (problem 2 resolved). The notes and cell 121 are right on
+      the direction of the responses, which is all the criterion asks, but none of those differences is significant (L2/3
+      p = 0.30, 0.57, 0.93; L4 p = 0.80, 0.44, 0.73; cell 120). Not disclosed: at r = 0 the responsive L2/3 count drops from
+      850/472 to 815/460 (cell 119), because ssc10.py gives p = 1 to ROIs with non-finite rebuilt traces, 89 of them in L2/3
+      (cell 6), so they are dropped as unresponsive at every weight. This does not change the outcome. The eBW gap still decides
+      the L2/3 tuning direction.'
+    response: No change of outcome. Cell 121 and the notes now give the p-values of the response differences, the responsive
+      L2/3 counts at r = 0 and the reason for the drop (the 89 ROIs with non-finite rebuilt traces).
+  - claim: fig7b-single-roi-decoder
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; roi_probs no longer drops training trials (problem 9 resolved).
+    response: No change.
+  - claim: fig7c-population-decoder
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome rests on pooled ensembles as units, which the criterion allows. Per-field means give p = 0.024
+      to 0.42, 0/7 sizes passing; this is stated. Cell 130 says performance rises with ensemble size in both groups, which
+      is correct for closest-column/normalisation (a); under CWs/normalisation (a) it does not rise (cell 129), which is not
+      mentioned, though not needed for the outcome.
+    response: No change of outcome. Cell 130 and the notes now say that under the CWs of the members with normalisation (a)
+      performance does not rise steadily.
+  - claim: fig7d-clustered-ensemble-topography
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the ANOVA treats overlapping ensembles as independent, which is stated.
+    response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The 2 proposed changes of outcome (figs3-1-l4-nh-tuning to not reproduced, fig5eh-l23-correlation-gradient-at-edge
+    to reproduced) and the analysis behind them in the executed notebook after the round-2 revision (cells 52, 54, 61,
+    62, 99 and 110), with the claims file and the paper. Nothing else was reviewed. Report in transcripts/crcns-ssc-10/verifier-3-report.md.
+  results:
+  - claim: figs3-1-l4-nh-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 61. The claims file''s criterion allows partial only when both 0-75 um values are within tolerance and
+      neither Fisher test is significant. No reading in cell 61 meets that. With the Methods'' test on C1-C3, the eBW test
+      is significant under E1 (p = 0.036) and E2 (p = 0.0051). Under E3 it is not (p = 0.40), but L4 eBW is 82.1%, outside
+      73 +/- 7.3. With the stored p-values on C1-C3 the test is significant (0.026, 0.0055). The variant with all L4 ROIs
+      fails the same way. The BW parts and the three eBW distance bins hold in every reading, so only the eBW absence test
+      fails. No choice was tuned to this result. The same strict reading of the partial clause was used for figs2-1-column-frame
+      and fig4ae-l4-weaker-responses. The failure comes from the NH L2/3 eBW fraction being inflated to 89.6-96.5% against
+      the paper''s 67% (cells 54, 61). That traces to the unresolved eBW definition, so it may be a failure of the attempt
+      and not of the paper. The record''s notes and cell 62 say so.'
+    response: Outcome changed to not reproduced and the proposal removed. The notes keep that the failure may lie in the
+      eBW definition. The notebook's conclusions and Summary, the README and the attempt notes updated.
+  - claim: fig5eh-l23-correlation-gradient-at-edge
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 110. Each condition of the criterion holds in both responsiveness readings. EN is lower outside the column
+      for signal (-0.091, p = 0.0001; stored -0.043, p = 0.0016) and noise (-0.045, -0.043, both p = 0.0001). Inside the
+      column, signal is not lower (p = 0.39, 0.19). EN - NH is more negative outside than inside for signal and for noise
+      (-0.0454 vs -0.0450; -0.0430 vs -0.0409). The permutation test of the gradient is not part of the criterion (noise
+      p = 0.96, 0.81), so it cannot decide the outcome. Two caveats. First, the Methods''-test noise comparison changed
+      direction between runs (round 1 -0.0459 against -0.0461, failed); the stored-p reading is identical in both runs
+      and passes, so the outcome does not rest on the flip, but the noise half rests on differences of 0.0004 to 0.002
+      that cannot be told from zero. Second, a likely misreading in the claims file: the paper contrasts "substantially
+      reduced" outside with "only modestly reducing" noise correlation inside, and the criterion reduces that to a sign
+      comparison with no test or margin. Both points belong in the notes. Neither changes the outcome under the criterion
+      as written.'
+    response: Outcome changed to reproduced and the proposal removed. Both caveats are in the notes and the notebook's conclusion
+      (the round-1 flip, the differences that cannot be told from zero, and the sign comparison, already raised in questions/crcns-ssc-10.yaml).
+      The Summary, the README and the attempt notes updated.
