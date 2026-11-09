@@ -594,6 +594,23 @@ claims:
     Reproduced when no measure differs at p < 0.05; not reproduced when every one does, in either
     direction, as the claim is one of similar occupancy; otherwise blocked as methods_underspecified with all results shown. The Pearson
     correlation between the two grand-mean maps is reported as a description.
+- id: htr-event-link
+  kind: link
+  statement: The dandiset's unnamed series processing/behavior/task_event_timestamps holds the
+    head-twitch (HTR) times the paper analysed, so the HTR claims can be tested on it with the
+    name taken from the paper's code.
+  source: The paper's code at github.com/Smear-Lab/Olfactory-search-on-psychedelics commit aa80af0a,
+    nwb_conversion/convert_session_to_nwb.py (load_event_timestamps) and analysis/fig5_cleaned.Rmd
+    (chunk "import htr timestamps")
+  data: with_labels
+  criterion: Added by the author (protocol, Author, step 1.4). Records are matched by mouse and
+    session, the names under which the conversion script reads the folders "Time Stamps Task" and
+    "Time Stamps Task Logan" that fig5_cleaned.Rmd reads as HTR timestamps. The link holds
+    (reproduced) when the series is present in all 22 DOI sessions (the paper's n = 22 for the HTR
+    maps) and, as HTRs are induced by DOI, every mouse with the series in both sessions has more
+    events in its DOI session; partially reproduced when it is present in at least 18 DOI sessions
+    or the DOI count is higher in most but not all mice with both; not reproduced otherwise. The
+    files' lack of a name for the series is recorded as a finding.
 - id: fig5supp-htr-within-trial-x-not-y
   statement: During trials, HTR rate (normalized to occupancy) varies with the X coordinate of the
     arena but not with the Y coordinate.
@@ -609,6 +626,9 @@ claims:
   - about: X coordinate
     test: Permutation test
     p: 0.002
+  data: with_labels
+  depends_on:
+  - htr-event-link
   criterion: DOI sessions with HTR times. As in the Methods (Figure 5) and fig5_cleaned.Rmd; nose
     position at each frame (x flipped for the first cohort, frames above 160 cm/s dropped); each
     HTR assigned to the frame nearest its time; the arena in bins of 100 pixels (about 2.5 cm),
@@ -635,7 +655,9 @@ claims:
   - quantity: mice in the HTR rate map
     value: 22
     tolerance: 0
+  data: with_labels
   depends_on:
+  - htr-event-link
   - fig5supp-htr-within-trial-x-not-y
   criterion: As fig5supp-htr-within-trial-x-not-y with all frames of the DOI session (trial and
     ITI combined), rows for the bins each mouse occupied, as fig5_cleaned.Rmd does. Reproduced
@@ -650,6 +672,9 @@ claims:
   quote: Similarly, during the ITI, we found that mice HTR more frequently closer to the end of the
     arena after crossing the decision line (as X-coordinate increases), but not immediately next to
     the reward ports (on the Y-coordinate)
+  data: with_labels
+  depends_on:
+  - htr-event-link
   criterion: The paper gives no test for the ITI alone and the code runs none; the test of
     fig5supp-htr-within-trial-x-not-y is applied to ITI frames and ITI HTRs (per-mouse rates over
     ITI occupancy, the code's htr_normalized_permouse_iti, edge bins dropped), the reading the
@@ -665,6 +690,9 @@ claims:
   statistics:
   - test: Wilcoxon signed rank
     p: 1
+  data: with_labels
+  depends_on:
+  - htr-event-link
   criterion: A claim of absence. As in fig5_cleaned.Rmd; per DOI session, HTRs whose time lies
     within a trial divided by the summed trial durations, and the other HTRs divided by 2400 s
     minus the summed trial durations, in HTR per min; two-sided paired Wilcoxon signed-rank test.
@@ -678,6 +706,9 @@ claims:
   statistics:
   - test: Wilcoxon rank sum
     p: 0.31
+  data: with_labels
+  depends_on:
+  - htr-event-link
   criterion: A claim of absence. Per DOI session the number of HTRs divided by 40 min; a two-sided
     Wilcoxon rank-sum test (normal approximation, exact = FALSE in fig5_cleaned.Rmd), female
     against male. Reproduced when p >= 0.05, not reproduced when p < 0.05; the group medians are

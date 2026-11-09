@@ -23,11 +23,11 @@ ENTRY = {
     "related": [{"id": "dandi:000001/0.240101.0000", "relation": "uses_data"},
                 {"id": "doi:10.1000/demo", "relation": "reproduces"}],
 }
-CLAIMS = {"schema_version": 2, "dataset": {"archive": "dandi", "id": "000001"}, "paper": "doi:10.1000/demo",
+CLAIMS = {"schema_version": 2, "paper": "doi:10.1000/demo",
           "claims": [{"id": "fig1", "statement": "Something rises.", "source": "Figure 1"}]}
 ATTEMPT = {
-    "schema_version": 2, "id": "demo-01",
-    "dataset": {"archive": "dandi", "id": "000001", "version": "0.240101.0000"},
+    "schema_version": 3, "id": "demo-01",
+    "datasets": [{"archive": "dandi", "id": "000001", "version": "0.240101.0000", "relation": "primary"}],
     "paper": "doi:10.1000/demo", "date": "2026-10-13", "entry": "demo",
     "provenance": {"kind": "agent", "accountable": {"name": "Someone"},
                    "agent": {"harness": "h", "model": "m", "protocol": "p"}},
@@ -57,8 +57,8 @@ def repo(tmp_path, monkeypatch):
     (entry_dir / "requirements.in").write_text("numpy\n")
     (entry_dir / "requirements.lock.txt").write_text("numpy==2.0.0\n")
     nbformat.write(notebook(f'DANDISET, VERSION = "000001", "{VERSION}"\nprint(1)'), entry_dir / "analysis.ipynb")
-    (tmp_path / "claims" / "000001").mkdir(parents=True)
-    (tmp_path / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(CLAIMS))
+    (tmp_path / "claims").mkdir(parents=True)
+    (tmp_path / "claims" / "demo.yaml").write_text(yaml.safe_dump(CLAIMS))
     (tmp_path / "attempts").mkdir()
     (tmp_path / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(ATTEMPT))
     monkeypatch.setattr(tool, "ROOT", tmp_path)
@@ -133,6 +133,22 @@ def test_a_blocked_outcome_needs_a_reason(repo):
     assert any("blocked_by" in e for e in errors(repo))
 
 
+
+def test_an_outcome_on_an_assumption_states_it_and_is_not_blocked(repo):
+    """An outcome that rests on an assumption about an open method says what was assumed in a deviation
+    (docs/protocol.md, Author, step 1.6); a claim with no defensible choice is blocked instead."""
+    def with_outcome(**o):
+        attempt = {**ATTEMPT, "outcomes": [{**ATTEMPT["outcomes"][0], **o}]}
+        (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+        return errors(repo)
+    assumed = "Assumed a 1 s window, the one Figure 3 uses, since the Methods give none."
+    assert with_outcome(assumed=True, deviations=[assumed]) == []
+    assert with_outcome(assumed=True) != []
+    assert with_outcome(assumed=True, deviations=[]) != []
+    assert with_outcome(assumed=True, deviations=[assumed], outcome="blocked", blocked_by="methods_underspecified",
+                        notes="N.") != []
+    assert with_outcome(assumed="yes", deviations=[assumed]) != []
+
 def test_the_entry_name_must_match_its_directory(repo):
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump({**ENTRY, "name": "other"}))
     assert any("must match the directory name" in e for e in errors(repo))
@@ -140,7 +156,7 @@ def test_the_entry_name_must_match_its_directory(repo):
 
 def test_every_claim_needs_one_outcome(repo):
     claims = {**CLAIMS, "claims": CLAIMS["claims"] + [{"id": "fig2", "statement": "S.", "source": "Figure 2"}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     attempt = {**ATTEMPT, "outcomes": ATTEMPT["outcomes"] * 2}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     found = errors(repo)
@@ -155,10 +171,10 @@ def test_the_dandiset_version_must_be_pinned(repo):
 
 
 def test_the_dandiset_version_must_agree_across_files(repo):
-    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "dataset": {**ATTEMPT["dataset"], "version": "draft"}}))
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "datasets": [{**ATTEMPT["datasets"][0], "version": "draft"}]}))
     nbformat.write(notebook('"000001"'), repo / "entries" / "demo" / "analysis.ipynb")
     found = errors(repo)
-    assert any("dataset version 'draft' differs" in e for e in found)
+    assert any("dataset 000001 version 'draft' differs" in e for e in found)
     assert any(f"names version {VERSION}" in e for e in found)
 
 
@@ -209,7 +225,7 @@ def test_a_claim_may_have_several_expected_values_and_depend_on_another(repo):
         {"id": "fig1", "statement": "S.", "source": "Figure 1",
          "expected": [{"quantity": "a", "value": 0.5, "tolerance": 0.05}, {"quantity": "b", "value": 2.0}]},
         {"id": "fig2", "statement": "T.", "source": "Figure 2", "depends_on": ["fig1"]}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     attempt = {**ATTEMPT, "outcomes": ATTEMPT["outcomes"] + [{"claim": "fig2", "outcome": "blocked",
                                                               "blocked_by": "other", "notes": "n"}],
                "inputs": [{"what": "model RDMs", "source": "https://github.com/x/y at abc123"}],
@@ -221,7 +237,7 @@ def test_a_claim_may_have_several_expected_values_and_depend_on_another(repo):
 def test_a_claim_cannot_depend_on_one_that_is_not_there(repo):
     claims = {**CLAIMS, "claims": CLAIMS["claims"] + [
         {"id": "fig2", "statement": "T.", "source": "Figure 2", "depends_on": ["fig9"]}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("depends on 'fig9'" in e for e in errors(repo))
 
 
@@ -252,19 +268,19 @@ def test_measured_may_hold_one_value_per_expected_value(repo):
 
 def test_a_claim_may_say_it_uses_outside_data(repo):
     claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "with_inputs"}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert errors(repo) == []
     claims["claims"][0]["data"] = "somewhere"
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("data" in e for e in errors(repo))
 
 
 def test_a_claim_on_data_in_another_archive_names_it_and_is_tested_there(repo):
     claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "elsewhere"}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("where" in e for e in errors(repo))
     claims["claims"][0]["where"] = "PRIDE PXD000001"
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("list them under `inputs`" in e for e in errors(repo))
     attempt = {**ATTEMPT, "inputs": [{"what": "proteomics", "source": "PRIDE PXD000001"}]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
@@ -278,7 +294,7 @@ def test_a_claim_on_data_in_another_archive_names_it_and_is_tested_there(repo):
 
 def test_an_earlier_attempt_is_not_held_to_a_later_elsewhere(repo):
     claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "elsewhere", "where": "PRIDE PXD000001"}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     earlier = {**ATTEMPT, "outcomes": [{**ATTEMPT["outcomes"][0], "outcome": "blocked",
                                         "blocked_by": "data_missing", "notes": "Not in the dandiset."}]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(earlier))
@@ -307,7 +323,7 @@ def test_a_later_round_decides_the_claims_it_reviews(repo):
 
 def test_names_from_outside_need_a_source_and_a_finding(repo):
     claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "with_labels"}]}
-    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("with_labels" in e for e in errors(repo))
     attempt = {**ATTEMPT, "inputs": [{"what": "stimulus names", "source": "https://example.org at abc"}],
                "findings": [{"kind": "metadata_insufficient", "statement": "Codes have no names."}]}
@@ -316,7 +332,7 @@ def test_names_from_outside_need_a_source_and_a_finding(repo):
 
 
 def test_only_the_latest_attempt_must_match_the_entrys_version(repo):
-    earlier = {**ATTEMPT, "dataset": {**ATTEMPT["dataset"], "version": "0.230101.0000"}}
+    earlier = {**ATTEMPT, "datasets": [{**ATTEMPT["datasets"][0], "version": "0.230101.0000"}]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(earlier))
     (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**ATTEMPT, "id": "demo-02"}))
     assert errors(repo) == []

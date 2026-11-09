@@ -1,0 +1,1150 @@
+# Claims for Lee, Matthews, Lemieux et al. (2025), "Separable Dorsal Raphe Dopamine Projections
+# Mimic the Facets of a Loneliness-like State", eLife doi:10.7554/eLife.105955, on dandiset 001195.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, protocol
+# as stated in docs/protocol.md (version pilot-10).
+#
+# Text read: the eLife reviewed preprint, version 2 (8 July 2025), from paper/10.7554-elife.105955.txt
+# (a PDF supplied by a person, extracted with PyMuPDF), with its Methods, figure legends and all figure
+# supplements. The PDF was opened for Figures 6 and 7 only. The legend of Figure 7 runs off the page in
+# the PDF itself and stops inside panel I; panels J to M have no legend, so their numbers (the
+# percentages of Figure 7J and r = 0.679, p = 0.045 in Figure 7M) were read from the figure image. The
+# eLife source data files listed under each figure are not in paper/, and the supplied text has no
+# data or code availability statement. The paper links no analysis code, so no code was read and
+# every method detail below comes from the Methods, the legends and the figure supplements. The
+# earlier Research Square preprint (doi:10.21203/rs.3.rs-1025403/v1), which the dandiset says used
+# the same patch-clamp data, was checked for the ex vivo Methods only: they match the eLife text, and
+# it adds that the cells recorded at rest came from 19 mice.
+#
+# The dandiset (title and description on DANDI) holds in vivo calcium imaging with behaviour videos
+# and ex vivo patch-clamp recordings, the data of Figure 6, Figure 6 supplement 1, Figure 7 and
+# Figure 7 supplements 1 and 2. The behavioural optogenetics (Figures 2 to 4 and 8), the tracing
+# (Figure 1) and the RNAscope (Figure 5) are covered below because they are the paper's main findings.
+#
+# Data the paper used, as it reports them:
+# - Ex vivo patch clamp (Figure 6). Male DAT::Cre mice with ChR2 (AAV5-DIO-ChR2-eYFP) in the DRN,
+#   at least 8 weeks of expression; whole-cell current clamp in coronal slices of the BNST, CeA and
+#   BLP, in the region with eYFP terminals; 3 kHz filter, 10 kHz sampling. Light, 470 nm, 8 pulses of
+#   5 ms at 30 Hz every 30 s. At rest, BNST n = 19, CeA n = 36, BLP n = 48 cells; with current
+#   injected to make the cell fire, BNST n = 5, CeA n = 20, BLP n = 17. Baseline properties came from
+#   a 5 mV, 250 ms hyperpolarizing step in voltage clamp at -70 mV (capacitance, membrane resistance)
+#   and from 1 s current steps from -120 to 260 pA in 20 pA increments. Clustered cells: CeA 26 and
+#   BLP 27 (from the t-test degrees of freedom, t24 and t25, in Figure 6 supplement 1H-I). A few cells
+#   were recorded with TTX/4AP (EPSP n = 8, IPSP n = 3).
+# - Ex vivo ChrimsonR validation (Figure 7 supplement 1B-I). DAT::Cre mice with ChrimsonR in the
+#   DRN; CeA cells stimulated with 635 nm (10 mW) or 470 nm (0.3 and 0.2 mW) light, and with 635 nm
+#   light during constant 470 nm light; 9 and 12 cells (from F2,16 and t11).
+# - In vivo imaging (Figure 7). DAT::Cre mice, GCaMP7f in the CeA, ChrimsonR (or TdTomato in
+#   controls) in the DRN, GRIN lens over the CeA, nVoke microscope at 20 frames/s. Three-chamber
+#   sessions of 5 min habituation and 10 min test with a juvenile mouse under one cup and an object
+#   under the other, in three conditions per mouse: group-housed without light (GH off), group-housed
+#   with 620 nm light (8 pulses of 5 ms at 30 Hz every 1 s, 10 mW; GH on), order counterbalanced,
+#   and 2-3 weeks later after 24 h of isolation without light (SI off). ChrimsonR cells: GH off 429,
+#   GH on 441, SI off 484; the legend says N = 15 mice per condition, Figure 7E says N = 12 ChrimsonR
+#   mice, and TdTomato controls are N = 2 (39, 61 and 76 cells). 202 cells were co-registered
+#   between GH off and GH on. Measured variables: CNMF-E traces per cell, SLEAP pose (15 keypoints)
+#   from the behaviour video, cup interactions derived from it, time in the social and object sides.
+# - Behaviour with optogenetics (Figures 2-4, 8, supplements). Male DAT::Cre mice, ChR2, NpHR or
+#   eYFP in the DRN, fibres over the BNST, CeA or BLP; tube test, RTPP, OFT, EPM, three-chamber,
+#   juvenile intruder, ICSS. Group sizes are given in each claim.
+#
+# Method details the paper leaves open are named in the criteria with the readings its text allows.
+# The SLEAP model (774 labelled frames) and the custom MATLAB code for passive properties (Q-method,
+# by P. Namburi) are described but not published with the paper.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001195"
+paper: doi:10.7554/elife.105955
+claims:
+
+# ---------------------------------------------------------------- Figure 6, ex vivo patch clamp
+- id: fig6df-epsp-ipsp-at-rest
+  statement: At the resting membrane potential, photostimulation of DRN-DAT terminals evoked both
+    excitatory and inhibitory post-synaptic potentials in downstream cells of the BNST, CeA and BLP
+    (19, 36 and 48 cells recorded).
+  source: Results, DRNDAT input has divergent effects on downstream cellular excitability, paragraph
+    2; Figure 6D-F
+  quote: Optical stimulation at the resting membrane potential evoked both excitatory and inhibitory
+    post-synaptic potentials (EPSPs and IPSPs) in downstream cells
+  expected:
+  - quantity: BNST cells recorded at rest
+    value: 19
+    tolerance: 0
+    unit: cells
+  - quantity: CeA cells recorded at rest
+    value: 36
+    tolerance: 0
+    unit: cells
+  - quantity: BLP cells recorded at rest
+    value: 48
+    tolerance: 0
+    unit: cells
+  criterion: Counts are compared exactly (tolerance 0) because they are cell counts the dataset
+    either holds or not; a count that differs is reported, and the claim is then judged on the
+    cells present. Per cell, the average of the light sweeps at rest (Methods, Ex vivo
+    electrophysiology); the EPSP peak and IPSP trough are measured against the 5 s before
+    stimulation (Methods). A cell is 'excitation' with an EPSP only, 'inhibition' with an IPSP only,
+    'mix' with both, 'none' otherwise (Methods; Figure 6D-F legend). The paper gives no threshold
+    for calling a deflection an EPSP or an IPSP; the readings run are a peak (EPSP) or trough (IPSP)
+    of the average trace within 0-5.5 s of light onset (the window the Methods use for total
+    voltage area) beyond (a) 2 or (b) 3 standard deviations of the 5 s baseline of the average
+    trace. Reproduced when, under the readings, each of the three regions has at least one cell with
+    an EPSP and the pooled cells include cells with an IPSP; the proportions of the four classes
+    per region are reported. If the readings disagree the claim is blocked as
+    methods_underspecified.
+
+- id: fig6gi-firing-responses
+  statement: In cells made to fire by constant current, photostimulation increased firing in all
+    BNST cells (5 of 5), while CeA (20 cells) and BLP (17 cells) cells showed either an increase or
+    a decrease in firing.
+  source: Results, DRNDAT input has divergent effects on downstream cellular excitability, paragraph
+    2; Figure 6G-I
+  quote: During spontaneous firing, BNST cells were universally excited whereas more diverse
+    responses were observed with the BLP and CeA
+  expected:
+  - quantity: BNST firing cells
+    value: 5
+    tolerance: 0
+    unit: cells
+  - quantity: CeA firing cells
+    value: 20
+    tolerance: 0
+    unit: cells
+  - quantity: BLP firing cells
+    value: 17
+    tolerance: 0
+    unit: cells
+  criterion: Per cell, the action potential inter-event interval (IEI) in the 5 s before and the 5 s
+    after the first light pulse; a decrease is 'excitation', an increase 'inhibition' (Methods, Ex
+    vivo electrophysiology). The paper does not say how sweeps are combined or which summary of the
+    IEIs is compared; readings (a) mean IEI over all intervals pooled across sweeps, (b) mean over
+    sweeps of each sweep's mean IEI. The Figure 6 supplement 1G legend plots 5.5 s before the light,
+    so a 5.5 s baseline is shown as a variant. Action potentials are detected as upward crossings of
+    0 mV, a standard choice. Reproduced when every BNST cell is excited and both classes occur among
+    CeA cells and among BLP cells, under each reading.
+
+- id: fig6j-epsp-amplitude-region
+  statement: The peak amplitude of the optically evoked EPSP differed between regions, larger in
+    the CeA than in the BLP.
+  source: Figure 6J, left
+  quote: "peak amplitude (Kruskal-Wallis statistic = 6.790, p=0.0335; Dunn’s posts-hoc tests: CeA vs BLP
+    p=0.0378)"
+  statistics:
+  - about: EPSP peak amplitude across BNST, CeA and BLP
+    test: Kruskal-Wallis
+    statistic: Kruskal-Wallis statistic = 6.790
+    p: 0.0335
+  - about: CeA against BLP
+    test: Dunn's post hoc test
+    p: 0.0378
+    corrected: Dunn's multiple comparisons
+  depends_on:
+  - fig6df-epsp-ipsp-at-rest
+  criterion: EPSP peak of the average trace at rest against the 5 s baseline (Methods), one value per
+    cell with an EPSP. Which cells enter is open; readings (a) cells with an EPSP (excitation and
+    mix), (b) excitation-only cells. Reproduced when, under the readings, a Kruskal-Wallis test across
+    the three regions gives p < 0.05, Dunn's test gives CeA against BLP p < 0.05, and the CeA median
+    exceeds the BLP median.
+
+- id: fig6k-ipsp-amplitude-region
+  statement: The trough amplitude of the optically evoked IPSP differed between regions, deeper in
+    the CeA than in the BLP.
+  source: Figure 6K, left
+  quote: "trough amplitude (one-way ANOVA, F2,31=8.150, p=0.0014, CeA vs BLP: **p=0.0014)"
+  statistics:
+  - about: IPSP trough amplitude across BNST, CeA and BLP
+    test: one-way ANOVA
+    statistic: F(2,31) = 8.150
+    p: 0.0014
+    n: 34 cells with an IPSP (from the degrees of freedom)
+  - about: CeA against BLP
+    test: post hoc comparison (test not named)
+    p: 0.0014
+  depends_on:
+  - fig6df-epsp-ipsp-at-rest
+  expected:
+  - quantity: cells with an IPSP in the test
+    value: 34
+    tolerance: 3.4
+    unit: cells
+  criterion: IPSP trough of the average trace at rest against the 5 s baseline (Methods), one value
+    per cell. Readings for the cells (a) inhibition and mix cells, (b) inhibition-only cells; the
+    single BNST point in Figure 6K beside the absence of BNST inhibition-only cells in Figure 6D
+    favours (a), but both are run. The post hoc test is not named; Tukey's test (the Prism default
+    after a one-way ANOVA) and Holm-Sidak are the readings. Reproduced when the one-way ANOVA gives
+    p < 0.05, CeA against BLP p < 0.05 and the CeA mean trough is more negative than the BLP mean.
+
+- id: fig6-s1de-monosynaptic
+  statement: The optically evoked EPSP and the slow component of the IPSP persisted after TTX/4AP,
+    so the responses were typically monosynaptic.
+  source: Figure 6 supplement 1D-E; Results, DRNDAT input has divergent effects on downstream
+    cellular excitability, paragraph 2
+  quote: the optically-evoked EPSP (upper panels) and slow component of the IPSP (lower panels) was
+    maintained following application of TTX/4AP
+  expected:
+  - quantity: EPSP cells tested with TTX/4AP
+    value: 8
+    tolerance: 0
+    unit: cells
+  - quantity: IPSP cells tested with TTX/4AP
+    value: 3
+    tolerance: 0
+    unit: cells
+  criterion: Per cell, the EPSP peak or IPSP trough after TTX/4AP divided by that before (normalized
+    amplitude, Figure 6 supplement 1E). The paper gives no threshold for 'maintained'; the response
+    is counted as maintained when it is still detected under the readings of fig6df-epsp-ipsp-at-rest.
+    Reproduced when it is maintained in most cells of each group. The normalized amplitudes are
+    reported.
+
+- id: fig6no-cea-clusters
+  statement: Hierarchical clustering of CeA cells on four baseline properties gave two clusters,
+    late-firing cells (cluster 1) that were excited by DRN-DAT input and regular-firing cells
+    (cluster 2) that were mostly inhibited.
+  source: Results, DRNDAT input has divergent effects on downstream cellular excitability, paragraph
+    3; Figure 6L, 6N-O
+  quote: CeA cells in cluster 1 represented ‘late-firing’ neurons, whereas cluster 2 were typical of
+    ‘regularfiring’ neurons ... with cluster 1 ‘late-firing’ neurons excited and cluster 2
+    ‘regular-firing’ neurons mostly inhibited
+  expected:
+  - quantity: CeA cells clustered
+    value: 26
+    tolerance: 0
+    unit: cells
+  depends_on:
+  - fig6df-epsp-ipsp-at-rest
+  - fig6gi-firing-responses
+  criterion: Features from the Methods (Ex vivo electrophysiology). Ramp ratio, mean Vm 900-1000 ms
+    over mean Vm 100-200 ms after step onset at the largest subthreshold step; max instantaneous
+    frequency, the highest firing frequency in the first 100 ms of the depolarizing steps; firing
+    delay, step onset to first spike at rheobase; voltage sag, peak minus steady-state Vm in the
+    -120 pA step. Each feature max-min normalized, Ward linkage on Euclidean distance (scipy
+    linkage), two clusters at the top split. Response label per cell (Methods), from IEI when firing
+    data exist, else EPSP only = excitation, IPSP only = inhibition, mix by the sign of the voltage
+    area 0-5.5 s after light onset. Open details and their readings, all run. (1) Ramp ratio from
+    absolute Vm (as written) or from the deflections from the pre-step baseline. (2) Steady state
+    for the sag, the mean of the last 100 ms or of the last 200 ms of the step. (3) Normalization is
+    max-min, as the Methods and legend say; Figure 6L shows the normalized values on a 0-100 scale,
+    which accounts for the dendrogram's axis (to 200) and does not change the partition. (4) Cells,
+    those with all four features (26 from t24). The cluster with the longer firing delay is the
+    late-firing cluster. Proportions are over all cells of a cluster, as the Figure 6O pie charts
+    include cells with no response. Reproduced when, under the readings, every cell of the
+    late-firing cluster is excited and more than half of the cells of the other cluster are
+    inhibited; blocked as methods_underspecified if the readings disagree.
+
+- id: fig6-s1h-cea-cluster-properties
+  statement: The two CeA clusters differed in all four input properties (ramp ratio, maximum
+    instantaneous frequency, firing delay and voltage sag).
+  source: Figure 6 supplement 1H
+  quote: "Unpaired t-tests for CeA – ramp ratio: t24=3.502, p=0.0018; max instantaneous firing
+    frequency (max freqinst.): t24=4.698, p<0.0001, firing delay: t24=5.050, p<0.0001, voltage sag:
+    t24=3.983, p=0.0006"
+  statistics:
+  - about: ramp ratio
+    test: unpaired t-test
+    statistic: t(24) = 3.502
+    p: 0.0018
+  - about: max instantaneous firing frequency
+    test: unpaired t-test
+    statistic: t(24) = 4.698
+    p: 0.0001
+    p_relation: "<"
+  - about: firing delay
+    test: unpaired t-test
+    statistic: t(24) = 5.050
+    p: 0.0001
+    p_relation: "<"
+  - about: voltage sag
+    test: unpaired t-test
+    statistic: t(24) = 3.983
+    p: 0.0006
+  depends_on:
+  - fig6no-cea-clusters
+  criterion: Unpaired two-sided t-tests (Statistical analyses) between the clusters of
+    fig6no-cea-clusters on the raw feature values. Reproduced when all four give p < 0.05 under the
+    readings of that claim.
+
+- id: fig6pq-blp-clusters
+  statement: BLP cells clustered into putative pyramidal neurons (cluster 1) and putative GABAergic
+    interneurons (cluster 2); 93% of the putative pyramidal neurons were inhibited by DRN-DAT input
+    and 62% of the putative interneurons were excited.
+  source: Results, DRNDAT input has divergent effects on downstream cellular excitability, paragraph
+    3; Figure 6M, 6P-Q
+  quote: with 93% of putative pyramidal neurons showing an inhibitory response, and 62% of putative
+    GABAergic interneurons showing an excitatory response
+  expected:
+  - quantity: putative pyramidal BLP cells inhibited
+    value: 93
+    tolerance: 9.3
+    unit: percent
+  - quantity: putative GABAergic BLP cells excited
+    value: 62
+    tolerance: 6.2
+    unit: percent
+  - quantity: BLP cells clustered
+    value: 27
+    tolerance: 0
+    unit: cells
+  depends_on:
+  - fig6df-epsp-ipsp-at-rest
+  - fig6gi-firing-responses
+  criterion: As fig6no-cea-clusters, with capacitance in place of ramp ratio (Methods). Capacitance
+    from the 5 mV, 250 ms hyperpolarizing step in voltage clamp at -70 mV by the Q-method (charge
+    of the transient over 5 mV; Methods cite the Q-method, the paper's MATLAB code is not
+    published). Cells, those with all four features (27 from t25). The cluster with the larger
+    capacitance and lower maximum frequency is the pyramidal cluster. The same open reading
+    (steady state for the sag) is run, with max-min normalization. Denominators are all cells of
+    each cluster, as the Figure 6Q pie for cluster 2 includes cells with no response, and 93% and 62%
+    fit 13 of 14 and 8 of 13 cells (27 in all), not the response-labelled cells alone. Reproduced when both percentages are within tolerance under the
+    readings; partially reproduced when the direction holds (most pyramidal cells inhibited, most
+    interneurons excited) but a percentage is outside tolerance.
+
+- id: fig6-s1i-blp-cluster-properties
+  statement: The two BLP clusters differed in capacitance, maximum instantaneous frequency, firing
+    delay and voltage sag.
+  source: Figure 6 supplement 1I
+  quote: "unpaired t-tests for BLP – capacitance: t25=4.803, p<0.0001, max freqinst.: t25=15.48,
+    p<0.0001, firing delay: t25=2.743, p=0.0111, voltage sag: t25=2.705, p=0.0121"
+  statistics:
+  - about: capacitance
+    test: unpaired t-test
+    statistic: t(25) = 4.803
+    p: 0.0001
+    p_relation: "<"
+  - about: max instantaneous firing frequency
+    test: unpaired t-test
+    statistic: t(25) = 15.48
+    p: 0.0001
+    p_relation: "<"
+  - about: firing delay
+    test: unpaired t-test
+    statistic: t(25) = 2.743
+    p: 0.0111
+  - about: voltage sag
+    test: unpaired t-test
+    statistic: t(25) = 2.705
+    p: 0.0121
+  depends_on:
+  - fig6pq-blp-clusters
+  criterion: Unpaired two-sided t-tests between the clusters of fig6pq-blp-clusters on the raw
+    feature values. Reproduced when all four give p < 0.05 under the readings of that claim.
+
+- id: fig6-s1jk-cluster-voltage-area
+  statement: The total voltage area evoked by DRN-DAT stimulation differed between the two clusters
+    in both the CeA and the BLP, and the EPSP peak amplitude differed between the BLP clusters but not
+    between the CeA clusters.
+  source: Figure 6 supplement 1J-K
+  quote: "EPSP peak amplitude, CeA: unpaired t-test, t17=1.40, p=0.180; BLP: unpaired t-test t22=2.34,
+    p=0.029. ... Total voltage area, CeA: Mann-Whitney U = 22, p=0.0023; BLP: Mann-Whitney U = 29,
+    p=0.0019"
+  statistics:
+  - about: CeA clusters, total voltage area
+    test: Mann-Whitney U
+    statistic: U = 22
+    p: 0.0023
+  - about: BLP clusters, total voltage area
+    test: Mann-Whitney U
+    statistic: U = 29
+    p: 0.0019
+  - about: BLP clusters, EPSP peak amplitude
+    test: unpaired t-test
+    statistic: t(22) = 2.34
+    p: 0.029
+  - about: CeA clusters, EPSP peak amplitude
+    test: unpaired t-test
+    statistic: t(17) = 1.40
+    p: 0.18
+  depends_on:
+  - fig6no-cea-clusters
+  - fig6pq-blp-clusters
+  criterion: Total voltage area, the integral of Vm against the 5 s pre-light baseline from 0 to 5.5
+    s after the first pulse, on the average trace at rest (Methods). Mann-Whitney U for the area and
+    unpaired t-test for the EPSP peak between clusters, as the legend names them. Reproduced when
+    the area tests give p < 0.05 in both regions, the BLP EPSP test gives p < 0.05, and the CeA EPSP
+    test gives p >= 0.05 (a claim of absence, judged on the paper's t-test).
+
+- id: fig6-s1ln-combined-clusters
+  statement: Clustering CeA and BLP cells together gave two clusters with a response pattern very
+    similar to that of the separate clusterings.
+  source: Figure 6 supplement 1L-N; Results, DRNDAT input has divergent effects on downstream
+    cellular excitability, paragraph 3
+  quote: In addition, clustering CeA and BLP cells together yielded a very similar result
+  depends_on:
+  - fig6no-cea-clusters
+  - fig6pq-blp-clusters
+  criterion: The five features used in the separate clusterings (ramp ratio, capacitance, maximum
+    instantaneous frequency, firing delay, voltage sag; Figure 6 supplement 1L), max-min normalized,
+    Ward linkage, two clusters, on the cells with all five. The paper gives no number for 'very
+    similar'; what it shows (Figure 6 supplement 1N) is the response of CeA and BLP cells in each
+    combined cluster. Reproduced when, under the readings of the two claims it depends on, in each
+    region one combined cluster has more than half of its cells excited and the other more than
+    half inhibited, with the excited cluster the same for both regions, as in the separate
+    clusterings (late-firing CeA and putative interneurons excited, regular-firing CeA and putative
+    pyramidal inhibited). The agreement of each cell's combined and separate cluster is reported.
+
+# ---------------------------------------------------------------- Figure 7, in vivo imaging
+- id: fig7e-no-behavioural-change
+  statement: With the expression and illumination parameters used, social preference of ChrimsonR
+    mice did not differ significantly across GH off, GH on and SI off.
+  source: Figure 7E; Results, DRNDAT input enables a functional shift in CeA dynamics, paragraph 4
+  quote: We successfully optimized viral expression and illumination parameters to minimize changes
+    in social preference with DRNDAT-CeA with ChrimsonR
+  statistics:
+  - test: mixed-effects model
+    statistic: F(1.897, 30.36) = 0.5767
+    p: 0.5591
+    n: 12 mice
+  criterion: A claim of absence, judged on the paper's test. Social:object ratio per session, time
+    in the social side over time in the object side during the 10 min test (Methods, Three chamber
+    sociability assay; the imaging chamber has the same dimensions). Sides are the left and right
+    compartments (23 cm each) of the 57.5 cm chamber, the 11.5 cm centre excluded. A mixed-effects
+    model with condition as the repeated factor (Prism's mixed-effects analysis, restricted maximum
+    likelihood, with the Geisser-Greenhouse correction that the fractional degrees of freedom
+    F(1.897, 30.36) show) on the ChrimsonR mice. Reproduced when p >= 0.05; the condition means are reported
+    either way. Total social time (Figure 7E right) is shown as a variant, under both readings the
+    paper allows (social side time, as the axis label says, and social cup interaction time, as
+    the legend says).
+
+- id: fig7gh-delta-auroc-trend
+  statement: CeA response strength to the social cup relative to the object cup (social minus object
+    auROC) tended to be larger with DRN-DAT stimulation (GH on) than without (GH off), a trend with
+    a significant Kruskal-Wallis test across conditions but a non-significant pairwise test.
+  source: Figure 7G-H; Results, DRNDAT input enables a functional shift in CeA dynamics, paragraph 5
+  quote: did find a trend indicating stronger responses toward social stimuli compared to object
+    stimuli in the GH on condition compared to the GH off condition in mice expressing ChrimsonR
+  statistics:
+  - about: social minus object auROC across GH off, GH on, SI off
+    test: Kruskal-Wallis
+    statistic: K-W statistic = 6.172
+    p: 0.0457
+    n: 429, 441 and 484 cells
+  - about: GH off against GH on
+    test: Dunn's multiple comparisons
+    p: 0.058
+  - about: GH off against SI off
+    test: Dunn's multiple comparisons
+    p: 0.9999
+    p_relation: ">"
+  expected:
+  - quantity: GH off cells
+    value: 429
+    tolerance: 42.9
+    unit: cells
+  - quantity: GH on cells
+    value: 441
+    tolerance: 44.1
+    unit: cells
+  - quantity: SI off cells
+    value: 484
+    tolerance: 48.4
+    unit: cells
+  criterion: auROC per cell and stimulus as in the Methods (In vivo microendoscopic calcium imaging).
+    A binary vector of social (or object) cup interaction in 40 ms bins against the cell's raw CNMF-E
+    trace z-scored and thresholded at 100 steps from its minimum to its maximum; area under the
+    ROC curve. Interaction, from pose, when the nose is within 1.3 times the cup diameter and the
+    cup lies in a 90 degree cone in front of the head (Methods). Open details, readings all run.
+    (1) Distance, nose to cup centre below 0.65 cup diameters (inside a circle 1.3 times the cup)
+    or below 1.3 cup diameters. (2) Head direction, from the neck or the head keypoint to the nose;
+    the cone is 45 degrees either side. (3) Time base, traces and behaviour resampled to 40 ms bins
+    as written, or the 50 ms imaging frames. (4) Period, the 10 min test only, or the whole session
+    with habituation counted as no interaction. (5) Mice, ChrimsonR mice only (the panel is
+    labelled DRNDAT-CeA:ChrimsonR) or all mice imaged. Kruskal-Wallis on social minus object auROC
+    across the three conditions with cells as samples, then Dunn's test. Reproduced when, under the
+    readings, Kruskal-Wallis gives p < 0.05 and the GH on median or mean exceeds that of GH off;
+    the Dunn p-values are reported. If the readings disagree the claim is blocked as
+    methods_underspecified.
+
+- id: fig7j-proportions-unchanged
+  statement: Single cells did not change significantly in response strength or in the proportion of
+    neurons significantly excited or inhibited by the social or object cup across the three
+    conditions (social cup excited 6.0%, 7.2% and 5.9%, inhibited 4.8%, 4.0% and 6.0%; object cup
+    excited 4.1%, 2.4% and 3.6%, inhibited 5.0%, 3.6% and 5.1%, for GH off, GH on and SI off).
+  source: Figure 7G and 7J (percentages read from the figure); Figure 7K-L for the per-mouse
+    proportions; Results, DRNDAT input enables a functional shift in CeA dynamics, paragraph 5
+  quote: At a single-cell level, we did not observe significant changes in CeA response strength or
+    proportion of neurons significantly responding to social or object stimuli across the three
+    conditions
+  expected:
+  - quantity: social-excited, GH off
+    value: 6.0
+    tolerance: 0.6
+    unit: percent of cells
+  - quantity: social-excited, GH on
+    value: 7.2
+    tolerance: 0.72
+    unit: percent of cells
+  - quantity: social-excited, SI off
+    value: 5.9
+    tolerance: 0.59
+    unit: percent of cells
+  - quantity: social-inhibited, GH off
+    value: 4.8
+    tolerance: 0.48
+    unit: percent of cells
+  - quantity: social-inhibited, GH on
+    value: 4.0
+    tolerance: 0.4
+    unit: percent of cells
+  - quantity: social-inhibited, SI off
+    value: 6.0
+    tolerance: 0.6
+    unit: percent of cells
+  - quantity: object-excited, GH off
+    value: 4.1
+    tolerance: 0.41
+    unit: percent of cells
+  - quantity: object-excited, GH on
+    value: 2.4
+    tolerance: 0.24
+    unit: percent of cells
+  - quantity: object-excited, SI off
+    value: 3.6
+    tolerance: 0.36
+    unit: percent of cells
+  - quantity: object-inhibited, GH off
+    value: 5.0
+    tolerance: 0.5
+    unit: percent of cells
+  - quantity: object-inhibited, GH on
+    value: 3.6
+    tolerance: 0.36
+    unit: percent of cells
+  - quantity: object-inhibited, SI off
+    value: 5.1
+    tolerance: 0.51
+    unit: percent of cells
+  depends_on:
+  - fig7gh-delta-auroc-trend
+  criterion: A cell is significantly excited when its auROC exceeds the 97.5th percentile of 1,000
+    auROCs from random circular shifts of the behaviour vector, inhibited when below the 2.5th
+    (Methods); shifts drawn uniformly over the session length and the seed are standard choices.
+    The auROC readings of fig7gh-delta-auroc-trend are all run. The expected percentages hold when
+    within tolerance under one reading. The paper names no test for the proportions (the legend of
+    7J-L is missing). Readings for the absence part are a chi-square test of the 3 by 2 table of
+    responsive against other cells per stimulus and sign (pooled proportions, Figure 7J); for the
+    per-mouse percentages (Figure 7K-L), a one-way repeated measures ANOVA, or Prism's
+    mixed-effects model when a mouse lacks a session (Statistical analyses, three or more groups),
+    and a Kruskal-Wallis test (the test the paper uses on the auROCs in Figure 7H). For response
+    strength the paper reports no test on the auROCs of Figure 7G; a Kruskal-Wallis test across
+    conditions on the social and on the object auROC is the reading, and the paper's own
+    Kruskal-Wallis on social minus object auROC (fig7gh-delta-auroc-trend) gives p = 0.0457, so
+    this part of the statement sits uneasily with Figure 7H; the results are reported. Reproduced
+    when the percentages are within tolerance and no proportion test finds p < 0.05; partially
+    reproduced when the tests find no difference but percentages fall outside tolerance.
+
+- id: fig7i-little-overlap
+  statement: Among 202 cells co-registered between GH off and GH on, 16 GH off and 18 GH on cells
+    were excited by the social cup, and only 2 in both sessions, suggesting that stimulation may
+    recruit separate CeA ensembles to represent social stimuli.
+  source: Figure 7I; Results, DRNDAT input enables a functional shift in CeA dynamics, paragraph 5
+  quote: in co-registered neurons, we found little overlap between CeA neurons excited by the social
+    stimulus in both GH on and GH off conditions
+  expected:
+  - quantity: co-registered cells, GH off and GH on
+    value: 202
+    tolerance: 20.2
+    unit: cells
+  - quantity: co-registered cells social-excited in GH off
+    value: 16
+    tolerance: 1.6
+    unit: cells
+  - quantity: co-registered cells social-excited in GH on
+    value: 18
+    tolerance: 1.8
+    unit: cells
+  - quantity: co-registered cells social-excited in both
+    value: 2
+    tolerance: 1
+    unit: cells
+  depends_on:
+  - fig7j-proportions-unchanged
+  criterion: Co-registration with CellReg on the CNMF-E spatial footprints, with translation and
+    rotation and its probabilistic model on spatial correlation and centroid distance (Methods);
+    the paper gives no CellReg parameters, so its defaults are used, a stated choice. The tolerance
+    on the 'both' count is one cell, since 10% of 2 is below a cell. Reproduced when the counts are
+    within tolerance under one auROC reading. Whatever the counts, the overlap is reported against
+    the number expected if the two sets were independent (16 x 18 / 202, about 1.4 in the paper).
+    The figure's inhibitory overlap (12 GH off, 11 GH on, 2 both) is reported as well.
+
+- id: fig7m-social-excited-predicts-preference
+  statement: Across mice, the proportion of socially excited CeA neurons correlated positively with
+    social preference in the GH on condition (r = 0.679, p = 0.045), but not in GH off or SI off.
+  source: Figure 7M (r and p read from the figure); Results, DRNDAT input enables a functional shift
+    in CeA dynamics, paragraph 5
+  quote: we did find a significant positive correlation between the proportion of socially-excited
+    CeA neurons and social preference in the GH on condition, but not in the GH off or SI off
+    conditions
+  statistics:
+  - about: GH on
+    test: Pearson's correlation
+    statistic: r = 0.679
+    p: 0.045
+  expected:
+  - quantity: Pearson r, GH on
+    value: 0.679
+    tolerance: 0.0679
+  depends_on:
+  - fig7j-proportions-unchanged
+  - fig7e-no-behavioural-change
+  criterion: Per mouse and condition, the fraction of its cells significantly excited by the social
+    cup (fig7j-proportions-unchanged) against its social:object ratio (fig7e-no-behavioural-change,
+    labelled soc:obj zone ratio in the figure); Pearson correlation per condition (Statistical
+    analyses). Which mice enter is not stated and the counts disagree (the Figure 7G legend says 15
+    mice, Figure 7E 12 ChrimsonR mice, Figure 7 supplement 1N-O 9, 8 and 9 mice, while r = 0.679
+    with p = 0.045 fits 9 mice in GH on and the supplement's p-values fit 10, 9 and 10); readings (a)
+    ChrimsonR mice with that session, (b) all mice imaged in that session. Reproduced when, under
+    one reading together with each auROC reading, GH on gives r > 0 with p < 0.05 and GH off and SI
+    off give p >= 0.05; r is within tolerance for full agreement, else partially reproduced. If
+    the readings disagree on the sign or significance, the claim is blocked as
+    methods_underspecified with every result shown.
+
+- id: fig7-s1no-no-other-correlations
+  statement: Social preference did not correlate with the proportion of object-excited CeA neurons
+    or of socially inhibited CeA neurons in any condition.
+  source: Figure 7 supplement 1N-O; Results, DRNDAT input enables a functional shift in CeA
+    dynamics, paragraph 5
+  quote: Importantly, we do not observe a correlation between social preference and object-excited
+    CeA neurons
+  statistics:
+  - about: object-excited, GH off
+    test: Pearson's correlation
+    statistic: r = -0.3231
+    p: 0.6328
+    n: 9 mice
+  - about: object-excited, GH on
+    test: Pearson's correlation
+    statistic: r = -0.1152
+    p: 0.7679
+    n: 8 mice
+  - about: object-excited, SI off
+    test: Pearson's correlation
+    statistic: r = 0.3438
+    p: 0.3307
+    n: 9 mice
+  - about: social-inhibited, GH off
+    test: Pearson's correlation
+    statistic: r = 0.1729
+    p: 0.3625
+    n: 9 mice
+  - about: social-inhibited, GH on
+    test: Pearson's correlation
+    statistic: r = -0.3941
+    p: 0.2939
+    n: 8 mice
+  - about: social-inhibited, SI off
+    test: Pearson's correlation
+    statistic: r = 0.0116
+    p: 0.9745
+    n: 9 mice
+  depends_on:
+  - fig7m-social-excited-predicts-preference
+  criterion: A claim of absence, judged on the paper's Pearson correlations, as in
+    fig7m-social-excited-predicts-preference with object-excited and social-inhibited fractions.
+    Reproduced when all six give p >= 0.05; r is reported either way. The printed values are not
+    self-consistent. The two GH off p-values appear swapped between panels N and O (r = -0.3231
+    gives p = 0.3625 and r = 0.1729 gives p = 0.6328 with 10 mice), and every printed r and p fits
+    10, 9 and 10 mice, not the printed N = 9, 8 and 9. The r values are taken as printed and the
+    absence is judged on each correlation's own p.
+
+- id: fig7-s1l-tdtomato-no-change
+  statement: In TdTomato control mice, the social minus object auROC did not differ across GH off,
+    GH on and SI off.
+  source: Figure 7 supplement 1L
+  quote: Difference in response strength (Δ auROC) of CeA neurons to social and object cups in
+    DRNDAT-CeA:TdTomato control mice
+  statistics:
+  - test: one-way ANOVA
+    statistic: F(2,173) = 0.4183
+    p: 0.6588
+    n: 39, 61 and 76 cells from 2 mice
+  expected:
+  - quantity: TdTomato cells, GH off
+    value: 39
+    tolerance: 3.9
+    unit: cells
+  - quantity: TdTomato cells, GH on
+    value: 61
+    tolerance: 6.1
+    unit: cells
+  - quantity: TdTomato cells, SI off
+    value: 76
+    tolerance: 7.6
+    unit: cells
+  depends_on:
+  - fig7gh-delta-auroc-trend
+  criterion: A claim of absence, judged on the paper's one-way ANOVA across conditions with cells as
+    samples, on the auROC readings of fig7gh-delta-auroc-trend. Reproduced when p >= 0.05.
+
+- id: fig7-s2-functional-clusters
+  statement: Hierarchical clustering of trial-averaged CeA responses to social and object cup
+    interactions gave 12 functional clusters.
+  source: Figure 7 supplement 2A-B; Methods, In vivo microendoscopic calcium imaging, last paragraph
+  quote: The dendrogram (left) reveals 12 functional clusters of neurons
+  expected:
+  - quantity: functional clusters
+    value: 12
+    tolerance: 1.2
+    unit: clusters
+  depends_on:
+  - fig7gh-delta-auroc-trend
+  criterion: Trials are interactions lasting at least 1 s, at least 5 s after the previous
+    interaction, merging pauses under 1.5 s (Methods). Per neuron, the z-scored average trace from
+    5 s before to 5 s after onset for the social and the object cup, concatenated; MATLAB-style
+    agglomerative clustering cut at 0.770 times the largest linkage distance (Methods). Open
+    details, readings all run. (1) Linkage, MATLAB's default (single) or Ward or average, since the
+    Methods name the 'cluster' function but no method. (2) Z-scoring of the whole trace before
+    averaging, or of the averaged trace. (3) Neurons, pooled across the three conditions (the
+    figure gives percentages per condition from one dendrogram). Reproduced when one reading
+    gives 11 to 13 clusters; the counts under all readings are reported.
+
+- id: fig7-s1ef-red-vs-blue
+  statement: Ex vivo, red light evoked ChrimsonR-mediated potentials in CeA cells with much larger
+    peak amplitude and area than the blue light (0.3 or 0.2 mW) used for imaging.
+  source: Figure 7 supplement 1D-F; Results, DRNDAT input enables a functional shift in CeA dynamics,
+    paragraph 2
+  quote: Red light evoked a PSP with a significantly greater peak amplitude
+  statistics:
+  - about: peak amplitude, 635 nm against 470 nm at 0.3 and 0.2 mW
+    test: repeated measures ANOVA
+    statistic: F(2,16) = 200.1
+    p: 0.0001
+    p_relation: "<"
+  - about: area
+    test: repeated measures ANOVA
+    statistic: F(2,16) = 404.2
+    p: 0.0001
+    p_relation: "<"
+  - about: peak amplitude, red against 0.3 mW blue
+    test: post hoc comparison (test not named)
+    p: 0.0001
+    p_relation: "<"
+  - about: peak amplitude, red against 0.2 mW blue
+    test: post hoc comparison (test not named)
+    p: 0.0001
+    p_relation: "<"
+  - about: area, red against 0.3 mW blue
+    test: post hoc comparison (test not named)
+    p: 0.0001
+    p_relation: "<"
+  - about: area, red against 0.2 mW blue
+    test: post hoc comparison (test not named)
+    p: 0.0001
+    p_relation: "<"
+  criterion: Per cell, the PSP peak amplitude and the area 0-5.5 s after light onset. The paper
+    does not say how a PSP with both EPSP and IPSP (Figure 7 supplement 1D) gives one peak
+    amplitude; the readings run are (a) the largest absolute deflection from the 5 s baseline,
+    whichever sign, and (b) the EPSP peak, or the IPSP trough magnitude in cells with only an IPSP.
+    Amplitude and area are measured for each light condition against the 5 s baseline (Methods, Ex
+    vivo electrophysiology). Repeated measures one-way ANOVA across the three lights. Reproduced
+    when both ANOVAs give p < 0.05 and red exceeds each blue power in most cells.
+
+- id: fig7-s1hi-red-during-blue
+  statement: Red light still evoked PSPs during constant blue light, though they were significantly
+    smaller than with red light alone.
+  source: Figure 7 supplement 1G-I
+  quote: Red light evoked a significantly smaller PSP in the presence of continuous blue light
+  statistics:
+  - about: peak amplitude
+    test: paired t-test
+    statistic: t(11) = 5.172
+    p: 0.0003
+  - about: potential area
+    test: paired t-test
+    statistic: t(11) = 6.431
+    p: 0.0001
+    p_relation: "<"
+  criterion: As fig7-s1ef-red-vs-blue, red alone against red during constant 0.3 mW blue light,
+    paired two-sided t-tests. Reproduced when both give p < 0.05 with smaller PSPs during blue
+    light, and a PSP is still detected during blue light in most cells.
+
+# ---------------------------------------------------------------- Figure 1, anatomy
+- id: fig1c-drn-vta-projections
+  statement: DRN-DAT and VTA-DAT neurons innervate distinct targets; VTA-DAT fluorescence is greater
+    in striatal subregions, DRN-DAT fluorescence is greater in the oval BNST and the lateral CeA.
+  source: Figure 1C; Results, DRNDAT neurons project to and exhibit dense collateralization,
+    paragraph 1
+  quote: "and significantly greater following DRN injection in the BNST oval nucleus (unpaired ttest:
+    t22=3.95, p=0.0007) and CeA lateral division"
+  statistics:
+  - about: BNST oval nucleus, DRN against VTA
+    test: unpaired t-test
+    statistic: t(22) = 3.95
+    p: 0.0007
+  - about: CeA lateral division, DRN against VTA
+    test: unpaired t-test
+    statistic: t(34) = 3.18
+    p: 0.0031
+  - about: CPu, VTA against DRN
+    test: unpaired t-test
+    statistic: t(39) = 13.23
+    p: 0.0001
+    p_relation: "<"
+
+- id: fig1h-collateralization
+  statement: Dual retrograde tracing shows that many TH+ DRN neurons project to both the BNST and
+    the CeA (46% of BNST projectors, 55% of CeA projectors), while few project to both the BLP and
+    the BNST or CeA (7.6% and 9.7%).
+  source: Figure 1H
+  quote: dual CTB-labelled TH+ cells constituted 46% of all BNST projectors and 55% of all CeA
+    projectors ... (7.6% of BNST projectors and 9.7% of CeA projectors)
+  expected:
+  - quantity: dual-labelled among BNST projectors, BNST and CeA injections
+    value: 46
+    tolerance: 4.6
+    unit: percent
+  - quantity: dual-labelled among CeA projectors, BNST and CeA injections
+    value: 55
+    tolerance: 5.5
+    unit: percent
+  - quantity: dual-labelled among BNST projectors, BNST and BLP injections
+    value: 7.6
+    tolerance: 0.76
+    unit: percent
+  - quantity: dual-labelled among CeA projectors, CeA and BLP injections
+    value: 9.7
+    tolerance: 0.97
+    unit: percent
+
+- id: fig1-s2d-fewer-blp-projectors
+  statement: TH+ BNST and CeA projectors per slice were similar in number, while BLP projectors were
+    significantly fewer.
+  source: Figure 1 supplement 2D
+  quote: The total number of TH+ BNST and CeA projectors per slice was similar (n=27.9 BNST projectors
+    and n=27.2 CeA projectors per slice), whereas TH+ BLP projectors were significantly fewer
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: Kruskal-Wallis statistic = 83.5
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: BNST projectors per slice
+    value: 27.9
+    tolerance: 2.79
+  - quantity: CeA projectors per slice
+    value: 27.2
+    tolerance: 2.72
+  - quantity: BLP projectors per slice
+    value: 6.4
+    tolerance: 0.64
+
+# ---------------------------------------------------------------- Figures 2 to 4, behaviour
+- id: fig2d-blp-place-avoidance
+  statement: Photostimulation of the DRN-DAT to BLP projection, but not the projections to the BNST
+    or CeA, produced avoidance of the stimulation zone in real-time place preference relative to
+    eYFP controls.
+  source: Figure 2B-G; Results, DRNDAT-BLP photostimulation promotes place avoidance, paragraph 2
+  quote: we found that photostimulation of the DRNDAT-BLP projection, but not the projection to the
+    BNST or CeA, produced avoidance of the stimulation zone, relative to eYFP controls
+  statistics:
+  - about: BLP, ChR2 against eYFP, ON minus OFF zone time
+    test: unpaired t-test
+    statistic: t(20) = 2.13
+    p: 0.0455
+    n: 14 ChR2 and 8 eYFP mice
+  - about: BLP, time in ON zone across the session
+    test: repeated measures two-way ANOVA, main effect of opsin
+    statistic: F(1,20) = 4.53
+    p: 0.046
+  - about: BNST
+    test: unpaired t-test
+    statistic: t(41) = 1.44
+    p: 0.156
+    n: 29 ChR2 and 14 eYFP mice
+  - about: CeA
+    test: unpaired t-test
+    statistic: t(39) = 0.828
+    p: 0.413
+    n: 28 ChR2 and 13 eYFP mice
+  criterion: As the paper tests it, ON minus OFF percent zone time in ChR2 against eYFP mice per
+    projection, unpaired two-sided t-test. Reproduced when BLP gives p < 0.05 with ChR2 lower and
+    BNST and CeA give p >= 0.05.
+
+- id: fig2-s2-no-icss
+  statement: Photostimulation of none of the three projections supported intracranial
+    self-stimulation.
+  source: Figure 2 supplement 2A-C
+  quote: did not support intra-cranial self-stimulation (ICSS) as shown by a lack of preference for
+    the active nosepoke
+  statistics:
+  - about: BNST
+    test: unpaired t-test
+    statistic: t(42) = 0.225
+    p: 0.823
+  - about: CeA
+    test: unpaired t-test
+    statistic: t(41) = 0.225
+    p: 0.823
+  - about: BLP
+    test: unpaired t-test
+    statistic: t(20) = 0.152
+    p: 0.881
+
+- id: fig3a-c-epm-no-effect
+  statement: Photostimulation of the projections had no significant effect on open arm time in the
+    elevated plus maze; BNST stimulation gave only a weak trend toward more open arm time.
+  source: Figure 3A-C; Results, DRNDAT-BNST photostimulation promotes non-social exploration
+  quote: resulted in a weak trend toward increased time spent in the open arm of the EPM
+  statistics:
+  - about: BNST, ON minus first OFF epoch, ChR2 against eYFP
+    test: unpaired t-test
+    statistic: t(27) = 1.39
+    p: 0.177
+  - about: CeA
+    test: unpaired t-test
+    statistic: t(35) = 0.639
+    p: 0.527
+  - about: BLP
+    test: unpaired t-test
+    statistic: t(20) = 0.759
+    p: 0.457
+  - about: BNST, light by group across epochs
+    test: two-way ANOVA, interaction
+    statistic: F(2,50) = 2.008
+    p: 0.145
+  - about: CeA, light by group across epochs
+    test: two-way ANOVA, interaction
+    statistic: F(2,72) = 0.118
+    p: 0.889
+  - about: BLP, light by group across epochs
+    test: two-way ANOVA, interaction
+    statistic: F(2,40) = 0.354
+    p: 0.704
+
+- id: fig3-s1-oft-no-effect
+  statement: Photostimulation did not change time in the centre or distance travelled in the open
+    field for any projection.
+  source: Figure 3 supplement 1
+  quote: Photostimulation had no significant effect on time spent in the center of the open field
+  statistics:
+  - about: centre time, BNST
+    test: two-way ANOVA, light by group interaction
+    statistic: F(2,90) = 0.2105
+    p: 0.811
+  - about: centre time, CeA
+    test: two-way ANOVA, light by group interaction
+    statistic: F(2,92) = 0.528
+    p: 0.592
+  - about: centre time, BLP
+    test: two-way ANOVA, light by group interaction
+    statistic: F(2,40) = 0.181
+    p: 0.835
+  - about: distance travelled, BNST
+    test: two-way RM ANOVA, light by group interaction
+    statistic: F(2,90) = 0.209
+    p: 0.812
+  - about: distance travelled, CeA
+    test: two-way RM ANOVA, light by group interaction
+    statistic: F(2,92) = 0.108
+    p: 0.898
+  - about: distance travelled, BLP
+    test: two-way RM ANOVA, light by group interaction
+    statistic: F(2,40) = 0.252
+    p: 0.771
+
+- id: fig3g-bnst-rearing
+  statement: Photostimulation of the DRN-DAT to BNST projection increased rearing during the
+    juvenile intruder assay; CeA and BLP stimulation did not.
+  source: Figure 3G-I; Results, DRNDAT-BNST photostimulation promotes non-social exploration
+  quote: photoactivation of the DRNDAT-BNST projection increased rearing behavior
+  statistics:
+  - test: paired t-test
+    statistic: t(23) = 2.32
+    p: 0.0298
+    n: 24 ChR2 mice
+
+- id: fig4e-cea-social-preference
+  statement: Photostimulation of the DRN-DAT to CeA projection increased the social:object ratio in
+    the three-chamber assay; BNST and BLP stimulation had no significant effect.
+  source: Figure 4D-F; Results, DRNDAT-CeA photostimulation promotes sociability, paragraph 1
+  quote: This revealed that optical stimulation of the DRNDAT-CeA projection increased social
+    preference, but no significant effect was observed
+  statistics:
+  - about: CeA ChR2, ON against OFF
+    test: paired t-test
+    statistic: t(28) = 2.91
+    p: 0.021
+    corrected: corrected for multiple comparisons (method not named)
+    n: 29 mice
+  - about: BNST ChR2
+    test: paired t-test
+    statistic: t(26) = 0.552
+    p: 0.586
+    n: 27 mice
+  - about: BLP ChR2
+    test: paired t-test
+    statistic: t(13) = 1.62
+    p: 0.13
+    n: 14 mice
+  - about: CeA ChR2, social zone time
+    test: paired t-test
+    statistic: t(28) = 2.88
+    p: 0.015
+    corrected: corrected for multiple comparisons
+
+- id: fig4h-cea-rank-correlation
+  statement: In DRN-DAT to CeA ChR2 mice the light-induced change in social zone time correlated
+    positively with social dominance.
+  source: Figure 4H; Results, DRNDAT-CeA photostimulation promotes sociability, paragraph 1
+  quote: we found that the optically-induced change in social preference in DRNDAT-CeA mice was
+    positively correlated with social dominance
+  statistics:
+  - test: Pearson's correlation
+    statistic: r = 0.549
+    p: 0.002
+    n: 29 mice
+  expected:
+    quantity: Pearson r
+    value: 0.549
+    tolerance: 0.0549
+
+- id: fig4k-cea-face-investigation
+  statement: Photostimulation of the DRN-DAT to CeA projection modestly increased face investigation
+    of a juvenile in the home cage.
+  source: Figure 4J-L; Results, DRNDAT-CeA photostimulation promotes sociability, paragraph 2
+  quote: photoactivation of the DRNDAT-CeA projection modestly increased face sniffing of the
+    juvenile mouse
+  statistics:
+  - test: paired t-test
+    statistic: t(22) = 2.36
+    p: 0.027
+    n: 22 ChR2 mice (as printed; a paired t-test with 22 degrees of freedom implies 23)
+
+- id: fig4r-markov-transitions
+  statement: In a two-state Markov model of juvenile intruder behaviour, CeA photostimulation changed
+    the probability of transitions between social and nonsocial states but not of transitions within
+    a state.
+  source: Figure 4P-R; Results, DRNDAT-CeA photostimulation promotes sociability, paragraph 4
+  quote: did not significantly change the probability of transitioning within social and nonsocial
+    state (Figure 4Q ), but did significantly change the probability of transitioning between social
+    and nonsocial states
+  statistics:
+  - about: across-state transitions, opsin by transition
+    test: two-way ANOVA, interaction
+    statistic: F(1,68) = 4.452
+    p: 0.0385
+  - about: within-state transitions
+    test: two-way ANOVA, interaction
+    statistic: F(1,68) = 3.385
+    p: 0.0702
+
+- id: fig4-s2d-baseline-correlations
+  statement: Across baseline behaviour, social dominance correlated weakly and negatively with open
+    arm time, and social sniffing correlated robustly and negatively with rearing.
+  source: Figure 4 supplement 2D; Results, DRNDAT-CeA photostimulation promotes sociability,
+    paragraph 3
+  quote: This showed a weak, negative correlation between social dominance and open arm time in the
+    elevated plus maze ... revealed a robust negative correlation between the time spent engaged in
+    social sniffing and time spent rearing
+
+# ---------------------------------------------------------------- Figure 5, receptor expression
+- id: fig5-receptor-segregation
+  statement: In the BNST and CeA terminal fields neuropeptide receptors (Vipr2, Npbwr1) were densely
+    and co-expressed, with Drd2 more abundant than Drd1, while the BLP terminal field was dominated
+    by Drd1.
+  source: Figure 5; Results, DRNDAT terminal fields contain spatially-segregated dopamine and
+    neuropeptide receptor populations, paragraph 2
+  quote: dopamine receptor expression was relatively more sparse, with Drd2 more abundant than Drd1
+    ... The DRNDAT terminal field of the BLP displayed a markedly different receptor expression
+    pattern, dominated by Drd1
+  statistics:
+  - about: oval BNST, probe by AP position
+    test: two-way ANOVA, interaction
+    statistic: F(9,160) = 6.194
+    p: 0.0001
+    p_relation: "<"
+  - about: CeL, probe by AP position
+    test: two-way ANOVA, interaction
+    statistic: F(12,220) = 8.664
+    p: 0.0001
+    p_relation: "<"
+  - about: BLP, probe by AP position
+    test: two-way ANOVA, interaction
+    statistic: F(15,176) = 2.165
+    p: 0.0091
+
+# ---------------------------------------------------------------- Figure 8, photoinhibition
+- id: fig8c-cea-inhibition-blocks-rebound
+  statement: Photoinhibition of DRN-DAT terminals in the CeA, but not the BNST or BLP, blocked the
+    increase in social preference after 24 h of isolation.
+  source: Figure 8C; Results, DRNDAT-CeA photoinhibition blocks isolation-induced sociability
+  quote: However, inhibition of DRNDAT terminals in CeA, but not BNST or BLP, blocked the rebound in
+    sociability associated with acute social isolation
+  statistics:
+  - about: CeA, light by group
+    test: two-way RM ANOVA, interaction
+    statistic: F(1,30) = 4.909
+    p: 0.0344
+    n: 20 NpHR and 12 eYFP mice
+  - about: CeA NpHR against eYFP after isolation
+    test: multiple comparisons test
+    p: 0.0017
+    corrected: adjusted
+  - about: CeA, isolated minus grouped, NpHR against eYFP
+    test: unpaired t-test
+    statistic: t(29) = 2.177
+    p: 0.0377
+  - about: BNST, light by group
+    test: two-way RM ANOVA, interaction
+    statistic: F(1,10) = 1.005
+    p: 0.3397
+  - about: BLP, light by group
+    test: two-way RM ANOVA, interaction
+    statistic: F(1,12) = 3.346
+    p: 0.0923
+
+- id: fig8d-cea-inhibition-rank
+  statement: In CeA NpHR mice the change in social zone time after isolation correlated negatively
+    with social dominance.
+  source: Figure 8D
+  quote: showing significant negative correlation in NpHRCeA mice
+  statistics:
+  - test: Pearson's correlation
+    statistic: r = -0.500
+    p: 0.0414
+    n: 20 mice
+  expected:
+    quantity: Pearson r
+    value: -0.5
+    tolerance: 0.05
+  criterion: Pearson correlation of relative dominance with the change in social zone time
+    (isolated minus grouped) in CeA NpHR mice (Figure 8D legend). The printed values are not
+    self-consistent (r = -0.500 with N = 20 gives p = 0.025; p = 0.0414 fits 17 mice), so r is
+    judged within tolerance and the sign and p < 0.05 are required.
+
+- id: fig8-s1-no-effect-group-housed
+  statement: Photoinhibition of the terminals in group-housed mice did not change social preference
+    in any region.
+  source: Figure 8 supplement 1B
+  quote: Photoinhibition had no significant effect on social:object ratio in group-housed mice
+  statistics:
+  - about: CeA
+    test: two-way ANOVA, light by group interaction
+    statistic: F(1,31) = 0.1353
+    p: 0.7154
+  - about: BNST
+    test: two-way ANOVA, light by group interaction
+    p: 0.4571
+  - about: BLP
+    test: two-way ANOVA, light by group interaction
+    statistic: F(1,14) = 2.517
+    p: 0.1349
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig6no-cea-clusters. Dropped the "no normalization" reading. Figure 6L shows the max-min normalized features on a 0-100 scale, which accounts for the dendrogram heights, and the Methods and legend both say max-min. Also set the proportions over all cells of a cluster, since the Figure 6O pies include cells with no response.
+  - fig6pq-blp-clusters. The denominators were the response-labelled cells; the Figure 6Q pies include "none" cells, and 93% and 62% fit 13 of 14 and 8 of 13 cells (27 in all) only with all cells counted. Changed to all cells of each cluster and dropped the no-normalization reading, as above.
+  - fig6-s1ln-combined-clusters. Replaced the 80% agreement bound, a number chosen by the writer, with the response pattern per region and cluster that Figure 6 supplement 1N shows; agreement is still reported.
+  - fig7e-no-behavioural-change. The statement said the parameters were tuned so that preference did not change; the paper says they were optimized to minimize changes. Restated as no significant difference. Added the Geisser-Greenhouse correction that the fractional degrees of freedom show.
+  - fig7j-proportions-unchanged. Source now names Figure 7G and 7K-L as well as 7J. The criterion invented only a chi-square test for the per-mouse data; added the Methods' choice for three or more groups (repeated measures ANOVA or mixed-effects model) beside Kruskal-Wallis, and a reading for the response-strength part, which had no test, noting that Figure 7H's own Kruskal-Wallis is significant.
+  - fig7i-little-overlap. "Recruits" overstated the paper's "may recruit"; restated.
+  - fig7m-social-excited-predicts-preference. Added that r = 0.679 with p = 0.045 fits 9 mice in GH on and that the supplement's p-values fit 10, 9 and 10 mice, to the list of mouse counts the readings must cover.
+  - fig7-s1no-no-other-correlations. The note flagged only the GH off pair of panel N. Checked all six; the two GH off p-values are swapped between panels N and O, and every printed r and p fits 10, 9 and 10 mice, not the printed 9, 8 and 9. Recorded in the criterion; statistics left as printed.
+  - fig7-s1ef-red-vs-blue. Added the four post hoc results of the legend (red against each blue power, p < 0.0001). The single amplitude measure for a mixed PSP was presented as given; named it open with two readings.
+  - fig3a-c-epm-no-effect. Added the CeA and BLP two-way ANOVA interactions of the Figure 3 legend.
+  - fig3-s1-oft-no-effect. The statement covers distance travelled but the statistics did not; added the three RM ANOVA interactions.
+  - fig4k-cea-face-investigation. Noted that t(22) for a paired test implies 23 mice while the legend prints N = 22.
+  - fig8d-cea-inhibition-rank. Added a criterion noting that r = -0.500 with N = 20 gives p = 0.025, not the printed 0.0414 (which fits 17 mice).
+  - Open, not settled. The EPSP and IPSP detection thresholds (fig6df), the linkage method of the MATLAB functional clustering (fig7-s2), the CellReg parameters (fig7i, defaults used as a stated choice) and the interaction geometry and time base (fig7gh) are not given by the paper; they stay as named readings. The paper links no analysis code and the Figure 7J-M legend is missing from the PDF itself.
+  - Coverage. The main findings of Figures 1 to 8 and their supplements have claims; the null correlations with dominance (Figures 2H-J, 3D-F, 3J-L, 4M-O) have none, which is acceptable as they are secondary. All claims come from this paper.
