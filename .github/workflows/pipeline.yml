@@ -1,9 +1,10 @@
 name: Attempt pipeline
 
-# Whole attempts on several datasets at once:
-#   gh workflow run pipeline.yml -f datasets="000628 000939 DANDI:001075" -f max_parallel=3
-# Each dataset goes through attempt-sequence.yml (author, two verification
-# rounds, two revisions), and at most max_parallel datasets run at the same
+# Whole attempts on several papers at once:
+#   gh workflow run pipeline.yml -f datasets="tingley-2021 000939 DANDI:001075" -f max_parallel=3
+# Each is a paper key, or a dataset listed for a paper in papers/datasets/ (docs/paper-first.md). Each paper goes
+# through attempt-sequence.yml (author, two verification
+# rounds, two revisions), and at most max_parallel papers run at the same
 # time. A dataset that fails stops on its own; the others go on. Every agent
 # run uses the same subscription token, so its usage limits are shared: the
 # more in parallel, the sooner they are reached. When a dataset's sequence is
@@ -14,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       datasets:
-        description: "Datasets (000147, DANDI:000147 or <archive>:<id>), separated by spaces or commas"
+        description: "Papers (tingley-2021), or datasets listed for one (000147, DANDI:000147), separated by spaces or commas"
         required: true
       max_parallel:
         description: "How many datasets to run at the same time"
@@ -40,23 +41,24 @@ jobs:
           DATASETS: ${{ inputs.datasets }}
           MAX_PARALLEL: ${{ inputs.max_parallel }}
         run: |
+          pip install -q pyyaml
           python3 - <<'PY'
           import json, os, re, sys
           sys.path.insert(0, "tools")
-          import datasets
+          import paper_records
           given = [d for d in re.split(r"[\s,]+", os.environ["DATASETS"]) if d]
           folders, bad = [], []
           for d in given:
               try:
-                  folders.append(datasets.folder(datasets.parse(d)))
-              except ValueError:
+                  folders.append(paper_records.resolve(d))
+              except (ValueError, SystemExit):
                   bad.append(d)
           if bad or not folders:
-              sys.exit(f"::error::Not datasets: {bad or 'none given'}")
+              sys.exit(f"::error::Not papers: {bad or 'none given'}")
           if not re.fullmatch(r"[1-9][0-9]?", os.environ["MAX_PARALLEL"]):
               sys.exit("::error::max_parallel must be a number from 1 to 99")
           folders = list(dict.fromkeys(folders))
-          print("Datasets:", ", ".join(folders))
+          print("Papers:", ", ".join(folders))
           with open(os.environ["GITHUB_OUTPUT"], "a") as out:
               out.write(f"folders={json.dumps(folders)}\n")
           PY
@@ -67,9 +69,9 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(inputs.max_parallel) }}
       matrix:
-        dataset: ${{ fromJSON(needs.plan.outputs.folders) }}
+        paper: ${{ fromJSON(needs.plan.outputs.folders) }}
     uses: ./.github/workflows/attempt-sequence.yml
     with:
-      dataset: ${{ matrix.dataset }}
+      paper: ${{ matrix.paper }}
       model: ${{ inputs.model }}
     secrets: inherit
