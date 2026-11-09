@@ -1,0 +1,792 @@
+# Claims for Schuck, Cai, Wilson & Niv (2016), Neuron 91:1402-1412, on CRCNS data set ofc-4
+# (doi:10.6080/K0FN14CH).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-04,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record with its Supplemental Information, as supplied under paper/
+# (PyMuPDF text of the journal PDF): Summary, Results, Discussion, Experimental Procedures, the
+# legends of Figures 1 to 5, and the supplement (legends of Figures S1 to S5, Table S1, and the
+# Supplemental Results 1.1 to 1.5). The supplement's text carries line numbers between its
+# lines; quotes from it are cut with "..." at those breaks. The paper links no analysis code
+# (it names SPM8, the PhysIO toolbox, LIBSVM, the Princeton MVPA toolbox, R with lmer and boot,
+# neuRosim and AFNI), so no code was read. The data descriptor names BrainIAK for building
+# design matrices; that is not the paper's code.
+#
+# Data the paper used. 30 adults scanned, 3 excluded, 27 analysed (13 female, mean age 22.18,
+# range 18 to 31), most with five runs (mean 4.9). Face-house age-judgment task with
+# mini-blocks; 16 states from previous category, previous age, current category and current
+# age, labelled (Ho)Fy and so on; trial classes Enter (8 states, category switch), Internal
+# (4 states) and Exit (4 states). Five scanner runs, 485 trials in all, after three training
+# blocks of 97 trials outside the scanner. 3 T Siemens Skyra, EPI with TR 2.4 s, 46 slices.
+# Measured variables: per-trial state, correctness and reaction time; fMRI. Analyses on 27
+# participants, except the trial-wise decoding around errors (24 participants; two lost error
+# time stamps, one had errors only at the start of scans).
+#
+# The CRCNS data set, by its description, holds the 24 participants of the trial-wise analysis
+# (the first with four runs, the others five): slice-timing corrected and realigned fMRI time
+# series within each participant's OFC mask (the Kahnt et al. 2012 mask, in native space),
+# design matrices built with AFNI from boxcars from stimulus onset to response, with 16 state
+# columns plus 'first' and 'err', nuisance time courses (four Legendre drift terms and six
+# motion parameters), and per-state event files with onsets, reaction times and stimulus
+# durations. It holds no whole-brain data, no other ROI, no cardiac or respiratory regressors,
+# and no training-session data. Claims on whole-brain maps, other ROIs and training are kept
+# because they are main findings; their data are not in the description.
+#
+# Method details fixed by the paper (Experimental Procedures, fMRI Data Analysis, State Space
+# Similarities, Behavioral Analyses, and the Supplemental Results). The first trial of each
+# run, error trials and trials following errors are left out of all analyses but error rates.
+# GLM on realigned, non-normalized, unsmoothed data with one regressor per state (boxcar of
+# the trial's reaction time, convolved with the canonical HRF), nuisance regressors and the
+# run mean, giving one beta map per state and run. Beta maps z-scored and spatially smoothed
+# within each run. Linear SVM (LIBSVM, cost 1), leave-one-run-out, trained and tested on the
+# 16 states; the test set is the held-out run's beta maps. Component accuracies come from
+# comparing predicted and true state on each of the four components, with no new classifier.
+# Trial-wise decoding uses the same classifier, tested on raw data smoothed at FWHM 3 mm and
+# z-scored run-wise, taking the volume 2 TRs after stimulus onset (4.8 to 7.2 s). Similarity
+# is the Pearson correlation of OFC beta maps between runs (each run's maps against all maps
+# of the other runs, averaged, then averaged over runs), with negative correlations set to
+# NaN. Reaction times are medians within each factor cell. Mixed-effects models (lmer) have
+# participants as a random effect on the intercept and on the linear effect of trial or
+# errors, tested by Wald chi-square. Chance is 6.25% for 16-way, 12.5% for 8-way and 50% for
+# a component.
+#
+# Details the paper leaves open, used by several claims (each claim's criterion names those it
+# needs). (O1) The smoothing kernel for the beta maps is not given; readings are 3 mm FWHM, the
+# kernel given for the trial-wise test data, and no smoothing. Smoothing needs voxel positions;
+# if the data set has none, only the unsmoothed reading can be run. (O2) Which way the beta
+# maps are z-scored is not given; readings are (a) each voxel across the state maps of a run,
+# (b) each map across voxels. (O3) How trials following errors are left out of the GLM is not
+# given; readings are (a) as a separate nuisance regressor, (b) merged with the 'err'
+# regressor. (O4) Where a t-test against chance is not said to be one-sided, the side is open;
+# readings are one-sided (as the paper states for Figure 2B and Figure S2) and two-sided.
+# (O5) The paper's GLM had 26 cardiac regressors and SPM8; the data set's design matrix was
+# built with AFNI and has drift and motion terms only. The paper's nuisance set cannot be
+# rebuilt from the data set as described, which the author records as a deviation.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: ofc-4
+  doi: 10.6080/K0FN14CH
+paper: doi:10.1016/j.neuron.2016.08.019
+claims:
+- id: behavior-error-rate
+  statement: Participants performed the task nearly without errors, with a mean error rate of
+    2.3% in the scanner.
+  source: Results, paragraph 4 (after Figure 1); Supplemental Results 1.1
+  quote: "Participants performed the task with near optimal performance (mean error rate: 2.3%; Figure S1)"
+  expected:
+    quantity: mean error rate in the scanner
+    value: 2.3
+    tolerance: 0.23
+    unit: percent
+  criterion: Error rate per participant over the trials of the five runs, then the mean over
+    participants. Whether time-outs count as errors is open (both led to feedback, Methods,
+    Task; time-outs were 0.3% of trials, Supplemental Results 1.1, more than the tolerance);
+    readings are errors only, and errors plus time-outs. The denominator is open; readings are
+    (a) all trials including the repetitions that follow errors, (b) all trials but the first
+    of each run. Reproduced when under one reading the mean is within tolerance. The data set holds 24 of the 27
+    participants, so the value is compared as given and the subset is noted.
+- id: supp-errors-by-trial-class
+  statement: Error rates differed by trial class (Enter 3.4%, Exit 2.3%, Internal 1.4%).
+  source: Supplemental Results 1.1, paragraph 1
+  quote: "but were affected by the class ... of the trial (Enter: 3.4%, Exit: 2.3%, Internal: 1.4%"
+  statistics:
+  - test: mixed-effects model, Wald chi-square
+    statistic: χ2(2) = 20.8
+    p: 0.001
+    p_relation: "<"
+    n: 27 participants
+  expected:
+  - quantity: error rate, Enter trials
+    value: 3.4
+    tolerance: 0.34
+    unit: percent
+  - quantity: error rate, Exit trials
+    value: 2.3
+    tolerance: 0.23
+    unit: percent
+  - quantity: error rate, Internal trials
+    value: 1.4
+    tolerance: 0.14
+    unit: percent
+  criterion: Trial class of each trial from its state (Enter when previous and current category
+    differ, Internal when category and age repeat, Exit when the age changes; Figure S1). A
+    mixed-effects model of errors on trial class with participants as random intercept, tested
+    by Wald chi-square (Methods, Behavioral Analyses). The model family is open; readings are
+    (a) a linear mixed model on each participant's error rate per class, (b) a logistic mixed
+    model on trial-wise errors. Reproduced when under one reading the class effect has p <
+    0.001, the three rates are within tolerance and their order is Enter, Exit, Internal.
+- id: supp-errors-stable-over-blocks
+  statement: Error rates did not change over the blocks of the main experiment.
+  source: Supplemental Results 1.1, paragraph 1
+  quote: Behavioral error rates were 2.3% during the main experiment, with no evidence for error
+    rates ... changing over time (main effect Block
+  statistics:
+  - test: mixed-effects model, main effect of block, Wald chi-square
+    statistic: χ2(1) = 0.08
+    p: 0.77
+    n: 27 participants
+  criterion: A claim of absence. A mixed-effects model of errors on block (scanner run) as a
+    linear term, participants as random effect on intercept and on the block slope (Methods,
+    Behavioral Analyses), Wald chi-square at p < 0.05. Reproduced when the block effect is not
+    significant; the slope is reported either way. The model family is open as in
+    supp-errors-by-trial-class; both readings are shown and the absence is judged on (a), the
+    linear mixed model, as the Methods name lmer, which fits linear models.
+- id: supp-errors-not-by-age-category
+  statement: Error rates were not affected by the age or the category judged, nor by their
+    interaction.
+  source: Supplemental Results 1.1, paragraph 1
+  quote: Error rates were not affected ... by factors Age, Category or their interaction (all p’s > .13)
+  statistics:
+  - test: mixed-effects model, Wald chi-square
+    p: 0.13
+    p_relation: ">"
+    n: 27 participants
+  criterion: A claim of absence. A mixed-effects model of errors on current age, current
+    category and their interaction, participants as random intercept, Wald chi-square at p <
+    0.05. Reproduced when none of the three terms is significant. Model family as in
+    supp-errors-by-trial-class, judged on reading (a), with (b) shown.
+- id: supp-training-errors-higher
+  statement: Errors were higher during training than in the main experiment in the scanner.
+  source: Supplemental Results 1.1, paragraph 1
+  quote: errors were significantly higher during ... training than during the main experiment, t(26) = 5.6, p < .001
+  statistics:
+  - test: t-test
+    statistic: t(26) = 5.6
+    p: 0.001
+    p_relation: "<"
+    n: 27 participants
+  criterion: Paired t-test across participants of training against scanner error rates.
+    Needs the training session (three blocks of 97 trials outside the scanner), which the data
+    set's description does not list.
+- id: supp-training-rt-unchanged
+  statement: Reaction times did not change between training and the main experiment (991
+    against 985 ms).
+  source: Supplemental Results 1.1, paragraph 1
+  quote: not change between training and main experiment (991 vs 985 ms, t(26) = 0.27, p = .79)
+  statistics:
+  - test: t-test
+    statistic: t(26) = 0.27
+    p: 0.79
+    n: 27 participants
+  criterion: A claim of absence, judged by a paired t-test at p < 0.05 on per-participant
+    median RTs. Needs the training session, which the data set's description does not list.
+- id: supp-rt-stable-over-blocks
+  statement: Reaction times did not change between blocks of the main experiment.
+  source: Supplemental Results 1.1, paragraph 1
+  quote: nor ... between blocks within the main experiment (χ2(1) = 1.7, p = .18)
+  statistics:
+  - test: mixed-effects model, Wald chi-square
+    statistic: χ2(1) = 1.7
+    p: 0.18
+    n: 27 participants
+  criterion: A claim of absence. Per participant and block, the median RT of correct trials
+    (Methods, Behavioral Analyses, RTs are medians within each factor cell); a linear mixed
+    model of RT on block as a linear term with participants as random effect on intercept and
+    slope, Wald chi-square at p < 0.05. Reproduced when the block effect is not significant.
+    Whether error trials enter the RT medians is open; readings are correct trials only (the
+    paper leaves error trials out of all but error-rate analyses) and all responded trials.
+- id: supp-rt-faces-faster
+  statement: Reaction times were faster for faces than for houses (944 against 1028 ms), with no
+    effect of age and no interaction.
+  source: Supplemental Results 1.1, paragraph 1
+  quote: by age (p = .67), but were faster for faces than for houses (944 vs 1028 ms
+  statistics:
+  - about: category
+    test: mixed-effects model, Wald chi-square
+    statistic: χ2(1) = 78.3
+    p: 0.001
+    p_relation: "<"
+  - about: age
+    test: mixed-effects model, Wald chi-square
+    p: 0.67
+  - about: age by category interaction
+    test: mixed-effects model, Wald chi-square
+    p: 0.98
+  expected:
+  - quantity: median RT, faces
+    value: 944
+    tolerance: 94.4
+    unit: ms
+  - quantity: median RT, houses
+    value: 1028
+    tolerance: 102.8
+    unit: ms
+  criterion: Per participant, median RT of correct trials in each cell of current category by
+    current age; a linear mixed model of these medians on category, age and their interaction
+    with participants as random intercept, Wald chi-square. The RT for faces and houses is the
+    mean over participants of their category medians; whether it is that or the median over
+    trials pooled is open, and both are shown. Reproduced when the category effect has p <
+    0.001 with faces faster, the age effect and interaction have p > 0.05, and both RTs are
+    within tolerance under one reading.
+- id: supp-rt-by-trial-class
+  statement: Reaction times differed by trial class, slightly faster on repeat (Internal) trials
+    than on the other classes.
+  source: Supplemental Results 1.1, paragraph 1
+  quote: RTs were also affected by trial ... class with slightly faster trials in Repeat than in the other trial classes
+  statistics:
+  - test: mixed-effects model, Wald chi-square
+    statistic: χ2(2) = 153.7
+    p: 0.001
+    p_relation: "<"
+  criterion: Per participant, median RT of correct trials per trial class; a linear mixed model
+    on trial class with participants as random intercept, Wald chi-square. "Repeat" is read as
+    the Internal class, the trials in which category and age repeat (Figure 1 legend).
+    Reproduced when the class effect has p < 0.001 and the Internal median is below both the
+    Enter and the Exit median.
+- id: fig2a-16way-decoding
+  statement: The 16 task states can be decoded from multivoxel patterns in anatomically defined
+    OFC above chance (mean 12.2% against 6.25%).
+  source: Results, paragraph 5; Figure 2A
+  quote: we could decode significantly above chance in which of the 16 possible task-states
+    participants were during the task (mean classification accuracy 12.2%, i.e., almost twice the 6.25% chance baseline
+  statistics:
+  - test: t-test against chance
+    statistic: t26 = 9.04
+    p: 0.001
+    p_relation: "<"
+    n: 27 participants
+  expected:
+    quantity: mean 16-way classification accuracy in OFC
+    value: 12.2
+    tolerance: 1.22
+    unit: percent
+  criterion: As the Methods (fMRI Data Analysis) fix it. One beta map per state and run from a
+    GLM of the OFC time series with the 16 state regressors, the 'first' and 'err' regressors,
+    nuisance regressors and the run mean; the beta maps z-scored and smoothed within run
+    (open, O1 and O2); linear SVM, cost 1, leave-one-run-out, tested on the held-out run's 16
+    beta maps; accuracy per participant over all test maps. One-sample t-test of the
+    participants' accuracies against 6.25%, side open (O4). Post-error trials as O3.
+    Reproduced when under one reading the mean is within tolerance and p < 0.001; partially
+    reproduced when the accuracy is above chance at p < 0.05 but outside tolerance.
+- id: fig2-two-back-state-space
+  statement: A classifier for an alternative 16-state space built from the task-irrelevant
+    category and age of two trials back decodes worse than the hypothesized state space (8.1%
+    against 12.2%).
+  source: Results, paragraph 5
+  quote: Training and testing a classifier on this state space resulted in lower 16-way
+    classification compared to the hypothesized state space (8.1% versus 12.2%, t26 = 2.8, p = 0.01)
+  statistics:
+  - test: t-test
+    statistic: t26 = 2.8
+    p: 0.01
+    n: 27 participants
+  depends_on:
+  - fig2a-16way-decoding
+  expected:
+    quantity: mean 16-way accuracy, two-back state space
+    value: 8.1
+    tolerance: 0.81
+    unit: percent
+  criterion: States relabelled by current category and age with the category and age of two
+    trials back in place of one trial back (Results, paragraph 5), each trial's label taken
+    from the trial sequence; a new GLM with these 16 regressors, then the analysis of
+    fig2a-16way-decoding unchanged. Paired t-test across participants against the
+    hypothesized space, two-sided (the paper does not say one-sided here). Reproduced when the
+    two-back accuracy is within tolerance and below the hypothesized accuracy with p < 0.05.
+    How trials are labelled when two trials back is the first trial of a run or an error is
+    open; readings are leaving such trials out (as a nuisance regressor) and labelling them
+    from the trials as presented.
+- id: fig2b-hidden-components
+  statement: Within the 16-way classification, the three hidden, task-relevant components
+    (previous category, previous age, current category) are each classified above chance.
+  source: Results, paragraph 5; Figure 2B
+  quote: In contrast, the category and age from one trial ago, as well as the current category—all hidden and
+    task-relevant components—were classified above chance
+  statistics:
+  - about: previous category
+    test: t-test against chance, one-sided
+    statistic: t26 > 3
+    p: 0.014
+  - about: previous age
+    test: t-test against chance, one-sided
+    statistic: t26 > 3
+    p: 0.003
+  - about: current category
+    test: t-test against chance, one-sided
+    statistic: t26 > 3
+    p: 0.007
+  depends_on:
+  - fig2a-16way-decoding
+  criterion: From the predictions of fig2a-16way-decoding, each test map scored correct on a
+    component when predicted and true state agree on it (Methods, fMRI Data Analysis); per
+    participant the proportion correct; one-sided one-sample t-test against 50%. The paper's
+    numbers do not agree with each other (t26 > 3 gives a one-sided p below 0.003, not 0.014
+    or 0.007), so the p-values may come from the bootstrap of Figure S2B (participants
+    resampled with replacement, 10000 iterations, Supplemental Results 1.2); readings are the
+    t-test and that bootstrap. Reproduced when under one reading all three components have p
+    < 0.05; partially reproduced when one or two do.
+- id: fig2b-current-age-absent
+  statement: The observable component, current age, is not classified above chance within the
+    16-way classification.
+  source: Results, paragraph 5; Figure 2B
+  quote: the analysis revealed no evidence that the current age, which was task-relevant but
+    observable given the current category, contributed to state representations in the OFC
+    (rightmost bar in Figure 2B, p > 0.72
+  statistics:
+  - test: test against chance, one-sided (test not named)
+    p: 0.72
+    p_relation: ">"
+  depends_on:
+  - fig2a-16way-decoding
+  criterion: A claim of absence. Current-age accuracy as in fig2b-hidden-components, one-sided
+    one-sample t-test against 50% at p < 0.05, the test the Results imply for Figure 2B (t26);
+    the bootstrap of Figure S2B, which the sentence cites, is shown as a variant. Reproduced
+    when the t-test is not significant.
+- id: fig2b-two-back-absent
+  statement: The task-irrelevant category and age from two trials back are not classified above
+    chance by the two-back classifier.
+  source: Results, paragraph 5; Figure 2B
+  quote: This analysis confirmed that no information about irrelevant events from two trials ago
+    could be detected (two leftmost bars in Figure 2B, p > 0.66)
+  statistics:
+  - test: test against chance, one-sided (test not named)
+    p: 0.66
+    p_relation: ">"
+  depends_on:
+  - fig2-two-back-state-space
+  criterion: A claim of absence. Component accuracies for category and age of two trials back
+    from the predictions of fig2-two-back-state-space, one-sided one-sample t-test against
+    50% at p < 0.05, the test the Results imply for Figure 2B (t26); the bootstrap of Figure
+    S2B is shown as a variant. Reproduced when neither t-test is significant.
+- id: figs2c-8way-decoding
+  statement: Decoding an 8-state space without current age (previous category, previous age,
+    current category) is above chance (16.7%), and its three components are decoded above
+    baseline (53.5%, 52.9%, 55.5%).
+  source: Results, paragraph 6; Supplemental Results 1.2, paragraph 2; Figure S2C
+  quote: Decoding eight different states in the OFC in this manner, we indeed found significant
+    decoding accuracy, albeit at a slightly lower level relative to chance baseline (16.7%,
+    corresponding to 4.2% above chance baseline, t26 = 3.3, p = 0.002); all components involved
+    in this reduced state space also showed above baseline decoding (53.5%, 52.9%, and 55.5%
+  statistics:
+  - about: 8-way accuracy against chance, main text
+    test: t-test against chance
+    statistic: t26 = 3.3
+    p: 0.002
+    n: 27 participants
+  - about: 8-way accuracy against chance, Supplemental Results 1.2
+    test: t-test against chance
+    statistic: t26 = 6.6
+    p: 0.001
+    p_relation: "<"
+  - about: previous category
+    test: t-test against chance
+    p: 0.03
+  - about: previous age
+    test: t-test against chance
+    p: 0.09
+  - about: current category
+    test: t-test against chance
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: mean 8-way accuracy
+    value: 16.7
+    tolerance: 1.67
+    unit: percent
+  - quantity: previous category accuracy, 8-way
+    value: 53.5
+    tolerance: 5.35
+    unit: percent
+  - quantity: previous age accuracy, 8-way
+    value: 52.9
+    tolerance: 5.29
+    unit: percent
+  - quantity: current category accuracy, 8-way
+    value: 55.5
+    tolerance: 5.55
+    unit: percent
+  criterion: States with different current ages modelled as the same event type (Figure S2C
+    legend), giving 8 regressors; then the analysis of fig2a-16way-decoding with chance 12.5%
+    and components against 50%. The paper reports the test twice with different numbers (main
+    text 4.2% above chance, t26 = 3.3; supplement 8.5% above chance, t26 = 6.6; 16.7 less
+    12.5 is 4.2) and calls previous age above baseline in the main text but marginal (p = .09)
+    in the supplement. Reproduced when the 8-way mean is within tolerance with p < 0.05 against
+    12.5%, and previous category and current category are above 50% at p < 0.05; the previous
+    age result is reported against both statements. The 10% tolerance on the component
+    accuracies spans chance, so they are judged on their tests.
+- id: figs2a-permutation-control
+  statement: Classifiers trained on permuted labels decode at chance, and the real decoding is
+    above the permutation results for the 16-way classification and each binary component.
+  source: Results, paragraph 7; Supplemental Results 1.2, paragraph 1; Figure S2A
+  quote: First, a permutation analysis showed at chance decoding levels and was significantly
+    lower than decoding on the real data, both in the 16-way analysis as well as regarding the
+    binary classification (see black bar in Figures 2A and S2A, all p < 0.025)
+  statistics:
+  - test: permutation test
+    p: 0.025
+    p_relation: "<"
+  depends_on:
+  - fig2a-16way-decoding
+  expected:
+  - quantity: upper 95th percentile of permutation accuracy, 16-way
+    value: 7.04
+    tolerance: 0.704
+    unit: percent
+  - quantity: upper 95th percentile, previous category
+    value: 51.5
+    tolerance: 5.15
+    unit: percent
+  - quantity: upper 95th percentile, previous age
+    value: 51.7
+    tolerance: 5.17
+    unit: percent
+  - quantity: upper 95th percentile, current category
+    value: 51.4
+    tolerance: 5.14
+    unit: percent
+  - quantity: upper 95th percentile, current age
+    value: 51.7
+    tolerance: 5.17
+    unit: percent
+  criterion: Training labels permuted in each fold, 10 permutations per participant, accuracies
+    averaged within participant, test labels unchanged (Supplemental Results 1.2). The
+    tolerances are the default 10% of the value; the percentiles are chance-level numbers
+    from 10 random permutations, so the claim rests on the comparison with the real accuracy.
+    The distribution whose 95th percentile is reported, and the test behind p < 0.025, are
+    open; readings are (a) the participants' averaged permutation accuracies, with a paired
+    t-test of real against permuted; (b) all participant and permutation values pooled, with
+    the real group mean compared to the percentile. Reproduced when under one reading the
+    permuted 16-way mean is not above 6.25% at p < 0.05 and the real accuracy exceeds the
+    permuted at p < 0.025 for the 16-way classification and each of the four components;
+    partially reproduced when this holds for the 16-way classification but not for every
+    component. The percentiles are compared with the expected values and reported.
+- id: synthetic-data-control
+  statement: Decoding on synthetic fMRI data with univariate stimulus-driven OFC activation and
+    each participant's event timing is not above chance (6.8%).
+  source: Results, paragraph 7; Experimental Procedures, Synthetic fMRI Data and Noise Simulations
+  quote: This analysis also showed no above-chance decoding (mean accuracy across simulated
+    ‘‘participants’’ 6.8%, p = 0.43 when compared to the chance baseline of 6.25%)
+  statistics:
+  - test: comparison with chance baseline
+    p: 0.43
+  expected:
+    quantity: mean 16-way accuracy on synthetic data
+    value: 6.8
+    tolerance: 0.68
+    unit: percent
+  criterion: A claim of absence. Synthetic data made with neuRosim as the Methods give (one
+    spherical OFC peak of mean size 5 voxels, SD 1, fading 0.01, at each participant's peak of
+    decoding plus spatial noise of mean 3 and SD 2 voxels; state amplitudes from a normal
+    distribution of mean 25, SD 5; double-gamma HRF; default noise mixture, baseline 10, SNR
+    2.87; smoothed to the real data's smoothness), then the analysis of fig2a-16way-decoding.
+    The Methods place the peak at each participant's maximum decoding and cite Figure S5,
+    which shows Euclidean distances, so the reference is wrong. Readings are (a) the peak of
+    the participant's conjunction searchlight within OFC (Figure S3C), (b) the peak of the
+    participant's 16-way searchlight accuracy within OFC. The Methods simulate whole-brain
+    data and match the real data's smoothness with AFNI's 3dFWHMx; with OFC voxels only, both
+    are restricted to the OFC mask, as a deviation. The searchlight radius is not given anywhere and is open, with 2 and 3 voxels
+    as the readings run (a standard choice, not the paper's). The test is not named; reading,
+    a one-sample t-test against 6.25%. Reproduced when that test is not significant at p <
+    0.05; the mean is reported against 6.8%. Being a simulation, the result is reported over
+    at least 10 random seeds.
+- id: fig2c-enter-cluster
+  statement: In the similarity structure of OFC state patterns, pairs of states are more similar
+    when both are Enter or both non-Enter states than when they differ.
+  source: Results, paragraph 9; Figure 2C
+  quote: indicates that pairs of activity patterns were indeed more similar if two states were
+    both Enter or both non-Enter states (p < 0.01; paired t test comparing each subjects’
+    average within-class versus between-class correlations)
+  statistics:
+  - test: paired t test
+    p: 0.01
+    p_relation: "<"
+    n: 27 participants
+  criterion: Per participant, the 16 by 16 between-run correlation matrix of OFC beta maps as
+    in the Methods (State Space Similarities), negative values set to NaN. Mean within-class
+    (Enter with Enter, non-Enter with non-Enter) against mean between-class correlation, paired
+    t-test across participants. Whether the diagonal (a state with itself across runs) is in
+    the within-class mean is open; readings are without and with it. Whether the beta maps
+    are z-scored and smoothed first, as for classification, is open (O1, O2). The dendrogram's
+    linkage method is not given and is shown only. Reproduced when under one reading
+    within-class exceeds between-class at p < 0.01; partially reproduced at p < 0.05.
+- id: fig2d-enter-nonenter-decoding
+  statement: All three hidden components are decoded above chance even when the 16-way
+    classifier is tested separately on Enter and on non-Enter trials.
+  source: Results, paragraph 9; Figure 2D
+  quote: a decoding analysis done separately for Enter and non-Enter trials that showed that
+    even within these subsets of trials the 16-way classifier could successfully detect all
+    three hidden state components (Figure 2D, all t26 > 2, p < 0.05
+  statistics:
+  - test: t-test against chance
+    statistic: t26 > 2
+    p: 0.05
+    p_relation: "<"
+    n: 27 participants
+  depends_on:
+  - fig2a-16way-decoding
+  criterion: The classifiers of fig2a-16way-decoding unchanged; the test set split into the 8
+    Enter and 8 non-Enter state maps, component accuracies computed in each subset and then
+    averaged within participant (Methods, fMRI Data Analysis); one-sample t-test against 50%,
+    one-sided as the Results state for Figure 2B and the Figure S2 legend for its panels
+    (two-sided shown). Which averages are tested
+    is open; readings are (a) per component, the mean of the Enter and non-Enter accuracies,
+    (b) per component and subset, each of the six tested. Reproduced when under one reading
+    all tested accuracies have p < 0.05.
+- id: fig3-searchlight-conjunction
+  statement: In whole-brain searchlight decoding, medial OFC is the only area where all three
+    hidden components are decoded together, peaking in the left medial orbital gyrus at MNI [3,
+    44, -14].
+  source: Results, paragraph 10; Figure 3E; Table S1
+  quote: a voxel-wise conjunction analysis on the information maps of hidden state components
+    confirmed that, across participants, only medial OFC activity carried complete information
+    about all three hidden state components
+  statistics:
+  - test: voxel-wise conjunction, uncorrected
+    statistic: Zpeak = 3.14
+    p: 0.01
+    p_relation: "<"
+    n: 27 participants
+  expected:
+    quantity: conjunction peak Z
+    value: 3.14
+    tolerance: 0.314
+  criterion: Needs whole-brain data in MNI space (16-way searchlight, component maps, group
+    t-tests, conjunction at p < 0.01 uncorrected per component, minimum cluster 5 voxels),
+    which the data set's description does not list; it holds OFC voxels in native space only.
+    The searchlight radius is not given (open).
+- id: other-rois-incomplete
+  statement: Hippocampus, DLPFC and FFA/PPA code current and previous category but not previous
+    age, and show neither complete nor task-specific encoding. Their decoding accuracy does
+    not correlate with error rate in hippocampus or DLPFC but does in PPA/FFA, and in none of
+    them does pattern similarity relate to transition error rates.
+  source: Results, paragraphs 10, 11 and 15; Figure S2D to S2F
+  quote: None of these areas showed either complete encoding of all hidden state components nor
+    specific encoding of only task-relevant variables
+  statistics:
+  - about: correlation of decoding with error rate, PPA/FFA
+    test: Pearson correlation
+    statistic: r = -0.40, t25 = -2.2
+    p: 0.03
+  - about: correlation of decoding with error rate, hippocampus and DLPFC
+    test: Pearson correlation
+    p: 0.14
+    p_relation: ">"
+  - about: similarity and error rate, hippocampus, DLPFC, FFA/PPA
+    p: 0.17
+    p_relation: ">"
+  criterion: Needs the hippocampus, DLPFC and PPA/FFA ROIs (AAL labels, Methods), which the data
+    set's description does not list.
+- id: fig4a-decoding-error-correlation
+  statement: Across participants, mean classification accuracy of the three hidden components in
+    OFC correlates negatively with error rate.
+  source: Results, paragraph 11; Figure 4A; Figure S4
+  quote: participants’ average error rates were significantlycorrelated with themean
+    classificationaccuracyofallthree hidden state components
+  statistics:
+  - test: Pearson correlation
+    statistic: r = -0.58, t25 = -3.6
+    p: 0.002
+    ci:
+      level: 0.95
+      low: -0.8432
+      high: -0.0169
+    n: 27 participants
+  depends_on:
+  - fig2b-hidden-components
+  expected:
+    quantity: Pearson r, error rate against mean hidden-component accuracy
+    value: -0.58
+    tolerance: 0.2632
+  criterion: Per participant, the mean of the three hidden-component accuracies of
+    fig2b-hidden-components and the scanner error rate of behavior-error-rate; Pearson
+    correlation, and a bootstrap 95% CI over participants with the boot package defaults. The
+    number of bootstrap iterations is given as 10,000 (Methods) and 1000 (Supplemental Results
+    1.4, Figure S4); both are run. The tolerance is the distance from r to the nearer bound of
+    the paper's CI. Reproduced when r is negative with p < 0.05 and within tolerance;
+    partially reproduced when r lies inside the paper's CI but outside the tolerance. The data
+    set holds 24 of the 27 participants.
+- id: fig4b-error-trial-drop
+  statement: Trial-wise 16-way decoding is lower on error trials (4.2%) than in the five trials
+    preceding an error (11%).
+  source: Results, paragraph 12; Figure 4B
+  quote: incorrect responses were accompanied by worse classification—the average 16-way
+    classification in the five trials preceding an error was 11% whereas accuracy was only 4.2%
+    on error trials (t23 = 2.2, p = 0.04
+  statistics:
+  - test: t-test
+    statistic: t23 = 2.2
+    p: 0.04
+    n: 24 participants
+  depends_on:
+  - fig2a-16way-decoding
+  expected:
+  - quantity: 16-way accuracy, five trials before an error
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: 16-way accuracy, error trials
+    value: 4.2
+    tolerance: 0.42
+    unit: percent
+  criterion: Trial-wise test data as the Methods fix it (raw time series smoothed at FWHM 3 mm,
+    z-scored per run, the volume 2 TRs after stimulus onset, 4.8 to 7.2 s), classified by the
+    classifier trained on the other runs in fig2a-16way-decoding. The true state of an error
+    trial is the state the task rules assign to it; how it is reconstructed is not stated, and
+    the reading is from the trial sequence. Errors whose five preceding trials do not lie in
+    the run are left out (Methods, Participants). Per participant, mean accuracy over the five
+    preceding trials and over error trials; paired t-test, two-sided. Reproduced when both
+    values are within tolerance and the difference has p < 0.05; partially reproduced when the
+    difference holds but a value is outside tolerance. Which volume is "2 TRs after onset" is
+    open; readings are the first volume acquired at or after onset plus 4.8 s, and the volume
+    nearest onset plus 4.8 s.
+- id: fig4b-decline-before-errors
+  statement: Decoding accuracy declines linearly over the trials leading up to and including an
+    error, and no such decline is seen in matched time courses without errors.
+  source: Results, paragraph 12; Figure 4B
+  quote: there was a negative linear effect of trial on decoding in the trials leading up to and
+    including an error ... No such decrease was detected in matched decoding time-courses that
+    did not include errors
+  statistics:
+  - about: linear effect of trial, error time courses
+    test: mixed-effects model, Wald chi-square
+    statistic: χ2(1) = 4.7
+    p: 0.03
+  - about: condition by trial interaction
+    test: mixed-effects model, Wald chi-square
+    statistic: χ2(1) = 4.3
+    p: 0.04
+  - about: linear effect of trial, non-error time courses
+    test: mixed-effects model, Wald chi-square
+    p: 0.33
+  depends_on:
+  - fig4b-error-trial-drop
+  criterion: Trial-wise accuracy as in fig4b-error-trial-drop for trials -5 to 0 around each
+    error; a mixed-effects model of classifier accuracy on trial number relative to the
+    error, participants as random effect on intercept and slope, Wald chi-square. Matched
+    courses are seven consecutive trials without errors (Figure 4B legend); how they are
+    chosen is open, with readings (a) every non-overlapping run of seven correct trials, (b)
+    one such run per error from the same run. The interaction is condition by trial in a joint
+    model. Whether accuracy enters as 0 or 1 per trial or as a mean per participant and
+    position is open; both are run. Reproduced when under one reading the error slope is
+    negative with p < 0.05, the interaction has p < 0.05, and the non-error slope has p >
+    0.05.
+- id: fig4b-error-vs-matched
+  statement: Decoding on the error trial is lower than on matched correct trials, and marginally
+    lower on the trial before the error.
+  source: Results, paragraph 13; Figure 4B
+  quote: decoding in the error trial was significantly lower than decoding in the matched correct
+    trials (trial ‘‘0’’ in the figure; t24 = 2.3, p = 0.01) and marginally lower in the trial
+    prior to the error
+  statistics:
+  - about: trial 0
+    test: t-test
+    statistic: t24 = 2.3
+    p: 0.01
+  - about: trial -1
+    test: t-test
+    statistic: t23 = 1.5
+    p: 0.07
+  depends_on:
+  - fig4b-decline-before-errors
+  criterion: Per participant, accuracy at position 0 (and -1) in the error and in the matched
+    non-error courses of fig4b-decline-before-errors; paired t-test. The side is not stated;
+    t24 = 2.3 with p = 0.01 fits a one-sided test, so the reading is one-sided, with two-sided
+    shown. The paper gives t24 for trial 0 though 24 participants enter the error analyses
+    (Methods, Participants), which implies 23 degrees of freedom; the difference is reported
+    with its degrees of freedom. Reproduced when trial 0 is lower at p < 0.05; trial -1 is
+    reported against p = 0.07.
+- id: fig5-similarity-predicts-errors
+  statement: Across the eight Exit to Enter transitions, transitions between states whose OFC
+    patterns are more correlated have lower error rates.
+  source: Results, paragraph 14; Figure 5B and 5C
+  quote: Results showed that transitions to ‘‘nearer’’ states (i.e., transitions between pairs of
+    states whose neural representations were more highly correlated) were associated with lower
+    error rates
+  statistics:
+  - about: linear effect of correlation on error rate, eight transition types
+    test: linear regression
+    statistic: t6 = -3.23
+    p: 0.02
+  - about: within-subject mixed-effects analysis
+    test: mixed-effects model, Wald chi-square
+    statistic: χ2(1) = 3.0
+    p: 0.08
+  - about: Figure 5B, group average by ordinal position
+    p: 0.04
+  - about: Figure 5C, within-subject correlations against zero
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig2c-enter-cluster
+  criterion: Between-run correlations of OFC beta maps as in fig2c-enter-cluster, negative
+    values NaN. For each of the eight transitions from an Exit state to the following Enter
+    state, the correlation of the two states' patterns and the error rate on the Enter trial
+    (Results, paragraph 14). The regression with t6 is open between (a) the eight transition
+    types, group-mean correlation against group error rate, and (b) the eight ordinal
+    positions of Figure 5B (transitions ranked by correlation within participant, averaged
+    over participants); the paper gives p = 0.02 in the text and p = 0.04 in the Figure 5B
+    legend, which may be these two. The mixed model has error rate on correlation with
+    participants as random effect. Figure 5C is each participant's Pearson correlation of error
+    rate with pattern correlation over the eight transitions, tested against 0 (test not
+    named; reading a one-sample t-test). Reproduced when under one reading the regression is
+    negative with p < 0.05 and the Figure 5C mean is below 0 at p < 0.05; partially reproduced
+    when one of the two holds. The mixed model is reported against p = 0.08.
+- id: figs5-euclidean-distance
+  statement: The relation between pattern similarity and error rate holds with between-run
+    Euclidean distances in place of correlations.
+  source: Results, paragraph 14; Supplemental Results 1.5; Figure S5
+  quote: we repeated this same analysis using Euclidean distances instead of correlations and
+    obtained the same results (see Figure S5)
+  statistics:
+  - about: Figure S5B, group average by ordinal position
+    p: 0.03
+  - about: Figure S5C, within-subject correlations against zero
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig5-similarity-predicts-errors
+  criterion: The analysis of fig5-similarity-predicts-errors with Euclidean distance between
+    beta maps of different runs in place of correlation (Methods, State Space Similarities),
+    under the same readings. Reproduced when under one reading the regression of error rate
+    on distance is positive with p < 0.05 and the Figure S5C mean is above 0 at p < 0.05.
+- id: fig5-synthetic-control
+  statement: The similarity and error-rate analysis on synthetic data with univariate
+    stimulus-driven OFC activation finds no correlation with performance.
+  source: Results, paragraph 14
+  quote: These control analyses found no significant correlations with performance (p > 0.18 for all)
+  statistics:
+  - p: 0.18
+    p_relation: ">"
+  depends_on:
+  - synthetic-data-control
+  - fig5-similarity-predicts-errors
+  criterion: A claim of absence. The synthetic data of synthetic-data-control, analysed as in
+    fig5-similarity-predicts-errors with the real error rates. Reproduced when none of its
+    tests reaches p < 0.05, over the seeds run.
+- id: supp-motor-action-not-in-ofc
+  statement: The current motor response, decoded as part of an alternative state space, is
+    found in left motor and visual cortex, and not in an ROI analysis of the whole OFC.
+  source: Supplemental Results 1.3, paragraphs 1 and 2; Figure S3A
+  quote: the effect was detected only at a ... lenient threshold and was not confirmed in an ROI analysis of the whole OFC (p = .40)
+  statistics:
+  - about: OFC ROI decoding of states with motor response
+    p: 0.4
+  criterion: A claim of absence for the OFC part. States defined by previous category, previous
+    age, current category and the correct response side, with GLM onsets at the response; the
+    analysis of fig2a-16way-decoding in OFC, t-test against chance at p < 0.05. Which accuracy
+    the ROI test uses is not given; readings are the 16-way accuracy against 6.25% and the
+    motor-response component against 50%. The test is not named; the t-test is a reading. Needs the
+    response side of each trial; whether the data set has it is the author's to find. The
+    whole-brain part needs data the description does not list.
+checks:
+- date: 2026-11-04
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. The two values it did not find, the CI bounds -0.8432 and -0.0169 of fig4a-decoding-error-correlation, are in the text with a garbled minus sign; they match the paper.
+  - behavior-error-rate. The criterion counted time-outs as errors and spoke of responded trials, which excludes time-outs; whether they count is not stated and they are 0.3% of trials, more than the tolerance. Named it open, with both readings.
+  - supp-errors-stable-over-blocks. Gave the reason for judging the absence on the linear mixed model, the Methods naming lmer.
+  - fig2b-hidden-components. t26 > 3 implies a one-sided p below 0.003, which does not agree with the reported 0.014 and 0.007; the p-values may come from the Figure S2B bootstrap. Named the bootstrap as a second reading.
+  - fig2b-current-age-absent and fig2b-two-back-absent. The test behind p > 0.72 and p > 0.66 is not named; the statistics no longer call it a t-test, and the criterion names the t-test as the one the Results imply with the bootstrap of Figure S2B as a variant.
+  - figs2c-8way-decoding. The current-category tolerance was 5.5; 10% of 55.5 is 5.55.
+  - figs2a-permutation-control. The component tolerances of 0.14 to 0.17 points were justified by spanning chance, which does not apply to a chance-level permutation percentile from 10 permutations; set to the default 10% of the value. The statement covers each binary component, but the criterion judged the 16-way result only; it now judges all four components, with partial reproduction when only the 16-way holds.
+  - synthetic-data-control. The Methods cite Figure S5 for the participant peaks, which is the Euclidean-distance figure; the criterion read Figure S3C without saying so. Named the wrong reference and two readings (conjunction peak, 16-way searchlight peak), and noted that whole-brain simulation and smoothness matching are restricted to OFC.
+  - fig2d-enter-nonenter-decoding. The criterion said the Figure 2 legend states one-sided tests; it does not. Cited the Results for Figure 2B and the Figure S2 legend.
+  - other-rois-incomplete. The statement called the PPA/FFA relation weaker, which the paper does not say, and mixed the decoding-error correlation with the similarity analysis. Rewrote it to give each as the paper does.
+  - fig4b-error-vs-matched. Noted that t24 does not fit the 24 participants of the error analyses, and that trial -1 is reported against p = 0.07, as the statement includes it.
+  - supp-motor-action-not-in-ofc. Which accuracy the OFC ROI test (p = .40) uses and which test it is are not given; named the 16-way and motor-component readings.
+  - Open. fig3-searchlight-conjunction gives the peak as left medial orbital gyrus at x = 3, as the Results do, while Table S1 lists the conjunction peak as right rectal gyrus; the claim cannot be tested on the data set either way.
+  - Open. The paper's GLM nuisance set (26 cardiac regressors, SPM8) cannot be rebuilt from the data set as described (header, O5).
+  - Coverage. The decoding of response mapping in visual cortex (Figure S3B) has no claim; it is an exploratory supplementary result and was not added.

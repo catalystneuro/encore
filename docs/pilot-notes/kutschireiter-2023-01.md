@@ -1,0 +1,96 @@
+# 000289, Kutschireiter et al. 2023
+
+No claims reproduced, none partially, none not reproduced and one blocked on
+the dataset; the other twelve claims use data elsewhere and are left out of the
+counts. It pins version 0.240801.1040, the only published version, and the
+draft is identical in assets and size. The paper, Kutschireiter, Basnak, Wilson
+and Drugowitsch in PNAS, is a theory paper: it derives a circular Kalman filter
+(circKF) for head direction (HD), shows that a ring attractor network can
+implement it as a Bayesian ring attractor, compares it with a conventional
+attractor of fixed certainty, studies the effect of neural noise, and maps the
+network onto the Drosophila central complex with the hemibrain connectome. It
+records no data, and its one statement the dandiset could bear on is the
+Discussion's prediction that bump amplitude is higher with reliable HD cues.
+The claims were written from the version of record as served by Europe PMC
+(PMC9992764) with its SI Appendix, and from the paper's code and processed
+simulation outputs on Zenodo (doi:10.5281/zenodo.7615975, commit a9db6f9). The
+twelve simulation and connectome claims were judged on those stored outputs and
+on the public hemibrain v1.2 export: seven are reproduced, four partially and
+one not. `fig3d-best-network-slow-decay` fails its condition 4 with two rises
+(0.0008 and 0.0014) that are 0.32 and 0.52 standard errors;
+`noise-effects-on-mu-and-kappa` fails because the bump amplitude falls under
+noise (0.83, 0.65, 0.82 and 0.42 against the noise-free 1.00) where the paper
+says it drifts up; `fig4gh-drosophila-network-matches` holds within 0.02 but
+not within 0.01 at 0.1, 0.2 and 0.3/s; `fig4b-connectome-motifs` holds under
+the sort by protocerebral bridge glomerulus, while the second sort the
+criterion requires cannot be formed from hemibrain names, and rests on
+assumptions; and `figs2-performance-independent-of-n` is not reproduced, as N
+16 at 0.1/s is 0.041 below the reference, 4.3 standard errors of a difference.
+The prediction was tested on the 15 flies of the dandiset's cue-contrast
+experiment and is blocked as `methods_underspecified`, as the readings
+disagree: high contrast exceeds low in 10 of 15 flies with dF/F but p 0.138,
+and in 12 of 15 with raw fluorescence and p 0.021. The author asked a reader
+no questions, so the answer run and the following author run changed nothing.
+Round 1 agreed with 11 of 13 outcomes, and the author took both of its others:
+fig4b from reproduced to partially reproduced, as the criterion requires both
+sorts, and figs2 from partially reproduced to not reproduced, as both readings
+fail. Its points led to the defining lines of the released code printed, Monte
+Carlo standard errors from the 10,000 runs per scan, the inhibition and a run
+with it held fixed for the noise claim, 18 variants of the raw signal for the
+prediction (p below 0.05 in all nine F - F0 variants and in none of the nine
+divided by F0) and the NaN cell of Fig. S2 printed. Round 2 agreed with all 13,
+so there was no third round; it found statements the outputs did not support,
+among them swapped dF/F and raw ratios, ROI mask sizes never printed and a
+noise control that removes the restoring force along with the noise's effect
+on the inhibition, which were corrected, the last with a control that keeps
+the inhibition at the value a noise-free bump of the decoded amplitude gives
+(mean amplitude 1.002 to 1.045 after 5 s). Three questions were put to a
+reader during the revisions, after the answer step: whether the noise claim
+should test only the noise's direct effect, as the SI derivation does, whether
+fig4b's second sort belongs to the claim, and whether "mostly independent"
+allows a single exception in figs2. The author's run took about 1 h 20 min
+(22:52 to 00:10 UTC) and nothing failed; the paper's large scans were not
+re-run. The notebook ran in about 9 minutes at first, mostly streaming 10% of
+the raw imaging, and in 6.5 minutes in the last run.
+
+The dandiset holds no data of this paper: its related resources name the
+bioRxiv preprint of this paper (10.1101/2021.12.17.473253 version 4) as the
+paper it supplements, but its description says the data belong to
+"Uncertainty and learning in a biological ring attractor" (Basnak et al., in
+preparation), so it links no paper that uses them. imaging_rate is 9.18 Hz in
+every file, but sub-4 and sub-10 are imaged at 7.87 Hz (0.127 s frame
+interval, 9446 frames in 1200 s) with 14 planes, against 9.18 Hz and 12 planes
+in the other 13 sessions. In sub-2 the trials table has five blocks (high,
+zero, low, zero, low) where every other fly of the cue-contrast experiment has
+six with two of each contrast, and the last block lasts 405 s against about
+200 s in the protocol, so it may hold a low and a high block labelled as one.
+The processing behind the stored dF/F is not described: the ROI masks are 2D,
+3 to 11 pixels each (median 7), the dF/F agrees with the raw imaging averaged
+in them only after spatial smoothing (median correlation over ROIs 0.66
+without, 0.93 with a 4-pixel Gaussian, sub-1), and the RoiResponseSeries unit
+is "na". The bump phase follows the cue position with peak coupling at lag 0
+to 5 frames, so the dF/F and the cue share a clock. The paper's released code
+does not run as published, as RNN_filter_Run uses z but has no z parameter and
+Figure2h.ipynb and the scan scripts pass kappa_y to functions whose parameter
+is kappa_v, and one NaN remains in figureS2.npz (N 128 at 100/s); the
+connectome is the public v1.2 export, not v1.2.1 as in the legend, since
+neuPrint now requires a personal API token. Two questions are put to the
+paper's authors: which activity signal, comparison of cue conditions and test
+would test the bump amplitude prediction, and which spatial position Fig. 4B
+used to sort neurons, as the hemibrain names give only the PB glomerulus for
+EPG and PEN1 neurons.
+
+The author's points on the protocol: it assumes the dataset holds the paper's
+data, so the twelve claims on data elsewhere were tested on the Zenodo deposit
+pinned by DOI and md5; it does not cover a reading the criterion names that
+cannot be formed from the data, as fig4b's second sort; the claims file
+requires every reading to hold where the protocol lets a number be reproduced
+under any reading, and the claims file was followed; the prediction's
+criterion says to block when readings differ while step 1.6 allows adopting
+the best-supported reading; it does not say what counts as public when
+neuPrint needs a personal token; it does not set the scope of the duplicate
+check, which compared traces only among the 15 sessions analysed; its
+streaming rule is written for the dataset, and the outside zip and tar were
+read whole into memory; and it does not say whether one failed condition of a
+multi-condition criterion with the effect present is partially or not
+reproduced.

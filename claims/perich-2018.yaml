@@ -1,0 +1,720 @@
+# Claims for Perich, Gallego & Miller (2018), "A Neural Population Mechanism for Rapid Learning",
+# Neuron 100, 964-976, on dandiset 000688.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23, protocol
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC6250582, NIHMS1507895), as served
+# by ncbi_pmc, not the version of record: main text, figure legends 1 to 7 and STAR Methods, with
+# its eight supplement files (NIHMS1507895-supplement-1 to -8). Supplements 1 to 7 are the main
+# Figures 1 to 7 as images; supplement 8 holds Figures S1 to S7 with their legends. Figure panels
+# and the p-values printed inside them (Figures 3E, S5F, S7A, S7D) were read from the PDFs. The
+# figure letters of the manuscript do not all agree with the Results: the Results cite Figure 3E,F,G
+# and 4E where the legends call the same panels 3E, 3F, 3G and 4D; Figure 6 has two panels "d" in
+# its legend (the lag histogram is panel C in the image). Sources below give both where they differ.
+#
+# Code: the paper links no code. Data and Software Availability says "Custom code was used to
+# process the neural and kinematic data ... This code may be shared upon reasonable request", and
+# names the MATLAB functions used (cov, pca, factoran, glmfit, mahal). No repository was read. Every
+# method below is from the STAR Methods, the legends or the Results.
+#
+# Dataset: dandiset 000688, "Long-term recordings of motor and premotor cortical spiking activity
+# during reaching in monkeys", lists this paper and Glaser et al. 2018 (Nat. Commun.) as
+# IsDescribedBy. Whether it holds the curl field and visuomotor rotation sessions this paper
+# analyses is the author's to find; the data were not looked at.
+#
+# Data the paper used, as it reports them:
+# - Subjects: two male rhesus macaques, Monkey C (11.7 kg) and Monkey M (10.5 kg), with 96-channel
+#   Utah arrays in M1 and PMd (Blackrock Cerebus), spikes sorted offline (Plexon Offline Sorter)
+#   over all three epochs of a session together.
+# - Task: instructed-delay center-out reaching with a 2-D planar manipulandum, eight targets on a
+#   circle of 8 cm (6 cm in Monkey C's first three sessions), 2 cm square targets; hold 0.5 to 1.5
+#   s, instructed delay 0.5 to 1.5 s, auditory go cue, 1 s to reach, 0.5 s target hold. Handle
+#   position at 1 kHz.
+# - Sessions: each has a Baseline epoch, a perturbation epoch and a Washout epoch. Curl field (CF)
+#   sessions: 85 degree velocity-dependent field, k = 0.15 N s/cm, CW or CCW; Baseline 170 to 225
+#   rewards, Force 201 to 337, Washout 153 to 404. Monkey C three CW and two CCW, Monkey M four
+#   CCW (9 sessions). Visuomotor rotation (VR) sessions: 30 degree rotation of the cursor, CW or
+#   CCW; Baseline 154 to 217 successful trials, Rotation 219 to 316, Washout 162 to 348. Monkey C
+#   two CW and two CCW, Monkey M three CCW (7 sessions). The Methods and Figure 6 legend count 9 CF
+#   and 7 VR, 16 sessions in all; the Figure 2C legend shows two CW and five CCW CF sessions and the
+#   Figure 7 legend one CW and four CCW VR sessions, which do not add up to these counts.
+# - Neurons: 137 to 256 PMd and 55 to 93 M1 per session in Monkey C, 66 to 121 PMd and 26 to 51 M1
+#   in Monkey M. Cells with high coincidence across channels excluded. GLM analyses use neurons
+#   above 5 Hz trial-averaged rate (918 M1, 2221 PMd pooled over all sessions); the covariance
+#   analysis uses neurons above 1 Hz.
+# - Measured variables: spike times of sorted units, handle position (and its derivatives), trial
+#   events (target onset, go cue, movement onset, reward), the perturbation type and direction,
+#   the epoch of each trial.
+#
+# Shared methods, from the STAR Methods unless said otherwise. Claims cite these as M1 to M8.
+# M1 Behavioral error: angular deviation of the hand from the target direction 150 ms after
+#    movement onset, minus the mean deviation for that target in Baseline; CW sessions sign-flipped
+#    and all sessions pooled (Behavioral adaptation analysis).
+# M2 Latent activity: spikes counted in 50 ms bins, square-root transformed, convolved with a
+#    non-causal Gaussian kernel of width 100 ms; PCA per area per session, with the PCA axes found on
+#    Baseline trials only; 8 components for M1 and 16 for PMd (Dimensionality reduction;
+#    Output-potent and output-null subspaces; Results, Models to study ..., paragraph 3).
+# M3 Subspaces: a linear map W from the 16 PMd latent dimensions to the 8 M1 latent dimensions
+#    (M = W P), fit on Baseline trials; SVD W = U S V'; the rows of V' give the output-potent and
+#    output-null axes. PMd latent activity is projected on each to give potent and null activity.
+# M4 GLMs: Poisson GLMs with exponential link fit with glmfit (no regularization) on 50 ms bins.
+#    Kinematic covariates, in every model: endpoint position, velocity and acceleration,
+#    downsampled to 20 Hz, shifted by three bins (150 ms) and convolved with raised cosine bases
+#    centered at 0 and 100 ms. Basic model = kinematics only; Full model = kinematics plus neural
+#    inputs. Full models: M1-M1 and PMd-PMd (latent activity of the same area recomputed without the
+#    predicted neuron), PC-M1 (all PMd latent activity, called PMd-M1 in places), Pot-M1 and Null-M1
+#    (PMd potent or null activity predicting M1 neurons), and the single-neuron controls M1sn-M1,
+#    PMdsn-PMd, PMdsn-M1. Only neurons above 5 Hz.
+# M5 Performance: pseudo-R2 (pR2, Equation 9) and relative pseudo-R2 of Full against Basic (rpR2,
+#    Equation 12) from Poisson log-likelihoods; 95% bounds by bootstrap with 1000 resamples.
+# M6 Training and testing: models trained on the last 50% of the Force or Rotation epoch, reward
+#    trials only, with ten-fold cross-validation; tested on single trials from the start of the
+#    same epoch. For Washout (Figures 5, 7F) models are trained on Baseline and tested on Washout.
+#    Neurons kept when the Basic pR2 and the rpR2 lower bounds are above zero in all ten folds
+#    (Selecting cells with significant GLM predictions).
+# M7 Model error: on each test trial the rpR2 minus the rpR2 of a fixed Late block of eight
+#    consecutive trials (around 70 trials from the start of the epoch), divided by the
+#    cross-validated training rpR2, in percent; zero in Late by construction (Calculating GLM
+#    error). Early is the block starting at the first perturbation trial (Figure 3C legend).
+# M8 Tests: GLM comparisons at p = 0.01 (Results, Curl field adaptation is not associated ...,
+#    paragraph 1); Kolmogorov-Smirnov test on rpR2 values for Figures 3E and S5F; two-sample t-test
+#    on the normalized change in rpR2 (model error) for Early against Late; all tests two-sided
+#    (Quantification and statistical analysis).
+#
+# Details none of the sources fixes, with the readings the text allows. Each criterion that uses
+# one says so; the notebook runs every reading, and when they disagree the claim is blocked as
+# methods_underspecified.
+# O1 Early and Late blocks in Force and Rotation. Early begins at the first perturbation trial;
+#    its length is not given for these epochs (eight trials in Washout, Figure 5 legend). Late is
+#    eight consecutive trials "around 70 trials from the start". Readings: Early = first 8 trials;
+#    Late = trials 66 to 73 or trials 70 to 77; trials counted (a) over reward trials only, as
+#    for training, or (b) over all trials.
+# O2 Washout blocks: Early = first eight Washout trials; Late = "eight trials taken later in
+#    Washout", closer in time than in Force, position not given. Readings: Late Washout = trials
+#    21 to 28, 31 to 38 or 41 to 48 of Washout.
+# O3 The part of each trial used for PCA, the subspaces and the GLMs is not given. Readings: (a)
+#    target presentation to target acquisition, as in the covariance analysis; (b) the whole
+#    trial, start to end.
+# O4 Gaussian kernel "width 100 ms": readings (a) standard deviation 100 ms; (b) full width at half
+#    maximum 100 ms. Not expected to change an outcome.
+# O5 Unit of the model-error t-test (M7, M8). Late is zero by construction for the block mean, yet
+#    Figures 3G, 4D, 5B and 7E show spread in Late. Readings: (a) single-trial model errors of all
+#    neurons in the block, pooled across sessions, Early against Late, two-sample t-test; (b) one
+#    value per neuron per block (mean over the block's trials), Early against Late, two-sample
+#    t-test, with the one-sample t-test of Early against zero shown as a variant.
+# O6 Raised cosine bases: widths not given (the paper adapts Pillow et al. 2008, "bases further back
+#    in history become wider"). Standard choice: Pillow-form raised cosines with peaks at 0 and
+#    100 ms and spacing 100 ms. The 150 ms shift is read as kinematics lagging neural activity
+#    (neural activity at time t paired with kinematics at t + 150 ms), as "transmission delays
+#    between cortical activity and the motor output" implies.
+# O7 Subspace rows. The Methods text says the first N rows of V' are potent and the remaining R - N
+#    null, with N = 16 PMd and R = 8 M1 dimensions, which cannot be; the reading is first R = 8 rows
+#    potent, last N - R = 8 null (the only one consistent with "equal dimensionality", Results).
+#    W is fit by ordinary least squares at zero lag (not stated; standard choice).
+# O8 rpR2 bootstrap resampling unit not given. Readings: (a) time bins; (b) trials.
+# O9 Dimensionality (Figure 3B). Readings for the threshold: (a) the number of principal components
+#    whose variance exceeds the 99th percentile of the matching noise eigenvalue (Results wording);
+#    (b) the number of components needed to explain 95% of the variance left after subtracting
+#    the noise variance (Methods wording). Data: trial-averaged rates per target in Baseline
+#    (the noise is "across targets"), window as O3.
+# O10 Movement onset (M1) not defined. Readings: hand speed first crossing (a) 10%, (b) 20% or
+#    (c) 30% of the trial's peak speed after the go cue.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000688"
+paper: doi:10.1016/j.neuron.2018.09.030
+claims:
+- id: methods-neuron-counts
+  statement: Per session, 137 to 256 PMd and 55 to 93 M1 neurons were isolated in Monkey C and 66
+    to 121 PMd and 26 to 51 M1 neurons in Monkey M; neurons above 5 Hz, pooled over all CF and VR
+    sessions, number 918 in M1 and 2221 in PMd.
+  source: STAR Methods, Neural recordings, paragraph 2
+  quote: Across all sessions, we isolated between 137 - 256 PMd and 55 - 93 M1 neurons for Monkey
+    C, and 66 - 121 PMd and 26 - 51 M1 neurons for Monkey M ... Pooled across all monkeys and CF and
+    VR sessions, this gave a population of 918 M1 and 2221 PMd neurons
+  expected:
+  - quantity: PMd neurons per session, Monkey C, range 137 to 256 (lower bound)
+    value: 137
+    tolerance: 13.7
+  - quantity: PMd neurons per session, Monkey C, range 137 to 256 (upper bound)
+    value: 256
+    tolerance: 25.6
+  - quantity: M1 neurons per session, Monkey C, range 55 to 93 (lower bound)
+    value: 55
+    tolerance: 5.5
+  - quantity: M1 neurons per session, Monkey C, range 55 to 93 (upper bound)
+    value: 93
+    tolerance: 9.3
+  - quantity: PMd neurons per session, Monkey M, range 66 to 121 (lower bound)
+    value: 66
+    tolerance: 6.6
+  - quantity: PMd neurons per session, Monkey M, range 66 to 121 (upper bound)
+    value: 121
+    tolerance: 12.1
+  - quantity: M1 neurons per session, Monkey M, range 26 to 51 (lower bound)
+    value: 26
+    tolerance: 2.6
+  - quantity: M1 neurons per session, Monkey M, range 26 to 51 (upper bound)
+    value: 51
+    tolerance: 5.1
+  - quantity: M1 neurons above 5 Hz, all CF and VR sessions pooled
+    value: 918
+    tolerance: 91.8
+  - quantity: PMd neurons above 5 Hz, all CF and VR sessions pooled
+    value: 2221
+    tolerance: 222.1
+  criterion: Units as sorted in the data, per area and session, for the 9 CF and 7 VR sessions.
+    Each per-session count must lie in its monkey's range widened by 10% of each bound. The 5 Hz
+    rule is the trial-averaged mean rate over all trials of the session (Methods do not say which
+    trials; reading as stated). Reproduced when all ranges and both pooled counts hold; partially
+    reproduced when the ranges hold and a pooled count does not.
+- id: fig2d-cf-behavioral-adaptation
+  statement: On exposure to the curl field the monkeys made large reach direction errors that
+    shrank gradually until behavior stabilized, and mirror-image after-effects appeared at the
+    start of Washout.
+  source: Results, Curl field adaptation involves widespread ..., paragraph 1; Figure 2C and 2D
+  quote: Within each session, the monkeys exhibited large errors upon exposure to the CF, which were
+    gradually reduced until behavior stabilized ... Further evidence of adaptation was revealed by
+    behavioral after-effects (mirror image errors) that occurred upon return to normal reaching
+    during the Washout epoch
+  criterion: Error as M1 (movement onset per O10), CW sessions sign-flipped. The paper gives no
+    test. Per session, the mean error of the Early block, of the Late block (O1 readings) and of
+    the first eight Washout trials (Figure 5 legend). Reproduced when, across the 9 CF sessions,
+    the Early mean exceeds the Late mean in at least 8 sessions and is greater by a two-sided
+    paired t-test at p < 0.05, and the first eight Washout trials have a mean error of opposite
+    sign to the Early Force error in at least 8 sessions. The thresholds of 8 of 9 sessions and the
+    t-test are the reader's operational reading of "large errors ... gradually reduced" and are
+    recorded as a deviation; the session medians are shown.
+- id: fig7bc-vr-behavior-similar
+  statement: In VR sessions behavioral errors were similar in magnitude and time course to those of
+    CF sessions, with large initial errors in Rotation and strong after-effects in Washout.
+  source: Results, PMd to M1 mapping is unchanged throughout adaptation to a visuomotor rotation,
+    paragraph 2; Figure 7B and 7C
+  quote: In many respects, adaptation during the CF and VR sessions was quite similar. Behavioral
+    errors were similar in magnitude and time course
+  depends_on:
+  - fig2d-cf-behavioral-adaptation
+  criterion: As fig2d-cf-behavioral-adaptation for the 7 VR sessions (Rotation in place of Force).
+    Reproduced when the VR sessions meet the same rule and a two-sided two-sample t-test of
+    per-session Early errors, VR against CF, gives p >= 0.05 (no test is given by the paper for
+    "similar"; this reading is recorded as a deviation and the medians of both are shown).
+- id: figs2-covariance-preserved-example
+  statement: In a representative CF session, the pairwise covariance of neurons in the Force and
+    Washout blocks correlated with Baseline values at r of at least 0.85 in M1 and at least 0.93 in
+    PMd.
+  source: Results, Models to study adaptation-related changes ..., paragraph 2; Figure S2E
+  quote: representative session ... Pearson's correlation with Baseline values r ≥ 0.85 for M1
+    and r ≥ 0.93 for PMd
+  expected:
+  - quantity: minimum r with Baseline over blocks, M1, representative session
+    value: 0.85
+    tolerance: 0.085
+  - quantity: minimum r with Baseline over blocks, PMd, representative session
+    value: 0.93
+    tolerance: 0.093
+  criterion: Method from STAR Methods, Single neuron covariance. Neurons above 1 Hz; spikes in 10 ms
+    bins from target presentation to target acquisition; five blocks (Baseline split in two, Force
+    split in two, Washout); in each block trials averaged per target; covariance between all pairs
+    of neurons; Pearson r between each block's covariances and the Baseline covariances (Figure S2D
+    legend, the two Baseline halves compared with each other and the Force and Washout blocks with
+    the full Baseline). The representative session is the Monkey C session of Figures S2 and S6A,
+    which the paper does not name; every CF session is computed. Open (deviation) whether the
+    diagonal (variances) enters the correlation; both are run. Open (deviation) which neurons the
+    r values pool, since the Results call them a representative session and the Figure S2E legend
+    says "all combinations of neurons recorded in each of the nine CF sessions"; readings (a) one
+    session at a time, (b) the pairs of all nine CF sessions pooled into one correlation per block.
+    Reproduced when, under reading (a), at least one CF session has all its block r values at or
+    above 0.85 - 0.085 in M1 and 0.93 - 0.093 in PMd, or, under reading (b), the pooled block r
+    values meet the same bounds.
+- id: figs3a-covariance-like-baseline-split
+  statement: Across all CF sessions the similarity of the covariance between Baseline and the Force
+    and Washout blocks resembled that between random subsamples of Baseline, so the covariance
+    structure did not change with adaptation.
+  source: Results, Models to study adaptation-related changes ..., paragraph 2; Figure S3A
+  quote: Across all sessions, the differences in covariance strongly resembled those obtained from
+    random subsamples of Baseline data for which the covariance structure should be unchanged
+  depends_on:
+  - figs2-covariance-preserved-example
+  criterion: Covariance as figs2-covariance-preserved-example; the reference distribution from
+    random subsamples of Baseline trials, compared with each other, 100 times per session (STAR
+    Methods, Single neuron covariance; the subsample size is not given, read as two random halves
+    of Baseline compared with each other, as in Figure S2D). The paper gives no test. Reading recorded as a deviation; reproduced when, in each
+    area, the median over sessions of the Force 1, Force 2 and Washout r values lies inside the
+    range of the pooled Baseline-split r values, and partially reproduced when that holds for one
+    area only. The distributions are shown.
+- id: figs3b-covariance-preserved-vr
+  statement: In VR sessions as well, the changes in neural activity preserved the population
+    covariance structure.
+  source: Results, PMd to M1 mapping is unchanged throughout adaptation to a visuomotor rotation,
+    paragraph 2; Figure S3B (the Results cite it as Figure S2B, which shows CF example neurons; the
+    VR covariance summary is Figure S3B)
+  quote: Additionally, changes in neural activity preserved the population covariance structure
+  depends_on:
+  - figs3a-covariance-like-baseline-split
+  criterion: As figs3a-covariance-like-baseline-split for the 7 VR sessions (Rotation blocks in
+    place of Force).
+- id: fig3b-pmd-higher-dimensional
+  statement: In every session the PMd manifold had more dimensions than the M1 manifold (median 14
+    against 8.5).
+  source: Results, Models to study adaptation-related changes ..., paragraph 3; Figure 3B
+  quote: In all sessions, the PMd manifold contained more dimensions than did the M1 manifold ...
+    M1 median, 8.5; PMd median, 14
+  expected:
+  - quantity: median M1 dimensionality across sessions
+    value: 8.5
+    tolerance: 0.85
+  - quantity: median PMd dimensionality across sessions
+    value: 14
+    tolerance: 1.4
+  criterion: Dimensionality by the method adapted from Machens et al. 2010 (STAR Methods,
+    Dimensionality reduction, paragraph 2) on rates as M2; noise from differences between random
+    pairs of trials to the same target, 1000 repetitions, 99% limit of each noise eigenvalue;
+    threshold rule and data as O9, window as O3. Over all 16 sessions (Figure 3B legend, "all
+    sessions from both monkeys"). Reproduced when, under one reading, PMd exceeds M1 in every
+    session and both medians are within tolerance; partially reproduced when PMd exceeds M1 in
+    every session and a median is outside tolerance.
+- id: figs4d-dimensionality-robust-to-size
+  statement: With random subsamples of equal, fixed numbers of neurons, estimated dimensionality
+    fell for small samples but PMd stayed higher-dimensional than M1 for every neuron count tested.
+  source: Figure S4D legend; STAR Methods, Dimensionality reduction, paragraph 2
+  quote: With decreasing neuron counts, we began to underestimate the apparent dimensionality.
+    However, critically, PMd (red) was consistently higher dimensional than M1 (black) for all
+    tested neuron counts
+  depends_on:
+  - fig3b-pmd-higher-dimensional
+  criterion: As fig3b-pmd-higher-dimensional, on random subsamples of 40, 50, 60 and 70 neurons per
+    area and all neurons (the counts on the Figure S4D axis), mean over sessions. Number of
+    subsamples per size not given; standard choice of 100 (cannot change the sign of the
+    comparison in expectation). Sessions with fewer neurons than a size are left out of that size
+    (open; deviation). Reproduced when the PMd mean exceeds the M1 mean at every size.
+- id: figs4c-null-potent-index-centered
+  statement: Single neurons contributed to both output-potent and output-null subspaces; the
+    null/potent index was centered on zero with virtually no neurons near -1 or 1.
+  source: Figure S4C legend; STAR Methods, Output-potent and output-null subspaces, paragraph 3
+  quote: The distribution of neurons was centered around zero and virtually no neurons had a
+    null/potent index close to -1 / 1, indicating that the output-potent and output-null subspaces
+    captured population-wide features
+  criterion: Index per PMd neuron from the product of the PCA loading matrix and V (M2, M3, O7) as
+    (sum of absolute potent weights - sum of absolute null weights) / (sum of both). "Magnitude"
+    is read as the sum of absolute values; the sum of squares is the second reading. Reproduced when
+    the mean index over neurons lies between -0.1 and 0.1 and fewer than 1% of neurons have an
+    absolute index above 0.9 (the reader's reading of "centered" and "virtually no", recorded as a
+    deviation); the shuffled control is shown.
+- id: figs5e-glm-cell-counts
+  statement: In the CF sessions pooled, the number of M1 or PMd neurons with significant GLM fits
+    was 214 for M1-M1, 338 for PMd-PMd, 170 for PC-M1, 144 for Pot-M1 and 97 for Null-M1; the
+    Basic model was significant for 522 of 918 M1 and 612 of 2221 PMd neurons.
+  source: Figures 3C and S5E (cell counts in the panels); STAR Methods, Selecting cells with
+    significant GLM predictions
+  quote: This reduced the pool of candidate cells to 522 of 918 (57%) in M1 and 612 of 2221 (28%)
+    in PMd
+  expected:
+  - quantity: M1 neurons with significant Basic pR2 (all sessions)
+    value: 522
+    tolerance: 52.2
+  - quantity: PMd neurons with significant Basic pR2 (all sessions)
+    value: 612
+    tolerance: 61.2
+  - quantity: M1-M1 significant cells, CF sessions
+    value: 214
+    tolerance: 21.4
+  - quantity: PMd-PMd significant cells, CF sessions
+    value: 338
+    tolerance: 33.8
+  - quantity: PC-M1 significant cells, CF sessions
+    value: 170
+    tolerance: 17
+  - quantity: Pot-M1 significant cells, CF sessions
+    value: 144
+    tolerance: 14.4
+  - quantity: Null-M1 significant cells, CF sessions
+    value: 97
+    tolerance: 9.7
+  criterion: Selection as M6 with M2 to M5; readings O3, O6, O8. The Basic counts are read as over
+    all CF and VR sessions (the denominators 918 and 2221 are the pooled counts); the per-model
+    counts are over the nine CF sessions (Figure 3C legend, "pooled across nine sessions").
+    Reproduced when, under one reading, all seven counts are within tolerance; partially
+    reproduced when at least four are.
+- id: figs5e-pot-null-similar-training
+  statement: Pot-M1 and Null-M1 had similar cross-validated accuracy within the end-of-Force
+    training trials.
+  source: Results, Output-potent activity in PMd consistently predicts M1 neurons ..., paragraph 2;
+    Figure S5E
+  quote: Both models had similar accuracy when evaluated within the end-of-Force training trials
+    using ten-fold crossvalidation
+  depends_on:
+  - figs5e-glm-cell-counts
+  criterion: Cross-validated rpR2 of the selected cells for Pot-M1 and Null-M1 in the CF sessions
+    (M6). The paper gives no test for "similar"; the test it uses for rpR2 distributions is the
+    two-sided Kolmogorov-Smirnov test at p = 0.01 (M8), taken here. A claim of absence;
+    reproduced when that test does not find a difference, with medians of both shown.
+- id: fig3e-local-rpr2-unchanged
+  statement: The rpR2 distributions of the within-area models M1-M1 and PMd-PMd did not differ
+    between Early and Late Force trials (Kolmogorov-Smirnov p = 0.72 and p = 0.19).
+  source: Figure 3E (p-values in the panel); Results, Curl field adaptation is not associated ...,
+    paragraph 2
+  quote: M1-M1 and PMd-PMd had similar distributions during Early and Late
+  statistics:
+  - about: M1-M1, Early against Late Force rpR2
+    test: Kolmogorov-Smirnov test
+    p: 0.72
+    n: 214 M1 cells, nine CF sessions
+  - about: PMd-PMd, Early against Late Force rpR2
+    test: Kolmogorov-Smirnov test
+    p: 0.19
+    n: 338 PMd cells, nine CF sessions
+  depends_on:
+  - figs5e-glm-cell-counts
+  criterion: Per selected cell, rpR2 of the trained model (M6) on the Early and on the Late block
+    (O1; rpR2 computed over the block's bins together), pooled over the nine CF sessions; two-sided
+    two-sample Kolmogorov-Smirnov test (M8) at p = 0.01. A claim of absence; reproduced when the
+    test is not significant for both models under every reading, not reproduced when it is
+    significant for either; p-values and medians shown.
+- id: fig3g-local-models-generalize
+  statement: Model error of M1-M1 and PMd-PMd did not differ between Early and Late Force; the
+    local models generalized throughout CF adaptation.
+  source: Figure 3G (legend "No effects were significant (two-sample t-test)"); Results, Curl field
+    adaptation is not associated ..., paragraph 2
+  quote: We found that both within-area models ( M1 -M1, PMd -PMd) generalized well, predicting the
+    adaptation-related changes in single-neuron spiking nearly equally well in both blocks
+  statistics:
+  - test: two-sample t-test
+    p: 0.01
+    p_relation: ">"
+    n: 214 M1-M1 and 338 PMd-PMd cells, nine CF sessions
+  depends_on:
+  - figs5e-glm-cell-counts
+  criterion: Model error as M7 (O1, O5), Early against Late, two-sided two-sample t-test at p =
+    0.01 (M8), per model. A claim of absence, judged on this test; reproduced when neither model
+    differs, not reproduced when either does; the mean errors are shown.
+- id: fig4d-null-m1-fails-early
+  statement: Null-M1 generalized significantly worse in Early than in Late Force, while Pot-M1
+    generalized well in both blocks.
+  source: Figure 4D legend (Results cite it as Figure 4E); Results, Output-potent activity in PMd
+    consistently predicts M1 neurons ..., paragraph 2
+  quote: The Pot -M1 model generalized well throughout learning, making accurate predictions in
+    Early Force as well as Late Force ... However, the Null -M1 model generalized significantly
+    worse in the Early block than in the Late block
+  statistics:
+  - about: Null-M1, Early against Late Force model error
+    test: two-sample t-test
+    p: 0.01
+    p_relation: "<"
+    n: 97 M1 cells, nine CF sessions
+  depends_on:
+  - figs5e-glm-cell-counts
+  criterion: Model error as M7 (O1, O5), Early against Late, two-sided two-sample t-test at p = 0.01
+    (M8), with subspaces from M3 (O7). Reproduced when, under every reading, Null-M1 has a
+    significantly larger Early error and Pot-M1 has no significant difference; partially
+    reproduced when the Null-M1 effect holds and Pot-M1 also differs; not reproduced when Null-M1
+    does not differ. Readings that disagree block the claim.
+- id: fig4c-null-tracks-behavior
+  statement: The Null-M1 model error changed over Force trials with a time course similar to that
+    of behavioral adaptation, while Pot-M1 stayed near zero.
+  source: Figure 4C; Results, Output-potent activity in PMd consistently predicts M1 neurons ...,
+    paragraph 2
+  quote: Interestingly, the Null-M1 error alone paralleled the time course of behavior
+  depends_on:
+  - fig4d-null-m1-fails-early
+  criterion: Single-trial model errors (M7) averaged over cells and smoothed with a 30-trial moving
+    average, with the start padded with NaNs of half the window (STAR Methods, Evaluating GLM
+    performance, paragraph 3); behavioral error (M1) smoothed the same way. The paper compares
+    the curves by eye. Reading recorded as a deviation; reproduced when the Pearson correlation
+    across Force trials between the smoothed behavioral error and the Null-M1 curve is positive
+    and larger than that for Pot-M1, and partially reproduced when only the first holds.
+- id: figs6-pc-m1-fails
+  statement: PC-M1, with all PMd latent activity as input, also failed to generalize during CF
+    adaptation, its accuracy changing with a time course like that of behavior.
+  source: Results, Output-potent activity in PMd consistently predicts M1 neurons ..., paragraph 3;
+    Figure S6 (pink)
+  quote: Since PC- M1 contained all of the output-potent and output-null subspace activity, we
+    expected that, similarly to Null -M1, it would fail to generalize during adaptation. Indeed, its
+    accuracy changed progressively during adaptation
+  depends_on:
+  - figs5e-glm-cell-counts
+  criterion: As fig4d-null-m1-fails-early for PC-M1. Reproduced when the Early model error is
+    significantly larger than Late at p = 0.01.
+- id: figs6de-per-monkey
+  statement: In each monkey separately, only Null-M1 and PC-M1 had significantly larger model error
+    in Early than in Late Force; M1-M1, PMd-PMd and Pot-M1 did not.
+  source: Figure S6D and S6E (asterisks)
+  inferred: Read from the asterisks of Figure S6D and S6E, whose legend says asterisks mark Early
+    against Late differences at p < 0.01 (two-sample t-test); no sentence names the models.
+  statistics:
+  - about: Null-M1 and PC-M1, Early against Late, each monkey
+    test: two-sample t-test
+    p: 0.01
+    p_relation: "<"
+    n: Monkey C five CF sessions, Monkey M four CF sessions
+  depends_on:
+  - fig4d-null-m1-fails-early
+  criterion: As fig4d-null-m1-fails-early, run for each monkey's CF sessions apart, five models.
+    Reproduced when, in both monkeys, Null-M1 and PC-M1 are significant at p = 0.01 and the other
+    three are not; partially reproduced when that holds in one monkey.
+- id: figs5f-rpr2-distributions
+  statement: Of the unnormalized rpR2 distributions of the five models in Early against Late CF
+    trials, only Null-M1 (p = 0.04) and PC-M1 (p = 0.01) changed; Pot-M1 (p = 0.40), M1-M1 (p =
+    0.72) and PMd-PMd (p = 0.19) did not.
+  source: Figure S5F (legend and p-values in the panel)
+  quote: values for all predicted neurons for the five GLM models during Early and Late CF
+    adaptation. Only Null-M1 and PMd-M1 were significantly changed between the two periods
+  statistics:
+  - about: Null-M1
+    test: Kolmogorov-Smirnov test
+    p: 0.04
+    n: 97 cells
+  - about: PC-M1 (PMd-M1)
+    test: Kolmogorov-Smirnov test
+    p: 0.01
+    n: 170 cells
+  - about: Pot-M1
+    test: Kolmogorov-Smirnov test
+    p: 0.4
+    n: 144 cells
+  depends_on:
+  - fig3e-local-rpr2-unchanged
+  criterion: As fig3e-local-rpr2-unchanged for the five models. The legend calls Null-M1
+    significant at p = 0.04, above the paper's own threshold of 0.01 (M8); the criterion uses p <
+    0.05 for this panel, the level at which the legend's statement holds, and also reports the
+    outcome at 0.01. Reproduced when Null-M1 and PC-M1 differ at p < 0.05 and Pot-M1, M1-M1 and
+    PMd-PMd do not; partially reproduced when PC-M1 and Null-M1 differ and one other model also
+    does.
+- id: figs7a-unnormalized-change
+  statement: Without normalization by cross-validated performance, the change in rpR2 between
+    Early and Late CF was significant only for Null-M1 (p = 0.01) and PC-M1 (p = 0.00); in VR no
+    model changed (p from 0.28 to 0.80).
+  source: Figure S7A and S7B (legend and p-values in the panels)
+  quote: The distributions of change in rpR2 for the curl field sessions, but without the
+    normalization by the cross-val- ... performance. Asterisks indicate significance at p < 0.01.
+    (B) Same as Panel A, but for the visuomotor rotation sessions. There were no significant
+    differences in the models
+  statistics:
+  - about: CF, M1-M1
+    p: 0.13
+  - about: CF, PMd-PMd
+    p: 0.44
+  - about: CF, Pot-M1
+    p: 0.54
+  - about: CF, Null-M1
+    p: 0.01
+  - about: CF, PC-M1
+    p: 0
+  - about: VR, M1-M1
+    p: 0.33
+  - about: VR, PMd-PMd
+    p: 0.62
+  - about: VR, Pot-M1
+    p: 0.28
+  - about: VR, Null-M1
+    p: 0.72
+  - about: VR, PC-M1
+    p: 0.8
+  depends_on:
+  - fig3g-local-models-generalize
+  criterion: As M7 without dividing by the cross-validated rpR2 (O1, O5), Early against Late,
+    two-sided two-sample t-test (the test M8 gives for model-error comparisons; the panel does not
+    name it). The panel marks Null-M1 at p = 0.01 as significant at "p < 0.01"; read as p <= 0.01.
+    Reproduced when, in CF, Null-M1 and PC-M1 are significant and the other three are not, and in
+    VR none is; partially reproduced when the CF pattern holds and a VR model is significant.
+- id: figs7e-dimensionality-range
+  statement: The Null-M1 failure and Pot-M1 generalization held for M1 dimensionalities from 7 to
+    20 (PMd twice that); Null-M1 was significant at all tested values except 9, Pot-M1 at none.
+  source: Figure S7E; STAR Methods, Controls for the output-potent and output-null subspaces;
+    Results, Output-potent activity in PMd consistently predicts M1 neurons ..., paragraph 3
+  quote: Our primary effect that Pot-M1, and not Null-M1, generalizes to early CF trials held for a
+    wide range of dimensionalities
+  statistics:
+  - test: two-sample t-test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig4d-null-m1-fails-early
+  criterion: As fig4d-null-m1-fails-early with M1 dimensionality 7, 8, 9, 10, 11, 12, 15 and 20
+    and PMd twice that (the values on the Figure S7E axis; the Methods say 5 to 20). Reproduced when
+    Null-M1 is significant at p = 0.01 for at least six of the eight values and Pot-M1 for none;
+    partially reproduced when Null-M1 is significant for at least four (the figure shows seven of
+    eight; the thresholds are the reader's reading of "a wide range", a deviation).
+- id: figs7f-factor-analysis
+  statement: The main result held with Factor Analysis in place of PCA; in CF only Null-M1 and PC-M1
+    had larger Early error, and in VR no model did.
+  source: Figure S7F; Results, Output-potent activity in PMd consistently predicts M1 neurons ...,
+    paragraph 3
+  quote: We thus replicated these main results using Factor Analysis, another common method for
+    dimensionality reduction of neural data, instead of PCA
+  depends_on:
+  - fig4d-null-m1-fails-early
+  criterion: As fig4d-null-m1-fails-early and fig7de-vr-all-generalize, with latent activity from
+    Factor Analysis (factoran, 8 M1 and 16 PMd factors; STAR Methods, Dimensionality reduction)
+    in place of PCA. Reproduced when in CF Null-M1 and PC-M1 are significant at p = 0.01 and
+    M1-M1, PMd-PMd and Pot-M1 are not, and in VR none is.
+- id: figs7cd-single-neuron-models
+  statement: With single-neuron spiking as inputs, M1sn-M1 and PMdsn-PMd generalized well through
+    CF adaptation while PMdsn-M1 did not, in each monkey; in Washout, PMdsn-M1 alone showed
+    de-adaptation in CF (p = 0.00), and no model changed in VR.
+  source: Figure S7C and S7D; Results, Output-potent activity in PMd consistently predicts M1
+    neurons ..., paragraph 3
+  quote: Indeed, the local models ( M1sn -M1, PMdsn PMd) generalized well throughout adaptation,
+    while the between area model ( PMdsn -M1) did not
+  statistics:
+  - about: Washout CF, M1sn-M1
+    p: 0.25
+  - about: Washout CF, PMdsn-PMd
+    p: 0.15
+  - about: Washout CF, PMdsn-M1
+    p: 0
+  - about: Washout VR, M1sn-M1
+    p: 0.07
+  - about: Washout VR, PMdsn-PMd
+    p: 0.64
+  - about: Washout VR, PMdsn-M1
+    p: 0.6
+  depends_on:
+  - fig4d-null-m1-fails-early
+  - fig5-washout-null-m1
+  criterion: Models as M4 with all other single neurons of the area as inputs (M1sn-M1, PMdsn-PMd)
+    or all PMd neurons (PMdsn-M1). The kinematic covariates are open. The STAR Methods (Covariate
+    inputs to the GLMs) say "For Figure S7C, D, we performed a control in which we repeated the GLM
+    models for the CF task using only the velocity inputs", while the S7C and S7D legends describe
+    single-neuron inputs only; readings (a) position, velocity and acceleration as M4, (b) velocity
+    only. Force as fig4d-null-m1-fails-early per monkey, Washout as
+    fig5-washout-null-m1. Reproduced when PMdsn-M1 alone is significant at p = 0.01 in Force in
+    both monkeys and in CF Washout, and no model is in VR Washout; partially reproduced when the
+    Force result holds and the Washout result does not.
+- id: fig5-washout-null-m1
+  statement: Models trained on Baseline predicted the first eight Washout trials worse than later
+    Washout trials for Null-M1 only; Pot-M1 predicted both blocks well.
+  source: Figure 5B; Results, Output-potent activity in PMd consistently predicts M1 neurons ...,
+    paragraph 4
+  quote: We found that Null -M1 generalized poorly in the earliest trials, then rapidly improved
+    with de-adaptation as output-null activity began to return to Baseline. There was no such effect
+    for the Pot -M1 model, which accurately predicted both early and late Washout trials
+  statistics:
+  - about: Null-M1, Early against Late Washout model error
+    test: two-sample t-test
+    p: 0.01
+    p_relation: "<"
+  criterion: Models trained on Baseline trials (M6), tested on Washout; model error as M7 with the
+    Washout blocks of O2; cells selected as M6 on the Baseline training data. Which Baseline trials
+    train the models is not given (STAR Methods, Training the GLMs, says only "trained the GLMs
+    using Baseline data"); readings (a) all Baseline reward trials, (b) the last 50% of Baseline
+    reward trials, as for Force. Two-sided two-sample
+    t-test at p = 0.01, O5 readings. Reproduced when Null-M1 Early error is significantly larger
+    and Pot-M1 does not differ, under every reading.
+- id: fig6c-null-leads-potent
+  statement: In Baseline, output-null activity preceded output-potent activity by 35 ms on average
+    across the 16 sessions, a lag significantly below zero (t-test, p = 0.02), and output-null also
+    led at the end of Force.
+  source: Figure 6B and 6C (legend's first "d"); Results, Evolving changes in PMd output-null
+    planning activity ..., paragraph 1
+  quote: Output-null activity preceded output-potent by 35 ms on average, and the distribution was
+    significantly negative (t-test; p = 0.02)
+  statistics:
+  - test: t-test
+    p: 0.02
+    n: 16 CF and VR sessions
+  expected:
+  - quantity: mean lag of output-potent relative to output-null, Baseline
+    value: -35
+    tolerance: 3.5
+    unit: ms
+  criterion: Method from STAR Methods, Calculating the lag. Baseline trials, a 700 ms window
+    after target presentation, potent and null activity (M3, O7) shifted relative to each other
+    by -350 to 350 ms in 10 ms steps, CCA at each lag, the lag of maximum first canonical
+    correlation per session. Open (deviations) - the time resolution (readings (a) latent activity
+    from 10 ms bins, smoothed as M2; (b) 50 ms latent activity interpolated to 10 ms) and trials
+    concatenated within a session. The t-test is read as one-sample against zero, two-sided.
+    Reproduced when, under one reading, the mean lag is negative with p < 0.05 and within 3.5 ms
+    of -35 ms and the mean end-of-Force lag over the 9 CF sessions (same method on a block of
+    trials from the end of Force, STAR Methods) is also negative; partially reproduced when the
+    Baseline lag is significantly negative and either it is outside tolerance or the end-of-Force
+    mean lag is not negative. The paper gives no test for the end-of-Force lags.
+- id: fig6e-planning-change-in-null
+  statement: Changes in preparatory (planning) activity from Baseline were largely confined to the
+    output-null subspace and grew significantly from Early to Late Force; in the movement window,
+    M1 activity changed significantly more in Late Force.
+  source: Figure 6D and 6E; Results, Evolving changes in PMd output-null planning activity ...,
+    paragraph 2
+  quote: Changes in preparatory activity were largely confined to the output-null subspace.
+    Furthermore, the amount of this altered preparatory activity increased significantly between
+    Early and Late adaptation
+  statistics:
+  - about: Null subspace, planning window, Early against Late Force
+    p: 0.05
+    p_relation: "<"
+  - about: M1, movement window, Early against Late Force (asterisk on the M1 bars of Figure 6E)
+    p: 0.05
+    p_relation: "<"
+  criterion: Method from STAR Methods, Quantifying changes in neural state space activity. Trials
+    aligned on go cue, latent activity in 20 ms bins for M1 (8 dimensions) and PMd potent and null
+    subspaces; at each time point the Mahalanobis distance (MATLAB mahal) of each Force trial from
+    all Baseline reaches to the same target; normalized by subtracting the value at a reference
+    point and dividing by the maximum over the adaptation period. Open (deviations) - the reference
+    point (readings the first bin of the window, 0.5 s before go cue, or the go cue); the planning
+    and movement windows, not given in the text (read from the bars of Figure 6D, about -0.15 to
+    0 s and 0.25 to 0.40 s from go cue, on an axis from -0.5 to 0.8 s); the blocks, labeled Force 1 and Force 4 in the panel
+    (read as the first and last quarter of Force; the O1 Early and Late blocks as the second
+    reading); the test, not named (two-sided two-sample t-test over trials, session values as a
+    second reading). Reproduced when, under every reading, the null planning change is larger in
+    Force 4 at p < 0.05 and exceeds the potent and M1 planning changes in Force 4, and the M1
+    movement-window change is larger in Force 4 at p < 0.05; partially reproduced when the null
+    planning result holds and the M1 movement result does not.
+- id: fig7de-vr-all-generalize
+  statement: During VR adaptation all four GLM models, including Null-M1, generalized to Early and
+    Late Rotation trials, with no significant change in model error.
+  source: Figure 7D and 7E; Results, PMd to M1 mapping is unchanged ..., paragraph 2
+  quote: However, all GLM models, including Null -M1, accurately generalized throughout Rotation
+  statistics:
+  - test: two-sample t-test
+    p: 0.01
+    p_relation: ">"
+    n: seven VR sessions
+  criterion: As fig3g-local-models-generalize and fig4d-null-m1-fails-early for the seven VR
+    sessions (Rotation epoch), M1-M1, PMd-PMd, Pot-M1 and Null-M1. A claim of absence, judged on
+    the paper's test (two-sided two-sample t-test at p = 0.01); reproduced when no model differs
+    between Early and Late, not reproduced when any does.
+- id: fig7f-vr-washout-unchanged
+  statement: In VR Washout neither Pot-M1 nor Null-M1 showed a change in performance during
+    de-adaptation, despite behavioral after-effects.
+  source: Figure 7F; Results, PMd to M1 mapping is unchanged ..., paragraph 2
+  quote: Furthermore, we did not see any effect of de-adaptation in the neural predictions during
+    Washout, despite the presence of behavioral after-effects
+  depends_on:
+  - fig5-washout-null-m1
+  criterion: As fig5-washout-null-m1 for the seven VR sessions. A claim of absence; reproduced when
+    neither model differs at p = 0.01, not reproduced when either does.
+- id: cf-vr-dissociation
+  statement: The Null-M1 failure to generalize is specific to CF adaptation; it is absent in VR
+    adaptation of similar behavioral magnitude, so it is not a necessary consequence of changing
+    behavior.
+  source: Results, PMd to M1 mapping is unchanged ..., paragraph 2; Discussion, Visuomotor rotation
+    and curl field likely employ distinct adaptive processes
+  quote: This result highlights a fundamental difference in the neural adaptation to these two
+    perturbations
+  depends_on:
+  - fig4d-null-m1-fails-early
+  - fig5-washout-null-m1
+  - fig7de-vr-all-generalize
+  - fig7f-vr-washout-unchanged
+  - fig7bc-vr-behavior-similar
+  criterion: Reproduced when fig4d-null-m1-fails-early and fig7de-vr-all-generalize are both
+    reproduced; partially reproduced when they are and fig7bc-vr-behavior-similar is not.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs2-covariance-preserved-example, the criterion now names as open whether the r values are per session (Results, "representative session") or pooled over the nine CF sessions (Figure S2E legend), and judges both.
+  - figs3a-covariance-like-baseline-split, rewrote the garbled subsample note as two random halves of Baseline, the split Figure S2D describes.
+  - figs3b-covariance-preserved-vr, the source now says the Results cite Figure S2B while the VR covariance summary is Figure S3B.
+  - fig6c-null-leads-potent, the statement says output-null also led at the end of Force (Results, "during both Baseline and at the end of Force"), so the criterion now judges the end-of-Force mean lag sign as well.
+  - fig6e-planning-change-in-null, the movement window read from Figure 6D is 0.25 to 0.40 s after go cue, not 0.45 s (bar ends at the 0.4 tick; axis -0.5 to 0.8 s); added the M1 movement-window p < 0.05 entry (the Figure 6E movement asterisk is on the M1 bars by the legend colors) and made the criterion judge that part of the statement.
+  - fig5-washout-null-m1, the criterion now names as open which Baseline trials train the Washout models (all Baseline reward trials or the last 50%), since the Methods say only "Baseline data".
+  - figs7cd-single-neuron-models, the criterion now names as open the kinematic covariates, since the Methods say the Figure S7C,D control used only velocity inputs and the legends do not.
+  - checked against the figure PDFs, by text and colour positions, the model each printed p-value or asterisk belongs to in Figures 3E, 6E, S5F, S6D, S6E, S7A, S7B, S7D, S7E and S7F; all agree with the claims.
+  - open, fig2d-cf-behavioral-adaptation, fig7bc-vr-behavior-similar, figs3a-covariance-like-baseline-split, figs4c-null-potent-index-centered, fig4c-null-tracks-behavior and figs7e-dimensionality-range, the paper gives no test for these qualitative findings; the session counts, t-tests, correlation and index thresholds in their criteria are judging rules of the reader, recorded as deviations.
+  - open, figs5e-pot-null-similar-training, the paper gives no test for "similar accuracy"; the Kolmogorov-Smirnov test is borrowed from the Early against Late rpR2 comparisons (Figures 3E, S5F).
+  - open, figs5f-rpr2-distributions, the legend calls Null-M1 significant at p = 0.04 although the paper sets p = 0.01 for all GLM comparisons; the criterion judges at 0.05 and reports 0.01.
+  - open, the session counts of the Figure 2C (seven CF) and Figure 7 (five VR) legends do not match the 9 CF and 7 VR sessions of the Methods; the claims use the Methods counts.
