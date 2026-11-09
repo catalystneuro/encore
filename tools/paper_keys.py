@@ -20,6 +20,7 @@ import json
 import re
 import sys
 import unicodedata
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -52,10 +53,19 @@ def load(path: Path):
 
 
 def crossref(doi: str) -> dict:
+    """A work's Crossref record, with a pause between calls and retries when Crossref asks to slow down."""
+    import time
     req = urllib.request.Request(f"https://api.crossref.org/works/{doi}",
-                                 headers={"User-Agent": "encore-paper-keys/1"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.load(r)["message"]
+                                 headers={"User-Agent": "encore-paper-keys/1 (https://encorescience.org)"})
+    for attempt in range(6):
+        time.sleep(0.5)
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.load(r)["message"]
+        except urllib.error.HTTPError as err:
+            if err.code not in (429, 500, 502, 503, 504) or attempt == 5:
+                raise
+            time.sleep(int(err.headers.get("Retry-After") or 0) or 5 * 2 ** attempt)
 
 
 def papers_with_records() -> dict[str, dict]:

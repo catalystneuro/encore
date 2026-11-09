@@ -13,6 +13,7 @@
     python tools/runner/describe.py published FOLDER   # "true" when the dataset has a published version
     python tools/runner/describe.py claims-ready PAPER
                                                        # "true" when main has a claims file whose check passed
+                                                       # and which covers each of the paper's datasets
     python tools/runner/describe.py paper FOLDER       # the key of the paper main lists the dataset for, if any
     python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
     python tools/runner/describe.py label FOLDER       # how the dataset is shown: DANDI:000003
@@ -96,6 +97,17 @@ def claims_ready(paper: str) -> bool:
     """Whether main has the paper's claims file (claims/<paper>.yaml) and its latest check says it is ready."""
     checks = (main_yaml(f"claims/{paper}.yaml") or {}).get("checks") or [{}]
     return checks[-1].get("ready") is True
+
+
+def claims_cover(paper: str) -> bool:
+    """Whether main's claims file for the paper covers each of its datasets: true for a paper on one dataset, and
+    for one on several when every claim names its datasets (`datasets:`, docs/protocol.md). A paper that has gained
+    a dataset since its claims were read has its claims read again."""
+    _, listed = main_papers()
+    if len(listed.get(paper) or []) <= 1:
+        return True
+    claims = (main_yaml(f"claims/{paper}.yaml") or {}).get("claims") or []
+    return bool(claims) and all(c.get("datasets") for c in claims if c.get("kind") != "link")
 
 
 def main_blobs(prefix: str) -> dict[str, str]:
@@ -439,7 +451,7 @@ def main() -> int:
         print("true" if all((k not in by_key and rest[0] in listed) or (k in by_key and published(by_key[k]))
                             for k in keys) else "false")
     elif command == "claims-ready":
-        print("true" if claims_ready(rest[0]) else "false")
+        print("true" if claims_ready(rest[0]) and claims_cover(rest[0]) else "false")
     elif command == "match":
         found = next((t for t in main_targets() if t["folder"] == rest[0]), None)
         if found is None:

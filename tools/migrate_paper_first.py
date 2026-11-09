@@ -83,6 +83,29 @@ def plan() -> dict:
             folders[a["doi"]].append(a["folder"])
     several = {doi for doi, f in folders.items() if len(f) > 1}
 
+    # Every other dataset whose paper match on main settles on a paper is listed for that paper too, so that its
+    # chain goes on under the paper's key after the cutover. Its paper gets a key now if it has none. Only the
+    # datasets with records decide a paper's layout (`several`).
+    import paper_match
+    fixes = paper_match.triage()
+    recorded = {f for fs in folders.values() for f in fs}
+    new_keys: dict[str, str] = {}
+    for t in datasets.targets():
+        if t["folder"] in recorded or t["archive"] in ("local", "remote"):
+            continue
+        status, chosen = paper_match.choose(t, fixes.get(t["folder"], {}), paper_match.load(t["folder"]))
+        if status != "matched" or not chosen:
+            continue
+        doi = paper_keys.doi_of(chosen[0]["doi"])
+        if doi not in keys and doi not in new_keys:
+            title = chosen[0].get("title") or ""
+            key, title = paper_keys.base_key(doi, {"title": title} if title else {})
+            taken = set(keys.values()) | set(new_keys.values())
+            new_keys[doi] = paper_keys.distinguish(key, title, taken) if key in taken else key
+        if t["folder"] not in folders[doi]:
+            folders[doi].append(t["folder"])
+    keys = {**keys, **new_keys}
+
     def scoped(doi: str, folder: str) -> str:
         return f"{keys[doi]}-{folder}" if doi in several else keys[doi]
 
@@ -112,6 +135,9 @@ def plan() -> dict:
         moves.append((path.relative_to(ROOT).as_posix(), new))
     for a in attempts:
         folder_paper.setdefault(a["folder"], a["doi"])
+    for doi, fs in folders.items():
+        for f in fs:
+            folder_paper.setdefault(f, doi)
     for folder, doi in sorted(folder_paper.items()):
         q = ROOT / "questions" / f"{folder}.yaml"
         if q.is_file():
@@ -150,6 +176,7 @@ def plan() -> dict:
     if dup:
         raise SystemExit("two records would move to the same path: " + ", ".join(dup[:10]))
     return {"moves": moves, "ids": ids, "entries": entries, "several": sorted(keys[d] for d in several),
+            "new_keys": new_keys,
             "folder_paper": {f: keys[d] for f, d in folder_paper.items()}, "paper_datasets": paper_datasets,
             "attempts": attempts}
 
@@ -164,6 +191,8 @@ def git(*args: str) -> None:
 
 
 def apply(p: dict) -> None:
+    if p["new_keys"]:
+        paper_keys.write_keys({**paper_keys.read_keys(), **p["new_keys"]})
     for src, dst in p["moves"]:
         (ROOT / dst).parent.mkdir(parents=True, exist_ok=True)
         git("mv", src, dst)
@@ -185,9 +214,6 @@ def apply(p: dict) -> None:
         m = re.search(r"^dataset:\n((?:  .*\n)+)", text, re.M)
         if not m:
             raise SystemExit(f"{path}: no dataset block")
-        block = "".join("    " + line[2:] + "\n" if i else "- " + line[2:] + "\n"
-                        for i, line in enumerate(m.group(1).splitlines()))
-        block = block.replace("\n- ", "\n- ", 1)
         items = [line for line in m.group(1).splitlines()]
         listed = "datasets:\n" + "".join(("- " if i == 0 else "  ") + line.strip() + "\n" for i, line in enumerate(items))
         listed += "  relation: primary\n"
@@ -218,7 +244,10 @@ def main() -> int:
     if args.plan:
         for src, dst in p["moves"]:
             print(f"{src} -> {dst}")
+        for doi, key in sorted(p["new_keys"].items(), key=lambda kv: kv[1]):
+            print(f"new key {key} for {doi}")
         print(f"\n{len(p['moves'])} moves; {len(p['ids'])} attempts, {len(p['entries'])} entries; "
+              f"{len(p['new_keys'])} new keys; "
               f"{len(p['paper_datasets'])} papers, {len(p['several'])} on several datasets: {', '.join(p['several'])}",
               file=sys.stderr)
         return 0

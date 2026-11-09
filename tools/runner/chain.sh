@@ -259,7 +259,12 @@ case "$match" in
     if [ -z "$is_paper" ]; then
       # From here the chain is the paper's: the dataset's branch held only its paper match, now on main.
       fetch
-      p=$(python "$here/describe.py" paper "$d") || { end "$d STOPPED: the paper match is on main, but no paper lists the dataset (papers/datasets/)"; exit 1; }
+      # A dataset matched before papers were listed by paper match (or by hand) is listed now.
+      if ! p=$(python "$here/describe.py" paper "$d"); then
+        "$here/merge_match.sh" "$d" --adopt 2>&1 | while read -r line; do log "$line"; done
+        fetch
+        p=$(python "$here/describe.py" paper "$d") || { end "$d STOPPED: the paper match is on main, but the dataset could not be listed for its paper (papers/datasets/)"; exit 1; }
+      fi
       log "the paper match lists the dataset for paper $p; going on as $p"
       git push -q origin --delete "attempt/$d" 2>/dev/null || true
       [ -e "$STATE/attempt-$p" ] || mv "$mark" "$STATE/attempt-$p" 2>/dev/null || true
