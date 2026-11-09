@@ -107,7 +107,8 @@ outcomes:
   deviations:
   - Movement onset is taken as event code 8 (reading (a) of the criterion, an event code). The data
     set does not document the codes; code 8 comes 0.22 to 0.58 s after code 3 (read as target onset)
-    and 0.03 to 0.38 s before the target code event, which fits the cursor leaving the start window,
+    and 0.03 to 0.38 s before the target code event (5th to 95th percentiles; the full ranges are
+    0.08 to 1.12 s and 0.02 to 1.25 s), which fits the cursor leaving the start window,
     the definition of reading (b). No continuous arm position is in the data set to run reading (b)
     directly. This reading of the code is an assumption.
   - Monkey X only, 359 units; counts compared as percentages, scaled to 343.
@@ -169,8 +170,9 @@ outcomes:
   notes: In the first and last 400 ms of the window, 35.7, 11.4 and 7.0% and 28.7, 13.6 and 5.0% of
     the 359 units have position, vision and interaction effects, against 31, 9, 5% and 29, 10, 4%;
     1 of 6 values is within tolerance (the last 400 ms position effect). All 483 units give 31.5,
-    11.2, 6.2% and 27.1, 13.3, 4.3%, 3 of 6 within, which would be partial. The position percentages
-    are near the paper's; the vision and interaction percentages are higher. Starting the window at
+    11.2, 6.2% and 27.1, 13.3, 4.3%, 3 of 6 within, which would be partial. The last 400 ms position
+    percentage is within tolerance and the first 400 ms one is above it; the vision and interaction
+    percentages are higher. Starting the window at
     least 250 ms after code 10 (a variant, against a possible saccade at its start) gives 35.7, 10.9,
     7.5% and 28.8, 13.7, 5.0% (1 of 6 within), and 3 of 6 with all units.
   deviations:
@@ -282,7 +284,8 @@ outcomes:
   notes: With outliers on INDX1 (reading (i), Tukey fences over all cells), mean INDX2 is -0.5, +12.7
     and +7.5% for Position Only, Vision Only and Position/Vision cells, against -9, -13 and -13%.
     No outlier reading, population or code mapping gives three negative means within tolerance; the
-    closest, outliers on INDX2 with reading (c), gives -1.7, -10.5 and -9.5%.
+    closest are outliers on INDX2 with reading (c), which gives -1.7, -10.5 and -9.5% for the 359 units
+    and -2.0, -14.1 and -9.9% for all 483 units, where only Vision Only is within tolerance.
   deviations:
   - Monkey X only, one unit per session.
 - claim: rate-variance-nv-higher
@@ -340,7 +343,6 @@ outcomes:
   - Which code is NV is assumed, as for rate-variance-nv-higher.
 - claim: fig6-decoding-vv
   outcome: not_reproduced
-  assumed: true
   notebook: reproduce_shi_2013.ipynb
   output: claim:fig6-decoding-vv
   measured: 77.4
@@ -350,7 +352,8 @@ outcomes:
     483 units give 68.4%. With target labels shuffled within each cell and condition, the decoder
     gives 16.1% (V) and 11.2% (NV) on average over 20 shuffles, near the nominal chance of 12.5%.
   deviations:
-  - Which code is V is assumed; under the other mapping V/V accuracy is 63.7%, also not within.
+  - Which code is V is assumed; under the other mapping V/V accuracy is 63.7%, also not within, and
+    all units give 68.4%, so the outcome does not rest on the mapping or the choice of unit.
   - Monkey X only, 359 cells, one per session, their trials joined by order within target and condition
     (criterion reading (i)).
 - claim: fig6-decoding-nvnv
@@ -374,7 +377,10 @@ outcomes:
     over the 8 targets P = 0.0087; two-sample over the 200 bootstrap accuracies P = 4e-63; two-sample
     over targets P = 0.0081); populations of 200 cells give P = 0.0009, 6e-65 and 0.0008. With all
     483 units, 68.4 against 63.0%, paired P = 0.29 and over bootstraps P = 4e-15. With all units the
-    unpaired test over targets gives P = 0.40.
+    unpaired test over targets gives P = 0.40. With all units and populations of 200 cells, 62.9 against
+    55.3%, the paired test over targets also finds the difference (P = 0.036; unpaired P = 0.14). The
+    test over bootstraps (reading (b)) treats the 200 resamples as independent, so its P value depends
+    on how many are drawn; the tests over targets do not.
   deviations:
   - Which code is V is assumed; under the other mapping NV would decode better (77.4 against 63.7%).
     The mapping was chosen from aborted trials, not from neural data.
@@ -441,7 +447,9 @@ outcomes:
     of about 100 samples could reach, so the spread does not settle what they are. Tested on them
     for the record only (trials pooled over sessions), no target shows a V against NV difference by
     MANOVA, and one shows one by Levene's test (90 degrees, second value, P = 0.012 centred on the
-    mean, 0.28 on the median); 8.7% of session and target pairs differ by MANOVA.
+    mean, 0.28 on the median); 8.7% of session and target pairs differ by MANOVA. If these fields
+    were the mean eye position, reading (a) would therefore not reproduce the claim. The block also
+    rests on a reading of the analog file layout known to be at least partly wrong.
 - claim: aborted-trials-nv
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -743,3 +751,216 @@ verifications:
       a code 10 to code 12 interval shorter than its own field 11 plus 28 ms; the 0.832 s intervals
       are on trials with field 11 = 800 (some sessions change field 11 within the session), so the
       timing supports field 11 as the minimum hold.
+- date: '2026-11-09'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full re-executed notebook with the conclusions and the summary, the helper module
+    (ppc.py), the claims file, the README and the attempt record, with the paper's full text under paper/.
+    The verifier checked the outcomes and the flagged assumptions, every conclusion sentence against the
+    outputs, and which of its round-1 points are resolved.
+  results:
+  - claim: behavior-mean-position-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 28 outcomes in the record. Remaining (B2): whether fields 19 to 21 are the
+      mean over the hold or a single sample remains undecidable; the behavioural and Table 1 outcomes
+      rest on them. This is stated. The MANOVA is calibrated on these data (5.7% significant with shuffled
+      labels), the two conditions are interleaved within sessions, and within-session SDs are printed.'
+    response: No change; the question stays stated in the deviation and asked of the paper's authors.
+  - claim: behavior-variability-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. Fields 19 to 21 (B2) remain undecidable, as for
+      behavior-mean-position-sessions.
+    response: No change.
+  - claim: table1-endpoint-means
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 28 outcomes in the record. Fields 19 to 21 (B2) remain undecidable, as for
+      behavior-mean-position-sessions.
+    response: No change.
+  - claim: table1-endpoint-sd
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. Fields 19 to 21 (B2) remain undecidable, as for
+      behavior-mean-position-sessions.
+    response: No change.
+  - claim: fig3-example-neuron
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: movement-epoch-tuning
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. Movement onset read as code 8 is stated and reasonable.
+      Cell 10 gives 0.22 to 0.58 s (code 8) and 0.54 to 0.96 s (code 3) as ranges, but they are the 5th
+      to 95th percentiles, not the minimum to maximum (0.08 to 1.12 s and 0.54 to 1.92 s); the record's
+      deviation repeats the 0.22 to 0.58 and 0.03 to 0.38 s ranges without saying they are percentiles.
+    response: Cell 10 and the deviation now say the ranges are 5th to 95th percentiles and give the full
+      ranges as well. Outcome unchanged.
+  - claim: hold-position-main-effect
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 28 outcomes in the record. B3 (window placement) is resolved by the per-trial
+      table of the interval against field 11. Remaining (clock alignment) is checked per session, but
+      in 206 of 359 sessions no unit is tuned in the hold, so the shared spike and event clock is not
+      confirmed there; a misaligned session would dilute the counts and the decoding.
+    response: No change; the clock check and its limit are shown in the notebook. Cell 10 now says code
+      10 follows the target code by a median of 320 ms (range 0.22 to 0.42 s), not by 320 ms on every
+      trial.
+  - claim: hold-vision-main-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 28 outcomes in the record. The first sorted unit per session is stated and
+      reasonable. Remaining (B1): the record has 359 monkey X sessions against the paper''s 219; the new
+      checks rule out monkey B and repeated recordings of one neuron but do not say which sessions the
+      paper used. Every count, index and decoding claim rests on this. It is stated as a finding and cannot
+      be settled from the data.'
+    response: No change; kept as the selection_undocumented finding.
+  - claim: hold-interaction
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: hold-subepochs
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. The first sorted unit per session is stated and
+      reasonable, and the late-start variant leaves the outcome unchanged (B3 resolved). Cell 59 says
+      the position percentages are close, but the first-400 ms one, 35.7%, is outside 31 +/- 3.1; the
+      record's near the paper's has the same problem.
+    response: Cell 59 and the notes now say the last 400 ms position percentage is within tolerance and
+      the first 400 ms one is above it. Outcome unchanged.
+  - claim: hold-overall-effects
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: correlation-endpoint-datasets
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 28 outcomes in the record. Correlation reading (a) is stated and reasonable.
+      Data set 1 rests on fields 19 to 21 (B2), which remain undecidable.
+    response: No change.
+  - claim: fig4-indx1-negative
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 28 outcomes in the record. The first sorted unit per session is stated and
+      reasonable. Cell 68 says readings (b) and (c) give the same, but reading (b) gives 78.4% and 70.0%
+      for all cells and Position Only, not reading (a)'s 77.8% and 68.4%. The outcome is the same, and
+      the record's notes state these values correctly.
+    response: Cell 68 now gives reading (b)'s values (78.4, 70.0, 75.0, 75.0%, only the first within tolerance).
+      Outcome unchanged.
+  - claim: fig4-indx1-means
+    agrees: true
+    outcome: partially_reproduced
+    reason: I now agree. The Position Only part holds in full (-12.0%, within -13 +/- 1.3, the least negative
+      group). The Position/Vision part fails (-24.2% outside -31 +/- 3.1, and not the most negative group).
+      Calling that partial is defensible.
+    response: No change.
+  - claim: indx1-tuning-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: indx2-means
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. Cell 76 calls outliers on INDX2 by reading (c)
+      the closest (-1.7, -10.5, -9.5%), but all units with the same reading give -2.0, -14.1 and -9.9,
+      and -14.1 is within -13 +/- 1.3, so it is arguably closer. The outcome is unaffected.
+    response: Cell 76 and the notes now give both, and say that with all units only Vision Only is within
+      tolerance. Outcome unchanged.
+  - claim: rate-variance-nv-higher
+    agrees: true
+    outcome: partially_reproduced
+    reason: I now agree, but only just. Both means are outside tolerance (46.4 against a bound of 50.4,
+      23.1 against 27), but NV is higher in 67% of cells, at about twice the V value. That direction rests
+      on the code mapping (V = 4, B4), which is unchanged, reasonable and flagged.
+    response: No change.
+  - claim: fig5-fano-factor
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. FF outlier reading (a) and V = 4 are stated and
+      reasonable. The possible misreading in the claims file (B6) is now asked of a reader; it does not
+      change the outcome, as no reading reproduces the claim, including the 0 to 80 range variant.
+    response: No change; the question stays in questions/shi-2013.yaml.
+  - claim: cv2-larger-nv
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 28 outcomes in the record. CV2 reading (a) and V = 4 are stated and reasonable;
+      the direction depends on the mapping (B4).
+    response: No change.
+  - claim: fig6-decoding-vv
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 28 outcomes in the record. The assumed flag is not needed: the claim is
+      not reproduced under both code mappings (63.7%) and with all units (68.4%), so its outcome rests
+      on no assumption. The decoder''s chance level on these data (B7) and the unused branch of ppc.decode
+      (B9) are resolved.'
+    response: Removed assumed from this outcome; the deviation and cell 91 now say the outcome rests on
+      neither the mapping nor the choice of unit.
+  - claim: fig6-decoding-nvnv
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. V = 4 is stated and reasonable; the outcome depends
+      on it (B4).
+    response: No change.
+  - claim: decoding-v-better-than-nv
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 28 outcomes in the record. V = 4 is stated and reasonable; the direction
+      depends on it (B4). Cell 93 says that with all 483 units only the test over bootstraps finds it,
+      but cell 90 shows that with all units and populations of 200 cells the paired test over targets
+      also finds it (P = 0.0364). The outcome is unaffected. B8 (the t-test over bootstrap accuracies
+      is pseudo-replicated) was not addressed; it decides no outcome.
+    response: Cell 93 and the notes now give the all-units populations of 200 cells (paired P = 0.036,
+      unpaired P = 0.14). On B8, the test over bootstraps is reading (b) of the claims file's criterion
+      and is kept as a reading; cell 93 and the notes now say it treats the resamples as independent,
+      so its P value depends on how many are drawn, while the tests over targets do not. Outcome unchanged.
+  - claim: fig6-decoding-cross
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: decoding-subepochs
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record. The first sorted unit per session is stated and
+      reasonable, and the late-start variant leaves the outcome unchanged (B3 resolved).
+    response: No change.
+  - claim: decoding-nonsignificant-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: eye-position-no-difference
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 28 outcomes in the record. It is confirmed as metadata_insufficient; the
+      analog channels are now shown and the note on fields 22 and 23 is corrected. Remaining: the block
+      depends on the layout read for the analog files, seven channels out of 16 described, with channel
+      6 spanning 16 bits, so it rests partly on a layout reading known to be at least partly wrong. If
+      fields 22 and 23 were eye position, reading (a) would fail the claim (Levene''s test P = 0.012 at
+      90 degrees, vertical).'
+    response: Block kept. Cell 106 and the notes now say that the block rests on a layout reading known
+      to be partly wrong, and that if fields 22 and 23 were the mean eye position reading (a) would not
+      reproduce the claim.
+  - claim: aborted-trials-nv
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 28 outcomes in the record.
+    response: No change.
+  - claim: longer-hold-no-difference
+    agrees: true
+    outcome: blocked
+    reason: I now agree. The per-trial table removes my round-1 objection and supports reading field 11
+      as the minimum hold; no completed trial has field 11 >= 1,200. Cell 112 says each session's shortest
+      interval follows its field 11, which cell 111 contradicts (sessions grouped at 900 have a shortest
+      interval of 0.832 s, at 1,000 of 0.960 s); most likely the three sessions whose field 11 changes
+      within the session explain it, but the sentence does not say so.
+    response: Cell 112 now drops the per-session sentence and says the sessions whose shortest interval
+      is below their first field 11 are those whose field 11 changes within the session; cell 111 now
+      lists those sessions with their field 11 values and the field 11 of the trial with the shortest
+      interval. Block unchanged.
