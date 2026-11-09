@@ -1,0 +1,324 @@
+schema_version: 3
+id: espinosa-2017-01
+datasets:
+  - archive: crcns
+    id: bf-2
+    version: unversioned
+    doi: 10.6080/K0MG7MQW
+    relation: primary
+paper: doi:10.1093/cercor/bhx302
+date: '2026-11-09'
+entry: espinosa-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42690358737
+outcomes:
+  - claim: supp1-nphr-in-somatostatin-cells
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Histological cell counts from immunostained sections. The data set holds no histology, and the paper
+      names no other archive for it.
+  - claim: supp2-nphr-silences-som-cells
+    outcome: blocked
+    blocked_by: data_missing
+    notes: In vitro whole-cell recordings from ventral pallidum slices. The data set holds only in vivo extracellular
+      recordings and videos; the paper names no other archive for the slice data.
+  - claim: supp3-two-ventral-pallidum-cell-types
+    outcome: blocked
+    blocked_by: data_missing
+    notes: In vitro whole-cell recordings; not in the data set (see supp2-nphr-silences-som-cells).
+  - claim: fig1-bf-response-classes
+    outcome: not_reproduced
+    notebook: reproduce_espinosa_2017.ipynb
+    output: claim:fig1-bf-response-classes
+    measured:
+      - 40
+      - 76
+      - 214
+      - 33.7
+      - 30.3
+    notes: 330 units in 4 animals and 20 recordings, as the paper and descriptor state. Under none of the twelve
+      readings (500-ms and 250-ms bins, n1 and n2, r1 to r3) are the three counts within tolerance; across them
+      inhibited units number 36 to 70, excited 68 to 118 and unaffected 142 to 226, against 29, 56 and 245. The
+      decrease of inhibited units is 16.2 to 39.7% (expected 49.2 +- 5.1) and the increase of excited units 21.3
+      to 31.5% (expected 39.6 +- 7.9); no reading has both within tolerance. Measured values are for 500-ms bins,
+      n1, r1. Counting every light pulse, including those given with the pinch, no reading brings the counts within
+      tolerance either (inhibited 45 to 77, excited 76 to 123). The data set's own per-unit flags (column 17 of
+      data_correlation.mat, '1sigpos -1signeg 0nosig laser/spk') give 56 excited, 30 inhibited and 244 unaffected
+      units, within tolerance of the paper; the classes found here agree with those flags for 191 to 286 of the
+      330 units. With the flags' classes, the increase measured here is 33.5 to 35.7% (within tolerance) and the
+      decrease 43.1 to 46.4% (within tolerance under two of four readings). So the deposited classification matches
+      the paper, and the method as the claims file reads it does not recover it. The question of how the flags were
+      computed is put to the paper's authors (findings).
+    deviations:
+      - Pulse bins are those whose centres fall in (0, 5] s (ten 500-ms or twenty 250-ms bins). The claims file
+        says the bins of the 5-s pulse without fixing the bin that straddles the end; this is a standard choice
+        of edge, noted in bf2.py.
+      - Light responses use the per-unit light-alone onsets of data_correlation.mat ('RT laser'). In NE52 and NE58
+        the light pulses alternate with light given together with the pinch, which the paper does not mention (Methods,
+        Optogenetic and Somatosensory Stimulation). Every light pulse of the TTL was run as a second reading.
+      - Shuffles permute both the inter-spike and inter-pulse intervals, keeping the first event (Methods, Unit
+        cross-correlation analysis, 'Both neural timestamps and start times of light pulses where shuffled by randomized
+        exchange of the original inter-event intervals'); seeds fixed per unit, a standard choice.
+  - claim: fig1d-excited-cells-fire-faster
+    outcome: reproduced
+    notebook: reproduce_espinosa_2017.ipynb
+    output: claim:fig1d-excited-cells-fire-faster
+    notes: Under all 24 combinations of class reading (12) and basal-rate reading (rate outside the light, rate
+      in the 5 s before each pulse), the Kruskal-Wallis test gives p at most 4.1e-10 and excited units have a higher
+      median rate than inhibited and unaffected units by rank-sum tests at p < 0.05. For 500-ms bins, n1, r1 and
+      the rate outside the light, medians are 12.26 (excited), 5.15 (inhibited) and 3.23 Hz (unaffected), Kruskal-Wallis
+      p = 6.8e-15, rank-sum excited against inhibited p = 0.00084, excited against unaffected p = 2e-15. Excited
+      units fire faster in each animal (medians 5.69 to 20.89 Hz against 2.88 to 5.20 Hz for the others, 500-ms,
+      n2, r1). With the data set's own classes the same holds (12.78 against 2.49 and 4.14 Hz, p = 3.2e-08).
+    deviations:
+      - The fig1-bf-response-classes classes do not match the paper's counts; the test is run on them as the criterion
+        says.
+  - claim: fig1d-discharge-by-class
+    outcome: reproduced
+    notebook: reproduce_espinosa_2017.ipynb
+    output: claim:fig1d-discharge-by-class
+    notes: 'Under all twelve readings the Kruskal-Wallis test (p at most 5.8e-38) and the three pairwise rank-sum
+      tests give p < 0.05, with medians ordered excited above unaffected above inhibited (500-ms, n1, r1: 1.197,
+      1.012, 0.805; Kruskal-Wallis p = 2.1e-40). As the claims file notes, this largely follows from the classification.'
+    deviations:
+      - The classes do not match the paper's counts (fig1-bf-response-classes).
+  - claim: fig1e-excited-slower-kinetics
+    outcome: not_reproduced
+    notebook: reproduce_espinosa_2017.ipynb
+    output: claim:fig1e-excited-slower-kinetics
+    measured:
+      - 9953
+      - 9698
+    notes: Under none of the 24 readings (two bin sizes, n1 and n2, r1 to r3, fit windows w1 and w2) does the rank-sum
+      test find excited units slower than inhibited ones at p < 0.05 (p = 0.051 to 0.992), and under none are both
+      mean time constants within tolerance. Measured values are the means for 250-ms bins, n1, r1, w1 (excited 9953
+      ms, inhibited 9698 ms; medians 2927 and 4998 ms). Many fits reach the 20-s bound (for example 36 of 75 excited
+      and 17 of 37 inhibited units in that reading), so the means are dominated by fits without a clear exponential;
+      with w2 the medians are 316 to 680 ms and still do not separate the classes.
+    deviations:
+      - The time constant is bounded to 1 ms to 20 s and fits start from the bin centred on light onset; the paper
+        gives neither (Figure 1E legend, 'exponential time constants from curve fittings to the early response').
+        A standard choice; fits at the bound are counted.
+      - The classes do not match the paper's counts (fig1-bf-response-classes).
+  - claim: supp4-tail-pinch-response-patterns
+    outcome: not_reproduced
+    notebook: reproduce_espinosa_2017.ipynb
+    output: claim:supp4-tail-pinch-response-patterns
+    measured:
+      - 16
+      - 10
+      - 26
+    notes: 'Pinch onsets are in two animals (NE52 and NE58, 242 units, 15 or 16 pinch-alone onsets per unit), while
+      the Supplementary Figure 4 legend gives four animals for panels C and D and two for E. Under none of the 24
+      readings (pinch window 2 s or 5 s, bins, n1 and n2, r1 to r3) are the three group sizes within tolerance:
+      pinch-inhibited 10 to 50 (expected 44), pinch-activated 6 to 62 (expected 149), light-inhibited units tested
+      with the pinch 25 to 47 (expected 18, panel E, two animals). Measured values are for the 2-s window, 500-ms
+      bins, n1, r1. The data set''s own pinch flags (column 19) over all units, including the 88 units of NE48 and
+      NE69 whose files hold no pinch events, give 45 pinch-inhibited units (10, 7 and 28 excited, inhibited and
+      unaffected by light) against the legend''s 44 (10, 7, 27), but 61 pinch-activated units against 149 and 30
+      light-inhibited units against 18. Panels C and D rest in part on pinch timing that is not in the data set;
+      panel E, which the files allow, is not matched under any reading.'
+    deviations:
+      - Pulse bins are those whose centres fall in (0, 5] s (ten 500-ms or twenty 250-ms bins). The claims file
+        says the bins of the 5-s pulse without fixing the bin that straddles the end; this is a standard choice
+        of edge, noted in bf2.py.
+      - The pinch window is read as 2 s (the files' pinch duration, 1.99 s, and the Methods' 'typically 1-2 s')
+        and as 5 s (legend), as the criterion says.
+      - Pinch onsets are the per-unit 'RT somatic' lists (pinch alone). The second TTL row of NE52 holds hundreds
+        of 50-ms pulses and is not used; LAN.RTb holds the pinch events there.
+  - claim: fig2c-mpfc-activation
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: supp6-prelimbic-infralimbic
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: fig2d-power-dependent-nphr-specific
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: supp7c-off-target-no-effect
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: fig2e-coherence-reduced
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: fig3a-cholinergic-blockade
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: fig3b-baseline-unchanged-response-decays
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: supp9-layers
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: supp9-fast-spiking-cells
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: supp9-interneurons-stronger
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal unit recordings. The data set holds no prefrontal recordings. Its descriptor lists ventral
+      pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and hippocampus recordings, and
+      open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives streamed in the notebook
+      hold the same. The paper names no other archive for these data.
+  - claim: fig4bcd-slow1-suppressed
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal LFP (and for supp10 prefrontal units). The data set holds no prefrontal recordings.
+      Its descriptor lists ventral pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and
+      hippocampus recordings, and open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives
+      streamed in the notebook hold the same. The paper names no other archive for these data.
+  - claim: supp10-phase-modulation
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal LFP (and for supp10 prefrontal units). The data set holds no prefrontal recordings.
+      Its descriptor lists ventral pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and
+      hippocampus recordings, and open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives
+      streamed in the notebook hold the same. The paper names no other archive for these data.
+  - claim: fig4g-low-gamma-power
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal LFP (and for supp10 prefrontal units). The data set holds no prefrontal recordings.
+      Its descriptor lists ventral pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and
+      hippocampus recordings, and open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives
+      streamed in the notebook hold the same. The paper names no other archive for these data.
+  - claim: supp11a-high-gamma-power-unchanged
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal LFP (and for supp10 prefrontal units). The data set holds no prefrontal recordings.
+      Its descriptor lists ventral pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and
+      hippocampus recordings, and open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives
+      streamed in the notebook hold the same. The paper names no other archive for these data.
+  - claim: fig4h-low-gamma-episodes
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal LFP (and for supp10 prefrontal units). The data set holds no prefrontal recordings.
+      Its descriptor lists ventral pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and
+      hippocampus recordings, and open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives
+      streamed in the notebook hold the same. The paper names no other archive for these data.
+  - claim: suppt2-gamma-event-frequency
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs prefrontal LFP (and for supp10 prefrontal units). The data set holds no prefrontal recordings.
+      Its descriptor lists ventral pallidum recordings (4 animals, 20 recordings, 330 neurons), medial septum and
+      hippocampus recordings, and open-field and Y-maze videos; the archive's file list (bf-2/live/) and the archives
+      streamed in the notebook hold the same. The paper names no other archive for these data.
+  - claim: fig5c-light-path-needed
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Needs sessions of NpHR+ mice with the light path blocked. Every open-field folder of the five VP mice
+      is a Laser_ON session (Behavioral_tests/OPEN_FIELD/VP.tar.gz), and the data set holds no other open-field
+      sessions of these mice.
+  - claim: fig5d-nphr-locomotion
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The VP open-field archive holds 5 mice (1189, 1190, 1191, 1337, 1556), matching the paper's 5 NpHR+ mice;
+      the per-frame movement vector ('cambio') and train onsets ('ttl') are stored for 3 of them (1189, 1191, 1556;
+      21, 12 and 21 trains). The Control archive holds 9 mice, each with a raw MPEG video and tracking output but
+      no train onsets or movement vector, and nothing says which 5 are the paper's NpHR- mice or which genotype
+      each is. The per-train traces of result_rapidez_all.mat (90 'halo_cre' and 91 control trains, 120 s each at
+      29.97 Hz) carry no mouse or train identity and no description; they do not match the frame-difference estimator
+      of the Methods. Detecting the trains from the videos would need a step neither the paper nor the descriptor
+      describes. Outside the notebook, as a probe that decides nothing here, no pixel of mouse 1556's video followed
+      its stored laser vector closely (best r = 0.59), the frame difference of that video correlated with its stored
+      'cambio' at r = 0.39, and a control video decoded at about 790 frames per second.
+  - claim: supp14-moving-no-difference
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: Blocked for the same reasons as fig5d-nphr-locomotion, on which it rests (it also depends on fig5c-light-path-needed
+      for its method). The VP open-field archive holds 5 mice (1189, 1190, 1191, 1337, 1556), matching the paper's
+      5 NpHR+ mice; the per-frame movement vector ('cambio') and train onsets ('ttl') are stored for 3 of them (1189,
+      1191, 1556; 21, 12 and 21 trains). The Control archive holds 9 mice, each with a raw MPEG video and tracking
+      output but no train onsets or movement vector, and nothing says which 5 are the paper's NpHR- mice or which
+      genotype each is. The per-train traces of result_rapidez_all.mat (90 'halo_cre' and 91 control trains, 120
+      s each at 29.97 Hz) carry no mouse or train identity and no description; they do not match the frame-difference
+      estimator of the Methods. Detecting the trains from the videos would need a step neither the paper nor the
+      descriptor describes. Outside the notebook, as a probe that decides nothing here, no pixel of mouse 1556's
+      video followed its stored laser vector closely (best r = 0.59), the frame difference of that video correlated
+      with its stored 'cambio' at r = 0.39, and a control video decoded at about 790 frames per second.
+findings:
+  - kind: data_missing
+    statement: The data set holds only the basal forebrain (ventral pallidum) recordings of Figure 1 and Supplementary
+      Figure 4 and open-field videos. The prefrontal unit and LFP recordings behind the paper's main findings (Figures
+      2 to 4, Supplementary Figures 6 to 11, Table 2), the in vitro and histology data (Supplementary Figures 1
+      to 3) and the light-blocked behavior sessions (Figure 5C) are not in it.
+  - kind: data_missing
+    statement: Pinch timing is in the files of two animals (NE52, NE58). The 88 units of NE48 and NE69 carry pinch
+      response flags (column 19 of data_correlation.mat; 24 activated, 16 inhibited, 20 unaffected, 28 empty) but
+      their recordings hold no pinch events, and the Supplementary Figure 4 legend gives four animals for panels
+      C and D.
+  - kind: metadata_error
+    statement: The descriptor says each recording lasts 10 min and the light is 5 s on and 15 s off. The files last
+      900 s in 16 of 20 recordings (600 s in NE69), and the light pulses come every 20, 25 or 30 s depending on
+      the recording.
+  - kind: metadata_error
+    statement: The descriptor gives the second row of LAN.ttl as the somatosensory stimulation. In NE52 that row
+      holds 700 to 1680 pulses of about 50 ms per recording, while LAN.RTb and the per-unit 'RT somatic' lists hold
+      29 to 31 and 15 or 16 pinch events. In NE58 the row matches the events.
+  - kind: metadata_insufficient
+    statement: Columns 6 to 8 and 15 to 20 of data_correlation.mat are not described ('Remaining columns are used
+      by scripts'). They hold the authors' cross-correlograms, the mean of 100 shuffles, and the per-unit light
+      and pinch response flags that match the paper's counts. That 'RT laser' lists only the light-alone pulses
+      in recordings where light alternates with light plus pinch, and 'RT somatic' only the pinch-alone ones, is
+      also not described.
+  - kind: metadata_insufficient
+    statement: The control open-field folders (9 mice) hold no laser train timing, no movement vector and no genotype,
+      and two of the five VP mice (1190, 1337) have no train timing; result_rapidez_all.mat holds per-train traces
+      with no mouse or train identity and no description. The locomotion results of Figure 5 cannot be recomputed
+      from them.
+  - kind: methods_unavailable
+    statement: Question for the paper's authors. How were the per-unit light response flags (column 17 of data_correlation.mat,
+      56 excited, 30 inhibited) computed? The Methods (Unit cross-correlation analysis) compare 'bin to bin' the
+      original sequence with 100 shuffles at P < 0.01. Read as the mean over the pulse outside all shuffles, any
+      pulse bin outside all shuffles, or a rank-sum test, with 500-ms or 250-ms bins and either normalization, this
+      gives 36 to 70 inhibited and 68 to 118 excited units. Which bins, statistic and threshold were used, and were
+      pulses given together with the tail pinch included? The same question applies to the exponential fit of Figure
+      1E (bins and fit window).
+  - kind: paper_inconsistency
+    statement: The Methods give 4 to 6 mW for the 100-um optrode used in the basal forebrain, the Supplementary
+      Figure 4 legends 15 to 25 mW, and the files 'Int. real' values of 15.8, 17.1 and 24.1 (normalized to a 200-um
+      fiber, per the descriptor) with 'intensity' 10 for every unit.
