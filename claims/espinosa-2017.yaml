@@ -1,0 +1,866 @@
+# Claims for Espinosa, Alonso, Morales, Espinosa, Chavez & Fuentealba (2017), "Basal Forebrain
+# Gating by Somatostatin Neurons Drives Prefrontal Cortical Activity", Cereb Cortex 29:42-53
+# (advance access 17 November 2017), doi:10.1093/cercor/bhx302, tested on CRCNS bf-2 ("Basal
+# forebrain extracellular recordings of anesthetized mice with somatostatin positive neurons
+# optogenetically inhibited", doi:10.6080/K0MG7MQW).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
+# protocol pilot-14 as stated in docs/protocol.md (Reader).
+#
+# Text read. The version of record with its supplement, as supplied under paper/
+# (10.1093-cercor-bhx302.txt, PyMuPDF text of the journal PDF and of the supplementary PDF
+# bhx302suppmat_161017.pdf): Methods, Results, Discussion, figure legends, and the supplement
+# (Supplementary Figures 1 to 14, Supplementary Tables 1 to 3, the legends of Supplementary Movies 1
+# to 3). The figures were read from their legends and the Results sentences that cite them. The
+# supplementary movies were not supplied; no claim rests on them. Supplementary Table 2 prints
+# p as "4.94E-04" and the Figure 1D legend prints "4.10×10−5"; the quote checker does not find
+# these forms, so they were confirmed by reading.
+#
+# Code. The paper links no analysis code of its own. It names the tools it used: KlustaKwik
+# (github.com/kwikteam/klustakwik2) for spike sorting, the Chronux toolbox for multitaper spectra
+# and coherence, eegfilt.m from EEGLAB for the slow-band filter, circ_corrcl.m from CircStat, MATLAB
+# kmeans.m, and the LAN-toolbox for gamma event detection at http://lantoolbox.wikispaces.com/.
+# That address did not respond on 2026-11-09 (Wikispaces closed in 2018). The data descriptor
+# names a Bitbucket copy (bitbucket.org/marcelostockle/lan-toolbox), which asked for a login; it
+# was not read. The descriptor also says the data set holds MATLAB scripts (fig_gamma_VP.m,
+# fig_fourier_VP.m and others) written for a later manuscript; they are inside the data set, which
+# the reader may not open, and were not read. Every method below is from the Methods, the Results,
+# the figure legends or the supplement.
+#
+# Data the paper describes. Mice 8 to 30 weeks old, either sex, 27 in all (Methods). NpHR+ mice are
+# Sst-IRES-Cre x Ai39 crosses expressing halorhodopsin in somatostatin cells; NpHR- controls are
+# C57Bl/6J, Ai39 or Sst-IRES-Cre mice. Experiments:
+# (1) In vitro whole-cell recordings in ventral pallidum slices (Supplementary Figs 2 and 3).
+# (2) Basal forebrain recordings under urethane with a 32-channel optrode (100 um fiber, 4 to 6 mW,
+#     5-s green light pulses): 330 units from 4 animals (Figure 1: 56 excited, 29 inhibited, 245
+#     unaffected), part of them also tested with tail pinch (Supplementary Fig. 4).
+# (3) Medial prefrontal cortex recordings under urethane with a 4-shank 32-channel probe, light
+#     delivered to the basal forebrain by a 200 um fiber (10 to 25 mW): 1308 units from 7 NpHR+
+#     animals in Figure 2C; light power series in 9 NpHR+ and 5 NpHR- animals (Figure 2D); local
+#     atropine and mecamylamine in 3 mice (Figure 3); LFP slow oscillations and gamma (Figure 4).
+# (4) Open-field video of chronically implanted mice (bilateral fibers), 5 NpHR+ and 5 NpHR-
+#     (Figure 5, Supplementary Fig. 14, Supplementary Table 3).
+# Measured variables are spike times, waveforms, LFP (20 kHz, analysed at 500 Hz), the laser and
+# tail-pinch timing, and per-frame video movement. The data set's title and descriptor say it holds
+# ventral pallidum recordings from 4 animals (20 ten-minute recordings, 32 channels, 330 neurons,
+# laser 5 s on and 15 s off) for this paper, medial septum and hippocampus recordings for a later
+# paper, LAN structures with the laser and somatosensory TTLs, per-neuron spike times and waveforms,
+# and open-field and Y-maze videos for medial septum, ventral pallidum and control animals. The
+# descriptor does not mention prefrontal recordings. Its files were not looked at.
+#
+# Discrepancies in the paper, recorded where they bear on a claim. The Results say discharge was
+# "slightly higher in infralimbic cortex" while the Supplementary Fig. 6 legend gives a higher value
+# for prelimbic (supp6-prelimbic-infralimbic). The low gamma power test is P = 0.0226 in the Results
+# and P = 0.0018 in the Figure 4G legend (fig4g-low-gamma-power). The cell-type comparison of response
+# size is an unpaired t-test in the Results and a Wilcoxon signed-rank test in the Supplementary
+# Fig. 9D legend (supp9-interneurons-stronger). The Supplementary Fig. 10B legend reports a
+# significant phase modulation over the first 3 s, the Results and 10C only over 3 to 5 s
+# (supp10-phase-modulation). The Methods give the behavioral train as 10 1-s pulses at 1 Hz, the
+# Figure 5 and Supplementary Fig. 14 legends as 10 1-s pulses at 0.5 Hz; the latency definition
+# (measured from 20 s after train onset) follows the 0.5 Hz train. The Figure 1C legend bins at
+# 250 ms, the Methods' cross-correlation at 500 ms.
+#
+# Shared method: responsive units (Methods, Unit cross-correlation analysis). Per unit, spikes in a
+# window of 15 s before to 15 s after each light onset, in 500-ms bins, normalized to the unit's
+# basal firing rate and accumulated over the pulses of the session. Spike times and pulse onsets
+# are shuffled 100 times by exchanging their inter-event intervals, and the original sequence is
+# compared bin to bin with the shuffled ones at P < 0.01. Open, and named in the claims that use
+# it: (r1) a unit is excited (inhibited) when the mean normalized rate over the bins of the 5-s
+# pulse is above (below) all 100 shuffled values; (r2) when at least one bin of the pulse is above
+# (below) all 100 shuffled values in that bin, the sign taken from the mean over the pulse; (r3)
+# when the pulse bins differ from the shuffled pulse bins by a two-sided rank-sum test at P < 0.01.
+# The basal rate used to normalize is also open: (b1) the 5 s before each light onset, the
+# light-off epoch the paper uses for coherence and slow oscillations; (b2) the whole 15 s before
+# onset; (b3) the unit's mean rate over the recording outside the pulses. A 250-ms bin (Figure 1C)
+# is a variant of the 500-ms bin.
+schema_version: 2
+paper: doi:10.1093/cercor/bhx302
+claims:
+- id: supp1-nphr-in-somatostatin-cells
+  statement: In NpHR+ mice the EYFP-tagged halorhodopsin is expressed in basal forebrain
+    somatostatin cells, with large overlap with somatostatin (91% of 118 cells), little with
+    parvalbumin (5% of 174 cells) and none with ChAT (0% of 54 cells).
+  source: Supplementary Figure 1 legend; Results, Synaptic output of the basal forebrain, paragraph 1;
+    Supplementary Table 1
+  quote: Note no overlap between EYFP and ChAT (0%, n = 54 cells), little overlap between EYFP and PV
+    (5%, n = 174 cells), and large overlap between EYFP and SOM (91%, n = 118 cells)
+  expected:
+  - quantity: overlap of EYFP and SOM
+    value: 91
+    tolerance: 9.1
+    unit: percent
+  - quantity: overlap of EYFP and PV
+    value: 5
+    tolerance: 0.5
+    unit: percent
+  - quantity: overlap of EYFP and ChAT
+    value: 0
+    tolerance: 0
+    unit: percent
+  criterion: Histological cell counts from immunostained sections. Supplementary Table 1 gives other
+    figures for the same counts (SOM 87 of 118 EYFP+/marker+, 73.7%; PV 3 of 180, 1.7%; ChAT 0 of
+    54), and the legend's 91% and 5% follow no single denominator in the table. Readings are the
+    legend's percentages and the table's; reproduced when the counted overlaps match either within
+    tolerance.
+- id: supp2-nphr-silences-som-cells
+  statement: In ventral pallidum slices a 5-s light pulse hyperpolarizes somatostatin-positive cells
+    (9.26 mV against -0.01 mV in somatostatin-negative cells) and cuts their firing from 6.21 to 0.73
+    Hz, while somatostatin-negative cells keep firing (6.61 against 6.32 Hz).
+  source: Supplementary Figure 2G to 2I legend; Results, Synaptic output of the basal forebrain,
+    paragraph 1
+  quote: "light pulse (5 s) induces significant hyperpolarization in SOM+ (9.26 ± 3.01 mV, n = 4)
+    compared to SOM- cells (-0.01 ± 0.478 mV, n = 5; p = 0.024, unpaired t-test) ... the effect of
+    light (5 s pulses) on the firing rate of SOM+ (Pre: 6.21 ± 2.58 Hz vs Light: 0.73 ± 0.72 Hz, n =
+    4, p = 0.035, paired t-test) and SOM- (Pre: 6.61 ± 1.07 Hz vs Light 6.32 ± 1.11 Hz, n = 5, p =
+    0.349, paired t-test)"
+  statistics:
+  - about: light-induced hyperpolarization, SOM+ against SOM- cells
+    test: unpaired t-test
+    p: 0.024
+    n: 4 SOM+ and 5 SOM- cells
+  - about: SOM+ firing rate, before against during light
+    test: paired t-test
+    p: 0.035
+    n: 4 SOM+ cells
+  - about: SOM- firing rate, before against during light
+    test: paired t-test
+    p: 0.349
+    n: 5 SOM- cells
+  expected:
+  - quantity: hyperpolarization in SOM+ cells
+    value: 9.26
+    tolerance: 3.01
+    unit: mV
+  - quantity: SOM+ firing rate before light
+    value: 6.21
+    tolerance: 2.58
+    unit: Hz
+  - quantity: SOM+ firing rate during light
+    value: 0.73
+    tolerance: 0.72
+    unit: Hz
+  - quantity: SOM- firing rate before light
+    value: 6.61
+    tolerance: 1.07
+    unit: Hz
+  - quantity: SOM- firing rate during light
+    value: 6.32
+    tolerance: 1.11
+    unit: Hz
+  criterion: In vitro whole-cell recordings (Methods, In vitro electrophysiological recordings).
+    Reproduced when the unpaired t-test of hyperpolarization and the paired t-test on SOM+ rates give
+    p < 0.05, the paired t-test on SOM- rates gives p >= 0.05, and the values are within tolerance
+    (the stated spread, s.e.m. per the legend).
+- id: supp3-two-ventral-pallidum-cell-types
+  statement: Ventral pallidum neurons in vitro fall into GABAergic-like cells, which fire
+    spontaneously and fire more to depolarizing current, and ChAT-like cells, which typically do not
+    fire spontaneously and fire less.
+  source: Supplementary Figure 3 legend; Results, Synaptic output of the basal forebrain, paragraph 2
+  quote: the number of action potentials evoked by different depolarizing current injection is higher
+    in GABAergic-like compared to ChAT-like neurons (at 50 pA
+  statistics:
+  - about: evoked firing at 50, 100 and 150 pA, GABAergic-like against ChAT-like
+    test: unpaired t-test
+    p: 0.001
+    p_relation: "<"
+  - about: baseline membrane potential, GABAergic-like against ChAT-like
+    test: unpaired t-test
+    p: 0.0004
+    n: 6 GABAergic-like and 5 ChAT-like cells
+  expected:
+  - quantity: GABAergic-like evoked firing at 100 pA
+    value: 56.25
+    tolerance: 7.27
+    unit: Hz
+  - quantity: ChAT-like evoked firing at 100 pA
+    value: 6.3
+    tolerance: 1.37
+    unit: Hz
+  criterion: In vitro recordings; cells classed by soma size and firing (Methods). Reproduced when
+    evoked firing is higher in GABAergic-like cells at 50, 100 and 150 pA by unpaired t-tests at p <
+    0.05 and the 100 pA values are within tolerance (the stated s.e.m.).
+- id: fig1-bf-response-classes
+  statement: Light inhibition of somatostatin cells in vivo changes the firing of a minority of basal
+    forebrain units. Of 330 units (4 animals), 29 (8.8%) decrease their activity by 49.2% and 56 (17%)
+    increase it by 39.6%; 245 are unaffected.
+  source: Results, Synaptic output of the basal forebrain, paragraph 2; Figure 1C legend
+  quote: We found a minor fraction of basal forebrain cells (8.8%, n = 29 units) responding (time
+    constant = 263.1 ± 48.7 ms) by robustly decreasing their activity (49.2 ± 5.1%). Along with
+    somatostatin cells decreasing their firing rate, another neuronal population (17%, n = 56 units)
+    increased its activity (39.6 ± 7.9%)
+  expected:
+  - quantity: inhibited units
+    value: 29
+    tolerance: 2.9
+    unit: units
+  - quantity: excited units
+    value: 56
+    tolerance: 5.6
+    unit: units
+  - quantity: unaffected units
+    value: 245
+    tolerance: 24.5
+    unit: units
+  - quantity: decrease in activity of inhibited units
+    value: 49.2
+    tolerance: 5.1
+    unit: percent
+  - quantity: increase in activity of excited units
+    value: 39.6
+    tolerance: 7.9
+    unit: percent
+  criterion: Basal forebrain units of the 4 optrode animals (Figure 1C), classified by the shared
+    method in the opening comment under readings r1 to r3 and baselines b1 to b3. The change in
+    activity is, per unit, the mean normalized rate over the 5-s pulse minus 1, in percent, averaged
+    over the units of each class; the paper does not say whether the spread is s.e.m. or SD, and it
+    is used as stated. Reproduced when, under one reading, the three counts and the two changes are
+    within tolerance; partially reproduced when the counts are within tolerance and the changes have
+    the right sign but fall outside it.
+- id: fig1d-excited-cells-fire-faster
+  statement: Basal forebrain units excited by the light have higher spontaneous firing rates than
+    inhibited or unaffected units, suggesting they belong to different cell types.
+  source: Results, Synaptic output of the basal forebrain, paragraph 2; Figure 1D, bottom panel
+  quote: Spontaneous firing rates of neurons activated by optical stimulation were consistently
+    higher than those of inhibited or unresponsive cells (Fig. 1D)
+  statistics:
+  - about: basal firing rate across the three classes
+    test: Kruskal-Wallis test
+    p: 2.06e-8
+  - about: basal firing rate, pairwise between classes (pairs not named in the legend)
+    test: Wilcoxon rank-sum test
+    p: 8.17e-8
+  - about: basal firing rate, pairwise between classes (pairs not named in the legend)
+    test: Wilcoxon rank-sum test
+    p: 4.10e-5
+  - about: basal firing rate, pairwise between classes (pairs not named in the legend)
+    test: Wilcoxon rank-sum test
+    p: 0.0125
+  depends_on:
+  - fig1-bf-response-classes
+  criterion: Classes from fig1-bf-response-classes. Basal firing rate is not defined; readings are
+    the rate outside the light pulses over the recording, and the rate in the 5 s before each pulse.
+    The legend lists three rank-sum p-values without naming the pairs. Reproduced when the
+    Kruskal-Wallis test across classes gives p < 0.05 and the excited class has a higher median
+    rate than both others by rank-sum tests at p < 0.05.
+- id: fig1d-discharge-by-class
+  statement: Normalized discharge probability during the light differs between excited, inhibited
+    and unaffected basal forebrain units.
+  source: Figure 1D, top panel, legend
+  quote: normalized discharge probability during optical stimulation (top panel, Kruskal–Wallis test,
+    P = 5.44 × 10−35; Wilcoxon rank-sum test, *P = 5.65 × 10−24, **P = 5.39×10−14, ***P = 1.11×10−16)
+  statistics:
+  - about: across the three classes
+    test: Kruskal-Wallis test
+    p: 5.44e-35
+  - about: pairwise between classes (pairs not named in the legend)
+    test: Wilcoxon rank-sum test
+    p: 5.65e-24
+  - about: pairwise between classes (pairs not named in the legend)
+    test: Wilcoxon rank-sum test
+    p: 5.39e-14
+  - about: pairwise between classes (pairs not named in the legend)
+    test: Wilcoxon rank-sum test
+    p: 1.11e-16
+  depends_on:
+  - fig1-bf-response-classes
+  criterion: Per unit, mean normalized rate over the 5-s pulse, as in fig1-bf-response-classes and
+    under its readings. Largely follows from the classification. Reproduced when the Kruskal-Wallis
+    test gives p < 0.05 and all three pairwise rank-sum tests give p < 0.05 with excited above
+    unaffected above inhibited.
+- id: fig1e-excited-slower-kinetics
+  statement: Excited basal forebrain units respond with slower kinetics than inhibited ones (time
+    constants 602.5 against 263.1 ms).
+  source: Results, Synaptic output of the basal forebrain, paragraph 2; Figure 1E legend
+  quote: another neuronal population (17%, n = 56 units) increased its activity (39.6 ± 7.9%),
+    presumably by synaptic disinhibition, with significantly slower kinetics (time constant = 602.5 ±
+    68.6 ms)
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.0072
+    n: 56 excited and 29 inhibited units
+  expected:
+  - quantity: time constant, excited units
+    value: 602.5
+    tolerance: 68.6
+    unit: ms
+  - quantity: time constant, inhibited units
+    value: 263.1
+    tolerance: 48.7
+    unit: ms
+  depends_on:
+  - fig1-bf-response-classes
+  criterion: Per unit, an exponential fitted to the early response of the normalized discharge
+    probability after light onset (Figure 1E legend); the bins and the fit window are not given.
+    Readings are 250-ms bins (Figure 1C) or 500-ms bins (Methods), each fitted (w1) from light
+    onset to the first extremum of the response or (w2) over the whole 5-s pulse; a single
+    exponential approaching a plateau, the time constant per unit, mean over units. Reproduced when,
+    under one reading, both means are within tolerance and the rank-sum test gives p < 0.05 with
+    excited slower; partially reproduced when the test holds and the values do not.
+- id: supp4-tail-pinch-response-patterns
+  statement: Basal forebrain units classed by their response to tail pinch respond in varied ways to
+    the light. Of 44 pinch-inhibited units 10 are excited, 7 inhibited and 27 unaffected by light; of
+    149 pinch-activated units 24, 11 and 114; and of 18 light-inhibited units 6 are excited, 7
+    inhibited and 5 unaffected by the pinch.
+  source: Supplementary Figure 4C to 4E legend; Results, Synaptic output of the basal forebrain,
+    paragraph 3
+  quote: Cells were either excited (red line, n = 10), inhibited (black line, n = 7), or unaffected
+    (blue line, n = 27) by light stimulation ... Cells were either excited (red line, n = 24),
+    inhibited (black line, n = 11), or unaffected (blue line, n = 114) by optical stimulation ...
+    Cells were either excited (red line, n = 6), inhibited (black line, n = 7), or unaffected (blue
+    line, n = 5) by somatosensory stimulation
+  expected:
+  - quantity: pinch-inhibited units
+    value: 44
+    tolerance: 4.4
+    unit: units
+  - quantity: pinch-activated units
+    value: 149
+    tolerance: 14.9
+    unit: units
+  - quantity: light-inhibited units tested with pinch
+    value: 18
+    tolerance: 1.8
+    unit: units
+  depends_on:
+  - fig1-bf-response-classes
+  criterion: Recordings with tail pinch (4 animals for C and D, 2 for E). Pinch responses classified
+    by the shared cross-correlation method around pinch onset, light responses as in
+    fig1-bf-response-classes, under the same readings; the pinch window is the stimulus duration
+    (typically 1 to 2 s by the Methods, 5 s by the legend), both read. Reproduced when, under one
+    reading, the three group sizes are within tolerance and each of the nine sub-counts is within
+    10% or 2 units of the legend's, whichever is larger (small counts); partially reproduced when the
+    group sizes hold and the sub-counts do not.
+- id: fig2c-mpfc-activation
+  statement: Inhibiting basal forebrain somatostatin cells raises prefrontal spiking. Of 1308
+    cortical units in 7 NpHR+ animals, 29.6% (387) increase their firing rate by 30.4% for the whole
+    light pulse, and the population response differs from shuffled pulses.
+  source: Results, Optogenetic disinhibition of the basal forebrain, paragraph 1; Figure 2C legend
+  quote: Nearly one-third of cortical neurons (29.6%, n = 387) systematically increased their firing
+    rate (by 30.4 ± 1.2%) for the entire duration of the laser pulse
+  statistics:
+  - about: NpHR+ responses against shuffled laser pulses
+    test: Wilcoxon signed-rank test
+    statistic: W = 693 248
+    p: 1.0e-80
+    p_relation: "<"
+    n: 1308 units, 7 animals
+  expected:
+  - quantity: fraction of cortical units excited
+    value: 29.6
+    tolerance: 2.96
+    unit: percent
+  - quantity: excited cortical units
+    value: 387
+    tolerance: 38.7
+    unit: units
+  - quantity: increase in firing of excited units
+    value: 30.4
+    tolerance: 1.2
+    unit: percent
+  criterion: Prefrontal units of the 7 NpHR+ animals at 15 to 25 mW (Figure 2C), classified by the
+    shared method under readings r1 to r3 and b1 to b3. The signed-rank test pairs, per unit, the
+    mean normalized rate over the pulse with the mean over the 100 shuffles. Reproduced when, under
+    one reading, the fraction, count and increase are within tolerance and the test gives p < 0.05
+    with responses above the shuffles.
+- id: supp6-prelimbic-infralimbic
+  statement: The light-evoked discharge of excited prefrontal units differs between prelimbic (1.36)
+    and infralimbic (1.31) cortex; the Results describe it as slightly higher in infralimbic.
+  source: Supplementary Figure 6A legend; Results, Optogenetic disinhibition of the basal forebrain,
+    paragraph 1
+  quote: Discharge probabilities were significantly different in prelimbic (1.36 ± 0.02) and
+    infralimbic (1.31 ± 0.01) cortex (two-sample t-test, p = 0.0372)
+  statistics:
+  - test: two-sample t-test
+    p: 0.0372
+    n: 381 prelimbic units (5 animals) and 146 infralimbic units (2 animals)
+  expected:
+  - quantity: normalized discharge probability, prelimbic
+    value: 1.36
+    tolerance: 0.02
+  - quantity: normalized discharge probability, infralimbic
+    value: 1.31
+    tolerance: 0.01
+  depends_on:
+  - fig2c-mpfc-activation
+  criterion: Excited units of fig2c-mpfc-activation, assigned to prelimbic or infralimbic from the
+    recording sites of Supplementary Figure 6B; per unit, the mean normalized rate over the pulse.
+    The legend's counts (381 and 146 excited units) exceed the 387 excited units of Figure 2C, so
+    the unit set is open; readings are the Figure 2C excited units and all excited units at any
+    power. The text and the legend disagree on direction; the legend's numbers are tested.
+    Reproduced when the two-sample t-test gives p < 0.05 with prelimbic higher and both values within
+    tolerance; the direction found is reported against both sources.
+- id: fig2d-power-dependent-nphr-specific
+  statement: The cortical excitation grows with laser power and is specific to NpHR+ animals; in
+    NpHR- animals only about 10% of cortical units are activated, with little effect on population
+    spiking.
+  source: Figure 2D legend; Supplementary Figure 7A and 7B; Results, Optogenetic disinhibition of the
+    basal forebrain, paragraph 1
+  quote: The excitatory effect was dependent on laser power, and specific for transgenic NpHR+
+    animals (Fig. 2D; Supplementary Fig. 7)
+  statistics:
+  - test: 2-way ANOVA with Bonferroni post-hoc correction
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 9 NpHR+ and 5 NpHR- animals
+  criterion: Per unit, mean normalized rate over the pulse at each light power, NpHR+ against NpHR-
+    animals; the power levels are those recorded (not listed in the paper). The Statistics section
+    names a 2-way repeated-measures ANOVA, the legend a 2-way ANOVA; readings are genotype x power
+    with power as a repeated factor, and with both factors between units. Reproduced when the
+    genotype effect or interaction gives p < 0.05, NpHR+ exceeds NpHR- at the higher powers by
+    Bonferroni post-hoc tests at p < 0.001, and the NpHR+ response increases with power.
+- id: supp7c-off-target-no-effect
+  statement: Light delivered in NpHR+ animals to the dorsal striatum, ventral striatum or olfactory
+    tubercle does not change prefrontal spiking.
+  source: Supplementary Figure 7C legend; Results, Optogenetic disinhibition of the basal forebrain,
+    paragraph 1
+  quote: None of the responses was statistically significant (p > 0.05, Wilcoxon signed-rank test)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test. For each off-target site, the Wilcoxon
+    signed-rank test of the per-unit mean normalized rate over the pulse against the shuffled
+    responses, as in fig2c-mpfc-activation. Reproduced when no site gives p < 0.05; not reproduced
+    when any does. The median change per site is reported.
+- id: fig2e-coherence-reduced
+  statement: Light reduces the coherence between single cortical units and the rest of the
+    simultaneously recorded units, significantly only below 10 Hz.
+  source: Figure 2E legend; Results, Optogenetic disinhibition of the basal forebrain, paragraph 1
+  quote: Laser-induced reduction of coherence was statistically significant only for low frequencies
+    (<10 Hz, W = 142 155, P < 10−6, Wilcoxon signed-rank test, n = 1109 cells, 7 NpHR+ animals)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    statistic: W = 142 155
+    p: 1.0e-6
+    p_relation: "<"
+    n: 1109 cells, 7 NpHR+ animals
+  criterion: Method from Methods, Single unit versus multi-unit coherence analysis. Multi-unit
+    activity is the summed spikes of all other units of the session; spikes binned at 500 Hz;
+    multitaper coherence (Chronux) with TW = 3 and 5 tapers on 5-s epochs, light on (the pulse)
+    against light off (5 s before onset). Open is how epochs are combined; readings are (a)
+    coherence averaged across pulses as Chronux's trial average, and (b) coherence per pulse then
+    averaged. Per unit, mean coherence below 10 Hz on against off. Reproduced when, under one
+    reading, the signed-rank test gives p < 0.05 with lower coherence during light below 10 Hz;
+    the same test above 10 Hz is reported.
+- id: fig3a-cholinergic-blockade
+  statement: Local cholinergic antagonists in the prefrontal cortex reduce the light-evoked cortical
+    activation from 35.7% to 19.0%.
+  source: Results, Optogenetic disinhibition of the basal forebrain, paragraph 1; Figure 3A
+  quote: Cholinergic blockers significantly diminished cortical activation (from 35.7 ± 3.2% (before
+    drug) to 19.0 ± 3.7% (after drug); W = 1438, P < 10−6, Wilcoxon signed-rank test, n = 64 cells,
+    3 mice)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    statistic: W = 1438
+    p: 1.0e-6
+    p_relation: "<"
+    n: 64 cells, 3 mice
+  expected:
+  - quantity: activation before drug
+    value: 35.7
+    tolerance: 3.2
+    unit: percent
+  - quantity: activation after drug
+    value: 19.0
+    tolerance: 3.7
+    unit: percent
+  criterion: Recordings with atropine and mecamylamine injected at minute 5 (Methods). Per unit, the
+    percent change of the mean normalized rate over the pulse, pulses before the injection against
+    pulses after it. Which units form the 64 is open; readings are all units of the 3 sessions, and
+    the units excited before the drug by the shared method. Reproduced when, under one reading, the
+    signed-rank test gives p < 0.05 with a smaller response after the drug and both values are within
+    tolerance.
+- id: fig3b-baseline-unchanged-response-decays
+  statement: The cholinergic antagonists do not change baseline cortical spiking, while the light
+    raises discharge at all tested intervals and this effect progressively decreases after the drug.
+  source: Results, Optogenetic disinhibition of the basal forebrain, paragraph 1; Figure 3B
+  quote: Importantly, baseline spiking activity in the cortex was not affected by cholinergic receptor
+    antagonists (Fig. 3B). On the other hand, optical stimulation produced a significant increase in
+    cortical discharge probability at all tested intervals (Friedman test, P = 1.07 × 10−18); yet,
+    this effect progressively decreased after local drug application (Wilcoxon signed-rank test, P =
+    2.6 × 10−4, Fig. 3B)
+  statistics:
+  - about: light against no light across intervals
+    test: Friedman test
+    p: 1.07e-18
+  - about: decrease of the light effect after the drug
+    test: Wilcoxon signed-rank test
+    p: 2.6e-4
+  depends_on:
+  - fig3a-cholinergic-blockade
+  criterion: Units of fig3a-cholinergic-blockade. The time points of Figure 3B are not listed;
+    readings are 1-min intervals and the pulses grouped by 5 per interval. The paper gives no test
+    for the unchanged baseline; it is judged with the paper's paired test (Wilcoxon signed-rank) on
+    the per-unit baseline rate before against after the drug, p >= 0.05 meaning unchanged.
+    Reproduced when the baseline is unchanged, the Friedman test gives p < 0.05 for light against no
+    light, and the light response after the drug is lower than before by a signed-rank test at p <
+    0.05.
+- id: supp9-layers
+  statement: Most active prefrontal cells (79.8%) are in deeper layers, and similar proportions of
+    cells are activated at all depths (25.5%, 30.8%, 28.7% and 31.1% from superficial to deep).
+  source: Results, Optogenetic disinhibition of the basal forebrain, paragraph 2; Supplementary
+    Figure 9B
+  quote: We found that superficial layers contained a tiny fraction of the recorded cells, with the
+    large majority of active cells (79.8%) being located in deeper layers. Interestingly, despite
+    large differences in the total numbers of cells by layer, similar proportions were activated at
+    all depths
+  expected:
+  - quantity: active cells in deeper layers
+    value: 79.8
+    tolerance: 7.98
+    unit: percent
+  - quantity: fraction activated, depth 1 (superficial)
+    value: 25.5
+    tolerance: 2.55
+    unit: percent
+  - quantity: fraction activated, depth 2
+    value: 30.8
+    tolerance: 3.08
+    unit: percent
+  - quantity: fraction activated, depth 3
+    value: 28.7
+    tolerance: 2.87
+    unit: percent
+  - quantity: fraction activated, depth 4 (deep)
+    value: 31.1
+    tolerance: 3.11
+    unit: percent
+  depends_on:
+  - fig2c-mpfc-activation
+  criterion: The depth bins and which of them are "deeper layers" are not given. Readings are four
+    bins of equal depth across the probe sites, and bins by electrode row of the 4-shank probe; for
+    79.8%, the cells of the lower two or lower three bins, and "active" as excited units or all
+    recorded units. The legend's excited counts (14, 131, 176, 60) are matched under the same
+    readings. Reproduced when, under one reading, all five values are within tolerance; partially
+    reproduced when the four fractions are within tolerance and no bin's fraction differs from the
+    others by a chi-square test at p < 0.05.
+- id: supp9-fast-spiking-cells
+  statement: Spike durations of prefrontal units are bimodal; fast-spiking cells (spike under 0.6 ms,
+    putative interneurons) are 9.9% of units and fire faster than regular-spiking putative pyramidal
+    cells (5.16 against 2.5 Hz).
+  source: Results, Optogenetic disinhibition of the basal forebrain, paragraph 2; Supplementary
+    Figure 9C
+  quote: A histogram of spike durations for all recorded units showed a bimodal distribution, with
+    fast-spiking cells (i.e., spike duration <0.6 ms), putative GABAergic interneurons (McCormick et
+    al. 1985), accounting for a small fraction of the total neuronal population (9.9%). Fast-spiking
+    cells discharged at significantly higher rates (unpaired t-test, P = 3.9 × 10−36, 5.16 ± 0.39 Hz)
+  statistics:
+  - test: unpaired t-test
+    p: 3.9e-36
+    n: 287 interneurons and 2588 pyramidal cells
+  expected:
+  - quantity: fraction of fast-spiking units
+    value: 9.9
+    tolerance: 0.99
+    unit: percent
+  - quantity: firing rate, fast-spiking
+    value: 5.16
+    tolerance: 0.39
+    unit: Hz
+  - quantity: firing rate, regular-spiking
+    value: 2.5
+    tolerance: 0.05
+    unit: Hz
+  criterion: Spike duration is peak to trough of the mean waveform (Supplementary Fig. 9C), split at
+    0.6 ms. The legend gives 2,895 units (287 plus 2,588 is 2,875), more than the 1308 of Figure 2C;
+    the unit set is open, with readings all prefrontal units of all animals and powers, and the 1308
+    units of Figure 2C. Rate is the mean over the recording. Reproduced when, under one reading, the
+    unpaired t-test gives p < 0.05 with fast-spiking faster and the three values are within
+    tolerance; bimodality is shown by the histogram.
+- id: supp9-interneurons-stronger
+  statement: The light activates similar proportions of putative interneurons and pyramidal cells,
+    but raises discharge more in interneurons (35.5%) than in pyramidal cells (26.2%).
+  source: Results, Optogenetic disinhibition of the basal forebrain, paragraph 2; Supplementary
+    Figure 9D legend
+  quote: Optical stimulation of the basal forebrain activated similar proportions of putative
+    interneurons and pyramidal cells. However, the increase in discharge probability produced by
+    laser stimulation was significantly higher on interneurons (35.5 ± 5.9%) than on pyramidal cells
+    (26.2 ± 1.0%; unpaired t-test, P = 0.019)
+  statistics:
+  - about: response size, Results
+    test: unpaired t-test
+    p: 0.019
+    n: 31 interneurons and 350 pyramidal cells
+  - about: response size, Supplementary Figure 9D legend
+    test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: increase in interneurons
+    value: 35.5
+    tolerance: 5.9
+    unit: percent
+  - quantity: increase in pyramidal cells
+    value: 26.2
+    tolerance: 1.0
+    unit: percent
+  depends_on:
+  - fig2c-mpfc-activation
+  - supp9-fast-spiking-cells
+  criterion: Excited units of fig2c-mpfc-activation split by spike duration as in
+    supp9-fast-spiking-cells (31 and 350 in the legend). Per unit, percent change over the pulse.
+    The Results name an unpaired t-test, the legend a signed-rank test (which cannot compare two
+    unpaired groups); the unpaired t-test is the main reading and a rank-sum test the variant.
+    Reproduced when the test gives p < 0.05 with interneurons higher and both values are within
+    tolerance, and the fractions excited in the two types do not differ by a chi-square test at p
+    < 0.05.
+- id: fig4bcd-slow1-suppressed
+  statement: Slow oscillation epochs form two clusters by power and frequency; only the very slow,
+    high power cluster (slow 1, 0.5 to 1 Hz) is suppressed by the light, while slow 2 (1 to 2 Hz) is
+    not.
+  source: Results, Optogenetic stimulation of the basal forebrain reorganizes cortical oscillatory
+    patterns, paragraph 1; Figure 4B to 4D legend; Supplementary Figure 8
+  quote: we found that slow oscillatory episodes distributed in 2 clusters (Fig. 4B), from which, only
+    1 cluster was affected by optical stimulation in the basal forebrain (Fig. 4C, D). That is, only
+    very slow frequency, high power oscillations were suppressed by optogenetic stimulation
+  statistics:
+  - about: slow 1 power, light on against off
+    test: paired t-test
+    p: 0.0009316
+    n: 77 epochs
+  - about: slow 2 power, light on against off
+    test: paired t-test
+    p: 0.22603
+    n: 793 epochs
+  expected:
+  - quantity: slow oscillation epochs
+    value: 870
+    tolerance: 87
+    unit: epochs
+  criterion: Method from Methods, Spectral analysis, and Supplementary Figure 8. Prefrontal LFP at
+    500 Hz, z-scored, filtered 0.5 to 2 Hz (two-way least-squares FIR, eegfilt), Hilbert amplitude
+    averaged over the 5 s before and the 5 s during each pulse. An epoch is not defined; readings are
+    one per pulse (its light-off window) and one per pulse and channel. Each epoch's normalized power
+    and main frequency are clustered by k-means with k = 2. Reproduced when, under one reading, two
+    clusters separate a lower-frequency high-power group, its power falls during light by a paired
+    t-test at p < 0.05, and the other cluster's does not (p >= 0.05). The Figure 4C sample (77
+    epochs) is in Supplementary Figure 8.
+- id: supp10-phase-modulation
+  statement: The cortical response to the light is phase-modulated by the slow oscillation, largest
+    in its active phase and smallest at the peak of the cycle, and this holds only in the second half
+    of the light pulse (3 to 5 s).
+  source: Results, Optogenetic stimulation of the basal forebrain reorganizes cortical oscillatory
+    patterns, paragraph 1; Supplementary Figure 10
+  quote: In fact, the effect was maximal during the active phase of slow oscillations and minimal at
+    the peak of oscillatory cycles ... optogenetic stimulation of the basal forebrain was
+    phase-modulated by the slow oscillation only during the second half of the laser pulse (i.e., 3–5
+    s, Supplementary Fig. 10)
+  statistics:
+  - about: phase modulation of light-evoked discharge (Supplementary Figure 10B)
+    test: circular-linear correlation
+    p: 0.0047
+  - about: responses at cycle peaks against troughs
+    test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: "<"
+  criterion: Phase of the slow oscillation from the Hilbert transform of the 0.5 to 2 Hz band
+    (Methods), with 0 degrees at the LFP peak; per pulse, the phase at light onset and the evoked
+    discharge, in 36-degree bins (10A) or 40-degree bins (10B); circular-linear correlation
+    (circ_corrcl) over integration windows from light onset. The legend of 10B places p = 0.0047 in
+    the first 3 s while the Results and 10C place significance only in the second half; readings
+    are the window from onset to 3 s and from 3 to 5 s. Reproduced when the correlation is
+    significant (p < 0.05) for windows ending after 3 s and not for those ending at or before 3 s,
+    with the largest response away from the peak; the 0 to 3 s result is reported.
+- id: fig4g-low-gamma-power
+  statement: Prefrontal LFP power in the low gamma band (20 to 40 Hz) is higher during the light than
+    in control periods.
+  source: Results, Optogenetic stimulation of the basal forebrain reorganizes cortical oscillatory
+    patterns, paragraph 2; Figure 4E and 4G legend
+  quote: found a prominent shoulder in the low gamma range (20–40 Hz, Fig. 4E), which power was
+    significantly more elevated during optical stimulation when compared to control periods (Wilcoxon
+    signed-rank test, P = 0.0226, Fig. 4G)
+  statistics:
+  - about: as given in the Results
+    test: Wilcoxon signed-rank test
+    p: 0.0226
+  - about: as given in the Figure 4G legend
+    test: Wilcoxon signed-rank test
+    p: 0.0018
+  criterion: Multitaper spectra (Chronux, TW = 3, 5 tapers) of the 500-Hz LFP over the 5-s pulse and
+    the 5 s before it, normalized by 1/f, mean power 20 to 40 Hz (Methods, Spectral analysis). The
+    unit of the test is not given; readings are per animal (n = 7) and per pulse. Reproduced when,
+    under one reading, the signed-rank test gives p < 0.05 with higher power during light.
+- id: supp11a-high-gamma-power-unchanged
+  statement: High gamma power (55 to 80 Hz) is not significantly changed by the light.
+  source: Supplementary Figure 11A legend; Results, Optogenetic stimulation of the basal forebrain
+    reorganizes cortical oscillatory patterns, paragraph 2
+  quote: box plots for the average power of high gamma cortical band activity (55-80 Hz, p = 0.0520)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.052
+  depends_on:
+  - fig4g-low-gamma-power
+  criterion: A claim of absence. As fig4g-low-gamma-power over 55 to 80 Hz with the same test (the
+    legend gives no test name; the Figure 4G test is used). Reproduced when the test gives p >= 0.05;
+    not reproduced when it gives p < 0.05. The size of the change is reported.
+- id: fig4h-low-gamma-episodes
+  statement: The density of low gamma episodes increases during the light, while high gamma episode
+    density does not change.
+  source: Results, Optogenetic stimulation of the basal forebrain reorganizes cortical oscillatory
+    patterns, paragraph 2; Figure 4H legend; Supplementary Figure 11B
+  quote: We found that the density of oscillatory episodes significantly increased (t-test, P = 5.8 ×
+    10−8) only in the low gamma band during optical stimulation (Fig. 4H), but was not affected in
+    the high gamma band (Supplementary Fig. 11)
+  statistics:
+  - about: low gamma episode density, light on against off
+    test: paired t-test
+    p: 5.76e-8
+  - about: high gamma episode density, light on against off
+    p: 0.17033
+  criterion: Detection from Methods, Detection of cortical gamma band oscillations. LFP at 500 Hz,
+    band-pass FIR (20 to 40 Hz for low and 55 to 80 Hz for high, from the Results; the Methods filter
+    20 to 80 Hz), rectified, 20 Hz fourth-order Butterworth low-pass, z-scored over the whole
+    signal; events exceed 2 SD, bounded at 1 SD, 150-ms refractory window and 150-ms minimum
+    duration. Density is events per second in the 5-s pulse against the 5 s before. The unit of the
+    paired test is not given; readings are per pulse and per animal. Reproduced when, under one
+    reading, low gamma density is higher during light by a paired t-test at p < 0.05 and high gamma
+    density is not (p >= 0.05).
+- id: suppt2-gamma-event-frequency
+  statement: Low gamma events are slightly higher in frequency during the light (28.65 against 28.19
+    Hz), while their duration and amplitude, and all high gamma event parameters, are unchanged.
+  source: Supplementary Table 2; Results, Optogenetic stimulation of the basal forebrain reorganizes
+    cortical oscillatory patterns, paragraph 2
+  quote: Only the mean frequency was marginally, yet significantly increased for slow gamma events
+    (Supplementary Table 2). Other parameters of gamma band episodes were not affected by optical
+    stimulation of the basal forebrain (Supplementary Table 2)
+  statistics:
+  - about: low gamma event frequency
+    test: t-test
+    p: 4.94e-4
+  - about: low gamma event duration
+    test: t-test
+    p: 0.0807
+  - about: low gamma event amplitude
+    test: t-test
+    p: 0.0536
+  expected:
+  - quantity: low gamma event frequency, light off
+    value: 28.19
+    tolerance: 0.10
+    unit: Hz
+  - quantity: low gamma event frequency, light on
+    value: 28.65
+    tolerance: 0.12
+    unit: Hz
+  depends_on:
+  - fig4h-low-gamma-episodes
+  criterion: Events of fig4h-low-gamma-episodes; per event, mean frequency, amplitude and duration
+    from Morlet wavelets of 7 cycles (Methods). Pooled events, light on against off, by t-test (the
+    table says t-test; unpaired, since events are not paired). Reproduced when low gamma frequency is
+    higher during light at p < 0.05 with both values within tolerance, and the other five parameters
+    give p >= 0.05.
+- id: fig5c-light-path-needed
+  statement: In quiescent NpHR+ mice, light to the basal forebrain triggers movement sooner (8.1
+    against 23.8 s) and larger (2.12 against 0.81) than the same protocol with the light path blocked.
+  source: Figure 5C legend; Results, Locomotor activity is triggered by basal forebrain disinhibition,
+    paragraph 1
+  quote: Response latency (from the end of stimulation) is ... shorter when the light path is not
+    blocked (8.1 ± 2.3 s vs. 23.8 ± 3.1 s, P = 0.0005, unpaired t-test). Response amplitude after the
+    end of train stimulation is larger when the light path was not blocked (2.12 ± 0.66 vs. 0.81 ±
+    0.06, P = 0.024, unpaired t-test)
+  statistics:
+  - about: latency
+    test: unpaired t-test
+    p: 0.0005
+    n: 4 NpHR+ mice
+  - about: amplitude
+    test: unpaired t-test
+    p: 0.024
+    n: 4 NpHR+ mice
+  expected:
+  - quantity: latency, light passing
+    value: 8.1
+    tolerance: 2.3
+    unit: s
+  - quantity: latency, light blocked
+    value: 23.8
+    tolerance: 3.1
+    unit: s
+  - quantity: amplitude, light passing
+    value: 2.12
+    tolerance: 0.66
+    unit: z-score
+  - quantity: amplitude, light blocked
+    value: 0.81
+    tolerance: 0.06
+    unit: z-score
+  criterion: Movement estimator from Methods, Behavioral event analysis. Per frame, the mean absolute
+    difference between consecutive frames, z-scored, absolute value, moving average over 50 frames.
+    Trains count when the estimator stayed below 2 z for the 40 s before train onset. Latency is the
+    time from 20 s after train onset to the first crossing of 2 z, up to 60 s after onset, else 40 s.
+    Amplitude is not defined; readings are the mean and the maximum of the estimator from 20 to 60 s
+    after train onset. The unit of the t-test is not given; readings are trials and mice. Reproduced
+    when, under one reading, both t-tests give p < 0.05 in the stated direction and the four values
+    are within tolerance; partially reproduced when the tests hold and the values do not.
+- id: fig5d-nphr-locomotion
+  statement: In quiescent mice, light to the basal forebrain triggers movement sooner (8.3 against
+    27.2 s) and larger (1.92 against 0.97) in NpHR+ than in NpHR- mice; NpHR- mice still move above
+    baseline, likely from tissue heating.
+  source: Figure 5D legend; Results, Locomotor activity is triggered by basal forebrain disinhibition,
+    paragraph 1
+  quote: Response latency (from the end of stimulation) is ... shorter for NpRH+ animals (8.3 ± 2.1 s
+    vs. 27.2 ± 2.7 s, P = 0.007, unpaired t-test). Response amplitude (after the end of train
+    stimulation) is larger for NpHR+ animals (1.92 ± 0.48 vs. 0.97 ± 0.17, P = 0.011, unpaired
+    t-test). Note significant locomotor activation in NpHR−animals compared to the baseline
+  statistics:
+  - about: latency
+    test: unpaired t-test
+    p: 0.007
+    n: 5 NpHR+ mice (60 trials) and 5 NpHR- mice (49 trials)
+  - about: amplitude
+    test: unpaired t-test
+    p: 0.011
+    n: 5 NpHR+ mice (60 trials) and 5 NpHR- mice (49 trials)
+  expected:
+  - quantity: quiescent trials, NpHR+
+    value: 60
+    tolerance: 6
+    unit: trials
+  - quantity: quiescent trials, NpHR-
+    value: 49
+    tolerance: 4.9
+    unit: trials
+  - quantity: latency, NpHR+
+    value: 8.3
+    tolerance: 2.1
+    unit: s
+  - quantity: latency, NpHR-
+    value: 27.2
+    tolerance: 2.7
+    unit: s
+  - quantity: amplitude, NpHR+
+    value: 1.92
+    tolerance: 0.48
+    unit: z-score
+  - quantity: amplitude, NpHR-
+    value: 0.97
+    tolerance: 0.17
+    unit: z-score
+  criterion: As fig5c-light-path-needed, under its readings, NpHR+ against NpHR- trials with the
+    light path open. Reproduced when, under one reading, both t-tests give p < 0.05 in the stated
+    direction and the latencies and amplitudes are within tolerance; partially reproduced when the
+    tests hold and the values do not. The NpHR- rise above baseline is reported as the estimator
+    after the train against the 40 s before.
+- id: supp14-moving-no-difference
+  statement: When mice are already moving, the light produces no difference in locomotion between
+    NpHR+ and NpHR- mice.
+  source: Supplementary Figure 14B legend; Results, Locomotor activity is triggered by basal forebrain
+    disinhibition, paragraph 1
+  quote: Response latency (p = 0.59) and amplitude (p = 0.14) were not significantly different between
+    NpHR+ and NpHR- animals (Wilcoxon rank-sum test)
+  statistics:
+  - about: latency
+    test: Wilcoxon rank-sum test
+    p: 0.59
+    n: 5 NpHR+ mice (26 trials) and 5 NpHR- mice (34 trials)
+  - about: amplitude
+    test: Wilcoxon rank-sum test
+    p: 0.14
+    n: 5 NpHR+ mice (26 trials) and 5 NpHR- mice (34 trials)
+  depends_on:
+  - fig5c-light-path-needed
+  criterion: A claim of absence, judged on the paper's test. Trains preceded by movement (estimator
+    not below 2 z for the 40 s before onset), latency and amplitude as in fig5c-light-path-needed
+    under its readings, NpHR+ against NpHR- trials by the Wilcoxon rank-sum test. Reproduced when
+    neither test gives p < 0.05; not reproduced when either does. Trial counts (26 and 34) and the
+    effect sizes are reported.
