@@ -257,7 +257,9 @@ def apply(p: dict) -> None:
         "# The site redirects old pages with it; nothing else should need it.\n"
         + yaml.safe_dump({"schema_version": 1, "attempts": p["ids"], "entries": p["entries"],
                           "folders": p["folder_paper"], "several": p["several"]}, sort_keys=True, width=100))
-    git("add", "-A", "attempts", "entries", "claims", "questions", "transcripts", "summaries", "docs", "papers")
+    # Only the folders the checkout has: a branch from before summaries/ existed, say.
+    git("add", "-A", *[d for d in ("attempts", "entries", "claims", "questions", "transcripts", "summaries", "docs",
+                                   "papers") if (ROOT / d).exists()])
 
 
 def main() -> int:
