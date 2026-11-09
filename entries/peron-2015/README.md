@@ -20,7 +20,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The paper does not define its whisking amplitude. Under the three readings in the claims file the
-three mice give 74.7, 29.0 and 26.9 degrees, and 72.4, 29.0 and 26.6 once tracking errors in the
-whisker angle and the filter's edge effects are removed. Twice the peak Hilbert amplitude, which the criterion
-does not list, gives 53.7. The attempt record, with the reasons and the differences from the
+three mice give 74.7, 29.0 and 26.9 degrees. Removing the tracking errors in the whisker angle,
+including jumps that last several samples, brings the first to 69.2 to 70.1, just above the upper
+bound of 68.8; only a filter that also cuts the peaks of real whisks brings it inside (68.3 to 68.6).
+Twice the peak Hilbert amplitude, which the criterion does not list, gives 53.7. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/peron-2015-01.yaml`](../../attempts/peron-2015-01.yaml).

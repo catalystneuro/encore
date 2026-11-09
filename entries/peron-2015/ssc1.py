@@ -240,6 +240,8 @@ def load_session(name: str) -> dict:
 ARTEFACT_LIMIT = 85.0   # degrees; |angle| above this is near the +/-90 degree limit of the tracker
 SPIKE_DEV = 20.0        # degrees from the 5-sample running median; a one- or two-sample jump
 EDGE_S = 0.2            # seconds left out at each end of a trial for the edge-trimmed Hilbert peak
+JUMP_STEP = 30.0        # degrees in one 2 ms sample (15,000 degrees/s); a step no whisker makes
+JUMP_SAMPLES = 25       # samples (50 ms) within which a jump must return to be a multi-sample error
 
 
 def artefact_masks(ang: np.ndarray) -> dict:
@@ -259,6 +261,26 @@ def artefact_masks(ang: np.ndarray) -> dict:
     return {"limit": np.abs(ang) > ARTEFACT_LIMIT, "spike": dev > SPIKE_DEV, "dev": dev}
 
 
+def jump_mask(x: np.ndarray, step: float = JUMP_STEP, n: int = JUMP_SAMPLES) -> np.ndarray:
+    """Samples between a step of more than ``step`` degrees and an opposite step within ``n`` samples.
+
+    Multi-sample tracking errors (round-2 verifier): the angle jumps away and back after three or
+    more samples (for example -24.1, 72.8, 72.8, 72.1, -23.1), which the 5-sample spike mask misses.
+    A step of 30 degrees in one 2 ms sample is 15,000 degrees/s, several times the fastest whisker
+    movement in the data (the 99th percentile of the step is about 8 degrees); the angle must come back
+    within 50 ms, less than half a whisk cycle at 10 Hz. Both are standard choices, not from the paper,
+    and the notebook shows other values. Angles that wrap past 90 degrees and back are also
+    caught, so this mask also drops the part of a protraction beyond 90 degrees.
+    """
+    dx = np.diff(x)
+    big = np.flatnonzero(np.abs(dx) > step)
+    m = np.zeros(len(x), bool)
+    for a, b in zip(big[:-1], big[1:]):
+        if b - a <= n and np.sign(dx[a]) != np.sign(dx[b]):
+            m[a + 1:b + 1] = True
+    return m
+
+
 def _fill(x: np.ndarray, drop: np.ndarray) -> np.ndarray:
     """x with the samples in ``drop`` replaced by linear interpolation from their neighbours."""
     x = x.copy()
@@ -268,7 +290,8 @@ def _fill(x: np.ndarray, drop: np.ndarray) -> np.ndarray:
 
 
 def whisking_amplitudes(sess: dict, band=(6.0, 30.0), limits=(70.0, 80.0, 85.0, 88.0),
-                        spike_devs=(10.0, 20.0, 40.0)) -> dict:
+                        spike_devs=(10.0, 20.0, 40.0), median_windows=(11, 21),
+                        jumps=((20.0, 10), (20.0, 25), (30.0, 10), (30.0, 25), (30.0, 50), (50.0, 25))) -> dict:
     """Per-trial whisker movement amplitude, three readings (claim results-whisking-amplitude).
 
     (a) range (max minus min) of the angle over the whole trial;
@@ -286,6 +309,12 @@ def whisking_amplitudes(sess: dict, band=(6.0, 30.0), limits=(70.0, 80.0, 85.0, 
     transform inflate the amplitude (``hilbert_peak_trim``), and the same after the samples of
     either mask are replaced by interpolation (``hilbert_peak_trim_clean``); the number of samples
     of each mask in the trial.
+    For the multi-sample errors the round-2 verifier found: (a) without samples more than SPIKE_DEV
+    from a running median of ``median_windows`` samples (``range_trial_med<W>``, which removes
+    jumps of up to (W - 1) / 2 samples), (a) without the samples of ``jump_mask`` for each
+    (step, samples) pair (``range_trial_jump<step>_<n>``), and (a) without the samples of every
+    mask together (limit, spike, 21-sample median, default jump mask: ``range_trial_all``), and
+    of all but the 21-sample median (``range_trial_lsj``), with the counts ``n_jump`` and ``n_med``.
     """
     w = sess["whisker"]
     t, tr, ang = w["time"], w["trial"], w["angle"].copy()
@@ -341,6 +370,17 @@ def whisking_amplitudes(sess: dict, band=(6.0, 30.0), limits=(70.0, 80.0, 85.0, 
             e[f"range_trial_limit{L:g}"] = rng(x[np.abs(x) <= L])
         for D in spike_devs:
             e[f"range_trial_spike{D:g}"] = rng(x[dev[s0:e0] <= D])
+        med = {}
+        for W in median_windows:
+            med[W] = np.abs(x - median_filter(x, size=W, mode="nearest")) > SPIKE_DEV
+            e[f"range_trial_med{W}"] = rng(x[~med[W]])
+        for J, N in jumps:
+            e[f"range_trial_jump{J:g}_{N}"] = rng(x[~jump_mask(x, J, N)])
+        jm = jump_mask(x)
+        e["n_jump"] = int(jm.sum())
+        e["n_med"] = int(med[max(median_windows)].sum())
+        e["range_trial_lsj"] = rng(x[~(lim | spk | jm)])
+        e["range_trial_all"] = rng(x[~(lim | spk | jm | med[max(median_windows)])])
         extra.append(e)
     arr = np.array(rows, float)
     out = {"trial": arr[:, 0].astype(int), "range_trial": arr[:, 1],
@@ -437,6 +477,8 @@ def reduce_session(sess: dict, shifts=(0.0, -3000.0, 3000.0)) -> dict:
         "kappa_pct": np.nanpercentile(w["kappa"], [1, 50, 99]).tolist(),
         "angle_nan": float(np.isnan(w["angle"]).mean()),
         "angle_abs_over_85": float(np.mean(np.abs(w["angle"]) > 85)),
+        # Step between successive samples (degrees per 2 ms), percentiles 50, 99, 99.9, 99.99.
+        "step_pct": np.nanpercentile(np.abs(np.diff(w["angle"])), [50, 99, 99.9, 99.99]).tolist(),
         # The first two steps of more than 90 degrees between samples, each with 6 samples on either
         # side, to show what the tracking errors and wraps look like.
         "jump_examples": [np.round(w["angle"][max(j - 6, 0):j + 8], 1).tolist()

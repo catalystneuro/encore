@@ -48,8 +48,9 @@ outcomes:
     outcome: blocked
     blocked_by: data_missing
     notes: The high-resolution reference stacks and the nucleus counts from them are not in the data set.
-      Its imaging archives hold registered trial TIFFs per plane; one archive listed in full held 45 TIFFs
-      and nothing else. The criterion uses nuclei counts the data set carries and blocks the claim otherwise.
+      By the data description its imaging archives hold registered trial TIFFs; the notebook does not
+      list their contents. The criterion uses nuclei counts the
+      data set carries and blocks the claim otherwise.
   - claim: fig1e-days-to-criterion
     outcome: blocked
     blocked_by: data_missing
@@ -78,17 +79,30 @@ outcomes:
     notes: Means over the three mice (per mouse 70.6, 99.2, 54.2 for a) are (a) 74.7 degrees for the per-trial
       angle range over the trial, (b) 29.0 over the sample epoch and (c) 26.9 for the peak Hilbert amplitude
       (6 to 30 Hz; 22.2 to 30.4 with the other bands shown); none is within 55.5 +/- 13.3 (42.2 to 68.8).
-      Tracking errors do not explain the miss. Without samples above 85 degrees (in 26, 52 and 2 trials
-      per mouse) reading (a) is 72.4, without one- or two-sample spikes 71.9, and 71.7 to 74.1 with other
-      thresholds; only dropping all samples above 70 degrees, which also cuts real protractions, gives
-      67.4. Unwrapping protractions that pass 90 degrees and wrap to the other sign gives 77.0. Leaving
+      Removing tracking errors brings reading (a) close to the upper bound but not inside it under any
+      mask that removes only errors. Without samples above 85 degrees (in 26, 52 and 2 trials per mouse)
+      reading (a) is 72.4 and without one- or two-sample spikes 71.9. It falls steadily as the threshold on
+      the angle drops, 74.1 at 88 degrees, 72.4 at 85, 70.3 at 80 and 67.4 at 70, the lower thresholds also
+      cutting the tops of real protractions; spike thresholds of 10 to 40 degrees give 71.7 to 72.1.
+      Unwrapping protractions that pass 90 degrees and wrap to the other sign gives 77.0. Jumps that last
+      three samples or more are nearly all in an229717 (99.9th percentile step 34.5 degrees per 2 ms
+      against 4.5 to 7.0 in the other sessions; a step over 30 degrees that returns within 25 samples in
+      116 of its 183 trials, against 9 of 764 and 4 of 496). Removing them gives 69.7 to 70.1 over six
+      step and duration values (69.8 at 30 degrees and 25 samples), and 69.2 with the limit and spike masks
+      as well, 0.4 above the bound of 68.8; an229717 falls from 99.2 to 84.0 to 86.0. A 21-sample running
+      median filter gives 68.6, and 68.3 with every other mask, inside, but it also removes real whisk
+      peaks, flagging samples in 79 of 764 trials of an197522, whose largest steps are 9.1 to 11.3 degrees
+      (99.99th percentile), and lowering that mouse from 70.1 to 69.0. Trials with no masked sample give
+      59.4 over mice, but they are a selection (in an197522 66.1 against 70.6 for all trials). The miss is
+      therefore narrow, 0.4 to 1.3 degrees for the cleanings that remove only errors, and whether a cleaned
+      reading (a) falls inside depends on a choice the paper does not describe. Leaving
       out 0.2 s at each end of the trial, where the filter's edge effect inflates a synthetic sinusoid's
       peak Hilbert amplitude from 20 to 22.0 (20.1 without the ends), changes reading (c) to 26.6, and
       26.6 with artefacts interpolated. Reading (b) without artefacts is 28.6 to 29.0. Measures the criterion
       does not list fall inside the tolerance, the mean of per-mouse medians of reading (a) (68.6), the
       1st to 99th percentile range of angle per trial (49.2) and twice the peak Hilbert amplitude, a peak-to-peak
       measure (53.7 +/- 15.7; 53.2 without ends and artefacts). The part of the statement the criterion
-      does not test, larger movements than about 20 degrees, holds for every full-sweep measure (29.0
+      does not test, larger movements than about 20 degrees, holds for every full-sweep measure (28.6
       to 77.0). The paper does not define the measure; the question is recorded as a finding for its
       authors. 1,443 trials (764, 183, 496 per mouse).
     deviations:
@@ -106,9 +120,12 @@ outcomes:
         (at most 0.06% of samples), which look like tracking errors, are kept in the main readings, as the
         criterion's maximum minus minimum includes them. Readings (a) and (b) are also shown without samples
         above 85 degrees and without spikes over 20 degrees from a 5-sample running median, with other
-        thresholds, and after unwrapping; reading (c) without 0.2 s at each end. These are standard choices,
-        not from the paper, and every one gives the same outcome; the 1st to 99th percentile range is
-        shown as a further variant.
+        thresholds, and after unwrapping; reading (a) also without jumps of several samples (a step over
+        30 degrees in one sample that returns within 25 samples, with other values, and running medians of
+        11 and 21 samples); reading (c) without 0.2 s at each end. These are standard choices, not from the
+        paper, which says nothing on tracking errors. Every one that removes only errors gives the same
+        outcome; the 21-sample median, which also cuts real whisk peaks, does not (68.6, or 68.3 with every
+        mask). The 1st to 99th percentile range is shown as a further variant.
   - claim: fig1g-early-stereotypy
     outcome: blocked
     blocked_by: data_missing
@@ -394,14 +411,16 @@ findings:
   - kind: other
     statement: The whisker angle holds tracking errors that the description does not mention. Samples
       jump to the tracker's +/-90 degree limit for one or two samples (for example 87.3, 37.8, -89.2, 41.7 degrees
-      on successive 2 ms samples in an229717), jump briefly to a distant value (-24.1, 72.8, 72.8, 72.1,
-      -23.1 in an229719), and protractions past 90 degrees wrap to the other sign (84.6, 89.2, -87.5, -88.7,
+      on successive 2 ms samples in an229717), jump to a distant value for three samples or more (-24.1,
+      72.8, 72.8, 72.1, -23.1 in an229719; in an229717 a step over 30 degrees that returns within 25 samples
+      occurs in 116 of 183 trials, and its 99.9th percentile step is 34.5 degrees against 4.5 to 7.0 in the
+      other sessions), and protractions past 90 degrees wrap to the other sign (84.6, 89.2, -87.5, -88.7,
       89.3 in an197522). Samples above 85 degrees occur in 26 of 764, 52 of 183 and 2 of 496 valid whisker trials
       of an197522, an229717 and an229719. The largest per-trial angle range, 179.8 degrees, spans these limits.
   - kind: methods_unavailable
     statement: Question for the paper's authors. How was the whisker movement amplitude of 55.5 +/- 13.3
       degrees (Results, paragraph 2) measured? On the three mice in the data set the per-trial angle range
-      is 74.7 degrees (72.4 without tracking errors), its range over the sample epoch 29.0, and the peak
+      is 74.7 degrees (69.2 without the tracking errors), its range over the sample epoch 29.0, and the peak
       Hilbert amplitude 26.9 (6 to 30 Hz band, also not given), while twice the peak Hilbert amplitude
       is 53.7. Which measure, epoch and band were used, and how were tracking errors handled?
   - kind: methods_unavailable
@@ -760,3 +779,273 @@ verifications:
         response: Outcome unchanged. The block stays methods_underspecified, since the protocol never blocks a
           data elsewhere claim as data_missing (author, step 4), and the notes say why the test cannot be
           repeated as described.
+  - date: '2026-11-09'
+    kind: agent
+    by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+    reviewed: Round 2. The full executed notebook of the first revision, the helper module ssc1.py, the claims
+      file and the attempt record, with the paper. Its report agrees with all 43 outcomes; it asked for
+      reading (a) without multi-sample tracking jumps and corrections to sentences the numbers did not
+      support. It found no misreading of the paper in the claims file (the degree values it calls garbled
+      are legible apart from the degree signs, which does not affect the criterion), so no question was
+      added. Report in transcripts/peron-2015/verifier-2-report.md.
+    results:
+      - claim: table-s1-roi-counts
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig2-core-counts
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: results-gaba-fraction
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig2e-fraction-imaged
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. The record's 45 TIFFs and nothing else is not supported
+          by any printed output; cell 6 says it was not run here.
+        response: Outcome unchanged. The sentence on 45 TIFFs is removed from the notes, which now say only what
+          the data description says of the imaging archives and that the notebook does not list their
+          contents.
+      - claim: fig1e-days-to-criterion
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: results-trials-per-session
+        agrees: true
+        outcome: reproduced
+        reason: I agree. Cell 28 gives 290.2 pooled and 272.5 as the mean of per-mouse means, both inside [174,
+          316]. It is weak evidence (5 sessions from 3 of 8 mice), and the record now says so.
+        response: No change.
+      - claim: results-whisking-amplitude
+        agrees: true
+        outcome: not_reproduced
+        reason: I now agree; in round 1 I said partially_reproduced. In cell 33 every listed reading is still
+          outside [42.2, 68.8] after removing only the artefacts, (a) 72.4 or 71.9, (b) 28.6 to 29.0, (c)
+          26.6, so the criterion's within tolerance under one reading rule gives not_reproduced. The miss
+          is narrow. Reading (a) falls steadily as the threshold drops (74.1 at 88 degrees, 72.4 at 85,
+          70.3 at 80, 67.4 at 70), the mean of per-mouse medians is 68.6, inside, and multi-sample jumps
+          are not removed by either artefact mask. Reading (a) with multi-sample jumps removed has not
+          been computed, and since the miss is 3.6 degrees above the bound, moves with the threshold and
+          is driven by an229717, this check could move the outcome. The sentences 71.7 to 74.1 with other
+          thresholds (70.3 is printed for 80 degrees), tracking errors do not explain the miss, most of
+          reading (a) is real whisking, and 29.0 to 77.0 (reading b without spikes is 28.6) are not
+          supported as written, and the summary omits the multi-sample jumps.
+        response: Outcome unchanged, and no change is proposed. A new cell (cell 34) removes multi-sample jumps
+          two ways, a jump mask (a step over 30 degrees in one sample that returns within 25 samples, with
+          five other step and duration values) and running medians of 11 and 21 samples. The jumps are
+          nearly all in an229717 (116 of its 183 trials; 99.9th percentile step 34.5 degrees against 4.5
+          to 7.0 elsewhere). Reading (a) becomes 69.7 to 70.1 with the jump mask and 69.2 with the limit,
+          spike and jump masks together, 0.4 above the bound; an229717 falls from 99.2 to 84.0 to 86.0.
+          Only the 21-sample median brings it inside (68.6, or 68.3 with every mask), and it also cuts
+          real whisk peaks, lowering an197522, which has no jumps (99.99th percentile step 9.1 to 11.3),
+          from 70.1 to 69.0. The best-supported cleaning thus leaves the outcome not_reproduced, by 0.4 to
+          1.3 degrees, and the notes say that a cleaned reading (a) inside the tolerance depends on a
+          choice the paper does not describe. The conclusion, notes, README and summary now give the
+          threshold series 74.1, 72.4, 70.3, 67.4, drop the sentences the verifier found unsupported, give
+          28.6 to 77.0, and list the multi-sample jumps in the summary and the finding.
+      - claim: fig1g-early-stereotypy
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: supp-trim-all-chance
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: figs4-dendrite-soma
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig3a-active-fraction
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig3b-task-related
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig4d-sample-epoch-principal
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig4d-gaba-reward-cue
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig3c-discriminative
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig3d-principal-touch-whisking-equal
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig3d-surround-whisking-dominates
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig3d-population-encoding
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: discussion-principal-exclusive-classes
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig6b-touch-fraction-stable
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig6b-whisking-fraction-early
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig6c-no-trimming-expansion
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig6d-neurometric-flat
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig6d-psychometric-improves
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig6efg-rfit-vectors-stabilize
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig6h-days-different
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig7-touch-declines-surround
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig3d-touch-uniform-l5-gaba
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig7-whisking-uniform
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig7ab-salt-and-pepper
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig4-neuropil-sample-principal
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: figs5-l4-neuropil-correlation
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig8b-direction-tuned
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: figs7-direction-stable
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig8de-direction-topography
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: results-di-magnitude-similar
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: fig8e-l4-neuropil-direction-map
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig8h-passive-active-overlap
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig8i-no-anesthetized-topography
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: fig8jk-neuropil-anesthetized
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims.
+        response: No change.
+      - claim: figs3d-neuropil-correction
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: discussion-correlation-more-touch
+        agrees: true
+        outcome: blocked
+        reason: I agree with each of the blocked claims. Cell 7 now shows that no identifier or description
+          field carries a layer, class or column label, so the M6 blocks stand.
+        response: No change.
+      - claim: methods-event-detection
+        agrees: true
+        outcome: blocked
+        reason: I accept methods_underspecified over my round-1 data_missing, given the protocol rule the record
+          cites. Either way the outcome is blocked.
+        response: No change.
