@@ -1,11 +1,11 @@
 #!/bin/bash
-# Put a dataset's checked claims file on main ahead of its attempt: the checkpoint after the claims check
+# Put a paper's checked claims file on main ahead of its attempt: the checkpoint after the claims check
 # (docs/pipeline.md). Run from a clone of the repository:
 #
-#   tools/runner/merge_claims.sh FOLDER [--with-transcripts]
+#   tools/runner/merge_claims.sh PAPER [--with-transcripts]
 #
-# Takes claims/<folder>/ from the branch attempt/<folder> (and, with --with-transcripts, the claims
-# runs' transcripts and reports, transcripts/<folder>/claims*.md, for a branch that is deleted
+# Takes claims/<paper>.yaml from the branch attempt/<paper> (and, with --with-transcripts, the claims
+# runs' transcripts and reports, transcripts/<paper>/claims*.md, for a branch that is deleted
 # afterwards), validates each claims file against schemas/claims.schema.json, and commits it straight
 # to main, with no pull request; when main has moved on in the meantime, it starts again from the new
 # main. Works in a temporary worktree, so the clone's checkout is left alone. When the attempt itself
@@ -13,20 +13,20 @@
 set -euo pipefail
 d=$1; with_transcripts=${2:-}
 here=$(cd "$(dirname "$0")" && pwd)
-label=$(python3 "$here/describe.py" label "$d" 2>/dev/null || echo "$d")
+label=$d
 tmp=$(mktemp -d)
 trap 'git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"' EXIT
 for try in 1 2 3 4 5; do
   git fetch -q origin main "attempt/$d"
   git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
   git worktree add -q --detach "$tmp" origin/main
-  git -C "$tmp" checkout -q "origin/attempt/$d" -- "claims/$d"
+  git -C "$tmp" checkout -q "origin/attempt/$d" -- "claims/$d.yaml"
   if [ "$with_transcripts" = --with-transcripts ]; then
     git -C "$tmp" ls-tree --name-only "origin/attempt/$d" "transcripts/$d/" | { grep '/claims[^/]*\.md$' || true; } \
       | xargs -r git -C "$tmp" checkout -q "origin/attempt/$d" --
   fi
   if git -C "$tmp" diff --cached --quiet; then echo "$d: main already has these claims"; exit 0; fi
-  (cd "$tmp" && python - "claims/$d" <<'PY'
+  (cd "$tmp" && python - "claims/$d.yaml" <<'PY'
 import json, sys
 from pathlib import Path
 import yaml
@@ -36,7 +36,7 @@ def plain(v):   # YAML dates as strings, so the schema's formats apply
             if isinstance(v, list) else v.isoformat() if hasattr(v, "isoformat") else v)
 schema = Draft202012Validator(json.loads(Path("schemas/claims.schema.json").read_text()))
 bad = 0
-for path in sorted(Path(sys.argv[1]).glob("*.yaml")):
+for path in [Path(sys.argv[1])]:
     for err in schema.iter_errors(plain(yaml.safe_load(path.read_text()))):
         print(f"{path}: {'/'.join(map(str, err.path)) or '(top level)'}: {err.message}")
         bad += 1
