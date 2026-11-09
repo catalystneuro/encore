@@ -1,0 +1,771 @@
+# Claims for Quattrocolo & Maccaferri (2013), J Neurosci 33:5486-5498, on CRCNS data set hc-9
+# (doi:10.6080/K0HQ3WTH).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-04,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record, as supplied under paper/ (PyMuPDF text of the journal PDF),
+# with its Materials and Methods, Results, Discussion and the legends of Figures 1 to 13. The
+# paper has no supplement. It links no analysis code, so none was read. The PDF could not be
+# rendered here, and the extracted text prints the signs =, < and > (and minus, plus/minus,
+# mu, Omega) as a replacement character. Each p_relation below is read from the sentence it
+# sits in: a difference the text calls significant, or a change it reports, is p < 0.05; one
+# it calls absent ("did not change significantly", "similar", "ineffective", "returned to
+# baseline") is p > 0.05. Values printed with that character between them are read as mean
+# plus/minus SE, as the Methods state ("Data are presented as mean ±SE").
+#
+# Data the paper used. Acute hippocampal slices (350 um) from mice of either sex, P10 to P19:
+# CXCR4-EGFP mice (Cajal-Retzius cells labelled by EGFP; 56 animals) and Sst-IRES-Cre;
+# ChR2(H134R)-EYFP mice (8 animals) for the optogenetic experiments. Recordings at 30-32 C,
+# filtered at 3 kHz and digitized at 10-20 kHz (Multiclamp 700, Clampex 9). Experiments:
+# spontaneous GABAergic currents in Cajal-Retzius cells (Figure 1); paired recordings from
+# stratum lacunosum-moleculare interneurons (neurogliaform-like) to Cajal-Retzius cells, with
+# three-spike trains, uPSC amplitude, 20-80% rise time and decay (Figures 2 to 6); O-LM
+# interneuron firing patterns and reconstructions, and light-evoked firing and currents in
+# ChR2-expressing O-LM cells (Figure 7); light-evoked and stratum oriens-evoked PSCs in
+# Cajal-Retzius cells (Figures 8, 9); DHPG effects on spontaneous event frequency and
+# amplitude in intact and reduced slices (Figure 10); cell-attached action-current
+# frequencies after stratum lacunosum-moleculare stimulation, with and without gabazine
+# (Figure 11); dynamic-clamp injection of slow and fast synaptic conductances at about -45
+# and -50 mV (Figure 12).
+#
+# The CRCNS data set, by its title and description, holds only the current-step firing
+# patterns of three O-LM cells "first featured in Quattrocolo and Maccaferri (2013), Figure 7"
+# (cells 1May2012_P3, 20Sept2011_P2 and 24October2012_C2; steps from -100 to +250 pA in 30 pA
+# increments; ATF text files), recorded in current clamp with the K-methylsulfate pipette
+# solution. Only the claim fig7a-olm-sag concerns those recordings. The other claims cover the
+# paper's main findings, whose data the description does not list.
+#
+# Method details, from the Materials and Methods: uPSCs averaged after alignment on the
+# presynaptic spike; decay as the monoexponential time constant, the weighted average of a
+# biexponential fit, or the time to 63% decay when neither fits; stratum oriens-evoked PSCs
+# averaged first, then analyzed alike. Figure 10 windows 0-5 min (control) and 7-12 min
+# (drug). Figure 11 firing rates per Abeles (1982), prestimulus 40-60 ms, early 90-110 ms,
+# late 400-420 ms; Figure 11D baseline over 0-60 ms, and the effect as the peak of a 5 ms
+# binned time course divided by baseline. Figure 12 slow conductance windows 40-60 ms against
+# 60-80 and 100-120 ms; fast conductance 50-60 ms against 60-70 and 100-110 ms. Significance
+# level 0.05; tests named in the text.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-9
+  doi: 10.6080/K0HQ3WTH
+paper: doi:10.1523/jneurosci.5680-12.2013
+claims:
+- id: fig7a-olm-sag
+  statement: O-LM interneurons recorded in CXCR4-EGFP slices show a sag in their voltage
+    response to hyperpolarizing current pulses (pulses of -100 and +50 pA in Figure 7A), and the
+    ChR2-expressing O-LM cell of Figure 7D has a similar firing pattern.
+  source: Figure 7A and 7D legends
+  quote: Firingpatternsoftheaboveshowncells.Noticethepresenceofasaginthehyperpolarizingresponse.
+    ... Notice the similarity with the firing patterns shown in A.
+  criterion: The paper shows the sag in example traces and does not define a measure, so the
+    measure is open. Taken from the legend, the -100 pA step is the hyperpolarizing response
+    to examine. Two standard readings, neither of them the paper's, are run. (a) A visible sag,
+    read as a depolarizing relaxation from the peak hyperpolarization during the -100 pA step
+    to the mean voltage over its last 100 ms larger than twice the SD of the pre-step baseline
+    voltage. (b) A sag ratio, (V_end - V_min) / (V_baseline - V_min), of at least 0.1, a common
+    convention. The paper does not name its cells, so which cell of the data set is shown in
+    Figure 7A or 7D is open; the similarity of the 7D firing pattern to those in 7A is read as
+    the sag, the one feature the legends point to, and every cell is judged alike. Reproduced
+    when every cell shows a sag, partially reproduced when most do, not reproduced otherwise.
+    The outcome is the one both readings give; if they differ, both results are shown and the
+    author adopts the reading the paper best supports, as an assumption. The outcome rests on
+    the assumed measure either way.
+- id: fig1-spontaneous-amplitude
+  statement: Pharmacologically isolated spontaneous GABAergic currents in Cajal-Retzius cells
+    have an average amplitude of 113 pA, with large variability.
+  source: Results, paragraph 1; Figure 1C
+  quote: spontaneous GABAergic events had an average amplitude of 113 �12 pA (n �14 cells from n
+    �5 mice of 12.6 �0.4 postnatal days of age), with a large variability (Fig. 1)
+  expected:
+    quantity: mean amplitude of spontaneous GABAergic events
+    value: 113
+    tolerance: 12
+    unit: pA
+  criterion: Events detected with a template (Clampfit) and reviewed by eye (Methods), at -60
+    mV with NBQX (25 uM) and D-AP-5 (50 uM) present (Figure 1 legend). The paper gives no
+    template or detection threshold, so the detection settings are open and the author states
+    the standard ones used. The average is read as the mean over 14 cells of each cell's mean
+    amplitude, as n and the SE are given over cells (Figure 1C, n = 14 cells); the paper does
+    not say so in words, and the mean over all pooled events is shown as a variant. Tolerance
+    is the paper's SE.
+- id: fig4-upsc-amplitude
+  statement: Unitary PSCs from stratum lacunosum-moleculare interneurons onto Cajal-Retzius
+    cells are small, 5 pA for the first response and 11 pA at the peak of the third response
+    of a three-spike train.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 2; Figure 4C
+  quote: The amplitude of unitary postsynaptic currents (uPSCs) was 5 �1 pA (n �26) for the first
+    response and 11 �2 pA (n �26) at the peak of the third response (Fig. 4)
+  expected:
+  - quantity: uPSC amplitude, first response (A1)
+    value: 5
+    tolerance: 1
+    unit: pA
+  - quantity: uPSC amplitude, third response (A3)
+    value: 11
+    tolerance: 2
+    unit: pA
+  criterion: Amplitudes measured on the spike-aligned average as drawn in Figure 4B, over 26
+    pairs. Tolerances are the paper's SE.
+- id: fig4-upsc-kinetics
+  statement: Unitary PSCs from stratum lacunosum-moleculare interneurons are slow, with a 20-80%
+    rise time of 3.4 ms and a decay time constant of the compound response of 30.3 ms.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 2; Figure 4C
+  quote: Overall, kinetic properties were slow. The average rise time of the first response was
+    3.4 �0.4 ms (n �17), and the decay time constant of the compound response was 30.3 �2.9 ms
+    (n �23).
+  expected:
+  - quantity: 20-80% rise time of the first uPSC
+    value: 3.4
+    tolerance: 0.4
+    unit: ms
+  - quantity: decay time constant of the compound uPSC
+    value: 30.3
+    tolerance: 2.9
+    unit: ms
+  criterion: Rise time 20-80% (Figure 4 legend); decay as the monoexponential time constant, the
+    weighted biexponential average, or the time to 63% decay when neither fits (Methods).
+    Tolerances are the paper's SE.
+- id: paired-presynaptic-neurogliaform
+  statement: Of the presynaptic stratum lacunosum-moleculare interneurons in connected pairs, 14
+    were anatomically identified as neurogliaform-like cells; the others were partly recovered,
+    identified by firing pattern, or not identified.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 1; Figures 2 and 3A
+  quote: In 14 cases, anatomical recovery was sufficient to define them as neurogliaform-like
+    cells based on their dendritic and axonal structures.
+  expected:
+    quantity: presynaptic cells anatomically identified as neurogliaform-like
+    value: 14
+    tolerance: 0
+    unit: cells
+  criterion: A count of identified cells; tolerance 0 as it is a count of anatomical
+    reconstructions.
+- id: upsc-gabazine-block
+  statement: Gabazine fully blocks the unitary responses, so they are mediated by GABAA
+    receptors.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 2 (data not shown)
+  quote: Application of gabazine fully blocked unitary responses, indicating that they were
+    mediated by GABAA receptors (n �4; data not shown).
+  criterion: In each of the 4 pairs, no uPSC is distinguishable from baseline noise in the
+    spike-aligned average after gabazine. The paper gives no measure of block.
+- id: fig5-no-gabab-component
+  statement: With QX-314-free pipettes, no outward (GABAB receptor-mediated) current is seen in
+    Cajal-Retzius cells after interneuron trains, either in control or in gabazine.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 2; Figure 5
+  quote: under these experimental conditions, no outward current was detectable either in
+    control conditions or after application of gabazine (n �4 pairs from 4 animals of 11.8 �0.5
+    postnatal days of age)
+  criterion: A claim of absence with no test named. In each of the 4 pairs the spike-aligned
+    average in control and in gabazine (12.5 uM) shows no outward deflection beyond baseline
+    noise after the train.
+- id: fig6-spontaneous-larger-than-unitary
+  statement: In the Cajal-Retzius cells of connected pairs, the largest spontaneous event (237
+    pA) is much larger than the first unitary response (5 pA), a ratio of 66.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 3; Figure 6D
+  quote: The amplitude of the largest spontaneous events observed was 237 �41 pA, which compared
+    with 5 �1 pA for the unitary response to the first spike (p �0.05, Wilcoxon's matched-pairs
+    signed-rank test, n �23). The ratio between these amplitudes was 66 �12 (n �23).
+  statistics:
+  - test: Wilcoxon matched-pairs signed-rank test
+    p: 0.05
+    p_relation: "<"
+    n: 23 pairs
+  expected:
+  - quantity: amplitude of the largest spontaneous event (Amax)
+    value: 237
+    tolerance: 41
+    unit: pA
+  - quantity: Amax / A1 ratio
+    value: 66
+    tolerance: 12
+  criterion: Amax is the largest spontaneous event recorded without firing in the interneuron
+    (Figure 6A legend). The Results say "in the absence of firing in the Cajal-Retzius cell",
+    which is voltage-clamped, so the legend's reading is taken. The stretch of recording
+    searched for the largest event is not given and can change Amax; the author uses all of
+    each pair's recording without presynaptic firing and says so. The ratio 66 is far above
+    237/5, so it is read as the mean of per-pair ratios Amax/A1. Reproduced when the Wilcoxon
+    test of Amax against A1 has p < 0.05 with Amax larger, and the values are within the
+    paper's SE.
+- id: fig6-spontaneous-faster-than-unitary
+  statement: The largest spontaneous event rises much faster (0.7 ms) than the first unitary
+    response (3.4 ms), a ratio of 0.2.
+  source: Results, Stratum lacunosum-moleculare interneurons as a source of local GABAergic
+    input, paragraph 3; Figure 6D
+  quote: the rise time of the observed largest spontaneous event was much faster than the one
+    measured for the first unitary response (0.7 �0.3 ms compared with 3.4 �0.4 ms, respectively;
+    p �0.05, Wilcoxon's matched-pairs signed-rank test, n �17). The ratio of these values was 0.2
+    �0.1 (n �17).
+  statistics:
+  - test: Wilcoxon matched-pairs signed-rank test
+    p: 0.05
+    p_relation: "<"
+    n: 17 pairs
+  expected:
+  - quantity: rise time of the largest spontaneous event
+    value: 0.7
+    tolerance: 0.3
+    unit: ms
+  - quantity: rise time ratio rtmax / rt1
+    value: 0.2
+    tolerance: 0.1
+  criterion: Rise time 20-80%, as for uPSCs in Figure 4; the Figure 6D legend says only "rise
+    time", so 20-80% for the spontaneous event is a reading. Amax selected as in
+    fig6-spontaneous-larger-than-unitary. The ratio is read as the mean of per-pair ratios
+    rtmax/rt1. Reproduced when the Wilcoxon test has p < 0.05 with the spontaneous event
+    faster, and the values are within the paper's SE.
+- id: fig7-chr2-olm-light-firing
+  statement: In Sst-IRES-Cre;ChR2(H134R)-EYFP mice, short light pulses trigger action potentials
+    in all nine O-LM-like stratum oriens interneurons tested, and light-activated currents in
+    every interneuron tested in voltage clamp.
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3;
+    Figure 7C, 7D
+  quote: In nine of nine cells, we could trigger action potentials with short light pulses, and
+    in all interneurons tested, we could record light-activated currents in voltage-clamp
+    configuration (Fig. 7).
+  expected:
+    quantity: O-LM cells firing to light pulses
+    value: 9
+    tolerance: 0
+    unit: cells of 9
+  criterion: A count; every cell tested fires to a 1-5 ms light pulse. Tolerance 0, as the
+    paper reports all cells.
+- id: fig8-light-evoked-psc
+  statement: Light stimulation of Sst-expressing axons in stratum lacunosum-moleculare evokes
+    PSCs in Cajal-Retzius cells of 106 pA amplitude and 1.6 ms rise time, fully blocked by TTX
+    and by gabazine.
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3;
+    Figure 8
+  quote: The events had an amplitude of 106 �15 pA, a rise time of 1.6 �0.3 ms (n �9), and were
+    fully blocked by TTX (n �4) and gabazine (n �4).
+  expected:
+  - quantity: light-evoked PSC amplitude
+    value: 106
+    tolerance: 15
+    unit: pA
+  - quantity: light-evoked PSC rise time
+    value: 1.6
+    tolerance: 0.3
+    unit: ms
+  criterion: Over 9 Cajal-Retzius cells; the values within the paper's SE, and no PSC above
+    baseline noise after TTX (500 nM, 4 cells) or gabazine (12.5 uM, 4 cells), as the Figure 8
+    legend gives the concentrations. Rise time 20-80%, as the Figure 9D legend plots the
+    light-evoked rise times on its 20-80% rt panel. Whether the events are measured on each
+    cell's average or sweep by sweep is not stated; the Methods' rule for evoked oPSCs
+    (averaged first, then analyzed) is the reading taken, and the mean of single sweeps is
+    shown as a variant.
+- id: fig9-opsc-rise-time
+  statement: PSCs evoked by stratum oriens stimulation rise fast (1.0 ms), like light-evoked
+    PSCs (1.6 ms) and unlike neurogliaform unitary PSCs (3.4 ms).
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3;
+    Figure 9D
+  quote: we observed events with rise-time kinetics similar to the ones obtained with
+    optogenetic stimulation but very different from what found in unitary connections mediated
+    by neurogliaform cells. The rise time of stratum oriens-evoked ... postsynaptic currents
+    (oPSCs) was 1.0 � 0.2 ms (n �14)
+  statistics:
+  - about: oPSC against light-evoked PSC rise time
+    test: Kruskal-Wallis with Dunn's post hoc test
+    p: 0.05
+    p_relation: ">"
+    n: 14 oPSC and 9 light-evoked recordings
+  - about: oPSC against neurogliaform uPSC rise time
+    test: Kruskal-Wallis with Dunn's post hoc test
+    p: 0.05
+    p_relation: "<"
+    n: 14 oPSC and 17 uPSC recordings
+  expected:
+    quantity: oPSC 20-80% rise time
+    value: 1.0
+    tolerance: 0.2
+    unit: ms
+  criterion: A Kruskal-Wallis test over the three groups (oPSC, light-evoked, neurogliaform
+    uPSC) with Dunn's post hoc comparisons, recorded with NBQX and D-AP-5 present. Reproduced
+    when oPSC against uPSC has p < 0.05 with oPSC faster, and oPSC against light-evoked has p
+    > 0.05; the size of each difference is reported.
+- id: fig9-opsc-amplitude-decay
+  statement: Stratum oriens-evoked PSCs are GABAA receptor-mediated, with amplitudes of 43 pA to
+    the first pulse and 69 pA to the third, and a decay time of 23.7 ms after the third pulse.
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 3;
+    Figure 9C, 9D
+  quote: The amplitude of the response to the first pulse of oPSCs was 43 � 12 pA (n �14) and 69
+    �14 pA (n �14) to the third. The decay time at the end of the third pulse was 23.7 �2.4 ms (n
+    �14).
+  expected:
+  - quantity: oPSC amplitude, first pulse
+    value: 43
+    tolerance: 12
+    unit: pA
+  - quantity: oPSC amplitude, third pulse
+    value: 69
+    tolerance: 14
+    unit: pA
+  - quantity: oPSC decay time after the third pulse
+    value: 23.7
+    tolerance: 2.4
+    unit: ms
+  criterion: Events averaged first, then measured as uPSCs are (Methods). Values within the
+    paper's SE over 14 cells; gabazine (12.5 uM) abolishes the response in the cells tested
+    (Figure 9C).
+- id: fig10-dhpg-increases-frequency
+  statement: DHPG increases the frequency of spontaneous GABAergic events in Cajal-Retzius
+    cells from 154 to 657 mHz.
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 4;
+    Figure 10A
+  quote: DHPG application increased the frequency of synaptic events from 154 �56 mHz in control
+    conditionsto657�147mHzinthepresenceof the drug (n �9, p �0.05, Wilcoxon's matched-pairs
+    signed-rank test).
+  statistics:
+  - test: Wilcoxon matched-pairs signed-rank test
+    p: 0.05
+    p_relation: "<"
+    n: 9 cells
+  expected:
+  - quantity: spontaneous event frequency, control
+    value: 154
+    tolerance: 56
+    unit: mHz
+  - quantity: spontaneous event frequency, DHPG
+    value: 657
+    tolerance: 147
+    unit: mHz
+  criterion: Control over 0-5 min and DHPG (10 uM) over 7-12 min (Methods), with NBQX and D-AP-5
+    present. Reproduced when the Wilcoxon test has p < 0.05 with frequency higher in DHPG.
+- id: fig10-dhpg-amplitude-unchanged
+  statement: DHPG does not significantly change the amplitude of spontaneous events (133 against
+    89 pA).
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 4;
+    Figure 10A
+  quote: the amplitude of the spontaneous currents did not change significantly (133 �22 pA
+    during the baseline vs 89 �9 pA during DHPG application, n �9, p �0.05, Wilcoxon's
+    matched-pairs signed-rank test).
+  statistics:
+  - test: Wilcoxon matched-pairs signed-rank test
+    p: 0.05
+    p_relation: ">"
+    n: 9 cells
+  expected:
+  - quantity: spontaneous event amplitude, control
+    value: 133
+    tolerance: 22
+    unit: pA
+  - quantity: spontaneous event amplitude, DHPG
+    value: 89
+    tolerance: 9
+    unit: pA
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon matched-pairs
+    signed-rank test at 0.05 over 9 cells, windows as in fig10-dhpg-increases-frequency.
+    Reproduced when p >= 0.05; the change in amplitude is reported either way.
+- id: fig10-reduced-slice-no-effect
+  statement: In reduced slices with stratum oriens cut away, DHPG changes neither the frequency
+    (100 against 160 mHz) nor the amplitude (148 against 123 pA) of spontaneous events.
+  source: Results, Functional properties of O-LM cell-originated GABAergic input, paragraph 4;
+    Figure 10B
+  quote: the control frequency was 100 �22 mHz, which compared with 160 �51 mHz in the presence of
+    DHPG (n �8, p �0.05, Wilcoxon's matched-pairs signed-rank test). Under the same conditions,
+    no significant effects were seen on event amplitudes (148 �10 pA in control vs 123 �16 pA
+    during drug application
+  statistics:
+  - about: frequency, control against DHPG
+    test: Wilcoxon matched-pairs signed-rank test
+    p: 0.05
+    p_relation: ">"
+    n: 8 cells
+  - about: amplitude, control against DHPG
+    test: Wilcoxon matched-pairs signed-rank test
+    p: 0.05
+    p_relation: ">"
+    n: 8 cells
+  expected:
+  - quantity: spontaneous event frequency, control, reduced slice
+    value: 100
+    tolerance: 22
+    unit: mHz
+  - quantity: spontaneous event frequency, DHPG, reduced slice
+    value: 160
+    tolerance: 51
+    unit: mHz
+  - quantity: spontaneous event amplitude, control, reduced slice
+    value: 148
+    tolerance: 10
+    unit: pA
+  - quantity: spontaneous event amplitude, DHPG, reduced slice
+    value: 123
+    tolerance: 16
+    unit: pA
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon matched-pairs
+    signed-rank test at 0.05 over 8 cells for frequency and for amplitude, windows 0-5 and 7-12
+    min. Tolerances are the paper's SE. Reproduced when both tests give p >= 0.05; the changes are reported either way.
+- id: fig11-slm-inhibition
+  statement: In 12 of 21 Cajal-Retzius cells, stratum lacunosum-moleculare stimulation stops
+    spontaneous firing (9.7 to 0.0 Hz), which then returns to baseline (9.7 Hz).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraphs 1 and 2;
+    Figure 11A
+  quote: stimulation of stratum lacunosum-moleculare decreased spontaneous firing frequency from
+    9.7 �1.9 to 0.0 �0.0 Hz (n �12, p �0.05, Friedman's test with Dunn's post hoc test; ... and
+    then returned to baseline values (9.7 �1.7 Hz, n �12, p �0.05
+  statistics:
+  - about: prestimulus against early poststimulus
+    test: Friedman's test with Dunn's post hoc test
+    p: 0.05
+    p_relation: "<"
+    n: 12 cells
+  - about: prestimulus against late poststimulus
+    test: Friedman's test with Dunn's post hoc test
+    p: 0.05
+    p_relation: ">"
+    n: 12 cells
+  expected:
+  - quantity: cells inhibited by stimulation
+    value: 12
+    tolerance: 1
+    unit: cells of 21
+  - quantity: prestimulus firing frequency, inhibited cells
+    value: 9.7
+    tolerance: 1.9
+    unit: Hz
+  - quantity: early poststimulus firing frequency, inhibited cells
+    value: 0.0
+    tolerance: 0.0
+    unit: Hz
+  - quantity: late poststimulus firing frequency, inhibited cells
+    value: 9.7
+    tolerance: 1.7
+    unit: Hz
+  criterion: Cell-attached action currents with NBQX and D-AP-5 present; rates per Abeles
+    (1982), prestimulus 40-60 ms, early 90-110 ms, late 400-420 ms (Methods). The Dunn
+    comparisons are read as each poststimulus window against prestimulus; the paper does not
+    say which pairs it compared, and the early against late pair is shown as a variant. The
+    paper gives no explicit rule for sorting cells into the inhibited and excited groups; the
+    reading taken is the Figure 11D effect ratio, 0 for inhibitory and above 1 for excitatory
+    responses (legend). Reproduced when the early drop has p < 0.05 and the late window does
+    not differ from prestimulus. The count tolerance is one cell, 10% of 12 (1.2) admitting 11
+    to 13 cells; the same one cell is used for the 9 excited cells, since the two groups split
+    the same 21 recordings and a cell moved from one group moves to the other. The paper
+    leaves out "a few cases in which faster kinetics were observed", without a rule, so the
+    count may not be reproducible from the recordings alone.
+- id: fig11-slm-inhibition-gabazine
+  statement: In gabazine, stratum lacunosum-moleculare stimulation no longer inhibits
+    spontaneous firing of the inhibited group (12.5 Hz before, 7.5 Hz after, 11 Hz recovery).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 2; Figure
+    11A, bottom
+  quote: in the presence of gabazine, stimulation was ineffective and did not inhibit
+    spontaneous firing. Under these experimental conditions, the frequency of spontaneous action
+    currents was 12.5 �1.6 Hz before versus 7.5 �2.7 Hz after stimulation (n �5, p �0.05
+  statistics:
+  - about: prestimulus against early poststimulus, gabazine
+    test: Friedman's test with Dunn's post hoc test
+    p: 0.05
+    p_relation: ">"
+    n: 5 cells
+  - about: prestimulus against late poststimulus, gabazine
+    test: Friedman's test with Dunn's post hoc test
+    p: 0.05
+    p_relation: ">"
+    n: 5 cells
+  expected:
+  - quantity: prestimulus firing frequency in gabazine, inhibited group
+    value: 12.5
+    tolerance: 1.6
+    unit: Hz
+  - quantity: early poststimulus firing frequency in gabazine, inhibited group
+    value: 7.5
+    tolerance: 2.7
+    unit: Hz
+  - quantity: late poststimulus (recovery) firing frequency in gabazine, inhibited group
+    value: 11
+    tolerance: 1.9
+    unit: Hz
+  criterion: A claim of absence, judged on the paper's test, Friedman's test with Dunn's post
+    hoc test at 0.05 over 5 cells, windows as in fig11-slm-inhibition. The 5 cells are
+    recordings of the inhibited group kept in cell-attached mode for gabazine (Results).
+    Tolerances are the paper's SE. Reproduced when neither
+    poststimulus window differs from prestimulus; the changes are reported either way.
+- id: fig11-slm-excitation
+  statement: In 9 of 21 Cajal-Retzius cells, stratum lacunosum-moleculare stimulation
+    transiently increases firing (3.7 to 25.2 Hz), which then returns to 3.0 Hz; in gabazine
+    no action current is recorded.
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 3; Figure
+    11B, 11C
+  quote: Stimulation of stratum lacunosummoleculare transiently increased the frequency of
+    action currents ... from 3.7 �1.6 to 25.2 �6.0 Hz (n �9, p �0.05, Friedman's test with Dunn's
+    post hoc test), which then returned to a frequency of 3.0 �1.4 Hz, similar to before
+    stimulation
+  statistics:
+  - about: prestimulus against early poststimulus
+    test: Friedman's test with Dunn's post hoc test
+    p: 0.05
+    p_relation: "<"
+    n: 9 cells
+  - about: prestimulus against late poststimulus
+    test: Friedman's test with Dunn's post hoc test
+    p: 0.05
+    p_relation: ">"
+    n: 9 cells
+  expected:
+  - quantity: cells excited by stimulation
+    value: 9
+    tolerance: 1
+    unit: cells of 21
+  - quantity: prestimulus firing frequency, excited cells
+    value: 3.7
+    tolerance: 1.6
+    unit: Hz
+  - quantity: early poststimulus firing frequency, excited cells
+    value: 25.2
+    tolerance: 6.0
+    unit: Hz
+  - quantity: late poststimulus firing frequency, excited cells
+    value: 3.0
+    tolerance: 1.4
+    unit: Hz
+  criterion: Windows, comparisons and grouping as in fig11-slm-inhibition. Reproduced when the
+    early increase has p < 0.05, the late window does not differ from prestimulus, and no
+    action current is recorded in gabazine in the 5 cells so tested. Count tolerance one cell,
+    for the reason given in fig11-slm-inhibition.
+- id: fig11d-baseline-frequency-dichotomy
+  statement: Cells inhibited by stimulation fire faster at baseline (10.6 Hz) than cells excited
+    by it (2.8 Hz), giving an L-shaped plot of effect against baseline frequency without
+    intermediate responses.
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 4; Figure
+    11D; for the absence of intermediate responses, Discussion, Implications for the network
+    functions of Cajal-Retzius cells, paragraph 4
+  quote: Cells that were inhibited had a higher frequency of basal spontaneous activity compared
+    with cells that were excited by stimulation. The value of action current frequency for the
+    former group was 10.6 �1.4 Hz compared with 2.8 �1.2 Hz for the latter (Mann-Whitney test, p
+    �0.05, n �21).
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.05
+    p_relation: "<"
+    n: 21 cells (12 inhibited, 9 excited)
+  expected:
+  - quantity: baseline frequency, inhibited cells
+    value: 10.6
+    tolerance: 1.4
+    unit: Hz
+  - quantity: baseline frequency, excited cells
+    value: 2.8
+    tolerance: 1.2
+    unit: Hz
+  criterion: Baseline over the whole prestimulus period, 0-60 ms; effect as the peak of a 5 ms
+    binned time course divided by baseline (Methods). Reproduced when the Mann-Whitney test has
+    p < 0.05 with inhibited cells faster, and no cell has a ratio between 0 and 1 (the
+    legend's inhibitory ratio 0, excitatory ratio above 1). The cell with a 0 Hz baseline that
+    fired after stimulation counts as excitatory with an infinite ratio, as the legend marks
+    it.
+- id: gabazine-baseline-firing
+  statement: Gabazine does not change baseline firing of the cells inhibited by stimulation
+    (10.6 against 12.3 Hz) but abolishes baseline firing of the cells excited by it (2.8 against
+    0.0 Hz).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 4
+  quote: In this group, baseline frequency was 10.6 �1.4 Hz in control conditions (n � 12)
+    compared with 12.3 �1.9 Hz (n �5) in the presence of gabazine (p �0.05, Mann-Whitney U test;
+    ... Baseline frequency of spontaneous action currents was 2.8 �1.2 Hz (n �9) in the absence
+    of the drug versus 0.0 �0.0 (n �5) after its application (p �0.05, Mann-Whitney U test).
+  statistics:
+  - about: inhibited group, control against gabazine
+    test: Mann-Whitney U test
+    p: 0.05
+    p_relation: ">"
+    n: 12 control and 5 gabazine recordings
+  - about: excited group, control against gabazine
+    test: Mann-Whitney U test
+    p: 0.05
+    p_relation: "<"
+    n: 9 control and 5 gabazine recordings
+  expected:
+  - quantity: baseline frequency in gabazine, inhibited group
+    value: 12.3
+    tolerance: 1.9
+    unit: Hz
+  - quantity: baseline frequency in gabazine, excited group
+    value: 0.0
+    tolerance: 0.0
+    unit: Hz
+  criterion: The paper's Mann-Whitney U test at 0.05, unpaired, as written, although the
+    gabazine cells are a subset of the control cells; a paired test on those 5 cells is
+    shown as a variant. The baseline window is open; the Methods give 40-60 ms for the
+    Friedman comparisons and 0-60 ms for Figure 11D, and both are run. The control values
+    (10.6 and 2.8 Hz) are those of Figure 11D, which points to 0-60 ms; 40-60 ms is the
+    variant. Reproduced when the
+    inhibited group shows no difference and the excited group a significant drop to zero.
+- id: fig12a-slow-conductance-depolarized
+  statement: At about -45 mV, injecting a slow synaptic conductance does not increase firing
+    immediately (7.2 against 8.2 Hz) but inhibits it later (0.3 Hz).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 5; Figure
+    12A, top
+  quote: the injection of a synaptic waveform did not lead to immediate increased firing (basal
+    frequency before the conductance injection was 7.2 �0.6 vs 8.2 �0.6 Hz immediately after, n
+    �17, p �0.05, ... However, a clear inhibition of spiking was evident at later times (0.3 �0.3
+    Hz, n �17, p �0.05
+  statistics:
+  - about: before against immediately after
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: ">"
+    n: 17 recordings
+  - about: before against later
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 17 recordings
+  expected:
+  - quantity: firing before conductance
+    value: 7.2
+    tolerance: 0.6
+    unit: Hz
+  - quantity: firing immediately after
+    value: 8.2
+    tolerance: 0.6
+    unit: Hz
+  - quantity: firing later
+    value: 0.3
+    tolerance: 0.3
+    unit: Hz
+  criterion: Dynamic clamp, slow conductance from Figure 11 recordings, reversal -30 mV, 10 ms
+    test pulses at 10 Hz; windows 40-60 ms against 60-80 ms and 100-120 ms (Methods).
+    Comparisons read as each window against before. Reproduced when the immediate window does
+    not differ (p >= 0.05) and the later window is lower with p < 0.05.
+- id: fig12a-slow-conductance-hyperpolarized
+  statement: At about -50 mV, the same slow conductance excites the cell immediately (8.6 to
+    35.8 Hz), followed by inhibition (0.0 Hz).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 5; Figure
+    12A, bottom
+  quote: Basal frequency before the conductance injection was 8.6 �0.4 versus 35.8 �3.7 Hz
+    immediately after (n �14, p � 0.05, ... Excitation was followed by inhibition at later times
+    (0.0 �0.0 Hz, n �14, p �0.05
+  statistics:
+  - about: before against immediately after
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 14 recordings
+  - about: before against later
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 14 recordings
+  expected:
+  - quantity: firing before conductance
+    value: 8.6
+    tolerance: 0.4
+    unit: Hz
+  - quantity: firing immediately after
+    value: 35.8
+    tolerance: 3.7
+    unit: Hz
+  - quantity: firing later
+    value: 0.0
+    tolerance: 0.0
+    unit: Hz
+  criterion: As in fig12a-slow-conductance-depolarized. Reproduced when both comparisons have p
+    < 0.05, with an increase then a decrease.
+- id: fig12b-fast-conductance-depolarized
+  statement: At about -45 mV, a fast conductance derived from stratum oriens stimulation
+    excites the cell (7.0 to 45.5 Hz), then inhibits it (0.7 Hz).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 6; Figure
+    12B
+  quote: prestimulation frequency of firing was 7.0 �0.8 Hz, immediately followed by excitation
+    (as indicated by a frequency of 45.5 �5.8 Hz, n �17, p �0.05, ... later inhibition (0.7 �0.3
+    Hz, n �17, p �0.05
+  statistics:
+  - about: before against immediately after
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 17 recordings
+  - about: before against later
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 17 recordings
+  expected:
+  - quantity: firing before conductance
+    value: 7.0
+    tolerance: 0.8
+    unit: Hz
+  - quantity: firing immediately after
+    value: 45.5
+    tolerance: 5.8
+    unit: Hz
+  - quantity: firing later
+    value: 0.7
+    tolerance: 0.3
+    unit: Hz
+  criterion: Fast conductance from Figure 9 recordings, same reversal and amplitude as the slow
+    one; windows 50-60 ms against 60-70 ms and 100-110 ms (Methods). Reproduced when both
+    comparisons have p < 0.05, with an increase then a decrease.
+- id: fig12b-fast-conductance-hyperpolarized
+  statement: At about -50 mV, the fast conductance also excites the cell (7.9 to 74.1 Hz), then
+    inhibits it (1.3 Hz).
+  source: Results, Inhibitory/excitatory effect of evoked GABAergic input, paragraph 6; Figure
+    12B
+  quote: basal frequency (7.9 �0.7 Hz) was followed by immediate excitation (74.1 �7.5 Hz, n �15,
+    p �0.05, ... and later inhibition (01.3 �0.5 Hz, n �15, p �0.05
+  statistics:
+  - about: before against immediately after
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 15 recordings
+  - about: before against later
+    test: Friedman's test with Dunn's multiple comparison post hoc correction
+    p: 0.05
+    p_relation: "<"
+    n: 15 recordings
+  expected:
+  - quantity: firing before conductance
+    value: 7.9
+    tolerance: 0.7
+    unit: Hz
+  - quantity: firing immediately after
+    value: 74.1
+    tolerance: 7.5
+    unit: Hz
+  - quantity: firing later
+    value: 1.3
+    tolerance: 0.5
+    unit: Hz
+  criterion: As in fig12b-fast-conductance-depolarized. The later value is printed "01.3" and is
+    read as 1.3 Hz. Reproduced when both comparisons have p < 0.05, with an increase then a
+    decrease.
+- id: no-age-dependence
+  statement: Within the P10 to P19 range, postnatal age does not correlate significantly with
+    the amplitude or kinetics of synaptic events, nor with the responses to stimulation or
+    the voltage dependence of the conductance-clamp results.
+  source: Materials and Methods, Animals, paragraph 3
+  quote: Within our datasets, we did not find any significant correlation between the postnatal
+    age of the animals used to prepare slices and the measured amplitude/kinetics of synaptic
+    events (spontaneous, evoked, or unitary).
+  criterion: A claim of absence whose test the paper does not name. The paper says "stratum
+    radiatum stimulation", but its stimulation experiments (Figure 11) stimulate stratum
+    lacunosum-moleculare, so the Figure 11 responses are the ones tested. The readings are (a)
+    Pearson and (b) Spearman correlation of each measure with postnatal day, at 0.05.
+    Reproduced when neither reading finds a significant correlation for any measure; the
+    coefficients are reported either way.
+checks:
+- date: 2026-11-04
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig7a-olm-sag, criterion made consistent with the protocol (the outcome is the one both readings give, the author adopts one as an assumption if they differ); it now says the paper does not name which data set cell is in Figure 7A or 7D, and that the 7D similarity is judged by the sag, the feature the legends point to.
+  - fig1-spontaneous-amplitude, criterion now names the open detection settings and marks the per-cell average as a reading of n = 14 cells and the SE over cells, with pooled events as a variant.
+  - fig6-spontaneous-larger-than-unitary and fig6-spontaneous-faster-than-unitary, source given the full section name; criteria note that the Results and the Figure 6A legend differ on whose firing is absent (legend taken), that the stretch searched for Amax is open, that the ratios are means of per-pair ratios (66 is far above 237/5), and that 20-80% rise time for spontaneous events is a reading.
+  - fig7-chr2-olm-light-firing, statement said light-activated currents in all nine cells; the paper says "in all interneurons tested", without saying how many were tested in voltage clamp.
+  - fig8-light-evoked-psc, criterion now gives 20-80% rise time from the Figure 9D legend and names the averaging of events as open, with the Methods rule for evoked oPSCs taken.
+  - fig10-reduced-slice-no-effect, expected values added for the four means the paper reports, with its SE as tolerance.
+  - fig11-slm-inhibition, the count tolerance reason was wrong (10% of 12 rounded up is 2, not 1); restated, and the same one cell justified for the excited group. The grouping rule (Figure 11D ratio) is named as a reading, and the late value 9.7 Hz added to expected.
+  - fig11-slm-inhibition-gabazine, expected values added (12.5, 7.5 and 11 Hz with SE).
+  - fig11-slm-excitation, late value 3.0 Hz added to expected; tolerance reason cited.
+  - fig11d-baseline-frequency-dichotomy, source now cites the Discussion for the absence of intermediate responses; criterion says how the 0 Hz baseline cell is counted, as the legend marks it.
+  - gabazine-baseline-firing, criterion notes that the control values match Figure 11D, which points to the 0-60 ms baseline.
+  - no-age-dependence, criterion notes the paper's "stratum radiatum stimulation", which matches no experiment in the paper; the Figure 11 responses are taken.
+  - Open, the PDF could not be parsed here, so the signs =, <, > and minus in the extracted text remain unread; each p_relation was checked against the wording of its sentence and all agree, but none was checked against the printed sign. The sign of the -30 mV reversal used in Figure 12 is read the same way.
+  - Open, paragraph numbers in the sources are inferred from the extracted text, whose paragraph breaks are not always visible.

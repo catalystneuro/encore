@@ -1,0 +1,1137 @@
+# Claims for Boran, Fedele, Klaver, Hilfiker, Stieglitz, Grunwald & Sarnthein (2019), Science
+# Advances 5, eaav3687, on dandiset 000574.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record as served by Europe PMC (PMC6436923), in
+# paper/10.1126-sciadv.aav3687.txt, with its Results, figure legends and Methods, and the
+# supplement aav3687_SM.pdf (figs. S1 to S6, table S1 and table S2, the statistics checklist)
+# extracted into the same file. Table S1 is garbled by the extraction; it was read by its column
+# order (subject, diagnosis, age, hemisphere of the hippocampal electrode with maximal PLV,
+# tissue SOZ or non-SOZ, scalp electrode with maximal PLV, PLV peak frequency, individual PLV
+# band, maximal PLV, PLV workload dependent and its band, PLV maintenance against encoding,
+# EEG workload dependent, iEEG workload dependent, then the median band limits), and the
+# medians it prints (6.0 to 11.5 Hz, 7.8 to 10.0 Hz) were recomputed from the rows to confirm
+# the reading. The supplement PDF page could not be rendered in this run. Movie S1 was not read.
+# The data descriptor for the deposit (Boran et al. 2020, Sci Data 7, 30,
+# doi:10.1038/s41597-020-0364-3, paper/10.1038-s41597-020-0364-3.txt) was read for the
+# description of the deposited data; it repeats the behavior and spike sorting numbers.
+#
+# Code read: the paper links no analysis code ("Additional data related to this paper may be
+# requested from the authors"). It links the task (Presentation,
+# www.neurobs.com/ex_files/expt_view?id=266, not read; stimulus software) and Combinato
+# (spike sorting, run before the data were deposited). The data descriptor names the G-Node
+# deposit doi:10.12751/g-node.d76994
+# (gin.g-node.org/USZ_NCH/Human_MTL_units_scalp_EEG_and_iEEG_verbal_WM, master at commit
+# 0b27b34ecd0da217e4403bdd080b4a0d78f155fd, read 2026-10-23). Its code_MATLAB folder holds one
+# script, Load_Data_Example_Script.m, which only reads and plots the NIX files (metadata, iEEG,
+# scalp EEG, trial events, spike times, waveforms, electrode MNI coordinates). No analysis
+# method below is settled by code. The dandiset's related resources name the GIN deposit as
+# a variant form of it and the conversion code (github.com/janhohenheim/usz-neuro-conversion),
+# which was not read.
+#
+# Data the paper used: nine epilepsy patients (table S1; ages 24, 39, 18, 28, 20, 31, 47, 56
+# and 19 for subjects 1 to 9, which match Table 1 of the data descriptor, so subject numbers
+# are the same in both papers) with depth electrodes in hippocampus, entorhinal cortex and
+# amygdala, each with nine microwires at its tip; 36 sessions in total (up to seven per
+# subject), 50 trials per session. Task: modified Sternberg task. Fixation [-6, -5] s;
+# encoding [-5, -3] s, a string of eight consonants of which the middle 4, 6 or 8 are the
+# memory items (set size; the outer positions are X); maintenance [-3, 0] s; probe letter at
+# 0 s, answered IN or OUT by button press, then acoustic feedback. Times are relative to probe
+# onset throughout the paper. An error trial is always followed by a set size 4 trial.
+# Measured variables: per trial set size, match (IN) or mismatch (OUT), correct or incorrect,
+# response and response time; spike times and mean waveforms of 1526 sorted units (putative
+# neurons) in hippocampus (676), entorhinal cortex (449) and amygdala (401), units seen in more
+# than one session counted once per session; iEEG from the macroelectrodes (recorded at 4 kHz
+# against a common intracranial reference, analysed as one bipolar signal per macroelectrode
+# from its deepest contacts; deposited at 2 kHz per the data descriptor); scalp EEG on the
+# 10-20 system (recorded at 256 Hz, re-referenced to averaged mastoids; deposited at 200 Hz);
+# local field potentials of the microwires (used for spike-field coherence; the data
+# descriptor does not list them among the deposited data); electrode MNI coordinates,
+# anatomical labels and seizure onset zone (SOZ) electrodes. Trials with eye movements or
+# artifacts were removed by visual inspection (the data descriptor lists trial rejection
+# information per trial).
+#
+# Definitions used throughout, from the Methods unless a claim says otherwise:
+# - Unless a claim says otherwise, the neuron analyses use correct trials only (Results,
+#   Single-unit electrophysiology, paragraph 2).
+# - "Permutation t test" is the EEGLAB test that mixes values of the two distributions 2000
+#   times and takes P from the resulting t values (Methods, Statistics). Firing rates and power
+#   spectra are compared with cluster-based nonparametric permutation tests as in FieldTrip.
+#   A "permutation test against scrambled data" builds a null from n > 200 label-scrambled
+#   repetitions, with minimum P = 1/(n + 1).
+# - High workload is set sizes 6 and 8 pooled and low workload set size 4 for the neuron
+#   analyses (Fig. 2 and Fig. 4E); the EEG, iEEG and PLV analyses compare set size 8 with set
+#   size 4 (Fig. 5 and Fig. 6).
+#
+# Details the paper leaves open and that apply to several claims:
+# - Paired or unpaired permutation t test for comparisons of periods within the same trials.
+#   Readings (a) paired over trials, (b) unpaired. A difference counts in the named direction
+#   when two-sided P < 0.05 and the mean is higher in the named period.
+# - The number of label-scrambled repetitions behind "permutation test against scrambled
+#   data". The printed P = 0.002 is the minimum for 499 repetitions (Methods, Statistics),
+#   while table S2 gives 1000 resampling runs for Fig. 2B, 2C and 3E. Both are run; this can
+#   only move a P near 0.05.
+# - Correct trials only, or all artifact-free trials, for the EEG, iEEG and PLV analyses. The
+#   rule "unless stated otherwise ... only trials with correct responses" is stated in the
+#   neuron section. Readings (a) correct trials only, (b) all artifact-free trials.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000574"
+paper: doi:10.1126/sciadv.aav3687
+claims:
+- id: behavior-accuracy-set-size
+  statement: >-
+    Correct response rates were 90.2 +/- 7.8% for IN and 93.1 +/- 4.3% for OUT trials, and the
+    rate of correct responses decreased with set size, from 98.5% (set size 4) to 90.5% (6) and
+    84.7% (8), a significant effect in a permuted repeated-measures ANOVA over 36 sessions.
+  source: Results, Task and behavior, paragraph 2; Figure 1B
+  quote: >-
+    The average correct response rates were 90.2 ± 7.8% for IN and 93.1 ± 4.3% for OUT. The rate
+    of correct responses decreased with set size from a set size of 4 (98.5% correct responses)
+    to set sizes of 6 (90.5%) and 8 (84.7%)
+  statistics:
+  - test: permuted repeated-measures ANOVA
+    statistic: F(2, 70) = 40.25
+    p: 0.0002
+    n: 36 sessions from nine subjects
+  expected:
+  - quantity: correct rate, IN trials
+    value: 90.2
+    tolerance: 7.8
+    unit: '%'
+  - quantity: correct rate, OUT trials
+    value: 93.1
+    tolerance: 4.3
+    unit: '%'
+  - quantity: correct rate, set size 4
+    value: 98.5
+    tolerance: 9.85
+    unit: '%'
+  - quantity: correct rate, set size 6
+    value: 90.5
+    tolerance: 9.05
+    unit: '%'
+  - quantity: correct rate, set size 8
+    value: 84.7
+    tolerance: 8.47
+    unit: '%'
+  - quantity: ANOVA F value
+    value: 40.25
+    tolerance: 4.03
+  criterion: >-
+    All trials of the 36 sessions. The IN and OUT tolerances are the SD the paper gives;
+    the others are 10%. Open, how percentages are formed; readings (a) the mean of
+    per-session percentages (Fig. 1B shows sessions), (b) trials pooled over sessions. The
+    ANOVA has set size as the within factor and session as the unit (F with 2 and 70 degrees
+    of freedom); its permutation scheme is not given, and the reading is set-size labels
+    shuffled within each session, 4999 permutations (P = 0.0002 as 1/(n + 1), Methods,
+    Statistics). Reproduced when, under one reading, all values are within tolerance, the
+    order 4 above 6 above 8 holds and the ANOVA has P < 0.05.
+- id: behavior-capacity
+  statement: >-
+    Across all sessions the working memory capacity (Cowan's K) averaged 6.8 letters.
+  source: Results, Task and behavior, paragraph 2
+  quote: >-
+    Across all sessions, the capacity averaged 6.8 [Cowan's K , (correct IN rate + correct OUT
+    rate − 1) × set size]
+  expected:
+    quantity: mean Cowan's K over sessions
+    value: 6.8
+    tolerance: 0.68
+  criterion: >-
+    K = (correct IN rate + correct OUT rate - 1) x set size, per session, as the Results define
+    it, averaged over the 36 sessions. Open, which set size and rates enter; readings (a) K at
+    set size 8 from the set size 8 rates, (b) the maximum of K over the three set sizes,
+    (c) the rates pooled over all set sizes multiplied by 8, the largest set size, (d) the mean
+    of K over the three set sizes. Reproduced when one reading is within tolerance.
+- id: behavior-rt-workload
+  statement: >-
+    The mean response time of correct trials (1630 trials) increased with workload, by 48 ms
+    per item, a significant effect in a permuted repeated-measures ANOVA.
+  source: Results, Task and behavior, paragraph 2; Figure 1C
+  quote: >-
+    The mean response time (RT) for the correct trials (1630 trials) increased with workload (48
+    ms per item; permuted repeated-measures ANOVA, F 2,2007 = 21.10, P = 0.0002; Fig. 1C )
+  statistics:
+  - test: permuted repeated-measures ANOVA
+    statistic: F(2, 2007) = 21.10
+    p: 0.0002
+    n: 1630 correct trials
+  expected:
+  - quantity: correct trials
+    value: 1630
+    tolerance: 163
+  - quantity: increase of RT per item
+    value: 48
+    tolerance: 4.8
+    unit: ms
+  - quantity: ANOVA F value
+    value: 21.10
+    tolerance: 2.11
+  criterion: >-
+    RT relative to probe onset (Fig. 1C legend), correct trials. Table S2 (Fig. 1c) names the
+    test a permutation ANOVA with n the number of trials (1630) and df = (2, 2007), so the
+    ANOVA is run on trials with set size as factor (one-way, permuted set-size labels). The F
+    has 2007 error degrees of freedom, which does not fit the 1630 trials; its F is reported.
+    Open, how 48 ms per item is
+    obtained; readings (i) the slope of a line fit over all correct trials, (ii) the mean over
+    sessions of per-session slopes, (iii) the slope over the three set-size means, (iv) the
+    difference between set sizes 8 and 4 divided by 4. Open, per-session value for reading
+    (ii), mean RT (the text) or median RT (Fig. 1C). Reproduced when RT rises with set
+    size, the ANOVA has P < 0.05, and under one reading the slope and the
+    trial count are within tolerance. The F value is reported, not judged, since its degrees
+    of freedom cannot be matched to a stated design.
+- id: behavior-rt-correct-incorrect
+  statement: >-
+    Correct IN/OUT decisions were made faster than incorrect ones (1.36 +/- 0.64 s against
+    1.87 +/- 1.21 s).
+  source: Results, Task and behavior, paragraph 2
+  quote: >-
+    Correct IN/OUT decisions were made more rapidly than incorrect decisions (1.36 ± 0.64 s
+    versus 1.87 ± 1.21 s, respectively; permutation t test, t = 5.06, P = 5.0 × 10 −5 )
+  statistics:
+  - test: permutation t test
+    statistic: t = 5.06
+    p: 5.0e-5
+  expected:
+  - quantity: mean RT, correct trials
+    value: 1.36
+    tolerance: 0.64
+    unit: s
+  - quantity: mean RT, incorrect trials
+    value: 1.87
+    tolerance: 1.21
+    unit: s
+  criterion: >-
+    RT relative to probe onset. The tolerances are the SDs the paper gives. Readings (a) all trials pooled, mean +/- SD over trials,
+    unpaired permutation t test; (b) per-session means, paired over sessions with at least
+    one error. The permutation t test as in Methods, Statistics (2000 permutations; the
+    printed P implies more, which only moves the minimum P). Reproduced when, under one
+    reading, both means are within tolerance and correct RT is shorter with P < 0.05.
+- id: neurons-recorded
+  statement: >-
+    1526 neurons were recorded (51 +/- 35 per session), 676 in hippocampus, 449 in entorhinal
+    cortex and 401 in amygdala.
+  source: Results, Single-unit electrophysiology, paragraph 1
+  quote: >-
+    We recorded the activity of 1526 (51 ± 35 per session) neurons from the hippocampus ( n =
+    676), entorhinal cortex ( n = 449), and amygdala ( n = 401) across all microelectrodes
+  expected:
+  - quantity: neurons
+    value: 1526
+    tolerance: 0
+  - quantity: hippocampal neurons
+    value: 676
+    tolerance: 0
+  - quantity: entorhinal neurons
+    value: 449
+    tolerance: 0
+  - quantity: amygdala neurons
+    value: 401
+    tolerance: 0
+  - quantity: neurons per session, mean
+    value: 51
+    tolerance: 5.1
+  criterion: >-
+    Counts of sorted units over all sessions, a unit seen in several sessions counted once per
+    session (Results, same paragraph). The counts are exact, since they describe the deposited
+    units; a difference is reported with its size. Hippocampus is the hippocampal head and body
+    electrodes (AH and PH in the data descriptor's Table 1), entorhinal cortex EC, amygdala A.
+    Open, the sessions in the per-session mean (1526 over 36 sessions is 42); readings (a) all
+    36 sessions, (b) sessions with at least one unit.
+- id: spike-sorting-quality
+  statement: >-
+    The mean firing rate of all neurons was 2.55 +/- 3.30 Hz; the percentage of interspike
+    intervals below 3 ms was 1.58 +/- 4.18%, and the ratio of the peak of the mean waveform to
+    the SD of the noise was 3.28 +/- 1.56.
+  source: >-
+    Results, Single-unit electrophysiology, paragraph 1; Methods, Spike detection and
+    single-unit identification; fig. S1
+  quote: >-
+    The percentage of ISI below 3 ms was 1.58 ± 4.18%, and the ratio of the peak amplitude of the
+    mean waveform to the SD of the noise was 3.28 ± 1.56
+  expected:
+  - quantity: mean firing rate over neurons
+    value: 2.55
+    tolerance: 3.30
+    unit: Hz
+  - quantity: percentage of ISI below 3 ms, mean over neurons
+    value: 1.58
+    tolerance: 4.18
+    unit: '%'
+  - quantity: waveform peak SNR, mean over neurons
+    value: 3.28
+    tolerance: 1.56
+  criterion: >-
+    Over all 1526 units. The tolerances are the SDs the paper gives. Open, the time base of the firing rate; readings (a) spikes over the
+    total duration of the task trials, (b) over the whole session. Open, the noise SD of the
+    SNR; readings (a) the mean over samples of the deposited waveform SD, (b) the waveform SD
+    at the first samples of the 2 ms window. Reproduced when, under one reading, all three
+    means are within tolerance.
+- id: fig2b-maintenance-neurons-hippocampus
+  statement: >-
+    Neurons with higher firing during maintenance than fixation (maintenance neurons) occurred
+    in all three areas, most frequently in hippocampus, where 20.6% of the recorded neurons
+    were maintenance neurons.
+  source: Results, Single-unit electrophysiology, paragraph 2; Figure 2B; table S2 (Fig. 2b)
+  quote: >-
+    We identified maintenance neurons in all recorded areas ( Fig. 2B ); however, they occurred
+    most frequently within the hippocampus (χ 2 1 = 47.30, P = 6.1 × 10 −12 ), where 20.6% of all
+    recorded neurons were maintenance neurons (permutation test against scrambled data, P =
+    0.002)
+  statistics:
+  - about: hippocampus against the other areas
+    test: chi-square test
+    statistic: chi2(1) = 47.30
+    p: 6.1e-12
+  - about: percentage of maintenance neurons in each area against scrambled data
+    test: permutation test against scrambled data
+    p: 0.002
+    n: 1000 resampling runs (table S2), P = 0.002 for each of the three areas
+  expected:
+  - quantity: maintenance neurons, percentage of hippocampal neurons
+    value: 20.6
+    tolerance: 2.06
+    unit: '%'
+  - quantity: chi-square value
+    value: 47.30
+    tolerance: 4.73
+  criterion: >-
+    Correct trials. A maintenance neuron has a higher firing rate in maintenance (-3 to 0 s)
+    than in fixation (-6 to -5 s) (fig. S2 legend) by a permutation t test (Results; Methods,
+    Statistics), on per-trial rates, paired and unpaired as named in the opening comment,
+    P < 0.05. Per area, the count is compared with a null from shuffling the maintenance and
+    fixation labels within each trial and rerunning the selection ("permuted labels", Fig. 2
+    legend; the labels are not named, and the period labels are the only labels of this
+    selection), at both numbers of repetitions. The chi-square has 1 degree of freedom; readings
+    (a) a 2 x 2 table of hippocampus against entorhinal cortex and amygdala pooled, without
+    continuity correction, (b) the same with Yates correction. Reproduced when, under one
+    reading of each open detail, the hippocampal percentage is the highest of the three areas
+    and within tolerance, the chi-square has P < 0.05, and the hippocampal count exceeds the
+    null at P < 0.05; partially reproduced when hippocampus is highest and significant but the
+    percentage is outside tolerance.
+- id: fig2c-load-dependent-maintenance-neurons
+  statement: >-
+    During maintenance, 15% of hippocampal maintenance neurons (21 neurons) increased their
+    firing rate with workload (set size 4 against set sizes 6 and 8), a significant percentage
+    against scrambled data; the percentage was not significant in entorhinal cortex or
+    amygdala.
+  source: Results, Single-unit electrophysiology, paragraph 2; Figure 2C; table S2 (Fig. 2c)
+  quote: >-
+    During maintenance, a subset of maintenance neurons in the hippocampus (15%, 21 neurons;
+    permutation test against scrambled data, P = 0.002) increased their firing rates
+    systematically with workload (set size 4 versus set sizes 6 and 8; Fig. 2C )
+  statistics:
+  - about: hippocampus against scrambled data
+    test: permutation test against scrambled data
+    p: 0.002
+  - about: entorhinal cortex and amygdala against scrambled data
+    test: permutation test against scrambled data
+    p: 0.05
+    p_relation: ">"
+    n: table S2 prints n.s. for both
+  expected:
+  - quantity: load-dependent hippocampal maintenance neurons
+    value: 21
+    tolerance: 2.1
+  - quantity: percentage of hippocampal maintenance neurons
+    value: 15
+    tolerance: 1.5
+    unit: '%'
+  depends_on:
+  - fig2b-maintenance-neurons-hippocampus
+  criterion: >-
+    Maintenance neurons from fig2b-maintenance-neurons-hippocampus, correct trials, maintenance
+    -3 to 0 s. The test of load dependence is not named; readings (a) a permutation t test of
+    per-trial maintenance rates, set size 4 against 6 and 8 (Methods, Statistics, for two
+    distributions), (b) a cluster-based nonparametric permutation test on the firing rate over
+    the maintenance period, 500 ms bins at 20 ms steps (Fig. 2A legend; Methods, Statistics,
+    for firing rates), each at P < 0.05 with the rate higher for 6 and 8. The null shuffles set
+    size labels across trials and reruns the test ("permuted labels", Fig. 2 legend), at both
+    numbers of repetitions. Reproduced when, under one reading, the hippocampal count is within
+    tolerance and significant at P < 0.05 and neither other area is significant; partially
+    reproduced when hippocampus is significant but the count is outside tolerance or another
+    area is significant too.
+- id: fig3e-probe-neurons-entorhinal
+  statement: >-
+    Neurons firing specifically after the probe letter (probe neurons) occurred in all areas,
+    most prominently in entorhinal cortex, where 9% of neurons (41) were probe neurons.
+  source: Results, Single-unit electrophysiology, paragraph 3; Figure 3E; table S2 (Fig. 3e)
+  quote: >-
+    We identified probe neurons in all areas and, most prominently, in the entorhinal cortex (χ 2
+    1 = 23.16, P = 1.5 × 10 −6 ; Fig. 3E ), in which 9% of neurons were probe neurons (41
+    neurons; permutation test against scrambled data, P = 0.001)
+  statistics:
+  - about: entorhinal cortex against the other areas
+    test: chi-square test
+    statistic: chi2(1) = 23.16
+    p: 1.5e-6
+  - about: percentage of probe neurons in each area against scrambled data
+    test: permutation test against scrambled data
+    p: 0.001
+    n: 1000 resampling runs (table S2), P = 0.001 for each of the three areas
+  expected:
+  - quantity: entorhinal probe neurons
+    value: 41
+    tolerance: 4.1
+  - quantity: chi-square value
+    value: 23.16
+    tolerance: 2.32
+  criterion: >-
+    Correct trials. A probe neuron has a higher firing rate after the probe than in encoding
+    (-5 to -3 s) and than in maintenance (-3 to 0 s), each by a permutation t test at P < 0.05
+    (Results, same paragraph). The probe window is not given; readings (a) 0 to 1 s after probe
+    onset, (b) probe onset to the button press of each trial (the probe is shown until the
+    response, Methods, Task), (c) -500 to 0 ms relative to the button press, the window used
+    for retrieval decoding (Fig. 4F legend). Paired and unpaired as in the opening
+    comment. Null and chi-square readings as in fig2b-maintenance-neurons-hippocampus, with
+    entorhinal cortex against the other two areas. Reproduced when, under one reading,
+    entorhinal cortex has the highest percentage, its count is within tolerance, the
+    chi-square has P < 0.05 and the entorhinal count exceeds the null at P < 0.05.
+- id: fig3-probe-onset-not-movement
+  statement: >-
+    Peak firing of probe neurons was higher when aligned to probe onset than when aligned to
+    the button press (5.47 +/- 4.97 Hz against 4.28 +/- 4.37 Hz), so their firing reflects the
+    probe stimulus more than movement preparation.
+  source: Results, Single-unit electrophysiology, paragraph 4; Figure 3A and 3B
+  quote: >-
+    Aligning the response with the probe stimulus onset resulted in significantly higher peak
+    firing rates (mean for all probe neurons, 5.47 ± 4.97 Hz versus 4.28 ± 4.37 Hz; permutation t
+    test, t 75 = 4.40, P = 0.0005
+  statistics:
+  - test: permutation t test
+    statistic: t(75) = 4.40
+    p: 0.0005
+    n: 76 probe neurons (from the degrees of freedom)
+  expected:
+  - quantity: mean peak rate, probe aligned
+    value: 5.47
+    tolerance: 4.97
+    unit: Hz
+  - quantity: mean peak rate, button aligned
+    value: 4.28
+    tolerance: 4.37
+    unit: Hz
+  depends_on:
+  - fig3e-probe-neurons-entorhinal
+  criterion: >-
+    All probe neurons of fig3e-probe-neurons-entorhinal (76 by the reported degrees of freedom
+    and by 8 neurons being 10.5%). Per neuron, the maximum of the trial-averaged rate in 200 ms
+    bins at 20 ms steps (Fig. 3 legend) after each alignment; the tolerances are the SDs the
+    paper gives; paired permutation t test over
+    neurons (Methods, Statistics). Open, the window of the maximum; readings (a) 0 to 1 s after
+    the alignment event, (b) 1 s before to 1 s after it. Reproduced when, under one reading,
+    the probe-aligned peak is higher with P < 0.05 and both means are within tolerance;
+    partially reproduced when the direction and test hold but a mean is outside tolerance.
+- id: fig3-probe-neurons-few-task-specific
+  statement: >-
+    Only a few probe neurons reflected the decision (8 neurons, 10.5% of probe neurons, IN
+    against OUT), and only one showed workload dependence.
+  source: Results, Single-unit electrophysiology, paragraph 4; Figure 3A to 3D
+  quote: >-
+    However, only a small number of probe neurons (eight neurons, 10.5% of probe neurons)
+    reflected the subject's decision (IN versus OUT; Fig. 3 , A and B), and only one neuron
+    showed workload dependence
+  expected:
+  - quantity: probe neurons with IN/OUT difference
+    value: 8
+    tolerance: 0.8
+  - quantity: percentage of probe neurons with IN/OUT difference
+    value: 10.5
+    tolerance: 1.05
+    unit: '%'
+  - quantity: probe neurons with workload dependence
+    value: 1
+    tolerance: 1
+  depends_on:
+  - fig3e-probe-neurons-entorhinal
+  criterion: >-
+    Probe neurons from fig3e-probe-neurons-entorhinal. IN against OUT, and set size 4 against 6
+    and 8, by a cluster-based nonparametric permutation test at P < 0.05 on the rate in 200 ms
+    bins at 20 ms steps after probe onset (Fig. 3A and 3C legends). The time range tested is
+    not given; readings (a) 0 to 1 s after probe onset, (b) 0 to 2 s. Reproduced when, under
+    one reading, both counts are within tolerance (a count of one may be 0 to 2, as 10% of one
+    neuron cannot be judged); partially reproduced when one holds.
+- id: fig4a-dpca-workload-separation
+  statement: >-
+    The first three demixed principal components of the population firing rates explained
+    44.7% of the variance and separated set sizes 4, 6 and 8, with three angles of 120 degrees
+    in the dPC2-dPC3 plane; the first 15 components explained 79%.
+  source: Results, Attractors in neural population dynamics, paragraph 1; Figure 4A; fig. S3
+  quote: >-
+    We formed a three-dimensional space from the first three demixed principal components (dPCs
+    1, 2, and 3, explaining 44.7% of the variance; Fig. 4A , fig. S3, and movie S1). dPCA
+    distinguished between workloads 4, 6, and 8.
+  expected:
+  - quantity: variance explained by dPCs 1 to 3
+    value: 44.7
+    tolerance: 4.47
+    unit: '%'
+  - quantity: variance explained by the first 15 dPCs
+    value: 79
+    tolerance: 7.9
+    unit: '%'
+  - quantity: angles between set-size trajectories in the dPC2-dPC3 plane, maintenance
+    value: 120
+    tolerance: 12
+    unit: degrees
+  criterion: >-
+    dPCA (Kobak et al. 2016) of all neurons, correct trials, trial-averaged per set size, from
+    spikes in 2 ms bins smoothed with a 1000 ms Gaussian kernel and z-scored to the fixation
+    period (Methods, dPCA of firing rates), with time and set-size marginalizations, components
+    ordered by explained variance. Open, the scale of the z-score; readings (a) mean and SD of
+    the fixation rate, (b) fixation mean and SD over the whole trial. Open, the dPCA
+    regularization; readings (a) the toolbox's cross-validated lambda, (b) none. Angles are
+    those at the centroid between the three set-size points of the dPC2-dPC3 projection,
+    averaged over maintenance. Reproduced when, under one reading, both variances and all three
+    angles are within tolerance; partially reproduced when the set sizes separate (all
+    pairwise maintenance distances exceed those of label-shuffled dPCA runs) but a value is
+    outside tolerance.
+- id: fig4b-speed-lowest-maintenance
+  statement: >-
+    In the dPCA state space, the speed of the population trajectory was highest during
+    encoding and lowest during maintenance, lower than in each other trial period, including
+    fixation.
+  source: Results, Attractors in neural population dynamics, paragraph 2; Figure 4B
+  quote: >-
+    The speed was highest during encoding, when maintenance neurons ramped up their firing. By
+    contrast, speed was lowest during maintenance (permutation t test against the other trial
+    periods, P = 0.0005)
+  statistics:
+  - test: permutation t test against the other trial periods
+    p: 0.0005
+    n: 200 dPCA runs on 20% subsamples (Methods); 2000 permutations (table S2)
+  depends_on:
+  - fig4a-dpca-workload-separation
+  criterion: >-
+    The dPCA of fig4a-dpca-workload-separation, first 15 dPCs (Fig. 4 legend). Speed V(t) as
+    Methods equation 2 with step 20 ms, averaged over set sizes and over each period; 200 runs
+    of dPCA on neural trajectories subsampled at 20% with replacement (Methods). Periods
+    fixation -6 to -5 s, encoding -5 to -3 s, maintenance -3 to 0 s; the retrieval window is
+    not given; readings (a) 0 to 1 s after probe onset, (b) 0 to 2 s. Permutation t test of the
+    per-run maintenance speeds against each other period. Open, the number of runs; the Methods
+    give 200 dPCA runs and table S2 (Fig. 4b, 4c) gives n = 2000 "nr of runs"; both are run.
+    Reproduced when, under one
+    reading, maintenance speed is below each other period with P < 0.05 and encoding speed is
+    the highest; partially reproduced when maintenance is lowest but encoding is not highest.
+- id: fig4c-distance-largest-maintenance
+  statement: >-
+    The pairwise distance between the trajectories of different set sizes was larger during
+    maintenance than during encoding, and the largest of the trial periods.
+  source: Results, Attractors in neural population dynamics, paragraph 2; Figure 4C
+  quote: >-
+    Analyzing the pairwise distance between trajectories that corresponded to different set
+    sizes, we found that the distances during maintenance were larger than during encoding
+    (permutation t test, P = 0.0005; Fig. 4C )
+  statistics:
+  - test: permutation t test
+    p: 0.0005
+  depends_on:
+  - fig4a-dpca-workload-separation
+  criterion: >-
+    As fig4b-speed-lowest-maintenance, with distance from Methods equation 1 between each of
+    the three pairs of set-size trajectories, averaged over pairs and over each period, 200
+    or 2000 subsampled runs (as there). Reproduced when, under one reading, maintenance distance exceeds encoding
+    distance with P < 0.05 and is the largest of the four periods; partially reproduced when it
+    exceeds encoding only.
+- id: fig4d-encoding-decodes-correct
+  statement: >-
+    During encoding of high-workload trials (set sizes 6 and 8), hippocampal neurons, but not
+    entorhinal or amygdala neurons, predicted whether the subject would later respond correctly,
+    with a median decoding accuracy of 80%.
+  source: Results, Decoding of information during the trial, paragraph 2; Figure 4D
+  quote: >-
+    For the encoding period (−5 to −3 s), we found that the activity of hippocampal neurons, but
+    not neurons in other areas, could be used to decode whether the subject would later reply
+    correctly or incorrectly in the trial. The median decoding accuracy was 80% (permutation test
+    against scrambled data, P = 0.002; Fig. 4D )
+  statistics:
+  - test: permutation test against scrambled data
+    p: 0.002
+    corrected: Bonferroni over 12 tests, corrected P = 0.024
+    n: 500 decoder runs with scrambled labels
+  expected:
+    quantity: median decoding accuracy, hippocampus, encoding
+    value: 80
+    tolerance: 8
+    unit: '%'
+  criterion: >-
+    Pseudopopulation decoding with a support vector machine as in the NDT toolbox (Methods,
+    Neural decoding): spikes in 1 ms bins smoothed in a 1500 ms window, classified at 250 ms
+    steps, 500 resampling runs, trials of set sizes 6 and 8 (Fig. 4D legend), units from
+    sessions with at least five incorrect responses, five cross-validation splits; null from
+    500 runs with scrambled labels; Bonferroni over 12 tests. Populations hippocampus,
+    entorhinal cortex and amygdala. Open, the smoothing window shape; readings (a) a 1500 ms
+    boxcar (NDT binning), (b) a Gaussian. Open, feature normalization; readings (a) z-score
+    per neuron on training data (NDT's usual preprocessing), (b) none. Open, the SVM kernel;
+    the reading is NDT's default linear kernel. Open, how "median accuracy" is taken; readings
+    (a) median over resampling runs of the accuracy averaged over the 250 ms steps inside -5 to
+    -3 s, (b) median over runs and steps together. Reproduced when, under one reading,
+    hippocampus is above the null at corrected P < 0.05 with median within tolerance and
+    neither other area is significant; partially reproduced when hippocampus holds and another
+    area is significant too.
+- id: fig4e-maintenance-decodes-workload
+  statement: >-
+    During maintenance, workload (set size 4 against 6 and 8) could be decoded from hippocampal
+    neurons with a median accuracy of 80%, but not from neurons of the other areas.
+  source: Results, Decoding of information during the trial, paragraph 2; Figure 4E
+  quote: >-
+    For the maintenance period, we found that the workload (set size 4 versus set sizes 6 and 8)
+    of each trial could be decoded from hippocampal neurons but not from neurons in the other
+    areas (permutation test against scrambled data, P = 0.002; Fig. 4E ). The median decoding
+    accuracy was 80%.
+  statistics:
+  - test: permutation test against scrambled data
+    p: 0.002
+    corrected: Bonferroni over 12 tests, corrected P = 0.024
+    n: 500 decoder runs with scrambled labels
+  expected:
+    quantity: median decoding accuracy, hippocampus, maintenance
+    value: 80
+    tolerance: 8
+    unit: '%'
+  criterion: >-
+    As fig4d-encoding-decodes-correct, with correct trials, labels set size 4 against 6 and 8,
+    all units, ten cross-validation splits, and the maintenance period -3 to 0 s. Open, class
+    balance; readings (a) equal numbers of trials per class drawn for each neuron (NDT's
+    requirement), (b) all trials. Reproduced when, under one reading, hippocampus is above the
+    null at corrected P < 0.05 with median within tolerance and neither entorhinal cortex nor
+    amygdala is significant; partially reproduced when hippocampus holds and another area is
+    significant too.
+- id: fig4e-workload-decoding-leave-one-subject-out
+  statement: >-
+    Excluding any one subject changed the hippocampal workload decoding accuracy to a value in
+    the range 71 to 81%.
+  source: Results, Decoding of information during the trial, paragraph 2
+  quote: >-
+    To ensure that some subjects did not drive the results, we performed a leave-one-out
+    analysis. The exclusion of any subject changed the decoding accuracy to a value in the range
+    [71 to 81%].
+  expected:
+  - quantity: lowest leave-one-subject-out accuracy
+    value: 71
+    tolerance: 7.1
+    unit: '%'
+  - quantity: highest leave-one-subject-out accuracy
+    value: 81
+    tolerance: 8.1
+    unit: '%'
+  depends_on:
+  - fig4e-maintenance-decodes-workload
+  criterion: >-
+    The decoder of fig4e-maintenance-decodes-workload rerun nine times, each without the
+    hippocampal units of one subject. Reproduced when all nine accuracies lie in 71 to 81%
+    widened by 10% of each bound (63.9 to 89.1%), under a reading of fig4e that reproduced.
+- id: fig4e-maintenance-neurons-carry-workload
+  statement: >-
+    Workload decoding from hippocampal maintenance neurons alone was little different from
+    decoding from all hippocampal neurons, while excluding the maintenance neurons reduced the
+    accuracy to 71%.
+  source: Results, Decoding of information during the trial, paragraph 2; Figure 4E
+  quote: >-
+    We also performed the same analysis using only maintenance neurons; there was little
+    difference in the decoding accuracy between the use of only maintenance neurons and the use
+    of the whole population of hippocampal neurons. Conversely, the exclusion of maintenance
+    neurons reduced the prediction accuracy to 71%.
+  expected:
+    quantity: accuracy without maintenance neurons
+    value: 71
+    tolerance: 7.1
+    unit: '%'
+  depends_on:
+  - fig2b-maintenance-neurons-hippocampus
+  - fig4e-maintenance-decodes-workload
+  criterion: >-
+    The decoder of fig4e-maintenance-decodes-workload on (i) hippocampal maintenance neurons
+    only and (ii) hippocampal neurons other than maintenance neurons. "Little difference" is not
+    quantified; it is judged with the protocol's default tolerance, the maintenance-neuron
+    median within 8 percentage points (10% of the 80% accuracy) of the all-hippocampus median, with (i) significant
+    against its scrambled null (Fig. 4E legend, "Sufficient decoding was possible"). Reproduced
+    when both parts hold and (ii) is within tolerance and below the all-hippocampus median.
+- id: fig4e-no-decoding-6-vs-8
+  statement: >-
+    The decoder did not distinguish trials of set size 6 from set size 8.
+  source: Results, Decoding of information during the trial, paragraph 2
+  quote: >-
+    The decoder did not distinguish between trials of set sizes 6 and 8, which points to a
+    ceiling effect
+  depends_on:
+  - fig4e-maintenance-decodes-workload
+  criterion: >-
+    A claim of absence. The paper reports no separate test; the decoding test of the Methods is
+    used, as in fig4e-maintenance-decodes-workload, with labels set size 6 against 8,
+    hippocampal neurons, maintenance period, against 500 scrambled-label runs at P < 0.05
+    (the Bonferroni correction of the Methods covers the 12 tests of Fig. 4D to 4F, which do
+    not include this one). Reproduced when the accuracy is
+    not above the null; not reproduced when it is. The median accuracy is reported either way.
+- id: fig4f-retrieval-decodes-response
+  statement: >-
+    During retrieval (500 ms before the button press), neurons in all recorded areas predicted
+    the IN or OUT response; with all neurons the median decoding accuracy reached 90%.
+  source: Results, Decoding of information during the trial, paragraph 2; Figure 4F
+  quote: >-
+    For the retrieval period, we found that neurons from all areas encoded whether the subject
+    would later reply by pressing the IN or OUT button in the trial (permutation test against
+    scrambled data, P = 0.002; Fig. 4F ). The median decoding accuracy reached 90% if firing
+    from all neurons was included
+  statistics:
+  - test: permutation test against scrambled data
+    p: 0.002
+    corrected: Bonferroni over 12 tests, corrected P = 0.024
+  expected:
+    quantity: median decoding accuracy, all neurons, retrieval
+    value: 90
+    tolerance: 9
+    unit: '%'
+  criterion: >-
+    As fig4d-encoding-decodes-correct, with correct trials, labels IN against OUT, a 500 ms
+    window ending at the button press (Fig. 4F legend, -500 to 0 ms; Methods, a narrow 500 ms
+    window), ten cross-validation splits, populations hippocampus, entorhinal cortex, amygdala
+    and all neurons. Reproduced when, under one reading, each of the four populations is above
+    its null at corrected P < 0.05 and the all-neuron median is within tolerance; partially
+    reproduced when some but not all areas are significant.
+- id: figs3d-hippocampus-loadings
+  statement: >-
+    Ranking the first 200 neurons of each region by their dPCA loading, hippocampal neurons had
+    higher loadings than entorhinal and amygdala neurons at each rank except the first three,
+    where entorhinal neurons had the highest loading.
+  source: fig. S3d legend
+  quote: >-
+    For each rank, hippocampus (cyan) had a higher loading than entorhinal cortex (magenta)
+    (paired Wilcoxon test P < 10-33) and amygdala (yellow), except for the first three ranks
+  statistics:
+  - about: hippocampus against entorhinal cortex, rank by rank
+    test: paired Wilcoxon test
+    p: 1.0e-33
+    p_relation: "<"
+    n: 400 neurons (table S2)
+  depends_on:
+  - fig4a-dpca-workload-separation
+  criterion: >-
+    The dPCA of fig4a-dpca-workload-separation. The legend names both dPC3 (title) and dPC2
+    (text); readings (a) dPC2, (b) dPC3. Open, the loading; readings (i) the absolute decoder
+    weight of the neuron, (ii) the signed weight. Per region
+    the 200 largest, sorted; paired Wilcoxon signed-rank test of hippocampus against entorhinal
+    cortex over the 200 ranks. Reproduced when, under one reading, hippocampus is higher with
+    P < 0.05 and higher than amygdala at most ranks.
+- id: fig5-subject1-eeg-power-workload
+  statement: >-
+    In subject 1, scalp EEG power during the last 2 s of maintenance was higher for set size 8
+    than for set size 4 at Pz (8.5 to 16 Hz) and at Fz (8 to 12.5 Hz); this workload-dependent
+    power increase did not appear in the other subjects.
+  source: Results, Electrophysiology of cortico-hippocampal functional coupling, paragraph 2; Figure 5B and 5C; fig. S5; table S1
+  quote: >-
+    the scalp EEG power increased during maintenance for a high workload (set size 8), with a
+    peak within the 8- to 12-Hz alpha range over parietal cortex ( Fig. 5 , A and B). This
+    workload-dependent EEG power increase extended to frontal electrode Fz ( Fig. 5C ). While
+    this power increase is known from healthy subjects for the same or similar task ( 5 , 6 ),
+    it did not appear in the other subjects of our study group (fig. S5 and table S1)
+  statistics:
+  - test: cluster-based nonparametric permutation test
+    p: 0.05
+    p_relation: "<"
+    n: 61 trials of set sizes 4 and 8 in subject 1 (Fig. 5 legend); table S2 gives 116 trials for Fig. 5b and 5c
+  criterion: >-
+    Last 2 s of maintenance, scalp EEG re-referenced to averaged mastoids, multitaper spectra
+    (+/- 2 Hz smoothing, seven tapers; Methods, Frequency spectra), trials of set size 8
+    against 4, cluster-based nonparametric permutation test over frequency (P < 0.05). Open,
+    the frequency range tested; readings (a) 4 to 30 Hz (the time-frequency range in Methods),
+    (b) 1 to 40 Hz. Subject 1 reproduced when Pz and Fz each have a significant cluster of
+    higher set size 8 power overlapping 8.5 to 16 Hz and 8 to 12.5 Hz respectively. "Other
+    subjects": table S1 gives EEG workload dependence as no for subjects 2 to 8 and decrease
+    for subject 9, on the channels of fig. S5, which are not named in the text (the legend
+    cites table S7, which does not exist); the reading is the scalp electrode of each subject's
+    maximal PLV (table S1), the columns table S1 sets side by side, with Pz and Fz shown as a
+    variant. Reproduced when subject 1 holds and none of subjects 2 to 9 has a significant
+    increase, as the text says; partially reproduced when subject 1 holds and another subject
+    has an increase.
+- id: fig5-subject1-hippocampal-power-workload
+  statement: >-
+    In subject 1, theta-alpha power (7.5 to 10 Hz) in the left hippocampal iEEG increased with
+    workload during maintenance.
+  source: Figure 5G and 5H; Results, Electrophysiology of cortico-hippocampal functional coupling, paragraph 2
+  quote: >-
+    Theta-alpha power (7.5 to 10.0 Hz) in the left hippocampal iEEG increased with workload
+    during maintenance.
+  statistics:
+  - test: cluster-based nonparametric permutation test
+    p: 0.05
+    p_relation: "<"
+  criterion: >-
+    Subject 1, the left hippocampal bipolar channel of the maximal PLV pair (table S1), last 2 s
+    of maintenance, multitaper spectra as in fig5-subject1-eeg-power-workload, normalized to
+    fixation power (Fig. 5H legend), set size 8 against 4, cluster-based test at P < 0.05.
+    Reproduced when a significant cluster of higher set size 8 power overlaps 7.5 to 10 Hz.
+    Table S1 also lists iEEG workload dependence as increase for subjects 1 and 6 and no for
+    the others; this is reported for all subjects.
+- id: fig5-subject1-neurons-workload
+  statement: >-
+    In subject 1, the average firing rate of the five hippocampal maintenance neurons was higher
+    for high workload (set size 8 against 4) during encoding and maintenance.
+  source: Figure 5I; Results, Electrophysiology of cortico-hippocampal functional coupling, paragraph 2
+  quote: >-
+    The average firing rate of maintenance neurons in this subject was higher for a high workload
+    during encoding and maintenance ( n = 5 hippocampal neurons with more than 100 spikes during
+    both encoding and maintenance)
+  statistics:
+  - test: cluster-based nonparametric permutation test
+    p: 0.05
+    p_relation: "<"
+  expected:
+    quantity: subject 1 hippocampal maintenance neurons with more than 100 spikes in encoding and in maintenance
+    value: 5
+    tolerance: 0
+  depends_on:
+  - fig2b-maintenance-neurons-hippocampus
+  criterion: >-
+    Subject 1, hippocampal maintenance neurons from fig2b-maintenance-neurons-hippocampus with
+    more than 100 spikes in encoding and in maintenance. Their average rate over time, set size
+    8 against 4, cluster-based nonparametric permutation test at P < 0.05. Open, the unit of
+    the test; readings (a) trials, with the per-trial rate averaged over the five neurons,
+    (b) neuron-trial pairs. Reproduced when, under one reading, the count is 5 and significant
+    clusters of higher set size 8 rate fall in both encoding and maintenance.
+- id: fig5-subject1-plv-hippocampus-pz
+  statement: >-
+    In subject 1, the task increased the phase locking value (PLV) between hippocampal iEEG and
+    scalp EEG at Pz in the alpha band during the last 2 s of maintenance; this PLV was higher
+    for set size 8 than 4 (9.0 to 12.0 Hz) and maximal at occipitoparietal electrodes. The PLV
+    to Fz was also higher for set size 8 (8.5 to 10 Hz).
+  source: Figure 5D, 5E and 5F; Results, Electrophysiology of cortico-hippocampal functional coupling, paragraph 3; fig. S4
+  quote: >-
+    The WM task enhanced the hippocampal-cortical PLV specifically in the 8–10 Hz alpha range and
+    during the maintenance period ( Fig. 5D and fig. S4). The PLV increased with workload ( Fig.
+    5E ) and was highest at occipitoparietal electrode sites ( Fig. 5F ).
+  statistics:
+  - test: randomization test against a null distribution with scrambled labels
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig6-plv-all-subjects
+  - fig6-plv-maintenance-over-encoding
+  criterion: >-
+    The PLV method of fig6-plv-all-subjects for subject 1. Reproduced when the maximal PLV pair
+    is the left hippocampus with Pz, its PLV in the last 2 s of maintenance exceeds that in
+    encoding (method of fig6-plv-maintenance-over-encoding, the golden bar of Fig. 5) in bins
+    overlapping 8 to 10 Hz, its workload difference (set size 8 minus 4) exceeds the
+    95th percentile of the label-shuffled null in bins overlapping 9.0 to 12.0 Hz, the scalp
+    electrode with the highest alpha PLV to that hippocampal channel is parietal or occipital,
+    and the hippocampus-Fz workload difference is significant in bins overlapping 8.5 to 10 Hz;
+    partially reproduced when the Pz parts hold and the Fz part does not.
+- id: fig6-plv-all-subjects
+  statement: >-
+    All subjects showed a significant hippocampal-scalp PLV peak during maintenance (set size
+    8), with individual frequency bands whose lower bound lay in the theta-alpha range and which
+    extended up to 17.5 Hz (median band limits 6.0 to 11.5 Hz).
+  source: Results, Cortico-hippocampal low-frequency coupling in the group of subjects, paragraph 1; Figure 6A to 6H; table S1
+  quote: >-
+    All subjects showed a significant PLV peak for at least one pair of signals recorded from a
+    scalp electrode and a hippocampal channel (table S1). The frequency band of the maximal
+    significant PLV indicated individual differences
+  statistics:
+  - test: randomization test against a null distribution with scrambled trials
+    p: 0.05
+    p_relation: "<"
+    n: nine subjects
+  expected:
+  - quantity: subjects with significant PLV
+    value: 9
+    tolerance: 0
+  - quantity: median lower band limit
+    value: 6.0
+    tolerance: 0.6
+    unit: Hz
+  - quantity: median upper band limit
+    value: 11.5
+    tolerance: 1.15
+    unit: Hz
+  criterion: >-
+    Per subject, every pair of a hippocampal bipolar iEEG channel (deepest contacts of each
+    hippocampal macroelectrode) and a scalp electrode. Last 2 s of maintenance, 2-s epochs,
+    set size 8, multitaper spectra (+/- 2 Hz, seven tapers, the spectra of Methods, Frequency
+    spectra, which the PLV section says it uses), PLV as Methods equation 3. Significance per
+    frequency bin against the 95th percentile of 200 PLVs with trials of one channel permuted
+    (one-tailed). The pair and band of the highest significant PLV are kept (table S1); the
+    individual band is the contiguous run of significant bins around the peak. Open, the
+    frequency range searched; readings (a) 4 to 30 Hz, (b) 1 to 40 Hz. Trials as in the
+    opening comment. Reproduced when, under one reading, all nine subjects have a significant
+    pair and both median band limits are within tolerance; partially reproduced when all nine
+    are significant and the medians are not.
+- id: tables1-plv-per-subject
+  statement: >-
+    Table S1 gives for each subject the scalp electrode of maximal PLV, its peak frequency and
+    the maximal PLV (subject 1 Pz 10.5 Hz 0.72; 2 F3 7 Hz 0.40; 3 F3 12 Hz 0.43; 4 F3 14 Hz
+    0.85; 5 P3 5.5 Hz 0.60; 6 O1 7.5 Hz 0.50; 7 O1 7.5 Hz 0.64; 8 O1 11.5 Hz 0.57; 9 O1 8 Hz
+    0.69), with the hippocampal electrode in the left hemisphere for subjects 1 to 6 and the
+    right for 7 to 9.
+  source: table S1
+  inferred: >-
+    Values only in table S1 (read from its extracted text by column order); no sentence states
+    them.
+  expected:
+  - quantity: maximal PLV, subject 1
+    value: 0.72
+    tolerance: 0.072
+  - quantity: maximal PLV, subject 2
+    value: 0.40
+    tolerance: 0.040
+  - quantity: maximal PLV, subject 3
+    value: 0.43
+    tolerance: 0.043
+  - quantity: maximal PLV, subject 4
+    value: 0.85
+    tolerance: 0.085
+  - quantity: maximal PLV, subject 5
+    value: 0.60
+    tolerance: 0.060
+  - quantity: maximal PLV, subject 6
+    value: 0.50
+    tolerance: 0.050
+  - quantity: maximal PLV, subject 7
+    value: 0.64
+    tolerance: 0.064
+  - quantity: maximal PLV, subject 8
+    value: 0.57
+    tolerance: 0.057
+  - quantity: maximal PLV, subject 9
+    value: 0.69
+    tolerance: 0.069
+  depends_on:
+  - fig6-plv-all-subjects
+  criterion: >-
+    From fig6-plv-all-subjects. Reproduced when, under one reading, at least seven of the nine
+    subjects have the same scalp electrode, hippocampal hemisphere, and maximal PLV within
+    tolerance; partially reproduced for four to six. Peak frequencies are reported against the
+    table.
+- id: fig6-plv-workload-eight-of-nine
+  statement: >-
+    During maintenance, PLV in the individual frequency band was higher for set size 8 than
+    set size 4 in eight of nine subjects (range 5.5 to 16.5 Hz, median band limits 7.8 to
+    10 Hz).
+  source: Results, Cortico-hippocampal low-frequency coupling in the group of subjects, paragraph 2; Figure 6A to 6H; table S1
+  quote: >-
+    During maintenance, the PLV was increased for high workload in eight of nine subjects in the
+    individual frequency band (set size 4 versus set size 8; permutation test, P = 0.05; range,
+    5.5 to 16.5 Hz; median band limits, 7.8 to 10 Hz; Fig. 6 and table S1)
+  statistics:
+  - test: permutation test, randomization against a null distribution with scrambled labels
+    p: 0.05
+    n: nine subjects, 200 permutations each
+  expected:
+  - quantity: subjects with workload-dependent PLV
+    value: 8
+    tolerance: 0
+  - quantity: median lower limit of the workload bands
+    value: 7.8
+    tolerance: 0.78
+    unit: Hz
+  - quantity: median upper limit of the workload bands
+    value: 10
+    tolerance: 1.0
+    unit: Hz
+  depends_on:
+  - fig6-plv-all-subjects
+  criterion: >-
+    The pair of fig6-plv-all-subjects per subject. PLV for set size 8 minus PLV for set size 4,
+    against the 95th percentile of 200 differences with the epochs randomly assigned to the two
+    set sizes (Methods, Phase-locking value). A subject counts when at least one bin inside the
+    individual band is significant. Table S1 lists subject 3 as not significant. Reproduced
+    when, under one reading, eight subjects count (seven or nine is partially reproduced) and
+    both medians and the range (5.5 to 16.5 Hz widened by 10% of each bound) hold.
+- id: fig6-plv-maintenance-over-encoding
+  statement: >-
+    The PLV during the last 2 s of maintenance exceeded the PLV during encoding in eight of nine
+    subjects, so hippocampal-cortical connectivity in the theta-alpha range increased
+    specifically during maintenance.
+  source: Results, Cortico-hippocampal low-frequency coupling in the group of subjects, paragraph 2; Figure 6A to 6H; table S1
+  quote: >-
+    the PLV during maintenance exceeded the PLV during encoding in eight of nine subjects ( Fig. 6
+    and table S1)
+  statistics:
+  - test: randomization test against a null distribution with scrambled labels
+    p: 0.05
+    p_relation: "<"
+  expected:
+    quantity: subjects with maintenance PLV above encoding PLV
+    value: 8
+    tolerance: 0
+  depends_on:
+  - fig6-plv-all-subjects
+  criterion: >-
+    The pair of fig6-plv-all-subjects per subject. PLV in the last 2 s of maintenance minus PLV
+    in encoding (-5 to -3 s), against the 95th percentile of 200 differences with epochs
+    randomly assigned to the two periods (Methods). Open, which trials; readings (a) set size 8
+    trials, where the PLV was selected, (b) all set sizes pooled. A subject counts when a bin in
+    the individual band is significant. Table S1 lists subject 4 as not significant. Reproduced
+    when, under one reading, eight subjects count; partially reproduced for seven or nine.
+- id: fig6-power-unchanged-individual-band
+  statement: >-
+    In the majority of subjects, iEEG and EEG power in the individual frequency band did not
+    differ during maintenance, which suggests that the PLV differences came from phase
+    consistency.
+  source: Results, Cortico-hippocampal low-frequency coupling in the group of subjects, paragraph 1; table S1
+  quote: >-
+    In the majority of the subjects, there were no differences in the iEEG or EEG power in the
+    individual frequency band during maintenance, which suggests that the differences in PLV were
+    primarily a result of the differences in phase consistency.
+  depends_on:
+  - fig6-plv-all-subjects
+  criterion: >-
+    A claim of absence. Table S1 reports it as workload dependence (set size 8 against 4) of
+    EEG and of iEEG power, so that is the comparison: per subject, the channels of the
+    maximal PLV pair, last 2 s of maintenance, multitaper spectra as in
+    fig5-subject1-eeg-power-workload, cluster-based permutation test at P < 0.05 over the
+    individual band. Reproduced when at least five of nine subjects show no significant
+    difference for EEG and at least five for iEEG; not reproduced otherwise. Table S1 has two
+    of nine with an EEG difference (subjects 1 and 9) and two with an iEEG difference
+    (subjects 1 and 6); the per-subject results are reported against it.
+- id: fig6i-plv-posterior-gradient
+  statement: >-
+    Across subjects, maximal PLV increased from the anterior to the posterior end of the
+    hippocampal axis (34 electrode pairs, R2 = 0.118), and PLV to posterior sites (y < -20 mm)
+    was higher than to anterior sites.
+  source: Figure 6I; Results, Cortico-hippocampal low-frequency coupling in the group of subjects, paragraph 3
+  quote: >-
+    For the subject group, there was a gradual increase in the PLV from the anterior end to the
+    posterior end of the hippocampal axis during maintenance ( R 2 = 0.118, P = 0.0467) and the
+    PLV to posterior sites ( y < −20 mm) was higher than to anterior sites (permutation t test, t
+    = 2.09, P = 0.0405)
+  statistics:
+  - about: linear fit of maximal PLV on anterior-posterior position
+    test: permutation t test
+    statistic: R2 = 0.118
+    p: 0.0467
+    n: 34 electrode pairs
+  - about: posterior (y < -20 mm) against anterior sites
+    test: permutation t test
+    statistic: t = 2.09
+    p: 0.0405
+  expected:
+  - quantity: R2 of the linear fit
+    value: 0.118
+    tolerance: 0.0118
+  - quantity: electrode pairs
+    value: 34
+    tolerance: 0
+  depends_on:
+  - fig6-plv-all-subjects
+  criterion: >-
+    Per subject, the scalp electrode of the maximal PLV pair, paired with every hippocampal
+    bipolar channel; for each, the maximal PLV in the subject's individual band during
+    maintenance, set size 8 (as in fig6-plv-all-subjects), plotted against the MNI y coordinate
+    of the hippocampal contact (Fig. 6I). Open, the coordinate of a bipolar channel; readings
+    (a) the deepest contact, (b) the midpoint of the two contacts. The fit's P from a
+    permutation of PLV values over positions (2000 permutations; table S2 gives 32 degrees of
+    freedom). Reproduced when, under one reading, there are 34 pairs, the slope is positive
+    (PLV higher posteriorly) with P < 0.05 and R2 within tolerance, and posterior sites exceed
+    anterior sites by an unpaired permutation t test at P < 0.05; partially reproduced when the
+    direction and one of the two tests hold.
+- id: fig6i-no-left-right-difference
+  statement: >-
+    There was no evidence that the PLV differed between left and right hippocampus.
+  source: Results, Cortico-hippocampal low-frequency coupling in the group of subjects, paragraph 3; Figure 6I
+  quote: >-
+    There was no evidence that the PLV differed between the left and right hippocampus.
+  depends_on:
+  - fig6i-plv-posterior-gradient
+  criterion: >-
+    A claim of absence. The paper names no test here; Methods, Statistics, give the permutation
+    t test for comparing two distributions, which is used: the 34 maximal PLV values of
+    fig6i-plv-posterior-gradient, left against right channels, unpaired, P < 0.05. Reproduced
+    when the test is not significant; not reproduced when it is. The difference of means is
+    reported either way.
+- id: soz-plv-no-difference
+  statement: >-
+    The increase in PLV did not differ significantly between hippocampal channels inside and
+    outside the seizure onset zone.
+  source: Results, Recordings in the epileptogenic zone, paragraph 1; table S1
+  quote: >-
+    When comparing hippocampal channels within and outside the seizure onset zone (SOZ) (table
+    S1), the increase in the PLV was not significantly different between the non-SOZ electrodes
+    and SOZ electrodes.
+  depends_on:
+  - fig6-plv-all-subjects
+  criterion: >-
+    A claim of absence, with the permutation t test of Methods, Statistics, unpaired, P < 0.05.
+    SOZ membership from the deposited SOZ electrode list (table S1 marks the maximal-PLV
+    hippocampal channel as SOZ in subjects 3 and 4). Open, which increase; readings (a) set
+    size 8 minus set size 4, (b) maintenance minus encoding, each the maximum in the individual
+    band. Open, which channels; readings (a) all hippocampal channels paired with the
+    maximal-PLV scalp electrode, as in Fig. 6I, (b) the nine maximal-PLV pairs. Reproduced when
+    no reading finds a significant difference; not reproduced when a reading does. Effect
+    sizes are reported for every reading.
+- id: hfo-rates-unaffected
+  statement: >-
+    The rates of clinically relevant high-frequency oscillations were not affected by
+    performing the task.
+  source: Results, Recordings in the epileptogenic zone, paragraph 1
+  quote: >-
+    The rates of clinically relevant HFOs were not affected by the performance of the task.
+  criterion: >-
+    A claim of absence for which the paper names neither the HFO detector nor the test nor the
+    comparison. It cites reference 27 (Fedele et al. 2017, Sci Rep 7, 13836) for the detector;
+    that paper is not under paper/ and was not read. The comparison is not given; the readings
+    the text allows are (a) per-channel HFO rates in the task periods (encoding, maintenance)
+    against fixation, (b) rates in trials of set size 8 against set size 4. The test is then
+    the permutation t test of Methods, Statistics, at P < 0.05, the paper's general test for
+    two distributions. Reproduced when no reading finds a significant difference in any
+    channel group (SOZ, non-SOZ); not reproduced when one does. Without the detector of
+    reference 27 (a question to a reader) the claim is blocked as methods_underspecified.
+- id: sfc-maintenance-over-encoding
+  statement: >-
+    Maintenance neurons showed significant spike-field coherence to the local field potential,
+    but not to the iEEG or scalp EEG, and for all frequency bins the percentage of neurons with
+    spike-field coherence was higher during maintenance than during encoding.
+  source: Results, Spike-field coherence, paragraph 1; fig. S6b; Figure 5J
+  quote: >-
+    We found significant spike-field coherence to the LFP but not to the iEEG or the scalp EEG.
+    For all frequency bins, the percentage of neurons with spike-field coherence was higher
+    during maintenance than during encoding (fig. S6).
+  expected:
+    quantity: maintenance neurons with at least 100 spikes in maintenance and in encoding
+    value: 94
+    tolerance: 9.4
+  depends_on:
+  - fig2b-maintenance-neurons-hippocampus
+  criterion: >-
+    Maintenance neurons of fig2b-maintenance-neurons-hippocampus with at least 100 spikes in
+    both periods (fig. S6b legend gives N = 94). Pairwise phase consistency, the P-hat-2
+    estimator of Vinck et al. 2012 (FieldTrip ppc2), between each neuron's spikes and the LFP
+    of the same microwire; maintenance is the last 2 s (fig. S6a), encoding -5 to -3 s.
+    Significance per frequency bin against the 95th percentile of 200 PPCs with the spike
+    trials permuted (Methods, Spike-field coherence). Open, the frequency range; readings
+    (a) 4 to 30 Hz, (b) 1 to 40 Hz. Open, the spectral estimate around each spike; the
+    reading is FieldTrip's spike-triggered spectrum with a window of a fixed number of cycles,
+    and the cycle number is a further open detail, run at 3 and 5 cycles. Reproduced when,
+    under one reading, the maintenance percentage exceeds the encoding percentage in every
+    frequency bin and the percentages for iEEG and scalp EEG are no higher than the 5%
+    expected by chance (the paper does not say how "not to the iEEG or the scalp EEG" was
+    judged; this is the reading of its per-bin 95th percentile threshold); partially reproduced when the maintenance percentage is higher in most
+    bins. The LFP of the microwires is not among the data listed by the data descriptor; if
+    the dataset lacks it, the LFP parts are blocked and the iEEG and scalp EEG parts are run.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - behavior-rt-workload, removed the per-session ANOVA reading; table S2 (Fig. 1c) names a permutation ANOVA over trials (n = 1630, df = (2, 2007)), so the unit is settled by the supplement.
+  - behavior-rt-correct-incorrect, tolerances of the two mean RTs changed from 10% to the SDs the paper prints (0.64 s, 1.21 s); the protocol takes the stated spread, as this file already did for the IN and OUT rates.
+  - spike-sorting-quality, tolerances changed from 10% to the printed SDs (3.30 Hz, 4.18%, 1.56), for the same reason.
+  - fig3-probe-onset-not-movement, tolerances changed from 10% to the printed SDs (4.97 Hz, 4.37 Hz), for the same reason.
+  - fig3e-probe-neurons-entorhinal, probe window reading (c) was 0 to 0.5 s after the probe, attributed to the retrieval decoding window; that window is -500 to 0 ms relative to the button press (Fig. 4F legend), so the reading now says so. Reading (b) now cites Methods, Task (the probe stays on until the response).
+  - fig3-probe-neurons-few-task-specific, tolerance of the one workload-dependent neuron changed from 0 to 1, which the criterion already stated (0 to 2) and gave the reason for; expected and criterion disagreed.
+  - fig4b-speed-lowest-maintenance and fig4c-distance-largest-maintenance, the number of runs is now open with both readings; the Methods give 200 dPCA runs and table S2 gives n = 2000 runs for Fig. 4b and 4c.
+  - figs3d-hippocampus-loadings, statement now includes amygdala and that entorhinal neurons had the highest loading at the first three ranks, as the fig. S3d legend says; it said less than the paper.
+  - fig5-subject1-eeg-power-workload, "at most one other subject" replaced by none of subjects 2 to 9, as the text says the increase did not appear in the other subjects (table S1 has none); Pz and Fz added as a variant electrode reading; the n now also records the 116 trials of table S2, which differ from the 61 of the legend.
+  - fig5-subject1-plv-hippocampus-pz, the criterion did not test the stated maintenance specificity of the PLV (Fig. 5D, golden bar); it now requires maintenance PLV above encoding PLV near 8 to 10 Hz, by the method of fig6-plv-maintenance-over-encoding, added to depends_on.
+  - fig6i-plv-posterior-gradient, the criterion now judges the expected R2 and the 34 pairs, which were listed in expected but never judged.
+  - hfo-rates-unaffected, the comparison (task periods against fixation) was chosen by the writer; it is now named as open with the readings the text allows, and the claim is blocked as methods_underspecified until the detector of reference 27 is supplied.
+  - sfc-maintenance-over-encoding, the 5% chance rule for "not to the iEEG or the scalp EEG" is now marked as a reading, since the paper does not say how this was judged.
+  - fig2b-maintenance-neurons-hippocampus, the null's permuted labels are now marked as not named by the paper, with the reason for the reading.
+  - Checker flag on behavior-rt-correct-incorrect P = 5.0e-5 confirmed by reading; the paper prints "P = 5.0 × 10 −5", which the checker's number forms do not include. No change.
+  - Open, not settled. The F of 2 and 2007 degrees of freedom for RT (behavior-rt-workload) fits no stated design; it stays reported, not judged.
+  - Open, not settled. Table S1 and table S2 were read from extracted text by column order; the PDF could not be rendered in this run. The values read agree with the medians the paper prints.
+  - Open, not settled. Fig. S5 cites a table S7 that does not exist, so the EEG channels for the other subjects are a reading (fig5-subject1-eeg-power-workload).
+  - Open, not settled. hfo-rates-unaffected needs the HFO detector of reference 27, which is not under paper/.

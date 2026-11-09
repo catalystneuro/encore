@@ -1,0 +1,74 @@
+dandiset: "000231"
+paper: doi:10.1038/s41597-022-01728-1
+questions:
+- claim: tracking-error-dataset1
+  asked: 2026-10-29
+  question: Should the tracking claims (tracking-mean-error, tracking-error-dataset1,
+    tracking-error-challenge) and behavior-clock-drift name the paper's original data release
+    (ref. 13, Zenodo doi:10.5281/zenodo.4743837) as the place of their data, with `data` elsewhere
+    or with_inputs? The claims file says the paper does not say where the curated training sets
+    are and that no claim uses the Zenodo release. The tracking validation is reported "As
+    reported previously 8", ref. 13 is the data release of that study, and the abstract offers
+    "our carefully curated labeled data" to users. The Zenodo record's own README lists a folder
+    `trainset/` ("Quantifications of whisker tracking accuracy", per-frame whisker-wise error
+    tables) and a per-session `behavioral_logfile` with times in the Arduino timebase; this was
+    seen in the README only, and no data were read from it.
+  passage: This dataset improves on our original data release 13 because it includes more raw
+    data, including videos and full bandwidth recordings (Background & Summary, paragraph 5). As
+    reported previously 8 , each type of error is nearly zero (<0.2%) on dataset 1 (Technical
+    Validation, Validation of pose tracking data). In addition, our carefully curated labeled data
+    could be used to develop new computer vision algorithms for tracking body posture (Abstract).
+  why: The four claims are blocked as data_missing in this attempt because the dandiset does not
+    hold the curated labels, the held-out predictions or the Arduino times. If the paper relies on
+    ref. 13 for them, they are data held elsewhere in a public archive, and a later attempt could
+    test them there (the release is one 52 GB zip, which can be read member by member over HTTP).
+  answered: 2026-10-29
+  answer: The claims stand and the claims file is unchanged. The paper names ref. 13 once, as
+    "our original data release", and says only that this dataset "improves on" it by adding raw
+    videos, full bandwidth recordings and the NWB format; it never says what that release holds.
+    The tracking validation cites ref. 8 (the Neuron paper), not ref. 13 ("As reported previously
+    8 , each type of error is nearly zero"), and the abstract's "carefully curated labeled data"
+    names no archive. Nothing in the paper places the curated training sets 1 to 5, the held-out
+    predictions or the Arduino-timebase trial starts on Zenodo. The `trainset/` folder and the
+    `behavioral_logfile` files are known only from the Zenodo README, which is not the paper, and
+    `data` elsewhere is for data the paper itself deposited in another archive (Reader, step 4;
+    Author, step 4). So the four claims keep `data` dataset. The header's note that the paper
+    does not say where the curated sets are is accurate. Whether they are public somewhere is
+    for the author to record in the notes of the data_missing block, as step 4 asks ("its notes
+    say where you looked").
+- claim: trials-table-structure
+  asked: 2026-10-29
+  question: Should the criterion compare stop_time with the start_time of the next trial run (the
+    next trial number) instead of the next row of the table? The criterion compares consecutive
+    rows. The verifier noted that the table can lack trials, so "the next trial" of Table 6 may
+    mean the next trial the mouse ran, which is not in the table where a trial is missing.
+  passage: stop_time (float) Stop time of the trial. (Equal to the start time of the next trial.)
+    (Data Records, trials table, Table 6). In some cases the video recording was not started until
+    after the first trial. Trials before the video began are excluded from this trials table.
+    Therefore the first trial number in this table is not necessarily 0 (Data Records, paragraph
+    after Table 6).
+  why: Under the criterion as written the claim is not reproduced, because 5 of 32,235 pairs of
+    consecutive rows, in 4 sessions, differ by 7.0 to 68.0 s, and all 5 are where a trial number
+    is skipped. Compared only where the trial numbers are consecutive, all 32,230 pairs agree, so
+    the reading decides the outcome. The paper describes only trials dropped before the video
+    began (at the start of a table) and says munged trials are kept with ignore_trial True; it
+    does not mention trials missing inside a table.
+- claim: session-labeling-quality
+  asked: 2026-10-29
+  question: Should the contact part of the criterion take the 2% bound over all contact events of
+    a session, pooled over its whiskers, instead of for each whisker and session? The expected
+    value is the "largest fraction of contacts with a missing frame, any whisker and session". The
+    verifier noted that the paper's "≤2% of the contact events" of a session reads more naturally
+    as pooled over the whiskers.
+  passage: "As reported previously 8 , sessions with inaccurate labeling were discarded: we
+    required that every whisker be labeled in ≥95% of the frames, that ≤2% of the contact events
+    contained even a single frame with a missing label, and that the arcs traced out over the
+    entire session by the whisker contained no discontinuities or jumps suggestive of tracking
+    errors (Technical Validation, Inclusion criteria)."
+  why: Per whisker, up to 7.7% of a whisker's contacts in a session hold an interpolated or absent
+    frame, and the claim is not reproduced. Pooled over the whiskers of a session the largest
+    fraction is 2.007% (C0 to C3) or 2.008% (C1 to C3), both in KM91 2016-12-16 (54 of 2,691 and
+    54 of 2,689 contacts), so the claim would still be not reproduced, but by one contact (53 would
+    give 1.97%), and the result also rests on counting a frame absent from the processed series as
+    missing. The frame part fails for C0 under either reading. The reading thus decides how close
+    the contact part comes to the bound, though not, as computed, the outcome.

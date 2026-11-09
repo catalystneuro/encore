@@ -1,0 +1,121 @@
+# 001676, Skromne Carrasco et al. 2026
+
+Eighteen claims reproduced (14 on an assumption), six partially (two on an
+assumption), three not reproduced (two on an assumption) and five blocked,
+three for insufficient metadata, one for missing data and one as too large.
+All 32 claims are on the dandiset. The first verification round agreed with 26
+of the 32 outcomes as they stood and the second with all 32, and nothing was
+proposed after the second, so there was no third round. It pins version
+0.251205.2137, the version the paper cites and the only published one. The
+paper, Skromne Carrasco, Viejo and Peyrache, "Months-long stability of the
+head-direction system" in Nature, images head-direction (HD) cells of the
+post-subiculum with a Miniscope in mice 1 to 5 over a month in one environment
+(Fig. 1), over two weeks in each of four environments (Fig. 2), in a week of
+probe trials (Fig. 3) and in visits in random order (Extended Data Fig. 9), and
+in mice 6 to 10 over weekly and single visits (Fig. 4, Extended Data Fig. 10),
+with silicon-probe recordings in four mice (Extended Data Fig. 7). The claims
+were written from the version of record without the Supplementary Information
+or the Source Data, and no figure was read from the PDF; the paper's code is
+available on request, so no code was read. Twenty-seven claims were tested.
+Most rest on one open detail of the HD cell rule, whether the head-direction
+information (HDI) is computed on the smoothed or the raw tuning curve; the
+smoothed curve with a 12 degree kernel was adopted for every claim as the main
+reading because it gives the paper's numbers of compared sessions (18 in Fig.
+1f; 85 pooled against 84) and of offset values (25,441 against 25,901), where
+raw HDI gives 92 sessions and 92,537 values, and raw HDI is shown alongside.
+Reproduced are the stability of preferred directions in Fig. 1f and 1g and
+Extended Data Fig. 4a to c (pooled V 75.58 over 85 sessions against 75.21 over
+84), the drift rates of Fig. 1h and 1i (6.71 and 5.32 degrees per week), the
+pairwise offsets of Extended Data Fig. 4g, Fig. 2e and the electrophysiology
+of Extended Data Fig. 7, `edf1h-ring`, `edf4ef-not-diffusive`, `edf4ij-pv-decay`,
+`edf5c-stable-within-environment`, `fig2g-environment-classifier`,
+`fig4e-decoder-single-visit`, `edf2-no-registration-confound` and the two
+Extended Data Fig. 10 claims. The classifier of Fig. 2g reaches 0.64 against
+0.28 for shuffles, but given only which cell pairs are present it reaches 0.70,
+and with the correlations permuted among the pairs present 0.59, so the
+correlations add a little to the presence pattern. The two Extended Data Fig.
+10 claims rest on taking a change in preferred direction as the earlier session
+minus the later one, the convention under which the Fig. 1g means have the
+paper's sign in 5 of 5 mice. Partial are `roi-counts` (402 sessions, 367 for
+mice 1 to 5, against 388), `edf4f-change-below-shuffle`, `edf8-same-vs-mixed`,
+`fig2i-random-remapping` (Rayleigh p 0.069 where the paper reports 0.032),
+`edf9-interference` and `fig4d-single-visit-memory` (single-visit mean 21.9
+against 6.6 +- 4.1). Not reproduced are `edf1e-hd-proportion` (main reading
+0.116, 0.400, 0.035, 0.292, 0.072, at most 1 of 5 within tolerance under any
+reading), `edf2ab-jaccard` (2 of 5 mice) and `fig2h-coherent-remapping` (10 of
+15 pairs, 67% against 80%); with raw HDI the last two would be reproduced, and
+raw HDI would also change `edf4c-previous-session` and fail parts of
+`fig1f-example-stable` and `edf4ij-pv-decay`. `fig1k-decoding-across-days` is
+blocked as too large: its 1,883 XGBoost fits at 2.56 s each, four at a time,
+take an estimated 80 minutes (51 for the pairs up to 10 days apart), plus
+loading, against the 60-minute limit; the data it needs are in the dataset.
+The author asked no questions of a reader, so the answer and author-answers
+runs changed nothing. Round 1 disagreed with six outcomes and found that the
+sign of the change in preferred direction was run one way only, that most HD
+cell claims were run only under the main reading, that `edf2` kept only cells
+with CellReg score above 0.8 and corrected over 3 tests where the claims file
+lists 4, that the Fig. 2g classifier may read which cells are present, and
+that the decoders were run only with test cells passing the HD rule in the test
+session; in reply both signs and raw HDI were run, `edf2` was rerun over all
+scores, controls and a looser decoder rule were added, five outcomes changed
+to the verifier's, and `edf2ab-jaccard` was kept not reproduced with the
+disagreement recorded, as choosing raw HDI for that claim alone would pick the
+reading that passes. Round 2 agreed with all 32, asked that `edf2`,
+`edf4ij-pv-decay` and `edf1h-ring` be marked as resting on an assumption, found
+CellReg scores below 0 in the raw-HDI `edf2` set and stale sentences (fit times
+of 2.39 s, 75 and 47 minutes where 2.57 s, 81 and 51 were printed, and run
+times), all corrected, and asked for the presence-keeping shuffle of Fig. 2g,
+which was added. The author's run took about 2 h (04:40 to 06:43 UTC); pycircstat
+does not import under numpy 2, so its formulas were reimplemented, and a helper
+bug crashed the decoding notebook on the first full run after round 1 and was
+fixed. The main and decoding notebooks ran in 19 and 32 minutes at first, 2038
+s and 1740 s after the author-answers run, 25 and 34 minutes after round 1 and
+35.3 and 40 minutes at the end. Untracked items at the repository root
+(`.bashrc`, `scripts`, `.idea` and others), which predate the run, were left
+alone.
+
+The tuning_curves table of every imaging file holds one curve repeated for
+every ROI, in 401 of 402 sessions the curve of ROI 0, smoothed with a kernel of
+about 4 bins, while its description says it holds the tuning curve of each
+ROI. Each protocol's files carry a CellReg table for that protocol only, and
+nothing links ROIs across protocols, so the probe trials of Fig. 3 cannot be
+matched to the last visits of the two-week protocol and all of Fig. 3 is
+blocked; the probe week is also not labelled, and is found as the first week of
+the random-order protocol, which starts 3 days after the last two-week session
+for mice 1 to 4 and 81 days after it for mouse 5. The electrophysiology files
+hold spike times and electrode groups only, with no waveforms, so the waveform
+features of Extended Data Fig. 7f-h cannot be computed; they hold 347 units,
+254 of them on PoSub shanks (the paper's n of 254 cells), and two explorations
+of each of the three environments separated by sleep where the paper describes
+one. The dandiset holds 402 imaging sessions (367 for mice 1 to 5) where the
+paper reports 388, including random-order sessions of mouse 5, whose field of
+view the paper says was lost before the probe trials, and sessions last 902 to
+1799 s where the Methods state 20 min; the circular protocol has 19, 20, 19, 19
+and 20 sessions, as Extended Data Fig. 1e states. The CellReg scores include
+values below 0, 102 of 5,190 rows, down to -1.24, which a CellReg confidence
+score cannot take, and the files do not describe the score. The dandiset's
+related publication and each file's related_publications point to the bioRxiv
+preprint, not the Nature article. Questions are put to the paper's authors:
+whether the HDI is computed on the raw or the smoothed tuning curve and whether
+the kernel is 12 degrees or 12 bins, what "detected in at least six sessions"
+means and which sessions enter the average HDI; whether pairwise offsets are
+unsigned, how the drift rate per week is computed and what the sign of a
+change in preferred direction is; and the XGBoost hyperparameters, the dF/F
+normalization, how population activity is summed, whether test cells must be
+HD cells in the test session and whether the error variance of Extended Data
+Fig. 8c is circular or linear.
+
+The author's points on the protocol: the aim of under ten minutes cannot be met
+when streaming the 402 files takes 16 to 23 minutes; asset paths do not show
+the protocol, so the decoding notebook opens every file to select sessions;
+step 1.6 is written per claim while one open detail, the HD rule, underlies
+about 20 claims, and one main reading was adopted for all of them because it
+reproduces the paper's sample sizes, which the protocol does not say is a valid
+basis; the chance-level rule would block where the signed offsets' chance (90
+degrees) is far from the paper's, but the unsigned reading's matches, so the
+match chose the reading; part of edf9's criterion needs a blocked claim not
+listed in `depends_on`; the line between partially and not reproduced for
+criteria with several parts is unclear, and partially was used when the
+qualitative effect holds but a numeric part fails; the suggested clock check
+does not suit continuous imaging, and HD tuning against time shift was used;
+and pycircstat does not import, so its formulas were reimplemented.
