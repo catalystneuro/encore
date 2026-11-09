@@ -426,7 +426,8 @@ python tools/entry.py lock entries/<name>
 python tools/entry.py all  entries/<name>    # check, then run from a clean environment
 ```
 
-Commit notebooks without outputs. Read the executed copy in
+`lock` pins every package, with its hashes, for the entry's Python version, and records that version as
+`python` in entry.yaml (the registry's current one for a new entry). Commit notebooks without outputs. Read the executed copy in
 `executed/<name>/` and confirm the conclusions still match the numbers: counts
 near a threshold can move when a random split changes.
 
