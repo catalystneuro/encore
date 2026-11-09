@@ -177,11 +177,14 @@ COLAB_URL = "https://colab.research.google.com/github/catalystneuro/encore/blob/
 
 def environment_of(entry_dir: Path) -> dict:
     """An entry's environment, for its page: the Python version it runs on and how many packages its lock pins."""
-    import entry as entry_tool
+    # As tools/entry.py's python_of, without importing it: it needs nbformat, which the site's workflows do not install.
     lock = entry_dir / "requirements.lock.txt"
-    pinned = sum(1 for line in lock.read_text().splitlines() if re.match(r"^[A-Za-z0-9]", line)) if lock.is_file() else 0
-    hashed = lock.is_file() and "--hash=" in lock.read_text()
-    return {"python": entry_tool.python_of(entry_dir), "pinned": pinned, "hashed": hashed}
+    text = lock.read_text() if lock.is_file() else ""
+    pinned = sum(1 for line in text.splitlines() if re.match(r"^[A-Za-z0-9]", line))
+    entry = load_yaml(entry_dir / "entry.yaml") or {}
+    locked_for = re.search(r"--python-version\s+(\d+\.\d+)", text[:2000])
+    python = str(entry.get("python") or (locked_for.group(1) if locked_for else "3.13"))
+    return {"python": python, "pinned": pinned, "hashed": "--hash=" in text}
 
 
 def record_files(kind: str) -> list[tuple[Path, list[str]]]:
