@@ -1,0 +1,641 @@
+# Claims for Johnson, Dewar, Solbakk, Endestad, Meling & Knight (2017), Current Biology 27,
+# 1829-1835, "Bidirectional Frontoparietal Oscillatory Systems Support Working Memory",
+# doi:10.1016/j.cub.2017.05.046, on CRCNS data set pfc-5 (doi:10.6080/K0ZC811B).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record with its supplemental information, as supplied under paper/
+# (PDF extracted to text): main text (Results, Discussion), figure legends 1 to 4, STAR Methods
+# (pages e1 to e4), and the supplement (legends of Figures S1 to S4, Tables S1 to S3, read from
+# the text). The PDF could not be rendered in this run, so the figures themselves were not read:
+# the channel list of the Figure 2 cluster (the PFC region of interest of the PSI analysis) and
+# the time courses of Figures 2 to 4 are known only from the text and legends. The extraction
+# garbles symbols: "3" stands for the multiplication sign, "/" for an arrow, "%" for less than
+# or equal, "R" for greater than or equal, "jZj" for |Z|, and a replacement character for the
+# minus sign in exponents. Quotes keep the extracted characters. The CRCNS data descriptor
+# (paper/pfc-5.data-description.txt) was read only to know what the data set holds; no claim or
+# method comes from it.
+#
+# Code. The paper's Key Resources Table and Data and Software Availability say the custom MATLAB
+# code is deposited with the data at CRCNS (http://crcns.org). By the data descriptor it is the
+# analysis_scripts directory of pfc-5 itself (<metric>_compute, <metric>_stat_group,
+# <metric>_stat_group_hem, subfunctions; FieldTrip). Being among the data set's files, it was
+# not read in this run, and no commit is recorded. Every method below is from the paper's text.
+# Where those scripts settle a detail named as open below, the author may follow them (protocol,
+# Reader step 2) and should say so.
+#
+# Data the paper used (Experimental Model and Subject Details; Behavioral Task; Data
+# Acquisition; Data Preprocessing). 14 patients with unilateral lateral PFC lesions (7 left, 7
+# right; 5 stroke tested in Berkeley, 9 low-grade tumor resection tested in Oslo; 46 +- 16 years,
+# 5 males) and 20 healthy controls (44 +- 19 years, 11 males, all Berkeley). Per-patient lesion
+# hemisphere, etiology, size, years since lesion, age, gender, education, IQ and accuracy by
+# visual hemifield in Table S1. One session of 240 trials (at least 120 completed by every
+# subject), six bins of visual hemifield (left, right) by condition (identity, spatial relation,
+# temporal relation). Trial: 2 s pretrial fixation, start screen (IDENTITY or RELATION), 100 ms
+# fixation, two shapes of 200 ms each to one hemifield, a 900 or 1150 ms jittered maintenance
+# interval, a test prompt, an active processing interval of the same length as the maintenance,
+# then a two-alternative forced choice. 64-channel BioSemi EEG at 1024 Hz with EOG and earlobe
+# references; eye tracking used to drop trials in which gaze reached the ipsilateral hemifield.
+# Preprocessing: earlobe reference, 256 Hz, 1 to 70 Hz FIR, EMG removal (AAR), line noise
+# removal, ICA, channel interpolation, manual trial rejection (on average 187 trials per
+# subject kept). Then the surface Laplacian, swapping of channels across the midline for the 7
+# right-lesioned patients and 10 randomly chosen controls, so that the lesion is on the left, and
+# three segments per trial: pretrial baseline (550 to 50 ms before the start screen), encoding
+# and maintenance (1500 ms from first stimulus onset; the second stimulus ends at 400 ms), and
+# active processing (900 ms from the offset of the test prompt). Measured variables: accuracy,
+# ERPs, baseline power spectra, task-induced power, and phase slope index (PSI) between channels.
+# "Lesioned visual hemifield" trials are those whose stimuli went to the hemifield contralateral
+# to the lesion (Table S1 note).
+#
+# Methods shared by the EEG claims below, from STAR Methods (Spectral Decomposition; Phase Slope
+# Index; Statistical Bootstrapping; Cluster-Based Permutation Testing), fixed for every criterion
+# that cites "the shared methods":
+# - Correct trials only, except the baseline spectra (all trials). Each visual hemifield is
+#   analysed separately.
+# - Power, per subject: time-frequency representations at each frequency 1 to 40 Hz with a
+#   Hanning-tapered window of 3 cycles (3/f), 10 ms steps, segments zero-padded to 7500 ms. The
+#   baseline power of all correct trials and time points is pooled per channel and frequency;
+#   r values are drawn and averaged (r = the subject's trial count), 1000 times; the mean task
+#   power is Z scored on that distribution.
+# - PSI, per subject: the mean over correct trials (per visual hemifield) subtracted from each
+#   trial; the same time-frequency analysis in 100 ms steps; cross-spectra per frequency; PSI
+#   (Nolte et al. 2008) over 2 to 7 Hz (delta-theta) and 9 to 24 Hz (alpha-beta) for every
+#   channel pair. Null: frequency bins shuffled per channel pair and time point and PSI
+#   recomputed, 1000 times; raw PSI Z scored on the null. Encoding-maintenance and processing Z
+#   then have the temporal mean of the baseline Z subtracted. Positive PSI from A to B means A
+#   leads.
+# - Group tests: Monte Carlo cluster-based permutation (FieldTrip), independent-samples t test
+#   between patients (14) and controls (20), cluster-forming threshold 0.05 two-tailed, cluster
+#   size the sum of t, 1000 shuffles of group labels, cluster p < 0.05. Clusters over spatial
+#   adjacency and over time and/or frequency "as appropriate".
+# - Group by hemisphere interaction: a lesion-minus-intact index (e.g. F5 minus F6) for each
+#   non-midline channel pair, in both groups, then the group test on the index.
+#
+# Details the paper leaves open, shared by several criteria (each criterion names those it
+# needs):
+# - O1, channel neighbours for spatial clustering. Not given. Readings (a) FieldTrip's
+#   biosemi64 neighbour template; (b) neighbours by triangulation of the electrode positions.
+# - O2, which dimensions are clustered "as appropriate". Readings (a) channels by time by
+#   frequency (1 to 40 Hz) for power, channels by time for ERPs and band PSI; (b) channels by
+#   time on the band average named in the claim (3 to 4 Hz, 2 to 7 Hz, 9 to 24 Hz).
+# - O3, the hemisphere index. "on all 54 non-midline channels" with "subtracting the signal in
+#   each intact-hemisphere channel from its lesioned-hemisphere homolog". Readings (a) 27
+#   indices placed at the lesioned-hemisphere (left) positions; (b) 54 values, each channel
+#   minus its homolog.
+# - O4, which 10 controls were swapped across the midline: "randomly chosen". Readings (a) the
+#   swap already in the deposited preprocessed data, if it is there; (b) several random draws
+#   of 10, all shown.
+# - O5, the surface Laplacian's parameters. Not given; FieldTrip's ft_scalpcurrentdensity
+#   spline defaults are the standard choice. Whether the deposited preprocessed data already
+#   carry it is the author's to find.
+# - O6, the PFC region of interest for the PSI time courses ("the lesioned PFC region of
+#   interest, as identified in the analysis of power asymmetry (see Figure 2)"). The text does
+#   not list its channels. Readings (a) the lesioned-hemisphere anterior channels of the
+#   significant cluster found under claim power-lowtheta-interaction; (b) the ANTERIOR channels
+#   of Figure S4, AF7-F5-F7-FC5-FT7. Its partners, "parieto-occipital channels in the same
+#   hemisphere", are read as P1-P3-P5-P7-P9-PO3-PO7-O1, the left posterior set Figures S3 and
+#   S4 name.
+# - O7, the group summary behind a thresholded Z ("single-subject analyses revealed ... Z >
+#   1.96" on a figure of group means). Readings (a) the group mean of the subjects' Z crosses
+#   the threshold; (b) most subjects' Z crosses it.
+schema_version: 2
+paper: doi:10.1016/j.cub.2017.05.046
+claims:
+- id: cohort-and-trials
+  statement: The study has 14 unilateral PFC patients and 20 age- and education-matched
+    controls; after cleaning, subjects kept on average 187 trials, 94 +- 21 (55 to 119) in the
+    lesioned and 93 +- 22 (51 to 120) in the intact visual hemifield.
+  source: Results, paragraph 1; STAR Methods, Data Preprocessing, EEG Cleaning, last sentence
+  quote: 'Fourteen unilateral PFC patients (mean ± SD: 46 ± 16 years of age; 15 ± 3 years of
+    education; Figures 1A and S1; Table S1) and 20 age- and education-matched healthy controls
+    ... The final dataset included an average of 187 trials per subject (mean ± SD [range]
+    trials: 94 ± 21 [55-119] lesioned visual hemifield, 93 ± 22 [51-120] intact visual
+    hemifield).'
+  expected:
+  - quantity: patients
+    value: 14
+    tolerance: 0
+  - quantity: controls
+    value: 20
+    tolerance: 0
+  - quantity: mean trials per subject after cleaning
+    value: 187
+    tolerance: 18.7
+  - quantity: mean trials, lesioned visual hemifield
+    value: 94
+    tolerance: 21
+  - quantity: mean trials, intact visual hemifield
+    value: 93
+    tolerance: 22
+  criterion: Subjects are counted, and trials are counted per subject and visual hemifield
+    after all exclusions. The paper does not say whether these counts include incorrect trials.
+    Readings (a) all trials kept after cleaning; (b) correct trials only. Means use the paper's
+    SD as tolerance. The ranges hold when the minimum and maximum fall within 55 to 119 and 51
+    to 120 widened by 10% of each bound.
+- id: demographics-matched
+  statement: Controls do not differ from patients in age or education, nor in variance.
+  source: STAR Methods, Experimental Model and Subject Details, paragraph 1
+  quote: independent-samples t tests with equal variance confirmed that the control group matched
+    on demographics (age t1,32 < 0.36, p > 0.72; education t1,32 < 1.22, p > 0.23; variance
+    F13,19 < 1.31, one-tailed p > 0.31)
+  statistics:
+  - about: age, patients against controls
+    test: independent-samples t test, equal variance
+    statistic: t(1,32) < 0.36
+    p: 0.72
+    p_relation: ">"
+  - about: education, patients against controls
+    test: independent-samples t test, equal variance
+    statistic: t(1,32) < 1.22
+    p: 0.23
+    p_relation: ">"
+  - about: variance, patients against controls
+    test: F test of variances, one-tailed
+    statistic: F(13,19) < 1.31
+    p: 0.31
+    p_relation: ">"
+  expected:
+  - quantity: patient mean age
+    value: 46
+    tolerance: 16
+    unit: years
+  - quantity: control mean age
+    value: 44
+    tolerance: 19
+    unit: years
+  criterion: A claim of absence, judged on the paper's tests. Two-tailed independent-samples t
+    tests with pooled variance on age and on years of education, 14 patients against 20
+    controls, and a one-tailed F test of variances with 13 and 19 degrees of freedom (patients
+    in the numerator). The paper does not say which variable's variance was tested; readings
+    (a) age, (b) education, (c) both. Reproduced when none of the tests gives p < 0.05; not
+    reproduced when one does. The t, F and p values are reported either way.
+- id: patient-factors-no-effect
+  statement: In patients, no lesion or demographic factor (lesion hemisphere, etiology, size,
+    years since lesion, age, gender, education, IQ) nor visual hemifield or condition has a
+    significant effect on accuracy, which permits pooling the patients into one group.
+  source: Results, Behavior, paragraph 1; Table S2
+  quote: No significant effects were observed (p > 0.14; Table S2), permitting the normalization
+    of patient data into one group [24].
+  statistics:
+  - test: repeated-measures mixed ANCOVA
+    p: 0.14
+    p_relation: ">"
+    n: 14 patients
+  criterion: A claim of absence, judged on the paper's test (STAR Methods, Behavioral Analysis;
+    Table S2). Patient accuracy per visual hemifield (lesion, intact) and condition (identity,
+    spatial, temporal) in a repeated-measures ANCOVA with lesion hemisphere, etiology (stroke
+    against tumor resection, one degree of freedom as Table S2 gives), lesion size, years
+    elapsed, age, gender, education and IQ as between-subject terms, and the terms Table S2
+    lists (hemisphere by etiology, hemisphere by gender, etiology by gender, and their
+    interactions with the within-subject factors). Reproduced when no term has p < 0.05; not
+    reproduced when one does. All F and p values are reported against Table S2. The
+    per-patient covariates are in Table S1; whether the data set holds them is the author's to
+    find.
+- id: table-s1-patient-accuracy
+  statement: Each patient's accuracy in the lesioned and intact visual hemifield is as Table S1
+    lists, from 0.65 to 0.98.
+  source: Table S1
+  inferred: Numbers from Table S1 (Accuracy, Lesion VHF and Intact VHF columns); no sentence of
+    the text states them.
+  criterion: Accuracy per patient and visual hemifield as the fraction of correct trials after
+    the eye-gaze exclusion. Patients are matched to Table S1 rows by subject number if the data
+    set numbers them alike, otherwise by lesion hemisphere, etiology, age and gender. Tolerance
+    0.02 per value (the table prints two decimals, and with about 100 trials per hemifield a
+    trial or two of exclusion moves the value by 0.01 to 0.02; 10% of the value would not tell
+    patients apart). Reproduced when at least 26 of the 28 values are within tolerance;
+    partially reproduced for 20 to 25. Readings for the denominator (a) all trials after the
+    eye-gaze exclusion; (b) the trials kept after EEG cleaning.
+- id: accuracy-patients-impaired
+  statement: PFC patients are less accurate than controls (mean +- SD 0.87 +- 0.08 against 0.95
+    +- 0.03), a group effect with p < 7 x 10^-5 in the mixed-effects model with group as the only
+    fixed effect.
+  source: Results, Behavior, paragraph 2; Figure 1C; Table S3
+  quote: 'Results revealed that PFC patients were impaired at the task relative to controls (mean
+    ± SD correct: controls 0.95 ± 0.03 versus patients 0.87 ± 0.08'
+  statistics:
+  - about: group, model with group as the only fixed effect
+    test: mixed-effects model (fitglme)
+    statistic: F(1,202) = 16.77, Cohen's d = 1.47
+    p: 0.00007
+    p_relation: "<"
+    n: 14 patients and 20 controls
+  - about: group, full model with group, visual hemifield and condition
+    test: mixed-effects model (fitglme)
+    statistic: F(1,196) = 4.70, Cohen's d = 0.78
+    p: 0.03
+    corrected: does not survive Bonferroni over 7 effects (alpha 0.0071)
+  expected:
+  - quantity: control mean accuracy
+    value: 0.95
+    tolerance: 0.03
+  - quantity: patient mean accuracy
+    value: 0.87
+    tolerance: 0.08
+  - quantity: F of group, group-only model
+    value: 16.77
+    tolerance: 1.68
+  criterion: The model is from STAR Methods, Behavioral Analysis, and Table S3. Its rows are
+    read as the 204 subject by visual hemifield by condition accuracies (34 x 6), with a random
+    intercept per subject; the denominator degrees of freedom of Table S3 (196, 202, 200) fit
+    this and a condition term of one degree of freedom (condition coded as one number). The
+    paper calls the model "logit mixed-effects" in the Results and "linear mixed-effects" in
+    the Methods. Readings (a) a Gaussian (linear) model on the cell accuracies; (b) a binomial
+    logit model on the cells, weighted by trial counts; (c) condition as a three-level factor
+    instead of one number. Group means are over each subject's accuracy, read (a) over all the
+    subject's trials or (b) as the mean of its six cells. Reproduced when, under one reading,
+    both means are within tolerance and the group effect of the group-only model has p < 7 x
+    10^-5 with patients lower; partially reproduced when the means hold and p < 0.0071 (the
+    paper's Bonferroni level). The full model's group effect is reported as well.
+- id: patients-above-chance
+  statement: Despite the impairment, patients perform well above the 0.5 chance rate.
+  source: Results, Behavior, paragraph 2
+  quote: Nonetheless, patients performed well above chance (pairedsample t1,13 > 15.43
+  statistics:
+  - test: paired-sample t test against chance, one-tailed
+    statistic: t(1,13) > 15.43
+    p: 5.0e-10
+    p_relation: "<"
+    n: 14 patients
+  expected:
+  - quantity: smallest t against chance
+    value: 15.43
+    tolerance: 1.54
+  criterion: Patient accuracy against 0.5 by a one-tailed t test with 13 degrees of freedom.
+    The ">" in "t1,13 > 15.43" suggests more than one test; readings (a) one test on each
+    patient's overall accuracy; (b) one per visual hemifield; (c) one per visual hemifield and
+    condition. Reproduced when, under one reading, every test gives t above 13.89 (15.43 less
+    10%) and one-tailed p < 5 x 10^-10.
+- id: accuracy-no-hemifield-condition-effect
+  statement: Accuracy does not differ between visual hemifield presentations or between
+    conditions.
+  source: Results, Behavior, paragraph 2; Figure 1D; Table S3, third model
+  quote: There were no differences between visual hemifield presentations or conditions
+    (uncorrected p > 0.05).
+  statistics:
+  - about: visual hemifield, model with visual hemifield and condition only
+    test: mixed-effects model (fitglme)
+    statistic: F(1,200) = 0.46
+    p: 0.50
+  - about: condition, same model
+    test: mixed-effects model (fitglme)
+    statistic: F(1,200) = 1.74
+    p: 0.19
+  - about: visual hemifield by condition, same model
+    test: mixed-effects model (fitglme)
+    statistic: F(1,200) = 0.39
+    p: 0.53
+  depends_on:
+  - accuracy-patients-impaired
+  criterion: A claim of absence, judged on the paper's test, the model with only visual
+    hemifield and condition fixed effects (Table S3, third model; STAR Methods, Behavioral
+    Analysis), with the model readings of claim accuracy-patients-impaired. Reproduced when the
+    visual hemifield, condition and interaction effects all have uncorrected p > 0.05; not
+    reproduced when any has p < 0.05. Effect sizes are reported either way. The full model's
+    visual hemifield and condition effects (Table S3, p = 0.06 each) are shown as a variant.
+- id: erp-lesioned-maintenance
+  statement: For stimuli presented to the lesioned visual hemifield, patients show attenuated
+    positive ERPs in posterior channels and reversed-polarity signals in lesioned-hemisphere
+    anterior channels early in maintenance.
+  source: Results, Task-Induced ERPs; Figure S2A
+  quote: PFC patients exhibited attenuated positive-polarity ERPs in parieto-occipital channels
+    (pcluster = 0.03) and reversed-polarity signals in lesioned-hemisphere anterior channels
+    (F5-F7-FC5-FT7-C3C5-T7; pcluster = 0.002).
+  statistics:
+  - about: posterior channels, group main effect
+    test: cluster-based permutation test
+    p: 0.03
+    n: 14 patients and 20 controls
+  - about: lesioned-hemisphere anterior channels, group main effect
+    test: cluster-based permutation test
+    p: 0.002
+    n: 14 patients and 20 controls
+  criterion: ERPs from STAR Methods, Event-Related Potentials. Correct lesioned-hemifield
+    trials, segments zero-padded and 30 Hz low-pass FIR filtered, averaged, and the mean of the
+    500 ms pretrial baseline subtracted, over the 1500 ms encoding-maintenance segment. Group
+    test with the shared methods on all 64 channels by time, over the whole segment. The
+    zero-padding is written "7,500" with no unit (ms or samples); either is a standard choice
+    and cannot change the outcome much. Open details O1, O2, O4, O5. Reproduced when two
+    clusters have p < 0.05 after the second stimulus ends (400 ms), one with patients below
+    controls that includes P6, P8, P10 or PO8 (the POSTERIOR channels of Figure S2A), and one
+    of opposite sign to the controls' ERP in lesioned-hemisphere anterior channels among F5,
+    F7, FC5, FT7, C3, C5 and T7. Partially reproduced when only one of them holds.
+- id: erp-processing-interaction
+  statement: At active processing, for lesioned-hemifield stimuli, ERPs show a group by
+    hemisphere interaction without a group main effect; patients have enhanced signal in
+    lesioned-hemisphere anterior channels 100 ms after the test prompt, relative to the intact
+    homologs.
+  source: Results, Task-Induced ERPs
+  quote: At active processing, there was a group 3 hemisphere interaction (pcluster = 0.034) but no
+    group main effect (pcluster > 0.26). Enhanced signal was detected in patients 100 ms after
+    presentation of the test prompt in lesioned-hemisphere anterior channels
+    (FP1-AF3-AF7-F5-F7FC5-FT7), relative to the homologous, intact-hemisphere channels.
+  statistics:
+  - about: group by hemisphere interaction
+    test: cluster-based permutation test
+    p: 0.034
+  - about: group main effect
+    test: cluster-based permutation test
+    p: 0.26
+    p_relation: ">"
+  criterion: ERPs as in claim erp-lesioned-maintenance over the 900 ms active processing
+    segment (from test prompt offset), correct lesioned-hemifield trials. The interaction is the
+    shared group test on the hemisphere index (O3) by time; the main effect the group test on
+    all 64 channels by time. Open details O1, O2, O3, O4, O5. Reproduced when an interaction
+    cluster has p < 0.05, with patients' lesion-minus-intact index above the controls' in
+    channels among FP1, AF3, AF7, F5, F7, FC5 and FT7 near 100 ms, and no group main effect
+    cluster has p < 0.05. Partially reproduced when the interaction holds and a main effect
+    cluster is also significant.
+- id: erp-intact-none
+  statement: None of the ERP group effects is seen when stimuli are presented to the intact
+    visual hemifield.
+  source: Results, Task-Induced ERPs; Figure S2B
+  quote: None of these effects was observed on trials in which stimuli were presented to the
+    intact visual hemifield (pcluster > 0.33)
+  statistics:
+  - test: cluster-based permutation test
+    p: 0.33
+    p_relation: ">"
+  depends_on:
+  - erp-lesioned-maintenance
+  - erp-processing-interaction
+  criterion: A claim of absence, judged on the paper's tests, the group main effect and group by
+    hemisphere tests of claims erp-lesioned-maintenance and erp-processing-interaction run on
+    correct intact-hemifield trials, at cluster p < 0.05. Reproduced when no cluster in any of
+    them has p < 0.05; not reproduced when one does. The smallest cluster p of each test is
+    reported.
+- id: baseline-spectral-interaction
+  statement: In the pretrial baseline, patients have higher raw power between 6 and 18 Hz in
+    lesioned-hemisphere anterior channels (AF3, F3, F5) than in the intact homologs, a group by
+    hemisphere interaction (a steepened spectral slope over the lesion).
+  source: Results, Baseline Neurological Effects; Figure S3
+  quote: Cluster-based permutation testing of raw power spectra revealed a group 3 hemisphere
+    interaction (pcluster = 0.004) ... Enhanced power was detected between 6 and 18 Hz in
+    lesioned-hemisphere anterior channels, relative to the homologous, intact-hemisphere
+    channels, defining baseline effects in patients.
+  statistics:
+  - about: group by hemisphere interaction
+    test: cluster-based permutation test
+    p: 0.004
+    n: 14 patients and 20 controls
+  criterion: Spectra from STAR Methods, Baseline Spectral Power. All trials, the 500 ms pretrial
+    segment zero-padded to 7500 ms, Hanning taper, FFT, power at each frequency 1 to 40 Hz,
+    averaged over trials per subject (raw, not log). Group test on the hemisphere index (O3) by
+    frequency, with the shared methods. Open details O1, O3, O4, O5. Reproduced when a cluster
+    has p < 0.05 with patients' index above the controls', spanning frequencies within about 6
+    to 18 Hz and including AF3, F3 or F5; partially reproduced when the cluster is significant
+    but lies elsewhere in frequency or space.
+- id: baseline-no-group-effect
+  statement: Baseline raw power shows no main effect of group.
+  source: Results, Baseline Neurological Effects; Figure S3 legend
+  quote: but no main effect of group (uncorrected p > 0.05)
+  statistics:
+  - test: cluster-based permutation test (independent-samples t, uncorrected)
+    p: 0.05
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test (STAR Methods, Cluster-Based
+    Permutation Testing, "Baseline power was tested for main effects of group on all 64
+    channels"). Spectra as in claim baseline-spectral-interaction; independent-samples t test
+    of patients against controls at each channel and frequency 1 to 40 Hz. The paper says p >
+    0.05 uncorrected, so no point passes the cluster-forming threshold. Reproduced when no
+    cluster has p < 0.05; the number of channel-frequency points with uncorrected p < 0.05 is
+    reported, and the claim is marked as only partly holding when any point passes.
+- id: power-anterior-theta-controls
+  statement: In controls, delta-theta (2 to 7 Hz) power in anterior channels rises during
+    encoding-maintenance and stays elevated through active processing, where it peaks, above Z
+    = 3.29 against the pretrial baseline.
+  source: Results, Task-Induced Power, paragraph 2; Figure S4A
+  quote: Activity in the delta-theta (2–7 Hz) range marked the encodingmaintenance interval in
+    anterior channels, which increased and then remained elevated through processing (Z > 3.29
+    versus pretrial baseline; p < 0.001; Figure S4).
+  statistics:
+  - test: bootstrapped Z against the pretrial baseline
+    statistic: Z > 3.29
+    p: 0.001
+    p_relation: "<"
+    n: 20 controls
+  criterion: Z-scored power with the shared methods, averaged over 2 to 7 Hz and the ANTERIOR
+    channels of Figure S4 (AF7, F5, F7, FC5, FT7), per control. Figure S4 does not split by
+    visual hemifield; readings (a) both hemifields pooled; (b) each hemifield. Open details O4,
+    O5, O7. Reproduced when the controls' Z exceeds 3.29 during active processing and its
+    maximum over the trial lies in active processing; partially reproduced when it exceeds
+    3.29 but peaks earlier.
+- id: power-posterior-alphabeta
+  statement: Posterior channels show beta-gamma (12 to 35 Hz) increases and alpha
+    desynchronization at encoding, then alpha-beta (9 to 24 Hz) decreases through maintenance
+    (|Z| > 1.96) and active processing (Z < -3.29), in both groups.
+  source: Results, Task-Induced Power, paragraph 3; Figure S4
+  quote: increased parieto-occipital activity in the betagamma range (12–35 Hz) and narrowband
+    alpha desynchronization marked visual processing during encoding, followed by widespread
+    alpha-beta (9–24 Hz) decreases throughout maintenance
+  statistics:
+  - about: alpha-beta at maintenance
+    test: bootstrapped Z against the pretrial baseline
+    statistic: '|Z| > 1.96'
+    p: 0.05
+    p_relation: "<"
+  - about: alpha-beta at active processing
+    test: bootstrapped Z against the pretrial baseline
+    statistic: Z < -3.29
+    p: 0.001
+    p_relation: "<"
+  criterion: Z-scored power with the shared methods over the POSTERIOR channels of Figure S4 (P1,
+    P3, P5, P7, P9, PO3, PO7, O1), per group. Visual hemifield readings as in claim
+    power-anterior-theta-controls. Open details O4, O5, O7. Reproduced when, in each group, the
+    9 to 24 Hz Z is below -1.96 through maintenance (400 ms after first stimulus onset to the
+    test prompt) and below -3.29 during active processing, and the 12 to 35 Hz Z is above zero
+    during encoding (0 to 400 ms). Partially reproduced when the alpha-beta decreases hold in
+    one group only, or hold but not the encoding increase.
+- id: power-lowtheta-interaction
+  statement: At active processing, patients have reduced low-theta (3 to 4 Hz) power in
+    lesioned-hemisphere anterior channels relative to the intact homologs, a group by
+    hemisphere interaction found both when stimuli went to the lesioned and to the intact
+    visual hemifield.
+  source: Results, Task-Induced Power, paragraph 2; Figure 2A and 2B
+  quote: Cluster-based permutation testing revealed group 3 hemisphere interaction effects
+    (pcluster % 0.04; Figure 2) ... Reduced low-theta (3–4 Hz) power was detected in anterior
+    channels in the lesioned hemisphere, relative to the homologous channels in the intact
+    hemisphere.
+  statistics:
+  - about: lesioned visual hemifield
+    test: cluster-based permutation test, group by hemisphere
+    p: 0.04
+  - about: intact visual hemifield
+    test: cluster-based permutation test, group by hemisphere
+    p: 0.036
+  criterion: Z-scored power with the shared methods over the 900 ms active processing segment,
+    correct trials, each visual hemifield separately; group test on the hemisphere index (O3).
+    Open details O1, O2, O3, O4, O5. Reproduced when, for both hemifields, a cluster has p <
+    0.05 with patients' lesion-minus-intact index below the controls', covering 3 to 4 Hz in
+    lesioned-hemisphere anterior channels; partially reproduced when this holds for one
+    hemifield only.
+- id: power-no-group-main-effect
+  statement: Task-induced power shows no group main effect, neither for anterior theta nor for
+    the posterior alpha-beta decreases.
+  source: Results, Task-Induced Power, paragraphs 2 and 3; Figure 2A legend; Figure S4B legend
+  quote: but non-significant group main effects (pcluster > 0.10) ... These patterns did not
+    differ by group (pcluster > 0.52)
+  statistics:
+  - about: all task-induced power
+    test: cluster-based permutation test, group main effect
+    p: 0.10
+    p_relation: ">"
+  - about: posterior alpha-beta patterns
+    test: cluster-based permutation test, group main effect
+    p: 0.52
+    p_relation: ">"
+  - about: anterior theta at active processing (Figure 2A)
+    test: cluster-based permutation test, group main effect
+    p: 0.61
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's test, the group cluster test with the
+    shared methods on Z-scored power on all 64 channels, for encoding-maintenance and active
+    processing and each visual hemifield. Open details O1, O2, O4, O5. Reproduced when no
+    cluster has p < 0.05; not reproduced when one does. Cluster p values and the size of the
+    group difference in anterior 3 to 4 Hz and posterior 9 to 24 Hz Z are reported either way.
+- id: psi-deltatheta-bottomup-encoding
+  statement: In both groups, delta-theta PSI shows parieto-occipital regions leading PFC at the
+    offset of the second stimulus at encoding, at baseline-corrected Z of -10 or below.
+  source: Results, Task-Induced Directional Connectivity, paragraph 3; Figure 3A and 3B, left
+  quote: Parieto-occipital / PFC PSI marked the offset of the second stimulus at encoding
+  statistics:
+  - test: PSI Z against frequency-shuffled null, baseline-corrected
+    statistic: Z <= -10
+    p: 2.0e-23
+    p_relation: "<"
+  expected:
+  - quantity: baseline-corrected delta-theta PSI Z (PFC to parieto-occipital) at second stimulus
+      offset
+    value: -10
+    tolerance: 1
+  criterion: Delta-theta PSI Z with the shared methods, from PFC channels to parieto-occipital
+    channels of the lesioned hemisphere (O6), averaged over channel pairs, correct trials, each
+    visual hemifield. Open details O4, O5, O6, O7. Reproduced when, under one reading, both
+    groups reach Z of -9 or below (within 10% of -10) within 100 ms of 400 ms after first
+    stimulus onset, in both hemifields; partially reproduced when Z is negative and below -1.96
+    there but does not reach -9.
+- id: psi-deltatheta-pfc-lead-controls
+  statement: In delta-theta PSI, controls shift to PFC leading parieto-occipital regions in
+    mid-maintenance (Z > 1.96), and the PFC lead peaks early in active processing (Z of 10 or
+    more), whereas patients show zero directionality (Z < 1.96).
+  source: Results, Task-Induced Directional Connectivity, paragraph 3; Figure 3A and 3B, left
+  quote: Controls then exhibited a shift in directionality so that PFC drove parieto-occipital
+    regions mid-maintenance (Z > 1.96; p < 0.05). PFC / parieto-occipital PSI continued to
+    increase in controls with executive demands such that the PFC lead peaked early during
+    active processing ... whereas PFC patients exhibited zero directionality (Z < 1.96; p >
+    0.05).
+  statistics:
+  - about: controls, mid-maintenance
+    test: PSI Z against frequency-shuffled null, baseline-corrected
+    statistic: Z > 1.96
+    p: 0.05
+    p_relation: "<"
+  - about: controls, early active processing
+    test: PSI Z against frequency-shuffled null, baseline-corrected
+    statistic: Z >= 10
+    p: 2.0e-23
+    p_relation: "<"
+  - about: patients
+    test: PSI Z against frequency-shuffled null, baseline-corrected
+    statistic: Z < 1.96
+    p: 0.05
+    p_relation: ">"
+  expected:
+  - quantity: controls' peak baseline-corrected delta-theta PSI Z (PFC to parieto-occipital),
+      early active processing
+    value: 10
+    tolerance: 1
+  depends_on:
+  - power-lowtheta-interaction
+  criterion: PSI as in claim psi-deltatheta-bottomup-encoding. Reproduced when, under one
+    reading, in both visual hemifields the controls' Z exceeds 1.96 at some point of
+    maintenance, reaches at least 9 (10 less 10%) in the first half of active processing, with
+    its maximum there, and the patients' Z stays below 1.96 through maintenance and
+    processing. Partially reproduced when the controls' pattern holds with a peak between 1.96
+    and 9, or holds in one hemifield only.
+- id: psi-deltatheta-group-clusters
+  statement: Across all 64 by 64 channel pairs, delta-theta PSI differs between groups
+    intermittently during encoding and maintenance and in a sustained way during active
+    processing.
+  source: Results, Task-Induced Directional Connectivity, paragraph 3; Figure 3, right
+  quote: 'Cluster-based permutation testing of all 64-by-64 channel pairs revealed intermittent
+    group effects during encoding and maintenance (lesioned/intact visual hemifield: 100–200/200–300
+    and 700–800/1,000–1,200 ms) and sustained effects during active processing (100–700/0–500 ms;
+    pcluster < 0.05).'
+  statistics:
+  - test: cluster-based permutation test, group main effect
+    p: 0.05
+    p_relation: "<"
+    n: 14 patients and 20 controls
+  criterion: Delta-theta PSI Z (baseline-corrected) with the shared methods for every channel
+    pair, 100 ms steps, each visual hemifield; group cluster test on pairs by time. How pairs
+    are clustered is open; readings (a) over time only, per pair; (b) over time and over pairs
+    whose both channels are neighbours (O1). The windows are read as lesioned hemifield 100 to
+    200 and 700 to 800 ms (encoding-maintenance) and 100 to 700 ms (processing), intact
+    hemifield 200 to 300 and 1000 to 1200 ms and 0 to 500 ms. Open details O1, O4, O5.
+    Reproduced when, under one reading and in both hemifields, significant clusters (p < 0.05)
+    cover most of the processing window and some of the encoding-maintenance windows, within
+    100 ms (one time step) of the stated edges; partially reproduced when only the processing
+    effects hold.
+- id: psi-network-degree
+  statement: A post hoc network analysis of delta-theta PSI shows group differences from
+    lesioned PFC to bilateral central-posterior regions, sustained for 200 ms early in active
+    processing, for both visual hemifields.
+  source: Results, Task-Induced Directional Connectivity, paragraph 4; Figure 3, right
+  quote: Cluster-based permutation testing of network data revealed group effects from lesioned
+    PFC to bilateral central-posterior regions that were sustained for 200 ms early during active
+    processing, regardless of whether stimuli were presented to the lesioned or intact visual
+    hemifield (pcluster % 0.01; Figure 3, right).
+  statistics:
+  - about: printed as pcluster at most 0.01
+    test: cluster-based permutation test, group main effect on network degree
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - psi-deltatheta-group-clusters
+  criterion: Network degree from STAR Methods, Graph Theory. On the Z-scored delta-theta PSI
+    (before baseline correction), a connection is true when |Z| > 1.96; degree per channel is
+    "the weight of true directional connections" to all other channels; then the temporal mean
+    of the baseline degree is subtracted. Readings for the degree (a) the sum of Z over true
+    connections leaving the channel (out-degree, signed); (b) the count of true connections
+    leaving the channel. Group cluster test with the shared methods on channels by time. Open
+    details O1, O4, O5. Reproduced when, under one reading and in both hemifields, a cluster
+    with p <= 0.01 lasting about 200 ms (two time steps) in the first half of active processing
+    shows patients below controls in degree from lesioned PFC, or in central-posterior
+    channels of both hemispheres; partially reproduced when it holds at p < 0.05 or in one
+    hemifield only.
+- id: psi-alphabeta-bottomup
+  statement: In alpha-beta (9 to 24 Hz) PSI, parieto-occipital regions lead PFC throughout
+    encoding, maintenance and active processing, for both visual hemifields.
+  source: Results, Task-Induced Directional Connectivity, paragraph 5; Figure 4A and 4B
+  quote: Parieto-occipital regions drove PFC throughout encoding, maintenance, and active
+    processing, regardless of whether stimuli were presented to the lesioned or intact visual
+    hemifield
+  statistics:
+  - test: PSI Z against frequency-shuffled null, baseline-corrected
+    statistic: Z < -1.96
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - power-lowtheta-interaction
+  criterion: PSI as in claim psi-deltatheta-bottomup-encoding, over 9 to 24 Hz. Open details O4,
+    O5, O6, O7. Reproduced when, under one reading, in both groups and both hemifields the
+    baseline-corrected Z from PFC to parieto-occipital channels is below -1.96 for most time
+    points of encoding-maintenance and of active processing; partially reproduced when it is
+    negative throughout but crosses -1.96 only in part.
+- id: psi-alphabeta-no-group-effect
+  statement: PFC lesions do not affect alpha-beta PSI at any point of encoding, maintenance or
+    active processing.
+  source: Results, Task-Induced Directional Connectivity, paragraph 5; Figure 4A and 4B
+  quote: PFC lesions did not affect alpha-beta PSI at any point during encoding, maintenance, or
+    active processing (group pcluster > 0.05).
+  statistics:
+  - test: cluster-based permutation test, group main effect
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - psi-deltatheta-group-clusters
+  criterion: A claim of absence, judged on the paper's test, the group cluster test of claim
+    psi-deltatheta-group-clusters on alpha-beta PSI, both segments and both hemifields, with
+    the same readings for clustering pairs. Reproduced when no cluster has p < 0.05; not
+    reproduced when one does. The smallest cluster p values and the group difference in the
+    PFC to parieto-occipital Z are reported either way.
