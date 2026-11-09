@@ -80,6 +80,10 @@
 #    the first five novel arm trials (Methods, Population vector cross-correlation). Negative
 #    shifts are backward.
 #
+# Author run, 2026-11-05: added the link claim link-roi-alignment (protocol, Author, step 1.4) and
+# listed it under depends_on, with data: with_labels, for the claims that use cells tracked across
+# days. No statement, expected value or criterion was changed.
+#
 # Inconsistencies noticed in the text (for the author's notes, not corrected here): Fig 1F
 # prints F(1,15)=10.66 with p=5.22e-4, where that F gives p near 0.005; Fig S3A prints
 # F(1,14)=.016 with p=.795 (the same F in Fig S3B gives p=.902); Fig 2C-D give N=8 Cre mice
@@ -92,6 +96,22 @@ dataset:
   id: "001710"
 paper: doi:10.1101/2023.11.20.567978
 claims:
+- id: link-roi-alignment
+  kind: link
+  statement: The authors' across-session ROI matches, published on Figshare and named in the
+    dandiset's description, refer to the ROIs of the dandiset's files and match cells at the same
+    place in the field of view across the six days.
+  source: Methods, Two photon (2P) imaging, paragraph 2; dandiset description; Figshare
+    doi:10.6084/m9.figshare.31286365 version 5 (roi_aligners.zip)
+  quote: Custom code was used to find cells that were successfully tracked across imaging sessions.
+  data: with_labels
+  criterion: Added by the author (protocol, Author, step 1.4). Records are matched by ROI index,
+    through the session order of the authors' mouse_metadata.py (GiocomoLab/Plitt_Kaganovsky_Stx3_CA1
+    at commit f2ab24db8709a321d38576a1fa674f95035a2fec). Reproduced when every matched index exists
+    in the corresponding file and at least 95% of matched cells lie within 10 pixels of their day-1
+    position after removing each day pair's median displacement, against random pairs as the
+    reference; partially when at least 50% do. The number of cells tracked over all six days is
+    reported per mouse.
 - id: fig1c-novelty-preference
   statement: In the freely moving novel-arm T-maze test trial, control mice preferred the
     previously unseen arm while Cre mice explored the arms at chance, and the novel minus
@@ -477,6 +497,9 @@ claims:
     against Cre. Readings, cells (a) all tracked cells (Fig 2G legend, "each cell"), (b) tracked
     place cells (Fig 2E-F, Results "place cell responses"), with the PV correlation readings of
     figs3b. Reproduced when p >= 0.05 for both trial types under every reading.
+  depends_on:
+  - link-roi-alignment
+  data: with_labels
 - id: figs3eg-across-day-decoding-no-difference
   statement: Position decoders trained on one day and tested on other days did not differ in
     accuracy between control and Cre mice.
@@ -503,6 +526,8 @@ claims:
     trial types under both readings.
   depends_on:
   - fig2cd-decoding-no-group-difference
+  - link-roi-alignment
+  data: with_labels
 - id: figs4-morph-task-context-discrimination
   statement: In a separate morph VR task, Cre mice showed normal experience-dependent
     contextual remapping, with trial by trial similarity matrices like those of control mice.
@@ -1035,6 +1060,9 @@ claims:
     day by day matrix. Cells are those tracked across days. Readings, days (a) 1 to 6, (b) 1 to
     5; with the COM readings of fig6c. Reproduced when the control shift is below 0 with
     p < 0.05, the Cre shift has p >= 0.05, and control is more negative than Cre with p < 0.05.
+  depends_on:
+  - link-roi-alignment
+  data: with_labels
 - id: figs8d-pv-shift-not-explained-by-speed
   statement: The day 1 PV shift is not correlated with running speed on the first five novel
     trials.
@@ -1169,6 +1197,8 @@ claims:
     pair. Reproduced when both control tests have p < 0.05 with positive differences.
   depends_on:
   - figs9a-hse-trial-proportion-no-difference
+  - link-roi-alignment
+  data: with_labels
 - id: fig7e-cre-reactivation-boost-novel-only
   statement: In Cre mice, reactivated cells have a weakly higher across-day correlation on novel
     trials but not on familiar trials.
@@ -1195,6 +1225,8 @@ claims:
     absence part judged on the paper's test).
   depends_on:
   - fig7e-reactivated-cells-more-stable-across-days-control
+  - link-roi-alignment
+  data: with_labels
 - id: fig7e-reactivation-effect-virus-and-novelty
   statement: The across-day stability gain of reactivated cells is larger in control than in Cre
     mice and larger on novel than familiar trials, and the novelty effect is larger in control
@@ -1229,6 +1261,8 @@ claims:
     partially when the main effects hold but not the novelty comparison.
   depends_on:
   - fig7e-reactivated-cells-more-stable-across-days-control
+  - link-roi-alignment
+  data: with_labels
 - id: fig7h-reactivated-cells-higher-trial-correlation-control
   statement: In control mice, cells that participated in HSEs have higher trial by trial rate
     map correlation than cells that did not, on familiar and novel trials.
