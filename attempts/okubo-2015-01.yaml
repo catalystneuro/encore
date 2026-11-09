@@ -21,9 +21,12 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/42684624949
 inputs:
-- what: The model code HVCModelCode (MATLAB, E. Mackevicius, 2015-07-18) of the paper's Supplementary
-    Information, ported to Python in hvcmodel.py for the model claims.
+- what: The model code HVCModelCode (MATLAB, E. Mackevicius, 2015-07-18) of the paper's Supplementary Information,
+    ported to Python in hvcmodel.py for the model claims.
   source: doi:10.1038/nature15741
+- what: RunHVC_split_intoThree.m and HVCtestRaster_intoThree.m of the model code repository named in the Supplementary
+    Information code, ported to Python (hvcmodel.run_motif_github, raster_classes) for reading (b) of model-ed10eh-motif.
+  source: https://github.com/emackev/HVCModelCode/tree/05dc96b1263ee14c066eeda674b96b015f6c57d7
 outcomes:
 - claim: counts-neurons-birds
   outcome: reproduced
@@ -34,13 +37,15 @@ outcomes:
   - 35
   - 210
   - 1116
-  notes: Of 1,125 neuron files, 1,116 pass the Methods' 5 s singing rule (1,117 expected), in 32 juvenile
-    birds; 210 are HVCp (211 expected under either reading). The totals 1,149 and 35 cannot be measured,
-    as the adult neurons are not in the dataset; with the paper's 32 adult neurons the total would be
-    1,148. Measured values for the two totals are given as 1,116 + 32 and 32 + 3.
+  notes: Of 1,125 neuron files, 1,116 pass the Methods' 5 s singing rule (1,117 expected), in 32 juvenile birds;
+    210 are HVCp (211 expected under either reading). The totals 1,149 and 35 cannot be measured, as the adult neurons
+    are not in the dataset; with the paper's 32 adult neurons the total would be 1,148. Measured values for the
+    two totals are given as 1,116 + 32 and 32 + 3. Under the second reading of the HVCp count (the 211 span all
+    stages), the juvenile 210 plus 0 to 32 unidentified adult neurons gives 210 to 242; the adult cell types are
+    not in the dataset, so this reading is within tolerance only if at most 22 of the 32 adult neurons were HVCp.
   deviations:
-  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found
-    in CRCNS (am-1, am-2 and am-4 hold other data); the adult stage is left out.
+  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found in CRCNS
+    (am-1, am-2 and am-4 hold other data); the adult stage is left out.
   - The two totals add the paper's own adult counts to the juvenile counts measured here.
 - claim: ed1a-stage-age
   outcome: reproduced
@@ -52,13 +57,13 @@ outcomes:
   - 58
   - 62
   - 73
-  notes: Reading (b), one value per neuron, gives Spearman rho 0.615 and median ages 48, 58, 62 and 73
-    dph, all within tolerance. Reading (a), per bird and day, gives rho 0.710 with medians 47, 57, 60
-    and 76; reading (c), per bird and stage, rho 0.756. The neuron list's 'young adult' stage is counted
-    as motif; as a fifth stage, rho is 0.642.
+  notes: Reading (b), one value per neuron, gives Spearman rho 0.615 and median ages 48, 58, 62 and 73 dph, all
+    within tolerance. Reading (a), per bird and day, gives rho 0.710 with medians 47, 57, 60 and 76; reading (c),
+    per bird and stage, rho 0.756. The neuron list's 'young adult' stage is counted as motif; as a fifth stage,
+    rho is 0.642.
   deviations:
-  - The list's stage 'young adult' (66 neurons of bird 1, 90 to 112 dph), which the paper does not define,
-    is counted as motif; with it the per-stage counts match the paper's (378 motif neurons).
+  - The list's stage 'young adult' (66 neurons of bird 1, 90 to 112 dph), which the paper does not define, is counted
+    as motif; with it the per-stage counts match the paper's (378 motif neurons).
 - claim: fig1-subsong-locking
   outcome: not_reproduced
   notebook: reproduce_okubo_2015.ipynb
@@ -66,47 +71,48 @@ outcomes:
   measured:
   - 39
   - 25
-  notes: 39 subsong-stage neurons (12 birds), as in the paper. 25 are locked at P < 0.05 under shift reading
-    (b) and 27 under reading (a), against 19 +/- 1.9. At P < 0.01 (not the paper's threshold) 21, at P
-    < 0.001 20.
+  notes: '39 subsong-stage neurons (12 birds), as in the paper. 25 are locked at P < 0.05 under shift reading (b)
+    and 27 under reading (a), against 19 +/- 1.9. At P < 0.01 (not the paper''s threshold) 21, at P < 0.001 20.
+    The excess is not borderline: 20 of the 39 have P < 0.001 under both readings. The locked neurons'' peaks lie
+    mostly just before onset (median -15 ms).'
   deviations:
-  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the
-    claims header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
-  - The smoothing is a centred 20-bin moving average, the plain reading of 'smoothed over 20 bins' (claims
-    header).
+  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the claims
+    header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
+  - The smoothing is a centred 20-bin moving average, the plain reading of 'smoothed over 20 bins' (claims header).
 - claim: fig1f-locking-increases
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig1f-locking-increases
   measured: 0.196
-  notes: Juvenile stages only. Fractions locked rise 0.641, 0.852, 0.863, 0.963 from subsong to motif;
-    Pearson r with stage 0.196 (P = 3.8e-11) under reading (b), 0.174 (P = 4.8e-09) under (a), 0.248 with
-    per-type locking (iii b), 0.240 with Bonferroni. The paper's r = 0.22 includes the adult stage, absent
-    here. The chi-square across the four juvenile stages gives P = 6.4e-11.
+  notes: Juvenile stages only. Fractions locked rise 0.641, 0.852, 0.863, 0.963 from subsong to motif; Pearson r
+    with stage 0.196 (P = 3.8e-11) under reading (b), 0.174 (P = 4.8e-09) under (a), 0.248 with per-type locking
+    (iii b), 0.240 with Bonferroni. The paper's r = 0.22 includes the adult stage, absent here. The chi-square across
+    the four juvenile stages gives P = 6.4e-11.
   deviations:
-  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found
-    in CRCNS (am-1, am-2 and am-4 hold other data); the adult stage is left out.
-  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the
-    claims header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
+  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found in CRCNS
+    (am-1, am-2 and am-4 hold other data); the adult stage is left out.
+  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the claims
+    header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
 - claim: fig1f-rhythmic-protosyllable
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig1f-rhythmic-protosyllable
   measured:
   - 7
   - 87
   - 161.6
-  notes: Rhythmic subsong neurons 7 (bins a) or 6 (bins b) of 39, against 3; protosyllable-stage 87 or
-    88 of 135, against 70 +/- 7. Mean period 161.6 +/- 6.0 ms (bins a) and 174.9 +/- 9.9 ms (bins b);
-    the latter is within 169 +/- 6.4 ms. Of the four measures, the IBI peak is significant for 100 of
-    135 protosyllable-stage neurons and the cepstrum for 37; requiring 3 of 4 gives 59. The direction
-    of the claim holds; the counts do not.
+  notes: Rhythmic subsong neurons 7 (bins a) or 6 (bins b) of 39, against 3 (partially at 2 or 4); protosyllable-stage
+    87 or 88 of 135, against 70 +/- 7. Mean period 161.6 +/- 6.0 ms (bins a) and 174.9 +/- 9.9 ms (bins b); the
+    latter is within 169 +/- 6.4 ms. No reading has all three values within tolerance, and both counts are outside
+    even the partial band. The direction of the claim holds (rhythm rare in subsong, common in the protosyllable
+    stage). Of the four measures, the IBI peak is significant for 100 of 135 protosyllable-stage neurons and the
+    cepstrum for 37; requiring 3 of 4 gives 59.
   deviations:
-  - Burst surrogates are drawn uniformly over non-overlapping arrangements of the bout's bursts with more
-    than 30 ms between them, an implementation of the paper's sequential placement with re-drawing.
-  - The multitaper spectra use 1 ms bins and 2048-point FFTs with the Methods' NW = 3/2 and K = 2 (standard
-    choices for the Chronux defaults the paper does not state); bouts shorter than 1.5 s give no window,
-    so 38 neurons have no spectrum or cepstrum.
+  - Burst surrogates are drawn uniformly over non-overlapping arrangements of the bout's bursts with more than 30
+    ms between them, an implementation of the paper's sequential placement with re-drawing.
+  - The multitaper spectra use 1 ms bins and 2048-point FFTs with the Methods' NW = 3/2 and K = 2 (standard choices
+    for the Chronux defaults the paper does not state); bouts shorter than 1.5 s give no window, so 38 neurons have
+    no spectrum or cepstrum.
 - claim: fig1fg-rhythm-increases
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
@@ -115,70 +121,81 @@ outcomes:
   - 0.292
   - 0.47
   - 835
-  notes: Juvenile stages only. r(rhythmic, stage) is 0.279 to 0.292 and r(period, stage) 0.455 to 0.470
-    over the four readings, all P < 1e-10. Rhythmic juvenile neurons total 826 to 836, above 727 +/- 72.7.
-    Mean periods by stage 146.5, 161.6, 280.2 and 443.1 ms. The adult stage is missing, so only sign and
-    significance are judged.
+  notes: Juvenile stages only. r(rhythmic, stage) is 0.279 to 0.292 and r(period, stage) 0.455 to 0.470 over the
+    four readings, all P < 1e-10. Rhythmic juvenile neurons total 826 to 836, above 727 +/- 72.7. Mean periods by
+    stage 146.5, 161.6, 280.2 and 443.1 ms. The adult stage is missing, so only sign and significance are judged.
   deviations:
-  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found
-    in CRCNS (am-1, am-2 and am-4 hold other data); the adult stage is left out.
+  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found in CRCNS
+    (am-1, am-2 and am-4 hold other data); the adult stage is left out.
 - claim: ed1c-burst-width-rate
   outcome: blocked
   blocked_by: data_missing
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed1c-burst-width-rate
-  notes: The criterion compares each juvenile stage with the adult stage, whose neurons are not in the
-    dataset. The juvenile medians are shown in the notebook (width 15.6, 8.6, 8.3, 7.2 ms; rate 147, 213,
-    256, 355 Hz from subsong to motif; Kruskal-Wallis P = 7.2e-15 and 1.7e-65).
+  notes: The criterion compares each juvenile stage with the adult stage, whose neurons are not in the dataset.
+    The juvenile medians are shown in the notebook (width 15.6, 8.6, 8.3, 7.2 ms; rate 147, 213, 256, 355 Hz from
+    subsong to motif; Kruskal-Wallis P = 7.2e-15 and 1.7e-65).
+  deviations: []
 - claim: fig1de-bout-related
   outcome: not_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig1de-bout-related
   measured:
-  - 342
-  - 124
-  - 158
-  - 60
-  notes: Shift reading (b) gives 124 pre-bout only, 158 post-bout only, 60 both, 342 in all; reading (a)
-    116, 152, 66 and 334. The pre-bout total (184) is near the paper's 187, the post-bout total (218)
-    well above its 149. 173 pre-bout peaks were left out as syllable-related by the 25 ms rule.
+  - 279
+  - 61
+  - 188
+  - 30
+  notes: Exclusion reading (ii), adopted, with shift reading (b), 61 pre-bout only, 188 post-bout only, 30 both,
+    279 in all; with shift (a) 49, 181, 37 and 267. The total is within 285 +/- 28.5 but none of the three classes
+    is within tolerance. Exclusion reading (i) (the first version) gives 124, 158, 60 and 342 (b) and 116, 152,
+    66 and 334 (a). The post-bout total (218 under b) is well above the paper's 149 under every reading; 88 of these
+    218 neurons have their post-bout peak in the first 50 ms after offset and 56 in the first 25 ms.
   deviations:
-  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the
-    claims header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
-  - The rule that removes syllable-related pre-bout peaks is read as removing a neuron that is locked
-    to syllable onsets with a locking peak within 25 ms of its pre-bout peak latency (Methods, Bout-related
-    neural activity).
+  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the claims
+    header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
+  - 'The rule that removes syllable-related pre-bout peaks (''a peak in the bout-onset aligned histogram and a peak
+    at a similar latency (less than 25 ms apart) in the syllable-onset aligned histogram'', Methods, Bout-related
+    neural activity) is run under two readings: (i) the neuron is locked to syllable onsets with its locking peak
+    (searched in -50 to 200 ms) within 25 ms of the pre-bout peak; (ii) the syllable-onset histogram, which spans
+    +/- 0.5 s, has a significant peak (shift test) within 25 ms either side of the pre-bout peak. Reading (ii) is
+    adopted (assumption), as reading (i) can only remove pre-bout peaks between -75 and 0 ms.'
+  assumed: true
 - claim: fig2b-protosequence
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig2b-protosequence
   measured: 55
-  notes: Locked to protosyllable onsets, 29 neurons in bird 2 (57-64 dph), 14 in bird 1 (56-59) and 12
-    in bird 4 (48-49), 55 in all (54 +/- 5.4). Latencies span -35 to 188 ms in bird 2 (mean protosyllable
-    132 ms), but only -21 to 91 ms in bird 1 (mean 139 ms) and -36 to 95 ms in bird 4 (mean 143 ms). Coverage
-    of the protosyllable is 99.4%, 92.7% and 97.8%. Bird 4's `a` syllables last about 140 ms, where the
-    paper describes 70 ms protosyllables found by phase segmentation.
+  notes: Locked to protosyllable onsets, 29 neurons in bird 2 (57-64 dph), 14 in bird 1 (56-59) and 12 in bird 4
+    (48-49), 55 in all (54 +/- 5.4). Latencies span -35 to 188 ms in bird 2 (mean protosyllable 132 ms), but only
+    -21 to 91 ms in bird 1 (mean 139 ms) and -36 to 95 ms in bird 4 (mean 143 ms). Coverage of the protosyllable
+    is 99.4%, 92.7% and 97.8%. Bird 4's `a` syllables last about 140 ms, where the paper describes 70 ms protosyllables
+    found by phase segmentation.
   deviations:
-  - The dataset's labels are Latin letters; a to e are read as alpha to epsilon and capitals as the adult
-    syllables, following the Methods' labelling scheme (Syllable classification and labelling).
-  - Protosyllables of birds 1, 2 and 4 are the dataset's `a` labels (alpha, Methods, Syllable classification
-    and labelling), not recomputed; bird 4's phase segmentation is not marked in the files.
+  - The dataset's labels are Latin letters; a to e are read as alpha to epsilon and capitals as the adult syllables,
+    following the Methods' labelling scheme (Syllable classification and labelling).
+  - Protosyllables of birds 1, 2 and 4 are the dataset's `a` labels (alpha, Methods, Syllable classification and
+    labelling), not recomputed; bird 4's phase segmentation is not marked in the files.
 - claim: ed2st-coverage
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed2st-coverage
   measured:
   - 17
-  - 79.8
-  notes: 19 syllable types of birds 1, 2 and 4 have more than 10 neurons bursting (paper 20); 17 are covered
-    above 90%, the lowest is 79.8% (bird 2 alpha, 73-84 dph); 18 of 19 lie within their 2.5 to 97.5% surrogate
-    interval, the exception being bird 1's B at 81-112 dph (93.9%, interval 94.5 to 100%).
+  - 79.3
+  notes: With one common warped window per syllable, 19 syllable types of birds 1, 2 and 4 have more than 10 neurons
+    bursting (paper 20); 17 are covered above 90%, the lowest is 79.3% (bird 2 alpha, 73-84 dph); 18 of 19 lie within
+    their 2.5 to 97.5% surrogate interval, the exception being bird 1's C at 81-112 dph (98.9%, interval 99.5 to
+    100%). With each neuron warped to its own mean duration and the patches cut or padded (the first version), all
+    19 lie within their intervals (17 above 90%, lowest 79.8%); in the first version's run, with another random
+    stream for the surrogates, bird 1's B at 81-112 dph fell just below its interval (93.9% against 94.5%), so the
+    interval test of syllables near 100% turns on fractions of a point.
   deviations:
-  - The 20 syllables are not listed in the paper; the list analysed here (every syllable type with a raster
-    in the paper's figures for birds 1, 2 and 4, per period) is the author's choice, as the criterion
-    allows.
-  - Spikes are time-warped to the mean duration before the coverage analysis, as in the paper's population
-    rasters; the coverage Methods do not say (assumption).
+  - The 20 syllables are not listed in the paper; the list analysed here (every syllable type with a raster in the
+    paper's figures for birds 1, 2 and 4, per period) is the author's choice, as the criterion allows.
+  - Every neuron's renditions of a syllable are warped to one duration, the median of the neurons' mean durations,
+    so that all neurons share one window, as in the paper's population rasters ('syllable duration from each rendition
+    was linearly time-warped to the mean duration of the syllable', Methods); the coverage Methods do not say (assumption).
+    The per-neuron warping of the first version is shown as a variant.
   assumed: true
 - claim: ed2p-probabilistic
   outcome: reproduced
@@ -187,12 +204,12 @@ outcomes:
   measured:
   - 52.3
   - 87
-  notes: Mean fraction of protosyllables with a spike 52.3% over 87 rhythmic protosyllable-stage neurons
-    (bins a; 51.6% over 88 with bins b), range 0 to 99%. The 87 rhythmic neurons are more than the paper's
-    70 (see fig1f-rhythmic-protosyllable). Labelled birds 56.5%, duration-fit birds 47.2%.
+  notes: Mean fraction of protosyllables with a spike 52.3% over 87 rhythmic protosyllable-stage neurons (bins a;
+    51.6% over 88 with bins b), range 0 to 99%. The 87 rhythmic neurons are more than the paper's 70 (see fig1f-rhythmic-protosyllable).
+    Labelled birds 56.5%, duration-fit birds 47.2%.
   deviations:
-  - For birds without `a` labels, protosyllables come from the duration fit of the Methods per bird and
-    day (5 ms bins, a standard choice); the fit failed for to3340 at 50 dph (1 neuron).
+  - For birds without `a` labels, protosyllables come from the duration fit of the Methods per bird and day (5 ms
+    bins, a standard choice); the fit failed for to3340 at 50 dph (1 neuron).
 - claim: ed2qr-pairs-independent
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
@@ -201,13 +218,13 @@ outcomes:
   - 10
   - 0.119
   - 0.083
-  notes: 10 simultaneous pairs both rhythmic in the protosyllable stage (bins a), in 4 birds (to3779,
-    to3965, to5640, to3759) where the paper has 3; median r^2 0.119 and median MI 0.083 bits, against
-    0.072 and 0.056. With bins b, 8 pairs, 0.139 and 0.098. Participation stays weakly related, as the
-    claim says, but the medians are outside tolerance.
+  notes: 10 simultaneous pairs both rhythmic in the protosyllable stage (bins a), in 4 birds (to3779, to3965, to5640,
+    to3759) where the paper has 3; median r^2 0.119 and median MI 0.083 bits, against 0.072 and 0.056. With bins
+    b, 8 pairs, 0.139 and 0.098. Participation stays weakly related, as the claim says, but the medians are outside
+    tolerance.
   deviations:
-  - Simultaneous pairs are neurons of the same bird and day whose analysis files list the same song files;
-    protosyllables are taken from the first neuron's segments in the shared files.
+  - Simultaneous pairs are neurons of the same bird and day whose analysis files list the same song files; protosyllables
+    are taken from the first neuron's segments in the shared files.
 - claim: fig2c-latency-subsong-earlier
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
@@ -217,22 +234,23 @@ outcomes:
   - 115
   - 64
   - 44
-  notes: Reading (a), one latency per neuron, with shift reading (b), 64% of 25 locked subsong neurons
-    and 44% of 115 locked protosyllable-stage neurons peak before onset; medians -14.5 and 6.5 ms; rank-sum
-    P = 0.038. With shift reading (a), 59% against 44%, P = 0.143. Reading (b), pooled bursts, 29% against
-    23%. The locked counts (25, 115) exceed the paper's 19 and 104.
+  notes: Reading (a), one latency per neuron, with shift reading (b), 64% of 25 locked subsong neurons and 44% of
+    115 locked protosyllable-stage neurons peak before onset; medians -14.5 and 6.5 ms; rank-sum P = 0.038. With
+    shift reading (a), 59% against 44%, P = 0.143. Reading (b), pooled bursts, 29% against 23%. The locked counts
+    (25, 115) exceed the paper's 19 and 104.
   deviations:
-  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the
-    claims header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
+  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the claims
+    header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
   - The outcome holds under one shift reading (b) and not the other (a).
 - claim: fig2c-latency-broadens-later
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig2c-latency-broadens-later
   measured: 851
-  notes: Reading (a), IQR of per-neuron latencies 101.0 ms for 851 locked multi-syllable and motif neurons
-    against 52.0 ms for the protosyllable stage; fraction before onset 36% against 44%; rank-sum P = 0.002.
-    Pooled burst times (b) give IQR 130.5 against 137.4 ms, no broadening.
+  notes: Reading (a), IQR of per-neuron latencies 101.0 ms for 851 locked multi-syllable and motif neurons against
+    52.0 ms for the protosyllable stage; fraction before onset 36% against 44%; rank-sum P = 0.002. Pooled burst
+    times (b) give IQR 130.5 against 137.4 ms, no broadening.
+  deviations: []
 - claim: bird1-protosequence
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
@@ -240,48 +258,59 @@ outcomes:
   measured:
   - 16
   - 14
-  notes: Bird 1 has 16 protosyllable-stage neurons; 14 are locked to protosyllable onsets (reading a),
-    12 rhythmic (b), 11 both (c).
+  notes: Bird 1 has 16 protosyllable-stage neurons; 14 are locked to protosyllable onsets (reading a), 12 rhythmic
+    (b), 11 both (c).
+  deviations: []
 - claim: fig3g-bird1-shared-specific
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig3g-bird1-shared-specific
   measured:
-  - 96
-  - 37
-  - 39
-  - 20
-  notes: Adjusted window, shift reading (b), bird 1 at 62-72 dph (126 neurons), 96 active, 37 beta-specific,
-    39 gamma-specific, 20 shared, all within tolerance; shift reading (a) gives 97, 38, 40 and 19. Unadjusted,
-    107 active and 32 shared (outside). Adding D to beta at 70-72 dph changes nothing.
+  - 107
+  - 41
+  - 44
+  - 22
+  notes: 'Window adjusted by the double-detection rule, shift reading (b), bird 1 at 62-72 dph (126 neurons): 107
+    active, 41 beta-specific, 44 gamma-specific, 22 shared, all within tolerance; shift reading (a) gives 108, 42,
+    45 and 21. The rule adjusted a window in 15 neurons, each with a burst in the gap between the syllables detected
+    for both; 10 changed class. Unadjusted, 107 active and 32 shared (outside); with the first version''s margin
+    rule 96, 37, 39 and 20. Adding D to beta at 70-72 dph changes nothing.'
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - The dataset's labels are Latin letters; a to e are read as alpha to epsilon and capitals as the adult
-    syllables, following the Methods' labelling scheme (Syllable classification and labelling).
-  - Beta is `b` before 70 dph and `B` from 70 dph, gamma `c` and `C`; the files switch to capitals at
-    70 dph.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - The dataset's labels are Latin letters; a to e are read as alpha to epsilon and capitals as the adult syllables,
+    following the Methods' labelling scheme (Syllable classification and labelling).
+  - Beta is `b` before 70 dph and `B` from 70 dph, gamma `c` and `C`; the files switch to capitals at 70 dph.
   assumed: true
 - claim: ed4a-shared-latency-bird1
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed4a-shared-latency-bird1
   measured:
-  - 0.852
-  - 0.7
-  notes: Adjusted window, early r = 0.852 (n = 20, P = 1.8e-06), within 0.91 +/- 0.091; late r = 0.700
-    (n = 8, P = 0.053), below 0.87 +/- 0.087. Without warping, 0.856 and 0.713 (P = 0.047). Unadjusted,
-    r = -0.210 and 0.059; 11 of 32 early shared neurons then have one peak at the end of beta and the
-    other just before gamma (about 180 ms apart).
+  - 0.888
+  - 0.765
+  notes: Double-detection rule, early r = 0.888 (n = 22, P = 3.4e-08), within 0.91 +/- 0.091; late r = 0.765 (n
+    = 10, P = 0.010), below 0.87 +/- 0.087 (lower bound 0.783). Onset-aligned without warping, 0.648 and 0.771.
+    With the margin rule 0.852 and 0.700 (P = 0.053). Unadjusted, -0.210 and 0.059.
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
   assumed: true
 - claim: ed3j-shared-ibi-specific-doubled
   outcome: reproduced
@@ -291,179 +320,227 @@ outcomes:
   - 16
   - 2.19
   - 1.03
-  notes: Bins (b), median most-probable IBI 180 ms (protosyllable stage, 16 neurons), 185 ms (20 shared),
-    395 ms (76 specific); ratios 2.19 and 1.03. Bins (a), 176, 189 and 396 ms, ratios 2.25 and 1.07 (specific
-    ratio just outside). The protosyllable group has 16 neurons, 12 of them rhythmic, against the paper's
-    9; with the rhythmic 12 the medians are the same.
+  notes: Bins (b), median most-probable IBI 180 ms (protosyllable stage, 16 neurons), 185 ms (20 shared), 395 ms
+    (76 specific); ratios 2.19 and 1.03. Bins (a), 176, 189 and 396 ms, ratios 2.25 and 1.07 (specific ratio just
+    outside). The protosyllable group has 16 neurons, 12 of them rhythmic, against the paper's 9; with the rhythmic
+    12 the medians are the same. The IBI counts of bird 1's 16 protosyllable-stage neurons (0 to 239 IBIs in 80
+    to 1,000 ms) are printed; they do not single out the paper's group of 9, which is not reconstructed.
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
   - Shared and specific groups are those of fig3g-bird1-shared-specific (adjusted window).
   assumed: true
 - claim: fig3h-bird1-shared-decrease
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig3h-bird1-shared-decrease
   measured:
-  - 8
-  - 84
-  notes: Adjusted window, early 20 shared and 76 specific, late (81-112 dph) 8 shared and 84 specific;
-    chi-square P = 0.019 (Yates 0.033). The late shared count, 8, is outside 10 +/- 1. Unadjusted, late
-    12 and 92, P = 0.001. The paper's own counts give P = 0.031.
+  - 10
+  - 93
+  notes: Double-detection rule, late (81-112 dph) 10 shared and 93 specific, within 10 +/- 1 and 90 +/- 9; shared
+    fraction 22/107 early against 10/103 late, chi-square P = 0.029 (paper 0.03). Unadjusted 12 and 92 (P = 0.001);
+    margin rule 8 and 84 (P = 0.019); shift reading (a) 10 and 95 (P = 0.04).
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
   assumed: true
 - claim: all-birds-shared-specific
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:all-birds-shared-specific
   measured:
-  - 167
-  - 428
-  notes: Birds 1, 2, 4, 5 and 6 each have shared and specific neurons; bird 3 has no labelled syllables.
-    Reading (a), all ages, adjusted, 167 or 168 shared (185 +/- 18.5) and 428 specific (496 +/- 49.6);
-    unadjusted 233 or 234 and 468. Reading (b), early periods, 105 and 205 (adjusted), 152 and 213 (unadjusted).
-    No reading puts both totals within tolerance. Bird 6's pairs give 0 to 1 shared neurons each.
+  - 180
+  - 482
+  notes: Birds 1, 2, 4, 5 and 6 each have shared and specific neurons; bird 3 has no labelled pair, so the condition
+    on all 6 birds can be checked for 5 only. Reading (a), all ages, double-detection rule, totals 180 or 181 shared
+    (185 +/- 18.5) and 482 specific (496 +/- 49.6), both within tolerance, over 7 syllable pairs in 12 tables. Reading
+    (b), early only, 114 or 115 and 234. Unadjusted (a) 233 or 234 and 469; margin rule (a) 167 or 168 and 429.
+    28 bird-1 neurons of 70-72 dph enter both the beta/gamma and the B/D tables (3 shared in both).
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - The dataset's labels are Latin letters; a to e are read as alpha to epsilon and capitals as the adult
-    syllables, following the Methods' labelling scheme (Syllable classification and labelling).
-  - The 8 pairs are not listed in the paper. Used here, bird 1 beta/gamma and B/D, bird 2 alpha/beta,
-    bird 4 b/d and c/d, bird 5 a/b (assumed by analogy with bird 2's bout-onset differentiation), bird
-    6 every pair of its labels in turn (its pair is not given); bird 3 cannot be paired. That makes 7
-    pairs, against 8.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - The dataset's labels are Latin letters; a to e are read as alpha to epsilon and capitals as the adult syllables,
+    following the Methods' labelling scheme (Syllable classification and labelling).
+  - The 8 pairs are not listed in the paper. Used here, bird 1 beta/gamma and B/D, bird 2 alpha/beta, bird 4 b/d
+    and c/d, bird 5 a/b (assumed by analogy with bird 2's bout-onset differentiation), bird 6 every pair of its
+    labels in turn (its pair is not given); bird 3 cannot be paired. That makes 7 pairs, against 8.
   - Bird 3's syllables carry no labels in the dataset (one neuron of 19 has them).
   assumed: true
 - claim: all-birds-shared-decrease
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:all-birds-shared-decrease
-  notes: Five pairs of birds 1, 2 and 4. Boundary reading (a), pooled shared fraction 0.325 early, 0.218
-    late, CMH P = 1.3e-04 (2.1e-04 with continuity correction). Reading (b), 0.406 and 0.184, P = 1.7e-06.
-    Unadjusted (boundary a), 0.404 and 0.241, P = 1.2e-07.
+  notes: Double-detection rule. Boundary reading (a), CMH P = 5.2e-05 (8.0e-05 with continuity correction), pooled
+    shared fraction 0.314 early and 0.210 late; reading (b), P = 3.0e-06 (5.0e-06), 0.378 and 0.178. Unadjusted
+    P = 1.2e-07; margin rule 1.3e-04. Paper P = 3e-6.
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - The early/late boundary for bird 1's B/D pair is not given; readings 80 dph (a, when D and B begin
-    to differ, Extended Data Fig. 7 legend) and 85 dph (b). For bird 4, (a) the neuron list's multi-syllable/motif
-    boundary (58/59 dph) and (b) 51-55 against 60-67 dph.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - The early/late boundary for bird 1's B/D pair is not given; readings 80 dph (a, when D and B begin to differ,
+    Extended Data Fig. 7 legend) and 85 dph (b). For bird 4, (a) the neuron list's multi-syllable/motif boundary
+    (58/59 dph) and (b) 51-55 against 60-67 dph.
   assumed: true
 - claim: skipping-cycles
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:skipping-cycles
-  notes: Reading (a), neurons with a period near twice the base period in bird 1 (242 of 318 rhythmic,
-    P0 178 ms), bird 3 (1 of 13, P0 103 ms) and bird 4 (14 of 164, P0 183 ms); none in bird 6, whose base
-    period (631 ms) comes from one rhythmic shared neuron as it has no protosyllable-stage neurons; none
-    in birds 2 and 5. Reading (b), 99, 1 and 4 in birds 1, 3 and 4.
+  notes: Reading (a), neurons with a period near twice the base period in bird 1 (242 of 318 rhythmic later-stage
+    neurons, P0 178 ms), bird 3 (1 of 13, P0 103 ms from 3 protosyllable-stage neurons) and bird 4 (14 of 164, P0
+    183 ms); reading (b), 99, 1 and 4. Bird 6 has no protosyllable-stage neurons and only 2 rhythmic shared neurons
+    (202 and 631 ms), fewer than the 3 now required for a base period, so it cannot be tested; birds 2 and 5 have
+    none. Reading (a) is weak in bird 1, where most later-stage neurons qualify.
   deviations:
-  - For birds 3 and 4 all rhythmic neurons are tested, including the protosyllable stage, since the paper's
-    examples there are protosyllable-stage neurons (Extended Data Figs 8 and 9f).
+  - For birds 3 and 4 all rhythmic neurons are tested, including the protosyllable stage, since the paper's examples
+    there are protosyllable-stage neurons (Extended Data Figs 8 and 9f).
+  - A base period needs at least 3 neurons (standard choice; the first version took bird 6's from one neuron).
 - claim: fig4-bird2-before-beta
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig4-bird2-before-beta
   measured:
   - 125
   - 35
   - 29
-  - 12
-  notes: 125 neurons of bird 2, 35 at 57-64 dph; protosequence 29 (reading a, locked to protosyllable
-    onsets), 28 (b, rhythmic) or 25 (c, both), against 28 +/- 2.8. Pre-bout neurons by fig1de-bout-related's
-    test 12, against 4; of these 2 (reading a) or 4 (readings b and c) are outside the protosequence.
+  - 4
+  notes: 125 neurons of bird 2, 35 at 57-64 dph; protosequence 29 (reading a, locked to protosyllable onsets), 28
+    (b, rhythmic) or 25 (c, both), against 28 +/- 2.8. Pre-bout neurons by fig1de-bout-related's test under exclusion
+    reading (ii), adopted there, 4 under both shift readings (4 expected); under exclusion reading (i), 12 (shift
+    b) or 11 (shift a). Whether the 4 are a different set from the protosequence ('a different 4') is not tested.
   deviations:
-  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the
-    claims header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
+  - The Methods do not say whether shifted spikes wrap around the +/- 0.5 s window; both readings of the claims
+    header are run (a, circular; b, spikes from +/- 1 s binned within +/- 0.5 s).
+  - Pre-bout activity under exclusion reading (ii) of fig1de-bout-related (assumption; reading i shown).
+  assumed: true
 - claim: fig4h-bird2-shared-early
   outcome: partially_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig4h-bird2-shared-early
   measured:
-  - 20
-  - 23
-  notes: Adjusted window, offset-aligned, 20 shared and 23 specific (onset-aligned 20 and 22), within
-    tolerance. Latency r = 0.787 (n = 20, P = 3.9e-05) onset-warped and 0.777 offset-aligned without warping,
-    below 0.891. No shared neuron has two peaks in alpha by the rule used, so none is left out. Unadjusted,
-    25 shared, 18 specific, r = -0.144.
+  - 22
+  - 19
+  notes: Double-detection rule, offset-aligned, 22 shared and 19 specific (onset-aligned 22 and 21), within tolerance.
+    Latency r = 0.842 (n = 22, P = 8.9e-07) onset-warped, 0.844 offset-aligned, 0.780 offset-aligned without warping,
+    below 0.891. Six shared neurons have a second significant peak in alpha (P < 0.001), where the paper has one;
+    leaving all six out gives r = 0.703, leaving out the most significant one 0.832. Leave-one-out r spans 0.818
+    to 0.995; only leaving out to3779_2013-07-07_HVCp-3 (alpha 114 ms, beta 29 ms, no second peak) passes the bound.
+    Unadjusted, 25 shared, 18 specific, r = -0.144; margin rule 20, 22 and r = 0.787.
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - With linear time-warping, onset- and offset-aligned histograms differ only by a shift, so they give
-    the same classes; the offset-aligned count differs by one neuron through the surrogate draws.
-  - The neuron 'that had two peaks during the syllable alpha' is identified by a rule (two peaks above
-    half the maximum, 30 ms apart), an operational choice.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - 'The neuron ''that had two peaks during the syllable alpha'' is identified as the criterion asks, by a second
+    significant peak: alpha''s window is shift-tested again with 25 ms either side of the main peak left out (P
+    < 0.05).'
+  - Offset- and onset-aligned classes can differ under the double-detection rule, as the two windows' margins differ;
+    both are shown.
   assumed: true
 - claim: fig4i-bird2-shared-decrease
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:fig4i-bird2-shared-decrease
   measured:
-  - 6
-  - 25
-  notes: Adjusted window, late (73-84 dph) 6 shared and 25 specific; early 20 and 23; chi-square P = 0.016
-    (Yates 0.03). Both late counts are outside tolerance (4, and 28 +/- 2.8). Unadjusted, 8 and 25.
+  - 4
+  - 26
+  notes: Double-detection rule, offset-aligned, late (73-84 dph) 4 shared and 26 specific (28 +/- 2.8), shared fraction
+    22/41 early against 4/30 late, chi-square P = 0.00049 (paper 5 x 10^-4); onset-aligned the same counts, P =
+    0.0009. Unadjusted 8 and 25 (P = 0.003), margin rule 6 and 25 (P = 0.013), both outside the band of 3 to 5 shared.
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
   assumed: true
 - claim: ed4bd-shared-latency-other
   outcome: not_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed4bd-shared-latency-other
   measured:
-  - 0.757
-  - 0.957
-  notes: Bird 1 D/B r = 0.998 early and 0.991 late (n = 38, 40; boundary a), above 0.891. Bird 2 alpha/beta
-    r = 0.787 early (P = 3.9e-05) and -0.406 late (n = 6, P = 0.42). Bird 4 b2/d1 r = 0.757 (n = 8, P
-    = 0.030; 0.89 +/- 0.089) and c/d2 r = 0.957 (n = 6, P = 0.0028). Not every correlation is positive
-    and significant, so by the criterion the claim is not reproduced; four of six meet the sign and significance
-    and three meet their value.
+  - 0.339
+  - 0.98
+  notes: Double-detection rule. Bird 1 D/B early r = 0.997 (n = 38), late 0.993 (n = 42), above 0.891; bird 2 alpha/beta
+    early 0.842 (n = 22), below 0.891, late 0.996 (n = 4, P = 0.004); bird 4 c/d2 0.980 (n = 6, P = 0.0006), within
+    0.98 +/- 0.098; bird 4 b2/d1 0.339 (n = 9, P = 0.37) under boundary (a) and 0.010 (n = 5) under (b), not significant.
+    So not all correlations are positive and significant. With the margin rule, bird 2 late r = -0.406.
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - Bird 4's halves are read as the first and second halves of the mean syllable (Extended Data Fig. 9g,
-    h); b2/d1 keeps shared b/d neurons whose b latency is in the second half and measures it from the
-    middle of b.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - Bird 4's halves are read as the first and second halves of the mean syllable (Extended Data Fig. 9g, h); b2/d1
+    keeps shared b/d neurons whose b latency is in the second half and measures it from the middle of b.
   assumed: true
 - claim: ed7-bird1-bd-shared-persist
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed7-bird1-bd-shared-persist
   measured:
-  - 46
-  - 52
-  notes: Late B/D shared fraction 40/52 = 0.77 (boundary a) or 28/38 = 0.74 (b), against late B/C 8/92
-    = 0.09; chi-square P = 7.3e-17. The raster sizes are 46 and 52 (a) or 60 and 38 (b), against 60 and
-    70.
+  - 55
+  - 69
+  notes: 'Double-detection rule, boundary (a): late B/D shared 42 of 69 (0.61) against late B/C 10 of 103 (0.10),
+    chi-square P = 8e-13; boundary (b) 29 of 51 (0.57). Raster sizes 55 and 69 (a) or 73 and 51 (b), against 60
+    and 70.'
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
   - The B/D early/late boundary is not given (see all-birds-shared-decrease).
   assumed: true
 - claim: ed8-bird3-phase
@@ -471,18 +548,21 @@ outcomes:
   blocked_by: metadata_insufficient
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed8-bird3-phase
-  notes: The test needs bird 3's syllables A to E from phase segmentation. In the dataset only one of
-    bird 3's 19 neurons (to3017_2012-05-03_HVC-X-2) has labelled syllables (148 labelled, a to e); the
-    other 10,463 selected segments are unlabelled. The phase could be computed from the sound in to3017.tar.gz,
-    but the syllable identities cannot.
+  notes: The test needs bird 3's syllables A to E from phase segmentation. In the dataset only one of bird 3's 19
+    neurons (to3017_2012-05-03_HVC-X-2) has labelled syllables (148 labelled, a to e); the other 10,463 selected
+    segments are unlabelled. The phase could be computed from the sound in to3017.tar.gz, but the syllable identities
+    cannot.
+  deviations: []
 - claim: motif-strategy-shared
   outcome: blocked
   blocked_by: metadata_insufficient
   notebook: reproduce_okubo_2015.ipynb
   output: claim:motif-strategy-shared
-  notes: Depends on ed8-bird3-phase (bird 3's labels are missing). Bird 4's part, shown in the notebook,
-    holds 8 rhythmic protosyllable-stage neurons of 18, and every one of its syllables a to f has neurons
-    significant for it and for another syllable (42, 74, 48, 62, 15 and 54).
+  notes: 'Bird 3''s syllables A to E are not labelled in the dataset (only 1 of its 19 neurons has labels), and
+    the claim depends on ed8-bird3-phase. Bird 4''s part is positive: 8 of its 18 protosyllable-stage neurons are
+    rhythmic, and every syllable a to f has neurons shared with another syllable in the pair tables with the double-detection
+    rule (a 31, b 53, c 26, d 48, e 15). Bird 3 has 3 rhythmic protosyllable-stage neurons.'
+  deviations: []
 - claim: ed9-bird4-rhythms
   outcome: not_reproduced
   notebook: reproduce_okubo_2015.ipynb
@@ -492,210 +572,553 @@ outcomes:
   - 8
   - 3
   - 5
-  notes: 18 protosyllable-stage neurons in bird 4, as expected; 8 rhythmic (bins a; 7 with bins b), against
-    11 +/- 1.1. Of the 8, 3 have a period near 100 ms and 5 near 200 ms (periods 90 to 206 ms), against
-    5 and 6; the spectral peaks give the same split.
+  notes: 18 protosyllable-stage neurons in bird 4, as expected; 8 rhythmic (bins a; 7 with bins b), against 11 +/-
+    1.1. Of the 8, 3 have a period near 100 ms and 5 near 200 ms (periods 90 to 206 ms), against 5 and 6; the spectral
+    peaks give the same split.
+  deviations: []
 - claim: ed4j-bias
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed4j-bias
   measured:
-  - 0.973
-  - 0.282
-  notes: Reading (a), all pairs, specific 0.973 +/- 0.075 (n = 427), just outside 0.96 +/- 0.011; shared
-    0.282 +/- 0.228 (n = 168), within. Reading (b), bird 1 beta/gamma and bird 2 alpha/beta at all ages,
-    0.980 and 0.393; their early periods only, 0.967 and 0.394, both within tolerance. The early-only
-    restriction is not a reading the criterion names, so the outcome is partial.
+  - 0.961
+  - 0.28
+  notes: 'Reading (a), all pairs, double-detection rule: specific 0.961 +/- 0.104 (n = 480), within 0.96 +/- 0.011;
+    shared 0.280 +/- 0.231 (n = 181), within 0.28 +/- 0.22. The specific neurons'' spread is wider than the paper''s
+    (s.d. 0.104 against 0.011; range 0.08 to 1.00). Reading (b), bird 1 beta/gamma and bird 2 alpha/beta, 0.968
+    and 0.430 (shared outside). With the margin rule, (a) gives 0.973 (outside) and 0.283. The early-only variant
+    of the first version is dropped, as the criterion does not name it.'
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - Bias uses the peak of each type's histogram in the test window (adjusted when the window was adjusted);
-    0/0 cases are dropped.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - Bias uses the peak of each type's histogram in the test window (adjusted when the window was adjusted); 0/0
+    cases are dropped.
   assumed: true
 - claim: ed5-shared-acoustic-difference
   outcome: blocked
   blocked_by: not_runnable
-  notes: The method computes eight Sound Analysis Pro features (refs 51 and 55) in 1 ms steps after each
-    burst of every shared neuron, from the sound files in the per-bird raw archives (birds 1 to 6, about
-    30 GB compressed; to3965 alone 12.5 GB). Sound Analysis Pro is Windows software that cannot be installed
-    in the locked environment, and the paper names no other implementation of its features. Not attempted.
+  notes: 'The acoustic test computes eight Sound Analysis Pro features (refs 51 and 55) in 1 ms steps after each
+    burst of every shared neuron, from the sound files in the per-bird raw archives (birds 1 to 6, about 30 GB compressed;
+    to3965 alone 12.5 GB, streamed at about 30 MB/s here, so 15 to 20 min for all six before decompression). Sound Analysis
+    Pro is Windows software that cannot be installed in the locked environment, the paper names no other implementation
+    of its features, and a reimplementation was not attempted in this run. The part without sound was tested: the
+    pairs hold 16 shared HVCRA and 116 shared HVCX neurons (24 and 120 in the paper); counting a neuron as obscured
+    when the 10 to 40 ms window after its burst leaves the syllable in either syllable, 2 and 53 are obscured, leaving
+    14 and 63 (15 and 61 in the paper); in both syllables, 2 and 34.'
+  deviations: []
+  output: claim:ed5-shared-acoustic-difference
+  notebook: reproduce_okubo_2015.ipynb
 - claim: ed5-shared-ra-x-proportion
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed5-shared-ra-x-proportion
   measured:
-  - 24
-  - 34
-  notes: A claim of absence, judged on chi-square. Reading (a), shared and specific neurons of the pairs,
-    HVCRA 17/71 = 24%, HVCX 106/316 = 34%, P = 0.116. Reading (b), all juvenile neurons of birds 1 to
-    6, 14% and 20%, P = 0.085. The test finds no difference under either reading; the effect (HVCX higher
-    by 6 to 10 points) is in the paper's direction.
+  - 22
+  - 33
+  notes: 'A claim of absence, judged on chi-square. Reading (a), adopted, shared and specific neurons of the pairs:
+    HVCRA 16/73 = 22%, HVCX 116/351 = 33%, P = 0.062, no difference. Reading (b), all juvenile neurons of birds
+    1 to 6: 13% and 22%, P = 0.018, a difference. Reading (a) is adopted as it counts only neurons tested for sharing;
+    reading (b) counts as not shared every neuron recorded outside the pairs'' ages. The first version (margin rule)
+    gave P = 0.116 and 0.085. The paper''s 24 shared HVCRA neurons at 19% imply 126 HVCRA neurons, near the 125
+    of reading (b), but its 120 HVCX at 28% imply 429, matching neither reading (351 and 521).'
   deviations:
-  - The paper adjusted the shared/specific test interval by visual inspection where one burst would be
-    detected for two adjacent syllables (Methods, Shared and specific neurons); this cannot be repeated.
-    Assumed here, as the reading the Methods best support, a fixed rule (hvc.type_test, adjust=True) that
-    searches the peak again within the syllable itself when it falls in the 30 ms before onset or the
-    10 ms after offset. The unadjusted result is shown as the other reading.
-  - Pairs as in all-birds-shared-specific, with bird 6's pair that has the most shared neurons; a neuron
-    shared in any pair counts as shared.
+  - The paper adjusted the shared/specific test interval by visual inspection 'if necessary to avoid the same burst
+    being detected twice (that is, being associated with an offset of one syllable and an onset of the next syllable)'
+    (Methods, Shared and specific neurons); this cannot be repeated. Assumed here, as the rule closest to that passage
+    (hvc.pair_table, adjust 'double'), when a type's peak falls in the 30 ms before onset or the 10 ms after offset,
+    the neighbouring syllable on that side is tested too; the burst counts as detected twice when that syllable's
+    peak is significant and within 25 ms of the same time (the Methods' 'similar latency' of the bout-related analysis).
+    The burst is then left to the syllable whose window holds it furthest from an edge, and the other syllable's
+    window leaves out 25 ms either side of it before its peak is tested again. The unadjusted result and the first
+    version's broader rule (every peak outside the syllable searched again inside it, hvc.type_test adjust=True)
+    are shown as the other readings.
+  - Pairs as in all-birds-shared-specific, with bird 6's pair that has the most shared neurons; a neuron shared
+    in any pair counts as shared.
+  - The readings of the denominator give different outcomes; reading (a) is adopted (assumption).
   assumed: true
 - claim: ed2mo-ra-x-similar
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:ed2mo-ra-x-similar
-  notes: Juvenile stages only; 11 comparisons (subsong has no rhythmic HVCRA neuron, so no period comparison).
-    Only the motif-stage period differs after Bonferroni (HVCRA 494 ms, n = 46; HVCX 413 ms, n = 213;
-    P = 0.0010 rank-sum, 0.0003 median-split chi-square); no locking or rhythmicity comparison does (smallest
-    P 0.156).
+  notes: Juvenile stages only; 11 comparisons (subsong has no rhythmic HVCRA neuron, so no period comparison). Only
+    the motif-stage period differs after Bonferroni (HVCRA 494 ms, n = 46; HVCX 413 ms, n = 213; P = 0.0010 rank-sum,
+    0.0003 median-split chi-square); no locking or rhythmicity comparison does (smallest P 0.156). The same single
+    comparison is significant under all 8 combinations of the shift readings (a, b) and the rhythmicity readings
+    (bins and cepstrum a, b).
   deviations:
-  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found
-    in CRCNS (am-1, am-2 and am-4 hold other data); the adult stage is left out.
+  - The 32 adult neurons of 3 birds (ref. 20, Kozhevnikov and Fee 2007) are not in am-3 and were not found in CRCNS
+    (am-1, am-2 and am-4 hold other data); the adult stage is left out.
 - claim: model-fig5a-subsong-decay
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-fig5a-subsong-decay
-  notes: Seed 9038, 102 seed activations, mean active non-seed neurons 0.28, 3.28, 5.74, 4.94, 4.34 at
-    lags 0 to 4 against a baseline of 4.78; within 15% of baseline from lag 3 (30 ms). Ten further seeds
-    return within 15% from lag 2 to 9.
+  notes: Seed 9038, 102 seed activations, mean active non-seed neurons 0.28, 3.28, 5.74, 4.94, 4.34 at lags 0 to
+    4 against a baseline of 4.78; within 15% of baseline from lag 3 (30 ms). Ten further seeds return within 15%
+    from lag 2 to 9.
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
-  - '''Returns to the level'' is taken as staying within 15% of the baseline mean from some lag of 10
-    steps or less (a standard choice); isolated activations are too few (2 to 9) for a stable mean and
-    are shown alongside.'
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
+  - '''Returns to the level'' is taken as staying within 15% of the baseline mean from some lag of 10 steps or less
+    (a standard choice); isolated activations are too few (2 to 9) for a stable mean and are shown alongside.'
 - claim: model-fig5b-chain
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-fig5b-chain
-  notes: 26 non-seed neurons participate in subsong and 90 at iteration 500; their most common latencies
-    cover steps 2 to 10 (counts 11, 14, 11, 15, 11, 9, 8, 10, 1), and step 1, the input step, is held
-    by the seed neurons. 7 of 10 further seeds cover steps 2 to 10.
+  notes: 26 non-seed neurons participate in subsong and 90 at iteration 500; their most common latencies cover steps
+    2 to 10 (counts 11, 14, 11, 15, 11, 9, 8, 10, 1), and step 1, the input step, is held by the seed neurons. 7
+    of 10 further seeds cover steps 2 to 10.
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
 - claim: model-fig5cd-split
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-fig5cd-split
-  notes: Iteration 992, specific 1 and 1, shared 81, all at the same latency in both types (fraction 0.98);
-    iteration 2,500, specific 40 and 35, shared 0. In ten further seeds the shared fraction at 2,500 is
-    0 to 0.16, and 8 of 10 have specific neurons of both types at 992.
+  notes: Iteration 992, specific 1 and 1, shared 81, all at the same latency in both types (fraction 0.98); iteration
+    2,500, specific 40 and 35, shared 0. In ten further seeds the shared fraction at 2,500 is 0 to 0.16, and 8 of
+    10 have specific neurons of both types at 992.
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
 - claim: model-fig5e-latency-broadens
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-fig5e-latency-broadens
-  notes: Latency s.d. 2.18, 2.27, 2.41 steps (subsong, iteration 500, splitting); IQR 1, 4, 4. Reproduced
-    under the s.d. reading; the IQR does not increase from the protosyllable stage to splitting.
+  notes: Latency s.d. 2.18, 2.27, 2.41 steps (subsong, iteration 500, splitting); IQR 1, 4, 4. Reproduced under
+    the s.d. reading; the IQR does not increase from the protosyllable stage to splitting.
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
 - claim: model-ed10gh-period
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-ed10gh-period
-  notes: Mean period of participating non-seed neurons 100 ms (iteration 500), 102.4 ms (992) and 200
-    ms (2,500); the 75 specific neurons at 2,500 all have 200 ms. Both readings agree.
+  notes: Mean period of participating non-seed neurons 100 ms (iteration 500), 102.4 ms (992) and 200 ms (2,500);
+    the 75 specific neurons at 2,500 all have 200 ms. Both readings agree.
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
   - The model period is computed on one iteration (100 steps), so lags beyond 990 ms are not reached.
 - claim: model-ed10ad-bout-onset
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-ed10ad-bout-onset
-  notes: Iteration 600, 51 neurons specific to the bout-onset syllable, 39 to later syllables, 0 shared;
-    shared fraction 0.60 at iteration 130.
+  notes: Iteration 600, 51 neurons specific to the bout-onset syllable, 39 to later syllables, 0 shared; shared
+    fraction 0.60 at iteration 130.
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
 - claim: model-ed10eh-motif
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-ed10eh-motif
-  notes: At iteration 2,500 the three seed groups have 32, 11 and 17 specific neurons and no neuron participates
-    in all three, but 13 participate in two (shared fraction 0.18, none at the same latency), so the daughter
-    sequences are not fully non-overlapping. At 500 and 992 nearly all are shared (1.0 and 0.99).
+  notes: 'Reading (a) (alternating run''s counts and thresholds, seed 9038): at iteration 2,500 the three seed groups
+    have 32, 11 and 17 specific neurons and none participates in all three, but 13 participate in two (shared fraction
+    0.18), so the daughter sequences are not non-overlapping. Reading (b), RunHVC_split_intoThree.m of github.com/emackev/HVCModelCode
+    at commit 05dc96b (seed 210): 9, 8 and 27 specific and 18 in two groups (0.29); the script''s own raster classes
+    count the same 18 as shared by two. Of five further seeds, two runs of reading (a) separate fully (seeds 4 and
+    5) and none of reading (b) (4 to 33 in two groups). A threshold of more than one firing changes the counts by
+    at most one neuron. In both readings the groups get 4, 3 and 3 pulses per iteration, as in the GitHub script.'
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
-  - The supplied code has no motif-strategy run. Assumed, as the Methods give no iteration counts or thresholds
-    for it, the alternating run's (500 protosyllable and 2,000 splitting iterations; thresholds 4 and
-    2); seed groups pulsed in turn every 100 ms; seed input 10 as in the code where the Methods' Wmax
-    would give 9; m = 3 in splitting from the Methods. The GitHub repository the code names is not pinned
-    and was not read.
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
+  - 'Reading (a): the Methods give no iteration counts or thresholds for the motif strategy; the alternating run''s
+    are used (500 protosyllable and 2,000 splitting iterations; thresholds 4 and 2), seed input 10 as in the code
+    where the Methods'' Wmax would give 9, m = 3 in splitting from the Methods.'
+  - 'Reading (b): the GitHub repository the supplied code names is pinned at commit 05dc96b1263ee14c066eeda674b96b015f6c57d7
+    and RunHVC_split_intoThree.m is ported (hvcmodel.run_motif_github): seed 210, wmax 1 to 3 with m 9 to 3 (the
+    Methods say wmax 1 to 2), no subsong stage, snapshots at splitting iterations 690 and 2,000; participation with
+    reading (a)''s threshold and with the script''s raster classes.'
   assumed: true
 - claim: model-ed10ik-new-chain
   outcome: reproduced
   notebook: reproduce_okubo_2015.ipynb
   output: claim:model-ed10ik-new-chain
-  notes: Iteration 600, 34 neurons specific to the bout-onset element and 10 to the protosyllable, 45
-    shared; each protosyllable seed neuron fires on every protosyllable input (1.0, against 0.67 in the
-    bout-onset differentiation run).
+  notes: Iteration 600, 34 neurons specific to the bout-onset element and 10 to the protosyllable, 45 shared; each
+    protosyllable seed neuron fires on every protosyllable input (1.0, against 0.67 in the bout-onset differentiation
+    run).
   deviations:
-  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and
-    the code's seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published
-    figures.
-  - The Methods' parameters for this case are used; everything they leave open (bout structure, seed 1009,
-    snapshots, thresholds 4 and 6) follows the bout-onset run of the code (assumption).
+  - The model runs on a Python port of the paper's MATLAB code (hvcmodel.py) with NumPy's generator and the code's
+    seeds; MATLAB's random numbers cannot be reproduced, so no run is identical to the published figures.
+  - The Methods' parameters for this case are used; everything they leave open (bout structure, seed 1009, snapshots,
+    thresholds 4 and 6) follows the bout-onset run of the code (assumption).
   assumed: true
 findings:
 - kind: metadata_error
-  statement: List_of_HVC_neurons.xls assigns 66 neurons of bird 1 (to3965, 90 to 112 dph) to a stage 'young
-    adult', which the paper does not define; its four juvenile stages match the paper's counts only when
-    these are counted as motif (378 motif neurons with the 5 s rule). The data descriptor lists only the
-    four juvenile stages.
+  statement: List_of_HVC_neurons.xls assigns 66 neurons of bird 1 (to3965, 90 to 112 dph) to a stage 'young adult',
+    which the paper does not define; its four juvenile stages match the paper's counts only when these are counted
+    as motif (378 motif neurons with the 5 s rule). The data descriptor lists only the four juvenile stages.
 - kind: identifier_missing
   statement: Two rows of List_of_HVC_neurons.xls (HVCp tab) have the same bird, date and name, to3563_2013-02-25_HVCp-1,
-    with different file ranges (40-50 and 137-150); Analysis_files holds one file under that name. The
-    list has 1,126 rows and the archive 1,125 neuron files; one of the two neurons is missing or merged.
+    with different file ranges (40-50 and 137-150); Analysis_files holds one file under that name. The list has
+    1,126 rows and the archive 1,125 neuron files; one of the two neurons is missing or merged.
 - kind: metadata_insufficient
-  statement: Bird 3 (to3017), the paper's motif-strategy bird, has syllable labels in only one of its
-    19 neurons (148 labelled syllables). The phase-segmented syllables A to E of Extended Data Fig. 8
-    are not marked, so its shared-neuron and phase analyses cannot be repeated.
+  statement: Bird 3 (to3017), the paper's motif-strategy bird, has syllable labels in only one of its 19 neurons
+    (148 labelled syllables). The phase-segmented syllables A to E of Extended Data Fig. 8 are not marked, so its
+    shared-neuron and phase analyses cannot be repeated.
 - kind: metadata_insufficient
-  statement: The data descriptor says SegmentTitles holds the 'syllable name if applicable' but not the
-    naming, the files use Latin letters, lower case a to f for the juvenile syllables the paper calls
-    alpha to epsilon and capitals for adult syllables. The mapping had to be inferred from the paper's
-    labelling scheme. Bird 4's protosyllable-stage `a` syllables last about 140 ms, where the paper's
-    bird-4 protosyllables are 70 ms phase segments; which segments are phase segments is not said.
+  statement: The data descriptor says SegmentTitles holds the 'syllable name if applicable' but not the naming,
+    the files use Latin letters, lower case a to f for the juvenile syllables the paper calls alpha to epsilon and
+    capitals for adult syllables. The mapping had to be inferred from the paper's labelling scheme. Bird 4's protosyllable-stage
+    `a` syllables last about 140 ms, where the paper's bird-4 protosyllables are 70 ms phase segments; which segments
+    are phase segments is not said.
 - kind: metadata_insufficient
-  statement: EventTimes and EventIsSelected hold two rows per file with nearly identical spike times (about
-    0.1 ms apart) and slightly different selections; the descriptor does not say what the rows are or
-    which one the paper used. Row 0 was used here.
+  statement: EventTimes and EventIsSelected hold two rows per file with nearly identical spike times (about 0.1
+    ms apart) and slightly different selections; the descriptor does not say what the rows are or which one the
+    paper used. Row 0 was used here.
 - kind: data_missing
-  statement: The 32 adult neurons of 3 birds that the paper includes (a reanalysis of ref. 20) are not
-    in am-3, which the descriptor says holds juvenile birds only, and were not found elsewhere on CRCNS.
-    Every comparison with the adult stage (Fig. 1f, g, Extended Data Fig. 1c, 2m-o) can be made only for
-    the juvenile stages.
+  statement: The 32 adult neurons of 3 birds that the paper includes (a reanalysis of ref. 20) are not in am-3,
+    which the descriptor says holds juvenile birds only, and were not found elsewhere on CRCNS. Every comparison
+    with the adult stage (Fig. 1f, g, Extended Data Fig. 1c, 2m-o) can be made only for the juvenile stages.
 - kind: methods_unavailable
-  statement: Question for the paper's authors. Shared and specific neurons were found with a test window
-    'adjusted if necessary' by visual inspection so that one burst is not counted for two adjacent syllables
-    (Methods, Shared and specific neurons). Without an adjustment, bird 1 has 32 shared neurons early
-    instead of 22 and the latency correlations vanish; this attempt replaced the inspection by a rule
-    (peak searched again within the syllable when it falls in the margins), which gives 20. Could the
-    adjusted windows, or the list of neurons and their classes, be published?
+  statement: 'Question for the paper''s authors. Shared and specific neurons were found with a test window ''adjusted
+    if necessary'' by visual inspection so that one burst is not counted for two adjacent syllables (Methods, Shared
+    and specific neurons). Without an adjustment, bird 1 has 32 shared neurons early instead of 22 and the latency
+    correlations vanish. This attempt replaced the inspection by a rule: the window is adjusted only when the neighbouring
+    syllable''s test finds the same burst within 25 ms, and the burst is left to the syllable whose window holds
+    it furthest from an edge; this gives 22 shared in bird 1 and 22 and 4 in bird 2. Was this how the windows were
+    adjusted, and could the adjusted windows, or the list of neurons and their classes, be published?'
 - kind: methods_unavailable
-  statement: Question for the paper's authors. The 8 syllable pairs behind 185 shared and 496 specific
-    neurons, the pairs of birds 5 and 6 ('data not shown'), the 20 syllables of the coverage analysis,
-    and the early/late boundaries of bird 1's B/D pair and bird 4's b/d and c/d pairs are not given. This
-    attempt used bird 5 a/b, every pair of bird 6, 19 syllables of birds 1, 2 and 4, and boundaries of
-    80 dph (bird 1) and the stage boundary (bird 4). Which were used?
+  statement: Question for the paper's authors. The 8 syllable pairs behind 185 shared and 496 specific neurons,
+    the pairs of birds 5 and 6 ('data not shown'), the 20 syllables of the coverage analysis, and the early/late
+    boundaries of bird 1's B/D pair and bird 4's b/d and c/d pairs are not given. This attempt used bird 5 a/b,
+    every pair of bird 6, 19 syllables of birds 1, 2 and 4, and boundaries of 80 dph (bird 1) and the stage boundary
+    (bird 4). Which were used?
 - kind: methods_unavailable
-  statement: Question for the paper's authors. In the shift test of syllable- and bout-aligned histograms,
-    were spikes shifted past +/- 0.5 s wrapped around or taken from a wider window, and how were the 20-bin
-    smoothing and the histogram bins of the IBI and autocorrelation measures set? With the readings tried
-    here, more neurons are locked in subsong (25 against 19), rhythmic (87 against 70 in the protosyllable
-    stage) and post-bout (218 against 149) than the paper reports.
+  statement: Question for the paper's authors. In the shift test of syllable- and bout-aligned histograms, were
+    spikes shifted past +/- 0.5 s wrapped around or taken from a wider window, and how were the 20-bin smoothing
+    and the histogram bins of the IBI and autocorrelation measures set? With the readings tried here, more neurons
+    are locked in subsong (25 against 19), rhythmic (87 against 70 in the protosyllable stage) and post-bout (218
+    against 149) than the paper reports. Which peak of the syllable-onset histogram removes a pre-bout neuron as
+    syllable-related (the locking peak, or any significant peak near the pre-bout latency) is also open; the readings
+    give 184 and 91 pre-bout neurons.
+- kind: code_mismatch
+  statement: For the motif strategy the Methods say 'wmax was increased from 1 to 2, m was decreased from 9 to 3',
+    which lowers Wmax = wmax m from 9 to 6, while RunHVC_split_intoThree.m in the GitHub repository the supplied
+    code names (commit 05dc96b) sets wmaxSplit = 3 and m = Wmax / wmaxSplit = 3, keeping Wmax at 9. The supplied
+    Supplementary Information code holds no motif-strategy run.
+verifications:
+- date: '2026-11-09'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the author-answers run with the conclusion cells and the summary removed,
+    the helper modules hvc.py and hvcmodel.py and the claims file, with the paper. The verifier listed the am-3
+    bucket and tested shift_test, type_test and rhythmicity on synthetic data, and checked the model port's bout-onset
+    parameters against the MATLAB code. Its outcomes differ from the record on four claims (fig1f-rhythmic-protosyllable,
+    ed2qr-pairs-independent, fig4i-bird2-shared-decrease, model-ed10eh-motif), all partially against not reproduced.
+    It reported no place where the claims file misreads the paper, so no question was added for a reader. Report
+    in transcripts/okubo-2015/verifier-1-report.md.
+  results:
+  - claim: counts-neurons-birds
+    agrees: true
+    outcome: reproduced
+    reason: 'The juvenile part, which is what the criterion judges: 1,116 neurons (expected 1,117), 32 birds, 210
+      HVCp (expected 211). The 32 adult neurons are not in the archive. Problem 13: the HVCp reading ''211 spanning
+      all stages'' is not shown, though the criterion asks for both readings.'
+    response: No change of outcome. The notebook now prints the HVCp count under both readings; under the second
+      (the 211 span all stages) it can only be bounded, 210 to 242, as the adult neurons' cell types are not in
+      the dataset.
+  - claim: ed1a-stage-age
+    agrees: true
+    outcome: reproduced
+    reason: 'Per-neuron reading: rho = 0.615; medians 48, 58, 62 and 73 dph match exactly. Counting the list''s
+      ''young adult'' as motif gives 378 motif neurons, the paper''s number.'
+    response: No change of outcome.
+  - claim: fig1-subsong-locking
+    agrees: true
+    outcome: not_reproduced
+    reason: 39 subsong neurons, but 25 (wide shift) or 27 (circular shift) are locked against 19 +/- 1.9. Section
+      C asks for the subsong locking histograms, to show why there are 25 locked neurons and not 19.
+    response: 'No change of outcome. The notebook now prints, per subsong neuron, the number of syllables, the histogram
+      peak''s rate and latency and P under both readings: 20 of the 39 have P < 0.001 under both, so the excess
+      is not borderline; the locked peaks lie mostly just before onset (median -15 ms).'
+  - claim: fig1f-locking-increases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Juvenile stages only, so partial at best. The locked fraction rises 0.64, 0.85, 0.86, 0.96; r = 0.196
+      with P = 3.8e-11.
+    response: No change of outcome.
+  - claim: fig1f-rhythmic-protosyllable
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Rhythmic neurons: 87-88 of 135 (expected 70 +/- 7) and 6-7 of 39 in subsong (expected 3), under every
+      reading.'
+    response: 'Outcome changed to not_reproduced, as the verifier gives it: no reading has all three values within
+      tolerance, and both counts are outside the criterion''s partial band (2 or 4 for subsong). The notes say the
+      direction of the claim holds.'
+  - claim: fig1fg-rhythm-increases
+    agrees: true
+    outcome: partially_reproduced
+    reason: Juvenile only. Rhythmic vs stage r = 0.28-0.29; period vs stage r = 0.46-0.47; both P < 1e-20 with the
+      right sign. The rhythmic total is 826-836 against 727 +/- 72.7.
+    response: No change of outcome.
+  - claim: ed1c-burst-width-rate
+    agrees: true
+    outcome: blocked
+    reason: The criterion compares each stage with adults, and the adult neurons (ref. 20) are not in am-3 (bucket
+      listing).
+    response: No change of outcome.
+  - claim: fig1de-bout-related
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Post-only 158 (expected 98 +/- 9.8), both 60 (expected 50 +/- 5), total 342 (expected 285 +/- 28.5);
+      only pre-only (124) is within tolerance. Problem 7: the pre-bout exclusion compares the pre-bout peak (-300
+      to 0 ms) with the syllable-locking peak, searched only in -50 to 200 ms, so it can only remove pre-bout peaks
+      between -75 and 0 ms; the Methods refer to a peak in the syllable-onset histogram, which spans +/- 0.5 s.
+      Section C asks for the distribution of post-bout peak latencies.'
+    response: 'No change of outcome. A second exclusion reading is run and adopted (assumed): a significant peak
+      of the syllable-onset histogram, over +/- 0.5 s, within 25 ms of the pre-bout peak. It gives 61, 188, 30 and
+      279 (total within tolerance, the classes not). The post-bout peak latencies are printed: 88 of the 218 post-bout
+      neurons peak in the first 50 ms after offset.'
+  - claim: fig2b-protosequence
+    agrees: true
+    outcome: partially_reproduced
+    reason: 55 locked neurons (expected 54) and coverage above 90% in all three birds, but latencies do not reach
+      past the mean protosyllable offset in birds 1 and 4.
+    response: No change of outcome.
+  - claim: ed2st-coverage
+    agrees: true
+    outcome: partially_reproduced
+    reason: '19 syllables kept, 17 above 90%, lowest 79.8%. But ''b1 B 81-112'' (93.9%) lies outside its surrogate
+      interval (94.5-100), and the criterion requires every syllable inside. Problem 2: each neuron''s window uses
+      its own mean syllable duration and the patches are cut or padded to the median length before being combined,
+      which misaligns syllable time across neurons and can move a syllable out of its interval.'
+    response: No change of outcome. The coverage now warps every neuron to one duration per syllable (the median
+      of the neurons' mean durations), and the per-neuron durations are printed. 17 of 19 are above 90%, the lowest
+      79.3%, and 18 of 19 lie within their intervals; bird 1's C at 81-112 dph (98.9%) is now below its interval
+      (99.5 to 100%). The first version's method is shown as a variant (all 19 within, with another surrogate stream).
+  - claim: ed2p-probabilistic
+    agrees: true
+    outcome: reproduced
+    reason: Mean 52.3% against 53 +/- 5.3%, which meets the criterion's condition. It is computed over 87 rhythmic
+      neurons, not 70.
+    response: No change of outcome.
+  - claim: ed2qr-pairs-independent
+    agrees: false
+    outcome: not_reproduced
+    reason: 10 pairs in 4 birds; median r^2 = 0.119 (expected 0.072) and median MI = 0.083 bits (expected 0.056).
+    response: Outcome kept as partially_reproduced; the disagreement is recorded. Both medians are outside tolerance,
+      as the verifier says, but the claim's effect, participation in largely independent sets (r^2 and MI near zero),
+      is present though weaker, which is what partially_reproduced describes, and the pair count is within tolerance.
+  - claim: fig2c-latency-subsong-earlier
+    agrees: true
+    outcome: reproduced
+    reason: 'Wide shift, latency reading (a): 64% vs 44% before onset, P = 0.038, subsong median earlier. Fragile:
+      under the circular shift P = 0.143, and the locked counts (25 and 115) are outside tolerance.'
+    response: No change of outcome.
+  - claim: fig2c-latency-broadens-later
+    agrees: true
+    outcome: reproduced
+    reason: IQR 52 to 101 ms and fraction before onset 44% to 36%; 851 neurons against 814 +/- 81.4.
+    response: No change of outcome.
+  - claim: bird1-protosequence
+    agrees: true
+    outcome: reproduced
+    reason: 16 neurons, 14 locked to protosyllable onsets under reading (a).
+    response: No change of outcome.
+  - claim: fig3g-bird1-shared-specific
+    agrees: true
+    outcome: reproduced
+    reason: 'Only under the author''s window-adjustment rule (problem 1): 96 / 37 / 39 / 20, against lower bounds
+      of 94.5 / 36.9 / 37.8 / 19.8; without the rule there are 32 shared. Problem 1: the paper adjusted the interval
+      only ''if necessary to avoid the same burst being detected twice''; the rule instead re-searches every peak
+      outside [0, mean duration], whether or not that burst is also detected in the neighbouring syllable, and the
+      notebook never shows on how many neurons the rule fired.'
+    response: 'No change of outcome. The rule was revised to follow the passage: a window is adjusted only when
+      the neighbouring syllable''s test finds the same burst within 25 ms, and the burst is left to one syllable
+      (hvc.pair_table, adjust ''double''). The notebook prints, per table, how many peaks lay outside the syllable,
+      how many were double detections and how many windows were adjusted, and per neuron for bird 1. Counts are
+      now 107 / 41 / 44 / 22, all within tolerance; the first version''s rule and no adjustment are shown as variants.'
+  - claim: ed4a-shared-latency-bird1
+    agrees: true
+    outcome: partially_reproduced
+    reason: Early r = 0.852 (P = 1.8e-6) passes; late r = 0.700 with P = 0.053 fails.
+    response: No change of outcome. With the revised rule, early r = 0.888 and late 0.765 (P = 0.010), just below
+      0.783; the shared neurons' latencies are printed.
+  - claim: ed3j-shared-ibi-specific-doubled
+    agrees: true
+    outcome: reproduced
+    reason: 'Bin reading (b): specific/proto ratio 2.19 and shared/proto 1.03, both within tolerance. The protosyllable
+      group has 16 (or 12) neurons, not 9 (problem 11); section C asks for the IBI count per neuron.'
+    response: No change of outcome. The IBI count and most-probable IBI of each of bird 1's 16 protosyllable-stage
+      neurons are printed; they do not single out a group of 9, so the paper's group is not reconstructed.
+  - claim: fig3h-bird1-shared-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: The late fraction is lower, P = 0.019, but late shared is 8 against 10 +/- 1.
+    response: Outcome changed to reproduced. With the revised adjustment rule (problem 1), the late counts are 10
+      shared and 93 specific, both within tolerance, and the shared fraction is lower late (P = 0.029); the outcome
+      rests on that rule (assumed).
+  - claim: all-birds-shared-specific
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Bird 3 cannot be tested (it has no labels). Totals 167 shared (within tolerance) and 428 specific (outside
+      496 +/- 49.6); no reading gets both totals within tolerance. Problem 12: the ''pairs counted'' printout counts
+      tables, not pairs, and bird-1 neurons from 70-72 dph enter both the beta/gamma and the B/D pair.'
+    response: No change of outcome. With the revised rule both totals are within tolerance under reading (a) (180
+      or 181 and 482), but bird 3 still cannot be tested, so the outcome stays partial. The printout now gives tables
+      and syllable pairs, and the 28 bird-1 neurons in both tables are counted.
+  - claim: all-birds-shared-decrease
+    agrees: true
+    outcome: reproduced
+    reason: CMH P = 1.3e-4 (boundary a) and 1.7e-6 (boundary b); the pooled shared fraction is lower late.
+    response: No change of outcome. With the revised rule, P = 5.2e-05 and 3.0e-06.
+  - claim: skipping-cycles
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Found in birds 1, 3 and 4 under both readings, but not in bird 6. Problem 10: bird 6''s base period
+      comes from a single shared neuron (631 ms), which says nothing useful, and reading (a) flags 242 of 318 bird-1
+      neurons, including long-period motif-stage neurons, so it is a weak test.'
+    response: No change of outcome. A base period now needs at least 3 neurons, so bird 6 has none and cannot be
+      tested; the counts are given by stage and the notes say reading (a) is weak in bird 1.
+  - claim: fig4-bird2-before-beta
+    agrees: true
+    outcome: partially_reproduced
+    reason: 125 / 35 / 28-29 all match, but there are 12 pre-bout neurons against 4. Only 'pre-bout and outside
+      the rhythmic set' gives 4, a reading the author chose after the fact (problem 6).
+    response: Outcome changed to reproduced (assumed). The subset 'outside the protosequence' no longer decides
+      anything. Under exclusion reading (ii) of fig1de-bout-related, run in reply to problem 7 and adopted there,
+      4 of the 35 neurons are pre-bout under both shift readings; under reading (i) 12 or 11. The outcome rests
+      on that reading.
+  - claim: fig4h-bird2-shared-early
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Offset-aligned counts are within tolerance: 20 shared, 23 specific. Latency r = 0.787 is below the
+      0.891 bound, and the two-peak neuron was not identified. Problem 3: the claims file asks for the shared neuron
+      whose alpha histogram has two significant peaks; the author''s rule found none, and the per-neuron latencies
+      are not printed.'
+    response: No change of outcome. The two-peak neuron is now found by a second shift test with 25 ms either side
+      of the main peak left out; six shared neurons have a significant second peak. The per-neuron alpha and beta
+      latencies and second-peak P values are printed, with leave-one-out r (0.818 to 0.995). With the revised rule,
+      22 shared and 19 specific and r = 0.842 (0.703 with all six left out), still below 0.891.
+  - claim: fig4i-bird2-shared-decrease
+    agrees: false
+    outcome: not_reproduced
+    reason: Late shared 6, outside even the partial band of 3-5; specific 25 (expected 28 +/- 2.8). The decrease
+      itself is significant, P = 0.016.
+    response: Outcome changed to reproduced. The verifier was right that 6 shared lay outside the criterion's band;
+      with the revised adjustment rule (problem 1) the late counts are 4 shared and 26 specific and P = 0.00049,
+      so the claim is reproduced, resting on that rule (assumed). Under the first version's rule the count is still
+      6.
+  - claim: ed4bd-shared-latency-other
+    agrees: true
+    outcome: not_reproduced
+    reason: Bird 1 D/B r = 0.99 passes. Bird 2 late r = -0.41 (P = 0.42) and bird 4 b2/d1 r = 0.76, so the partial
+      condition (all positive and significant) fails.
+    response: No change of outcome. With the revised rule bird 2's late r is 0.996 (n = 4), but bird 4's b2/d1 r
+      is 0.339 (P = 0.37).
+  - claim: ed7-bird1-bd-shared-persist
+    agrees: true
+    outcome: reproduced
+    reason: Late B/D shared fraction 0.74-0.77 against late B/C 0.09.
+    response: No change of outcome. With the revised rule, 0.61 (boundary a) and 0.57 (b) against 0.10.
+  - claim: ed8-bird3-phase
+    agrees: true
+    outcome: blocked
+    reason: 'Confirmed: only 1 of bird 3''s 19 neurons has labels; labels A-E were assigned by hand; to3017.tar.gz
+      would give the sound phase but not syllable identity.'
+    response: No change of outcome.
+  - claim: motif-strategy-shared
+    agrees: true
+    outcome: blocked
+    reason: 'Bird 3''s shared part needs the missing labels. Parts are testable and positive: bird 4 has 8 rhythmic
+      protosyllable-stage neurons and every syllable a-f has neurons shared with another; bird 3 has 3 rhythmic
+      protosyllable-stage neurons. Problem 9: cell 68 uses type_test without the adjustment, inconsistent with the
+      main reading.'
+    response: No change of outcome. Bird 4's counts now come from pair tables with the revised adjustment.
+  - claim: ed9-bird4-rhythms
+    agrees: true
+    outcome: not_reproduced
+    reason: 18 neurons, but 8 rhythmic against 11 +/- 1.1, and a 10 Hz / 5 Hz split of 3/5 against 5/6.
+    response: No change of outcome.
+  - claim: ed4j-bias
+    agrees: true
+    outcome: partially_reproduced
+    reason: The shared mean fits (0.282). The specific mean (0.973, or 0.980) is outside 0.96 +/- 0.011 under the
+      criterion's readings; it fits only under the author's extra 'early only' variant (problem 4), and its s.d.
+      is 0.07 against the paper's 0.011.
+    response: Outcome changed to reproduced. The early-only variant is dropped. With the revised adjustment rule
+      (problem 1), reading (a) of the criterion gives 0.961 for specific and 0.280 for shared neurons, both within
+      tolerance; the outcome rests on that rule (assumed). The notes say the specific s.d. (0.104) is far wider
+      than the paper's.
+  - claim: ed5-shared-acoustic-difference
+    agrees: true
+    outcome: blocked
+    reason: The sound exists, in about 30 GB of raw archives, so the stated reason 'not_runnable' is not valid (problem
+      8; the verifier gives too_large or methods_underspecified). The gap-exclusion counts (24/120 shared, 9/59
+      obscured) need only segments and could have been tested.
+    response: 'Kept blocked as not_runnable; the disagreement on the reason is recorded. not_runnable is the protocol''s
+      reason for a method whose software cannot be installed in the locked environment, which is the case for Sound
+      Analysis Pro, and the streaming of the sound is timed in the notebook (15 to 20 min for 30 GB) so that too_large
+      does not apply. The part without sound is now tested: 16 and 116 shared HVCRA and HVCX neurons (24 and 120),
+      of which 2 and 53 obscured (9 and 59).'
+  - claim: ed5-shared-ra-x-proportion
+    agrees: true
+    outcome: reproduced
+    reason: 'A claim of absence: P = 0.116 (reading a) and 0.085 (reading b). The fractions are 24%/34% and 14%/20%,
+      against 19%/28%.'
+    response: No change of outcome. With the revised rule, reading (a) gives P = 0.062 and reading (b) P = 0.018;
+      the readings now differ, and reading (a), which counts only neurons tested for sharing, is adopted (assumed).
+  - claim: ed2mo-ra-x-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Juvenile stages, 11 comparisons: only the motif-stage period is significant after Bonferroni, under
+      both period readings. Problem 14: only the wide-shift locking and the aa rhythmicity readings are used.'
+    response: No change of outcome. All 8 combinations of the locking and rhythmicity readings are now run; each
+      gives the same single comparison.
+  - claim: model-fig5a-subsong-decay
+    agrees: true
+    outcome: reproduced
+    reason: Back within 15% of baseline by lag 3 for seed 9038, and by lag 9 or earlier for all 10 other seeds.
+    response: No change of outcome.
+  - claim: model-fig5b-chain
+    agrees: true
+    outcome: reproduced
+    reason: 90 participating neurons at iteration 500 against 26 in subsong; latencies 2-10 all covered.
+    response: No change of outcome.
+  - claim: model-fig5cd-split
+    agrees: true
+    outcome: reproduced
+    reason: 'Iteration 992: 1 + 1 specific, 81 shared, all at the same latency; shared fraction falls 0.98 to 0.00
+      by 2,500. Marginal: two of the 10 extra seeds have no specific neurons at 992.'
+    response: No change of outcome.
+  - claim: model-fig5e-latency-broadens
+    agrees: true
+    outcome: reproduced
+    reason: The s.d. reading rises 2.18, 2.27, 2.41. The IQR reading does not rise from protosyllable to splitting
+      (4 to 4), and several extra seeds fail too.
+    response: No change of outcome.
+  - claim: model-ed10gh-period
+    agrees: true
+    outcome: reproduced
+    reason: Mean period 100 ms at iteration 500 and 200 ms at 2,500; specific neurons at 200 ms.
+    response: No change of outcome.
+  - claim: model-ed10ad-bout-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'Iteration 600: 51 and 39 specific neurons; shared fraction 0.00, against 0.60 at iteration 130.'
+    response: No change of outcome.
+  - claim: model-ed10eh-motif
+    agrees: false
+    outcome: not_reproduced
+    reason: 'At 2,500 iterations, 13 non-seed neurons still take part in two groups, against ''non-overlapping''
+      sequences; only reading (a) was run. Problem 5: reading (b), the GitHub code, was not run on the ground that
+      no commit is pinned, though the author could have pinned one; the groups get unequal numbers of pulses (4,
+      3, 3) under a threshold of more than 2 firings, the author''s choice.'
+    response: 'Outcome changed to not_reproduced. Reading (b) is now run: the GitHub repository is pinned at commit
+      05dc96b and its RunHVC_split_intoThree.m is ported; it leaves 18 neurons in two groups at the end. The 4,
+      3, 3 pulses are those of the GitHub script itself, and a threshold of more than one firing changes the counts
+      by at most one neuron.'
+  - claim: model-ed10ik-new-chain
+    agrees: true
+    outcome: reproduced
+    reason: Specific neurons for both elements (34 and 10); protosyllable seeds fire on every input (1.0).
+    response: No change of outcome.

@@ -14,6 +14,7 @@ Where parameters come from is said at each constant below.
 """
 from __future__ import annotations
 
+import collections
 import io
 import re
 import tarfile
@@ -234,8 +235,9 @@ def histogram(rel, ntrial):
     return _smooth_rows(h)[0] / SMOOTH / max(ntrial, 1) / BIN, centres
 
 
-def shift_test(rel, tri, ntrial, window, rng, n_surr=N_SHIFT, reading="wide"):
+def shift_test(rel, tri, ntrial, window, rng, n_surr=N_SHIFT, reading="wide", exclude=None):
     """Peak of the smoothed aligned histogram in `window` (s, s) and its shift-test P.
+    `exclude` (s, s), when given, is left out of the window for the real and surrogate peaks.
 
     Surrogates add one random shift per trial, uniform over +/- 0.5 s (Methods). The Methods do
     not say what happens to spikes shifted past the +/- 0.5 s range (claims header, OPEN ii):
@@ -245,6 +247,8 @@ def shift_test(rel, tri, ntrial, window, rng, n_surr=N_SHIFT, reading="wide"):
     """
     centres = -HIST_HALF + BIN * (np.arange(NB) + 0.5)
     win = (centres >= window[0]) & (centres <= window[1])
+    if exclude is not None:
+        win &= ~((centres >= exclude[0]) & (centres <= exclude[1]))
     h, _ = histogram(rel, ntrial)
     hw = np.where(win, h, -np.inf)
     i = int(np.argmax(hw)); peak = h[i]
@@ -532,15 +536,19 @@ PRE_ONSET = 0.030    # s; "between 30 ms before syllable onset
 POST_OFFSET = 0.010  # s; and 10 ms after syllable offset"
 
 
-def type_test(n: dict, labels, align="onset", reading="wide", tag="", adjust=False):
+def type_test(n: dict, labels, align="onset", reading="wide", tag="", adjust=False, inner=False, exclude=None):
     """Shift test of one neuron for one syllable type (a set of dataset labels).
 
     Spike times are linearly time-warped to the type's mean duration (factor mean/duration
     applied to times relative to the alignment point) and the 1 ms, 20-bin smoothed histogram's
     peak is taken between 30 ms before onset and 10 ms after offset of the mean syllable, then
     tested as for syllable locking. Returns dict(n_syll, mean_dur, peak, lat, p) or None when the
-    neuron has no rendition of the type. The paper's visual adjustment of the interval, to avoid
-    one burst counting for two adjacent syllables, is not repeated (it cannot be)."""
+    neuron has no rendition of the type. `inner=True` searches and tests the peak within the
+    syllable itself (onset to mean offset), the window used when the paper's adjustment applies
+    (see `pair_table`). `adjust=True` is the "margin rule" variant: every peak in the 30 ms before
+    onset or the 10 ms after offset is searched again within the syllable, whether or not the
+    neighbouring syllable also detects the burst (the author's first rule, kept as a variant).
+    `exclude` (s from onset, s from onset) leaves that part out of the window (see `_double`)."""
     fi, on, off, lab = syllables(n, labels)
     if on.size == 0:
         return None
@@ -548,38 +556,146 @@ def type_test(n: dict, labels, align="onset", reading="wide", tag="", adjust=Fal
     md = float(dur.mean())
     warp = md / dur
     if align == "onset":
-        ev, win = on, (-PRE_ONSET, md + POST_OFFSET)
+        ev, win = on, ((0.0, md) if inner else (-PRE_ONSET, md + POST_OFFSET))
     else:
-        ev, win = off, (-(md + PRE_ONSET), POST_OFFSET)
+        ev, win = off, ((-md, 0.0) if inner else (-(md + PRE_ONSET), POST_OFFSET))
     rel, tri = aligned(n, ev, fi, warp=warp)
-    pk, lat, p = shift_test(rel, tri, on.size, win, neuron_rng(n["key"], f"type{tag}{''.join(sorted(labels))}{align}{reading}"),
-                            reading=reading)
+    stream = f"{'adj' if inner else 'excl' if exclude is not None else 'type'}{tag}{''.join(sorted(labels))}{align}{reading}"
+    ex = None if exclude is None else ((exclude[0], exclude[1]) if align == "onset" else (exclude[0] - md, exclude[1] - md))
+    pk, lat, p = shift_test(rel, tri, on.size, win, neuron_rng(n["key"], stream), reading=reading, exclude=ex)
     if align == "offset":
         lat = lat + md  # latency from (mean) onset, so onset- and offset-aligned latencies compare
-    if adjust and not (0.0 <= lat <= md):
-        # A rule standing in for the paper's visual adjustment (assumption): a peak in the 30 ms
-        # before onset or the 10 ms after offset may be a burst of the neighbouring syllable, so
-        # the peak is searched again within the syllable itself and tested there.
-        w2 = (0.0, md) if align == "onset" else (-md, 0.0)
-        pk, lat, p = shift_test(rel, tri, on.size, w2, neuron_rng(n["key"], f"adj{tag}{''.join(sorted(labels))}{align}{reading}"),
-                                reading=reading)
-        if align == "offset":
-            lat = lat + md
+    if adjust and not inner and not (0.0 <= lat <= md):
+        return type_test(n, labels, align, reading, tag, inner=True)
     return dict(n_syll=int(on.size), mean_dur=md, peak=pk, lat=lat, p=p)
+
+
+def neighbour(n: dict, labels, side):
+    """The syllable next to the renditions of a type: for side 'after' the next selected syllable
+    in the same bout (gap at most BOUT_GAP), for 'before' the previous one. Returns (most common
+    label, median gap in s, fraction of renditions with that neighbour) or None."""
+    found = []
+    for f in n["files"]:
+        k = f["sel"]
+        on, off, ti = f["on"][k], f["off"][k], f["title"][k].astype(str)
+        o = np.argsort(on); on, off, ti = on[o], off[o], ti[o]
+        for j in np.flatnonzero(np.isin(ti, list(labels))):
+            if side == "after" and j + 1 < on.size and on[j + 1] - off[j] <= BOUT_GAP:
+                found.append((ti[j + 1], on[j + 1] - off[j]))
+            if side == "before" and j > 0 and on[j] - off[j - 1] <= BOUT_GAP:
+                found.append((ti[j - 1], on[j] - off[j - 1]))
+    if not found:
+        return None
+    lab = collections.Counter(x for x, _ in found).most_common(1)[0][0]
+    gaps = [g for x, g in found if x == lab]
+    nrend = int(syllables(n, labels)[1].size)
+    return lab, float(np.median(gaps)), len(gaps) / max(nrend, 1)
+
+
+EDGE = 0.003   # s; a peak this close to the window's edge is the tail of a burst outside it (standard choice)
+
+
+def _double(n, X, rX, label_sets, align, reading, cache):
+    """The paper's adjustment, as a rule (assumption): "adjusted the interval if necessary to
+    avoid the same burst being detected twice (that is, being associated with an offset of one
+    syllable and an onset of the next syllable)" (Methods, Shared and specific neurons).
+
+    When type X's peak lies outside the syllable (in the 30 ms before onset or the 10 ms after
+    offset), the neighbouring syllable Y on that side (`neighbour`) is tested with the same test.
+    The burst is detected twice when Y's test is significant and its peak lies within SAME_LATENCY
+    (25 ms; the Methods' "similar latency" of the bout-related analysis) of the time of X's peak,
+    measured from Y's onset with the median gap between them. The burst's time is taken from the
+    peak that is not at the edge of its window (EDGE), and the burst is left to the syllable whose
+    window [-30 ms, offset + 10 ms] holds it furthest from an edge. The other syllable's window
+    then leaves out SAME_LATENCY on either side of the burst, and its peak is searched and tested
+    again. Returns dict(dbl, owner 'X' or 'Y', Y label set, burst time from X's and from Y's onset)
+    or None when the burst is not detected twice."""
+    if rX is None:
+        return None
+    md, L = rX["mean_dur"], rX["lat"]
+    if 0.0 <= L <= md:
+        return None
+    side = "after" if L > md else "before"
+    nb = neighbour(n, X, side)
+    if nb is None:
+        return None
+    ylab, gap, frac = nb
+    Y = next((s for s in label_sets if ylab in s), {ylab})
+    key = "".join(sorted(Y))
+    if key not in cache:
+        cache[key] = type_test(n, Y, align, reading)
+    rY = cache[key]
+    if rY is None or not rY["p"] < ALPHA:
+        return None
+    mdY = rY["mean_dur"]
+    shift = -(md + gap) if side == "after" else mdY + gap      # time from Y's onset = time from X's onset + shift
+    if abs(rY["lat"] - (L + shift)) > SAME_LATENCY:
+        return None
+    def edge(lat, m):
+        return min(lat + PRE_ONSET, m + POST_OFFSET - lat) < EDGE
+    eX, eY = edge(L, md), edge(rY["lat"], mdY)
+    tX = L if (eY or not eX) and not (eX and not eY) else rY["lat"] - shift
+    if eX and eY:
+        tX = (L + rY["lat"] - shift) / 2
+    tY = tX + shift
+    dX = min(tX + PRE_ONSET, md + POST_OFFSET - tX)
+    dY = min(tY + PRE_ONSET, mdY + POST_OFFSET - tY)
+    return dict(owner="X" if dX >= dY else "Y", Y=Y, tX=tX, tY=tY, nb=ylab)
 
 
 def pair_table(neurons, A, B, align="onset", reading="wide", adjust=False):
     """For each neuron, the type test for syllable types A and B (sets of labels); class
-    'shared' (both significant), 'specific_A', 'specific_B' or 'none'."""
+    'shared' (both significant), 'specific_A', 'specific_B' or 'none'.
+
+    `adjust`: False (no adjustment, "raw"), "double" (the main reading: the window is adjusted
+    only when the same burst is detected in the neighbouring syllable, `_double`), or "margin"
+    (variant: every peak outside the syllable is searched again inside it, `type_test(adjust=True)`).
+    Columns out_X, dbl_X and adj_X say, per type, whether the peak lay outside the syllable,
+    whether the neighbouring syllable detected the same burst, and whether X's window was adjusted;
+    lat0_X and p0_X are the unadjusted peak latency and P."""
     rows = []
     for n in neurons:
-        ra = type_test(n, A, align, reading, adjust=adjust); rb = type_test(n, B, align, reading, adjust=adjust)
-        sa = ra is not None and ra["p"] < ALPHA; sb = rb is not None and rb["p"] < ALPHA
+        res = {"A": type_test(n, A, align, reading), "B": type_test(n, B, align, reading)}
+        raw = dict(res)
+        sets = {"A": A, "B": B}
+        inf = {nm: dict(out=False, dbl=False, adj=False, nb="") for nm in "AB"}
+        for nm in "AB":
+            r = raw[nm]
+            inf[nm]["out"] = r is not None and not (0.0 <= r["lat"] <= r["mean_dur"])
+        if adjust == "margin":
+            res = {nm: type_test(n, sets[nm], align, reading, adjust=True) for nm in "AB"}
+            for nm in "AB":
+                inf[nm]["adj"] = inf[nm]["out"]
+        elif adjust == "double":
+            cache = {"".join(sorted(A)): raw["A"], "".join(sorted(B)): raw["B"]}
+            for nm, other in (("A", "B"), ("B", "A")):
+                if inf[nm]["adj"]:
+                    continue
+                d = _double(n, sets[nm], raw[nm], (A, B), align, reading, cache)
+                if d is None:
+                    continue
+                inf[nm]["dbl"] = True; inf[nm]["nb"] = d["nb"]
+                if d["owner"] == "Y":
+                    tgt, t = nm, d["tX"]
+                elif d["Y"] == sets[other]:
+                    tgt, t = other, d["tY"]
+                    inf[other]["dbl"] = True
+                else:
+                    continue
+                if not inf[tgt]["adj"]:
+                    res[tgt] = type_test(n, sets[tgt], align, reading, exclude=(t - SAME_LATENCY, t + SAME_LATENCY))
+                    inf[tgt]["adj"] = True
+        sa = res["A"] is not None and res["A"]["p"] < ALPHA; sb = res["B"] is not None and res["B"]["p"] < ALPHA
         cls = "shared" if sa and sb else "specific_A" if sa else "specific_B" if sb else "none"
         row = dict(key=n["key"], cls=cls)
-        for nm, r in (("A", ra), ("B", rb)):
+        for nm in "AB":
+            r = res[nm]
             for k in ("n_syll", "mean_dur", "peak", "lat", "p"):
                 row[f"{k}_{nm}"] = np.nan if r is None else r[k]
+            row[f"lat0_{nm}"] = np.nan if raw[nm] is None else raw[nm]["lat"]
+            row[f"p0_{nm}"] = np.nan if raw[nm] is None else raw[nm]["p"]
+            for k in ("out", "dbl", "adj", "nb"):
+                row[f"{k}_{nm}"] = inf[nm][k]
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -694,18 +810,21 @@ COV_MIN_NEURONS = 10          # "more than 10 neurons bursting within the syllab
 COV_N_SURR = 1000             # "1,000 surrogate data sets"
 
 
-def coverage_patches(n: dict, labels, thresh, fi_on_off=None):
+def coverage_patches(n: dict, labels, thresh, fi_on_off=None, md_common=None):
     """Covered patches (boolean over 1 ms steps of the window from 30 ms before onset to 10 ms
     after the mean offset) of one neuron for one syllable type, one patch per kept burst
     window. Spikes are time-warped to the mean duration, as in the paper's population rasters
-    (the coverage Methods do not say; an assumption). Returns (list of patches, window length)."""
+    (the coverage Methods do not say; an assumption). `md_common`, when given, is the duration
+    every rendition is warped to (one window shared by all neurons of a syllable, as in a
+    population raster); otherwise the neuron's own mean duration is used. Returns (list of
+    patches, window length)."""
     if fi_on_off is None:
         fi, on, off, _ = syllables(n, labels)
     else:
         fi, on, off = fi_on_off
     if on.size == 0:
         return [], 0
-    md = float((off - on).mean())
+    md = float((off - on).mean()) if md_common is None else float(md_common)
     t0, t1 = -PRE_ONSET, md + POST_OFFSET
     nb = int(round((t1 - t0) / BIN))
     rel, tri = aligned(n, on, fi, warp=md / (off - on), half=1.0)

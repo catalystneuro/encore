@@ -205,6 +205,63 @@ def run_motif(seed=9038):
     )
 
 
+MOTIF_GITHUB = "github.com/emackev/HVCModelCode, commit 05dc96b1263ee14c066eeda674b96b015f6c57d7"
+
+
+def run_motif_github(seed=210):
+    """Motif strategy as in `RunHVC_split_intoThree.m` of the GitHub code (MOTIF_GITHUB), reading
+    (b) of model-ed10eh-motif. That script: seed 210 (its L45); 9 seed neurons (L55); wmax 1 and
+    m 9 (L46-47), so Wmax = 9; beta 0.115, alpha 30, eta 0.025, epsilon 0.2, tau 4, gamma 0.01
+    (L56-61); splitting with wmaxSplit 3 and m = Wmax / wmaxSplit = 3 (L63, L159-160), gamma rising
+    as sigmf(1:2000, [1/200 500]) * 0.18 (L68); Niter = [1 499 690 2000] (L67): 500 protosyllable
+    iterations, then 690 and 2,000 splitting iterations (snapshots there). Seeds 1-3, 4-6 and 7-9
+    are driven at steps with mod(step, 30) == 1, 11 and 21 (L101-103), so in a 100-step iteration
+    the groups get 4, 3 and 3 pulses, as in reading (a). Random numbers: rng(seed) once before the
+    initial weights (L84-85), no subsong stage, then per iteration rand(n, nsteps) (L120 ...).
+    The script's own classification is in `HVCtestRaster_intoThree.m` (see `raster_classes`)."""
+    k, nsteps = 9, 100
+    wmax0, m0, wmax_split = 1.0, 9.0, 3.0
+    Wmax = wmax0 * m0
+    gammas = sigmf(np.arange(1, 2001), 1 / SIG_TAU, 500) * 0.18
+    steps = np.arange(1, nsteps + 1)
+    psyl_in = np.full((k, nsteps), -float(HOW_CLAMPED))
+    psyl_in[:, steps % TRAININT == 1] = 10.0
+    alt_in = np.full((k, nsteps), -float(HOW_CLAMPED))
+    groups = [np.arange(0, 3), np.arange(3, 6), np.arange(6, 9)]
+    for g, ids in enumerate(groups):
+        alt_in[np.ix_(ids, np.flatnonzero(steps % (3 * TRAININT) == g * TRAININT + 1))] = 10.0
+    rng = np.random.default_rng(seed)
+    w = 2 * _rand(rng, N, N) * Wmax / N
+    snaps = {}
+    proto_types = [dict(nids=np.arange(k), tind=np.flatnonzero(steps % TRAININT == 1) + 1,
+                        cand_lat=np.arange(1, TRAININT + 1), thres=4) for _ in range(3)]  # as run_motif
+    split_types = [dict(nids=ids, tind=np.flatnonzero(steps % (3 * TRAININT) == g * TRAININT + 1) + 1,
+                        cand_lat=np.arange(1, TRAININT + 1), thres=2) for g, ids in enumerate(groups)]
+    for t in range(500):
+        bdyn = (_rand(rng, N, nsteps) >= (1 - PIN)).astype(float)
+        bdyn[:k, :] = psyl_in
+        w, xdyn = hvc_iter(w, bdyn, gamma=GAMMA_START, wmax=wmax0, m=m0, beta=0.115, eta=0.025, epsilon=0.2)
+    snaps[500] = dict(w=w, xdyn=xdyn, input=bdyn, types=proto_types)
+    for i in range(2000):
+        bdyn = (_rand(rng, N, nsteps) >= (1 - PIN)).astype(float)
+        bdyn[:k, :] = alt_in
+        w, xdyn = hvc_iter(w, bdyn, gamma=gammas[i], wmax=wmax_split, m=Wmax / wmax_split, beta=0.115,
+                           eta=0.025, epsilon=0.2)
+        if i + 1 in (690, 2000):
+            snaps[500 + i + 1] = dict(w=w, xdyn=xdyn, input=bdyn, types=split_types)
+    return dict(seed=seed, seeds=np.arange(k), groups=groups, snapshots=snaps)
+
+
+def raster_classes(xdyn, k=9):
+    """The classification of `HVCtestRaster_intoThree.m` (MOTIF_GITHUB, L44-46): over the first 60
+    steps of the iteration (two cycles of the three groups), a non-seed neuron firing more than 4
+    times is shared by three groups, 3 or 4 times by two; the rest (at most 2 firings) are
+    specific or silent. Returns counts (three, two, one or two firings, silent)."""
+    c = np.asarray(xdyn[k:, :60], dtype=float).sum(axis=1)
+    return dict(three=int((c > 4).sum()), two=int(((c > 2) & (c < 5)).sum()),
+                specific=int(((c >= 1) & (c <= 2)).sum()), silent=int((c == 0).sum()))
+
+
 # ---------------------------------------------------------------- bout-onset runs
 def _bout_onset_core(seed, *, beta, eta, epsilon, gamma_split, how_on, how_on_psyl_start,
                      how_on_psyl_split):
