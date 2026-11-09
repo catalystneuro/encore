@@ -663,6 +663,7 @@ claims:
   - fig3f-rf-size-hierarchy
   - fig3i-modulation-index-hierarchy
   - fig3l-response-decay-timescale-hierarchy
+  - link-unit-tables
   expected:
   - quantity: time to first spike, deep minus superficial
     value: 2.59
@@ -703,6 +704,7 @@ claims:
   where: DANDI:000021 and DANDI:000022 (the paper's Data availability)
   depends_on:
   - fig2-sharp-peak-pairs
+  - link-unit-tables
   criterion: Sharp peaks as in fig2-sharp-peak-pairs, units split into superficial (layers 2 to
     4) and deep (layers 5 and 6) per area (Extended Data Fig. 10c legend); DS averaged across mice
     (Extended Data Fig. 10d legend). Extended Data Fig. 10e gives a DS "based on average
@@ -883,6 +885,25 @@ claims:
     in each area. The absence of a correlation with hierarchy (legend) is judged by the Pearson
     test of Figure4.py at p < 0.05. Reproduced when all eight areas are above chance under one
     reading and the correlation is not significant; partially when one of the two holds.
+- id: link-unit-tables
+  kind: link
+  statement: The paper's per-unit tables (data/time_to_first_spike.csv, data/timescale_metrics.csv and
+    data/layer_info.csv) describe the units of dandisets 000021 and 000022, matched by ecephys unit id.
+  source: Code availability; common/create_units_table.py of the paper's repository
+  data: elsewhere
+  where: DANDI:000021 and DANDI:000022 (the paper's Data availability), with GitHub
+    AllenInstitute/neuropixels_platform_paper at commit 4f8bcc26fa6fbec1ae687c650bacc9ea67a7036d
+  criterion: Added by the author (protocol, Author, step 4) because ed10b-layers and
+    ed10ce-superficial-lead-deep take layers from data/layer_info.csv. Records are matched by
+    ecephys_unit_id against the id column of the units tables. Agreement is checked by recomputing,
+    from the dandisets' spike times, the response decay timescale over 40 to 290 ms after flash onset
+    and the intrinsic timescale over 1.0 to 2.0 s (Figure3/timescale_calculation.py, which wrote
+    timescale_metrics.csv) and the flash time to first spike from 30 ms within 200 ms
+    (Figure3/get_flash_PSTH.py, which wrote time_to_first_spike.csv), and by checking that layer
+    codes above zero fall on cortical units. Reproduced when at least 95% of each table's ids are
+    units of the dandisets and, for each recomputed table, at least 90% of the units with both values
+    agree (within 1 ms, or within 1% for timescales); partially reproduced when the ids match but the
+    values of one table do not agree.
 - id: methods-gaze-stability
   statement: Across 50 mice with eye tracking, 95% of gaze locations fell within 6.4 +/- 2.1
     degrees of the mean, with a maximum of 13.6 degrees.
