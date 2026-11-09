@@ -1,0 +1,456 @@
+schema_version: 3
+id: mizuseki-2009-01
+datasets:
+- archive: crcns
+  id: hc-2
+  version: unversioned
+  doi: 10.6080/K0Z60KZ9
+  relation: primary
+paper: doi:10.1016/j.neuron.2009.08.037
+date: '2026-11-09'
+entry: mizuseki-2009
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42696393582
+outcomes:
+- claim: tables1-cell-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every expected count includes data hc-2 does not hold. The per-rat CA1 counts of Table S1 cover
+    all tasks, and hc-2 holds open-field sessions only; the open-field counts (1083 principal cells, 188
+    interneurons) include rat i01, which hc-2 does not hold; the EC, CA3 and DG counts have no data. hc-2
+    gives 739 putative pyramidal cells and 181 putative interneurons counted session by session (545 and
+    127 once per unit), ec13 299 and 95, ec14 237 and 46, ec16 203 and 40, under the assumed classification.
+    These are below the paper's open-field totals, as a subset should be, but the interneuron count (181
+    in three rats against 188 in four) suggests the classification marks more interneurons than the paper's.
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:tables1-cell-counts
+  deviations:
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: fig2c-ec-cell-classes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so the EC cell
+    classes cannot be tested.
+- claim: figs4-ec2-bursting
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every ordering in the criterion compares groups of which hc-2 holds at most one (CA1); it has
+    no EC, CA3 or DG cells.
+- claim: fig1-ec3-ca1-theta-coherence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there is no
+    EC3 LFP.
+- claim: fig1-layer-reversals
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC sites of known layer.
+- claim: fig3-interneurons-min-ascending
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:fig3-interneurons-min-ascending
+  notes: Tested on the CA1 groups hc-2 holds. The minimum of the pooled phase histogram is at 335 degrees
+    for 739 pyramidal cells and 315 for 181 interneurons, inside both readings of the ascending phase
+    (180-360 and 265-360), in each rat (305 to 355) and under every classification and theta-epoch variant.
+    Referred to EC3 with the paper's 0 to 80 degree lead of CA1, the minima would be 255-335 and 235-315,
+    inside reading (a) for any shift and inside (b) for shifts up to 70 and 50 degrees. The EC and DG/CA3
+    groups of the statement cannot be tested.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: fig3-dg-ca3-precede-ca1
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no DG or CA3 cells.
+- claim: fig3-ec-opposite-to-targets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC principal cells.
+- claim: fig3c-ec3-subset-locked
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC3 or EC2 cells.
+- claim: fig3-ec5-weakest
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC5 cells.
+- claim: fig3d-ec2-strongest-modulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC cells.
+- claim: fig3d-hippocampal-modulation
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:fig3d-hippocampal-modulation
+  measured:
+  - 0.193
+  - 93.0
+  notes: CA3 and DG are not in hc-2, so the claim is judged on its two CA1 values, as the criterion says.
+    Mean R of the 427 significantly modulated pyramidal cells is 0.193 (expected 0.19 +/- 0.019, inside),
+    and 93.0% of 459 included cells are modulated (expected 84 +/- 8.4, above the bound of 92.4). The
+    theta-epoch variants give 91.1 to 95.8% and R 0.172 to 0.200; ratio above 3 (91.1%, R 0.200) and speed
+    above 5 cm/s (92.0%, R 0.199) put both values in tolerance, no speed criterion puts neither. By rat
+    95.2, 87.8 and 78.8%; once per unit 92.5% and R 0.191. Interneurons give 96.4% and R 0.304. The comparisons
+    with CA3 and DG cannot be tested.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+  - The expected values were read from the bars of Figure 3D (claims file); the paper prints no number
+    for them.
+- claim: figs8-task-invariance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds one task (open field); the criterion makes the claim not testable with one task.
+- claim: figs9-phase-method
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs9-phase-method
+  notes: For CA1 pyramidal cells (410 modulated by maxima, 405 by Hilbert) and interneurons (104), the
+    group mean preferred phases by the maxima, minima and Hilbert methods differ by at most 0.7 and 0.2
+    degrees, within both 45 and 90 degrees. Other groups are not in hc-2.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+  - The 5-11 Hz filter is a zero-phase 4th-order Butterworth band-pass (claims file O3, a standard choice).
+- claim: figs10-ca1-reference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there is no
+    EC3 LFP to compare with CA1.
+- claim: fig4a-ec-hippocampus-offsets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC-hippocampal pairs.
+- claim: fig4a-pair-offset-ranges
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC2-DG, EC2-CA3 or EC3-CA1 pairs.
+- claim: fig4a-ec5-ca1-flat
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC5 cells.
+- claim: fig4-ec2-ec3-opposite-lags
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC cells.
+- claim: figs11-phase-time-agreement
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs11-phase-time-agreement
+  measured: 0.361
+  notes: 5493 CA1 pairs from the same session, both members modulated and more than 100 CCG events in
+    [-150, 150] ms. With the CCG peak lag unwrapped to one theta cycle (the criterion's reading), the
+    Pearson correlation with the phase difference as time is 0.614 for 1840 pyramidal cell-interneuron
+    pairs (Figure S11B), 0.146 for 3406 pyramidal cell pairs (Figure S11A) and 0.361 over all pairs (criterion
+    r > 0.5, all p < 1e-17); circular correlations 0.659, 0.205 and 0.395. Without unwrapping r is 0.061
+    over all pairs, as many peaks fall in the neighbouring cycle (41% outside +/-62.5 ms). The claim holds
+    for principal-interneuron pairs and not for principal pairs. The measured value is the correlation
+    over all pairs.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+  - Pairs are taken within each session; the CCG uses theta-epoch spikes, 1 ms bins, normalised by (1
+    - |t|/T) with T the theta duration (Supplemental Experimental Procedures, Analysis of temporal relationships),
+    smoothed with SD 10 ms (Figure S11 legend).
+- claim: fig5-rate-phase-shift
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:fig5-rate-phase-shift
+  measured: 130.2
+  notes: Tested on CA1 pyramidal cells; EC2, EC3, CA3 and DG are not in hc-2. The group mean preferred
+    phase moves earlier at every step between rate categories, from 248.1 degrees at 4 Hz (451 cells)
+    to 117.9 at >= 40 Hz (148 cells), an advance of 130.2 degrees, below the criterion's 135 (the paper's
+    more than 150 less 10%). The 139 cells modulated in both categories advance by a median of 134.6 degrees
+    (91% advance; circular mean 137.1). The theta-epoch variants give 129.9 to 131.1, the classification
+    variants 129.7 and 129.0, and the rats 125.6, 147.3 and 129.6. The effect is present and large, but
+    below the bound.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: fig5b-burst-double-peak
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:fig5b-burst-double-peak
+  notes: CA1 pyramidal cells only (EC2 not in hc-2). The burst-spike phase histogram has two peaks under
+    both readings, at 235 and 25 degrees of the smoothed histogram (a) and with two von Mises components
+    (means 230 and 38) preferred by BIC (73071 against 73371) (b), in each rat. Burst spikes do not share
+    the phase of >= 40 Hz spikes; circular means 272 and 118, 154 degrees apart (criterion within 90).
+    Bursts mostly occupy the low-rate phase of the main peak.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+  - The von Mises mixture is fitted on a random subset of 20000 burst spikes (seed fixed), a standard
+    choice to bound the fit time.
+- claim: figs13-interneuron-rate
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs13-interneuron-rate
+  measured: 59.6
+  notes: CA1 interneurons (97 modulated at 4 Hz, 64 at >= 40 Hz, 82 for bursts). The group mean phases
+    are 213.3, 153.7 and 166.9 degrees; pairwise differences 59.6, 46.5 and 13.2, above the 33 degree
+    bound. The theta-epoch variants give largest differences 51.6 to 58.7 and the classification variants
+    61.6 and 43.2; rat ec13 alone gives 27.2 and 34.0, ec14 99.6 and ec16 75.7. Part of the shift may
+    come from cells the assumed rule calls interneurons; the stricter variant still gives 43.2. Mean R
+    falls with rate (Spearman -0.99).
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: fig6-hippocampal-precession
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no linear track sessions.
+- claim: fig7a-precession-strength
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no linear track sessions and no EC cells.
+- claim: figs15-ec3-no-precession
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no linear track sessions and no EC3 cells.
+- claim: fig7b-frequency-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no linear track sessions, no EC3 LFP and no EC, CA3 or DG cells.
+- claim: figs16-open-field-smallest-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds the open field alone, and the criterion makes the comparison between tasks not testable
+    then; it also lacks the EC3 LFP the shift is measured against.
+- claim: figs18-spike-phase-spectrum
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7b-frequency-shift, blocked for missing data; hc-2 also has no EC3 LFP.
+- claim: fig7-ca1-highest-precession
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig7a-precession-strength, fig7b-frequency-shift and figs15-ec3-no-precession, all
+    blocked for missing data.
+- claim: fig8-ec-population-predicts-sinks
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper names no archive for the CSD theta phases of Montgomery et al. (2009) (searched its
+    text, legends and supplement), so the outside input is not shown to be public; and hc-2 holds no EC2
+    or EC3 cells and no CSD of the dentate molecular layer or lacunosum-moleculare.
+- claim: figs2-ripple-sequence
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs2-ripple-sequence
+  measured:
+  - 10.05
+  - 4.41
+  notes: 2067 ripples in 21 sessions. Peak of the group mean rate within +/-50 ms over baseline, 5 ms
+    bins. CA1 pyramidal cells (739) 10.05-fold with baseline (a) -500 to -250 ms and 7.41-fold with (b)
+    the rate outside ripples; interneurons (181) 4.41 and 2.12 (expected 6 +/- 0.6 and 3 +/- 0.3). With
+    10 and 20 ms bins 9.79 and 9.54 or 7.23 and 6.99 for pyramidal cells, 4.35 and 4.20 or 2.10 and 2.01
+    for interneurons; no reading puts both in tolerance. Pyramidal cells are recruited more than interneurons
+    (about 2.3 to 3.5 times the fold), as the legend's two-fold gain says. The EC delays and recruitment
+    cannot be tested. Measured values are reading (a), 5 ms bins.
+  deviations:
+  - The CA1 pyramidal layer channel is the one with the largest 140-230 Hz power among channels that correlate
+    with their shank and are not outliers; hc-2 does not say which channel is in the layer.
+  - Non-theta periods are windows where the theta ratio does not exceed 2 (any speed); the paper does
+    not define them beyond non-theta.
+  - The bin of Figure S2 and the window of the peak are not given; 5, 10 and 20 ms bins and +/-50 ms are
+    used (standard choices, varied).
+  - Detected events closer than 30 ms are merged (a standard choice).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: figs19-fast-firing-minority
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs19-fast-firing-minority
+  notes: CA1 pyramidal theta spikes (903418). Reading (a) 0.546 at 4-12 Hz against 0.049 at >= 40 Hz;
+    reading (b) 0.662 below 20 Hz against 0.338 at or above; the same in each rat. 98% of 459 included
+    cells are significantly modulated at 4 Hz and 32% at >= 40 Hz. The EC part cannot be tested.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: figs6-identified-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2c-ec-cell-classes, blocked for missing data (no EC cells).
+- claim: figs7-individual-rats
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs7-individual-rats
+  notes: CA1 groups in rats ec13, ec14 and ec16. Pyramidal cells (199, 130, 98 modulated) have group mean
+    phases 216.1, 210.1 and 207.6 degrees, at most 8.5 apart; interneurons (57, 21, 28) 189.6, 189.4 and
+    157.7, at most 31.9 apart; within 45 and 90 degrees. Under the stricter classification variant the
+    interneuron means are 191.8, 163.4 and 138.1 (53.7 apart, still within 90). EC groups are not in hc-2.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend). Here CA1 theta is used in every rat.
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: figs12b-burst-single-phase
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mizuseki_2009.ipynb
+  output: claim:figs12b-burst-single-phase
+  notes: 226 CA1 pyramidal cells modulated in both spike groups. 64 (28.3%) have burst and single-spike
+    phases more than 90 degrees apart (a) and 177 (78.3%) differ by Watson-Williams test (b); binomial
+    p against 5% 2.8e-30 and 5.7e-182. It holds in each rat. EC2 is not in hc-2.
+  deviations:
+  - Theta phase is referred to the CA1 pyramidal layer LFP, as hc-2 has no EC3 LFP; the paper uses EC3
+    theta except for rat i01 and Figure S10, and reports CA1 leading EC3 by 0 to 80 degrees (Figure S10
+    legend).
+  - Theta epochs are windows (2 s, 1 s step) where the ratio of 5-11 Hz power to the 1-4 and 12-14 Hz
+    power exceeds 2 and running speed exceeds 3 cm/s. The paper gives the ratio (Supplemental Experimental
+    Procedures) but no threshold, adjusts epochs by hand, and says only walking/running; the threshold
+    and speed are assumptions, varied (ratio 1.5 or 3, speed 5 cm/s or none).
+  - Putative interneurons are units with a trough-to-peak latency below 0.4 ms or a mean rate above 10
+    Hz. The paper separates hippocampal cells by autocorrelograms, waveforms and rates (Supplemental Experimental
+    Procedures, Cell Type Classification) without thresholds, and hc-2 has no labels; the rule is an assumption,
+    with two variants shown (waveform alone; narrow and above 1 Hz, or above 10 Hz).
+- claim: discussion-ec-interneurons-with-ec2
+  outcome: blocked
+  blocked_by: data_missing
+  notes: hc-2 holds no entorhinal cortex recordings (CA1 probe only, data descriptor), so there are no
+    EC interneurons or EC2 principal cells.
+findings:
+- kind: data_missing
+  statement: hc-2 holds only the CA1 open-field part of the paper's data, 21 sessions of rats ec13, ec14
+    and ec16. The entorhinal recordings, the CA3 and dentate recordings, the linear track, T-maze and
+    wheel sessions, and rats ec12 and i01 are not in it, so 26 of the 37 claims cannot be tested.
+- kind: metadata_insufficient
+  statement: No unit carries a cell type or a region or layer label; the structure and type fields of
+    the units in the .xml files are empty or '--'. Principal cells and interneurons had to be classified
+    by an assumed rule, which several results depend on.
+- kind: metadata_insufficient
+  statement: The files do not say which channel lies in the CA1 pyramidal layer, which the paper uses
+    for theta and ripples, and some channels are noisy (in ec016.582 the channel with the largest ripple-band
+    power correlates with its shank at r = 0.52). Positions in the .whl files are in video pixels with
+    no scale.
+- kind: other
+  statement: Sessions ec015.041 and ec015.047 carry the prefix ec015 but are listed under rat ec14 in
+    the data descriptor; nothing in the files confirms which animal they come from. With positions scaled
+    to the platform sides of the descriptor, the 120 cm sessions give 0.86 to 0.91 cm per pixel and the
+    180 cm sessions 1.01 to 1.09, so either the camera view changed or the stated sizes do not match the
+    tracked area.
+- kind: methods_unavailable
+  statement: 'Question for the authors. How were theta epochs set: what threshold on the 5-11 Hz to 1-4
+    and 12-14 Hz power ratio, over which window, and what speed or behaviour criterion defined walking/running?
+    The manual adjustment cannot be repeated. Here a ratio above 2 in 2 s windows and speed above 3 cm/s
+    were assumed; the share of modulated CA1 pyramidal cells moves from 91.1 to 95.8% across the variants,
+    across the bound of fig3d-hippocampal-modulation.'
+- kind: methods_unavailable
+  statement: Question for the authors. What thresholds on autocorrelogram, waveform and mean rate separated
+    CA1 principal cells from interneurons? Here a trough-to-peak latency below 0.4 ms or a mean rate above
+    10 Hz was assumed, giving 19.7% interneurons against 14.8% in the paper's open-field counts; the interneuron
+    rate-phase shift (figs13-interneuron-rate) and between-rat agreement depend on it.
+- kind: methods_unavailable
+  statement: Question for the authors. For the ripple-triggered rates of Figure S2, what bin and what
+    baseline define the 6-fold and 3-fold increases of CA1 pyramidal cells and interneurons? With a pre-ripple
+    baseline the increases here are 10.05 and 4.41, with the rate outside ripples 7.41 and 2.12.
