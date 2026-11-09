@@ -3,7 +3,7 @@ converted (tools/migrate_paper_first.py) and merged, with the lanes stopped. Eac
 --apply does it.
 
     python tools/runner/cutover_paper_first.py keys [--apply]         # keys for papers only open branches have records of
-    python tools/runner/cutover_paper_first.py branches [--apply]     # open attempt branches
+    python tools/runner/cutover_paper_first.py branches [NAME...] [--apply]   # open attempt branches (or those named)
     python tools/runner/cutover_paper_first.py executed [--apply]     # the executed-notebooks branch
     python tools/runner/cutover_paper_first.py issues [--apply]       # open `needs-you` issues
     python tools/runner/cutover_paper_first.py state DIR [--apply]    # the runner's state (~/registry-runner)
@@ -110,7 +110,7 @@ def keys(apply: bool) -> int:
     return 0
 
 
-def branches(apply: bool) -> int:
+def branches(apply: bool, only: list[str] | None = None) -> int:
     git("fetch", "-q", "origin", "main", "+refs/heads/attempt/*:refs/remotes/origin/attempt/*")
     open_ = [b.strip().removeprefix("origin/attempt/") for b in
              git("branch", "-r", "--no-merged", MAIN, "--list", "origin/attempt/*").splitlines() if b.strip()]
@@ -118,8 +118,8 @@ def branches(apply: bool) -> int:
     keys = set(papers.values())
     bad = 0
     for name in open_:
-        if name in keys:
-            continue   # already a paper's branch
+        if name in keys or (only and name not in only):
+            continue   # already a paper's branch, or not one asked for
         target = papers.get(name, name)
         print(f"attempt/{name} -> attempt/{target}", end="")
         if not apply and not TRY:
@@ -288,7 +288,7 @@ def main() -> int:
     if args[0] == "keys":
         return keys(apply)
     if args[0] == "branches":
-        return branches(apply)
+        return branches(apply, args[1:])
     if args[0] == "executed":
         return executed(apply)
     if args[0] == "issues":
