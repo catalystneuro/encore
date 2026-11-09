@@ -354,9 +354,11 @@ def lagged(spec_seg, start, stop, max_lag=MAX_LAG):
     return np.concatenate(rows, axis=0).T          # (samples, bands*lags), lag-major
 
 
-def trial_design(d, idx, window="sound", tmax_extra=0.4):
+def trial_design(d, idx, window="sound", tmax_extra=0.4, xshift=0):
     """X, y blocks per trial for the trials idx (claims, open detail 7):
-    'sound' samples from onset to offset; 'plus' onset to offset + 400 ms."""
+    'sound' samples from onset to offset; 'plus' onset to offset + 400 ms.
+    xshift (a check of alignment only; 0 in every fit) reads the spectrogram xshift samples
+    later against the same HFB samples, the segment padded with its edge values."""
     Xs, ys = [], []
     on = np.round(d["trials"].onset.to_numpy() * FS_OUT).astype(int)
     for i in idx:
@@ -365,6 +367,10 @@ def trial_design(d, idx, window="sound", tmax_extra=0.4):
         s0 = int(0.5 * FS_OUT)                       # segment starts 0.5 s before onset
         seg = d["spec"][i]
         n = min(n, seg.shape[1] - s0)
+        if xshift:
+            pad = abs(xshift)
+            seg = np.pad(seg, ((0, 0), (pad, pad)), mode="edge")
+            s0 = s0 + pad + xshift
         Xs.append(lagged(seg, s0, s0 + n))
         ys.append(d["hfb"][:, on[i]:on[i] + n].T)
     return Xs, ys
