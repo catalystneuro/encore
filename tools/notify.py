@@ -1,4 +1,5 @@
-"""Open, update or close a dataset's `needs-you` issue, from the last line of its runner chain.
+"""Open, update or close a paper's `needs-you` issue (or a dataset's, before its paper match), from the last line
+of its runner chain.
 
     python tools/notify.py FOLDER STATUS [--detail TEXT] [--run ID] [--mention USER] [--dry-run]
 
@@ -38,8 +39,16 @@ def gh(*args: str) -> str:
     return subprocess.run(["gh", *args], check=True, capture_output=True, text=True).stdout
 
 
+def shown(name: str) -> str:
+    """How the chain's name is shown: a dataset's label (DANDI:000147) before its paper match, else the paper's key."""
+    try:
+        return datasets.label(datasets.key_of_folder(name))
+    except (ValueError, KeyError):
+        return name
+
+
 def title(folder: str) -> str:
-    return f"{datasets.label(datasets.key_of_folder(folder))}: waiting on you"
+    return f"{shown(folder)}: waiting on you"
 
 
 def open_issue(folder: str) -> int | None:
@@ -60,7 +69,7 @@ def branch_file(folder: str, path: str) -> str | None:
 def body(folder: str, status: str, detail: str, run: str, mention: str) -> str:
     what = re.sub(r"^STOPPED:? ", "", status.removeprefix(folder).strip())
     lines = [f"{'@' + mention + ' ' if mention else ''}The runner stopped on "
-             f"{datasets.label(datasets.key_of_folder(folder))} and is waiting on a person.", "",
+             f"{shown(folder)} and is waiting on a person.", "",
              f"**What stopped it:** {what}"]
     if detail:
         lines.append(f"**Why:** {detail}")
