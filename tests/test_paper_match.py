@@ -12,7 +12,8 @@ from jsonschema import Draft202012Validator
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "tools"))
 
-import agent_run  # noqa: E402
+import agent_run  # noqa: E402,F401
+import paper_records  # noqa: E402
 import paper_match as pm  # noqa: E402
 
 TITLE = "Responses of pyramidal cell somata and apical dendrites in mouse visual cortex over multiple days"
@@ -125,9 +126,9 @@ def test_an_attempt_uses_the_matched_paper(monkeypatch):
     monkeypatch.setattr(pm, "load", lambda folder: match)
     import pytest
     with pytest.raises(SystemExit, match="no paper matches dataset DANDI:000336"):
-        agent_run.target("000336")
+        paper_records.matched_doi("000336")
     match["papers"][0]["verdict"] = "primary"
-    assert agent_run.target("000336")["paper"] == "10.1038/s41597-023-02214-y"
+    assert paper_records.matched_doi("000336") == "10.1038/s41597-023-02214-y"
 
 
 def test_every_match_file_validates():

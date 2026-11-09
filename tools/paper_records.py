@@ -108,6 +108,19 @@ def resolve(name: str) -> str:
     k = paper_of_dataset(name)
     if k:
         return k
+    # A dataset in the queue that no paper lists yet (a local dataset `encore check` runs on, or one matched since
+    # papers/datasets/ was last written): its matched paper, tested on it alone.
+    try:
+        key = datasets.parse(name)
+    except ValueError:
+        key = None
+    if key and any(t["key"] == key for t in datasets.targets()):
+        doi = matched_doi(name)
+        paper = key_of_doi(doi) or datasets.folder(key)
+        archive, id_ = datasets.split_key(key)
+        listed().setdefault(paper, {"paper": f"doi:{doi}", "datasets": [
+            {"archive": archive, "id": id_, "relation": "primary", "key": key, "folder": datasets.folder(key)}]})
+        return paper
     raise SystemExit(f"error: {name} is neither a paper key nor a dataset listed for a paper")
 
 
