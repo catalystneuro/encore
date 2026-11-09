@@ -1,0 +1,65 @@
+#!/bin/bash
+# Put a dataset's paper match on main, whatever it says (docs/pipeline.md, step 1). Run from a clone of the
+# repository:
+#
+#   tools/runner/merge_match.sh FOLDER
+#
+# Takes papers/match/<folder>.yaml and the paper-match run's transcript and report
+# (transcripts/match/<folder>/paper-match*.md, when an agent ran) from the branch attempt/<folder>, validates the
+# match file against schemas/paper-match.schema.json, and commits them straight to main, with no pull
+# request; when main has moved on in the meantime, it starts again from the new main. On main, the match
+# decides which paper an attempt uses, and holds a dataset with no usable paper out of the queue
+# (tools/runner/describe.py). When it settles on a paper, the dataset is listed for that paper
+# (papers/datasets/<key>.yaml), the paper getting a key first if it has none (papers/keys.yaml; docs/paper-first.md),
+# in the same commit: the attempt goes on under the paper's key. Works in a temporary worktree, so the clone's
+# checkout is left alone.
+#
+#   tools/runner/merge_match.sh FOLDER --adopt
+#
+# only lists the dataset for its paper, from the match main already has: for a dataset matched before the
+# cutover to paper-first records, or listed by hand.
+set -euo pipefail
+d=$1; mode=${2:-}
+here=$(cd "$(dirname "$0")" && pwd)
+label=$(python3 "$here/describe.py" label "$d" 2>/dev/null || echo "$d")
+tmp=$(mktemp -d)
+trap 'git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"' EXIT
+if [ "$mode" = --adopt ]; then
+  for try in 1 2 3 4 5; do
+    git fetch -q origin main
+    git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
+    git worktree add -q --detach "$tmp" origin/main
+    [ "$(cd "$tmp" && python3 tools/paper_match.py status "$d")" = matched ] || { echo "$d: main's paper match settles on no paper"; exit 1; }
+    paper=$(cd "$tmp" && python3 tools/paper_records.py adopt "$d") || { echo "$d: could not list the dataset for its paper"; exit 1; }
+    git -C "$tmp" add papers/keys.yaml papers/datasets
+    if git -C "$tmp" diff --cached --quiet; then echo "$d: already listed for paper $paper"; exit 0; fi
+    git -C "$tmp" -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
+      commit -q -m "List $label for paper $paper" -m "From its paper match on main (docs/paper-first.md)."
+    if git -C "$tmp" push -q origin HEAD:main 2>/dev/null; then echo "$d: listed for paper $paper"; exit 0; fi
+    sleep $((try * 5))
+  done
+  echo "$d: could not push the listing to main"; exit 1
+fi
+for try in 1 2 3 4 5; do
+  git fetch -q origin main "attempt/$d"
+  git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
+  git worktree add -q --detach "$tmp" origin/main
+  git -C "$tmp" checkout -q "origin/attempt/$d" -- "papers/match/$d.yaml"
+  git -C "$tmp" ls-tree --name-only "origin/attempt/$d" "transcripts/match/$d/" | { grep '/paper-match[^/]*\.md$' || true; } \
+    | xargs -r git -C "$tmp" checkout -q "origin/attempt/$d" --
+  if git -C "$tmp" diff --cached --quiet; then echo "$d: main already has this paper match"; exit 0; fi
+  (cd "$tmp" && python3 tools/paper_match.py validate "papers/match/$d.yaml") \
+    || { echo "$d: the paper match does not validate; not merged"; exit 1; }
+  status=$(cd "$tmp" && python3 tools/paper_match.py status "$d")
+  if [ "$status" = matched ]; then
+    paper=$(cd "$tmp" && python3 tools/paper_records.py adopt "$d") || { echo "$d: could not list the dataset for its paper"; exit 1; }
+    git -C "$tmp" add papers/keys.yaml papers/datasets
+    echo "$d: listed for paper $paper"
+  fi
+  git -C "$tmp" -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
+    commit -q -m "Paper match for $label: $status" \
+    -m "From attempt/$d (docs/pipeline.md, step 1)."
+  if git -C "$tmp" push -q origin HEAD:main 2>/dev/null; then echo "$d: paper match merged into main ($status)"; exit 0; fi
+  sleep $((try * 5))
+done
+echo "$d: could not push the paper match to main"; exit 1

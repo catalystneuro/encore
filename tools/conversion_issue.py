@@ -10,23 +10,32 @@ item for the person who converted it to triage. Nothing is posted.
 from __future__ import annotations
 
 import sys
+
+import yaml
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from agent_run import attempt_of  # noqa: E402
+from agent_run import ROOT, records_of  # noqa: E402
+import paper_records  # noqa: E402
 
-SITE = "https://catalystneuro.github.io/reproduction-registry"
-REPO = "https://github.com/catalystneuro/reproduction-registry"
+SITE = "https://encorescience.org"
+REPO = "https://github.com/catalystneuro/encore"
 
 
 def issue(dandiset: str) -> str:
-    found = attempt_of(dandiset)
-    if found is None:
+    # The paper's latest attempt that used this dandiset (a paper may be tested on several).
+    record = None
+    for path in reversed(records_of(dandiset)):
+        r = yaml.safe_load(path.read_text())
+        used = [d for d in paper_records.record_datasets(r) if str(d["id"]) == dandiset]
+        if used:
+            record, version = r, used[0]["version"]
+            break
+    if record is None:
         raise SystemExit(f"error: no attempt on dandiset {dandiset}")
-    record, entry_dir = found
-    version = record["dataset"]["version"]
+    entry_dir = ROOT / "entries" / record["entry"]
     dandi = (f"https://dandiarchive.org/dandiset/{dandiset}/{version}" if version != "draft"
              else f"https://dandiarchive.org/dandiset/{dandiset}/draft")
     findings = record.get("findings") or []
