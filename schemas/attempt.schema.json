@@ -7,7 +7,7 @@
   "required": [
     "schema_version",
     "id",
-    "dataset",
+    "datasets",
     "paper",
     "date",
     "provenance",
@@ -15,59 +15,97 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 2
+      "const": 3
     },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
     },
-    "dataset": {
-      "description": "The dataset the attempt tested: the archive and the dataset's identifier there.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "archive",
-        "id",
-        "version"
-      ],
-      "properties": {
-        "archive": {
-          "description": "The archive that holds the dataset, in lower case: dandi, ebrains, openneuro, dryad, zenodo, figshare and so on.",
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9-]*$"
-        },
-        "id": {
-          "description": "The dataset's identifier in that archive, e.g. 000003 on DANDI.",
-          "type": "string",
-          "minLength": 1
-        },
-        "version": {
-          "description": "The version the attempt read, e.g. 0.220127.0436, or draft.",
-          "type": "string",
-          "minLength": 1
-        },
-        "modified": {
-          "description": "For a version that can still change, such as a draft, when the archive says it was last modified. A published version is fixed and needs none; it usually has a DOI instead.",
-          "type": "string",
-          "format": "date-time"
-        },
-        "doi": {
-          "description": "The DOI of the version read, when it has one: an identifier that holds across archives.",
-          "type": "string",
-          "pattern": "^10\\.[0-9]{4,9}/.+$"
-        }
-      },
-      "if": {
+    "datasets": {
+      "description": "Every dataset the attempt used (docs/protocol.md, \"Record the attempt\").",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "description": "A dataset the attempt used: the archive, the dataset's identifier there, the pinned version, and how the paper relates to it.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "archive",
+          "id",
+          "version",
+          "relation"
+        ],
         "properties": {
           "archive": {
-            "const": "dandi"
+            "description": "The archive that holds the dataset, in lower case: dandi, ebrains, openneuro, dryad, zenodo, figshare and so on.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "id": {
+            "description": "The dataset's identifier in that archive, e.g. 000003 on DANDI.",
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "description": "The version the attempt read, e.g. 0.220127.0436, or draft.",
+            "type": "string",
+            "minLength": 1
+          },
+          "modified": {
+            "description": "For a version that can still change, such as a draft, when the archive says it was last modified. A published version is fixed and needs none; it usually has a DOI instead.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "doi": {
+            "description": "The DOI of the version read, when it has one: an identifier that holds across archives.",
+            "type": "string",
+            "pattern": "^10\\.[0-9]{4,9}/.+$"
+          },
+          "relation": {
+            "description": "primary: the data the paper was published with; reuses: data the paper reuses from another study.",
+            "enum": [
+              "primary",
+              "reuses"
+            ]
+          }
+        },
+        "if": {
+          "properties": {
+            "archive": {
+              "const": "dandi"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "id": {
+              "pattern": "^[0-9]{6}$"
+            }
           }
         }
-      },
-      "then": {
+      }
+    },
+    "missing_datasets": {
+      "description": "Datasets the paper's claims rest on that this attempt could not use; claims that need one are blocked with dataset_missing.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "why"
+        ],
         "properties": {
+          "archive": {
+            "type": "string"
+          },
           "id": {
-            "pattern": "^[0-9]{6}$"
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
           }
         }
       }
@@ -88,11 +126,23 @@
       "description": "Set when the attempt no longer stands, for example because its claims were written without the paper's full text. The record is kept as it was; its outcomes are shown but not counted.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["date", "reason"],
+      "required": [
+        "date",
+        "reason"
+      ],
       "properties": {
-        "date": {"type": "string", "format": "date"},
-        "reason": {"type": "string", "minLength": 1},
-        "superseded_by": {"description": "The id of the attempt that replaces it, once there is one.", "type": "string"}
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "superseded_by": {
+          "description": "The id of the attempt that replaces it, once there is one.",
+          "type": "string"
+        }
       }
     },
     "provenance": {
@@ -205,6 +255,7 @@
               "metadata_insufficient",
               "methods_underspecified",
               "data_unreadable",
+              "dataset_missing",
               "too_large",
               "not_runnable",
               "other"
@@ -273,6 +324,7 @@
                   "metadata_insufficient",
                   "methods_underspecified",
                   "data_unreadable",
+                  "dataset_missing",
                   "too_large",
                   "not_runnable",
                   "other"
@@ -431,7 +483,9 @@
           },
           "found": {
             "description": "How the finding was found. Unset: by the attempt itself. `on_prompt`: by the reconcile step of a repeat attempt, which checked a finding of the earlier attempt that this one, made blind, did not report (docs/protocol.md, \"Repeat attempts\").",
-            "enum": ["on_prompt"]
+            "enum": [
+              "on_prompt"
+            ]
           }
         }
       }
@@ -440,24 +494,63 @@
       "description": "A repeat attempt's comparison with the attempt before it, written by the reconcile step once this attempt, made blind, has been verified (docs/protocol.md, \"Repeat attempts\"). A finding of this attempt that no item of `findings` points at is new.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["earlier", "date", "blind", "findings"],
+      "required": [
+        "earlier",
+        "date",
+        "blind",
+        "findings"
+      ],
       "properties": {
-        "earlier": {"description": "The id of the attempt compared with.", "type": "string"},
-        "date": {"type": "string", "format": "date"},
-        "blind": {"description": "Whether this attempt's author saw nothing of earlier attempts, from `tools/blind.sh audit` and its transcripts.", "type": "boolean"},
-        "blind_note": {"description": "What the author saw of an earlier attempt, when `blind` is false.", "type": "string"},
+        "earlier": {
+          "description": "The id of the attempt compared with.",
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        },
+        "blind": {
+          "description": "Whether this attempt's author saw nothing of earlier attempts, from `tools/blind.sh audit` and its transcripts.",
+          "type": "boolean"
+        },
+        "blind_note": {
+          "description": "What the author saw of an earlier attempt, when `blind` is false.",
+          "type": "string"
+        },
         "findings": {
           "description": "One item per finding of the earlier attempt, in its order.",
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["finding", "status", "note"],
+            "required": [
+              "finding",
+              "status",
+              "note"
+            ],
             "properties": {
-              "finding": {"description": "The earlier finding's number in its record, from 1.", "type": "integer", "minimum": 1},
-              "status": {"enum": ["fixed", "partly_fixed", "still_present", "not_checked"]},
-              "now": {"description": "The number, from 1, of this attempt's finding that reports it, when it is still present or partly fixed.", "type": "integer", "minimum": 1},
-              "note": {"type": "string", "minLength": 1}
+              "finding": {
+                "description": "The earlier finding's number in its record, from 1.",
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "enum": [
+                  "fixed",
+                  "partly_fixed",
+                  "still_present",
+                  "not_checked"
+                ]
+              },
+              "now": {
+                "description": "The number, from 1, of this attempt's finding that reports it, when it is still present or partly fixed.",
+                "type": "integer",
+                "minimum": 1
+              },
+              "note": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },
@@ -467,15 +560,34 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["claim", "earlier", "note"],
+            "required": [
+              "claim",
+              "earlier",
+              "note"
+            ],
             "properties": {
-              "claim": {"type": "string"},
-              "earlier": {"enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"]},
-              "note": {"type": "string", "minLength": 1}
+              "claim": {
+                "type": "string"
+              },
+              "earlier": {
+                "enum": [
+                  "reproduced",
+                  "partially_reproduced",
+                  "not_reproduced",
+                  "blocked"
+                ]
+              },
+              "note": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },
-        "protocol": {"description": "When the protocol changed between the two attempts, what the changes did.", "type": "string"}
+        "protocol": {
+          "description": "When the protocol changed between the two attempts, what the changes did.",
+          "type": "string"
+        }
       }
     },
     "inputs": {

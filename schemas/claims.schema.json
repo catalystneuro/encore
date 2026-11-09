@@ -6,7 +6,6 @@
   "additionalProperties": false,
   "required": [
     "schema_version",
-    "dataset",
     "paper",
     "claims"
   ],
@@ -15,7 +14,7 @@
       "const": 2
     },
     "dataset": {
-      "description": "The dataset the claims are tested on: the archive and the dataset's identifier there.",
+      "description": "Before the cutover to paper-first records, the dataset a per-dataset claims file was read for. A paper's own claims file (claims/<paper>.yaml) leaves it out.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -149,6 +148,14 @@
             "description": "For a claim with data `elsewhere`: the archive and the pinned identifier of the data, e.g. 'PRIDE PXD012345' or 'Zenodo doi:10.5281/zenodo.123'.",
             "type": "string",
             "minLength": 1
+          },
+          "datasets": {
+            "description": "Only when the paper is tested on more than one dataset: the folder names of those this claim rests on.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
           }
         },
         "allOf": [
