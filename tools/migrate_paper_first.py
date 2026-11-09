@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import os
 import re
 import subprocess
 import sys
@@ -61,10 +62,16 @@ def plan() -> dict:
     attempts = []
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
         a = load(path)
+        used = a.get("dataset") or (a.get("datasets") or [None])[0]
+        if used is None and a.get("dandiset"):   # schema 1: dandiset and dandiset_version
+            used = {"archive": "dandi", "id": str(a["dandiset"]), "version": a.get("dandiset_version")}
+        if not used or not a.get("paper"):
+            print(f"{path.relative_to(ROOT)}: no dataset or paper; left where it is", file=sys.stderr)
+            continue
         attempts.append({"path": path, "id": a["id"], "date": str(a["date"]), "entry": a.get("entry"),
                          "doi": paper_keys.doi_of(a["paper"]),
-                         "folder": folder_of(a["dataset"]["archive"], a["dataset"]["id"]),
-                         "dataset": a["dataset"]})
+                         "folder": folder_of(used["archive"], used["id"]),
+                         "dataset": used})
     claims = {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         c = load(path)
@@ -82,6 +89,12 @@ def plan() -> dict:
         if a["folder"] not in folders[a["doi"]]:
             folders[a["doi"]].append(a["folder"])
     several = {doi for doi, f in folders.items() if len(f) > 1}
+    # A branch converted at the cutover takes main's layout (the papers main has records of on several datasets),
+    # so that its files land where main's do.
+    if os.environ.get("MIGRATE_SEVERAL_FROM"):
+        main_several = set((yaml.safe_load(Path(os.environ["MIGRATE_SEVERAL_FROM"]).read_text()) or {}).get("several") or [])
+        several = {doi for doi in folders if keys.get(doi) in main_several} | {
+            doi for doi in several if keys.get(doi) not in set(keys.values()) - main_several}
 
     # Every other dataset whose paper match on main settles on a paper is listed for that paper too, so that its
     # chain goes on under the paper's key after the cutover. Its paper gets a key now if it has none. Only the
@@ -150,7 +163,10 @@ def plan() -> dict:
         doi = folder_paper.get(folder)
         if doi is None:
             continue   # a dataset with only a paper match: nothing else to move
-        dest = f"transcripts/{keys[doi]}/{folder}" if doi in several else f"transcripts/{keys[doi]}"
+        # A dataset with no records (only a reader's run that wrote no claims, say) keeps its transcripts apart, in
+        # the paper's folder under its own name, as the datasets of a paper on several do.
+        dest = (f"transcripts/{keys[doi]}/{folder}" if doi in several or folder not in recorded
+                else f"transcripts/{keys[doi]}")
         for f in sorted(t.rglob("*")):
             if f.is_file() and not f.name.startswith("paper-match"):
                 rel = f.relative_to(t).as_posix()
@@ -211,6 +227,14 @@ def apply(p: dict) -> None:
         a = yaml.safe_load(text)
         if a.get("schema_version") == 3:
             continue
+        if a.get("schema_version") == 1 and a.get("dandiset"):
+            # Schema 1 named a DANDI dataset with two fields; written as the block schema 2 has, then converted.
+            text = re.sub(r'^dandiset_version: *(.*)\n', "", text, count=1, flags=re.M)
+            text = re.sub(r'^dandiset: *(.*)\n',
+                          lambda m_: f'dataset:\n  archive: dandi\n  id: {m_.group(1)}\n'
+                                     f'  version: {a.get("dandiset_version")}\n', text, count=1, flags=re.M)
+            text = re.sub(r"^schema_version: 1$", "schema_version: 2", text, count=1, flags=re.M)
+            a = yaml.safe_load(text)
         m = re.search(r"^dataset:\n((?:  .*\n)+)", text, re.M)
         if not m:
             raise SystemExit(f"{path}: no dataset block")
@@ -232,7 +256,7 @@ def apply(p: dict) -> None:
         "# Old names and the paper-first names they moved to, at the cutover (tools/migrate_paper_first.py).\n"
         "# The site redirects old pages with it; nothing else should need it.\n"
         + yaml.safe_dump({"schema_version": 1, "attempts": p["ids"], "entries": p["entries"],
-                          "folders": p["folder_paper"]}, sort_keys=True, width=100))
+                          "folders": p["folder_paper"], "several": p["several"]}, sort_keys=True, width=100))
     git("add", "-A", "attempts", "entries", "claims", "questions", "transcripts", "summaries", "docs", "papers")
 
 

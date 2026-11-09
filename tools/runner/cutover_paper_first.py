@@ -27,6 +27,7 @@ papers/renamed.yaml.
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -89,7 +90,11 @@ def branches(apply: bool) -> int:
             git("worktree", "add", "-q", "--detach", str(tmp), f"origin/attempt/{name}")
             # Main's tools and keys, so that the branch is converted exactly as main was.
             git("checkout", MAIN, "--", "tools", "schemas", "papers/keys.yaml", cwd=tmp)
-            run = subprocess.run([sys.executable, "tools/migrate_paper_first.py"], cwd=tmp, capture_output=True, text=True)
+            several = tmp / ".main-renamed.yaml"
+            several.write_text(git("show", f"{MAIN}:papers/renamed.yaml"))
+            run = subprocess.run([sys.executable, "tools/migrate_paper_first.py"], cwd=tmp, capture_output=True,
+                                 text=True, env={**os.environ, "MIGRATE_SEVERAL_FROM": str(several)})
+            several.unlink()
             if run.returncode:
                 print(f": conversion failed: {run.stderr.strip()[-300:]}"); bad += 1; continue
             # Main's lists of papers and their datasets, which it has for every matched dataset: the branch's own
