@@ -1,0 +1,993 @@
+schema_version: 3
+id: yuan-2025-01
+datasets:
+- archive: dandi
+  id: 001882
+  version: 0.260701.1757
+  doi: 10.48324/dandi.001882/0.260701.1757
+  relation: primary
+paper: doi:10.3390/genes16010043
+date: '2026-11-03'
+entry: yuan-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41738439366
+inputs:
+- what: SIFT and PolyPhen-2 (HumVar) scores, rs ids and positions on the MANE Select transcripts, from
+    the Ensembl VEP REST service, for table2-pathogenicity.
+  source: https://rest.ensembl.org (Ensembl release 116, the release printed by the notebook)
+- what: PolyPhen-2 HumDiv, FATHMM, FATHMM-MKL, FATHMM-XF and MutationTaster scores and GRCh38 and GRCh37
+    positions from dbNSFP, for table2-pathogenicity and the variant positions.
+  source: dbNSFP 4.8a through https://myvariant.info/v1 (build 20250624)
+- what: CADD PHRED and raw scores, for table2-pathogenicity.
+  source: https://cadd.gs.washington.edu/api/v1.0, versions GRCh38-v1.6, GRCh38-v1.7, GRCh37-v1.6 and
+    GRCh37-v1.7
+- what: Allele counts by population, for gnomad-frequencies.
+  source: gnomAD GraphQL API https://gnomad.broadinstitute.org/api, datasets gnomad_r3 (v3.1.2) and gnomad_r4
+    (v4.1)
+- what: ClinVar VCF releases of 3, 11, 20 and 26 November 2024, read at one position, for asp423glu-novel.
+  source: https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2024/clinvar_20241103.vcf.gz
+    (MD5 1f435715628c40411b682ddbe01b8df2) and the releases of 20241111, 20241120 and 20241126
+- what: IMPG1 and IMPG2 sequences and feature annotations, for variant-domains and table4-impg1-physicochemical.
+  source: UniProt UniSave, Q17R60 entry version 129 and Q9BZV3 entry version 146
+- what: InterPro domain locations of Q17R60 and Q9BZV3, for variant-domains.
+  source: https://www.ebi.ac.uk/interpro/api (InterPro 110.0, Pfam 38.2, SMART 9.0, PROSITE profiles 2026_01)
+- what: FATHMM-MKL coding and non-coding scores on GRCh37, for table2-pathogenicity.
+  source: FATHMM-MKL web server, http://fathmm.biocompute.org.uk/fathmmMKL.htm (no version; as it answered
+    on 4 November 2026)
+- what: MuPRO DDG from sequence, for table3-destabilizing.
+  source: MuPRO web server, https://mupro.proteomics.ics.uci.edu (no version; as it answered on 4 November
+    2026)
+- what: I-Mutant 2.0 DDG and sign of DDG from sequence, for table3-destabilizing.
+  source: I-Mutant 2.0 web server, https://folding.biofold.org/i-mutant/i-mutant2.0.html (last updated
+    27 December 2006, as it prints)
+- what: ClinVar summary of variation 1000102, and the dated ClinVar VCF releases of 2020 and 2021 read
+    at one position, for asp423glu-novel.
+  source: NCBI E-utilities esummary (db=clinvar) and https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/archive_2.0/2020/
+    and 2021/
+outcomes:
+- claim: cohort-prevalence
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:cohort-prevalence
+  measured:
+  - 7
+  - 480
+  - 1.458
+  - 0.417
+  - 1.042
+  notes: The spreadsheet holds 7 IMPG carriers (5 IMPG2, 2 IMPG1), 2 with RP (F32, M83) and 5 with VMD.
+    Over the paper's cohort of 480 these are 1.458%, 0.417% and 1.042%, within 10% of 1.45%, 0.41% and
+    1.04% (and equal to them truncated to two decimals); 480/7 = 68.6, the Discussion's 1 in 68. The dandiset
+    holds no patient outside the seven, so the denominator could not be checked.
+  deviations:
+  - The cohort size of 480 is taken from the paper (Methods 2.1), as the criterion allows when the dataset
+    holds only the carriers; the second measured value is that number, not a measurement.
+- claim: all-caucasian
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:all-caucasian
+  notes: No file and no metadata field records race, ethnicity or ancestry; the spreadsheet's headers
+    and the dandiset description were searched for race, ethnic, Caucasian, white, European and ancestry,
+    with no hit.
+- claim: table1-genotypes
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:table1-genotypes
+  notes: All 7 patients match Table 1 in gene, cDNA change, protein change and zygosity (7 of 7, no field
+    differs after normalising spaces around ';' and '&'). The spreadsheet writes F32's gene as IMPG1,
+    where Table 1 prints IMGP1.
+  deviations:
+  - The spreadsheet looks like the authors' source for Table 1 (same patient labels and fields, with
+    an extra column), so the test shows that the deposit agrees with the paper, not independent evidence
+    of the clinical findings.
+- claim: table1-diagnosis-sex-age
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:table1-diagnosis-sex-age
+  notes: Diagnoses match for 7 of 7 patients, compared with the spreadsheet's diagnosis column. Sex and
+    age exist only in the patient label (F32 and so on), the label the paper uses, so their match (7 of
+    7) is true by construction and is not an independent measurement; no date of any kind is recorded,
+    so the readings of age (at the last visit, or in 2024) cannot be told apart.
+  deviations:
+  - The spreadsheet looks like the authors' source for Table 1 (same patient labels and fields, with
+    an extra column), so the test shows that the deposit agrees with the paper, not independent evidence
+    of the clinical findings.
+- claim: inheritance-by-disease
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:inheritance-by-disease
+  notes: RP; both patients carry missense variants, F32 one IMPG1 variant marked D (dominant), M83 two
+    IMPG2 variants marked R (recessive, 'Het for both genes'). VMD; all 5 carry one heterozygous variant
+    marked D, 2 missense and 3 nonsense.
+  deviations:
+  - The spreadsheet looks like the authors' source for Table 1 (same patient labels and fields, with
+    an extra column), so the test shows that the deposit agrees with the paper, not independent evidence
+    of the clinical findings.
+- claim: table1-bcva
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:table1-bcva
+  notes: All 14 eyes match Table 1. The spreadsheet holds one acuity per eye and no visit date, so the
+    two readings of the criterion (most recent visit, any visit) coincide.
+  deviations:
+  - The spreadsheet looks like the authors' source for Table 1 (same patient labels and fields, with
+    an extra column), so the test shows that the deposit agrees with the paper, not independent evidence
+    of the clinical findings.
+- claim: f32-sector-rp-phenotype
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:f32-sector-rp-phenotype
+  notes: All 4 features are visible in both eyes on the Figure 2A,B panels; spicule pigment in the lower
+    nasal periphery on FF, a matching band of reduced FAF with a sharp border, a normal fovea with a continuous
+    ellipsoid zone on the B-scan, and a Goldmann field whose outer isopter reaches about 40 to 45 degrees
+    superiorly against about 70 inferiorly.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+- claim: m83-rp-phenotype
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m83-rp-phenotype
+  notes: 6 of 9 named features are visible on the Figure 2C,D panels (atrophy, the bull's eye ring in
+    the inset of the left eye, reduced FAF, the central island and inferior crescent on GVF, diffuse ellipsoid
+    loss, and a spared segment in the left fovea). The 360-degree spread of bone spicules (the superior
+    periphery is hidden by lashes), the pale discs and the attenuated vessels cannot be judged on the
+    pseudo-colour widefield panels.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+- claim: m75-vmd-phenotype
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m75-vmd-phenotype
+  notes: 5 of 6 features are visible on the Figure 3A,B panels. SD-OCT shows subfoveal material in both
+    eyes; FF a small pale foveal lesion in both; FAF a dark right macula (mean 0.75 of the surround at
+    r16, 95th percentile 0.90) and a bright focus in the left (95th percentile 1.37 of the surround, maximum
+    brighter than in 97% of the background discs, bright under all five readings), so the left macula
+    is hyper-autofluorescent as the text says, not hypo-autofluorescent as the legend says; the nevus
+    is seen above the left fovea on infrared and FF, not in the right eye. The dandiset holds one angiogram
+    frame per eye, so the early blockage and the late window defects cannot both be seen.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+  - FAF features are also measured at the lesion the yellow arrow marks, with the arrow pixels left out
+    (mean in discs of radius 16, 32 and 48 pixels, 95th percentile and maximum within 16 pixels, darker
+    area within 100 pixels, each against the median of an annulus 80 to 140 pixels out, and 36 background discs of radius 16 placed 110 pixels from the lesion, inside the surround annulus,
+    so on the perimacular ring, not the general fundus); the lesion centres, radii and the 0.85 cut-off
+    are a standard choice made to make the reading checkable, not the paper's method, and every radius
+    is shown.
+- claim: m82-vmd-phenotype
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m82-vmd-phenotype
+  notes: 2 of 4 features are visible on the Figure 3C,D panels; the attenuated ellipsoid with a thin fovea
+    on the right B-scan and the small vitelliform deposit with an ellipsoid gap on the left. On FF the
+    fovea is mottled with no clear pale area, and on FA the left arrowed area is not brighter than its
+    surround (small hyperfluorescent dots are seen in the right eye). The FAF panels are empty (NA, 3
+    to 4% non-black pixels), as the legend says.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+- claim: m73-vmd-phenotype
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m73-vmd-phenotype
+  notes: 4 of 6 features are visible on the Figure 3E,F panels; subretinal hyporeflective spaces in both
+    eyes, the ellipsoid break in the right eye, a small pale foveal lesion and peripheral cobblestone
+    patches in both eyes. FAF shows a bright focus in the left macula (maximum 1.49 of the surround, above
+    every background disc) and in the right only a small speck (maximum 1.11, 95th percentile 1.02) that
+    is no brighter than the perimacular ring (64% of background discs are as bright), so under the adopted reading the hyper-autofluorescence is seen in one eye, not both. Two of the four other readings count
+    the right eye too (95th percentile above 1.0 of the surround; above 1.1 of the adjacent macula, 1.21).
+    Dot-blot hemorrhages cannot be told apart from pigment, on the downsampled panels or on the full-resolution
+    crops, so the outcome is partial under every reading (5 of 6 at most) and does not rest on the choice
+    of reading.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+  - FAF features are also measured at the lesion the yellow arrow marks, with the arrow pixels left out
+    (mean in discs of radius 16, 32 and 48 pixels, 95th percentile and maximum within 16 pixels, darker
+    area within 100 pixels, each against the median of an annulus 80 to 140 pixels out, and 36 background discs of radius 16 placed 110 pixels from the lesion, inside the surround annulus,
+    so on the perimacular ring, not the general fundus); the lesion centres, radii and the 0.85 cut-off
+    are a standard choice made to make the reading checkable, not the paper's method, and every radius
+    is shown.
+  - Not an assumption the outcome rests on, since the outcome is partial under every reading. Neither
+    the paper nor the claims file says what makes a lesion hyper-autofluorescent;
+    the paper graded by inspection. Five readings of a bright focus are run on every eye (95th percentile
+    above 1.1 or 1.0 of the surround, above 1.1 of the adjacent macula, and 95th percentile or maximum
+    brighter than in 95% of same-size background discs of the same panel, which lie on the perimacular
+    ring). The last is adopted, since hyper-autofluorescence is a lesion brighter than the fundus around
+    it, and it calibrates brighter on the panel's own perimacular ring while keeping a small focus. The readings agree on every eye except
+    M73's right (bright under the 1.0 surround and the macula readings, not under the other three) and
+    M73's left (not bright under the background 95th percentile reading).
+- claim: f57-vmd-phenotype
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:f57-vmd-phenotype
+  notes: 2 of 4 features are visible on the Figure 3G,H panels; subretinal vitelliform deposits on both
+    B-scans and hypo-autofluorescence in both maculae (mean 0.82 and 0.78 of the surround at r16, no bright
+    focus under any of the five readings). The left eye is darker than the right at r16 (by 0.046) but
+    brighter at r48 (by 0.049), and its darker area is 0.77 of the right eye's, so 'more pronounced in
+    the left eye' is not shown. On FF the fovea shows a small darker spot, not hypopigmentation.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+  - FAF features are also measured at the lesion the yellow arrow marks, with the arrow pixels left out
+    (mean in discs of radius 16, 32 and 48 pixels, 95th percentile and maximum within 16 pixels, darker
+    area within 100 pixels, each against the median of an annulus 80 to 140 pixels out, and 36 background discs of radius 16 placed 110 pixels from the lesion, inside the surround annulus,
+    so on the perimacular ring, not the general fundus); the lesion centres, radii and the 0.85 cut-off
+    are a standard choice made to make the reading checkable, not the paper's method, and every radius
+    is shown.
+- claim: m34-vmd-phenotype
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m34-vmd-phenotype
+  notes: 2 of 4 features are visible on the Figure 3I,J panels; small subfoveal deposits on both B-scans
+    and hypo-autofluorescent maculae (0.64 and 0.59 of the surround at r16, no bright focus under any
+    reading), which is the legend's reading, not the text's 'faint hyper-autofluorescence'. Glaucomatous
+    discs cannot be judged on the widefield images, and the fovea is a dark spot on FF, not a pale one.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+  - FAF features are also measured at the lesion the yellow arrow marks, with the arrow pixels left out
+    (mean in discs of radius 16, 32 and 48 pixels, 95th percentile and maximum within 16 pixels, darker
+    area within 100 pixels, each against the median of an annulus 80 to 140 pixels out, and 36 background discs of radius 16 placed 110 pixels from the lesion, inside the surround annulus,
+    so on the perimacular ring, not the general fundus); the lesion centres, radii and the 0.85 cut-off
+    are a standard choice made to make the reading checkable, not the paper's method, and every radius
+    is shown.
+- claim: rp-superior-field-no-cme
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:rp-superior-field-no-cme
+  notes: Both RP patients have a superior field limitation on the Goldmann charts (F32 an outer isopter
+    at about 40 to 45 degrees superiorly against 70 inferiorly; M83 no field above the central island,
+    with an inferior residual crescent), and none of the 4 B-scans shows intraretinal cystoid spaces.
+    Only one B-scan per eye is in the dandiset, so cysts elsewhere in the macula cannot be excluded.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+- claim: vmd-acuity-preserved
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:vmd-acuity-preserved
+  notes: VMD acuities, worse and better eye; M75 20/40 and 20/40, M82 20/30 and 20/25, M73 20/100 and
+    20/50, F57 and M34 20/20. Under all four readings of the criterion (better eye worse than 20/40; worse
+    eye worse than 20/40, 20/50 or 20/70) M73 is the only patient counted as reduced, and the other 4
+    are not.
+- claim: m73-f57-similar-lesions
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m73-f57-similar-lesions
+  notes: Both patients have subfoveal vitelliform lesions on SD-OCT (M73 hyporeflective spaces, F57 hyperreflective
+    deposits), and M73 alone has peripheral cobblestone patches on FF (F57's images show less periphery).
+    On FAF M73's left macula has a bright focus (maximum 1.49 of the surround, above every background
+    disc) where F57 has none in either eye (100% and 97% of background discs are as bright), but under
+    the adopted reading M73's right macula has none either (64% of background discs are as bright), so
+    the increased autofluorescence holds in one of his two eyes. Under two of the other readings his right
+    eye is bright too, and all three parts of the criterion would hold. The criterion gives no rule for
+    a partial result; partially reproduced is used because two of its three parts hold and the third holds
+    in one eye.
+  deviations:
+  - The dandiset holds the images only as the annotated, cropped panels of the paper's own figure (one
+    image per modality and eye, one OCT B-scan per eye), not the clinical image files; the test checks
+    the text against the published figure, not against independent data.
+  - Each feature was judged by the author's visual reading of the panels at full resolution, the only
+    method the criterion allows; the readings are printed with the panels they rest on.
+  - FAF features are also measured at the lesion the yellow arrow marks, with the arrow pixels left out
+    (mean in discs of radius 16, 32 and 48 pixels, 95th percentile and maximum within 16 pixels, darker
+    area within 100 pixels, each against the median of an annulus 80 to 140 pixels out, and 36 background discs of radius 16 placed 110 pixels from the lesion, inside the surround annulus,
+    so on the perimacular ring, not the general fundus); the lesion centres, radii and the 0.85 cut-off
+    are a standard choice made to make the reading checkable, not the paper's method, and every radius
+    is shown.
+  - Assumption. Neither the paper nor the claims file says what makes a lesion hyper-autofluorescent;
+    the paper graded by inspection. Five readings of a bright focus are run on every eye (95th percentile
+    above 1.1 or 1.0 of the surround, above 1.1 of the adjacent macula, and 95th percentile or maximum
+    brighter than in 95% of same-size background discs of the same panel, which lie on the perimacular
+    ring). The last is adopted, since hyper-autofluorescence is a lesion brighter than the fundus around
+    it, and it calibrates brighter on the panel's own perimacular ring while keeping a small focus. The readings agree on every eye except
+    M73's right (bright under the 1.0 surround and the macula readings, not under the other three) and
+    M73's left (not bright under the background 95th percentile reading).
+  assumed: true
+- claim: m73-eog-normal
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:m73-eog-normal
+  notes: The dandiset holds no EOG; none of EOG, electro-oculogram or Arden occurs in any of its text
+    (spreadsheet, Word document, folder script, metadata), and no file is an electrophysiology recording.
+- claim: other-gene-variants
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:other-gene-variants
+  notes: The dandiset holds no genetic report beyond the IMPG variants of the spreadsheet; none of JAG1,
+    BEST1, ALMS1, CEP164, COL11A1, CPLANE1, EYS, KIF7, NPHP4 or PHYH occurs in any of its text.
+- claim: variant-domains
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:variant-domains
+  notes: No reading places all 7; UniProt, InterPro and the PROSITE profiles place 6, Pfam and SMART 4.
+    UniProt (Q17R60 v129, Q9BZV3 v146); IMPG1 has only SEA 1 (232-354) and SEA 2 (571-684), no EGF-like
+    domain, so p.Leu740Phe cannot be near one; the other 6 hold. InterPro 110.0 and PROSITE profiles;
+    IMPG1 has an EGF-like domain at 684-722, 18 residues before Leu740 (near, the closest domain, not
+    in it), but IMPG2 has a single EGF-like domain (1010-1051), so p.Arg1088* lies in no EGF-like 2 domain;
+    the other 6 hold. Pfam 38.2 and SMART 9.0 annotate only the two SEA domains of each protein, so p.Leu740Phe,
+    p.Cys1019Tyr and p.Arg1088* fail. p.Arg131Cys is 108 residues from SEA1 and 109 from the end of the
+    signal peptide (1-22), so 'near SEA-1' rests on one residue if the signal peptide counts as a domain.
+    The paper's own 'in' for p.Leu740Phe holds under no reading. The spreadsheet's 'Location of Variant'
+    column places p.Leu740Phe 'Post EGF-like 1', after the domain.
+  deviations:
+  - UniProt entries are pinned through UniSave at the versions current in November 2024 (Q17R60 v129
+    and Q9BZV3 v146, both released 2 October 2024 and replaced on 27 November 2024, as cell 61 prints); InterPro is read
+    from its current release (110.0), which cannot be pinned through its API.
+- claim: table2-pathogenicity
+  outcome: not_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:table2-pathogenicity
+  notes: SIFT and PolyPhen-2 HumVar (Ensembl VEP release 116, MANE Select transcripts) match Table 2 exactly
+    for the three IMPG2 missense variants (SIFT 0, 0, 0; PolyPhen 0.996, 0.645, 0.998) but not for IMPG1;
+    VEP gives SIFT 0.02 for p.Leu740Phe and 0.09 for p.Asp423Glu, the paper's two values exchanged, and
+    PolyPhen 0.106 and 0.043 (paper 0.575 and 0.98). PolyPhen-2 HumDiv (dbNSFP 4.8a) gives 0.575 for p.Leu740Phe
+    as the paper does, 3 of 5 values within tolerance, but 0.31 for p.Asp423Glu. VEP calls p.Asp423Glu
+    tolerated (SIFT) and benign (PolyPhen), against the paper's Pathogenic, so the Prediction column is
+    not matched. CADD PHRED matches at most 2 of 7 values under any of GRCh37 or GRCh38 and v1.6 or v1.7;
+    the nonsense variants score 36 to 45 against 11.2 and 13.4. No FATHMM, FATHMM-MKL or FATHMM-XF coding
+    score and no MutationTaster score in dbNSFP matches the paper's columns (0 of 5 and 0 of 7), under
+    any value of dbNSFP's per-transcript or per-model lists; the FATHMM-MKL web server gives the same
+    coding scores as dbNSFP (0.83 to 0.99 for the IMPG2 variants, against 0.0076 to 0.0577) and matches
+    0 of 5, coding or non-coding. The MutationTaster2021 API redirects to the GeneCascade home page, even
+    for its own documented example, so the paper's 0 to 100 MutationTaster score could not be recomputed.
+    The paper's ids for p.Leu740Phe and p.Arg964* (rs15048636, rs267606975) differ from the variants'
+    ids (rs150486366, rs267606875); the dandiset's Word document gives rs267606875.
+  deviations:
+  - The web tools of November 2024 cannot be called in a pinned version. SIFT and PolyPhen-2 HumVar come
+    from Ensembl VEP (release 116); PolyPhen-2 HumDiv, FATHMM and MutationTaster from dbNSFP 4.8a (MyVariant.info
+    build 20250624), whose MutationTaster score is a probability, not the paper's 0 to 100 score; FATHMM-MKL
+    also from the FATHMM web server as it answers today; CADD from its versioned API.
+  - dbNSFP's per-transcript lists (SIFT, FATHMM) cannot always be lined up with its transcript list, since
+    MyVariant.info drops missing entries; every list value is shown and a match by any value counts.
+  - MutationTaster2021, which gives a 0 to 100 tree vote, was tried through its API and does not answer.
+  - SIFT and PolyPhen-2 were not run on GRCh37 in the notebook; VEP's GRCh37 service took 12 minutes while
+    preparing (not run here).
+- claim: asp423glu-novel
+  outcome: not_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:asp423glu-novel
+  notes: IMPG1 c.1269C>A on NM_001563.4 is GRCh38 6:76002940 G>T (rs758038128). It is ClinVar variation
+    1000102, NM_001563.4(IMPG1):c.1269C>A (p.Asp423Glu), a missense variant of uncertain significance
+    in IMPG1, in all 4 ClinVar VCF releases of November 2024 (3, 11, 20 and 26 November). It first appears
+    in the release of 15 March 2021 (the release of 8 March 2021 lacks it), from one submission last evaluated
+    on 28 August 2020, with the condition 'not provided'; so ClinVar records no association with VMD,
+    and the claim's second half (first association with VMD) is not contradicted. The same position also
+    carries a synonymous G>A record (1156378).
+- claim: table3-destabilizing
+  outcome: not_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:table3-destabilizing
+  notes: Tested on the two sequence-based tools; the 15 values of mCSM, SDM and DUET need the I-TASSER
+    models of Methods 2.3, which are not deposited. MuPRO (web server, sequence only) gives a negative
+    DDG for all 5 variants and matches Table 3 for 3 of 5 (p.Leu740Phe -0.930, p.Asp423Glu -0.478, p.Arg131Cys
+    -0.627); it gives p.Cys1019Tyr -0.887 (Table 3 -1.266) and p.Leu249Phe -1.2666 (Table 3 -1.525), so
+    Table 3's p.Cys1019Tyr value is MuPRO's p.Leu249Phe value, which the Word document gives for p.Leu249Phe.
+    I-Mutant 2.0 (web server, sequence, 25 C, pH 7) gives a positive, stabilizing DDG for 4 of 5 (p.Leu740Phe
+    +0.19, p.Asp423Glu +0.88, p.Cys1019Tyr +0.14, p.Leu249Phe +0.55) and -1.22 for p.Arg131Cys; for IMPG2
+    these are Table 3's magnitudes (0.14, 0.55) with the sign reversed, and -1.22 is the Word document's
+    value (Table 3 -1.13). Its sign classifier calls p.Asp423Glu an increase in stability (reliability
+    8 of 10). So under either I-Mutant output not every variant is destabilizing by every tool, and the
+    claim's first part fails on a tool the paper names. The ranking cannot be tested on all five tools;
+    p.Leu249Phe is the most destabilizing under MuPRO and p.Arg131Cys under I-Mutant. On Table 3's own
+    values every entry is negative and p.Leu249Phe has the most negative mean (-1.25). The Word document
+    holds 23 of the 25 values; 20 agree within 10%, and it gives SDM +0.58 (Stabilizing) for p.Asp423Glu
+    where Table 3 prints -0.52. The outcome rests on the claims file's reading that iMutant is run from
+    sequence; the paper does not name the mode, neither sequence output gives Table 3's IMPG1 values (-0.85,
+    -0.76), and the regression and the classifier disagree in sign for p.Leu740Phe, p.Cys1019Tyr and p.Leu249Phe,
+    so the paper may have used the structure mode on the undeposited models (asked of a reader in questions/001882.yaml).
+  deviations:
+  - 'mCSM, SDM and DUET were not run: they need the I-TASSER models, which are not deposited, and a rerun
+    of I-TASSER (a queued web server with stochastic output) was not tried. 15 of the 25 values are therefore
+    not computed.'
+  - MuPRO and I-Mutant 2.0 were run on their web servers as they answer today (no version can be pinned),
+    on the UniProt sequences Q17R60 v129 and Q9BZV3 v146, the criterion's reading; I-Mutant at its default
+    25 C and pH 7, in both its DDG regression and sign classifier modes.
+  - Assumption. iMutant is run from sequence, as the criterion says. The paper does not say so; Methods
+    2.4 gives only the server's address, its reference 46 is 'I-Mutant2.0, Predicting stability changes
+    upon mutation from the protein sequence or structure', and Methods 2.3 built I-TASSER models 'for
+    further analysis'. The structure mode cannot be run, since the models are not deposited, so the outcome
+    rests on the sequence reading and on one tool, in one mode, on a server with no version. Under MuPRO
+    alone every value is negative.
+  assumed: true
+
+- claim: impg1-interactions-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:impg1-interactions-unchanged
+  notes: DynaMut needs the I-TASSER models of Methods 2.3, which are not deposited anywhere; a rerun of
+    I-TASSER (a queued web server with stochastic output, the claims file's only reading) was not tried.
+    The dandiset holds the residue-contact images of Figure 4A,B only.
+- claim: impg2-interactions-changed
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:impg2-interactions-changed
+  notes: As for impg1-interactions-unchanged. The dandiset holds the residue-contact images of Figure
+    4C-E; in that file the images of the top row show Arg131 and Cys131 and the middle row Cys1019 and
+    Tyr1019, while the labels beside them read p.Cys1019Tyr and p.Leu249Phe (read by eye).
+- claim: table4-impg1-physicochemical
+  outcome: partially_reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:table4-impg1-physicochemical
+  measured:
+  - 89387.39
+  - 89401.41
+  - 89421.4
+  - 4.793
+  - 4.796
+  - 4.793
+  - 12450
+  - 12453
+  - 12451
+  - 53.57
+  - 53.76
+  - 53.16
+  - 75.63
+  - 75.63
+  - 75.14
+  - -0.482
+  - -0.482
+  - -0.483
+  notes: Reading (a), the full UniProt sequence (Q17R60 v129, 797 residues), gives 14 of 18 values; all
+    6 of the reference (89,387.4 Da, pI 4.793, 12,450 atoms, instability 53.57, aliphatic 75.63, GRAVY
+    -0.482) and all 6 of p.Leu740Phe, and the instability (53.76) and aliphatic (75.63) indices of p.Asp423Glu.
+    Its weight (89,401.4 against 89,419), pI (4.796 against 4.81), atoms (12,453 against 12,457) and GRAVY
+    (-0.482 against -0.474) do not match; an Asp to Phe change at 423 gives Table 4's p.Asp423Glu column
+    (89,419.5, 4.81, 12,457, 53.76, 75.63, -0.474). The directions the text states all hold. Reading (b),
+    without the signal peptide, matches no value. The pI is computed with Biopython's Bjellqvist pK values,
+    not ExPASy's own code; the reference matches (4.793), and Asp to Glu moves it by +0.003 where Table
+    4 moves it by +0.02 (Asp to Phe, +0.017), so a small difference between the codes would not bring
+    4.796 to 4.81.
+  deviations:
+  - Values are computed with ProtParam's definitions (ExPASy average residue masses, the Bjellqvist pK
+    values and the instability index as Biopython implements ProtParam, the Ikai aliphatic index, Kyte-Doolittle
+    GRAVY) in place of the web tool.
+- claim: gnomad-frequencies
+  outcome: reproduced
+  notebook: reproduce_yuan_2025.ipynb
+  output: claim:gnomad-frequencies
+  measured:
+  - 98335
+  - 4096
+  - 3031
+  - 18722
+  - 58997
+  - 332
+  notes: Under gnomAD v4.1 joint allele counts with '1 in N' read as 1/(2 x allele frequency) (one carrier
+    in N individuals), all 6 values are within 10%; 1 in 98,335 (p.Cys1019Tyr, 6 of 1,180,016 European
+    non-Finnish alleles), 4,096 and 3,031 (p.Arg131Cys, European non-Finnish and Middle Eastern), 18,722
+    and 58,997 (p.Arg964*, African/African American and European non-Finnish) and 332 (p.Leu740Phe). v4.1
+    exomes match 4 of 6; v4.1 genomes, v3.1.2 genomes and the 1/allele frequency reading match none. p.Cys1019Tyr
+    is absent from v3.1.2.
+  deviations:
+  - The paper names no gnomAD version; the readings of the criterion were run and one combination matches
+    all values. The gnomAD API prints no release number; that gnomad_r4 is v4.1 comes from gnomAD's
+    documentation, not from an output of the notebook.
+findings:
+- kind: data_missing
+  statement: The dandiset holds no clinical recording. The fundus photographs, FAF, angiograms, OCT and
+    Goldmann fields exist only as the annotated, cropped panels of the paper's Figures 2 and 3 (one image
+    per modality and eye, one OCT B-scan per eye, a single angiogram frame per eye). The EOG of patient
+    M73, the genetic panel reports (the JAG1, BEST1 and other variants the Discussion cites), race or
+    ethnicity, visit dates and any record of the other 473 patients of the cohort are not in it.
+- kind: other
+  statement: The first column of the spreadsheet 'derivatives/small table for 7 patients 20241127.xlsx'
+    holds what look like hospital record numbers of the seven patients, in a public CC0 dataset. The attempt
+    did not print or use them.
+- kind: metadata_error
+  statement: The metadata give 1 subject, 4 samples and no species, approach or measurement technique,
+    while the files describe seven human patients. The figure files are named as BIDS microscopy samples
+    (sub-01/micr/sub-01_sample-0N_microscopy.ome.tif.tif, one .ome.tif.jpg) but are RGB figure exports
+    from Adobe Illustrator, not OME-TIFF and not microscopy; one is named 'Fig 3. VMD 20241122.1-01.tif'.
+- kind: metadata_insufficient
+  statement: The paper is named only in the description, not in relatedResource. No file describes the
+    spreadsheet's columns (the 'Location of Variant' column is not in the paper; Refraction, clinVar and
+    Pathogenicity are empty) or says which figure each image file is.
+- kind: other
+  statement: Five identical Google Drive desktop.ini files and the script setup_bids.py, which only makes the folder
+    layout and a dataset_description.json that is not deposited, are among the 13 assets.
+- kind: other
+  statement: The Word document 'sourcedata/protein structure and stabilityIMPG2 TABLE original.docx' differs
+    from the paper's Table 3. Of the 23 Table 3 values it holds, 3 differ by more than 10%; SDM gives
+    p.Asp423Glu +0.58 (Stabilizing) where Table 3 prints -0.52, MuPRO gives p.Leu249Phe -1.2666 where
+    Table 3 prints -1.525, and mCSM gives p.Asp423Glu -0.58 against -0.653. Three more differ within 10%
+    (SDM p.Cys1019Tyr -0.85 against -0.78, iMutant p.Arg131Cys -1.22 against -1.13, DUET p.Leu249Phe -1.777
+    against -1.77). It has no iMutant value for IMPG1. Its Table A names p.Leu249Phe 'p.Leu 249Tyr'. Rerun here, MuPRO gives -1.2666 for
+    p.Leu249Phe (the document's value) and -0.887 for p.Cys1019Tyr, where both the document and Table
+    3 give -1.266, and I-Mutant 2.0 gives -1.22 for p.Arg131Cys (the document's value).
+- kind: paper_inconsistency
+  statement: Table 4's p.Asp423Glu column (89,419 Da, pI 4.81, 12,457 atoms, GRAVY -0.474) is what ProtParam's
+    definitions give for Asp423Phe on UniProt Q17R60, not for Asp423Glu (89,401.4 Da, 4.796, 12,453, -0.482);
+    a single Asp to Glu change adds one CH2.
+- kind: paper_inconsistency
+  statement: In Table 2 the IMPG1 SIFT scores match VEP's values for the two variants exchanged (p.Leu740Phe
+    0.02, p.Asp423Glu 0.09), and two variant ids are mistyped (rs15048636 for rs150486366, rs267606975
+    for rs267606875, which the dandiset's Word document gives).
+- kind: other
+  statement: IMPG1 p.Asp423Glu (c.1269C>A, GRCh38 6:76002940 G>T, rs758038128), which the paper calls
+    novel, was ClinVar variation 1000102 (missense, uncertain significance, condition not provided) in
+    every ClinVar release from 15 March 2021, including all of November 2024.
+- kind: other
+  statement: In the Figure 4 file of IMPG2 (sub-01_sample-04b) the variant labels are one row out of step
+    with the images; the top row shows Arg131 and Cys131 and is labelled p.Cys1019Tyr, the middle row
+    shows Cys1019 and Tyr1019 and is labelled p.Leu249Phe (read by eye).
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which PolyPhen-2 model (HumDiv or HumVar), which FATHMM
+    model (the 'FATHMM coding' column) and which MutationTaster output (the 0 to 100 'score') give Table
+    2, on which transcript and genome build, and which CADD version; which gnomAD version and which reading
+    of '1 in N' (the values match v4.1 joint counts as 1/(2 x allele frequency)); and which source gives
+    the domain boundaries of Figure 1, whose IMPG1 EGF-like domain is not in UniProt and whose IMPG2 EGF-like
+    2 domain is not in InterPro. Also, which I-Mutant 2.0 output and sign give Table 3's iMutant column,
+    and what made a fundus autofluorescence lesion count as hyper-autofluorescent (the right eye of M73,
+    whose lesion holds only a speck no brighter than the background fundus).
+- kind: paper_inconsistency
+  statement: Table 3's iMutant values for IMPG2 p.Cys1019Tyr and p.Leu249Phe (-0.14, -0.55, destabilizing)
+    are the magnitudes the I-Mutant 2.0 server the paper names gives from sequence with the sign reversed
+    (+0.14, +0.55, which the server prints as increased stability); the server also gives +0.19 and +0.88
+    for the IMPG1 variants (Table 3 -0.85 and -0.76), and its sign classifier calls p.Asp423Glu stabilizing.
+    Table 3's MuPRO value for p.Cys1019Tyr (-1.266) is the one MuPRO gives for p.Leu249Phe.
+verifications:
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the DANDI API only, and could
+    not run the FAF measures. It gave its own outcome for each claim; all 26 agree with the record''s
+    outcomes then (for table3-destabilizing and the two interaction claims it gave blocked as data_missing
+    where the record had not_runnable). Its other points: the dataset''s figures are the paper''s own published
+    panels and its spreadsheet is the authors'' source file for Table 1, so ''reproduced'' for the dataset
+    claims means the deposit agrees with the paper, not independent evidence (problem 1); the Table 2
+    inconsistencies (problem 4); the dandiset metadata gives 1 subject and no species (problem 10); the
+    2 images of the Word document were not shown. In reply the Word document''s images are shown, and
+    problems 1, 4 and 10 were already stated in the deviations and findings.'
+  results:
+  - claim: cohort-prevalence
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 11: the spreadsheet has 7 carriers, 2 with RP and 5 with VMD; 7/480 = 1.458%, 2/480
+      = 0.417% and 5/480 = 1.042%, all within tolerance. The denominator of 480 comes from the paper,
+      which the criterion allows.'
+    response: No change needed.
+  - claim: all-caucasian
+    agrees: true
+    outcome: blocked
+    reason: 'There is no race or ancestry field in the spreadsheet headers (cell 13). The verifier queried
+      the archive: neither the dandiset metadata nor the asset metadata has any subject fields.'
+    response: No change needed.
+  - claim: table1-genotypes
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 15: 7 of 7 patients match on gene, cDNA, protein and zygosity.'
+    response: No change needed.
+  - claim: table1-diagnosis-sex-age
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 17: diagnoses match 7/7. Sex and age exist only in the ''Sex & Age (Y)'' label, and
+      with no dates the two age readings can''t be told apart. sex_paper and age_paper are parsed from
+      the same identifier string as sex_data and age_data, so those checks are true by construction (problem
+      8).'
+    response: The cell now prints that the sex and age checks are true by construction, and the conclusion
+      and notes say only the diagnosis is compared with a separate field. Outcome kept.
+  - claim: inheritance-by-disease
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 19: the RP variants are all missense, D in IMPG1 and R with 2 variants in IMPG2; every
+      VMD patient is heterozygous D for one variant, missense or nonsense.'
+    response: No change needed.
+  - claim: table1-bcva
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 21: 14 of 14 eyes match. There is one value per eye, so the two visit readings give
+      the same result.'
+    response: No change needed.
+  - claim: vmd-acuity-preserved
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: under all four readings (better eye worse than 20/40; worse eye worse than 20/40,
+      20/50 or 20/70), M73 is the only reduced patient.'
+    response: No change needed.
+  - claim: f32-sector-rp-phenotype
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 26: all 4 features read as visible in both eyes. The reading was made on the published
+      figure panels. The phenotype verdicts are the author''s own reading of the paper''s own figure panels,
+      so they are not independent evidence (problem 1).'
+    response: Added full-resolution crops around every arrow of Figure 2 (impg.arrow_boxes). Outcome kept.
+  - claim: m83-rp-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 27: 6 of 9 features visible; 360-degree bone spicules, pale discs and vessel attenuation
+      not discernible.'
+    response: Added the full-resolution arrow crops of Figure 2. Outcome kept.
+  - claim: m75-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 31: 5 of 6 features visible. FA is not discernible because each eye has one angiogram
+      frame, not early and late phases. The left-eye FAF matches the text''s ''hyper''.'
+    response: FAF measures now leave out the arrow pixels and are shown under five readings of a bright
+      focus; the left eye is bright under all five (95th percentile 1.37). Added full-resolution arrow
+      crops of Figure 3. Outcome kept.
+  - claim: m82-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 32: 2 of 4 visible; FF foveal hypopigmentation and the bilateral FA window defect not
+      discernible.'
+    response: Added the full-resolution arrow crops of Figure 3, including the FA arrows. Outcome kept.
+  - claim: m73-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 33: 4 of 6 visible. Dot-blot haemorrhages not discernible; right-eye FAF not hyper-autofluorescent
+      (p95 = 1.00). The p95 > 1.1 threshold is the author''s own and decides the right-eye verdict; the
+      80 to 140 px ring includes the yellow arrow overlays, the optic disc and vessels; no sensitivity
+      check and no arrow masking were done; in the cell 30 crop M73 OD shows a small bright central speck
+      (problem 2).'
+    response: Arrow pixels are now left out of every FAF measure, the maximum and a macula-relative 95th
+      percentile were added, and the lesion is compared with 36 same-size discs of the panel's own background.
+      Five readings are shown per eye; the one that calibrates on the background (maximum brighter than
+      in 95% of background discs) is adopted as an assumption, and the outcome is marked assumed. The
+      speck in M73's right eye (maximum 1.11, 95th percentile 1.02) is no brighter than the background
+      (64% of discs are as bright); two of the other readings count it as bright. Outcome kept, since
+      dot-blot hemorrhages are not discernible under any reading.
+  - claim: f57-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 34: 2 of 4 visible. FF hypopigmentation not seen. ''More pronounced in the left eye''
+      is contradicted: the OS/OD hypo-autofluorescent area ratio is 0.77.'
+    response: Re-measured with the arrows masked; the numbers are unchanged (0.82 and 0.78 at r16, area
+      ratio 0.77) and no reading finds a bright focus. Outcome kept.
+  - claim: m34-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 35: 2 of 4 visible. FAF is hypo-autofluorescent, which matches the legend, not the text.
+      Glaucomatous discs and macular hypopigmentation not discernible.'
+    response: Re-measured with the arrows masked; unchanged (0.64 and 0.59). Outcome kept.
+  - claim: rp-superior-field-no-cme
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28: all 4 features visible. Only one B-scan per eye is available.'
+    response: No change needed.
+  - claim: m73-f57-similar-lesions
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 36: the SD-OCT lesions and M73-only cobblestone degeneration hold. The FAF contrast
+      holds in M73''s left eye only. The criterion names no partial outcome; this depends on problem 2.'
+    response: 'As for m73-vmd-phenotype: the FAF verdicts are shown under five readings, and the adopted
+      one leaves M73''s right eye not bright; the outcome is marked assumed, and the notes say that under
+      two other readings all three parts would hold. Outcome kept.'
+  - claim: m73-eog-normal
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 38 finds no EOG or Arden term in any text. The verifier listed the archive''s assets:
+      none of the 13 (xlsx, docx, py, figure images, desktop.ini) is an EOG.'
+    response: No change needed.
+  - claim: other-gene-variants
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 38: none of the named genes appears anywhere. The spreadsheet has IMPG variants only;
+      the verifier confirmed this from the asset list.'
+    response: No change needed.
+  - claim: variant-domains
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 40: 6 of 7 placements hold under each reading. UniProt fails IMPG1 L740 (IMPG1 has no
+      EGF annotation); InterPro fails IMPG2 R1088 (no second EGF domain). The InterPro reading keeps only
+      integrated InterPro entries; the Pfam and SMART annotations, which the criterion names, were fetched
+      but never used or shown, and a member-database reading could place R1088 in a second EGF domain
+      and L740 near or in an EGF domain (problem 5).'
+    response: Every InterPro and member-database domain row is now printed, and Pfam, SMART and the PROSITE
+      profiles are each run as a reading. None annotates a second IMPG2 EGF-like domain; PROSITE places
+      6 of 7 (as InterPro), Pfam and SMART 4 (SEA domains only). Outcome kept.
+  - claim: table2-pathogenicity
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 42: no tool''s own call matches the paper for IMPG1. SIFT calls L740F deleterious and
+      D423E tolerated; PolyPhen-2 HumVar calls both benign, and HumDiv gives D423E 0.310. CADD matches
+      at most 2 of 7 under any build and version; FATHMM 0 of 5; MutationTaster 0 of 7. impg.dbnsfp takes
+      the first element of dbNSFP''s per-transcript lists, not the MANE transcript; MutationTaster2021
+      and the FATHMM web server were not run (problem 3). The paper''s IMPG1 SIFT values are exactly swapped
+      relative to VEP, and two rs ids are mistyped (problem 4).'
+    response: impg.dbnsfp now keeps every list value with the transcript list and the MANE index, and
+      a match by any value counts (still 0 of 5 and 0 of 7). The FATHMM-MKL web server was run (0 of 5,
+      the same coding scores as dbNSFP). The MutationTaster2021 API was tried and redirects to its home
+      page, as the notebook prints. Problem 4 was already recorded as a finding. Outcome kept.
+  - claim: asp423glu-novel
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 44: ClinVar VCV 1000102 (6:76002940 G>T, missense, Uncertain significance) is in all
+      four November 2024 releases; rs758038128 is also colocated. The record''s HGVS, condition (CLNDN)
+      and first-submission date are not printed, so the ''first association with VMD'' half of the claim
+      isn''t addressed (problem 9).'
+    response: The cell now prints CLNHGVS, CLNDN and the review status, ClinVar's summary (one submission,
+      last evaluated 28 August 2020, condition not provided), and the first dated release holding the
+      record (15 March 2021). The notes say ClinVar records no association with VMD, so that half is not
+      contradicted. Outcome kept.
+  - claim: table3-destabilizing
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (data_missing: the I-TASSER models are not deposited). The notebook''s reason, ''not
+      runnable'', is not one of the allowed reasons. iMutant and MuPRO need only the sequence, so the
+      sign test and the ranking could have been run on 2 of the 5 tools (problem 6). The Word document
+      contradicts Table 3 in places the notebook shows but doesn''t feed into any conclusion.'
+    response: MuPRO and I-Mutant 2.0 were run on the web servers the paper names, from sequence. I-Mutant's
+      DDG regression gives positive (stabilizing) values for 4 of 5 variants and its sign classifier calls
+      p.Asp423Glu stabilizing, so the claim that every tool gives a negative value fails; MuPRO matches
+      Table 3 for 3 of 5. Outcome changed from blocked to not_reproduced, with the 15 structure-based
+      values recorded as not computed.
+  - claim: impg1-interactions-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Needs DynaMut on the undeposited I-TASSER models. The dandiset holds
+      only the Figure 4 renderings.
+    response: blocked_by changed from not_runnable to data_missing, as the verifier gives it; the notes
+      say a rerun of I-TASSER was not tried.
+  - claim: impg2-interactions-changed
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Same as the IMPG1 interaction claim.
+    response: blocked_by changed from not_runnable to data_missing.
+  - claim: table4-impg1-physicochemical
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 49, reading (a): 14 of 18 values match and every stated direction holds. The 4 misses
+      are all in the p.Asp423Glu column, which matches an Asp to Phe change exactly. Reading (b) matches
+      0 of 18. The verifier tested the mass and atom tables, which match ExPASy; the pI comes from Biopython,
+      not ExPASy''s own code, and the small difference this could cause is not checked (problem 7).'
+    response: The cell now prints the pI change of Asp to Glu (+0.003) against Table 4's (+0.02), and
+      the conclusion and notes say a small difference between the two codes would not reach 4.81. ExPASy's
+      own code was not run. Outcome kept.
+  - claim: gnomad-frequencies
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 51: gnomAD v4.1 joint with 1/(2 AF) gives 6 of 6 within 10% (98,335; 4,096; 3,031; 18,722;
+      58,997; 332).'
+    response: No change needed.
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the claims file and the attempt record, with the paper. The verifier agreed with all 26
+    outcomes as recorded, with a reservation on table3-destabilizing. Its other points; the count of desktop.ini
+    files is five, not six (cells 0, 9, 10, the summary and the finding); the summary's account of the Word
+    document's differences from Table 3; the unprinted statements that the draft holds the same 13 assets,
+    that the UniSave versions were current in November 2024 and that gnomad_r4 serves v4.1; and the record's
+    narrowing of its round-1 problem 1. In reply the count is corrected to five everywhere (cell 3 and cell
+    9 now print it), cell 3 compares the draft's assets with the published version's (13, the same paths, sizes
+    and asset ids), the Word document's differences are restated from cell 70, and the points tied to a claim
+    are answered under that claim. No outcome changed and none is proposed.
+  results:
+  - claim: cohort-prevalence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: all-caucasian
+    agrees: true
+    outcome: blocked
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: table1-genotypes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. Its round-1 problem 1 said
+      the spreadsheet is the authors' source file for Table 1, so the reproduced Table 1 claims are agreement
+      of the deposit with the paper, not independent evidence; the record narrowed this to the phenotype verdicts,
+      and the README and the notebook do not say it of the Table 1 claims.
+    response: A deviation on this claim now says that the spreadsheet looks like the authors' source for Table
+      1, so the test shows agreement of the deposit with the paper; the notebook (Table 1 section and summary)
+      and the README say the same, and the round-1 record now gives problem 1 in full. Outcome kept.
+  - claim: table1-diagnosis-sex-age
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. Its round-1 problem 1 said
+      the spreadsheet is the authors' source file for Table 1, so the reproduced Table 1 claims are agreement
+      of the deposit with the paper, not independent evidence; the record narrowed this to the phenotype verdicts,
+      and the README and the notebook do not say it of the Table 1 claims.
+    response: A deviation on this claim now says that the spreadsheet looks like the authors' source for Table
+      1, so the test shows agreement of the deposit with the paper; the notebook (Table 1 section and summary)
+      and the README say the same, and the round-1 record now gives problem 1 in full. Outcome kept.
+  - claim: inheritance-by-disease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. Its round-1 problem 1 said
+      the spreadsheet is the authors' source file for Table 1, so the reproduced Table 1 claims are agreement
+      of the deposit with the paper, not independent evidence; the record narrowed this to the phenotype verdicts,
+      and the README and the notebook do not say it of the Table 1 claims.
+    response: A deviation on this claim now says that the spreadsheet looks like the authors' source for Table
+      1, so the test shows agreement of the deposit with the paper; the notebook (Table 1 section and summary)
+      and the README say the same, and the round-1 record now gives problem 1 in full. Outcome kept.
+  - claim: table1-bcva
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. Its round-1 problem 1 said
+      the spreadsheet is the authors' source file for Table 1, so the reproduced Table 1 claims are agreement
+      of the deposit with the paper, not independent evidence; the record narrowed this to the phenotype verdicts,
+      and the README and the notebook do not say it of the Table 1 claims.
+    response: A deviation on this claim now says that the spreadsheet looks like the authors' source for Table
+      1, so the test shows agreement of the deposit with the paper; the notebook (Table 1 section and summary)
+      and the README say the same, and the round-1 record now gives problem 1 in full. Outcome kept.
+  - claim: f32-sector-rp-phenotype
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: m83-rp-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: m75-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. The record's notes give the
+      right eye's 95th percentile as 0.89, where cell 43 prints 0.896, which rounds to 0.90; this is trivial.
+    response: The notes now give 0.90. The FAF deviation now says that the background discs, 110 pixels from
+      the lesion, lie inside the 80 to 140 pixel surround and so sample the perimacular ring, not the general
+      fundus. Outcome kept.
+  - claim: m82-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: m73-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded. The assumption is stated, but this outcome does not rest on it; cell 50 and
+      the notes say it is partial under every reading (5 of 6 at most), because dot-blot haemorrhages are not
+      discernible, so the flag is unnecessary, and the README's 'the M73 claims rest on it' overstates the
+      case for this claim.
+    response: assumed is removed from this outcome, and its assumption deviation now says the outcome does
+      not rest on it. Cell 50, the notebook summary and the README no longer mark it as resting on the assumption;
+      the README says that m73-f57-similar-lesions rests on it. The FAF deviation now says that the background
+      discs, 110 pixels from the lesion, lie inside the 80 to 140 pixel surround and so sample the perimacular
+      ring, not the general fundus. Outcome kept.
+  - claim: f57-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: The FAF deviation now says that the background discs, 110 pixels from the lesion, lie inside
+      the 80 to 140 pixel surround and so sample the perimacular ring, not the general fundus. Outcome kept.
+  - claim: m34-vmd-phenotype
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: The FAF deviation now says that the background discs, 110 pixels from the lesion, lie inside
+      the 80 to 140 pixel surround and so sample the perimacular ring, not the general fundus. Outcome kept.
+  - claim: rp-superior-field-no-cme
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: vmd-acuity-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: m73-f57-similar-lesions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded. The assumption is stated in the deviations, the notes, cell 42 and cell 56,
+      and it is reasonable, but it is still decisive; for M73's right eye readings (1), (4) and (5) say not
+      bright and readings (2) and (3) say bright (cell 43), and under (2) or (3) all three parts hold, as the
+      record says. One correction; the 'background fundus' discs are centred 110 px from the lesion, so they
+      lie inside the 80 to 140 px surround ring (impg.faf_measures). They are the perimacular ring, not the
+      general fundus.
+    response: Kept as assumed, with the dependence stated as before. The description of the background discs
+      is corrected in cell 42, cells 49, 50 and 56, the notebook summary, the README and every FAF deviation
+      of the record (perimacular ring, inside the surround, not the general fundus). Outcome kept.
+  - claim: m73-eog-normal
+    agrees: true
+    outcome: blocked
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: other-gene-variants
+    agrees: true
+    outcome: blocked
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: variant-domains
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. That UniSave versions 129
+      and 146 were current in November 2024 is not supported by any printed output (cell 61 prints only the
+      entry ID line); this does not change the outcome.
+    response: Cell 61 now prints the release dates of the pinned versions and the next ones from UniSave; Q17R60
+      v129 and Q9BZV3 v146 were both released on 2 October 2024 and replaced on 27 November 2024, after the
+      paper's access dates of 15 and 16 November. The deviation cites them. Outcome kept.
+  - claim: table2-pathogenicity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: asp423glu-novel
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: table3-destabilizing
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, with a reservation that bears on the outcome. The claims file says 'iMutant and MuPRO run
+      from sequence'; the paper does not say this. Methods 2.4 gives only the URL, its reference 46 is 'I-Mutant2.0,
+      Predicting stability changes upon mutation from the protein sequence or structure', and the paper had
+      built I-TASSER models 'for further analysis' (Methods 2.3), so the sequence-only reading may be a misreading
+      by the claims file. Neither sequence-mode output gives the paper's IMPG1 iMutant values (-0.85, -0.76;
+      the server gives +0.19 and +0.88), and the server's regression and classifier disagree in sign for p.Cys1019Tyr
+      and p.Leu249Phe. The record does not state this dependence and does not mark the outcome assumed. Given
+      the claims file as written, not reproduced follows; the failure rests on one tool, in one mode, from
+      an unversioned server. Separately, the Summary's 'differs from Table 3 in four values' is not supported;
+      cell 70 also shows DUET p.Leu249Phe differing (-1.777 against -1.77), marks SDM p.Cys1019Tyr and iMutant
+      p.Arg131Cys as agreeing within 10%, and counts 3 values outside tolerance (20 of 23 agree).
+    response: The dependence is stated in cell 71, the notes, a new assumption deviation, the notebook summary
+      and the README, and the outcome is marked assumed (outcome unchanged, not_reproduced). The possible misreading
+      is asked of a reader in questions/001882.yaml; the claim is not changed. The rerun shows the regression
+      and the classifier disagree in sign for p.Leu740Phe as well (+0.19 against Decrease), so the text names
+      three variants. The structure mode was not run, since the I-TASSER models are not deposited. The summary
+      and the finding on the Word document now say it holds 23 of the 25 values, 3 differ by more than 10%
+      (MuPRO p.Leu249Phe, mCSM and SDM p.Asp423Glu) and 3 more within 10% (SDM p.Cys1019Tyr, iMutant p.Arg131Cys,
+      DUET p.Leu249Phe).
+  - claim: impg1-interactions-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: impg2-interactions-changed
+    agrees: true
+    outcome: blocked
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it.
+    response: No change needed.
+  - claim: table4-impg1-physicochemical
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. Round-1 problem 7 is partly
+      resolved; ExPASy's own code was not run, the argument from the +0.003 shift is sound, and the result
+      does not affect a conclusion.
+    response: No change; ExPASy's own code was not run, as the notes say.
+  - claim: gnomad-frequencies
+    agrees: true
+    outcome: reproduced
+    reason: Agrees as recorded; the printed outputs (cells 13 to 79) support it. That gnomad_r4 serves v4.1
+      is not supported by any printed output; this does not change the outcome.
+    response: The gnomAD API exposes no release number (its metadata give only a ClinVar release date), so
+      it cannot be printed; cell 77 and the deviation now say that v4.1 comes from gnomAD's documentation,
+      not from an output of the notebook. Outcome kept.

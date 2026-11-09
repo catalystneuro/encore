@@ -1,0 +1,840 @@
+schema_version: 3
+id: peterson-2021-01
+datasets:
+- archive: dandi
+  id: "000055"
+  version: 0.220127.0436
+  doi: 10.48324/dandi.000055/0.220127.0436
+  relation: primary
+paper: doi:10.1523/eneuro.0007-21.2021
+date: 2026-11-07
+entry: peterson-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42333071861
+inputs:
+- what: The paper's projection matrices from electrodes to AAL regions (aal_XX_elecs2ROI.csv, first
+    row the electrode density, then one row per electrode) and the region centroids
+    (aal_XX_ROIcentroids_Lside.csv), for the 12 subjects, from Figshare item 12114408 version 1,
+    "ROI projection matrices and labels". Used for every claim on regions and checked by claim
+    roi-projection-link.
+  source: doi:10.6084/m9.figshare.12114408.v1
+- what: The paper's analysis code, read for method details (config.py, tfr_utils.py,
+    compute_spectral_power.py, regression_utils.py and the notebooks of Figures 3 to 5); no code or
+    data from it is run.
+  source: https://github.com/BruntonUWBio/naturalistic_arm_movements_ecog at commit
+    04c6faf2f219586fa834d10c614ef48a694cec55
+outcomes:
+- claim: subject-days
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:subject-days
+  notes: The dataset's subjects 01 to 12 have exactly the days of Table 2, 55 subject-days in all, so
+    subjects are matched by number. No two files share event times or wrist traces.
+- claim: roi-projection-link
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:roi-projection-link
+  notes: For all 12 subjects the rows used equal the electrodes of the NWB file. S01's matrix has 98
+    rows for 94 electrodes; the last four are all zero and are dropped by the code's rule. The
+    all-zero rows of S03 (16) and S12 (8) fall on whole depth groups (LAD and LPD; AID). The region
+    with the largest weight is the one with the nearest centroid for 0.587 to 0.786 of electrodes,
+    against 0.163 to 0.258 with the electrode order shuffled, in all 12 subjects; the Spearman
+    correlation of weight with proximity is 0.916 to 0.937. The regions with mean density above 3
+    are the eight the claims file names.
+  deviations:
+  - This link claim was written by the author during the attempt (protocol, author step 4), after
+    the electrode and row counts had been listed.
+- claim: cohort
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:cohort
+  notes: No value is recorded under measured, as two of the seven expected values (male subjects,
+    mean age) cannot be measured. 12 subjects, a mean of 84.8 surface electrodes (SD 11.6; 87.0 +- 12.9), a mean of 23.7 depth
+    electrodes in the subjects with depth electrodes (23.2 +- 12.1) and 5 subjects implanted in the
+    right hemisphere (judged by the wrist of the events, which agrees with the sign of the mean MNI
+    x) match. Seven subjects (S01, S02, S03, S09, S10, S11, S12) have electrode groups whose
+    description says depth, where the paper says five. Sex and age are not in the files or the
+    archive's metadata and are not testable. The data descriptor of the dataset (doi
+    10.1038/s41597-022-01280-y, Table 2) counts S10 as 86 surface and 40 depth electrodes and S11 as
+    106 surface and none, where the group descriptions give 78 and 48, and 88 and 18. With the
+    descriptor's counts the surface mean is 87.0 +- 12.9 and six subjects have depth electrodes (23.3
+    +- 12.0), so the count of five fails under both. The descriptor's table also lists sex and age (8
+    male, 4 female; ages with mean 29.4), which match the paper, but it is not the dataset and is not
+    used for the outcome.
+  deviations:
+  - Depth electrodes are those in groups whose description in the file contains "depth"; the paper's
+    per-subject table (Extended Data Figure 1-1) could not be read.
+- claim: fig2-event-counts
+  outcome: not_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig2-event-counts
+  measured:
+  - 211
+  - 996
+  - 770.5
+  notes: Reading a (all events) gives 211 to 996 events per subject, median 770.5; reading b (bad
+    segments dropped) 211 to 979, median 739. The most is within tolerance under both; the fewest
+    (against 151 +- 15.1) and the median (against 640 +- 64) are not. The files hold 8088 events and
+    the data descriptor of the dataset states 6931 verified events. No event is marked as a false
+    positive, and the paper removed 17.8% of events as false positives or occlusions, so the dataset
+    likely holds events the paper dropped. The reaches table has the same nine columns in all 55 files
+    and none marks false positives or verified events, so the outcome rests on reading a in full and on
+    reading b without its false-positive step. The reading b median less 14% (739 x 0.86 = 636)
+    would lie within tolerance, so the shortfall may come from the missing marks.
+  deviations:
+  - The false-positive removal of reading b cannot be applied, as the files do not mark false
+    positives.
+  - The bad-segment rule of reading b uses an assumed summary of segment power (see
+    fig3-group-lfb-decrease-hfb-increase); here it drops 1 segment below 0 dB, 74 with high 115-125
+    Hz power and 124 with missing samples.
+- claim: fig2-features-differ-across-subjects
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig2-features-differ-across-subjects
+  notes: All ten Kruskal-Wallis tests across the 12 subjects give p < 0.001 under reading b (7888
+    events) and reading a (8088); the largest p is 9.9e-35 (reach duration).
+  deviations:
+  - Reach angle is the files' angle negated and folded onto -90 to 90 degrees. The files store the
+    angle in image coordinates (it matches the wrist trace to a median of 1.46 degrees, and to 116.58
+    degrees when negated), and the code negates it and folds 90-270 degrees. Time of day is in hours
+    from the files' midnight clock.
+- claim: fig2-reach-shape
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig2-reach-shape
+  notes: Duration and magnitude part holds. Pooled, 0.918 of reaches last under 2 s and 0.915 cover
+    under 200 pixels, and both shares exceed one half in all 12 subjects (lowest 0.881 and 0.591,
+    S08 for magnitude). Angle part does not hold. The two highest maxima of the angle density lie at
+    -71.5 and 75.0 degrees pooled and within 15 degrees of +-90 in no subject; S02 and S04 have a
+    single maximum, and in S03, S06 and S07 the density at 0 exceeds the lower peak. 22.9% of reaches
+    lie within 30 degrees of horizontal. Reading a gives the same. The criterion's KDE has no
+    boundary correction, and on synthetic angles whose density peaks at +-90 it puts the peaks at
+    -72.5 and 70.0 (n = 250) and -73.5 and 74.0 degrees (n = 900), so the criterion is biased against
+    the angle part. With the data reflected at +-90 (a sensitivity output, not the criterion) the peaks
+    lie within 15 degrees of +-90 pooled and in 6 of 12 subjects, still not more than half, so the
+    outcome is the same. Asked of a reader (questions/000055.yaml).
+  deviations:
+  - Angle convention as in fig2-features-differ-across-subjects.
+- claim: fig2-bimanual-skew
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig2-bimanual-skew
+  notes: The median bimanual ratio is below 0.5 (pooled 0.136) and the overlap skewness positive
+    (pooled 1.114) in all 12 subjects; the class is bimanual for 0.725 of events pooled and more than
+    half in all 12 (lowest 0.507, S12). The five highest median ratios are S04, S07, S05, S02, S03 and
+    the five lowest overlap skewness S07, S05, S02, S03, S04, so S02, S04 and S05 are in both. Reading
+    a gives the same.
+  deviations:
+  - Bimanual ratio has no missing values in the files (26 events are exactly 0.5), so the code's
+    fill of 0.5 changes nothing.
+- claim: extfig2-1c-contralateral-larger
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:extfig2-1c-contralateral-larger
+  notes: The peak over 0 to 1.5 s of the median contralateral displacement exceeds the ipsilateral
+    one in all 12 subjects under reading a (rest position the mean over -1.5 to -1 s; ratios 1.12 to
+    37.81, median 4.3) and reading b (position at onset; ratios 1.08 to 42.01, median 5.83). The
+    margin is small for S04 (1.12 and 1.32) and S05 (1.15 and 1.08), so "substantially" holds for
+    10 of 12 subjects if read as a ratio above 1.5.
+- claim: extfig2-2-feature-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:extfig2-2-feature-correlations
+  measured:
+  - 0.233
+  - 0.604
+  - 0.503
+  - 0.502
+  - 0.494
+  - 0.599
+  notes: Five of six pooled Pearson correlations are within tolerance under reading b; reach
+    magnitude and duration give 0.233 against 0.26 +- 0.026 (lower bound 0.234). Reading a gives
+    0.231, 0.609, 0.505, 0.501, 0.494 and 0.598, also five of six.
+- claim: fig2-days-and-waking
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig2-days-and-waking
+  notes: The busiest day holds more than half of the events for S05 (0.605) and S09 (0.517) and for
+    none of the other subjects, but S04's busiest day holds 0.379, so the day part does not hold as
+    written. More than half of each subject's events fall at 08 to 24 h (0.641 to 0.964), so the
+    waking part holds. Reading a gives the same.
+  deviations:
+  - The hour of an event is taken from the files' clock, which starts at midnight; the Sleep/rest
+    labels fall mostly in its first hours (0.545 of them at 0 to 8 h).
+- claim: fig3-group-lfb-decrease-hfb-increase
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig3-group-lfb-decrease-hfb-increase
+  assumed: true
+  notes: After the bootstrap mask, the mean over 4-30 Hz and 0 to 0.5 s is negative and over 50-120
+    Hz positive in precentral (-0.885 and 0.496 dB), postcentral (-0.890 and 0.507) and inferior
+    parietal (-0.663 and 0.277), and also at the onset time bin (-0.748 and 0.460, -0.742 and 0.477,
+    -0.592 and 0.278). Middle frontal, supramarginal and middle temporal (-0.005 and 0.003 dB) show
+    the same pattern over 0 to 0.5 s; at the onset bin supramarginal's high-frequency value and middle
+    temporal's low-frequency value are 0.000.
+  deviations:
+  - Region power uses the paper's projection matrices from Figshare (claim roi-projection-link), not a
+    new projection from the AAL atlas.
+  - The bad electrodes are those of each subject's first file, as the code takes them
+    (tfr_utils.py, load_project_spectral_power, which reads info['bads'] from the first power file of
+    each subject only); the files' good flags differ between days for every subject.
+  - Assumed reading of the bad-segment rule (Methods, "discarding segments with power <0 dB or with
+    abnormally high power at 115-125 Hz (>3 SDs) compared with all segments"). The paper's
+    preprocessing code is not published. The segment's Welch power density in microvolts squared per
+    Hz is averaged over 1-200 Hz (or 115-125 Hz), converted to dB and averaged over good electrodes;
+    the 3 SD limit is taken over the subject's segments. Averaging the log density instead would drop
+    7931 of 8087 segments, so that reading is not usable. Segments with missing samples are dropped
+    (Methods, "segments with missing data").
+  - The bootstrap mask covers -4.5 to 4.5 s (the 10 s segment less the code's 0.5 s pad), so the FDR
+    correction runs over 25 x 91 bins per region; the paper's power files may span a different time
+    range.
+  - ECoG times in three files (S01 day 7, S04 day 3, S06 day 3) are shifted by 29241 to 30682 s, the
+    ECoG missing at the start of the day (see findings).
+  - The events include the false positives the paper removed (Methods, 17.8% of events removed as
+    false positives or occlusions), as the files do not mark them (fig2-event-counts). This holds for
+    every ECoG claim that refers to this one.
+- claim: fig3-sensorimotor-largest
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig3-sensorimotor-largest
+  assumed: true
+  notes: Under readings a, b and c postcentral, precentral and inferior parietal are the three
+    largest regions and the temporal regions are below all three. Reading a gives 0.523, 0.512 and
+    0.336 dB, then middle frontal 0.236, supramarginal 0.093 and the temporal regions at most 0.039.
+  deviations:
+  - As for fig3-group-lfb-decrease-hfb-increase.
+- claim: fig3-lfb-more-widespread
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig3-lfb-more-widespread
+  notes: The criterion's two readings disagree, and the criterion blocks the claim when they do.
+    Reading a counts 7 regions with a significant 4-30 Hz decrease and 7 with a significant 50-120 Hz
+    increase over 0 to 0.5 s, so low frequencies are not more widespread. Reading b gives 35.2
+    significant decreasing bins per low frequency against 25.9 increasing bins per high frequency,
+    so they are. Supramarginal (30 bins) and superior temporal (24 bins) both have significant
+    low-frequency decreases; superior temporal has no significant high-frequency increase. Question
+    for the paper's authors. How was "more spatially widespread" judged, as the number of regions
+    with any significant change or as the extent of significant time-frequency bins? The Results
+    sentence (Intracortical spectral power, paragraph 2) and Figure 3 give no measure; with region
+    counts the two bands tie here at 7 of 8. The tie does not depend on the bootstrap seed. With ten
+    other seeds reading a gives 7 against 7 regions every time and reading b 35.0 to 35.6 against 25.5
+    to 25.8 bins per frequency, and middle and inferior temporal keep 3 to 4 and 6 to 9 significant
+    high-frequency bins.
+- claim: fig4-precentral-subject-variability
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig4-precentral-subject-variability
+  assumed: true
+  notes: All four parts hold. (1) Every subject has a negative 8-32 Hz mean and a positive 76-100 Hz
+    mean in precentral over 0 to 0.5 s. (2) S03, S06, S07, S08 and S11 are positive at 116 and 121
+    Hz. (3) S09 and S12 both peak at 66 Hz among 56-121 Hz, with the 101-121 Hz mean (0.05 and 0.045
+    dB) below half the peak (0.373 and 0.289). (4) S08 has the narrowest decrease (2 bins); S03, S04,
+    S05 and S07 tie at 3 bins for the next places, and by the interpolated width S08 (9.4 Hz), S04
+    (14.4 Hz) and S11 (16.8 Hz) are the three narrowest.
+  deviations:
+  - The bin count of part 4 ties four subjects for the second and third places. The tie is broken by
+    the width in Hz of the run below half the minimum, interpolated between bins, a finer form of the
+    same measure; the paper and its code give no rule. Under the bin count with the tie read against
+    S04, part 4 fails and the claim would be partially reproduced. The interpolated width is also
+    close for the third place (S11 16.8 Hz against S05 16.9 Hz), but S04 (14.4 Hz) is second.
+  - As for fig3-group-lfb-decrease-hfb-increase.
+- claim: fig5-band-power-differs-across-subjects
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig5-band-power-differs-across-subjects
+  notes: Kruskal-Wallis across the 12 subjects (7888 events) gives p = 1.31e-163 for LFB and 7.06e-264
+    for HFB with the band mean, and 9.09e-165 and 7.79e-258 with the code's band median. With only
+    segments with missing samples dropped (7963 events), p = 1.46e-165 and 7.68e-263.
+  deviations:
+  - As for fig3-group-lfb-decrease-hfb-increase, except that the outcome does not depend on the
+    assumed bad-segment rule.
+- claim: table1-subject-band-power-ci
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:table1-subject-band-power-ci
+  notes: Under the reading mean over events of the band mean, 23 of 24 subject and band values lie
+    inside the paper's intervals; S06 HFB is 1.782 dB against 2.02 to 2.37 (the bootstrap interval
+    here is 1.64 to 1.92). The other readings give 21 (median of band mean), 21 (mean of band median)
+    and 20 (median of band median) of 24. LFB is below baseline and HFB above it in all 12 subjects.
+    With only segments with missing samples dropped, 22 of 24 (LFB 12, HFB 10).
+  deviations:
+  - As for fig3-group-lfb-decrease-hfb-increase; the outcome does not depend on the assumed
+    bad-segment rule.
+- claim: fig5-recording-day-effects
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig5-recording-day-effects
+  notes: With the band mean, the per-subject Kruskal-Wallis tests across days agree with the paper on
+    all 24 subject and band pairs, the 11 the paper names significant (largest p 0.0331, HFB S07) and
+    the 13 others not (smallest p 0.068, HFB S01). With the code's band median, 23 of 24 agree; LFB
+    S05 gives p = 0.088. With only segments with missing samples dropped, the same 11 pairs are
+    significant.
+  deviations:
+  - As for fig5-band-power-differs-across-subjects.
+- claim: extfig5-1-baseline-reduces-day-variability
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:extfig5-1-baseline-reduces-day-variability
+  assumed: true
+  notes: Reading a (precentral region per subject), the SD across days of the day means is lower
+    with baseline subtraction for 9 of 12 subjects in LFB (median 0.202 against 0.865 dB) and 12 of
+    12 in HFB (0.140 against 0.480 dB). Reading b (per good electrode), for 1006 of 1096 electrodes
+    in LFB and 988 of 1096 in HFB. Variability remains, as 11 subject and band pairs have significant
+    day effects after baseline subtraction (fig5-recording-day-effects).
+  deviations:
+  - As for fig3-group-lfb-decrease-hfb-increase. Power without baseline is the 10*log10 band power
+    with no subtraction, with the data in microvolts.
+- claim: discussion-day-changes-small
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:discussion-day-changes-small
+  assumed: true
+  notes: The largest deviation of a day mean from the subject's mean precentral band power is 1.011 dB
+    (S03 LFB), within 2.2 dB; the range of day means, the other reading the claims file mentions,
+    reaches 1.801 dB. Without baseline subtraction the mean band power is 12.4 to 36.3 dB with the
+    data in microvolts, inside 9 to 55 dB; in volts it would be -107.5 to -83.7 dB.
+  deviations:
+  - As for fig3-group-lfb-decrease-hfb-increase. The files store microvolts (conversion 1e-6 to
+    volts), and the level part holds with that unit.
+- claim: fig6-r2-at-most-025
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig6-r2-at-most-025
+  assumed: true
+  measured:
+  - 0.189
+  notes: The largest split-averaged full-model withheld R2 over the 1096 good electrodes of the 12
+    subjects and both bands is 0.189 (HFB, S04), within 0.275; the largest in LFB is 0.149 (S01). The
+    code's 80/20 split gives 0.192, the code's band median 0.203, and bad electrodes included 0.189.
+    The median R2 is -0.014 in both bands, and 22 (LFB) and 14 (HFB) good electrodes exceed 0.05. For
+    reference only, the R2 stored in the files reach 0.149 and 0.255; their Spearman correlation with
+    the R2 here is 0.718 (LFB) and 0.643 (HFB) over 1088 good electrodes.
+  deviations:
+  - The Huber fits minimise the objective of sklearn's HuberRegressor (the code's model, defaults) by
+    a batched Newton method with a line search, many problems at once (helper huber_fit). On 240 fits
+    the coefficients differ from sklearn's by at most 1.16e-03 and the withheld R2 by at most 4.4e-05.
+  - Delta R2 refits are run only at electrodes whose full-model R2 exceeds 0.05 in either band (86
+    models in the main analysis, 84 with the 80/20 split), as every criterion uses Delta R2 only there.
+  - In the code's Delta R2 variant the refit is shared with the Methods' version and the feature is
+    shuffled among the test events before scoring; the code shuffles it over all events before
+    splitting.
+  - The code's log(x + 1) transforms of reach magnitude and onset speed are not run as a variant.
+  - Forward selection runs over design columns (each day and time-of-day one-hot column on its own,
+    as in the code), with the adjusted R2 computed from the rank of the design as statsmodels does.
+    A day or time-of-day feature counts as selected when any of its columns is; the code checks one
+    fixed column. Time-of-day bins are 0-8, 8-16 and 16-24 h without shared edges.
+  - The events are those of reading b of fig2-event-counts (7888), which include the false positives
+    the paper removed, as the files do not mark them; the assumed bad-segment rule and the bad
+    electrodes of each subject's first file are as for fig3-group-lfb-decrease-hfb-increase.
+- claim: fig6b-best-models-sensorimotor
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig6b-best-models-sensorimotor
+  assumed: true
+  notes: Reading a, all 22 good electrodes with LFB R2 > 0.05 and 13 of 14 (0.929) with HFB R2 > 0.05
+    are assigned to the five frontoparietal regions, and the median R2 of precentral, postcentral and
+    inferior parietal electrodes exceeds that of temporal electrodes in both bands (-0.0097 against
+    -0.0158 in LFB, -0.0117 against -0.0147 in HFB). Reading b, the three regions with the highest
+    projected R2 are precentral, postcentral and inferior parietal in both bands. Few electrodes exceed
+    0.05, from 4 subjects in LFB and 6 in HFB. These sets overlap the electrodes whose stored R2 (the
+    paper's own, in the files) exceeds 0.05 in 18 electrodes in LFB (22 here, 23 stored, 5 subjects)
+    and 12 in HFB (14 here, 22 stored, 8 subjects). Selected by the stored R2, 22 of 23 LFB and 18 of
+    22 HFB electrodes are in the five frontoparietal regions (a sensitivity output, not the
+    criterion).
+  deviations:
+  - As for fig6-r2-at-most-025. For reading a an electrode is assigned to the region with its largest
+    weight in the Figshare projection matrix; electrodes whose row is all zero have no region and count
+    as outside the five.
+- claim: fig6c-angle-and-day-most-informative
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig6c-angle-and-day-most-informative
+  assumed: true
+  notes: Over the 22 good electrodes with LFB R2 > 0.05, reach angle (median Delta R2 0.066) and
+    recording day (0.017) have the two largest median Delta R2; time of day is third (0.0017) and the
+    seven other features have a median of 0. In HFB (14 electrodes) day (0.068) and angle (0.033) are
+    the two largest. The code's Delta R2, the code's selection by LFB R2, the 80/20 split and the
+    inclusion of bad electrodes all give angle and day as the two largest in both bands. Over the
+    electrodes whose stored R2 exceeds 0.05 (23 LFB, 22 HFB; a sensitivity output), angle (0.063) and
+    day (0.013) are the two largest in LFB and day (0.050) and angle (0.019) in HFB, also with the
+    code's Delta R2.
+  deviations:
+  - As for fig6-r2-at-most-025.
+- claim: extfig6-2-angle-most-retained
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:extfig6-2-angle-most-retained
+  assumed: true
+  notes: Angle part holds. Reach angle has the highest projected retention probability in
+    precentral, postcentral and inferior parietal in both bands (0.448 to 0.679, against at most 0.400
+    for any other feature there). Order part does not hold under either reading. Averaged over the
+    three sensorimotor regions and both bands (reading a) the second to fifth features are onset speed,
+    speech ratio, reach magnitude and bimanual ratio, and over all eight regions (reading b) speech
+    ratio, onset speed, reach magnitude and bimanual ratio; reach duration is sixth and seventh. The
+    second to tenth features lie between 0.202 and 0.357, so the order among them rests on small
+    differences.
+  deviations:
+  - As for fig6-r2-at-most-025. Selection is run once per electrode and band on all of the subject's
+    events, as in the code, so the retention probability of a feature at one electrode is 0 or 1 (a
+    fraction for day and time of day) before projection.
+- claim: fig6d-upward-reaches-enhance-pattern
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig6d-upward-reaches-enhance-pattern
+  assumed: true
+  notes: The median split-averaged reach-angle coefficient over good electrodes with R2 > 0.05 is
+    -1.027 in LFB (22 electrodes, 0.955 negative) and 0.535 in HFB (14 electrodes, none negative). The
+    code's selection by LFB R2 gives -1.027 and 0.202, the inclusion of bad electrodes -0.815 and 0.515,
+    and the 80/20 split -0.973 and 0.540. By subject, the LFB medians are -1.353 to 0 (4 subjects) and
+    the HFB medians 0 to 0.730 (6 subjects). Over the electrodes whose stored R2 exceeds 0.05 (a
+    sensitivity output), the median is -1.026 in LFB (23 electrodes) and 0.498 in HFB (22).
+  deviations:
+  - As for fig6-r2-at-most-025.
+- claim: fig6d-angle-and-day-largest-coefficients
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:fig6d-angle-and-day-largest-coefficients
+  assumed: true
+  notes: Over good electrodes with R2 > 0.05, reach angle and the SD of the day coefficients have the
+    two largest values under both readings and in both bands. LFB angle 1.027 and day 0.660, then time
+    of day 0.188; HFB day 0.733 and angle 0.535, then reach magnitude 0.231 (reading a). The two
+    readings differ only for features whose coefficients change sign. The code's selection by LFB R2,
+    the inclusion of bad electrodes and the 80/20 split give the same two features in both bands and
+    readings. The day SD is the second largest value in LFB and the largest in HFB, which bears on the
+    statement's "large" SD. Over the electrodes whose stored R2 exceeds 0.05 (a sensitivity output),
+    angle and the day SD are also the two largest under both readings in both bands (LFB 1.026 and
+    0.635, HFB day 0.668 and angle 0.498).
+  deviations:
+  - As for fig6-r2-at-most-025.
+  - The day (and time-of-day) value is the mean over splits of the SD of the one-hot coefficients in
+    each split (helper electrode_model). Taken as the SD of the split-averaged coefficients it is
+    0.658 against 0.660 in LFB and 0.729 against 0.733 in HFB, and angle and day stay the two largest.
+findings:
+- kind: metadata_error
+  statement: In three files (sub-01 ses-7, sub-04 ses-3, sub-06 ses-3) the ECoG holds 15.5 to 15.9 h
+    and its starting_time is 0, while the reaches table and the pose run on a clock from midnight.
+    The ECoG starts 29241 to 30682 s after midnight, the time missing from 24 h; ReachEvents and the
+    session start time agree, and the movement response appears only with this shift (S06 day 3,
+    precentral HFB +1.98 dB with it, -0.07 dB without). Read with starting_time as given, the event
+    times point at the wrong ECoG or past its end.
+- kind: other
+  statement: The files hold 8088 wrist movement events (211 to 996 per subject), where the data
+    descriptor states 6931 verified events and the paper reports 151 to 947 per subject (median 640).
+    No event is marked as a false positive or as removed, so the events the paper analysed cannot be
+    selected.
+- kind: metadata_insufficient
+  statement: Reach_angle_degrees is described only as "Reach angle in degrees". It holds the angle of
+    the reach in image coordinates (y down, -180 to 180), so upward reaches are negative, while the
+    paper's feature is the negated angle folded to -90 to 90.
+- kind: metadata_error
+  statement: Pose positions are labelled meters but hold pixels (the data descriptor gives pixels; the
+    values span hundreds).
+- kind: metadata_error
+  statement: Bimanual_overlap is described as a fraction of the contralateral movement duration, but
+    1708 of 8088 values exceed 1 (up to 3.83); it behaves as seconds.
+- kind: metadata_error
+  statement: session_start_time is 19:00 at UTC-5 for files that start at local midnight (midnight UTC
+    written in another zone), and 03:07 to 03:31 at UTC-5 for the three files whose ECoG starts later.
+- kind: other
+  statement: 124 of the event segments contain missing (NaN) ECoG samples on every electrode, in 30 of
+    55 files.
+- kind: data_missing
+  statement: The subjects' sex and age, which the paper reports, are not in the files or the archive's
+    metadata.
+- kind: paper_inconsistency
+  statement: Seven subjects have electrode groups described as depth in the files (S01, S02, S03, S09,
+    S10, S11, S12), where the paper says five subjects had depth electrodes.
+- kind: metadata_insufficient
+  statement: The electrode `good` flags differ between a subject's files, and nothing says which list
+    the paper used; the paper's code takes the list of each subject's first file.
+- kind: metadata_error
+  statement: The electrode group descriptions and the data descriptor's Table 2 disagree for two
+    subjects. S11 has groups LATD, LMTD and LTPD described as depth (18 electrodes), where the
+    descriptor gives S11 106 surface and no depth electrodes; S10 has 78 electrodes in groups not
+    described as depth and 48 in depth groups, where the descriptor gives 86 and 40.
+- kind: methods_unavailable
+  statement: The paper's rule for bad ECoG segments ("power <0 dB or with abnormally high power at
+    115-125 Hz (>3 SDs) compared with all segments") does not say how a segment's power is
+    summarised, in which unit, or whether the SD is over a subject's or all segments, and the
+    preprocessing code is not published. Question for the authors. Was the 0 dB test applied to the
+    log of the mean power density over frequencies and electrodes in microvolts squared, as assumed
+    here? The mean of the log density is below 0 dB for nearly every segment.
+- kind: methods_unavailable
+  statement: The paper does not say how it judged low-frequency decreases "more spatially widespread"
+    than high-frequency increases (Results, Intracortical spectral power, paragraph 2). Question for
+    the authors. Was it the number of regions with significant changes or the extent of significant
+    bins? The two give different answers here.
+verifications:
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper and the data descriptor. The verifier tested
+    helper functions on synthetic inputs (fold_angle, band and time bins, band_values, segment_power,
+    boot_sig_mask) and checked the archive's asset metadata. It agreed with 19 outcomes and found the
+    six regression claims blocked without good reason.
+  results:
+  - claim: subject-days
+    agrees: true
+    outcome: reproduced
+    reason: All 12 subjects have exactly the Table 2 days, 55 subject-days.
+    response: No change needed.
+  - claim: roi-projection-link
+    agrees: true
+    outcome: reproduced
+    reason: Rows match electrodes for 12 of 12 subjects. The top weight is at the nearest centroid for
+      0.59 to 0.79 of electrodes, against about 0.2 when the order is shuffled. The eight regions with
+      density > 3 are the ones the claims file names.
+    response: No change needed.
+  - claim: cohort
+    agrees: true
+    outcome: partially_reproduced
+    reason: 12 subjects, surface mean 84.8, depth mean 23.7 and 5 right hemisphere pass; subjects with
+      depth electrodes is 7 against an exact 5. Sex and age are not in the files or the archive metadata.
+      Depth electrodes are taken as groups whose description contains "depth"; the data descriptor's
+      Table 2 gives S10 86 surface + 40 depth and S11 106 + 0, and with its counts 6 subjects have depth
+      electrodes, so the outcome stands (B6).
+    response: Added a data check printing every group and its description beside the descriptor's Table
+      2, and the cohort numbers with the descriptor's counts (87.0 +- 12.9 surface, 6 subjects with
+      depth electrodes). Recorded the disagreement for S10 and S11 as a finding. Outcome kept.
+  - claim: fig2-event-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: The fewest and the median are outside tolerance under both readings. Reading b could not
+      drop the false positives, as the files do not mark them; the gap between 8088 events and the
+      descriptor's 6931 verified events could account for the mismatch (a median of 739 at about 14%
+      removal is about 635), so the claim is not_reproduced only under reading a in full (B3).
+    response: Added a data check printing the reaches-table columns of every file (the same nine in all
+      55, none marking false positives or verified events). The notes and conclusion now say the outcome
+      rests on reading a and on reading b without its false-positive step. Outcome kept.
+  - claim: fig2-features-differ-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: All ten Kruskal-Wallis p < 0.001 under both readings.
+    response: No change needed.
+  - claim: fig2-reach-shape
+    agrees: true
+    outcome: partially_reproduced
+    reason: The duration and magnitude part holds; the angle part holds in 0 of 12 subjects and not
+      pooled, with peaks near +-70. A Gaussian KDE without boundary correction cannot place peaks near
+      +-90 for data bounded there; on synthetic folded angles peaking at +-90, Scott's bandwidth puts the
+      peaks at +-72 to +-74, so the angle part's failure does not count as evidence against the paper
+      (B2, in the criterion, reported and not corrected).
+    response: Added the synthetic check and the same KDE with the data reflected at +-90 as a
+      sensitivity output. With reflection the peaks lie within 15 degrees of +-90 pooled and in 6 of 12
+      subjects, not more than half, so the outcome is the same. The criterion is asked of a reader in
+      questions/000055.yaml. Outcome kept.
+  - claim: fig2-bimanual-skew
+    agrees: true
+    outcome: reproduced
+    reason: The ratio, overlap and class parts hold pooled and in 12 of 12 subjects; S02, S04 and S05 are
+      among both "five" sets under both readings.
+    response: No change needed.
+  - claim: extfig2-1c-contralateral-larger
+    agrees: true
+    outcome: reproduced
+    reason: The contralateral peak exceeds the ipsilateral peak in 12 of 12 subjects under both readings;
+      the smallest ratio is 1.08 (S05).
+    response: No change needed.
+  - claim: extfig2-2-feature-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 6 correlations are within tolerance; magnitude vs duration is r = 0.233 against 0.26 +-
+      0.026 under both readings.
+    response: No change needed.
+  - claim: fig2-days-and-waking
+    agrees: true
+    outcome: partially_reproduced
+    reason: The busiest day holds more than half of the events for S05 and S09 but not S04 (0.379); the
+      waking part holds in 12 of 12 subjects.
+    response: No change needed.
+  - claim: fig3-group-lfb-decrease-hfb-increase
+    agrees: true
+    outcome: reproduced
+    reason: Masked 4-30 Hz power is below 0 and 50-120 Hz power above 0 in precentral, postcentral and
+      inferior parietal under both readings. Bad electrodes are taken from each subject's first file and
+      the good flags differ between files for all 12 subjects; the helper attributes this to the code,
+      which the verifier could not check (B7). The summary of segment power for the bad-segment rule is
+      an assumption, and the SD is per subject where the Methods say all segments; the main results
+      barely move without the rule (B8). The three short files are assumed to end at midnight, which
+      ReachEvents and the neural response support (B9).
+    response: The deviation now cites the code that takes the first file's bad list (tfr_utils.py,
+      load_project_spectral_power). The seed check added for fig3-lfb-more-widespread shows the pattern
+      in the three named regions under ten other seeds. Outcome kept.
+  - claim: fig3-sensorimotor-largest
+    agrees: true
+    outcome: reproduced
+    reason: Under readings a, b and c the named three are the top three, and every temporal region is
+      below them.
+    response: No change needed.
+  - claim: fig3-lfb-more-widespread
+    agrees: true
+    outcome: blocked
+    reason: Reading a gives 7 regions against 7, reading b 35.2 against 25.9 bins per frequency.
+      Supramarginal and superior temporal do have low-frequency decreases. The disagreement rests on a
+      few marginal bins in middle and inferior temporal from one bootstrap seed; if either region lost
+      them under another seed, the claim would be reproduced. Seed stability was not checked (B4).
+    response: Added the masks under ten other seeds. Reading a gives 7 against 7 under every seed
+      (middle and inferior temporal keep 3 to 4 and 6 to 9 significant high-frequency bins) and reading b
+      35.0 to 35.6 against 25.5 to 25.8, so the readings disagree under every seed. Outcome kept.
+  - claim: fig4-precentral-subject-variability
+    agrees: true
+    outcome: reproduced
+    reason: Parts 1 to 3 hold. Part 4 holds only after a tie-break, as four subjects tie at 3 bins and
+      are ranked alphabetically; the interpolated width is the author's own measure, not the criterion's.
+      It also passes (S04 at 14.4 Hz is second narrowest), but S11 is 16.8 Hz against S05 at 16.9 Hz.
+      Under a strict reading of the tie, part 4 is indeterminate and the claim would be partial (B5).
+    response: The notes give the margin at the third place. Outcome kept, marked as assumed, with the
+      strict reading recorded in the deviations.
+  - claim: fig5-band-power-differs-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: p = 1.3e-163 (LFB) and 7.1e-264 (HFB) with the band mean; the median variant agrees.
+    response: No change needed.
+  - claim: table1-subject-band-power-ci
+    agrees: true
+    outcome: partially_reproduced
+    reason: The best reading puts 23 of 24 values inside the paper's intervals; S06 HFB is 1.78 against
+      2.02 to 2.37, and the bootstrap interval here (1.64 to 1.92) does not overlap the paper's. Other
+      readings give 21, 21 and 20.
+    response: No change needed.
+  - claim: fig5-recording-day-effects
+    agrees: true
+    outcome: reproduced
+    reason: With the band mean, all 24 subject and band pairs agree with the paper; the median variant
+      gives 23, missing LFB S05.
+    response: No change needed.
+  - claim: extfig5-1-baseline-reduces-day-variability
+    agrees: true
+    outcome: reproduced
+    reason: The SD is lower with the baseline subtracted in 9/12 (LFB) and 12/12 (HFB) subjects, and for
+      92% and 90% of good electrodes; 11 day effects remain.
+    response: No change needed.
+  - claim: discussion-day-changes-small
+    agrees: true
+    outcome: reproduced
+    reason: The largest day change is 1.01 dB (limit 2.2); levels without baseline are 12.4 to 36.3 dB in
+      microvolts, inside 9 to 55.
+    response: No change needed.
+  - claim: fig6b-best-models-sensorimotor
+    agrees: false
+    outcome: blocked
+    reason: The notebook says "too large", but its own estimate is 3.1 h on one core and 0.8 h on 4
+      cores, about four times that with the variants, the same order as the 24 min ECoG step it ran. All
+      inputs are in the dataset and already computed in the notebook. None of the six regression claims
+      was tested (B1).
+    response: Ran the regressions. The Huber fits are solved many at once by a batched Newton method on
+      sklearn's objective (within 4.4e-05 of sklearn in withheld R2), and Delta R2 refits are run where
+      the full model's R2 exceeds 0.05; the main analysis and every variant take about 2 min. Outcome changed
+      from blocked to reproduced. Both readings hold in both bands.
+  - claim: fig6-r2-at-most-025
+    agrees: false
+    outcome: blocked
+    reason: Not run, for the same reason as fig6b-best-models-sensorimotor. The dataset's electrode
+      tables hold the paper's own R2 (max 0.149 LFB, 0.255 HFB), which fits the claim but is the paper's
+      output, not a reproduction.
+    response: Ran the regressions, with the per-electrode R2 table by subject and band. Outcome changed
+      from blocked to reproduced. The largest R2 is 0.189, with 0.192 (80/20) and 0.203 (band median) as
+      variants. The stored R2 are shown for reference only.
+  - claim: fig6c-angle-and-day-most-informative
+    agrees: false
+    outcome: blocked
+    reason: Not run, for the same reason as fig6b-best-models-sensorimotor.
+    response: Ran the regressions. Outcome changed from blocked to reproduced. Angle and day have the
+      two largest median Delta R2 in LFB, and in HFB, under every variant.
+  - claim: extfig6-2-angle-most-retained
+    agrees: false
+    outcome: blocked
+    reason: Not run, for the same reason as fig6b-best-models-sensorimotor.
+    response: Ran the regressions. Outcome changed from blocked to partially_reproduced. Angle is the
+      most retained feature in the three sensorimotor regions in both bands, but the order of the next
+      four does not hold under either reading.
+  - claim: fig6d-upward-reaches-enhance-pattern
+    agrees: false
+    outcome: blocked
+    reason: Not run, for the same reason as fig6b-best-models-sensorimotor.
+    response: Ran the regressions. Outcome changed from blocked to reproduced. The median angle
+      coefficient is -1.027 (LFB) and 0.535 (HFB), with the same signs in every variant.
+  - claim: fig6d-angle-and-day-largest-coefficients
+    agrees: false
+    outcome: blocked
+    reason: Not run, for the same reason as fig6b-best-models-sensorimotor.
+    response: Ran the regressions. Outcome changed from blocked to reproduced. Angle and the day SD are
+      the two largest under both readings in both bands and in every variant.
+- date: '2026-11-07'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with the conclusion cells,
+    the summary, the README and this record, the helper module and the claims file, with the paper and
+    the data descriptor. The verifier checked huber_fit, forward_select, day_balanced_splits and
+    electrode_model against sklearn's Huber objective and statsmodels' rank-based adjusted R2. It agreed
+    with all 25 outcomes and found every number in the conclusions matching the outputs.
+  results:
+  - claim: subject-days
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: roi-projection-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: cohort
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 7 lists the groups and cell 31 gives the descriptor's counts; the "five" fails
+      either way (B6 resolved). 8 male and 4 female are in the data descriptor, as stated.
+    response: No change needed.
+  - claim: fig2-event-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The claim is judged on reading a in full, and on reading b without its false-positive
+      step, which the files make impossible. This is a data limitation and is disclosed (B3 resolved as
+      far as the data allow).
+    response: No change needed.
+  - claim: fig2-features-differ-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: fig2-reach-shape
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. A boundary-reflected KDE puts the peaks within 15 degrees of +-90 in 6 of 12 subjects,
+      not more than half, so the partial outcome holds under either KDE. The bias remains in the criterion
+      and is reported there (B2 resolved as a sensitivity check).
+    response: No change needed.
+  - claim: fig2-bimanual-skew
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: extfig2-1c-contralateral-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: extfig2-2-feature-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: fig2-days-and-waking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: No change needed.
+  - claim: fig3-group-lfb-decrease-hfb-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assumed reading of the bad-segment rule is stated and reasonable, and cell 107
+      shows it changes no outcome. Every ECoG outcome includes the false-positive events the files do not
+      mark, which is stated under fig2-event-counts and fig6 but not under fig3 or fig5. Cell 59 says
+      middle frontal and supramarginal show the same pattern, but cell 57 also lists middle temporal
+      (-0.005 and +0.003 dB), and supramarginal's high-frequency value at the onset bin is 0.000, so the
+      pattern holds there only over 0 to 0.5 s.
+    response: Added a deviation that the events include the paper's false positives, which carries to
+      every ECoG claim that refers to this one, and said so in the summary and the README. Cell 59 and the
+      notes now name middle temporal and say that at the onset bin supramarginal's high-frequency value
+      and middle temporal's low-frequency value are 0.000.
+  - claim: fig3-sensorimotor-largest
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assumption is stated and reasonable.
+    response: No change needed.
+  - claim: fig3-lfb-more-widespread
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Under ten seeds the readings give 7 against 7 regions and 35.0 to 35.6 against 25.5
+      to 25.8 bins per frequency every time (B4 resolved).
+    response: No change needed.
+  - claim: fig4-precentral-subject-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the tie-break is stated with the strict reading (partial) recorded. Part 4 depends on
+      the tie-break, and this is disclosed (B5 resolved by disclosure).
+    response: No change needed.
+  - claim: fig5-band-power-differs-across-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The false-positive events are not stated under fig5 (see fig3-group).
+    response: The false-positive deviation of fig3-group-lfb-decrease-hfb-increase carries to this claim.
+  - claim: table1-subject-band-power-ci
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome.
+    response: As for fig5-band-power-differs-across-subjects.
+  - claim: fig5-recording-day-effects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: As for fig5-band-power-differs-across-subjects.
+  - claim: extfig5-1-baseline-reduces-day-variability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the assumption is stated and reasonable.
+    response: As for fig5-band-power-differs-across-subjects.
+  - claim: discussion-day-changes-small
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the microvolt unit is stated and reasonable.
+    response: As for fig5-band-power-differs-across-subjects.
+  - claim: fig6-r2-at-most-025
+    agrees: true
+    outcome: reproduced
+    reason: Largest R2 is 0.189, against a limit of 0.275. The batched Huber fit agrees with sklearn to
+      4.4e-05 in R2, and refits only where R2 > 0.05 are the only electrodes the criteria use (B1
+      resolved).
+    response: No change needed.
+  - claim: fig6b-best-models-sensorimotor
+    agrees: true
+    outcome: reproduced
+    reason: In LFB, 22 of 22 electrodes with R2 > 0.05 are in the five frontoparietal regions, in HFB 13 of
+      14; the projected top three are all frontoparietal. The attempt's R2 matches the stored R2 only
+      moderately (Spearman 0.718 LFB, 0.643 HFB), and the claim rests on small sets (22 LFB electrodes
+      from 4 subjects, 11 from S01; 14 HFB from 6 subjects). The notebook does not show how far these
+      sets overlap the paper's; the overlap with the stored R2 > 0.05 sets and the criteria applied to
+      electrodes selected by the stored R2 would settle it. The outcome stands on present evidence.
+    response: Added both outputs. The sets overlap in 18 electrodes in LFB (22 here, 23 stored) and 12 in
+      HFB (14 here, 22 stored); the stored sets come from 5 and 8 subjects. Selected by the stored R2, 22
+      of 23 LFB and 18 of 22 HFB electrodes are frontoparietal. Outcome kept.
+  - claim: fig6c-angle-and-day-most-informative
+    agrees: true
+    outcome: reproduced
+    reason: Angle and day have the two largest median Delta R2 in LFB under every variant. Rests on the
+      same small sets as fig6b-best-models-sensorimotor, whose overlap with the paper's is not shown.
+    response: Added the stored-R2 selection, with Delta R2 refits for the 12 stored-selected electrodes
+      that lacked them. Angle and day are the two largest in both bands, with both Delta R2 versions.
+      Outcome kept.
+  - claim: extfig6-2-angle-most-retained
+    agrees: true
+    outcome: partially_reproduced
+    reason: The angle part holds; the order of the next four fails under both readings.
+    response: No change needed.
+  - claim: fig6d-upward-reaches-enhance-pattern
+    agrees: true
+    outcome: reproduced
+    reason: Median angle coefficient is -1.027 in LFB and +0.535 in HFB. Rests on the same small sets as
+      fig6b-best-models-sensorimotor, whose overlap with the paper's is not shown.
+    response: Added the stored-R2 selection; the median is -1.026 in LFB and 0.498 in HFB. Outcome kept.
+  - claim: fig6d-angle-and-day-largest-coefficients
+    agrees: true
+    outcome: reproduced
+    reason: Angle and the day SD are the two largest under both readings in both bands. The day coefficient
+      is taken as the mean over splits of the per-split SD, not the SD of the split-averaged coefficients,
+      and the record does not state this. It can only raise the day value a little, and the margins are
+      large (day 0.660 against the next feature at 0.188 in LFB).
+    response: Added a deviation stating the definition and an output with the other one. The SD of the
+      split-averaged coefficients gives 0.658 against 0.660 in LFB and 0.729 against 0.733 in HFB, and
+      angle and day stay the two largest, also with the stored-R2 selection. Outcome kept.

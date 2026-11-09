@@ -1,0 +1,8 @@
+There was one question, and I changed the claims file to answer it.
+
+**fig2-wall-responsive-counts (responsiveness test).** The BH-FDR test is now the main reading and the uncorrected test is the variant, shown.
+- **Why:** The Methods set only a threshold for this test, "( p < 0.05)", and never say it is uncorrected. The next sentence writes "p < 0.05, corrected for multiple comparisons using the Benjamini-Hochberg false discovery rate method", so the paper uses "p < 0.05" for adjusted values too. That leaves the correction open, not in conflict with the code. `Fig2DEF_Pop_Heatmap_Hist_Pie.m` is the script that makes the Figure 2D-F counts, and it applies BH-FDR across the nine distances. Protocol step 2 says the code settles what the Methods leave open, so the earlier check that called this a disagreement had it wrong.
+- **What changed:** the opening comment, and the criteria of figs2-tungsten-responsiveness, fig2-wall-responsive-counts, fig2-distance-tuned-counts and telc-unit-yield. The claims that classify "as in the opening comment" follow automatically. These are fig2f-tuning-categories, figs4l-temporal-windows-map, and the decoding, Figure S4 and Figure S5 claims.
+- **Not changed:** the expected values, which are the paper's. I didn't use the question's counts from the deposit or its per-unit labels as evidence, since those come from the data.
+
+The question has `answered: 2026-11-03` set. `tools/claims_check.py` reports 41 claims, 41 quotes and 0 problems. The `checks` entry from 2026-10-21 still records the old decision (uncorrected as main reading); I left the history as it was. Nothing is committed or pushed.
