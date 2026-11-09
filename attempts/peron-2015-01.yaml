@@ -1,0 +1,380 @@
+schema_version: 3
+id: peron-2015-01
+datasets:
+  - archive: crcns
+    id: ssc-1
+    version: unversioned
+    doi: 10.6080/K0TB14TN
+    relation: primary
+paper: doi:10.1016/j.neuron.2015.03.027
+date: '2026-11-09'
+entry: peron-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42695953465
+outcomes:
+  - claim: table-s1-roi-counts
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds 3 of the 8 mice (an197522, an229717, an229719), with one or two sessions
+      each where the paper imaged about four sessions per subvolume. Distinct ROIs per mouse are 11,649,
+      3,771 and 11,341 against 16,200, 19,012 and 18,125 in Table S1 (72%, 20%, 63%), 26,761 in all against
+      108,374. The spared whiskers named in the files (D2, D3, D2) match Table S1. The count the claim
+      tests rests on sessions that are not deposited, so it cannot be compared.
+  - claim: fig2-core-counts
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The criterion uses the class
+      labels the data set carries. The Gad2 mouse an194181 and four other mice are also absent; 26,761
+      ROIs of 3 mice are in the data set.
+  - claim: results-gaba-fraction
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The only mouse with labelled GABAergic neurons, an194181 (Gad2-T2A-NLS-mCherry), is not in
+      the data set, and no ROI carries a cell-class label.
+  - claim: fig2e-fraction-imaged
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The high-resolution reference stacks and the nucleus counts from them are not in the data set.
+      Its imaging archives hold registered trial TIFFs per plane; one archive listed in full held 45 TIFFs
+      and nothing else. The criterion uses nuclei counts the data set carries and blocks the claim otherwise.
+  - claim: fig1e-days-to-criterion
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no training sessions, only five imaging sessions of trained mice.
+  - claim: results-trials-per-session
+    outcome: reproduced
+    notebook: reproduce_peron_2015.ipynb
+    output: claim:results-trials-per-session
+    measured: 290.2
+    notes: The five sessions hold 398, 370, 184, 231 and 268 behavioural trials. Pooled over sessions
+      the mean is 290.2 (SD 91.2), and the mean of the three per-mouse means (384.0, 184.0, 249.5) is
+      272.5; both are within 245 +/- 71. Counting only trials with imaging gives 238.6 pooled and 225.2
+      over mice.
+    deviations:
+      - Five sessions of 3 of the paper's 8 mice; the paper's number covers every imaging session of 8
+        mice.
+  - claim: results-whisking-amplitude
+    outcome: not_reproduced
+    notebook: reproduce_peron_2015.ipynb
+    output: claim:results-whisking-amplitude
+    measured: 74.7
+    notes: Means over the three mice (per mouse 70.6, 99.2, 54.2 for a) are (a) 74.7 degrees for the per-trial
+      angle range over the trial, (b) 29.0 over the sample epoch and (c) 26.9 for the peak Hilbert amplitude
+      (6 to 30 Hz; 22.2 to 30.4 with the other bands shown); none is within 55.5 +/- 13.3 (42.2 to 68.8).
+      Two measures the criterion does not list fall inside it, the 1st to 99th percentile range of angle
+      per trial (49.2) and twice the peak Hilbert amplitude, a peak-to-peak measure (53.7 +/- 15.7). The
+      paper does not define the measure; the question is recorded as a finding for its authors. 1,443
+      trials (764, 183, 496 per mouse).
+    deviations:
+      - Three of the paper's eight mice, five sessions.
+      - The sample epoch is the pole-in-reach interval of the data set's poleInReach series (the paper's
+        "1 s sample epoch (pole in reach)", Results, Imaging Large Neuronal Populations, paragraph 1).
+      - The band used to isolate whisking before the Hilbert transform (reading c) is not given in the
+        paper or in the Supplemental Experimental Procedures, which cite Huber et al. (2012); 6 to 30
+        Hz is used, with 4 to 30 and 8 to 25 Hz shown. Every band gives the same outcome, so the outcome
+        does not rest on it.
+      - Only trials the data set lists as valid whisker trials are used; rare angle samples at +/-90 degrees
+        (at most 0.06% of samples), which look like tracking errors, are kept, as the criterion's maximum
+        minus minimum includes them; the 1st to 99th percentile range is shown as a variant.
+  - claim: fig1g-early-stereotypy
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no training videography or training sessions.
+  - claim: supp-trim-all-chance
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no sessions after trimming all whiskers.
+  - claim: figs4-dendrite-soma
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The simultaneous L5A soma and deep L3 dendrite imaging (42 pairs, 3 mice, planes about 240
+      um apart) is not in the data set; its subvolumes have planes 15 um apart, and one is a single plane
+      at 29 Hz with no description.
+  - claim: fig3a-active-fraction
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig3b-task-related
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig4d-sample-epoch-principal
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig4d-gaba-reward-cue
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The Gad2 mouse an194181 is not in the data set and no ROI is labelled GABAergic; the claim
+      also depends on fig4d-sample-epoch-principal, blocked for lack of column labels.
+  - claim: fig3c-discriminative
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5). Neuropil ROIs are not in the data set either.
+  - claim: fig3d-principal-touch-whisking-equal
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig3d-surround-whisking-dominates
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig3d-population-encoding
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5). Neuropil ROIs are not in the data set either.
+  - claim: discussion-principal-exclusive-classes
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. Depends on fig3d-principal-touch-whisking-equal,
+      blocked for the same reason.
+  - claim: fig6b-touch-fraction-stable
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig6b-whisking-fraction-early
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig6c-no-trimming-expansion
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig6d-neurometric-flat
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig6d-psychometric-improves
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig6efg-rfit-vectors-stabilize
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig6h-days-different
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig7-touch-declines-surround
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig3d-touch-uniform-l5-gaba
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5). The Gad2 mouse is not in the data set either.
+  - claim: fig7-whisking-uniform
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: fig7ab-salt-and-pepper
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: 'The data set''s ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file''s shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper''s task-related, discrimination and encoding-model criteria
+      use (M1, M3 to M5). The 3D positions the pairwise distances need are not given either: ROI masks
+      give positions within a plane, with no plane depth or offset between subvolumes.'
+  - claim: fig4-neuropil-sample-principal
+    outcome: blocked
+    blocked_by: data_missing
+    notes: No neuropil ROIs or neuropil traces are in the data set; the session files hold dF/F of somatic
+      ROIs only. Column labels are also absent.
+  - claim: figs5-l4-neuropil-correlation
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The L4 axon imaging of the Scnn1a-Tg3-Cre mice (an224823, an227254, an238004) and the neuropil
+      ROIs are not in the data set.
+  - claim: fig8b-direction-tuned
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: figs7-direction-stable
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The data set holds no imaging during learning. Its five sessions are from 2013-03-08 and 2013-03-10
+      (an197522), 2013-12-01 (an229717) and 2013-12-02 and 2013-12-05 (an229719), each imaging 4 to 10
+      subvolumes of 15 um plane spacing, not one subvolume of 120 um spacing tracked from the start of
+      training; there are no training-day sessions and no mouse an194181, an194672 or an198503.
+  - claim: fig8de-direction-topography
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The row axis and the principal
+      column centre the criterion needs are not in the data set.
+  - claim: results-di-magnitude-similar
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. Depends on fig8de-direction-topography,
+      blocked for the same reason.
+  - claim: fig8e-l4-neuropil-direction-map
+    outcome: blocked
+    blocked_by: data_missing
+    notes: Neither L4 axon nor neuropil ROIs are in the data set; it also depends on fig8de-direction-topography.
+  - claim: fig8h-passive-active-overlap
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The anesthetized passive-deflection imaging of mice an257218, an257219 and an257221 is not
+      in the data set, which holds only three behaving volume-imaging mice (bucket listing, data check).
+  - claim: fig8i-no-anesthetized-topography
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The anesthetized passive-deflection imaging of mice an257218, an257219 and an257221 is not
+      in the data set, which holds only three behaving volume-imaging mice (bucket listing, data check).
+  - claim: fig8jk-neuropil-anesthetized
+    outcome: blocked
+    blocked_by: data_missing
+    notes: The anesthetized passive-deflection imaging of mice an257218, an257219 and an257221 is not
+      in the data set, which holds only three behaving volume-imaging mice (bucket listing, data check).
+  - claim: figs3d-neuropil-correction
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. Raw ROI and neuropil fluorescence
+      are not in the session files either; they could only be re-extracted from the registered TIFFs (about
+      146 GB of archives for five sessions), which would also need the paper's neuropil masks, not deposited.
+  - claim: discussion-correlation-more-touch
+    outcome: blocked
+    blocked_by: metadata_insufficient
+    notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
+      position relative to one another (data check). The claims file's shared method M6 says the claims
+      that need these labels are blocked when the data set carries none. The data set also holds no calcium
+      events (only dF/F), which the paper's task-related, discrimination and encoding-model criteria use
+      (M1, M3 to M5).
+  - claim: methods-event-detection
+    outcome: blocked
+    blocked_by: methods_underspecified
+    notes: The claim is data elsewhere. The paper cites the simultaneous imaging and cell-attached data
+      of Chen et al. (2013b) without an identifier; CRCNS cai-1 holds such data (folders named GCaMP6f_11cells_Chen2013
+      and others). The test cannot be repeated as described. The paper does not say how the recordings
+      were degraded to this study's dwell time and frame rate, nor the Savitzky-Golay window of the noise
+      estimate, nor the window within which a detected event matches an action potential, nor which 7
+      neurons were used. Each of these sets the detection rate at a given false-positive rate, and no
+      choice has a basis in the paper, so no reading was run.
+findings:
+  - kind: data_missing
+    statement: The data set holds 5 imaging sessions from 3 of the paper's 8 volume-imaging mice (an197522,
+      an229717, an229719), with 20% to 72% of their Table S1 ROIs (26,761 of 108,374 for all eight mice).
+      The other five mice, including the Gad2 mouse with labelled GABAergic neurons, the imaging during
+      learning, the L4 axon mice, the anesthetized mice, the L5 soma and dendrite pairs, the training
+      sessions and the high-resolution reference stacks are not in it, although the paper says the data
+      set includes the imaging data of Table S1.
+  - kind: metadata_error
+    statement: The data description lists raw fluorescence and algorithmically extracted calcium events
+      for each ROI, and files named vol_xxx holding multi-session data. The session files hold only dF/F
+      (dffTSA) and whisker variables as time series, and no vol_xxx file exists; the imaging archives
+      hold registered TIFFs.
+  - kind: metadata_insufficient
+    statement: No ROI carries a layer (L1, L2/3, L5 apical dendrite), cell-class or barrel-column label,
+      and no imaging plane carries a depth or position relative to the others. The description says laminar
+      boundaries were drawn in the reference stack, but neither the boundaries nor the stack are deposited,
+      so the paper's comparisons between layers, classes and principal and surround columns cannot be
+      made from the data set.
+  - kind: metadata_error
+    statement: One subvolume (an197522, 2013-03-08, dffTSA 10, raw folder fov_04001, 202 ROIs) is a single
+      plane imaged at 29 Hz, not three planes at 7 Hz as the description says of every subvolume; and
+      many 7 Hz subvolumes have ROIs on only one or two of their three planes. Neither is described.
+  - kind: metadata_error
+    statement: The event series structure is named eventSeriesArrayHash in the files, not eventSeriesHash
+      as described; the file an229717_2013_12_01/an229717_2013_12_01_sesssion.mat has a misspelt name;
+      the description's citation of the paper is a placeholder ("Article title. Journal Name xxx").
+  - kind: other
+    statement: In an197522 on 2013-03-10 the dF/F response to the first touch is not larger with the true
+      touch times than with the times shifted by 3 s (3 of 9 subvolumes; median 0.0009 against 0.0083
+      dF/F), so that session's imaging could not be shown to share the trial clock. In the other four
+      sessions the true alignment gives the largest response in 21 of 25 subvolumes.
+  - kind: methods_unavailable
+    statement: Question for the paper's authors. How was the whisker movement amplitude of 55.5 +/- 13.3
+      degrees (Results, paragraph 2) measured? On the three mice in the data set the per-trial angle range
+      is 74.7 degrees, its range over the sample epoch 29.0, and the peak Hilbert amplitude 26.9 (6 to
+      30 Hz band, also not given), while twice the peak Hilbert amplitude is 53.7. Which measure, epoch
+      and band were used?
+  - kind: methods_unavailable
+    statement: Question for the paper's authors. For the event detector's validation (54% of single action
+      potentials at 0.01 Hz false positives, n = 7), which recordings of Chen et al. (2013) were used,
+      how were they degraded to this study's dwell time and frame rate, and what were the Savitzky-Golay
+      window and the matching window?
