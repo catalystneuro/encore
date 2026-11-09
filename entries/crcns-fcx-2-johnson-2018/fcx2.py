@@ -21,7 +21,9 @@ the paper's Materials and methods; M1 to M10 are the shared method details of th
   resting on the data: the 900 and 1150 ms delay trials part where it puts the first event that
   depends on the delay, in all three segments, and not where the code's windows put it
   (sanity_subject). ERPs, power, PLV and both PSI measures are also computed in the code's
-  windows (`WIN_ALT`), as a variant; PAC is computed in the main windows only.
+  windows (`WIN_ALT`), as a variant; PAC is computed in the main windows only. The table's
+  windows start 0 to 0.65 s after a segment's first sample, inside the low filters' edge
+  transient; `edge_check` measures this for power by joining the three segments of a trial.
 - Filter bank (M2): the 24 band edges of power_compute.m (`BANDS`), the last band dropped for the
   512 Hz subjects s8 and s9 (code). Two-pass FIR filters designed as FieldTrip's default for
   `bpfilttype = 'fir'` (fir1 with a Hamming window, order 3 * fix(fs / low edge), capped at a
@@ -49,9 +51,10 @@ the paper's Materials and methods; M1 to M10 are the shared method details of th
   PAC paragraph 2).
 - Theta spectra for PSI (M5): the code (psi_compute.m) runs FieldTrip mtmfft with a Hanning
   taper over the whole 900 ms window, zero padded to 4 s, at 3 to 7 Hz; FieldTrip ignores
-  `t_ftimwin` for mtmfft. The Methods describe sliding 3-cycle windows, which cannot be placed
-  inside a 900 ms segment at 3 Hz (a 1 s window), so the code's single window is the main
-  reading and sliding windows that run into the zero padding are a variant (`theta_fourier`).
+  `t_ftimwin` for mtmfft. The Methods describe sliding 3-cycle windows (M5 of the claims file),
+  which cannot be placed inside a 900 ms segment at 3 Hz (a 1 s window); they are the reading
+  the claims are judged on, run into the zero padding, and the code's single window is a
+  variant (`theta_fourier`).
 - PSI (Nolte et al. 2008, ref. 30 of the paper): coherency from the cross-spectrum averaged over
   trials (and windows), PSI = Im(sum_f conj(C_f) C_(f+1)), positive when the first signal leads.
   Null: the frequencies of the second signal shuffled, 1000 times; z = (PSI - mean) / SD
@@ -699,6 +702,102 @@ def lowpass_erp(x, fs, sel, hi=30.0, chunk=8):
     return out
 
 
+def continuous_trials(sub, correct):
+    """The pre, encmain and proc segments of each correct trial joined into one trace by their
+    sampleinfo (their overlapping samples are equal, sanity_subject). Returns the traces
+    (trials, ch, L) in float32, zero after a trial's last sample, the per-trial offsets of the
+    three segments from the start of pre, and the number of samples inside a trace that no
+    segment covers."""
+    segs = [sub["seg"][k] for k in ("pre", "encmain", "proc")]
+    si = [s["sampleinfo"][correct, 0].astype(np.int64) for s in segs]
+    offs = [s - si[0] for s in si]
+    L = max(int((o + s["x"].shape[-1]).max()) for o, s in zip(offs, segs))
+    xs = [s["x"][correct] for s in segs]
+    n, nch = xs[0].shape[:2]
+    out = np.zeros((n, nch, L), np.float32)
+    filled = np.zeros((n, L), bool)
+    for i in range(n):
+        for o, x in zip(offs, xs):
+            out[i, :, o[i]:o[i] + x.shape[-1]] = x[i]
+            filled[i, o[i]:o[i] + x.shape[-1]] = True
+    last = np.array([np.where(f)[0].max() for f in filled])
+    gaps = int(sum((~filled[i, :last[i] + 1]).sum() for i in range(n)))
+    return out, offs, gaps
+
+
+def power_at(x, fs, bands, idxs, chunk=6):
+    """Hilbert power of x (trials, ch, T) in each band at per-trial samples: each of `idxs` is
+    (trials, k). Returns a list of float32 (trials, ch, nband, k)."""
+    pad = Padder(x.shape[-1], fs)
+    n, nch = x.shape[:2]
+    gains = [bandpass_gain(lo, hi, fs, pad.nfft, pad.npad) for lo, hi in bands]
+    outs = [np.empty((n, nch, len(bands), ix.shape[1]), np.float32) for ix in idxs]
+    tr = np.arange(n)[:, None]
+    for c0 in range(0, nch, chunk):
+        X = pad.fft(x[:, c0:c0 + chunk].astype(np.float64))
+        for k, g in enumerate(gains):
+            y = pad.back(X * g, analytic=True)
+            for ix, out in zip(idxs, outs):
+                out[:, c0:c0 + chunk, k, :] = (np.abs(y[tr, :, ix]) ** 2).transpose(0, 2, 1)
+    return outs
+
+
+EDGE_BANDS = np.arange(0, 9)       # 1-3 ... 9-14 Hz: the theta, alpha and peak-search bands
+
+
+def edge_check(sub, correct, bmean, bsd, keep):
+    """Filter edge effects of the trial table's windows, which start 0.65 s (baseline), 0 s
+    (encoding) and 0.3 s (postcue) after the first sample of their segment.
+
+    - Encoding and postcue: power at the same samples filtered from their own segment (as in
+      the main analysis) and from the joined trace, which has 1.8 s (encoding) and about 2.3 s
+      (postcue) of data before them. The baseline z of the joined trace's power (main baseline
+      mean and SD) is the edge-reduced variant of power-theta-sustained and theta-peak-bands.
+    - Baseline: no data precede it, so its edge effect is measured where it can be, at an
+      interior window of the same length 1.0 s into encmain: power from the joined trace against
+      power from a 4.5 s cut of it that starts as far before the window as pre starts before the
+      baseline.
+    """
+    fs = sub["seg"]["encmain"]["fs"]
+    bands = BANDS[EDGE_BANDS]
+    tr, offs, gaps = continuous_trials(sub, correct)
+    n = tr.shape[0]
+    _, esel = segment(sub, "enc")
+    _, psel = segment(sub, "post")
+    _, bsel = segment(sub, "base")
+    ref0 = offs[1] + int(round(1.0 * fs))
+    idx = {"enc": offs[1][:, None] + esel[None], "post": offs[2][:, None] + psel[None],
+           "ref": ref0[:, None] + np.arange(len(bsel))[None]}
+    p_tr = dict(zip(idx, power_at(tr, fs, bands, list(idx.values()))))
+    Tpre = sub["seg"]["pre"]["x"].shape[-1]
+    start = ref0 - bsel[0]
+    cut = np.stack([tr[i, :, start[i]:start[i] + Tpre] for i in range(n)])
+    p_cut = power_at(cut, fs, bands, [np.tile(bsel, (n, 1))])[0]
+    del tr, cut
+    p_seg = {"enc": _filter_chunks(sub["seg"]["encmain"]["x"][correct], fs, esel, bands, "power"),
+             "post": _filter_chunks(sub["seg"]["proc"]["x"][correct], fs, psel, bands, "power")}
+    out = {"gaps": gaps, "bands": bands}
+    # trial-mean power, segment (or cut) over joined trace, per electrode and band
+    pb_cut, pb_ref = p_cut.mean(axis=(0, 3)), p_tr["ref"].mean(axis=(0, 3))
+    out["base_ratio"] = pb_cut / pb_ref                                         # (ch, band)
+    out["base_sd_ratio"] = p_cut.mean(axis=3).std(axis=0) / p_tr["ref"].mean(axis=3).std(axis=0)
+    nb = int(round(0.25 * fs))
+    for w in ("enc", "post"):
+        a, b = p_seg[w].mean(axis=0), p_tr[w].mean(axis=0)                     # (ch, band, T)
+        T = a.shape[-1]
+        out[f"{w}_ratio_bins"] = np.stack([a[..., i:i + nb].mean(-1) / b[..., i:i + nb].mean(-1)
+                                           for i in range(0, T - nb // 2, nb)], axis=-1)
+    zc = {}
+    for w in ("enc", "post"):
+        z = (p_tr[w] - bmean[None, :, :len(bands), None]) / bsd[None, :, :len(bands), None]
+        if w == "enc":
+            pk = z.mean(axis=(0, 3))[keep][:, PEAK_BANDS].mean(axis=0)
+            out["peak_curve_all"], out["peak_band_all"] = pk, int(PEAK_BANDS[np.argmax(pk)])
+        zc[w] = resample_20hz(z, fs).astype(np.float32).mean(axis=0)
+    out["power_z_mean"] = zc
+    return out
+
+
 def segment(sub, name, win=WIN):
     segname, t0, t1 = win[name]
     d = sub["seg"][segname]
@@ -808,6 +907,7 @@ def _make_units(regions, hemis, labels, keep, pairs, cs, keep_th, cs_shuf, keep_
             u[f"z_{w}_{mode}"] = float(d["z"][u["ph"], u["amp"], :].mean())
             u[f"raw_{w}_{mode}"] = float(d["raw"][u["ph"], u["amp"], :].mean())
         u["zf_post_mtmfft"] = cs[("post", "mtmfft")]["z"][u["ph"], u["amp"], :16].copy()
+        u["zf_post_sliding"] = cs[("post", "sliding")]["z"][u["ph"], u["amp"], :16].copy()
         for mode, zsh in cs_shuf.items():
             u[f"z_post_{mode}_shuf"] = float(zsh[u["ph"], u["amp"], :].mean())
         for w, (th, the) in list(keep_th.items()) + extra:
@@ -896,6 +996,8 @@ def analyse_subject(sub, chans, nperm_cluster=1000, pac=True, pac_readings=("a",
         del z
         p_d -= bmean_d[None, :, :, None]
         p_d /= bsd_d[None, :, :, None]
+        if name == "enc":
+            res["enc_time_mean_z_alt"] = p_d.mean(axis=(0, 3))
         zs_d[name] = resample_20hz(p_d, fs).astype(np.float32)
         del p_d
     res["power_z_mean"] = {k: v.mean(axis=0) for k, v in zs.items()}  # (ch, band, t20)
@@ -918,6 +1020,10 @@ def analyse_subject(sub, chans, nperm_cluster=1000, pac=True, pac_readings=("a",
     pk = res["enc_time_mean_z"][keep][:, PEAK_BANDS].mean(axis=0)
     res["peak_curve_all"] = pk
     res["peak_band_all"] = int(PEAK_BANDS[np.argmax(pk)])
+    pk = res["enc_time_mean_z_alt"][~res["excluded_alt"]][:, PEAK_BANDS].mean(axis=0)
+    res["peak_band_all_alt"] = int(PEAK_BANDS[np.argmax(pk)])
+    res["edge"] = edge_check(sub, correct, bmean, bsd, keep)
+    res["timing"]["edge"] = time.time() - T0
 
     # ---- phase measures on ERP-subtracted delay data (subtracterp.m, ncond = 1), in the main
     # windows (with the main exclusions) and in the code's windows (with that placement's own)

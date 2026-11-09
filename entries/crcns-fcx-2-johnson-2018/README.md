@@ -28,7 +28,12 @@ reasoning and the differences from the paper's method.
 The analysis windows are placed by the trial table and the descriptor, 1.5 s earlier on the
 derived time axes than the paper's deposited code places them: the trials with the two delay
 lengths part where the table puts the delay-dependent events, and not where the code does. The
-code's windows are run as a variant. The phase-directing units that the equal-strength and PAC
+code's windows are run as a variant. If the deposited scripts produced the paper's figures, the
+paper's numbers come from the code's windows, so the main reading tests the claims against the
+events the Methods describe and does not recompute the paper's numbers. The table's windows start
+close to a segment's first sample; joining the three segments of each trial shows that this leaves
+baseline power unchanged and lowers theta power only in the first 250 ms of encoding, without
+changing an outcome. The phase-directing units that the equal-strength and PAC
 claims rest on cannot be selected: the PSI of the paper's Methods selects at most 3 per system, and
 the deposited code's own form of PSI selects as many units with trials shuffled as on the real
 data. The behaviour claim is reproduced with condition as one numeric term, as the amended claims

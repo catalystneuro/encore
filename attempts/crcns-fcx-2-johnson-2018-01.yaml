@@ -135,7 +135,12 @@ outcomes:
     ms delay trials part where the table puts the first delay-dependent event in each segment (proc
     ERPs from -0.25 to 0.75 s, p down to 0.005 against 200 permutations, around the response screen
     at -0.3 s) and not where the code's windows put it (proc 1.0 to 2.0 s, p 0.29 to 0.94). The
-    code's windows are run as a variant for ERPs, power, PLV and both PSI measures.
+    code's windows are run as a variant for ERPs, power, PLV and both PSI measures. If the deposited
+    scripts produced the paper's figures, the paper's numbers come from the code's windows, so the
+    main reading tests the claims against the events the Methods describe and does not recompute
+    the paper's numbers. The table's windows start 0 (encoding), 0.3 (postcue) and 0.65 s
+    (baseline) after a segment's first sample; joining each trial's segments shows this leaves
+    baseline power unchanged and lowers theta power only in the first 250 ms of encoding.
   - >-
     The baseline subtracted is the mean over trials of each trial's baseline mean, as erp_compute.m
     does (lines 84 to 88, nanmean(pretrial.trial)); the claims file's "subtracting the temporal mean
@@ -154,7 +159,13 @@ outcomes:
     and 8 of 102 OFC meet the rule. MTL alpha is below -1.96 over half the time points in 0 of 10
     subjects (2 of 36 electrodes). In the code's windows the counts are 0, 0 and 0 subjects (1, 1
     and 11 electrodes) and 0 of 10 for alpha. All 254 electrodes have some z above 1.96 above 16 Hz
-    (239 in the code's windows; reported, not judged).
+    (239 in the code's windows; reported, not judged). Edge effects of the trial table's windows,
+    measured by joining the three segments of each trial into one trace: baseline power is
+    unchanged (0.999 to 1.000 of the joined trace's at an interior window cut as pre is cut, 1.5 to
+    14 Hz), encoding power is lower in its first 250 ms only (median ratio 0.73 at 1.5-4 Hz, 0.79
+    to 0.87 at 2-5 to 5-8 Hz) and postcue power by at most 1.1%. With encoding and postcue power
+    from the joined trace, theta is sustained in 1 of 10, 0 of 9 and 0 of 9 subjects (3, 5 and 8
+    electrodes) and MTL alpha in 0 of 10, the same outcome.
   deviations:
   - *timeaxis
 - claim: power-condition-exclusions
@@ -202,8 +213,9 @@ outcomes:
     table's windows. Neither part holds in either network: precue mean z is 0.25 (MTL-PFC) and 0.01
     (MTL-OFC), with 45 against 55 and 82 against 87 pairs below -1.96 and above 1.96, and postcue does
     not exceed precue (MTL-PFC raw p = 0.27; MTL-OFC raw PSI falls, p < 0.0001). Other readings. The
-    code's single window gives part (2) for MTL-PFC on raw PSI only (p = 0.014) with MTL-OFC raw PSI
-    falling (p = 0.001), which the criterion calls partial. In the code's windows sliding windows
+    code's single window is a variant the criterion does not judge, as M5 fixes sliding windows; it
+    gives part (2) for MTL-PFC on raw PSI only (p = 0.014) with MTL-OFC raw PSI falling (p =
+    0.001). In the code's windows sliding windows
     give part (1) in both networks and part (2) for MTL-OFC on raw PSI only (p = 0.027), also
     partial, and the single window gives part (2) in neither. The code's own form of PSI gives both
     parts in both networks in the code's windows and part (1) and part (2) in one network each in
@@ -211,7 +223,11 @@ outcomes:
     data, so it is not used. The sliding-window z is also too wide (SD 2.3 with trials shuffled),
     which bears on part (1) only; the single window is near nominal (SD 0.92, 2.2% above 1.96). The
     outcome rests on the window placement: in the code's windows the claims file's sliding reading
-    would be partial. The pair counts are 170 and 289 (expected 172 and 303).
+    would be partial. The placement follows the events as the data place them (delay-jitter test),
+    but if the deposited scripts produced the paper's figures, the paper's PSI comes from the
+    code's windows, so the table's placement tests the claim against the events the Methods
+    describe and does not recompute what the paper did. The pair counts are 170 and 289 (expected
+    172 and 303).
   deviations:
   - >-
     The sliding 3-cycle windows of M5 cannot be placed inside a 900 ms segment at 3 Hz (a 1 s
@@ -285,10 +301,17 @@ outcomes:
   output: claim:crossspectral-equal-strength
   notes: >-
     The claim is about the phase-directing pairs, and none can be selected with a defensible basis.
-    The Methods' PSI selects 0 MTL to PFC and 1 PFC to MTL pair (sliding windows) or none (single
-    window), too few for the model (also too few units under the claim's own rule). The code's
-    form selects 57% of pairs with trials shuffled, against the 2.5% its z > 1.96 threshold implies,
-    so by the protocol's rule on chance levels its procedure is not the paper's stated one. On the
+    The Methods' PSI, the claim's own selection rule, selects 0 MTL to PFC and 1 PFC to MTL pair
+    (sliding windows) or none (single window), too few for the model, and 0% to 1% of units per
+    system against the paper's 31% to 49%, so the paper's selection was not made by the procedure
+    the Methods state as run here. The code's form selects 57% of pairs with trials shuffled,
+    against the 2.5% its z > 1.96 threshold implies, so by the protocol's rule on chance levels its
+    procedure is not the paper's stated one either. The label methods_underspecified is kept for
+    this reason: which procedure selected the paper's units is not fixed by the paper or its code.
+    On the 5 MTL-OFC pairs the Methods' PSI selects with sliding windows (3 MTL to OFC, 2 OFC to
+    MTL, in s9 and s10; not judged) there is no frequency (p = 0.36), frequency x direction (p =
+    0.44) or direction effect (Welch t test on pair means, p = 0.995); MTL-PFC has 1 pair and no
+    model. On the
     code's selection (not judged; 105 MTL to PFC and 76 PFC to MTL, 189 MTL to OFC and 170 OFC to
     MTL pairs) frequency x direction is significant in both networks (p = 2e-05 and 0.00019),
     frequency in MTL-OFC (p = 2e-09) and direction in both (p = 0.020 and 0.0057). Which form of PSI
@@ -311,8 +334,10 @@ outcomes:
     (partial needs 7). For reading (b) the Methods' single-window PSI selects no electrodes, its
     sliding-window PSI selects electrodes in 3 subjects (overlap 0 of 10), and the code's form gives
     an overlap of 4 of 10. The curves are flat in most subjects (trial-, time- and electrode-averaged
-    z mostly within -0.9 to 2.2; s9 up to 5.5). The measured values are the counts at 2-5, 3-6, 4-7
-    and 5-8 Hz under reading (a).
+    z mostly within -0.9 to 2.2; s9 up to 5.5). With encoding power from the joined trace, which
+    removes the filters' edge effect at the start of the encoding window, the overlap is 3 of 10
+    (1.5-4 Hz in 5 subjects); in the code's windows it is 4 of 10. The measured values are the
+    counts at 2-5, 3-6, 4-7 and 5-8 Hz under reading (a).
   deviations:
   - The paper's visual confirmation of the peaks is not reproducible and is left out.
   - *timeaxis
@@ -415,7 +440,10 @@ outcomes:
   notes: >-
     Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 189 MTL
     to OFC and 170 OFC to MTL pairs) the spatial condition x direction effect is p = 0.00018
-    (surrogate a), and both models have effects below 0.05/15.
+    (surrogate a), below 0.05/15, with the spatial minus identity difference larger for MTL to OFC
+    (0.0064 against -0.0192), which is one part of the criterion's condition (1) and so its
+    partial case; the direction effect is p = 0.29 (MTL to OFC higher), and both models have
+    effects below 0.05/15. Under surrogate (b) the condition x direction effect is p = 0.056.
   deviations:
   - *pacmodel
   - *timeaxis
@@ -627,6 +655,185 @@ verifications:
       Spatial model, direction p 0.13, condition x direction p 0.17. The temporal model has effects
       below 0.05/15.
     response: *pacresp
+- date: 2026-11-09
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the run after author-revise-1, with the conclusions and
+    summary, the helper module, the attempt record, the README and the claims file; the verifier
+    also read the paper under paper/.
+  results:
+  - claim: behavior-proficient
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18.
+    response: No change.
+  - claim: behavior-no-difficulty-difference
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Agrees with a reservation. This criterion has no partial outcome. On reading (c) the
+      summary_file.csv response times give F 2.41, p 0.13; the trial tables give F 12.33, p 0.0015.
+      The assumption is stated and can be defended, since that file's condition means and SDs are
+      the paper's. It is weak, though: 21 of the 30 file values cannot be derived from the trial
+      data. With the trial tables the result would be not reproduced.
+    response: >-
+      No change of outcome. The dependence on the response-time source is stated in the notes, the
+      deviations, the README and the summary, and the question to the authors under findings asks
+      how those response times were computed; no further source of the file's values was found.
+  - claim: electrode-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: correct-trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: erp-no-condition-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      One electrode with the subject-wide null; 0 with a per-trial baseline. The assumption is
+      stated and follows erp_compute.m lines 84 to 88. Under the per-electrode null the result is
+      not reproduced whatever the baseline (27 or 22 electrodes), so the outcome depends on the
+      baseline only under the subject-wide null. One significant electrode is about what chance
+      gives across 10 subjects and 2 tests.
+    response: No change.
+  - claim: power-theta-sustained
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Both window placements fail. Edge effects are not measured: the table placement puts the
+      baseline 0.65 to 0.85 s after the segment's first sample and starts encoding at that sample,
+      inside the edge transient of the low theta filters.
+    response: >-
+      No change of outcome. Added the edge check: the three segments of each trial are joined by
+      their sampleinfo into one trace, encoding and postcue power are compared at the same samples
+      from the segment and from the trace, and the baseline's edge effect is measured at an
+      interior window cut as pre is cut. Baseline power is unchanged (0.999 to 1.000), encoding
+      theta power is 13% to 27% lower in its first 250 ms only, and with power from the joined
+      trace theta is sustained in 1 of 10, 0 of 9 and 0 of 9 subjects, as before.
+  - claim: power-condition-exclusions
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      7 (1 PFC, 4 OFC, 2 MTL) in the table's windows; 12 in the code's windows.
+    response: No change.
+  - claim: plv-theta-peak
+    agrees: true
+    outcome: reproduced
+    reason: The one-subject rule is lenient, and the notes say so.
+    response: No change.
+  - claim: psi-theta-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      With sliding windows (M5) the table windows fail both parts; the code windows give the
+      partial pattern (MTL-OFC raw p 0.027). The outcome rests on the window placement, which is
+      stated and can be defended. If the deposited scripts produced the paper's figures, the
+      paper's numbers come from the code's windows, and the table placement does not recompute what
+      the paper did; the record should say this. The notes call the code's single window partial,
+      but M5 fixes sliding windows, so the single window is a variant the criterion does not judge.
+    response: >-
+      No change of outcome. The notes, the deviation on the windows, the notebook's result and
+      summary and the README now say that the paper's numbers would come from the code's windows if
+      the deposited scripts produced them, and that the single window is a variant the criterion
+      does not judge; the helper module's docstring now names sliding windows as the judged
+      reading.
+  - claim: crossspectral-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: No reading reaches 4 of 7 systems.
+    response: No change.
+  - claim: phase-directing-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: crossspectral-equal-strength
+    agrees: true
+    outcome: blocked
+    reason: &blockreason >-
+      Yes on blocking, label questionable. The code's PSI form selects 57% of units on shuffled
+      data and 56% on real data, so its selection carries no information, and blocking is
+      reasonable. But the Methods' PSI is fully specified, was run, and selects 0 to 3 units per
+      system; the findings call this a code_mismatch, and these claims depend on
+      phase-directing-counts, which is not reproduced. methods_underspecified describes the cause
+      poorly. The MTL-OFC network has 5 sliding-selected pairs, and the model was not attempted on
+      them. The note "also too few units under the claim's own rule" is not backed by a printed
+      output.
+    response: >-
+      Outcome and label kept, and the disagreement on the label recorded. The Methods' PSI, run as
+      stated, selects 0% to 1% of units per system against the paper's 31% to 49%, so the paper's
+      selection was not made by that procedure as run here, and the code's form is not calibrated;
+      which procedure selected the paper's units is not fixed by the paper or its code, which is
+      what methods_underspecified records. The model was run on the 5 sliding-selected MTL-OFC
+      pairs (s9 and s10), not judged: no frequency (p = 0.36), frequency x direction (p = 0.44) or
+      direction effect (p = 0.995, Welch t test, as 2 subjects cannot carry a random intercept);
+      MTL-PFC has 1 pair and no model. The unsupported parenthetical was replaced by the counts it
+      referred to.
+  - claim: theta-peak-bands
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Overlap is 4 of 10 under reading (a). The code-window variant is no longer shown; in round 1
+      it gave 4 of 10. Edge effects bear on it, as 4 subjects peak at the lowest filter.
+    response: >-
+      No change of outcome. Added the code-window variant (overlap 4 of 10) and the edge-reduced
+      variant with encoding power from the joined trace (overlap 3 of 10, 1.5-4 Hz in 5 subjects).
+  - claim: pac-mtl-spatial
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: &pacresp2 >-
+      Outcome and label kept, for the reason given under crossspectral-equal-strength. The PAC
+      result text no longer says that none of the eight patterns appears: under surrogate (a) the
+      MTL-OFC spatial direction model meets one part of condition (1) of pac-mtl-ofc-direction.
+  - claim: pac-frontal-no-condition
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: *pacresp2
+  - claim: pac-mtl-pfc-spatial
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: *pacresp2
+  - claim: pac-mtl-pfc-temporal
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: *pacresp2
+  - claim: pac-pfc-mtl-no-condition
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: *pacresp2
+  - claim: pac-mtl-ofc-spatial
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: *pacresp2
+  - claim: pac-mtl-pfc-direction
+    agrees: true
+    outcome: blocked
+    reason: *blockreason
+    response: *pacresp2
+  - claim: pac-mtl-ofc-direction
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Yes on blocking, label questionable (as for crossspectral-equal-strength). Cell 59 says "none
+      of the eight patterns appears under either surrogate reading", which is wrong for this claim
+      under reading (a): the spatial condition x direction p is 0.00018, below 0.05/15, and the
+      difference is larger for MTL to OFC (0.0064 against -0.0192), one part of condition (1),
+      which the criterion calls partial. These results are not judged, so no outcome changes.
+    response: >-
+      Outcome and label kept. The sentence in the notebook and the record's notes now say that this
+      one part of condition (1) holds under surrogate (a) on the code's selection (not judged), with
+      the direction effect p = 0.29 and effects below 0.05/15 in both models.
 findings:
 - kind: metadata_error
   statement: >-
