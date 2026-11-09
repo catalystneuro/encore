@@ -62,12 +62,14 @@
 # - Unit inclusion: SNR and false-alarm criteria (Methods); the code drops a unit as low-firing
 #   when both its largest per-distance mean wall rate and its mean baseline rate are below 1 Hz.
 # - Wall-activated or wall-suppressed: at each distance, one-tailed Wilcoxon signed-rank test of
-#   the pass's wall rate against its own baseline rate, p < 0.05 (Methods, no correction named,
-#   while the same paragraph names BH-FDR for the tuning test). The code corrects the nine
-#   p-values of each direction with Benjamini-Hochberg (BH-FDR) and uses q < 0.05. Methods and
-#   code disagree, so the Methods' uncorrected p < 0.05 is the main reading, on which claims are
-#   judged, and the code's BH-FDR is the variant, shown. Wall-responsive means activated or
-#   suppressed.
+#   the pass's wall rate against its own baseline rate, p < 0.05 (Methods). The Methods give the
+#   threshold and say nothing of a correction; they write "p < 0.05, corrected" for adjusted
+#   values in the next sentence, so "p < 0.05" alone does not exclude one. The code
+#   (Fig2DEF_Pop_Heatmap_Hist_Pie.m, which makes the Figure 2D-F counts) corrects the nine
+#   p-values of each direction with Benjamini-Hochberg (mafdr BHFDR) and uses q < 0.05. The code
+#   settles what the Methods leave open, so the BH-FDR test is the main reading, on which claims
+#   are judged, and the uncorrected test is the variant, shown. Wall-responsive means activated
+#   or suppressed.
 # - Distance-tuned: two-tailed Wilcoxon signed-rank tests between all 36 pairs of distances,
 #   BH-FDR corrected, any q < 0.05 (Methods). The code pairs the k-th pass at one distance with
 #   the k-th pass at the other.
@@ -230,9 +232,9 @@ claims:
     Classification as in the opening comment, applied to the tungsten sessions with their own
     distances (4 to 20 mm in 1-mm steps, so the binning into nine 2-mm bins does not apply; the
     code leaves the number of distances to each session). Responsiveness is judged with the
-    Methods' uncorrected p < 0.05 per distance; the code's BH-FDR across distances is the
-    variant, shown. Reproduced when all four counts are within tolerance under the Methods'
-    test.
+    code's BH-FDR across the session's distances, q < 0.05; the uncorrected p < 0.05 per
+    distance is the variant, shown. Reproduced when all four counts are within tolerance under
+    the BH-FDR test.
 - id: figs2-tungsten-tuning
   statement: >-
     Of the 43 wall-responsive tungsten units, 39 (90.7%) were distance-tuned; 24 (55.8%) were
@@ -312,9 +314,9 @@ claims:
     value: 97
     tolerance: 9.7
   criterion: >-
-    Classification as in the opening comment (Methods, uncorrected p < 0.05 per distance; variant,
-    the code's BH-FDR across the nine distances, shown). Reproduced when all four counts are
-    within tolerance under the Methods' test.
+    Classification as in the opening comment (the code's BH-FDR across the nine distances,
+    q < 0.05; variant, uncorrected p < 0.05 per distance, shown). Reproduced when all four
+    counts are within tolerance under the BH-FDR test.
 - id: fig2-distance-tuned-counts
   statement: >-
     Over the full wall-contact period, 656 of 768 wall-responsive units (85.4%) were distance
@@ -344,7 +346,7 @@ claims:
     tolerance: 2.9
   criterion: >-
     Distance tuning as in the opening comment. Reproduced when all four counts are within
-    tolerance under the Methods' responsiveness test (the code's BH-FDR variant shown). The 472 activated units are the
+    tolerance under the BH-FDR responsiveness test (the uncorrected variant shown). The 472 activated units are the
     population of Figures 2D-E, 5D, 6G-I and S4.
 - id: fig2f-tuning-categories
   statement: >-
@@ -1181,7 +1183,7 @@ claims:
   criterion: >-
     Unit criteria and classification as in the opening comment (the same code,
     Fig5CE_TeLC_heatmap_stacked_bar.m). Reproduced when all four values are within tolerance
-    under the Methods' responsiveness test (the code's BH-FDR variant shown).
+    under the BH-FDR responsiveness test (the uncorrected variant shown).
 - id: fig5d-telc-preferred-closer
   statement: >-
     Wall-activated, distance-tuned units in SpVi-TeLC mice prefer closer distances than those in

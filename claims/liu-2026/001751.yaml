@@ -73,7 +73,28 @@ dataset:
   id: "001751"
 paper: doi:10.1038/s41556-026-02009-4
 claims:
+- id: code-table-link
+  kind: link
+  statement: The rows of the paper's metadata_multiPatch.xlsx (cell types, tested pairs and
+    annotated connections) can be linked to the dandiset's files and channels, and they agree
+    with what the files hold.
+  source: Code availability; github.com/RFLiu2021/AIC_proj at commit 44cd8a6,
+    ephysio/data_ephy/rawdata_ephysio/metadata_multiPatch.xlsx
+  data: with_labels
+  criterion: Added by the author (protocol, author, step 1.4), written after the file survey and
+    before any claim's analysis. Records are matched by the NWB file name the table lists, and
+    within a file by channel number. The link holds (reproduced) when every file the table
+    lists is in the dandiset, the table's presynaptic channel is the channel that fires an
+    action potential on the first pulse (crossing 0 mV within 8 ms in at least half the sweeps)
+    in at least 90% of the table's files, and the table's postsynaptic channel holds a cell
+    (pre-pulse mean below -30 mV) in at least 90% of its pairs. It holds in part (partially
+    reproduced) when each of these is at least 50%, and fails otherwise. Reported without
+    deciding, the dandiset files the table does not list, ordered pairs listed twice, cells
+    given two types, and the averaged postsynaptic response of each annotated connection.
 - id: fig5d-connectivity-totals
+  data: with_labels
+  depends_on:
+  - code-table-link
   statement: Simultaneous recordings of up to eight layer 5b neurons tested 1,292 potential
     connections among 377 neurons and found 31 monosynaptic connections.
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5d
@@ -105,6 +126,7 @@ claims:
     variant that does not decide. Reproduced when all three counts are within tolerance under
     every reading run; blocked as methods_underspecified when the readings disagree.
 - id: fig5-pc-to-pc
+  data: with_labels
   statement: PCs form monosynaptic connections with other PCs in 24 of 503 tested pairs (4.77%).
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5i;
     Supplementary Table 5
@@ -122,6 +144,7 @@ claims:
     tolerance: 0.48
     unit: percent
   depends_on:
+  - code-table-link
   - fig5d-connectivity-totals
   criterion: Pairs, connections and their readings as in fig5d-connectivity-totals; cell types
     as the dataset labels them, or as metadata_multiPatch.xlsx labels them when the dataset does
@@ -131,6 +154,7 @@ claims:
     some PC-to-PC connections "Inh", and the count of excitatory ones alone is shown as a variant.
     Reproduced when the three values are within tolerance under every reading run.
 - id: fig5-ven-outputs-absent
+  data: with_labels
   statement: VENs form no connections with adjacent VENs (0 of 110 pairs), with PCs (0 of 200) or
     with interneurons (0 of 55).
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5g,i
@@ -158,6 +182,7 @@ claims:
     value: 55
     tolerance: 5.5
   depends_on:
+  - code-table-link
   - fig5d-connectivity-totals
   criterion: As fig5-pc-to-pc. Counts are integers, so 10% of 0 is no tolerance; the connection
     counts must be 0. The paper reports no test. The code's table annotates one VEN-to-PC
@@ -165,6 +190,7 @@ claims:
     notebook shows that pair's averaged response and says which reading counts it. Reproduced when
     every value is within tolerance under every reading run.
 - id: fig5-pc-to-ven
+  data: with_labels
   statement: PCs rarely project to VENs, with one connection in 200 tested PC-to-VEN pairs (0.5%).
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5i
   quote: Likewise, VENs received minimal local excitatory input, suggesting PCs rarely projected to
@@ -177,10 +203,12 @@ claims:
     value: 200
     tolerance: 20
   depends_on:
+  - code-table-link
   - fig5d-connectivity-totals
   criterion: As fig5-pc-to-pc. A count of 1 has no 10% tolerance; it must be 1. Reproduced when
     both values hold under every reading run.
 - id: fig5-pc-in
+  data: with_labels
   statement: PCs and interneurons are connected in 2 of 65 PC-to-IN pairs (3.08%) and 4 of 65
     IN-to-PC pairs (6.15%).
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5i
@@ -200,11 +228,13 @@ claims:
     value: 65
     tolerance: 6.5
   depends_on:
+  - code-table-link
   - fig5d-connectivity-totals
   criterion: As fig5-pc-to-pc, with interneurons as the dataset labels them (or "GABA" in
     metadata_multiPatch.xlsx). Counts of 2 and 4 have tolerances under 1, so they must match
     exactly. Reproduced when all four values hold under every reading run.
 - id: fig5-in-to-ven-absent
+  data: with_labels
   statement: Interneurons make no connections onto VENs (0 of 55 pairs).
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2
   quote: However, no synaptic connections were found between VENs and INs (VEN-to-IN, 0 of 55 and
@@ -217,9 +247,11 @@ claims:
     value: 55
     tolerance: 5.5
   depends_on:
+  - code-table-link
   - fig5d-connectivity-totals
   criterion: As fig5-pc-in. Reproduced when both values hold under every reading run.
 - id: fig5-pair-distances
+  data: with_labels
   statement: PC-PC connections span a wide range of soma distances, 111.8 ± 61.2 um (mean ± s.d.);
     the distances given for the other classes are 135.7 ± 60.0 um for VEN-VEN, 119.3 ± 63.1 um for
     VEN-PC, 107.0 ± 60.1 um for PC-IN and 97.4 ± 36.8 um for VEN-IN.
@@ -271,6 +303,7 @@ claims:
     tolerance: 3.7
     unit: um
   depends_on:
+  - code-table-link
   - fig5d-connectivity-totals
   criterion: The s.d. describes the spread of pairs, not an uncertainty of the mean, so each mean
     and each s.d. gets 10% of its value, not the s.d. as tolerance. The paper does not say how the
@@ -283,6 +316,7 @@ claims:
     within tolerance under every reading run; blocked as methods_underspecified when readings
     disagree; blocked as data_missing when the dataset holds no soma positions.
 - id: fig5i-ven-sparse-local-connectivity
+  data: with_labels
   statement: VENs have sparse synaptic interactions with the local circuit compared with PCs.
   source: Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5i
   quote: These findings suggest that VENs follow a distinct connectivity pattern characterized by
@@ -305,6 +339,7 @@ claims:
     tolerance: 0.62
     unit: percent
   depends_on:
+  - code-table-link
   - fig5-pc-to-pc
   - fig5-ven-outputs-absent
   - fig5-pc-to-ven
@@ -317,6 +352,9 @@ claims:
     Fisher exact test of each VEN rate against its PC rate is shown as a variant and does not
     decide, since the paper uses none.
 - id: fig5fg-example-slice
+  data: with_labels
+  depends_on:
+  - code-table-link
   statement: In the example slice of Fig. 5d-h (six simultaneously recorded excitatory neurons),
     PC cell 2 evokes EPSPs in cell 6, and VEN cell 4 evokes no EPSP in any of the other cells.
   source: Figure 5d-h
