@@ -115,6 +115,23 @@ claims:
     mapping and any mismatch are reported; subjects whose day sets are identical cannot be told
     apart this way, so the event counts per subject (claim fig2-event-counts) are reported
     beside them.
+- id: roi-projection-link
+  kind: link
+  statement: The rows of the paper's projection matrices from electrodes to the eight regions,
+    deposited on Figshare, can be matched one to one to the dataset's electrodes, and their weights
+    fit the electrodes' positions.
+  source: Methods, Projecting power into regions of interest; Figshare item 12114408 version 1
+    (aal_XX_elecs2ROI.csv and aal_XX_ROIcentroids_Lside.csv)
+  data: with_inputs
+  criterion: Added by the author (protocol, author step 4). Rows are matched to the electrodes of
+    each subject's NWB file by order, as the paper's code (load_project_spectral_power) applies them
+    to its power files; where a file has more rows than electrodes, the code's rule (drop all-zero
+    rows) is used. The link holds (reproduced) when for all 12 subjects the rows used equal the
+    electrodes in number, and the region with the largest weight is the region whose centroid
+    (aal_XX_ROIcentroids_Lside.csv) is nearest the electrode's mirrored MNI position for more
+    electrodes than with the electrode order shuffled (200 shuffles). Partially reproduced when this
+    holds for 9 to 11 subjects. The eight regions with mean density above 3 are also checked against
+    those the claims file names.
 - id: cohort
   statement: Twelve subjects (8 male, 4 female, 29.4 +- 7.9 years) had on average 87.0 +- 12.9
     surface electrodes; five also had 23.2 +- 12.1 depth electrodes; five were implanted in the
@@ -318,6 +335,8 @@ claims:
     corrected: FDR (Benjamini-Hochberg)
     n: 12 subjects
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: Group spectrogram per region as the Methods and the code (plot_specs_group) make
     it. Per subject, the median over events of region power (spectral method of the opening
     comment); the mean over the 12 subjects; the group median over -1.5 to -1 s subtracted
@@ -342,6 +361,7 @@ claims:
   data: with_inputs
   depends_on:
   - fig3-group-lfb-decrease-hfb-increase
+  - roi-projection-link
   criterion: On the masked group spectrograms of claim fig3-group-lfb-decrease-hfb-increase. The
     paper does not say how magnitude is measured. Readings are (a) the mean absolute masked
     value over all frequency bins and 0 to 0.5 s; (b) the same over the 4-30 Hz bins and,
@@ -362,6 +382,7 @@ claims:
   data: with_inputs
   depends_on:
   - fig3-group-lfb-decrease-hfb-increase
+  - roi-projection-link
   criterion: On the masked group spectrograms, over 0 to 0.5 s. Readings for "widespread" are (a)
     the number of regions with any significant negative bin in 4-30 Hz against the number with
     any significant positive bin in 50-120 Hz; (b) the count of significant negative 4-30 Hz bins
@@ -384,6 +405,8 @@ claims:
     and 80 Hz. For subjects 04 and 08, low-frequency power decreases occur across narrower
     frequency bands compared with the other subjects.
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: Per subject, the unmasked median over events of precentral power (Figure 4 legend,
     no statistical masking), with the mean of that median over -1.5 to -1 s subtracted again, as
     plot_specs_single_region in the code does, averaged over 0 to 0.5 s (the window of the
@@ -410,6 +433,8 @@ claims:
     p_relation: "<"
     n: 12 subjects, events pooled within subject
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: Banded precentral power per event (opening comment; band mean as the main result,
     the code's median as a variant), all days pooled per subject. One-way Kruskal-Wallis test
     across the 12 subjects per band, as the Figure 5 notebook (pingouin kruskal). "Pooling over
@@ -422,6 +447,8 @@ claims:
   inferred: Values read from Table 1; no sentence states them. The statement is a reading of the
     table.
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: 'Table 1 intervals (dB), LFB then HFB. S01 -1.87 to -1.29, 0.03 to 0.23; S02 -1.12
     to -0.31, 0.07 to 0.64; S03 -2.11 to -1.73, 1.39 to 1.67; S04 -0.17 to 0.01, 0.32 to 0.52;
     S05 -0.7 to -0.38, 0.2 to 0.48; S06 -1.63 to -1.11, 2.02 to 2.37; S07 -0.84 to -0.51, 1.14
@@ -483,6 +510,8 @@ claims:
     test: Kruskal-Wallis test
     p: 0.006
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: Per subject and band, a one-way Kruskal-Wallis test of banded precentral power
     across the subject's recording days, uncorrected, at p < 0.05 (Figure 5 legend; the notebook
     uses pingouin's uncorrected p). Band mean as the main result, band median (code) as a
@@ -500,6 +529,7 @@ claims:
   data: with_inputs
   depends_on:
   - fig5-recording-day-effects
+  - roi-projection-link
   criterion: The legend gives the measure, the SD across recording days of the average LFB
     (8-32 Hz) and HFB (76-100 Hz) power, with and without baseline subtraction. The figure could
     not be read and no code for it is in the repository, so what is averaged is open. Readings
@@ -519,6 +549,8 @@ claims:
   quote: It is also worth noting that these day-to-day changes in ECoG spectral power are small
     in magnitude (±1–2 dB) relative to spectral power without any baseline values subtracted
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: On precentral banded power, per subject and band, the day means of the event
     values. The day-to-day change is the largest absolute difference between a day mean and the
     subject's overall mean. It holds when every such change is at most 2.2 dB (2 dB widened by
@@ -536,6 +568,8 @@ claims:
     fit of our models to electrodes located in frontoparietal sensorimotor areas ( Fig. 6 b ,
     Extended Data Fig. 6-1 ).
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: Full-model withheld R2 per electrode and band (regression method of the opening
     comment). The paper shows this on brain maps and gives no measure. Each electrode is assigned
     to an area in one of two ways, (a) to the region of the eight with its largest projection
@@ -584,6 +618,8 @@ claims:
   quote: Reach angle is the feature most often retained, followed by reach duration, reach
     magnitude, bimanual ratio, and bimanual overlap.
   data: with_inputs
+  depends_on:
+  - roi-projection-link
   criterion: Per electrode and band, whether each feature is kept by forward selection (code
     feat_select_prob; a day or time-of-day one-hot column counts as 1/number of columns of that
     feature). The legend projects the retention probability onto the eight regions and averages

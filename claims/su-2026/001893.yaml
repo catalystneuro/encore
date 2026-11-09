@@ -119,6 +119,7 @@ claims:
     Patch-seq transcriptomic data
   depends_on:
   - patchseq-sample
+  - patchseq-transcriptome-link
   criterion: The paper does not say how identity was confirmed. Gene counts as CPM of exonic
     plus intronic reads (Methods, cDNA and sequencing). The markers the paper uses for
     noradrenergic identity elsewhere are Dbh, Th, Slc6a2 and Slc18a2 (Methods, Identification of
@@ -128,6 +129,39 @@ claims:
     shows with MapMyCells. Reproduced when all cells with a transcriptome pass under a reading;
     partially reproduced when at least 90% pass. The fraction of the 96 cells with a
     transcriptome is reported.
+- id: patchseq-transcriptome-link
+  kind: link
+  statement: The Patch-seq transcriptomes at the NeMO Archive can be matched to the dandiset's
+    recorded cells, one library per cell, through the identifiers the dandiset gives.
+  source: The dandiset's mapping.tsv and README.txt (ASSOCIATED DATASETS); the paper's Data
+    availability
+  data: elsewhere
+  where: NeMO Archive collection nemo:col-s96tk9a (Patch-seq raw FASTQ), named in the dandiset's
+    README and metadata; files pinned by their NeMO identifiers and MD5 sums
+  depends_on:
+  - patchseq-sample
+  criterion: Added by the author (protocol, author, step 4). Records are matched by identifier;
+    each cell's library_aliquot_nhash_id in mapping.tsv, and the NeMO sample named by its
+    nemo_assets_url, whose sample name must equal that identifier. The link holds (reproduced)
+    when every cell with a library identifier resolves to a NeMO library with two FASTQ files
+    (R1 and R2) whose MD5 sums match NeMO's, and whose specimen type is nuclei and technique
+    SMART-seq, as the paper describes; partially reproduced when at least 90% do. The number of
+    the 96 cells that have a library identifier is reported.
+- id: tau-table-link
+  kind: link
+  statement: The membrane time constants in the paper's frozen table (LCNE-patchseq-figures at
+    79fa20a, code/data/LCNE_patchseq_S14_cell_table.csv) can be matched to the dandiset's cells
+    and agree with the time constants computed from the dandiset's sweeps.
+  source: README of LCNE-patchseq-figures at 79fa20a, Cell metadata
+  data: with_inputs
+  depends_on:
+  - patchseq-sample
+  criterion: Added by the author (protocol, author, step 4), for the code variant of the
+    patchseq-tau claims. Records are matched by ephys_roi_id, the session label of each NWB file.
+    The link holds (reproduced) when every table row matches one file and, over cells with a
+    value on both sides, the IPFX time constant computed here from all of a cell's subthreshold
+    long squares (no sweep rule, as the code's variant has none) is within 10% of the table's value
+    for at least 90% of the cells; partially reproduced for 50% to 90%; not reproduced below.
 - id: patchseq-ap-waveform-spinal-vs-cortex
   statement: The intracellular action potential waveforms of LC-NE neurons projecting to the
     spinal cord differ significantly from those of neurons projecting to isocortex (two-sided

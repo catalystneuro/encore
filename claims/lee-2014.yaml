@@ -1,0 +1,1025 @@
+# Claims for Lee, Marchionni, Bezaire, Varga, Danielson, Lovett-Barron, Losonczy & Soltesz (2014),
+# Neuron 82:1129-1144, on CRCNS data set hc-10 (doi:10.6080/K00P0WXQ).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-06,
+# protocol as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record with its Supplemental Information, as supplied under paper/
+# (PyMuPDF text of the journal PDF): Results, Discussion, Experimental Procedures, the legends
+# of Figures 1 to 6 and S1 to S5, Table S1 and the Supplemental Experimental Procedures. The
+# extracted text prints micrometres as "mm" and some minus signs as a replacement character.
+# Values shown only in Figures S1E to S1H and S3F were read from the PDF pages (rendered here)
+# and are marked as read from a figure.
+#
+# Code read: the model code the paper links, ModelDB accession 153280 ("superdeep", NEURON),
+# downloaded from modeldb.science/download/153280 on 2026-11-06 (zip sha256 333fd221...fe405,
+# README "Last updated on May 15, 2014"). It holds the cell templates, connectivity, stimulation
+# and job scripts of the network model of Figures 4C to 4F and S3. It holds no analysis of the
+# experimental recordings, so it fixes none of the criteria for the intrinsic properties. The
+# lab page the paper also links (ivansolteszlab.org/models/superdeep.html, said to hold the
+# simulation results and analysis procedures) is now a parked domain, and the Open Source
+# Brain project page returns 404; neither was read.
+#
+# Data the paper used. Coronal hippocampal slices (300 um) from 2- to 3-month-old PV-TOM,
+# PV-ChR2 and C57BL/6J mice of either sex, septal (AP -1.9 to -2.5 mm) and temporal (AP -3.1
+# to -3.7 mm) CA1; recordings at 33 C, filtered at 3 kHz, digitized at 10 kHz (MultiClamp
+# 700B, Digidata 1440A). PCs are superficial (sPC) or deep (dPC) by soma distance from the
+# Pyr/Rad border (septal 0-20 and 20-40 um; temporal 0-50 and 50-200 um). Experiments: paired
+# recordings PVBC to PC (euIPSC, uIPSC, CV, release probability, paired-pulse ratio, connection
+# probability; Figure 1), PC to PVBC (euEPSC, connection probability; Figure 3), PVBC trains
+# against PC firing in current clamp (Figure 4A, 4B), CCKBC to PC (Figure 5), PVBC to
+# retrogradely labelled mPFC-, AMG- and MEC-projecting dPCs (Figure 6); bouton counts and
+# morphology (Figures 1J to 1L, 2G to 2I, 5G, S1, S4, S5); optogenetic IPSCs (Figure 1N); in
+# vivo two-photon GCaMP5 imaging of PV+ axons in 5 head-fixed running mice (Figure 2B to 2F);
+# a NEURON network model of 1,000 sPCs, 1,000 dPCs and 36 PVBCs (Figure 4C to 4F, S3).
+# Intrinsic properties (Figure S1E to S1H): sPC n = 8, dPC n = 9, held at -70 mV, 1 s steps
+# (0 to +550 pA in 50 pA steps for firing; -100 to +100 pA for input resistance, steady state
+# 0.8 to 1.0 s after step onset); voltages uncorrected for the +14.6 mV junction potential,
+# which Table S1 subtracts.
+#
+# The CRCNS data set, by its description, holds ATF files of current-injection sweeps: for
+# this paper 8 superficial and 9 deep PCs (steps -400 to +550 pA in 50 pA increments, the
+# protocol of Supplemental Experimental Procedures 8A) and 6 PV+ basket cells; its other cells
+# belong to other papers. Only the claims figs1e-if-curves, figs1f-input-resistance,
+# figs1g-resting-potential, figs1h-sag, tables1-rheobase and figs3f-pvbc-firing concern those
+# recordings. The other claims cover the paper's main findings, whose data the data set does
+# not hold. The model claims need simulations of the ModelDB code (data with_inputs).
+#
+# Statistics, from Experimental Procedures, Statistical Analysis: two-tailed Student's t tests,
+# paired or unpaired as appropriate, replaced by Wilcoxon signed-rank (paired) or Mann-Whitney
+# (unpaired) when a group fails the Shapiro-Wilk test; Pearson's chi-square for connection
+# probabilities, with Bonferroni-Holm correction for three groups (Figure 6G); ANOVA with
+# Tukey-Kramer for Figures 6E, S5D and 4D to 4F; mean and SEM; significance at p < 0.05. The
+# text does not say which test each comparison used, so `test` below names the rule. Where a
+# mean is given with its SEM, the SEM is the tolerance.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-10
+  doi: 10.6080/K00P0WXQ
+paper: doi:10.1016/j.neuron.2014.03.034
+claims:
+- id: figs1e-if-curves
+  statement: Superficial and deep CA1 PCs do not differ in firing frequency as a function of
+    injected current (two-way ANOVA, p > 0.4; 8 sPCs, 9 dPCs).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 2;
+    Figure S1E and legend
+  quote: There were no differences between dPCs and sPCs in terms of their firing frequency as a
+    function of intracellularly injected current (Figure S1E)
+  statistics:
+  - test: two-way ANOVA
+    p: 0.4
+    p_relation: ">"
+    n: 8 sPCs and 9 dPCs
+  expected:
+  - quantity: sPC firing frequency at +550 pA (read from Figure S1E)
+    value: 31.5
+    tolerance: 3.15
+    unit: Hz
+  - quantity: dPC firing frequency at +550 pA (read from Figure S1E)
+    value: 30.5
+    tolerance: 3.05
+    unit: Hz
+  criterion: 'From the Supplemental Experimental Procedures 2B, steps of 1 s from 0 to +550 pA
+    in 50 pA increments, cells held at -70 mV; the data set''s steps from 0 to +550 pA are used.
+    How firing frequency is computed is not stated. Readings: (a) spikes during the 1 s step
+    divided by 1 s; (b) (spikes - 1) over the time from first to last spike, the form the
+    Figure S3E legend implies for the model (31.06 Hz for 30 spikes). Spike detection is a
+    standard choice (upward crossing of 0 mV) that cannot change the outcome. A claim of
+    absence, judged on the paper''s test as written, a two-way ANOVA of firing frequency on
+    group (sPC, dPC) and current step: reproduced when the group effect is not significant
+    (p >= 0.05), not reproduced when it is; the effect size is reported either way, and a
+    repeated-measures ANOVA is shown as a variant. The expected values, read from the figure,
+    are checked as well under either reading.'
+- id: figs1f-input-resistance
+  statement: Superficial and deep PCs do not differ in input resistance (117 against 124 MOhm).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 2;
+    Figure S1F; Table S1
+  quote: There were no differences between dPCs and sPCs in terms of their firing frequency as a
+    function of intracellularly injected current (Figure S1E) and in input resistance (Figure
+    S1F)
+  expected:
+  - quantity: sPC input resistance (Table S1, experimental)
+    value: 117
+    tolerance: 11.7
+    unit: MOhm
+  - quantity: dPC input resistance (Table S1, experimental)
+    value: 124
+    tolerance: 12.4
+    unit: MOhm
+  criterion: 'From the Supplemental Experimental Procedures 2B, voltage responses to 1 s steps
+    from -100 to +100 pA in 50 pA increments, cells held at -70 mV, measured at steady state
+    0.8 to 1.0 s after step onset. How resistance is computed from these responses is not
+    stated. Readings: (a) the slope of a linear fit of steady-state voltage against current
+    over the five steps; (b) the mean of the change from the pre-step baseline divided by the
+    current, over the four non-zero steps. Per cell, then mean per group. Reproduced when, under
+    one reading, both group means are within tolerance and the groups do not differ by the
+    paper''s rule (two-tailed unpaired t test, Mann-Whitney if Shapiro-Wilk fails, p >= 0.05).
+    Partially reproduced when the groups do not differ but a mean falls outside tolerance.'
+- id: figs1g-resting-potential
+  statement: Superficial PCs have more depolarized resting membrane potentials than deep PCs
+    (about -66 against -72 mV uncorrected; -80.9 against -86.6 mV corrected for the junction
+    potential).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 2;
+    Figure S1G; Table S1
+  quote: However, sPCs showed more depolarized resting membrane potentials (Figure S1G)
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 8 sPCs and 9 dPCs
+  expected:
+  - quantity: sPC resting potential, uncorrected (Table S1 -80.9 mV plus the 14.6 mV junction
+      potential; Figure S1G shows about -66 mV)
+    value: -66.3
+    tolerance: 6.63
+    unit: mV
+  - quantity: dPC resting potential, uncorrected (Table S1 -86.6 mV plus 14.6 mV; Figure S1G
+      shows about -72 mV)
+    value: -72.0
+    tolerance: 7.2
+    unit: mV
+  criterion: 'The paper does not say how the resting potential was measured. It is read as the
+    membrane potential with no injected current: the pre-step baseline of sweeps whose current
+    channel shows zero holding current. Table S1''s footnote says the biological PCs were given
+    an unrecorded tonic current during the sweeps to rest at -84.6 mV (corrected), and the
+    Methods say cells were held at -70 mV; if the files show a holding current, or no current
+    channel and a baseline at the holding level, the sweeps do not hold the resting potential
+    and the claim cannot be tested on them. Otherwise reproduced when sPCs are more depolarized
+    than dPCs by the paper''s rule (two-tailed unpaired t test, Mann-Whitney if Shapiro-Wilk
+    fails, p < 0.05) and both means are within tolerance; partially reproduced when the
+    difference holds but a mean falls outside.'
+- id: figs1h-sag
+  statement: Superficial PCs show larger sag potentials than deep PCs in response to large
+    hyperpolarizing current pulses (about 8.7 against 5.6 mV).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 2;
+    Figure S1H
+  quote: as reported before (Jarsky et al., 2008), larger sag potentials in response to large
+    hyperpolarizing current pulses (Figure S1H)
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 8 sPCs and 9 dPCs
+  expected:
+  - quantity: sPC sag amplitude (read from Figure S1H)
+    value: 8.7
+    tolerance: 0.87
+    unit: mV
+  - quantity: dPC sag amplitude (read from Figure S1H)
+    value: 5.6
+    tolerance: 0.56
+    unit: mV
+  criterion: 'Sag amplitude is the difference between the peak hyperpolarization during the
+    step and the steady state; the paper does not define the windows or the step. Steady state
+    is taken as the mean at 0.8 to 1.0 s, the window the Supplemental Experimental Procedures 2B
+    use for input resistance, and the peak as the most negative voltage in the step (a standard
+    choice). The step is open; readings (a) -400 pA, the largest step of the protocol (Figure
+    S3C plots sag against current down to -400 pA, and its biological values there are of the
+    size of Figure S1H), (b) -300 pA, (c) -200 pA. Reproduced when, under one reading, sPC sag
+    exceeds dPC sag by the paper''s rule (two-tailed unpaired t test, Mann-Whitney if
+    Shapiro-Wilk fails, p < 0.05) and both means are within tolerance; partially reproduced when
+    the difference holds under a reading but no reading puts both means within tolerance.'
+- id: tables1-rheobase
+  statement: The experimental superficial and deep PCs have the same rheobase, +150 pA, at the
+    50 pA resolution of the step protocol.
+  source: Table S1 and its footnote
+  inferred: Values from Table S1 (Experimental Rheobase, dPC +150, sPC +150 pA); no sentence of
+    the text states them.
+  expected:
+  - quantity: sPC rheobase
+    value: 150
+    tolerance: 0
+    unit: pA
+  - quantity: dPC rheobase
+    value: 150
+    tolerance: 0
+    unit: pA
+  criterion: 'Rheobase is the smallest step that evokes firing, excluding the tonic current
+    (Table S1 footnote); steps are on a 50 pA grid, so a 10% tolerance admits only the reported
+    step and the tolerance is set to 0. How a group value is formed is not stated. Readings: (a)
+    the median of per-cell rheobases; (b) the mean of per-cell rheobases rounded to the nearest
+    50 pA step. The first step at which the group-mean firing of Figure S1E is above zero is
+    not a reading, since that figure shows both group means at about 1 Hz at +100 pA.
+    Reproduced when, under one reading, both groups give +150 pA; partially reproduced when
+    they give the same step but not +150 pA.'
+- id: figs3f-pvbc-firing
+  statement: A biological PV+ basket cell does not fire up to +300 pA, fires at about 2 Hz at
+    +350 pA, and its firing rises steeply above that, to about 17 Hz at +400, 36 Hz at +450 and
+    52 Hz at +500 pA, matched by the PVBC model.
+  source: Figure S3F and legend
+  inferred: Values read from Figure S3F (open triangles); the legend says only "Firing frequency
+    of model and biological PVBCs in response to suprathreshold current injections".
+  expected:
+  - quantity: PVBC firing at +350 pA (tolerance of one spike per second, since 10% of a value
+      read as 2 Hz from the figure is below its reading resolution)
+    value: 2
+    tolerance: 1
+    unit: Hz
+  - quantity: PVBC firing at +400 pA
+    value: 17
+    tolerance: 1.7
+    unit: Hz
+  - quantity: PVBC firing at +450 pA
+    value: 36
+    tolerance: 3.6
+    unit: Hz
+  - quantity: PVBC firing at +500 pA
+    value: 52
+    tolerance: 5.2
+    unit: Hz
+  criterion: 'Firing frequency per step as in figs1e-if-curves, under either of its readings.
+    The figure shows one biological PVBC and does not name it, nor whether it is one cell or a
+    mean. Readings: (a) any one of the data set''s PV+ basket cells; (b) the mean over them,
+    using the steps every cell has. The paper does not state the step protocol for the
+    biological PVBCs (Supplemental Experimental Procedures 2B describes PCs only); 1 s steps in
+    50 pA increments, as for the PCs and as Figure S3F''s abscissa shows, are assumed. Reproduced
+    when, under one reading, there is no firing from 0 to +300 pA and the four values are within
+    tolerance; partially reproduced when the onset is between +300 and +400 pA but some value is
+    outside tolerance.'
+- id: fig1e-euipsc-dpc-larger
+  statement: PVBCs evoke effective unitary IPSCs about three times larger in dPCs than in sPCs,
+    in septal CA1 (65.2 against 19.6 pA) and temporal CA1 (65.0 against 24.9 pA).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 3;
+    Figure 1C to 1E
+  quote: 'septal: dPC: 65.2 ± 17.2 pA, n = 7; sPC: 19.6 ± 5.4 pA, n = 7; p < 0.05; temporal: dPC:
+    65.0 ± 8.3 pA, n = 17; sPC: 24.9 ± 3.9 pA, n = 22; p < 0.005'
+  statistics:
+  - about: septal dPC against sPC
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 7 dPCs and 7 sPCs
+  - about: temporal dPC against sPC
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.005
+    p_relation: <
+    n: 17 dPCs and 22 sPCs
+  expected:
+  - quantity: septal dPC euIPSC
+    value: 65.2
+    tolerance: 17.2
+    unit: pA
+  - quantity: septal sPC euIPSC
+    value: 19.6
+    tolerance: 5.4
+    unit: pA
+  - quantity: temporal dPC euIPSC
+    value: 65.0
+    tolerance: 8.3
+    unit: pA
+  - quantity: temporal sPC euIPSC
+    value: 24.9
+    tolerance: 3.9
+    unit: pA
+- id: fig1-uipsc-successes
+  statement: Counting successful events only, unitary IPSCs are also larger in dPCs than in sPCs
+    (68.4 against 32.4 pA, septal and temporal pooled).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 3
+  quote: 'Note that the difference in IPSC amplitudes was significant also when only the
+    successful events were considered ... dPC: 68.4 ± 6.9 pA, n = 24; sPC: 32.4 ± 3.5 pA, n =
+    29; data pooled from septal and temporal CA1, p < 0.005'
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.005
+    p_relation: <
+    n: 24 dPCs and 29 sPCs
+  expected:
+  - quantity: dPC uIPSC
+    value: 68.4
+    tolerance: 6.9
+    unit: pA
+  - quantity: sPC uIPSC
+    value: 32.4
+    tolerance: 3.5
+    unit: pA
+- id: fig1f-connection-probability
+  statement: The PVBC to PC connection probability does not differ between sPCs and dPCs
+    (septal 50% and 50%; temporal 48.9% and 43.6%).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 3;
+    Figure 1F
+  quote: 'the robust difference in IPSC amplitudes was present without a difference in
+    connection probability ... (Figure 1F; septal: sPCs: 50%; dPCs: 50%; temporal: sPCs:
+    48.9%; dPCs: 43.6%)'
+  expected:
+  - quantity: septal sPC connection probability
+    value: 50
+    tolerance: 5
+    unit: '%'
+  - quantity: septal dPC connection probability
+    value: 50
+    tolerance: 5
+    unit: '%'
+  - quantity: temporal sPC connection probability
+    value: 48.9
+    tolerance: 4.89
+    unit: '%'
+  - quantity: temporal dPC connection probability
+    value: 43.6
+    tolerance: 4.36
+    unit: '%'
+  criterion: A claim of absence, judged by Pearson's chi-square test on connected and tested
+    pairs (Statistical Analysis, Figure 1F), per region, at p < 0.05. Reproduced when neither
+    region shows a significant difference.
+- id: fig1g-somatic-distance
+  statement: Somatic distances of PVBC-sPC pairs (76.2 um) and PVBC-dPC pairs (70.4 um) do not
+    differ, so the larger dPC IPSCs are not due to pair geometry.
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 3;
+    Figure 1G
+  quote: since the somatic distances of the PVBC-sPC pairs (76.2 ± 4.7 mm; n = 38) and the
+    PVBC-dPC pairs (70.4 ± 6.3 mm; n = 30) were not different (p > 0.5; Figure 1G
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 38 PVBC-sPC and 30 PVBC-dPC pairs
+  expected:
+  - quantity: PVBC-sPC somatic distance
+    value: 76.2
+    tolerance: 4.7
+    unit: um
+  - quantity: PVBC-dPC somatic distance
+    value: 70.4
+    tolerance: 6.3
+    unit: um
+- id: fig1-common-pvbc
+  statement: When an sPC and a dPC share a presynaptic PVBC, the dPC euIPSC is still larger
+    (63.8 against 22.1 pA, 8 sequential paired recordings).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 3
+  quote: 'the larger euIPSCs in dPCs compared to sPCs were also observed when the postsynaptic
+    cells shared a common presynaptic PVBC (n = 8 sequential paired recordings; dPC: 63.8 ±
+    15.9 pA; sPC: 22.1 ± 5.5 pA; p < 0.001)'
+  statistics:
+  - test: two-tailed paired t test, or Wilcoxon signed-rank test when Shapiro-Wilk fails
+    p: 0.001
+    p_relation: <
+    n: 8 sequential paired recordings
+  expected:
+  - quantity: dPC euIPSC, common PVBC
+    value: 63.8
+    tolerance: 15.9
+    unit: pA
+  - quantity: sPC euIPSC, common PVBC
+    value: 22.1
+    tolerance: 5.5
+    unit: pA
+- id: fig1i-distance-correlation
+  statement: euIPSC amplitude correlates with PC distance from stratum radiatum (septal R2 =
+    0.389, temporal R2 = 0.356), but not within either group alone (temporal sPC R2 = 0.027,
+    dPC R2 = 0.045).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 4;
+    Figure 1I
+  quote: 'While there was a correlation between distance of the postsynaptic PCs from the
+    stratum radiatum and the euIPSC amplitude (Figure 1I; R2 = 0.389, p < 0.05, septal CA1; R2 =
+    0.356, p < 0.005, temporal CA1), this was driven by the overall difference between sPCs and
+    dPCs, as no correlation remained when examining either group individually (R2 = 0.027, p =
+    0.22, sPC; R2 = 0.045, p = 0.20, dPC'
+  statistics:
+  - about: septal, all PCs
+    test: linear fit
+    statistic: R2 = 0.389
+    p: 0.05
+    p_relation: <
+  - about: temporal, all PCs
+    test: linear fit
+    statistic: R2 = 0.356
+    p: 0.005
+    p_relation: <
+  - about: temporal sPCs
+    test: linear fit
+    statistic: R2 = 0.027
+    p: 0.22
+  - about: temporal dPCs
+    test: linear fit
+    statistic: R2 = 0.045
+    p: 0.2
+  expected:
+  - quantity: R2, septal
+    value: 0.389
+    tolerance: 0.0389
+  - quantity: R2, temporal
+    value: 0.356
+    tolerance: 0.0356
+- id: fig1-kmeans-large-small
+  statement: K-means with two clusters splits euIPSCs into small (mean 22.5 pA) and large (82.1
+    pA) amplitudes, and large ones are more frequent in dPCs (10 of 17) than in sPCs (3 of 22).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 4
+  quote: we performed a K-means test for two-clusters, which indicated a ''small''-amplitude
+    euIPSC cluster with a mean of 22.5 pA, and a ''large''-amplitude cluster with a mean of 82.1
+    pA ... (3 of 22 average euIPSCs recorded from sPCs were ''large'' amplitude versus 10 of 17
+    from dPCs, p < 0.01, Pearson's chi-square test)
+  statistics:
+  - test: Pearson's chi-square test
+    p: 0.01
+    p_relation: <
+    n: 22 sPCs and 17 dPCs
+  expected:
+  - quantity: small cluster mean
+    value: 22.5
+    tolerance: 2.25
+    unit: pA
+  - quantity: large cluster mean
+    value: 82.1
+    tolerance: 8.21
+    unit: pA
+  - quantity: large euIPSCs among sPCs
+    value: 3
+    tolerance: 0
+  - quantity: large euIPSCs among dPCs
+    value: 10
+    tolerance: 1
+  criterion: 'K-means with two clusters on the per-pair average euIPSC amplitudes, then
+    Pearson''s chi-square on large and small counts by group (Results, paragraph 4). The counts
+    (22 sPCs, 17 dPCs) are the temporal pairs of Figure 1E; the paper does not say whether the
+    clustering used the temporal pairs alone or also the 14 septal pairs. Readings: (a) the 39
+    temporal amplitudes; (b) all 53 amplitudes, counting the temporal pairs. Reproduced when,
+    under one reading, the cluster means and counts are within tolerance and the chi-square
+    gives p < 0.01.'
+- id: fig1j-axon-terminals
+  statement: Single PVBCs form about twice as many putative perisomatic axon terminals on dPCs
+    as on sPCs (8.7 against 4.0).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 5;
+    Figure 1J
+  quote: 'PVBCs formed significantly more perisomatic axon terminals on dPCs compared to sPCs
+    (Figures 1J and S1I; dPC: 8.7 ± 0.9, n = 10; sPC: 4.0 ± 0.6, n = 10; p < 0.005)'
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.005
+    p_relation: <
+    n: 10 dPCs and 10 sPCs
+  expected:
+  - quantity: terminals per dPC
+    value: 8.7
+    tolerance: 0.9
+  - quantity: terminals per sPC
+    value: 4.0
+    tolerance: 0.6
+- id: fig1-release-properties
+  statement: PVBC to dPC inputs have a smaller coefficient of variation (0.61 against 1.00) and
+    a higher probability of release (0.92 against 0.66) than PVBC to sPC inputs, with no
+    difference in paired-pulse ratio (71.6% against 88.9%).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 5
+  quote: 'the PVBC-to-dPC unitary inputs were accompanied by smaller coefficient of variation
+    (dPC: 0.61 ± 0.06, n = 17; sPC: 1.00 ± 0.06, n = 22; p < 0.001) and larger probability of
+    success in GABA release (dPC: 0.92 ± 0.03, n = 17; sPC: 0.66 ± 0.04, n = 22; p < 0.001),
+    without differences in short-term plasticity properties'
+  statistics:
+  - about: coefficient of variation
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.001
+    p_relation: <
+    n: 17 dPCs and 22 sPCs
+  - about: probability of success
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.001
+    p_relation: <
+    n: 17 dPCs and 22 sPCs
+  - about: paired-pulse ratio
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.3
+    p_relation: ">"
+    n: 17 dPCs and 22 sPCs
+  expected:
+  - quantity: dPC CV
+    value: 0.61
+    tolerance: 0.06
+  - quantity: sPC CV
+    value: 1.0
+    tolerance: 0.06
+  - quantity: dPC probability of success
+    value: 0.92
+    tolerance: 0.03
+  - quantity: sPC probability of success
+    value: 0.66
+    tolerance: 0.04
+  - quantity: dPC paired-pulse ratio
+    value: 71.6
+    tolerance: 7.6
+    unit: '%'
+  - quantity: sPC paired-pulse ratio
+    value: 88.9
+    tolerance: 9.9
+    unit: '%'
+  criterion: CV from 50 events per pair including failures; paired-pulse ratio as the second
+    over the first response to 10 Hz presynaptic stimulation (Supplemental Experimental
+    Procedures 2A). The paired-pulse part is a claim of absence, judged by the paper's rule at
+    p < 0.05.
+- id: fig1k-somatic-dendritic-ratio
+  statement: The ratio of somatic to proximal dendritic PVBC boutons is similar on sPCs and dPCs.
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 5;
+    Figure 1K
+  quote: the ratio of the number of somatic versus proximal dendritic PVBC boutons was similar
+    between PVBC-sPC and PVBC-dPC pairs (Figure 1K; p > 0.38)
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.38
+    p_relation: ">"
+    n: 10 sPCs and 10 dPCs
+- id: fig1l-pv-boutons
+  statement: dPC somata are surrounded by about twice as many PV+ boutons as sPC somata (107.3
+    against 55.0).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 6;
+    Figure 1L
+  quote: 'the number of PV+ boutons around the somata of single dPCs were approximately 2-fold
+    higher than in the case of sPCs (dPC: 107.3 ± 7.8, n = 7; sPC: 55.0 ± 2.8, n = 5; p <
+    0.005)'
+  statistics:
+  - test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.005
+    p_relation: <
+    n: 7 dPCs and 5 sPCs
+  expected:
+  - quantity: PV+ boutons per dPC soma
+    value: 107.3
+    tolerance: 7.8
+  - quantity: PV+ boutons per sPC soma
+    value: 55.0
+    tolerance: 2.8
+- id: fig1n-optogenetic-ipsc
+  statement: Light activation of PV+ cells in PV-ChR2 slices evokes larger IPSCs in dPCs than in
+    simultaneously recorded sPCs (382.3 against 141.6 pA).
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 7;
+    Figure 1M and 1N
+  quote: 'resulted in significantly larger optogentically evoked IPSCs in dPCs compared to sPCs
+    (dPC: 382.3 ± 47.8 pA, n = 8; sPC: 141.6 ± 26.3 pA, n = 8; p < 0.005'
+  statistics:
+  - test: two-tailed paired t test, or Wilcoxon signed-rank test when Shapiro-Wilk fails
+    p: 0.005
+    p_relation: <
+    n: 8 dPC-sPC dual recordings
+  expected:
+  - quantity: dPC light-evoked IPSC
+    value: 382.3
+    tolerance: 47.8
+    unit: pA
+  - quantity: sPC light-evoked IPSC
+    value: 141.6
+    tolerance: 26.3
+    unit: pA
+- id: fig2c-fullfield-running
+  statement: In running mice, full-field PV+ axonal GCaMP5 fluorescence rises more in the deep
+    than in the superficial sublayer (dF/F 43.4% against 30.3%).
+  source: Results, Running Evokes Preferential Activation of PVBC Axon Terminals around the
+    Somata of dPCs, paragraph 1; Figure 2B and 2C
+  quote: 'the running-associated increases in full-field axonal fluorescence were significantly
+    larger in the deep compared to the superficial sublayer (Figures 2B and 2C; deep: DF/F =
+    43.4% ± 3.7%; superficial: 30.3% ± 2.4%; n = 10 superficial-deep FOV pairs in 5 mice; p <
+    0.05)'
+  statistics:
+  - test: two-tailed paired t test, or Wilcoxon signed-rank test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 10 superficial-deep FOV pairs in 5 mice
+  expected:
+  - quantity: deep full-field dF/F during running
+    value: 43.4
+    tolerance: 3.7
+    unit: '%'
+  - quantity: superficial full-field dF/F during running
+    value: 30.3
+    tolerance: 2.4
+    unit: '%'
+- id: fig2e-bouton-roi-running
+  statement: Running-evoked fluorescence of single PV+ bouton ROIs does not differ between the
+    sublayers (60.4% against 59.3%).
+  source: Results, Running Evokes Preferential Activation of PVBC Axon Terminals around the
+    Somata of dPCs, paragraph 2; Figure 2D and 2E
+  quote: 'there was no difference in the enhancement in PV+ bouton ROI fluorescence between the
+    sublayers (Figure 2E; deep: DF/F = 60.4% ± 6.2%, n = 5; superficial: 59.3% ± 7.2%, n = 5; p
+    > 0.5)'
+  statistics:
+  - test: two-tailed t test, paired or unpaired as appropriate (not stated which), or its rank
+      equivalent when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 5 deep and 5 superficial
+  expected:
+  - quantity: deep bouton dF/F during running
+    value: 60.4
+    tolerance: 6.2
+    unit: '%'
+  - quantity: superficial bouton dF/F during running
+    value: 59.3
+    tolerance: 7.2
+    unit: '%'
+- id: fig2f-bouton-density
+  statement: In anesthetized mice, two-photon imaging shows more PV+ boutons in the deep than in
+    the superficial sublayer.
+  source: Results, Running Evokes Preferential Activation of PVBC Axon Terminals around the
+    Somata of dPCs, paragraph 2; Figure 2F
+  quote: found significantly higher numbers of PV+ boutons in the deep compared to the
+    superficial sublayer (Figure 2F)
+  statistics:
+  - test: two-tailed t test, or its rank equivalent when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+- id: figs2-ais-correction
+  statement: Axon initial segment-targeting boutons are 12.7% of PV+ boutons in the deep and
+    4.2% in the superficial sublayer, and after correcting for them the running-evoked rise
+    remains larger in the deep sublayer (37.9% against 29.0%).
+  source: Results, Running Evokes Preferential Activation of PVBC Axon Terminals around the
+    Somata of dPCs, paragraph 3; Figure S2
+  quote: 'The results showed that 12.7% (229 out of 1,803) of the PV+ boutons in the deep
+    sublayer and 4.2% (49 out of 1,161) of the PV+ boutons in the superficial sublayer were axon
+    initial segment-targeting boutons ... (corrected DF/F, deep: 37.9% ± 3.3%; superficial:
+    29.0% ± 2.2%; p < 0.05)'
+  statistics:
+  - test: two-tailed paired t test, or Wilcoxon signed-rank test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 10 superficial-deep FOV pairs
+  expected:
+  - quantity: AIS-targeting share, deep
+    value: 12.7
+    tolerance: 1.27
+    unit: '%'
+  - quantity: AIS-targeting share, superficial
+    value: 4.2
+    tolerance: 0.42
+    unit: '%'
+  - quantity: corrected deep dF/F
+    value: 37.9
+    tolerance: 3.3
+    unit: '%'
+  - quantity: corrected superficial dF/F
+    value: 29.0
+    tolerance: 2.2
+    unit: '%'
+- id: fig2gi-pvbc-axon-sublayers
+  statement: Single PVBCs, filled in vitro (7) or in vivo (4), have longer axons and more
+    boutons in the deep than in the superficial sublayer, with no difference in interbouton
+    distance.
+  source: Results, Running Evokes Preferential Activation of PVBC Axon Terminals around the
+    Somata of dPCs, paragraph 4; Figure 2G to 2I
+  quote: analysis showed significantly longer axons (Figure 2G) and more boutons (Figure 2H)
+    belonging to single PVBCs in the deep compared to the superficial sublayer ... the
+    interbouton distance was not different (Figure 2I)
+- id: fig3c-spc-excite-pvbc
+  statement: sPCs connect to PVBCs three times as often as dPCs do (48.2%, 27 of 56, against
+    16%, 8 of 50), with no difference in euEPSC amplitude (46.7 against 33.3 pA).
+  source: Results, CA1 sPCs Are More Likely to Provide Excitatory Inputs to PVBCs, paragraph 1;
+    Figure 3A to 3C
+  quote: 'the connection probability between sPCs to PVBCs was three times higher compared to
+    dPCs to PVBCs (Figures 3A and 3C; dPC: 16%, 8/50 pairs connected; sPC: 48.2%, 27/56; p <
+    0.001), with no difference in the euEPSC amplitudes (Figure 3B; dPC: 33.3 ± 5.1 pA, n = 8;
+    sPC: 46.7 ± 10.7 pA, n = 27; p > 0.1)'
+  statistics:
+  - about: connection probability
+    test: Pearson's chi-square test
+    p: 0.001
+    p_relation: <
+    n: 50 dPC and 56 sPC pairs
+  - about: euEPSC amplitude
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.1
+    p_relation: ">"
+    n: 8 dPC and 27 sPC connections
+  expected:
+  - quantity: sPC to PVBC connected pairs
+    value: 27
+    tolerance: 2.7
+  - quantity: dPC to PVBC connected pairs
+    value: 8
+    tolerance: 0.8
+  - quantity: dPC euEPSC
+    value: 33.3
+    tolerance: 5.1
+    unit: pA
+  - quantity: sPC euEPSC
+    value: 46.7
+    tolerance: 10.7
+    unit: pA
+- id: fig3-epsc-release-properties
+  statement: Release probability (0.74 against 0.70) and short-term plasticity (89.1% against
+    82.3%) of PC to PVBC synapses do not differ between dPCs and sPCs.
+  source: Results, CA1 sPCs Are More Likely to Provide Excitatory Inputs to PVBCs, paragraph 1
+  quote: 'there was no difference in the probability of success in glutamate release from dPCs
+    (0.74 ± 0.06, n = 8) versus sPCs (0.70 ± 0.05, n = 27; p < 0.05), and the short-term
+    plasticity properties were also similar between the two groups (dPC: 89.1% ± 16.7%, n = 8;
+    sPC: 82.3% ± 9.8%, n = 18; p > 0.5)'
+  statistics:
+  - about: release probability (printed p < 0.05 in a sentence that reports no difference)
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 8 dPCs and 27 sPCs
+  - about: paired-pulse ratio
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 8 dPCs and 18 sPCs
+  expected:
+  - quantity: dPC release probability
+    value: 0.74
+    tolerance: 0.06
+  - quantity: sPC release probability
+    value: 0.70
+    tolerance: 0.05
+  - quantity: dPC paired-pulse ratio
+    value: 89.1
+    tolerance: 16.7
+    unit: '%'
+  - quantity: sPC paired-pulse ratio
+    value: 82.3
+    tolerance: 9.8
+    unit: '%'
+  criterion: A claim of absence. The sentence reports no difference in release probability but
+    prints p < 0.05, which contradicts it; the sentence's words are taken, and the claim is
+    judged by the paper's rule at p < 0.05 for both measures.
+- id: fig3ef-reciprocal-motifs
+  statement: PVBCs connect to sPCs, and to dPCs, with similar probability and euIPSC amplitude
+    whether or not the PC excites the PVBC.
+  source: Results, CA1 sPCs Are More Likely to Provide Excitatory Inputs to PVBCs, paragraph 3;
+    Figure 3E and 3F
+  quote: PVBCs formed unitary connections with similar probability and strength with sPCs
+    regardless of whether the sPCs provided excitatory input to the PVBC (Figure 3E). A similar
+    scenario was observed for dPCs (Figure 3F)
+  criterion: A claim of absence, judged by Pearson's chi-square test for connection probability
+    and the paper's unpaired rule for euIPSC amplitude, at p < 0.05, for sPCs and dPCs apart.
+- id: fig4b-pvbc-inhibit-firing
+  statement: Theta-nested gamma bursts of PVBCs reduce dPC firing (2.1 to 0.6 Hz) more than sPC
+    firing (2.2 to 1.6 Hz), from similar baseline rates.
+  source: Results, PVBCs Nonuniformly Inhibit the Action Potential Discharges of PCs, paragraph
+    1; Figure 4A and 4B
+  quote: 'change in dPCs firing during theta-nested gamma-frequency discharges of PVBCs: 2.1 ±
+    0.2 Hz to 0.6 ± 0.2 Hz, n = 7; in sPC: from 2.2 ± 0.1 Hz to 1.6 ± 0.3 Hz, n = 8; p < 0.05'
+  statistics:
+  - about: inhibition of firing, dPC against sPC
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 7 dPC and 8 sPC pairs
+  - about: baseline firing, sPC against dPC
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 8 sPCs and 7 dPCs
+  expected:
+  - quantity: dPC firing before
+    value: 2.1
+    tolerance: 0.2
+    unit: Hz
+  - quantity: dPC firing during PVBC bursts
+    value: 0.6
+    tolerance: 0.2
+    unit: Hz
+  - quantity: sPC firing before
+    value: 2.2
+    tolerance: 0.1
+    unit: Hz
+  - quantity: sPC firing during PVBC bursts
+    value: 1.6
+    tolerance: 0.3
+    unit: Hz
+- id: fig4d-model-feedforward
+  statement: In the network model, extra excitation to sPCs lowers dPC firing more than extra
+    excitation to dPCs lowers sPC firing, and sPCs are more sensitive to their own extra
+    excitation than dPCs.
+  source: Results, Computational Simulations Indicate Preferential Feedforward Inhibition from
+    the Superficial to Deep PC Sublayer, paragraphs 1 and 2; Figure 4C to 4E
+  quote: increasing excitation selectively to sPCs in the model caused a ... larger decrease in dPC
+    firing than the decrease in sPC firing that occurred after increasing excitation selectively
+    to dPCs (Figure 4D; p < 0.001), and the sPCs in the network (subject to less PVBC
+    inhibition) were more sensitive to increasing levels of excitation than the dPCs
+  statistics:
+  - test: Tukey-Kramer test
+    p: 0.001
+    p_relation: <
+    n: three statistically independent simulations
+  data: with_inputs
+  criterion: Needs the network model of ModelDB 153280, run as the Supplemental Experimental
+    Procedures 8 describe (control, and +5, 10, 15, 20, 30 and 40% afferents to sPCs or to dPCs;
+    three independent networks; 5,000 ms at 0.05 ms steps), rates normalized to control.
+    Reproduced when the decrease in dPC rate with excitation to sPCs exceeds the decrease in sPC
+    rate with excitation to dPCs by Tukey-Kramer at p < 0.05, and sPC rates rise more with
+    their own extra excitation than dPC rates.
+- id: fig4ef-model-pvbc-rates
+  statement: In the model, control PC rates are about 2.4 Hz; adding 5% excitation to sPCs
+    raises sPC firing 34% and PVBC firing 65%, while adding 10% to dPCs raises dPC firing 38%
+    but PVBC firing only 15%.
+  source: Results, Computational Simulations Indicate Preferential Feedforward Inhibition from
+    the Superficial to Deep PC Sublayer, paragraphs 1 and 2; Figure 4C, 4E and 4F
+  quote: While a 34% increase in sPC firing rate resulted in a 65% increase in PVBC firing, a 38%
+    increase in dPC firing rate only resulted in a 15% increase in PVBC firing (Figure 4F)
+  data: with_inputs
+  depends_on:
+  - fig4d-model-feedforward
+  expected:
+  - quantity: control PC firing rate
+    value: 2.4
+    tolerance: 0.24
+    unit: Hz
+  - quantity: sPC rate increase, +5% to sPCs
+    value: 34
+    tolerance: 3.4
+    unit: '%'
+  - quantity: PVBC rate increase, +5% to sPCs
+    value: 65
+    tolerance: 6.5
+    unit: '%'
+  - quantity: dPC rate increase, +10% to dPCs
+    value: 38
+    tolerance: 3.8
+    unit: '%'
+  - quantity: PVBC rate increase, +10% to dPCs
+    value: 15
+    tolerance: 1.5
+    unit: '%'
+  criterion: From simulations of ModelDB 153280 as in fig4d-model-feedforward; each value is the
+    mean over the three networks. Reproduced when all are within tolerance; partially
+    reproduced when the PVBC increase is larger for the sPC condition but some value is outside.
+- id: fig5-cckbc-nonselective
+  statement: CCKBCs evoke similar euIPSCs in dPCs and sPCs (42.2 against 42.9 pA) with similar
+    connection probability (44% against 40%), similar pair distances and bouton numbers, and no
+    PC to CCKBC excitatory connections were found (0 of 28 deep, 0 of 23 superficial).
+  source: Results, Cholecystokinin-Expressing Basket Cells Do Not Preferentially Innervate CA1
+    sPCs versus dPCs, paragraph 1; Figure 5C to 5H, S4
+  quote: 'the IPSCs generated by the CCKBCs were similar between sPCs and dPCs (Figures 5B and
+    5C; euIPSCs amplitude; dPC: 42.2 ± 8.5 pA, n = 20; sPC: 42.9 ± 8.8 pA, n = 21; p > 0.5; data
+    from the temporal hippocampus). In addition, there was also no difference in connection
+    probability (Figure 5D; dPC: 44%; sPC: 40%; p > 0.62)'
+  statistics:
+  - about: euIPSC amplitude
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 20 dPCs and 21 sPCs
+  - about: connection probability
+    test: Pearson's chi-square test
+    p: 0.62
+    p_relation: ">"
+  - about: somatic distance
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 25 CCKBC-sPC and 22 CCKBC-dPC pairs
+  - about: CCKBC boutons per PC
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+    n: 9 sPCs and 9 dPCs
+  - about: CB1R+ boutons per PC soma
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.5
+    p_relation: ">"
+  expected:
+  - quantity: dPC euIPSC from CCKBCs
+    value: 42.2
+    tolerance: 8.5
+    unit: pA
+  - quantity: sPC euIPSC from CCKBCs
+    value: 42.9
+    tolerance: 8.8
+    unit: pA
+  - quantity: dPC connection probability
+    value: 44
+    tolerance: 4.4
+    unit: '%'
+  - quantity: sPC connection probability
+    value: 40
+    tolerance: 4
+    unit: '%'
+  criterion: Claims of absence, each judged by the paper's test (unpaired rule for amplitudes,
+    distances and bouton counts; Pearson's chi-square for connection probability) at p < 0.05.
+    Reproduced when none differs and no PC to CCKBC connection is found.
+- id: fig6c-parallel-projections
+  statement: mPFC- and AMG-projecting dPCs of temporal CA1 are largely separate populations
+    (17% of mPFC-projecting and 14% of AMG-projecting cells double-labelled), and mPFC- and
+    AMG-projecting PCs lie mostly in the deep sublayer.
+  source: Results, Heterogeneous PVBC Microcircuits as a Function of Long-Distance Targets of
+    CA1 PCs, paragraphs 2 and 3; Figure 6B and 6C, S5C
+  quote: 'mPFCPCs also labeled from AMG: 17%, 54 colabeled cells out of 314 cells; AMGPCs also
+    labeled from mPFC: 14%, 54/385 colabeled cells; n = 3 animals), indicating that the mPFCPCs
+    and AMGPCs form a largely segregated, parallel projection pathway from the CA1'
+  expected:
+  - quantity: mPFC-projecting cells also labelled from AMG
+    value: 17
+    tolerance: 1.7
+    unit: '%'
+  - quantity: AMG-projecting cells also labelled from mPFC
+    value: 14
+    tolerance: 1.4
+    unit: '%'
+- id: fig6e-amg-larger-ipsc
+  statement: PVBCs evoke euIPSCs three times larger in AMG-projecting than in mPFC-projecting
+    dPCs (64.0 against 21.0 pA), with similar connection probability (36% against 32.1%) and
+    twice as many perisomatic terminals (6.0 against 3.0).
+  source: Results, Heterogeneous PVBC Microcircuits as a Function of Long-Distance Targets of
+    CA1 PCs, paragraph 4; Figure 6D and 6E, S5D
+  quote: 'PVBCs evoked significantly larger euIPSCs in postsynaptic AMGPCs compared to mPFCPCs
+    (Figures 6D and 6E; AMG: 64.0 ± 12.6 pA, n = 9; mPFC: 21.0 ± 3.5 pA, n = 9; p < 0.05 ...
+    PVBCs formed significantly more perisomatic axon terminals on AMGPCs compared to mPFCPCs
+    (AMG: 6.0 ± 0.4, n = 4; mPFC: 3.0 ± 0.4, n = 4; p < 0.005)'
+  statistics:
+  - about: euIPSC amplitude
+    test: ANOVA followed by Tukey-Kramer test
+    p: 0.05
+    p_relation: <
+    n: 9 AMG and 9 mPFC dPCs
+  - about: perisomatic terminals
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.005
+    p_relation: <
+    n: 4 AMG and 4 mPFC dPCs
+  expected:
+  - quantity: AMG dPC euIPSC
+    value: 64.0
+    tolerance: 12.6
+    unit: pA
+  - quantity: mPFC dPC euIPSC
+    value: 21.0
+    tolerance: 3.5
+    unit: pA
+  - quantity: PVBC-mPFC connected pairs (of 28)
+    value: 9
+    tolerance: 0.9
+  - quantity: PVBC-AMG connected pairs (of 24)
+    value: 9
+    tolerance: 0.9
+  - quantity: terminals per AMG dPC
+    value: 6.0
+    tolerance: 0.4
+  - quantity: terminals per mPFC dPC
+    value: 3.0
+    tolerance: 0.4
+- id: fig6g-mpfc-excite-pvbc
+  statement: mPFC-projecting dPCs excite PVBCs far more often (33.3%) than AMG- (4.2%) or
+    MEC-projecting (5%) dPCs.
+  source: Results, Heterogeneous PVBC Microcircuits as a Function of Long-Distance Targets of
+    CA1 PCs, paragraph 5; Figure 6F and 6G
+  quote: 'mPFCPCs were significantly more likely than AMGPCs or MECPCs to display excitatory
+    connections with PVBCs (Figures 6F and 6G; mPFC: 33.3%; AMG: 4.2%; MEC: 5%; p < 0.025'
+  statistics:
+  - test: Pearson's chi-square test
+    corrected: Bonferroni-Holm
+    p: 0.025
+    p_relation: <
+  expected:
+  - quantity: mPFC dPC to PVBC connection probability
+    value: 33.3
+    tolerance: 3.33
+    unit: '%'
+  - quantity: AMG dPC to PVBC connection probability
+    value: 4.2
+    tolerance: 0.42
+    unit: '%'
+  - quantity: MEC dPC to PVBC connection probability
+    value: 5
+    tolerance: 0.5
+    unit: '%'
+- id: figs1-pc-morphology
+  statement: dPCs have larger somata and longer basal dendrites than sPCs, with similar apical
+    dendritic length.
+  source: Results, PVBCs Preferentially Innervate Subpopulations of CA1 PCs, paragraph 2;
+    Figure S1A to S1D; Figure S3A legend
+  quote: there were some morphological differences between the dPCs and sPCs, with the dPCs
+    having larger basal dendritic trees and somata (Figures S1A-S1D)
+  statistics:
+  - about: basal dendritic length (Figure S1C, asterisk; legend p < 0.05)
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 6 sPCs and 6 dPCs
+  - about: soma surface area (Figure S1D, asterisk; legend p < 0.05)
+    test: two-tailed unpaired t test, or Mann-Whitney test when Shapiro-Wilk fails
+    p: 0.05
+    p_relation: <
+    n: 11 sPCs and 11 dPCs
+  expected:
+  - quantity: dPC soma surface area (Figure S3A legend)
+    value: 822
+    tolerance: 82.2
+    unit: um2
+  - quantity: sPC soma surface area (Figure S3A legend)
+    value: 636
+    tolerance: 63.6
+    unit: um2
+checks:
+- date: 2026-11-06
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - tables1-rheobase, removed reading (c), the first step with nonzero group-mean firing in
+    Figure S1E; that figure shows both group means at about 1 Hz at +100 pA, so the reading
+    cannot give the +150 pA of Table S1.
+  - figs3f-pvbc-firing, the open triangles of Figure S3F show the biological PVBC at about 2 Hz
+    at +350 pA; added this to the statement and the expected values (tolerance 1 Hz, reason
+    given), and named the PVBC step protocol as not stated in the paper, with 1 s steps of 50
+    pA assumed from the PC protocol and the figure's abscissa.
+  - fig2e-bouton-roi-running, the test named a paired t test; the paper gives n = 5 per
+    sublayer without saying the samples are paired, so the test now names the rule without
+    choosing.
+  - fig1-kmeans-large-small, added a criterion; the paper does not say whether the clustering
+    used only the 39 temporal pairs whose counts it reports or all 53 pairs, so both are named
+    as readings.
+  - figs1-pc-morphology, added the statistics the figure reports (asterisks, legend p < 0.05)
+    for basal dendritic length (Figure S1C, n = 6 and 6) and soma area (Figure S1D, n = 11 and
+    11).
+  - Open, figs1e-if-curves, figs1h-sag and figs3f-pvbc-firing rest on values read from figures
+    with 10% tolerance; the figures also show SEM bars, which the text does not state.
+  - Open, figs1g-resting-potential, whether the deposited sweeps hold a zero-current baseline
+    is for the author to find; the Table S1 footnote says the PCs were given a tonic current
+    during the sweeps.
+  - Open, fig6c-parallel-projections, the Results give 314 mPFC and 385 AMG cells with 54
+    double-labelled, but the Figure S5C legend gives 271 and 410 single-labelled and 56 double;
+    the claim follows the Results.

@@ -1,0 +1,993 @@
+schema_version: 3
+id: bruno-2017-01
+datasets:
+- archive: crcns
+  id: apl-1
+  version: unversioned
+  doi: 10.6080/K0SN074B
+  relation: primary
+paper: doi:10.7554/elife.27342
+date: 2026-11-08
+entry: bruno-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42478340998
+outcomes:
+- claim: dataset-size
+  outcome: partially_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:dataset-size
+  measured:
+  - 10
+  - 30
+  - 1131
+  notes: 10 preparations, 30 recordings and 1131 neurons, all as the paper gives. Recordings hold 75 to
+    160 neurons and only 12 of 30 lie in 108 to 198 (120 to 180 widened by 10%), as the data set's description
+    (75 to 160) says. Counting only neurons that spike after onset gives the same numbers. The paper's
+    range cannot hold with its total, as ten preparations of at least 120 neurons would hold at least
+    1200.
+- claim: fig1d-slow-oscillation
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig1d-slow-oscillation
+  measured: 0.0486
+  notes: Power-weighted peak of the grand mean spectrum 0.0486 Hz; per recording 0.0131 to 0.0789 Hz,
+    30 of 30 above 0 and at or below 0.11 Hz. Variant, frequency of maximum power above 0 Hz, 0.0076 to
+    0.0992 Hz, 30 of 30 at or below 0.11 Hz. The frequency grid step is 0.0076 Hz. The grand mean spectrum's
+    maximum is at the lowest bin and the spectrum is nearly flat over its first bins (7.54 at 0.0076 Hz,
+    7.24 at 0.053 Hz), so the decay of the rate contributes to it. A detrended check, not judged, shows
+    an oscillation besides the decay. With a quadratic trend removed from the population rate after offset,
+    the frequency of maximum power above 0.02 Hz is 0.034 to 0.156 Hz (median 0.064 Hz), at or below 0.11
+    Hz in 27 of 30, and the power in 0.05 to 0.11 Hz exceeds that in 0.2 to 1 Hz in 30 of 30 (median ratio
+    9.8).
+  deviations:
+  - Chronux mtspectrumpt is ported to Python (apl.mtspectrumpt) with its defaults, tapers [3 5], the time
+    grid from the first to the last spike, the mean rate subtracted; it was not checked against MATLAB
+    output.
+- claim: fig1e-decaying-rate
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig1e-decaying-rate
+  notes: Reading (a), 30 of 30 decreasing (R from -0.992 to -0.774) and none increasing; reading (b),
+    30 of 30 negative slopes. Every preparation has three decreasing responses.
+- claim: fig2b-dimensions
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig2b-dimensions
+  measured:
+  - 3
+  - 7
+  notes: Reproduced under reading (c) with the recording's own median ISI and count (ii), at most 80%
+    (own/le80), the first reading the criterion lists that matches; 28 of 30 counts in 3.6 to 8.8 (3 to
+    7) and neurons divided by count above 10 in all 30 (lowest 10.7). The code's pooled median with count
+    (ii) gives the same 28 and 30. With count (i), smallest reaching 80%, the counts are 4 to 8 (the paper's
+    range; 30 of 30 in range) but the ratio is 9.4 in one recording (75 neurons, 8 PCs), so the criterion
+    fails there by one response. The readings (a) median ISI / sqrt(12) and (b) median ISI / 12 give 21
+    to 76 dimensions and ratios of 1.8 to 2.8 at the lowest. The adopted reading of the later claims (own/min80)
+    is one under which this claim fails, by one response.
+  deviations:
+  - The kernel width is read four ways (median ISI / sqrt(12), / 12, the median ISI of the recording,
+    and the code's running median over the recordings of the same bout number), each with both count rules,
+    as the criterion lists.
+- claim: fig2ef-periodic-recurrence
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig2ef-periodic-recurrence
+  measured:
+  - 11.06
+  - 14.98
+  notes: Measured gives the quartiles of the 30 dominant periods under the adopted reading (own/min80,
+    mean of the peak). 26 of 30 periods lie in 9 to 16.5 s, and 4 do not (17.28, 22.23, 8.75 and 19.94
+    s); with the median of the peak 23 of 30. The four readings with the code's width give 22 to 26 of
+    30, the narrow widths 13 to 29; every reading except twelve/le80 with the mean (13 of 30) meets the
+    criterion.
+  deviations:
+  - Recurrence follows Analyse_by_Recurrence_Points.m (points from 35 s to 10 s before the end, the first
+    contiguous run within theta dropped, bins of 1 s on 0 to 50 s, peaks of at least 100 points), as the
+    claims file's opening comment gives it.
+- claim: fig2e-single-dominant-orbit
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig2e-single-dominant-orbit
+  measured: 29
+  notes: Adopted reading, 29 of 30 responses above 50% with delays of 5 to 50 s, 27 of 30 counting all
+    recurrent points (propInMaxPeriod). 1 to 4 peaks per response (12 with one), as the Methods say. The
+    other three readings with the code's width give 29 to 30 and 24 to 27, the same outcome.
+- claim: fig2s2-threshold-robust
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig2s2-threshold-robust
+  notes: Reading (a) holds for both lower thresholds under every reading of width, count and period (Spearman
+    0.70 to 0.97, all p below 2e-5, 30 responses with a peak at both thresholds). Reading (b) holds at
+    5% in all eight cases and fails at 2% in six (adopted, mean period, median absolute difference 1.30
+    s against 1.27 s).
+- claim: fig3a-coalescence
+  outcome: not_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3a-coalescence
+  measured: 12
+  notes: Coalescence (first window with at least 90% recurrent points) within one dominant period of onset
+    in 12 of 30 responses (adopted reading), 11 to 14 under the others, against 27 required; from offset
+    19 of 30 (17 to 20). Coalescence 7.5 to 49.5 s after onset, median 14.5 s. The stability part holds,
+    more than 50% of points recur after coalescence in 30 of 30 (60.8% to 98.6%). As the checked points
+    start 5 s after onset (Methods), the earliest possible coalescence is 7.5 s after onset, near the
+    shortest periods (8.7 to 9.4 s). The lateness is not an edge effect of the 90% line, as within one
+    period of onset the highest window density reaches 0.8 in 15 of 30 responses and 0.7 in 21.
+  deviations:
+  - A window counts as coalesced when at least 90% of its points recur, as the Methods say (Testing convergence
+    to the same manifold); the code's PrctWnone below 10 is the strict form. With 500 points per window
+    the two differ only at exactly 450 points; the counts are those of the strict form except from offset
+    (19 against 18).
+- claim: fig3c-same-manifold
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3c-same-manifold
+  measured: 29
+  notes: Reading (a), recurrent points, 29 of 30 pairs below their control mean under every reading, failing
+    pair (1,2) of preparation 4 (1.04 times its control). Reading (b), the code's point sets, 28 of 30
+    under every reading, failing pairs (1,2) and (1,3) of preparation 4 (1.19 and 1.17), the pairs the
+    paper names. 100 shuffles each way; 2 s.e.m. of the control 0.11 to 0.36.
+  deviations:
+  - The Hausdorff distances use scipy's exact directed_hausdorff in place of the code's loops.
+- claim: fig3s1a-common-axes
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3s1a-common-axes
+  measured: 30
+  notes: On common axes (5 to 10 PCs, at most 80%), recurrent points 30 of 30 under every reading; the
+    code's point sets 28 of 30 (failing preparation 4, pairs (1,2) and (1,3)) under three readings and
+    27 under own/le80 (also preparation 8, pair (2,3)).
+- claim: fig3d-initial-conditions
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3d-initial-conditions
+  notes: The transient distance exceeds both the onset and the coalesced distance in 30 of 30 pairs under
+    every reading and both point sets. Adopted reading, medians 9.31 (onset), 45.44 (transient) and 14.51
+    (coalesced, code's point sets).
+  deviations:
+  - The transient distance uses every fifth point of the second program of the pair, to save time; points
+    10 ms apart are nearly equal, so the maximum changes little.
+- claim: fig3f-pairwise-similarity
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3f-pairwise-similarity
+  measured: 29
+  notes: Data correlation above control in 29 of 30 pairs (Spearman, first program's control), 30 (Pearson,
+    first), 27 (Spearman, larger control) and 28 (Pearson, larger control), the same under every reading
+    of width and count. With Pearson and the larger control the failing pairs are (1,3) and (2,3) of preparation
+    7, as the paper names them; with Spearman and the first control pair (1,3) of preparation 4 fails
+    (0.597 against 0.622).
+  deviations:
+  - The similarity matrix is the correlation of the post-onset spike-density functions, as the criterion
+    says; the code takes it from its clustering toolbox's convolved trains, which use the same kernel
+    width.
+- claim: fig3h-perturbations-return
+  outcome: partially_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3h-perturbations-return
+  measured:
+  - 16
+  - 15
+  assumed: true
+  notes: Adopted reading with the Methods' period (mean of the peak), 34 divergent periods, 16 kept after
+    removing those within two periods of the end, 15 returned (0.938). The fraction meets the criterion
+    and both counts fall just below their tolerances (17.1 to 20.9 and 15.3 to 18.7). With the median
+    of the peak (the code's period) 17 kept and 16 returned (0.941); 16 returns are within tolerance and
+    17 periods just below 17.1. Over the four readings 14 to 19 kept, 13 to 17 returned, fractions 0.875
+    to 0.941; the counts meet the criterion only under own/le80 (18 kept and 16 returned with the mean
+    period, 19 and 17 with the median). With eight combinations run, a pass under one of them is weak
+    evidence. The code's rule, removing only the periods within two cycles of the end that never return,
+    keeps 17 to 21 over the readings; under the adopted reading it keeps 19 of which 18 return (0.947),
+    with either period, which meets both tolerances and matches the paper's 19. The criterion states
+    the Methods' rule ("We removed all such divergent periods whose divergent point fell within two oscillation
+    cycles of the end of the recording"), so the code's rule is reported, not judged. The criterion has
+    no partial outcome; partially reproduced is kept because the returned fraction holds and the two counts
+    miss their tolerances by 1.1 and 0.3.
+  deviations:
+  - Divergent periods follow the Methods' definition (runs of windows below 90% after coalescence that
+    fall below 50%), computed directly; the code's loop in recurrence_point_results_Viz.m finds the same
+    kind of run.
+  - Assumed, the adopted reading (own/min80) and the period for the two-cycle rule, the Methods' mean
+    of the dominant peak. The outcome is reproduced only under own/le80. Question for the authors under
+    findings.
+- claim: fig3i-same-manifold-after
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig3i-same-manifold-after
+  measured: 13
+  notes: Reading (b), recurrences after the divergent point (the code's blnSame), 13 of the 15 returned
+    divergences exceed 0.2 under the adopted reading, within 12.6 to 15.4; reading (a), after the end
+    of the divergent period (Methods), 10. With the median period 14 of 16 under (b) and 11 under (a).
+    Over the four readings (b) gives 11 to 17 and (a) 9 to 14. It depends on claim fig3h-perturbations-return,
+    whose counts are just short; the returned divergences tested here are those it finds. The count depends
+    strongly on the reading (9 to 17), so the pass under the adopted reading is weak evidence for the
+    paper's 14.
+- claim: fig4bc-stable-spiral
+  outcome: partially_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig4bc-stable-spiral
+  measured:
+  - -0.000362
+  - 0.00729
+  notes: The grand mean is a stable spiral under every reading (adopted a = -0.000362, b = 0.00729). 21
+    of 30 responses lie in the stable-spiral region; 8 of 10 preparations have at least two of three (preparations
+    3 and 4 have one each); other readings 20 to 23 responses and 6 to 9 preparations. Spread, SD of a
+    0.00058 and of b 0.0028 across responses. No point of a dominant orbit had fewer than 100 neighbours
+    (fewest in any response 195, median of the per-response medians 1566), so the filter removes nothing
+    here.
+  deviations:
+  - The maximum eigenvalue is the one of largest modulus, as MATLAB's max orders complex numbers in LocalLinearDynamics.m;
+    the Methods do not say how the maximum is taken.
+  - The local neighbourhood is the contiguous run of points within 2.5 theta around the point, as the
+    Methods describe. The code's run detection subtracts the point's position in the neighbourhood from
+    the time indices (abs(currixs - ixPt)), which can miss gaps before the point; that quirk is not reproduced.
+- claim: fig4c-orbital-period
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig4c-orbital-period
+  measured: 10.45
+  assumed: true
+  notes: Mean over responses of 2 pi / b times 0.01 s, 10.45 s under the adopted reading; the variant
+    mean of per-point rotation periods 10.24 s. With count (ii) (the code's) 13.55 s (own/le80) and 12.22
+    s (pooled/le80), outside tolerance. The per-response linear periods do not correlate with the recurrence
+    periods (Pearson r = -0.063, p = 0.74; -0.12 to 0.03 under the other readings), and the means do not
+    agree within the claim's tolerance either (10.45 s against a median recurrence period of 12.73 s,
+    2.3 s apart where the tolerance is 1 s). The criterion judges the mean and reports the correlation,
+    so "consistent with" is reported, not judged; neither the correlation nor the means support it.
+  deviations:
+  - Assumed, the Methods' count rule (smallest number of PCs reaching 80%); the code's rule gives a mean
+    period outside the tolerance. Question for the authors under findings.
+- claim: fig4s1a-contracting-dimensions
+  outcome: not_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig4s1a-contracting-dimensions
+  measured: 11
+  notes: All unique-dimension means negative in 11 of 30 responses (8 to 11 under the other readings),
+    where more than 15 are required. The second part holds, 10 responses (9 to 12) have exactly one positive
+    mean, in a dimension other than the first. In 7 responses the first dimension's mean is positive.
+- claim: fig4s1b-rotation-dominant
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig4s1b-rotation-dominant
+  notes: Proportion of local models with a complex eigenvalue among the top two above 0.5 in all 30 responses
+    under every reading (adopted 0.87 to 1.00).
+- claim: fig5b-period-changes
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig5b-period-changes
+  measured:
+  - 31
+  - 73
+  notes: Adopted reading, 12 slowing, 4 speeding and 14 unchanged at p < 0.01 (10000 permutations of the
+    window delays, two-sided); the code's pooled one-sided test with 100000 permutations gives 13, 4 and
+    13. Windows per response 31 to 73, from the first to the last window with at least 90% recurrent points.
+    Other readings 10 to 14 slowing, 4 to 6 speeding, 11 to 15 unchanged.
+  deviations:
+  - The Methods do not say what the permutation test permutes; the main test permutes the mean delays
+    against window time, keeping the weights with the windows, and is two-sided. The code's test, which
+    permutes the pooled time and delay values and is one-sided, is shown as the claims file's variant.
+    Ranks are assigned without averaging ties, as in WeightedCorrelation.m.
+- claim: fig5c-no-relation-contraction
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig5c-no-relation-contraction
+  measured: -0.341
+  notes: Pearson R = -0.341, p = 0.065 between weighted rho and mean real part (adopted reading); -0.342,
+    p = 0.064 with the contraction in %/s. Other readings R = -0.14 to -0.34, p = 0.064 to 0.46. No relation
+    at p < 0.05, but the effect is moderate and p is near the threshold.
+- claim: fig6s1-no-p10-motorneurons
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig6s1-no-p10-motorneurons
+  measured: 0.522
+  notes: 1050 neuron-program values (1 neuron without spikes after 33 s); largest maximum locking 0.522;
+    none at 0.9 or more, none in two programs; 2 values reach 0.5, none 0.7.
+- claim: fig6d-decode-p10
+  outcome: not_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig6d-decode-p10
+  notes: Methods' windowing, mean forecast R minus 2 s.e.m. above 0 in 8 of 9 responses under every reading
+    of width and count (adopted, mean R of the other eight 0.36 to 0.89); the criterion requires each
+    of the nine and has no partial rule. Response 1 of preparation 4 fails under all four (mean R -0.060,
+    -0.120, -0.080 and -0.123 for own/min80, own/le80, pooled/min80 and pooled/le80; bounds -0.127 to
+    -0.204), with histories up to 100 ms, and with the code's windowing (mean R -0.102, bound -0.131).
+    Its training fit is good (mean training R 0.94; 0.91 to 0.97 in all nine) but its forecasts are not,
+    forecast R -0.59 to 0.27 in four windows plotted, against 0.81 to 0.94 for response 2 of the same
+    preparation. Forecast windows, 40 per response with the Methods' windowing (360), 174 per response
+    with the code's (1566); the paper's N = 173 is close to the code's count per response. The failing
+    response is the one the paper describes as apparently chaotic. The decoding gives different numbers
+    in different executions, as forecasts diverge in some windows of the longer histories (in the executed
+    copy, 462 to 627 of 5760 windows over all histories with the Methods' windowing, 1614 of 7830 with
+    the code's, above 10 times the response's largest P10 rate, up to about 1e13 spikes/s at the clip
+    of the linear predictor; one window of the selected histories, under pooled/min80). The copy reviewed
+    in round 3 gave mean R -0.060, -0.127, -0.060 and -0.119 for that response and -0.101 with the code's
+    windowing; the pass counts were 8 of 9 under every reading in each execution. A perturbation of the
+    PCs by 1e-9 of their SD changes the mean MAE of preparation 4, bout 1 at 150 ms with the code's windowing
+    from 5.3e11 to 4.2e11 and leaves the 50 ms model nearly unchanged (13.27 and 13.32), so mean MAEs
+    with diverging windows, and the history selected from them, depend on rounding; the forecast R of
+    the selected models moves by up to 0.02 between executions.
+  deviations:
+  - The Poisson GLM is fitted by a numpy IRLS in place of MATLAB's glmfit, at most 25 iterations with
+    a relative deviance change of 1e-6 (a standard choice; the forecasts of one program agreed to three
+    decimals with 100 iterations).
+  - Each window's fit starts from the previous window's coefficients, which changes only the starting
+    point of the iterations.
+  - All four readings of width and count with the code's width are run with the Methods' windowing; the
+    variants (histories up to 100 ms, the code's windowing) under the adopted reading.
+- claim: fig6s2-dimensions-p10
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig6s2-dimensions-p10
+  measured:
+  - 3
+  - 5
+  notes: Reproduced under own/le80, where both parts hold. The nine 80% counts are 3 to 5 under own/le80
+    and pooled/le80, and the 90% counts at least double them in each. Under own/le80 with the full history
+    grid for both, the 90% models are not better, mean MAE lower in 5 of 9 (two-sided Wilcoxon p = 0.91,
+    median difference -0.13) and mean R-squared higher in 4 of 9 (p = 0.50). Under pooled/le80 (four histories)
+    p = 0.65 and 0.82. Under the adopted reading (own/min80) the counts are 4 to 6 and one (6) is outside
+    2.7 to 5.5; there the 90% models are worse in MAE (p = 0.027, 7 of 9 worse, full grid; p = 0.020 with
+    four histories for both) and do not differ in R-squared (p = 0.13). No comparison finds the 90% models
+    better at p < 0.05. Over all histories 1111 (own/le80) and 1166 (own/min80) of 5760 windows of the
+    90% models have diverging forecasts in the executed copy, so the mean MAEs and these p-values depend
+    on rounding through the history selected and differ between executions; earlier executions gave p
+    = 0.50 and 0.91 for MAE under own/le80, with the same conclusion.
+  deviations:
+  - The 90% models use the Methods' full history grid under own/min80 and own/le80, and histories of 50,
+    100, 150 and 200 ms under pooled/le80, to fit the time limit; the comparison is also shown with the
+    80% models restricted to the same four histories.
+- claim: fig7a-long-tailed-participation
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig7a-long-tailed-participation
+  notes: Both readings of d, 30 of 30 responses with positive skewness (0.50 to 4.36, reading (a)) and
+    fewer than half the neurons above 50% of the maximum (at most 39.4%).
+  deviations:
+  - Participation uses the adopted kernel width (the recording's median ISI).
+- claim: fig7f-strongly-variable-neurons
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig7f-strongly-variable-neurons
+  notes: All 10 preparations have strongly variable neurons under both readings of d and both poolings;
+    reading (a) with all pairs at least 4 per preparation, 3.8% to 23.4% of neurons; consecutive pairs
+    5.9% to 29.3%.
+  deviations:
+  - Neuron ids are taken to name the same neuron in all bouts, as the data description says (recordings
+    concatenated before spike sorting); per-neuron spike counts correlate between bouts above permuted
+    ids in 30 of 30 pairs, which is consistent with it.
+- claim: halving-participation
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:halving-participation
+  measured: 6
+  notes: Reading (a), the neuron at 100%, halves in another program in 6 of 10 preparations; reading (b),
+    the top 10%, in 9 of 10; the same under both readings of d.
+- claim: fig7s1-rate-synchrony
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig7s1-rate-synchrony
+  measured:
+  - 0.491
+  - 0.239
+  notes: Participation (a), rate from stimulation offset, matched pairs, mean R-squared 0.491 within responses
+    and 0.239 for changes. Rate from onset 0.514 and 0.265; the code's mismatched pairing 0.205 and 0.221;
+    participation (b) 0.499 and 0.244.
+- claim: fig7gh-robust-to-participation
+  outcome: partially_reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig7gh-robust-to-participation
+  assumed: true
+  notes: Adopted width and count. With recurrent points the normalised distance rises with the total change
+    in participation (slope 0.0127, p = 0.031, R-squared 0.17, 28 pairs) but not the Hellinger distance
+    (p = 0.35); with the code's point sets it rises with the Hellinger distance (p = 0.028) but not the
+    total change (p = 0.11). Participation reading (b) gives the same pattern (p = 0.032 and 0.017). So
+    one of the two absences holds and the other fails, and the claim holds in part. Under own/le80 one
+    slope is significant with the recurrent points (total change, p = 0.036) and none with the code's
+    points (lowest p 0.053); under pooled/min80 and pooled/le80, with participation from the pooled width,
+    no slope is significant with the legend's exclusion (lowest p 0.085 and 0.069). With the code's exclusion
+    (pairs with normalised distance below 1), pooled/min80 has a significant total-change slope with the
+    recurrent points (p = 0.028 and 0.029, participation readings (a) and (b)) and pooled/le80 has none
+    (lowest p 0.069). The robust fits agree with the ordinary ones in
+    significance except one (code points, adopted reading, reading (a), Hellinger, robust p = 0.063).
+  deviations:
+  - Assumed, the adopted reading of width and count (own/min80). Under the pooled readings the claim is
+    reproduced with the legend's exclusion; with the code's exclusion pooled/min80 has one significant
+    slope (total change, recurrent points). Participation is computed under each reading's width and count. The test is the code's
+    linear regression slope, as the criterion says.
+- claim: fig7s2-no-invariant-core
+  outcome: reproduced
+  notebook: reproduce_bruno_2017.ipynb
+  output: claim:fig7s2-no-invariant-core
+  notes: With a port of the code's ensemble toolbox, every preparation has neurons typed oscillator in
+    all three programs (16 to 84 per preparation, adopted width, seed 7). The top 10% of them by maximum
+    participation (2 to 8 neurons) have a median maximum change between consecutive programs of 0.068
+    to 0.440 of the program maximum, so only preparation 2 has an invariant core by the claims file's
+    rule (1 of 10). Both widths, two seeds and both participation readings give 0 or 1 of 10. Without
+    typing, the top 10% of all neurons have median maximum changes of 0.12 to 0.32, under 0.1 in none.
+    The legend's statement that only the oscillator class had a consistently typed neuron in all ten preparations
+    holds in part, as persistent oscillators are found in 10 of 10 under every variant but persistent
+    bursters in 6 to 10 (10 in one variant).
+  deviations:
+  - The ensembles and types come from a Python port in apl.py of StaticEnsembles.m, consensus_cluster_spike_data_binless.m,
+    allevsplitConTransitive.m, Analyse_Spike_Train_Properties.m (with shuffle_intervals.m and spike_xcorr.m)
+    and Types_of_Ensemble_Across_Dataset.m at the cited commit, with the code's parameters. MATLAB's kmeans
+    is replaced by Lloyd's algorithm from the code's k-means++ start; the port was not checked against
+    MATLAB output. The clustering is random, so two seeds are shown.
+  - The convolution kernel uses the recording's own median ISI (the code's Data.GaussSD, the adopted width)
+    and, as a variant, the pooled width.
+- claim: fig8-caudolateral
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion needs the orientation of the array. The paper's text, the code (ParticipationMapsSummary.m
+    plots the coordinates on the diode template without labels), the data description and the files (Coordinates.mat,
+    diode_template.mat, plot_maps.m) do not say which direction of x or y is rostral, caudal, medial or
+    lateral. The notebook prints the counts of top-fifth neurons by quadrant of the array coordinates,
+    which decide nothing without it. Shown for the verifier, not judged, the top-fifth neurons of each
+    side concentrate in one quadrant of the array coordinates, the same for maximum under both divisions
+    and for range under true quintiles (left x-y-, right x-y+); under true quintiles that quadrant holds
+    34% to 41% of the top fifth against 19% to 20% of all neurons, and under the code's equal-width fifths
+    71% (left, maximum, 15 of 21) and 54% (right, 15 of 28). The code's equal-width division leaves 1
+    or 2 neurons in the top fifth of the range, so that half of the test is nearly empty as the code defines
+    it.
+findings:
+- kind: paper_inconsistency
+  statement: The paper gives 120 to 180 neurons per recorded population and 1131 neurons in all over 10
+    preparations; ten preparations of at least 120 would hold at least 1200. The data set holds 75 to
+    160 neurons per preparation, 1131 in all, as its description says.
+- kind: metadata_insufficient
+  statement: Coordinates.mat gives each neuron's x and y on a 0 to 50 scale without a unit, and neither
+    the files, plot_maps.m nor the data description say which directions of the array are rostral, caudal,
+    medial or lateral, so the paper's caudo-lateral quadrant cannot be located.
+- kind: other
+  statement: The P10 spike times are on a grid of 0.614 ms (1629.7 Hz), which agrees with the data description's
+    1630 Hz sampling; the paper says 1600 Hz.
+- kind: identifier_missing
+  statement: The P10 files of preparation 2 are named Jun0414da0Np10.mat while its spike and coordinate
+    files are Jun0414B; they can be matched only by the first seven characters, as the paper's code does.
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods give the Gaussian width as the median ISI divided by
+    12 (the extracted text; possibly the square root of 12), but the code uses the median ISI itself,
+    computed as a running median over the recordings of the same bout number read so far. With median
+    ISI / 12 or / sqrt(12) the recordings need 21 to 76 PCs for 80% of the variance, not the paper's 4
+    to 8. Which width was used for the published figures, and was the median meant to be per recording?
+- kind: methods_unavailable
+  statement: Question for the authors. The Methods say the projection kept the dimensions needed for at
+    least 80% of the variance; the recurrence and participation code keeps those whose cumulative variance
+    is at most 80% (one fewer), while the manifold code keeps the smallest number reaching 80%. Which
+    rule produced Figures 2 to 5? The linear-model period of Figure 4C is 10.45 s under the first and
+    12.2 to 13.6 s under the second.
+- kind: methods_unavailable
+  statement: Question for the authors. For removing divergent periods within two oscillation cycles of
+    the end, is the cycle the mean or the median recurrence time of the dominant peak, and is the rule
+    applied to all divergent periods (Methods) or only to those that never return (code)? The counts change
+    from 16 to 21 kept periods with these choices.
+- kind: methods_unavailable
+  statement: Question for the authors. The permutation test of the weighted Spearman correlation (Tracking
+    changes in periodicity) is not described beyond 10000 permutations; the code permutes the pooled time
+    and period values with 100000 permutations and tests one side. Which test gave Figure 5B?
+- kind: code_mismatch
+  statement: Figure 6D reports N = 173 forecast windows. The Methods' windowing (40 s fit, 10 s forecast,
+    1 s steps from 33 s) gives 40 windows per response here; the code's windowing (training on 50% of
+    the series, 0.2 s steps) gives 174 per response, close to 173, so the figure appears to use the code's
+    windowing, not the Methods'.
+- kind: code_mismatch
+  statement: In What_is_Participation.m the rate changes are ordered (1,2), (1,3), (2,3) and the participation
+    changes (1,2), (2,3), (1,3), so two of three pairs are mismatched in the correlation behind Figure
+    7, figure supplement 1D. With matched pairs the mean R-squared is 0.239, with the code's pairing 0.205.
+- kind: code_mismatch
+  statement: LocalLinearDynamics.m finds the contiguous neighbourhood of a point from abs(currixs - ixPt),
+    the time indices minus the point's position within the neighbourhood, so gaps among neighbours earlier
+    than that position are not detected and the fitted run can extend past them. The Methods describe
+    a run contiguous in time.
+verifications:
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier listed the archive, read the paper's
+    code and tested helper functions on synthetic inputs. Its report gave its own outcome for each claim;
+    24 of 30 agree with the record as it then stood.
+  results:
+  - claim: dataset-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 10 gives 10 preparations, 30 recordings and 1131 neurons, all exact. Only 12 of 30 recordings
+      hold 108 to 198 neurons; the range is 75 to 160, which matches the data description, not the paper's
+      120 to 180.
+    response: No change needed.
+  - claim: fig1d-slow-oscillation
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: the weighted peak of the grand mean spectrum is 0.0486 Hz, and 30 of 30 recordings
+      lie in (0, 0.11] Hz. B.10: fig1d may be measuring the rate decay, not an oscillation; the grand
+      mean spectrum''s maximum is at the lowest non-zero bin (0.0076 Hz), and there is no pre-stimulus
+      or detrended comparison to tell the two apart.'
+    response: 'Added a detrended check, not judged: with a quadratic trend removed from the population
+      rate after offset, the frequency of maximum power above 0.02 Hz is 0.034 to 0.156 Hz (median 0.064
+      Hz), at or below 0.11 Hz in 27 of 30, and the power in 0.05 to 0.11 Hz exceeds that in 0.2 to 1
+      Hz in 30 of 30. The notes say the decay contributes to the lowest bins. Outcome kept.'
+  - claim: fig1e-decaying-rate
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 14: 30 of 30 responses decrease under both reading (a) (R < -0.2) and reading (b) (negative
+      slope).'
+    response: No change needed.
+  - claim: fig2b-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: 'Code count (le80) with either the recording''s own or the pooled median ISI: 28 of 30 counts
+      in 3.6 to 8.8, and neurons/dimensions above 10 in 30 of 30. It fails under the Methods count (min80:
+      ratio above 10 in only 29 of 30) and under both printed SDs (22 to 76 dimensions). B.1: the adopted
+      reading fails fig2b, and no single reading makes the whole chain hold, and the notebook does not
+      say so.'
+    response: Outcome kept. The conclusion, the recurrence section and the Summary now say that the adopted
+      reading of the later claims fails this claim by one response, and the Summary tabulates the outcome
+      under each reading for every claim that changes with it. The adopted reading is kept, as the protocol
+      puts the Methods' count first.
+  - claim: fig2ef-periodic-recurrence
+    agrees: true
+    outcome: reproduced
+    reason: 'In all readings but one, more than 15 and fewer than 30 dominant periods lie in 9 to 16.5
+      s (adopted reading: 26 of 30, median 12.7 s). The exception is twelve/le80 with the mean period
+      (13 of 30).'
+    response: No change needed.
+  - claim: fig2e-single-dominant-orbit
+    agrees: true
+    outcome: reproduced
+    reason: 29 of 30 responses have more than 50% of points in the dominant peak (27 of 30 counting all
+      recurrent points); there are 1 to 4 peaks.
+    response: No change needed.
+  - claim: fig2s2-threshold-robust
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) holds at 5% and at 2% in every reading, Spearman 0.70 to 0.97 with p < 1e-4.
+    response: No change needed.
+  - claim: fig3a-coalescence
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Coalescence comes within one period of onset in only 11 to 14 of 30 responses (27 required),
+      and 16 to 20 of 30 measured from offset. The proportion recurrent after coalescence exceeds 50%
+      in 30 of 30. B.7: coalescence and divergence use dens > 0.9 where the paper says at least 90%. C:
+      the recurrence-density time course of a few responses, and the density in the first windows, would
+      show whether late coalescence is real.'
+    response: Windows now count at at least 90% (summarise, divergences and the fig5b windows); the counts
+      are unchanged except from offset (19 of 30, 17 to 20). Added the first-window density and the highest
+      density within one period of onset for every response (at least 0.8 in 15 of 30, at least 0.7 in
+      21) and a plot of six density time courses. Outcome kept.
+  - claim: fig3c-same-manifold
+    agrees: true
+    outcome: reproduced
+    reason: 29 of 30 pairs pass with recurrent points and 28 of 30 with the code's points. With the code's
+      points the failing pairs are exactly (4; 1,2) and (4; 1,3), as in the paper.
+    response: No change needed.
+  - claim: fig3s1a-common-axes
+    agrees: true
+    outcome: reproduced
+    reason: 27 to 30 of 30 pairs pass (26 required).
+    response: No change needed.
+  - claim: fig3d-initial-conditions
+    agrees: true
+    outcome: reproduced
+    reason: 'The transient distance exceeds both other distances in 30 of 30 pairs. Medians: transient
+      about 45, onset about 9.3, coalesced about 14.'
+    response: No change needed.
+  - claim: fig3f-pairwise-similarity
+    agrees: true
+    outcome: reproduced
+    reason: 27 to 30 of 30 pairs pass in every variant. Pearson with the larger control fails exactly
+      (7; 1,3) and (7; 2,3), as in the paper.
+    response: No change needed.
+  - claim: fig3h-perturbations-return
+    agrees: false
+    outcome: reproduced
+    reason: 'Own/le80: 18 kept with 16 returned (mean period) and 19 kept with 17 returned (median period),
+      both within tolerance. It fails under the adopted own/min80 reading (16 kept, 15 returned) and under
+      the pooled readings. B.4: fig3h and fig3i are reading-shopped; eight readings were run, the target
+      counts are met in only a few of them and not under the adopted reading, and this success is weak
+      evidence.'
+    response: Outcome kept as partially reproduced, resting on the adopted reading, and the disagreement
+      recorded. The criterion holds only under own/le80, one of eight combinations of width, count and
+      period, and the adopted reading decides, as for the other claims. Corrected the notes and the conclusion,
+      which had called 17 kept periods (median period, adopted reading) within tolerance; 17 is below
+      17.1.
+  - claim: fig3i-same-manifold-after
+    agrees: true
+    outcome: reproduced
+    reason: '13 or 14 under own/le80 with reading (a), and under own/min80 or pooled/le80 with reading
+      (b), all within 14 plus or minus 1.4. The result depends strongly on the reading (range 9 to 17).
+      B.4: reading-shopped; the criterion allows under a reading, but this success is weak evidence.'
+    response: Outcome kept. The conclusion and notes now say the count ranges from 9 to 17 with the reading
+      and that the pass is weak evidence for the paper's 14.
+  - claim: fig4bc-stable-spiral
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The grand mean is a stable spiral in every reading, but only 6 to 9 of the 10 preparations
+      have two of three spiral responses (adopted reading: 8; preparations 3 and 4 have 1 each). C: the
+      100-neighbour filter never removed a point; a histogram of npts per response would show whether
+      the filter is meaningful.'
+    response: 'Added the neighbour counts: the fewest in any response is 195, the median of the per-response
+      medians 1566, and the per-response 5th percentiles are printed, so the filter removes nothing here.
+      Outcome kept.'
+  - claim: fig4c-orbital-period
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'The mean linear-model period is 10.45 s (own/min80) and 10.12 s (pooled/min80), within 10
+      plus or minus 1, but 13.55 s and 12.22 s under le80, the count under which fig2b holds. It is uncorrelated
+      with the recurrence periods (r = -0.06, p = 0.74), so consistent with is not supported.'
+    response: Outcome kept as reproduced, resting on the adopted reading, and the disagreement recorded.
+      The criterion judges the mean against 10 s and says consistency is reported as the correlation,
+      not judged; the notes and the conclusion say the correlation is absent and that consistency holds
+      only for the means. The Summary's table shows the le80 readings fail.
+  - claim: fig4s1a-contracting-dimensions
+    agrees: true
+    outcome: not_reproduced
+    reason: Only 8 to 11 of 30 responses have all dimension means negative (more than 15 required).
+    response: No change needed.
+  - claim: fig4s1b-rotation-dominant
+    agrees: true
+    outcome: reproduced
+    reason: p_complex12 exceeds 0.5 in 30 of 30 responses in every reading (minimum 0.73).
+    response: No change needed.
+  - claim: fig5b-period-changes
+    agrees: true
+    outcome: reproduced
+    reason: 'Adopted reading: 12 slowing, 4 speeding and 14 unchanged; 31 to 73 windows per response,
+      within 27.9 to 79.2. (own/le80 has a minimum of 27 windows, just below the range.)'
+    response: With windows at at least 90%, the adopted reading is unchanged; pooled/le80 now gives 11
+      slowing, 6 speeding and 13 unchanged. Outcome kept.
+  - claim: fig5c-no-relation-contraction
+    agrees: true
+    outcome: reproduced
+    reason: P ranges from 0.064 to 0.47 across readings, never below 0.05. The adopted reading is borderline
+      (R = -0.34, p = 0.064).
+    response: Numbers updated after the re-run (adopted R = -0.341, p = 0.065). Outcome kept.
+  - claim: fig6d-decode-p10
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Mean R minus 2 s.e.m. is above 0 in 8 of 9 responses under all three windowings. Preparation
+      4, bout 1 has mean forecast R = -0.06. B.3: fig6d was decoded only under own/min80 (decode_program
+      hard-codes min80); the le80 and pooled readings were not run, so it is unknown whether preparation
+      4, bout 1 fails under every reading. C: decoding under own/le80 and pooled/le80, plus a plot of
+      P10 against the forecast for preparation 4, bout 1, would settle it.'
+    response: 'decode_program now takes the count rule, and the decoding is run under all four readings:
+      preparation 4, bout 1 fails under every one (mean R -0.060 to -0.127), the other eight pass. Added
+      a plot and printout of the P10 rate against four forecasts for that response and for bout 2 of the
+      same preparation. Outcome kept as partially reproduced, as the decoding holds in eight of nine responses,
+      and the disagreement recorded.'
+  - claim: fig6s1-no-p10-motorneurons
+    agrees: true
+    outcome: reproduced
+    reason: The largest locking value is 0.522; no neuron reaches 0.9 in any program.
+    response: No change needed.
+  - claim: fig6s2-dimensions-p10
+    agrees: false
+    outcome: reproduced
+    reason: 'Under le80, all 9 counts lie in 2.7 to 5.5 and the 90% count is at least twice the 80% count.
+      The 90% models are not better: MAE is worse (p = 0.0195, 7 of 9 worse) and R-squared does not differ
+      (p = 0.25). B.5: the 90% models search only 50, 100, 150 and 200 ms while the 80% models search
+      50 to 200 ms in 10 ms steps, which favours the 80% models; a like-for-like comparison was available
+      from by_history but was not shown. B.6: the counts pass only under le80, but the forecasts compare
+      min80 against min90 dimensions.'
+    response: 'Changed from partially reproduced to reproduced. The 90% models are now decoded under own/le80
+      and pooled/le80 as well, with the full history grid under own/min80 and own/le80, and the comparison
+      is also shown on four histories for both. Under own/le80 both parts hold in one reading: counts
+      3 to 5, 90% counts at least double, and the 90% models not better (MAE p = 0.91, R-squared p = 0.50).
+      No comparison finds the 90% models better.'
+  - claim: fig7a-long-tailed-participation
+    agrees: true
+    outcome: reproduced
+    reason: Skewness is positive in 30 of 30 responses, and the fraction of neurons above 0.5 is at most
+      0.40.
+    response: No change needed.
+  - claim: fig7f-strongly-variable-neurons
+    agrees: true
+    outcome: reproduced
+    reason: All 10 preparations have at least 4 strongly variable neurons, under both readings and both
+      pools.
+    response: No change needed.
+  - claim: halving-participation
+    agrees: true
+    outcome: reproduced
+    reason: 6 preparations under reading (a) (top neuron) and 9 under reading (b) (top 10%), against more
+      than one required.
+    response: No change needed.
+  - claim: fig7s1-rate-synchrony
+    agrees: true
+    outcome: reproduced
+    reason: 'Main reading (rate from offset, matched pairs): mean R-squared 0.491 against 0.5 plus or
+      minus 0.05, and 0.239 against 0.23 plus or minus 0.023.'
+    response: No change needed.
+  - claim: fig7gh-robust-to-participation
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Adopted own/min80, one slope is significant with recurrent points (total change, p = 0.031)
+      and one with the code''s points (Hellinger, p = 0.028). Under pooled/le80 neither slope is significant.
+      B.2: fig7gh was run under only 2 of the 4 readings; own/le80 and pooled/min80 are missing, and the
+      outcome flips between the two readings that were run.'
+    response: 'Changed from not reproduced to partially reproduced, still resting on the adopted reading:
+      one of the two absences holds and the other fails. Run under all four readings, with participation
+      computed under each reading''s width and count: own/le80 has one significant slope with the recurrent
+      points (p = 0.036) and none with the code''s points; pooled/min80 and pooled/le80 have none.'
+  - claim: fig7s2-no-invariant-core
+    agrees: false
+    outcome: blocked
+    reason: 'Cell 71 is a placeholder; nothing was computed. B.8: fig7s2 is labelled blocked although
+      it is testable; the archive holds all 30 spike-time sets, which is everything the ensemble typing
+      needs, the paper links the code toolbox and the claims file names those scripts. A partial test
+      is also possible with no typing, the top 10% by maximum participation and their median maximum change,
+      from PART.'
+    response: 'Tested with a Python port of the code''s ensemble pipeline (StaticEnsembles.m, consensus_cluster_spike_data_binless.m,
+      allevsplitConTransitive.m, Analyse_Spike_Train_Properties.m, Types_of_Ensemble_Across_Dataset.m)
+      under two widths and two seeds: 0 or 1 of 10 preparations have an invariant core, so the outcome
+      is now reproduced. The test without typing is shown too (no preparation under 0.1). The verifier
+      gave blocked (other) and said the claim was testable.'
+  - claim: fig8-caudolateral
+    agrees: true
+    outcome: blocked
+    reason: 'Correctly blocked; nothing gives which way is caudal or lateral. One part is testable without
+      orientation: whether the top-fifth neurons concentrate in a single quadrant (left: 15 of 21 in x-y-).
+      Separately, the range test is nearly empty as run: pooling the equal-width fifths over 8 preparations
+      leaves 1 to 2 neurons in the top fifth.'
+    response: Outcome kept. Added true quintiles, the share of the top fifth in its most common quadrant
+      against the share of all neurons there (34% to 41% against 19% to 20% under true quintiles), and
+      a note that the equal-width range test holds 1 or 2 neurons.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary,
+    the helper module, the attempt record and the claims file, with the paper. The verifier found no place
+    where the claims file misreads the paper and agreed with 29 of the 30 outcomes. It also noted that
+    the README gives about 36 minutes where the notebook printed 33.8 min (now about 40 minutes; this
+    revision's run printed 39.6 min).
+  results:
+  - claim: dataset-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig1d-slow-oscillation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. B.10 is resolved: the detrended spectrum was added.'
+    response: No change needed.
+  - claim: fig1e-decaying-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig2b-dimensions
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. B.1 is resolved, disclosed in cells 21 and 22 and in the
+      Summary table. Cell 21 says the Methods'' printed width (median ISI / 12, or / sqrt(12)) gives 22
+      to 76 dimensions; cell 20 gives 21 (sqrt12/le80) to 76, and the record''s 21 to 76 is correct. Remaining:
+      no single reading of width and count makes fig2b, fig3h, fig4c, fig6s2 and fig7gh all hold, and
+      fig2b fails under the adopted reading; this is now disclosed, but every assumed outcome rests on
+      it.'
+    response: Corrected cell 21 to 21 to 76 dimensions (21 to 41 with median ISI / sqrt(12), 33 to 76
+      with / 12). The absence of a consistent reading stays disclosed in the header, the recurrence section
+      and the Summary; the adopted reading is kept, as the protocol puts the Methods' count first. Outcome
+      kept.
+  - claim: fig2ef-periodic-recurrence
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig2e-single-dominant-orbit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig2s2-threshold-robust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3a-coalescence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. B.7 is resolved (windows now count at at least 90%), and the
+      coalescence densities asked for were added.
+    response: No change needed.
+  - claim: fig3c-same-manifold
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3s1a-common-axes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3d-initial-conditions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3f-pairwise-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig3h-perturbations-return
+    agrees: true
+    outcome: partially_reproduced
+    reason: Accepts it. The criterion holds under own/le80 (18 kept and 16 returned; 19 and 17) and fails
+      under the adopted reading (16 and 15), and the record says so. The criterion's text gives no partial
+      outcome; strictly, under the adopted reading it gives not reproduced. Cell 53 and the notes say
+      the code's rule keeps 17 to 21, which is true but leaves out that under the adopted reading the
+      code's rule keeps 19 periods and 18 return (0.947, cell 52), which meets both tolerances and matches
+      the paper's 19.
+    response: Added to the conclusion and the notes that the code's rule under the adopted reading keeps
+      19 with 18 returned (0.947), meeting both tolerances, and that it is reported, not judged, because
+      the criterion states the Methods' rule ("We removed all such divergent periods whose divergent point
+      fell within two oscillation cycles of the end of the recording"). Added that the criterion has no
+      partial outcome and why partially reproduced is kept (the fraction holds, the counts miss by 1.1
+      and 0.3). Outcome kept, as the verifier accepts it.
+  - claim: fig3i-same-manifold-after
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. B.4 is resolved: the weak-evidence wording is now in fig3h
+      and fig3i.'
+    response: No change needed.
+  - claim: fig4bc-stable-spiral
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. The neighbour counts asked for were added.
+    response: No change needed.
+  - claim: fig4c-orbital-period
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees. The criterion judges only the mean, 10 plus or minus 1 s, and says consistency
+      is reported, not judged; under the adopted reading the mean is 10.45 s (cell 61). In round 1 it
+      judged consistency, which the criterion does not ask for. Cell 62 and the notes say consistency
+      holds only for the means (10.45 s against a median recurrence period of 12.73 s); the two differ
+      by 2.3 s, more than twice the tolerance of 1 s, so the means are not shown consistent either. The
+      record attached the round-1 B.11 toy-orbit note to fig4c as a reason, but B.11 was marked as not
+      affecting a conclusion; the round-1 reasons were the le80 failure and the missing correlation.
+    response: 'Corrected cell 62 and the notes: the means are 2.3 s apart where the tolerance is 1 s,
+      so neither the correlation nor the means support "consistent with", which is reported, not judged.
+      Removed the B.11 note from the round-1 reason for this claim. Outcome kept.'
+  - claim: fig4s1a-contracting-dimensions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig4s1b-rotation-dominant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig5b-period-changes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig5c-no-relation-contraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig6s1-no-p10-motorneurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig6d-decode-p10
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion requires mean forecast R minus 2 s.e.m. above 0 in each of the nine responses,
+      and it has no partial rule; the paper's statement is specifically in all nine. Cell 79 shows preparation
+      4, bout 1 failing under all four readings, with histories up to 100 ms, and with the code's windowing
+      (mean R -0.060 to -0.127), so the failure does not depend on the reading. Eight of nine is a failure
+      of exactly what the claim says, not a partial match. In cells 79 and 83 (not discussed anywhere)
+      the mean MAE for preparation 4, bout 1 reaches 7.6e6 with the code's windowing, which points to
+      exploding forecasts in some windows.
+    response: 'Agreed. In round 2 the outcome may not change, so the verified outcome, partially reproduced,
+      is kept and not reproduced is proposed under proposed, with the reason. The conclusion now says
+      so. Added a printout of the forecasts that diverge (above 10 times the largest P10 rate, up to the
+      clip at about 1e13): many windows of the longer histories, none in the selected 80% models, and
+      a perturbation test showing that a mean MAE with diverging windows depends on rounding (5.3e11 against
+      2.8e11 at 150 ms). In this run the code-windowing mean MAE of that response is 13.3 and its mean
+      R -0.102; the pass counts are unchanged.'
+  - claim: fig6s2-dimensions-p10
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Under own/le80 the counts are 3 to 5 and the 90% counts at least double them; the
+      90% models are not better (MAE p = 0.91, R-squared p = 0.50, full history grid for both, cell 83).
+      B.5 and B.6 are resolved. For preparation 4, bout 1 the mean MAE reaches 6.6e7 (90%, own/min80)
+      and 3.1e9 (90%, own/le80), which points to exploding forecasts in some windows; it does not change
+      the outcome, since the 90% models only look worse.
+    response: 'Added the count of diverging forecasts for the 90% models (457 and 610 of 5760 windows
+      over all histories under own/le80 and own/min80, one window in the selected models). The decoding
+      is sensitive to rounding through these windows, and the re-run gives different numbers from the
+      copy reviewed: under own/le80 MAE lower with 90% in 6 of 9, p = 0.50, R-squared p = 0.50; under
+      own/min80 MAE p = 0.027, R-squared p = 0.16; pooled/le80 p = 0.73 and 0.82. The conclusion and notes
+      now give these numbers and say so. No comparison finds the 90% models better, as before. Outcome
+      kept.'
+  - claim: fig7a-long-tailed-participation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig7f-strongly-variable-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: halving-participation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig7s1-rate-synchrony
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+  - claim: fig7gh-robust-to-participation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees, as in round 1. The result is split by reading: one slope of two is significant under
+      own/min80, and under own/le80 with recurrent points, and none under either pooled reading (cell
+      100). The same strictness caveat as fig3h applies. The deviation says under the pooled readings
+      the claim is reproduced; that is true with the legend''s exclusion, the main reading, but with the
+      code''s exclusion pooled/min80 has a significant total-change slope with recurrent points (p = 0.028
+      and 0.029, cell 100), and this is not mentioned.'
+    response: 'Corrected the deviation, the notes and the conclusion: with the code''s exclusion pooled/min80
+      has a significant total-change slope with the recurrent points (p = 0.028 and 0.029), pooled/le80
+      none. Outcome kept.'
+  - claim: fig7s2-no-invariant-core
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 103 gives 0 or 1 of 10 preparations with a core, across both widths, both seeds
+      and both participation readings. The outcome rests on a port of random clustering that was not checked
+      against MATLAB, as the record says; it is stable across seeds and widths. The record's fig7s2 entry
+      has no notebook or output fields, although cell 103 is tagged claim:fig7s2-no-invariant-core.
+    response: Added the notebook and output fields. The port could not be checked against MATLAB output
+      here, as no MATLAB run is available; this stays stated in the deviation. Outcome kept.
+  - claim: fig8-caudolateral
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentences match the printed outputs.
+    response: No change needed.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome of fig6d-decode-p10, the only one in the record, with
+    the analysis behind it in the full executed notebook of the second revision and the claims file. The
+    verifier found that the claims file does not misread the paper here. It also found that the numbers
+    of the record's reason and notes and of the fig6d conclusion do not match that notebook's outputs,
+    without changing the outcome.
+  results:
+  - claim: fig6d-decode-p10
+    agrees: true
+    outcome: not_reproduced
+    reason: 'The test is that mean forecast R minus 2 s.e.m. must be above 0 in each of the nine responses,
+      and the criterion has no partial rule. Cell 79 shows that test failing. Under every reading of width
+      and count, only 8 of 9 responses pass. Preparation 4, bout 1 fails under all four: mean R is -0.060
+      (own/min80), -0.127 (own/le80), -0.060 (pooled/min80) and -0.119 (pooled/le80), with bounds -0.128
+      to -0.206. It also fails with histories up to 100 ms, and with the code''s windowing (mean R -0.101,
+      bound -0.130). The fixed choices hold the result up; the result does not rest on a choice made
+      to reach it, because the failure holds under every reading, history range and windowing that was
+      run. Cell 81 shows that perturbing the PCs leaves the mean R of this response unchanged (-0.1006
+      against -0.0991). The reason, the notes and cell 82 give numbers this notebook does not print (per-reading
+      mean R, the counts of diverging forecasts, the perturbation test, the mean MAE of 7.6e6 said not
+      to be run here, and the forecast R of response 2), so they seem to describe a different execution;
+      any statement about the diverging forecasts or about rounding should be redone from the printed
+      outputs.'
+    response: Outcome changed to not reproduced and the proposal removed. The notebook was re-run and the
+      fig6d conclusion and notes now give this execution's numbers, which differ again from the copy reviewed
+      (for example mean R -0.120 and -0.080 under own/le80 and pooled/min80, 462 to 627 diverging windows).
+      They state that the decoding is not exactly the same between executions, give the reviewed copy's
+      values for the failing response, and say that the pass count of 8 of 9 under every reading holds
+      in each execution. The fig6s2 conclusion and notes, which rest on the same decoding, were corrected
+      to this execution's numbers too.
