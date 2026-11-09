@@ -3,6 +3,8 @@
     python tools/paper_records.py key DATASET_OR_PAPER   # the paper key: a key as is, a DOI, or a matched dataset's paper
     python tools/paper_records.py datasets PAPER         # the paper's dataset folders, one a line
     python tools/paper_records.py claims PAPER           # the paper's claims file (claims/<key>.yaml)
+    python tools/paper_records.py adopt DATASET          # after its paper match: list the dataset for its paper,
+                                                         # giving the paper a key if it has none; prints the key
 
 A paper is named by its key (papers/keys.yaml, tools/paper_keys.py), and lists its datasets in
 papers/datasets/<key>.yaml. Its records:
@@ -200,6 +202,31 @@ def label(key: str) -> str:
     return f"{key} ({', '.join(datasets.label(d['key']) for d in ds)})" if ds else key
 
 
+def adopt(dataset: str, relation: str = "primary") -> str:
+    """List a dataset for the paper its match settled on (papers/datasets/<key>.yaml), giving the paper a key
+    first if it has none (papers/keys.yaml). A dataset already listed is left as it is. Returns the key."""
+    key = datasets.parse(dataset)
+    doi = matched_doi(dataset)
+    title = ""
+    for t in datasets.targets():
+        if t["key"] == key:
+            title = next((p.get("title") or "" for p in t.get("papers") or []
+                          if paper_keys.doi_of(p.get("doi") or "") == doi), "") or ""
+    paper = paper_keys.add_key(doi, title)
+    keys.cache_clear()
+    path = ROOT / "papers" / "datasets" / f"{paper}.yaml"
+    body = yaml.safe_load(path.read_text()) if path.is_file() else None
+    body = body or {"schema_version": 1, "paper": f"doi:{doi}", **({"title": title} if title else {}), "datasets": []}
+    archive, id_ = datasets.split_key(key)
+    if not any(d["archive"] == archive and str(d["id"]) == id_ for d in body["datasets"]):
+        body["datasets"].append({"archive": archive, "id": id_, "relation": relation})
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("# The datasets this paper is tested on (docs/paper-first.md).\n"
+                        + yaml.safe_dump(body, sort_keys=False, width=100, allow_unicode=True))
+    listed.cache_clear()
+    return paper
+
+
 def main() -> int:
     command, *rest = sys.argv[1:]
     if command == "key":
@@ -207,6 +234,8 @@ def main() -> int:
     elif command == "datasets":
         for d in datasets_of(resolve(rest[0]), available_only="--available" in rest):
             print(d["folder"])
+    elif command == "adopt":
+        print(adopt(rest[0]))
     elif command == "claims":
         print(claims_file(resolve(rest[0])).relative_to(ROOT).as_posix())
     else:

@@ -143,6 +143,25 @@ def assign(keys: dict[str, str], found: dict[str, dict]) -> dict[str, str]:
     return keys
 
 
+def add_key(doi: str, title: str = "", surname: str = "", year: str = "") -> str:
+    """The key of a paper, assigned now and written to papers/keys.yaml if it has none: from the surname and
+    year given, else from Crossref."""
+    keys = read_keys()
+    doi = doi_of(doi)
+    if doi in keys:
+        return keys[doi]
+    p = {"title": title} if title else {}
+    if surname and year:
+        p.update(surname=surname, year=str(year))
+    key, title = base_key(doi, p)
+    taken = set(keys.values())
+    if key in taken:
+        key = distinguish(key, title, taken)
+    keys[doi] = key
+    write_keys(keys)
+    return key
+
+
 def read_keys() -> dict[str, str]:
     return (load(KEYS) or {}).get("keys", {}) if KEYS.is_file() else {}
 
