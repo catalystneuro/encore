@@ -1,0 +1,1917 @@
+schema_version: 3
+id: moaddab-2021-ventral-01
+datasets:
+- archive: crcns
+  id: bf-3
+  version: unversioned
+  doi: 10.6080/K0HH6H8V
+  relation: primary
+paper: doi:10.1038/s42003-020-01554-4
+date: '2026-11-06'
+entry: moaddab-2021-ventral
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42159374311
+outcomes:
+- claim: recorded-units
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:recorded-units
+  measured:
+  - 435
+  - 14
+  - 195
+  notes: 435 unit files and 14 rats, as the paper reports. The files hold 195 sessions (distinct session
+    file names, each with its own trial table; no rat has two on one date), one more than the paper's
+    194. The criterion reads a different count as a difference in the data set. Four pairs of units from
+    one session share 70 to 88% of their spikes within 0.1 ms and may be one neuron recorded on two wires;
+    they are counted as the paper counts them.
+- claim: cue-responsive-screen
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:cue-responsive-screen
+  measured:
+  - 271
+  - 160
+  notes: With the Methods' rates (mean Hz, unrounded), 271 of 435 neurons (62%) from 160 sessions pass
+    the screen, within tolerance of 257 and 153, and every rat has one. With the rates floored to integers
+    as the authors' code does, and Matlab's ttest treating a constant nonzero difference as significant,
+    the screen gives 257 neurons from 153 sessions, the paper's counts. 240 neurons pass under both. The paper gives no chance level;
+    the same screen on pre-cue windows (20 to 10 s before onset as baseline, 10 to 9 s and 5 to 0 s before
+    onset as the two windows) passes 119 of 435 neurons (27%), near the 26.5% six independent tests at
+    0.05 give.
+  deviations:
+  - The authors' floored rates are shown as a variant (vpAnalysis.m, lines 7-64).
+- claim: fig1f-suppression-cue-effect
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig1f-suppression-cue-effect
+  notes: Under every reading (groups A or B, 0/0 trials dropped, set to 0, or set to 1 as in the authors'
+    code, sessions counted once or per neuron) the rat means order danger (0.92 to 0.93) > uncertainty
+    (0.62 to 0.64) > safety (0.11 to 0.13), and the one-way repeated measures ANOVA on 14 rats gives F(2,26)
+    = 74.6 to 80.9, p about 1e-11 (main reading 75.80, partial eta squared 0.85; paper 75.34, 0.85). 8
+    of 2448 trials are 0/0.
+  deviations:
+  - Sessions are those with a cue-responsive neuron of groups A (153); groups B (160) give the same outcome.
+- claim: fig1f-differential-suppression
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig1f-differential-suppression
+  measured:
+  - 0.29
+  - 0.512
+  - 0.802
+  notes: All three bootstrap intervals over 14 rats exclude zero under every reading, with means within
+    tolerance; main reading danger - uncertainty 0.290 [0.198, 0.391], uncertainty - safety 0.512 [0.359,
+    0.720], danger - safety 0.802 [0.639, 0.951] (paper 0.28, 0.52, 0.80).
+  deviations:
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+- claim: fig2-excited-inhibited-split
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig2-excited-inhibited-split
+  measured:
+  - 130
+  - 127
+  notes: On the 257 neurons of the authors' screen, baseline-subtracted Hz with the two window means averaged
+    gives 130 cue-excited and 127 cue-inhibited, normalized firing (three-cue pool) gives 125/132 or 121/136;
+    the four-type pool gives 124/133; pooling the 6 s with Hz gives 118/139 (outside tolerance). The authors'
+    normalization gives 131/126. On the Methods' 271 neurons no reading is within tolerance (142 to 155
+    cue-inhibited, tolerance 113.4 to 138.6). The authors' split, used for the later claims, and the Hz
+    two-means split differ on 25 of the 257 neurons (13 and 12 each way). The claim is tested on the
+    257 neurons its statement names; that population is the code's screen (A1).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  assumed: true
+- claim: ancova-excited-no-baseline-effect
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:ancova-excited-no-baseline-effect
+  notes: Groups A, 131 cue-excited neurons, baseline x cue x interval F(110,14190) = 1.09, p = 0.235 (three-cue
+    pool), 1.12, p = 0.182 (four types), 1.12, p = 0.187 (authors' normalization); paper F(110,14080)
+    = 1.12, p = 0.18, whose degrees of freedom imply 130 neurons. On groups B (123 neurons) the interaction
+    is significant (p = 0.0006, 0.0001, 0.0003), so the outcome rests on A1.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Univariate repeated measures ANCOVA (sphericity assumed) with the centred baseline rate as covariate,
+    written for this entry.
+  assumed: true
+- claim: ancova-inhibited-baseline-effect
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:ancova-inhibited-baseline-effect
+  notes: The interaction is significant under every pool and both groupings, groups A, 126 neurons, F(110,13640)
+    = 1.56, p = 1.5e-4 (three-cue pool), 1.68, p = 1.1e-5 (four types), 1.85, p < 1e-6 (authors' normalization);
+    groups B, 148 neurons, p <= 4e-5. Paper F(110,13420) = 1.93, p = 2.34e-8.
+  deviations:
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+- claim: kmeans-three-clusters
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:kmeans-three-clusters
+  measured:
+  - 74
+  - 34
+  - 18
+  notes: With one Matlab k-means++ start after rng(1) on groups A's 126 cue-inhibited neurons, Low 74,
+    Intermediate 34, High 18, with the claims file's reading (b) for the ISIs (10 s baselines; ANOVA F
+    = 545.55, 9.73, 16.67, 17.90, 2.12 for baseline rate, CV, skewness, half duration, amplitude ratio)
+    and with the authors' features (20 s baselines, floored baseline rate), which give the paper's F values
+    to the printed digits (546.73, 8.79, 18.20, 17.90, 2.12; amplitude ratio p = 0.12). Reading (a) (whole-session
+    ISIs) with one start gives 58/48/20. With 100 restarts, k-means finds partitions with lower within-cluster
+    sums of squares (groups A, 56/48/22 to 58/46/22; groups B, 74/54/20 or 76/52/20), none within tolerance;
+    on the authors' features the global partition has SSE 7254 against 7997 for the paper's. Over seeds
+    1 to 300, one start reaches the paper's partition 98 times. Z-scored features (O7 b) give 30/64/32
+    or 46/56/24. The partitions of the claims file's reading (b) and of the authors' features have the
+    same members (adjusted Rand index 1.000); the lower-SSE partition moves 16 Low neurons to Intermediate
+    and 4 Intermediate to High (index 0.579). So the seed and number of starts change the clusters, against
+    the claims file's statement that the seed cannot change a conclusion beyond the edge of an interval;
+    whether the reading should be Matlab's default of one start is asked in questions/crcns-bf-3.yaml.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Features as the Methods define them, computed from the spike times and the stored mean waveform; half
+    duration and amplitude ratio follow the authors' code (vpAnalysis.m, lines 1035-1049).
+  assumed: true
+- claim: clusters-differ-in-cue-firing
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:clusters-differ-in-cue-firing
+  notes: Groups A clusters, Methods' normalization, Low vs Intermediate F(110,11660) = 1.26, p = 0.035
+    (three-cue pool) and 1.34, p = 0.011 (four types); Low vs High p = 6.1e-4 and 3.6e-5; Intermediate
+    vs High p = 2.0e-5 and 2.3e-6. All three pairs are significant at 0.05, but Low vs Intermediate misses
+    the paper's p < 0.005. With the authors' normalization all pairs give p < 0.005 (Low vs Intermediate
+    p = 0.0027), a variant outside the claims file. Groups B's clusters also give p < 0.005 for all pairs, but
+    they are not the paper's clusters and do not count towards the outcome.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: clusters-by-rat
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:clusters-by-rat
+  measured:
+  - 11
+  - 9
+  - 5
+  - 11
+  notes: Low firing neurons come from 11 rats, Intermediate from 9, High from 5, and 11 of the 18 High
+    firing neurons from rat pa02, the paper's counts. With 100 restarts the High cluster of groups A has
+    22 neurons, 14 from pa02.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  assumed: true
+- claim: fig3a-low-differential-cue-firing
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig3a-low-differential-cue-firing
+  notes: 74 Low firing neurons, three-cue pool, cue F(2,146) = 32.31, p = 2.4e-12; interval F(55,4015)
+    = 4.51, p = 2.3e-25; cue x interval F(110,8030) = 3.23, p = 8.8e-27 (paper F(2,142) = 23.45, F(55,3905)
+    = 4.66, F(110,7810) = 3.27). 10 s cue means danger -0.561, uncertainty -0.224, safety 0.050. The same
+    under every reading.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: fig3b-low-inhibited-to-threat-cues
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig3b-low-inhibited-to-threat-cues
+  measured:
+  - -0.709
+  - -0.343
+  - -0.484
+  - -0.234
+  notes: Three-cue pool, danger onset -0.709 [-0.865, -0.546], uncertainty onset -0.343 [-0.500, -0.175],
+    danger late -0.484 [-0.626, -0.349], uncertainty late -0.234 [-0.336, -0.129]; safety onset [-0.314,
+    0.021], safety late [0.001, 0.216]. Four-type pool, the pattern holds (safety late [-0.010, 0.170])
+    with means -0.614, -0.299, -0.427, -0.209. The means are about twice the paper's (-0.37, -0.14, -0.27,
+    -0.09) and outside tolerance. The authors' normalization gives -0.364, -0.138, -0.266, -0.094 and
+    the full pattern. Changing one element of the normalization at a time, Z over single trials in place
+    of trial means is what brings the means to the paper's (single trials, 10 s baseline, unfloored, -0.344,
+    -0.166, -0.240, -0.118); the baseline length and flooring move them by at most 0.06.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig3b-low-differential
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig3b-low-differential
+  measured:
+  - -0.366
+  - -0.25
+  - -0.193
+  - -0.325
+  - -0.292
+  notes: Three-cue pool, danger - uncertainty onset -0.366 [-0.527, -0.214], late -0.250 [-0.368, -0.129];
+    uncertainty - safety onset -0.193 [-0.378, -0.003], late -0.325 [-0.493, -0.176], delay -0.292 [-0.519,
+    -0.078]. Four-type pool, the pattern holds (onset uncertainty - safety [-0.324, 0.004]) but the danger
+    - uncertainty means (-0.315, -0.218) are outside tolerance. The authors' normalization gives the paper's
+    means (-0.226, -0.172, -0.082, -0.144, -0.122) with the delay interval reaching zero (upper bound
+    0.002; paper -6.3e-4).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig3c-intermediate-differential-cue-firing
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig3c-intermediate-differential-cue-firing
+  notes: 34 Intermediate firing neurons, three-cue pool, cue F(2,66) = 23.81, p = 1.6e-8; interval F(55,1815)
+    = 7.30; cue x interval F(110,3630) = 3.70, p = 3e-33 (paper 27.25, 7.62, 3.90). Onset means danger
+    -0.974 < uncertainty -0.592 < safety -0.337. The same under every reading.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: fig3d-intermediate-inhibition
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig3d-intermediate-inhibition
+  measured:
+  - -0.974
+  - -0.592
+  - -0.337
+  - -0.87
+  - -0.554
+  notes: Three-cue pool, danger onset -0.974 [-1.284, -0.690], uncertainty onset -0.592 [-0.883, -0.263],
+    safety onset -0.337 [-0.529, -0.136], danger late -0.870 [-1.114, -0.649], uncertainty late -0.554
+    [-0.767, -0.310], safety late [-0.101, 0.183], the pattern holds under both pools, but danger onset
+    and late, uncertainty onset and late, and under the three-cue pool safety onset, are outside tolerance
+    (paper -0.54, -0.25, -0.21 +- 0.10, -0.49, -0.23). The authors' normalization gives -0.544, -0.253, -0.207, -0.488, -0.234.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig3d-intermediate-differential
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig3d-intermediate-differential
+  measured:
+  - -0.383
+  - -0.316
+  - -0.255
+  - -0.59
+  notes: Three-cue pool, danger - uncertainty onset -0.383 [-0.691, -0.140]; late -0.316 [-0.658, 0.042],
+    which contains zero; uncertainty - safety onset -0.255 [-0.676, 0.167] (contains zero, as the paper
+    has it), late -0.590 [-0.857, -0.321]. The four-type pool is the same in pattern. The authors' normalization
+    gives all four parts and the paper's means (-0.291, -0.254, -0.046, -0.211).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: supp5-low-cue-correlations
+  outcome: not_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:supp5-low-cue-correlations
+  notes: Low firing neurons (74), three-cue pool, danger-uncertainty r = 0.59, 0.49, 0.53 (all p < 1e-4)
+    at onset, late cue and delay; uncertainty-safety r = 0.36 (p = 0.001) at onset, -0.30 and -0.33 later.
+    Intermediate (34), danger-uncertainty r = 0.60 (p = 2e-4), -0.16, 0.35 (p = 0.044); uncertainty-safety
+    never significant. The positive onset uncertainty-safety correlation of Low neurons fails the criterion
+    under every reading. The authors' code correlates the first 5 s of cue in place of the first 1 s (vpAnalysis.m,
+    lines 1719-1775); with that window the Low onset uncertainty-safety correlation is r = 0.03 (p = 0.82),
+    so the outcome depends on the window Supplementary Fig. 5 used, which the claims file did not read. With the
+    first 5 s both clusters meet the criterion. Which window the supplement used is asked in questions/crcns-bf-3.yaml.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - The reading of 'commonly' as two of three periods is the claims file's assumption.
+  assumed: true
+- claim: supp6-low-nosepoke-pauses
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:supp6-low-nosepoke-pauses
+  notes: Low firing neurons show no inhibition after a pause under any reading. Intermediate neurons
+    show none with the authors' pause definition and the claims file's scalings (post -0.252 [-0.572, 0.062]
+    and -0.024 [-0.212, 0.249], post - pre [-0.303, 0.451] and [-0.200, 0.256]), but with the authors'
+    single-event scaling their post firing lies below zero (-0.103 [-0.201, -0.020]), and so it does with
+    5 s pauses and scaling (ii) (-0.399 [-0.646, -0.051], post - pre -0.320 [-0.613, -0.016]). The 10 s
+    pauses show no inhibition but give only 25 events in 14 of 34 Intermediate neurons (median 0 per
+    neuron) and 85 in 47 of 74 Low neurons, too few to support an absence. With the authors' pauses
+    the interval effect is significant for Intermediate neurons (p = 1.2e-5 to 3.3e-8) and not for Low
+    (p >= 0.13). The absence holds in the Low cluster and in the Intermediate cluster only under some
+    readings, so the claim holds in part. Changed from reproduced after verification round 1.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Assumption A3. A nose-poke pause is a gap of more than 2 s between pokes 18 to 2 s before a cue onset,
+    as cubeScriptPR25.m defines it ('find ITI periods with a 2-s nose poke cessation'); the text read
+    does not define it, and the claims file's 10 s and 5 s gaps are its own guesses.
+  - Pause windows are kept within recorded time; the files hold no data between trials.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig4a-low-rt-over-fo
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4a-low-rt-over-fo
+  notes: Mean cue relative-threat beta against fear-output beta of the 74 Low neurons, O2 (a), 0/0 dropped,
+    -0.292/-0.244, -0.402/-0.181, -0.478/-0.122, -0.430/-0.117, -0.235/-0.215 for assignments 0 to 1.
+    Relative threat is further from zero at every assignment under every reading; both betas are negative.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4a-low-025-better-than-000
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4a-low-025-better-than-000
+  notes: Assignment (0.00, 0.25) x regressor x interval, F(13,949) = 2.10, p = 0.012 (O2 a, dropped),
+    2.10 to 2.22, p = 0.008 to 0.012 under all readings (paper F(13,936) = 2.13, p = 0.011). Mean cue
+    relative-threat beta 0.40 at 0.25 against 0.29 at 0.00 in absolute value.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4a-low-025-similar-050
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4a-low-025-similar-050
+  notes: Assignment (0.25, 0.50) x regressor x interval, F(13,949) = 0.86 to 1.09, p = 0.36 to 0.59 under
+    every reading (paper F(13,936) = 0.88, p = 0.57).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4b-low-dynamic-shift
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4b-low-dynamic-shift
+  notes: Model (a), a constant with the 0.25 and 0.50 regressors (the model of vpAnalysis.m, line 1158),
+    assignment x interval F(13,949) = 2.34 to 2.44, p = 0.003 to 0.0045 under every reading (paper F(13,949)
+    = 2.42, p = 0.003). Model (b), with fear output added, p = 0.10 to 0.12; model (c), betas of the single-assignment
+    models, p = 0.30 to 0.48.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4c-low-early-late-betas
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4c-low-early-late-betas
+  measured:
+  - -0.53
+  - -0.13
+  - -0.98
+  - 0.57
+  notes: Model (a), O2 (a), 0/0 dropped, early 0.25 -0.53 [-0.97, -0.09], early 0.50 -0.13 [-0.59, 0.35],
+    late 0.50 -0.98 [-1.51, -0.42], late 0.25 0.57 [0.12, 1.00]. The late 0.25 interval lies above zero
+    under every reading of O2 and O3, where the paper's contains zero (0.20 [-0.22, 0.62]); the other
+    three parts hold and the means are within tolerance. With the authors' per-trial firing, -0.57, 0.05,
+    -0.51, 0.20, the paper's values, and all four parts hold.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig4d-low-early-late-shift
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4d-low-early-late-shift
+  measured:
+  - 1.1
+  - -0.84
+  - 1.94
+  notes: Model (a), O2 (a), 0/0 dropped, shift 0.25 1.10 [0.55, 1.64], shift 0.50 -0.84 [-1.47, -0.25],
+    difference 1.94 [0.91, 3.08], within tolerance (paper 0.76, -0.56, 1.32); the same under O2 (b) and
+    (c). The authors' per-trial firing gives 0.77, -0.57, 1.33.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig4e-int-025-better-than-000
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4e-int-025-better-than-000
+  notes: 34 Intermediate neurons, O2 (a), dropped, relative-threat cue betas -0.54, -0.78, -0.89, -0.68,
+    -0.42 against fear output -0.30, -0.17, -0.11, -0.23, -0.36; assignment (0.00, 0.25) x regressor x
+    interval F(13,429) = 2.12, p = 0.012 (paper F(13,416) = 2.10, p = 0.013). Under O2 (b), fear output
+    (-0.45) is further from zero than relative threat (-0.38) at 1.00, so the criterion holds under O2
+    (a) and (c) only.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4e-int-025-similar-050
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4e-int-025-similar-050
+  notes: Assignment (0.25, 0.50) x regressor x interval, F(13,429) = 0.97 to 1.03, p = 0.42 to 0.48 under
+    every reading (paper F(13,416) = 1.09, p = 0.37).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4f-int-no-assignment-interval
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4f-int-no-assignment-interval
+  notes: Assignment x interval on the two relative-threat betas, model (a) F(13,429) = 1.21 to 1.24, p
+    = 0.25 to 0.27 (paper F(13,429) = 1.24, p = 0.25); models (b) and (c) p >= 0.055. On groups B's 54
+    Intermediate neurons models (a) and (b) give p = 0.012 to 0.034.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig4g-int-early-late-betas
+  outcome: not_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4g-int-early-late-betas
+  measured:
+  - -0.4
+  - -0.63
+  - 0.99
+  - -1.44
+  notes: Model (a), O2 (a), dropped, early 0.25 -0.40 [-1.08, 0.34], early 0.50 -0.63 [-1.77, 0.17], late
+    0.25 0.99 [0.05, 1.95], late 0.50 -1.44 [-2.29, -0.60], the early 0.25 interval contains zero and
+    both late intervals exclude it. Model (c) puts both early intervals below zero. No reading with the
+    Methods' normalization gives the pattern. The authors' per-trial firing gives -0.76 [-1.29, -0.12],
+    0.07, 0.12, -0.44 with the pattern (paper -0.77, 0.07, 0.13, -0.43).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig4h-int-early-late-shift
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4h-int-early-late-shift
+  measured:
+  - 1.39
+  - -0.81
+  - 2.2
+  notes: Model (a), O2 (a), dropped, shift 0.25 1.39 [0.58, 2.33], shift 0.50 -0.81 [-1.82, 0.06], difference
+    2.20 [0.49, 4.04], within tolerance (paper 0.88, -0.52, 1.38). The authors' per-trial firing gives
+    0.88, -0.51, 1.39.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig4-low-int-combined
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig4-low-int-combined
+  notes: Model (a), assignment x interval F(13,1378) = 2.51, p = 0.002, neuron type x assignment x interval
+    F(13,1378) = 0.71 to 0.76, p = 0.70 to 0.75, under every reading (paper 2.52, p = 0.002; 0.72, p =
+    0.74). Model (b) also meets the criterion (p = 0.014 to 0.022); model (c) does not (p = 0.22 to 0.30).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig5a-low-reward-firing
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig5a-low-reward-firing
+  notes: Events (a), scaling (i), cluster x interval F(15,1590) = 3.68, p = 2.2e-6; Low interval F(15,1095)
+    = 4.99, p = 1.4e-9; Intermediate interval F(15,495) = 1.47, p = 0.11. Every reading meets the criterion
+    (Intermediate p = 0.07 to 0.26; paper F(15,495) = 1.21, p = 0.26).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  assumed: true
+- claim: fig5bc-reward-pre-post
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig5bc-reward-pre-post
+  measured:
+  - -0.078
+  - 0.446
+  - 0.368
+  - 0.012
+  - -0.257
+  notes: Events (a), scaling (i), Low pre -0.078 [-0.242, 0.100], post 0.368 [0.117, 0.617], post - pre
+    0.446 [0.112, 0.779]; Intermediate pre 0.012 [-0.236, 0.319], post -0.257 [-0.613, 0.148]; all within
+    tolerance. Events (b) and the authors' events with scaling (i) agree. With scaling (ii) the means
+    are about three times larger and the Intermediate pre interval excludes zero. The authors' scaling
+    gives -0.064, 0.277, 0.340, 0.000, -0.135 (paper -0.06, 0.28, 0.34, 0.0003, -0.14).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig5d-f-low-reward-cue-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig5d-f-low-reward-cue-correlations
+  measured:
+  - 0.0669
+  - 0.1544
+  - 0.0053
+  notes: Three-cue pool, events (a), scaling (i), O5 (a), reward against danger r = -0.26 (R2 0.067, p
+    = 0.026), uncertainty r = -0.39 (R2 0.154, p = 5e-4), safety r = 0.07 (R2 0.005, p = 0.54). Every
+    reading gives the signs and significance the criterion asks, none puts all three R2 within 10% of
+    the paper's (0.08, 0.16, 0.006). The authors' normalization and O5 (a) give R2 0.084, 0.156, 0.0057,
+    all within tolerance. The partial outcome comes only from the 10% tolerance on
+    R2, which is asked in questions/crcns-bf-3.yaml.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - The cue 'pre' bin (last 250 ms before cue onset) is the claims file's assumption; the authors' code
+    uses it (vpAnalysis.m, line 3903).
+  assumed: true
+- claim: fig5-low-fisher-comparisons
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig5-low-fisher-comparisons
+  measured:
+  - 0.9
+  - 2.91
+  notes: Independent-samples Fisher Z, three-cue pool, events (a), scaling (i), O5 (a), danger against
+    uncertainty Z = 0.90, p = 0.37; uncertainty against safety Z = -2.91, p = 0.0036 (the sign follows
+    the order of comparison; paper 0.74 and 2.96). Every reading meets the criterion (Z = 0.70 to 1.39,
+    p >= 0.17; |Z| = 2.77 to 3.35, p <= 0.006); Steiger's dependent test agrees. The authors' normalization
+    gives 0.71 and -2.94.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: fig5g-i-intermediate-no-reward-cue-correlation
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig5g-i-intermediate-no-reward-cue-correlation
+  notes: 34 Intermediate neurons, no cue-reward correlation reaches p < 0.05 under any reading (r from
+    -0.14 to 0.26, p >= 0.14) and no Fisher comparison does (p >= 0.31).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A2. The cue-inhibited clusters are those of one Matlab k-means++ start after rng(1) (vpAnalysis.m,
+    lines 1485-1487; Methods, K-means clustering, name Matlab's kmeans, whose default is one start), repeated
+    here with numpy's Mersenne Twister, which gives Matlab's rng(1) stream. They are Low 74, Intermediate
+    34, High 18, the paper's clusters. The claims file's standard choice of 100 restarts gives other clusters
+    (58/46/22).
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: fig6a-excited-differential-cue-firing
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6a-excited-differential-cue-firing
+  notes: 131 cue-excited neurons, three-cue pool, cue F(2,260) = 67.31, p = 2.8e-24; interval F(55,7150)
+    = 14.30; cue x interval F(110,14300) = 4.22, p = 3.8e-44 (paper 68.22, 15.06, 4.52). Onset means danger
+    1.157 > uncertainty 0.679 > safety 0.308. The same under every reading.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: fig6b-excited-period-firing
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6b-excited-period-firing
+  measured:
+  - 0.478
+  - 0.413
+  - 0.332
+  - 0.37
+  - 0.255
+  - 0.415
+  notes: Three-cue pool, onset intervals above zero for all cues; danger and uncertainty above zero in
+    late cue and delay; all six difference intervals above zero (danger - uncertainty 0.478, 0.413, 0.332;
+    uncertainty - safety 0.370, 0.255, 0.415). Safety delay lies below zero under every reading (-0.162 [-0.254, -0.077]),
+    and safety late cue under the three-cue pool ([-0.150, -0.004]) and the authors' normalization ([-0.098,
+    -0.008]); the four-type pool's late-cue interval contains zero ([-0.126, 0.003]). The difference means are outside tolerance with
+    the Methods' normalization; the authors' normalization gives 0.265, 0.239, 0.195, 0.206, 0.146, 0.222,
+    within tolerance (paper 0.26, 0.24, 0.19, 0.21, 0.15, 0.22). Whether the paper says safety firing
+    did not differ from baseline, or only did not increase, is asked in questions/crcns-bf-3.yaml.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: supp8-excited-cue-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:supp8-excited-cue-correlations
+  notes: Groups A, three-cue pool, danger-uncertainty r = 0.72, 0.60, 0.55 (p < 1e-10); uncertainty-safety
+    r = 0.37 at onset (p < 1e-4), 0.11 in late cue (p = 0.21), -0.08 in the delay (p = 0.34). The delay
+    correlation is negative but not significant under either pool. The authors' normalization gives r
+    = -0.23 (p = 0.008) and groups B r = -0.23 (p = 0.012), both meeting the criterion.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: supp9-excited-nosepoke-pauses
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:supp9-excited-nosepoke-pauses
+  notes: With the authors' pause definition, the post - pre interval is [-0.039, 0.361] (scaling i), [-0.013,
+    0.222] (ii) and [-0.001, 0.112] (authors' scaling), and no post interval lies above zero. 10 s pauses
+    agree but rest on 135 events in 71 of 131 neurons (median one per neuron); the authors' pauses give
+    3367 events, 9 to 46 per neuron, and a significant interval effect (p = 8.3e-8 to 1.6e-6) without
+    a post or post - pre interval above zero. With 5 s pauses and scaling (ii), firing rises after the pause
+    (post 0.172 [0.037, 0.336], post - pre 0.207 [0.052, 0.389]); with scaling (i) post - pre is 0.206
+    [-0.004, 0.395]. The outcome depends on the pause definition and rests on A3.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Assumption A3. A nose-poke pause is a gap of more than 2 s between pokes 18 to 2 s before a cue onset,
+    as cubeScriptPR25.m defines it ('find ITI periods with a 2-s nose poke cessation'); the text read
+    does not define it, and the claims file's 10 s and 5 s gaps are its own guesses.
+  - Pause windows are kept within recorded time.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig6-excited-assignment-050
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6-excited-assignment-050
+  notes: Bins from cue onset to 2 s after offset. Methods' normalization, 0.25 against 0.50 assignment
+    x regressor F(1,130) = 5.39 to 10.30, p = 0.002 to 0.022; 0.50 against 0.75 F(1,130) = 1.09 to 2.47,
+    p = 0.12 to 0.30 (paper F(1,129) = 3.92, p = 0.05); mean relative-threat beta largest at 0.50 (0.404,
+    0.472, 0.398 under O2 a). The authors' per-trial firing gives F(1,130) = 6.40, p = 0.013 and 3.93,
+    p = 0.0497, meeting the criterion.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig6c-excited-regressor-interval
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6c-excited-regressor-interval
+  notes: 0.50 model, relative threat against fear output over 14 bins, O2 (a) regressor p = 0.088, interaction
+    p = 0.058; O2 (b) regressor p = 0.002, interaction p = 0.058; O2 (c) regressor p = 0.054, interaction
+    p = 0.021. No reading gives both. The authors' per-trial firing gives regressor F(1,130) = 6.72, p
+    = 0.011 and interaction F(13,1690) = 2.08, p = 0.013 (paper F(1,128) = 6.29, p = 0.013; F(13,1664)
+    = 2.15, p = 0.01).
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  assumed: true
+- claim: fig6d-excited-betas
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6d-excited-betas
+  measured:
+  - 0.67
+  - 0.42
+  - 0.27
+  - 0.49
+  - 0.25
+  - 0.49
+  - 0.15
+  - 0.25
+  notes: O2 (a), dropped, relative threat onset 0.67 [0.44, 0.93], late 0.42 [0.23, 0.61], delay 0.49
+    [0.27, 0.71]; fear output onset 0.18 [-0.03, 0.38], late 0.27 [0.13, 0.40], delay 0.25 [0.08, 0.39];
+    differences onset 0.49 [0.12, 0.90], late 0.15 [-0.14, 0.44], delay 0.25 [-0.10, 0.57]. All parts
+    hold, means within tolerance; O2 (c) agrees, under O2 (b) the late and delay differences exclude zero.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Regression by least squares in place of Matlab regress (the same model). Per-trial firing under the
+    claims file's readings O2 (a), (b), (c) and 0/0 suppression ratios under O3 (dropped, 0); the authors'
+    code (per-trial firing with the 2 s floored baseline, 0/0 ratios set to 1, vpAnalysis.m lines 431-434
+    and 1097-1170) as a variant.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig6ef-excited-reward-firing
+  outcome: reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6ef-excited-reward-firing
+  measured:
+  - 0.239
+  - 0.312
+  notes: Events (a), scaling (i), interval F(15,1950) = 3.84, p = 8e-7; post 0.239 [0.018, 0.447], post
+    - pre 0.312 [0.060, 0.562], within tolerance (paper 0.22, 0.26). Events (b) and the authors' events
+    with scaling (i) agree; scaling (ii) gives means about 0.85. The authors' scaling gives 0.214 and
+    0.261.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+- claim: fig6g-excited-reward-cue-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6g-excited-reward-cue-correlations
+  measured:
+  - 0.1006
+  - 0.0996
+  - 0.0762
+  notes: Three-cue pool, events (a), scaling (i), O5 (a), r = 0.32, 0.32, 0.28 (R2 0.101, 0.100, 0.076,
+    p <= 0.0014). Every reading gives three positive significant correlations; none puts all three R2
+    within 10% of the paper's (0.09, 0.12, 0.08). The authors' normalization gives 0.084, 0.113, 0.098. The partial outcome comes only from the 10% tolerance on
+    R2, which is asked in questions/crcns-bf-3.yaml.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  assumed: true
+- claim: fig6-excited-peak-cue-vs-reward
+  outcome: partially_reproduced
+  notebook: reproduce_moaddab_2021.ipynb
+  output: claim:fig6-excited-peak-cue-vs-reward
+  measured:
+  - 1.128
+  - 0.586
+  - 0.129
+  notes: Three-cue pool, events (a), scaling (i), O5 (a), danger - reward 1.128 [0.726, 1.581], uncertainty
+    - reward 0.586 [0.241, 0.945], safety - reward 0.129 [-0.263, 0.558]; uncertainty also excludes zero.
+    With O5 (b) the pattern holds (0.632, 0.089, -0.368) with means outside tolerance. The authors' normalization
+    with O5 (a) gives 0.398 [0.148, 0.631], 0.136 [-0.082, 0.351], -0.086 [-0.317, 0.168], the paper's
+    values (0.40, 0.13, -0.08). Under scaling (i) the cue values are Z-scored over cue bins and the reward
+    values over the 16 reward bins, so the difference has no common unit; under scaling (ii), where both
+    share the cue normalization's SD, no reading gives the pattern. Whether (i) belongs among this claim's
+    readings is asked in questions/crcns-bf-3.yaml.
+  deviations:
+  - Assumption A1. The neuron groups are those of the authors' code (vpAnalysis.m, lines 7-64 and 1182-1205,
+    on the cube built by cubeScriptPR25.m), the screen on rates floored to integers, which gives the paper's
+    257 neurons from 153 sessions, and the split by the code's per-trial normalization, which gives the
+    paper's 131 cue-excited and 126 cue-inhibited neurons. The Methods do not say rates are rounded; their
+    unfloored rates give 271 neurons (groups B, shown as a variant). Chosen because the claims concern
+    the neurons the paper analysed, and the code reproduces every count the paper gives.
+  - Reward events within recorded time only (the files hold data from 20 s before to 31.5 s after each
+    cue onset), under the claims file's readings O4; the authors' events (pellets 18 to 2 s before and
+    14 to 28 s after each cue onset, cubeScriptPR25.m) with the same scalings and with the code's own
+    scaling as variants.
+  - Firing is normalized as the Methods describe (Z-score normalization, trial-averaged 250 ms rates minus
+    the trial type's mean 10 s baseline, Z-scored over all bins of all trial types), under the claims
+    file's readings O1 (a) and (b). The authors' code instead subtracts each trial's 2 s baseline, floored
+    to an integer rate, and Z-scores single trials (cubeScriptPR25.m); this is shown as a variant, and
+    it gives the paper's printed values.
+  - Studentized bootstrap with analytic standard errors of each resample in place of Matlab bootci's nested
+    bootstrap; 1000 resamples, a seed per claim.
+  assumed: true
+findings:
+- kind: metadata_insufficient
+  statement: Spikes, nose pokes and pellet deliveries were recorded only from 20 s before each cue onset
+    to 31.5 s after it, where an EVT14 event (pause recording, in the authors' script) ends each window;
+    the rest of each 3.5 min inter-trial interval is not in the files (177497 of 177598 pokes and 5871
+    of 5877 pellets fall in these windows). The data descriptor does not say so, and analyses of the inter-trial
+    interval can only use these windows.
+- kind: metadata_insufficient
+  statement: The data descriptor does not say what the event channels EVT01 to EVT14 hold, or which channel
+    carries which cue in each behavior program (the letter after epr25 in the file name). Only the authors'
+    script cubeScriptPR25.m gives them; the mapping it gives agrees with the shocks (all 780 danger trials
+    and 390 of 1560 uncertainty trials shocked 12 s after onset, no safety trial). EVT08 repeats EVT01
+    in every file and is not described.
+- kind: metadata_error
+  statement: The data descriptor says VPcube.poke.base is the nose-poke rate over the 2 s before the cue;
+    the cube holds the rate over the 20 s before it (equal in all 435 units to the rate computed from
+    the poke times). It lists half duration and amplitude ratio among the cube's fields; the cube has
+    neither (vpAnalysis.m computes them). It describes mean waveforms for each trial type; each unit file
+    has one 32-sample waveform.
+- kind: other
+  statement: The files hold 195 sessions (distinct session file names, each with its own trial table),
+    one more than the 194 the paper reports for the 435 neurons.
+- kind: other
+  statement: Four pairs of units recorded in one session share 70 to 88% of their spikes within 0.1 ms
+    (pa02082418 SPK01a and SPK15a; pa21040319, pa21040419 SPK06a and SPK15a; pa21040519 SPK07a and SPK15a),
+    and a fifth pair 49% (pa21031519 SPK06a and SPK07a). They may be one neuron recorded on two wires
+    and counted twice.
+- kind: code_mismatch
+  statement: The Methods normalize firing by averaging trials of each type, subtracting that type's mean
+    firing in the 10 s before cue onset and Z-scoring over the trial types; the authors' script cubeScriptPR25.m
+    subtracts from each trial its firing in the 2 s before cue onset, floored to an integer rate, and
+    Z-scores single trials. The paper's printed means, bootstrap intervals and regression betas match
+    the script's normalization (for example Low firing danger onset -0.364 against the paper's -0.37),
+    and the Methods' normalization gives values about twice as large. Of the three differences, Z-scoring single trials
+    in place of trial means accounts for the gap, since with Z over single trials the means are within the paper's
+    tolerance whatever the baseline length or flooring.
+- kind: code_mismatch
+  statement: The Methods screen neurons on mean firing rates (Hz); vpAnalysis.m floors each trial's rate
+    to an integer before the t-tests. The floored screen gives the paper's 257 neurons from 153 sessions;
+    the unfloored one gives 271 from 160, and a split into cue-excited and cue-inhibited neurons outside
+    the paper's counts.
+- kind: code_mismatch
+  statement: The Methods subtract the mean firing of the 1 s before reward delivery; cubeScriptPR25.m
+    subtracts the mean of the first 1 s of the 4 s window, 2 s to 1 s before delivery. The script also
+    takes only pellets delivered 18 to 2 s before or 14 to 28 s after a cue onset.
+- kind: methods_unavailable
+  statement: The k-means clusters of cue-inhibited neurons (Low 74, Intermediate 34, High 18) are a local
+    optimum, vpAnalysis.m runs Matlab kmeans once after rng(1), and with more starts k-means finds partitions
+    with a lower within-cluster sum of squares (58/46/22 on the same features; SSE 7254 against 7997).
+    Over 300 seeds one start reaches the paper's partition 98 times. Question for the authors, was a single
+    start intended, and do the cluster results hold on the lowest-SSE partition?
+- kind: methods_unavailable
+  statement: The text read does not define a nose-poke pause (Supplementary Figs. 6 and 9) or the cue
+    window of the cue-cue correlations (Supplementary Figs. 5 and 8). cubeScriptPR25.m takes gaps of more
+    than 2 s between pokes 18 to 2 s before cue onset, and vpAnalysis.m correlates the first 5 s of cue
+    for the cue-inhibited clusters. Question for the authors, are these the definitions used in the supplementary
+    figures?
+verifications:
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of commit f940f5d6b1 (author-answers, the analysis of the author run 4d8f88d15e)
+    with the conclusion cells and the summary removed, the helper module and the claims file, with the paper.
+    The header summary table in cell 0, which gives the outcomes, was still in that notebook. The verifier also read the archive listing and tested the helper functions on synthetic input. agrees
+    compares its outcome with the outcome of the record it reviewed.
+  results:
+  - claim: recorded-units
+    agrees: true
+    outcome: partially_reproduced
+    reason: 435 neurons and 14 rats match. There are 195 distinct sessions against 194 (cell 15). The criterion
+      says to report this as a difference in the data set. Problem 10, four same-session unit pairs share
+      more than 70% of their spikes and are likely duplicate units; they are kept in every population.
+    response: No change to the outcome. The duplicate pairs stay in, as the paper counts them; the notes and
+      a finding already report them, and the verifier marks this as not affecting a conclusion.
+  - claim: cue-responsive-screen
+    agrees: true
+    outcome: reproduced
+    reason: With the Methods' rates, 271 neurons, 160 sessions, all 14 rats, within tolerance. The authors'
+      floored rates give exactly 257/153 (cell 17). The paper states no chance level for the cue screen. Six
+      uncorrected tests imply about 26% false positives per neuron under the null, and the notebook does not
+      report this.
+    response: No change to the outcome. The cell now prints the chance reference, 1 - 0.95^6 = 0.265, and
+      the same screen run on pre-cue windows, which passes 119 of 435 neurons (27%); the conclusion and notes
+      give it. The notebook now also prints the lines of the authors' scripts that it cites (vpAnalysis.m
+      lines 7-64 among them).
+  - claim: fig1f-suppression-cue-effect
+    agrees: true
+    outcome: reproduced
+    reason: F(2,26) = 74.6 to 80.9, p about 1e-11, danger > uncertainty > safety under every O3 reading and
+      both populations (cell 19). Problem 11, cell 19 contains a dead expression.
+    response: No change to the outcome. The dead expression is removed.
+  - claim: fig1f-differential-suppression
+    agrees: true
+    outcome: reproduced
+    reason: All three intervals exclude zero and all means are within tolerance (0.29/0.51/0.80) under every
+      reading (cell 21).
+    response: No change.
+  - claim: fig2-excited-inhibited-split
+    agrees: false
+    outcome: partially_reproduced
+    reason: On the paper's 257 neurons, Hz with two window means gives 130/127, within tolerance. On the Methods'
+      271 neurons no claims-file reading is within tolerance, 139 to 155 inhibited (cell 23). Problem 1, the
+      header says the Methods' reading is the main result and the authors' code a variant, and A1 reverses
+      that for the neuron groups, using the code's floored-rate screen and the code's per-trial normalization
+      for the split; the notebook never shows how far the groups it used differ from the Hz two-means split.
+    response: 'Kept as reproduced and the disagreement recorded. The criterion asks for counts within tolerance
+      under one reading, and the claim''s statement is about the 257 neurons; on those, the claims-file reading
+      Hz with two window means gives 130/127. The 257 come from the code''s screen (A1), so the outcome stays
+      marked as resting on it, and the notes say the Methods'' 271 neurons fail. The header now states A1
+      as an exception to the rule for both steps, with the reason (the code reproduces every count the paper
+      gives and the Methods do not mention rounding). A new cell crosstabs the groups: the code''s split and
+      the Hz two-means split differ on 25 of the 257 neurons, and groups A and B share 108 cue-excited and
+      115 cue-inhibited neurons.'
+  - claim: ancova-excited-no-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: On the 131 neurons, p = 0.235 (O1a) and p = 0.182 (O1b). On groups B (Methods' rates) p < 0.001,
+      so the absence depends on A1 (cell 27).
+    response: No change; the notes already say the outcome rests on A1 and give the groups B result.
+  - claim: ancova-inhibited-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: p from 1.4e-9 to 1.5e-4 in every reading and group (cell 29).
+    response: No change.
+  - claim: kmeans-three-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Reading CV over the 10 s baselines, raw features, Matlab default of one start after rng(1) gives
+      74/34/18, and the F pattern matches, amplitude ratio p = 0.12 (cell 31). The partition is a local optimum.
+      Problem 3, the claims file says the seed cannot change a conclusion beyond the edge of an interval,
+      and here it does; only 98 of 300 single starts reach 74/34/18 and the lower-SSE optimum (58/46/22) fails
+      the counts. The main clusters use the code's features, not a claims-file reading, and the notebook does
+      not check that the claims-file reading's memberships are identical.
+    response: 'No change to the outcome. A new cell gives the adjusted Rand index and crosstabs: the claims-file
+      reading (10 s baselines, raw, one start after rng(1)) has the same members as the code''s clusters (index
+      1.000), and the lower-SSE partition moves 20 of 126 neurons (index 0.579). The conclusion and notes
+      say the seed changes the clusters and that every cluster claim rests on A2. Whether the claims file''s
+      reading should be Matlab''s default of one start, as the Methods name it, is asked in questions/crcns-bf-3.yaml.'
+  - claim: clusters-differ-in-cue-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: On the paper's clusters under O1a/b all three pairs have p < 0.05, but Low vs Intermediate has
+      p = 0.035/0.011, not < 0.005. Only the code normalization gives p < 0.005 for all pairs (cell 36). Problem
+      5, groups B's clusters (74/54/20) are not the paper's clusters, so the all-p < 0.005 result on B should
+      not count toward this claim.
+    response: No change to the outcome. The conclusion and notes now say groups B's clusters do not count
+      towards it.
+  - claim: clusters-by-rat
+    agrees: true
+    outcome: reproduced
+    reason: 11/9/5 rats, and 11 High neurons from pa02, on the main clusters (cell 38).
+    response: No change.
+  - claim: fig3a-low-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: All three effects p < 1e-11 and cue means order D < U < S under O1a/b (cell 42).
+    response: No change.
+  - claim: fig3b-low-inhibited-to-threat-cues
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'The pattern holds under O1b. Means are about 1.7x the paper''s (danger onset -0.61 against -0.37
+      +- 0.08). Under O1a the safety late-cue interval is above zero (cell 44). Problem 2, the authors'' per-trial
+      normalization matches the printed values, which suggests the paper''s Methods do not describe the computation
+      the figures were made with; that decides fig3b, 3d, 4c, 4g, 6b, 6c and 6-assignment. The notebook never
+      isolates which element causes the gap: per-trial vs trial-averaged Z, 2 s vs 10 s baseline, or flooring.'
+    response: No change to the outcome. A new section before this claim varies one element at a time. Z over
+      single trials puts all seven checked means within tolerance whatever the baseline and floor, and Z over
+      trial means none; flooring moves the means by at most 0.008 and the baseline length the four Low means by
+      at most 0.057 (Intermediate uncertainty onset by up to 0.15). The Methods describe Z over
+      trial means, so the claims file reads them correctly; the code_mismatch finding now says which element
+      differs.
+  - claim: fig3b-low-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'O1b: the pattern holds but the late-cue U-S mean is -0.28 (tolerance -0.14 +- 0.11). No O1 reading
+      meets both conditions (cell 46).'
+    response: No change; the normalization section bears on it as on fig3b-low-inhibited-to-threat-cues.
+  - claim: fig3c-intermediate-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: All effects significant and onset order D < U < S (cell 48).
+    response: No change.
+  - claim: fig3d-intermediate-inhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: The pattern holds under O1a/b. Means are about 1.8x the paper's (danger onset -0.97/-0.86 against
+      -0.54 +- 0.15) (cell 50).
+    response: No change; the normalization section includes the Intermediate onset means.
+  - claim: fig3d-intermediate-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under O1a/b the late-cue D-U interval contains zero ([-0.66, 0.04]) and the U-S means are out
+      of tolerance. The code normalization meets everything (cell 52).
+    response: No change.
+  - claim: supp5-low-cue-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: For Low neurons, onset U-S r = 0.36/0.38 with p <= 0.0014 is positive under every reading (cell
+      54). The code's first-5 s period would pass. Problem 8, supp5 uses a 1 s onset period; the Supplementary
+      Information was not read, and the authors' code correlates the first 5 s; a possible misreading by the
+      claims file.
+    response: No change to the outcome. The first-5 s variant was already shown; the notes now say both clusters
+      meet the criterion with it. The period is asked in questions/crcns-bf-3.yaml.
+  - claim: supp6-low-nosepoke-pauses
+    agrees: false
+    outcome: partially_reproduced
+    reason: Low shows no inhibition under every reading. Intermediate post firing is below zero under 5 s/(ii)
+      ([-0.65, -0.05]) and under code/code (cell 64). Problem 4, the header calls supp6 reproduced, but readings
+      5 s/(ii) and code/code for Intermediate show the effect the paper says is absent; under the 10 s reading
+      Intermediate neurons have a median of 0 events and only 14 of 34 contribute, too little data to support
+      a claim that an effect is absent.
+    response: Changed to partially reproduced, as the verifier gives. Under the authors' pause definition
+      (A3) the absence holds for Intermediate neurons with the claims file's scalings but not with the authors'
+      own single-event scaling, and the 10 s reading has too few events to count. The pause cells now print
+      the number of events and their distribution per neuron (min, quartiles, max).
+  - claim: fig4a-low-rt-over-fo
+    agrees: true
+    outcome: reproduced
+    reason: RT beta is further from zero than FO beta at all five assignments in every reading. Both are negative
+      (cell 70).
+    response: No change.
+  - claim: fig4a-low-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.007 to 0.012, and |RT| at 0.25 is greater than at 0.00 in every reading (cell 72).
+    response: No change.
+  - claim: fig4a-low-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.36 to 0.58 in every reading (cell 74).
+    response: No change.
+  - claim: fig4b-low-dynamic-shift
+    agrees: true
+    outcome: reproduced
+    reason: Model (a) gives p = 0.003 to 0.005 in every reading. Models (b) and (c) give p > 0.1 (cell 76).
+      Problem 9, the interaction holds only for model (a), which the code supports.
+    response: No change; the conclusion and notes already say the outcome holds for model (a) only.
+  - claim: fig4c-low-early-late-betas
+    agrees: true
+    outcome: partially_reproduced
+    reason: Model (a) means are within tolerance, but the late 0.25 interval excludes zero above it ([0.12,
+      1.00]) under every claims-file reading. Only the code firing gives the full pattern (cell 78).
+    response: No change.
+  - claim: fig4d-low-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: 'Model (a): 1.10 / -0.84 / 1.94, all intervals with the reported signs and within tolerance (cell
+      79).'
+    response: No change.
+  - claim: fig4e-int-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: 'O2a and O2c: RT > FO at every assignment, p = 0.006 to 0.012, and 0.25 > 0.00 (cell 81).'
+    response: No change.
+  - claim: fig4e-int-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.42 to 0.48 (cell 83).
+    response: No change.
+  - claim: fig4f-int-no-assignment-interval
+    agrees: true
+    outcome: reproduced
+    reason: p >= 0.055 in every reading on the paper's 34 neurons (cell 85).
+    response: No change.
+  - claim: fig4g-int-early-late-betas
+    agrees: true
+    outcome: not_reproduced
+    reason: 'No claims-file reading gives the pattern: model (a) early 0.25 contains zero and late 0.50 is
+      below zero, and model (c) early 0.50 is below zero. Only the code firing reproduces it (cell 87).'
+    response: No change.
+  - claim: fig4h-int-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: 'Model (a), every O2/O3 reading: 1.39 [0.58, 2.33], -0.81 [-1.82, 0.06], 2.20 [0.49, 4.04], all
+      within tolerance (cell 88).'
+    response: No change.
+  - claim: fig4-low-int-combined
+    agrees: true
+    outcome: reproduced
+    reason: 'Models (a) and (b): assignment x interval p <= 0.022, three-way p >= 0.70 (cell 90).'
+    response: No change.
+  - claim: fig5a-low-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: Every reading meets all three conditions (cell 100).
+    response: No change.
+  - claim: fig5bc-reward-pre-post
+    agrees: true
+    outcome: reproduced
+    reason: 'Events (a) and (b) with scaling (i): pattern holds and values within tolerance (cell 102).'
+    response: No change.
+  - claim: fig5d-f-low-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Signs and p values hold in every reading. R2 values are outside the 10% tolerance (cell 104).
+      Problem 7, a 10% tolerance on R2 (+-0.0006 for a null R2 of 0.006) is unreasonably tight, and the partial
+      outcomes come from it, not from the data.
+    response: No change to the outcome; the tolerance is the claims file's, which the author may not change.
+      It is asked in questions/crcns-bf-3.yaml, and the notes say the partial outcome comes only from it.
+  - claim: fig5-low-fisher-comparisons
+    agrees: true
+    outcome: reproduced
+    reason: D vs U p = 0.17 to 0.49 and U vs S p <= 0.0055 in every reading (cell 105).
+    response: No change.
+  - claim: fig5g-i-intermediate-no-reward-cue-correlation
+    agrees: true
+    outcome: reproduced
+    reason: All correlation p >= 0.14 and all Fisher p >= 0.31 (cell 106).
+    response: No change.
+  - claim: fig6a-excited-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: All effects significant and onset order D > U > S (cell 56).
+    response: No change.
+  - claim: fig6b-excited-period-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Every increase and all six difference intervals exclude zero above it. Safety delay is below zero
+      in every reading, and the means are within tolerance only with the code normalization (cell 58). Problem
+      8, the criterion requires safety late-cue and delay intervals to contain zero; the paper says only that
+      increases were limited to threat cues, so a safety value below zero does not contradict it; a possible
+      misreading by the claims file.
+    response: No change to the outcome. The notes and conclusion now also say the late-cue safety interval
+      lies below zero under the three-cue pool and the code normalization (it was described as containing
+      zero). The criterion's reading of the passage is asked in questions/crcns-bf-3.yaml; with the Methods'
+      normalization the means stay outside tolerance either way.
+  - claim: supp8-excited-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: On the 131 neurons under O1a/b, delay U-S r = -0.08 (p = 0.34). It passes with the code normalization
+      and on groups B (cell 60).
+    response: No change.
+  - claim: supp9-excited-nosepoke-pauses
+    agrees: false
+    outcome: partially_reproduced
+    reason: No increase under 10 s, under 5 s/(i) and under the code pauses. Under 5 s/(ii), post 0.17 [0.04,
+      0.34] and post-pre are above zero (cell 66). Problem 4, the header calls supp9 reproduced, but reading
+      5 s/(ii) shows the effect the paper says is absent.
+    response: Kept as reproduced, resting on A3, and the disagreement recorded. Under the authors' pause definition,
+      the best-supported reading (cubeScriptPR25.m, 'find ITI periods with a 2-s nose poke cessation'), no
+      interval lies above zero under any of the three scalings, the authors' own included, with 3367 events
+      (9 to 46 per neuron). The readings disagree, so the outcome is marked as resting on the assumption,
+      and the 5 s/(ii) result is in the notes and conclusion. The 10 s reading is now reported as resting
+      on 135 events in 71 of 131 neurons.
+  - claim: fig6-excited-assignment-050
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0.25 vs 0.50 significant and 0.50 has the largest beta in every reading. 0.50 vs 0.75 has p =
+      0.12 to 0.30 under claims-file readings and p = 0.0497 only under the code variant (cell 92).
+    response: No change.
+  - claim: fig6c-excited-regressor-interval
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'No claims-file reading gives both effects: O2b gives the regressor effect only, O2c the interaction
+      only (cell 94).'
+    response: No change.
+  - claim: fig6d-excited-betas
+    agrees: true
+    outcome: reproduced
+    reason: 'O2a and O2c with both O3 readings: pattern holds and values within tolerance (cell 96).'
+    response: No change.
+  - claim: fig6ef-excited-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: 'Events (a) and (b) with scaling (i): interval effect p < 1e-6 and both intervals above zero within
+      tolerance (cell 108).'
+    response: No change.
+  - claim: fig6g-excited-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: All three r are positive with p < 0.05 in every reading. R2 is out of the 10% tolerance in every
+      reading (cell 110). Problem 7, the 10% tolerance on R2 is unreasonably tight and the partial outcome
+      comes from it, not from the data.
+    response: No change to the outcome; the tolerance is asked in questions/crcns-bf-3.yaml, and the notes
+      say the partial outcome comes only from it.
+  - claim: fig6-excited-peak-cue-vs-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Pattern holds only for O1a, O5b, scale (i), where the safety mean of -0.37 is out of tolerance
+      (cell 112). Problem 6, under scaling (i) the cue values are Z-scored over cue bins and the reward values
+      over 16 reward bins, so the cue - reward difference has no common unit, and scaling (i) is the only
+      claims-file reading where the pattern holds.
+    response: No change to the outcome. The conclusion and notes now say the difference has no common unit
+      under (i) and that under (ii) no reading gives the pattern. Whether (i) belongs among this claim's readings
+      is asked in questions/crcns-bf-3.yaml.
+- date: '2026-11-06'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of commit 9c2068cc1a (author-revise-1), with the conclusions and
+    summary, the README, the attempt record, the helper module, the claims file and the round-1 report, with the
+    paper. agrees compares its outcome with the outcome of the record it reviewed.
+  results:
+  - claim: recorded-units
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The Result sentence and the record notes match the printed outputs.
+    response: No change. The Summary now names it among the partial outcomes that do not meet the criterion under
+      the code's variant.
+  - claim: cue-responsive-screen
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The Result sentence and the record notes match the printed outputs.
+    response: No change.
+  - claim: fig1f-suppression-cue-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It also holds on groups B, so it is right that it is not flagged as assumed.
+    response: No change.
+  - claim: fig1f-differential-suppression
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It also holds on groups B, so it is right that it is not flagged as assumed.
+    response: No change.
+  - claim: fig2-excited-inhibited-split
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees with reproduced, but only under A1. The claim's statement names the 257 neurons; on those,
+      the claims-file reading Hz, two window means gives 130/127 (cell 29). On the Methods' 271 neurons every claims-file
+      reading fails (142 to 155 inhibited); the round-1 range of 139 to 155 was wrong. Cell 32 says two of the criterion's
+      four readings give counts within tolerance, but cell 29 shows three of four within tolerance with the three-cue
+      pool (130/127, 125/132, 121/136), plus the four-type pool with two means (124/133). Cell 0 repeats the implication.
+    response: Cell 32 now says three of four readings are within tolerance with the three-cue pool and two of four
+      with the four-type pool (Hz two means and normalized two means, 124/133). The header (cell 0) now calls Hz
+      with two window means one of the readings within tolerance. The Summary says which claims rest on A1.
+  - claim: ancova-excited-no-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on A1. It reverses on groups B (p <= 0.0006).
+    response: No change; the notes already give the groups B result and mark the outcome as resting on A1. The Summary
+      sentence that said all claims rest on A1 and A2 now says which rest on which.
+  - claim: ancova-inhibited-baseline-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It also holds on groups B, so it is right that it is not flagged as assumed.
+    response: No change.
+  - claim: kmeans-three-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. A2 is reasonable because the Methods name Matlab kmeans, whose default is one
+      start, and the code does rng(1) (cell 15, lines 1485-1487). It is fragile, only 98 of 300 seeds reach the
+      paper's partition (cell 44). About 25 cluster claims rest on it; the claims file's statement that the seed
+      cannot change a conclusion beyond the edge of an interval is wrong here, and a question is filed. The membership
+      check is done (adjusted Rand index 1.000, cell 46).
+    response: No change; the question is in questions/crcns-bf-3.yaml.
+  - claim: clusters-differ-in-cue-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: clusters-by-rat
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig3a-low-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig3b-low-inhibited-to-threat-cues
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Cell 59 says the baseline length and flooring move the means by at most 0.06;
+      this fails for one of the seven means (cell 58), Intermediate uncertainty onset moves from -0.592 to -0.442
+      (0.15) under trial means and from -0.330 to -0.253 (0.077) under single trials. The round-1 response says
+      the same and is wrong for the same reason. The fig3b notes are correct, as they cover only the four Low means,
+      which move at most 0.054. The round-1 reason kept only that the notebook never isolates which element causes
+      the gap, and dropped the main point, that the Methods may not describe the computation the figures were made
+      with, which decides fig3b, 3d, 4c, 4g, 6b, 6c and fig6-excited-assignment-050; the code_mismatch finding covers
+      the substance.
+    response: 'Cell 59 now gives the size of each effect: flooring moves each mean by at most 0.008; the baseline
+      length moves Intermediate uncertainty onset by 0.15 (trial means) and 0.077 (single trials), the other six
+      means by at most 0.062 and the four Low means by at most 0.057 (taken over all four baseline and floor settings).
+      The round-1 response is corrected to match, and the round-1 reason now includes the dropped point.'
+  - claim: fig3b-low-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. With the code variant the delay interval reaches zero (cell 67), so it is one
+      of the partial outcomes that still fails under the code variant, against the Summary and README sentence that
+      most partial outcomes are values within tolerance under the code's normalization.
+    response: The Summary and README sentence now says ten of the 15 partial outcomes meet the criterion under the
+      code's variant and names the five that do not, this claim among them. The Summary table note now gives the
+      delay interval.
+  - claim: fig3c-intermediate-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig3d-intermediate-inhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The record notes' list of means outside tolerance leaves out safety onset under
+      the three-cue pool (-0.337 against -0.21 +- 0.10, cell 73). This does not change the outcome.
+    response: The notes now include safety onset under the three-cue pool.
+  - claim: fig3d-intermediate-differential
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: supp5-low-cue-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The 1 s onset window may be a misreading by the claims file; a question is
+      filed and the outcome would change if it is answered differently.
+    response: No change.
+  - claim: supp6-low-nosepoke-pauses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with partially_reproduced, as given in round 1.
+    response: No change.
+  - claim: fig4a-low-rt-over-fo
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4a-low-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4a-low-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4b-low-dynamic-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4c-low-early-late-betas
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4d-low-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4e-int-025-better-than-000
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4e-int-025-similar-050
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4f-int-no-assignment-interval
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It reverses on groups B (models a and b).
+    response: No change; the notes already give the groups B result (p = 0.012 to 0.034).
+  - claim: fig4g-int-early-late-betas
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4h-int-early-late-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig4-low-int-combined
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig5a-low-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig5bc-reward-pre-post
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Cell 150 says that with scaling (ii) the pre intervals exclude zero; under
+      events (a)/(ii) the Low pre interval is [-0.044, 0.150] (cell 149), which contains zero. The record's version
+      (the Intermediate pre interval excludes zero) is correct.
+    response: Cell 150 now says the Intermediate pre interval excludes zero under both event readings and the Low
+      pre interval only under events (b), and that the Low post means, not all means, are about three times larger.
+  - claim: fig5d-f-low-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The 10% tolerance on R2 may be a misreading by the claims file; a question
+      is filed and the outcome would change if it is answered differently.
+    response: No change.
+  - claim: fig5-low-fisher-comparisons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig5g-i-intermediate-no-reward-cue-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. It rests on the single-start partition of A2, reached by 98 of 300 seeds; the
+      claims file's statement that the seed cannot change a conclusion beyond the edge of an interval is wrong here,
+      and a question is filed.
+    response: No change.
+  - claim: fig6a-excited-differential-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6b-excited-period-firing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The safety requirement may be a misreading by the claims file; a question is
+      filed. With the code variant the safety intervals still exclude zero (cell 85), so the partial outcome does
+      not come only from the normalization.
+    response: The Summary and README sentence on partial outcomes now names this claim among those that do not meet
+      the criterion under the code's variant.
+  - claim: supp8-excited-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: supp9-excited-nosepoke-pauses
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees with reproduced, but only under A3. With the code's pause definition no post or post - pre
+      interval lies above zero under any scaling, on 3367 events with 9 to 46 per neuron (cell 96). The margin is
+      thin, lower bounds are -0.013 and -0.001. Under the claims file's own 5 s/(ii) reading firing rises after
+      the pause, so the claim fails there.
+    response: No change; the notes and conclusion already give the 5 s/(ii) result, and the outcome is marked as
+      resting on A3.
+  - claim: fig6-excited-assignment-050
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6c-excited-regressor-interval
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6d-excited-betas
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6ef-excited-reward-firing
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome, which rests on the neuron groups of A1.
+    response: No change.
+  - claim: fig6g-excited-reward-cue-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The 10% tolerance on R2 may be a misreading; a question is filed. R2 values
+      0.084/0.113/0.098 are still outside tolerance under the code variant (cell 162).
+    response: The Summary and README sentence on partial outcomes now names this claim among those that do not meet
+      the criterion under the code's variant.
+  - claim: fig6-excited-peak-cue-vs-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Scaling (i) may be a misreading by the claims file; a question is filed and
+      the outcome would change if it is answered differently.
+    response: No change.

@@ -79,7 +79,9 @@ jobs:
 
       - name: Build the site
         run: |
-          python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json" --queue "$RUNNER_TEMP/queue.json"
+          # Page views are counted only when the repository variable CF_ANALYTICS_TOKEN is set (tools/build_site.py, beacon).
+          python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json" --queue "$RUNNER_TEMP/queue.json" \
+            --analytics "${{ vars.CF_ANALYTICS_TOKEN }}"
           touch site/.nojekyll
           # The site's domain. Each publish replaces the branch, so the file is written with every build;
           # GitHub Pages would forget the domain without it.

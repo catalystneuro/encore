@@ -1,0 +1,1473 @@
+# Claims for Kim, Lycke, Zolotavin, Montes, Xie & Luan (2026), Science Advances 12, eaef0343,
+# "Learning induces activation-mechanism-dependent neural plasticity in an intracortical
+# microstimulation task", on DANDI 001868 (version 0.260715.2016).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-03, protocol pilot-13 as stated in docs/protocol.md.
+#
+# Text read: the version of record, full text from Europe PMC (PMC13544205): main text, figure
+# legends of Figures 1 to 7, Materials and Methods, and the supplement (sciadv.aef0343_sm.pdf,
+# legends of figs. S1 to S9, extracted with PyMuPDF). The bioRxiv preprint
+# (10.64898/2026.06.05.730421 v1), which the dandiset names, was not used for claims. The
+# supplement holds figure legends only; it has no tables.
+#
+# Code read: https://github.com/XieLuanLab/icms-activation-plasticity at commit d1922d1
+# (2026-07-15). python/ holds the figure scripts for Figs. 4 to 6 and figs. S1, S3 to S9, and
+# utils/ (filters, early and late weeks, currents, effect size); matlab/ holds the imaging and
+# threshold figure scripts for Figs. 2 and 3 and fig. S2 and the statistics helper report_stat.m;
+# processing/ holds the upstream pipeline (artifact suppression and sorting, response metrics,
+# pulse-locking, population coupling, UnitMatch, the volumetric and planar imaging pipelines).
+# The figure scripts read processed tables from the paper's Zenodo figure source data
+# (doi:10.5281/zenodo.21382755), not the NWB files. None of the scripts computes the counts of
+# Fig. 3B, the exponential fit of Fig. 2A, or the delta-spikes values and hit and miss PSTHs of
+# Fig. 6 (all read precomputed).
+#
+# Data the paper used: 12 Thy1-GCaMP6s (GP4.3) mice, all implanted with a 32-channel
+# ultraflexible NET in S1 with a cranial window. Six behavioural mice (four male, two female;
+# named Mouse 1 to 6 in the paper, ICMS92, ICMS93, ICMS98, ICMS100, ICMS101 and ICMS83 in the code)
+# did an ICMS detection task (wheel turn, go/no-go) over weeks 0 to 4, 46 sessions. Six control
+# mice (from an earlier study, ref. 22) received similar stimulation without behaviour (imaging
+# 18 sessions; ephys from 4 control animals, 15 sessions). Each behavioural mouse had 3 fixed
+# stimulation contacts at 200 to 400 um depth. Each session had four blocks of 100 trials (10 catch
+# trials at 0 uA and 90 stimulation trials, 3 channels x 3 currents x 10), with currents
+# re-centred on the threshold between blocks, plus a fifth block for planar imaging. A trial is
+# a prestimulus period of 1 to 1.5 s, a 700 ms train of 100 Hz biphasic cathode-leading pulses
+# (70 pulses, 167 us phases, 67 us interphase), a 2.5 s poststimulus period and a 1 to 1.5 s
+# intertrial interval; outcomes hit, miss, false alarm (catch). Measured variables: wheel
+# position (rotary encoder, reliable in 5 mice; Mouse 6 excluded), response times, spike-sorted
+# units from 30 kHz recordings on the NET (973 units, 484 modulated), volumetric 2P imaging
+# (512 x 512 pixels, 1 x 1 mm, 30 fps, 25 um steps over 300 um) and planar 2P imaging at 100 um
+# depth (30 fps; cells tracked across weeks in three mice, Mouse 1 to 3 in the code). Only the
+# 4, 5 and 6 uA currents were analysed. The paper says the dandiset holds the processed
+# electrophysiology, behavioural and 2P imaging data; whether it holds the control animals and
+# the imaging ROIs and activation calls is for the author to find. Raw recordings are not public.
+#
+# Method fixed here for every criterion, from the paper and its code (referred to as "the common
+# method"):
+# - Week of a session is ceil(days since the animal's first session / 7), day 0 being week 0;
+#   weeks above 4 are dropped. Early is weeks 0 and 1, late weeks 2 to 4 (Results, Behavioral
+#   learning enhances, paragraph 1; code matlab/fig2/fig2a_thresholds.m, python/utils/config.py,
+#   processing/batch_process/postprocessing/longitudinal_data_utils.py).
+# - Currents 4, 5 and 6 uA (Methods, Analysis of behavioral data).
+# - Tests are two-sided Mann-Whitney U at P < 0.05 unless a claim says otherwise (Methods,
+#   Statistics; figure legends). Effect size r is |Z|/sqrt(n1 + n2) for imaging and thresholds
+#   (matlab/report_stat.m) and the rank-biserial 1 - 2U/(n1 n2) for ephys
+#   (python/utils/plotting.py); it is reported, not judged.
+# - Ephys response: one unit at one stimulation channel and current in one session (Methods,
+#   Quantifying neuromodulation metrics). Modulated when the paired t test of per-trial spike
+#   counts, stimulation train against the 700 ms before it, gives P < 0.05 with the z-score above
+#   zero, the response has more than 50 spikes and a baseline rate of at least 0.5 Hz (Methods;
+#   code processing/.../stim_response_util.py and python/utils/filters.py). The code also drops
+#   stimulation channels recorded on fewer than 5 days, responses with 5 trials or fewer, and
+#   z-scores of 50 or more (100 for Fig. 4 and fig. S5); these are followed, and the Methods
+#   filters alone are a variant. Modulation score is (mean stimulation rate minus mean
+#   prestimulus rate) / STD of the per-trial prestimulus rates (Methods). Time to maximum firing
+#   rate is the argmax over the train of the rate in 10 ms bins smoothed by a Gaussian of
+#   sigma 20 ms (code responses_v3/stim_condition_response.py; 2 ms bins, sigma 5 ms, for the
+#   120 ms window); the Methods do not give it.
+# - Pulse-locking: spikes in each 10 ms interpulse interval in 0.5 ms bins, the first 1.5 ms and
+#   last 0.5 ms blanked; spike probability is spikes per bin over trials (Methods). PLI is the mean
+#   of the 3 bins around the peak minus the median of the unblanked bins, on the mean curve of 500
+#   bootstrap draws of 20% of pulses; PL when PLI exceeds the 99th percentile of 100 surrogates
+#   with the same spike count placed uniformly at random in the unblanked window (code
+#   responses_v2/pulse_locked_response_metrics.py). The Methods call the null "shuffled data"
+#   and give 5000 bootstrap resamples for Fig. 5C; the code's choices are followed and 5000
+#   resamples is a variant.
+# - Cell type: trough-to-peak of the unit's template on its main channel; below 0.45 ms is a
+#   narrow-waveform interneuron, otherwise pyramidal (Fig. 4H legend; code
+#   longitudinal_data_utils.py).
+# - Imaging activation (volumetric): per channel and current, the stimulation-window volume minus
+#   the prestimulus volume, a voxel responsive above 2 x its baseline STD, an ROI activated when
+#   at least 50% of its voxels are responsive, ROIs under 5 um radius dropped; distance is the 3D
+#   distance of the ROI centroid from the stimulation site, counts limited to 800 um (Methods,
+#   Detection and quantification; code matlab/fig2/*.m). The code applies this to the
+#   trial-averaged difference with a channel-specific multiplier (stdMod in
+#   NeuroAnalysis_BehavioralParametricSweepBlockExtractTest.m); the Methods' fixed 2 x STD is
+#   followed and the code's multiplier is a variant. Where the dataset holds the paper's ROIs or
+#   activation calls, they are used.
+# - Imaging activation (planar): EXTRACT ROIs; an ROI's response is activated when its
+#   trial-averaged dF/F exceeds threshold for a run of more than 5 frames with onset before
+#   700 ms (Methods). The Methods give the threshold as mean + 2 STD of the ROI's full trace; the
+#   code uses 2 x CV of the trace; both are readings.
+#
+# Data from outside the paper's recordings: none for the tests. The paper's Zenodo figure source
+# data (doi:10.5281/zenodo.21382755) hold the processed tables the figure code reads; they are
+# not used for any claim here.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001868"
+  doi: 10.48324/dandi.001868/0.260715.2016
+paper: doi:10.1126/sciadv.aef0343
+claims:
+- id: fig2a-threshold-decrease
+  statement: Behavioural detection thresholds fall with learning; thresholds in the late phase
+    (weeks 2 to 4) are lower than in the early phase (weeks 0 to 1), median 5.5 against 4.2 uA.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 1; Figure 2A
+  quote: The detection thresholds in the late phase were significantly lower than those in the
+    early phase ( Fig. 2A ), decreasing from a median of 5.5 to 4.2 μA
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: r = 0.40
+    p: 7.68e-6
+    n: 43 early and 80 late channel-session thresholds
+  expected:
+  - quantity: median early-phase threshold
+    value: 5.5
+    tolerance: 0.55
+    unit: uA
+  - quantity: median late-phase threshold
+    value: 4.2
+    tolerance: 0.42
+    unit: uA
+  - quantity: number of early thresholds
+    value: 43
+    tolerance: 4
+  - quantity: number of late thresholds
+    value: 80
+    tolerance: 8
+  criterion: A threshold per channel and block from a cumulative Gaussian fitted to the hit
+    proportions at each current, with the block's catch-trial false-alarm rate as a 0 uA point
+    (Methods, Analysis of behavioral data; code processing/dataloader.py, psignifit sigmoid norm,
+    experiment type YesNo, free guess and lapse), the threshold being the current at 50%
+    detection of the fitted function; the session threshold of a channel is the mean of its four
+    block thresholds (Methods). One value per channel and session, all six mice, weeks by the
+    common method (code fig2a_thresholds.m). Reproduced when both medians are within tolerance
+    and the two-sided Mann-Whitney test gives P < 0.05 with late lower. Session thresholds the
+    dataset stores are used when present, and the refitted ones are shown with them. The
+    exponential fit drawn in Fig. 2A is not in the code and is not tested.
+- id: fig2a-steepest-decline-early
+  statement: The steepest fall in threshold is between weeks 0 and 1, followed by smaller changes
+    and relative stability in weeks 2 to 4.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 1; Figure 2A; fig. S1D
+  quote: detection thresholds decreased ( Fig. 2A and fig. S1D), with the steepest decline
+    occurring during weeks 0 to 1, followed by more gradual changes and relative stability in
+    weeks 2 to 4
+  depends_on:
+  - fig2a-threshold-decrease
+  criterion: The paper reports no test. From the channel-session thresholds of
+    fig2a-threshold-decrease, the median per week; reproduced when the fall in median from week
+    0 to week 1 is larger than each later week-to-week change, as Fig. 2A plots it. This is a
+    reading of the figure and is marked as resting on that assumption.
+- id: figs1e-response-times-decrease
+  statement: Response times follow the same time course as thresholds, falling over training.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 1; fig. S1E
+  quote: Response times followed a similar time course (fig. S1E)
+  criterion: The paper reports no test. Response time of hit trials (stimulation onset to the
+    wheel crossing threshold), median per animal and week as fig. S1E plots it. Reproduced when
+    the median over animals falls from week 0 to the late phase and most of the fall is between
+    weeks 0 and 1. As a variant, a two-sided Mann-Whitney test of hit response times, early
+    against late, as the paper uses for wheel-movement onset (fig. S5C).
+- id: fig2c-count-increase-fixed-current
+  statement: At each fixed current (4, 5 and 6 uA), more neurons are activated by ICMS in the late
+    phase than in the early phase.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 3; Figure 2C
+  quote: resulting in significantly larger activated populations at all current levels in the
+    late learning phase than in the early phase
+  statistics:
+  - about: 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.28
+    p: 0.043
+    n: 13 early, 41 late
+  - about: 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.33
+    p: 0.015
+    n: 20 early, 35 late
+  - about: 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.39
+    p: 0.0069
+    n: 22 early, 26 late
+  criterion: Activated neurons counted from volumetric imaging by the common method, within 800 um
+    of the stimulation site, per channel and current, all six mice, channel 3 of Mouse 4 left out
+    as the code does (fig2c_neuron_counts.m, "error was found in this dataset"). The unit of
+    observation is open. The legend says each dot is a channel, session and animal; the code
+    takes the median over the sessions of each week per channel. Readings (a) channel x week
+    medians (code) and (b) channel x session values (legend). Reproduced when, under one reading,
+    the two-sided Mann-Whitney test gives P < 0.05 with late higher at all three currents;
+    partially reproduced at one or two currents.
+- id: fig2b-example-counts
+  statement: In one representative animal at 4 uA, the number of activated neurons in the same
+    field of view rises from 71 at week 0 to 114 at week 1 and 220 at week 2.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 3; Figure 2B
+  quote: In one representative animal at a fixed stimulation current of 4 μA, the number of
+    ICMS-activated neurons increased over time within the same FOV, with progressively more cells
+    recruited from week 0 (71 neurons) to week 1 (114 neurons) and to week 2 (220 neurons)
+  expected:
+  - quantity: activated neurons, week 0
+    value: 71
+    tolerance: 7.1
+  - quantity: activated neurons, week 1
+    value: 114
+    tolerance: 11.4
+  - quantity: activated neurons, week 2
+    value: 220
+    tolerance: 22
+  criterion: Counts as in fig2c-count-increase-fixed-current at 4 uA. The paper names neither the
+    animal nor the channel, nor which session of a week. Readings are every animal and channel,
+    with (a) the week median of sessions and (b) each session. Reproduced when one animal and
+    channel gives all three counts within tolerance under one reading; partially reproduced when
+    some animal and channel shows counts rising over the three weeks without matching the values.
+- id: figs2ab-density-peak-200um
+  statement: Activation density, as a function of distance from the stimulation site, peaks at
+    around 200 um.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 3; fig. S2, A and B
+  quote: The activation density peaked at around 200 μm (fig. S2, A and B)
+  criterion: Density per 100 um spherical shell (0 to 800 um) is the count of activated neurons
+    in the shell over the shell's volume (Methods; code fig2d_ring_plots_5uA.m), per channel and
+    session, median over samples per week, at 4 and 5 uA. Reproduced when, for most weeks at both
+    currents, the shell of highest median density is the 100 to 200 or 200 to 300 um shell.
+- id: fig2e-density-200um-increase
+  statement: At 5 uA, activation density within 200 um of the stimulation site is higher in the
+    late phase than in the early phase.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 3; Figure 2E
+  quote: resulting in significantly higher activation density with learning within a radius of
+    200 μm ( Fig. 2E
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: r = 0.31
+    p: 0.015
+    n: 22 early, 40 late
+  criterion: Density is the number of activated neurons within 200 um over the volume of a 200 um
+    sphere (code fig2e_density_r50_5uA.m), one value per channel and session at 5 uA, samples
+    with no activated neuron within 200 um dropped (code). Which animals are open. The legend
+    says n = 6 animals; the code loops over five, leaving out Mouse 5 (ICMS101). Readings (a)
+    five mice (code) and (b) six mice (legend). Reproduced when, under one reading, the two-sided
+    Mann-Whitney test gives P < 0.05 with late higher.
+- id: fig2e-radius-increase
+  statement: The activation radius, the distance enclosing 50% of activated neurons, increases
+    from the early to the late phase at 5 uA.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 3; Figure 2E
+  quote: we defined the distance enclosing 50% of all activated neurons as the activation radius
+    (Materials and Methods), which also increased over time
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: r = 0.56
+    p: 1.1e-5
+  depends_on:
+  - fig2e-density-200um-increase
+  criterion: The radius is the median distance of the activated neurons from the stimulation site
+    (Methods, Detection and quantification; code), per channel and session at 5 uA, on the
+    samples and readings (a) and (b) of fig2e-density-200um-increase. Reproduced when, under one
+    reading, the two-sided Mann-Whitney test gives P < 0.05 with late larger.
+- id: figs2de-control-stable
+  statement: In control animals stimulated without behavioural training, activation density
+    within 200 um and the number of activated neurons do not change from early to late weeks.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 3; fig. S2, D and E
+  quote: In control animals not undergoing ICMS-driven behavioral learning, both the number and
+    spatial distribution of activated neurons remained stable and resembled those in the initial
+    training weeks
+  statistics:
+  - about: control density within 200 um
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.05
+    p: 0.808
+    n: 18 early, 7 late
+  - about: control number of activated neurons
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.22
+    p: 0.066
+    n: 42 early, 26 late
+  criterion: A claim of absence, judged on the paper's test. Control animals, density within 200 um
+    and counts as in fig2e-density-200um-increase and fig2c-count-increase-fixed-current, early
+    (weeks 0 and 1) against late; the code tests weeks 2 and 3 as late for this figure
+    (figs2d_control_vs_behavior_density.m) and its control values are precomputed, so the
+    current and grouping of the controls are open; readings (a) 5 uA, late weeks 2 and 3 and (b)
+    all three currents pooled, late weeks 2 to 4. Reproduced when the two-sided Mann-Whitney test
+    gives P >= 0.05 for both measures; the effect sizes are reported. Not testable if the dataset
+    does not hold the control animals.
+- id: figs2de-behaviour-increase-comparison
+  statement: In the behaviourally trained animals, compared over training as for the controls,
+    density within 200 um and the number of activated neurons at 5 uA increase.
+  source: fig. S2, D and E legend
+  quote: whereas behaviorally trained animals exhibited significant increases in activation
+    density (two-sided Mann-Whitney U, nearly = 22, nlate = 29, p = 0.044, r = 0.28)
+  statistics:
+  - about: density within 200 um
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.28
+    p: 0.044
+    n: 22 early, 29 late
+  - about: number of activated neurons at 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.54
+    p: 9.0e-4
+    n: 18 early, 20 late
+  criterion: As fig2e-density-200um-increase (density) and fig2c-count-increase-fixed-current at
+    5 uA (counts, channel x week medians), with Mouse 5 left out as the code does (figs2d and
+    figs2e scripts, numel(anID)-1). The legend says the behavioural data are reproduced from
+    Figs. 2E and 2C, yet its n (22 and 29; 18 and 20) differ from theirs (22 and 40; 20 and 35);
+    the code limits late to weeks 2 and 3 (weeks 0 to 3 kept, early 0 to 1 against late 2 to 3).
+    Readings (a) late weeks 2 and 3 (code, whose n the legend's should match) and (b) late weeks
+    2 to 4 as in Figs. 2C and 2E. Reproduced when, under one reading, both tests give P < 0.05
+    with late higher.
+- id: fig2g-stable-at-threshold
+  statement: When the current is set to each session's detection threshold, the activation density
+    within 200 um and the number of activated neurons do not change between learning phases.
+  source: Results, Behavioral learning enhances ICMS-evoked population activation over time,
+    paragraph 4; Figure 2, F and G
+  quote: when the stimulation current was adjusted to the behavioral detection threshold for each
+    session, both the activation density and number of activated neurons remained stable across
+    learning phases
+  statistics:
+  - about: density within 200 um
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.07
+    p: 0.511
+    n: 32 early, 69 late
+  - about: number of activated neurons
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.11
+    p: 0.253
+    n: 32 early, 69 late
+  depends_on:
+  - fig2a-threshold-decrease
+  criterion: A claim of absence, judged on the paper's test. For each channel and session, the
+    imaged current equal to the session threshold rounded to the nearest uA (code
+    fig2g_neurons_density_threshold.m); count and density within 200 um as in
+    fig2c-count-increase-fixed-current and fig2e-density-200um-increase, samples with no
+    activated neuron within 200 um dropped, all six mice. Reproduced when the two-sided
+    Mann-Whitney test, early against late, gives P >= 0.05 for both measures; not reproduced when
+    either is significant. Effect sizes are reported.
+- id: fig3b-tracking-counts
+  statement: Of 10,608 neurons tracked in three animals, 4469 were activated by ICMS; 114 were
+    activated at all weeks, 370 in 4 of 5 weeks, and 2063 in only one session.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 1; Figure 3B
+  quote: Among 10,608 tracked neurons in three animals, 4469 neurons were activated by ICMS. Among
+    the ICMS-activated neurons, 114 were activated at all weeks, 370 neurons were activated in 4
+    out of 5 weeks, and 2063 were only activated in one session
+  expected:
+  - quantity: tracked neurons
+    value: 10608
+    tolerance: 1061
+  - quantity: ICMS-activated tracked neurons
+    value: 4469
+    tolerance: 447
+  - quantity: activated at all weeks
+    value: 114
+    tolerance: 11.4
+  - quantity: activated in 4 of 5 weeks
+    value: 370
+    tolerance: 37
+  - quantity: activated in one session only
+    value: 2063
+    tolerance: 206
+  criterion: Planar imaging of Mice 1 to 3 (ICMS92, ICMS93, ICMS98 in the code), ROIs matched across
+    sessions by mask overlap after PatchWarp alignment (Methods, Alignment and unit tracking). The
+    code does not compute these counts, and its raster (fig3b) marks the spatial presence of a
+    tracked ROI in a week. What a "tracked neuron" is, is open; readings (a) every ROI matched in
+    any session, (b) ROI sets present in at least N sessions (N = 4 for Mouse 1, 3 for Mice 2 and 3,
+    Methods). Activated is the planar criterion of the common method at any of 4 to 6 uA and any
+    channel, with the mean + 2 STD and 2 x CV thresholds as readings. Reproduced when, under one
+    reading, at least four of the five counts are within tolerance; partially reproduced when the
+    ordering (one-session > 4-of-5 > all weeks) holds.
+- id: fig3df-stable-cells-amplitude-duration-onset
+  statement: Neurons reliably activated and tracked across sessions show no change in dF/Fmax or
+    response duration over training, and a decrease in fluorescence onset time.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 2; Figure 3, D to F
+  quote: these longitudinally stable cells exhibited no significant changes in either Δ F / F max or
+    fluorescence duration ... and a significant decrease in fluorescence onset times
+  statistics:
+  - about: dF/Fmax
+    test: two-sided Mann-Whitney U test
+    statistic: r < 0.01
+    p: 0.8478
+    n: 226 cells
+  - about: duration
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.01
+    p: 0.8306
+    n: 226 cells
+  - about: onset time
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.30
+    p: 5.72e-11
+    n: 226 cells
+  expected:
+    quantity: longitudinally stable cells
+    value: 226
+    tolerance: 23
+  criterion: A tracked response is an ROI at one channel and current, 4 to 6 uA. The text keeps
+    those activated in all sessions or all but one in which the current was applied; the code
+    keeps those activated in more than N sessions (N = 4, 3, 3; roiPLotter2Miss.m). Readings (s1)
+    the text and (s2) the code. dF/F is (F - mean of the ROI's full trace) / mean, smoothed over
+    5 frames and trial-averaged; dF/Fmax is its maximum after stimulation onset; onset is the
+    first frame above 1 x CV and duration the span above it, times 33 ms (code). Per response, the
+    mean over weeks 0 and 1 against the mean over weeks 2 to 4, two-sided Mann-Whitney (code
+    fig3_stats.m). dF/Fmax and duration are claims of absence, judged at P >= 0.05; onset is
+    reproduced when P < 0.05 with late earlier. Reproduced when all three hold under one
+    reading.
+- id: fig3i-more-high-intensity-week4
+  statement: By week 4, more tracked neurons have dF/Fmax above the mean plus one standard
+    deviation, indicating enhanced excitability.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 2; Figure 3I
+  quote: By week 4, more neurons exhibited fluorescence intensities exceeding mean + standard
+    deviation (STD) ( Fig. 3I ), indicating enhanced excitability
+  depends_on:
+  - fig3df-stable-cells-amplitude-duration-onset
+  criterion: The paper reports no test and shows one representative animal. The threshold is open;
+    readings (t1) mean + STD of the pooled week 0 and week 4 values (as Fig. 3I draws one line),
+    (t2) mean + STD of weeks 3 and 4 pooled (code fig3i_histogram.m). Reproduced when, in at least
+    one of the three animals under one reading, the number of tracked responses above the
+    threshold at week 4 exceeds the number at week 0.
+- id: fig3j-high-intensity-subgroup-increase
+  statement: The subgroup of tracked neurons with high dF/Fmax in the final week shows a
+    significant increase in fluorescence over training, while the remaining neurons do not.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 2; Figure 3J
+  quote: These neurons showed significant increases in fluorescence over training, whereas the
+    remaining neurons (blue) did not
+  statistics:
+  - about: high-intensity subgroup, early against late
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.32
+    p: 9.76e-4
+    n: 52 early, 57 late
+  - about: remaining neurons, early against late
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.08
+    p: 0.1176
+    n: 174 early, 220 late
+  depends_on:
+  - fig3df-stable-cells-amplitude-duration-onset
+  criterion: Tracked responses as in fig3df-stable-cells-amplitude-duration-onset. The subgroup is
+    the responses whose dF/Fmax in the final session exceeds the mean + STD of that session's
+    values, per animal (code roiPLotter2Miss.m); the text says the final week, so readings (f1)
+    each response's last valid session (code) and (f2) week 4. Early and late values per
+    response by phase as in that claim; readings for the samples (p1) per-response phase means
+    and (p2) the per-response week values pooled by phase, as the unequal early and late n
+    suggest. Reproduced when, under one reading, the subgroup's test gives P < 0.05 with late
+    higher and the remaining neurons' test gives P >= 0.05.
+- id: fig3j-weekly-divergence
+  statement: The high-intensity subgroup starts with fluorescence comparable to the rest (weeks 0
+    and 1), diverges by week 2, and stays stronger through weeks 3 and 4.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 2; Figure 3J
+  quote: The high intensity subgroup initially exhibited fluorescence comparable to the rest of the
+    population ... but diverged over time, showing significantly stronger responses by week 2
+  statistics:
+  - about: week 0
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.0355
+    p: 0.5078
+  - about: week 1
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.0885
+    p: 0.0988
+  - about: week 2
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.16
+    p: 0.0018
+  - about: week 3
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.41
+    p: 8.62e-15
+  - about: week 4
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.31
+    p: 2.48e-9
+  depends_on:
+  - fig3j-high-intensity-subgroup-increase
+  criterion: Per week, subgroup against remaining responses (dF/Fmax), zeros and missing values
+    removed, two-sided Mann-Whitney (code fig3_stats.m), under the readings of
+    fig3j-high-intensity-subgroup-increase. Reproduced when weeks 0 and 1 give P >= 0.05 and weeks
+    2, 3 and 4 give P < 0.05 with the subgroup higher; partially reproduced when weeks 3 and 4
+    are significant and weeks 0 and 1 are not.
+- id: fig3lm-deconvolved-spikes-subgroup
+  statement: In deconvolved spike trains, the high-intensity subgroup's spike counts rise and its
+    spike onset latencies fall from the early to the late phase, while the remaining neurons change
+    little; the subgroup starts with spike counts and onset latencies comparable to the rest
+    (weeks 0 and 1) and diverges from week 2 to week 4, with more spikes and shorter latency.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 3; Figure 3, L and M
+  quote: Neurons in the high intensity subgroup exhibited a significant increase in spike counts
+    and a decrease in spike onset latency from early to late phases, while the remaining neurons
+    exhibited little change
+  statistics:
+  - about: spike count, week 0
+    test: two-sided Mann-Whitney U test
+    statistic: r < 0.01
+    p: 0.9699
+  - about: spike count, week 1
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.08
+    p: 0.1076
+  - about: spike count, week 2
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.14
+    p: 0.0070
+  - about: spike count, week 3
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.40
+    p: 3.13e-14
+  - about: spike count, week 4
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.30
+    p: 1.16e-8
+  - about: onset latency, week 0
+    test: two-sided Mann-Whitney U test
+    statistic: r < 0.01
+    p: 0.8767
+  - about: onset latency, week 1
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.02
+    p: 0.6763
+  - about: onset latency, week 2
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.10
+    p: 0.0442
+  - about: onset latency, week 3
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.16
+    p: 0.0024
+  - about: onset latency, week 4
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.14
+    p: 0.0059
+  depends_on:
+  - fig3j-high-intensity-subgroup-increase
+  criterion: Raw planar traces deconvolved with OASIS, AR(1) model, optimised parameters and
+    minimum spike size, threshold factor 0.95, spikes where the deconvolved signal exceeds 0.1
+    (Methods, Deconvolution; code roiPLotter2Miss.m), trial-averaged; spike count over the
+    stimulation window and spike onset as the mean first-spike frame times 33 ms (code). Subgroup
+    and readings as fig3j-high-intensity-subgroup-increase; per-week tests as
+    fig3j-weekly-divergence. Reproduced when, for spike count and onset, weeks 0 and 1 give
+    P >= 0.05 and weeks 2 to 4 give P < 0.05 with the subgroup higher in count and shorter in
+    onset; partially reproduced when that holds for one measure or for weeks 3 and 4 only. The
+    early-to-late change within each group, for which the text gives no P, is tested as in
+    fig3j-high-intensity-subgroup-increase (two-sided Mann-Whitney, early against late, Fig. 3
+    legend) and reported; the subgroup is expected to rise in count and fall in onset, the
+    remaining neurons to change little.
+- id: fig3n-newly-recruited-weaker
+  statement: Neurons recruited only in the last week have lower dF/Fmax and fewer deconvolved spikes
+    than the high-intensity subgroup in weeks 2 to 4, with similar onset time.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 4; Figure 3N
+  quote: Neurons recruited exclusively during the last week of training exhibited lower Δ F / F max
+    values ... and fewer deconvolved spikes ( P = 3.29 × 10 −17 ) than the high-intensity
+    subgroup during weeks 2 to 4 while activation onset time remained similar between the two
+    groups ( P = 0.0633)
+  statistics:
+  - about: dF/Fmax, newly recruited against subgroup at weeks 2 to 4
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 3.09e-19
+    n: 23 week-0, 57 weeks 2 to 4, 700 week-4 neurons
+  - about: deconvolved spikes, newly recruited against subgroup at weeks 2 to 4
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 3.29e-17
+  - about: onset time, newly recruited against subgroup
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 0.0633
+  expected:
+  - quantity: newly recruited week-4 neurons
+    value: 700
+    tolerance: 70
+  - quantity: subgroup neurons at weeks 2 to 4
+    value: 57
+    tolerance: 6
+  - quantity: week-0 group neurons
+    value: 23
+    tolerance: 2.3
+  depends_on:
+  - fig3lm-deconvolved-spikes-subgroup
+  criterion: Three groups (code fig3jlmn_subset_analysis.m, fig3_stats.m) are the subgroup at week
+    0, the subgroup averaged over weeks 2 to 4 per response, and newly recruited responses (an ROI
+    present in exactly one session, in week 4, and activated there). The legend names the first
+    group "all longitudinally recruited neurons at week 0" while the code uses the subgroup at
+    week 0; readings (g1) the code and (g2) all tracked responses at week 0. Kruskal-Wallis
+    followed by Tukey-Kramer comparisons (MATLAB multcompare default). The text does not say
+    whether each printed P is the Kruskal-Wallis omnibus P or the post hoc pairwise P; both are
+    computed and shown, and significance of a pair is judged on the post hoc P. Reproduced when the newly
+    recruited group is significantly lower than the weeks 2 to 4 subgroup in dF/Fmax and spike
+    count and not significantly different in onset, under one reading.
+- id: fig3n-enhanced-vs-week0
+  statement: The enhanced subgroup at weeks 2 to 4 has higher dF/Fmax, more spikes and shorter spike
+    onset than tracked neurons at week 0, and newly recruited week-4 neurons have lower dF/Fmax
+    than tracked neurons at week 0.
+  source: Results, Longitudinal tracking of individual neurons reveals learning-sensitive
+    subpopulations, paragraph 4; Figure 3N
+  quote: the enhanced subgroup at weeks 2 to 4 had significantly increased Δ F / F max , greater
+    spike counts, and shorter spike onset time compared to all longitudinally tracked neurons at
+    week 0
+  statistics:
+  - about: subgroup weeks 2 to 4 against week 0, dF/Fmax
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 0.0114
+  - about: subgroup weeks 2 to 4 against week 0, spike count
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 0.0059
+  - about: subgroup weeks 2 to 4 against week 0, spike onset
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 0.0030
+  - about: newly recruited week 4 against week 0, dF/Fmax
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 0.0349
+  - about: newly recruited week 4 against week 0, spike onset
+    test: Kruskal-Wallis with Tukey-Kramer post hoc correction
+    p: 0.479
+  depends_on:
+  - fig3n-newly-recruited-weaker
+  criterion: Groups, readings and tests as fig3n-newly-recruited-weaker. Reproduced when the
+    subgroup at weeks 2 to 4 is significantly higher than the week-0 group in dF/Fmax and spike
+    count and shorter in onset, and the newly recruited group is significantly lower in dF/Fmax
+    than the week-0 group. The text calls the newly recruited spike onset "shorter" at P = 0.479;
+    that comparison is reported and not judged, as the paper's own threshold is not met.
+- id: fig4-unit-counts
+  statement: Electrophysiology recorded 973 units in six animals (672 putative pyramidal, 301
+    interneurons), of which 484 were significantly modulated by the stimulation train (311
+    pyramidal, 173 interneurons).
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraphs 1, 3 and 4; Figure 4H
+  quote: Modulated units ( n = 484; 311 pyramidal, 173 interneuron) showed a bimodal spike-width
+    distribution similar to the full recorded population ( n = 973; 672 pyramidal, 301
+    interneuron)
+  expected:
+  - quantity: recorded units
+    value: 973
+    tolerance: 97
+  - quantity: modulated units
+    value: 484
+    tolerance: 48
+  - quantity: pyramidal units, all
+    value: 672
+    tolerance: 67
+  - quantity: interneurons, all
+    value: 301
+    tolerance: 30
+  - quantity: modulated pyramidal units
+    value: 311
+    tolerance: 31
+  - quantity: modulated interneurons
+    value: 173
+    tolerance: 17
+  criterion: Units as sorted in the dataset, behavioural mice only, counted per animal and session
+    (units are not tracked across sessions, Fig. 4F legend). A unit is modulated when at least one
+    of its responses is modulated by the common method; cell type by the common method. Whether a
+    unit is counted once per session or once overall is open; readings (a) unit-sessions and (b)
+    unique sorted units per animal. Reproduced when, under one reading, at least five of the six
+    counts are within tolerance, and the trough-to-peak distribution is bimodal about 0.45 ms
+    (reported, not judged).
+- id: fig4d-waveform-separation
+  statement: Stimulation-period waveforms match the same unit's non-stimulation waveforms and stay
+    distinct from neighbouring units; within-unit distances in PC space are smaller than
+    between-unit distances.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 2; Figure 4D; fig. S3A
+  quote: Within-unit Euclidean distances in the PC space (between stimulation and nonstimulation
+    waveforms of the same unit; n = 243) are significantly smaller than the between-unit
+    distances
+  statistics:
+  - test: two-sided Mann-Whitney U test
+    statistic: r = 0.49
+    p: 1.6e-31
+    n: 243 within-unit, 801 between-unit distances
+  criterion: Each waveform is (functional channels) x 90 samples (3 ms), projected on the first 10
+    PCs; within-unit distance is between the centroids of a unit's stimulation and
+    non-stimulation spikes, between-unit distance between the stimulation centroids of units
+    within 240 um or no more than four contacts apart (Methods, Spike sorting during stimulation).
+    Whether the PCA is fitted per unit pair, per session or per animal is open; readings per
+    session and per animal. Reproduced when the two-sided Mann-Whitney test gives P < 0.05 with
+    within-unit smaller under one reading, and also with 3, 5, 7, 15 and 20 PCs (reported). Needs
+    spike waveforms in and out of stimulation; not testable if the dataset holds only spike times.
+- id: figs3b-modulation-increase-all
+  statement: The modulation z-score of all modulated responses at fixed currents increases from the
+    early to the late phase at 4, 5 and 6 uA.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 3; fig. S3B
+  quote: Modulation z-score at fixed currents of all modulated cells increased significantly over
+    training
+  statistics:
+  - about: 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.18
+    p: 4.8e-5
+    n: 189 early, 729 late
+  - about: 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.12
+    p: 3.3e-3
+    n: 283 early, 489 late
+  - about: 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.18
+    p: 1.5e-4
+    n: 303 early, 250 late
+  criterion: Modulated responses by the common method (z cap 50), early against late per current,
+    two-sided Mann-Whitney (code python/fig_s3, utils/longitudinal.py). Reproduced when P < 0.05
+    with late higher at all three currents; partially reproduced at one or two. The response
+    counts are reported against the paper's n.
+- id: figs3c-latency-all
+  statement: Time to maximum firing rate of all modulated responses decreases at 5 uA but not
+    significantly at 4 or 6 uA.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 3; fig. S3C
+  quote: A decrease was observed at 5 μA (p = 0.012, r = -0.10) but not with statistical
+    significance at 4 μA (p = 0.18, r = -0.04) or 6 μA (p = 0.19, r = -0.04)
+  statistics:
+  - about: 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.10
+    p: 0.012
+  - about: 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.04
+    p: 0.18
+  - about: 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.04
+    p: 0.19
+  depends_on:
+  - figs3b-modulation-increase-all
+  criterion: Responses as figs3b-modulation-increase-all; time to maximum firing rate by the common
+    method. Reproduced when the 5 uA test gives P < 0.05 with late shorter and the 4 and 6 uA
+    tests give P >= 0.05.
+- id: figs3d-modulation-stable-at-threshold
+  statement: Modulation at each session's detection threshold does not change over training.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 3; fig. S3D
+  quote: When stimulation currents were adjusted to session-specific detection thresholds, the
+    modulation score of these units remained stable across training
+  statistics:
+  - test: two-sided Mann-Whitney U
+    statistic: r = 0.21
+    p: 0.095
+    n: 21 early, 34 late
+  depends_on:
+  - fig2a-threshold-decrease
+  - figs3b-modulation-increase-all
+  criterion: A claim of absence, judged on the paper's test. The n (21 and 34) is far below the
+    response counts, so the unit of observation is open; readings (a) one value per channel and
+    session, the median z-score of the modulated responses at the current equal to the rounded
+    session threshold, (b) every modulated response at that current. Reproduced when the
+    two-sided Mann-Whitney test, early against late, gives P >= 0.05 under reading (a), the
+    reading whose n matches; (b) is shown.
+- id: fig4g-modulated-count-mouse1
+  statement: The number of modulated units rose moderately in some animals (Mouse 1 at 4 uA), with
+    no significant change at group level.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 3; Figure 4, F and G
+  quote: electrophysiological recordings detected only a moderate increase in modulated unit
+    numbers in some animals
+  statistics:
+  - about: Mouse 1, 4 uA
+    test: one-sided Mann-Whitney U test
+    statistic: r = 0.42
+    p: 0.044
+    n: 8 early, 21 late
+  criterion: For Mouse 1 (ICMS92) at 4 uA, the number of modulated responses per stimulation
+    channel and session (code python/fig4/modulated_unit_count.py), early against late, one-sided
+    Mann-Whitney with late greater (legend, code). Reproduced when P < 0.05; the same group-level
+    test over all six mice is reported, and the claim is partially reproduced if it is
+    significant (the paper says it is not).
+- id: fig4ij-pyramidal-modulation-increase
+  statement: Increases in modulation over training are carried by pyramidal cells, at 4, 5 and
+    6 uA, with latency decreasing at 5 and 6 uA.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 4; Figure 4, I and J
+  quote: Notably, increases in modulation strength and decreases in latency were driven primarily
+    by pyramidal cells
+  statistics:
+  - about: modulation, 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.25
+    p: 2.6e-5
+  - about: modulation, 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.22
+    p: 5.3e-5
+  - about: modulation, 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.23
+    p: 2.0e-4
+  - about: latency, 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.06
+    p: 0.32
+  - about: latency, 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.17
+    p: 1.7e-3
+  - about: latency, 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.12
+    p: 0.049
+  depends_on:
+  - figs3b-modulation-increase-all
+  criterion: Modulated responses of pyramidal units (common method, z cap 100 as in
+    python/fig4/modulation_over_time.py), early against late per current, two-sided Mann-Whitney
+    as the legend says (the code's stats_table.py runs one-sided tests, shown as a variant).
+    Reproduced when modulation rises with P < 0.05 at all three currents and latency falls with
+    P < 0.05 at 5 and 6 uA; partially reproduced when modulation rises at one or two currents.
+- id: fig4ij-interneurons-little-change
+  statement: Interneurons show no significant change in modulation at any current; their latency
+    changes significantly only at 6 uA.
+  source: Results, Chronic electrophysiology confirms learning-driven strengthening of
+    neuromodulation, paragraph 4; Figure 4, I and J
+  quote: whereas interneurons showed little significant change
+  statistics:
+  - about: modulation, 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.07
+    p: 0.39
+    n: 69 early, 254 late
+  - about: modulation, 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.05
+    p: 0.45
+    n: 113 early, 180 late
+  - about: modulation, 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.10
+    p: 0.24
+    n: 122 early, 86 late
+  - about: latency, 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.01
+    p: 0.88
+  - about: latency, 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.07
+    p: 0.31
+  - about: latency, 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.21
+    p: 0.010
+  depends_on:
+  - fig4ij-pyramidal-modulation-increase
+  criterion: A claim of absence for modulation, judged on the paper's test. Interneuron responses
+    as fig4ij-pyramidal-modulation-increase. Reproduced when modulation gives P >= 0.05 at all
+    three currents; latency is reported at each current and the 6 uA change is compared with the
+    paper's. Effect sizes are reported.
+- id: fig5d-pulse-locking-stable-across-currents
+  statement: Over 80% of units keep their PL or NPL identity at a given stimulation contact as the
+    current rises from 4 to 6 uA.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 2; Figure 5D
+  quote: Over 80% of units retained their PL and NPL identity at a given stimulation contact as
+    current amplitude increased ( Fig. 5D )
+  expected:
+  - quantity: fraction keeping PL or NPL identity
+    value: 0.80
+    tolerance: 0
+  - quantity: unit-channel pairs
+    value: 729
+    tolerance: 73
+  criterion: PL by the common method, per modulated response. For each animal, session, channel and
+    unit seen at two or more currents, the pattern over 4 to 6 uA is all PL, all NPL, NPL to PL
+    (monotone up), PL to NPL (monotone down) or mixed (code python/fig5/generate_figure5.py).
+    Reproduced when (all PL + all NPL) / all pairs exceeds 0.80; the expected value is a bound
+    ("over 80%"), so the tolerance is zero.
+- id: fig5e-pyramidal-fraction-pl
+  statement: Pyramidal cells are more common among PL units (76.2%) than among NPL units (49.8%).
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 2; Figure 5E
+  quote: Pyramidal cells are more prevalent among PL units than NPL units ( Fig. 5E
+  statistics:
+  - test: two-sided Fisher's exact test
+    p: 1.6e-9
+  expected:
+  - quantity: pyramidal fraction of PL units
+    value: 0.762
+    tolerance: 0.076
+  - quantity: pyramidal fraction of NPL units
+    value: 0.498
+    tolerance: 0.050
+  criterion: Unit classified PL by a two-step majority, first over stimulation channels at each
+    current, then over currents, ties counted NPL (Methods, Quantifying neuromodulation metrics;
+    code generate_figure5.py); a unit is one sorted unit in one session. Two-sided Fisher's exact
+    test on the 2 x 2 table of PL/NPL by pyramidal/interneuron. Reproduced when both fractions are
+    within tolerance and P < 0.05 with PL higher.
+- id: figs4b-pl-latency-distance
+  statement: PL spike latency increases linearly with distance from the stimulation site, giving
+    conduction velocities of about 0.2 to 0.27 m/s; latency jitter does not vary with distance.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 2; fig. S4, B and C
+  quote: Linear fits to the monotonically increasing segment yielded conduction velocities of 0.2
+    to 0.27 m/s
+  statistics:
+  - about: latency against distance, 4 uA
+    test: OLS regression on binned means
+    statistic: slope = 0.005 ms/um, r2 = 0.97
+    p: 0.001
+    p_relation: "<"
+  - about: latency against distance, 5 uA
+    test: OLS regression on binned means
+    statistic: slope = 0.004 ms/um, r2 = 0.95
+    p: 0.001
+    p_relation: "<"
+  - about: latency against distance, 6 uA
+    test: OLS regression on binned means
+    statistic: slope = 0.004 ms/um, r2 = 0.91
+    p: 0.001
+  - about: jitter against distance, 4 uA
+    test: OLS regression on binned means
+    p: 0.095
+  - about: jitter against distance, 5 uA
+    test: OLS regression on binned means
+    p: 0.43
+  - about: jitter against distance, 6 uA
+    test: OLS regression on binned means
+    p: 0.53
+  expected:
+    quantity: conduction velocity range
+    value: 0.2385
+    tolerance: 0.0585
+    unit: m/s
+  criterion: For each PL response, latency is the mean, over the bootstrap draws of the common
+    method, of the time of the peak bin of the spike-probability curve, and jitter is the variance
+    of those peak times in ms^2 (code processing/.../responses_v2/pulse_locked_response_metrics.py,
+    get_bootstrapped_metrics; responses_v3/process_stim_responses.py, jitter = std_latency**2);
+    distance is from the unit's estimated location to the stimulation contact. Bins are 120 um wide
+    from 60 um (code python/fig_s4/generate_figure.py). The legend says OLS on binned means; the
+    code fits latency on binned medians of 120 to 840 um (its "monotonic segment") and fits jitter
+    on the unbinned responses. Readings for latency (a) binned means over 120 to 840 um (legend,
+    with the code's segment) and (b) binned medians over 120 to 840 um (code); for jitter (c)
+    binned means (legend) and (d) unbinned responses (code). Velocity is 1e-3 / slope m/s with the
+    slope in ms/um (code). Reproduced when, under one reading, the latency slope is positive with
+    P < 0.05 at every current, each velocity is inside 0.2 to 0.27 m/s widened by 10% of each
+    bound (0.18 to 0.297, which the expected value and tolerance span), and jitter shows no slope
+    with P < 0.05.
+- id: fig5fg-pl-modulation-increase
+  statement: PL modulation over the 700 ms train increases from early to late at 4, 5 and 6 uA, and
+    PL time to maximum firing rate decreases at 5 and 6 uA.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 3; Figure 5, F and G
+  quote: Specifically, PL modulation increased from early to late phases across all current
+    amplitudes
+  statistics:
+  - about: modulation, 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.23
+    p: 3.3e-5
+    n: 136 early, 469 late
+  - about: modulation, 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.20
+    p: 2.4e-4
+    n: 188 early, 285 late
+  - about: modulation, 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.26
+    p: 6.4e-5
+    n: 179 early, 135 late
+  - about: latency, 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.05
+    p: 0.35
+  - about: latency, 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.15
+    p: 5.9e-3
+  - about: latency, 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = -0.14
+    p: 0.040
+  criterion: PL modulated responses by the common method (z cap 50, code generate_figure5.py),
+    early against late per current, two-sided Mann-Whitney. Reproduced when modulation rises with
+    P < 0.05 at all three currents and time to maximum falls with P < 0.05 at 5 and 6 uA;
+    partially reproduced when modulation rises at one or two currents. Response counts are
+    reported against the paper's n.
+- id: figs4de-npl-no-change
+  statement: NPL responses show no significant change in modulation or time to maximum firing rate
+    over training at any current.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 3; fig. S4, D and E
+  quote: whereas NPL responses showed no significant changes (fig. S4, D and E)
+  statistics:
+  - about: modulation, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.12
+    p: 0.093
+    n: 53 early, 260 late
+  - about: modulation, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.02
+    p: 0.38
+    n: 95 early, 204 late
+  - about: modulation, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.08
+    p: 0.15
+    n: 124 early, 115 late
+  - about: time to maximum, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.03
+    p: 0.38
+  - about: time to maximum, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.00
+    p: 0.51
+  - about: time to maximum, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.08
+    p: 0.85
+  depends_on:
+  - fig5fg-pl-modulation-increase
+  criterion: A claim of absence, judged on the paper's test. NPL modulated responses, tests as
+    fig5fg-pl-modulation-increase. Reproduced when all six tests give P >= 0.05; not reproduced when
+    any gives P < 0.05. Effect sizes are reported.
+- id: fig5h-pl-spike-probability-increase
+  statement: PL responses show increased peak spike probability within the 10 ms interpulse
+    interval over training at 5 and 6 uA, not at 4 uA.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 3; Figure 5H
+  quote: At the finer 10-ms interpulse scale, PL responses also showed increased peak spike
+    probability over time at 5 and 6 μA
+  statistics:
+  - about: 4 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.07
+    p: 0.22
+  - about: 5 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.12
+    p: 0.028
+  - about: 6 uA
+    test: two-sided Mann-Whitney U test
+    statistic: r = 0.17
+    p: 0.010
+  depends_on:
+  - fig5fg-pl-modulation-increase
+  criterion: Peak of the mean spike-probability curve of each PL response (common method; code
+    process_stim_responses.py), early against late per current, two-sided Mann-Whitney.
+    Reproduced when 5 and 6 uA give P < 0.05 with late higher; 4 uA is reported.
+- id: figs5c-wheel-onset-decrease
+  statement: Wheel-movement onset decreases from early to late training; median onset is 122 ms in
+    the fastest animal (Mouse 1), 135 ms over all hit trials and 129 ms in the late phase.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 4; fig. S5, C and D
+  quote: We evaluated three candidate cutoffs from stimulation onset ... the median wheel-movement
+    onset in the fastest animal (Mouse 1, 122 ms; fig. S5D), the median onset across all hit
+    trials (135 ms), and the median onset during the late training phase (129 ms)
+  statistics:
+  - test: two-sided Mann-Whitney U
+    statistic: r = -0.22
+    p: 4.15e-30
+    n: 1,305 early and 2,922 late trials
+  expected:
+  - quantity: median hit movement onset, Mouse 1
+    value: 122
+    tolerance: 12.2
+    unit: ms
+  - quantity: median movement onset, all hit trials
+    value: 135
+    tolerance: 13.5
+    unit: ms
+  - quantity: median movement onset, late phase
+    value: 129
+    tolerance: 12.9
+    unit: ms
+  criterion: Wheel displacement low-passed at 20 Hz forward and backward; the response threshold is
+    the 25th percentile of absolute displacement at response time over all hit and miss trials;
+    onset is the first time displacement exceeds 50% of that threshold (fig. S5, A and B legend),
+    sustained for 50 ms (code python/fig_s5). Hit trials at 4 to 6 uA in Mice 1 to 5 (Mouse 6
+    excluded, legend). Whether the threshold is per animal or over all animals is open; readings
+    per animal and pooled. Reproduced when, under one reading, the three medians are within
+    tolerance and the two-sided Mann-Whitney test of hit-trial onsets gives P < 0.05 with late
+    earlier.
+- id: figs5-restricted-window-consistent
+  statement: In a 120 ms window after stimulation onset, before movement, PL modulation still
+    increases at all currents while NPL modulation does not change, and PL time to maximum falls
+    at 4 and 5 uA.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 4; fig. S5, E to H
+  quote: This analysis yielded results consistent with those obtained using the longer 700-ms
+    window (fig. S5, E to H)
+  statistics:
+  - about: PL modulation, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.25
+    p: 2.2e-5
+    n: 127 early, 435 late
+  - about: PL modulation, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.20
+    p: 4.7e-4
+    n: 164 early, 276 late
+  - about: PL modulation, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.29
+    p: 2.0e-5
+    n: 165 early, 127 late
+  - about: NPL modulation, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.16
+    p: 0.075
+    n: 52 early, 225 late
+  - about: NPL modulation, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.14
+    p: 0.089
+    n: 83 early, 147 late
+  - about: NPL modulation, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.02
+    p: 0.81
+    n: 103 early, 104 late
+  - about: PL time to maximum, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.12
+    p: 0.038
+  - about: PL time to maximum, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.18
+    p: 1.7e-3
+  - about: PL time to maximum, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.02
+    p: 0.77
+  - about: NPL time to maximum, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.07
+    p: 0.45
+  - about: NPL time to maximum, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.01
+    p: 0.90
+  - about: NPL time to maximum, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.03
+    p: 0.70
+  depends_on:
+  - fig5fg-pl-modulation-increase
+  criterion: As fig5fg-pl-modulation-increase and figs4de-npl-no-change, with spikes counted in
+    the first 120 ms of the train against the 120 ms before it (code window_config.py, symmetric
+    window) and time to maximum in 2 ms bins smoothed by a sigma 5 ms Gaussian (code). Whether
+    PL/NPL labels and the modulated set are recomputed in the 120 ms window or kept from the 700 ms
+    window is open; readings both. Reproduced when, under one reading, PL modulation rises with
+    P < 0.05 at all three currents and NPL modulation gives P >= 0.05 at all three; PL and NPL time
+    to maximum are reported against the paper's.
+- id: figs6-first-five-frames
+  statement: Within the first five imaging frames after ICMS onset, both the recruitment of tracked
+    neurons and the response amplitude of the increasing subset rise from early to late training.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 4; fig. S6, B and C
+  quote: Both recruitment of tracked neurons and the response amplitude of the increasing subset (
+    Fig. 3J ) increased significantly from early to late training (fig. S6, B and C)
+  statistics:
+  - about: number of recruited neurons
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.75
+    p: 1.8e-5
+    n: 15 early, 37 late animal x session x channel samples
+  - about: maximum dF/F of the increasing subset
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.63
+    p: 4.1e-4
+  depends_on:
+  - fig3j-high-intensity-subgroup-increase
+  criterion: A tracked neuron is recruited at a channel and current when its trial-averaged dF/F
+    exceeds 2 x CV of its trial-concatenated trace in any of the first five frames after onset
+    (fig. S6A legend), among neurons already activated by the full-window planar criterion (code
+    export_recruited_traces.m); count per animal, session and channel over 4 to 6 uA (legend).
+    Amplitude is the maximum dF/F in those frames for the subset of fig3j. Reproduced when both
+    tests give P < 0.05 with late higher.
+- id: figs7-control-no-change
+  statement: In control animals stimulated without behavioural training, neither PL nor NPL
+    responses change in modulation, time to maximum firing rate or PL peak spike probability.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 4; fig. S7
+  quote: in the control group without behavioral learning, neither PL nor NPL cells showed
+    significant changes in any of these metrics (fig. S7)
+  statistics:
+  - about: PL modulation
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.05
+    p: 0.83
+    n: 29 early, 12 late
+  - about: NPL modulation
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.29
+    p: 0.061
+    n: 30 early, 29 late
+  - about: PL time to maximum
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.39
+    p: 0.050
+  - about: NPL time to maximum
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.23
+    p: 0.13
+  - about: PL maximum spike probability
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.10
+    p: 0.62
+  criterion: A claim of absence, judged on the paper's test. Control animals (4 animals, 15
+    sessions, fig. S7 legend), responses and PL labels by the common method; the currents are not
+    given (the code reads precomputed control results), readings (a) 5 uA, as fig. S9C uses for
+    controls, and (b) 4 to 6 uA pooled. Reproduced when all five two-sided Mann-Whitney tests,
+    early against late, give P >= 0.05 under the reading whose n is closest to the paper's; the
+    PL time-to-maximum test sits at P = 0.050 in the paper, and its value is reported. Not
+    testable if the dataset does not hold the controls.
+- id: figs8-tracked-units
+  statement: UnitMatch tracking gives 34 units spanning early and late phases in six animals;
+    tracked pairs are 6.8-fold closer in waveform than nearby non-matched units; in tracked units
+    PL modulation increases and PL time to maximum decreases, while NPL modulation does not
+    change.
+  source: Results, Millisecond pulse-locking dynamics differentiate learning-induced plasticity,
+    paragraph 5; fig. S8, C and D
+  quote: Analyses of the 34 tracked units support the main findings ... PL modulation increased
+    significantly over training while NPL modulation did not, and PL time to maximum firing rate
+    decreased (fig. S8D)
+  statistics:
+  - about: waveform distance, tracked pairs against nearby non-matched units
+    test: two-sided Mann-Whitney U
+    p: 6.6e-83
+  - about: PL modulation, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.19
+    p: 0.049
+  - about: PL modulation, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = 0.39
+    p: 0.0024
+  - about: PL time to maximum, 4 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.21
+    p: 0.026
+  - about: PL time to maximum, 5 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.28
+    p: 0.0028
+  - about: PL time to maximum, 6 uA
+    test: two-sided Mann-Whitney U
+    statistic: r = -0.28
+    p: 0.030
+  expected:
+  - quantity: tracked units
+    value: 34
+    tolerance: 3.4
+  - quantity: waveform distance ratio, non-matched over tracked
+    value: 6.8
+    tolerance: 0.68
+  criterion: UnitMatchPy on each animal's curated templates, match probability above 0.75 linked by
+    connected components, best match kept per session, consecutive-session probability at least
+    0.5, tracks of 3 or more sessions spanning both phases, tracks with median pairwise distance
+    above 3 x the global median and sessions above 5 x the track median dropped (Methods, Unit
+    tracking). Whether the ratio is of means or medians is open; readings both. Responses of the
+    tracked units, early against late per current, unpaired two-sided Mann-Whitney (code
+    fig_s8). Reproduced when the track count and ratio are within tolerance, PL modulation rises
+    with P < 0.05 at 5 and 6 uA, PL time to maximum falls with P < 0.05 at all three currents, and
+    NPL modulation gives P >= 0.05; partially reproduced when the PL directions hold without all
+    tests. Needs the templates; if the dataset lacks them, the units it labels as tracked are used
+    if present.
+- id: fig6c-kl-divergence
+  statement: Hit-miss separation of delta-spikes distributions (KL divergence) increases over time
+    for both PL and NPL responses, and NPL responses separate hit from miss more than PL responses
+    in both early and late phases.
+  source: Results, Differential behavioral correlates of PL and NPL neurons, paragraph 2; Figure 6C
+  quote: While both PL and NPL separation between hit and miss trials increased over time ... NPL
+    responses showed greater separation between hit and miss trials than PL responses in both
+    early ... and late ... phases
+  statistics:
+  - about: PL early against late
+    test: two-sided Mann-Whitney U test with Benjamini-Hochberg FDR correction
+    statistic: r = 0.18
+    p: 7.2e-26
+    corrected: FDR-BH
+  - about: NPL early against late
+    test: two-sided Mann-Whitney U test with Benjamini-Hochberg FDR correction
+    statistic: r = 0.05
+    p: 6.1e-3
+    corrected: FDR-BH
+  - about: NPL against PL, early
+    test: two-sided Mann-Whitney U test with Benjamini-Hochberg FDR correction
+    statistic: r = 1.00
+    p: 7.3e-116
+    corrected: FDR-BH
+  - about: NPL against PL, late
+    test: two-sided Mann-Whitney U test with Benjamini-Hochberg FDR correction
+    statistic: r = 0.34
+    p: 7.3e-116
+    corrected: FDR-BH
+  depends_on:
+  - fig5fg-pl-modulation-increase
+  criterion: Delta-spikes per trial is the spike count in the 700 ms train minus that in the 700 ms
+    before it, each trial labelled PL or NPL by its response (Results); trials of modulated
+    responses at 4 to 6 uA. Per week and label, hit and miss values winsorized, then bootstrap KL
+    divergence KL(hit || miss) from 25-bin histograms over -30 to 50 spikes, 1000 draws with
+    replacement of a fraction of min(n_hit, n_miss) per group (code python/fig6/hit_miss_histograms.py).
+    The samples of the Mann-Whitney tests are the bootstrap values, weeks 0 and 1 against 2 to 4,
+    four tests corrected together by FDR-BH (code); their P depends on the number of draws, so the
+    medians are what is judged. The figure script and stats_table.py differ; readings (k1)
+    winsorizing 1%, fraction 0.4 (figure) and (k2) 2.5%, fraction 0.8 (stats table). Reproduced
+    when, under one reading, median KL rises from early to late for PL and NPL and NPL exceeds PL
+    in both phases, each with corrected P < 0.05.
+- id: fig6d-npl-hit-miss-divergence
+  statement: PL responses show no significant hit-miss divergence in firing rate at any time,
+    while NPL responses diverge from 65 ms after ICMS onset early in training and from 35 ms late
+    in training, both before movement onset.
+  source: Results, Differential behavioral correlates of PL and NPL neurons, paragraph 3; Figure 6D
+  quote: PL responses did not show any significant hit-miss divergence at any time point. In
+    contrast, NPL responses diverged significantly beginning at 65 ms post-ICMS onset during the
+    early period. With training, the onset of divergence in NPL neurons shifted earlier to 35 ms
+  expected:
+  - quantity: NPL divergence onset, early
+    value: 65
+    tolerance: 10
+    unit: ms
+  - quantity: NPL divergence onset, late
+    value: 35
+    tolerance: 10
+    unit: ms
+  depends_on:
+  - fig5fg-pl-modulation-increase
+  criterion: Each row is one response's trial-averaged firing rate for hit and for miss trials
+    (Results, "trial-averaged firing rates of all units"), from stimulation onset. Per bin a
+    two-sided Mann-Whitney test of hit against miss rows, statistic sign(mean difference) x
+    -log10 P, clusters of adjacent bins with |statistic| > -log10 0.05 summed, null from 1000
+    permutations of hit and miss labels over rows, max |cluster mass|, cluster P < 0.05 (code
+    python/fig6/hit_miss_psth.py). The bin width and smoothing are not in the paper or code (read
+    precomputed); readings (b1) 10 ms bins, onset as the bin centre (which gives the printed
+    multiples of 5 ms) and (b2) 5 ms bins. The onset is the start of the significant cluster;
+    the code keeps the last significant cluster, the text says "beginning at"; readings (o1) the
+    first and (o2) the last significant cluster. The tolerance is one 10 ms bin, as 10% of the
+    values is below the bin width. Reproduced when, under one reading, PL has no significant
+    cluster in either phase and both NPL onsets are within tolerance, late earlier than early.
+- id: fig6f-population-coupling
+  statement: PL population coupling increases from early to late while NPL coupling stays stable,
+    and NPL units have higher population coupling than PL units in both phases.
+  source: Results, Differential behavioral correlates of PL and NPL neurons, paragraph 4; Figure 6F
+  quote: PL coupling increased over time ( Fig. 6F ; n early = 494, n late = 899, P FDR = 1.95 × 10
+    −6 , r = 0.16) while NPL coupling remained stable
+  statistics:
+  - about: PL early against late
+    test: two-sided Mann-Whitney U test with FDR-BH correction
+    statistic: r = 0.16
+    p: 1.95e-6
+    corrected: FDR-BH
+    n: 494 early, 899 late
+  - about: NPL early against late
+    test: two-sided Mann-Whitney U test with FDR-BH correction
+    statistic: r = -0.04
+    p: 0.33
+    corrected: FDR-BH
+    n: 263 early, 553 late
+  - about: NPL against PL, early
+    test: two-sided Mann-Whitney U test with FDR-BH correction
+    statistic: r = 0.46
+    p: 3.4e-25
+    corrected: FDR-BH
+  - about: NPL against PL, late
+    test: two-sided Mann-Whitney U test with FDR-BH correction
+    statistic: r = 0.31
+    p: 1.7e-22
+    corrected: FDR-BH
+  depends_on:
+  - fig5fg-pl-modulation-increase
+  criterion: Per stimulation condition (current x channel) and session, spikes within the trains
+    concatenated; population rate of all other modulated units in 1 ms bins, Gaussian sigma 10 ms,
+    mean-centred; stPR averaged in a +-100 ms window around each spike, coupling the value at zero
+    lag, divided by the median of 200 absolute circular-shift values; units with fewer than 50
+    spikes excluded (Methods, Population coupling; code processing/pop_coupling/pop_coupling_v2.py).
+    One value per unit, condition and session, 4 to 6 uA pooled (code python/fig6/pop_coupling.py).
+    Four tests corrected together by FDR-BH. Reproduced when PL rises with corrected P < 0.05, NPL
+    early against late gives corrected P >= 0.05, and NPL exceeds PL in both phases with corrected
+    P < 0.05; partially reproduced when the NPL-PL difference holds without the PL increase.
+- id: figs9-coupling-window-and-control
+  statement: NPL coupling exceeds PL coupling also within the 120 ms premotion window, and the
+    difference is absent in control animals without behavioural learning.
+  source: Results, Differential behavioral correlates of PL and NPL neurons, paragraph 4; fig. S9, B
+    and C
+  quote: This difference remained robust when computed within the 120-ms premotion time window
+    (fig. S9B) and was absent in control animals without behavioral learning (fig. S9C)
+  statistics:
+  - about: 120 ms window, early
+    test: two-sided Mann-Whitney U with Benjamini-Hochberg correction
+    statistic: r = 0.37
+    p: 7.4e-9
+    corrected: FDR-BH
+    n: 264 PL, 125 NPL
+  - about: 120 ms window, late
+    test: two-sided Mann-Whitney U with Benjamini-Hochberg correction
+    statistic: r = 0.31
+    p: 1.7e-11
+    corrected: FDR-BH
+    n: 484 PL, 255 NPL
+  - about: controls, early
+    test: two-sided Mann-Whitney U with Benjamini-Hochberg correction
+    statistic: r = -0.10
+    p: 0.48
+    corrected: FDR-BH
+    n: 49 PL, 64 NPL
+  - about: controls, late
+    test: two-sided Mann-Whitney U with Benjamini-Hochberg correction
+    statistic: r = 0.13
+    p: 0.48
+    corrected: FDR-BH
+    n: 25 PL, 128 NPL
+  depends_on:
+  - fig6f-population-coupling
+  criterion: As fig6f-population-coupling. For the 120 ms window, spikes in the first 120 ms of
+    each train, a +-50 ms stPR window and a 10-spike minimum (code movement_control/pop_coupling_stpr.py);
+    for controls, the full train at 5 uA (fig. S9C legend; code fig_s9). Reproduced when NPL
+    exceeds PL with corrected P < 0.05 in both phases for the 120 ms window, and the control tests
+    give corrected P >= 0.05 in both phases (a claim of absence, judged on the paper's test).
+    Not testable for controls if the dataset does not hold them.
+- id: figs9a-coupling-700ms
+  statement: In the 700 ms window of fig. S9A, PL population coupling increases from early to late
+    while NPL coupling does not change, and PL coupling is lower than NPL coupling in both phases.
+  source: Results, Differential behavioral correlates of PL and NPL neurons, paragraph 4; fig. S9A
+  quote: PL coupling increased significantly over time (PL early vs late
+  statistics:
+  - about: PL early against late
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = 0.17
+    p: 1.3e-6
+    corrected: FDR-BH
+    n: 446 early, 763 late
+  - about: NPL early against late
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = -0.05
+    p: 0.22
+    corrected: FDR-BH
+    n: 255 early, 547 late
+  - about: PL against NPL, early
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = 0.46
+    p: 5.5e-24
+    corrected: FDR-BH
+  - about: PL against NPL, late
+    test: two-sided Mann-Whitney U with FDR-BH correction
+    statistic: r = 0.28
+    p: 3.4e-17
+    corrected: FDR-BH
+  depends_on:
+  - fig6f-population-coupling
+  criterion: The Results cite fig. S9A for the PL increase being "driven primarily by stronger
+    coupling among PL cells", while the legend describes coupling of PL and NPL units as in
+    Fig. 6F, and the code (python/fig_s9/generate_figure.py) computes it as Fig. 6F with Mouse 6
+    (ICMS83) left out, its comment matching the legend's PL n of 446 and 763. Readings (a) as
+    fig6f-population-coupling without Mouse 6 (code, legend) and (b) the population trace built
+    from the other modulated PL units only (Results). Four tests corrected together by FDR-BH.
+    Reproduced when, under one reading, PL rises with corrected P < 0.05, NPL early against late
+    gives corrected P >= 0.05, and NPL exceeds PL in both phases with corrected P < 0.05.
+checks:
+- date: 2026-11-03
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs4b-pl-latency-distance, criterion said the code does not fix latency, jitter or the fitted segment; the code does (latency the bootstrap mean of the peak-bin time, jitter its variance in ms^2, 120 um bins from 60 um, latency fit on binned medians over 120 to 840 um, jitter fit on unbinned responses), so these are now taken from it, with the legend's binned means as the other reading.
+  - figs4b-pl-latency-distance, expected value 0.235 and tolerance 0.062 spanned 0.173 to 0.297, not the 0.18 to 0.297 the criterion states (the range 0.2 to 0.27 widened by 10% of each bound); set to 0.2385 and 0.0585.
+  - fig3lm-deconvolved-spikes-subgroup, added the effect sizes the text gives and the file left out (spike count week 0 r < 0.01, week 1 r = 0.08; onset week 0 r < 0.01).
+  - fig3lm-deconvolved-spikes-subgroup, the statement left out the finding its quote states (subgroup spike counts up and onset down from early to late, remaining neurons little change); added to the statement, and the criterion says how it is tested.
+  - fig3n-newly-recruited-weaker, the first two statistics were labelled "across groups", but the text attaches them to the newly recruited against weeks 2 to 4 subgroup comparison; relabelled. Renamed the expected "subgroup neurons at week 0" to "week-0 group neurons", as the legend and text call that group all tracked neurons at week 0 and the file itself leaves which group open. The criterion now names as open whether the printed P values are omnibus or post hoc.
+  - figs2de-behaviour-increase-comparison, the statement said "over the same weeks as the controls", which comes from the code, not the paper; removed. The criterion fixed late as weeks 2 and 3; the legend says the data are reproduced from Figs. 2C and 2E (late weeks 2 to 4), so both are now readings.
+  - figs9a-coupling-700ms, new claim. Fig. S9A reports its own tests (n 446 and 763 PL) and the Results cite it for the PL coupling increase; no claim covered it. The text and the legend describe it differently, so both are readings.
+  - Checker flagged p 9.0e-4 (figs2de-behaviour-increase-comparison) and p 2.0e-4 (fig4ij-pyramidal-modulation-increase) as not found; read in the text as "p = 9.0e-4" (fig. S2E legend) and "P = 2.0 × 10 −4" (Results); both are right.
+  - Code citations spot-checked at commit d1922d1 (animal order and the Mouse 4 channel left out of Fig. 2C, Mouse 5 left out of Fig. 2E and fig. S2D, weeks 0 to 3 in fig. S2D and S2E, the modulation filters, the cluster onset of Fig. 6D); they match. The other code details were not all re-read.
+  - Open, not settled. Fig. S2D and S2E n do not match Figs. 2C and 2E although the legend says the data are reproduced from them; fig3df and later imaging claims rest on code-defined dF/F, onset and subgroup readings the paper does not give; the control currents for fig. S7 are not given in the paper.

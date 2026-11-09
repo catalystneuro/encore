@@ -1,0 +1,123 @@
+# crcns-rrf-1, Moaddab et al. 2021
+
+Twenty-four claims reproduced (21 on an assumption), five partially (all five
+on an assumption), one not reproduced (on an assumption) and none blocked. The
+first verification round agreed with all 30 outcomes as they stood and the
+second with all 30, including the one the author changed in between; nothing
+was proposed after the second, so there was no third round. The version is
+recorded as unversioned with the data set's DOI (10.6080/K04B2ZJ5). The paper,
+Moaddab and McDannald, "Retrorubral field is a hub for diverse threat and
+aversive outcome signals" in Current Biology (31:2099-2110), records 743
+retrorubral field (RRF) single units over 228 sessions from 11 male Long Evans
+rats during fear discrimination, in which danger, uncertainty and safety cues
+predict foot shock with probability 1.00, 0.25 and 0.00 while the rats nose
+poke for food; it screens 423 cue-responsive units from 190 sessions, clusters
+them by k-means into eight clusters (k1 to k8), relates their firing to peak
+threat probability and fear output, and describes their firing to shock and
+omission. The data set holds a derived `cube.mat`, one file per unit and the
+paper's MATLAB code (cubeScriptPR25.m and rrfAnalysis.m). The claims were
+written from the PyMuPDF text of the version of record and its supplemental
+information, with the table layouts and the Figure 6 panels read from rendered
+pages, and without the code, which the paper says will be uploaded to CRCNS;
+the lab page it names, http://mcdannaldlab.org/resources, returned 404. Every
+claim could be tested. All outcomes after the first three rest on the
+assumption that the code's normalization is what the paper did, and most also
+on the clusters of the code's own k-means run (rng(1) and one MATLAB k-means
+start), repeated in Python with MATLAB's random draws and seeding, which gives
+the paper's cluster sizes (33, 59, 18, 63, 58, 61, 64, 67). Reproduced are,
+among others, `units-and-sessions` and `cue-responsive-units` (the paper's
+counts, with the per-rat counts of Figure S1), `behavior-discrimination`
+(F(2, 20) = 103.57, p = 2.8e-11, the paper's F and p), `kmeans-elbow` (on the
+claims file's reading z-b with scikit-learn, 4 of 4 combinations),
+`fig4def-danger-uncertainty-correlation` (R2 0.483, 0.214 and 0.210 with the
+paper's p values), `fig5a-tuning-anova` (the paper's three F values) and
+`fig5f-fear-output-vs-peak-probability` (R2 = 0.430, the per-cluster R2 equal
+to Figure S6). Partial are `fig4abc-threat-bias` (part (2) in 5 of the 7
+clusters, one short), `table-s3-cluster-regression` (k3 has a regressor x bin
+interaction, p = 0.047 against the paper's 0.09), `fig6b-k2-anti-ppe` (the
+omission CI just excludes zero where the paper's includes it),
+`fig6de-k4-k5-persistent-threat` (the k5 omission mean 0.156 against 0.25 +/-
+0.08) and `fig6f-k6-ppe-then-valence`. Not reproduced is `fig6a-k1-shock`: in
+the 0 to 8 s after shock offset the claims file reads from Figure 6, the k1
+danger and uncertainty shock CIs include zero, while in 0 to 4 s all seven CIs
+agree. Under the claims file's readings of the Methods' normalization (z-a and
+z-b) the cluster sizes are within 10% for at most 4 of 8 and, by round 1's
+count, most means fall outside tolerance. The author's first run had 25 reproduced, 4 partially, 1 not
+reproduced and none blocked, with fig6f reproduced. The author asked no
+questions of a reader, so the answer and author-answers runs changed nothing.
+Round 1 agreed with all 30 outcomes and raised the Figure 6 window, the
+reliance on the code's normalization, a search for units to drop that was
+fitted to the target F values, a standard error that differs from MATLAB's
+bootci and CIs from a single seed sitting at zero, and parts of the code it
+could not read because it did not download the data set; in reply a cell
+printing the cited code lines was added, all 121 judged CIs were redrawn over
+20 seeds and with bootci's nested standard errors and judged by the sign most
+draws give, a convention of this attempt, which moved fig6f to partially
+reproduced, every k-means reading was run, the 362-unit pooled ANOVA was added,
+the Figure 6 page was rendered (its gray boxes end at 8 s), and two questions
+went to a reader in `questions/crcns-rrf-1.yaml` (the Figure 6 window and
+whether k4 counts in part (2) of fig4abc), a file written after the answer run,
+so the questions are unanswered. Round 2 agreed with all 30 outcomes, asked
+that kmeans-elbow rest on the claims file's reading in place of the code's
+mean(sumd), a sum at k = 2, and that the record say the majority rule is the
+attempt's own, and found text the outputs did not support, among them R2 given
+as 0.479 and 0.209 where the cells print 0.483 and 0.214 and a summary saying
+every F value was recovered where Table 1's k4 cue F is 8.09 against 7.93; in
+reply the basis and the text were corrected. The author's run went from 07:40
+to 08:31 UTC; the notebook ran in 49 to 50 s at first, 25 s after the
+author-answers run and 305 s and 308 s after the two revisions, the rise coming
+from the bootstrap redraws, and nothing failed. The untracked dotfiles in the
+repository root were left alone.
+
+The Methods and the paper's code disagree on the firing normalization: the
+Methods average trials of each type, subtract that type's 2-s baseline and
+z-score the means across trial types, while cubeScriptPR25.m floors every rate
+to an integer Hz, subtracts each trial's own 2-s baseline and z-scores the
+single-trial values over all 16 trials and all bins of a unit; the paper's
+cluster sizes, Table 1, Table S1, Figure 4 and Figure 5 statistics are
+reproduced to the printed digits only with the code's version. The data set
+holds no cluster labels and no per-unit electrode location, so the labels can
+be recovered only by re-running the code's k-means and its hand-written map
+from cluster numbers to k1 to k8, and the bregma level is a per-rat table
+inside rrfAnalysis.m. The code also differs from the Methods on the clustering:
+it runs k-means once per cluster number after rng(1) where the Methods say 10
+times, plots mean(sumd) where the Methods describe the mean squared distance to
+the centroid, and starts the outcome epochs 13 s after cue onset, which the
+Methods do not state. For k1, k3, k5 and k6 the gray boxes of Figure 6 span 0
+to 8 s after shock offset, but the Table S4 means are reproduced (to within
+0.008) only by 0 to 4 s, and in 0 to 8 s they differ by up to 0.15; this
+decides fig6a and the k5 omission mean of fig6de. The ANOVAs of Figure 5E and
+Table S3 have 355 error df, implying 362 units where the seven clusters hold
+364, and the paper does not say which two were left out; removing one k3 unit
+(four candidates fit equally) and one k5 unit reproduces Table S3's F and p for
+those clusters. The unit files hold spikes only from 20 s before to about 33.5
+s after each cue onset, as recording was paused between trials, which the data
+descriptor does not say. The event channels (EVT01 shock, EVT09/11/12 cues by
+program letter, EVT13 nose poke, EVT14 pause recording) are named only in
+comments of cubeScriptPR25.m, and EVT08, listed there as empty, repeats EVT01
+in every file. The descriptor says RRFcube.wave holds a mean waveform for each
+trial type where it holds one 32-sample waveform per unit, says poke.base is
+the nose poke rate 2 s before the cue where it is the rate over 20 s, and lists
+half-duration and amplitude-ratio fields that cube.mat does not contain. The
+paper and descriptor give a mean inter-trial interval of 3.5 min, while cue
+onsets are 203 to 265 s apart (mean 3.89 min). Rebuilding `cube.mat` from the
+unit files gives identical arrays, and no unit or session is deposited twice.
+Questions are put to the paper's authors: whether the code's normalization was
+used for all reported results, which interval after shock offset Figure 6 and
+Table S4 analysed for k1, k3, k5 and k6, and which two units were left out of
+the Figure 5E and Table S3 ANOVAs and on what rule.
+
+The author's points on the protocol: it does not cover code found inside the
+data set, or code that settles a reading neither the Methods nor the claims
+file names, so the code was followed as the claims file asked, with the lines
+cited; the reader's step 2 puts the Methods first while the claims file says to
+follow the code, so the code was followed, the outcomes marked assumed and the
+Methods' readings shown as variants; a conflict between Table S4 and the
+paper's own figure is not a misreading by the claims file, so the question
+route did not apply and the claims file's window was kept with a finding and
+the 0 to 4 s result; "assumed" is ambiguous when the paper's code makes a
+choice its Methods contradict, so every claim depending on the normalization
+was marked; and the clock check of shifting onsets into the inter-trial
+interval cannot work when recording paused between trials, so a pre-cue window
+and labels shifted by one trial were used (30.8% of units discriminate with
+true labels, 5.0% and 7.4% under the controls).
