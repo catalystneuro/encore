@@ -1,0 +1,120 @@
+# crcns-pfc-2, Fujisawa et al. 2008
+
+Five claims reproduced (one on an assumption), eight partially, 17 not
+reproduced (one on an assumption) and none blocked. The first verification
+round agreed with 28 of the 30 outcomes as they stood and the second with all
+30, with `odor-unrelated-to-stem` only as an outcome that rests on its
+assumption; nothing was proposed after the second, so there was no third
+round. CRCNS does not version data sets, so the version is recorded as
+unversioned with the data set's DOI (10.6080/K01V5BWK), with the MD5 sums from
+the data set's `checksums.md5`. The paper, Fujisawa, Amarasingham, Harrison and
+Buzsaki in Nature Neuroscience (11, 823-833), records units with one 8-shank,
+64-site silicon probe per rat in anterior cingulate and dorsal prelimbic cortex
+of four rats in an odor-based delayed matching-to-sample task on a figure-eight
+T-maze, three in layer 2/3 and one in layer 5, describes left and right
+trajectory-specific firing along the maze, identifies putative monosynaptic
+connections from cross-correlograms with a jitter test, and reports
+position-dependent transmission, depression and facilitation with spike
+repetition, and a supralinear effect of coincident inputs on a common target;
+the data set holds 13 working memory sessions from three rats (EE, FF, GG). The
+claims were written from the version of record and its supplement as extracted
+text, without the figure images, as the PDF pages could not be rendered, so
+values printed only inside figure panels were not read, and without code, as
+the paper links none; the claims check changed nine claims, among them a
+side-arm test for `odor-unrelated-to-stem` and a largest separation of 1,200 um
+for `fig3f-distance`, for 30 claims. Every claim could be tested at least in
+part, though the counts over four rats are compared with three, task
+performance rests on one session of 13, and the layer 5 values of the Figure
+2a, 3b and 3d sessions cannot be measured, as that session is not in the data
+set. Reproduced are `lifetime-width` (0.209 +- 0.154), `retrospective-coding-rare`
+(4.3% of EE188 cells, near the test's 5.1% false-positive rate),
+`no-spatial-clustering` (p = 0.577), `speed-not-correlated` (median -0.018)
+and `population-vector-width` (0.239 and 0.300), which rests on normalising each
+cell's PSTH by its peak. Partial are, among others, `unit-count` (627 cells
+over three rats), `task-performance` (45 of 46 correct in EE188),
+`trajectory-divergence` (the path at 0.28, head direction from 0.01),
+`fig3f-distance` (connections up to 1,400 um) and
+`connected-cells-trajectory-specific` (3 of 4 values). Not reproduced are,
+among others, `fig2-population-uniform`, `side-arm-selectivity-by-layer`
+(62.3% and 54.3% against 40% and 22%), `odor-selective-fraction` (30.8%),
+`connection-counts`, `cell-type-fractions`, `fig3d-hub` (82 or 83 cells
+against 39), `position-dependent-transmission` (31 to 34 of 389),
+`thinning-preserves-dependence`, `fig6-depression-facilitation`, whose
+significant share is at the random-label rate, and
+`fig7-supralinear-coincidence`. The author's first run had 8 reproduced, 4
+partially, 17 not reproduced and 1 blocked, `task-performance` for missing
+data. The author asked no questions of a reader, so the answer and
+author-answers runs changed nothing. Round 1 disagreed on `unit-count` and
+`fig4-pair-156-136`, both taken as partially reproduced, and raised the split
+of the jitter test's global band, the lack of a false-positive check on the
+connection detector, an off-centre permutation null in the spike-order test,
+the nose-poke window and thinning that can stop before its target; in reply
+every connection claim was re-run under the Methods' stepping procedure, a
+time-shifted false-positive check and the authors' `pairs_all` were added, the
+P was taken from both tails, the nose-poke sensor channels were read from the
+EE188 tar, `task-performance` and `trajectory-divergence` moved up,
+`thinning-preserves-dependence` and `odor-unrelated-to-stem` became not
+reproduced, and a question on the latter went to a reader in
+`questions/crcns-pfc-2.yaml`, written after the answer run, so it is
+unanswered. Round 2 agreed with all 30, found six passages the outputs did not
+support, among them an s.d. of 0.097 that appears nowhere and the statement
+that the three trials left out of the EE188 table are ordinary correct trials,
+and raised the head direction diverging at 0.01 and the reading of
+`speed-not-correlated`; in reply the text was corrected, outputs on time spent
+per tenth of the maze and head direction near the start were added, a second
+question went to a reader, and no outcome changed. The author's run went from
+13:14 to 15:27 UTC; the notebook ran in 17.6 min at first, 1,113 s after the
+author-answers run, 1,320 s after round 1 and 20.2 min after round 2. One
+locked run failed because a loop variable overwrote the position grid, and was
+fixed and re-run; the spike-order test used 100 jitter surrogates and 500
+permutations for run time.
+
+The data set holds three of the paper's four rats (rat H is absent), its trial
+tables list correct trials only, and the layer 5 session of Figure 2a and
+Supplementary Figure 11 (142 cells) is not in it; the FF sessions hold 40 to 64
+cells. Error trials can be found only from the nose-poke sensor channels in each
+session's raw .eeg file, which were read here for EE188. Each session's files
+keep a selection of the sorted clusters (627 cells of 1,495 clusters listed in
+spikeph); the description says Cells are neurons whose maximum rate in the
+trials exceeds 1 Hz, but the files hold no Cells variable, and 0 to 10 cells
+per session of CellsInfo are below 1 Hz, so which selection CellsInfo is
+cannot be confirmed. EE188_Behavior_PFC.mat holds 105 of the 117 cells of
+EE188_example.mat. The CellsInfo type column is described as pyramidal,
+interneuron or unknown, but no cell is unknown in the 12 sessions of
+behaviors.zip or in EE188_Behavior_PFC.mat (87 pyramidal and 18 interneurons
+in EE188), while EE188_example.mat of the same session has 33, 15 and 69, and
+neither classification is documented. The pairs_all list of EE188_example.mat
+(43 connections) is described as the pairs with monosynaptic connections, but
+it holds fewer connections than the paper reports for that session (48 and 30
+in Figure 3b) and its largest component is the 39-cell circuit of Figure 3d;
+which selection it is, is not said. The spikes' trial labels and positions
+start at the first nose-poke of each trial, while the description defines the
+trial start as the end of the last nose-poke, so spikes during the nose-poke,
+which lasts up to 315 s, are placed near position 0. The description names
+EE188_example.mat as a file of folder EE0708; it is a member of
+EE0708/EE.188.tar.gz, about 2 GB into the gzip stream. The layer of each rat's
+probe is not given and was taken from the paper's Supplementary Figure 1 by
+assuming that rats EE, FF and GG are the paper's E, F and G. The trial table of
+EE188 leaves out 3 trials that the sensor channels and the position file show
+as correct and 1 error trial; in two of the three the rat reaches the arm 193.4
+and 176.9 s after its last poke, longer than any table trial. In 10 of the 13
+sessions the second LED is not tracked, so head direction can be computed only
+in EE152, EE165 and EE188. Questions are put to the paper's authors: whether
+the 99% global band of the jitter test was the minimal band holding 99% of the
+surrogates within both sides or 1% on each side, which bin width the
+cross-correlograms used, how Figure 3d's subset of connections was chosen, and
+whether each cell's rates were normalised before the population vector
+correlations.
+
+The author's points on the protocol: the prompt asks for a pinned published
+version where `docs/archives.md` says CRCNS is unversioned, so unversioned and
+the MD5 sums were recorded; `docs/archives.md` covers zips only, while the key
+file is inside a tar.gz, which was streamed in sequence; readings multiply
+across dependent claims, and the protocol does not say how to handle this, so
+the downstream claims were run on one set of connections; there is no rule for
+testing part of a claim when the data lack some of its subjects, and
+`measured` was left out where values were missing; it is not said whether
+`assumed` covers an assumption about the data, such as which rat is which, so
+the rat mapping was recorded as a deviation only; and the development
+environment gave slightly different numbers from the locked one for one cell,
+so every number was taken from the executed copy.

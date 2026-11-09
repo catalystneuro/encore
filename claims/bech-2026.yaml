@@ -109,6 +109,18 @@ dataset:
   id: "001847"
 paper: doi:10.7554/elife.109717
 claims:
+- id: session-list-link
+  kind: link
+  statement: The session lists of the paper's processing code (Bech_Dard_process_NWB at commit 212a6310,
+    configs/session_groups), which name the expert, Context Off, optogenetic, control, muscimol, Ringer
+    and widefield sessions and so the mouse lines, match the dandiset's sessions.
+  source: github.com/LSENS-BMI-EPFL/Bech_Dard_process_NWB, configs/session_groups, at commit
+    212a63103528cdeafb6ebcf90a50235cd2290082 (the lists the opening comment cites)
+  criterion: Added by the author (protocol, Author, step 1.4). Sessions are matched by identifier, the
+    code's PB170_20240220_155608 being the dandiset's ses-PB170-20240220-155608. Reproduced when every
+    session of every list used here is in the dandiset with a readable trial table, and the counts of mice
+    and sessions per list agree with those the claims file's opening comment gives from the lists;
+    partially reproduced when at least 90% of the sessions match.
 - id: expert-sessions
   statement: The expert sessions of the behavioural data come from 41 mice and number 201, with an
     average of 23 context blocks per session.
@@ -138,6 +150,7 @@ claims:
     dataset, reproduced when the three counts are within tolerance; the overlap with the code's
     list sessions_Context_sessions_expert.yaml is reported.
 - id: fig1c-auditory-hit-both-contexts
+  data: with_labels
   statement: In expert sessions mice lick to the auditory tone in both contexts, with hit rates of
     96 ± 4% in W+ and 94 ± 5% in W- (mean ± SD over 41 mice).
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 2;
@@ -145,6 +158,7 @@ claims:
   quote: "In expert sessions, mice showed consistent licking responses to the auditory stimulus in
     both contexts (Auditory hit rate: W+ = 96 ± 4 %, W- = 94 ± 5 %; n = 41 mice)"
   depends_on:
+  - session-list-link
   - expert-sessions
   expected:
   - quantity: auditory hit rate in W+, mean over mice
@@ -159,6 +173,7 @@ claims:
     over the expert sessions under either reading of the selection. The tolerances are the
     paper's stated SDs over mice.
 - id: fig1c-whisker-context-modulation
+  data: with_labels
   statement: Licking to the whisker stimulus depends strongly on context, 84 ± 6% in W+ against
     32 ± 7% in W- (mean ± SD over mice).
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 2;
@@ -166,6 +181,7 @@ claims:
   quote: and strong context-modulated licking in response to whisker stimuli (W+ = 84 ± 6 %, W- = 32
     ± 7 %) (Figure 1C)
   depends_on:
+  - session-list-link
   - expert-sessions
   expected:
   - quantity: whisker hit rate in W+, mean over mice
@@ -179,12 +195,14 @@ claims:
   criterion: As fig1c-auditory-hit-both-contexts, for whisker trials. The tolerances are the
     paper's stated SDs over mice.
 - id: fig1d-independent-of-noise-identity
+  data: with_labels
   statement: The context modulation of whisker licking holds whichever background noise (pink or
     brown) is associated with each context.
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 2;
     Figure 1D
   quote: irrespective of which background noise was associated to each context (Figure 1D)
   depends_on:
+  - session-list-link
   - expert-sessions
   criterion: The paper reports no test for this panel, and the code computes none (plot
     utils/figure1D.py), which splits the mouse-level lick probabilities by the noise identity
@@ -195,6 +213,7 @@ claims:
     W+ is higher in both groups but the test passes in one only. The number of mice per group is
     reported.
 - id: fig1c-catch-higher-wplus
+  data: with_labels
   statement: Catch-trial (spontaneous) lick rates are low but slightly higher in W+ blocks, 13 ± 7%
     against 4 ± 2% in W-.
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 2;
@@ -207,6 +226,7 @@ claims:
     p: 1.6e-10
     n: 41 mice
   depends_on:
+  - session-list-link
   - expert-sessions
   expected:
   - quantity: catch false alarm rate in W+
@@ -222,6 +242,9 @@ claims:
     utils/figure1C.py:78-82. Reproduced when both means are within the stated SDs, W+ is higher
     and p < 0.05.
 - id: fig1e-context-off-no-discrimination
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: When the two context noises are replaced by constant white noise, keeping the block
     reward structure, mice no longer discriminate between the context blocks in their whisker
     responses.
@@ -242,6 +265,7 @@ claims:
     against W- blocks on the Off day is shown as a variant. The W+ minus W- difference on the Off
     day and on the On days is reported.
 - id: fig1g-first-trial-switch
+  data: with_labels
   statement: Mice change their whisker response at the first whisker trial after a context change,
     from 26 ± 8% to 73 ± 13% from W- to W+, and from 87 ± 7% to 57 ± 13% from W+ to W-.
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 3;
@@ -263,6 +287,7 @@ claims:
     p: 7.3e-17
     n: 41 mice
   depends_on:
+  - session-list-link
   - expert-sessions
   expected:
   - quantity: W- to W+, lick probability at whisker trial -1
@@ -289,6 +314,7 @@ claims:
     whether the printed p is corrected is not stated, so both are reported. Reproduced when the
     four values are within the stated SDs and both tests give p < 0.05 in the stated direction.
 - id: fig1f-gradual-further-adaptation
+  data: with_labels
   statement: After the first whisker trial of a new block, whisker responses adapt slightly further
     over the following whisker trials, the second whisker trial already closer to the new context
     than the first.
@@ -298,6 +324,7 @@ claims:
     context transition with a slight gradual further adaptation over subsequent whisker trials
     (Figure 1F)
   depends_on:
+  - session-list-link
   - expert-sessions
   criterion: The paper reports no test. Mean lick probability over mice at whisker trials +1 to +4
     after each transition, built as in fig1g-first-trial-switch (the code's window, 3 trials before
@@ -306,6 +333,7 @@ claims:
     +2; partially reproduced when this holds in one direction. The paired t-test across mice of +2
     against +1 (the paper's test for Figure 1G) is reported per direction.
 - id: fig1h-temporal-integration
+  data: with_labels
   statement: The lick probability to the first whisker trial of a block rises with the time elapsed
     since a transition to W+ and falls with it after a transition to W-, while the last whisker
     trial before a transition shows no sign of anticipating the switch.
@@ -315,6 +343,7 @@ claims:
     W−, suggesting temporal integration of contextual information after context switch. However,
     there was no apparent sign of anticipation of the context switch in the behavior of the mice.
   depends_on:
+  - session-list-link
   - expert-sessions
   criterion: As the Methods (Figure 1H) and the code give it, for each session the last whisker
     trial of each block and the first of the next (the first of the first block and the last of
@@ -333,6 +362,9 @@ claims:
     context, and is otherwise blocked as methods_underspecified. Reproduced when both parts hold,
     partially reproduced when one does.
 - id: fig1i-pupil-larger-wplus
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Before the whisker stimulus, pupil area is larger in W+ than in W- (0.52 ± 0.13 against
     0.50 ± 0.12 mm2), while whisker angle and jaw opening show no general effect of context.
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 4;
@@ -365,6 +397,9 @@ claims:
     is larger with corrected p < 0.05, and whisker angle and jaw opening give corrected p >= 0.05
     (the absence judged on the same test).
 - id: fig1i-posture-before-lick
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Independently of context, before trials in which the mouse then licks to the whisker
     stimulus the jaw rests more open (0.27 ± 0.05 against 0.23 ± 0.04 mm) and the whisker is more
     posterior (97.3 ± 13 against 98.6 ± 12 degrees).
@@ -408,6 +443,9 @@ claims:
     it, 180 degrees for a whisker parallel to the body. Reproduced when the four means are within
     the stated SDs and both tests give corrected p < 0.05 in the stated directions.
 - id: fig1j-jaw-speed-context
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Pre-stimulus jaw speed is higher in the rewarded context (3.0 ± 1.0 against 2.5 ± 0.8
     mm/s), and also before lick than before no-lick trials, while whisking speed shows no effect of
     context or lick.
@@ -453,6 +491,9 @@ claims:
     jaw speed is higher in W+ and before lick with corrected p < 0.05, and whisker speed gives
     corrected p >= 0.05 for both context and lick (the absence judged on the same test).
 - id: fig1k-model-accuracy
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: A gradient-boosted tree model of the whisker-trial lick choice, from task, history and
     orofacial features, reaches a cross-validated accuracy of 0.78 on held-out test trials.
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 5;
@@ -477,6 +518,7 @@ claims:
     stopping on the inner validation split is shown. Reproduced when the balanced accuracy is
     within tolerance; the accuracy on the held-out session is reported.
 - id: fig1k-context-strongest-feature
+  data: with_labels
   statement: Among the model's features, context gives the largest drop in accuracy when permuted,
     followed by whether the previous whisker trial was rewarded, the cumulative number of rewards
     and the index of the whisker trial in the block.
@@ -487,6 +529,7 @@ claims:
     rewarded, the cumulative number of rewards, and the index of the whisker trial of the block
     (Figure 1K)
   depends_on:
+  - session-list-link
   - fig1k-model-accuracy
   criterion: Permutation importance as the Methods (Figure 1K) and plot utils/figure1KL.py:512-523
     give it, each feature shuffled 10,000 times on the test split, the drop in balanced accuracy
@@ -494,6 +537,7 @@ claims:
     previous whisker rewarded, cumulative water, whisker trial in block; partially reproduced when
     context is first and the other three are in the top five in any order.
 - id: fig1l-shap-whisker-trial-in-block
+  data: with_labels
   statement: The SHAP values of the whisker-trial-in-block feature follow the behaviour, with a
     single-trial change after a context transition and a slower further component.
   source: Results, Rapid behavioral adaptation to sensory stimuli in a changing context, paragraph 5;
@@ -502,6 +546,7 @@ claims:
     consistent with the mouse behavior capturing both single trial adaptation after context
     transition and a slower component
   depends_on:
+  - session-list-link
   - fig1k-model-accuracy
   criterion: SHAP values by the interventional TreeExplainer with 100 background trials from the
     training set (Methods, Figure 1L; explain_behaviour models/behavioural_analysis_GBM.py:516-534),
@@ -511,6 +556,7 @@ claims:
     of trial -1 of the previous block, in the direction of the new context, and trial 2 lies
     further in that direction than trial 1; partially reproduced when only the sign change holds.
 - id: supp1c-wplus-blocks-longer
+  data: with_labels
   statement: Whisker-rewarded context blocks last longer than whisker-non-rewarded blocks (196 ± 13
     against 185 ± 4 s).
   source: Figure 1 figure supplement 1C
@@ -521,6 +567,7 @@ claims:
     statistic: t = 4.3
     p: 2.0e-4
   depends_on:
+  - session-list-link
   - expert-sessions
   expected:
   - quantity: W+ block duration
@@ -536,6 +583,7 @@ claims:
     lines 324-351, plot utils/figure1_supp.py:39-67); a two-sided paired t-test across mice, uncorrected.
     Reproduced when both means are within the stated SDs, W+ longer, p < 0.05.
 - id: supp1d-faster-response-wplus
+  data: with_labels
   statement: Spout contact after the stimulus is slightly faster in W+ than in W-, for auditory (370
     ± 9 against 400 ± 9 ms) and whisker trials (392 ± 9 against 418 ± 9 ms).
   source: Figure 1 figure supplement 1D
@@ -555,6 +603,7 @@ claims:
     p: 6.0e-4
     corrected: Bonferroni (x2 in the code)
   depends_on:
+  - session-list-link
   - expert-sessions
   expected:
   - quantity: auditory spout contact time in W+
@@ -581,6 +630,9 @@ claims:
     are within tolerance and both tests give corrected p < 0.05 with W+ faster; partially
     reproduced when the directions and tests hold but a mean is outside tolerance.
 - id: fig2c-catch-little-effect
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Optogenetic inactivation of cortical sites has little effect on licking in catch trials
     in either context.
   source: Results, Distributed cortical areas are involved in task execution, paragraph 1; Figure 2C
@@ -592,6 +644,9 @@ claims:
     largest mean |ΔP| over sites is reported; not reproduced when, under every reading, more do;
     otherwise blocked as methods_underspecified.
 - id: fig2d-auditory-a1-frontal
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: In auditory trials, inactivating auditory cortex and frontal premotor regions reduces
     lick probability, similarly in both contexts.
   source: Results, Distributed cortical areas are involved in task execution, paragraph 1; Figure 2D
@@ -605,6 +660,9 @@ claims:
     blocked as methods_underspecified. Similarity across contexts is reported as the W+ and W-
     mean ΔP at those sites.
 - id: fig2e-whisker-sensory-premotor-reduction
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: In whisker trials, inactivating wS1, wS2 and anterior premotor regions (wM1/2, ALM)
     reduces lick probability in both contexts.
   source: Results, Distributed cortical areas are involved in task execution, paragraph 1; Figure 2E;
@@ -617,6 +675,9 @@ claims:
     (where the whisker lick rate is high). Each threshold and null reading is run; the outcome is
     the one they all give, otherwise blocked as methods_underspecified.
 - id: fig2e-rsc-tjs1-increase-wminus
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Inactivating tongue-jaw somatosensory cortex (tjS1) or retrosplenial cortex (RSC)
     increases lick probability in whisker trials specifically in the W- context.
   source: Results, Distributed cortical areas are involved in task execution, paragraph 1; Figure 2E
@@ -634,6 +695,9 @@ claims:
     threshold and null reading is run; the outcome is the one they all give, otherwise blocked as
     methods_underspecified. The mean ΔP of each in both contexts is reported.
 - id: fig2-no-effect-control-mice
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: In control mice without ChR2, light at the grid sites causes no significant change in
     lick probability at any site.
   source: Results, Distributed cortical areas are involved in task execution, paragraph 1; Figure 2
@@ -647,6 +711,9 @@ claims:
     not reproduced when one does. When the thresholds disagree, blocked as methods_underspecified.
     The largest d' and |ΔP| over sites are reported.
 - id: supp2-muscimol-ws1-rsc
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Muscimol in wS1 significantly reduces whisker-trial lick probability in W- and W+, while
     muscimol in RSC gives a non-significant positive trend in whisker-trial licking in W-;
     pharmacological inactivation is consistent with the optogenetic results.
@@ -674,6 +741,9 @@ claims:
     reported against the resolution) and RSC in W- gives a positive change with 0.05 <= p < 0.1;
     partially reproduced when only the wS1 part holds. fpS1 is reported.
 - id: fig2f-latency-frontal-not-rsc
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Lick latency increases during inactivation of frontal areas but does not change during
     inactivation of RSC or tjS1.
   source: Results, Distributed cortical areas are involved in task execution, paragraph 1; Figure 2F
@@ -691,6 +761,9 @@ claims:
     when one of the two parts holds. Each threshold reading is run; the outcome is the one they
     all give, otherwise blocked as methods_underspecified.
 - id: fig2cd-rsc-no-effect-catch-auditory
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Inhibiting RSC does not change performance in catch or auditory trials, so the effect
     of RSC inactivation needs the context-sensitive whisker stimulus.
   source: Results, Optogenetic inhibition drives cortical activity modes predictive of behavior,
@@ -706,6 +779,9 @@ claims:
     When the readings disagree, blocked as methods_underspecified. The ΔP and d' of RSC in each
     group are reported, and the site (-0.5, 0.5) is shown as a variant.
 - id: fig3c-jaw-onset
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Jaw opening, the first movement, begins 108 ± 24 ms after the sensory stimulus, so the
     first 120 ms after the stimulus largely precede movement.
   source: Results, Context-dependent flow of activity during sensorimotor transformation, paragraph
@@ -728,6 +804,9 @@ claims:
     the code uses auditory and whisker hits. Reproduced when the mean onset is within tolerance
     (the ± is the paper's, SEM or CI width in the code).
 - id: fig3e-auditory-similar-across-contexts
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Auditory-evoked cortical activity is similar in W+ and W-, beginning in A1, then RSC,
     then medial secondary motor regions (wM1/2), then orofacial motor cortices (tjS1, ALM).
   source: Results, Context-dependent flow of activity during sensorimotor transformation, paragraph
@@ -746,6 +825,9 @@ claims:
     similarity holds and A1 is first. Each order and baseline reading is run; the outcome is the
     one they all give, otherwise blocked as methods_underspecified.
 - id: fig3f-whisker-divergence-after-50ms
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: In whisker trials, wS1 and wS2 activate similarly in both contexts early after the
     stimulus, and from about 50 ms activity diverges, with more activity in RSC and wM1/2 in W+ than
     in W-.
@@ -761,6 +843,9 @@ claims:
     The d' threshold and window are those of the Methods (Figure 3H). Each baseline reading is run;
     the outcome is the one they all give, otherwise methods_underspecified.
 - id: fig3h-rsc-first-context-discrimination
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: RSC is the first cortical area to discriminate the contexts in whisker trials, both in
     the pixel-wise maps and in the ROI averages, the time of the first d' above 2 between W+ and W-.
   source: Results, Context-dependent flow of activity during sensorimotor transformation, paragraph
@@ -779,6 +864,9 @@ claims:
     one they all give, otherwise methods_underspecified); a tie with another ROI at the first time
     counts as partially reproduced, and so does RSC first in one version only.
 - id: fig3-gcamp-consistent-controls-flat
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: GCaMP6f mice show whisker-evoked dynamics consistent with jRGECO1a mice, and
     calcium-insensitive tdTomato and GFP control mice show none of these dynamics.
   source: Results, Context-dependent flow of activity during sensorimotor transformation, paragraph
@@ -804,6 +892,9 @@ claims:
     coordinates in the injected mice the dataset holds. The paper reports no number of mice or
     quantification, so the claim is judged by presence.
 - id: fig4b-wminus-higher-correlation-correct
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Before correct trials, pre-stimulus correlations are higher in W- than W+ among
     orofacial regions, between whisker motor and orofacial regions, between wS1 and wS2, and
     between wS2 and wM1/2.
@@ -827,6 +918,7 @@ claims:
     for at least four, including one of each group the quote names. Both readings are run; the
     outcome is the one they both give, otherwise blocked as methods_underspecified.
 - id: fig4b-no-context-modulation-incorrect
+  data: with_labels
   statement: Before incorrect trials the contextual modulation of correlations is absent, because
     correlations increase in incorrect W+ trials.
   source: Results, Inter-area functional connectivity is modulated by context and upcoming choice,
@@ -835,6 +927,7 @@ claims:
     incorrect trial. This was due to an increase in correlation in incorrect trials in the W+
     context
   depends_on:
+  - session-list-link
   - fig4b-wminus-higher-correlation-correct
   criterion: A claim of absence, on the same pairs and methods as
     fig4b-wminus-higher-correlation-correct, before incorrect trials. The Figure 4B rule is the
@@ -843,6 +936,7 @@ claims:
     minus W+ d' >= 0.8 before incorrect trials, and the W+ incorrect minus W+ correct difference
     is positive for most of the seven pairs; not reproduced when a pair passes the d' rule.
 - id: fig4b-connected-network
+  data: with_labels
   statement: The pre-stimulus network of significantly correlated seeds connects whisker sensory
     regions, tongue-jaw orofacial regions and RSC, with wM1/2 as intermediary node, and pairs such
     as wS1 and wS2 or ALM and tjM1 are connected in both contexts for correct and incorrect trials.
@@ -852,6 +946,7 @@ claims:
     orofacial regions and RSC with wM1/2 acting as intermediary node in the spontaneous pre-stimulus
     activity.
   depends_on:
+  - session-list-link
   - fig4b-wminus-higher-correlation-correct
   criterion: As fig4b-wminus-higher-correlation-correct; a pair is connected when its grand-mean
     correlation is >= 1.8 SD of the null (Methods, Figures 4A&B; figure4A_B.py:100-101, 469).
@@ -859,6 +954,9 @@ claims:
     in each group, wM1 is connected to RSC and to at least one whisker sensory and one tongue-jaw
     region; partially reproduced when only the first part holds.
 - id: fig4c-inhibition-propagates-forward
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Inhibiting wS1 decreases activity widely across cortex, inhibiting wM1/2 decreases
     activity among motor areas while leaving whisker sensory responses intact, and inhibiting RSC
     does not increase activity in wM1/2 or tongue-jaw motor regions.
@@ -877,6 +975,9 @@ claims:
     RSC inhibition does not raise wM1, wM2, ALM, tjM1 or tjS1 above control by more than that SD;
     partially reproduced when two of the three parts hold.
 - id: fig4d-trajectories-follow-lick
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: Projected onto PC3, inactivation of wS1, wS2, wM1/2 and ALM drives the trajectory away
     from the control-lick trajectory toward no-lick, while inhibition of RSC and tjS1 gives
     trajectories that follow the control-lick trajectory in both contexts.
@@ -896,6 +997,7 @@ claims:
     closer to no-lick and RSC and tjS1 closer to lick; partially reproduced when RSC and tjS1 are
     closer to lick in both contexts and at least two of the others closer to no-lick.
 - id: fig4e-rsc-tjs1-smaller-angle
+  data: with_labels
   statement: The PC3 trajectories under RSC and tjS1 inhibition make smaller angles with the
     control-lick trajectory than those under inhibition of the other regions, which decreased lick
     probability.
@@ -905,6 +1007,7 @@ claims:
     lick trajectories compared to the other regions, which decreased lick probability in all
     contexts (Figure 4E)
   depends_on:
+  - session-list-link
   - fig4d-trajectories-follow-lick
   criterion: The angle as the Methods (Figures 4E-G) give it, the arccos of the normalised dot
     product of the per-mouse stimulated-site PC3 trace and the grand-average control-lick PC3 trace,
@@ -914,6 +1017,7 @@ claims:
     context, the mean angles over mice of RSC and tjS1 are both smaller than those of wS1, wS2,
     wM1 (or wM2) and ALM; partially reproduced when this holds in one context.
 - id: fig4fg-angle-predicts-lick-change
+  data: with_labels
   statement: Across all inactivated sites, in W+ and in W-, the angle between the inhibition and
     control-lick trajectories relates to the change in lick probability the inhibition evokes.
   source: Results, Optogenetic inhibition drives cortical activity modes predictive of behavior,
@@ -921,6 +1025,7 @@ claims:
   quote: This relationship held generally true across all inactivated regions in W+ and W-contexts
     (Figures 4F&G)
   depends_on:
+  - session-list-link
   - fig4e-rsc-tjs1-smaller-angle
   criterion: As the Methods (Figures 4E-G) and plot utils/figure4C_G.py:318-341 give it. Per
     context, a linear regression (scipy linregress, Pearson) over sites of the mean angle over mice
@@ -930,6 +1035,9 @@ claims:
     larger ΔP) with p < 0.05 in both contexts; partially reproduced when in one context, or when
     negative in both without p < 0.05.
 - id: supp4d-photoactivation-control
+  data: with_labels
+  depends_on:
+  - session-list-link
   statement: In mice expressing jRGECO1a without ChR2, the laser gives only a local photoactivation
     effect and none of the widespread inhibition seen in ChR2 mice.
   source: Figure 4 figure supplement 1D; Results, Optogenetic inhibition drives cortical activity
