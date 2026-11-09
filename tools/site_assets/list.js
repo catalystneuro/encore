@@ -1,4 +1,4 @@
-// One list component for the Datasets, Claims and Findings pages.
+// One list component for the Papers, Datasets, Claims and Findings pages.
 //
 // The page embeds its configuration as JSON in #list-config:
 //   { kind, root, data, facets: [{key, label}], sorts: [{key, label}],
@@ -114,6 +114,22 @@
   const tags = (list) => (list || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(' ');
 
   const render = {
+    papers(r) {
+      const href = r.page ? root + r.page : `https://doi.org/${r.doi}`;
+      const right = r.status === 'attempted'
+        ? `${tier(r)}<span class="small muted">${esc(r.date)}</span>`
+        : `<span class="tag">${esc(label('status', r.status))}</span>`;
+      const ds = r.datasets.map((d) => d.page ? `<a href="${root + d.page}">${esc(d.label)}</a>` : esc(d.label)).join(', ');
+      const reuse = r.relation.length === 1 && r.relation[0] === 'reuses' ? ' <span class="tag">Reused data</span>' : '';
+      const missing = r.missing ? ` <span class="tag warn" title="Datasets the paper rests on that the attempt could not use">${r.missing} dataset${r.missing === 1 ? '' : 's'} missing</span>` : '';
+      return `<div class="row drow">
+        <div class="id"><a href="${href}">${esc(r.byline)}</a></div>
+        <div><p class="title"><a href="${href}">${esc(r.title)}</a></p>
+          <div class="meta"><span class="muted">${esc(r.journal)}</span> · ${ds}${reuse}${missing}
+            <a href="https://doi.org/${esc(r.doi)}">doi</a></div>
+          ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
+        <div class="right">${right}</div></div>`;
+    },
     datasets(r) {
       const href = r.page ? root + r.page : r.url;
       const right = r.status === 'attempted'
