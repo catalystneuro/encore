@@ -671,8 +671,11 @@ claims:
   criterion: Per tuple, the average of K (A x_{t-1} + b) over the tuple's bins against the average
     true next command; error the L2 norm; significant when below the 5th percentile of the shuffle
     models' errors (Methods, Predicting condition-specific next command; Table S1 gives 5.38 for G
-    and 9.240 for J). The unit of the error is not given; the command's own units (those of the
-    decoder's velocity update) are used. Session and pooled aggregates as in the shared method.
+    and 9.240 for J). The paper gives no unit for the error; the code that prints these values
+    (pred_fwd.py frac_next_com_mov_sig, 326-330 and 606) applies K to activity in Hz, spike counts
+    per 100 ms bin times 10 (generalization_plots.py DataExtract.load, 204-206 and 256), so the
+    error, its shuffle and the expected values are ten times the error in the command's own units
+    (the decoder's velocity update per bin). Session and pooled aggregates as in the shared method.
     Reproduced when the aggregate tests give p < 0.001 in at least 8 of 9 G and 3 of 4 J sessions
     and pooled, the mean of session fractions of significant tuples is above 0.5 in each monkey
     ("majority"), and both errors are within tolerance; partially reproduced when the tests hold
@@ -1143,4 +1146,5 @@ checks:
   - Open, the code line references (the repository at 416187366f84) could not be re-read in this check; the method details cited to the code alone are taken as written.
   - Open, fig4g-majority-predicted and fig5f-condition-specific-next-command read "vast majority" and "majority" as a fraction above 0.5, and fig5d-four-dimensions uses two readings of "more accurately than the rest" made by the reader; the paper gives no rule for either.
   - Open, the units of the single-neuron distances and errors (fig3b, fig4de, Hz) and of the next-command error (fig5f) are not stated in the paper; they rest on the code.
+  - Answer of 2026-10-30, fig5f-condition-specific-next-command, the error is now taken as the code computes it, K applied to activity in Hz (counts per bin times 10), ten times the command's own units; expected values unchanged.
   - Open, most claims need the decoder (Kalman gain, or the PPF parameters for Monkey J); whether the dataset holds it is the author's to find.

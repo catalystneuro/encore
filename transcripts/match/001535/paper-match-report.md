@@ -1,0 +1,5 @@
+I marked doi:10.1016/j.cell.2025.02.001 (Natraj et al., Cell 2025) as **partial**. The match file validates (exit 0) and is ready for the workflow to commit.
+
+- **What decided it:** the dataset is one file, `sub-BRAVO1/sub-BRAVO1.nwb`. The archive describes it as "Long-term electrocorticographic (ECoG) training data during contextual brain computer interface (BCI) control in a tetraplegic human participant", covering seven directional targets. That is the paper's participant B1, so the B1 seven-direction decoding and plug-and-play (PnP) findings can be tested on it.
+- **What the dataset lacks:** the paper also relies on a second participant, B3, and on a 30-action imagined-movement mapping experiment ("30 actions in B1 ... and 32 actions in B3"). Neither is in the dataset.
+- **Where the rest of the data is:** the paper names no other dataset. Its data statement only links code on OSF (10.17605/OSF.IO/TBDWG) and says further data are "available from the Lead Contact upon request". So `data_in` is left empty.
