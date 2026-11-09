@@ -1612,7 +1612,7 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
         for nb in en["notebooks"]:
             links = []
             if nb["executed"]:
-                links.append(f'<a href="{root}{e(nb["executed"])}">Executed, with outputs</a>')
+                links.append(f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">Executed, with outputs</a>')
             if not data["demo"]:
                 links.append(f'<a href="{REPO_URL}/blob/main/entries/{e(en["name"])}/{e(nb["path"])}">Source</a>')
             items += (f'<li style="grid-template-columns:1fr max-content"><span><strong>{e(nb["title"])}</strong><br>'
@@ -1751,7 +1751,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                           key=lambda o: rank[o["outcome"]])
             if not mine:
                 continue
-            title = (f'<a href="{root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
+            title = (f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
                      else e(nb["title"]))
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span></h3>'
@@ -2175,6 +2175,9 @@ def main() -> int:
                         help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
+    parser.add_argument("--notebooks-from", metavar="URL",
+                        help="link executed notebooks under this site (e.g. the published one) rather than this "
+                             "build's own notebooks/, for previews, which leave the notebooks out")
     parser.add_argument("--analytics", metavar="TOKEN", default="",
                         help="the Cloudflare Web Analytics token of the published site, to count page views; "
                              "for the publish workflow only")
@@ -2185,6 +2188,7 @@ def main() -> int:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
     data["analytics"] = args.analytics
+    data["notebooks_root"] = args.notebooks_from
     if args.queue and args.queue.is_file():
         data["queue"] = json.loads(args.queue.read_text())
     if args.issues and args.issues.is_file():
