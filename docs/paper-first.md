@@ -22,17 +22,29 @@ paper becomes the unit, and each paper names the datasets it is tested on.
   papers would share one (3 today: guan-2022, daume-2024, moaddab-2021), the later-added one takes
   the first distinctive word of its title: `daume-2024-hippocampal`. Keys are assigned once and
   kept in `papers/keys.yaml` (DOI → key), never recomputed.
-- **Scope**: the datasets one set of claims is tested on, named by their folder names
-  (`000233`, `crcns-hc-14`), joined with `+` when there is more than one.
-- **Attempt id**: `<paper key>-NN`, numbered across the paper, whatever its scope
-  (`semenov-2026-01` … `-07`). The attempt names its datasets.
+- **Attempt id**: `<paper key>-NN`, numbered across the paper (`semenov-2026-01`). The attempt
+  names its datasets.
+
+## One attempt, every dataset the paper relies on
+
+- A paper's claims are extracted once, for the paper, and each claim names the datasets it
+  rests on. An attempt tests the paper against as many of those datasets as can be found and
+  loaded: Semenov 2026's next attempt loads all 7 dandisets.
+- The paper's datasets are listed in `papers/datasets/<paper key>.yaml`: each with archive, id,
+  relation (primary or reuses) and how it was found (archive metadata, the paper's data
+  availability statement, find_reuse). A dataset the paper relies on that is in no open archive,
+  or cannot be loaded, is listed with `available: false` and why.
+- **Missing datasets do not stop an attempt.** It runs on what is there; its record lists the
+  rest under `missing_datasets`, and each claim that needs one is blocked with
+  `blocked_by: missing-dataset`. The attempt is flagged on the site and in "waiting on you", so
+  the dataset can be found, converted or uploaded and a later attempt can add it.
 
 ## Layout
 
 | Now | Paper-first |
 |---|---|
-| `claims/<dataset>/<doi>.yaml` | `claims/<paper key>/<scope>.yaml` |
-| `entries/<dataset>-<author>-<year>/` | `entries/<paper key>/` (one scope) or `entries/<paper key>-<scope>/` |
+| `claims/<dataset>/<doi>.yaml` | `claims/<paper key>.yaml` |
+| `entries/<dataset>-<author>-<year>/` | `entries/<paper key>/` |
 | `attempts/<dataset>-<author>-<year>-NN.yaml` | `attempts/<paper key>-NN.yaml` |
 | `papers/match/<dataset>.yaml` | unchanged: it maps a dataset to its own paper |
 | paper store, `<dataset>/<id>.pdf` | `<paper key>/…`, one copy per paper |
@@ -49,14 +61,15 @@ datasets:
   id: "000233"
   version: 0.250624.0414
   relation: primary        # the paper the data were published with; or: reuses
-scope: "000233"
+missing_datasets: []       # datasets the paper relies on that this attempt could not use, each with why
 entry: tingley-2021
 ```
 
 ## Targets and queue
 
 - Primary targets stay as they are (archive listings → `papers/match/`), and become paper-first
-  once matched: (paper, scope = that dataset, relation primary).
+  once matched. A primary target whose paper is already listed (a second dandiset of Semenov 2026,
+  a CRCNS mirror) adds its dataset to that paper rather than starting a new one.
 - Reuse targets come from `targets/reuse.yaml`, written from find_reuse's REUSE pairs:
   paper DOI, dataset(s), relation `reuses`, and the quote find_reuse found. No paper-match step.
   They are taken only when no primary target is waiting.
@@ -72,11 +85,11 @@ and summary path, the runner's state (`resume-*.txt`, `attempt-<folder>` marks) 
 in one commit, and writes `papers/keys.yaml`. The old site URLs get redirect pages. It is run in a
 cutover window with the lanes stopped, because running attempts write to the old paths.
 
-## Open question
+## The 19 papers already tested per dataset
 
-For a paper whose data are split across datasets (Semenov 2026 on 7 dandisets), should the claims
-be tested **per dataset**, as now (seven scopes, seven sets of claims), or **once across all of
-them** (one scope, `001515+001516+…`, one set of claims, one attempt that loads every dataset)?
-The conversion keeps the existing per-dataset scopes either way; the question is what new
-attempts on such papers should do. Testing across all of them matches how the paper reports its
-results, but needs bigger runs.
+Their existing attempts and claims are kept as they are, converted to the new names
+(`semenov-2026-01` … `-07`, each with one dataset), and their claims files to
+`claims/<paper key>/<dataset>.yaml`, marked as per-dataset. Their next attempt extracts the
+paper's claims once and tests them across all its datasets. Mirrors on two archives (Girardeau
+2017, Fujisawa 2008) are compared, not combined: an attempt uses one copy of each dataset, and
+the site compares attempts on the two copies.
