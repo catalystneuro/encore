@@ -111,6 +111,22 @@ def resolve(name: str) -> str:
     raise SystemExit(f"error: {name} is neither a paper key nor a dataset listed for a paper")
 
 
+def matched_doi(dataset: str) -> str:
+    """The paper behind a dataset's data, as the paper match and papers/triage.yaml leave it (the paper a person
+    names in triage first, then the primary papers, then the partial ones), with its DOI cleaned."""
+    import paper_match
+    key = datasets.parse(dataset)
+    folder = datasets.folder(key)
+    for t in datasets.targets():
+        if t["key"] == key:
+            status, papers = paper_match.choose(t, paper_match.triage().get(folder, {}), paper_match.load(folder))
+            if not papers:
+                raise SystemExit(f"error: no paper matches dataset {datasets.label(key)} ({status}): "
+                                 f"see papers/match/{folder}.yaml")
+            return papers[0]["doi"]
+    raise SystemExit(f"error: dataset {datasets.label(key)} is not in the queue")
+
+
 def claims_file(key: str) -> Path:
     return ROOT / "claims" / f"{key}.yaml"
 

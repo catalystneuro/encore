@@ -72,14 +72,14 @@ def target(key: str) -> dict:
     return {"paper": paper_records.doi_of(key), "title": title_of(key)}
 
 
-def records_of(key: str) -> list[Path]:
-    """The paper's attempt records, oldest first."""
-    return paper_records.attempt_paths(key)
+def records_of(name: str) -> list[Path]:
+    """The paper's attempt records, oldest first (a paper key, or a dataset listed for the paper)."""
+    return paper_records.attempt_paths(paper_records.resolve(name))
 
 
-def attempt_of(key: str) -> tuple[dict, Path] | None:
+def attempt_of(name: str) -> tuple[dict, Path] | None:
     """The paper's latest attempt record, and its entry directory."""
-    found = records_of(key)
+    found = records_of(name)
     if not found:
         return None
     record = yaml.safe_load(found[-1].read_text())
@@ -103,7 +103,7 @@ def data_details(key: str) -> dict:
     for d in missing:
         lines.append(f'- {datasets.label(d["key"]) if d.get("id") else d.get("name", "a dataset")}: not available '
                      f'({d.get("why", "no reason given")}). Claims that need it are blocked with '
-                     f'`blocked_by: missing-dataset` (docs/protocol.md).')
+                     f'`blocked_by: dataset_missing` (docs/protocol.md).')
     if len(usable) == 1:
         sentence = labels[0]
         several = reader = ""
