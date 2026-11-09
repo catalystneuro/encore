@@ -1,0 +1,141 @@
+I wrote `docs/pilot-notes/001845-shukla-2026-01.md` and changed no other file. Nothing is committed. Here is the note:
+
+# 001845, Shukla et al. 2026
+
+Three claims reproduced (two on an assumption), four partially (three on an
+assumption), 12 not reproduced (eight on an assumption) and 15 blocked, six for
+missing data, five as methods underspecified, three as other and one as
+metadata insufficient; the one claim that also uses outside inputs,
+`fig6-marl-partner-aware`, a simulation that uses no recorded data, is counted
+apart and blocked as methods underspecified. The first verification round
+agreed with 28 of the 35 outcomes as they stood and the second with all 35; two
+changes of outcome were proposed after the second, and a third round agreed
+with both. It pins version 0.260526.1807, the published version; the paper
+cites none, and the README of the paper's code repository names 0.260519.1308,
+a partial upload whose 1,007 assets are all in the pinned version unchanged.
+The paper, Shukla, Rivera, Bladon and Jadhav, "A Novel Cooperative Behavior
+Assay in Rats Reveals Distinct Social Coordination Strategies of Increasing
+Complexity and Social Reciprocity Deficits in a Model of Fragile X Syndrome" in
+the Journal of Neuroscience, trains pairs of rats in facing W-mazes to poke
+matching wells together for a reward, at 100% and then 50% contingency, and
+compares WT and Fmr1 pairs; the dandiset holds the poke events, matches and
+head positions of 5 WT and 5 Fmr1 pairs in 1,766 NWB files, of which the
+notebook streams 1,120. The claims were written from the version of record in
+Europe PMC (PMC13277500), without a PDF or the supplement holding Figures S1 to
+S3, and the code repository holds only a README; the check changed 15 claims
+and left four points open. Five genotype claims (`fig1e-match-rate-wt-higher`,
+`fig1f-transition-rate-wt-higher`, `fig1i-performance-wt-higher`,
+`fig4i-peak-correlation-wt-higher` and `figs3-leadership-history`, the last by
+its own criterion) are blocked because the legends name a two-way RM ANOVA
+while the printed df fit an ordinary ANOVA with sessions as replicates, and the
+two readings disagree: for match rate, reading A finds WT higher (p 0.0004 or
+below at 100% and below 0.0001 at 50%) and reading B, with pair or rat as
+subject, does not (p 0.18 to 0.45). Reproduced are `fig4d-dwell-time` (Fmr1 33.4
+against 30.1 s and 18.3 against 16.9 s by pokes, p = 0.21 and 0.35, on the
+assumption that pokes are preferred to head positions), `fig5d-leading-near-half`
+(0.500 in both genotypes, which follows by construction in same-genotype pairs)
+and `fig7e-gaze-final-quartile` (F(3,54) = 19.3, p below 0.001), which rests on
+the positions of the six pairs whose head positions disagree with their pokes,
+as on the four aligned pairs two parts of its criterion fail. Partial are
+`fig1g-match-transition-regression` (Fmr1 R2 0.684 against a tolerance of 0.396
+to 0.484), `fig1h-above-chance-late` (4 or 5 of 5 WT and 3 of 5 Fmr1 pairs),
+`fig3d-entropy-wt-lower` (WT lower at 50% under every reading, no effect at
+100%) and `fig7c-trial-duration-vs-performance` (R -0.31 to -0.70, with no reading
+putting both within tolerance). Among the 12 not reproduced, `fig4b-arrival-lag-wt-shorter`
+and `fig4c-departure-lag-wt-shorter` fail under both readings with every
+session kept, and `fig3c-triplets-by-contingency` fails because the Fmr1
+alternation median at 100% is 0.369. `fig8b-partner-history-cooperation` and
+`fig8e-glmm-partner-cooperation` are blocked as other because how follower
+trials are built from the arrivals decides the test: on a null with one rat's
+visits circularly shifted in time, the rule the Methods describe gives the
+claimed effect in 10 of 10 rats and the first run's rule the opposite (0.176
+against 0.506), and `fig8d-fmr1-longer-delta-t` is blocked with them through
+its dependence on fig8b. The mixed pairs, the visual-cue task and the
+virtual-agent task are not deposited, and `fig2b-opaque-barrier-lowers-performance`
+is blocked as metadata insufficient. The author's first run gave 4 reproduced,
+7 partially, 10 not reproduced and 14 blocked, with `fig3c`, `fig4eg` and
+`fig7b` partial, `fig3e` blocked, `fig4b`, `fig4c`, `fig8b` and `fig8e` not
+reproduced, `fig8d` reproduced and `fig2b` blocked for missing data. The author
+asked no questions of a reader, so the answer and author-answers runs changed
+nothing. Round 1 disagreed on `fig2b`, which it gave metadata insufficient, on
+`fig3c`, `fig3e`, `fig4eg` and `fig7b`, which it gave not reproduced, and on
+`fig8b` and `fig8e`, which it gave blocked, and found that the follower-trial
+rule produced the reversed effect on two independent random walkers, that the
+6.4 cm radius rested on a pixel scale never checked, that one WT pair had a
+100% arrival lag of 43.7 s against 4 to 7 s for the others, that the missing
+sensory-deprived sessions were judged from the loaded files only, and that the
+rebuilt matches of fig1h overcount in the first 100% session; in reply the
+seven outcomes were changed, follower trials were rebuilt as the Methods
+describe and tested on the shifted null, the radius was measured per video,
+all 646 unanalysed files were read, `fig4d` was marked as resting on an
+assumption, and `fig4b` and `fig4c` were blocked after four sessions with lags
+over 100 s were removed. Round 2 agreed with all 35, found that `fig1i`,
+`fig4b` and `fig4c` rest on assumptions not marked (with the raw poke sequences
+both ANOVA readings fail fig1i), that the 100 s cut-off was chosen after seeing
+the outlier, that the fig1h variant is at chance early by construction, and
+sentences the outputs did not support (a fit shown only while preparing, a
+"plausible wait" contradicted by lags of 208.6 s, an interaction "at every
+reading", the clock check on every 7th session, the run time); in reply the
+text was corrected, the outputs it asked for were added, the dependence of the
+three blocked claims was stated in their notes as the attempt schema forbids
+`assumed: true` on a blocked outcome, and, as the per-session median lag also
+fails at 100% (p = 0.39 and 0.69), `fig4b` and `fig4c` were proposed as not
+reproduced, which round 3 accepted. The author's run took 1 h 23 min, ending at
+19:40 UTC; a 403 on the direct S3 URL, an 8-minute Figure 1J null, a mode-name
+bug that made two downsampling readings identical and a GLMM that did not
+converge in seconds were fixed during development. The notebook ran in about
+14 minutes at first, 747 s after the author-answers run, 10.5 minutes after
+rounds 1 and 2 and 729 s at the end. The changes in `tools/build_site.py` and
+`tools/site_assets/app.css` and the untracked files in the repository root
+were left alone.
+
+The dandiset holds only the cooperative sessions of the 5 WT and 5 Fmr1 pairs:
+the mixed WT-Fmr1 pairs, the visual-cue association task and the virtual-agent
+task are not in it, though the paper says all data underlying its results will
+be uploaded there, and six findings cannot be tested for this reason. No
+session is labelled sensory deprived; the 646 files after the analysed sessions
+carry the same descriptions and fields as the others and some score as low as
+0.0, so the sessions may be in the dandiset without a label, possibly numbered
+as 50% sessions inside the first 35 analysed (one at 10.0% among the last 9
+analysed 50% sessions of FXM105-FXM107, whose median is 39.4%). In 6 of 10
+pairs (ER1-ER2, FXM102-FXM103, FXM105-FXM107, FXM108-FXM109, XFN1-XFN3,
+XFN2-XFN4) only 39 to 62% of head positions at poke times are within 20 cm of
+the poked well, against 99.9% or more in the other four, and no shift of the
+poke times up to 30 s improves it, so measures built on positions (well
+occupancy, arrivals, gaze) are uncertain for these pairs. The camera device
+gives 0.0016 m per pixel in every file, but the processed positions of FXM105,
+FXM107, FXM108 and FXM109 were converted at 0.0025 m per pixel, and files of
+FXM102 and FXM103, and some of other rats, hold no raw pose estimation. About
+4.8% of pokes (82,245 of 1,716,630 in the analysed sessions) fall within 0.5 s
+of a poke by the same rat at another well, physically impossible for wells 47
+cm apart, in bursts of up to 128,979 pokes and 2,447 transitions in one rat
+session, affecting 140 of 1,120 rat sessions. No matched_poke is at the well of
+the previous match (0 of 19,602 consecutive pairs), a rule the files do not
+describe, and matches cannot be recomputed as only poke onsets are stored.
+Session numbers have gaps in three pairs, the files hold up to 56 sessions at
+100% and 88 at 50% where the paper analyses the first 21 and 35, and which
+sessions the paper used is not stated. Session epochs last 10.7 to 57.2 min
+(median 21.7) against the paper's 20 to 30 min, and in 6.6% of rat sessions
+some pokes fall outside the epoch. The paper's code repository
+(JadhavLab/Social_CoOp_Behavior) holds no analysis code. Questions are put to
+the paper's authors: whether the RM ANOVA had sessions as replicates or pairs
+or rats as subjects, and the units of match and transition rates; how the
+events of Figures 1H, 1J, 3, 4 and the Jaccard analysis were defined and
+whether long arrival lags were excluded; how synchronous and asynchronous
+matches, gaze trials and follower trials were built and how the partner's
+influence was separated from the dependence the null shows; the reinforcement
+learning model's parameters; and whether the sensory-deprived sessions were
+given 50% session numbers.
+
+The author's points on the protocol: the claims file blocks a claim whenever
+ANOVA readings A and B disagree while step 1.6 allows adopting the
+best-supported reading, and the claims file was followed, blocking 5 claims;
+it gives no rule for removing obvious sensor artefacts, so they were removed as
+a stated assumption with the raw data shown as a variant; some criteria have no
+rule for a result neither reproduced nor blocked, so the protocol's definition
+of partial was used; it does not say whether a faster equivalent computation is
+allowed, and the Figure 1J null used a shortcut recorded as a deviation;
+`measured` is defined only for a matching reading; R, glmmTMB and pymer4 are not
+in the locked environment, so the GLMMs were fitted by variational Bayes and
+recorded as a deviation; and the version to pin was ambiguous, as only the code
+README named one, a partial upload.
