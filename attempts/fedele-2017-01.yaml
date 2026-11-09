@@ -1,0 +1,321 @@
+schema_version: 3
+id: fedele-2017-01
+datasets:
+- archive: crcns
+  id: ieeg-1
+  version: unversioned
+  doi: 10.6080/K06Q1VD5
+  relation: primary
+paper: doi:10.1038/s41598-017-13064-1
+date: 2026-11-09
+entry: fedele-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42691126283
+inputs:
+- what: Table 1S of the paper's supplement (41598_2017_13064_MOESM1_ESM.pdf, MD5
+    1a5b656563fa749a6d2d9c1a86268d8d), fetched from the publisher at run time. Its per-channel rates
+    are the reference values of table-s1-rates; its red cells (resected channels) and gray cells
+    (excluded channels) supply what the deposit lacks, read from the PDF's vector fills. Its green
+    cells (HFO areas) are reference values.
+  source: doi:10.1038/s41598-017-13064-1 (supplementary information)
+- what: Table 1 of the paper (epilepsy type, ILAE outcome, follow-up months, nights, intervals,
+    resection of each HFO area, test-retest values), parsed from the Europe PMC full text of
+    PMC5653833 at run time. The outcome, epilepsy type and follow-up are not in the deposit.
+  source: doi:10.1038/s41598-017-13064-1 (Europe PMC PMC5653833, fullTextXML)
+outcomes:
+- claim: table-s1-link
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:table-s1-link
+  measured: [20, 1.0, 0.981]
+  notes: Patients are matched by number; all 20 have Table 1's nights and intervals. All 600 rated
+    channels of Table 1S are found among the deposit's bipolar labels once patient 18's PML contacts,
+    which the table writes both as PML and PM, are given one spelling. 1766 of 1800 channel and type
+    rates agree with Table 1S within 10% or 0.1 per minute (98.1%). Of the 37 gray channels of
+    Table 1S, 22 are in the deposit; the 15 listed under patient 11 are patient 14's channels in the
+    deposit.
+- claim: cohort
+  outcome: partially_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:cohort
+  measured: [20, 9, 11, 13]
+  notes: The deposit holds 20 patients. Epilepsy type and outcome are not in it; the counts 9 TLE,
+    11 ETE and 13 seizure free (65%, Clopper-Pearson 40.8 to 84.6%) come from Table 1, and Table 1S
+    gives the same ILAE class for all 20. In the deposit the channels of patients 2 to 9 are all
+    named after mesial temporal depth electrodes and patient 1 adds IAR and IPR strips, consistent
+    with 9 TLE patients but not proof of it. The outcome part cannot be tested on the deposit.
+  deviations:
+  - Epilepsy type and ILAE class are taken from Table 1, as the deposit does not hold them.
+- claim: table1-nights-intervals
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:table1-nights-intervals
+  notes: All 20 patients have the nights and intervals of Table 1 (58 nights, 385 intervals). 14
+    patients have more than six intervals in some night, up to 16 in night 5 of patient 5.
+- claim: hfo-amplitudes
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:hfo-amplitudes
+  measured: [27.35, 14.99, 9.13, 7.37]
+  notes: Reading (a)(i), band-passed signal over all 3215247 ripples and 316872 FR, gives all four
+    values within tolerance; reading (a)(ii), channels not grayed, also does (26.53, 14.26, 8.81,
+    6.96). On the unfiltered signal the medians are 134.04 and 111.13 microvolt, far outside.
+  deviations:
+  - Filters are the data set's FIR_2kHz.mat (scripts.zip), applied forward and backward as in its
+    view_data.m, in place of the detector's Filter_AsBurnos2016.mat named in the claims file; both
+    implement the bands of the Methods (ripples 80-240 Hz, FR 250-490 Hz). The forward-backward
+    filter is one convolution with conv(b, reversed b) on the oddly padded signal, differing from
+    Matlab filtfilt only at the ends of each interval.
+  - The unit of the signal is not stated by the data description; microvolts are assumed, which
+    the match of the amplitudes supports.
+- claim: followup-not-different
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:followup-not-different
+  measured: [29.3, 22.8, 15.3, 10.7]
+  notes: The follow-up is not in the deposit, so the test runs on Table 1's months, as the
+    criterion allows. Rank sum p = 0.250 with the normal approximation and continuity correction
+    and 0.275 exact, both above 0.05; difference of means 6.4 months. This checks the paper's table,
+    not the data set.
+- claim: table-s1-rates
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:table-s1-rates
+  measured: 0.981
+  notes: Pooling (a), all events over the total recorded time, matches 1766 of 1800 channel and
+    type values (98.1%); (b) 98.1% (1765) and (c) 94.7%. With 5 minutes per interval in place of the
+    actual length, 97.8% under (a). The mismatches under (a) are 33 values of patient 10, which
+    Table 1S prints in whole numbers (1799 of 1800 match with 0.5 per minute for that patient),
+    and one of patient 3. With pooling (a), the channels not grayed and the rule "greater than", the
+    HFO areas equal Table 1S's green cells for all 60 patient and type pairs (59 with pooling c, 56
+    with "greater or equal", 48 with all bipolar channels). Pooling (a) and channel set (a) with
+    the strict rule are used for every dependent claim.
+  deviations:
+  - Rates use each interval's actual length, as 93 of 385 intervals are not 5 minutes long; the
+    detector code in detector.zip divides by the analysed duration.
+- claim: fig1-patient4
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:fig1-patient4
+  notes: The FRandR area of patient 4 is AR1-2 alone (threshold 12.85 per minute), which is
+    resected; the ripple area is PL2-3, outside the resected channels; 9 of 24 channels have FRandR
+    rate 0.0 at one decimal.
+- claim: frandr-area-resection-per-patient
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:frandr-area-resection-per-patient
+  measured: [13, 3]
+  notes: All 20 patients agree with Table 1; fully resected in 13 of 13 seizure-free patients and
+    in 3 of 7 with recurrent seizures (7, 8, 9). Pooling (b) and (c) give the same; "greater or
+    equal" gives 19 of 20, all bipolar channels 17 of 20, and variant (d), per-interval areas held
+    in at least half the intervals, 18 of 20.
+  deviations:
+  - The resected channels are Table 1S's red cells, as the deposit does not mark them.
+- claim: ripple-fr-area-resection-per-patient
+  outcome: partially_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:ripple-fr-area-resection-per-patient
+  measured: [5, 3, 9, 5]
+  notes: The ripple area agrees with Table 1 for 17 of 20 patients and the FR area for 18 of 20.
+    The FR counts match; the ripple counts are 5 and 3 against 7 and 4. Every disagreement is one
+    between the paper's own tables; the computed areas equal Table 1S's green cells, but in patients
+    7, 11 and 15 those ripple cells are not red while Table 1 says resected, in patient 1 the FR cell
+    is red while Table 1 says not resected, and in patient 11 one of three green FR cells is not red
+    while Table 1 says resected. No other reading raises the agreement.
+- claim: table2-frandr-prediction
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:table2-frandr-prediction
+  measured: [100, 57, 81, 100, 85]
+  notes: TP 4, FP 0, FN 3, TN 13. Clopper-Pearson intervals 18.4 to 90.1 (sensitivity), 54.4 to
+    96.0 (NPV), 62.1 to 96.8 (accuracy), as printed, and 75.3 to 100 for specificity against the
+    printed 78 to 100. The asymptotic intervals do not match the printed ones. Chi2 p = 0.0023
+    (Pearson, reading a), 0.0138 (Yates), 0.0072 (Fisher).
+- claim: table2-ripple-fr-prediction
+  outcome: partially_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:table2-ripple-fr-prediction
+  measured: [38, 57, 62, 33, 45, 69, 29, 64, 33, 55]
+  notes: The five FR values equal Table 2; of the ripple values only PPV does (38, 57, 62, 33, 45
+    against 54, 43, 64, 33, 50). Computed from Table 1's own Y and N columns, the ripple values are
+    Table 2's, so the difference comes from the three patients where Table 1S and Table 1 disagree
+    on the ripple area.
+- claim: frandr-more-specific
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:frandr-more-specific
+  notes: Specificity 100% for FRandR against 38% for ripples and 69% for FR. The ripple value is
+    not the paper's 54% (claim table2-ripple-fr-prediction), but the ordering holds.
+- claim: engel-prediction
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:engel-prediction
+  measured: [80, 94, 95]
+  notes: TP 4, FP 0, FN 1, TN 15. Clopper-Pearson intervals 28.4 to 99.5, 69.8 to 99.8 and 75.1 to
+    99.9. Chi2 p = 0.0001 (Pearson), 0.0012 (Yates), 0.0010 (Fisher), all below 0.05.
+- claim: ete-soz-not-resected
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The seizure onset zone of patients 10 to 16 is not in the deposit (no field of the files;
+    the data description and electrode schemes name none) and the paper does not list it. The FRandR
+    part holds (claim frandr-area-resection-per-patient, fully resected in each of patients 10 to
+    16). The resection size is not testable from channel data.
+- claim: fig2-patient17
+  outcome: partially_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:fig2-patient17
+  notes: The FRandR area of patient 17 is FPR10-11 alone (threshold 2.00 per minute), which is not
+    resected, so the resection does not comprise the HFO area; but no area channel is inside the
+    resection, which the criterion also asks for. With "greater or equal" the area is FAR3-4,
+    FPR10-11, FPR9-10 and TR3-4, two inside and two outside the resection. The comparison with the
+    seizure onset zone is not possible (no SOZ channels in the deposit or the paper).
+- claim: fig3-patient1
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:fig3-patient1
+  measured: 0.992
+  notes: The FRandR area is PHR1-2 in each of the 4 nights; per-interval areas are inside the
+    resected channels in 28 of 28 intervals; 99.2% of 378 interval pairs are significant with a null
+    per pair and 97.6% with a pooled null.
+- claim: test-retest-group
+  outcome: partially_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:test-retest-group
+  assumed: true
+  measured: [99.5, 55.0, 100, 91.7]
+  notes: With FRandR and a null per pair, the interval median 99.5%, night median 100% and night
+    lower quartile 91.7% are within tolerance, the interval lower quartile 55.0% is not (67 plus or
+    minus 6.7). With the pooled null 93.4, 58.3, 100 and 91.7; with ripples or FR the values are
+    further off (FR 87.3 and 57.5; ripples 100 and 100). 17 of 18 per-patient FRandR interval
+    values are within 0.1 of Table 1; patient 8 has 0.55 against 0.67, which moves the lower
+    quartile. No pair lacked a scalar product.
+  deviations:
+  - The HFO type of Table 1's test-retest values and the form of the permutation null are not given
+    by the paper. All readings were run; FRandR with a null per pair is reported as the main one,
+    as it matches Table 1's per-patient values best (17 of 18 within 0.1), Fig. 3 shows FRandR, and
+    the Methods permute "for each interval". This is an assumption.
+  - Interval rates use each interval's actual length; night rates are the mean of the night's
+    interval rates (Methods, "we took the mean HFO rate for each night").
+- claim: test-retest-by-group
+  outcome: reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:test-retest-by-group
+  assumed: true
+  measured: [99.5, 100, 35.9]
+  notes: Under FRandR with a null per pair, the medians are 99.5% (8 TLE patients with pairs), 100%
+    (7 ETE good outcome) and 35.9% (3 ETE poor outcome with pairs), all within tolerance, the last
+    the lowest. Split by outcome the TLE medians are 99.5% and 77.5%, which, as the claims file
+    notes, Table 1 itself also implies (reading b is not supported by the paper's table).
+  deviations:
+  - Uses the reading adopted in test-retest-group (FRandR, null per pair), an assumption stated
+    there.
+- claim: spectral-classes
+  outcome: partially_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:spectral-classes
+  assumed: true
+  measured: [20421, 57.7, 341.7, 8.3, 175.0, 34.0]
+  notes: The selected channels (one per patient, the highest FRandR rate in its FRandR area) hold
+    20421 FRandR events, 3.3 times the paper's 6182. Under the main reading (raw signal, magnitude
+    of S, fixed starting values, peaks of the fitted curve) 57.7% are bimodal, 8.3% unimodal and
+    34.0% without a peak; under the ten readings run, bimodal 29.0 to 62.0%, unimodal 0.2 to 17.4%,
+    none 28.2 to 53.7%, and no share is within tolerance except 28.2% without a peak in one reading.
+    Bimodal is the largest class in 9 of 10 readings. The unimodal peak median (140 to 178 Hz across
+    readings, 175.0 main) is within tolerance in the main reading; the bimodal second peak is not
+    (312 to 456 Hz as the highest-frequency peak, 80 to 148 Hz as the most prominent). Fits that did
+    not converge, 180 to 470 per reading, are classified from their last estimate.
+  deviations:
+  - The Stockwell transform is a port of st.m from the data set's detector.zip (no edge removal,
+    factor 1), on 1200 samples centred on the event. In the deposit the FR and FRandR of an event
+    share start and end, so both readings of the window centre are the same.
+  - Open details, every reading run, none adopted on evidence; the main reading (raw signal,
+    magnitude of S averaged over the event, fixed starting values at 100, 200, 300 and 400 Hz with
+    50 Hz widths, amplitudes non-negative, widths 5 to 200 Hz, peaks as local maxima of the fitted
+    curve) is an assumption. A fitted centre counts as a peak in the "centres" reading when its
+    amplitude is at least 10% of the curve's maximum, a threshold chosen here. The power spectrum
+    was run with fixed starting values only. High-passing is a 4th-order Butterworth at 80 Hz.
+  - All FRandR events of all intervals on the channel are used; the paper's 6182 implies a smaller
+    set that it does not describe.
+- claim: spectral-tle-ete-no-difference
+  outcome: not_reproduced
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:spectral-tle-ete-no-difference
+  assumed: true
+  notes: The criterion's main test, chi2 of spectral class by epilepsy type over events, finds a
+    difference under every reading (main reading chi2 = 299.3, p of order 1e-65, 11153 TLE and 9268
+    ETE events; bimodal 53.9% in TLE against 62.2% in ETE). The variant, a rank sum test of the
+    per-patient bimodal fraction between 9 TLE and 11 ETE channels, finds none (p = 0.362 main; 0.149
+    to 0.447 in the other readings except 0.023 for power with fitted centres). It rests on the
+    spectral classification, which does not reproduce the paper's shares.
+  deviations:
+  - Uses the spectral readings of spectral-classes, an assumption stated there.
+- claim: tp-patients-hfo-area-location
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_fedele_2017.ipynb
+  output: claim:tp-patients-hfo-area-location
+  notes: The FRandR areas of patients 18 (PLL2-3), 19 (PL22-23, PL23-24) and 20 (OTL10-11) are
+    outside the resected channels of Table 1S, but the electrode schemes (docs/electrode_schemes.pdf)
+    draw the electrodes without the region of each contact, and patient 20's grid has no contact
+    numbers, so occipital, parietal or anterior placement cannot be read.
+findings:
+- kind: data_missing
+  statement: The data set holds no seizure outcome, postoperative follow-up, epilepsy type,
+    resected channels or seizure onset zone, although its title names the outcome of epilepsy
+    surgery. The outcome analyses can be run only with the paper's Table 1 and the colours of its
+    supplementary Table 1S; the seizure onset zone is not available anywhere.
+- kind: metadata_error
+  statement: The data description says each file contains 5 minutes of recording. 93 of the 385
+    intervals are not 300 s long; they range from 204 to 720 s. Rates computed as counts over 5
+    minutes are off for these intervals.
+- kind: metadata_insufficient
+  statement: The data description does not give the unit of the signal x. The values (median
+    absolute bipolar signal 20 to 93 per patient) and the HFO amplitudes are consistent with
+    microvolts.
+- kind: metadata_insufficient
+  statement: The electrode schemes show where electrodes lie but not the region of each contact,
+    and some grids (patient 20) have no contact numbers, so channels cannot be placed in a lobe or
+    gyrus.
+- kind: format_error
+  statement: 745 event markings (667 R, 49 FR, 29 FRandR) end after the last sample of their
+    interval, by up to 926 samples. Some event samples are not whole numbers (the data set's
+    view_data.m rounds them).
+- kind: metadata_insufficient
+  statement: The data description does not say that each FRandR event is also listed, with the
+    same channel, start and end, among the R and the FR events (true of all 93604 FRandR events), so
+    that the FR part of an FRandR event cannot be told apart from the ripple part.
+- kind: paper_inconsistency
+  statement: Table 1S lists under patient 11 fifteen grayed (excluded) channels, IAR3-4 to PMR15-16,
+    that are not patient 11's channels in the data set but are exactly the 15 channels of patient
+    14 that Table 1S does not list.
+- kind: paper_inconsistency
+  statement: Table 1S and Table 1 disagree on whether the HFO area was resected. Ripple area of
+    patients 7, 11 and 15, and FR area of patient 11, are green but not red (not resected) in Table
+    1S and marked resected in Table 1; the FR area of patient 1 is red in Table 1S and marked not
+    resected in Table 1. Table 2's ripple values follow Table 1.
+- kind: paper_inconsistency
+  statement: The Methods select up to six intervals per night, but the data set, like Table 1, has
+    more than six intervals in some night for 14 patients, up to 16.
+- kind: methods_unavailable
+  statement: Question for the authors. Which HFO type and which permutation null give Table 1's
+    test-retest values? The Methods permute the channel order "for each interval" and Fig. 3B plots
+    one random distribution. With FRandR and a null per interval pair, 17 of 18 patients are within
+    0.1 of Table 1 (patient 8 gives 0.55 against 0.67); a null pooled over a patient's pairs, or
+    ripples or FR, match less well. This attempt assumed FRandR with a null per pair.
+- kind: methods_unavailable
+  statement: Question for the authors. How were the 6182 FRandR events of the spectral analysis
+    selected, and how was the spectrum fitted? The highest-rate FRandR channel of each patient's
+    FRandR area holds 20421 events over all intervals. The Methods do not give the starting values
+    or bounds of the four gaussians, whether the magnitude or the power of the Stockwell transform
+    was averaged, whether the signal was filtered, or how peaks and troughs were found on the fit;
+    under ten combinations run here the shares are 29 to 62% bimodal, 0.2 to 17% unimodal and 28 to
+    54% without a peak, against 45, 28 and 27%.
