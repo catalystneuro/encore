@@ -11,8 +11,8 @@ under its folder name: the identifier alone for DANDI, which the registry began 
 "<archive>-<id>" for any other archive. How an agent reads each archive's datasets is in
 docs/archives.md.
 
-Targets come from each archive's list in targets/: targets/dandisets.json is DANDI's, built by
-tools/build_targets.py; targets/crcns.json and targets/ebrains.json are written by hand.
+Each archive is an adapter, a module in tools/archives/ (docs/archives.md, "Adding an archive"). Targets come
+from each archive's list in targets/, built by the adapter's builder or written by hand.
 """
 
 from __future__ import annotations
@@ -23,35 +23,15 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from archives import ALL as ADAPTERS  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 
+# Each archive's adapter is a module in tools/archives/. ARCHIVES gives its fields as a dict, as it always has:
 # label: how the site names it; url: a dataset's page there; access: what an agent is told about reading
 # its datasets (the details are in docs/archives.md, under the archive's heading).
-ARCHIVES = {
-    "dandi": {
-        "label": "DANDI", "name": "the DANDI Archive", "url": "https://dandiarchive.org/dandiset/{id}",
-        "access": ("Use the DANDI API (docs/archives.md, \"DANDI\") and stream the NWB files; do not download "
-                   "them to disk."),
-        "list": "dandisets.json",
-    },
-    "crcns": {
-        "label": "CRCNS", "name": "CRCNS.org", "url": "https://crcns.org/data-sets",
-        "access": ("Read the files anonymously from the public S3 bucket crcnsarchive "
-                   "(https://crcnsarchive.s3-us-west-2.amazonaws.com/{id}/), as docs/archives.md says under "
-                   "\"CRCNS\": stream them, opening a zip in place with fsspec and zipfile; do not download them "
-                   "to disk."),
-        "list": "crcns.json",
-    },
-    "ebrains": {
-        # A dataset is named by its DOI's suffix (10.25493/Q0FG-1X8 is q0fg-1x8, shown Q0FG-1X8); the data proxy
-        # needs its Knowledge Graph id, which the target list gives as kg_id.
-        "label": "EBRAINS", "name": "EBRAINS", "url": "https://doi.org/10.25493/{id}", "case": "upper",
-        "access": ("Read the files anonymously through the EBRAINS data proxy "
-                   "(https://data-proxy.ebrains.eu/api/v1/public/datasets/{kg_id}/<file>), as docs/archives.md says "
-                   "under \"EBRAINS\": stream each file into memory with fsspec; do not download them to disk."),
-        "list": "ebrains.json",
-    },
-}
+ARCHIVES = {key: archive.as_dict() for key, archive in ADAPTERS.items()}
 
 
 def key_of(archive: str, id_: str) -> str:
@@ -131,6 +111,8 @@ def targets() -> list[dict]:
         if not path.is_file():
             continue
         for t in json.loads(path.read_text())["targets"]:
+            if t.get("archive", archive) != archive:   # local.json holds both local and remote datasets
+                continue
             id_ = t.get("id") or t["dandiset"]
             key = key_of(archive, id_)
             out.append({**t, "key": key, "archive": archive, "id": id_, "folder": folder(key)})
