@@ -252,15 +252,16 @@ def state(directory: Path, apply: bool) -> int:
         if not re.match(r"^(resume-.*|started|queue|done)\.txt$", f.name):
             continue
         lines = f.read_text().splitlines()
-        new = []
+        renamed = []
         for line in lines:
             first, _, rest = line.partition(" ")
-            new.append(" ".join(x for x in (papers.get(first, first), rest) if x))
+            renamed.append(" ".join(x for x in (papers.get(first, first), rest) if x))
         # A paper whose two datasets were both queued is taken once.
-        new = list(dict.fromkeys(new))
+        new = list(dict.fromkeys(renamed))
         if new != lines:
-            print(f"{f.name}: " + ", ".join(f"{a} -> {b}" for a, b in zip(lines, new) if a != b)
-                  + (f" ({len(lines) - len(new)} duplicates dropped)" if len(new) < len(lines) else ""))
+            changes = sorted({f"{a.split()[0]} -> {b.split()[0]}" for a, b in zip(lines, renamed) if a != b})
+            print(f"{f.name}: {len(changes)} renamed ({', '.join(changes[:8])}{', ...' if len(changes) > 8 else ''})"
+                  + (f"; {len(lines) - len(new)} duplicates dropped" if len(new) < len(lines) else ""))
             if apply:
                 f.write_text("\n".join(new) + ("\n" if new else ""))
     for mark in sorted(directory.iterdir()):
