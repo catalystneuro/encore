@@ -66,7 +66,8 @@ claims:
     tolerance: 1.5
     unit: "%"
   criterion: Method from Materials and Methods, Behavioral analysis. For each session and
-    target, the mean endpoint position (x, y, z) of each trial over the last 800 ms of the hold;
+    target, the mean endpoint position (x, y, z) of each trial over the last 800 ms of the hold
+    (the unit of Fig. 2, whose legend gives each point as a trial's mean over the 800 ms hold);
     V trials against NV trials by a one-factor MANOVA at P < 0.05 (with two groups every MANOVA
     statistic gives the same exact test). The tolerance is the paper's stated spread. Open, and
     both readings are shown, (a) the mean of the 16 animal and target percentages, (b) the
@@ -899,7 +900,7 @@ claims:
   statement: An example neuron fired most when the hand was held at the lower left target (225
     degrees) in both V and NV; its hold-period rate showed a main effect of position (P < 0.05)
     but no effect of vision (P = 0.52) and no interaction (P = 0.64).
-  source: Results, Neurophysiology, paragraphs 1 and 2; Figure 3
+  source: Results, Neurophysiology, paragraph 1; Figure 3
   quote: For both the V and NV conditions, discharge was greatest when the animal held its hand
     at the target located in the lower left part of the workspace (225
   statistics:
@@ -1140,7 +1141,7 @@ claims:
 - id: fig4-indx1-means
   statement: Mean INDX1 was least negative for Position Only cells (-13%) and most negative for
     Position/Vision cells (-31%).
-  source: Results, Neurophysiology, paragraphs 4 and 5; Figure 4B, C
+  source: Results, Neurophysiology, paragraph 4; Figure 4B, C
   quote: the mean INDX1 was least negative ... In contrast, the average index was most negative in
     the population of cells showing both positional and visual modulation by the ANOVA
   expected:
@@ -1442,3 +1443,16 @@ claims:
     difference (decoding-v-better-than-nv) in sessions with a minimum hold of 1,200 ms against
     the others, by a chi-square test of the counts and the t-test of decoding-v-better-than-nv,
     at P < 0.05. Reproduced when neither differs. The choice of measures is an assumption.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - fig3-example-neuron, source was "paragraphs 1 and 2"; the 225 degree peak and the ANOVA (P = 0.52, P = 0.64) are both in paragraph 1, which runs onto page 4. Now paragraph 1.
+  - fig4-indx1-means, source was "paragraphs 4 and 5"; the -13% and -31% sentences close paragraph 4 (it continues past Fig. 4 on page 5), and paragraph 5 begins "It should be noted". Now paragraph 4.
+  - behavior-mean-position-sessions, the trial mean endpoint over the 800 ms hold as the MANOVA's unit was uncited; it now cites the Fig. 2 legend, which gives it.
+  - Header, checked the glyph readings against the PDF's own font tables (MathPi Differences, codes 2 "<", 3 "=", 5 plus/minus, 6 minus, 8 ">"); the example cell's "P = 0.52; P = 0.64", the eye position "P < 0.05" and the Fig. 4 outlier "> 1.5 times" are as the header says. Table 1's 96 means and SDs and their signs were checked against the text; all match, and the largest V against NV difference is 0.11 cm as stated. No change.
+  - Open, table1-endpoint-means and table1-endpoint-sd use a 90% of values rule, and hold-subepochs a five of six rule with "partially" at three or four; the paper gives no rule for these. Left as judging rules, not methods.
+  - Open, longer-hold-no-difference picks its measures and a chi-square test that the paper does not name (it cites only an abstract, Shi and Buneo 2009); the criterion marks this as an assumption. Left.
+  - Open, aborted-trials-nv and longer-hold-no-difference rest on sessions from Shi and Buneo (2009) where the window or hold was varied; whether these are among the 343 recording sessions or the extra behavioural files is not said, so `data` is left at the default for the author to settle.
