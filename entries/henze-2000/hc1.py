@@ -343,15 +343,17 @@ def process_file(z, info, folder):
 
 
 def per_spike_ic(t, icw, sr):
-    """Per-spike IC measures: peak (mV), pre-spike baseline (mean -3 to -1.5 ms), threshold
-    (the potential at the first point of the run of dV/dt > 10 V/s that holds the maximal rate
-    of rise in the 1.5 ms before the peak, as `ic_measures` start_a; NaN when the maximal rate is
-    not above 10 V/s), maximal rising and falling slopes (V/s)."""
+    """Per-spike IC measures: peak (mV), threshold (the potential at the first point of the run
+    of dV/dt > 10 V/s that holds the maximal rate of rise in the 1.5 ms before the peak, as
+    `ic_measures` start_a; NaN when the maximal rate is not above 10 V/s), pre-spike baseline
+    (mean of the 2 ms before that start, as the claims file's O6 b defines it; NaN with the
+    threshold), maximal rising and falling slopes (V/s)."""
     dv = np.diff(icw, axis=1) * sr / 1000.0
     pk = np.argmin(np.abs(t))
     lo = max(pk - int(round(sr * 0.0015)), 0)
+    n2 = int(round(sr * 0.002))
     peak = icw[:, pk]
-    base = icw[:, (t >= -3) & (t <= -1.5)].mean(1)
+    base = np.full(len(icw), np.nan)
     thr = np.full(len(icw), np.nan)
     kmax = lo + np.argmax(dv[:, lo:pk], axis=1)
     for i in range(len(icw)):
@@ -361,6 +363,7 @@ def per_spike_ic(t, icw, sr):
         while k > lo and dv[i, k - 1] > 10:
             k -= 1
         thr[i] = icw[i, k]
+        base[i] = icw[i, max(k - n2, 0):k].mean()
     rise = dv[:, lo:pk].max(1)
     fall = dv[:, pk:pk + int(sr * 0.003)].min(1)
     return {"peak": peak, "base": base, "thr": thr, "rise": rise, "fall": fall}

@@ -101,7 +101,13 @@ outcomes:
     second derivative, end at return to threshold) gives R = 0.644, P = 0.0175. With spontaneous spikes
     no reading reaches P < 0.03. The outcome rests on the site rule - S2 (14 cells) reproduces under one
     reading (R = 0.631, P = 0.0155), while S1 (8 cells) and S4 (9 cells) give positive R with P < 0.03
-    under 4 readings each, R 0.76 to 0.95, outside tolerance, which would be partially reproduced.
+    under 4 readings each, R 0.759 to 0.945, outside tolerance, which would be partially reproduced. It
+    also rests on one cell, D12821, which S2 and S3 add and whose intracellular duration (5.700 ms from
+    the dV/dt start, 2.985 ms from the second-derivative start) is far above the paper's 1.28 +/- 0.18
+    ms. Without D12821 no reading under S2 or S3 gives a positive R with P < 0.03 (S3, R -0.122 to 0.559;
+    the four S3 readings that reproduce fall to R 0.042 to 0.545, the S2 one to -0.197). Without D12821
+    and D8131 one S3 reading reproduces (second-derivative start, extracellular start at 2 SD, end at
+    threshold, R = 0.654, P = 0.029, n = 11).
   deviations:
   - 13 cells, where the paper has 11. Somatic and dendritic are classified from each cell's averaged AP
     by the paper's rule (Results, "lack of a fast afterhyperpolarization and/or an action potential peak
@@ -208,6 +214,15 @@ outcomes:
 - claim: fig4bc-burst-attenuation
   outcome: partially_reproduced
   assumed: true
+  proposed:
+    outcome: not_reproduced
+    reason: The selection verified in round 2 ignores the length of the depolarizing steps, whose median
+      per cell runs from 0.1 ms (D8131) to 500 ms against the 350 ms steps of Fig. 4A. Applying every feature
+      of Fig. 4A the criterion names (accommodating trains, first interval 5 to 15 ms, median step of 100
+      ms or more) leaves 6 tetrode cells; the full set and the amplitude parts each hold in at most 3 of
+      6 (2 of 5 with steps of 200 or 300 ms), not a majority, so neither the reproduced nor the partial
+      rule is met. With step length alone (50 to 300 ms) the amplitude parts hold in a majority (5 of 8
+      at 100 ms) and the full set in none.
   notebook: reproduce_henze_2000.ipynb
   output: claim:fig4bc-burst-attenuation
   notes: Among 17 tetrode cells (kept, extracellular spike present) with at least 10 depolarizing steps
@@ -218,13 +233,19 @@ outcomes:
     of 11 with the criterion's selection (accommodating trains, median first interval 5 to 15 ms) and
     0 of 1 with 7.5 to 12.5 ms. The amplitude parts hold in a majority under every selection with more
     than one cell (12 of 17, 9 of 13, 7 of 8, 7 of 11; O7 b). In the silicon-probe cells all parts hold
-    in 1 of 7. The notch was not scored.
+    in 1 of 7. The notch was not scored. The median step per cell runs from 0.1 ms (D8131) to 500 ms;
+    without D8131 the criterion's selection gives the full set in 5 of 10. With a median step of at least
+    50, 100, 200 or 300 ms added as a condition, no selection gives the full set in a majority; the amplitude
+    parts hold in a majority with step length alone (7 of 10, 5 of 8, 4 of 7, 4 of 7) and with the criterion's
+    selection at 50 ms (5 of 8), and not with the criterion's selection at 100 ms (3 of 6), 200 or 300
+    ms (2 of 5). Not reproduced is proposed for a third round.
   deviations:
   - The paper does not say which cells or trains form this analysis. The main selection takes cells with
     at least 10 steps reaching a 5th AP, an assumption; the result is shown at 20 and 50 trains and with
     the criterion's selection (accommodating trains, median first interspike interval of 5 to 15 ms or
     7.5 to 12.5 ms, "about 10 ms" read two ways). Cells are selected on their median first interval; single
-    trains are not.
+    trains are not. The step length of Fig. 4A (350 ms) is shown as a further condition (median step at
+    least 50 to 300 ms).
   - Steps are found on the current channel (deviation from its most common value, 5 robust SD), and their
     depolarizing sign from the membrane potential during them; the descriptor gives no step timing, and
     the current channel has no calibration, so step sizes are in raw units.
@@ -234,15 +255,17 @@ outcomes:
   output: claim:fig4d-amplitude-correlation
   measured: 0.408
   notes: D15121 gives R within 0.36 to 0.44 with P < 0.0001 under both intracellular amplitude readings
-    with the baseline-to-negative extracellular amplitude (O6 a, R = 0.408, n = 958; O6 b, R = 0.374,
-    n = 973); its trains start at a median first interval of 3.6 ms, bursts of high frequency as in Fig.
-    4D. The relationship is not general - over 16 candidate cells and four readings, 15 of 64 rows are
-    positive with P < 0.0001 (R 0.374 to 0.774), and D11222, D13522, D17111 and D17211 give negative correlations
+    with the baseline-to-negative extracellular amplitude (O6 a, R = 0.408; O6 b, R = 0.376; n = 958);
+    its trains start at a median first interval of 3.6 ms, bursts of high frequency as in Fig. 4D. The
+    relationship is not general - over 16 candidate cells and four readings, 16 of 64 rows are positive
+    with P < 0.0001 (R 0.142 to 0.869), and D11222, D13522, D17111 and D17211 give negative correlations
     with P < 0.0001 under some readings. The per-spike threshold of the first round was set only for spikes
     whose last pre-peak sample rose faster than 10 V/s (95 of 438 spikes of D12821); it is now the start
     of the run of dV/dt > 10 V/s that holds the maximal rate of rise, checked on synthetic APs, and it
     is found for 958 of 973 spikes of D15121.
   deviations:
+  - Intracellular amplitude O6 b of each spike is the peak minus the mean of the 2 ms before its threshold
+    point, as the claims file defines it; until round 2 it used the mean of -3 to -1.5 ms from the peak.
   - Burst spikes are those inside depolarizing steps with an interspike interval below 5 ms to a neighbour
     (Results, "< 5-ms inter-spike intervals"); cells need at least 30 such spikes, a choice made here.
   - The extracellular negative peak of each spike is the minimum within 0.25 ms of the trough of the file's
@@ -303,8 +326,9 @@ outcomes:
     recordings, which hold 18 cells and one labelled interneuron, so they come from the behaving-animal
     recordings, which the data set does not hold (claims file, reading b). On the anesthetized recordings
     (reading a) 2 of 10 pyramidal cells give a velocity within 0.36 to 2.2 m/s by the fit pairing and
-    1 by the farthest-site pairing; the finite velocities are 0.18 to 0.54 m/s, and 6 cells give a zero
-    or negative delay. The interneuron D17212 gives 0.64 m/s under the assumed site order. Reading (a)
+    1 by the farthest-site pairing; the finite velocities of the pyramidal cells are 0.18 to 0.54 m/s by
+    the fit pairing and 0.18 to 0.60 m/s by the farthest-site pairing, and 6 cells give a zero or negative
+    delay. The interneuron D17212 gives 0.64 m/s under the assumed site order. Reading (a)
     is shown, not scored, because the criterion's counts point to reading (b).
 - claim: fig8-neighbouring-shanks
   outcome: blocked
@@ -315,7 +339,7 @@ findings:
   statement: The data set holds only the anesthetized recordings. The behaving-animal recordings the paper
     re-examines (Figures 5 and 8 and, by its counts, the propagation velocities) and the histological
     tetrode-to-soma distances (Figure 6) are not in it, and the paper names no other archive for them.
-    Six of the paper's 21 findings cannot be tested for this reason.
+    Seven of the paper's 21 claims are blocked for this reason.
 - kind: metadata_insufficient
   statement: The per-cell spreadsheet IntraExtra.xls covers 18 of the 39 cells and only 2 of the 21 tetrode
     cells (D14521, D14921). For the other 19 there is no cell type, no somatic or dendritic impalement
@@ -349,13 +373,14 @@ findings:
     trains? The Results show one cell and give no selection. With every kept tetrode cell that has at
     least 10 steps reaching a 5th AP, 9 of 17 show all the changes the Results describe, a bare majority;
     with 20 or 50 trains 6 of 13 and 5 of 8, and with accommodating trains whose first interval is 5 to
-    15 ms, 6 of 11.
+    15 ms, 6 of 11, but 3 of 6 when the steps must also last 100 ms or more. How long were the steps?
 - kind: methods_unavailable
   statement: Question for the authors. Which of the tetrode cells were somatic and which dendritic impalements,
     and what electrode offset was removed from each before the AP peak was compared with 0 mV? Applied
     to the potentials as deposited, the rule gives 8 somatic cells and calls D53 dendritic; allowing 10
     mV for the offset gives 13 and calls D53 somatic. Whether the intracellular and extracellular durations
-    correlate within tolerance (R = 0.66) depends on this choice. Are D11221 and D11222 the two cells
+    correlate within tolerance (R = 0.66) depends on this choice, and on D12821, a cell the 10 mV allowance
+    adds, whose intracellular duration (5.7 ms) is far above the paper's 1.28 +/- 0.18 ms. Are D11221 and D11222 the two cells
     of Fig. 3A?
 - kind: selection_undocumented
   statement: Every one of the 21 tetrode folders has a resting potential below -55 mV, and Fig. 6A labels
@@ -575,4 +600,153 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Behaving-animal recordings are not in the archive.
+    response: Outcome kept.
+- date: '2026-11-09'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 revision, with its conclusions and
+    summary, the attempt record, the README, the helper module and the claims file, with the paper. The
+    verifier agreed with all 21 outcomes, with a reservation on duration-correlation and calling fig4bc-burst-attenuation
+    fragile. It quoted five sentences the outputs did not support (the summary's spreadsheet coverage,
+    the R 0.76 bound in the duration-correlation notes, the count of six blocked findings, the velocity
+    range of propagation-velocity-range and the stale slope-change text of the notch section), all now
+    corrected, and noted that the intracellular amplitude reading (b) of fig4d-amplitude-correlation used
+    -3 to -1.5 ms where the claims file gives the 2 ms before the start; the helper now follows the claims
+    file.
+  results:
+  - claim: sample-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 21.
+    response: Outcome kept.
+  - claim: fig1c-start-end-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 26 - the start lead is never in tolerance, under any of the four site rules (S1 to S4).
+    response: Outcome kept.
+  - claim: ap-duration-match
+    agrees: true
+    outcome: reproduced
+    reason: Cell 29 - 1, 6, 1 and 2 readings pass under S3, S1, S2 and S4. Under S3 the extracellular duration
+      SD is 0.59 against the paper's 0.19, but the criterion tests means only.
+    response: Outcome kept.
+  - claim: duration-correlation
+    agrees: true
+    outcome: reproduced
+    reason: The assumption (rule S3) is stated and reasonable in that it agrees with the paper's own label
+      of D53. The reservation is that the result rests on D12821, a cell S3 adds, whose intracellular duration
+      is 5.70 ms against the paper's 1.28 +/- 0.18. From cell 29's per-cell durations R = 0.742; without
+      D12821 it drops to R = 0.02, and without D12821 and D8131 to 0.46. Cell 32 does not print the per-cell
+      values of the reproducing readings. The record should say this. It also found that the notes' bound
+      R 0.76 for S1 and S4 is not printed.
+    response: Outcome kept. Cell 32 now prints the per-cell durations of every reproducing reading and R
+      with D12821, and D12821 and D8131, left out. Without D12821 no S2 or S3 reading has a positive R with
+      P < 0.03 (the four S3 readings that reproduce fall to R 0.042 to 0.545, the S2 one to -0.197); without
+      both cells one S3 reading reproduces (R = 0.654, P = 0.029, n = 11). The conclusion, the notes and
+      the methods_unavailable finding on the site rule now state this dependence. The range of the positive
+      significant readings is now printed per rule (S1 and S4, R 0.759 to 0.945), and the notes give it.
+  - claim: neg-peak-precedes-intra-peak
+    agrees: true
+    outcome: reproduced
+    reason: Cell 35.
+    response: Outcome kept.
+  - claim: fig1c-derivative-mismatch
+    agrees: true
+    outcome: reproduced
+    reason: Cell 38.
+    response: Outcome kept.
+  - claim: notch-and-ahp-landmarks
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 42. The method text of cell 41 still says the slope change is a local maximum of the second
+      derivative, where the code and the conclusion use the first local maximum or minimum; the text is
+      stale, the conclusion is correct.
+    response: Outcome kept. The method text now says the first local maximum or minimum.
+  - claim: fig2-interneuron-narrow
+    agrees: true
+    outcome: blocked
+    response: Outcome kept.
+  - claim: fig3b-latency-vs-amplitude
+    agrees: true
+    outcome: reproduced
+    reason: Cell 45 - holds under all four rules.
+    response: Outcome kept.
+  - claim: fig3a-example-pair
+    agrees: true
+    outcome: not_reproduced
+    reason: The pair identification is stated and reasonable. Cell 45 shows the 0.975 ms latency of D11222
+      is not a window-edge artefact.
+    response: Outcome kept.
+  - claim: fig3c-backprop-velocity
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 52 - 0 of 96 readings in tolerance.
+    response: Outcome kept.
+  - claim: fig4bc-burst-attenuation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, but fragile. Cell 58 now prints step durations but the selection ignores them. They range
+      from 0.1 to 500 ms, against the 350 ms steps of Fig. 4A. The 6 of 11 majority under the criterion's
+      selection includes D8131, whose median step is 0.1 ms; without it the count is 5 of 10, not a majority.
+      Taking only those 11 cells with steps of at least 100 ms leaves 6 cells. Full set and amplitude parts
+      then each hold in 3 of 6 (reading (a), extracellular amplitude baseline to negative peak), not a
+      majority, so the outcome would fall from partial to not reproduced.
+    response: Outcome kept, as round 2 verified it, and not_reproduced proposed for a third round. Cell
+      58 now adds the median step length (at least 50, 100, 200 or 300 ms) as a condition, alone and with
+      the criterion's selection, and the criterion's selection without D8131. It confirms the verifier's
+      counts (5 of 10 without D8131; 3 of 6 for both parts with steps of 100 ms or more) and shows 2 of
+      5 with steps of 200 or 300 ms. The selection that applies every feature of Fig. 4A the criterion names
+      is the best supported, so not reproduced is proposed; the notes, the conclusion and the methods_unavailable
+      finding give the dependence on step length.
+  - claim: fig4d-amplitude-correlation
+    agrees: true
+    outcome: reproduced
+    reason: With the corrected threshold, D15121 gives R = 0.408 and 0.374 with P < 0.0001 (cell 61). The
+      per-spike threshold now passes the synthetic check (cell 15, -59.6 against a -60 mV rest). Minor - cell
+      60 defines intracellular amplitude reading (b) as peak minus the mean of -3 to -1.5 ms, where the
+      claims file defines it as the 2 ms before the start, and the record does not list this as a deviation.
+    response: Outcome kept. The per-spike baseline is now the mean of the 2 ms before the threshold point,
+      as the claims file defines O6 b, checked on the synthetic APs of cell 15 (-60.0 against a -60 mV rest).
+      D15121 gives R = 0.376 under O6 b (n = 958) and 0.408 under O6 a, so the outcome is unchanged; the
+      change is recorded as a deviation.
+  - claim: fig5-theta-smaller-spikes
+    agrees: true
+    outcome: blocked
+    response: Outcome kept.
+  - claim: theta-higher-rates
+    agrees: true
+    outcome: blocked
+    response: Outcome kept.
+  - claim: fig6-amplitude-vs-distance
+    agrees: true
+    outcome: blocked
+    response: Outcome kept.
+  - claim: tetrode-cell-count-estimate
+    agrees: true
+    outcome: blocked
+    response: Outcome kept. The data_missing finding said six of the paper's findings cannot be tested for
+      this reason, where the record has seven blocked by data_missing; it now says seven.
+  - claim: silent-cells-inference
+    agrees: true
+    outcome: blocked
+    reason: Yes on the outcome. The verifier gave blocked_by other; the author's reason (a claim that depends
+      on a blocked claim is blocked for the same reason) is acceptable. It cannot check the protocol step
+      cited.
+    response: Outcome kept.
+  - claim: fig7-vertical-spread
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 64 - 4 of 10 cells.
+    response: Outcome kept.
+  - claim: propagation-velocity-range
+    agrees: true
+    outcome: blocked
+    reason: Changed from round 1. The claims file's criterion itself says the counts point to reading (b).
+      Reading (a) is reported in the notes. Cell 68 and the notes give finite velocities of 0.18 to 0.54
+      m/s, the fit pairing only; the farthest-site pairing gives up to 0.60 m/s (D18712, cell 67).
+    response: Outcome kept. The conclusion and the notes now give both pairings (0.18 to 0.54 m/s by the
+      fit, 0.18 to 0.60 m/s by the farthest site).
+  - claim: fig8-neighbouring-shanks
+    agrees: true
+    outcome: blocked
     response: Outcome kept.

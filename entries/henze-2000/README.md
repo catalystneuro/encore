@@ -19,7 +19,7 @@ histological distances the paper also uses are not in the data set.
 | Latency grows as AP amplitude falls, longer in dendrites | Reproduced |
 | The example somatic and dendritic pair (0.28 and 0.55 ms) | Not reproduced, resting on an assumption |
 | Back-propagation velocity 1.61 m/s | Not reproduced |
-| APs and extracellular spikes attenuate during evoked trains | Partially reproduced, resting on an assumption |
+| APs and extracellular spikes attenuate during evoked trains | Partially reproduced, resting on an assumption (not reproduced proposed for review) |
 | Extracellular and intracellular amplitudes correlate in bursts (R = 0.40) | Reproduced |
 | Spike amplitude and firing rate in theta sleep (two claims) | Blocked: data missing |
 | Amplitude against distance and the cell-count estimates (three claims) | Blocked: data missing |
