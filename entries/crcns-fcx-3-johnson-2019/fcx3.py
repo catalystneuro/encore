@@ -44,8 +44,8 @@ Where the parameters come from:
   psi_compute.m 'mtmfft'), or the 3-cycle windows at 10-ms steps (time-resolved, 'mtmconvol', on
   the zero-padded segment, with the whole-epoch windows of the code as a variant). Bands 2 to 7
   and 9 to 24 Hz (Methods, Task-Induced PSI). The null shuffles the frequencies of one signal and
-  recomputes the same statistic (Methods), 1000 shuffles, one shuffle for all pairs and trials;
-  see `psi_z`.
+  recomputes the same statistic (Methods), 1000 shuffles, one shuffle for all pairs and trials, or
+  one per trial (P1 null reading (b), task-induced PSI only); see `psi_z`.
 """
 
 from __future__ import annotations
@@ -547,7 +547,7 @@ def _unit(x):
     return x / np.where(a > 0, a, 1)
 
 
-def psi_z(A, B, ia, ib, rng, n_perm=N_PERM, code_null=False):
+def psi_z(A, B, ia, ib, rng, n_perm=N_PERM, code_null=False, trial_null=False):
     """PSI z per pair and time point, A = PFC (positive: PFC leads), B = parietal.
 
     A: trials x nA x f x T, B: trials x nB x f x T complex spectra of the channels, ERP already
@@ -567,6 +567,9 @@ def psi_z(A, B, ia, ib, rng, n_perm=N_PERM, code_null=False):
     observed value are the same measure; z = (observed - null mean) / null SD per pair and time
     point. The paper's "at each ... frequency point" is met by the one band value of P1 band
     reading (a); psianalysis.m repeats one null per bin, which only adds draws (a standard choice).
+
+    trial_null=True adds 'a_trial' and 'b_trial': readings (a) and (b) with P1 null reading (b), each
+    trial's parietal bins permuted by its own permutation in each shuffle (task-induced PSI only).
 
     code_null=True adds 'b_code': reading (b) z-scored against the null of psianalysis.m, the slope
     of the trial-mean normalised cross-spectrum with the bins of both factors shuffled
@@ -615,6 +618,31 @@ def psi_z(A, B, ia, ib, rng, n_perm=N_PERM, code_null=False):
         mean = s1[k] / n_perm
         sd = np.sqrt(np.maximum(s2[k] - n_perm * mean ** 2, 0) / (n_perm - 1))
         out[k] = (obs[k] - mean) / sd
+    if trial_null:
+        assert T == 1
+        Af = A[..., 0].transpose(2, 1, 0)  # f x nA x R
+        Na1 = Na[..., 0]  # nA x f
+        ubt = ub[..., 0].transpose(0, 2, 1)  # R x f x nB
+        rr = np.arange(R)[:, None]
+        t1 = {k: np.zeros(obs[k].shape) for k in ("a", "b")}
+        t2 = {k: np.zeros(obs[k].shape) for k in ("a", "b")}
+        for _ in range(n_perm):
+            P = rng.permuted(np.tile(np.arange(nf), (R, 1)), axis=1)
+            Bp = B[..., 0].transpose(0, 2, 1)[rr, P]  # R x f x nB, bins permuted per trial
+            Xp = Af @ np.conj(Bp.transpose(1, 0, 2)) / R  # f x nA x nB
+            Nbp = np.sqrt((np.abs(Bp) ** 2).mean(0))  # f x nB
+            C = Xp[:, ia, ib].T / (Na1[ia] * Nbp[:, ib].T)  # pairs x f
+            va = _slope(C)[:, None]
+            g = ubt[rr, P]
+            DB = np.conj(g[:, :-1]) * g[:, 1:]  # R x (f-1) x nB
+            vb = (MA @ np.conj(DB).reshape(1, R * (nf - 1), nB)).imag[:, ia, ib].T / R
+            for k, v in (("a", va), ("b", vb)):
+                t1[k] += v
+                t2[k] += v * v
+        for k in ("a", "b"):
+            mean = t1[k] / n_perm
+            sd = np.sqrt(np.maximum(t2[k] - n_perm * mean ** 2, 0) / (n_perm - 1))
+            out[k + "_trial"] = (obs[k] - mean) / sd
     if code_null:
         pp = (ua[:, ia] * np.conj(ub[:, ib])).mean(0).transpose(0, 2, 1)  # pairs x T x f
         c1, c2 = np.zeros(obs["b"].shape), np.zeros(obs["b"].shape)
@@ -809,7 +837,8 @@ def jitter_check(S, max_lag=0.4, n_shuffle=20):
         lag, r = best(jit)
         sh = [best(rng.permutation(jit)) for _ in range(n_shuffle)]
         out[key] = {"lag_s": lag, "r": r, "shuffled_abs_lag_max_s": max(abs(v[0]) for v in sh),
-                    "shuffled_r_max": max(v[1] for v in sh)}
+                    "shuffled_r_max": max(v[1] for v in sh), "time": e["time"][::10],
+                    "trace_900": env[jit == 900].mean((0, 1))[::10], "trace_1150": env[jit == 1150].mean((0, 1))[::10]}
         del env, x
     return out
 
@@ -870,7 +899,7 @@ def processing_tfr(proc, sel, fs, foi, config):
 
 
 ERP_CONFIGS = ("methods", "per_trial_baseline", "bandpass", "code", "methods_900")
-POWER_CONFIGS = ("methods", "code", "methods_900")
+POWER_CONFIGS = ("methods", "code", "methods_900", "methods_half")
 PSI_T_CONFIGS = ("methods", "code")
 
 
@@ -948,6 +977,15 @@ def analyse_subject(S, chan, n_perm=N_PERM, do_time_resolved=True):
         if config == "methods":
             R["power"]["methods_900"] = {name: _power_clusters(pz[j900], ccond[j900], nb, sid, name, "methods_900", n_perm)
                                          for name in contrasts}
+            # control for methods_900: as many trials per condition as it has, drawn from all delays
+            rng = np.random.default_rng(seed("half", sid))
+            half = np.zeros(len(ccond), bool)
+            for c in (1, 2, 3):
+                idx = np.where(ccond == c)[0]
+                half[rng.choice(idx, int((j900 & (ccond == c)).sum()), replace=False)] = True
+            R["n_correct_half_jitter"] = {d: int((half & (jit[correct] == d)).sum()) for d in (900, 1150)}
+            R["power"]["methods_half"] = {name: _power_clusters(pz[half], ccond[half], nb, sid, name, "methods_half", n_perm)
+                                          for name in contrasts}
         del pz
 
     # Task-induced PSI: one FFT of each 900-ms segment, ERP (mean over all correct trials) removed
@@ -967,15 +1005,20 @@ def analyse_subject(S, chan, n_perm=N_PERM, do_time_resolved=True):
             F = F - F.mean(0, keepdims=True)
             A, B = F[:, pfc, :, None], F[:, par, :, None]
             rng = np.random.default_rng(seed("psi", sid, band, interval))
-            res[interval] = {k: v[:, 0] for k, v in psi_z(A, B, ia, ib, rng, code_null=True).items()}
+            res[interval] = {k: v[:, 0] for k, v in psi_z(A, B, ia, ib, rng, code_null=True, trial_null=True).items()}
             rng = np.random.default_rng(seed("psi_deposited", sid, band, interval))
             dep[interval] = psi_deposited(F[:, [pfc[i] for i in ia]], F[:, [par[j] for j in ib]], rng)
             if interval == "processing":
                 # surrogate: parietal trials paired with other trials' PFC data (no trial-locked coupling)
                 rng = np.random.default_rng(seed("psi_surrogate", sid, band))
                 order = rng.permutation(A.shape[0])
-                sur = {k: v[:, 0] for k, v in psi_z(A, B[order], ia, ib, rng, code_null=True).items()}
+                sur = {k: v[:, 0] for k, v in psi_z(A, B[order], ia, ib, rng, code_null=True, trial_null=True).items()}
                 sur["same_trial_fraction"] = float(np.mean(order == np.arange(len(order))))
+        # processing PSI on the trials with a 900-ms delay only (timing finding), ERP of those trials removed
+        F, _ = fft_segment(proc["x"][correct][j900], proc["time"], fs, PROC_WIN, foi)
+        F = F - F.mean(0, keepdims=True)
+        rng = np.random.default_rng(seed("psi", sid, band, "processing_900"))
+        res["processing_900"] = {k: v[:, 0] for k, v in psi_z(F[:, pfc, :, None], F[:, par, :, None], ia, ib, rng).items()}
         res["freqs"] = freqs
         R["psi"][band] = res
         R["psi_surrogate"][band] = sur

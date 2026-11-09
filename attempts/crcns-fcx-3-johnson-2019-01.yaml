@@ -106,9 +106,9 @@ outcomes:
     one at either threshold. Variants with adjacent neighbours at 0.05 per tail give, with the 1-30 Hz
     band-pass of the Results, no cluster (smallest p 0.085); per-trial baseline, S5 p = 0.030; the
     whole epoch filtered (erp_compute.m), S2 p = 0.031 (0.053 in round 1 with another random seed);
-    900-ms-delay trials only, S5 p = 0.023. The deciding p values lie between 0.02 and 0.05, where
-    the Monte Carlo standard error of 1000 shuffles is about 0.006, so the outcome is close to the
-    threshold under every reading. The neighbour rule and alpha per tail are put to the paper's
+    900-ms-delay trials only, S5 p = 0.023. Under the adopted reading the deciding p (0.041) is
+    close to 0.05, where the Monte Carlo standard error of 1000 shuffles is about 0.006; the distance
+    reading's p = 0.014 is about 6 standard errors below 0.05. The neighbour rule and alpha per tail are put to the paper's
     authors (findings).
   deviations:
   - Assumption. The paper says only that clusters were formed over "neighboring electrodes", and the
@@ -142,14 +142,17 @@ outcomes:
   notes: With the segment zero padded (Methods), adjacent neighbours, 0.05 per tail and assignment
     (a), 5 subjects show spatial > identity effects (S2 to S6) and 1 identity > spatial (S4; paper
     2); the percentages of electrodes are 37.7 +- 21.1% and 11.8% (paper 54 +- 22% and 36 +- 12%).
-    Five subjects show spatial > identity effects under every reading, and S4 alone identity >
-    spatial under every reading but adjacent neighbours at 0.025 per tail (none). The counts match
+    Under the main spectra, five subjects show spatial > identity effects under every neighbour
+    reading and threshold, and S4 alone identity > spatial under each of them but adjacent neighbours
+    at 0.025 per tail (none). The counts match
     within one subject and 5 of 7 subjects have a significant cluster, the criterion's partial match.
     The paper's counts (5 and 2, S7 added) appear only with the whole-epoch windows of
     power_compute.m (round 1's analysis), where the distance reading gives 52.0% (within tolerance)
     and 28.4% (outside). The significant clusters have p <= 0.028 (paper, all p < 0.04). On the
     900-ms-delay trials alone 2 or 3 subjects show spatial > identity effects and none identity >
-    spatial.
+    spatial. A random draw of as many trials per condition from both delays gives 1 to 3 and 0 or 1,
+    so that loss comes from the smaller number of trials, and these tests cannot show whether the
+    1150-ms trials' timing matters.
   deviations:
   - Power with 3-cycle Hanning windows, 2 to 40 Hz, 10-ms steps (power_compute.m), on the 900-ms
     processing segment embedded in zeros, every window computed (Methods, Spectral Decomposition,
@@ -179,7 +182,8 @@ outcomes:
     clusters of the effects counted have p <= 0.014 with adjacent neighbours; S2's temporal >
     identity cluster is significant only under the distance reading (p = 0.020) or without spatial
     clustering (p = 0.044). On the 900-ms-delay trials alone 1 to 3 subjects show temporal >
-    identity effects.
+    identity effects and 1 (S1) identity > temporal; a random draw of as many trials from both delays
+    gives 2 or 3 and 0 or 1.
   deviations:
   - As fig2-spatial-power.
 - claim: power-difficulty-subjects
@@ -219,16 +223,17 @@ outcomes:
   notebook: reproduce_johnson_2019.ipynb
   output: claim:fig4-maintenance-parietal-led
   measured:
-  - -0.44
-  - -0.26
-  notes: With the Methods' null, no subject's mean maintenance PSI z is below -1.96 under either
-    reading. Reading (b) gives subject means -0.67 to 0.05 (delta-theta, mean -0.44 +- 0.26, recorded)
-    and -0.48 to -0.05 (alpha-beta, -0.26 +- 0.14); reading (a) -0.39 to 0.15 and -0.67 to 0.04. The
-    paper reports -40.03 +- 8.73 and -30.37 +- 2.60. Against psianalysis.m's null, reading (b) gives 4
-    of 7 subjects below -1.96 in delta-theta and none in alpha-beta, but that null gives |z| > 1.96
-    in 90 to 92% of trial-shuffled pairs. The deposited code without the conjugate gives every
-    subject below -1.96 with the parietal channel first (means -55.47 and -69.83) and above +1.96
-    with the PFC channel first (+58.67 and +69.48); it is not a reading of the paper.
+  - -0.08
+  - -0.24
+  notes: With the Methods' null, no subject's mean maintenance PSI z is below -1.96 under any
+    reading. Reading (a), adopted, gives subject means -0.39 to 0.15 (delta-theta, mean -0.08 +- 0.20,
+    recorded) and -0.67 to 0.04 (alpha-beta, -0.24 +- 0.25); reading (b) -0.67 to 0.05 and -0.48 to
+    -0.05; with one permutation per trial the lowest subject mean is -1.27. The paper reports -40.03
+    +- 8.73 and -30.37 +- 2.60. Against psianalysis.m's null, reading (b) gives 4 of 7 subjects below
+    -1.96 in delta-theta and none in alpha-beta, but that null gives |z| > 1.96 in 90 to 92% of
+    trial-shuffled pairs. The deposited code without the conjugate gives every subject below -1.96
+    with the parietal channel first (means -55.47 and -69.83) and above +1.96 with the PFC channel
+    first (+58.67 and +69.48); it is not a reading of the paper.
   deviations:
   - P1 details taken from psi_compute.m and subtracterp.m, ERP removed as the mean over all correct
     trials ("raw trial-wise mean", reading (a)); one Hanning-tapered FFT of each 900-ms segment
@@ -236,39 +241,46 @@ outcomes:
     (a)); one PSI per band summed over adjacent bins.
   - The null follows the Methods (Task-Induced PSI, paragraph 2), "we randomly shuffled the
     frequencies in one signal and re-computed PSI 1,000 times". Each shuffle permutes the parietal
-    spectrum's bins, the same permutation for every trial and pair (null reading (a)), and recomputes
-    the statistic that is z-scored. psianalysis.m z-scores the mean of per-trial PSI against the slope
-    of the trial-mean spectrum with both factors shuffled, a different statistic; where the Methods
-    and the code differ the Methods come first, and the code's null is a variant. On these data the
-    Methods' null gives |z| > 1.96 in 6 to 7% of trial-shuffled pairs under reading (a), and in 0.1%
-    (delta-theta) and 6.3% (alpha-beta) under reading (b).
+    spectrum's bins and recomputes the statistic that is z-scored, with the same permutation for
+    every trial (null reading (a)) or one per trial (null reading (b)), both run. psianalysis.m
+    z-scores the mean of per-trial PSI against the slope of the trial-mean spectrum with both factors
+    shuffled, a different statistic; where the Methods and the code differ the Methods come first,
+    and the code's null is a variant.
   - Assumption, for the PSI claims whose outcome depends on it (fig4c-alpha-beta-shift,
     fig5a-spatiotemporal-bidirectional, fig5b-alpha-beta-no-sustained). P1 leaves open whether PSI
-    comes from trial-averaged cross-spectra (a) or per trial (b). Reading (b) is adopted, with the
-    conjugate the Methods' cross-spectral density implies, since psianalysis.m computes PSI per trial and
-    averages it, and the Figure 4A legend gives values "per subject across all trials". Here both
-    readings give the same outcome.
+    comes from trial-averaged cross-spectra (a) or per trial (b). Reading (a) with null reading (a) is
+    adopted, since it is the first P1 lists, the measure of Nolte et al. (2008), and the only one
+    whose z is calibrated. On trial-shuffled data its z has mean -0.05 and 0.02, SD 1.01 and 1.04,
+    and |z| > 1.96 in 6.0% and 6.9% of pairs; reading (b) has mean -0.29 and SD 0.60 in delta-theta
+    (0.1% pass), subject means from -1.25 to 0.52 in alpha-beta, and on synthetic independent
+    signals a mean of -0.21 to -0.37, which one permutation per trial does not remove. The first
+    revision adopted reading (b), for the structure of psianalysis.m and the Figure 4A legend's
+    values "per subject across all trials"; round 2 of the verification found it uncalibrated. Here
+    both readings give the same outcome.
 - claim: fig4a-delta-theta-shift
   outcome: not_reproduced
   notebook: reproduce_johnson_2019.ipynb
   output: claim:fig4a-delta-theta-shift
   measured:
   - 0
-  - -0.43
-  - 114.2
-  notes: No subject has net processing delta-theta PSI z above 0 under either reading (means -0.43 +-
-    0.34 under (b), recorded, and -0.17 +- 0.16 under (a); paper 6 subjects, 6.01 +- 6.42). Processing
-    exceeds maintenance in the pair-level model under reading (b) (by 0.27, F(1,2268) = 114.2, p =
-    4.9e-26; paper F = 1936.10) but not under (a) (0.06, p = 0.14); on subject means neither differs
-    (paired t(6) p = 0.95 and 0.43). The partial match needs at least 4 subjects above 0. Against
-    psianalysis.m's null, reading (b) gives the round-1 result (4 subjects above 0, F = 59.5), but that
-    null is not calibrated (90% of trial-shuffled pairs pass |z| > 1.96).
+  - -0.17
+  - 2.2
+  notes: No subject has net processing delta-theta PSI z above 0 under any reading (means -0.17 +-
+    0.16 under (a), adopted and recorded, -0.43 +- 0.34 under (b), and -0.21 and -0.76 with one
+    permutation per trial; paper 6 subjects, 6.01 +- 6.42). Processing exceeds maintenance in the
+    pair-level model under reading (b) (by 0.27, F(1,2268) = 114.2, p = 4.9e-26; paper F = 1936.10)
+    but not under (a) (0.06, F = 2.2, p = 0.14); on subject means neither differs (paired t(6) p =
+    0.95 and 0.43). The partial match needs at least 4 subjects above 0. Against psianalysis.m's
+    null, reading (b) gives 4 subjects above 0 and F = 58.5, but that null is not calibrated (90% of
+    trial-shuffled pairs pass |z| > 1.96). On the 900-ms-delay trials alone 2 (a) or 1 (b) subjects
+    are above 0.
   deviations:
   - As fig4-maintenance-parietal-led. The mixed model is computed as the paired test over pairs,
-    which equals it when each pair has both intervals (checked against statsmodels MixedLM, F 116.4
-    against 114.2 under reading (b)). Degrees of freedom 2268 follow from 1135 pairs; as in the
-    paper's degrees of freedom, pairs that share electrodes are treated as independent, which
-    inflates F, so a paired t-test on subject means is printed beside it.
+    which equals it when each pair has both intervals (checked against statsmodels MixedLM, F 2.2
+    against 2.2 under reading (a) and 116.4 against 114.2 under reading (b)). Degrees of freedom 2268
+    follow from 1135 pairs; as in the paper's degrees of freedom, pairs that share electrodes are
+    treated as independent, which inflates F, so a paired t-test on subject means is printed beside
+    it.
 - claim: fig4c-alpha-beta-shift
   outcome: partially_reproduced
   assumed: true
@@ -277,31 +289,47 @@ outcomes:
   measured:
   - -0.57
   - 97.9
-  notes: Under reading (b), 6 of 7 subjects have processing alpha-beta PSI z below 0 (S3 is above,
-    0.46) and processing exceeds maintenance in the pair-level model (by 0.43, F(1,2268) = 97.9, p =
-    1.2e-22; paper F = 2302.30), the criterion's partial match. The effect is small. Subject means lie
-    between -1.35 and 0.46 (mean -0.57 +- 0.59; paper -12.60 +- 7.51). On subject means the interval
-    difference reverses sign and is not significant (paired t(6) = -1.22, p = 0.27), since S3 holds
-    756 of the 1135 pairs. The trial-shuffled surrogate passes |z| > 1.96 in 6.3% of alpha-beta pairs
-    under this reading. Under reading (a) 5 subjects are below 0 (mean -0.14), with processing higher
-    by 0.11 (p = 0.0097), which would be not reproduced.
+  notes: The outcome is the one round 2 reviewed, under PSI reading (b), and a change to not
+    reproduced is proposed. Under reading (b), 6 of 7 subjects have processing alpha-beta PSI z below
+    0 (S3 is above, 0.46) and processing exceeds maintenance in the pair-level model (by 0.43,
+    F(1,2268) = 97.9, p = 1.2e-22; paper F = 2302.30), the criterion's partial match by the letter.
+    Subject means lie between -1.35 and 0.46 (mean -0.57 +- 0.59, recorded; paper -12.60 +- 7.51). On
+    the trial-shuffled data reading (b) gives nearly the same subject means (observed minus surrogate
+    -0.08 +- 0.09, p = 0.061). Under reading (a), now adopted, 5 of 7 subjects are below 0 (mean -0.14
+    +- 0.26), with processing higher by 0.11 (F = 6.7, p = 0.0097). On subject means the interval
+    difference is not significant under either reading (paired t(6) p = 0.27 under (b), 0.48 under
+    (a)).
   deviations:
-  - As fig4a-delta-theta-shift. The outcome rests on PSI reading (b) (assumption, see
-    fig4-maintenance-parietal-led).
+  - As fig4a-delta-theta-shift. The outcome rests on PSI reading (b), the reading round 2 reviewed;
+    reading (a) is now adopted (see fig4-maintenance-parietal-led).
+  proposed:
+    outcome: not_reproduced
+    reason: Under PSI reading (a), now adopted because its z is calibrated, 5 of 7 subjects have
+      processing alpha-beta PSI z below 0 (mean -0.14 +- 0.26), fewer than the 6 the partial match
+      needs; one permutation per trial also gives 5. The 6 of 7 under reading (b) come from that
+      reading's null. On the trial-shuffled data, which have no trial-locked coupling, reading (b)'s
+      subject means are -1.17, -0.40, 0.52, -0.55, -0.60, -1.25 and 0.03, against the observed -1.07,
+      -0.51, 0.46, -0.61, -0.72, -1.35 and -0.18 (observed minus surrogate -0.08 +- 0.09, paired t(6)
+      p = 0.061), and on synthetic independent signals reading (b)'s mean z is -0.25 to -0.29 in
+      alpha-beta. Under reading (a) observed minus surrogate is -0.01 +- 0.23 (p = 0.93). The
+      analysis is in the notebook's task-induced PSI section (calibration, synthetic and fig4c
+      outputs).
 - claim: directional-pairs
   outcome: not_reproduced
   notebook: reproduce_johnson_2019.ipynb
   output: claim:directional-pairs
   measured:
-  - 1
-  - 74
-  notes: With the Methods' null, 1 (reading (b), recorded) or 78 (reading (a)) of 1135 pairs have
-    processing |z| > 1.96 in delta-theta, and 74 or 104 in alpha-beta, against 1008 and 984. The
-    trial-shuffled surrogate gives 1 and 71 under (b) and 68 and 78 under (a), and a null at 5% gives
-    about 57, so the counts are near what signals without trial-locked coupling give. Against
-    psianalysis.m's null, reading (b) gives 1014 and 1042, within tolerance (round 1's result), but
-    the trial-shuffled surrogate gives 1022 and 1045 under the same null, so that count does not
-    reflect directionality.
+  - 78
+  - 104
+  notes: With the Methods' null, 78 (reading (a), adopted and recorded) or 1 (reading (b)) of 1135
+    pairs have processing |z| > 1.96 in delta-theta, and 104 or 74 in alpha-beta, against 1008 and
+    984. The trial-shuffled surrogate gives 68 and 78 under (a) and 1 and 71 under (b), and a null at
+    5% gives about 57, so the counts are near what signals without trial-locked coupling give. With
+    one permutation per trial the counts are 98 and 93 (a) and 78 and 211 (b), against 75 and 71, and
+    76 and 194, on the surrogate. Against psianalysis.m's null, reading (b) gives 1014 and 1041,
+    within tolerance (round 1's result), but the trial-shuffled surrogate gives 1022 and 1044 under
+    the same null, so that count does not reflect directionality. The deposited code as written
+    marks 1129 to 1135 of the 1135 pairs.
   deviations:
   - As fig4-maintenance-parietal-led; 1135 pairs, not 1129 (table1-electrodes).
 - claim: fig5a-delta-theta-epochs
@@ -309,9 +337,9 @@ outcomes:
   notebook: reproduce_johnson_2019.ipynb
   output: claim:fig5a-delta-theta-epochs
   notes: No delta-theta time point differs between conditions after FDR under either PSI reading,
-    with the segment zero padded or with the whole-epoch windows of psi_compute.m, so there is no
-    sustained epoch. Reading (a) selects 78 directional pairs in 7 subjects; reading (b) selects 1
-    pair (S1).
+    with the segment zero padded or with the whole-epoch windows of psi_compute.m, in the pair-level
+    model or in a paired test on subject means, so there is no sustained epoch. Reading (a), adopted,
+    selects 78 directional pairs in 7 subjects; reading (b) selects 1 pair (S1).
   deviations:
   - Time-resolved PSI per psi_compute.m ('mtmconvol', per-condition ERP removed by subtracterp.m with
     three conditions), on the 900-ms segment zero padded (Methods, Time-Resolved PSI, "Spectral
@@ -323,23 +351,23 @@ outcomes:
   - The per-time-point mixed model is computed as the paired test over pairs (checked against
     statsmodels at three time points); FDR is Benjamini-Hochberg over the 91 points; a run is
     sustained when it spans at least 100 ms (P2), and runs over 100 ms are printed for the Figure 5
-    legend's ">100 ms" (asked of a reader).
+    legend's ">100 ms" (asked of a reader). A paired t-test on subject means at each time point is
+    printed beside it, since the model treats pairs that share electrodes as independent.
 - claim: fig5a-identity-direction
   outcome: not_reproduced
   notebook: reproduce_johnson_2019.ipynb
   output: claim:fig5a-identity-direction
   measured:
-  - 1.31
-  - 0.93
-  - -1.98
-  - 0.13
-  notes: In the paper's four epochs no reading meets the criterion. Under reading (b) with the
-    segment zero padded (S1's one pair) the identity-trial values are 1.31, 0.93, -1.98 and 0.13
-    (recorded); the third passes -1.96 with the right sign (-2.20 as identity minus spatial) but is
-    outside the bound (-3.04, within 10%), and the others are below 1.96 in absolute value. Every
-    value of the other readings (averaging, measure, PSI and spectra) is below 1.96 in absolute
-    value. Under reading (a) (78 pairs) the grand means are 0.73, 0.60, 0.22
-    and -0.13 (paper > 2.62, > 2.35, < -3.04, < -3.57).
+  - 0.73
+  - 0.6
+  - 0.22
+  - -0.13
+  notes: In the paper's four epochs no reading meets the criterion. Under reading (a), adopted (78
+    pairs), with the segment zero padded, the identity-trial grand means are 0.73, 0.60, 0.22 and
+    -0.13 (recorded; paper > 2.62, > 2.35, < -3.04, < -3.57). Under reading (b) (S1's one pair) they
+    are 1.31, 0.93, -1.98 and 0.13; the third passes -1.96 with the right sign (-2.20 as identity
+    minus spatial) but is outside the bound (-3.04, within 10%). Every value of the other readings
+    (averaging, measure, PSI and spectra) is below 1.96 in absolute value.
   deviations:
   - As fig5a-delta-theta-epochs; the paper's epochs are used.
 - claim: fig5a-spatiotemporal-bidirectional
@@ -347,30 +375,51 @@ outcomes:
   assumed: true
   notebook: reproduce_johnson_2019.ipynb
   output: claim:fig5a-spatiotemporal-bidirectional
-  notes: Under PSI reading (b), the selection leaves one directional pair (S1); its spatial-trial
+  notes: The outcome is the one round 2 reviewed, under PSI reading (b), and a change to reproduced
+    is proposed. Under reading (b) the selection leaves one directional pair (S1); its spatial-trial
     delta-theta PSI z reaches |z| = 3.07 (140 ms) and its temporal-trial z 2.36 (180 ms), with 16 and
-    11 of 91 time points at |z| >= 1.96 (paper, all |z| < 1.60). Its identity-trial z also passes
-    1.96 at 9 points, so on one pair such excursions are common. Under reading (a) (78 pairs in 7
-    subjects) the grand means stay at or below 0.87 and 1.01, which would meet the criterion, but the
-    identity-trial grand mean also stays below 0.99, where the paper reports |z| above 2.35. With
-    the whole-epoch windows, reading (b) gives 2.54 and 3.03 and reading (a) 0.37 and 0.56.
+    11 of 91 time points at |z| >= 1.96 (paper, all |z| < 1.60). Its identity-trial z also passes 1.96
+    at 9 points, so on one pair such excursions are common. Under reading (a), now adopted (78 pairs
+    in 7 subjects), the grand means stay at or below 0.87 and 1.01, and the identity-trial grand mean
+    also stays below 0.99, where the paper reports |z| above 2.35. With the whole-epoch windows,
+    reading (b) gives 2.54 and 3.03 and reading (a) 0.37 and 0.56.
   deviations:
-  - Assumption, PSI reading (b), as in fig4-maintenance-parietal-led. As fig5a-delta-theta-epochs
-    otherwise.
+  - The outcome rests on PSI reading (b), the reading round 2 reviewed; reading (a) is now adopted
+    (see fig4-maintenance-parietal-led). As fig5a-delta-theta-epochs otherwise.
+  proposed:
+    outcome: reproduced
+    reason: Under PSI reading (a), now adopted because its z is calibrated (see fig4c-alpha-beta-shift
+      and fig4-maintenance-parietal-led), the selection holds 78 pairs in 7 subjects, and the
+      spatial-trial and temporal-trial grand means stay at or below 0.87 and 1.01, under 1.96 at every
+      time point and under the paper's 1.60, which the criterion counts as reproduced. The absence
+      shows little, since under this reading the identity-trial grand mean also stays below 0.99,
+      where the paper reports |z| above 2.35. The reading (b) result rests on one pair whose
+      identity-trial z also passes 1.96 at 9 points.
 - claim: fig5b-alpha-beta-no-sustained
   outcome: reproduced
   assumed: true
   notebook: reproduce_johnson_2019.ipynb
   output: claim:fig5b-alpha-beta-no-sustained
-  notes: Under PSI reading (b) (74 pairs in 6 subjects), 30 (identity against spatial) and 35 (against
-    temporal) of 91 time points differ after FDR, and the longest run of one sign lasts 40 ms, so no
-    difference is sustained (whole-epoch windows, 36 and 37 points, longest 50 and 40 ms). Under
-    reading (a) (104 pairs) no point is significant after FDR (smallest p 0.0015 and 0.0027), the
-    criterion's partial match. Pairs that share electrodes are treated as independent in the
-    per-time-point model, as in the paper's degrees of freedom.
+  notes: The outcome is the one round 2 reviewed, under PSI reading (b), and a change to partially
+    reproduced is proposed. Under reading (b) (74 pairs in 6 subjects), 30 (identity against
+    spatial) and 35 (against temporal) of 91 time points differ after FDR in the pair-level model,
+    and the longest run of one sign lasts 40 ms, so no difference is sustained (whole-epoch windows,
+    36 and 37 points, longest 50 and 40 ms). The trial-shuffled data select 71 pairs under the same
+    reading, S3 supplies 44 of the 74, and a paired test on the 6 subjects' means finds no point
+    after FDR (smallest p 0.0029 and 0.0078). Under reading (a), now adopted (104 pairs in 7
+    subjects), no point is significant after FDR in the pair-level model (smallest p 0.0015 and
+    0.0027) or at subject level.
   deviations:
-  - Assumption, PSI reading (b), as in fig4-maintenance-parietal-led. As fig5a-delta-theta-epochs
-    otherwise.
+  - The outcome rests on PSI reading (b), the reading round 2 reviewed; reading (a) is now adopted
+    (see fig4-maintenance-parietal-led). As fig5a-delta-theta-epochs otherwise.
+  proposed:
+    outcome: partially_reproduced
+    reason: Under PSI reading (a), now adopted because its z is calibrated (see fig4c-alpha-beta-shift
+      and fig4-maintenance-parietal-led), no time point differs between conditions after FDR (smallest
+      p 0.0015 against spatial, 0.0027 against temporal, 104 pairs in 7 subjects), which the criterion
+      counts as partially reproduced. The significant points of reading (b) come from the pair-level
+      model on 74 pairs, about as many as trial-shuffled data select (71), 44 of them from S3; a
+      paired test on the 6 subjects' means finds none after FDR.
 findings:
 - kind: metadata_error
   statement: The data set's list of analysed channels (docs/summary_channel_analysis.csv) holds 187
@@ -392,7 +441,9 @@ findings:
     start) lying about 0.25 s before the events in 1150-ms trials, which would put the end of the cue
     in their processing window. The test is weak in the other subjects (S1, S5 and S6 show shifts of
     0.28 to 0.35 s in the processing epoch that do not pass the shuffle test) and does not prove it.
-    The ERP and power tests on the 900-ms-delay trials alone are shown as variants.
+    The ERP and power tests and the task-induced PSI on the 900-ms-delay trials alone are shown as
+    variants. Power on those trials loses most effects, and so does power on a random draw of as
+    many trials from both delays, so these tests cannot tell whether the timing affects the results.
 - kind: code_mismatch
   statement: The deposited psianalysis.m computes the cross-spectrum as the product of the two
     channels' Fourier coefficients without the conjugate, unlike the cross-spectral density of the
@@ -438,9 +489,11 @@ findings:
     Methods say, or the slope of the trial-mean spectrum, as psianalysis.m computes it? With the
     Methods' null, 1 (per trial) or 78 (trial-averaged) of 1135 pairs are directional in
     delta-theta, and 74 or 104 in alpha-beta, near the counts of trial-shuffled data; the paper
-    reports 1008 and 984, which only the code's null reproduces (1014 and 1042), and that null gives
+    reports 1008 and 984, which only the code's null reproduces (1014 and 1041), and that null gives
     about the same counts on trial-shuffled data. This attempt used the Methods' null and adopted the
-    per-trial reading, with the conjugate, where the readings give different outcomes.
+    trial-averaged reading, whose z is calibrated on trial-shuffled data, where the readings give
+    different outcomes; per-trial PSI with the Methods' null gives z offset from zero on data
+    without coupling.
 verifications:
 - date: '2026-11-08'
   kind: agent
@@ -610,3 +663,161 @@ verifications:
       printing subject-level tests beside the pair-level model for the task-induced PSI. Problem 7
       (timing of 1150-ms trials) is answered by running the ERP and power tests on the 900-ms-delay
       trials as variants; cue-locked high-gamma traces per delay group were not added.
+- date: '2026-11-09'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision (commit 9e50d4b6e6), the helper
+    module, the claims file and this record, with the paper. It agreed with 16 of the 17 outcomes and
+    disagreed with fig4c-alpha-beta-shift; of its round-1 points it found 7 resolved and 3 (the PSI
+    null, pairs treated as independent, the timing of the 1150-ms trials) partly resolved and bearing
+    on a conclusion. It quoted six passages the outputs do not support.
+  results:
+  - claim: table1-electrodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 187 channels and 1135 pairs (cell 17).
+    response: No change needed. The data-check text that said the docs' channel list names 192
+      channels now says 187, with Table 1's 192 beside it. The README and the notebook's opening,
+      which the report also quoted, no longer say the run takes 35 minutes with 20 of them streaming;
+      the loading cell takes 40 to 42 of the run's 41 to 43 minutes.
+  - claim: trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: Cell 20.
+    response: No change needed.
+  - claim: fig1b-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Range 0.625 to 0.975; p = 0.283 (cell 23).
+    response: No change needed.
+  - claim: fig1b-rt-identity-slower
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.024, 0.005, 0.010 and 0.254 (cell 26).
+    response: No change needed.
+  - claim: erp-no-condition-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: The assumption is stated and reasonable. The outcome hardly depends on it; in the main
+      configuration, 5 of the 6 neighbour and alpha-per-tail combinations give a cluster with p below
+      0.05 (or 0.025 where that is the threshold). Only adjacent neighbours at 0.025 per tail give
+      none (cell 29). The sentence "The deciding p values lie between 0.02 and 0.05, so the outcome is
+      close to the threshold under every reading" is not supported; the distance reading gives p =
+      0.014, about 6 Monte Carlo SE below 0.05, and only the adopted adjacent reading (0.041) is close
+      to the threshold.
+    response: Outcome kept. The notebook and the notes now say that the adopted reading's p (0.041)
+      is close to 0.05 and the distance reading's 0.014 is not.
+  - claim: fig2-spatial-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 and 1 subjects, within one of the paper's counts. The percentages are off, 37.7 and 11.8
+      (cell 32). The notes' "Five subjects show spatial > identity effects under every reading" and
+      "S4 alone identity > spatial under every reading" hold for the main spectra only; the 900-ms
+      variant gives 2 or 3 subjects and the whole-epoch windows add S7. The 900-ms-only variant
+      removes most power effects, and that loss cannot yet be separated from the halving of trials; a
+      control on a random half of all trials would separate the two.
+    response: Outcome kept. The notes now limit those sentences to the main spectra. The power test
+      is now also run on a random draw of trials from both delays with as many trials per condition
+      as the 900-ms trials (methods_half); it loses about as many effects (1 to 3 subjects spatial >
+      identity, 0 or 1 identity > spatial), so the loss on the 900-ms trials comes from fewer trials,
+      and the notes and the timing finding say these tests cannot tell whether the timing matters.
+      The cue-locked 70-150 Hz traces per delay group are now plotted.
+  - claim: fig3-temporal-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 and 2 subjects (4 and 2 with assignment b); no reading gets the percentages within
+      tolerance (cell 32).
+    response: Outcome kept. The random-trial control is reported here as for fig2-spatial-power (2 or
+      3 and 0 or 1 subjects, against 1 to 3 and 1 on the 900-ms trials).
+  - claim: power-difficulty-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Holds under reading (b)(i) in every configuration. S3 breaks the converse (cell 37).
+    response: No change needed; the fig2-spatial-power conclusion says the random-trial control bears
+      on this claim too.
+  - claim: power-low-frequencies
+    agrees: true
+    outcome: reproduced
+    reason: Yes, by the letter. The assumption is stated and defensible, but weak; a "maximum" at the
+      2-Hz end of the range only means the density keeps rising below 2 Hz. Without counting that
+      edge, the identity > other effect fails in every combination (cell 40).
+    response: Outcome kept, resting on the stated assumption, with the result without the edge
+      printed and given in the notes, as before.
+  - claim: fig4-maintenance-parietal-led
+    agrees: true
+    outcome: not_reproduced
+    reason: No subject is below -1.96 under either reading (cell 45).
+    response: Outcome kept. Reading (a) is now the adopted PSI reading and its values are recorded;
+      the readings with one permutation per trial (P1 null reading (b)) are added, and none is below
+      -1.96.
+  - claim: fig4a-delta-theta-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 7 subjects above zero under both readings (cell 48).
+    response: Outcome kept, with reading (a)'s values recorded; the per-trial null and the 900-ms
+      trials are added (2 or fewer subjects above zero).
+  - claim: fig4c-alpha-beta-shift
+    agrees: false
+    reason: The evidence does not support it. The partial match rests on the sign of subject means
+      that are all close to zero, -1.35 to 0.46 (cell 48). Under reading (b) with the Methods' null,
+      z is not centred on zero for independent signals; in a synthetic test (33 trials of independent
+      1/f and brown noise) reading (b) gave mean z of -0.32 to -0.34 in both bands, with SD 0.75 to
+      0.82 in delta-theta, and reading (a) a mean near 0 in delta-theta and -0.13 to -0.17 in
+      alpha-beta, with SD about 1. An offset of that size alone would put most subjects below zero,
+      and the data show the same pattern under (b). The record justifies reading (b) by its structure,
+      not by calibration; the surrogate shows (b) is too conservative in delta-theta (SD 0.60, 0.1%
+      pass rate) and in alpha-beta its per-subject rates run from 0% to 24%. If reading (a) were
+      adopted, fig4c would be not reproduced, fig5b partial, and fig5a-spatiotemporal reproduced by
+      the letter but uninformative. It asked for the surrogate's mean z per subject under (a) and
+      (b), and possibly (b) with one permutation per trial.
+    response: Outcome kept as round 2 does not allow a change, and not_reproduced proposed for a third
+      round. The notebook now prints the surrogate's mean z per subject, runs both readings with one
+      permutation per trial, and repeats the synthetic test. Under reading (b) the surrogate's subject
+      means (-1.25 to 0.52) nearly equal the observed ones (observed minus surrogate -0.08 +- 0.09, p =
+      0.061), and one permutation per trial does not calibrate it (mean -0.51 in delta-theta, 17% of
+      alpha-beta pairs past 1.96). Moving the FFT's time origin to the segment's centre removes the
+      offset in the synthetic test, which points to the phase slope from the segment's position in the
+      padded window. Reading (a), calibrated (mean -0.05 and 0.02, SD near 1, 6.0% and 6.9% pass), is
+      now adopted where the readings differ; under it 5 of 7 subjects are below zero.
+  - claim: directional-pairs
+    agrees: true
+    outcome: not_reproduced
+    reason: 1 or 78 delta-theta pairs and 74 or 104 alpha-beta pairs, all near the trial-shuffled
+      surrogate (cell 51). The README's statement that the deposited code z-scores against a null
+      that marks about 90% of pairs as directional on shuffled trials describes psianalysis.m's null
+      with the conjugate added; the code as deposited was never run on the surrogate, and on the real
+      data it marks 99.5 to 100% of pairs.
+    response: Outcome kept, with reading (a)'s counts (78 and 104) recorded and the per-trial nulls
+      added. The README now says the deposited code marks 99.5 to 100% of pairs on the real data, and
+      that the 90% on shuffled trials is that null with the conjugate added.
+  - claim: fig5a-delta-theta-epochs
+    agrees: true
+    outcome: not_reproduced
+    reason: No FDR-significant points (cells 54 and 56).
+    response: No change needed; a subject-level test is now printed beside the pair-level model and
+      also finds no point.
+  - claim: fig5a-identity-direction
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 58.
+    response: Outcome kept, with reading (a)'s values recorded.
+  - claim: fig5a-spatiotemporal-bidirectional
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes, by the letter, but the evidence is one pair in S1 (cell 60). The assumption is
+      stated, but its reasoning does not address calibration (see fig4c-alpha-beta-shift).
+    response: Outcome kept as round 2 does not allow a change, and reproduced proposed for a third
+      round, since reading (a), now adopted for its calibration, keeps every grand mean below 1.96
+      (largest 0.87 and 1.01). The notes say the absence shows little, as the identity-trial grand mean
+      also stays below 0.99.
+  - claim: fig5b-alpha-beta-no-sustained
+    agrees: true
+    outcome: reproduced
+    reason: Yes, by the letter. The significant points come only from reading (b)'s pair-level test (30
+      and 35 points, smallest p 2e-18). The 74 pairs it selects are about the number the
+      trial-shuffled data select (71), and S3 supplies 44 of them, all treated as independent. No
+      subject-level test is shown. Under reading (a) the outcome is partial.
+    response: Outcome kept as round 2 does not allow a change, and partially_reproduced proposed for
+      a third round under reading (a), now adopted, which finds no FDR-significant point. A paired test
+      on subject means at each time point is now printed; under reading (b) it finds no point after
+      FDR either (smallest p 0.0029 and 0.0078).
