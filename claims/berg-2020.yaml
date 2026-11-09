@@ -107,15 +107,22 @@ claims:
   source: Methods, Electrophysiology feature analysis; code data/human_IVSCC_excitatory_L23_consolidated_0131.csv
     and data/human_mouse_ephys_all_0127.csv at commit 3daf9f0
   data: with_labels
-  criterion: Cells are matched by the specimen ID (SpecimenID in the code's cell table). The 18
-    features are computed from each matched recording with IPFX, after the sweep QC of the
-    Methods. For each feature, the median over matched cells of the absolute difference from the
-    code's table relative to the table's absolute value is taken (10%, the protocol's default
+  criterion: Cells are matched to the code's cell table by specimen ID (SpecimenID). The paper names
+    no identifier (Methods), and the code joins its tables on SpecimenID only
+    (hivscc_data.load_data). Where the files carry no SpecimenID, the paper allows two readings of
+    the match, (M1) only by a SpecimenID stored in the files, and (M2) by a SpecimenID recovered
+    from each file, the code's SpecimenID of the same donor next above the file's ephys session id,
+    with agreement of the computed features with the code's table as the check. M2 is a
+    reconstruction that neither the paper nor the code states. Both are run and reported, with the
+    missing identifier recorded as a finding; the claims that depend on this link name the reading
+    they use. The 18 features are computed from each matched recording with IPFX, after the sweep QC
+    of the Methods. For each feature, the median over matched cells of the absolute difference from
+    the code's table relative to the table's absolute value is taken (10%, the protocol's default
     tolerance, as the bound). Reproduced when at least 283 of the 385 cells match and all 18
-    features are within 10%; partially reproduced when cells match and 9 to 17 features are
-    within 10%; not reproduced otherwise. The number of matched cells, and how many of them
-    carry a t-type or depth in the files themselves, is reported. The code's table is from the
-    revision (316 human cells), so cells beyond the preprint's 283 are expected.
+    features are within 10%; partially reproduced when cells match and 9 to 17 features are within
+    10%; not reproduced otherwise. The number of matched cells, and how many of them carry a t-type
+    or depth in the files themselves, is reported. The code's table is from the revision (316 human
+    cells), so cells beyond the preprint's 283 are expected.
 - id: cohort-cells
   statement: 385 Patch-seq neurons passing transcriptomic QC mapped to the five supragranular
     glutamatergic t-types, and 283 of them had recordings complete enough to compute
@@ -210,7 +217,16 @@ claims:
     value: 1.06
     tolerance: 0.01
     unit: mm
-  criterion: Tolerances are the reported spreads (SD across donors). Not tested on the dandiset.
+  criterion: Tolerances are the reported spreads (SD across donors). Not tested on the dandiset. The
+    human value is the mean and SD over the 5 human sections of each section's mean L2 plus L3
+    thickness, from the L1/L2 to the L3/L4 boundary line (Code6_cortical_depth_code_human.r,
+    L23_depth; the code prints 1058, 1293, 1387, 1073 and 1344 um). The paper does not say where the
+    mouse value of 1.06 mm comes from; the Methods (Quantification of soma size) describe only the
+    L1/L2 and L3/L4 borders, and the code's mouse sections have no white matter line, so the mouse
+    value and the ratio of 1.16 cannot be tested from the paper's materials and are not judged. The
+    mouse L2/3 thickness the code computes (Code7, 281, 223 and 257 um) is reported, not compared.
+    Reproduced when the human value is within tolerance; the outcome notes that the mouse value is
+    untested.
 - id: fig1b-density
   statement: Human supragranular neuron density is 27.7 +/- 4.5 thousand cells/mm3, highest in L2
     and halving to a minimum in mid L3, while mouse VISp L2/3 has about 6 times that density
@@ -264,7 +280,12 @@ claims:
     value: 253
     tolerance: 25.3
     unit: um2
-  criterion: Not tested on the dandiset.
+  criterion: Not tested on the dandiset. The quartiles are over all somata of a species pooled
+    across its sections (3 mouse, 5 human), as the code computes the values the text gives
+    (Code7_cortical_depth_code_mouse.r, quantile over the concatenated areas; it prints 44.7 and
+    96.5 um2 for mouse, 107.5 and 252.6 um2 for human, and a largest human soma of 886 um2). The
+    per-section quantiles the code also prints are reported, not judged. Reproduced when the four
+    quartiles are within tolerance and the largest human soma exceeds 850 um2.
 - id: fig1c-soma-variation
   statement: The variation of soma size in deep L3 is four times higher in human than in mouse.
   source: Results, Human supragranular cortex is more diverse than in mouse, paragraph 1; Figure 1c
@@ -278,7 +299,16 @@ claims:
     quantity: ratio of human to mouse SD of soma area in deep L3
     value: 4
     tolerance: 0.4
-  criterion: Not tested on the dandiset. The bins that make up deep L3 are not stated.
+  criterion: Not tested on the dandiset. The Methods do not say which bins make up deep L3 for this
+    ratio; the code settles it. Of the 20 bins of scaled depth (breaks every 0.05, Code6), deep L3
+    is the five bins whose centres lie in scaled depth -0.95 to -0.7 (centres -0.925 to -0.725,
+    normalized L2/3 depth 0.7 to 0.95). For each section and bin the SD of soma area is taken; these
+    SDs are averaged over the deep L3 bins and sections of each species, and the human mean is
+    divided by the mouse mean (Code7_cortical_depth_code_mouse.r, l3dex on het, printed as 4.0).
+    Reproduced when this ratio is within tolerance. As a variant, deep L3 as the bins with centres
+    deeper than the density minimum at normalized depth 0.575 (Methods, Quantification of soma
+    size), without the deepest bin, which the Methods drop for boundary effects, is run and
+    reported.
 - id: fig1f-frem3-heterogeneity
   statement: The human FREM3 t-type has more within-type transcriptomic heterogeneity (variance
     explained by PC1 above permuted data) than any other human or mouse supragranular t-type,
@@ -535,7 +565,12 @@ claims:
   - quantity: mouse morphological features with R2 above 0.15
     value: 12
     tolerance: 1.2
-  criterion: The t-type ANOVA on morphological features. Not tested on the dandiset.
+  criterion: The t-type ANOVA on all 60 morphological features of the code's tables, human LTK,
+    GLP2R and all FREM3 cells (the preprint's Methods; the code's revision uses superficial FREM3
+    only, shown as a variant) and mouse Adamts2, Rrad and Agmat cells. As in the code
+    (run_regressions in morpho_electro_feature_analysis.ipynb), a feature with no p-value (constant
+    among the cells) is dropped before the Benjamini-Hochberg correction, and R2 above 0.15 is
+    counted over the features kept. Not tested on the dandiset.
 - id: fig4-glp2r-sag
   statement: GLP2R neurons, like LTK neurons, lack firing rate adaptation and have higher input
     resistance, but unlike LTK neurons (which have no sag) they have pronounced sag.
@@ -633,7 +668,16 @@ claims:
   - quantity: test accuracy, mouse, combined features
     value: 0.60
     tolerance: 0.06
-  criterion: Not tested on the dandiset alone; it needs the morphological features.
+  criterion: Not tested on the dandiset alone; it needs the morphological features. The method of
+    edfig6-classifier-human-ephys (and edfig6-classifier-mouse-ephys), on the cells of the three
+    homologous types of each species with all 18 electrophysiological features and a reconstruction,
+    the 18 features and the 60 morphological features side by side, as in the code
+    (classifier_and_species_analysis.ipynb, "Human morpho-electric features" and "Mouse
+    morpho-electric features"; 72 human and 50 mouse cells in its tables). No morphological value is
+    missing in these cells, so the KNNImputer of the morphology-only classifier has no effect; the
+    code does not standardize the combined matrix, which leaves a random forest unchanged. The
+    notebook prints 0.686 for human and 0.640 for mouse over its 10 splits. Reproduced when both
+    mean accuracies are within tolerance.
 # --- FREM3 depth ------------------------------------------------------------------------------
 - id: fig5c-frem3-ephys-depth
   statement: In FREM3 neurons, 9 of 18 electrophysiological features correlate with normalized
@@ -685,7 +729,13 @@ claims:
   - quantity: morphological features correlated with depth at FDR below 0.01
     value: 28
     tolerance: 2.8
-  criterion: Not tested on the dandiset.
+  criterion: Not tested on the dandiset. The depth regression on all FREM3 cells with a
+    reconstruction and a normalized depth, for each of the 60 morphological features of the code's
+    table (morph_df.columns), the two soma location features included. As in the code
+    (run_regressions in morpho_electro_feature_analysis.ipynb), a feature with no p-value is dropped
+    before the Benjamini-Hochberg correction. Two features are constant among these cells
+    (apical_dendrite_pct_below_basal_dendrite_none, basal_dendrite_pct_above_apical_dendrite_none),
+    which leaves the paper's 58; the notebook prints 37 at FDR below 0.05 and 28 below 0.01.
 - id: fig5d-frem3-gene-depth
   statement: FREM3 gene expression varies with soma depth; 790 genes correlate with depth at FDR
     below 0.05, enriched for synaptic transmission, cell migration and neuron projection
@@ -751,7 +801,12 @@ claims:
   - quantity: morphological features with R2 above 0.4
     value: 20
     tolerance: 2
-  criterion: Not tested on the dandiset.
+  criterion: Not tested on the dandiset. The t-type ANOVA on deep FREM3, CARM1P1 and COL22A1 cells
+    with a reconstruction (CARM1P1 and COL22A1 not cut by depth, as in the code), for each of the 60
+    morphological features of the code's table. As in the code (run_regressions in
+    morpho_electro_feature_analysis.ipynb), a feature with no p-value is dropped before the
+    Benjamini-Hochberg correction (one, basal_dendrite_pct_above_apical_dendrite_none, in these
+    cells), and R2 above 0.4 is counted over the features kept; the notebook prints 24 and 20.
 - id: fig6c-carm1p1-upstroke-rin
   statement: CARM1P1 neurons have a faster AP upstroke than deep FREM3 and COL22A1 neurons, and a
     higher input resistance than deep FREM3 neurons.
@@ -806,7 +861,18 @@ claims:
   data: elsewhere
   where: Morphological features in GitHub AllenInstitute/patchseq_human_L23
     data/All_L23_Lockdown_all_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac
-  criterion: Not tested on the dandiset.
+  criterion: Not tested on the dandiset. The paper gives no measure, cell set or test for this
+    claim, and the code computes none. The readings it allows are these. Total dendritic length is
+    the sum of apical_dendrite_total_length_none and basal_dendrite_total_length_none per cell (the
+    code's table has no total). "All the L2 and L3 t-types" is (a) the five t-types with FREM3
+    whole, or (b) with FREM3 split at 0.575 into superficial and deep. Largest is by (i) the mean,
+    the paper's "on average" in the same sentence, or (ii) the median, over reconstructed cells,
+    with no test, since the paper reports none. The apical part ("shorter apical dendrite length on
+    average") is apical_dendrite_total_length_none below that of deep FREM3. Sparse branching of
+    COL22A1 is the fewest apical and basal branches (apical_dendrite_num_branches_none,
+    basal_dendrite_num_branches_none) among the three deep types, by the same mean or median.
+    Reproduced when CARM1P1 is largest and COL22A1 sparsest under every reading; methods
+    underspecified when the readings differ.
 - id: fig6e-deep-de-genes
   statement: 219 marker genes distinguish deep FREM3, CARM1P1 and COL22A1, 77 of them also found in
     Patch-seq cells, enriched for axon, synapse, calcium ion binding and extracellular matrix terms.

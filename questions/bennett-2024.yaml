@@ -1,0 +1,37 @@
+dandiset: "001051"
+paper: doi:10.1016/j.neuron.2024.06.015
+questions:
+- claim: fig7e-lags-straddle-zero
+  asked: 2026-11-01
+  question: The criterion judges "straddled zero" with the code's Wilcoxon signed-rank test of the
+    per-event lags against zero, a pair counting as straddling zero only when the test is not
+    significant. The paper names no test, and the Figure 7E legend shows a distribution of lags.
+    Does the claim say that the distribution of lags spans zero (a descriptive reading, judged on the
+    median lag or the spread of lags about zero), or that the median lag does not differ from zero?
+  passage: Time lags between VISp and MOp and their associated regions in the 3-7 Hz band straddled
+    zero lag, indicating that these areas did not consistently lead or follow activity in the other
+    network nodes (Figure 7E). (Results, paragraph 7 of the alpha section, top of page 13); (E)
+    Distribution of time lags in the 3-7 Hz band during VISp-triggered (left) and MOp-triggered (right)
+    events. (Figure 7 legend)
+  why: With 25 to 1143 events per pair the signed-rank test is significant for 94 of 102 pair results
+    (the code's own printed output is significant for all seven pairs), so the claim is not reproduced
+    as the criterion has it. Under a descriptive reading the median lags are small, -23 to +14 ms against
+    a 3 to 7 Hz cycle of 140 to 330 ms, but the fraction of positive lags reaches 0.97 for VISp-VISal and
+    0.12 for MOp-PO, so the outcome under that reading depends on the rule chosen.
+- claim: fig8d-cp-rf-larger-response
+  asked: 2026-11-01
+  question: The criterion takes the Methods' QC units (presence ratio above 0.95, isolation and
+    contamination thresholds, noise units removed) and names the code's filter (presence ratio above
+    0.9, no noise filter) as a variant. The figure's unit counts (80 CP-RF, 205 CP-noRF, 239 VISp) are
+    matched by the code's filter here (79, 206 and 239) and not by the Methods' QC (70, 162 and 218).
+    Should the code's filter be the criterion's unit selection for Figure 8D, and the expected counts
+    judged on it?
+  passage: CP RF 80 units, CP no RF 205, VISp 239 (Figure 8D panel labels); (D) Population visual
+    response of CP units with significant RFs (red), CP units without RFs (blue), and VISp units to a
+    full-field natural image presentation for 250 ms (Figure 8 legend); the code's
+    tensor_utils.apply_good_units_filter keeps presence_ratio > 0.9 with no noise filter (claims file
+    header).
+  why: Under the Methods' QC the CP-RF and CP-noRF counts are outside tolerance (80 +- 8, 205 +- 20.5)
+    and the claim is partially reproduced; under the code's filter all three counts are within one unit
+    of the paper's and the response difference holds (78 significant bins, all CP-RF higher), which would
+    make it reproduced. The same choice decides the units of fig8d-response-latencies.

@@ -32,7 +32,13 @@
 #     is found; an integer n for a rewarded visit, the n-th reward of the block (1 is the
 #     search trial that finds the goal); n + 0.3, 0.5 or 0.8 for a repeat error after n
 #     rewards; n + 0.9 for the final unrewarded visit to the old goal. Search is phase <= 1,
-#     repeat is phase > 1. Lockout (timeout) trials are dropped; the past arm is the last arm
+#     repeat is phase > 1. The first valid trial after a goal change always closes the old
+#     block, whatever arm it visits (the trial's goal field already holds the new goal, and
+#     both label_trial_interval.m, through its goalbounds, and dfa_ripcontent.m, through
+#     "[1 ctemp(1:end-1)]", give that trial to the old block). It is n + 0.9 when it visits
+#     the old goal and n + 0.3, 0.5 or 0.8 when it visits another arm; the next trial is the
+#     first search trial of the new block, even when it is the rat's first visit to the old
+#     goal. Lockout (timeout) trials are dropped; the past arm is the last arm
 #     visited, lockouts included (prevarm column 2), except in Figure 7 (column 1).
 #   - Replay events: SWRs during immobility (< 4 cm/s) inside a trial's home, center port
 #     (delay and reward) or outer port interval. A SWR is spatially continuous when the
@@ -98,9 +104,16 @@ claims:
     value: 166
     tolerance: 16.6
   criterion: Sessions are the full-task sessions of each subject, less sessions 1 and 3 of
-    subject 1 (Methods, Spatial decoding). Trial blocks are counted as in dfs_ripcontent.m part
+    subject 1 (Methods, Spatial decoding). The paper does not say how sessions are numbered;
+    the code selects them with a $gooddecode flag and a per-animal $session field of the task
+    records, neither given in the repository. Two readings are allowed. (a) The first and third
+    run sessions of subject 1 in order of recording. (b) The two sessions the Methods describe,
+    the first with fewer than 75% of movement frames decoded on the same segment, the second
+    with not all arms visited. Both are run and reported; when they give different outcomes
+    the claim follows (b), which the Methods state, and (a) is a variant. Trial blocks are counted as in dfs_ripcontent.m part
     2, blocks with at least four rewards at the goal (a trial of task phase >= 4, the code's
-    any(ctphase>=4)). Reproduced when
+    any(ctphase>=4)), with the first valid trial after each goal change in the old block, as
+    the opening comment says. Reproduced when
     all eight counts are within tolerance; partially reproduced when the session counts are and
     the block counts are not.
 - id: fig1ef-reward-rate

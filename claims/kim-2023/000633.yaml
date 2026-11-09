@@ -1,0 +1,281 @@
+# Claims for Kim, Semenov, Kiester, Keppler, Ibey, Bixler, Colunga Biancatelli & Pakhomov (2023),
+# Int. J. Mol. Sci. 24, 10921, on dandiset 000633.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (open access, CC BY) as served by Europe PMC (PMC10341945),
+# full text with Results, Discussion, Materials and Methods and figure legends. The paper has no
+# supplement. No PDF was available, so the numbers printed only inside the figures (the
+# p-values of Figure 3, the field maps of Figure 7) were not read. The paper links no code; its
+# Data Availability Statement says the data are available on request from the corresponding
+# author. Methods 4.4 refers to Kim et al. 2023 (Bioelectrochemistry 149, 108319) for the staining
+# and analysis protocols; that paper was not read, and details it may fix are named as open below.
+#
+# Data the paper used, as it reports them:
+# - Figure 2 (Section 2.1). Bovine pulmonary artery endothelial (BPAE) cell monolayers in 35 mm
+#   glass-bottom dishes, a triangular array of three hollow stainless-steel needles (1.5 mm
+#   outside diameter). Trains of five single 600 ns pulses (control, one base electrode
+#   energized) or five paired 600 + 600 ns pulses (base electrodes energized in alternation), at
+#   1 Hz or 833 kHz, 5 to 10 kV/cm. YO-PRO-1 (YP) uptake in 32 ROIs of 200 x 200 um along the
+#   bisecting line; each ROI's angle of field-vector change comes from the Sim4Life simulation
+#   (Methods 4.3, Figure 7B,C), which is not deposited. Paired-pulse uptake is expressed as % of
+#   the single-pulse uptake in the same ROI. Mean and s.e., n = 3.
+# - Figure 3 (Section 2.2). BPAE monolayers, a square array of four 1.5 mm hollow needles. Trains
+#   of four paired 600 + 600 ns pulses (50 ns interval), 10 kV/cm at the array center, at 1 Hz or
+#   770 kHz, co-directional or cross-directional (90 degrees). YP in one 200 x 200 um ROI at the
+#   center. Mean and s.e., n = 6, two-tailed Student's t-test.
+# - Figure 4 (Section 2.3). BPAE monolayers, triangular array (base electrodes E1 and E2, apex
+#   ground). (A) five single 600 ns pulses to E1, 833 kHz, 4 kV; (B, C) five paired 600 + 600 ns
+#   pulses to E1 and E2 in alternation, 833 kHz, 4 kV. Whole-sample images stitched from 216
+#   tiles (10x, 0.38 NA), DAPI channel (MemBrite Fix 405/430, all cells) and FITC channel (YP);
+#   propidium iodide marked cells dead before treatment. Shown as images only, with no
+#   quantification. The dandiset (title "The difference in electroporation patterns produced by
+#   a train of single pulses and a train of paired pulses", 2 files, 2 subjects, Bos taurus)
+#   is meant to hold this experiment.
+# - Figure 5 (Section 2.4). CHO-K1 cells loaded with FluoVolt, triangular array of 0.5 mm
+#   tungsten rods, 12 pulses of 300 ns to each base electrode in alternation (1.67 MHz), 50 V,
+#   about 0.15 kV/cm at the cells. Strobe imaging, 220 photos at 50 ns steps over 11 us,
+#   emission at opposite cell poles normalized to whole-cell emission, averaged over 5 cells.
+#
+# Method details the paper fixes for the image analysis (Methods 4.4): ROIs of 200 x 200 um;
+# "spontaneous" YP uptake measured within the hollow electrodes' footprints, where cells were
+# shielded from the field. The 1.5 mm outside diameter of the needles fixes the image scale if
+# the files do not.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000633"
+paper: doi:10.3390/ijms241310921
+claims:
+- id: fig2-cancellation-at-180
+  statement: At a 180 degree change of field direction, trains of paired pulses electroporate
+    less than trains of single pulses, about 2-fold less at 1 Hz and about 20-fold less at
+    833 kHz, so cancellation is stronger at the higher rate.
+  source: Results, Section 2.1, paragraph 2; Figure 2
+  quote: Maximum cancellation was expectedly observed at the 180° vector change, reducing YP uptake
+    compared to single-pulse trains 2-fold at 1 Hz and as much as 20-fold at 833 kHz
+  data: with_inputs
+  expected:
+  - quantity: single-pulse over paired-pulse YP uptake at 180 degrees, 1 Hz
+    value: 2
+    tolerance: 0.2
+    unit: fold
+  - quantity: single-pulse over paired-pulse YP uptake at 180 degrees, 833 kHz
+    value: 20
+    tolerance: 2
+    unit: fold
+  criterion: As in Section 2.1 and the Figure 2 legend, YP uptake per ROI under paired pulses as
+    % of single pulses in the same ROI, mean over the n = 3 experiments, with each ROI's angle
+    taken from the field simulation of Methods 4.3 (an outside input, not deposited). Open
+    details, each a reading to run. (1) Spontaneous uptake measured in the electrode footprints
+    (Methods 4.4) is (a) subtracted from each ROI before the ratio, or (b) not subtracted. (2)
+    The 180 degree value is (a) the ROI nearest the base, or (b) the value at 180 degrees read
+    from a fit of the curve (the paper fitted in Grapher 16 but does not name the function).
+    Reproduced when both folds fall within tolerance under one reading.
+- id: fig2-crossover-angle
+  statement: As the angle falls from 180 degrees, cancellation weakens, and paired-pulse trains
+    equal single-pulse trains at about 160 degrees at 1 Hz and about 130 degrees at 833 kHz.
+  source: Results, Section 2.1, paragraph 2; Figure 2
+  quote: Cancellation weakened as the angle was reduced, and at about 160° (1 Hz) or 130° (833
+    kHz), the effects of paired-pulse trains became the same as those of single-pulse ones
+  data: with_inputs
+  depends_on:
+  - fig2-cancellation-at-180
+  expected:
+  - quantity: angle where paired equals single pulses, 1 Hz
+    value: 160
+    tolerance: 16
+    unit: degree
+  - quantity: angle where paired equals single pulses, 833 kHz
+    value: 130
+    tolerance: 13
+    unit: degree
+  criterion: The curves of claim fig2-cancellation-at-180, under its readings. The crossing is
+    the angle where the mean curve crosses 100%, found by (a) linear interpolation between the
+    two adjacent ROIs (a standard choice the paper does not fix) or (b) the fitted curve.
+    Reproduced when both angles fall within tolerance under one reading.
+- id: fig2-facilitation-plateau
+  statement: Below the crossover, paired pulses facilitate electroporation, up to about three
+    times the single-pulse effect at 90 to 100 degrees at both rates, and the effect then stays
+    on a plateau down to 0 degrees.
+  source: Results, Section 2.1, paragraph 2; Figure 2; Discussion, paragraph 1
+  quote: Further reduction of the angle enhanced electroporation, up to about three-fold at 90–100°
+    for both nsEP frequencies, followed by a plateau all the way to 0°
+  data: with_inputs
+  depends_on:
+  - fig2-cancellation-at-180
+  expected:
+  - quantity: paired over single-pulse YP uptake at 90 to 100 degrees, 1 Hz
+    value: 300
+    tolerance: 30
+    unit: percent
+  - quantity: paired over single-pulse YP uptake at 90 to 100 degrees, 833 kHz
+    value: 300
+    tolerance: 30
+    unit: percent
+  criterion: The curves of claim fig2-cancellation-at-180, under its readings. The value at 90 to
+    100 degrees is (a) the mean of the ROIs whose angle lies in 90 to 100 degrees or (b) the ROI
+    nearest 95 degrees. The paper gives no test or bound for the plateau; it is read as the mean
+    over the ROIs below 90 degrees lying within the same tolerance (270 to 330%) at each rate, a
+    choice that uses the default 10% tolerance of the three-fold value.
+    Reproduced when both values and both plateaus hold under one reading; partially reproduced
+    when the three-fold values hold and the plateau does not.
+- id: fig2-60-fold-co-counter
+  statement: At 833 kHz co-directional pulse pairs electroporate about 60 times more than
+    counter-directional ones.
+  source: Results, Section 2.3, paragraph 1; Figure 2
+  quote: The profound, 60-fold difference in electroporation efficiency of co- and
+    counter-directional nsEPs at 833 kHz
+  data: with_inputs
+  depends_on:
+  - fig2-cancellation-at-180
+  - fig2-facilitation-plateau
+  expected:
+    quantity: co-directional over counter-directional paired-pulse uptake, 833 kHz
+    value: 60
+    tolerance: 6
+    unit: fold
+  criterion: The 833 kHz curve of claim fig2-cancellation-at-180, under its readings. The paper
+    does not say which co-directional value is meant; the readings are the ratio to the 180
+    degree value of (a) the plateau value (claim fig2-facilitation-plateau) or (b) the ROI
+    nearest 0 degrees. Reproduced when the ratio is within tolerance under one reading.
+- id: fig3-1hz-co-cross-same
+  statement: At 1 Hz, paired pulses that keep their direction and pairs whose second pulse turns
+    by 90 degrees electroporate the cell monolayer equally.
+  source: Results, Section 2.2, paragraph 1; Figure 3
+  quote: Consistently with the measurements in Figure 2 , co- and cross-directional pulses at 1 Hz
+    had the same electroporation efficiency
+  criterion: A claim of absence. YP uptake in the 200 x 200 um ROI at the array center (Methods
+    4.4), n = 6 per group, co-directional against cross-directional at 1 Hz with the paper's
+    two-tailed Student's t-test (Figure 3 legend), read as the unpaired test with equal
+    variances, which is what the name denotes; the paper reports no pairing of samples. The
+    p-values are printed in Figure 3 only and were not read. Spontaneous uptake measured in the
+    electrode footprints is subtracted, as Methods 4.4 says it was measured to account for it;
+    the unsubtracted values are shown as a variant only. The threshold is not stated; the
+    conventional p < 0.05 is used. Reproduced when the test finds no difference; the difference
+    of means is reported either way.
+- id: fig3-770khz-co-enhanced
+  statement: Raising the rate to 770 kHz increases electroporation by co-directional pulse pairs,
+    through temporal summation of the induced membrane potential.
+  source: Results, Section 2.2, paragraph 1; Figure 3
+  quote: Increasing the pulse frequency to 770 kHz enhanced electroporation by the co-directional
+    pulses because of the temporal summation of the induced membrane potential
+  criterion: Measure and test as in claim fig3-1hz-co-cross-same, comparing co-directional
+    pairs at 770 kHz with co-directional pairs at 1 Hz. Reproduced when the 770 kHz mean is
+    higher and the two-tailed t-test gives p < 0.05.
+- id: fig3-770khz-cross-same-as-1hz
+  statement: Cross-directional pulse pairs at 770 kHz are as effective as at 1 Hz, so charging two
+    different regions of the membrane does not summate.
+  source: Results, Section 2.2, paragraph 1; Figure 3
+  quote: Interestingly, charging two different regions of the cell membrane did not cause
+    summation, making cross-directional pulses at 770 kHz just as effective as at 1 Hz
+  criterion: A claim of absence, judged as in claim fig3-1hz-co-cross-same, comparing
+    cross-directional pairs at 770 kHz with cross-directional pairs at 1 Hz. Reproduced when the
+    t-test finds no difference; the difference of means is reported either way.
+- id: fig4a-single-pulse-follows-field
+  statement: Under a train of five single pulses applied to one base electrode (833 kHz, 4 kV),
+    YP uptake is distributed as the electric field strength map.
+  source: Results, Section 2.3, paragraph 1; Figure 4A
+  quote: In control cell monolayers exposed to a train of five single pulses applied to one of the
+    base electrodes (833 kHz, 4 kV), the distribution of YP fluorescence ( Figure 4 A) simply
+    followed the electric field strength map
+  data: with_inputs
+  criterion: The paper shows this as an image beside the simulated field map (Methods 4.3, Figure
+    7B), which is not deposited and whose values the text does not give; the comparison needs that
+    map as an outside input, computed as Methods 4.3 states (Sim4Life, 1.6 S/m solution 3.5 mm
+    deep, 1 V on the energized electrode, field in the plane 1 um above the glass, scaled to 4
+    kV). The paper names no measure of agreement. Readings, each to run. Background-subtracted
+    YP (footprint background, Methods 4.4) in 200 x 200 um ROIs over the image, compared with the
+    field in the same ROIs by (a) Spearman rank correlation or (b) the order of the three
+    electrode neighbourhoods by YP matching their order by field. Both measures are choices,
+    as the paper names none. Reproduced when both readings agree with the map (correlation
+    positive with p < 0.05, and the same order), not reproduced when both fail, and
+    methods_underspecified when they disagree. Without the map the claim is blocked.
+- id: fig4bc-paired-pulse-focal-apex
+  statement: Under five paired pulses applied to the two base electrodes in alternation (833 kHz,
+    4 kV), electroporation is strong near the grounded apex electrode and weak or absent near the
+    base electrodes, despite the strong field there.
+  source: Results, Section 2.3, paragraph 1; Figure 4B,C; Discussion, paragraph 2
+  quote: energizing two base electrodes in alternation (five paired pulses, 600 + 600 ns, 833 kHz,
+    4 kV) produced a strong effect near the apex electrode (ground) but weak or no effect near
+    the base electrodes, despite the strong electric field there
+  criterion: The paper shows this as images only (Figure 4B and the 3D rendering in 4C) and gives
+    no measure. From Methods 4.4, YP intensity in 200 x 200 um ROIs with the footprint
+    background subtracted. How near "near" is, is open; the readings are ROIs centered (a) 100
+    um and (b) 500 um outside the edge of each electrode footprint (1.5 mm needles), on the line
+    from that electrode toward the array center. Reproduced when, under both readings, the YP
+    near the apex in the paired-pulse image exceeds that near each base electrode, and the ratio
+    of apex to base YP is higher in the paired-pulse image than in the single-pulse image of
+    Figure 4A (the contrast the paper draws between the panels); not reproduced when either
+    fails under both readings; the readings disagreeing makes the claim methods_underspecified.
+    The values near each electrode in both images are reported.
+- id: fig4-comet-shape
+  statement: Under paired pulses the electroporated cells form a comet-shaped region pointing from
+    the apex electrode towards the base.
+  source: Discussion, paragraph 2; Figure 4B,C
+  quote: The electroporated cells formed a comet-shaped region pointing from the apex electrode
+    towards the base
+  depends_on:
+  - fig4bc-paired-pulse-focal-apex
+  criterion: Shown in images only, with no measure. The paper does not say what counts as
+    electroporated; the readings for the electroporated region are background-subtracted YP
+    above (a) half and (b) a quarter of its maximum in the paired-pulse image, after smoothing
+    over 200 x 200 um (the ROI size of Methods 4.4). Reproduced when, under both readings, the
+    region touches the apex footprint and extends further along the bisecting line toward the
+    base than across it.
+- id: fig5-base-sawtooth
+  statement: Cells between the base electrodes show sawtooth changes of membrane potential in
+    step with the alternating pulses, about a 10% rise of FluoVolt emission at the cathode-facing
+    pole and a 10% fall at the anode-facing pole.
+  source: Results, Section 2.4, paragraph 2; Figure 5
+  quote: Cells placed between the base electrodes displayed sawtooth-like changes in membrane
+    potential in synchrony with the applied pulses ... Depolarization at the cathode-facing pole
+    of the cell manifested as a ~10% emission increase, and hyperpolarization at the
+    anode-facing pole caused a ~10% emission decrease
+  expected:
+  - quantity: peak FluoVolt emission increase, cathode-facing pole, cells between base electrodes
+    value: 10
+    tolerance: 1
+    unit: percent
+  - quantity: peak FluoVolt emission decrease, anode-facing pole, cells between base electrodes
+    value: 10
+    tolerance: 1
+    unit: percent
+  criterion: As in Methods 4.5 and the Figure 5 legend, emission at the two opposite poles along
+    the field gradient, normalized to whole-cell emission, mean of 5 cells over the 220 time
+    points. The peak is (a) the largest excursion over the train or (b) the mean of the
+    per-pulse peaks (the paper does not say). Reproduced when both magnitudes are within
+    tolerance under one reading and the sign of the change alternates with each pulse.
+- id: fig5-apex-larger-polarization
+  statement: Cells near the apex reach a polarization of about 25% FluoVolt emission change, more
+    than twice that between the base electrodes, which follows the envelope of the train and not
+    its individual pulses.
+  source: Results, Section 2.4, paragraph 2; Figure 5
+  quote: In stark contrast, the cells near the apex reached a much higher polarization (~25% change
+    in FluoVolt emission), which followed the envelope of the pulse train but not the individual
+    pulses of it
+  depends_on:
+  - fig5-base-sawtooth
+  expected:
+    quantity: peak FluoVolt emission change, cells near the apex
+    value: 25
+    tolerance: 2.5
+    unit: percent
+  criterion: As in claim fig5-base-sawtooth, with its readings. Reproduced when the apex value is
+    within tolerance, exceeds twice the base value, and the apex trace keeps one sign through the
+    train. How to judge "not the individual pulses" is not fixed by the paper; it is reported as
+    the size of the pulse-to-pulse alternation relative to the peak, without a threshold.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3-1hz-co-cross-same, removed the paired t-test reading, which the paper does not suggest (Figure 3 legend names a two-tailed Student's t-test and reports no pairing), and fixed footprint background subtraction as the measure since Methods 4.4 says it was measured to account for spontaneous uptake; an absence claim is judged on the paper's test alone (protocol step 3), so the unsubtracted values are a variant only.
+  - fig3-770khz-co-enhanced, now refers to the measure and test of fig3-1hz-co-cross-same without the readings removed there.
+  - fig4a-single-pulse-follows-field, the criterion gave only the reproduced case; added not reproduced when both readings fail and methods_underspecified when they disagree, as the protocol requires, and marked both measures as choices.
+  - fig2-facilitation-plateau, marked the 270 to 330% band for the plateau as a choice taken from the default tolerance, since the paper gives no bound.
+  - Checked all quotes, sources, expected values and tolerances against the text; the statistics fields are correctly absent (the only tests, in Figure 3, are printed in the figure and not in the text). All main findings of the Results, the abstract and the Discussion have a claim.
+  - Open, not settled. The measures for the image-only findings of Figure 4 (Spearman correlation and electrode-neighbourhood order for 4A, the 100 and 500 um distances for 4B,C, the half and quarter maximum thresholds for the comet shape) are not given by the paper; they are named as readings, and an outcome resting on them carries that caveat.
+  - Open, not settled. Figures 2 and 4A need the per-ROI field angle and the field map of the Sim4Life simulation (Methods 4.3), which is not deposited; Kim et al. 2023 (Bioelectrochemistry 149, 108319), to which Methods 4.4 defers for the analysis, was not read.
+  - Open, not settled. The Figure 5 legend names Cell 1 and Cell 2 locations but the text does not say which is near the apex; this must come from the figure inset or the data.

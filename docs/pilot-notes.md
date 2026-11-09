@@ -376,3 +376,48 @@ the claims file, and report where it misreads the paper.
 - [000019, Bouchard et al. 2013](pilot-notes/bouchard-2013-01.md)
 - [000034, Buccino et al. 2020](pilot-notes/buccino-2020-01.md)
 - [000128, Churchland et al. 2010](pilot-notes/churchland-2010-01.md)
+- [000036, Mayner et al. 2022](pilot-notes/mayner-2022-01.md)
+
+## Protocol pilot-12 (2026-10-27): blind repeat attempts
+
+A repeat attempt used to start from the attempt before it: its author read the
+earlier record, edited the earlier entry in place, and said for each earlier
+finding whether it was fixed, with the earlier outcome next to each new one.
+That anchored it. An error in the earlier attempt was re-checked, not
+questioned; a problem the earlier attempt missed was less likely to be looked
+for; and two attempts on the same version could not be counted as two
+readings, which the registry's paper needs to measure how far results repeat
+(the attempts on 001754 are the example: attempt 03 marks each of its findings
+"still present" or "new").
+
+Now the author's runs are blind to earlier attempts (`tools/blind.sh` takes
+them, and the history, out of the checkout), and a separate run, `reconcile`,
+compares the verified attempt with the one before it, in a structured
+`reconciliation` block: each earlier finding fixed, partly fixed, still present
+or not checked, with a pointer to the new finding; findings the blind attempt
+missed but the comparison found are marked `found: on_prompt`; outcomes that
+differ get a reason. Finding statements no longer carry the comparison in
+their opening words.
+
+
+## Protocol pilot-13 (2026-10-31): a notebook may take an hour
+
+CI used to fail a notebook that took more than 30 minutes, and the limit was
+shaping results more than it should. Authors cut shuffles and fits short to
+stay under it (000447, 000678), split analyses across notebooks (000467),
+dropped neurons (000579) or recorded claims as `too_large` (000458, 000248),
+and 000673's verifier-2 run failed when its LFP notebook took 42 minutes. The
+limit is now 60 minutes a notebook (`tools/entry.py --max-minutes`), with CI's
+run job raised to 240 minutes to fit an entry's notebooks. The aim stays
+under ten minutes, and the author's time budget is unchanged.
+
+## Protocol pilot-14 (2026-11-09): papers first, and every dataset a paper rests on
+
+Records were filed by dataset, so a paper whose data are split across dandisets
+(Semenov 2026 on 7, Churchland 2010 on 4) was tested once per dandiset, each
+time with its own claims, and a paper that reuses a dataset had nowhere to go.
+Records are now filed by paper (docs/paper-first.md): one claims file for the
+paper, claims naming their datasets only when there are several, and one
+attempt that uses as many of the paper's datasets as can be loaded. A dataset
+it could not use is listed under `missing_datasets`, and the claims that need
+it are blocked with `dataset_missing`, so that a later attempt can add it.

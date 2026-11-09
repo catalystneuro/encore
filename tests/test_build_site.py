@@ -42,25 +42,33 @@ def test_a_verification_that_disagrees_on_any_claim_does_not_count():
 
 def broken_links(root: Path) -> list[str]:
     """Internal links and anchors in the built site that do not resolve."""
-    ids = {}
     pages = sorted(root.rglob("*.html"))
-    for page in pages:
-        ids[page] = set(re.findall(r'\bid="([^"]+)"', page.read_text()))
+    texts = {page: page.read_text() for page in pages}
+    # Each page's anchors, by its resolved path, which is how links are resolved below.
+    ids = {page.resolve(): set(re.findall(r'\bid="([^"]+)"', text)) for page, text in texts.items()}
+    found: dict[Path, Path | None] = {}   # a resolved link -> the file it reaches, or None
+
+    def reach(target: Path) -> Path | None:
+        if target not in found:
+            file = target / "index.html" if target.is_dir() else target
+            found[target] = file if file.is_file() else None
+        return found[target]
+
     broken = []
-    for page in pages:
-        for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', page.read_text()):
+    for page, text in texts.items():
+        for href in re.findall(r'<a\b[^>]*\bhref="([^"]+)"', text):
             href = href.replace("&amp;", "&")
             if re.match(r"[a-z]+:", href):
                 continue                                   # external
             path, _, fragment = href.partition("#")
             path = path.split("?")[0]
-            target = (page.parent / path).resolve() if path else page.resolve()
-            if target.is_dir():
-                target = target / "index.html"
-            if not target.is_file():
+            if path.startswith("/"):                       # from the site's root (the 404 page)
+                target = reach((root / path.lstrip("/")).resolve())
+            else:
+                target = reach((page.parent / path).resolve() if path else page.resolve())
+            if target is None:
                 broken.append(f"{page.relative_to(root)}: {href}")
-            elif fragment and target.suffix == ".html" and fragment not in ids.get(target, ids.get(
-                    next((p for p in pages if p.resolve() == target), page), set())):
+            elif fragment and target.suffix == ".html" and fragment not in ids.get(target, set()):
                 broken.append(f"{page.relative_to(root)}: {href} (no such anchor)")
     return broken
 
@@ -107,6 +115,29 @@ def test_pages_load_nothing_from_other_sites(built):
     for page in out.rglob("*.html"):
         text = page.read_text()
         assert "<script src=\"http" not in text and "<link rel=\"stylesheet\" href=\"http" not in text
+        assert site.BEACON_SRC not in text   # no analytics token was given
+
+
+def test_page_views_are_counted_only_on_the_published_site():
+    data = {"demo": False, "noindex": False, "analytics": "abc123"}
+    assert 'data-cf-beacon=\'{&quot;token&quot;: &quot;abc123&quot;}\'' in site.beacon(data)
+    assert site.beacon({**data, "analytics": ""}) == ""
+    assert site.beacon({**data, "noindex": True}) == ""
+    assert site.beacon({**data, "demo": True}) == ""
+
+
+def test_crawlers_get_the_sitemap_and_skip_the_previews(built):
+    _, out = built
+    robots = (out / "robots.txt").read_text()
+    assert "Disallow: /pr-preview/" in robots and f"Sitemap: {site.SITE_URL}sitemap.xml" in robots
+    assert site.robots({"demo": False, "noindex": True}) == "User-agent: *\nDisallow: /\n"
+
+
+def test_the_not_found_page_works_at_any_depth_and_is_not_indexed(built):
+    _, out = built
+    text = (out / "404.html").read_text()
+    assert '<meta name="robots" content="noindex">' in text
+    assert 'href="/assets/' in text and 'href="/datasets/"' in text
 
 
 def test_every_claim_has_an_anchor_on_its_dandiset_page(built):
@@ -176,7 +207,7 @@ def test_every_page_declares_the_favicon(built):
         if 'http-equiv="refresh"' in text:      # a redirect from where a page used to be
             continue
         href = re.search(r'<link rel="icon" href="([^"]+)"', text).group(1)
-        assert (page.parent / href).resolve().is_file(), page
+        assert ((out / href.lstrip("/")) if href.startswith("/") else (page.parent / href)).resolve().is_file(), page
 
 
 def test_findings_are_reached_from_the_dandisets_list(built):
@@ -221,6 +252,15 @@ def test_claims_checked_since_an_attempt_was_deprecated_count_as_read_again():
     assert old["claims"] == ("todo", "to read again") and old["check"][0] == "todo"
     assert new["claims"] == ("done", "read again") and new["check"] == ("done", "ready")
     assert old["attempt"][0] == new["attempt"][0] == "deprecated"
+
+
+def test_a_named_paper_the_manifest_has_not_checked_is_not_called_unnamed():
+    def paper(target):
+        data = {"targets": [{"key": "figshare:1", "label": "FIGSHARE:1", "name": "x", **target}], "attempts": [],
+                "pipeline": {"papers": {}, "questions": {}, "checks": {}}}
+        return site.pipeline_rows(data)[0]["state"]["paper"]
+    assert paper({"papers": ["10.1038/x"]}) == ("waiting", "not checked")
+    assert paper({"papers": []}) == ("waiting", "no paper named")
 
 def test_the_pipeline_has_a_row_per_target(built):
     data, out = built
@@ -343,8 +383,18 @@ def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
     assert every["datasets"] == [2, 0, 0] and every["attempts"] == [2, 0, 1]
     # Claims and findings come from each dandiset's current attempt, on its date.
     assert every["claims"] == [1, 0, 2] and every["findings"] == [1, 0, 0]
-    assert p["series"]["catalystneuro"]["datasets"] == [1, 0, 0]
-    assert 'data-metric="findings"' in site.progress_panel(data)
+    # The overview no longer splits out CatalystNeuro conversions; the datasets page's filter still does.
+    assert list(p["series"]) == ["all"]
+    panel = site.progress_panel(data)
+    assert 'data-metric="findings"' in panel and "data-subset" not in panel
+    # Attempts are also counted by protocol version, in version order, with "not recorded" last.
+    data["attempts"][0]["agent"] = {"protocol": "pilot-10"}
+    data["attempts"][2]["agent"] = {"protocol": "pilot-9"}
+    p = site.progress_data(data)
+    assert p["protocols"] == ["pilot-9", "pilot-10", "not recorded"]
+    every = p["series"]["all"]
+    assert every["protocol:pilot-10"] == [1, 0, 0] and every["protocol:pilot-9"] == [0, 0, 1]
+    assert every["protocol:not recorded"] == [1, 0, 0]
 
 
 def test_the_overview_shows_the_dashboard(built):
@@ -437,6 +487,11 @@ def test_link_claims_are_counted_apart_from_the_papers_findings():
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     assert site.outcome_counts(attempt, "link")["reproduced"] == 1
     assert "1 check that the dataset is the data behind the paper" in site.outside_note([attempt])
+    # The overview folds them into a details block that names each group and its count.
+    folded = site.outside_note([attempt], collapsed=True)
+    assert folded.startswith('<details class="separate">')
+    assert "claims using outside data (1) and checks of the link to the paper (1)</summary>" in folded
+    assert "<details" not in site.outside_note([attempt])
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
@@ -447,6 +502,14 @@ def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
     link = site.claim_item({**claim, "inferred": None, "kind": "link"}, "../")
     assert "checks the link to the paper’s data" in link
 
+
+
+def test_an_outcome_that_rests_on_an_assumption_says_so():
+    claim = {"claim": "t", "statement": "Few respond.", "source": "Figure 2", "outcome": "reproduced",
+             "blocked_by": None, "notes": "N.", "deviations": ["Assumed a 1 s window, the paper's Figure 3."],
+             "disagreed": False}
+    assert "rests on an assumption" in site.claim_item({**claim, "assumed": True}, "../")
+    assert "rests on an assumption" not in site.claim_item(claim, "../")
 
 def test_the_schema_keeps_quotes_inferences_and_links_apart():
     from jsonschema import Draft202012Validator
@@ -544,3 +607,19 @@ def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
     assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
     assert "2 chains are running now" in page
     assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+
+
+def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
+    earlier = {"id": "000001-demo-01", "findings": [{"kind": "data_missing", "statement": "No position."},
+                                                    {"kind": "metadata_error", "statement": "Wrong age."}]}
+    later = {"id": "000001-demo-02", "findings": [{"kind": "data_missing", "statement": "Position missing.", "found": None},
+                                                  {"kind": "other", "statement": "Duplicates.", "found": None}],
+             "reconciliation": {"earlier": "000001-demo-01", "blind": True, "findings": [
+                 {"finding": 1, "status": "still_present", "now": 1, "note": "Same files."},
+                 {"finding": 2, "status": "fixed", "note": "Age is set."}],
+                 "outcomes": [{"claim": "c", "earlier": "reproduced", "note": "New version."}]}}
+    site.reconcile([earlier, later])
+    assert [f["status"] for f in later["findings"]] == ["still_present", "new"]
+    assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
+                                                "kind": "metadata_error"}]
+    assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"

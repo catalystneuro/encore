@@ -1,0 +1,721 @@
+# Claims for Tingley, McClain, Kaya, Carpenter & Buzsaki (2021), Nature 597, 82-86,
+# doi:10.1038/s41586-021-03811-w, on dandiset 000233.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-10-28,
+# protocol pilot-12 as stated in docs/protocol.md (Reader).
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC9214835, NIHMS1804409) as
+# supplied under paper/, with the main text, Methods, Data and Code availability, and the legends
+# of Figures 1 to 4 and Extended Data Figures 1 to 10, and the Supplementary Information PDF
+# (Supplementary Table 1, the list of animals, and the Supplementary Discussion). No PDF of the
+# main article was supplied, so the figures themselves were not seen; claims rest on the text and
+# legends. The Supplementary Discussion cites some panels under older numbers ("Figure 2I-K" for
+# the fasting experiment, now Extended Data Fig. 4d-f; "Extended Data Figure 4" for SPW-R rate
+# rhythms, now Extended Data Fig. 3).
+#
+# Code: the paper links https://github.com/buzsakilab/buzcode (Code availability; SPW-R detection
+# names bz_FindRipples.m). Read at commit e615663b2b100782d1f378580f6d7aaa35c12937. It holds the
+# lab's general toolbox: the ripple detector (analysis/SharpWaveRipples/bz_FindRipples.m), the
+# sleep scorer (detectors/detectStates/SleepScoreMaster), the EMG-from-LFP estimate
+# (detectors/bz_EMGFromLFP.m) and a circular shuffle (utilities/bz_shuffleCircular.m, each row
+# shifted by a random number of samples). It holds no code for the glucose signal, the
+# cross-correlograms, the regression models or the DREADD analysis. The detector's defaults
+# (passband 130-200 Hz, thresholds 2 and 5 s.d., maximum duration 100 ms, minimum 20 ms) differ
+# from the Methods (120-200 Hz, 2 and 5 s.d., 15 to 250 ms); the Methods are followed, and the
+# Methods say the parameters used are stored with each session's ripple events.
+#
+# Data the paper used. Adult Long Evans rats in their home cage, ad libitum food and water, 12-h
+# light-dark cycle with lights on at 07:00, recorded continuously for up to 7 days (Methods). The
+# Methods count 45 rats: 10 chronic ripple and glucose recordings, 8 optogenetic induction of
+# ripples in dorsal hippocampus (5 CA1, 3 CA3), 6 DREADD (hM4Di) in lateral septum and 7 CNO
+# controls without virus, 3 simultaneous dorsal and ventral CA1, 6 posterior parietal cortex (PPC)
+# optogenetic controls, and 5 hippocampus and lateral septum unit recordings from ref. 26.
+# Supplementary Table 1 lists rats 1 to 45 with somewhat different counts (9 ripple and glucose
+# rats, 7 lateral-septum and 3 medial-septum DREADD rats, 8 CA1-implanted DREADD controls, 4
+# dorsal and ventral rats, 6 PPC rats), and Extended Data Fig. 7e says 5 PPC rats. The main
+# correlation is reported for n = 30 rats (Results; Fig. 2e; Extended Data Figs 5d and 9e), which
+# no single cohort in the Methods matches.
+# Measured variables: wideband signals (Intan RHD2000, 20 kHz), analysed at 1,250 Hz; CA1 SPW-R
+# events (start, peak, stop, amplitude, duration, frequency); brain state (NREM, wake) from the
+# sleep scorer; head accelerometer; an EMG proxy (high-pass coherence); interstitial glucose as
+# the current (nA) of a Medtronic iPro2 sensor on the back, with a single tail-vein blood reading
+# per placement used to convert current to mg/dl; optogenetic stimulation times, whose rate was
+# drawn at random for each 5-min window (0 to 40 per minute); CNO (5 mg/kg) or vehicle injected
+# on alternating days between 08:00 and 09:00 (Methods; the Results say 09:00); meal times of
+# 3-g pellets in the fasting experiment (4 rats, 36 meals); spikes of hippocampal and lateral
+# septal neurons for Extended Data Fig. 8 (38 recordings from 5 rats). Histology scores of viral
+# expression (Extended Data Fig. 10e) were given by ten colleagues and are printed only in that
+# figure's table.
+# Outside data: the paper's Data availability names the lab server
+# https://buzsakilab.nyumc.org/datasets/TingleyD/ as holding the datasets; no other archive.
+#
+# Methods shared by the criteria below, each from the paper as cited.
+# - SPW-R detection as in the Methods (SPW-R detection): 120-200 Hz third-order Butterworth on the
+#   1,250-Hz LFP, normalized squared signal, peak above 5 s.d., edges at 2 s.d., duration 15 to
+#   250 ms, events coincident with a 5 s.d. event on a noise channel (or the estimated EMG)
+#   excluded. Events already detected and stored in the dataset with these parameters are used.
+# - Time base. The glucose reading interval is taken as 5 min: calibration used the iPro2 reading
+#   within 2.5 min of the blood sample (Methods, Glucose sensor calibration), Fig. 2g uses 5-min
+#   epochs, Extended Data Fig. 6a uses offsets in 5-min increments and Extended Data Fig. 7m
+#   5-min bins. SPW-R rate (and stimulation rate) is the count of events in each 5-min bin aligned
+#   to the glucose readings, expressed per minute (Fig. 2a, "rate of SPW-Rs per minute").
+# - Glucose fluctuation is the derivative of the sensor signal, "change in current (delta
+#   current)" (Fig. 2a legend). OPEN, readings: (a) the difference between successive raw
+#   readings; (b) the same after high-pass filtering the current as in Fig. 1b, whose cutoff is
+#   not given (a standard choice is to be named). Current in nA is used; conversion to mg/dl is a
+#   constant per placement and cannot change a correlation.
+# - Cross-correlogram: the correlation coefficient R between SPW-R rate and delta current at
+#   offsets from -100 to +100 min in 5-min steps (Extended Data Figs 4b and 6a), a positive offset
+#   meaning glucose after SPW-Rs ("future changes", Results). OPEN, the correlation type is not
+#   named: (a) Pearson, (b) Spearman.
+# - Unit of analysis. OPEN, readings: (a) one cross-correlogram per rat over all its recording,
+#   pairs taken only within continuous recording; (b) one per session (a continuous recording),
+#   averaged per rat.
+# - Circular shuffle: SPW-R rate (or stimulation rate) circularly shifted against delta current,
+#   100 iterations (per rat in the Fig. 2f legend; the Fig. 3f legend says only 100 iterations); the shift is a random number of bins, as in
+#   buzcode's bz_shuffleCircular (whether that function was used is not stated).
+# - The "+-" spreads the paper gives (R, lag, SPW-R rate) are not said to be s.d. or s.e.m.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000233"
+paper: doi:10.1038/s41586-021-03811-w
+claims:
+- id: fig2-ripple-rate-predicts-glucose
+  statement: SPW-R rate is negatively correlated with future changes in interstitial glucose,
+    with a mean peak correlation of R = -0.21 (+- 0.08) at a lag of 10.7 (+- 4.5) min, over 30
+    rats.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 1; Figure 2a-f
+  quote: Notably, SPW-R rates were negatively correlated with future changes in glucose
+    concentrations ... R = -0.21 ± 0.08, n = 30 rats, temporal lag of 10.7 ± 4.5 min
+  expected:
+  - quantity: mean across rats of the most negative correlation between SPW-R rate and delta
+      current
+    value: -0.21
+    tolerance: 0.08
+  - quantity: mean across rats of the lag of that correlation (glucose after SPW-Rs)
+    value: 10.7
+    tolerance: 4.5
+    unit: min
+  criterion: Cross-correlograms as in the opening comment. Per rat, R is the most negative
+    correlation and the lag its offset. OPEN, the search range for the lag is not given; readings
+    (a) offsets 0 to +100 min, (b) -100 to +100 min. OPEN, which rats form n = 30; readings (a)
+    every rat in the dataset with CA1 SPW-Rs and glucose recorded together, in all conditions
+    (vehicle and CNO-free days for the DREADD rats, the optogenetic rats' natural SPW-Rs), (b)
+    only the ripple and glucose cohort of the Methods and Supplementary Table 1. Reproduced when,
+    under one combination of the readings named here and in the opening comment, both expected
+    values hold and R is negative in most rats; the number of rats used is reported.
+- id: fig2ef-correlation-beyond-shuffle
+  statement: The correlation between SPW-R rate and glucose change at a 10-min lag is more
+    negative than the correlations obtained when SPW-R rate is circularly permuted.
+  source: Figure 2e-f legends
+  quote: Histograms of the correlation between SPW-R rate and current flux at 10 min (red) and
+    the correlation observed when SPW-R rate is circularly permuted (black) (100 iterations per
+    rat)
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: The paper gives no test for this panel. Correlation at +10 min per rat, against 100
+    circular shuffles per rat (opening comment). Reproduced when the median of the observed
+    per-rat correlations is below the median of the shuffled ones and a two-sample
+    Kolmogorov-Smirnov test of observed against shuffled values gives p < 0.05, the test the
+    paper uses for the same comparison in Fig. 3f.
+- id: fig2g-clustered-ripples
+  statement: Isolated SPW-Rs have little or no effect on glucose, whereas clustered SPW-Rs (more
+    than 30 per minute) are followed by a several-fold larger decrease.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 1; Figure 2g
+  quote: Isolated SPW-Rs had little or no effect, whereas clustered events with more than 30
+    SPW-Rs per minute induced a several-fold-larger decrease in peripheral glucose levels
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: As in the Fig. 2g legend, the mean delta current 10 min after each 5-min epoch,
+    grouped by the number of SPW-Rs in the epoch. OPEN, the threshold; the Results say 30 per
+    minute and the legend counts per 5-min epoch, so readings (a) more than 150 SPW-Rs per epoch,
+    (b) more than 30 per epoch. OPEN, "isolated" is not defined; the choice made here is epochs
+    with 1 to 5 SPW-Rs (at most one per minute). Reproduced when, under one reading, the mean
+    delta current after clustered epochs is negative and at least twice the magnitude of that
+    after isolated epochs; the full curve over epoch counts is shown.
+- id: edfig4-ripple-features
+  statement: Of the SPW-R features, the inter-SPW-R interval (clustering) most strongly modulates
+    the glucose effect, then amplitude, then duration, and ripple frequency least.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 1; Extended Data Fig. 4a-c
+  quote: The most impactful of these was the inter-SPW-R interval (that is, the degree of
+    clustering of SPW-Rs) ... The second most influential feature was the amplitude of SPW-Rs,
+    followed by SPW-R duration; the frequency of the ripple oscillation had the least effect
+  criterion: As in the Extended Data Fig. 4b legend, SPW-Rs binned by the percentile of each
+    feature (duration in ms), and for each bin the mean peri-SPW-R delta current at +10 min.
+    Features from the Methods (amplitude as the maximum normalized squared signal, duration as
+    stop minus start, frequency from the Hilbert phase). OPEN, the influence measure is not
+    defined; the choice made here is the range of the +10-min effect across bins. OPEN, bin width;
+    readings (a) deciles, (b) 5-percentile bins. Reproduced when, under one reading, the order of
+    the four ranges is interval, amplitude, duration, frequency; partially reproduced when the
+    interval has the largest range but the rest of the order differs.
+- id: fig2h-phase-reset
+  statement: The phase dispersion of the glucose rhythm decreases after SPW-Rs, more so for
+    higher SPW-R rates.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 2; Figure 2h
+  quote: Furthermore, the phase dispersion of the glucose rhythm decreased after SPW-Rs, and the
+    magnitude of this decrease was proportional to SPW-R rate
+  criterion: As in the Fig. 2h legend, the circular s.d. of glucose phase across peaks of SPW-R
+    rate, at offsets -100 to +100 min. OPEN, the phase extraction is not given; readings
+    (a) Hilbert phase of delta current band-passed at periods of 15 to 75 min (the coupling range
+    of Extended Data Fig. 5), (b) at 15 to 90 min (the elevated power of Extended Data Fig. 1h).
+    OPEN, peaks are local maxima of SPW-R rate (a choice made here), pooled over rats and grouped
+    into deciles of peak rate (a choice made here). OPEN, the baseline of the decrease; readings
+    (a) the circular s.d. at offset 0, (b) its mean over offsets -100 to 0 min; the decrease is
+    that baseline minus the minimum from 0 to +30 min (a choice made here; the 5 to 15 min sensor
+    lag of the Methods lies inside it). Reproduced when, under one reading, the decrease is
+    positive in the top decile and its Spearman correlation with the deciles' median peak rate,
+    across the 10 deciles, is positive at p < 0.05.
+- id: edfig5-cross-frequency-coupling
+  statement: SPW-R rate and glucose show power-power and phase-power coupling at periods of 15 to
+    75 min, with the faster SPW-R rhythm (about 40 min) modulating the slower glucose rhythm
+    (about 60 min).
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 2; Extended Data Fig. 5d-e
+  quote: We observed significant power-power and phase-power relationships in the 15-75-min range
+    ... which suggests that a faster SPW-R frequency (about 40 min) modulates a slower (about 60
+    min) glucose rhythm
+  statistics:
+  - about: power-power comodulogram against circularly shuffled data
+    test: Student's t-test
+    p: 1.0e-24
+    p_relation: "<"
+    n: 30 rats
+  - about: phase of glucose against SPW-R rate amplitude
+    test: Rayleigh test for non-uniformity
+    p: 1.0e-18
+    p_relation: "<"
+  criterion: OPEN, the band filters and envelope method are not given; the choice made here is
+    band-pass at log-spaced periods from 10 to 120 min and Hilbert envelopes and phases.
+    Power-power, the correlation of SPW-R-rate and glucose envelopes for each pair of periods,
+    per rat, against circular shuffles; t-test across rats on the mean over 15 to 60 min (the
+    patch named in the Extended Data Fig. 5d legend; pairing of observed and shuffled values per
+    rat is a choice made here). Phase-power, SPW-R rate (z-scored per rat, legend 5e) as a
+    function of glucose phase, Rayleigh test of rate-weighted phases (a choice made here; the
+    legend names the Rayleigh test but not what it is applied to). Reproduced when both tests give p < 0.05 and the comodulogram peak lies
+    at a longer glucose period than SPW-R period. The paper's p bounds are compared, not required.
+- id: edfig1-glucose-rhythm
+  statement: Interstitial glucose fluctuations show an approximately 60-min oscillation, with
+    power elevated above a linear best fit to the spectrum at periods of 15 to 90 min.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 2; Extended Data Fig. 1g-i
+  quote: Because interstitial glucose fluctuations displayed an approximately 60-min oscillation
+  expected:
+  - quantity: period of the glucose oscillation
+    value: 60
+    tolerance: 6
+    unit: min
+  criterion: As in Extended Data Fig. 1g-h, power spectral density of delta current per rat, a
+    linear best fit subtracted, averaged across rats (8 rats in the legend). OPEN, the axes of
+    the fit are not given; log-log axes are used as the standard choice. Reproduced when the residual
+    power is positive over 15 to 90 min and its peak, or the first side peak of the mean
+    autocorrelogram (Extended Data Fig. 1i), lies within tolerance of 60 min.
+- id: edfig1-glucose-circadian-meals
+  statement: Glucose concentrations are modulated over the circadian cycle and rise after meals.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 1; Extended Data Fig. 1e-f
+  quote: Interstitial glucose concentrations are modulated over the circadian timescale. f ,
+    Interstitial glucose concentrations increase during the postprandial period ( n = 36 meals,
+    collected from 4 rats)
+  expected:
+  - quantity: meals in the fasting experiment
+    value: 36
+    tolerance: 3.6
+  - quantity: rats in the fasting experiment
+    value: 4
+    tolerance: 0
+  criterion: The paper gives no test. Circadian, glucose (current) by hour of day averaged per
+    rat; reproduced when a one-way ANOVA of hour of day on hourly means pooled over rats gives
+    p < 0.05 (a choice made here). Meals, current in the 60 min after each meal against the 30
+    min before; reproduced when the mean change is positive and a paired t-test across meals
+    gives p < 0.05 (a choice made here; the windows are not given in the paper).
+- id: edfig1-sensor-decay
+  statement: The raw sensor current decays slowly over days after implantation, while the
+    magnitude of its fluctuations (delta current) stays stable.
+  source: Extended Data Fig. 1b, 1d
+  quote: Note the slow decay over days, an indication of glucose oxidase enzyme breakdown on the
+    electrode surface ... Note the relatively stable readings over days, and that the slow decay
+    in absolute current readings is no longer present
+  criterion: The paper gives no test. Per placement, daily mean current and daily mean absolute
+    delta current against day since implantation. Reproduced when the slope of daily mean
+    current is negative in most placements and the slope of absolute delta current, as a
+    fraction of its first-day value, is smaller in magnitude than that of the current.
+- id: supp-ripple-rate
+  statement: CA1 SPW-Rs occur at 9.5 (+- 8.2) per minute on average, about 14,000 per day,
+    ranging from none for several minutes to more than 40 in a minute.
+  source: Supplementary Discussion, paragraph 2; Figure 1f
+  quote: On average, we observed ... 9.5 (± 8.2) SPW-Rs per minute ... or ~14,000 SPW-Rs per day)
+    with a large degree of variance ranging from zero ripples for ... several minutes up to > 40
+    ripples in a minute
+  expected:
+  - quantity: mean SPW-R rate
+    value: 9.5
+    tolerance: 0.95
+    unit: per minute
+  - quantity: SPW-Rs per day
+    value: 14000
+    tolerance: 1400
+  criterion: Tolerance is 10% of the mean, since the +- 8.2 describes minute-to-minute spread
+    and not the uncertainty of the mean. SPW-R count in 1-min bins over all recording of the
+    ripple and glucose rats. OPEN, which rats; readings as in fig2-ripple-rate-predicts-glucose.
+    Reproduced when the mean is within tolerance under one reading, and the maximum 1-min count
+    exceeds 40.
+- id: supp-ripples-stable-across-days
+  statement: In each rat the shape, amplitude and rate of SPW-Rs are consistent across days.
+  source: Supplementary Discussion, paragraph 2; Figure 1d-f
+  quote: In each animal, we validated that the shape, amplitude, ... and rate of hippocampal
+    SPW-Rs were consistent across multiple days
+  criterion: The paper gives no test. Per rat, the daily median SPW-R amplitude, median duration
+    and mean rate against recording day. Reproduced when, in most rats, the Spearman correlation
+    of daily median amplitude with day is not significant at p < 0.05 or its daily values stay
+    within 20% of the rat's overall median (a choice made here); rate is reported likewise.
+- id: edfig3-ripple-rate-rhythms
+  statement: SPW-R rate varies with circadian and ultradian rhythms, with spectral peaks at about
+    24 h and about 4 h, in 1,568.5 recording hours from 8 rats.
+  source: Extended Data Fig. 3a-d; Results, SPW-Rs phase reset glucose oscillations, paragraph 1
+  quote: Average power spectral density plot ( n = 8 rats) of ripple rate. Note two peaks at about
+    24 h and about 4 h
+  expected:
+  - quantity: recording hours in Extended Data Fig. 3a
+    value: 1568.5
+    tolerance: 156.85
+    unit: h
+  - quantity: rats in Extended Data Fig. 3
+    value: 8
+    tolerance: 0
+  - quantity: period of the slow spectral peak
+    value: 24
+    tolerance: 2.4
+    unit: h
+  - quantity: period of the faster spectral peak
+    value: 4
+    tolerance: 0.4
+    unit: h
+  criterion: Power spectral density of SPW-R rate per rat (5-min bins), averaged over rats.
+    Reproduced when local peaks lie within tolerance of 24 h and 4 h; the hours and rats used are
+    reported.
+- id: edfig2-refractory-period
+  statement: Inter-ripple intervals drop to zero below about 20 ms, a refractory period between
+    ripples, with peaks reflecting bursts of ripples.
+  source: Extended Data Fig. 2a
+  quote: Note the peaks in the histogram from bursts of ripples, and the drop to zero,
+    representing an approximately 20-ms refractory period between ripples
+  expected:
+    quantity: refractory period between ripples
+    value: 20
+    tolerance: 2
+    unit: ms
+  criterion: Histogram of inter-ripple intervals per rat in 1-ms bins; intervals between ripple
+    peaks (a choice made here; the legend does not name the time point of each ripple). Reproduced
+    when the shortest interval with counts lies within tolerance of 20 ms in most rats.
+- id: edfig3e-ca1-firing-decrease
+  statement: At slow time scales (beyond 250 ms) CA1 SPW-Rs are followed by an overall decrease
+    in CA1 population firing.
+  source: Extended Data Fig. 3e; Supplementary Discussion, paragraph 6
+  quote: At slow temporal scales (>250 ms), CA1 SPW-Rs are associated with an overall decrease in
+    CA1 firing rates
+  criterion: As in the legend, the cross-correlogram of SPW-R peaks with CA1 population firing
+    rate in 100-ms bins and with a 60-s median filter. The paper gives no test; choice made here,
+    reproduced when the population rate averaged from 0.25 to 60 s after SPW-Rs is below its
+    mean over the recording, in most sessions with units.
+- id: edfig4-fasting-fed
+  statement: The SPW-R and glucose cross-correlogram does not differ between fasting and fed
+    states, nor across the fasting-to-fed transition.
+  source: Extended Data Fig. 4d-f; Supplementary Discussion, paragraph 3
+  quote: The SPW-R-glucose fluctuation cross-correlogram was not different between fasting and
+    fed states
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: A claim of absence. The paper names no test; the two-way (two-sided) t-test it uses
+    for cross-correlogram comparisons (Extended Data Figs 7h, 9e, 10d) is applied. Cross-
+    correlograms computed on 4-h blocks of fasting and of fed time (Extended Data Fig. 4d), 4
+    rats, one value per block, unpaired (a choice made here; per-rat means, paired, shown as a
+    variant). Transition (Extended Data Fig. 4e), the cross-correlogram in a sliding 2-h window
+    around each meal; the paper gives no test, and the choice made here is the +10-min
+    correlation in the 2 h before each meal against the 2 h after, paired t-test across meals.
+    Reproduced when neither test gives p < 0.05; the differences are reported either way.
+- id: edfig4-nrem-wake
+  statement: The SPW-R and glucose cross-correlogram does not differ between NREM sleep and
+    waking, and its negative peak does not change across state transitions.
+  source: Extended Data Fig. 4g-i
+  quote: The negative correlation did not change in amplitude across either wake-to-NREM or
+    NREM-to-wake state transitions ... The SPW-R-glucose fluctuation cross-correlogram was not
+    different between NREM and waking states
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: A claim of absence, tested as in edfig4-fasting-fed with blocks of NREM and of wake
+    (Extended Data Fig. 4g, 8 rats), brain state from the sleep scorer. Transitions (Extended
+    Data Fig. 4h), a sliding 2-h window around each wake-to-NREM and NREM-to-wake transition; the
+    paper gives no test, and the choice made here is the most negative correlation from +5 to +20
+    min in the 2 h before each transition against the 2 h after, paired t-test across
+    transitions of each type. Reproduced when none of these tests gives p < 0.05.
+- id: edfig4-no-hour-differs
+  statement: No hour of the day has a significantly different SPW-R and glucose correlation than
+    any other hour (smallest P = 0.53).
+  source: Extended Data Fig. 4j-l
+  quote: Across rats, no hour of the day had a significantly different correlation than any other
+    hour of the day (Student's t -test; minimum P = 0.53)
+  statistics:
+  - about: smallest p over all pairs of hours
+    test: Student's t-test
+    p: 0.53
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: A claim of absence. As in Extended Data Fig. 4j-k, cross-correlograms in 4-h windows
+    centred on each hour, integrated over offsets +5 to +20 min, per rat; Student's t-test across
+    rats for every pair of hours. Reproduced when no pair gives p < 0.05; the smallest p is
+    reported.
+- id: edfig6-ripple-rate-best-predictor
+  statement: Among seven measured predictors, SPW-R rate is the most predictive of glucose
+    fluctuations; leaving it out raises the model error most, at a +10-min offset.
+  source: Results, SPW-Rs phase reset glucose oscillations, paragraph 3; Extended Data Fig. 6a-b;
+    Supplementary Discussion, paragraph 4
+  quote: In all cases, SPW-R rate was the most predictive variable
+  criterion: As in the Methods (Leave-one-out and pairwise model comparisons) for each rat, the
+    seven predictors (SPW-R rate, NREM or wake, high-pass coherence, power spectrum slope, theta
+    residual, theta/delta ratio, accelerometer movement), a linear regression on all seven and on
+    six, two thirds of bins for training and one third for testing, 100 random splits, offsets
+    -100 to +100 min in 5-min steps; MSE of the six-predictor model minus that of the full model.
+    Reproduced when the largest mean difference over predictors and offsets belongs to SPW-R rate
+    at an offset between +5 and +15 min.
+- id: edfig6d-pairwise-predictors
+  statement: In single-predictor models SPW-R rate predicts glucose fluctuations better than each
+    other measured signal; it beats brain state in 6 of 8 rats.
+  source: Extended Data Fig. 6c-d; Supplementary Discussion, paragraph 5
+  quote: For example, the upper leftmost value of 6 indicates that ripple rate was a better
+    predictor than brain state in 6 of the 8 rats
+  expected:
+    quantity: rats in which SPW-R rate predicts better than brain state
+    value: 6
+    tolerance: 0.6
+  criterion: As in the Methods, one linear regression per predictor, same 100 splits, two-sample
+    t-test of MSE across splits per rat at p < 0.05. OPEN, the temporal offset of the pairwise
+    models is not given; readings (a) +10 min (the offset of Extended Data Fig. 6b), (b) 0 min. Reproduced when the
+    count holds and, for every other predictor, SPW-R rate is better in more rats than the
+    reverse; the count over 8 rats is the paper's, and the number of rats used is reported.
+- id: edfig6ef-latent-variables
+  statement: Principal or independent components of all predictors do not predict glucose better
+    than SPW-R rate; PC1 performs similarly to SPW-R rate and the other components worse in at
+    least 4 of 8 rats.
+  source: Extended Data Fig. 6e-f
+  quote: SPW-R rate and PC1 were similar in all rats, all other principal components and
+    independent components performed worse for at least 4 out of 8 rats
+  depends_on:
+  - edfig6d-pairwise-predictors
+  criterion: As in the legend, generalized linear models with two predictors each, built from
+    principal components or independent components of the seven predictors and SPW-R rate alone,
+    compared pairwise across 100 splits by two-sided t-test at p < 0.05 per rat. OPEN, the GLM
+    family and the ICA algorithm are not given; a Gaussian GLM and FastICA are used as standard
+    choices. Reproduced when, as in the legends, no component beats SPW-R rate in any rat, PC1
+    does not differ from SPW-R rate in any rat, and every other component is worse in at least
+    4 of 8 rats (scaled to the rats used).
+- id: fig3d-induced-ripples-lower-glucose
+  statement: Optogenetically induced ripples in dorsal hippocampus are followed by a negative
+    peak in the cross-correlogram with glucose fluctuations.
+  source: Results, Induced ripples decrease glucose levels, paragraph 1; Figure 3d; Extended Data
+    Fig. 7c-d
+  quote: As in the intact rats, the optogenetically induced ripple events were followed by a
+    negative peak in the cross-correlogram with glucose fluctuations
+  criterion: Cross-correlogram of stimulation rate (5-min bins) with delta current per rat, as in
+    the opening comment, and its median across the 8 rats against the median of circular
+    shuffles (Fig. 3d legend). The paper gives no test for this panel; choice made here,
+    reproduced when the median correlogram has its minimum at a positive offset up to +30 min
+    and that minimum lies below the 2.5th percentile of the shuffled medians. The per-rat P
+    values at each offset and the count of rats with P < 0.05 (Extended Data Fig. 7c-d,
+    two-way t-tests) are shown.
+- id: fig3-induced-effect-size
+  statement: The glucose effect of induced ripples is 63% of that of natural SPW-Rs (0.059 nA
+    against 0.094 nA).
+  source: Results, Induced ripples decrease glucose levels, paragraph 1
+  quote: The magnitude of the induced glucose effect corresponded to 63% of the effect size of
+    naturally occurring SPW-Rs (peri-SPW-R, 0.094 nA; peri-stimulation, 0.059 nA)
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  expected:
+  - quantity: peri-SPW-R glucose effect
+    value: 0.094
+    tolerance: 0.0094
+    unit: nA
+  - quantity: peri-stimulation glucose effect
+    value: 0.059
+    tolerance: 0.0059
+    unit: nA
+  - quantity: ratio of induced to natural effect
+    value: 63
+    tolerance: 6.3
+    unit: percent
+  criterion: OPEN, the effect size is not defined. Readings (a) the depth of the mean peri-event
+    delta current (event-triggered average of the current derivative, in nA per 5-min reading)
+    below its baseline at offsets 0 to +100 min against -100 to 0 min, (b) the minimum of the
+    mean peri-event delta current from 0 to +30 min, (c) the mean delta current 10 min after
+    events. Stimulations from the 8 optogenetic rats. OPEN, which natural SPW-Rs; readings (i)
+    the rats of fig2-ripple-rate-predicts-glucose, (ii) the natural SPW-Rs of the 8 optogenetic
+    rats. Reproduced when, under one reading, the ratio is within tolerance; partially when the
+    ratio holds but the nA values do not.
+- id: fig3ef-stimulation-dose-response
+  statement: In seven of the eight optogenetic rats the glucose decrease is larger at higher
+    stimulation rates (median R = -0.11, P < 0.01).
+  source: Results, Induced ripples decrease glucose levels, paragraph 1; Figure 3e
+  quote: In seven of the eight rats, the effect on glucose concentrations was larger at higher
+    stimulation rates ... median R = - 0.11, P < 0.01
+  statistics:
+  - test: not named
+    p: 0.01
+    p_relation: "<"
+    n: 8 rats
+  expected:
+  - quantity: rats with larger glucose decrease at higher stimulation rates
+    value: 7
+    tolerance: 0.7
+  - quantity: median across rats of R between stimulation rate and delta current at +10 min
+    value: -0.11
+    tolerance: 0.011
+  criterion: Per rat, the correlation between stimulation rate per 5-min window and delta current
+    10 min later (Fig. 3e legend). OPEN, when a rat counts; readings (i) its R is negative, (ii)
+    its R is negative with P < 0.05 (Extended Data Fig. 7d counts rats with P < 0.05, two-way
+    t-tests). OPEN, the test behind P < 0.01 is not named; readings (a) a Wilcoxon signed-rank
+    test of the 8 per-rat R against zero, (b) the correlation over all rats' windows pooled, (c)
+    a two-sided t-test of the 8 per-rat R against zero. Reproduced when both expected values
+    hold and, under one reading, p < 0.01; partially when R and the count hold at p < 0.05 only.
+- id: fig3f-stimulation-vs-shuffle
+  statement: Correlations between stimulation rate and glucose change at 10 min differ from those
+    with circularly permuted stimulation rate (P = 0.00015, two-sample Kolmogorov-Smirnov test).
+  source: Figure 3f legend
+  quote: P = 0.00015, using a two-sample Kolmogorov-Smirnov test
+  statistics:
+  - test: two-sample Kolmogorov-Smirnov test
+    p: 0.00015
+    n: 8 rats, 100 iterations
+  depends_on:
+  - fig3ef-stimulation-dose-response
+  criterion: Observed correlation at +10 min per rat against 100 circular shuffles per rat.
+    OPEN, what the red histogram holds; readings (a) the 8 per-rat observed correlations against
+    all 800 shuffled ones, (b) per-rat observed correlations over repeated subsamples of windows
+    (not described). Reproduced when the KS test gives p < 0.05 with observed values more negative
+    under reading (a), the paper's p compared.
+- id: edfig7ab-stimulation-protocol
+  statement: The stimulation protocol has no ultradian structure, and the mean stimulation rate
+    does not differ across the light-dark cycle.
+  source: Extended Data Fig. 7a-b; Results, Induced ripples decrease glucose levels, paragraph 1
+  quote: Autocorrelation of stimulation protocol showing no ultradian structure. b , Average
+    stimulation rate was not different across the circadian light-dark cycle
+  criterion: A claim of absence; the paper names no test. Choices made here, per rat,
+    autocorrelation of stimulation rate in 5-min bins at lags from 15 min to 12 h within the 99%
+    white-noise bound (2.58 over the square root of the bin count) at more than 95% of lags, and
+    a two-sided t-test of 5-min stimulation rates in light (07:00 to 19:00) against dark not
+    significant at p < 0.05.
+- id: edfig7jm-induced-ripples-decoupled
+  statement: Induced ripples are decoupled from ongoing changes in vigilance, brain state and
+    behaviour (power spectrum slope, EMG proxy, movement and wake/NREM ratio).
+  source: Results, Induced ripples decrease glucose levels, paragraph 1; Extended Data Fig. 7j-m
+  quote: can be mimicked with artificially produced ripples in a manner that was decoupled from
+    ongoing changes in vigilance, brain state and behaviour
+  criterion: As in Extended Data Fig. 7j-m, the mean cross-correlogram across the 8 rats of
+    stimulation rate (5-min bins) with power spectrum slope, high-pass coherence, accelerometer
+    movement and the wake/NREM ratio per 5-min bin. Reproduced when, for each signal, no offset
+    from -100 to +100 min has a mean correlation outside the 2.5th to 97.5th percentiles of
+    circularly shuffled means (a choice made here; the paper gives no test).
+- id: edfig7-ppc-stimulation-no-effect
+  statement: The same stimulation in posterior parietal cortex does not change glucose; the CA1
+    and PPC cross-correlograms with glucose differ.
+  source: Results, Induced ripples decrease glucose levels, paragraph 1; Extended Data Fig. 7e-h
+  quote: The same intensity optogenetic stimulation in the posterior parietal area did not induce
+    a measurable change in glucose concentrations
+  depends_on:
+  - fig3d-induced-ripples-lower-glucose
+  criterion: As in Extended Data Fig. 7g-h, per rat cross-correlograms of stimulation rate with
+    delta current, CA1 cohort (8 rats) against PPC cohort (5 or 6 rats), compared at each offset
+    by a two-way (two-sided) unpaired t-test. Reproduced when the CA1 correlation is more
+    negative at +10 min with p < 0.05 and the PPC mean correlogram at +10 min lies within the
+    2.5th to 97.5th percentiles of its circular shuffles (the shuffle bound is a choice made
+    here; the paper gives no test of the PPC effect alone).
+- id: edfig8-lateral-septum-rectified
+  statement: Lateral septal populations fire at a nearly constant rate across theta cycles of
+    different hippocampal synchrony but increase linearly with SPW-R synchrony; theta cycles
+    occur at low and SPW-Rs at the highest synchrony percentiles.
+  source: Results, Lateral septum relays SPW-Rs downstream, paragraph 1; Extended Data Fig. 8c
+  quote: Theta cycles occurred primarily at lower population firing rates, whereas SPW-Rs
+    primarily occurred at the highest percentiles ... Lateral septal neuronal populations fired
+    at a semi-constant rate across theta cycles with different levels of hippocampal synchrony,
+    but increased linearly with SPW-Rs
+  expected:
+  - quantity: recordings
+    value: 38
+    tolerance: 3.8
+  - quantity: rats
+    value: 5
+    tolerance: 0
+  criterion: Hippocampal synchrony as in the Results, the mean of z-scored firing rates of all
+    hippocampal neurons in 25-ms bins; recordings with at least 15 lateral septal neurons
+    (legend); for each theta cycle and SPW-R, its synchrony percentile and the mean z-scored
+    lateral septal rate. OPEN, theta cycle detection is given only by ref. 26; the choice made
+    here is troughs of the 4-9 Hz filtered CA1 LFP during theta states of the sleep scorer.
+    Reproduced when the synchrony percentile at which 75% of theta cycles lie below it is lower
+    than that above which 75% of SPW-Rs lie, and the regression slope of lateral septal rate on
+    synchrony percentile is positive at p < 0.05 for SPW-Rs and at least three times larger than
+    for theta cycles (a choice made here).
+- id: edfig9-dorsal-ventral
+  statement: Dorsal and ventral CA1 SPW-Rs are only weakly correlated, and ventral SPW-Rs are
+    significantly less correlated with glucose fluctuations than dorsal SPW-Rs, which match the
+    earlier dorsal cohorts.
+  source: Results, Lateral septum relays SPW-Rs downstream, paragraph 1; Extended Data Fig. 9d-f
+  quote: SPW-R events were only weakly correlated between septal and temporal poles of the
+    hippocampus ... Ventral SPW-Rs were less strongly correlated with interstitial glucose
+    fluctuations than were SPW-Rs recorded from the dorsal CA1 region
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: In the dorsal and ventral rats (3 in the Methods, 4 in Supplementary Table 1), SPW-Rs
+    detected separately on the dorsal and ventral CA1 channels; correlation of their 5-min rates
+    reported (weak taken here as below 0.5). Glucose correlation at +10 min, dorsal against
+    ventral, by the paper's two-way (two-sided) t-test. OPEN, the units of that test; readings
+    (a) per-day correlations, paired, (b) per-day correlations, unpaired. Reproduced when ventral
+    is weaker (less negative) with p < 0.05 under one reading, and the dorsal values do not
+    differ from the earlier dorsal cohorts by the same unpaired t-test at p < 0.05.
+- id: fig4-cno-controls-no-change
+  statement: In control rats without virus, CNO does not change the SPW-R correlation with
+    glucose fluctuations compared with vehicle days.
+  source: Results, Lateral septum relays SPW-Rs downstream, paragraph 2; Figure 4b-d
+  quote: When CNO was injected into control rats, the SPW-R correlation with glucose fluctuations
+    was not significantly different from vehicle days
+  depends_on:
+  - fig2-ripple-rate-predicts-glucose
+  criterion: A claim of absence, judged on the paper's two-way t-test (Extended Data Fig. 10d,
+    Fig. 4e) at p < 0.05. Correlation of SPW-R rate with delta current at +10 min (Fig. 4e) in the
+    2-h window after each injection (Results, Lateral septum relays SPW-Rs downstream, paragraph
+    2; Fig. 4b legend), one value per day, control rats; CNO days against vehicle days by a
+    two-sided unpaired t-test (a choice made here; the paper does not say what the test's units
+    are). The paired test on per-rat means (Fig. 4c) is shown as a variant. Reproduced
+    when the test does not give p < 0.05; the difference is reported either way.
+- id: fig4-ls-dreadd-decouples
+  statement: In rats expressing hM4Di in the lateral septum, CNO significantly decreases the
+    SPW-R correlation with glucose fluctuations compared with their vehicle days and with control
+    rats on CNO days.
+  source: Results, Lateral septum relays SPW-Rs downstream, paragraph 2; Figure 4b-d; Extended Data
+    Fig. 10c-d
+  quote: However, when CNO was injected in rats that expressed hM4Di in the lateral septum, the
+    SPW-R correlation with glucose fluctuations was significantly decreased compared to vehicle
+    days and control rats on CNO days
+  depends_on:
+  - fig4-cno-controls-no-change
+  criterion: Measure as in fig4-cno-controls-no-change, lateral septum hM4Di rats (6 in the
+    Methods, 7 in Supplementary Table 1). OPEN, the measure; readings (a) correlation at +10 min,
+    (b) the cross-correlogram integrated over +5 to +20 min (Extended Data Fig. 4k). OPEN, the
+    test units; readings (a) per-day values, unpaired two-sided t-test, (b) per-rat means, paired
+    for CNO against vehicle and unpaired against controls. Reproduced when, under one reading, the
+    correlation on CNO days is less negative than on vehicle days and than in controls on CNO
+    days, both at p < 0.05; partially when only one comparison holds.
+- id: fig4-ls-dreadd-chance-level
+  statement: Inhibiting the lateral septum with hM4Di and CNO attenuates the SPW-R correlation
+    with glucose fluctuations to chance levels.
+  source: Abstract; Supplementary Discussion, paragraph 6; Figure 4b-d
+  quote: was attenuated to chance levels by pharmacogenetically suppressing activity of the
+    lateral septum
+  depends_on:
+  - fig4-ls-dreadd-decouples
+  criterion: The paper gives no test of chance level. Measure as in fig4-ls-dreadd-decouples on
+    CNO days in the lateral septum hM4Di rats, against 100 circular shuffles of SPW-R rate (the
+    shuffle of Fig. 2e-f). Choice made here, reproduced when the median observed correlation at
+    +10 min lies within the 2.5th to 97.5th percentiles of the shuffled values; the same test on
+    their vehicle days is shown.
+- id: fig4e-dreadd-time-course
+  statement: The CNO effect in lateral septum hM4Di rats is largest between 50 and 190 min after
+    injection, with its maximum about 1.2 h after injection.
+  source: Results, Lateral septum relays SPW-Rs downstream, paragraph 2; Figure 4e
+  quote: This difference was largest between 50 min and 190 min after injection ... Maximal effect
+    of CNO was observed about 1.2 h after the injection of CNO
+  depends_on:
+  - fig4-ls-dreadd-decouples
+  expected:
+    quantity: time of maximal CNO effect after injection
+    value: 1.2
+    tolerance: 0.12
+    unit: h
+  criterion: As in the Fig. 4e legend, the correlation at +10 min in a 90-min window slid in 5-min
+    steps from injection (the step is a choice made here), two-way (two-sided) t-test at each
+    step; the window time is its centre (OPEN; its start is shown as a variant). OPEN, the
+    comparison is not named in the legend; readings (a) CNO against vehicle days in hM4Di rats,
+    (b) hM4Di against control rats on CNO days (the two comparisons of Extended Data Fig. 10d). Reproduced
+    when the smallest p falls within tolerance of 1.2 h and the steps with p < 0.05 lie within 50
+    to 190 min.
+- id: fig4c-medial-septum-no-effect
+  statement: CNO has no effect on the SPW-R and glucose correlation in rats whose hM4Di
+    expression is confined to the medial septum.
+  source: Figure 4c legend; Supplementary Discussion, paragraph 7; Extended Data Fig. 10b
+  quote: In these animals, CNO injection ... had no effect on the correlation between SPW-R rate
+    and glucose fluctuations
+  depends_on:
+  - fig4-cno-controls-no-change
+  criterion: A claim of absence, judged as in fig4-cno-controls-no-change on the 3 medial septum
+    rats. Reproduced when CNO against vehicle days does not give p < 0.05.
+- id: edfig10-expression-correlates-effect
+  statement: Across DREADD rats, blinded ratings of viral expression in some septal subregions
+    correlate significantly with the CNO effect on the SPW-R and glucose correlation.
+  source: Extended Data Fig. 10e-g
+  quote: For each subregion, the correlation between these scores and the effect of CNO was
+    calculated and is shown in bold below. Red values had a P values < 0.05
+  statistics:
+  - about: correlations shown in red in Extended Data Fig. 10e
+    p: 0.05
+    p_relation: "<"
+    n: 9 rats (6 lateral septum, 3 medial septum)
+  data: with_inputs
+  depends_on:
+  - fig4-ls-dreadd-decouples
+  criterion: The scores are printed only in the table of Extended Data Fig. 10e, which was not
+    available as an image to this reader; the subregions marked significant are not named in the
+    text. Correlation (Pearson, OPEN against Spearman) between each subregion's mean score and
+    each rat's CNO effect. OPEN, the effect; readings (a) CNO minus vehicle correlation at +10
+    min (legend 10e, "the effect of CNO"), (b) the correlation after CNO injection (the x axis
+    of legends 10f-g). Reproduced when the
+    subregions with p < 0.05 are those marked red in the figure, including the dorsal lateral
+    septum shown in Extended Data Fig. 10f.
+checks:
+- date: 2026-10-28
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - Opening comment, the Fig. 3f legend says 100 iterations, not 100 per rat; reworded.
+  - fig2h-phase-reset, the criterion asked for a Spearman correlation across peaks of a circular
+    s.d. that exists only over groups of peaks, and quartiles give 4 points, too few for p < 0.05;
+    now deciles of peak rate. The baseline of the decrease, the peak definition and the pooling
+    were choices not marked as such; now marked, with offset 0 and the pre-peak mean as readings.
+  - edfig5-cross-frequency-coupling, the pairing in the t-test and the rate-weighted Rayleigh test
+    were choices not marked as such; now marked.
+  - edfig1-glucose-rhythm, the legend says a linear best fit, not a 1/f fit, and does not say
+    log-log axes; statement reworded and log-log marked as a standard choice.
+  - edfig2-refractory-period, peak-to-peak intervals were stated as the paper's; the legend does
+    not name the time point; marked as a choice.
+  - edfig3e-ca1-firing-decrease, Supplementary Discussion paragraph 5 corrected to 6; the test was
+    a choice not marked as such.
+  - edfig4-fasting-fed, the statement includes the fasting-to-fed transition (Supplementary
+    Discussion, paragraph 3) which the criterion did not judge; added the Extended Data Fig. 4e
+    window as a test made here, and marked the block units as a choice.
+  - edfig4-nrem-wake, the statement includes the state transitions (Extended Data Fig. 4h) which
+    the criterion did not judge; added a test made here.
+  - edfig6-ripple-rate-best-predictor, Supplementary Discussion paragraph 3 corrected to 4.
+  - edfig6d-pairwise-predictors, paragraph 4 corrected to 5; the +10-min offset was attributed to
+    the Methods, which give no offset for the pairwise models; now OPEN with +10 and 0 min.
+  - edfig6ef-latent-variables, the one-rat allowance is not in the paper; the legends say SPW-R
+    rate was better or equivalent in every comparison and PC1 similar in all rats; criterion now
+    follows them.
+  - fig3d-induced-ripples-lower-glucose, the shuffle bound was a choice not marked as such; now
+    marked, and the per-rat P values of Extended Data Fig. 7c-d are shown.
+  - fig3-induced-effect-size, which natural SPW-Rs form the 0.094 nA is not given; the
+    optogenetic rats' own SPW-Rs added as a reading.
+  - fig3ef-stimulation-dose-response, Extended Data Fig. 7d counts rats by P < 0.05; added as a
+    reading of the 7-of-8 count, and a t-test of per-rat R as a reading of P < 0.01.
+  - fig3f-stimulation-vs-shuffle, n said 100 shuffles each; the legend says 100 iterations.
+  - edfig7-ppc-stimulation-no-effect, the PPC shuffle bound was a choice not marked as such.
+  - fig4-cno-controls-no-change, the 2-h window is from the Results and the Fig. 4b legend, not
+    the Methods; the claim that Extended Data Fig. 10d compares days has no support in the paper;
+    both corrected.
+  - fig4-ls-dreadd-chance-level, new claim; the abstract's attenuation to chance levels
+    (Supplementary Discussion paragraph 6, eliminated the correlation) had no claim.
+  - fig4e-dreadd-time-course, the Fig. 4e legend does not name the comparison; both comparisons
+    of Extended Data Fig. 10d added as readings; the 5-min step marked as a choice.
+  - fig4c-medial-septum-no-effect, Supplementary Discussion paragraph 6 corrected to 7.
+  - edfig10-expression-correlates-effect, the legend 10e calls the measure the effect of CNO while
+    10f-g plot the correlation after CNO; both added as readings.
+  - Open, the buzcode commit and its detector defaults cited in the opening comment were not
+    checked here.
+  - Open, the Results paragraph numbers could not be checked, since the text has no paragraph
+    breaks and no PDF of the main article was supplied.
+  - Open, Extended Data Fig. 5a-c (glucose-triggered SPW-R and stimulation rates) has no claim;
+    no sentence states its result and the panel was not seen.
