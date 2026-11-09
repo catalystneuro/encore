@@ -162,7 +162,7 @@ def add_key(doi: str, title: str = "", surname: str = "", year: str = "") -> str
         return keys[doi]
     p = {"title": title} if title else {}
     if surname and year:
-        p.update(surname=surname, year=str(year))
+        p["name"] = f"{ascii_slug(surname)}-{year}"
     key, title = base_key(doi, p)
     taken = set(keys.values())
     if key in taken:

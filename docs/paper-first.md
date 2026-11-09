@@ -99,8 +99,9 @@ the site compares attempts on the two copies.
 
 With the lanes stopped (STOP_LANES, and wait for the running chains to end or stop them):
 
-1. On this branch: merge main, then `python tools/paper_keys.py` (keys for papers added since) and
-   `python tools/migrate_paper_first.py`; run the tests; commit; merge the pull request.
+1. On this branch: merge main, then `python tools/paper_keys.py` (keys for papers added since),
+   `python tools/runner/cutover_paper_first.py keys --apply` (keys for papers only open branches have records
+   of) and `python tools/migrate_paper_first.py`; run the tests; commit; merge the pull request.
 2. `python tools/runner/cutover_paper_first.py branches --apply`: the open attempt branches, converted the
    same way and renamed attempt/<paper>. Any it reports as not merging are fixed by hand.
 3. `... executed --apply` (the executed notebooks under the new entry names), `... issues --apply` (the

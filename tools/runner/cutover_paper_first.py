@@ -2,6 +2,7 @@
 converted (tools/migrate_paper_first.py) and merged, with the lanes stopped. Each step prints what it would do;
 --apply does it.
 
+    python tools/runner/cutover_paper_first.py keys [--apply]         # keys for papers only open branches have records of
     python tools/runner/cutover_paper_first.py branches [--apply]     # open attempt branches
     python tools/runner/cutover_paper_first.py executed [--apply]     # the executed-notebooks branch
     python tools/runner/cutover_paper_first.py issues [--apply]       # open `needs-you` issues
@@ -13,6 +14,8 @@ the steps out before the cutover.
 Run from a clone whose origin/main has the converted records. Names come from main's papers/datasets/ and
 papers/renamed.yaml.
 
+- keys: run in the checkout to be converted, before tools/migrate_paper_first.py: a paper that only an open
+  branch has records of gets its key in papers/keys.yaml, from the branch's entry name or claims header.
 - branches: every attempt/<folder> branch not merged into main is converted the way main was (the conversion
   run on the branch, with main's tools and keys), main is merged into it, and it is pushed as attempt/<paper>
   when its dataset is listed for a paper, the old branch deleted. A branch that does not merge is left as it
@@ -68,6 +71,43 @@ def paper_of_folder() -> dict[str, str]:
             if folder not in out or r < rank[folder]:
                 out[folder], rank[folder] = Path(path).stem, r
     return out
+
+
+def keys(apply: bool) -> int:
+    sys.path.insert(0, str(ROOT / "tools"))
+    import paper_keys
+    git("fetch", "-q", "origin", "main", "+refs/heads/attempt/*:refs/remotes/origin/attempt/*")
+    open_ = [b.strip() for b in git("branch", "-r", "--no-merged", MAIN, "--list", "origin/attempt/*").splitlines()
+             if b.strip()]
+    have = paper_keys.read_keys()
+    found: dict[str, dict] = {}
+    for ref in open_:
+        for path in git("diff", "--name-only", f"{MAIN}...{ref}", "--", "attempts", "claims").split():
+            try:
+                text = git("show", f"{ref}:{path}")
+            except subprocess.CalledProcessError:
+                continue
+            body = yaml.safe_load(text) or {}
+            doi = paper_keys.doi_of(str(body.get("paper") or ""))
+            if not doi or doi in have:
+                continue
+            p = found.setdefault(doi, {})
+            m = paper_keys.ENTRY.match(str(body.get("entry") or ""))
+            if m:
+                p["name"] = m.group(1)
+            m = paper_keys.CLAIMS_FOR.match(text.split("\n#\n", 1)[0]) if path.startswith("claims/") else None
+            if m and "name" not in p:
+                p.update(surname=m.group(1).strip(), year=m.group(2))
+    for doi, p in sorted(found.items()):
+        if "name" in p:
+            surname, year = p["name"].rsplit("-", 1)
+        else:
+            surname, year = p.get("surname", ""), p.get("year", "")
+        if apply:
+            print(f"{doi}: {paper_keys.add_key(doi, surname=paper_keys.ascii_slug(surname), year=year)}")
+        else:
+            print(f"{doi}: would get a key ({surname or 'from Crossref'} {year})")
+    return 0
 
 
 def branches(apply: bool) -> int:
@@ -222,6 +262,8 @@ def main() -> int:
     args = [a for a in args if a not in ("--apply", "--try")]
     if not args:
         raise SystemExit(__doc__)
+    if args[0] == "keys":
+        return keys(apply)
     if args[0] == "branches":
         return branches(apply)
     if args[0] == "executed":
