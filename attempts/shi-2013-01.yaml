@@ -1,0 +1,467 @@
+schema_version: 3
+id: shi-2013-01
+datasets:
+- archive: crcns
+  id: ppc-1
+  version: unversioned
+  doi: 10.6080/K0CZ353K
+  relation: primary
+paper: doi:10.1152/jn.00223.2012
+date: 2026-11-09
+entry: shi-2013
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42677293299
+outcomes:
+- claim: behavior-mean-position-sessions
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:behavior-mean-position-sessions
+  measured: 16.12
+  notes: In 2,872 session and target pairs of 359 monkey X sessions, 16.1% show a significant V
+    against NV difference by the two-group MANOVA (Hotelling T squared), both as the mean of the 8
+    target percentages (16.12, SD 4.27 over targets) and pooled (16.12), against 6.9 +/- 1.5%.
+    Per target the percentage runs from 9.2 to 22.8%.
+  deviations:
+  - Monkey X only; the data set holds no monkey B session, so the average is over 8 targets of one
+    animal, not 16 animal and target cells.
+  - Each trial has one hand position in the data (fields 19 to 21 of the trial's text record), not
+    a position trace, so the MANOVA uses that value in place of the trial's mean over the 800 ms
+    hold (Fig. 2 legend). That it is the hold endpoint is read from the data (its target means
+    match Table 1 within its SDs); the data set does not say when it is sampled.
+  - V and NV are codes 4 and 7 of the record's field 14 under an assumed mapping; the test is
+    symmetric in V and NV, so the mapping does not change it.
+- claim: behavior-variability-sessions
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:behavior-variability-sessions
+  measured:
+  - 8.08
+  - 8.08
+  - 7.0
+  notes: With Levene's test centred on the mean, 8.08, 8.08 and 7.00% of pairs differ in x, y and z
+    (mean of target percentages, the same pooled), against 5 +/- 1.9, 4.7 +/- 1.6 and 6 +/- 0.9; z
+    is within tolerance, x and y are not. Centred on the median, 0.45, 0.66 and 0.42%. No reading
+    puts all three axes within tolerance.
+  deviations:
+  - Monkey X only, and one hand position per trial, as for behavior-mean-position-sessions.
+- claim: table1-endpoint-means
+  outcome: partially_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:table1-endpoint-means
+  notes: All 48 of monkey X's means (8 targets, 3 axes, 2 conditions; mean over 359 sessions of the
+    session means) are within the Table 1 SDs, also after removing the mean offsets (-0.10, -0.17
+    and +0.26 cm in x, y, z). The largest V minus NV difference of the means is 0.150 cm (135
+    degrees, y), above the 0.121 cm bound, so the second part of the criterion fails. Monkey B's 48
+    values cannot be tested. No measured list is given, as the 48 monkey B values have no
+    counterpart.
+  deviations:
+  - Monkey X only; 359 sessions against the paper's 219.
+  - One hand position per trial, as for behavior-mean-position-sessions.
+- claim: table1-endpoint-sd
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:table1-endpoint-sd
+  notes: 4 of monkey X's 48 SDs over sessions (8.3%) are within 10% of Table 1. The SDs run from 0.32
+    to 0.67 cm against 0.50 to 1.28 cm in Table 1, a median 0.55 times the paper's. The SD over all
+    trials pooled across sessions (a variant) runs from 0.41 to 0.73 cm, 14.6% within.
+  deviations:
+  - Monkey X only; 359 sessions against the paper's 219, which may differ in their spread.
+- claim: fig3-example-neuron
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig3-example-neuron
+  measured:
+  - 0.364
+  - 0.537
+  notes: Of 359 units (first unit per session), 8 have their maximal mean rate at 225 degrees in
+    both conditions and a position effect (10 of 483 among all units). None has vision and
+    interaction P values within 0.52 +/- 0.052 and 0.64 +/- 0.064. The closest, 073009_4 chan1a, has
+    P = 0.364 and 0.537 (measured). The paper does not identify the neuron, and it may be one of
+    monkey B's, absent here.
+  deviations:
+  - Monkey X only.
+- claim: movement-epoch-tuning
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:movement-epoch-tuning
+  measured: 179
+  notes: With movement onset at event code 8, 187 of 359 units (52.1%, 179 scaled to 343) have a
+    target main effect or interaction in the 500 ms centred on it, against 139 +/- 13.9 (41%). All
+    483 units give 49.9% (171 scaled). A window centred on the target-code event (the cursor
+    entering the target window) gives 65.5%, and one on code 3 (target onset) 6.1%. Question for
+    the paper's authors, how movement onset was defined (methods_unavailable finding).
+  deviations:
+  - Movement onset is taken as event code 8 (reading (a) of the criterion, an event code). The
+    data set does not document the codes; code 8 comes 0.22 to 0.58 s after code 3 (read as target
+    onset) and 0.03 to 0.38 s before the target code event, which fits the cursor leaving the start
+    window, the definition of reading (b). No continuous arm position is in the data set to run
+    reading (b) directly. This reading of the code is an assumption.
+  - Monkey X only, 359 units; counts compared as percentages, scaled to 343.
+- claim: hold-position-main-effect
+  outcome: reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:hold-position-main-effect
+  measured: 135
+  notes: 141 of 359 units (39.3%, 135 scaled to 343) have a position main effect in the two-factor
+    ANOVA of the last 800 ms of the hold, against 135 of 343 (39.4%). The smoothed PSTH rate (sigma
+    50 ms) gives 142 (39.6%) and all 483 sorted units 176 (36.4%, 125 scaled), both within
+    tolerance. Shuffled labels give 4.2% significant.
+  deviations:
+  - Monkey X only; 359 sessions with the complete design (5 completed trials per target and
+    condition; the first five where a session has more), one unit per session (the first sorted
+    unit), against 343 neurons from two monkeys. The count is compared as a percentage, scaled to
+    343.
+  - The end of the hold is event code 12, read from the data (it follows code 10, read as target
+    offset, by 0.83 to 1.86 s, and the session's shortest such interval follows the record's
+    minimum hold parameter); the window is the 800 ms before it.
+- claim: hold-vision-main-effect
+  outcome: reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:hold-vision-main-effect
+  measured: 47
+  notes: 49 of 359 units (13.6%, 47 scaled to 343) have a vision main effect, against 44 +/- 4.4, and
+    fewer than the 141 with a position effect. All units give 69 of 483 (14.3%, 49 scaled); the
+    PSTH rate 50 (13.9%). The count is symmetric in V and NV, so the code mapping does not change
+    it.
+  deviations:
+  - As for hold-position-main-effect.
+- claim: hold-interaction
+  outcome: reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:hold-interaction
+  measured: 26
+  notes: 27 of 359 units (7.5%, 26 scaled to 343) have a position by vision interaction, within
+    reading (a), 27 +/- 2.7, and outside reading (b), 31 +/- 3.1. All units give 35 of 483 (7.2%, 25
+    scaled).
+  deviations:
+  - As for hold-position-main-effect.
+- claim: hold-subepochs
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:hold-subepochs
+  measured:
+  - 35.7
+  - 11.4
+  - 7.0
+  - 28.7
+  - 13.6
+  - 5.0
+  notes: In the first and last 400 ms of the window, 35.7, 11.4 and 7.0% and 28.7, 13.6 and 5.0% of
+    the 359 units have position, vision and interaction effects, against 31, 9, 5% and 29, 10, 4%;
+    1 of 6 values is within tolerance (the last 400 ms position effect). All 483 units give 31.5,
+    11.2, 6.2% and 27.1, 13.3, 4.3%, 3 of 6 within, which would be partial. The position percentages
+    are near the paper's; the vision and interaction percentages are higher.
+  deviations:
+  - As for hold-position-main-effect.
+- claim: hold-overall-effects
+  outcome: partially_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:hold-overall-effects
+  measured:
+  - 40.4
+  - 18.7
+  - 13.1
+  notes: 40.4% of units show a position effect (main or interaction), within 44 +/- 4.4; 18.7% a
+    vision effect, within 19 +/- 1.9; 13.1% effects of both, above 11 +/- 1.1. All units give 38.3,
+    18.8 and 12.2%.
+  deviations:
+  - As for hold-position-main-effect.
+- claim: correlation-endpoint-datasets
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:correlation-endpoint-datasets
+  measured:
+  - 0.9237
+  - 0.9154
+  notes: With each cell's V and NV mean hold rates at a target as one pair (reading (a)), Spearman r
+    is 0.9237 for the 463 cell and target pairs whose session and target had a significant MANOVA
+    (data set 1) and 0.9154 for the 2,409 others (data set 2), both within 0.093 of 0.9301 and
+    0.9281; the permutation test finds no difference (difference 0.0083, P = 0.469). With single
+    trials paired by order (reading (b)), r is 0.794 and 0.767, outside tolerance, and the
+    difference of 0.027 is significant (P = 0.025). All 483 units give P = 0.267 (a) and 0.001 (b).
+    Data set 1 is larger here than the paper's would be, as 16% of pairs had a significant MANOVA
+    (behavior-mean-position-sessions).
+  deviations:
+  - The readings give different outcomes. Reading (a) is adopted as an assumption, as its r values
+    are of the size the paper reports (0.93) and the paper speaks of correlations between the
+    responses in the two conditions; reading (b) gives r near 0.78. Question for the paper's
+    authors (methods_unavailable finding).
+  - Monkey X only; one hand position per trial for the MANOVA that forms the data sets.
+- claim: fig4-indx1-negative
+  outcome: partially_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig4-indx1-negative
+  measured:
+  - 77.8
+  - 68.4
+  - 75.0
+  - 75.0
+  - 356
+  - 98
+  - 44
+  - 20
+  notes: After outlier removal by reading (a) (Tukey fences over all cells, 3 removed), INDX1 is
+    negative in 77.8% of all cells, 68.4% of Position Only, 75.0% of Position/Vision and 75.0% of
+    Vision Only cells, against 84, 77, 85 and 84%; only the first is within tolerance, and the
+    others are 0.6 to 1.5 points below their lower bounds. Readings (b) and (c) give 78.4, 70.0,
+    75.0, 75.0 and the same as (a). Group sizes are 356, 98, 44 and 20 (paper 338, 110, 38, 27). Among
+    all 483 sorted units the four percentages (81.4, 71.4, 76.8, 81.2) are within tolerance. Under
+    the other code mapping INDX1 is also mostly negative (80.5, 72.3, 74.4, 73.7%), as choosing the
+    NV peak biases the NV rate upward.
+  deviations:
+  - Monkey X only, one unit per session; the population of all units, a variant, reproduces it.
+- claim: fig4-indx1-means
+  outcome: partially_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig4-indx1-negative
+  measured:
+  - -12.0
+  - -24.2
+  notes: Mean INDX1 is -12.0% for Position Only cells, within -13 +/- 1.3, and -24.2% for
+    Position/Vision cells, outside -31 +/- 3.1. Position Only is the least negative of the four
+    populations, as in the paper, but the most negative is all cells (-24.9%), not Position/Vision.
+    Readings (b) and (c), all units (-13.7 and -26.2%) and the other code mapping (-14.2 and -27.1%)
+    give the same pattern.
+  deviations:
+  - As for fig4-indx1-negative.
+- claim: indx1-tuning-shift
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:indx1-tuning-shift
+  measured:
+  - 33
+  - -23.0
+  - -27.6
+  notes: Of 44 Position/Vision cells, 33 (ring adjacency) or 34 (grid adjacency) have their V and NV
+    peaks at the same or adjacent targets, against 22 of 38; their mean INDX1 is -23.0% (-23.4%),
+    within -24 +/- 2.4, and the others' -27.6% (-26.9%), outside -40 +/- 4. All outlier readings
+    give the same; all units give 43 or 46 of 56, -26.6 and -24.8%.
+  deviations:
+  - Monkey X only, one unit per session.
+- claim: indx2-means
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:indx2-means
+  measured:
+  - -0.5
+  - 12.7
+  - 7.5
+  notes: With outliers on INDX1 (reading (i), Tukey fences over all cells), mean INDX2 is -0.5, +12.7
+    and +7.5% for Position Only, Vision Only and Position/Vision cells, against -9, -13 and -13%.
+    No outlier reading, population or code mapping gives three negative means within tolerance; the
+    closest, outliers on INDX2 with reading (c), gives -1.7, -10.5 and -9.5%.
+  deviations:
+  - Monkey X only, one unit per session.
+- claim: rate-variance-nv-higher
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:rate-variance-nv-higher
+  measured:
+  - 46.4
+  - 23.1
+  notes: At the NV preferred location, the mean across 359 cells of the hold rate variance is 46.4
+    (spikes/s)^2 in NV and 23.1 in V (sample variance), higher in NV in 67% of cells, as the paper's
+    56 against 30, but both below tolerance. After the Fig. 4 outliers, 46.7 and 23.0; with the
+    population variance, 37.1 and 18.5; all units, 48.5 and 25.6.
+  deviations:
+  - Which code is NV is assumed (code 7, from the aborts; see the attempt's findings). Under the
+    other mapping the direction reverses.
+  - Monkey X only, one unit per session.
+- claim: fig5-fano-factor
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig5-fano-factor
+  measured:
+  - 1.841
+  - 3.185
+  notes: With the Fig. 4 outliers removed (reading (a), 356 cells), FF is 1.84 in V and 3.19 in NV,
+    larger in NV but not significantly (permutation P = 0.280 two-sided, 0.137 one-sided), and both
+    above tolerance; a few high-rate cells (count variance up to 2,188) dominate the slope. With
+    Tukey outliers of the count means or variances removed (reading (b), 295 cells), FF is 0.98 and
+    1.24, larger in NV with P = 0.020, but both below tolerance. Without removal, 1.84 and 3.18 (P =
+    0.280).
+  deviations:
+  - The readings give different outcomes in significance, and neither puts both FF values within
+    tolerance. Reading (a) is adopted as an assumption, as the paper describes outlier removal only
+    in the Fig. 4 legend. Question for the paper's authors (methods_unavailable finding).
+  - Which code is NV is assumed, as for rate-variance-nv-higher.
+  - Monkey X only, one unit per session.
+- claim: cv2-larger-nv
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:cv2-larger-nv
+  notes: With the ISIs of a cell's five trials at the NV preferred location pooled (reading (a)),
+    CV2 is larger in NV, median 0.737 against 0.622 (Kruskal-Wallis H = 5.09, P = 0.024, 318 cells,
+    41 without two ISIs left out). Averaged over trials (reading (b)), 0.510 against 0.456, P =
+    0.098, not significant. All units give P = 0.0084 (a) and 0.067 (b).
+  deviations:
+  - The readings give different outcomes. Reading (a) is adopted as an assumption, as the Methods
+    say the CV2 "was calculated for each cell and condition", one value from that cell's data.
+    Question for the paper's authors (methods_unavailable finding).
+  - Which code is NV is assumed, as for rate-variance-nv-higher.
+- claim: fig6-decoding-vv
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig6-decoding-vv
+  measured: 77.4
+  notes: Trained and tested on V by the leave-one-out Poisson decoder, accuracy over 200 bootstrap
+    resamples of the 359 cells is 77.4 +/- 6.5% (reading (a)); populations of 200 cells give 73.3%
+    (reading (b)); both below 91.6 +/- 9%. The full population without resampling gives 87.5%. All
+    483 units give 68.4%.
+  deviations:
+  - Which code is V is assumed; under the other mapping V/V accuracy is 63.7%, also not within.
+  - Monkey X only, 359 cells, one per session, their trials joined by order within target and
+    condition (criterion reading (i)).
+- claim: fig6-decoding-nvnv
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig6-decoding-vv
+  measured: 63.7
+  notes: Trained and tested on NV, accuracy is 63.7 +/- 7.0% (reading (a)), 0.2 points below the
+    lower bound of 81.9 +/- 18.0%, and 57.2% with populations of 200 cells. The full population
+    gives 77.5%.
+  deviations:
+  - Which code is NV is assumed; under the other mapping NV/NV accuracy would be 77.4%, within
+    tolerance, so the outcome rests on the mapping.
+  - Monkey X only, as for fig6-decoding-vv.
+- claim: decoding-v-better-than-nv
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:decoding-v-better-than-nv
+  notes: V accuracy exceeds NV accuracy, 77.4 against 63.7%, and every t-test reading finds it
+    (paired over the 8 targets P = 0.0087; two-sample over the 200 bootstrap accuracies P = 4e-63;
+    two-sample over targets P = 0.0081); populations of 200 cells give P = 0.0009, 6e-65 and 0.0008.
+    With all 483 units, 68.4 against 63.0%, paired P = 0.29 and over bootstraps P = 4e-15.
+  deviations:
+  - Which code is V is assumed; under the other mapping NV would decode better (77.4 against
+    63.7%). The mapping was chosen from aborted trials, not from neural data.
+- claim: fig6-decoding-cross
+  outcome: reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:fig6-decoding-vv
+  measured:
+  - 58.9
+  - 52.7
+  notes: With the leave-one-out scheme (reading (a)), trained on NV and tested on V the accuracy is
+    58.9% (60.7 +/- 22), trained on V and tested on NV 52.7% (69.1 +/- 17), both within tolerance and
+    below the V/V accuracy of 77.4%. Training on all five trials (reading (b)) gives 62.1 and 56.8%.
+    Swapping the code mapping keeps both within tolerance and below the V/V accuracy (63.7%).
+  deviations:
+  - Monkey X only, as for fig6-decoding-vv.
+- claim: decoding-subepochs
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:decoding-subepochs
+  notes: The 400 ms windows decode less well than the 800 ms window (V 61.2 and 66.0 against 78.3%;
+    NV 59.8 and 42.8 against 64.6%). In V the first and last 400 ms do not differ (paired over
+    targets P = 0.38, two-sample over targets P = 0.31; over bootstraps P = 7e-11). In NV the last
+    400 ms decode 17.0 points worse than the first, and every reading finds it (P = 0.0073, 0.017
+    and 4e-78), so the claim of no difference does not hold. The claim covers both conditions, so
+    the code mapping does not change the outcome.
+  deviations:
+  - Monkey X only, as for fig6-decoding-vv.
+- claim: decoding-nonsignificant-cells
+  outcome: not_reproduced
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:decoding-nonsignificant-cells
+  measured:
+  - 24.7
+  - 12.5
+  notes: The 194 of 359 cells without any ANOVA effect decode 24.7% in V and 12.5% in NV (paper 20
+    and 14%; neither within tolerance), V above NV and 4 targets above chance in both, but the
+    difference is significant (paired over targets P = 0.00016), where the paper found it was not.
+    All 483 units (266 cells without effects) give 18.3 and 17.6% (P = 0.85).
+  deviations:
+  - Monkey X only, as for fig6-decoding-vv.
+- claim: eye-position-no-difference
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:eye-position-no-difference
+  notes: The data set holds no documented eye position. The analog files' channels are named only
+    AD01 to AD16 without description. The 24 field trial record (224 of the 359 sessions) ends with
+    two numbers near (0, -1.8) that might be an eye position, but nothing names them, and their SD
+    within a session (0.05 to 0.07) is below the eye tracker's stated resolution of 0.25 degrees.
+    Tested on them for the record only (trials pooled over sessions), no target shows a V against NV
+    difference by MANOVA, and one shows one by Levene's test (90 degrees, second value, P = 0.012
+    centred on the mean, 0.28 on the median); 8.7% of session and target pairs differ by MANOVA.
+- claim: aborted-trials-nv
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:aborted-trials-nv
+  notes: Which condition code is NV is not documented and was inferred from the aborted trials
+    themselves (more aborts after code 10 on code 7 trials), so a comparison of NV with V aborts
+    would test that inference, not the paper. The window sizes are not documented either; field 1
+    of the record (8, 10 or 12) may be one. For the record, with field 1 at 8, 10 and 12, 31.4, 26.6
+    and 5.7% of code 7 trials and 13.9, 24.4 and 3.6% of code 4 trials that reached code 10 were
+    aborted.
+- claim: longer-hold-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_shi_2013.ipynb
+  output: claim:longer-hold-no-difference
+  notes: Field 11 of the trial record follows the shortest interval from code 10 to code 12 in each
+    session (800, 900, 1,000 and 1,100 against 0.83, 0.96, 1.06 and 1.15 s at the median), so it is
+    read as the minimum hold. No completed trial in the data set has a minimum hold of 1,200 ms or
+    more (4 aborted trials do), so the sessions with the extended hold are not in it.
+findings:
+- kind: data_missing
+  statement: The data descriptor gives 343 cells, 219 from monkey X and 124 from monkey B. Every
+    session with a trial record has monkey X's target layout (targets about 9.2 cm apart
+    horizontally and 7.4 cm vertically, middle row at y near -4 cm, depth near 10 cm, as in Table 1
+    for monkey X); none has monkey B's square layout at a depth near 14.5 cm. Monkey B's data appear
+    not to be in the data set.
+- kind: selection_undocumented
+  statement: The data set holds 359 monkey X sessions with the paper's complete design (5 completed
+    trials per target and condition) and 485 sorted units in them (83 sessions have 2 units, 21 have
+    3 or 4), against the paper's 219 monkey X sessions and neurons, plus 47 sessions with an
+    incomplete design. Which sessions and units the paper analysed is not documented.
+- kind: metadata_insufficient
+  statement: The condition of a trial (Vision or No Vision) is coded only as 4 or 7 in field 14 of
+    an undocumented ASCII record strobed after each trial. Nothing says which is Vision. Code 7 trials
+    are aborted more often after the end of the reach (5,688 against 4,423) and not before it (6,040
+    against 6,006), which suggests 7 is No Vision; this attempt assumes so. Question for the data
+    owners, which code is Vision.
+- kind: metadata_insufficient
+  statement: The event codes are not described. EventCodes.txt is a generic list (TAPE = 1, DISPLAY
+    = 10 and so on) that does not match the codes in the files (0, 1, 55, 3 to 8, the target codes
+    44 to 66, 10, 12, 13, 14, 255). Their meaning, and that of the 19, 22 or 24 fields of the
+    per-trial text record (task parameters, target, condition, hand position, two further values),
+    had to be read from their timing and values.
+- kind: metadata_insufficient
+  statement: The analog channels (in .plx and .plxAnaAD files) are named AD01 to AD16 without
+    description, and the descriptor does not say what they record. No continuous arm or eye
+    position could be identified; the trial record gives one hand position per trial.
+- kind: metadata_insufficient
+  statement: The descriptor gives no units for the time stamps. In the .mat files spike times are in
+    milliseconds and event times in seconds; they agree with the .plx file of the session checked
+    (010609_1).
+- kind: other
+  statement: Nine early files (d1 to d14.mat, 2008) have a 19 field record without hand positions
+    and a minimum hold (record field 11) of 500 or 600 ms where the other sessions have 800 to 1,100
+    ms, below the paper's 800 ms hold.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) How movement onset was defined for the 500 ms
+    movement epoch; this attempt used event code 8, which fits the cursor leaving the start window.
+    (2) What a response pair is in the Spearman correlations between V and NV (each cell's mean rate
+    at a target, adopted here, or single trials). (3) Which cells were outliers in Fig. 5 (the Fig. 4
+    outliers were adopted here). (4) Whether CV2 pools the ISIs of a cell's trials (adopted here) or
+    averages per trial values. (5) Which sessions and units form the 219 monkey X neurons.
