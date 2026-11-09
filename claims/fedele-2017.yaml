@@ -85,7 +85,10 @@
 # test-retest medians for TLE patients "irrespective of outcome" as >98%; Table 1 gives 0.67 for
 # patient 8 (ILAE 3) and 1.00 for patient 9 (ILAE 5), whose median is 0.835. The Fig. 1 legend
 # labels PR "posterior hippocampus left". Patient 19 has a 4 x 8 grid in the Discussion and an
-# 8 x 4 grid in Table 1.
+# 8 x 4 grid in Table 1. The Methods select "up to six intervals" per night, but Table 1 lists more
+# intervals than six times the nights for several patients (patient 3, 5 nights and 39 intervals;
+# patients 5 and 6, 5 nights and 35; patient 1, 4 nights and 28; patient 2, 2 nights and 13;
+# patients 15 and 20, 4 nights and 28 and 29).
 schema_version: 2
 paper: doi:10.1038/s41598-017-13064-1
 claims:
@@ -93,7 +96,8 @@ claims:
   statement: The study included 20 patients, 9 with mesial temporal lobe epilepsy and 11 with
     extratemporal epilepsy; 13 became seizure free (ILAE 1) and 7 had recurrent seizures, a
     seizure-free rate of 65%.
-  source: Results, paragraph 1; Table 1
+  source: Results, paragraph 1; Table 1; the CI of the seizure-free rate is in Results, The HFO
+    area predicted seizure outcome, paragraph 1 ("65%, CI [41–85%]")
   quote: We included 20 patients (Table 1 ) of whom 9 with mesial temporal lobe epilepsy (TLE)
     and 11 with extratemporal epilepsy (ETE). Complete seizure freedom (ILAE 1 - International
     League Against Epilepsy, class 1) was reached in 13 patients, while 7 patients suffered from
@@ -131,7 +135,9 @@ claims:
   criterion: For each patient the count of distinct nights and of 5-minute intervals in the
     deposit is compared with Table 1 (Nights; Intervals). Reproduced when all 20 patients match
     on both; partially reproduced when at least 16 match on both; not reproduced otherwise.
-    Every mismatch is listed.
+    Every mismatch is listed. Table 1 itself does not respect the Methods' cap of six intervals
+    per night for seven patients (see the opening comment); the comparison is with Table 1 as
+    printed, and the largest number of intervals per night in the deposit is reported.
 - id: hfo-amplitudes
   statement: Detected ripples had median amplitude 27.4 microvolt peak-to-peak (interquartile
     range 15.0) and FR median amplitude 9.2 microvolt peak-to-peak (interquartile range 7.5).
@@ -200,7 +206,8 @@ claims:
     validation). Follow-up months come from the deposit when it holds them, else from Table 1.
     The paper does not say whether the exact or the normal approximation was used; the
     approximation with continuity correction (Matlab ranksum's default for these sizes) is
-    the main reading and the exact test a variant. SD is the sample SD (n - 1). Reproduced
+    the main reading and the exact test a variant; on the follow-up months of Table 1 both
+    give p = 0.25 (0.250 and 0.248). SD is the sample SD (n - 1). Reproduced
     when p >= 0.05 and the means and SDs are within tolerance; the p-value is reported.
 - id: table-s1-rates
   statement: The per-channel rates of ripples, FR and FRandR (events/min) of every patient are
@@ -352,8 +359,8 @@ claims:
     75); the asymptotic (Wald) method the Methods name for n > 10 is shown as a variant. The
     chi2 test is on the 2 x 2 table of area resection (fully, not fully) by outcome (ILAE 1,
     ILAE 2-6); the paper does not say which variant; readings (a) Pearson without continuity
-    correction (gives p = 0.0023 on the paper's counts), (b) with Yates correction, (c) Fisher's
-    exact test. Reproduced when the five percentages match and p < 0.05 under reading (a).
+    correction (gives p = 0.0023 on the paper's counts), (b) with Yates correction (p = 0.014),
+    (c) Fisher's exact test (p = 0.0072). Reproduced when the five percentages match and p < 0.05 under reading (a).
 - id: table2-ripple-fr-prediction
   statement: With the area defined by ripples, specificity was 54%, sensitivity 43%, NPV 64%,
     PPV 33% and accuracy 50%; by FR, 69%, 29%, 64%, 33% and 55%.
@@ -480,8 +487,11 @@ claims:
   - frandr-area-resection-per-patient
   criterion: Needs the SOZ channels of patients 10-16, which the paper does not list (it shows
     them only for patient 17, Fig. 2B). Reproduced when, for each of patients 10-16, at least
-    one SOZ channel is outside the RA and the FRandR area is fully inside it. The resection
-    size cannot be tested from channel data and is not judged.
+    one SOZ channel is outside the RA and the FRandR area is fully inside it. When the deposit
+    does not mark the SOZ channels either (its data description names none), the SOZ part is
+    not judged and the claim is reported as not testable; the FRandR part alone is already
+    judged by frandr-area-resection-per-patient. The resection size cannot be tested from
+    channel data and is not judged.
 - id: fig2-patient17
   statement: In patient 17 (recurrent seizures) the resected area does not comprise all
     channels of the HFO area, and the HFO area is smaller than the seizure onset zone.
@@ -552,7 +562,7 @@ claims:
     TLE patients irrespective of outcome, 97% in ETE patients with good outcome and only 36% in
     ETE patients with poor outcome.
   source: Results, Test-retest reliability of the spatial distribution of HFO rates, paragraph
-    2; Discussion, Automated detection predicts seizure outcome, paragraph 2
+    2; Table 1 legend; Discussion, Automated detection predicts seizure outcome, paragraph 2
   quote: Over the intervals of TLE patients, the median was >98% irrespective of outcome. Over
     the intervals of ETE patients, the median was 97% for patients with good outcome and only
     36% for patients with poor outcome.
@@ -626,7 +636,10 @@ claims:
     values and bounds, not given, (a) four gaussians at 100, 200, 300 and 400 Hz with widths
     of 50 Hz, (b) starting peaks at the four largest local maxima of the spectrum; a peak, (a)
     a local maximum of the fitted curve, (b) a fitted gaussian centre with positive amplitude
-    inside the band. Patients whose FRandR area is empty contribute no events. The event count
+    inside the band; the "second peak" of bimodal events, (a) the higher-frequency peak (the
+    Results say it is the second peak "in ripple and FR band"), (b) the more prominent peak
+    (the Discussion calls 240 Hz the median of a prominent peak "around 200 Hz"). Patients
+    whose FRandR area is empty contribute no events. The event count
     tolerance is 10%. Reproduced when the three shares are within tolerance under one reading
     and the two median frequencies are; partially reproduced when the shares are in the same
     order (bimodal largest) under one reading.
@@ -665,3 +678,20 @@ claims:
     parietal grid; patient 20, an anterior contact of the grid). Judged per patient; reproduced
     when all three hold, partially when one or two do. Where a contact's region cannot be read
     from the schemes, that patient is not judged and the notes say why.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, added the inconsistency between the Methods' cap of six intervals per night and Table 1, where seven patients have more intervals than six times their nights.
+  - cohort, source now names where the CI 41-85% of the seizure-free rate is printed, as the quote does not hold it.
+  - table1-nights-intervals, criterion notes the six-per-night inconsistency and compares with Table 1 as printed.
+  - followup-not-different, criterion records that the normal approximation and the exact ranksum both give p = 0.25 on Table 1's follow-up months (recomputed; means 29.3 and 22.8, SDs 15.3 and 10.7).
+  - table2-frandr-prediction, criterion gives the p-values of the Yates (0.014) and Fisher (0.0072) readings on the paper's counts, recomputed.
+  - ete-soz-not-resected, criterion says the SOZ part is not testable when neither paper nor deposit marks SOZ channels (the data description names none).
+  - test-retest-by-group, source adds the Table 1 legend, which holds the same sentences.
+  - spectral-classes, criterion names as open which peak the "second peak" of bimodal events is, as Results and Discussion describe it differently.
+  - Verified without change, Table 2 percentages from Table 1 columns, the Clopper-Pearson CIs (all printed intervals except specificity 78), the Engel recount, and the test-retest medians and lower quartiles from Table 1 with Matlab prctile.
+  - Open, the specificity CI 78-100% of the Results matches no standard method (Clopper-Pearson gives 75.3-100%, which the Discussion prints as 75-100%).
+  - Open, the SOZ comparisons in ete-soz-not-resected and fig2-patient17 depend on SOZ channels that the paper lists for no patient.
