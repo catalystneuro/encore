@@ -662,10 +662,39 @@ def notebook_of(attempt: dict, path: str | None) -> dict | None:
     return next((n for n in attempt["notebooks"] if n["path"] == path), None)
 
 
+TOP_JOURNALS = 25
+
+
+def journals_of(targets: list[dict]) -> dict[str, str]:
+    """Each target's journal for the datasets list's filter (papers/journals.yaml, tools/journals.py): one of the
+    TOP_JOURNALS journals with the most datasets, "Preprint", "Other journals", or "Not recorded"."""
+    path = ROOT / "papers" / "journals.yaml"
+    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
+    raw = {t["key"]: (known.get(norm(t.get("paper"))) or {}).get("journal") for t in targets}
+    counts: dict = {}
+    for j in raw.values():
+        if j and j != "Preprint":
+            counts[j] = counts.get(j, 0) + 1
+    top = {j for j, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:TOP_JOURNALS]}
+    return {k: (j if j in top or j == "Preprint" else "Other journals" if j else "Not recorded") for k, j in raw.items()}
+
+
+def journal_order(rows: list[dict]) -> list[str]:
+    """The journal filter's order: the journals by number of datasets, then the groups that are not one journal."""
+    groups = ["Preprint", "Other journals", "Not recorded"]
+    counts: dict = {}
+    for r in rows:
+        if r.get("journal") and r["journal"] not in groups:
+            counts[r["journal"]] = counts.get(r["journal"], 0) + 1
+    return [j for j, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))] + groups
+
+
 def rows(data: dict) -> dict[str, list]:
     current = current_attempts(data)
     by_id = {t["key"]: t for t in data["targets"]}
     dandisets, claims, findings = [], [], []
+    journal = journals_of(data["targets"])
     for t in data["targets"]:
         atts = current.get(t["key"])
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
@@ -689,6 +718,7 @@ def rows(data: dict) -> dict[str, list]:
             "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
             "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
+            "journal": journal.get(t["key"], "Not recorded"),
         })
     for atts in current.values():
         for a in atts:
@@ -710,7 +740,102 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
                 findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
-    return {"datasets": dandisets, "claims": claims, "findings": findings}
+    return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings}
+
+
+_PAPERS: dict = {}
+
+
+def paper_journals(dois: list[str]) -> dict[str, str]:
+    """Each paper's journal for the papers list's filter (papers/journals.yaml): one of the TOP_JOURNALS journals with
+    the most papers, "Preprint", "Other journals", or "Not recorded"."""
+    path = ROOT / "papers" / "journals.yaml"
+    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
+    raw = {d: (known.get(norm(d)) or {}).get("journal") for d in dois}
+    counts: dict = {}
+    for j in raw.values():
+        if j and j != "Preprint":
+            counts[j] = counts.get(j, 0) + 1
+    top = {j for j, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:TOP_JOURNALS]}
+    return {d: (j if j in top or j == "Preprint" else "Other journals" if j else "Not recorded") for d, j in raw.items()}
+
+
+def byline(key: str) -> str:
+    """"Tingley et al. 2021" from a paper key (tingley-2021, daume-2024-phase)."""
+    m = re.match(r"^(.+?)-(\d{4})(?:-|$)", key)
+    if not m:
+        return key
+    surname = " ".join(w.capitalize() for w in m.group(1).split("-"))
+    return f"{surname} et al. {m.group(2)}"
+
+
+def papers_of(data: dict) -> list[dict]:
+    """Every paper with records, or listed for a dataset (papers/datasets/), with its datasets and latest attempts:
+    for each of its datasets, the latest attempt on the paper (current_attempts), each attempt once."""
+    if id(data) in _PAPERS:
+        return _PAPERS[id(data)]
+    current = current_attempts(data)
+    by_key = {t["key"]: t for t in data["targets"]}
+    claim_papers = {f["paper"].lower() for fs in data.get("claim_files", {}).values() for f in fs}
+    out = []
+    for key, body in sorted(paper_records.listed().items()):
+        doi = paper_records.doi_of(key)
+        ds = [d["key"] for d in body.get("datasets") or []]
+        atts, seen = [], set()
+        for k in ds:
+            for a in current.get(k, []):
+                if a["paper"].lower() == doi and a["id"] not in seen:
+                    seen.add(a["id"])
+                    atts.append(a)
+        atts.sort(key=lambda a: (a["date"], a["id"]))
+        live = [a for a in atts if not a.get("deprecated")]
+        title = (body.get("title") or next((a.get("paper_title") for a in atts if a.get("paper_title")), None)
+                 or next((by_key[k]["paper_title"] for k in ds if k in by_key and by_key[k].get("paper") == doi), None)
+                 or byline(key))
+        out.append({
+            "key": key, "doi": doi, "title": title, "byline": byline(key), "datasets": ds,
+            "relation": sorted({d.get("relation", "primary") for d in body.get("datasets") or []}),
+            "attempts": atts, "live": live,
+            "status": "attempted" if atts else "claims" if doi in claim_papers else "open",
+            "date": max(a["date"] for a in atts) if atts else None,
+        })
+    _PAPERS.clear()
+    _PAPERS[id(data)] = out
+    return out
+
+
+def paper_rows(data: dict) -> list[dict]:
+    by_key = {t["key"]: t for t in data["targets"]}
+    papers = papers_of(data)
+    journal = paper_journals([p["doi"] for p in papers])
+    rows_ = []
+    for p in papers:
+        live, atts = p["live"], p["attempts"]
+        outcomes = [o for a in live for o in a["outcomes"]]
+        counts = outcome_counts(live) if live else None
+        rows_.append({
+            "id": p["key"], "title": p["title"], "byline": p["byline"], "doi": p["doi"],
+            "journal": journal.get(p["doi"], "Not recorded"),
+            "datasets": [{"key": k, "label": dataset_label(k), "page": page_of(k) if k in {a["key"] for a in atts}
+                          or k in data.get("claim_files", {}) else None} for k in p["datasets"]],
+            "n_datasets": len(p["datasets"]),
+            "archive": sorted({split_key(k)[0] for k in p["datasets"]}),
+            "relation": p["relation"],
+            "technique": sorted({x for k in p["datasets"] for x in by_key.get(k, {}).get("technique", [])}),
+            "species": sorted({x for k in p["datasets"] for x in by_key.get(k, {}).get("species", [])}),
+            "status": p["status"], "tier": weakest_tier(live) if live else None, "date": p["date"],
+            "counts": counts, "claims": len(outcomes) if live else None,
+            "elsewhere": sum(sum(outcome_counts(live, g).values()) for g in ("with_inputs", "elsewhere")) if live else None,
+            "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if live else None,
+            "reproduced": (round(share, 4) if (share := reproduced_share(counts)) is not None else None) if live else None,
+            "has": sorted({o["outcome"] for o in outcomes}),
+            "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
+            "findings": sum(len(a["findings"]) for a in live) if live else None,
+            "missing": sum(len(a.get("missing_datasets") or []) for a in live),
+            "page": f"papers/{p['key']}/" if atts or p["status"] == "claims" else None,
+        })
+    return rows_
 
 
 # --- html pieces ---------------------------------------------------------------
@@ -919,12 +1044,24 @@ def beacon(data: dict) -> str:
 def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "", path: str = "",
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
-    tabs = [("overview", "Overview", root or "./", None),
-            ("datasets", "Datasets", f"{root}datasets/", len({a["key"] for a in data["attempts"]})),
+    n_papers = sum(1 for p in papers_of(data) if p["attempts"])
+    n_datasets = len({a["key"] for a in data["attempts"]})
+    results = [("papers", "Papers", f"{root}papers/", n_papers), ("datasets", "Datasets", f"{root}datasets/", n_datasets)]
+    tabs = [("overview", "Overview", root or "./", None), ("results", None, None, None),
             ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
     for key, label, href, n in tabs:
+        if key == "results":
+            # A menu on a wide screen; on a narrow one, where the tab bar scrolls, its two items as tabs.
+            in_results = active in ("papers", "datasets")
+            items = "".join(f'<a href="{h}"{" aria-current=page" if k == active else ""}>{l}<span class="n">{c:,}</span></a>'
+                            for k, l, h, c in results)
+            nav += (f'<details class="menu"><summary class="tab{" current" if in_results else ""}">Results</summary>'
+                    f'<div class="menu-items">{items}</div></details>')
+            nav += "".join(f'<a class="tab narrow"{" aria-current=page" if k == active else ""} href="{h}">{l}'
+                           f'<span class="n">{c:,}</span></a>' for k, l, h, c in results)
+            continue
         current = ' aria-current="page"' if key == active else ""
         count = f'<span class="n">{n:,}</span>' if n is not None else ""
         nav += f'<a class="tab" href="{href}"{current}>{label}{count}</a>'
@@ -1509,11 +1646,22 @@ def page_about(data: dict) -> str:
 
 
 LISTS = {
+    "papers": {
+        "title": "Papers", "noun": "papers", "data": "data/papers.json",
+        "intro": "Every paper the registry tests, on the datasets its data are in: the paper the data were published "
+                 "with, or a paper that reuses them. Each opens a page with its claims and outcomes across its datasets.",
+        "facets": [("status", "Status"), ("journal", "Journal"), ("relation", "Data"), ("archive", "Archive"),
+                   ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"),
+                   ("technique", "Technique"), ("species", "Species")],
+        "sorts": [("-reproduced", "Most reproduced"), ("-date", "Most recently attempted"), ("byline", "First author"),
+                  ("-failures", "Most claims not reproduced"), ("-n_datasets", "Most datasets"), ("title", "Title")],
+        "csv": None,
+    },
     "datasets": {
         "title": "Datasets", "noun": "datasets", "data": "data/datasets.json",
         "intro": "Every public dataset whose metadata names a paper, on the DANDI Archive and other archives. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
-        "facets": [("status", "Status"), ("archive", "Archive"), ("has", "Has a claim that is"),
+        "facets": [("status", "Status"), ("archive", "Archive"), ("journal", "Journal"), ("has", "Has a claim that is"),
                    ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("-reproduced", "Most reproduced"), ("id", "Identifier"),
@@ -1532,12 +1680,16 @@ def page_list(data: dict, kind: str) -> str:
         "facets": [{"key": k, "label": label} for k, label in spec["facets"]],
         "sorts": [{"key": k, "label": label} for k, label in spec["sorts"]],
         "outcomes": {k: list(v) for k, v in OUTCOMES.items()},
-        "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "status": list(STATUS), "tier": list(TIERS)},
+        "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "tier": list(TIERS),
+                  "status": ["attempted", "claims", "open"] if kind == "papers" else list(STATUS),
+                  "journal": journal_order(rows_cache(data)[kind])},
         "labels": {
             "outcome": outcome_labels, "has": {**outcome_labels, "(none)": "Not attempted"},
             "blocked_by": {**BLOCKED_BY, "(none)": "No blocked claim"},
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
-            "status": STATUS, "found": {**FINDING_KINDS, "(none)": "None recorded"},
+            "status": {**STATUS, "claims": "Claims read, not yet attempted"} if kind == "papers" else STATUS,
+            "found": {**FINDING_KINDS, "(none)": "None recorded"},
+            "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
             "technique": {"(none)": "Not stated"}, "species": {"(none)": "Not stated"},
@@ -1734,6 +1886,56 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -
             f'<p class="sub small" style="margin-top:6px">Each attempt tests the paper again, usually on a newer version '
             f'of the dataset or a newer protocol, and reports which earlier findings are fixed. The latest attempt on '
             f'each paper is the current one.</p><ol class="timeline">{items}</ol></div>')
+
+
+def page_paper(data: dict, p: dict) -> str:
+    """A paper's page: its datasets, its latest attempts on them, and every claim's outcome, each linked to the
+    dataset page that has its notebook, notes and verification."""
+    root = "../../"
+    row = next(r for r in rows_cache(data)["papers"] if r["id"] == p["key"])
+    datasets_html = "".join(
+        f'<li><a href="{root}{e(d["page"])}">{e(d["label"])}</a>' if d["page"] else f'<li>{e(d["label"])}'
+        for d in row["datasets"])
+    relation = " (data the paper reuses)" if p["relation"] == ["reuses"] else ""
+    head = (f'<header class="page"><p class="eyebrow">{e(p["byline"])} · {e(row["journal"])}</p>'
+            f'<h1>{e(p["title"])}</h1>'
+            f'<p class="sub"><a href="https://doi.org/{e(p["doi"])}">doi:{e(p["doi"])}</a> · paper key '
+            f'<code>{e(p["key"])}</code></p></header>')
+    parts = [f'<section class="panel"><h2>Datasets{relation}</h2><ul class="inline">{datasets_html}</ul></section>']
+    if p["live"]:
+        # Each attempt's summary, named by the datasets it ran on when there are several.
+        shown = [a for a in p["live"] if a.get("summary")]
+        if shown:
+            paras = "".join(
+                (f'<p class="lede"><em>{e(", ".join(dataset_label(k) for k in a.get("datasets") or [a["key"]]))}:</em> '
+                 if len(shown) > 1 else '<p class="lede">') + f'{e(a["summary"])}</p>' for a in shown)
+            parts.append(f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that '
+                         f'recorded the attempt, from its claims and the agents&rsquo; reports. A failure to reproduce '
+                         f'may be a failure of the agent.</p></div>')
+        counts = row["counts"]
+        spelled = " · ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items() if n)
+        parts.append(f'<section class="panel"><h2>Outcomes</h2>{bar(counts, "outcomes")}'
+                     f'<p class="small muted">{spelled}: {row["claims"]} claims tested across {len(p["live"])} '
+                     f'attempt{"s" if len(p["live"]) != 1 else ""}.</p></section>')
+    for a in p["attempts"]:
+        missing = a.get("missing_datasets") or []
+        used = ", ".join(f'<a href="{root}{e(page_of(k))}">{e(dataset_label(k))}</a>' for k in a.get("datasets") or [a["key"]])
+        items = "".join(
+            f'<li>{chip(o["outcome"], root + page_of(a["key"]) + "#claim-" + o["claim"])} {e(o["statement"])}</li>'
+            for o in a["outcomes"])
+        flag = (f'<p class="small"><strong>Datasets it could not use:</strong> '
+                + "; ".join(e((m.get("archive", "") + ":" + m.get("id", "")).strip(":") or m.get("name", "a dataset"))
+                            + f' ({e(m.get("why", ""))})' for m in missing) + "</p>") if missing else ""
+        dep = f'<p class="small muted">Deprecated: {e(a["deprecated"])}</p>' if a.get("deprecated") else ""
+        parts.append(f'<section class="panel"><h2>Attempt <code>{e(a["id"])}</code></h2>'
+                     f'<p class="small muted">{e(a["date"])} · on {used}</p>{dep}{flag}'
+                     f'<ul class="paper-claims">{items}</ul></section>')
+    if not p["attempts"]:
+        parts.append('<section class="panel"><p class="muted">No attempt on this paper yet.</p></section>')
+    body = head + '<main class="paper">' + "".join(parts) + "</main>"
+    return shell(data, f'{p["byline"]}: {p["title"]} · {SITE_NAME}', root, "papers", body,
+                 path=f'papers/{p["key"]}/',
+                 description=f'Reproduction attempts on {p["byline"]}, "{p["title"]}", from its open data.')
 
 
 def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str:
@@ -2092,7 +2294,7 @@ def build(data: dict, output: Path) -> None:
     r = rows_cache(data)
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ASSETS, output / "assets", dirs_exist_ok=True)
-    for sub in ("datasets", "dandisets", "data", "api/dandiset"):
+    for sub in ("papers", "datasets", "dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_overview(data))
     (output / "about").mkdir(exist_ok=True)
@@ -2130,6 +2332,10 @@ def build(data: dict, output: Path) -> None:
                 (old / sub).mkdir(parents=True, exist_ok=True)
                 (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
             (output / "api" / "dandiset" / f"{split_key(key)[1]}.json").write_text(api)
+    for p in papers_of(data):
+        if p["attempts"] or p["status"] == "claims":
+            (output / "papers" / p["key"]).mkdir(parents=True, exist_ok=True)
+            (output / "papers" / p["key"] / "index.html").write_text(page_paper(data, p))
     for key in claims_only(data):
         page = output / page_of(key)
         page.mkdir(parents=True, exist_ok=True)
@@ -2202,6 +2408,8 @@ def sitemap(data: dict) -> str:
     pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
+    pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)
+              if p["attempts"] or p["status"] == "claims"]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')

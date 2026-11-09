@@ -344,8 +344,10 @@ jobs:
             git checkout -b "$BRANCH"
           fi
           # Refuse anything that is not this run's: a guard against results being mixed up.
-          if [ "$ROLE" = paper-match ]; then others=$(ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER")
-          else others=$(ls out/transcripts | grep -vx "$FOLDER"); fi
+          # `|| true`: grep finds nothing in a run that is all this one's, and fails, which `set -e` would stop on.
+          if [ "$ROLE" = paper-match ]; then
+            others=$({ ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER"; } || true)
+          else others=$(ls out/transcripts | grep -vx "$FOLDER" || true); fi
           others=$(echo "$others" | grep . || true)
           [ -z "$others" ] || { echo "::error::Transcripts for other datasets or papers: $others"; exit 1; }
           # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.
