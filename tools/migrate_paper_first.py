@@ -103,7 +103,8 @@ def plan() -> dict:
     fixes = paper_match.triage()
     recorded = {f for fs in folders.values() for f in fs}
     new_keys: dict[str, str] = {}
-    for t in datasets.targets():
+    # A branch converted at the cutover takes main's lists instead (MIGRATE_SEVERAL_FROM is set).
+    for t in [] if os.environ.get("MIGRATE_SEVERAL_FROM") else datasets.targets():
         if t["folder"] in recorded or t["archive"] in ("local", "remote"):
             continue
         status, chosen = paper_match.choose(t, fixes.get(t["folder"], {}), paper_match.load(t["folder"]))
