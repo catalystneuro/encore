@@ -1,0 +1,102 @@
+# 000252, Guan et al. 2022
+
+Nine claims reproduced (one on an assumption), one partially (on an
+assumption), one not reproduced and eight blocked, all eight for missing data.
+All 19 claims are on the dandiset. The first verification round agreed with all
+19 outcomes and the second with all 19; nothing was proposed after the second,
+so there was no third round. It pins version 0.230408.2207, the only published
+version, with the draft listing the same assets. The paper, Guan et al.,
+"Compositional coding of individual finger movements in human posterior
+parietal cortex and motor cortex enables ten-finger decoding", a bioRxiv
+preprint, records sorted single neurons from Utah arrays in two tetraplegic
+participants, N (one array in left PPC, N-PPC) and J (J-PPC and J-MC), during
+attempted finger presses of both hands, with an alternating-cues task and
+online BMI sessions besides; the dandiset holds 12 NWB files of the ten-finger
+press task, 10 sessions of N and 2 of J with 100 trials each. The claims were
+written from version 1 of the preprint as bioRxiv JATS XML, without a PDF; the
+paper links no code and names rsatoolbox and DABEST. The check made eight
+changes, among them a new reading O11 that fixes the Go window for the
+ten-finger analyses, and left three points open. The ten-finger claims could be
+tested and the alternating-cues and BMI claims could not. Reproduced are
+`tenfinger-recording-counts` and `tenfinger-pooled-npcc-neurons` (1114 N-PPC
+units, paper 1111), both on the counts before the 0.5 Hz exclusion, which the
+Methods apply to all analyses (943 and 930 after it, outside tolerance);
+`tenfinger-decoding-accuracy` (72.2%, 69.5% and 78.5% for N-PPC, J-PPC and
+J-MC under O1 (a) and O2 (a), chance 10%); `tenfinger-error-structure` (76.6%,
+72.1% and 62.8% of errors adjacent or matching); `fig8a-npcc-index-distinct`
+in all 18 readings; `fig8e-hand-ccgp` and `fig8e-finger-ccgp` (p = 1/1002, the
+latter through O9 (b), as J-MC fails the 0.9 margin of O9 (a));
+`figs11-jppc-lower-matched-size` (J-PPC 0.253 to 0.338 against at least 0.472);
+and `fig8b-matching-closer` (N-PPC 1.42, J-MC 3.06, J-PPC 0.22 with its CI
+including 0) on the assumption that the noise passed to rsatoolbox is the
+precision of each partition mean, without which the values are about a fifth
+as large and the claim would be partial. `jppc-finger-ccgp-low` is partial on
+the assumption that the standard accuracy is computed on the same
+pseudo-population as CCGP: J-PPC finger CCGP is 0.290 to 0.380, p is below
+0.001 in only one of eight readings, and there the within-hand accuracy (0.850)
+is outside the tolerance of 65%; with the per-session accuracy (0.680 to 0.690)
+the same reading is reproduced. `tenfinger-discriminative-fraction` is not
+reproduced: under O1 (a) 47.8%, 38.1% and 65.1% of neurons are discriminative
+against the paper's 66%, 57% and 78%, uncorrected p gives at most 56.1%, 46.5%
+and 68.8%, and only a 1 s window from the Go cue (60.8%, 56.8% and 82.9%), a
+variant outside O11, comes within tolerance. The five alternating-cues claims
+and the three BMI claims are blocked for missing data. The author's first run
+gave the same outcomes, with the same two assumptions. The author asked no
+questions of a reader, so the answer and author-answers runs changed nothing.
+Round 1 found that the fig8b magnitude rests on the x5 scaling (5.46 times the
+true value on synthetic data), that the per-session standard accuracy of
+`jppc-finger-ccgp-low` had been run for one reading only, that the J-PPC p
+value is fragile, that the O6 (b) null is conservative, that figs11 ran only O1
+(a), that the window of the discriminative fraction was not swept and that
+DANDI:000147 was not examined; in reply a synthetic check of the scale and the
+RDM ranges were added, the per-session accuracy and the null counts were
+printed for every reading, the window was swept, figs11 was run under O1 (b)
+and DANDI:000147 was checked, while the O6 (b) null was left as a deviation, as
+fixing it would take about 100 times as long. Round 2 found that calling the
+pseudo-population the better-supported choice is a judgement call, that the
+claims file corrects J's two arrays separately where the Methods correct over
+each participant's neurons, and sentences the outputs did not support (a
+shuffled-label range of 0.07 to 0.17 where the outputs give 0.04 to 0.17,
+"FDR per session gives no more" where it gives up to 0.3 points more, a run
+time of fourteen minutes, an RDM range from 0.00 and the contents of
+DANDI:000147, printed by no cell); in reply the text was corrected, a cell
+printing DANDI:000147 was added and the correction question went to a reader in
+`questions/000252.yaml`. The author's session ran from 12:02 to 12:29 UTC; a
+singular noise matrix and a sortedness check that read the wrong array were
+fixed during development. The notebook ran in about 6.8 minutes at first, 416 s
+after the author-answers run and 661 s at the end, and the executed copy was
+built before the last markdown-only edits. The untracked files in the
+repository root were left alone.
+
+The dandiset holds only the ten-finger press task: the alternating-cues task
+(Figures 1, 4 and 5, Supplementary Figures 2 to 5) and J's online BMI sessions
+(Figure 6b, Supplementary Figures 6 and 7) are not in it, though the paper's
+Data Availability names only this dandiset, and the trial table has no decoder
+output. Its metadata say it continues DANDI:000147, which holds 10 files of
+subject P1 from 2018 with a BCI finger-press task and appears to hold N's BMI
+sessions of ref 46, but no alternating-cues task and nothing of J. In 1509 of
+1692 units the spike times are not stored in increasing time order, which NWB
+expects. The files name the participants P1 (the paper's N) and N1 (the
+paper's J) with no mapping to the paper's labels, so N1 is not participant N
+and the mapping follows only from the sex and electrode locations. The trial
+columns Run, TrialNumber, cue_on_time, cue_off_time and go_on_time have no
+description, and the Delay screen onset is implied only by cue_off_time. The
+paper's per-session unit counts match the units before the 0.5 Hz exclusion,
+and the J-MC session of 2019-02-12 has 139 units against the paper's stated
+maximum of 130. Questions are put to the paper's authors: how the noise
+precision was passed to rsatoolbox for the cross-validated Mahalanobis
+distance; whether the standard accuracy compared with CCGP was computed on the
+pseudo-population or per session; what the 1001 label shuffles permuted and
+how trials of different sessions were matched; and which window, exclusion and
+correction gave the discriminative fractions.
+
+The author's points on the protocol: the claims file's readings O3 and O4 did
+not cover how the toolbox is called, which changes values about fivefold, so a
+reading from the toolbox's documentation was adopted as an assumption with the
+unscaled result as a variant; criteria that count a claim reproduced under one
+reading made fig8e-finger reproduced though O9 (a) fails and jppc partial
+through one reading of eight; step 1.4 does not say whether to look at a
+related dandiset the claims file does not name, such as 000147, so only its
+metadata were read and the claims kept as data_missing; and there is no rule
+for a pseudo-population null over random pairings, so each shuffle drew a new
+matching, recorded as a deviation.

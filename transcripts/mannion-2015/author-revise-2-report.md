@@ -1,0 +1,11 @@
+No outcomes changed. The record still has 1 reproduced (figs2-task-no-condition-difference) and 15 blocked: 14 for missing data and no-radial-bias-in-patches for missing calibration metadata. The round-2 verifier agreed with all 16, so nothing went under `proposed`. I re-ran the entry twice with `python tools/entry.py all`, the second time after the final edits. Both runs passed with 0 check errors, and every number came out the same as before.
+
+**What I corrected or added:**
+- **Filter figure (cell 19):** the filter matches OpenCV's to 8.9e-16, as cell 18 prints, not 1.3e-15.
+- **Times at or before 32 s (cell 12):** the notebook now also prints the task.py lines that skip presses and targets at or before 32 s (lines 53 to 54 and 99 to 100). Cell 15, the figs2 notes and the code_mismatch finding now point to these lines and to line 141.
+- **"Close to random" (cell 15):** this now reads as an inference from the code. Under reading (a) a target gets the label of the event starting 32 to 34 s after it, and no output measures how unrelated those labels are.
+- **Peak lag (cell 14):** this is now printed for every reading. The new output corrected the old claim of a 0.6 s peak in all four conditions. That holds under readings (a), (c) and (e). Under (b) and (d), lower/above peaks at 0.7 s. Cell 15 and the figs2 notes now say this.
+- **Round-1 `reviewed` description:** the handover removed only the Result cells and the Summary. The table of outcomes in the introduction (cell 0) and the outcome words in the section headings were still there, and the verifier quoted them. The description now says so.
+- **Round 2 record:** added under `verifications`, with an entry for all 16 claims: agrees, outcome, the verifier's reason in its own words, and my response.
+
+The verifier also pointed out that the round-1 volume variant is still uncorrected and fitted by OLS, and that p1011's run order is unconfirmed. I left that alone: the verifier called it harmless, and no outcome rests on it. Nothing in the report was a place where the claims file misreads the paper, so I added no questions. I did not commit, as instructed. A few untracked dotfiles and folders in the repository root (`.bashrc`, `.idea`, `scripts` and others) were not made by me, and I left them as they were.

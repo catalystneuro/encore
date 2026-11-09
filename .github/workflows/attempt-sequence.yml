@@ -1,16 +1,18 @@
 name: Attempt sequence
 
-# A whole attempt on one dataset, given by its folder name (000147, or <archive>-<id>): the reader's claims and their check (papers.yml), the author,
+# A whole attempt on one paper, given by its key (tingley-2021; docs/paper-first.md), whose datasets are listed in
+# papers/datasets/<key>.yaml: the reader's claims and their check (papers.yml), the author,
 # the first verification round,
 # the author's revision, the second round and the final revision, each an Agent
 # run (attempt.yml), and a third round when the final revision proposed changes. Each step starts when the one before has succeeded, so a
-# failure stops this dataset's attempt and leaves its branch as the last good
-# step left it. Called by pipeline.yml, once per dataset.
+# failure stops this paper's attempt and leaves its branch as the last good
+# step left it. Called by pipeline.yml, once per paper. The paper match, which lists a dataset's paper, is made
+# by the queue runner (tools/runner/chain.sh) before a paper has a key.
 
 on:
   workflow_call:
     inputs:
-      dataset:
+      paper:
         type: string
         required: true
       model:
@@ -26,12 +28,12 @@ permissions:
 jobs:
   claims:
     uses: ./.github/workflows/papers.yml
-    with: {dataset: "${{ inputs.dataset }}", role: claims, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: claims, model: "${{ inputs.model }}"}
     secrets: inherit
   claims-check:
     needs: claims
     uses: ./.github/workflows/papers.yml
-    with: {dataset: "${{ inputs.dataset }}", role: claims-check, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: claims-check, model: "${{ inputs.model }}"}
     secrets: inherit
   claims-ready:
     # The attempt starts only on a claims file whose last check says it is ready. Questions the
@@ -40,12 +42,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: {ref: "attempt/${{ inputs.dataset }}", persist-credentials: false}
+        with: {ref: "attempt/${{ inputs.paper }}", persist-credentials: false}
       - run: |
           pip install -q pyyaml
           python - <<'PY'
           import glob, sys, yaml
-          files = glob.glob("claims/${{ inputs.dataset }}/*.yaml")
+          files = glob.glob("claims/${{ inputs.paper }}.yaml")
           last = ((yaml.safe_load(open(files[0])) or {}).get("checks") or [{}])[-1] if files else {}
           if not last.get("ready"):
               sys.exit("::error::The claims check says the claims file is not ready")
@@ -53,27 +55,27 @@ jobs:
   author:
     needs: claims-ready
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: author, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: author, model: "${{ inputs.model }}"}
     secrets: inherit
   verifier-1:
     needs: author
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: verifier-1, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: verifier-1, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-1:
     needs: verifier-1
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: author-revise-1, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: author-revise-1, model: "${{ inputs.model }}"}
     secrets: inherit
   verifier-2:
     needs: author-revise-1
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: verifier-2, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: verifier-2, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-2:
     needs: verifier-2
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: author-revise-2, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: author-revise-2, model: "${{ inputs.model }}"}
     secrets: inherit
   proposals:
     # Whether the final revision proposed changes of outcome, which a third round settles.
@@ -84,25 +86,53 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: attempt/${{ inputs.dataset }}
+          ref: attempt/${{ inputs.paper }}
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - id: look
         env:
-          DATASET: ${{ inputs.dataset }}
+          PAPER: ${{ inputs.paper }}
         run: |
           pip install --no-cache-dir pyyaml
-          echo "found=$(python tools/agent_run.py proposals author "$DATASET")" >> "$GITHUB_OUTPUT"
+          echo "found=$(python tools/agent_run.py proposals author "$PAPER")" >> "$GITHUB_OUTPUT"
   verifier-3:
     needs: proposals
     if: needs.proposals.outputs.found == 'true'
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: verifier-3, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: verifier-3, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-3:
     needs: verifier-3
     uses: ./.github/workflows/attempt.yml
-    with: {dataset: "${{ inputs.dataset }}", role: author-revise-3, model: "${{ inputs.model }}"}
+    with: {paper: "${{ inputs.paper }}", role: author-revise-3, model: "${{ inputs.model }}"}
+    secrets: inherit
+  repeat:
+    # Whether the attempt has one before it, which the reconcile step compares it with. After the last round
+    # that ran: the third round is skipped when no changes were proposed.
+    needs: [author-revise-2, author-revise-3]
+    if: always() && needs.author-revise-2.result == 'success' && needs.author-revise-3.result != 'failure' && needs.author-revise-3.result != 'cancelled'
+    runs-on: ubuntu-latest
+    outputs:
+      found: ${{ steps.look.outputs.found }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: attempt/${{ inputs.paper }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - id: look
+        env:
+          PAPER: ${{ inputs.paper }}
+        run: |
+          pip install --no-cache-dir pyyaml
+          echo "found=$(python tools/agent_run.py repeat reconcile "$PAPER")" >> "$GITHUB_OUTPUT"
+  reconcile:
+    needs: repeat
+    if: always() && needs.repeat.outputs.found == 'true'
+    uses: ./.github/workflows/attempt.yml
+    with: {paper: "${{ inputs.paper }}", role: reconcile, model: "${{ inputs.model }}"}
     secrets: inherit

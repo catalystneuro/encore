@@ -1,0 +1,600 @@
+# Claims for Seyedolmohadesin et al. (2026), "Whole-brain chemosensory responses of both C. elegans
+# sexes", Current Biology 36, 4803-4816, on dandiset 000981.
+#
+# Provenance. Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions),
+# 2026-10-22, protocol pilot-10 as stated in docs/protocol.md. No data of the dandiset were seen;
+# only its title and description on the archive ("Datasets for the Current Biology paper", 47 assets).
+#
+# Text read. The version of record (PDF supplied by a person, text extracted with PyMuPDF), in
+# paper/10.1016-j.cub.2026.08.040.txt: main text, STAR Methods, and the supplement's Figures S1 to
+# S20 with their legends. Data S1 to S4 (spreadsheets behind Figures 2 to 5) and Videos S1 and S2
+# are not in the text. No figure was read from the PDF (no renderer was available).
+#
+# Code read. https://github.com/venkatachalamlab/whole-brain-chemosensory-responses at commit
+# b0dbdbf50c579d056d7991b7612fcff30091ffbd (1 June 2025). This is tag 1.0.0, which is the Zenodo
+# record the key resources table cites (10.5281/zenodo.21479592). It holds compile_all_traces.ipynb
+# (traces to per-presentation responses, and the band-passed traces for correlations), the figure
+# notebooks Fig2&3_prepare_data, Fig2B-E&Fig3, Fig4_prepare_data, Fig4, Fig5 and FigS2 (the drop
+# tests), config.py (stimulus names, onset frames, which of the 47 recordings are male) and
+# datasets.json (47 recordings, 22 hermaphrodites and 25 males). It does not hold the files it reads:
+# neurons/neuron_classes.json (the neuron classes and their layer), the metadata spreadsheet
+# sexual_dimorphism_data.xlsx (time ranges and ganglia to ignore per recording), confidence.csv
+# (identification confidence), the per-recording stimulus order files, or the connectome table. The
+# code predates the revision (submitted July 2025, revised January 2026) and has no code for the
+# cycle-1 and per-animal representations, the FDR correction, the AVA motor-state analyses (Figures
+# S2A to S2C, S3F, S3G, S8) or Figure S2E, S2F; those rest on the Methods alone.
+#
+# The data the paper used. OH16230 (otIs670[NeuroPAL]; otIs672[panneuronal GCaMP6s]) young adults,
+# 22 hermaphrodites and 25 males, each in a sex-specific microfluidic trap with 1 mM levamisole. One
+# recording per animal, 31 min continuous, GCaMP6s at 2.67 volumes/s (25 planes, 15 ms each), plus a
+# NeuroPAL multicolour volume for identification. Stimuli to the nose, 10 per cycle in a random order
+# per animal repeated three times; 60 s buffer first, then each stimulus 15 s followed by 45 s
+# buffer. The 10 are OP50 supernatant (food), 1 uM ascr#3 (pheromone), 800 mM sorbitol (osmotic
+# stress), 10 mM CuSO4 (toxic stress), isoamyl alcohol 1e-6 and 1e-2 (low and high odor), NaCl 100 and
+# 450 mM (low and high salt), a buffer-to-buffer switch (control) and 10 uM fluorescein (flow check).
+# Measured variables: a calcium trace per identified neuron (mean of the 15 brightest pixels in a
+# 2 x 2 x 3 um box at the ZephIR-tracked centre), neuron identities, sex, and the stimulus timing.
+# 196 sex-shared and 6 male-specific head neurons were analysed; tail neurons were recorded but not
+# analysed. Drop-test behaviour (Figure S1A, S1B) and published connectomes (Figure 4) are other data.
+#
+# Common methods, cited once here and named in the criteria.
+#
+# RESPONSE (Methods, Calculating stimulus onset and offset responses; code compile_all_traces.ipynb,
+# normalized_odor_response). For each neuron and stimulus presentation, the onset response is the
+# mean dF/F0 over the 40 frames (15 s) from stimulus onset, F0 the mean of the 10 frames (3.75 s)
+# before onset; the offset response is the mean dF/F0 over the 40 frames after offset, F0 the mean of
+# the 10 frames before offset. The code takes onset frames from config.py (181, 340, 500, ... 4818,
+# 30 presentations), offset = onset + 40 frames, and the stimulus at each position from the
+# recording's stimulus order.
+#
+# EXCLUSION (Methods, same section). Per neuron class, sex and stimulus, the means of the 15 s before
+# onset, during delivery and after offset (onset F0) are pooled over cycles, animals and the class's
+# neurons; a presentation with any of the three below Q1 - 5 IQR or above Q3 + 5 IQR is excluded. The
+# code (Fig2&3_prepare_data.ipynb) also excludes, with the same 5 IQR rule, presentations whose range
+# (max - min of dF/F0) in any of the three windows is extreme; keeps only identifications with
+# confidence 1; drops presentations with more than 7 missing frames of 120; and blanks time ranges
+# and ganglia listed per recording in a spreadsheet not in the repository. The Methods name only the
+# outlier rule. Two readings are run: (a) the Methods' rule alone; (b) the code's filters as well, as
+# far as the dandiset carries identification confidence and ignored ranges (the author says which).
+# These are readings of a method detail, so a claim's outcome is the one both give; when they give
+# different outcomes the claim is blocked as methods_underspecified, with both results shown.
+#
+# CLASSES. Left and right neurons (and the dorsal and ventral subclasses the code keeps apart) are
+# pooled into one subclass; ASEL and ASER stay separate (Results, Most sensory neurons..., paragraph
+# 3). Figures 3 and 4 use these subclasses (110 for Figure 4, Results, Functional correlations...,
+# paragraph 1). Counts use 89 canonical classes (Figure 5 legend); the code (Fig5.ipynb) collapses
+# CEP, IL1, IL2, OLQ, URY, SAA, SAB, SIA, SIB, RMD, RME, SMB, SMD, URA and the cord classes AS, DA, DB,
+# DD, VA, VB, VD, and calls a canonical class responsive (or dimorphic) when any subclass is. OPEN.
+# Which class is in which layer (24 sensory, 36 inter, 15 motor, 14 pharyngeal) is in Figure 5A and
+# Data S4 and in the code's missing neuron_classes.json; the author must use an assignment with these
+# totals, list it, and record it as a deviation.
+#
+# DIMORPHISM (Methods, Identifying sexually dimorphic responses, representation 1, which Figure 3
+# shows; code Fig2&3_prepare_data.ipynb). Per subclass, stimulus and window (onset or offset), all
+# hermaphrodite responses (every cycle, every neuron of the subclass, every animal) against all male
+# responses, two-sample t-test with equal variances (scipy ttest_ind default, as the code). Dimorphic
+# when p <= 0.05. Representation 2 uses cycle 1 only; representation 3 first averages each animal's
+# responses over cycles and left and right. The Figure 3 colour is |male - herm| / (|herm| + |male|
+# + 0.1) (code).
+#
+# RESPONSIVE (Methods, Identifying responsive neuron classes; code). Per subclass, sex, cue (the 8
+# cues) and window, the pooled responses against the pooled responses of the same subclass and sex
+# to the buffer-to-buffer control, two-sample t-test; responsive when p <= 0.05 (the code uses p <
+# 0.05, shown as a variant). A class is responsive if this holds in at least one sex for at least
+# one cue and window.
+#
+# CORRELATION (Methods, Calculating dimorphism in functional connectivity; code compile_all_traces
+# correct(), Fig4_prepare_data, Fig4). Each whole trace z-scored, then band-passed as the mean of the
+# past 10 frames minus the mean of the past 240 frames (the code's windows include the current frame,
+# 11 and 241 frames); the code blanks the first 96 frames and correlates frames 98 to 4978, pairwise
+# complete. A stimulus is a binary series, 1 while delivered (the code sets 1 from 2 frames before the
+# onset frame for 40 frames). Pearson r per pair per animal. Per subclass pair and sex, two readings:
+# (a) the code's, all left-right combinations of all animals pooled, values beyond 3 IQR of the
+# quartiles removed, mean, and a two-sample t-test (equal variances) on the pooled values; (b) the
+# Methods', the mean over the combinations per animal, then the mean over animals and a t-test on the
+# per-animal values. Functional dimorphism is |mean herm - mean male|. Reading (b) follows the
+# Methods ("Each pairwise correlation was then averaged across all individuals"); the code's outlier
+# removal and pooling are not in the Methods, so (b) decides the outcome and (a) is a variant
+# (docs/protocol.md, Reader, step 2).
+#
+# READINGS. Where a criterion lists readings of what a statement or reported number means (which
+# window a legend means, what "almost all" is), the claim holds under any of them. Where the readings
+# are choices of method (EXCLUSION (a) and (b), the OPEN details of motor state), the outcome is the
+# one they all give, and the claim is blocked as methods_underspecified when they differ.
+#
+# CONNECTOME (Methods, Normalization of connectome data and Calculating dimorphism in synaptic
+# connectivity; code Fig4_prepare_data, Fig4). Three hermaphrodite connectomes (White et al. 1986 as
+# annotated by Cook et al. 2019; Witvliet et al. 2021 datasets 7 and 8) and the male of Cook et al.
+# 2019 (doi 10.1038/s41586-019-1352-7). The code reads them from a table prepared by S.J. Cook that is
+# not in the repository. Each dataset divided by its 95% quantile and multiplied by White's 95%
+# quantile; hermaphrodite weight the mean of the three, with its SEM; per subclass pair the sum of
+# the 8 directed weights, the SEMs combined in quadrature; dimorphism degree |Sherm - Smale| / (Sherm
+# + Smale + 5) (Methods; the code uses 3, and drops pairs with both sums below 3, a variant).
+#
+# Omitted as checks of method, not findings: Figures S8E, S9 to S11 (window sizes) and S13, S16, S19.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000981"
+paper: doi:10.1016/j.cub.2026.08.040
+claims:
+- id: recordings-animals
+  statement: Whole-head activity of 196 sex-shared and 6 male-specific neurons was studied in 22
+    hermaphrodites and 25 males.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 1
+  quote: We studied the activity of 196 sex-shared neurons ... in the heads of 22 hermaphrodites and
+    25 males
+  expected:
+  - quantity: hermaphrodites recorded
+    value: 22
+    tolerance: 0
+  - quantity: males recorded
+    value: 25
+    tolerance: 0
+  criterion: Counted from the recordings' sex. The tolerance is zero because these are counts of
+    recorded animals, which the code's datasets.json also gives (22 and 25 of 47).
+- id: fig5b-responsive-classes
+  statement: Of the 89 head neuron classes, 84 (94%) responded to at least one stimulus in at least
+    one sex.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 9;
+    Figure 5B
+  quote: Of the 89 neuron classes in the head, 84 were responsive (94%)
+  expected:
+    quantity: responsive canonical head classes
+    value: 84
+    tolerance: 8.4
+  criterion: RESPONSE, EXCLUSION (both readings), CLASSES and RESPONSIVE as in the opening comment,
+    counted over the 89 canonical classes. Male-specific CEM and MCM are not among the 89 (code
+    removes them). Reproduced when the count is within tolerance under both exclusion readings
+    (opening comment, EXCLUSION).
+- id: fig5b-dimorphic-classes
+  statement: Of the 89 head neuron classes, 80 (90%) responded dimorphically to at least one stimulus.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 9;
+    Figure 5B
+  quote: and 80 classes (90%) were sexually dimorphic
+  expected:
+    quantity: dimorphic canonical head classes
+    value: 80
+    tolerance: 8.0
+  depends_on:
+  - fig5b-responsive-classes
+  criterion: DIMORPHISM (representation 1) over the 8 cues, onset or offset, then CLASSES. The code
+    (Fig5.ipynb) counts a class as dimorphic only when it is also responsive; the Methods do not say
+    so. Readings are (a) dimorphic and responsive, as the code; (b) dimorphic alone. Each is run with
+    both exclusion readings. Reproduced when the count is within tolerance under (a) or (b), with
+    both exclusion readings giving that outcome.
+- id: fig5b-layer-counts
+  statement: Responsive and dimorphic classes per layer are 23 and 22 of 24 sensory, 34 and 33 of 36
+    inter, 14 and 13 of 15 motor, and 13 and 12 of 14 pharyngeal classes.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 9;
+    Figure 5B
+  quote: Of the 24 sensory neuron classes, 23 classes (96%) were responsive, and 22 classes (92%) were
+    dimorphic. Of the 36 interneuron classes, 34 classes (94%) were responsive, and 33 classes (92%)
+    were dimorphic. Of the 15 motor neuron classes, 14 classes (93%) were responsive, and 13 classes
+    (87%) were dimorphic. Of the 14 pharyngeal neuron classes, 13 classes (93%) were responsive, and
+    12 classes (86%) were dimorphic
+  expected:
+  - quantity: responsive sensory classes
+    value: 23
+    tolerance: 2.3
+  - quantity: dimorphic sensory classes
+    value: 22
+    tolerance: 2.2
+  - quantity: responsive interneuron classes
+    value: 34
+    tolerance: 3.4
+  - quantity: dimorphic interneuron classes
+    value: 33
+    tolerance: 3.3
+  - quantity: responsive motor neuron classes
+    value: 14
+    tolerance: 1.4
+  - quantity: dimorphic motor neuron classes
+    value: 13
+    tolerance: 1.3
+  - quantity: responsive pharyngeal classes
+    value: 13
+    tolerance: 1.3
+  - quantity: dimorphic pharyngeal classes
+    value: 12
+    tolerance: 1.2
+  depends_on:
+  - fig5b-responsive-classes
+  - fig5b-dimorphic-classes
+  criterion: As the two claims it depends on, split by layer. The layer assignment is OPEN (opening
+    comment, CLASSES). Reproduced when all eight counts are within tolerance under reading (a) or
+    (b) of fig5b-dimorphic-classes; partially reproduced when six or seven are. Both exclusion
+    readings must give the outcome (opening comment, READINGS).
+- id: fig3-each-stimulus-mixed
+  statement: For every stimulus at least one neuron class responds dimorphically and at least one
+    monomorphically.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 5;
+    Figure 3A and 3B; Figure 5B
+  quote: For each stimulus tested, we observed at least one neuron class respond in a sexually
+    dimorphic manner, and one class respond in a monomorphic manner
+  depends_on:
+  - fig5b-responsive-classes
+  criterion: Per cue, a class is dimorphic to it when DIMORPHISM gives p <= 0.05 at onset or offset,
+    and monomorphic to it when RESPONSIVE holds for that cue and DIMORPHISM gives p > 0.05 at both
+    onset and offset (Figure 5B legend counts per-stimulus responsive and dimorphic classes; code
+    Fig5.ipynb). Reproduced when all 8 cues have at least one of each, under each exclusion reading.
+- id: sensory-dimorphic-and-monomorphic
+  statement: Nearly every sensory neuron class responds dimorphically to at least one stimulus and
+    monomorphically to at least one other.
+  source: Discussion, paragraph 1; Figures 3 and 5A
+  quote: nearly every sensory neuron responds in a sexually dimorphic manner to at least one stimulus
+    while responding monomorphically to at least one other stimulus
+  depends_on:
+  - fig3-each-stimulus-mixed
+  - fig5b-layer-counts
+  criterion: Dimorphic and monomorphic to a cue as defined in fig3-each-stimulus-mixed, over the 24
+    sensory canonical classes. The paper gives no count for the pair of conditions; "nearly every"
+    is read from the paper's own use of it for 22 of 24 sensory classes and 80 of 89 classes, as at
+    least 90% (22 of 24). Reproduced when at least 22 sensory classes meet both conditions.
+- id: layers-sensory-most-dimorphic
+  statement: Dimorphic and monomorphic responses are less present in interneurons than in sensory
+    neurons, and less still in motor neurons.
+  source: Summary; Figures 3A, 3B and 5B
+  quote: This dimorphic and monomorphic activity was present to a lesser extent in downstream
+    interneurons and even less so in motoneurons
+  depends_on:
+  - fig3-each-stimulus-mixed
+  - fig5b-layer-counts
+  criterion: The paper gives no measure for this. Its class counts (Figure 5B, 92% of sensory, 92%
+    of inter and 87% of motor classes dimorphic) do not order sensory above inter, so the statement
+    is read from the per-stimulus counts of Figure 5B and the cells of Figure 3A and 3B. Over the 8
+    cues, with canonical classes and layers as in fig5b-layer-counts, per layer, readings are (a)
+    the fraction of class-cue combinations with a dimorphic response (DIMORPHISM, onset or offset);
+    (b) the fraction of class-cue combinations that are responsive (RESPONSIVE, dimorphic or
+    monomorphic); (c) as (a) over subclass-cue-window cells of Figure 3A and 3B. Reproduced when,
+    under one reading, sensory > inter > motor; each reading is reported.
+- id: fig3a-osmotic-onset-examples
+  statement: At the onset of osmotic stress ASER and ASH respond monomorphically while AWA and AWB
+    respond dimorphically.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 5;
+    Figures 2B and 3A
+  quote: in response to the onset of osmotic stress, the gustatory neuron ASER and the nociceptive
+    neuron ASH ... show monomorphic responses, whereas olfactory neurons AWA and AWB ... show
+    dimorphic responses
+  criterion: DIMORPHISM, representation 1, onset window, 800 mM sorbitol. Reproduced when AWA and AWB
+    have p <= 0.05, and ASER and ASH have p > 0.05 (the absence is judged on the same test) and are
+    responsive to sorbitol at onset (RESPONSIVE, in at least one sex), since Figures 3 and 5 count a
+    class as monomorphic only when it responds. The four p-values and normalized differences are
+    reported, under both exclusion readings.
+- id: fig2b-bag-high-odor-monomorphic
+  statement: AWA's response to osmotic stress is dimorphic and BAG's response to high odor is
+    monomorphic.
+  source: Figure 2B legend
+  quote: exemplifying sexually dimorphic (e.g., AWA responding to osmotic stress) and monomorphic
+    neural activity (e.g., BAG responding to high odor)
+  criterion: DIMORPHISM, representation 1. The legend does not say onset or offset; Figure 2B plots
+    the whole presentation. Readings are (a) onset, (b) offset, (c) either window for AWA and both
+    windows for BAG. Reproduced when, under one reading, AWA has p <= 0.05 and BAG with 1e-2 isoamyl
+    alcohol has p > 0.05 and is responsive to it in the same window (RESPONSIVE, in at least one
+    sex), since Figures 3 and 5 count a class as monomorphic only when it responds.
+- id: fig3a-ash-stimulus-dependent
+  statement: ASH responds monomorphically to osmotic and toxic stress but dimorphically to high salt.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 5;
+    Figures 2B and 3A
+  quote: the ASH neuron's response to osmotic and toxic stress is monomorphic, but its response to high
+    salt is dimorphic
+  criterion: DIMORPHISM, representation 1, onset window (the text cites Figure 3A, onset). Reproduced
+    when ASH has p <= 0.05 for 450 mM NaCl, and p > 0.05 for sorbitol and for CuSO4 while responsive
+    to each at onset (RESPONSIVE, in at least one sex; monomorphic as in Figures 3 and 5).
+- id: fig3a-aser-salt-concentration
+  statement: ASER responds dimorphically to low salt but monomorphically to high salt.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 5;
+    Figures 2B and 3A
+  quote: the ASER neuron's response to a low concentration of salt is dimorphic, but its response to a
+    higher concentration of salt is monomorphic
+  criterion: DIMORPHISM, representation 1, onset window (Figure 3A), ASER alone. Reproduced when the
+    100 mM NaCl response has p <= 0.05, and the 450 mM NaCl response has p > 0.05 while responsive at
+    onset (RESPONSIVE, in at least one sex; monomorphic as in Figures 3 and 5).
+- id: fig2e-i2-dimorphic
+  statement: Pharyngeal interneuron I2 responds dimorphically to pheromone, osmotic stress and salt.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 7;
+    Figure 2E
+  quote: pharyngeal interneuron I2 exhibited sexually dimorphic responses to pheromone, osmotic stress,
+    and salt
+  criterion: DIMORPHISM, representation 1, class I2. The text fixes neither the window nor which salt.
+    Reproduced when ascr#3, sorbitol and at least one NaCl concentration each give p <= 0.05 at onset
+    or offset; the readings (onset only, offset only, low salt, high salt) are all reported.
+- id: pharynx-dimorphic-food-salt-pheromone
+  statement: The pharyngeal (enteric) neurons respond dimorphically to food, salt and pheromone.
+  source: Discussion, paragraph 4; Figure 2E
+  quote: the enteric nervous system of the worm responds to food, salt, and (most strikingly) pheromone
+    in a sexually dimorphic manner
+  criterion: DIMORPHISM, representation 1, over the pharyngeal subclasses (layer OPEN, opening comment).
+    Reproduced when at least one pharyngeal class has p <= 0.05, at onset or offset, for OP50, for
+    ascr#3, and for at least one NaCl concentration.
+- id: fig2-awa-awb-nociceptive
+  statement: Olfactory neurons AWA and AWB also respond to osmotic and toxic stress.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 7;
+    Figure 2B
+  quote: in addition to responding to odors, olfactory neurons AWA and AWB also responded to
+    nociceptive stimuli, including osmotic and toxic stress
+  criterion: RESPONSIVE per class and cue (in at least one sex, onset or offset). Reproduced when AWA
+    and AWB are each responsive to sorbitol and to CuSO4.
+- id: fig2-adf-m2-switch
+  statement: ADF responds to food in hermaphrodites but to pheromone in males, and pharyngeal neuron
+    M2 shows a similar switch between food and pheromone.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 7;
+    Figures 2B and 2E
+  quote: ADF responds to food in hermaphrodites, but in males it responds to pheromones ... More
+    surprising was a similar dimorphic switch in the M2 pharyngeal neuron, also to food and pheromone
+  criterion: Per sex, RESPONSIVE (onset or offset) of ADF and M2 to OP50 and to ascr#3. For M2 the text
+    does not say which sex responds to which cue. Readings are (a) ADF responsive to food and not to
+    pheromone in hermaphrodites, and to pheromone and not to food in males; M2 responsive to one cue
+    and not the other in each sex, with the cues opposite between sexes; (b) DIMORPHISM gives p <=
+    0.05 for both cues in each of ADF and M2, in the direction of a switch (for ADF the absolute
+    mean response to OP50 larger in hermaphrodites and to ascr#3 larger in males; for M2 the larger
+    sex opposite between the two cues), since a dimorphism without direction does not test the
+    switch the statement names. Reproduced when ADF and M2 meet one reading; partially
+    reproduced when one of the two does.
+- id: male-specific-unresponsive
+  statement: The male-specific head neuron classes CEM and MCM were predominantly unresponsive to the
+    stimuli.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 2;
+    Figure S2D (the text cites S2C; the legend of S2D shows the male-specific neurons)
+  quote: The male-specific head neuron classes (sensory neuron CEM and interneuron MCM) were
+    predominantly unresponsive to stimuli
+  criterion: RESPONSIVE in males, for CEMD, CEMV and MCM as the code separates them, over 8 cues and 2
+    windows (16 tests per class). "Predominantly" is read as most of the tests. Reproduced when fewer
+    than half of each class's tests are significant; the number significant is reported.
+- id: tail-unresponsive
+  statement: Tail neurons did not appear to respond to cues presented to the head.
+  source: Results, Broad chemosensory stimulation activates the whole brain of both sexes, paragraph 3
+  quote: tail neurons did not appear to be responsive to cues presented to the head
+  criterion: The paper reports no test on tail neurons; its test of responsiveness is RESPONSIVE. A
+    claim of absence, judged on that test, applied to each tail class the dandiset identifies.
+    Reproduced when no tail class is responsive; not reproduced when any is, with the number of
+    classes and tests reported. Not testable if the dandiset holds no identified tail neurons.
+- id: figs2f-left-right-similar
+  statement: Neurons within the same class usually have equivalent activity, with left and right
+    neurons more correlated with each other than with neurons of other classes.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 3;
+    Figure S2F
+  quote: Neurons within the same class usually exhibit equivalent neural-activity traces
+  criterion: Figure S2F legend, the within-animal Pearson r between the left and right neurons of each
+    class against the mean r of each of them with neurons of other classes. The traces are OPEN.
+    Readings are (a) the band-passed traces of CORRELATION; (b) the raw traces. Reproduced when, in
+    each sex, the mean left-right r exceeds the mean other-class r for more than half of the
+    bilateral classes, under both readings.
+- id: figs3e-pattern-robust
+  statement: Restricting the test to the first cycle or to per-animal averages makes specific
+    neuron-stimulus pairs less clearly dimorphic but leaves the pattern of dimorphic neuron classes
+    largely unchanged.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 10;
+    Figure S3A to S3E
+  quote: Overall, while specific odor-neuron pairs are not as clearly dimorphic in these more
+    conservative analyses, the pattern of neurons that we find to respond dimorphically is largely
+    unaffected
+  depends_on:
+  - fig5b-dimorphic-classes
+  criterion: DIMORPHISM under representations 1, 2 and 3 (Methods), per subclass, at p <= 0.05; a class
+    is dimorphic when any cue and window is (Figure S3E legend). The paper fixes no measure of
+    "largely". Readings are (a) more than half of the classes dimorphic under representation 1 are
+    dimorphic under all three (S3E's robust classes); (b) more than half of them are dimorphic under
+    each of representations 2 and 3 separately. Reproduced when one reading holds and the number of
+    dimorphic neuron-cue-window pairs is lower under representations 2 and 3 than under 1.
+- id: figs2e-no-order-effect
+  statement: Response amplitude does not depend on the position of the stimulus in the presentation
+    order.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 10;
+    Figure S2E
+  quote: We also verified that there was no dependence on response amplitude as a function of stimulus
+    order
+  criterion: Figure S2E legend, onset responses (RESPONSE) of cycle 1 only, against position 1 to 10,
+    for all stimuli combined and for each stimulus. The paper names no test and does not say which
+    neurons enter. Readings are (a) a linear regression of response on position over all neuron
+    responses, slope p >= 0.05; (b) the same on per-animal means over neurons; (c) a one-way ANOVA
+    over positions on all neuron responses, p >= 0.05. A claim of absence with no test in the paper,
+    so all readings are run; reproduced when all find no dependence for all stimuli combined, not
+    reproduced when all find one, otherwise blocked as methods_underspecified. Per-stimulus results
+    are reported.
+- id: figs3fg-state-dependence-interneurons
+  statement: Motor-state-dependent sexual dimorphism is more prominent in interneurons than in sensory
+    or motor neurons.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 11;
+    Figure S3F and S3G
+  quote: These state-dependent responses were more prominent in interneurons than in sensory or motor
+    neurons
+  criterion: State per presentation from AVA (Methods, Classifying motor state); the AVA trace is
+    divided by an exponential fit of its baseline, the 5 s before onset is a transition if it changes
+    by more than 20%, otherwise reverse when its mean is above the global mean and forward when
+    below. OPEN, with all combinations run. AVA as AVAL, AVAR, or their mean; "changes by more than
+    20%" as (max - min) / mean of the window, or as |last - first| / first; the fit subtracted or
+    divided. Per neuron-cue pair and window, a two-way ANOVA of RESPONSE values (representation 1)
+    on sex and state (forward and reverse; transitions out), interaction p (Methods, Identifying
+    state-dependent...), BH over the pairs of each window. Per layer, the fraction of neuron-cue pairs
+    with interaction q < 0.05 (black borders in S3F, S3G), and as a second reading p < 0.05.
+    Reproduced when the interneuron fraction exceeds both the sensory and the motor fraction.
+- id: figs2c-aib-state
+  statement: The structure of AIB's sexual dimorphism to high salt or pheromone differs between
+    forward and backward motor states.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 11;
+    Figure S2C
+  quote: In some responses, such as AIB responding to high salt or pheromones (Figure S2C), the
+    structure of the sexual dimorphism is different when animals are (fictively) moving forward in
+    comparison to backward
+  depends_on:
+  - figs3fg-state-dependence-interneurons
+  criterion: States and readings as in figs3fg-state-dependence-interneurons. Per state, DIMORPHISM of
+    AIB (S2C legend, two-sample t-test). Reproduced when, for 450 mM NaCl or for ascr#3, at onset or
+    offset, either the sex x state interaction has p < 0.05 or the response is dimorphic (p <= 0.05)
+    in one state and not in the other.
+- id: figs8-state-insensitive
+  statement: Average responses are mostly insensitive to the animal's motor state, and many dimorphic
+    sensory responses persist after conditioning on it.
+  source: Results, Most sensory neurons in the head exhibit sexually dimorphic responses, paragraph 11;
+    Discussion, paragraph 3; Figure S8A to S8D
+  quote: Overall, however, average responses were mostly insensitive to the motor state of the animal
+  depends_on:
+  - figs3fg-state-dependence-interneurons
+  criterion: States and readings as in figs3fg-state-dependence-interneurons, onset state, over the
+    classes and cues of Figure 2B to 2E (code Fig2&3_prepare_data, ADF, ADL, ASEL, ASER, ASH, ASI,
+    AWA, AWB, BAG, AIA, AIB, AVE, AVH, RIA, RIR, DB1, VB2, M2, I2, MC, M3). The paper names no test of
+    insensitivity; with its two-sample t-test, per class, cue, window and sex, forward against reverse
+    responses. Reproduced when more than half of these comparisons have p > 0.05, and more than half
+    of the sensory class-cue-window responses dimorphic under DIMORPHISM stay dimorphic (p <= 0.05)
+    within the forward state or within the reverse state.
+- id: fig4c-functional-connectivity-similar
+  statement: Pairwise functional connectivity is highly similar between the sexes (R2 = 0.8 for a
+    linear fit of male on hermaphrodite mean correlations).
+  source: Results, Functional correlations between sex-shared neurons are predominantly shared between
+    sexes, paragraph 2; Figure 4C
+  quote: the functional connectivity between hermaphrodites and males is highly similar (80% or R2 =
+    0.8 for a linear fit)
+  expected:
+    quantity: R2 of male against hermaphrodite mean pairwise correlations
+    value: 0.8
+    tolerance: 0.08
+  criterion: CORRELATION over the pairs of the 110 subclasses with stimuli left out (code Fig4.ipynb,
+    no_odor_score_df); R2 of an ordinary least-squares line (scipy linregress, as the code).
+    Reproduced when R2 is within tolerance under CORRELATION reading (b), the Methods'; reading (a),
+    the code's, is shown as a variant.
+- id: fig4-stimuli-correlate-sensory
+  statement: In both sexes stimuli are more correlated or anti-correlated with sensory neurons than
+    with interneurons or motor neurons.
+  source: Results, Functional correlations between sex-shared neurons are predominantly shared between
+    sexes, paragraph 2; Figure 4B
+  quote: In both sexes, stimuli were more correlated (or anti-correlated) with sensory neurons than with
+    interneurons ... or motor neurons
+  criterion: CORRELATION per stimulus-subclass pair (880 pairs), the per-sex mean r. The paper gives no
+    test or summary. Readings are (a) the mean |r| over the pairs of each layer; (b) the root mean
+    square r (as Figure S14's global correlation). Reproduced when, in each sex, the sensory value
+    exceeds the interneuron and the motor value under both readings, with CORRELATION reading (b);
+    CORRELATION reading (a) is a variant.
+- id: fig4-pharynx-uncorrelated
+  statement: Pharyngeal neurons show some correlations with each other but are largely uncorrelated
+    with the rest of the brain.
+  source: Results, Functional correlations between sex-shared neurons are predominantly shared between
+    sexes, paragraph 2; Figure 4B
+  quote: Neurons within the pharynx show some correlations with each other but are largely uncorrelated
+    with the rest of the brain
+  criterion: CORRELATION, per-sex mean r per subclass pair. The paper gives no measure; mean |r| is
+    used, with root mean square r as the second reading. Reproduced when, in each sex, pharyngeal to
+    non-pharyngeal pairs have a lower value than pharyngeal to pharyngeal pairs and than
+    non-pharyngeal to non-pharyngeal pairs, under every reading.
+- id: fig4-functional-dimorphism-small
+  statement: Almost all neuron pairs have a functional dimorphism below 0.4, on a scale of 0 to 2.
+  source: Results, Functional and synaptic sexual dimorphisms are distinct, paragraph 2; Figure 4E
+  quote: we observed that almost all neuronal pairs had a functional dimorphism of less than 0.4
+  criterion: CORRELATION, functional dimorphism per pair of subclasses (stimuli left out, "neuronal
+    pairs"). "Almost all" is read as (a) at least 95% or (b) at least 99% of pairs. Reproduced when
+    one reading holds under CORRELATION reading (b); the fraction is reported under both CORRELATION
+    readings, (a) as a variant.
+- id: fig4d-functional-synaptic-uncorrelated
+  statement: Functional and synaptic dimorphisms are uncorrelated.
+  source: Results, Functional and synaptic sexual dimorphisms are distinct, paragraph 3; Figure 4D
+  quote: We found no clear relationship between synaptic and functional dimorphism
+  data: with_inputs
+  criterion: Functional dimorphism (CORRELATION) and synaptic dimorphism degree (CONNECTOME) per pair
+    of subclasses present in the connectome, pairs without synapses set to 0 (code Fig4.ipynb). A
+    claim of absence. The test is the code's linear regression (scipy linregress); the paper reports
+    no value or threshold, so the paper's alpha of 0.05 is used. Reproduced when the slope has p >=
+    0.05; not reproduced when p < 0.05; R2 and slope reported either way. The code's regularization
+    of 3 is a variant.
+- id: fig4f-synaptic-top-not-functional
+  statement: The neuron pairs with the highest synaptic dimorphisms are functionally uncorrelated in
+    both sexes and show little to no functional dimorphism.
+  source: Results, Functional and synaptic sexual dimorphisms are distinct, paragraph 3; Figure 4F;
+    Figure S4B
+  quote: These pairs were functionally uncorrelated in both sexes
+  data: with_inputs
+  criterion: The top 36 pairs by dimorphism degree after removing pairs with combined SEM >= 5
+    (Methods, Selecting neuron pairs...), and the six of Figure 4F (code, RIM-SAAD, AIB-AIM,
+    URYD-RMDV, AVK-RMF, URX-RIR, ASH-AVA). Functional dimorphism p from CORRELATION. Readings of "no
+    functional dimorphism" are (a) p > 0.05 (Figure 4F asterisks); (b) p >= 0.01 (Figure 4E white).
+    Reproduced when more than half of the 36 and of the six have no functional dimorphism under one
+    reading; their mean r per sex is reported. The text's "functionally uncorrelated in both sexes"
+    has no measure or test in the paper (the Figure 4F legend states only little to no functional
+    dimorphism), so that part is reported descriptively and does not decide the outcome.
+- id: fig4g-functional-top-not-synaptic
+  statement: The neuron pairs with the highest functional dimorphisms are mostly not synaptically
+    connected, and where connected their connectivity is essentially not dimorphic.
+  source: Results, Functional and synaptic sexual dimorphisms are distinct, paragraph 3; Figure 4G;
+    Figure S4C
+  quote: We found that these pairs were mostly not synaptically connected. When they were connected,
+    the connectivity was essentially not dimorphic
+  data: with_inputs
+  criterion: The top 36 pairs by functional dimorphism with p < 0.01 (Methods; the code's p < 0.001 is
+    a variant), stimulus pairs, sensory-sensory pairs and pairs absent from the connectome left out
+    (Methods, Selecting neuron pairs...). The order of these exclusions is OPEN. The Methods name
+    them after the top 36, and the Figure S4C legend says the 36 include pairs that Figure 4G drops
+    (sensory-sensory pairs). Readings are (i) the exclusions applied before taking the 36; (ii) the
+    top 36 by p < 0.01 alone, with stimulus pairs and pairs absent from the connectome then left out
+    of the counts. Both are run and must give the outcome. Not connected is read as (a) zero summed weight in both
+    sexes, or (b) both sums below 3 (the code drops these). Not dimorphic is a difference below 5
+    (Methods, the bar for a substantial dimorphism). Reproduced when, under one reading, more than
+    half of the 36 are not connected and more than half of the connected ones are not dimorphic.
+- id: figs20-multihop-no-match
+  statement: Indirect multi-hop synaptic connections are stronger between all pairs but still fail to
+    match functional dimorphisms.
+  source: Results, Functional and synaptic sexual dimorphisms are distinct, paragraph 4; Figure S20
+  quote: these multi-hop indirect synaptic connections were higher between all pairs of neurons, but
+    they failed to match the dimorphisms measured in functional connectivity
+  data: with_inputs
+  depends_on:
+  - fig4d-functional-synaptic-uncorrelated
+  criterion: Figure S20 legend, a weighted graph per sex with edge cost 1 / synaptic strength
+    (CONNECTOME sums), Dijkstra shortest paths, indirect strength 1 / path cost; dimorphism degree as
+    CONNECTOME on the indirect strengths. Judged as fig4d-functional-synaptic-uncorrelated
+    (linregress slope p >= 0.05) on these values.
+- id: connectome-normalization-sem
+  statement: Normalizing the three hermaphrodite connectomes by their 95% quantiles cut the mean SEM
+    across them from 1.14 (SD 2.07) to 0.62 (SD 0.87).
+  source: STAR Methods, Normalization of connectome data
+  quote: This average SEM was 1.14 with a standard deviation of 2.07 ... the average SEM decreased to
+    0.62 (down from the initial 1.14), and the standard deviation of the SEM decreased to 0.87
+  data: with_inputs
+  expected:
+  - quantity: mean SEM before normalization
+    value: 1.14
+    tolerance: 0.114
+  - quantity: SD of SEM before normalization
+    value: 2.07
+    tolerance: 0.207
+  - quantity: mean SEM after normalization
+    value: 0.62
+    tolerance: 0.062
+  - quantity: SD of SEM after normalization
+    value: 0.87
+    tolerance: 0.087
+  criterion: CONNECTOME only; the dandiset is not used. SEM per directed synapse over the three
+    hermaphrodite datasets (pandas sem, ddof 1), its mean and SD (ddof 1) before and after
+    normalization. Which synapses enter is OPEN. The Methods say "across all synapses", the code
+    (Fig4_prepare_data) keeps synapses with both neurons among the recorded head neurons. Readings
+    are (a) the code's set; (b) every directed neuron pair with a synapse in at least one
+    hermaphrodite dataset. Reproduced when all four values are within tolerance under one reading,
+    as these are readings of what the reported numbers were computed over.
+- id: figs1-behavior
+  statement: The stimuli evoke behavioral responses in wild-type and in the imaged NeuroPAL GCaMP6s
+    strain, with preferences that are monomorphic for some stimuli and dimorphic for others.
+  source: Results, Broad chemosensory stimulation activates the whole brain of both sexes, paragraph 1;
+    Figure 1A and 1C; Figure S1A and S1B
+  quote: These stimuli evoked robust behavioral responses in both wild-type (N2) worms and the
+    NeuroPAL;GCaMP6s (OH16230) worms
+  criterion: Drop-test avoidance indices (Methods, Behavioral assays; code FigS2.ipynb). Per stimulus
+    and strain, hermaphrodite against male, two-sample t-test (S1 legend; equal variances, as the
+    code). "Robust" has no test in the paper or code and is reported descriptively. Reproduced when,
+    in each strain, at least one stimulus differs between the sexes (p <= 0.05) and at least one does
+    not. The paper does not say these data are in the dandiset.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3a-osmotic-onset-examples, fig3a-ash-stimulus-dependent, fig3a-aser-salt-concentration and fig2e-i2-dimorphic, statistics removed. Each recorded "p < 0.05, independent-sample t test", the Results' definition of a dimorphic neuron-stimulus pair; the paper reports no test result for these pairs, so it is a threshold used to classify, not a result.
+  - Opening comment, EXCLUSION and new READINGS paragraph. The two exclusion readings are choices of method, so the outcome must be the one both give, else methods_underspecified (protocol, Reader, step 3); fig5b-responsive-classes, fig5b-dimorphic-classes and fig5b-layer-counts let a claim pass under either and now require both.
+  - Opening comment, CORRELATION. The code's pooling and 3 IQR outlier removal are not in the Methods, which average each correlation across individuals; by protocol step 2 the Methods' reading (b) decides and the code's (a) is a variant. fig4c-functional-connectivity-similar (was "under one reading"), fig4-stimuli-correlate-sensory and fig4-functional-dimorphism-small changed to match.
+  - fig3a-osmotic-onset-examples, fig2b-bag-high-odor-monomorphic, fig3a-ash-stimulus-dependent, fig3a-aser-salt-concentration. A monomorphic response was tested only as p > 0.05, which a class that does not respond also passes; Figures 3 and 5 count a class as monomorphic only when responsive, so the criteria now also require RESPONSIVE for that cue and window.
+  - fig2-adf-m2-switch. Reading (b) accepted any dimorphism to both cues, which does not test which sex responds to which cue; it now requires the direction of the switch the statement names.
+  - fig4f-synaptic-top-not-functional. The criterion did not test the quoted "functionally uncorrelated"; the paper gives no measure for it, so the criterion now says it is reported descriptively and the outcome rests on the Figure 4F legend's "little to no dimorphism".
+  - fig4g-functional-top-not-synaptic. The criterion applied the stimulus, sensory-sensory and connectome exclusions before taking the top 36, but the Figure S4C legend says the 36 include pairs Figure 4G drops; both orders are now named as readings and must agree.
+  - connectome-normalization-sem. The restriction to recorded head neurons came from the code alone while the Methods say "all synapses"; both sets are now named as readings of what the reported numbers cover.
+  - layers-sensory-most-dimorphic added. The Summary's finding that dimorphic and monomorphic activity is less present in interneurons and least in motor neurons had no claim; the paper gives no measure, so the readings are named.
+  - Open. Paragraph numbers in the sources could not be checked (no PDF renderer; the text loses paragraph breaks); they were left as written and are consistent with each other.
+  - Open. Several thresholds for words the paper does not quantify are readings chosen by the first reader and kept, as named in the criteria ("nearly every" in sensory-dimorphic-and-monomorphic as at least 22 of 24, "predominantly" in male-specific-unresponsive, "many" and "mostly" in figs8-state-insensitive, "largely" in figs3e-pattern-robust).
+  - Open. The paper's code was not reread in this check (the file cites the repository at commit b0dbdbf); statements attributed to the code are taken from the first reader.

@@ -1,0 +1,899 @@
+schema_version: 3
+id: gao-2025-03
+datasets:
+- archive: dandi
+  id: "001199"
+  version: 0.250829.1250
+  doi: 10.48324/dandi.001199/0.250829.1250
+  relation: primary
+paper: doi:10.1523/jneurosci.2218-24.2025
+date: 2026-11-01
+entry: gao-2025-001199
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41291066974
+inputs:
+- what: The asset list (paths only) of dandiset 000946, the repository the paper's Methods name for
+    all its data, read to compare its rats and session dates with those of 001199. Used for the
+    notes of the subjects claim and a finding; no measurement is taken from it.
+  source: DANDI:000946 version 0.250829.1249 (doi:10.48324/dandi.000946/0.250829.1249)
+outcomes:
+- claim: subjects
+  outcome: not_reproduced
+  notebook: reproduce_gao_2025.ipynb
+  output: claim:subjects
+  measured:
+  - 6
+  - 6
+  notes: Simultaneous S1 and POm recordings in 6 rats (BH596, BH608, BH615, BH648, BH654, BH658),
+    paper 16; simultaneous S1 and AC recordings in 6 rats (BH646, BH648, BH650, BH655, BH657,
+    BH658), paper 12. Both readings of the targets (with and without the unexplained "S1-6"), and
+    areas taken from units with more than 2,000 spikes or from every unit, give the same counts;
+    with the 2025 cohort left out they are 2 and 0. Both counts are below the paper's, but the
+    partial result also needs the rats to be a subset of the paper's, none extra, and the evidence
+    goes against that. Every S1 file lists a 64-channel A1x64-Edge probe (or H9), where the paper
+    recorded S1 with a 32-channel A1x32-Poly3. Two rats (BH648, BH658) are in both groups, where
+    the paper's AC rats are another group. The ten rats of the two groups were recorded from August
+    2024 to July 2025, after the paper's preprint (June 2024), and none is among the 20 rats of
+    dandiset 000946, the repository the paper names, whose sessions run from August 2023 to April
+    2024 (of the 13 rats here only BH594, which has no POm or AC recording, is there). With files
+    of both areas in a rat, simultaneous or not, the counts are 10 and 7.
+  deviations:
+  - A session is a file in the 2024 cohort and a group of files sharing an identical trial table in
+    the 2025 cohort, where each probe has its own file; the dandiset does not say this, the shared
+    trial tables show it.
+  - Units of BH590 and BH594 files are taken as S1, as their notes say recording at S1 and their
+    celltype_label holds 0; BH596 and BH615 units are given the area their celltype_label holds.
+- claim: fig2-target-artifact
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The claim needs the raw voltage of the target-determination trials (about 170 kPa) and
+    spike waveforms; the files hold sorted spike times only, and no target-determination trials.
+    Two BH615 sessions at 10 and 15 V show a burst of detected spikes confined to 0 to 75 ms after
+    the trial start (population rate 2.9 to 7.2 times its mean), which looks like an ultrasound-locked
+    artefact, but neither the voltage nor the waveform tail can be examined.
+- claim: fig4-unit-counts
+  outcome: not_reproduced
+  notebook: reproduce_gao_2025.ipynb
+  output: claim:fig4-unit-counts
+  notes: RSU and FSU types come from the waveforms (IP and AHP, Methods, Neuronal type
+    classification), which the files do not hold, and the celltype_label column holds 0 or the
+    area in every file that has it, so the typed counts cannot be measured. A typed count is at
+    most the untyped count of its area and condition, and the untyped counts settle the criterion.
+    In the S1-targeted sessions at 5 V (2024) and every 2025 file (no voltage stated), there are 201
+    S1 and 76 POm units with more than 2,000 spikes at 3,000 Hz and 186 S1 and 53 POm at 30 Hz.
+    The S1 and POm RSUs at 3,000 Hz need at least 280.8 and 209.7 units to be within 10%, the POm
+    RSUs at 30 Hz 170.1, and the S1 RSUs and FSUs at 30 Hz together 188.1. So at most 4 of the 8
+    counts can be within 10%, where a partial result needs 6. With every voltage counted, which the
+    claims file excludes, at most 6 could be (465 and 344 S1 units; 110 and 93 POm units, below the
+    209.7 and 170.1 the POm RSUs need).
+  deviations:
+  - The typed counts are not measured; the outcome rests on upper bounds from the untyped counts
+    of units with more than 2,000 spikes.
+  - The 2025 files state no voltage and are all kept, which can only raise the bounds.
+- claim: fig4-timelocked-rsu-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types, which the files do not hold (see fig4-unit-counts).
+- claim: fig4-postsonication-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types (see fig4-unit-counts), which the files do not hold.
+- claim: fig4-30hz-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts), which the files do not hold.
+- claim: fig4-no-fsu-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FSU types (see fig4-unit-counts), which the files do not hold.
+- claim: fig5-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_gao_2025.ipynb
+  output: claim:fig5-unit-counts
+  notes: The typed counts cannot be measured (see fig4-unit-counts), and the paper's control, CG1 at
+    3,000 Hz (claims file header and fig5b), is not in the dandiset. The untyped counts bound the sham
+    half. Sham sessions hold 151 S1 and 37 POm units with more than 2,000 spikes; the paper's 67 POm
+    RSUs and 67 POm FSUs each need at least 60.3, so these 2 counts cannot be within 10%. The S1 sham
+    counts (31 and 53, needing 75.6 together) can. CG1 sessions at 300 and 4,500 Hz (11 S1 and 8 POm
+    units) do not bound the units of control sessions at 3,000 Hz that were not deposited, so the four
+    control counts cannot be measured, as for fig5b-cg1-control-no-response. At most 6 of the 8 counts
+    can then be within 10%, which is what a partial result needs, so the claim cannot be decided. Had
+    the CG1 sessions at other PRFs been counted as the control, at most 3 of 8 could be within 10%.
+  deviations:
+  - The typed counts are not measured; the bound on the sham half rests on the untyped counts.
+- claim: fig5a-sham-no-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types, which the files do not hold (see fig4-unit-counts).
+- claim: fig5b-cg1-control-no-response
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types, and the dandiset holds no CG1 session at 3,000 Hz PRF (see
+    fig5-unit-counts).
+- claim: fig6-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU and FSU types (see fig4-unit-counts). The untyped counts bound the typed ones
+    but do not settle the claim. In the five 200 us PD conditions, with the 2024 files at 5 V and
+    every 2025 file, there are 756 S1 and 280 POm units with more than 2,000 spikes, below the 945
+    and 821.7 the S1 and POm RSUs need, so the claim cannot be reproduced; the two FSU totals
+    (222.3 and 95.4 needed) could still be within 10%, which leaves a partial result open. With
+    every voltage (1,243 and 396 units) at most 3 of the 4 could be.
+- claim: fig6a-s1-rsu-timelocked-high-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6a-s1-rsu-delayed
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6b-s1-fsu-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6c-pom-rsu-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs RSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig6d-pom-fsu-prf
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs FSU types (see fig4-unit-counts); depends on fig6-unit-counts.
+- claim: fig7-9-unit-counts
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Every stimulated file of the dandiset has PD 200 us, so the duty-cycle series at 3,000 Hz
+    (PD 2 to 300 us), at 30 Hz (PD 200 to 30,000 us) and at 60% DC (PD 133 to 20,000 us) are present
+    only at their 200 us point. RSU and FSU types are missing as well (see fig4-unit-counts). The
+    units at the 200 us points (201 S1 and 76 POm at 3,000 Hz, 186 S1 at 30 Hz, with the 2024
+    files at 5 V) would allow at most 3 of the 8 totals within 10%, where a partial result needs 5.
+- claim: fig7a-s1-rsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The duty-cycle series is not in the dandiset, and RSU types are missing (see
+    fig7-9-unit-counts).
+- claim: fig7b-s1-fsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000.
+- claim: fig7c-pom-rsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000.
+- claim: fig7d-pom-fsu-dc-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000.
+- claim: fig8a-s1-rsu-dc-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 30 Hz series.
+- claim: fig8b-s1-fsu-dc-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 30 Hz series.
+- claim: fig9a-s1-rsu-60dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 60% DC series.
+- claim: fig9b-s1-fsu-60dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig7a-s1-rsu-dc-3000, for the 60% DC series.
+- claim: fig10a-dsttc-3000-during
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The directional correlations are between S1 and POm RSUs and FSUs, which cannot be typed
+    (see fig4-unit-counts).
+- claim: fig10a-dsttc-3000-post
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig10a-dsttc-3000-during.
+- claim: fig10b-dsttc-30
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig10a-dsttc-3000-during.
+- claim: fig10c-sttc-constant-pd
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs S1 RSU and POm RSU pairs, which cannot be typed (see fig4-unit-counts); depends on
+    fig6-unit-counts.
+- claim: fig10d-sttc-60dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 60% DC series is not in the dandiset and RSUs cannot be typed (see fig7-9-unit-counts).
+- claim: fig10e-sttc-30hz-dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 30 Hz DC series is not in the dandiset and RSUs cannot be typed (see
+    fig7-9-unit-counts).
+- claim: fig10f-sttc-3000-dc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 3,000 Hz DC series is not in the dandiset and RSUs cannot be typed (see
+    fig7-9-unit-counts).
+- claim: fig11b-ac-responses
+  outcome: not_reproduced
+  notebook: reproduce_gao_2025.ipynb
+  output: claim:fig11b-ac-responses
+  assumed: true
+  measured: 194
+  notes: 194 AC units with more than 2,000 spikes in 7 rats (paper 453; per PRF 45, 29, 42, 40 and
+    38 against 83, 59, 107, 104 and 100). No Kruskal-Wallis test across the five PRFs is
+    significant at 0.01 under any reading of R (p 0.013 to 0.74); with BH654 left out the R2 tests
+    give 0.0095 and 0.006, with every R2 mean below 100%. Against baseline only 1,500 Hz during
+    sonication is significant, under R1 and T2 alone (mean 105.1%, uncorrected p = 6.4e-05, below
+    0.01 after factors 5, 10 and 15); 3,000 Hz is not (102.4%, p = 0.02 uncorrected), and no PRF is
+    above baseline after sonication under any reading. 300 Hz has the lowest mean only under R1
+    during sonication with BH654 left out. Per-rat R1 means are 88 to 127%. Sham AC units give R1
+    means of 99.6 and 99.9% and no significant increase. Leaving out the S1-6 sessions gives the
+    same result. Under R2 every mean is below 100%, sham included (69.8%), as R2 keeps only trials
+    with a prestimulus spike; with BH654 left out the R2 means are 48.6 to 66.6%. The outcome rests
+    on two assumptions about the 2025 cohort, which holds every AC file (see deviations). Trial
+    tables and spikes span the same times (both end near 1,250 s), but the population correlogram
+    over lags of -60 to +60 s peaks within 0 to 400 ms of the trial start in only 4 of 108
+    stimulated files (BH648 S1 at 4,500 Hz, z = 6.0; BH656 POm at 3,000 Hz; BH650 POm at 4,500 Hz;
+    BH658 AC at 30 Hz), against 39 of 92 in the 2024 cohort, and no other lag fits (at most 5 files
+    share a 0.5 s bin; the mean over 2025 files stays below z = 1). Untyped S1 units of the 2025
+    cohort rise under T2, the test that makes 1,500 Hz significant in AC, at 30 Hz (p = 7e-07 and
+    1.6e-12 in the two windows) and 1,500 Hz (2.7e-12 and 8.1e-10), means 107 to 109%, mostly in
+    BH646 and BH648, where sham S1 units give T2 p = 0.99 and 1 and sham AC units 0.57; so the S1
+    spikes lock to the trial starts in at least those sessions. T1 is not significant in any 2025
+    S1 condition (smallest p = 0.024), so the locking is weak. At the same PRFs AC units show no
+    increase after sonication (101.6% and 100.3%, T2 p = 0.5 and 0.34), where the paper reports
+    one, so the failure of the pattern does not rest only on sessions whose timing is in doubt. At
+    300, 3,000 and 4,500 Hz the 2025 S1 units give no increase during sonication under T2 (p 0.62
+    to 1), and the outputs cannot tell missing responses from trial times that are not onsets.
+  deviations:
+  - The paper's AC group is 12 rats with S1 and AC probes; the dandiset holds AC files from 7 rats,
+    and all 7 are used. A variant leaves out BH654, whose AC files share no session with an S1 file.
+  - Sessions with stimulation labelled "S1-6", which nothing in the dandiset explains, are taken as
+    S1-targeted; a variant leaves them out, with the same outcome.
+  - Assumption. The pressure of the 2025 sessions is not stated in the files; they are taken to be
+    at the paper's 5 V (88 kPa), as nothing in the dandiset states another voltage. The files hold
+    no other voltage to compare, so no variant can be run.
+  - Assumption. The trial starts of the 2025 sessions are taken as the sonication onsets. The
+    files say nothing else, and the spikes support it in part, with locking of untyped S1 units at
+    30 and 1,500 Hz and correlogram peaks in 4 files (see notes). No other lag within 60 s fits, so
+    no alternative timing can be run.
+  - The Bonferroni factor B1 is taken as 5 (the PRFs compared with baseline in a window), with 10
+    (both windows) shown too; B2 is 15 (all pairs among the five PRFs and the baseline).
+- claim: fig11c-ac-to-s1-30hz
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs S1 RSU and FSU types (see fig4-unit-counts). Simultaneous AC and S1 files at 30 Hz
+    exist for 5 rats (BH646, BH648, BH650, BH655, BH657).
+- claim: fig11d-ac-to-s1-3000
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs S1 RSU and FSU types (see fig4-unit-counts). Simultaneous AC and S1 files at 3,000
+    Hz exist for 5 rats (BH646, BH648, BH650, BH655, BH657).
+findings:
+- kind: data_missing
+  statement: The files hold spike times only, with no spike waveforms and no RSU or FSU labels, so
+    the paper's typing of units (IP and AHP of the waveform, k-means) cannot be repeated. Of the 20
+    claims on RSUs and FSUs, 18 cannot be tested and the unit counts of Fig. 4 and 5 only through
+    upper bounds from untyped units.
+- kind: metadata_error
+  statement: The units column celltype_label is described as "label 1 = RSU, label 2 = FSU", but no
+    file holds a 1 or a 2 (the per-file value counts give 1,272 units labelled 0, 414 POm and 773 S1). It holds 0 in the 49 files of BH590 and BH594 and the area of the unit
+    (S1 or POm) in the 47 files of BH596 and BH615; the 133 files of the 2025 cohort have no such
+    column.
+- kind: data_missing
+  statement: Every stimulated file has a pulse duration of 200 us. The duty-cycle series of the
+    paper (Fig. 7 to 9 and 10D to 10F) are not in the dandiset, nor the target-determination trials
+    and raw voltage of Fig. 2, nor a CG1 control session at 3,000 Hz (CG1 sessions are at 300 and
+    4,500 Hz).
+- kind: other
+  statement: The dandiset names the paper as the description of its data, but its 13 rats were
+    recorded from August 2024 to July 2025, after the paper's preprint of June 2024, and it holds
+    conditions the paper does not describe (10 and 15 V, stimulation at POm, 64-channel probes with
+    and without z-coating, 2 mm offsets). Of its rats only BH594 has a file in dandiset 000946, which
+    the paper's Methods name as the repository of all its data and which lists 20 rats recorded from
+    August 2023 to April 2024. Simultaneous S1 and POm recordings exist for 6 rats and S1 and AC
+    recordings for 6, against the paper's 16 and 12.
+- kind: metadata_error
+  statement: The data_collection field gives "PRESSURE:67V" in most 2024 files whatever voltage the
+    identifier gives (the 67 is the ultrasound duration), and the 2025 files state no pressure or
+    voltage anywhere. The description says pressure is in the identifier, which holds for the 2024
+    files only.
+- kind: metadata_insufficient
+  statement: Stimulation targets "S1-6", "NEW", "y-1" and "SEP" in the notes of 2025 files, and the
+    identifier tags of 2024 files (coating, nocoating, NZ, C, P, 2mm, bad, break, x0y35z165), are not
+    explained anywhere in the dandiset. Electrode locations are "unknown" in every file.
+- kind: metadata_error
+  statement: In the 2025 cohort session_start_time does not date the session. Files of two probes
+    that share a trial table, and so are one session, have start times minutes apart, and the BH608
+    sham pair has start times five months apart (2025-02-06 and 2025-07-11). One file is named
+    ses-None.
+- kind: metadata_error
+  statement: In the BH608 30 Hz session the S1 file gives stimulation at S1 and the POm file, which
+    shares its trial table, stimulation at "SEP".
+- kind: format_error
+  statement: In 64 units of 16 files of the 2025 cohort the spike times are not in increasing order
+    (one to seven places per unit). They are sorted on reading.
+- kind: other
+  statement: The files sub-BH646_ses-None and sub-BH646_ses-20250308T003900 hold the same spike
+    trains and trial table (AC at 30 Hz); the recording is deposited twice.
+- kind: other
+  statement: The paper used two 32-channel A1x32-Poly3 probes; the S1 files here list 64-channel
+    A1x64-Edge probes with or without z-coating, as the dandiset's description says, and four BH590
+    files name a device "H9". The description gives 500 trials per recording; most files hold 499
+    and some 113 to 480.
+- kind: other
+  statement: In the 2025 cohort, which holds every AC recording, the spikes show no more locking to
+    the trial starts than to starts shifted by 1.25 s (true above shifted in 7 of 108 stimulated
+    files), and the population correlogram peaks within 0 to 400 ms of the trial start in 4 of 108
+    stimulated files (among them BH648 S1 at 4,500 Hz), with no other lag within 60 s at which
+    the files lock, though trial tables and spikes span the same times. In the 2024 cohort the
+    locking is clear (0.39 against 0.13 of units modulated, 50 of 92 files; correlogram peak within
+    0 to 400 ms in 39 of 92). Untyped S1 units of the 2025 cohort do show a weak rise after trial
+    starts at 30 and 1,500 Hz (means 107 to 109%), so some 2025 sessions lock. For the others,
+    either the sessions evoked no response or their trial times are not the sonication onsets; the
+    files cannot tell which. The data owners could state the voltage and the trial timing of the
+    2025 sessions.
+verifications:
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive API and tested
+    unit_counts and normalized_rates on synthetic inputs. Its report gave its own outcome for each of the
+    35 claims; it disagreed with three (subjects, fig4-unit-counts, fig5-unit-counts), and gave
+    metadata_insufficient where the record gives data_missing for 17 blocked claims.
+  results:
+  - claim: subjects
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Cell 16 finds 6 rats with simultaneous S1 and POm recordings (paper 16) and 6 with S1 and AC
+      (paper 12). The "partially reproduced" rule needs the dataset''s rats to be a subset of the
+      paper''s with none extra. The evidence goes against that: every S1 recording here uses a
+      64-channel A1x64-Edge probe, where the paper used two 32-channel Poly3 probes (cell 4). Two rats
+      (BH648, BH658) sit in both groups, where the paper says "another group of rats". Only BH594,
+      which has no POm recording, also appears in the paper''s named dandiset 000946. The criterion''s
+      "none extra" condition is not checked (problem 3).'
+    response: 'Outcome changed to not_reproduced, for the verifier''s reason. The subjects section now prints
+      the evidence on "none extra" for each rat of the two groups (S1 probe, first and last file date,
+      whether it is in 000946) and the probe of every S1 file (138 of 138 list an A1x64-Edge probe or
+      H9). For the report''s problem 7, which the verifier said does not affect a conclusion, a
+      session''s areas now come from units with more than 2,000 spikes, with every unit as a variant, and a variant leaves out the 2025 cohort (counts 2 and 0). The counts are 6 and 6 under
+      every reading.'
+  - claim: fig2-target-artifact
+    agrees: true
+    outcome: blocked
+    reason: 'There is no raw voltage, no waveforms and no target-determination trials. I confirmed this in
+      the archive API: every one of the 229 assets measures only ElectrodeGroup and Units, and no file
+      is over 7.8 MB.'
+    response: 'No change needed.'
+  - claim: fig4-unit-counts
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Upper bounds from cell 13 settle this without RSU/FSU types. The claims file excludes non-paper
+      pressures, so only the 5 V files count (plus 2025 files, whose voltage is unknown). Those hold
+      76 POm units at 3,000 Hz (233 RSUs alone need at least 209.7), 53 POm units at 30 Hz (need at
+      least 170.1), 201 S1 units at 3,000 Hz (need at least 280.8) and 186 S1 units at 30 Hz (RSUs
+      plus FSUs need at least 188.1). So at least 4 of the 8 counts fail. Even counting all voltages,
+      both POm RSU counts fail. The main count table pools the 5, 10 and 15 V sessions; the 5 V
+      restriction appears only as a variant (problem 2).'
+    response: 'Outcome changed to not_reproduced, for the verifier''s reason. A fig4-unit-counts section now
+      computes, for each count, the untyped units it needs and the most of the 8 counts that can be
+      within 10% (4 in the claims file''s sessions, 6 with every voltage), with the counts by rat. The
+      main count table is now the 2024 files at 5 V with every 2025 file, all voltages being the
+      variant, and it says that the 2025 files state no voltage and are all kept, which can only raise
+      the bounds.'
+  - claim: fig4-timelocked-rsu-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig4-postsonication-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig4-30hz-responses
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig4-no-fsu-change
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig5-unit-counts
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Sham sessions hold 37 POm units in total, but 67 RSUs and 67 FSUs each need at least 60.3. CG1
+      sessions exist only at 300 and 4,500 Hz and hold 11 S1 and 8 POm units, below the lower bounds
+      for control S1 FSUs (30.6), POm RSUs (49.5) and POm FSUs (37.8). So 5 or more of the 8 counts
+      fail.'
+    response: 'Outcome changed to not_reproduced, for the verifier''s reason. A fig5-unit-counts section now
+      prints the bounds (at most 3 of 8 counts within 10%) and the sham and CG1 units by rat.'
+  - claim: fig5a-sham-no-response
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig5b-cg1-control-no-response
+    agrees: true
+    outcome: blocked
+    reason: 'There are no CG1 sessions at 3,000 Hz (cell 6), and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig6-unit-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Units can''t be typed. Full reproduction is ruled out anyway: 396 POm units over all voltages,
+      where 913 RSUs need at least 821.7. With 5 V only, S1 has 756 units against at least 945 needed.
+      "Partially reproduced" (2 of 4) stays possible. The verifier gives the block as
+      metadata_insufficient.'
+    response: 'Kept blocked. The notebook now prints the bounds (at most 2 of 4 totals within 10% in the
+      claims file''s sessions, 3 with every voltage) and the notes state them. blocked_by is kept as
+      data_missing: the waveforms the paper types from are not in the files, and the celltype_label
+      column holds no type at all (0 or the area), so there is no label to interpret; the mislabelled
+      column is recorded as a metadata_error finding.'
+  - claim: fig6a-s1-rsu-timelocked-high-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig6a-s1-rsu-delayed
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig6b-s1-fsu-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig6c-pom-rsu-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig6d-pom-fsu-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig7-9-unit-counts
+    agrees: true
+    outcome: blocked
+    reason: 'No PD other than 200 µs exists (cell 6; the 26 files with no PD are exactly the 26 sham files).
+      The bounds would also rule out a partial outcome (S1 at 3,000 Hz has 465 units, below the 580
+      needed).'
+    response: 'Kept blocked, data_missing. The notebook now prints the bounds at the 200 us points (at most 3
+      of 8 totals within 10%) and checks that the 26 files with no PD are the 26 sham files; the notes
+      state the bound.'
+  - claim: fig7a-s1-rsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig7b-s1-fsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig7c-pom-rsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig7d-pom-fsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig8a-s1-rsu-dc-30
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig8b-s1-fsu-dc-30
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig9a-s1-rsu-60dc
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig9b-s1-fsu-60dc
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig10a-dsttc-3000-during
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig10a-dsttc-3000-post
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig10b-dsttc-30
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig10c-sttc-constant-pd
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig10d-sttc-60dc
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig10e-sttc-30hz-dc
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig10f-sttc-3000-dc
+    agrees: true
+    outcome: blocked
+    reason: 'The duty-cycle series (PDs other than 200 µs) are absent, and units also can''t be typed.'
+    response: 'No change needed.'
+  - claim: fig11b-ac-responses
+    agrees: true
+    outcome: not_reproduced
+    reason: 'There are 194 AC units against 453 ± 45.3. The Kruskal–Wallis p is 0.05 or 0.013 during
+      sonication and 0.74 or 0.013 after it, none below 0.01. During sonication only 1,500 Hz is
+      significant, and only under R1/T2; 3,000 Hz never is. Nothing is significant postsonication, and
+      300 Hz is never the lowest mean. Confidence is low: whether the 2025 trial starts are the
+      sonication onsets is not established; only 7 of 108 stimulated files show more modulation with
+      the true starts than with shifted ones, and even S1 in those sessions shows none, so the null
+      may come from the timing and not from the neurons (problem 4). The 2025 files give no voltage,
+      and treating them as the paper''s 5 V is never stated (problem 2). Under R2 the per-trial ratio
+      is biased downward at low counts, so R2 with T2 always returns p = 1; R1 fails as well, so the
+      outcome stands (problem 5).'
+    response: 'Outcome kept. Added the outputs the verifier asked for: the trial-table span against the spike
+      span per file (they agree, both ending near 1,250 s, except four sham files whose spikes end
+      early); a population correlogram over lags of -60 to +60 s for every file, listed for every 2025
+      session (4 of 108 stimulated 2025 files peak within 0 to 400 ms, against 39 of 92 in 2024, and
+      no other lag fits); and an untyped S1 positive control at 0-67 and 201-268 ms by cohort and PRF
+      (no 2025 S1 increase on T1 at any PRF, nor in 2024 at 5 V at 3,000 Hz), so the control cannot
+      separate missing responses from wrong trial times. The section now states that the 2025 files
+      are taken to be at the paper''s pressure and their trial starts to be onsets, and the conclusion
+      says confidence is low. The R2 bias is not a misreading of the paper, as the paper allows the
+      per-trial reading, and it does not change the outcome, so no question was asked.'
+  - claim: fig11c-ac-to-s1-30hz
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+  - claim: fig11d-ac-to-s1-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Each needs RSU/FSU types. celltype_label is described as "1 = RSU, 2 = FSU" but holds only 0,
+      "S1" or "POm", and there are no waveforms (cells 4–5; the API agrees). No untyped part of these
+      criteria can be tested. The verifier gives the block as metadata_insufficient.'
+    response: 'Kept blocked. The data check now prints per-file value counts of celltype_label (no 1 or 2 in
+      any of the 96 files). blocked_by is kept as data_missing, as for fig6-unit-counts: the waveforms
+      are missing and the column holds no type to interpret.'
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook after the round-1 revision, the helper module, the claims
+    file and the attempt record, with the paper. The verifier agreed with 34 of the 35 outcomes and disagreed
+    with fig5-unit-counts, which it would block as data_missing. It also listed sentences not supported
+    by the printed outputs: the format_error finding''s normalized rate of 4,224% and "one to seven places
+    per unit" (now printed; the 4,224% is removed), the files with 400 and 149 trials (now printed), the
+    per-rat counts at 10 and 15 V behind the BH594 sentence (now printed, and the sentence names BH594
+    and BH615), and those under fig11b-ac-responses.'
+  results:
+  - claim: subjects
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 17 gives 6 and 6 rats under every reading, and 2 and 0 without the 2025 cohort. The
+      "none extra" evidence now prints: 138 of 138 S1 files list an A1x64-Edge probe or H9; BH648 and
+      BH658 are in both groups; none of the 10 rats is in 000946. The round-1 reason in the record wrongly
+      appended problem 7, which the verifier had marked "does not affect a conclusion".'
+    response: Outcome kept. The round-1 reason no longer carries problem 7; the round-1 response now says
+      that the change for it answered a point that does not affect a conclusion.
+  - claim: fig2-target-artifact
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig4-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 20: at most 4 of 8 counts can be within 10%, and a partial result needs 6. The bound
+      is valid because keeping all 2025 files and the S1-6 sessions can only raise it.'
+    response: No change needed.
+  - claim: fig4-timelocked-rsu-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig4-postsonication-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig4-30hz-responses
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig4-no-fsu-change
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig5-unit-counts
+    agrees: false
+    outcome: blocked
+    reason: 'The sham half fails only the 2 POm counts (37 units, cell 23). The other failures all come
+      from CG1 sessions at 300 and 4,500 Hz. The paper''s control, and the claims-file header, is CG1
+      at 3,000 Hz, and the dandiset has none. Counting other-PRF CG1 sessions does not bound units in
+      sessions that are not deposited, so the deviation''s "can only raise the bounds" does not hold.
+      fig7-9-unit-counts and fig5b treat an absent condition as data_missing; treated the same way here,
+      at most 2 of 8 counts are ruled out and a partial result (6 of 8) stays possible. So the outcome
+      should be blocked (data_missing), or else carry assumed: true with the assumption stated, that the
+      dandiset''s CG1 sessions are the paper''s control.'
+    response: Agreed. As no outcome may change in round 2, the verified not_reproduced is kept and a change
+      to blocked, data_missing, is written under proposed. The fig5-unit-counts section now prints the
+      bound with the control counts taken as not measurable (2 of 8 ruled out, at most 6 of 8 within 10%),
+      its text and conclusion state the proposed change, and the deviation no longer says the CG1 sessions
+      can only raise the bounds. The Summary and README carry the proposal.
+  - claim: fig5a-sham-no-response
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig5b-cg1-control-no-response
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig6-unit-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 26: at most 2 of 4 totals can be within 10%, which leaves a partial result open. The
+      verifier accepts data_missing over its metadata_insufficient: the paper types units from waveforms,
+      which are absent, and the label column is recorded as a metadata_error.'
+    response: No change needed.
+  - claim: fig6a-s1-rsu-timelocked-high-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig6a-s1-rsu-delayed
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig6b-s1-fsu-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig6c-pom-rsu-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig6d-pom-fsu-prf
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig7-9-unit-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig7a-s1-rsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig7b-s1-fsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig7c-pom-rsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig7d-pom-fsu-dc-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig8a-s1-rsu-dc-30
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig8b-s1-fsu-dc-30
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig9a-s1-rsu-60dc
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig9b-s1-fsu-60dc
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig10a-dsttc-3000-during
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig10a-dsttc-3000-post
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig10b-dsttc-30
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig10c-sttc-constant-pd
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig10d-sttc-60dc
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig10e-sttc-30hz-dc
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig10f-sttc-3000-dc
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 6: every stimulated file is PD 200, and the 26 files with no PD are the 26 sham files.'
+    response: No change needed.
+  - claim: fig11b-ac-responses
+    agrees: true
+    outcome: not_reproduced
+    reason: '194 units against 453 ± 45.3. 3,000 Hz is never significant and nothing is significant after
+      sonication (cells 28-29); the count and pattern fail under every variant. The outcome rests on two
+      assumptions stated only as deviations, not as assumed: true, that the 2025 files were recorded at
+      5 V and that the 2025 trial starts are sonication onsets; both should be flagged, and both are reasonable.
+      The statement that untyped S1 units give no positive control is literally true for T1, but in cell
+      12 T2 gives 2025 S1 units p = 7e-07 and 1.6e-12 at 30 Hz and 2.7e-12 and 8.1e-10 at 1,500 Hz, and
+      sham AC units give T2 p = 0.57, so the test is not biased. The notebook dismisses these because
+      the means are only 107-109%, yet counts 1,500 Hz in AC as significant at 105.1% under the same test;
+      this weakens the claim that the AC null may come from the trial tables. Also not supported by the
+      outputs: the R2 means of the variant without BH654 are not printed; the PSTHs show rises from about
+      200-300 ms, not 125 ms, and none in the BH594 files; the README row lacks the low-confidence qualifier.
+      The outcome itself does not change.'
+    response: 'Outcome kept, now with assumed: true; the two deviations on the 2025 voltage and onsets
+      are marked as assumptions. The positive control now also prints a null (sham S1 units, T2 p = 0.99
+      and 1 in 2025) and the 2025 S1 means by rat at 30 and 1,500 Hz. The data check, the conclusion and
+      the notes now state the T2 results, say that the S1 spikes lock to the trial starts in at least
+      the 30 and 1,500 Hz sessions (mostly BH646 and BH648), that AC units show no increase after sonication
+      at those PRFs (101.6% and 100.3%, T2 p = 0.5 and 0.34), and that the outputs cannot tell the explanations
+      apart only at 300, 3,000 and 4,500 Hz; the "low confidence" wording is replaced by this. The R2
+      means of the variant without BH654 are now printed (48.6 to 66.6%). The PSTH sentence now gives
+      rises from about 200 to 300 ms and none clear in BH594. The README and Summary rows state the assumptions.'
+  - claim: fig11c-ac-to-s1-30hz
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+  - claim: fig11d-ac-to-s1-3000
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked, data_missing. Cell 4: 0 of 96 files hold a 1 or 2 in celltype_label.'
+    response: No change needed.
+- date: '2026-11-02'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig5-unit-counts, to blocked, data_missing) and
+    the analysis behind it in the full executed notebook after the round-2 revision (cells 14, 22 to 24
+    and the Summary), with the claims file, the attempt record and the paper. The verifier agreed with
+    it.
+  results:
+  - claim: fig5-unit-counts
+    agrees: true
+    outcome: blocked
+    reason: 'Numbers come from the data (cells 14 and 23): 151 S1 and 37 POm sham units; the CG1
+      sessions hold 11 S1 and 8 POm units, at 300 and 4,500 Hz. For sham POm, 37 units are fewer than
+      the 60.3 needed for either the 67 RSUs or the 67 FSUs, so those 2 counts are ruled out; that
+      leaves at most 6 of 8 within 10%, and a partial result needs 6. The choice was not made to reach
+      a result: it follows the claims file, whose header defines the control as CG1 at 3,000 Hz PRF,
+      as does the paper (Results, Fig. 5 paragraph). Cell 23 prints 0 units in CG1 sessions at 3,000
+      Hz, and sessions at 300 and 4,500 Hz cannot bound unit counts from sessions that were never
+      deposited. fig5b-cg1-control-no-response already treats this missing condition as data_missing.
+      With 2 counts ruled out and the other 6 unmeasurable, the data cannot decide between partially
+      reproduced and not reproduced, so blocked, data_missing is right. The proposed reason also cites
+      fig7-9-unit-counts as a parallel, which is not quite the same case, as its bound already rules
+      out a partial result; fig5b is the direct parallel and is enough.'
+    response: Outcome changed to blocked, data_missing, and proposed removed. The notes and the notebook's
+      fig5-unit-counts section now cite fig5b-cg1-control-no-response as the parallel and no longer
+      fig7-9-unit-counts. The conclusion, the Summary and the README give the outcome as blocked.

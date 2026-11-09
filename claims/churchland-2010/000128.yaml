@@ -43,7 +43,16 @@
 #    proto-trial is the condition's mean velocity over its trials, each component must correlate
 #    at r > 0.9, window movement onset -150 to +800 ms (the maze peri-movement window, M5);
 #    (T2) as T1 with the two components concatenated into one profile. If the dataset marks the
-#    paper's own trial selection, that is shown as a variant.
+#    paper's own trial selection, that is shown as a variant. Answered 2026-10-22: T1 is set aside
+#    and T2 alone is run. The paper does not say how the components combine, but it fixes two
+#    properties of its selection. It kept "typically ~90% of all trials" (Supplemental Experimental
+#    Procedures, Task design and behavioral control), and it left every condition with trials, since
+#    all 108 maze conditions enter the analyses (Results, Behavior and recordings; Methods, Using a
+#    PD, c conditions). A third of the maze conditions are straight reaches without barriers
+#    (Supplemental Experimental Procedures), and for a straight horizontal or vertical reach one
+#    velocity component is flat, so a per-component r > 0.9 cannot keep those conditions. The
+#    attempt reports that T1 empties two conditions and keeps 73.8% of trials, so T1 is not the
+#    paper's selection; T2 keeps 90.8% and every condition.
 # M2 Firing rates. Spikes convolved with a 20 ms Gaussian and averaged over the trials of each
 #    condition, separately locked to the go cue and to movement onset (Supplemental Experimental
 #    Procedures; Supplemental Figure 4 legend). "Width 20 ms" is taken as SD 20 ms, a standard
@@ -66,7 +75,13 @@
 #    tuning correlation, also peri-movement tuning at least 1.5 times the preparatory tuning
 #    (Methods, Correlations). The measure of "tuning" is open. Readings (S1) the range, maximum
 #    minus minimum over conditions of the condition-mean rate in the epoch; (S2) the standard
-#    deviation over conditions.
+#    deviation over conditions. Answered 2026-10-22: S2 is set aside and S1 alone is run. The
+#    paper does not define "tuning", but with its thresholds the measure must leave J-array neurons
+#    tuned in both epochs, since Figure 4D plots their distribution of correlations with a mean of
+#    0.13 and p = 0.03 (Results, Correlations between preparatory and peri-movement tuning), and
+#    Figure 3E,F shows tuned array isolations (Methods, Neural recordings and datasets). The attempt reports that S2 leaves no such neuron, so S2
+#    is not the paper's measure at these thresholds. One measure serves every analysis (the
+#    Methods use "preparatory tuning" for both thresholds), so S2 is dropped throughout.
 # M7 PD fit and performance. x_n = b0 + S b by least squares with an intercept; leave-one-condition-
 #    out; performance = 1 - (mean over left-out conditions of the squared error) / (variance of x_n
 #    over conditions) (Methods, Using a PD; PD performance). Variance with denominator c, a
@@ -183,7 +198,7 @@ claims:
   source: Results, Neural responses during preparation and movement, paragraph 4; Figure 3
   quote: Some neurons maintained similar tuning between preparatory and peri-movement epochs (panel
     A ) but most did not.
-  criterion: J-array (and J if present), neurons selected as for Figure 4 (M6, both readings), tuning
+  criterion: J-array (and J if present), neurons selected as for Figure 4 (M6, reading S1), tuning
     correlation as in M4. The paper sets no threshold for "similar tuning"; the one value it calls
     "quite high" is r = 0.72 (Figure 2B). Reproduced when at least one neuron has r of 0.72 or
     more and more than half of the neurons have r below 0.72.
@@ -209,9 +224,9 @@ claims:
     value: 0.11
     tolerance: 0.011
   criterion: Per neuron passing M6 (preparatory tuning > 5 spikes/s and peri-movement tuning at least
-    1.5 times the preparatory tuning, readings S1 and S2), the Pearson and Spearman correlation over
-    the 108 conditions between the preparatory rates and the peri-movement rates of M4, trials by
-    M1 (T1, T2). The paper does not name the test of the mean against zero. Readings (P1) one-sample
+    1.5 times the preparatory tuning, reading S1; S2 set aside, see the M6 answer), the Pearson and
+    Spearman correlation over the 108 conditions between the preparatory rates and the peri-movement
+    rates of M4, trials by M1 (reading T2; T1 set aside, see the M1 answer). The paper does not name the test of the mean against zero. Readings (P1) one-sample
     two-sided t-test of the r values; (P2) the same on Fisher z-transformed r; (P3) two-sided
     Wilcoxon signed-rank test. Reproduced when, under one combination of readings, both means are
     within tolerance and the test gives p < 0.05 with the mean positive; partially reproduced when
@@ -316,7 +331,11 @@ claims:
   criterion: Neurons as in fig4d (Supplemental Figure 1 legend). Per neuron, the conditions with the
     strongest and weakest preparatory rate and two intermediate ones (open; read as the conditions
     at one third and two thirds of the rank order), each neuron's rates divided by its maximum rate,
-    then averaged over neurons. Separation is the strongest-minus-weakest average. The paper gives
+    then averaged over neurons. The legend says only "normalizing each neuron's activity by its
+    maximum rate (results were similar without normalization)" and does not say over what the
+    maximum is taken (answered 2026-10-22). Readings (a) the maximum over all conditions and all
+    plotted times; (b) the maximum over the four plotted conditions and plotted times. Both are
+    run, and a combination of readings is one reading for the rule below. Separation is the strongest-minus-weakest average. The paper gives
     no threshold for "dramatically smaller"; readings (R1) separation at movement onset less than
     half its mean over the preparatory epoch; (R2) less than a quarter. Reproduced when the
     separation in the preparatory epoch is positive and the condition holds under one reading.
@@ -328,8 +347,9 @@ claims:
   source: Results, PD performance in a variety of spaces, paragraph 3; Figure 6A-D
   quote: For every dataset, the highest level of performance was achieved ... when PDs were expressed
     in the peri-movement space.
-  criterion: J-array (and other datasets the archive holds). Neurons passing the preparatory part of
-    M6 (S1, S2), regardless of peri-movement tuning (Methods, Correlations, last sentence). PD
+  criterion: J-array (and other datasets the archive holds). Trials by M1, reading T2 (T1 set aside,
+    see the M1 answer). Neurons passing the preparatory part of M6 (S1; S2 set aside, see the M6
+    answer), regardless of peri-movement tuning (Methods, Correlations, last sentence). PD
     performance by M7 in (a) the peri-movement space (M5) for each k (M8, K1 and K2); (b) the
     kinematic space, PCA of a T-matrix of horizontal and vertical position, velocity and
     acceleration from 150 ms before movement onset, each variable scaled to unit range over times
@@ -388,7 +408,7 @@ claims:
     not normalised, columns mean-centred), PCA, the smallest number of components whose cumulative
     variance reaches 90%. The range 7 to 10 widened by 10% of each bound gives 6.3 to 11, so 7 to 11
     components. Which neurons enter is open; readings (N1) neurons passing the preparatory part of
-    M6 (S1, S2); (N2) all neurons. Reproduced when the count is within the range under one reading.
+    M6 (S1; S2 set aside, see the M6 answer); (N2) all neurons. Reproduced when the count is within the range under one reading.
 - id: fig6e-summary-across-datasets
   statement: Averaged over monkeys A, B and J (J-array excluded, no EMG), PD performance is highest
     in the peri-movement space at every dimensionality limit, the advantage grows with

@@ -1,0 +1,1156 @@
+# Claims for LeMessurier, Laboy-Juarez, McLain, Chen, Nguyen & Feldman (2019), eLife 8:e46321,
+# "Enrichment drives emergence of functional columns and improves sensory coding in the whisker
+# map in L2/3 of mouse S1", on CRCNS data set ssc-10 (doi:10.6080/K0DB801M).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-08,
+# protocol as stated in docs/protocol.md (Reader), version pilot-13.
+#
+# Text read: the version of record, PMC6697414 (Europe PMC JATS XML, flattened), as supplied
+# under paper/: Results, Discussion, Materials and methods, Table 1, and the legends of Figures 1
+# to 7 and their figure supplements (Figure 1 S1, Figure 2 S1 and S2, Figure 3 S1, Figure 4 S1
+# and S2, Figure 5 S1 and S2). The paper has no other supplementary text. Table 1 is flattened
+# to one cell per line and was read in that form. No PDF of the paper was supplied; no figure
+# was read.
+#
+# Code read: github.com/alemessurier/imaging_analysis_pipeline, commit 5a21c9fef839fbc8eb79fa24f16662426e36904f
+# (2019-07-10), the repository the paper links. rawDataPipeline/ holds the reduction from movies
+# to ROI time series, dF/F, trial-aligned traces (traceByStim, sponTrace) and the responsiveness
+# test (permuteTest_whisk_2016.m). plotting_2017/ holds the figure scripts. Many functions those
+# scripts call are not in the repository, among them find_sigROIs, the computation of whiskPref
+# (the equivalent best whiskers), find_CWtuned_byRad, find_rankedRFs, find_corr_simple,
+# find_corrInBarrelvsAcross, decoder_PandPos and permutationTest_mean. What the code fixes:
+#   - Evoked window: frames ceil(0.5*fs)+1 to ceil(0.5*fs)+ceil(1*fs) of each trial-aligned
+#     trace, i.e. the 1 s after onset, with traces baseline-corrected to the 0.5 s before onset
+#     (rawDataPipeline_shared.m, analysisTemplate.m), as the Methods say.
+#   - EN against NH comparisons of means: permutationTest.m, 10,000 label shuffles of the pooled
+#     units, statistic the absolute difference of means (two-sided), p the fraction of shuffles
+#     (the observed value included) at least as large. Used in the figure scripts for responses
+#     by distance, receptive fields, correlations and spontaneous activity.
+#   - Fractions tuned by distance bin: the figure script somatotopy_plots_2018_eqSamp.m compares
+#     EN with NH by permutationTest on the 0/1 tuned indicators, where the legend of Figure 3A
+#     names Fisher's exact test. The legend is followed; the code's test is a variant.
+# Where the code and the Methods differ, the Methods are followed and the code's choice is a
+# variant: the responsiveness test is one-sided on means in the Methods ("greater than the 95th
+# percentile"), two-sided in permuteTest_whisk_2016.m, with mean or median set per field
+# (permTestType, 'median' in analysisTemplate.m); the temporal filter is a four-frame moving
+# median in the Methods, a five-frame window (ptsToAvg = 2) in the code; F0 is the 20th percentile
+# of the 80 s movie in the Methods, the 5th percentile in deltaF_simple.m.
+#
+# Data the paper used. Mice raised from weaning (P20-21) either enriched (EN, 2-3 littermates,
+# tactile toys changed every 2-4 days) or normally housed (NH, one littermate, no toys), for
+# 25-50 days. Drd3-Cre mice (L2/3 pyramidal cells; NH 7 mice, 11 fields; EN 7 mice, 11 fields)
+# and Scnn1a-Tg3-Cre mice (L4 excitatory cells; NH 5 mice, 6 fields; EN 6 mice, 8 fields), with
+# Cre-dependent GCaMP6s, imaged under isoflurane and chlorprothixene at 30 Hz through a cranial
+# window, fields ~400 x 400 um (L2/3, 100-250 um deep) or ~300 x 300 um (L4). Nine whiskers in a
+# 3 x 3 array centred on D2 (C1-C3, D1-D3, E1-E3) deflected one at a time with trains of five
+# 300 um deflections 100 ms apart, interleaved with blank trials, 5 s apart in random order,
+# 60 +/- 10 repetitions per whisker, ~40 movies of 80 s per field. Manually drawn soma ROIs; no
+# neuropil subtraction for L2/3 in the main analysis, neuropil weight r = 0.3 for L4. ROI
+# positions relative to the nine barrel centroids from cytochrome oxidase histology, barrel
+# radii, and whether each ROI lies over a barrel or a septum. Measured variables: the evoked
+# dF/F per trial, its median per whisker (the receptive field), responses z-scored to blank
+# trials, best and equivalent best whiskers, signal and noise correlations of pairs, and
+# logistic-regression decoders of single trials. Units of most tests are ROIs or ROI pairs
+# pooled across fields and mice. Separately, juxtacellular recordings with GCaMP6s imaging of 10
+# L2/3 cells in 5 C57BL/6 mice (Figure 1F) and a behavioural cohort of 6 NH and 6 EN mice
+# (data not shown).
+#
+# The CRCNS data set, by its title and description, holds the population imaging of the four
+# groups (raw and neuropil time series, dF/F, stimuli, trial-aligned traces, responsiveness
+# p-values, ROI positions relative to each barrel). Whether it holds the juxtacellular recordings,
+# or the barrel radii, is the author's to find.
+#
+# Methods common to the criteria below, from the Methods unless said otherwise:
+#   - Evoked response of a trial: mean dF/F in the 1 s after train onset minus mean dF/F in the
+#     0.5 s before (Methods, Quantification of whisker responses).
+#   - Responsive ROI: for some whisker, the per-trial evoked responses exceed those of blank
+#     trials by a permutation test of the difference in means (10,000 shuffles, one-sided at the
+#     95th percentile), p-values Benjamini-Hochberg corrected over the nine whiskers at 0.05.
+#     Variant: the p-values stored per ROI by the pipeline (two-sided, mean or median per the
+#     field's permTestType), BH corrected. ROIs with nuclear GCaMP were excluded by the authors.
+#   - Which responsive ROIs enter. Methods: for L2/3 "all whisker-responsive ROIs located within
+#     any of the nine columns"; for L4 only responsive ROIs in columns C1, C2 and C3. Open for
+#     L2/3: whether ROIs over septa enter the point representation and tuning-by-distance
+#     analyses. Readings (A) all responsive ROIs of the field; (B) only ROIs over one of the nine
+#     barrels. The counts favour (A) for Figures 2 and 3 (475 NH responsive cells, of which 344 lie
+#     within a column). Correlations use only ROIs over (L2/3) or in (L4) a barrel (Methods).
+#   - Receptive field: the median evoked response to each whisker over its trials (Methods).
+#     Response normalised to spontaneous activity: that median z-scored to the distribution of
+#     evoked-window responses on blank trials, read as (median - mean of blank) / SD of blank,
+#     the standard z-score; centring on the blank median is a variant (Methods, Quantification).
+#   - Best whisker (BW): the whisker with the largest mean evoked dF/F (Results, Whisker map
+#     topography, paragraph 2). The median (the receptive field of the Methods) is a variant.
+#   - Equivalent best whiskers (eBWs): whiskers whose response is "statistically
+#     indistinguishable from the BW (see Materials and methods)". Neither the Methods nor the code
+#     (whiskPref is loaded precomputed) say how. OPEN. Readings (E1) the paper's own permutation
+#     test of the difference in means (10,000 shuffles, two-sided as in permutationTest.m) between
+#     the BW's per-trial evoked responses and each other whisker's, p >= 0.05 uncorrected meaning
+#     equivalent; (E2) as E1 with Benjamini-Hochberg correction over the eight comparisons, as the
+#     Methods correct the responsiveness test; (E3) as E1 on medians (permutationTest_median.m).
+#   - Distance to a column: Euclidean distance in um from the ROI to the centroid of the
+#     reference whisker's barrel (Methods, 2-photon imaging, paragraph 4). In by-distance
+#     analyses each responsive ROI enters once for each of the nine reference whiskers, at its
+#     distance to that whisker's column; the bin counts the paper prints (406 and 419 NH cells at
+#     225-300 and 525-600 um, from 475 responsive cells) require this.
+#   - Columnar whisker (CW): the whisker of the barrel an ROI lies over (Results). Rows C, D, E run
+#     dorsal to ventral and arcs 1, 2, 3 caudal to rostral, so for D2 the within-arc -1 and +1
+#     row whiskers are C2 and E2 and the within-row -1 and +1 arc whiskers are D1 and D3
+#     (Results, Enrichment sharpens whisker receptive fields, paragraph 3).
+#   - EN against NH tests on means: the permutation test of the difference in means named in the
+#     Results, as in permutationTest.m (two-sided, 10,000 shuffles), with ROIs or pairs pooled
+#     across fields and mice as the units. Values reported as mean +/- SEM have the SEM as
+#     tolerance; other values have 10% of the value.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: ssc-10
+  doi: 10.6080/K0DB801M
+paper: doi:10.7554/elife.46321
+claims:
+- id: table1-mice-and-fields
+  statement: The population imaging used 7 NH and 7 EN Drd3-Cre mice with 11 imaging fields each,
+    and 5 NH and 6 EN Scnn1a-Tg3-Cre mice with 6 and 8 imaging fields.
+  source: Table 1
+  inferred: The counts are in the columns N mice and N imaging fields of Table 1; no sentence lists
+    all four groups. Materials and methods, Animals, gives 14 Drd3-Cre and 11 Scnn1a-Tg3-Cre mice.
+  expected:
+  - quantity: Drd3-Cre NH mice
+    value: 7
+    tolerance: 0
+  - quantity: Drd3-Cre NH imaging fields
+    value: 11
+    tolerance: 0
+  - quantity: Drd3-Cre EN mice
+    value: 7
+    tolerance: 0
+  - quantity: Drd3-Cre EN imaging fields
+    value: 11
+    tolerance: 0
+  - quantity: Scnn1a-Tg3-Cre NH mice
+    value: 5
+    tolerance: 0
+  - quantity: Scnn1a-Tg3-Cre NH imaging fields
+    value: 6
+    tolerance: 0
+  - quantity: Scnn1a-Tg3-Cre EN mice
+    value: 6
+    tolerance: 0
+  - quantity: Scnn1a-Tg3-Cre EN imaging fields
+    value: 8
+    tolerance: 0
+  criterion: Counts are exact. A tolerance of zero is used because these are counts of animals and
+    fields, which are either present or not.
+- id: l23-cell-counts
+  statement: In L2/3 of Drd3-Cre mice, NH fields held 998 cells of which 475 were whisker-responsive,
+    and EN fields 1257 cells of which 874 were responsive.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 2
+  quote: For L2/3 cells in normally-housed (NH) mice (11 imaging fields, seven mice, 998 total
+    cells, 475 responsive cells ... Enriched (EN) mice (11 imaging fields, seven mice, 1257 total
+    cells, 874 responsive cells
+  expected:
+  - quantity: NH L2/3 total cells
+    value: 998
+    tolerance: 99.8
+  - quantity: NH L2/3 responsive cells
+    value: 475
+    tolerance: 47.5
+  - quantity: EN L2/3 total cells
+    value: 1257
+    tolerance: 125.7
+  - quantity: EN L2/3 responsive cells
+    value: 874
+    tolerance: 87.4
+  criterion: Responsive as defined in the opening comment (Methods test; the pipeline's stored
+    p-values as a variant). Readings for which responsive ROIs are counted are (A) all of the
+    field and (B) only those over one of the nine barrels. Reproduced when all four counts are
+    within tolerance under one reading. The fraction responsive in EN higher than in NH is
+    reported either way.
+- id: l4-cell-counts
+  statement: In L4 of Scnn1a-Cre mice, NH fields held 322 cells of which 107 were responsive, and EN
+    fields 586 cells of which 181 were responsive.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 3
+  quote: We imaged from 107 responsive cells in L4 of NH mice (six imaging fields, five mice, 322
+    total cells ... In EN mice, we imaged from 181 responsive cells in L4 (eight imaging fields, six
+    mice, 586 total cells
+  expected:
+  - quantity: NH L4 total cells
+    value: 322
+    tolerance: 32.2
+  - quantity: NH L4 responsive cells
+    value: 107
+    tolerance: 10.7
+  - quantity: EN L4 total cells
+    value: 586
+    tolerance: 58.6
+  - quantity: EN L4 responsive cells
+    value: 181
+    tolerance: 18.1
+  criterion: Responsive as in the opening comment. The Methods restrict L4 analysis to responsive
+    ROIs in columns C1, C2 and C3; readings are (A) responsive ROIs counted over the whole field
+    and (B) only those in C1, C2 or C3. Reproduced when all four counts are within tolerance under
+    one reading.
+- id: fig1f-gcamp-matches-spikes
+  statement: Whisker receptive fields measured from GCaMP6s dF/F were highly similar to those from
+    simultaneously recorded spikes in 9 of 10 L2/3 neurons.
+  source: Results, Whisker receptive fields measured by calcium imaging, paragraph 1; Figure 1F
+  quote: Receptive fields from spike counts were highly similar to those from ΔF/F in 9/10 cells
+  criterion: Spikes 0 to 100 ms after each deflection count as evoked (Methods, Cell-attached
+    recording); the imaging receptive field as in the opening comment. The paper does not say how
+    "highly similar" was judged. Readings are (a) the same best whisker from spikes and from dF/F;
+    (b) a Pearson correlation of the two nine-whisker receptive fields with p < 0.05. Reproduced
+    when 9 of 10 cells (8 to 10 accepted) meet one reading.
+- id: fig2a-l23-point-representation-stronger
+  statement: In L2/3, EN raised the mean response to a reference whisker in and just around its
+    column, at 0-75 um (NH 0.59, EN 0.77), 150-225 um (0.53, 0.60) and 225-300 um (0.41, 0.51)
+    from the column centre.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 2; Figure 2A
+  quote: >-
+    This was observed in the central bin (0–75 μm from column center; NH: 0.59 ± 0.06, EN: 0.77 ±
+    0.04; p=0.0098, permutation test for difference in means) as well as at 150–225 µm (NH: 0.53 ±
+    0.02, EN: 0.60 ± 0.02; p=0.0028) and 225–300 µm (NH: 0.41 ± 0.02, EN: 0.51 ± 0.01; p=0.0001)
+  statistics:
+  - about: 0-75 um bin
+    test: permutation test for difference in means
+    p: 0.0098
+  - about: 150-225 um bin
+    test: permutation test for difference in means
+    p: 0.0028
+  - about: 225-300 um bin
+    test: permutation test for difference in means
+    p: 0.0001
+  expected:
+  - quantity: NH mean z-scored response, 0-75 um
+    value: 0.59
+    tolerance: 0.06
+  - quantity: EN mean z-scored response, 0-75 um
+    value: 0.77
+    tolerance: 0.04
+  - quantity: NH mean z-scored response, 150-225 um
+    value: 0.53
+    tolerance: 0.02
+  - quantity: EN mean z-scored response, 150-225 um
+    value: 0.60
+    tolerance: 0.02
+  - quantity: NH mean z-scored response, 225-300 um
+    value: 0.41
+    tolerance: 0.02
+  - quantity: EN mean z-scored response, 225-300 um
+    value: 0.51
+    tolerance: 0.01
+  criterion: Per responsive L2/3 ROI and reference whisker, the median evoked dF/F z-scored to blank
+    trials (Methods; Figure 2A legend), binned by distance to the reference column centre in 75 um
+    bins (Figure 2A legend), averaged over ROI-whisker pairs. EN against NH per bin by the
+    permutation test of the difference in means (permutationTest.m). ROI readings (A) and (B) of
+    the opening comment; z-score centred on the blank mean, the blank median as a variant.
+    Reproduced when, under one reading, EN is higher in all three bins with p < 0.05 each and the
+    six values are within tolerance; partially reproduced when the three tests hold but some
+    values fall outside tolerance.
+- id: fig2a-l23-flanks-suppressed
+  statement: In L2/3, EN lowered mean responses to the reference whisker at the flanks of the point
+    representation, 375 to 750 um from the column centre.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 2; Figure 2A
+  quote: But EN suppressed mean responses at the flanks of the point representation (375–750 μm,
+    p<0.05 for all bins
+  statistics:
+  - test: permutation test for difference in means
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig2a-l23-point-representation-stronger
+  criterion: As fig2a-l23-point-representation-stronger, for the five 75 um bins from 375 to 750
+    um. Reproduced when, under one reading, EN is lower with p < 0.05 in all five bins; partially
+    reproduced for three or four bins.
+- id: fig2b-2d-point-representation
+  statement: Two-dimensional maps of the L2/3 point representation, with fields rotated to align the
+    arc axis, show the same EN enhancement in the home column and reduction some distance away.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 2; Figure 2B
+  quote: This enhancement of responses in the home column and reduced responses some distance away
+    was also apparent in 2D maps
+  depends_on:
+  - fig2a-l23-point-representation-stronger
+  criterion: Responsive ROIs within 750 um of each reference column, coordinates centred on the
+    column and rotated so the within-row axis is horizontal (Figure 2B legend; Methods, Normalized
+    anatomical reference frame), binned by k-means into bins of similar ROI count (Methods; the
+    number of bins is not given, a plotting choice, 30 used). Reproduced when the EN minus NH mean
+    response is positive over ROIs inside the average barrel radius of the centre and negative over
+    ROIs beyond 375 um, on the same ROI-whisker pairs as Figure 2A.
+- id: fig2c-l4-point-representation-weaker
+  statement: In L4, EN reduced mean whisker-evoked responses in most bins within 375 um of the
+    reference column centre, including 0-75 um (NH 1.11, EN 0.86).
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 3; Figure 2C
+  quote: >-
+    We found that EN reduced mean whisker-evoked responses for cells in most bins <375 μm from the
+    reference whisker’s column center (p<0.05 for each bin), including at 0–75 μm (NH: 1.11 ±
+    0.13, EN: 0.86 ± 0.06, p=0.034)
+  statistics:
+  - about: 0-75 um bin
+    test: permutation test for difference in means
+    p: 0.034
+  - about: each bin below 375 um where EN is lower
+    test: permutation test for difference in means
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: NH L4 mean z-scored response, 0-75 um
+    value: 1.11
+    tolerance: 0.13
+  - quantity: EN L4 mean z-scored response, 0-75 um
+    value: 0.86
+    tolerance: 0.06
+  criterion: As fig2a-l23-point-representation-stronger, for L4 ROIs (responsive, in columns C1, C2
+    or C3, per the Methods; all responsive L4 ROIs as a variant). "Most bins" read as at least three
+    of the five 75 um bins below 375 um. Reproduced when EN is lower with p < 0.05 in at least three
+    of them, the 0-75 um bin among them, and both 0-75 um values are within tolerance.
+- id: fig2c-l4-sharper-than-l23
+  statement: In NH mice the point representation was sharper in L4 than in L2/3.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 3; Figure 2C
+  quote: We found that the point representation was sharper in L4 than L2/3
+  depends_on:
+  - fig2a-l23-point-representation-stronger
+  - fig2c-l4-point-representation-weaker
+  criterion: The paper gives no measure of sharpness. OPEN; readings are (a) the mean response at
+    225-300 um as a fraction of that at 0-75 um, and (b) the distance at which the binned mean
+    first falls below half the 0-75 um value, each computed on NH profiles of Figure 2A and 2C.
+    Reproduced when both readings are smaller in L4 than in L2/3. No test is reported.
+- id: figs2-1-column-frame
+  statement: In a column-based reference frame, EN raised the mean L2/3 response to a reference
+    whisker in its home column, sharpened the point representation mainly across rows, and reduced
+    its spatial bias toward adjacent higher-arc columns; in L4 EN weakened home-column responses.
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 4; Figure 2 figure supplement 1
+  quote: In L2/3, this confirmed that EN increased the mean response to a reference whisker in its
+    home column, and revealed that EN sharpened the point representation primarily across whisker
+    rows, not across arcs, and reduced spatial bias toward adjacent higher-arc whisker columns. In
+    L4, this confirmed that EN weakened home-column responses
+  criterion: Positions in units of the reference column radius along the ROI's direction (Figure 2
+    S1 legend; ROI_pos_barrel_norm), ROIs within 5 radii. Home column is distance < 1. The paper
+    reports no test for this figure; the home-column comparison uses the test of Figure 2A, EN
+    against NH by the permutation test of the difference in means. The reduced higher-arc bias has
+    no measure in the paper; it is read as the mean response at 1 to 2 radii within 45 degrees of
+    the +1 arc direction minus that within 45 degrees of the -1 arc direction being smaller in EN
+    than in NH. Across-row sharpening
+    has no measure in the paper; it is read as the EN minus NH difference in mean response for ROIs
+    at 1 to 2 radii lying within 45 degrees of the arc axis (across rows) being more negative than
+    for those within 45 degrees of the row axis (across arcs). Reproduced when the L2/3 home-column
+    response is higher in EN (p < 0.05), the L4 home-column response lower in EN (p < 0.05), and
+    the across-row and higher-arc readings hold; partially reproduced when the two home-column
+    tests hold alone.
+- id: figs2-2-barrel-size-unchanged
+  statement: Enrichment did not change the radius of L4 barrels, in Drd3-Cre mice (NH 151 um, EN 145
+    um) or in Scnn1a-Cre mice (NH 118 um, EN 124 um).
+  source: Results, Enrichment sharpens the point representation of a single whisker in L2/3,
+    paragraph 5; Figure 2 figure supplement 2
+  quote: Enrichment did not alter mean barrel radius (NH ... 151 ± 7.2 μm, n = 6 mice, EN ... 145 ±
+    4.6 μm [mean ± SEM], n = 7 mice (2-way ANOVA, factors ... enrichment and barrel identity, p=0.7
+    for enrichment factor) ... There was also no change in barrel radius in Scnn1a-Cre mice, which
+    have a slightly smaller barrels (NH ... 118 ± 6.6 μm, n = 5 mice, EN ... 124 ± 6.9 μm, n = 6
+    mice, p=0.01 for enrichment factor
+  statistics:
+  - about: Drd3-Cre, enrichment factor
+    test: 2-way ANOVA, factors enrichment and barrel identity
+    p: 0.7
+    n: 6 NH and 7 EN mice
+  - about: Scnn1a-Cre, enrichment factor (printed so, while the text and legend call it not
+      significant)
+    test: 2-way ANOVA, factors enrichment and barrel identity
+    p: 0.01
+    n: 5 NH and 6 EN mice
+  expected:
+  - quantity: Drd3-Cre NH mean barrel radius
+    value: 151
+    tolerance: 7.2
+    unit: um
+  - quantity: Drd3-Cre EN mean barrel radius
+    value: 145
+    tolerance: 4.6
+    unit: um
+  - quantity: Scnn1a-Cre NH mean barrel radius
+    value: 118
+    tolerance: 6.6
+    unit: um
+  - quantity: Scnn1a-Cre EN mean barrel radius
+    value: 124
+    tolerance: 6.9
+    unit: um
+  criterion: Radius from each barrel's area assuming a circle, nine barrels per mouse, the mouse mean
+    over them (Methods, Quantification of L4 barrel size). A claim of absence judged on the paper's
+    test, a two-way ANOVA with factors enrichment and barrel identity on per-barrel radii, for each
+    genotype. Reproduced when the enrichment factor has p >= 0.05 in both genotypes and the means
+    are within tolerance. The printed p = 0.01 for Scnn1a-Cre conflicts with the sentence and with
+    the legend ("no significant enrichment effect for either genotype"); the legend's reading is
+    used. Radii derived from the data set's normalised positions measure the radius along each
+    ROI's direction, not from area, and if used are a stated approximation.
+- id: figs3-1-l23-salt-and-pepper
+  statement: In L2/3 of NH mice, tuning is intermixed within columns; 53% of responsive cells within
+    75 um of a column centre had the CW as best whisker, falling to 16% at 225-300 um and 1% at
+    525-600 um, and by equivalent best whiskers 67%, 43% and 10%.
+  source: Results, Whisker map topography in L2/3 and L4 in normally housed mice, paragraph 2;
+    Figure 3 figure supplement 1B and 1D
+  quote: 53% (31/58) of responsive cells within 0–75 µm of a column center had a BW that matched the
+    column’s anatomically-mapped whisker ... to 16% (66/406 cells) at 225–300 µm and 1% (6/419
+    cells) at 525–600 µm ... By this measure, 67% (39/58) of L2/3 PYR cells within 0–75 µm of the
+    column center were tuned to the CW. This fraction fell off gradually with cortical distance, to
+    43% at 225–300 µm (174/406 cells) and 10% at 525–600 µm (41/419 cells
+  expected:
+  - quantity: NH L2/3 fraction BW equals reference whisker, 0-75 um
+    value: 53
+    tolerance: 5.3
+    unit: percent
+  - quantity: NH L2/3 fraction BW equals reference whisker, 225-300 um
+    value: 16
+    tolerance: 1.6
+    unit: percent
+  - quantity: NH L2/3 fraction BW equals reference whisker, 525-600 um
+    value: 1
+    tolerance: 1
+    unit: percent
+  - quantity: NH L2/3 fraction eBW includes reference whisker, 0-75 um
+    value: 67
+    tolerance: 6.7
+    unit: percent
+  - quantity: NH L2/3 fraction eBW includes reference whisker, 225-300 um
+    value: 43
+    tolerance: 4.3
+    unit: percent
+  - quantity: NH L2/3 fraction eBW includes reference whisker, 525-600 um
+    value: 10
+    tolerance: 1
+    unit: percent
+  - quantity: NH L2/3 ROI count, 0-75 um bin
+    value: 58
+    tolerance: 5.8
+  - quantity: NH L2/3 ROI-whisker count, 225-300 um bin
+    value: 406
+    tolerance: 40.6
+  criterion: Responsive NH L2/3 ROIs; each ROI enters each reference whisker's 75 um distance bins
+    (opening comment); fraction of entries whose BW (or eBW set) contains the reference whisker.
+    BW by mean, median as a variant; eBW readings E1, E2, E3; ROI readings (A), (B). The 1% value
+    is 6 of 419 cells; its tolerance is one percentage point (0 to 2%, about 0 to 8 of 419), as
+    10% of 1% is below one cell. Reproduced when the BW values and the bin counts are within tolerance under one reading
+    and the eBW values under one eBW reading; partially reproduced when only the BW values hold.
+    Fractions falling with distance is required in either case.
+- id: discussion-l23-nh-in-column-tuning
+  statement: In NH L2/3, about 48% of cells located in a column responded maximally to the CW and
+    65% had the CW among their equivalent best whiskers.
+  source: Discussion, Whisker map structure in L2/3 and L4 of normally housed mice, paragraph 1;
+    Results, Enrichment decreases tuning heterogeneity in the salt-and-pepper map, paragraph 1
+  quote: only 48% of PYR cells in each column responded maximally to the CW, and only 65% had the CW
+    among statistically equal best whiskers
+  expected:
+  - quantity: NH L2/3 in-column fraction with BW equal to CW
+    value: 48
+    tolerance: 4.8
+    unit: percent
+  - quantity: NH L2/3 in-column fraction with CW among eBWs
+    value: 65
+    tolerance: 6.5
+    unit: percent
+  criterion: Responsive NH L2/3 ROIs over one of the nine barrels, each against its own CW, pooled
+    over fields. The 65% matches 224 of 344 (65.1%) in the Results. The 48% is not given elsewhere;
+    readings are (a) the pooled fraction and (b) the mean over columns of the per-column fraction
+    ("in each column"). Reproduced when both values are within tolerance under one BW, eBW and
+    pooling reading.
+- id: figs3-1-l4-nh-tuning
+  statement: In NH L4, 63% (30/48) of cells within 75 um of a column centre had the CW as BW and 73%
+    (35/48) had it among eBWs, not different from L2/3; but the fraction tuned to a whisker fell off
+    more sharply with distance in L4, significantly at 150-375 um.
+  source: Results, Whisker map topography in L2/3 and L4 in normally housed mice, paragraph 3;
+    Figure 3 figure supplement 1B and 1D
+  quote: 63% of L4 excitatory cells (30/48) had a BW that matched the CW, and 73% (35/48) had the CW
+    among the eBWs. These values are not different from L2/3 (p=0.43 and p=0.67 respectively,
+    Fisher’s Exact Test). However, the fraction of cells tuned to a given whisker fell off ~30% more
+    sharply with distance in L4 than in L2/3, using either tuning measure. This difference was
+    significant at distance bins from 150 to 375 µm from the column center (p<0.05, Fisher’s Exact
+    Test
+  statistics:
+  - about: BW fraction at 0-75 um, L4 against L2/3
+    test: Fisher's exact test
+    p: 0.43
+  - about: eBW fraction at 0-75 um, L4 against L2/3
+    test: Fisher's exact test
+    p: 0.67
+  - about: fraction tuned, L4 against L2/3, bins from 150 to 375 um
+    test: Fisher's exact test
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: NH L4 fraction BW equals CW, 0-75 um
+    value: 63
+    tolerance: 6.3
+    unit: percent
+  - quantity: NH L4 fraction CW among eBWs, 0-75 um
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  depends_on:
+  - figs3-1-l23-salt-and-pepper
+  criterion: As figs3-1-l23-salt-and-pepper for NH L4 ROIs (C1 to C3 per the Methods, all responsive
+    L4 ROIs as a variant). The 0-75 um equality is a claim of absence judged by Fisher's exact test
+    at 0.05, L4 against L2/3, for both measures. Reproduced when both 0-75 um values are within
+    tolerance, neither 0-75 um test is significant, and L4 is lower than L2/3 with p < 0.05
+    (Fisher) in each of the three bins 150-225, 225-300 and 300-375 um for one tuning measure (the
+    Fisher tests are drawn in Figure 3 S1D, the eBW measure); partially reproduced when the values
+    and absence hold but L4 is significantly lower in only some of those bins.
+- id: fig3a-l23-enrichment-more-cw-tuned
+  statement: In L2/3, EN raised the fraction of cells tuned to the CW at column centres (82%, 111/135,
+    against 67% in NH) and in every bin below 300 um, not beyond; over all cells within column
+    boundaries 77.1% (468/607) against 65.1% (224/344).
+  source: Results, Enrichment decreases tuning heterogeneity in the salt-and-pepper map, paragraph 1;
+    Figure 3A
+  quote: In EN mice, 82% (111/135) of cells located 0–75 μm from a column center were tuned to the
+    CW, which is greater than NH mice (67%, p=0.025, Fisher’s Exact Test). This was true for all
+    bins < 300 μm from the column center, but not further away ... 77.1% (468/607) of
+    whisker-responsive cells in EN mice were tuned to the CW, compared to 65.1% (224/344) in NH
+    (p=0.00008
+  statistics:
+  - about: 0-75 um bin
+    test: Fisher's exact test
+    p: 0.025
+  - about: all cells within column boundaries (test not named for this p-value; read as the
+      Fisher's exact test named earlier in the paragraph)
+    test: Fisher's exact test
+    p: 0.00008
+  expected:
+  - quantity: EN L2/3 fraction CW among eBWs, 0-75 um
+    value: 82
+    tolerance: 8.2
+    unit: percent
+  - quantity: NH L2/3 fraction CW among eBWs, 0-75 um
+    value: 67
+    tolerance: 6.7
+    unit: percent
+  - quantity: EN L2/3 fraction CW among eBWs, within columns
+    value: 77.1
+    tolerance: 7.71
+    unit: percent
+  - quantity: NH L2/3 fraction CW among eBWs, within columns
+    value: 65.1
+    tolerance: 6.51
+    unit: percent
+  - quantity: EN L2/3 cells within columns
+    value: 607
+    tolerance: 60.7
+  - quantity: NH L2/3 cells within columns
+    value: 344
+    tolerance: 34.4
+  depends_on:
+  - figs3-1-l23-salt-and-pepper
+  criterion: Tuned means the reference whisker is among the eBWs (Figure 3A legend), eBW readings E1,
+    E2, E3. Per 75 um bin, EN against NH by Fisher's exact test (legend); the code's permutation
+    test on 0/1 indicators is a variant. Within columns, responsive ROIs over one of the nine
+    barrels against their CW. Reproduced when, under one eBW reading, the values are within
+    tolerance, EN is higher with p < 0.05 at 0-75 um and within columns, and EN is higher with p
+    < 0.05 in every bin below 300 um and in no bin from 300 um on; partially reproduced when the
+    0-75 um and within-column tests hold but the bin pattern does not.
+- id: fig3c-l4-enrichment-more-cw-tuned
+  statement: In L4, EN also raised the fraction of CW-tuned cells, at column centres (90%, 57/63,
+    against 73%) and over all cells within columns (89.3%, 133/149, against 75.6%, 65/86).
+  source: Results, Enrichment decreases tuning heterogeneity in the salt-and-pepper map, paragraph 2;
+    Figure 3C
+  quote: In EN mice, 90% (57/63) of cells at column centers (0–75 μm) were tuned to the CW, which is
+    greater than the 73% in NH mice (p=0.021) ... In EN mice, 89.3% (133/149) of all cells within a
+    column boundary were CW-tuned, compared to 75.6% (65/86) in NH mice (p=0.0086
+  statistics:
+  - about: 0-75 um bin
+    test: Fisher's exact test
+    p: 0.021
+  - about: all cells within column boundaries
+    test: Fisher's exact test
+    p: 0.0086
+  expected:
+  - quantity: EN L4 fraction CW among eBWs, 0-75 um
+    value: 90
+    tolerance: 9
+    unit: percent
+  - quantity: NH L4 fraction CW among eBWs, 0-75 um
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  - quantity: EN L4 fraction CW among eBWs, within columns
+    value: 89.3
+    tolerance: 8.93
+    unit: percent
+  - quantity: NH L4 fraction CW among eBWs, within columns
+    value: 75.6
+    tolerance: 7.56
+    unit: percent
+  depends_on:
+  - fig3a-l23-enrichment-more-cw-tuned
+  criterion: As fig3a-l23-enrichment-more-cw-tuned for L4 ROIs. The test is not named in this
+    paragraph; Fisher's exact test is read from the Figure 3 legend ("C-D, As in A and B").
+    Reproduced when the four values are within tolerance and both tests give p < 0.05 with EN
+    higher, under one eBW reading.
+- id: fig4a-l23-ranked-rf-sharper
+  statement: In L2/3, EN increased responses to the strongest three whiskers and decreased responses
+    to the weakest three in rank-ordered receptive fields normalised to spontaneous activity, so
+    receptive fields were sharper.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 1; Figure 4A
+  quote: In L2/3, EN increased responses to the strongest three whiskers, and decreased responses to
+    the weakest three whiskers, relative to NH cells
+  statistics:
+  - test: permutation test, per whisker rank
+    p: 0.05
+    p_relation: "<"
+  criterion: Per responsive L2/3 ROI, the nine z-scored median responses (opening comment) sorted
+    from strongest to weakest, averaged over ROIs; EN against NH per rank by the permutation test of
+    the difference in means (Figure 4A legend; permutationTest.m). ROI readings (A), (B).
+    Reproduced when EN is higher with p < 0.05 at ranks 1 to 3 and lower with p < 0.05 at ranks 7
+    to 9; partially reproduced when the direction holds at all six ranks but some tests do not.
+- id: fig4b-l23-cw-and-best-sw-stronger
+  statement: In L2/3, EN increased the signal-to-noise of the CW response and of the two best
+    surround whisker responses.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 1; Figure 4B
+  quote: EN specifically increased the signal-to-noise of both CW response and the best 2 SW
+    responses
+  statistics:
+  - test: permutation test
+    p: 0.05
+    p_relation: "<"
+  criterion: Responsive L2/3 ROIs over a barrel, z-scored median responses to the CW and to the
+    surround whiskers ranked by strength (Figure 4B legend). EN against NH by the permutation test
+    of the difference in means. Reproduced when EN is higher with p < 0.05 for the CW and for SW
+    ranks 1 and 2.
+- id: fig4c-spontaneous-activity
+  statement: EN decreased spontaneous (blank trial) activity in L2/3, while L4 spontaneous activity
+    was unaffected.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraphs 1 and 3; Figure 4C
+  quote: In addition to these changes in tuning shape, EN also decreased spontaneous (blank trial)
+    activity relative to NH ... spontaneous activity was unaffected
+  statistics:
+  - test: permutation test
+    p: 0.05
+    p_relation: "<"
+  criterion: Spontaneous activity of an ROI is the median dF/F during blank trials (Figure 4C
+    legend), read as the median over blank trials of the evoked-window response (baseline
+    subtracted, as for whisker trials); the median raw evoked-window dF/F without baseline
+    subtraction is a variant. EN against NH by the permutation test of the difference in means
+    (legend), responsive ROIs. Reproduced when L2/3 EN is lower with p < 0.05 and L4 shows no
+    difference at p < 0.05 (absence judged on the same test).
+- id: figs4-1-absolute-dff
+  statement: Without normalisation to spontaneous activity, L2/3 cells in EN had greater mean evoked
+    dF/F than NH, and the regression of weakest-four on strongest-four whisker responses had a
+    different slope in EN, showing sharper tuning.
+  source: Figure 4 figure supplement 1; Results, Enrichment sharpens whisker receptive fields,
+    paragraph 1
+  quote: denotes greater mean response for EN than NH (p=0.0002, permutation test) ... Regression
+    slope was different between NH and EN (p=1.2e-9, t-test for difference in slopes
+  statistics:
+  - about: mean response, EN against NH
+    test: permutation test
+    p: 0.0002
+  - about: regression slope, EN against NH
+    test: t-test for difference in slopes
+    p: 1.2e-9
+  criterion: Per responsive L2/3 ROI, the mean dF/F evoked by its four strongest and by its four
+    weakest whiskers; a linear regression of weakest on strongest in each group, slopes compared by
+    a t-test on the interaction term. Which response the p = 0.0002 compares is open; readings are
+    (a) the mean over the four strongest whiskers (the figure script make_responseDistPlots.m
+    tests bestSWs and worstSWs), (b) the mean over all nine whiskers. Reproduced when, under one
+    reading, EN is higher with p < 0.05, and the EN slope is lower than the NH slope with p < 0.05.
+- id: figs4-2-barrel-vs-septal
+  statement: Sharpening of L2/3 tuning by EN was more prominent for ROIs over L4 barrels than for ROIs
+    over septa.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 1; Figure 4 figure
+    supplement 2A and 2B
+  quote: Sharpening of tuning was more prominent for L2/3 cells located over L4 barrels than for
+    those located over septa
+  depends_on:
+  - fig4a-l23-ranked-rf-sharper
+  criterion: Ranked receptive fields as in fig4a-l23-ranked-rf-sharper, separately for ROIs over a
+    barrel and over septa. The paper gives no measure. Read as more ranks with a significant EN
+    against NH difference (p < 0.05, permutation test) in the barrel group than in the septal
+    group; reproduced when that holds. The septal group is smaller, which alone lowers its count;
+    the absolute EN minus NH differences at ranks 1-3 and 7-9 are reported as well.
+- id: fig4d-l23-cw-stronger
+  statement: In L2/3, CW responses were higher in EN than NH (0.71 against 0.64).
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 2; Figure 4D
+  quote: >-
+    CW responses were higher in EN than NH (NH: 0.64 ± 0.03, EN: 0.71 ± 0.02; p=0.01, permutation
+    test for difference in means)
+  statistics:
+  - test: permutation test for difference in means
+    p: 0.01
+  expected:
+  - quantity: NH L2/3 mean CW response
+    value: 0.64
+    tolerance: 0.03
+  - quantity: EN L2/3 mean CW response
+    value: 0.71
+    tolerance: 0.02
+  criterion: Responsive L2/3 ROIs over a barrel, the z-scored median response to the CW, averaged
+    over ROIs; columns with at least 3 ROIs (Figure 4 legend, stated for E; applying it to D as
+    well is a reading, all columns the other). EN against NH by the permutation test of the
+    difference in means. Reproduced when both values are within tolerance and p < 0.05 with EN
+    higher, under one reading.
+- id: fig4d-l23-across-row-sharpening
+  statement: In L2/3, EN reduced responses to the surround whiskers one row dorsal and one row ventral
+    to the CW (from 68% and 62% of the CW response in NH to 49% and 41% in EN), sharpening receptive
+    fields across rows.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 2; Figure 4D
+  quote: >-
+    In NH, the SW one row dorsal to the CW (within-arc, −1 row) and one row ventral to the CW
+    (within-arc, +one row) were 68% and 62% of the CW response, respectively. EN reduced responses
+    to both these SWs (within-arc, −1 row: NH: 0.44 ± 0.02, EN 0.35 ± 0.02, p=0.001; within-arc,
+    +one row: NH: 0.39 ± 0.02, EN: 0.29 ± 0.01, p=0.0001). As a result, these whiskers evoked only
+    49% and 41% of the CW response
+  statistics:
+  - about: within-arc, -1 row
+    test: permutation test for difference in means
+    p: 0.001
+  - about: within-arc, +1 row
+    test: permutation test for difference in means
+    p: 0.0001
+  expected:
+  - quantity: NH response, within-arc -1 row
+    value: 0.44
+    tolerance: 0.02
+  - quantity: EN response, within-arc -1 row
+    value: 0.35
+    tolerance: 0.02
+  - quantity: NH response, within-arc +1 row
+    value: 0.39
+    tolerance: 0.02
+  - quantity: EN response, within-arc +1 row
+    value: 0.29
+    tolerance: 0.01
+  - quantity: NH -1 row response as fraction of CW
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  - quantity: NH +1 row response as fraction of CW
+    value: 62
+    tolerance: 6.2
+    unit: percent
+  - quantity: EN -1 row response as fraction of CW
+    value: 49
+    tolerance: 4.9
+    unit: percent
+  - quantity: EN +1 row response as fraction of CW
+    value: 41
+    tolerance: 4.1
+    unit: percent
+  depends_on:
+  - fig4d-l23-cw-stronger
+  criterion: As fig4d-l23-cw-stronger, for the whisker in the same arc one row dorsal (-1) or ventral
+    (+1) of the CW, for ROIs whose CW has that neighbour among the nine. Fractions are the group
+    mean SW response over the group mean CW response (the printed values match this, e.g. 0.44 /
+    0.64 = 69%). Reproduced when both tests give p < 0.05 with EN lower and the four response
+    values are within tolerance; partially reproduced when the tests hold but values fall outside.
+- id: fig4d-l23-within-row-broadening
+  statement: In the within-row dimension, EN increased L2/3 responses to the surround whisker one arc
+    rostral of the CW (0.34 to 0.53) and did not alter responses to the one arc caudal (0.57 and
+    0.55), broadening receptive fields along rows.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 2; Figure 4D
+  quote: >-
+    In the within-row dimension, EN increased responses to the SW one arc rostral of the CW
+    (within-row, +one arc: NH: 0.34 ± 0.01, EN: 0.53 ± 0.02, p=0.0001), and did not alter responses
+    to the SW one arc caudal of the CW (within-row, −1 arc: NH: 0.57 ± 0.04, EN 0.55 ± 0.04,
+    p=0.40)
+  statistics:
+  - about: within-row, +1 arc
+    test: permutation test for difference in means
+    p: 0.0001
+  - about: within-row, -1 arc
+    test: permutation test for difference in means
+    p: 0.4
+  expected:
+  - quantity: NH response, within-row +1 arc
+    value: 0.34
+    tolerance: 0.01
+  - quantity: EN response, within-row +1 arc
+    value: 0.53
+    tolerance: 0.02
+  - quantity: NH response, within-row -1 arc
+    value: 0.57
+    tolerance: 0.04
+  - quantity: EN response, within-row -1 arc
+    value: 0.55
+    tolerance: 0.04
+  depends_on:
+  - fig4d-l23-cw-stronger
+  criterion: As fig4d-l23-cw-stronger, for the whisker in the same row one arc rostral (+1, higher arc
+    number) or caudal (-1). The -1 arc part is a claim of absence judged on the same permutation
+    test at 0.05. Reproduced when +1 arc is higher in EN with p < 0.05, -1 arc shows no difference
+    at p < 0.05, and the four values are within tolerance.
+- id: fig4ae-l4-weaker-responses
+  statement: In L4, EN reduced responses to most whiskers in ranked receptive fields and, in
+    somatotopic space, to the CW (0.98 to 0.81) and to the +1 arc (0.54 to 0.17), -1 arc (0.67 to
+    0.33) and +1 row (0.23 to 0.11) surround whiskers, sharpening receptive fields by global
+    weakening.
+  source: Results, Enrichment sharpens whisker receptive fields, paragraph 3; Figure 4A, 4B and 4E
+  quote: >-
+    In L4, EN reduced responses to most whiskers in rank-ordered receptive fields ... CW responses
+    were weaker in EN than NH (NH: 0.98 ± 0.09, EN: 0.81 ± 0.04, p=0.02), as were responses to the
+    within-row, +one arc SW (NH: 0.54 ± 0.08, EN: 0.17 ± 0.02, p=0.0001), the within-row, −1 arc SW
+    (NH: 0.67 ± 0.13, EN 0.33 ± 0.04, p=0.003), and the within-arc, +one row SW (NH: 0.23 ± 0.03,
+    EN 0.11 ± 0.02, p=0.0007)
+  statistics:
+  - about: CW
+    test: permutation test for difference in means
+    p: 0.02
+  - about: within-row, +1 arc
+    test: permutation test for difference in means
+    p: 0.0001
+  - about: within-row, -1 arc
+    test: permutation test for difference in means
+    p: 0.003
+  - about: within-arc, +1 row
+    test: permutation test for difference in means
+    p: 0.0007
+  expected:
+  - quantity: NH L4 CW response
+    value: 0.98
+    tolerance: 0.09
+  - quantity: EN L4 CW response
+    value: 0.81
+    tolerance: 0.04
+  - quantity: NH L4 +1 arc response
+    value: 0.54
+    tolerance: 0.08
+  - quantity: EN L4 +1 arc response
+    value: 0.17
+    tolerance: 0.02
+  - quantity: NH L4 -1 arc response
+    value: 0.67
+    tolerance: 0.13
+  - quantity: EN L4 -1 arc response
+    value: 0.33
+    tolerance: 0.04
+  - quantity: NH L4 +1 row response
+    value: 0.23
+    tolerance: 0.03
+  - quantity: EN L4 +1 row response
+    value: 0.11
+    tolerance: 0.02
+  depends_on:
+  - fig4d-l23-cw-stronger
+  criterion: As fig4d-l23-cw-stronger for L4 ROIs in C1 to C3, columns with at least 3 ROIs (Figure 4E
+    legend). Ranked receptive fields as in fig4a-l23-ranked-rf-sharper; "most whiskers" read as at
+    least five of nine ranks lower in EN with p < 0.05. Reproduced when the four somatotopic tests
+    give p < 0.05 with EN lower, the eight values are within tolerance, and the ranked reading
+    holds; partially reproduced when the four tests hold alone.
+- id: fig5a-l23-signal-correlation-boundary
+  statement: In L2/3, EN modestly raised signal correlation for within-column pairs (0.637 to 0.659)
+    and greatly reduced it for across-column pairs (0.541 to 0.425); in EN, closely spaced pairs
+    (under 150 um) had much lower signal correlation across than within columns (0.529 against
+    0.674), where in NH the difference was modest (0.611 against 0.652).
+  source: Results, Enrichment strengthens functional column boundaries in L2/3, paragraph 1; Figure
+    5A and 5C
+  quote: >-
+    For closely spaced pairs (<150 μm apart) signal correlation was only modestly higher for
+    within-column pairs than across-column pairs (0.652 ± 0.005 vs. 0.611 ± 0.007, p<0.0001,
+    permutation test of difference in means) ... In EN mice, mean signal correlation for
+    within-column pairs was modestly increased (NH: 0.637 ± 0.004, EN: 0.659 ± 0.002; includes
+    pairs at all distances; p<0.0001, permutation test), while signal correlation for across-column
+    pairs was greatly reduced (NH: 0.541 ± 0.004, EN: 0.425 ± 0.004; p<0.0001) ... signal
+    correlation for closely spaced cross-column pairs (<150 μm apart) was much lower than for
+    similarly spaced within-column pairs (0.674 ± 0.003 vs. 0.529 ± 0.006, p<0.0001
+  statistics:
+  - about: NH pairs under 150 um, within against across columns
+    test: permutation test of difference in means
+    p: 0.0001
+    p_relation: "<"
+  - about: within-column pairs, EN against NH
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  - about: across-column pairs, EN against NH
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  - about: EN pairs under 150 um, within against across columns
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: NH within-column signal correlation, pairs under 150 um
+    value: 0.652
+    tolerance: 0.005
+  - quantity: NH across-column signal correlation, pairs under 150 um
+    value: 0.611
+    tolerance: 0.007
+  - quantity: NH within-column signal correlation, all pairs
+    value: 0.637
+    tolerance: 0.004
+  - quantity: EN within-column signal correlation, all pairs
+    value: 0.659
+    tolerance: 0.002
+  - quantity: NH across-column signal correlation, all pairs
+    value: 0.541
+    tolerance: 0.004
+  - quantity: EN across-column signal correlation, all pairs
+    value: 0.425
+    tolerance: 0.004
+  - quantity: EN within-column signal correlation, pairs under 150 um
+    value: 0.674
+    tolerance: 0.003
+  - quantity: EN across-column signal correlation, pairs under 150 um
+    value: 0.529
+    tolerance: 0.006
+  criterion: All pairs of simultaneously imaged responsive L2/3 ROIs that both lie over a barrel
+    (septal ROIs left out); within-column when over the same barrel, across-column otherwise
+    (Methods, Signal and noise correlation analysis). Signal correlation is the Pearson
+    correlation of the two ROIs' nine-element vectors of mean evoked response per whisker, each
+    z-scored. Distance is Euclidean in um between ROI positions (from the positions relative to a
+    common barrel). Tests are permutation tests of the difference in means with pairs as units;
+    the ANOVA with multiple comparisons correction of the Figure 5C legend is a variant.
+    Reproduced when all four tests give p < 0.05 in the stated direction and the eight values are
+    within tolerance; partially reproduced when the four tests hold but some values fall outside.
+- id: fig5b-l23-noise-correlation-boundary
+  statement: In L2/3 of NH mice, noise correlations were similar within (0.334) and across (0.327)
+    columns; EN modestly reduced them within columns (0.307) and greatly reduced them across columns
+    (0.255), even for pairs about 100 um apart.
+  source: Results, Enrichment strengthens functional column boundaries in L2/3, paragraph 2; Figure
+    5B and 5D
+  quote: In NH mice, noise correlations for L2/3 neuron pairs decreased with distance, and were
+    similar within columns (0.334 ± 0.002) and across columns (0.327 ± 0.002). EN modestly reduced
+    noise correlations for within-column pairs (to 0.307 ± 0.001; p<0.0001, permutation test vs.
+    NH), but greatly reduced noise correlations for cross-column pairs (to 0.255 ± 0.001; p<0.0001,
+    permutation test vs. NH
+  statistics:
+  - about: within-column pairs, EN against NH
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  - about: across-column pairs, EN against NH
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: NH within-column noise correlation
+    value: 0.334
+    tolerance: 0.002
+  - quantity: NH across-column noise correlation
+    value: 0.327
+    tolerance: 0.002
+  - quantity: EN within-column noise correlation
+    value: 0.307
+    tolerance: 0.001
+  - quantity: EN across-column noise correlation
+    value: 0.255
+    tolerance: 0.001
+  depends_on:
+  - fig5a-l23-signal-correlation-boundary
+  criterion: Pairs as in fig5a-l23-signal-correlation-boundary. Noise correlation per pair is the
+    mean over the nine whiskers of the Pearson correlation of the two ROIs' per-trial evoked
+    responses to that whisker, each whisker's vector z-scored (Methods). EN against NH by the
+    permutation test of the difference in means; the Figure 5D legend's ANOVA is a variant. The
+    bins of Figure 5B are not given; "pairs 100 um apart" is read as across-column pairs 75 to 125
+    um apart, a standard window. Reproduced when both tests give p < 0.05 with EN lower, the EN
+    reduction across columns is larger than within, EN is lower than NH for across-column pairs
+    75 to 125 um apart (same test, p < 0.05), and the four values are within tolerance; partially
+    reproduced when the two main tests hold but the rest does not. The NH within against across
+    difference is reported; the paper reports no test of it.
+- id: fig5eh-l23-correlation-gradient-at-edge
+  statement: EN substantially reduced the signal and noise correlations of neurons outside a
+    reference column to neurons inside it, while preserving signal correlation and modestly
+    reducing noise correlation within the column, giving a steeper gradient at the column edge.
+  source: Results, Enrichment strengthens functional column boundaries in L2/3, paragraph 3; Figure
+    5E to 5H
+  quote: EN substantially reduced these signal and noise correlations for neurons outside the
+    column, while preserving signal correlation and only modestly reducing noise correlation among
+    neurons within the reference column ( Figure 5E–F ). This generated a stronger gradient of
+    signal- and noise-correlation in L2/3 at the reference column edge
+  depends_on:
+  - fig5a-l23-signal-correlation-boundary
+  - fig5b-l23-noise-correlation-boundary
+  criterion: For each responsive L2/3 ROI over a barrel and each reference column, its mean signal
+    (and noise) correlation to the other ROIs in that column (Figure 5E legend), against its
+    distance from the column centre. The legend gives no bins for G-H; 75 um bins as in Figure 2A, a
+    plotting choice. The paper reports no test for these panels; the permutation test of the
+    difference in means used for Figure 5A-B is applied. Reproduced when, for both correlations,
+    EN is lower than NH over ROIs outside the reference column with p < 0.05 and the EN minus NH
+    difference is more negative outside than inside, and inside the column the signal
+    correlation is not lower in EN at p < 0.05.
+- id: figs5-1-row-and-arc-boundaries
+  statement: The reduction of signal and noise correlations across column boundaries appeared for
+    both within-row and within-arc column boundaries.
+  source: Results, Enrichment strengthens functional column boundaries in L2/3, paragraph 2; Figure
+    5 figure supplement 1
+  quote: The reduction of signal and noise correlations across column boundaries was apparent across
+    both within-row and within-arc column boundaries
+  depends_on:
+  - fig5b-l23-noise-correlation-boundary
+  criterion: Across-column pairs split into pairs whose barrels share a row and pairs whose barrels
+    share an arc (Figure 5 S1 legend). The paper reports no test for this figure; the permutation
+    test of the difference in means of the main text is applied. Reproduced when, in both groups,
+    EN mean signal and noise correlations are lower than NH at p < 0.05.
+- id: fig6-l4-within-column-correlations
+  statement: In L4, EN increased both signal (0.681 to 0.774) and noise (0.241 to 0.356) correlations
+    between co-columnar neurons.
+  source: Results, Enrichment strengthens functional column boundaries in L2/3, paragraph 4; Figure 6
+  quote: >-
+    This was true for both signal correlations (NH: 0.681 ± 0.011; EN: 0.774 ± 0.005; p<0.0001) and
+    noise correlations (NH: 0.241 ± 0.006; EN: 0.356 ± 0.002; p<0.0001)
+  statistics:
+  - about: signal correlation
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  - about: noise correlation
+    test: permutation test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: NH L4 within-column signal correlation
+    value: 0.681
+    tolerance: 0.011
+  - quantity: EN L4 within-column signal correlation
+    value: 0.774
+    tolerance: 0.005
+  - quantity: NH L4 within-column noise correlation
+    value: 0.241
+    tolerance: 0.006
+  - quantity: EN L4 within-column noise correlation
+    value: 0.356
+    tolerance: 0.002
+  depends_on:
+  - fig5b-l23-noise-correlation-boundary
+  criterion: As the L2/3 correlation claims, for responsive L4 ROIs in the same barrel. The test is
+    not named in this paragraph and is read as the permutation test of the preceding paragraphs.
+    Readings (A) responsive ROIs in any barrel, (B) only in C1 to C3 (Methods). Reproduced when
+    both tests give p < 0.05 with EN higher and the four values are within tolerance under one
+    reading; partially reproduced when the tests hold but some values fall outside.
+- id: figs5-2-neuropil-robustness
+  statement: The enrichment effects on tuning heterogeneity and point representation were
+    qualitatively unchanged with neuropil subtraction at r = 0, 0.3 and 0.7 in L2/3 and L4; effects
+    on signal correlations held at r = 0 and 0.3 but were lost at 0.7, and effects on noise
+    correlations held at all levels.
+  source: Results, Robustness to neuropil contamination, paragraph 1; Figure 5 figure supplement 2
+  quote: Enrichment effects on tuning heterogeneity ( Figure 3 ) and point representation ( Figure 5
+    ) were qualitatively unchanged across these levels of neuropil subtraction in both L2/3 and L4
+    ... Effects of enrichment on signal correlations were conserved for r = 0 and r = 0.3, but were
+    lost for r = 0.7 ... Effects of enrichment on noise correlations persisted across all neuropil
+    subtraction levels
+  depends_on:
+  - fig2a-l23-point-representation-stronger
+  - fig2c-l4-point-representation-weaker
+  - fig3a-l23-enrichment-more-cw-tuned
+  - fig3c-l4-enrichment-more-cw-tuned
+  - fig5a-l23-signal-correlation-boundary
+  - fig5b-l23-noise-correlation-boundary
+  criterion: Raw ROI fluorescence minus r times the neuropil-mask fluorescence before dF/F (Figure 5
+    S2 legend; npSubtract_preDF.m), at r = 0, 0.3, 0.7, then the whole pipeline including the
+    responsiveness test. ("Figure 5" in the quote is read as Figure 2, the point representation.)
+    Qualitatively unchanged is read as the same direction of the EN against NH difference at 0-75
+    um for the fraction CW-tuned (L2/3 and L4) and the mean response (L2/3 higher, L4 lower). For
+    correlations, EN against NH within and across columns by the test the Figure 5 S2 legend names,
+    an ANOVA with multiple comparisons correction, at p < 0.05. Its design is not given; it is read
+    as a one-way ANOVA over the four groups (NH and EN, in-col and x-col) with Tukey-Kramer
+    comparisons (a standard choice, the default of MATLAB multcompare), and the permutation test of the main text is a variant. "Lost" is read as the
+    across-column EN against NH signal correlation difference not significant.
+    Reproduced when the four directions hold at all three weights, the across-column signal
+    correlation reduction is significant at r = 0 and 0.3 and not at 0.7, and both noise
+    correlation reductions are significant at all three; partially reproduced when all but the r =
+    0.7 signal correlation pattern hold.
+- id: fig7b-single-roi-decoder
+  statement: Single-ROI decoders detected CW deflection against blank above chance, slightly better
+    for EN cells than NH cells (fraction correct 0.65 against 0.63).
+  source: Results, Enrichment improves population coding of columnar whisker deflections, paragraph
+    1; Figure 7B
+  quote: Single-ROI decoders performed above chance, with slightly better performance by EN cells
+    than NH cells (fraction correct for NH ... 0.63 ± 0.005, for EN ... 0.65 ± 0.004, p=0.004,
+    permutation test for difference in means
+  statistics:
+  - test: permutation test for difference in means
+    p: 0.004
+  expected:
+  - quantity: NH single-ROI fraction correct
+    value: 0.63
+    tolerance: 0.005
+  - quantity: EN single-ROI fraction correct
+    value: 0.65
+    tolerance: 0.004
+  criterion: Responsive L2/3 ROIs of Drd3-Cre mice; for each, a logistic regression of stimulus
+    against blank on the single-trial evoked response (the 1 s window, Results), fit on 80% of the
+    CW and blank trials and tested on the other 20%, 500 repetitions, fraction correct averaged
+    (Methods, Neural decoder). Predicted class is the more probable of stimulus and blank. Open,
+    and named as readings, (i) the splits, as (a) 500 random 80/20 splits or (b) 5-fold
+    cross-validation repeated 100 times (the Methods say both "K-fold" and "repeated 500 times");
+    (ii) class balance, as (a) all trials of both classes or (b) blank trials subsampled to the
+    number of CW trials; (iii) the ROIs, as (a) those over a barrel, tested on its CW, or (b) all
+    responsive ROIs, tested on the whisker of the nearest column centre. Reproduced when, under
+    one combination, EN is higher with p < 0.05 by the permutation test, both means exceed 0.5, and
+    both values are within tolerance; partially reproduced when the test holds but values do not.
+    The tolerances are the SEMs and tight; every combination's values are shown.
+- id: fig7c-population-decoder
+  statement: Detection by population decoders of randomly chosen, simultaneously imaged ROIs improved
+    with ensemble size and was better for EN than NH for ensembles of 3 or more neurons.
+  source: Results, Enrichment improves population coding of columnar whisker deflections, paragraph
+    1; Figure 7C
+  quote: Detection performance increased with population size, and was greater for EN than NH for
+    populations containing ≥3 neurons (p<0.001; permutation test of difference in means
+  statistics:
+  - test: permutation test of difference in means
+    p: 0.001
+    p_relation: "<"
+  depends_on:
+  - fig7b-single-roi-decoder
+  criterion: Ensembles of 1, 2, 3, 5, 10, 15, 20, 25 and 30 responsive ROIs from one field, the lesser
+    of 500 or N-choose-K random ensembles per field and size; each ROI classifier's output
+    normalised so units weigh equally, class probabilities summed over the ensemble and the larger
+    class chosen (Methods). Tested whisker, open, (a) the whisker of the column closest to the
+    ensemble centroid (Figure 7C legend), (b) performance averaged over the CWs of the ensemble's
+    columns (Results). Normalisation, open, (a) each ROI's probabilities used as they are (they sum
+    to one per trial), (b) each ROI's probability z-scored over test trials. Unit of the
+    permutation test, open, (a) ensembles pooled, (b) per-field means. Reproduced when, under one
+    combination, mean performance rises with size and EN exceeds NH with p < 0.001 at every size
+    from 3 on; partially reproduced when p < 0.05 at every such size.
+- id: fig7d-clustered-ensemble-topography
+  statement: Spatially clustered ensembles detected the reference whisker best near its column
+    centre; EN decoders outperformed NH decoders for ensembles centred 0-77 and 77-154 um from the
+    column centre, and EN performed worse than NH farther away (e.g. 308-385 um).
+  source: Results, Enrichment improves population coding of columnar whisker deflections, paragraph
+    2; Figure 7D
+  quote: Mean detection performance (on average across the population sizes) was greatest for
+    ensembles centered near the whisker column center, and fell off with distance. EN decoders
+    outperformed NH decoders for ensembles centered at 0-77 µm and 77-154 µm from a column center
+    ... This effect disappeared and even reversed for more distant ensembles, where EN performed
+    worse than NH (e.g., 308-385 µm bin
+  statistics:
+  - about: EN against NH, 0-77 and 77-154 um bins
+    test: 2-way ANOVA
+    p: 2.0e-6
+  - about: EN against NH, 308-385 um bin
+    test: 2-way ANOVA
+    p: 2.0e-6
+  depends_on:
+  - fig7b-single-roi-decoder
+  criterion: Ensembles from k-means clustering of responsive ROI positions in each field, relative
+    to each reference whisker, for every k from 2 to the number of responsive ROIs (Methods),
+    sizes 2 to 42; each tested on detecting the reference whisker against blank as in
+    fig7c-population-decoder; ensembles binned by the distance of their centroid to the reference
+    column centre in 77 um bins (the bins the Results name). The factors of the 2-way ANOVA are
+    not given; readings (a) enrichment and ensemble size within each distance bin, (b) enrichment
+    and distance bin with per-bin comparisons. Reproduced when, under one reading, performance
+    is highest in the 0-77 um bin, EN exceeds NH with p < 0.05 in the 0-77 and 77-154 um bins, and
+    NH exceeds EN with p < 0.05 in the 308-385 um bin; partially reproduced when the near bins hold
+    but not the reversal.
+checks:
+- date: 2026-11-08
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4c-spontaneous-activity, fig4d-l23-cw-stronger, fig4d-l23-across-row-sharpening, fig4d-l23-within-row-broadening, fig4ae-l4-weaker-responses, source paragraph numbers corrected (the section has three Results paragraphs; Figure 4D is paragraph 2 and L4 is paragraph 3).
+  - figs2-1-column-frame, statement and quote now include the reduced bias toward higher-arc columns, which the same sentence reports; the criterion names a reading for it and says the paper reports no test for this figure, so the home-column test is borrowed from Figure 2A.
+  - figs3-1-l23-salt-and-pepper, the 1% value had tolerance 0.1 while the criterion accepted 2 to 10 cells; tolerance set to one percentage point and the criterion made to match.
+  - figs3-1-l4-nh-tuning, the paper says the L4 against L2/3 difference was significant at the bins from 150 to 375 um, so full reproduction now needs all three bins, not two of three.
+  - fig3a-l23-enrichment-more-cw-tuned, the statistics entry for p = 0.00008 now says the test is not named for that value and is read as Fisher's exact test.
+  - fig5a-l23-signal-correlation-boundary, fig6-l4-within-column-correlations, removed the rule that let some values fall outside tolerance and still count as reproduced (six of eight, three of four), which has no basis in the paper; those cases are now partial, as in the other claims.
+  - fig5b-l23-noise-correlation-boundary, same tolerance change; the criterion now tests the statement's "pairs 100 um apart" with a named window, since Figure 5B gives no bins.
+  - fig5a and fig5b, the ANOVA with multiple comparisons correction of the Figure 5C-D legend named as a variant.
+  - fig5eh-l23-correlation-gradient-at-edge, criterion rewritten. The old text was garbled, and it did not test the statement's preserved within-column signal correlation. It now says the paper reports no test for these panels.
+  - figs5-1-row-and-arc-boundaries, criterion now says the paper reports no test for this figure.
+  - figs5-2-neuropil-robustness, correlation effects are now judged by the test the Figure 5 S2 legend names (ANOVA with multiple comparisons correction), with its unstated design given as a reading and the permutation test as a variant; "lost" given a reading.
+  - Open, fig7d-clustered-ensemble-topography, the text prints "p= 2 * 10 - 6", a flattened 2 x 10^-6, so the checker cannot match it; the recorded 2.0e-6 is that value. The ANOVA factors stay open as named.
+  - Open, figs2-2-barrel-size-unchanged, the printed p = 0.01 for Scnn1a-Cre conflicts with the text and legend; the claim follows the legend, as already stated.
+  - Open, the eBW test (E1 to E3), septal ROI inclusion (A, B), sharpness measures, and decoder splits are not fixed by the paper or the code read; the criteria rely on the named readings.
+  - Open, the code repository and commit in the header were not re-read in this check.
+  - Not claimed, minor L4 findings in Results, Enrichment sharpens whisker receptive fields, paragraph 3 (best SW reduced more than CW; mean receptive field sharper in L4 than L2/3 in both groups). They are shown only in Figure 4A-B with no numbers, and the main findings all have claims.

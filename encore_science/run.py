@@ -32,11 +32,13 @@ REPO_URL = "https://github.com/catalystneuro/encore.git"
 TOOLS = "Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite"
 NOT_TOOLS = "ScheduleWakeup,CronCreate,CronDelete,CronList,Monitor,RemoteTrigger,Workflow"
 QUICK = ("claims", "claims-check", "author")
+# answer and author-answers run only when the author asked a reader about a suspected misreading of the claims file.
 FULL = QUICK + ("answer", "author-answers", "verifier-1", "author-revise-1", "verifier-2", "author-revise-2",
                 "verifier-3", "author-revise-3")
-# The hosts an agent's commands may reach: the archives, Python packages, and the paper's DOI.
-NETWORK = ["dandiarchive.org", "*.dandiarchive.org", "*.amazonaws.com", "crcns.org", "*.ebrains.eu",
-           "pypi.org", "files.pythonhosted.org", "github.com", "*.githubusercontent.com", "doi.org", "*.doi.org"]
+# The hosts an agent's commands may reach: Python packages and the paper's DOI, and each archive's own hosts, which
+# its adapter in the registry's tools/archives/ gives (ARCHIVE_HOSTS for a copy of the registry from before them).
+NETWORK = ["pypi.org", "files.pythonhosted.org", "github.com", "*.githubusercontent.com", "doi.org", "*.doi.org"]
+ARCHIVE_HOSTS = ["dandiarchive.org", "*.dandiarchive.org", "*.amazonaws.com", "crcns.org", "*.ebrains.eu"]
 DOI = re.compile(r"\b(10\.[0-9]{4,9}/[^\s\"<>]+)")
 # The one finished attempt the prompts point to for file formats. Every other dataset's work is taken out of a
 # run's copy of the registry, so that no agent can read another attempt on the same paper or data.
@@ -49,7 +51,7 @@ class Stop(Exception):
 
 @dataclass
 class Dataset:
-    archive: str        # local, remote, or an archive the registry knows (dandi, crcns, ebrains)
+    archive: str        # local, remote, or an archive the registry knows (dandi, crcns, ebrains, dryad, figshare, openneuro)
     id: str
     location: str       # the directory or URL; for an archive, its key
     fingerprint: str    # stands in for a version; "" for an archive
@@ -203,6 +205,7 @@ class Run:
                     shutil.rmtree(path) if path.is_dir() else path.unlink()
         # The notes on earlier attempts, and the README's table of their outcomes, go too.
         stub = "Left out of an `encore check`: this page describes other attempts.\n"
+        shutil.rmtree(self.registry / "docs" / "pilot-notes", ignore_errors=True)
         for name in ("docs/pilot-notes.md", "docs/conversion-tracker.md"):
             if (self.registry / name).is_file():
                 (self.registry / name).write_text(stub)
@@ -229,7 +232,7 @@ class Run:
 
     def settings(self, cwd: Path) -> str:
         """Claude Code settings for a role: the sandbox, writable only inside the run's directory."""
-        network = list(NETWORK)
+        network = NETWORK + self.archive_hosts()
         if self.dataset.archive == "remote":
             network.append(re.sub(r"^[a-z0-9+.-]+://([^/:]+).*$", r"\1", self.dataset.location))
         caches = [str(Path.home() / p) for p in (".cache", "Library/Caches", ".local/share/jupyter", "Library/Jupyter")]
@@ -237,6 +240,21 @@ class Run:
             "enabled": self.sandbox, "autoAllowBashIfSandboxed": True, "allowUnsandboxedCommands": False,
             "filesystem": {"allowWrite": [str(self.out), str(cwd), "/tmp", os.environ.get("TMPDIR", "/tmp"), *caches]},
             "network": {"allowedDomains": network}}})
+
+    def archive_hosts(self) -> list[str]:
+        tools = self.registry / "tools"
+        if not (tools / "archives").is_dir():
+            return list(ARCHIVE_HOSTS)
+        out = subprocess.run([sys.executable, "-c", "from archives import ALL; "
+                              "print(*sorted({h for a in ALL.values() for h in a.hosts}), sep='\\n')"],
+                             cwd=tools, check=True, capture_output=True, text=True).stdout
+        return out.split()
+
+    def stage(self) -> None:
+        """Put the dataset's files in place, for an archive whose files need credentials (tools/stage_files.py).
+        The credentials come from this process's environment and never reach the agents' commands."""
+        if (self.registry / "tools" / "stage_files.py").is_file():
+            subprocess.run([sys.executable, "tools/stage_files.py", self.dataset.folder], cwd=self.registry, check=True)
 
     def prompt(self, role: str) -> str:
         args = [sys.executable, "tools/agent_run.py", "prompt", role, self.dataset.folder, "--model", self.model]
@@ -290,6 +308,8 @@ class Run:
         if done.get("status") == "success":
             return
         say(f"\n{role}: starting")
+        if role not in ("claims", "claims-check", "answer"):   # the readers need the paper alone
+            self.stage()
         cwd = self.registry
         if role.startswith("verifier"):
             cwd = self.verifier_package(role)
@@ -334,7 +354,8 @@ class Run:
 
     def claims_ready(self) -> bool:
         import yaml
-        files = sorted((self.registry / "claims" / self.dataset.folder).glob("*.yaml"))
+        from .report import files_in
+        files = files_in(self.registry / "claims" / self.dataset.folder, "*.yaml")
         if not files:
             return False
         checks = (yaml.safe_load(files[0].read_text()) or {}).get("checks") or [{}]
