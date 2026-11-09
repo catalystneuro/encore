@@ -116,7 +116,11 @@ def resolve(name: str) -> str:
         key = None
     if key and any(t["key"] == key for t in datasets.targets()):
         doi = matched_doi(name)
-        paper = key_of_doi(doi) or datasets.folder(key)
+        # Under the paper's key unless the paper is already listed with other datasets: then under the dataset's
+        # folder name, so that this run uses only the dataset it was asked for.
+        paper = key_of_doi(doi)
+        if paper is None or paper in listed():
+            paper = datasets.folder(key)
         archive, id_ = datasets.split_key(key)
         listed().setdefault(paper, {"paper": f"doi:{doi}", "datasets": [
             {"archive": archive, "id": id_, "relation": "primary", "key": key, "folder": datasets.folder(key)}]})
