@@ -1,0 +1,66 @@
+# Yu, Gutnisky, Hires & Svoboda (2016) from dandiset 000005
+
+Tests the claims of [Yu et al. (2016)](https://doi.org/10.1038/nn.4412), written by a reader from
+the full text and its supplement, on [DANDI:000005](https://dandiarchive.org/dandiset/000005/0.220126.1853)
+version 0.220126.1853, the only published version: 18 silicon probe sessions in VPM (29 units) and
+130 single L4 cells recorded whole-cell or cell-attached, during pole localization with whisker
+tracking. The current record is [`attempts/yu-2016-02.yaml`](../../attempts/yu-2016-02.yaml);
+it replaces [`attempts/yu-2016-01.yaml`](../../attempts/yu-2016-01.yaml), whose claims
+were written from the abstract.
+
+| Claim | Outcome |
+|---|---|
+| `behavior-touches` | Partially reproduced |
+| `vpm-touch` | Not reproduced |
+| `vpm-whisking` | Partially reproduced |
+| `vpm-whisking-phase` | Reproduced |
+| `exc-vm-touch-whisking` | Partially reproduced |
+| `exc-threshold-touch-vs-whisking` | Partially reproduced |
+| `exc-effective-reversal` | Reproduced |
+| `exc-inhibition-timing`, `exc-inhibition-whisking` | Blocked: data missing |
+| `fs-touch-response` | Blocked: methods underspecified |
+| `fs-vm-touch-whisking` | Not reproduced |
+| `fs-whisking-rate` | Partially reproduced |
+| `fs-whisking-phase` | Reproduced |
+| `fs-touch-and-whisking` | Reproduced |
+| `exc-mainly-touch` | Not reproduced |
+| `vpm-photoinhibition` | Blocked: data missing |
+| `exc-thalamus-photoinhibition` | Partially reproduced |
+| `thalamus-drives-fs` | Blocked: too few cells |
+| `rabies-vpm-input` | Blocked: data missing |
+| the seven ION-cut claims | Blocked: metadata insufficient |
+| `pv-enphr-suppression` | Partially reproduced |
+| `fs-suppress-movement-spiking` | Partially reproduced |
+| `fs-enhance-touch-selectivity` | Partially reproduced |
+| `exc-touch-spikes-enphr` | Not reproduced |
+| `auc-weak-strong` | Not reproduced |
+| `auc-groups` | Not reproduced |
+| `behavior-false-alarms` | Reproduced |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The files give no cell type for the L4 neurons and do not mark the mice whose infraorbital nerve was
+cut. Cell classes are built by the claims file's rules (light tag, the waveform boundary of
+Supplementary Fig. 6, PV inactivation, spike width), and every group holds the cells of all mice; a
+variant leaves out four VGAT-ChR2 mice flagged as lacking touch input or performing below 0.5 correct. Open method details were asked in
+[`questions/000005.yaml`](../../questions/000005.yaml) and answered by a reader on 2026-10-20; the
+claims they bear on were re-run under the updated criteria, which moved `behavior-false-alarms`
+from blocked to reproduced and left the other outcomes as they were.
+
+After the first verification round the tag test counts every pulse of the 5 and 10 Hz trains, every
+claim on whisking epochs or onsets runs the touch and onset readings O10 and O11, and the data check
+shows spike detection quality, tagging coverage, the injected current of every file, the pole times
+and the ION-cut candidates. Three outcomes changed: `fs-touch-response` is blocked because its FS
+readings disagree; `auc-weak-strong` is not reproduced because its reading (b) matches under only 8
+of 20 random seeds (reading (a) under 19), and `auc-groups` because neither of its readings matches
+under most of them. The second verification round agreed with every outcome; the revision after it
+corrected the text and changed no outcome.
+
+- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took about 10 minutes from a clean environment,
+  most of it streaming the files.
+- `yu2016.py`: loading the files with range requests and reducing them as they load (spikes, the
+  whisking epochs of the principal whisker under both filter readings and under each whisking-onset
+  and touch reading (O10, O11), touches, licks, light epochs and tag pulses,
+  spike-removed membrane potential and event-aligned averages), and the paper's measures as
+  the claims file gives them. Other notebooks on this dandiset can import it.
