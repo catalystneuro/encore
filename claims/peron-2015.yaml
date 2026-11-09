@@ -24,7 +24,7 @@
 # (1) Volume imaging, 8 mice (an171923, an194181, an194672, an197522, an198503, an229716, an229717,
 #     an229719): six Emx1-Cre x Rosa26-LSL-H2B-mCherry (red nuclei in excitatory neurons), one
 #     Gad2-T2A-NLS-mCherry (an194181, red nuclei in GABAergic neurons), one C57BL/6 without a red
-#     marker (an171923). Spared whiskers C2, D2, D2, D2, C3, C2, D3, D2 in that order (Table S1). Each
+#     marker (an171923). Spared whiskers C2, D2, C2, D2, C3, C2, D3, D2 in that order (Table S1). Each
 #     mouse has two volumes of eight subvolumes; a subvolume is three planes 15 um apart (600 x 600 um,
 #     512 x 512 pixels) imaged at 7 Hz, each subvolume over 4.0 sessions on average (range 1 to 8),
 #     data pooled across sessions. L1 to L3 over 360 um of depth. Core counts are 82,732 L2/3
@@ -61,7 +61,8 @@
 #    event in each trial-aligned time bin; events shuffled in time 10,000 times; task related when the
 #    real peak exceeds the 95th percentile of shuffled peaks for at least one trial type (Model-Free
 #    Analysis, paragraph 1). Open: the bin width (readings are one imaging frame at 7 Hz, and the
-#    frame rate of the subvolume as acquired, the same thing for volume data) and the shuffle scope
+#    frame rate of the subvolume as acquired, which are one choice, so it is a standard choice
+#    whose effect on the counts is not known) and the shuffle scope
 #    (readings are events shuffled within each trial, and across the whole session).
 # M4 Trial-type discrimination. Per neuron, ROC on the decision variable "dot product of the trial's
 #    PSTH with the mean respond-left PSTH minus that with the mean respond-right PSTH", PSTH from the
@@ -105,6 +106,8 @@
 # 7 Hz", the Results three planes per subvolume; the fourth is the fly-back frame, discarded.
 # The Summary gives "300 layer (L) 2/3 pyramidal neurons (17%)" per column for each of touch and
 # whisking; the Discussion gives 12% touch, 12% whisking and 5% both in the principal column.
+# The core counts (82,732 + 777 + 3,806 + 2,469 = 89,784 ROIs) fall short of the Table S1 total
+# for the eight volume-imaging mice (108,374); the paper does not say what the other ROIs are.
 schema_version: 2
 paper: doi:10.1016/j.neuron.2015.03.027
 claims:
@@ -123,7 +126,10 @@ claims:
   criterion: Per mouse, the number of somatic and apical dendrite ROIs in the volume-imaging data
     (not the L4 axon or anesthetized mice) and the spared whisker. Reproduced when every mouse's count
     is within 10% of its Table S1 value and the spared whiskers match; partially reproduced when at
-    least six mice match. The total is shown with them.
+    least six mice match. The total is shown with them. The Table S1 total exceeds the core counts of
+    fig2-core-counts by 18,590 and the paper does not say why; readings of the count are all somatic
+    and dendritic ROIs of the mouse, and the same with the neurons imaged during learning (Table S1
+    parentheses) added for the four learning mice.
 - id: fig2-core-counts
   statement: The core data set comprises 82,732 excitatory L2/3 neurons, 777 L1 neurons and 3,806
     L2/3 GABAergic neurons from 8 mice, and 2,469 L5 apical dendrites imaged in deep L3.
@@ -340,7 +346,9 @@ claims:
     bias toward the sample epoch during which the animal interacted with the stimulus. In the principal
     barrel column, activity in the sample epoch was substantially elevated relative to surround
     columns for all excitatory neuron classes examined
-  criterion: For task-related ROIs (M3), the peak time of the trial-averaged activity (Figure 4C, 4D);
+  criterion: For task-related ROIs (M3), the peak time of the trial-averaged activity (Figure 4C, 4D),
+    principal-column ROIs for the L2/3 bias as in Figure 4C ("Only ROIs from the principal column were
+    employed, unless noted");
     the fraction of peaks per unit time in the sample epoch against the rest of the trial up to 2 s
     after the reward cue. Reproduced when, for L2/3 excitatory neurons, the density of peaks in the
     sample epoch is the highest of the epochs (pre-trial, sample, delay, response), and, for L2/3 and
@@ -383,8 +391,11 @@ claims:
     value: 56.1
     tolerance: 31.4
     unit: percent
-  criterion: Discriminative as M4. Whether the L5, GABAergic and neuropil fractions are of the principal
-    column only is not said; readings are principal column, and all columns. Reproduced when, under one
+  criterion: Discriminative as M4. The sentence does not say whether the L5, GABAergic and neuropil
+    fractions are of the principal column; the text of Figure 3C prints, for the principal-column
+    populations (n = 426 L5, n = 501 L2/3 GABAergic, n = 13,308 neuropil), 17%, 21% and 56%, and for
+    the surround populations 11%, 13% and 23%, so the principal column is the reading; all columns is
+    shown as a variant. Reproduced when, under one
     reading of M4 and M7, all four fractions are within tolerance and the L2/3 excitatory fraction is
     the lowest of the four.
 - id: fig3d-principal-touch-whisking-equal
@@ -419,8 +430,7 @@ claims:
   quote: In surround columns, whisking representation dominated (15.0% ± 3.9% whisking versus 8.9% ± 2.0%
     touch; p = 0.008
   statistics:
-  - test: Wilcoxon signed rank test
-    p: 0.008
+  - p: 0.008
     n: 8 mice
   expected:
   - quantity: whisking fraction, L2/3 excitatory, surround columns
@@ -449,9 +459,13 @@ claims:
   expected:
     quantity: fraction of L2/3 excitatory neurons encoding touch or whisking
     value: 25
-    tolerance: 2.5
+    tolerance: 5
     unit: percent
-  criterion: Classes as M5. "About a quarter" is read as 25% with the 10% tolerance. Reproduced when,
+  criterion: Classes as M5. "About a quarter" is read as 25%; the tolerance is 5 points, not 10% of
+    the value, because the paper gives an approximate fraction and the Figure 3D text (L2/3
+    excitatory, 21% of 69,424 surround and 29% of 13,308 principal-column neurons in any class)
+    pools to 22%, outside a 10% band. Whether the neuropil statement is about the principal column or
+    all columns is not said (Figure 3D shows both); readings are both. Reproduced when,
     under one reading of M5 and M7, the L2/3 excitatory fraction encoding either is within tolerance and
     lower than that of L1, L2/3 GABAergic and L5 neurons; whisking exceeds touch in L2/3 GABAergic and
     L5 neurons; and in neuropil ROIs touch exceeds whisking and more than half encode whisking.
@@ -475,8 +489,8 @@ claims:
     value: 5
     tolerance: 0.5
     unit: percent
-  criterion: Classes as M5. Readings are fractions pooled over the 8 mice (Figure 3D, n = 14,165 principal
-    column neurons per the figure text), and means of per-mouse fractions. "Touch" and "whisking" are
+  criterion: Classes as M5. Readings are fractions pooled over the 8 mice (Figure 3D, n = 13,308 principal
+    column L2/3 excitatory neurons per the figure text, which prints 12%, 5% and 12%), and means of per-mouse fractions. "Touch" and "whisking" are
     read as exclusive of "both", as 12 + 5 = 17 matches the Results. Reproduced when, under one reading,
     all three are within tolerance; partially reproduced when two are.
   depends_on:
@@ -522,11 +536,9 @@ claims:
     whisking fraction
   statistics:
   - about: first two against final two days
-    test: Wilcoxon rank-sum test
     p: 0.01
     n: 4 mice, 2 days per mouse
   - about: middle two against final two days
-    test: Wilcoxon rank-sum test
     p: 0.798
     n: 4 mice, 2 days per mouse
   expected:
@@ -539,7 +551,8 @@ claims:
   - quantity: whisking fraction, final two days
     value: 0.19
     tolerance: 0.05
-  criterion: As fig6b-touch-fraction-stable. Reproduced when the three means are within tolerance, the
+  criterion: As fig6b-touch-fraction-stable; the test is not named in the sentence and is read as the
+    Wilcoxon rank-sum test of the preceding sentence. Reproduced when the three means are within tolerance, the
     first-against-final test gives p < 0.05 with the final fraction higher, and the middle-against-final
     test gives p >= 0.05. Partially reproduced when the tests hold and a mean is out of tolerance.
   depends_on:
@@ -633,7 +646,8 @@ claims:
     value: 66
     tolerance: 7
     unit: percent
-  criterion: Percent correct over trials with a response, per session, for the 4 learning mice; the first
+  criterion: Percent correct per session, for the 4 learning mice; the denominator is not given
+    (readings are trials with a response, and all trials); the first
     training day is excluded (Figure 6D legend). Readings for "first two days" are training days 2 and 3
     (first with the full task), and days 1 and 2 of imaging. Reproduced when both means are within
     tolerance under one reading.
@@ -700,7 +714,6 @@ claims:
     p: 0.008
     n: 8 mice
   - about: L1, principal against surround touch fraction
-    test: Wilcoxon signed rank test
     p: 0.031
   expected:
     quantity: ratio of surround to principal touch fraction, L2/3 excitatory
@@ -710,7 +723,8 @@ claims:
     signed-rank test over mice. The ratio readings are the ratio of means over mice (8.9 / 16.8 = 0.53
     in the Results) and the mean of per-mouse ratios. Reproduced when both tests give p < 0.05 with the
     principal fraction higher and the ratio is within tolerance under one reading; partially reproduced
-    when the L2/3 test holds and the L1 test or the ratio does not.
+    when the L2/3 test holds and the L1 test or the ratio does not. The L1 test is not named; it is
+    read as the signed-rank test of the preceding sentence.
   depends_on:
   - fig3d-principal-touch-whisking-equal
   - fig3d-surround-whisking-dominates
@@ -722,10 +736,8 @@ claims:
     in the center and surround columns
   statistics:
   - about: L5
-    test: Wilcoxon signed rank test
     p: 0.383
   - about: L2/3 GABAergic
-    test: Wilcoxon signed rank test
     p: 0.578
   criterion: A claim of absence, judged on the paper's test, the Wilcoxon signed rank test over mice of
     principal against surround touch fractions (as for L2/3 in the same paragraph), at p < 0.05.
@@ -751,8 +763,8 @@ claims:
     category (touch, whisking, and mixed) to the pairwise distance distribution among all neurons
   criterion: Per mouse and category (touch, whisking, mixed), within and outside the principal column,
     the distribution of pairwise 3D distances among L2/3 excitatory neurons of the category against
-    1,000 random draws of the same number of neurons from all neurons in the same region (Figure S6
-    legend), with a 2.5 to 97.5 percentile envelope. A claim of absence; the paper names no further
+    1,000 random draws of the same number of neurons (Figure S6 legend; "from the entire population",
+    read as all neurons of the same region, and as all neurons of the mouse), with a 2.5 to 97.5 percentile envelope. A claim of absence; the paper names no further
     test, so the claim is reproduced when, for each mouse and category, the category's histogram (10 um
     bins, a standard choice) leaves the envelope in no more than 5% of bins over the range below 300 um,
     and not reproduced when it leaves it in a run of three or more bins below 50 um in most mice (the
@@ -764,8 +776,9 @@ claims:
   quote: The neuropil signal was temporally more concentrated in the sample epoch and spatially more
     concentrated in the principal column
   criterion: For task-related neuropil ROIs and L2/3 excitatory somata (M3), the fraction of activity
-    peaks in the sample epoch, and the touch fraction (M5) in principal against surround columns.
-    Reproduced when the neuropil exceeds the somata on both, pooled over 8 mice, and in at least six
+    peaks in the sample epoch, and the ratio of the principal-column to the surround touch fraction (M5).
+    The measure of spatial concentration is not given; this ratio is the reading, after Figures 3D and
+    S5F. Reproduced when the neuropil exceeds the somata on both, pooled over 8 mice, and in at least six
     mice for the sample-epoch fraction.
 - id: figs5-l4-neuropil-correlation
   statement: The touch map of L4 axons correlated best with that of the L2/3 neuropil (r = 0.60), less
@@ -806,7 +819,8 @@ claims:
     range (end knots), and (b) the extreme 1st and 99th percentiles of touch delta kappa. Touch neurons
     at the 95th percentile. Reproduced when, under one reading, more than half have |DI| > 0.5, the
     protraction share of tuned neurons is between 40% and 60%, and |DI| between 0.25 and 0.75 holds
-    fewer neurons than |DI| > 0.75.
+    fewer neurons than |DI| > 0.75. These cutoffs are not the paper's, which gives none for "tuned"
+    or "intermediate".
 - id: figs7-direction-stable
   statement: L2/3 directional tuning was stable during learning; the mean pairwise RMS difference of touch
     receptive fields across days (0.273, n = 118 neurons) was below the 5th percentile of the shuffled
@@ -830,7 +844,7 @@ claims:
     value: 118
     tolerance: 12
   criterion: Learning mice, per-session M5 fits; touch neurons at the 99th percentile with touch Rfit >
-    0.25 (Model-Based Encoding Analysis, last paragraph); per neuron the mean RMS over all pairs of days
+    0.25 (Model-Based Encoding Analysis, paragraph 10, the DI paragraph); per neuron the mean RMS over all pairs of days
     on which it is a touch cell of the curvature nonlinearities (0..1). Open; the shuffle by neuron
     identity pairs a neuron's curve on one day with another neuron's on another; readings are a null
     over random neuron pairs on the same day pairs, and over random neuron pairs on any days. The
@@ -897,7 +911,8 @@ claims:
     unit: percent
   criterion: Passive responders are ROIs whose trial-locked mean response exceeds the 95th percentile of an
     event-shuffled null and whose event rate exceeds 0.01 Hz (Experimental Procedures, last paragraph of
-    Model-Based Encoding Analysis); active touch neurons by M5 at the 95th percentile. Chance is read as
+    Model-Based Encoding Analysis); the event-rate rule is stated for the DI, so passive responders
+    with and without it are readings; active touch neurons by M5 at the 95th percentile. Chance is read as
     the active touch fraction among all ROIs imaged in both conditions. The response window is not given;
     readings are the 1 s and 2 s after deflection onset. Reproduced when, under one reading, both values
     are within tolerance. Blocked when the data set lacks the anesthetized mice.
@@ -919,10 +934,11 @@ claims:
   quote: The neuropil signal was still direction selective under anesthesia (Figure 8J). Moreover, the
     topography of neuropil directionality under anesthesia was consistent with that observed in
     anesthetized rats (Kremer et al., 2011
-  criterion: As fig8i-no-anesthetized-topography for neuropil ROIs, with DI defined so that forward
-    preference is positive in the anterior direction of the row axis. Reproduced when the binned DI
-    against row position has p < 0.05 with forward preference toward anterior columns, and the
-    fraction of responsive neuropil ROIs with |DI| > 0.5 exceeds half.
+  criterion: As fig8i-no-anesthetized-topography for neuropil ROIs, with the paper's DI (R - F) / (R +
+    F), so forward preference toward anterior columns is r < 0 along the row axis of Figure 8E.
+    Reproduced when the binned DI against row position has p < 0.05 with r < 0, and the fraction of
+    responsive neuropil ROIs with |DI| > 0.5 exceeds half; the 0.5 cutoff for "direction selective"
+    is not the paper's, which gives none.
   depends_on:
   - fig8h-passive-active-overlap
 - id: figs3d-neuropil-correction
@@ -931,7 +947,9 @@ claims:
   source: Figure S3D
   quote: Touch fraction among neurons without peri-somatic neuropil correction (above) and with correction
     (below). The bottom plot is consistent with electrophysiological results
-  criterion: Neuropil correction F_ROI - 1.0 x F_neuropil (annulus 3 to 13 um from the ROI edge, excluding
+  criterion: The direction (more touch neurons without correction) is not stated in the text; it is
+    read from the purpose of the correction and the touch-dominated neuropil (Encoding Model, paragraph
+    3), the Figure S3D panels not having been read. Neuropil correction F_ROI - 1.0 x F_neuropil (annulus 3 to 13 um from the ROI edge, excluding
     pixels with neighbour correlation above 0.2 and ROI pixels), clipped at baseline; F0 over a 3 min
     window at a skew-dependent percentile (Calcium Imaging Analysis, step 4). The skew to percentile map
     is not given; readings are the 5th percentile for all and the median for all. Touch fraction by M5
@@ -972,3 +990,28 @@ claims:
     accept when RMS difference < sigma and mean amplitude > sigma; peel and repeat). The degradation to
     the volume-imaging dwell time, the Savitzky-Golay window and the detection matching window are not
     given; this claim is outside the data set and is listed for completeness.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, the spared whiskers in mouse order are C2, D2, C2, D2, C3, C2, D3, D2 (Table S1); the third was given as D2.
+  - Opening comment and table-s1-roi-counts, the Table S1 total (108,374) exceeds the core counts (89,784) and the paper does not explain it; named as a discrepancy, with the two readings of the per-mouse count.
+  - fig3c-discriminative, the principal-column reading is settled by the Figure 3C text, whose principal-column L5, GABAergic and neuropil values (17%, 21%, 56%) match the Results and whose surround values (11%, 13%, 23%) do not; all columns kept as a variant.
+  - fig3d-population-encoding, tolerance widened from 2.5 to 5 points with its reason; "about a quarter" is approximate and the Figure 3D counts pool to 22%, which the 10% band excluded. The neuropil sentence's region is named as open, with both readings.
+  - discussion-principal-exclusive-classes, the principal-column L2/3 excitatory count in Figure 3D is 13,308 (13,308 + 69,424 = 82,732); 14,165 is the neuropil count.
+  - fig3d-surround-whisking-dominates, fig7-touch-declines-surround (L1), fig3d-touch-uniform-l5-gaba and fig6b-whisking-fraction-early, the test field removed from statistics whose sentence names no test; the readings stay in the criteria, now stated for L1 and the whisking fractions too.
+  - fig4d-sample-epoch-principal, the L2/3 sample-epoch bias is judged on principal-column ROIs, as the Figure 4C legend says.
+  - fig4-neuropil-sample-principal, "spatially more concentrated" now has a stated measure (principal to surround touch-fraction ratio), named as a reading; the criterion compared fractions without saying how.
+  - fig6d-psychometric-improves, the percent-correct denominator is not given; trials with a response and all trials are now both readings.
+  - fig7ab-salt-and-pepper, the Figure S6 legend draws from "the entire population"; same region and whole mouse are now both readings.
+  - figs7-direction-stable, the Rfit > 0.25 rule is in the DI paragraph (paragraph 10) of Model-Based Encoding Analysis, not its last paragraph.
+  - fig8h-passive-active-overlap, the 0.01 Hz event-rate rule is stated for the DI; passive responders with and without it are now readings.
+  - fig8jk-neuropil-anesthetized, the sign is stated with the paper's DI (R - F)/(R + F) instead of a redefined one; the |DI| > 0.5 cutoff is marked as not the paper's.
+  - fig8b-direction-tuned, the |DI| cutoffs are marked as not the paper's.
+  - figs3d-neuropil-correction, the direction of the effect is marked as a reading; the legend states no direction.
+  - M3, the two bin-width readings were the same choice; it is now named a standard choice.
+  - Open, the PDF could not be rendered in this check either; the Figure 3 numbers used above come from the extracted figure text, matched to panels by their n values, and the order of the touch, mixed and whisking percentages in it was not confirmed; Figures 8E, 8I and 8K values remain unread.
+  - Open, fig1g-early-stereotypy (90% of final level), fig7ab-salt-and-pepper (10 um bins, 5% of bins, runs below 50 um), fig8b-direction-tuned and fig8jk-neuropil-anesthetized use decision rules the paper does not give; they are the file's, for qualitative statements.
+  - Open, the encoding-model penalty scale, tent knots and kernel lags (M5) are not given and can change every class fraction; the readings named in M5 must all be run.
