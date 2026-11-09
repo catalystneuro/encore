@@ -1,0 +1,294 @@
+"""Move the records from dataset-first to paper-first names (docs/paper-first.md). Run once, at the cutover.
+
+    python tools/migrate_paper_first.py --plan      # print what would move, change nothing
+    python tools/migrate_paper_first.py             # move and rewrite, with git mv, in the working tree
+
+Needs papers/keys.yaml (tools/paper_keys.py) to name every paper with records. Writes:
+
+- papers/datasets/<key>.yaml: each paper's datasets, all `relation: primary` (the records so far are
+  all on the paper's own data).
+- papers/renamed.yaml: every old attempt id, entry name and record folder with its new name, for the
+  site's redirects and the runner's state.
+
+and moves, for a paper on one dataset, and for one on several (`<key>-<folder>` per dataset):
+
+| from | to (one dataset) | to (several) |
+|---|---|---|
+| attempts/<old id>.yaml | attempts/<key>-NN.yaml | the same, numbered across the paper |
+| entries/<old>/ | entries/<key>/ | entries/<key>-<folder>/ |
+| claims/<folder>/<doi>.yaml | claims/<key>.yaml | claims/<key>/<folder>.yaml |
+| questions/<folder>.yaml | questions/<key>.yaml | questions/<key>/<folder>.yaml |
+| transcripts/<folder>/ | transcripts/<key>/ | transcripts/<key>/<folder>/ |
+| transcripts/<folder>/paper-match*.md | transcripts/match/<folder>/ | the same |
+| summaries/<old id>.md, docs/pilot-notes/<old id>.md | .../<new id>.md | the same |
+
+Attempt records go to schema version 3 (`datasets:` for `dataset:`). Old ids and entry names are
+replaced in the records, entries, summaries and pilot notes; transcripts are left as they were
+written. Attempts are numbered across a paper in the order they were made.
+"""
+
+from __future__ import annotations
+
+import argparse
+import collections
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "tools"))
+import datasets  # noqa: E402
+import paper_keys  # noqa: E402
+
+TEXT_DIRS = ("attempts", "entries", "summaries", "docs/pilot-notes", "claims", "questions")
+TEXT_FILES = ("docs/pilot-notes.md",)
+TEXT_SUFFIXES = {".yaml", ".yml", ".md", ".ipynb", ".py", ".txt", ".in"}
+
+
+def load(path: Path):
+    return yaml.safe_load(path.read_text())
+
+
+def folder_of(archive: str, id_: str) -> str:
+    return datasets.folder(datasets.key_of(archive, str(id_)))
+
+
+def plan() -> dict:
+    keys = paper_keys.read_keys()
+    attempts = []
+    for path in sorted((ROOT / "attempts").glob("*.yaml")):
+        a = load(path)
+        used = a.get("dataset") or (a.get("datasets") or [None])[0]
+        if used is None and a.get("dandiset"):   # schema 1: dandiset and dandiset_version
+            used = {"archive": "dandi", "id": str(a["dandiset"]), "version": a.get("dandiset_version")}
+        if not used or not a.get("paper"):
+            print(f"{path.relative_to(ROOT)}: no dataset or paper; left where it is", file=sys.stderr)
+            continue
+        attempts.append({"path": path, "id": a["id"], "date": str(a["date"]), "entry": a.get("entry"),
+                         "doi": paper_keys.doi_of(a["paper"]),
+                         "folder": folder_of(used["archive"], used["id"]),
+                         "dataset": used})
+    claims = {}
+    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+        c = load(path)
+        claims[path] = {"doi": paper_keys.doi_of(c["paper"]), "folder": path.parent.name}
+    missing = sorted(({a["doi"] for a in attempts} | {c["doi"] for c in claims.values()}) - set(keys))
+    if missing and os.environ.get("MIGRATE_SEVERAL_FROM"):
+        # A branch's records of a paper main no longer has (claims replaced since the branch began) get a key here;
+        # the merge with main then drops them, since they are not the branch's own paper's.
+        for doi in missing:
+            keys[doi] = paper_keys.add_key(doi)
+    branch_only = set(missing)
+    missing = [] if os.environ.get("MIGRATE_SEVERAL_FROM") else missing
+    if missing:
+        raise SystemExit("no key for: " + ", ".join(missing) + " (run tools/paper_keys.py)")
+
+    # The datasets of each paper, from its claims files and attempts, in the order first seen.
+    folders = collections.defaultdict(list)
+    for c in claims.values():
+        if c["folder"] not in folders[c["doi"]]:
+            folders[c["doi"]].append(c["folder"])
+    for a in attempts:
+        if a["folder"] not in folders[a["doi"]]:
+            folders[a["doi"]].append(a["folder"])
+    several = {doi for doi, f in folders.items() if len(f) > 1}
+    # A branch converted at the cutover takes main's layout (the papers main has records of on several datasets),
+    # so that its files land where main's do.
+    if os.environ.get("MIGRATE_SEVERAL_FROM"):
+        main_several = set((yaml.safe_load(Path(os.environ["MIGRATE_SEVERAL_FROM"]).read_text()) or {}).get("several") or [])
+        # A paper only the branch's stale records name, on several datasets, keeps them apart, per dataset.
+        several = {doi for doi in folders if keys.get(doi) in main_several} | (several & branch_only)
+
+    # Every other dataset whose paper match on main settles on a paper is listed for that paper too, so that its
+    # chain goes on under the paper's key after the cutover. Its paper gets a key now if it has none. Only the
+    # datasets with records decide a paper's layout (`several`).
+    import paper_match
+    fixes = paper_match.triage()
+    recorded = {f for fs in folders.values() for f in fs}
+    new_keys: dict[str, str] = {}
+    # A branch converted at the cutover takes main's lists instead (MIGRATE_SEVERAL_FROM is set).
+    for t in [] if os.environ.get("MIGRATE_SEVERAL_FROM") else datasets.targets():
+        if t["folder"] in recorded or t["archive"] in ("local", "remote"):
+            continue
+        status, chosen = paper_match.choose(t, fixes.get(t["folder"], {}), paper_match.load(t["folder"]))
+        if status != "matched" or not chosen:
+            continue
+        doi = paper_keys.doi_of(chosen[0]["doi"])
+        if doi not in keys and doi not in new_keys:
+            title = chosen[0].get("title") or ""
+            key, title = paper_keys.base_key(doi, {"title": title} if title else {})
+            taken = set(keys.values()) | set(new_keys.values())
+            new_keys[doi] = paper_keys.distinguish(key, title, taken) if key in taken else key
+        if t["folder"] not in folders[doi]:
+            folders[doi].append(t["folder"])
+    keys = {**keys, **new_keys}
+
+    def scoped(doi: str, folder: str) -> str:
+        return f"{keys[doi]}-{folder}" if doi in several else keys[doi]
+
+    moves: list[tuple[str, str]] = []
+    ids, entries = {}, {}
+    by_paper = collections.defaultdict(list)
+    for a in attempts:
+        by_paper[a["doi"]].append(a)
+    for doi, mine in by_paper.items():
+        for n, a in enumerate(sorted(mine, key=lambda a: (a["date"], a["id"])), 1):
+            ids[a["id"]] = f"{keys[doi]}-{n:02d}"
+            if a["entry"]:
+                entries.setdefault(a["entry"], scoped(doi, a["folder"]))
+    for old_id, new_id in ids.items():
+        moves.append((f"attempts/{old_id}.yaml", f"attempts/{new_id}.yaml"))
+        for d in ("summaries", "docs/pilot-notes"):
+            if (ROOT / d / f"{old_id}.md").is_file():
+                moves.append((f"{d}/{old_id}.md", f"{d}/{new_id}.md"))
+    for old, new in entries.items():
+        if (ROOT / "entries" / old).is_dir():
+            moves.append((f"entries/{old}", f"entries/{new}"))
+    folder_paper = {}   # record folder -> the paper its claims, questions and transcripts belong to
+    for path, c in claims.items():
+        doi, folder = c["doi"], c["folder"]
+        folder_paper[folder] = doi
+        new = f"claims/{keys[doi]}/{folder}.yaml" if doi in several else f"claims/{keys[doi]}.yaml"
+        moves.append((path.relative_to(ROOT).as_posix(), new))
+    for a in attempts:
+        folder_paper.setdefault(a["folder"], a["doi"])
+    for doi, fs in folders.items():
+        for f in fs:
+            folder_paper.setdefault(f, doi)
+    for folder, doi in sorted(folder_paper.items()):
+        q = ROOT / "questions" / f"{folder}.yaml"
+        if q.is_file():
+            moves.append((f"questions/{folder}.yaml",
+                          f"questions/{keys[doi]}/{folder}.yaml" if doi in several else f"questions/{keys[doi]}.yaml"))
+    for t in sorted(p for p in (ROOT / "transcripts").iterdir() if p.is_dir()):
+        folder = t.name
+        for f in sorted(t.glob("paper-match*.md")):
+            moves.append((f.relative_to(ROOT).as_posix(), f"transcripts/match/{folder}/{f.name}"))
+        doi = folder_paper.get(folder)
+        if doi is None:
+            continue   # a dataset with only a paper match: nothing else to move
+        # A dataset with no records (only a reader's run that wrote no claims, say) keeps its transcripts apart, in
+        # the paper's folder under its own name, as the datasets of a paper on several do.
+        dest = (f"transcripts/{keys[doi]}/{folder}" if doi in several or folder not in recorded
+                else f"transcripts/{keys[doi]}")
+        for f in sorted(t.rglob("*")):
+            if f.is_file() and not f.name.startswith("paper-match"):
+                rel = f.relative_to(t).as_posix()
+                # An archived attempt's folder is numbered by the dataset's attempts; renumber it by the paper's.
+                m = re.match(r"attempt-(\d\d)/(.*)", rel)
+                if m:
+                    old_id = next((a["id"] for a in attempts if a["folder"] == folder
+                                   and a["id"].endswith("-" + m.group(1))), None)
+                    if old_id:
+                        rel = f"attempt-{ids[old_id].rsplit('-', 1)[1]}/{m.group(2)}"
+                moves.append((f.relative_to(ROOT).as_posix(), f"{dest}/{rel}"))
+
+    paper_datasets = {}
+    for doi, fs in folders.items():
+        items = []
+        for folder in fs:
+            key = datasets.key_of_folder(folder)
+            archive, id_ = datasets.split_key(key)
+            items.append({"archive": archive, "id": id_, "relation": "primary"})
+        paper_datasets[keys[doi]] = {"paper": f"doi:{doi}", "datasets": items}
+    targets = [b for _, b in moves]
+    dup = [t for t, n in collections.Counter(targets).items() if n > 1]
+    if dup:
+        raise SystemExit("two records would move to the same path: " + ", ".join(dup[:10]))
+    return {"moves": moves, "ids": ids, "entries": entries, "several": sorted(keys[d] for d in several),
+            "new_keys": new_keys,
+            "folder_paper": {f: keys[d] for f, d in folder_paper.items()}, "paper_datasets": paper_datasets,
+            "attempts": attempts}
+
+
+def rename_pattern(names: dict[str, str]) -> re.Pattern:
+    alternation = "|".join(re.escape(n) for n in sorted(names, key=len, reverse=True))
+    return re.compile(rf"(?<![\w-])(?:{alternation})(?![\w])")
+
+
+def git(*args: str) -> None:
+    subprocess.run(["git", *args], cwd=ROOT, check=True)
+
+
+def apply(p: dict) -> None:
+    if p["new_keys"]:
+        paper_keys.write_keys({**paper_keys.read_keys(), **p["new_keys"]})
+    for src, dst in p["moves"]:
+        (ROOT / dst).parent.mkdir(parents=True, exist_ok=True)
+        git("mv", src, dst)
+    names = {**p["entries"], **p["ids"]}
+    pattern = rename_pattern(names)
+    files = [f for d in TEXT_DIRS for f in (ROOT / d).rglob("*") if f.is_file() and f.suffix in TEXT_SUFFIXES]
+    files += [ROOT / f for f in TEXT_FILES if (ROOT / f).is_file()]
+    for f in files:
+        text = f.read_text()
+        new = pattern.sub(lambda m: names[m.group(0)], text)
+        if new != text:
+            f.write_text(new)
+    # Attempt records: schema 3, the dataset as a one-item list.
+    for path in sorted((ROOT / "attempts").glob("*.yaml")):
+        text = path.read_text()
+        a = yaml.safe_load(text)
+        if a.get("schema_version") == 3:
+            continue
+        if a.get("schema_version") == 1 and a.get("dandiset"):
+            # Schema 1 named a DANDI dataset with two fields; written as the block schema 2 has, then converted.
+            text = re.sub(r'^dandiset_version: *(.*)\n', "", text, count=1, flags=re.M)
+            text = re.sub(r'^dandiset: *(.*)\n',
+                          lambda m_: f'dataset:\n  archive: dandi\n  id: {m_.group(1)}\n'
+                                     f'  version: {a.get("dandiset_version")}\n', text, count=1, flags=re.M)
+            text = re.sub(r"^schema_version: 1$", "schema_version: 2", text, count=1, flags=re.M)
+            a = yaml.safe_load(text)
+        m = re.search(r"^dataset:\n((?:  .*\n)+)", text, re.M)
+        if not m:
+            raise SystemExit(f"{path}: no dataset block")
+        items = [line for line in m.group(1).splitlines()]
+        listed = "datasets:\n" + "".join(("- " if i == 0 else "  ") + line.strip() + "\n" for i, line in enumerate(items))
+        listed += "  relation: primary\n"
+        text = text[:m.start()] + listed + text[m.end():]
+        text = re.sub(r"^schema_version: 2$", "schema_version: 3", text, count=1, flags=re.M)
+        if yaml.safe_load(text)["datasets"][0]["id"] != a["dataset"]["id"]:
+            raise SystemExit(f"{path}: the dataset did not convert")
+        path.write_text(text)
+    out = ROOT / "papers" / "datasets"
+    out.mkdir(parents=True, exist_ok=True)
+    for key, body in sorted(p["paper_datasets"].items()):
+        (out / f"{key}.yaml").write_text(
+            "# The datasets this paper is tested on (docs/paper-first.md).\n"
+            + yaml.safe_dump({"schema_version": 1, **body}, sort_keys=False, width=100))
+    (ROOT / "papers" / "renamed.yaml").write_text(
+        "# Old names and the paper-first names they moved to, at the cutover (tools/migrate_paper_first.py).\n"
+        "# The site redirects old pages with it; nothing else should need it.\n"
+        + yaml.safe_dump({"schema_version": 1, "attempts": p["ids"], "entries": p["entries"],
+                          "folders": p["folder_paper"], "several": p["several"]}, sort_keys=True, width=100))
+    # Only the folders the checkout has: a branch from before summaries/ existed, say.
+    git("add", "-A", *[d for d in ("attempts", "entries", "claims", "questions", "transcripts", "summaries", "docs",
+                                   "papers") if (ROOT / d).exists()])
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--plan", action="store_true")
+    args = parser.parse_args()
+    p = plan()
+    if args.plan:
+        for src, dst in p["moves"]:
+            print(f"{src} -> {dst}")
+        for doi, key in sorted(p["new_keys"].items(), key=lambda kv: kv[1]):
+            print(f"new key {key} for {doi}")
+        print(f"\n{len(p['moves'])} moves; {len(p['ids'])} attempts, {len(p['entries'])} entries; "
+              f"{len(p['new_keys'])} new keys; "
+              f"{len(p['paper_datasets'])} papers, {len(p['several'])} on several datasets: {', '.join(p['several'])}",
+              file=sys.stderr)
+        return 0
+    apply(p)
+    print(f"moved {len(p['moves'])} paths; review with git status, then commit")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
