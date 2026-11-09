@@ -82,7 +82,8 @@ def plan() -> dict:
         # the merge with main then drops them, since they are not the branch's own paper's.
         for doi in missing:
             keys[doi] = paper_keys.add_key(doi)
-        missing = []
+    branch_only = set(missing)
+    missing = [] if os.environ.get("MIGRATE_SEVERAL_FROM") else missing
     if missing:
         raise SystemExit("no key for: " + ", ".join(missing) + " (run tools/paper_keys.py)")
 
@@ -99,8 +100,8 @@ def plan() -> dict:
     # so that its files land where main's do.
     if os.environ.get("MIGRATE_SEVERAL_FROM"):
         main_several = set((yaml.safe_load(Path(os.environ["MIGRATE_SEVERAL_FROM"]).read_text()) or {}).get("several") or [])
-        several = {doi for doi in folders if keys.get(doi) in main_several} | {
-            doi for doi in several if keys.get(doi) not in set(keys.values()) - main_several}
+        # A paper only the branch's stale records name, on several datasets, keeps them apart, per dataset.
+        several = {doi for doi in folders if keys.get(doi) in main_several} | (several & branch_only)
 
     # Every other dataset whose paper match on main settles on a paper is listed for that paper too, so that its
     # chain goes on under the paper's key after the cutover. Its paper gets a key now if it has none. Only the
