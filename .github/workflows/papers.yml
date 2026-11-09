@@ -170,7 +170,8 @@ jobs:
         run: |
           # The paper match reads the dataset's papers; the other roles, the paper's, from each of its datasets.
           if [ "$ROLE" = paper-match ]; then tools/get_papers.sh "$FOLDER" paper
-          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper; fi
+          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper \
+                 "$(python tools/paper_records.py doi "$FOLDER")"; fi
 
       - name: Run the paper match's cheap checks
         id: checks
