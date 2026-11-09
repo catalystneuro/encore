@@ -129,7 +129,10 @@ def branches(apply: bool) -> int:
         try:
             git("worktree", "add", "-q", "--detach", str(tmp), f"origin/attempt/{name}")
             # Main's tools and keys, so that the branch is converted exactly as main was.
-            git("checkout", MAIN, "--", "tools", "schemas", "papers/keys.yaml", cwd=tmp)
+            # Main's tools, keys, target lists, triage and paper matches, so that the branch is converted exactly as
+            # main was; a branch from before some of them existed would otherwise lack them.
+            git("checkout", MAIN, "--", "tools", "schemas", "targets", "papers/keys.yaml", "papers/triage.yaml",
+                "papers/match", cwd=tmp)
             several = tmp / ".main-renamed.yaml"
             several.write_text(git("show", f"{MAIN}:papers/renamed.yaml"))
             run = subprocess.run([sys.executable, "tools/migrate_paper_first.py"], cwd=tmp, capture_output=True,
