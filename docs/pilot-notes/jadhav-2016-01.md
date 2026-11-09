@@ -1,0 +1,122 @@
+# crcns-hc-28, Jadhav et al. 2016
+
+Nine claims reproduced, seven partially, 21 not reproduced and two blocked,
+both for missing data; every tested outcome but `wtrack-learning` rests on an
+assumption. The first verification round agreed with 33 of the 39 outcomes and
+disagreed on
+`fig3f-swr-cross-covariance-lag`, `fig4a-preferred-phases`,
+`figs3-arm-and-direction-selectivity`, `fig6e-theta-trained-glm`,
+`fig8d-glm-epoch-specific` and the block of `figs6-replay-content`, and the
+second agreed with all 39; nothing was proposed after the second, so there was
+no third round. CRCNS does not version data sets, so the version is recorded as
+unversioned with the data set's DOI (10.6080/K02N50G9) and the MD5 sums in the
+notebook header. The paper, Jadhav et al. in Neuron, records CA1 and prefrontal
+cortex (PFC) together in rats learning a W-track alternation task and a Y-track
+task, and reports that about a third of PFC neurons are modulated by awake
+sharp-wave ripples (SWRs), excited and inhibited in roughly equal numbers,
+transiently and after CA1; that SWR-modulated PFC cells are more strongly
+locked to hippocampal theta; that excited and inhibited cells differ in rate,
+spatial coverage, speed tuning and cofiring; that CA1-PFC pairs are correlated
+across SWRs in a way their theta cofiring and spatial correlation predict, with
+CA1 leading and CA1 ensembles predicting PFC SWR spiking in a GLM; and that
+none of this is present in the rest before the task. The data set holds the
+three W-track rats (HPa, HPb, HPc) for days 1 to 8, one tar.gz of about 2.7 GB
+per rat. The claims were written from the version of record with its full
+Supplemental Information, as text extracted from the PDF, which could not be
+rendered, so no value was read from a figure; the paper links no code. The
+claims check corrected 18 claims, among them applying the paper's 0.01
+threshold to comparisons between SWR-excited, SWR-inhibited and unmodulated
+cells, making the von Mises mean a variant for the preferred phase and defining
+the replay measure per event, for 39 claims. Most results pool the W-track rats
+with three Y-track rats not in the data set, and those claims were tested on
+the W-track rats alone, a pooled value outside its tolerance making the claim
+partial; `ytrack-learning` and `figs7-both-tracks` are blocked. Reproduced are
+`wtrack-learning` (0.85, 0.80 and 0.75 correct on day 3, 0.93, 0.88 and 0.92
+on day 8), `figs2-swr-at-reward-wells` (0.703 +- 0.032 against 0.71 +- 0.03),
+`fig6ab-both-signs`, the two pre-rest absences of Figure 8A to 8C, and four at
+the edge of their rules: `fig4-theta-locked-fraction` (91 of 167, 0.545,
+inside 0.60 +- 0.06 by 0.005), `theta-lag-past` (-15 ms under one reading, 0
+ms under the other on a nearly flat curve), `fig6e-glm-swr-prediction` (16
+modulated cells after 62 of 167 GLMs were dropped, failing under the
+mean-envelope reading) and `figs5-matched-selectivity` (excited r = 0.379, p =
+0.047, failing under both variants). Partial are, among others,
+`swr-detection-stats`, where no reading matches the count, duration and rate
+together, `ca1-swr-modulated` (0.651 against 0.80 +- 0.08),
+`fig6-swr-correlated-pairs` (0.227 of 198 pairs against 0.045 shuffled, z =
+5.27) and `fig6c-theta-predicts-swr-correlation` (r = 0.479). Not reproduced is
+the central count, `fig3-pfc-swr-modulation-fractions`: 12 excited, 7
+inhibited and 148 unmodulated of 167 PFC cell-days against 30, 26 and 109 of
+165, with 12 to 22 excited and 2 to 9 inhibited under every variant. Most of
+the other not reproduced claims compare the excited and inhibited groups, and
+the record says these failures follow from the small groups more than they
+test the claims one by one; under the mean envelope (17 excited and 3
+inhibited of 136) and without the wtr2 runs (11 and 6 of 161) no failing
+downstream claim meets its criterion. The author's first run had 7
+reproduced, 12 partially, 17 not reproduced and 3 blocked, with
+`figs6-replay-content` blocked as not run in time. The author asked no
+questions of a reader, so the answer and author-answers runs changed nothing;
+the author-answers report gave the counts as 8, 12, 16 and 3, which the record
+does not. Round 1 raised a 20 deg phase binning that inflated two 45 deg bins,
+rate maps that pooled the larger wtr2 track into the wtr1 bins, the wtr2 runs
+included under one reading only, an SWR reading that appears to over-detect
+(0.335 Hz at low speed against 0.12 Hz), unchecked position units, the
+downstream failures resting on 12 and 7 cells, theta phases read by rounding
+and the replay block; in reply the binning, rate maps and phase interpolation
+were fixed, positions were shown to be in cm, the mean-envelope and
+wtr1-only classifications were added and the replay analysis was run (206 of
+685 events significant, p = 0.45); four outcomes moved to not reproduced as
+the verifier gave, `fig4-theta-locked-fraction` and
+`figs5-matched-selectivity` to reproduced and `figs6-replay-content` to not
+reproduced, and `fig4a-preferred-phases` stayed not reproduced against the
+verifier's partial. Round
+2 agreed with all 39 and found that the sentence saying no variant rescues a
+failing claim did not cover eight claims, along with wording in the fig3de,
+fig4a, fig5c and fig8a notes, the run time and a typo; in reply a second
+battery ran those claims under both variants, which left every failing claim
+failing and showed `figs5-matched-selectivity` failing under both, and the
+author kept its verified outcome. The author's run took about 2 h 16 min
+(12:17 to 14:33 UTC); the notebook ran in 1217 s at first, 1229 s after the
+author-answers run, 1537 s after round 1 and 31 and 33 minutes after round 2.
+Nothing failed at the end; an `rm` with a `$TMPDIR` glob was denied by the
+permission check and succeeded with literal paths.
+
+The paper defers SWR detection to Karlsson and Frank (2009) and does not say
+how events were combined across tetrodes, whether the intermediate-CA1
+tetrodes took part, where the onset was set, or what raster span, jitter and
+PSTH bin entered the modulation measure; an event on any one ripple tetrode
+gives 415 SWRs per W-track day but only 19 of 167 SWR-modulated PFC
+cell-days, against 56 of 165, and the mean-envelope reading matches the
+paper's duration and low-speed rate but finds 139 SWRs per day, and every
+animal has fewer modulated cells than in Table S2. The Y-track rats are not in
+the data set, and the descriptor describes only the W-track task. On days 6 to
+8 the second run of each rat is in an environment named wtr2, which the
+descriptor does not define; it is a different W-track, elsewhere in the camera
+frame and for HPa and HPb with its centre arm pointing another way, and
+whether the 2016 paper used it is not stated. The descriptor gives cellinfo
+spikewidth in ms, but the values (0.98 to 23.12, median 9.89) are 30 kHz
+samples, and read as ms every cell would be excluded by the fast-spiking rule.
+It gives position data as Nx7, where the run-epoch files have 9 columns and the
+rest-epoch files 5, names the pixel size cmperpix where the files store
+cmperpixel (0.50 to 0.70), and does not say that x and y are already in cm. No
+identifier links a unit across days, so the unique-unit counts of Table S1
+cannot be checked. The files hold 509 CA1, 81 iCA1 and 193 PFC non-fast-spiking
+cell-days with spikes in the W-track runs, against 446, 69 and 172 in Table S1,
+and which units the table counts is not documented; after the 50-spike
+criterion 167 PFC cell-days remain against 165. In each rat's tar.gz the small
+spike and position files sit at the end, after about 840 LFP files. Questions
+are put to the paper's authors: how SWRs were detected and their onset set,
+which raster span, jitter and bin the modulation measure used, and whether the
+W-track analyses included the wtr2 runs.
+
+The author's points on the protocol: `docs/archives.md` describes CRCNS data as
+zip files opened in place, while hc-28 is tar.gz, which was streamed once per
+rat with the needed LFP held in memory (peak 3.8 GB per rat); "do not download
+to disk" does not address development caches, which were kept in `$TMPDIR` and
+deleted; there is no published version to pin, so `unversioned` was recorded
+with the MD5 sums; `too_large` covers only computation, so the replay analysis
+was first blocked as `other`; running every reading through chains of
+dependent claims would multiply the work, so one main reading was carried
+downstream; the claims file's pooled-value rule was mapped onto
+`partially_reproduced`; the decoding contrast for the clock check was replaced
+by two contrasts against shifted data; and the 10-minute aim cannot be reached
+when 8 GB must be streamed.
