@@ -172,6 +172,18 @@ def asset(name: str) -> str:
 
 # --- collecting ---------------------------------------------------------------
 
+COLAB_URL = "https://colab.research.google.com/github/catalystneuro/encore/blob/colab/entries"
+
+
+def environment_of(entry_dir: Path) -> dict:
+    """An entry's environment, for its page: the Python version it runs on and how many packages its lock pins."""
+    import entry as entry_tool
+    lock = entry_dir / "requirements.lock.txt"
+    pinned = sum(1 for line in lock.read_text().splitlines() if re.match(r"^[A-Za-z0-9]", line)) if lock.is_file() else 0
+    hashed = lock.is_file() and "--hash=" in lock.read_text()
+    return {"python": entry_tool.python_of(entry_dir), "pinned": pinned, "hashed": hashed}
+
+
 def record_files(kind: str) -> list[tuple[Path, list[str]]]:
     """A kind of record (claims, questions) with the datasets each is about: a paper's own file,
     <kind>/<paper>.yaml, is about all the paper's datasets; one from before the cutover to paper-first records,
@@ -339,6 +351,7 @@ def collect(executed: Path | None = None) -> dict:
             "derived_from": [r["id"].split(":", 1)[1] for r in related
                              if r["id"].startswith("entry:") and r["relation"] == "derived_from"],
             "notebooks": notebooks_of(entry),
+            **environment_of(ROOT / "entries" / entry["name"]),
         })
     # Each dataset's transcripts (its paper's, transcripts/<paper>/, or before the cutover, a paper's on several
     # datasets, transcripts/<paper>/<folder>/), and an earlier attempt's, moved aside to attempt-NN/ by
@@ -1786,6 +1799,9 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
                 links.append(f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">Executed, with outputs</a>')
             if not data["demo"]:
                 links.append(f'<a href="{REPO_URL}/blob/main/entries/{e(en["name"])}/{e(nb["path"])}">Source</a>')
+                links.append(f'<a href="{COLAB_URL}/{e(en["name"])}/{e(nb["path"])}" target="_blank" rel="noopener" '
+                             f'title="Open the notebook in Google Colab, which fetches the entry and installs its '
+                             f'pinned packages">Open in Colab</a>')
             items += (f'<li style="grid-template-columns:1fr max-content"><span><strong>{e(nb["title"])}</strong><br>'
                       f'<span class="muted small">{e(nb["path"])}</span></span>'
                       f'<span>{" · ".join(links) or "Not yet executed"}</span></li>')
@@ -1794,9 +1810,14 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
         built_on = (" Builds on " + ", ".join(e(x) for x in en["derived_from"]) + ".") if en["derived_from"] else ""
         code = ("" if data["demo"] else
                 f' <a href="{REPO_URL}/tree/main/entries/{e(en["name"])}">All files</a>')
+        env = ("" if data["demo"] or not en.get("pinned") else
+               f'<p class="small muted" style="margin:2px 0 0">Environment: Python {e(en["python"])}, '
+               f'{en["pinned"]} packages pinned{" with their hashes" if en.get("hashed") else ""} in '
+               f'<a href="{REPO_URL}/blob/main/entries/{e(en["name"])}/requirements.lock.txt">requirements.lock.txt</a>; '
+               f'CI runs each notebook from a new environment built from it.</p>')
         out += (f'<div class="entry"><p style="margin:18px 0 2px"><span class="tag">{e(ENTRY_TYPES.get(en["type"], en["type"]))}</span> '
                 f'<strong>{e(en["title"])}</strong></p>'
-                f'<p class="sub small">{e(en["description"])}{also}{built_on}{code}</p>'
+                f'<p class="sub small">{e(en["description"])}{also}{built_on}{code}</p>{env}'
                 f'<ul class="plain">{items}</ul></div>')
     return out, count
 
