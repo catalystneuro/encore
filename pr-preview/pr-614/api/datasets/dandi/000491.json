@@ -5,7 +5,7 @@
   "label": "DANDI:000491"
  },
  "page": "datasets/dandi/000491/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 7,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "000491-raicevic-2023-01",
+   "id": "raicevic-2023-01",
    "dataset": {
     "archive": "dandi",
     "id": "000491",
     "version": "0.230602.1307",
-    "doi": "10.48324/dandi.000491/0.230602.1307"
+    "doi": "10.48324/dandi.000491/0.230602.1307",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:000491"
@@ -64,7 +65,7 @@
    "tier": "runs",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "000491-raicevic-2023",
+   "entry": "raicevic-2023",
    "entry_title": "Sizes and shapes of perivascular spaces around pial arteries (Raicevic et al. 2023)",
    "summary": "Several of the paper's central findings held in this data and several did not. The vessel radius peak near 28 um, the polynomial fit matching the segmented area ratio best, and the fit velocity ordering reproduced, mostly under only some analysis choices. The resistance power law held partially, while the area ratio and resistance distributions, ellipse parameters and PVS width asymmetry did not match. The likely reason is the paper's undescribed manual centerline cleaning and PVS selection, for which the agent used stand-ins. The validation against 2D images could not be tested because those images are not in the dataset.",
    "description": "Tests the findings of Raicevic, Forer, Ladron-de-Guevara, Du, Nedergaard, Kelley and Boster (2023) on dandiset 000491, which holds the 3D two-photon stacks and the final vessel and PVS segmentations of 14 pial artery segments in 9 mice. From the deposited segmentations it takes normal cross sections, measures PVS and vessel areas, fits the ellipse, spline and polynomial shapes and the vessel circle, and computes the hydraulic resistance per unit length, then compares the distributions with the paper's. The 2D time series used to validate the segmentation are not in the dandiset.",
@@ -72,15 +73,15 @@
     {
      "path": "reproduce_raicevic_2023.ipynb",
      "title": "Reproducing Raicevic et al. (2023) from dandiset 000491",
-     "executed": "notebooks/000491-raicevic-2023/reproduce_raicevic_2023.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "cross-section-counts",
-     "statement": "cross-section-counts",
-     "source": null,
-     "quote": "",
+     "statement": "After excluding cross sections near the edge of the imaging volume, each of the 14 PVS segments yields between 54 and 451 normal cross sections, about 0.8 um apart.",
+     "source": "Methods, Creating normal cross sections",
+     "quote": "This resulted in between 54 and 451 different cross sections for each of the 14 PVS segments that were included in the subsequent analysis. The average distance between normal planes was approximately 0.8 \u03bc m.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -110,9 +111,9 @@
     },
     {
      "claim": "segmentation-validation-overlap",
-     "statement": "segmentation-validation-overlap",
-     "source": null,
-     "quote": "",
+     "statement": "Where a high signal-to-noise 2D time-averaged image was acquired, the 3D segmentation at the matching depth overlaps the 2D segmentation by at least 70% of the union area, for both PVS and vessel.",
+     "source": "Methods, Image Segmentation, last paragraph; Figure 2 legend",
+     "quote": "To consider the segmentation successful, at least 70% of the area had to overlap in both PVS and vessel ... The 3D segmentation and 2D segmentation match over 70% which gives confidence that 3D segmentation is accurate.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -129,10 +130,21 @@
     },
     {
      "claim": "fig5a-pvs-area-scales-with-vessel-area",
-     "statement": "fig5a-pvs-area-scales-with-vessel-area",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "PVS area increases with vessel area only approximately; the least-squares line of PVS area on vessel area over all cross sections has slope 1.05 (95% CI 0.973 to 1.12) and R2 of 0.158.",
+     "source": "Results, Area ratio, paragraph 1; Figure 5A",
+     "quote": "The area of the PVS generally increases with the area of the vessel, but the trend is only approximate, as evidenced by the low R 2 value of the fit line (0.158). The slope of the fit line is 1.05, (95% confidence interval 0.973, 1.12).",
+     "statistics": [
+      {
+       "about": "slope of PVS area on vessel area",
+       "test": "least-squares fit",
+       "ci": {
+        "level": 0.95,
+        "low": 0.973,
+        "high": 1.12
+       },
+       "n": "all cross sections of the 14 segments"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -157,9 +169,9 @@
     },
     {
      "claim": "fig5e-area-ratio-distribution",
-     "statement": "fig5e-area-ratio-distribution",
-     "source": null,
-     "quote": "",
+     "statement": "The PVS-to-vessel area ratio of the segmentation varies widely across cross sections; its distribution peaks at 1.12, its median is 1.88 and its IQR is 1.79 (25th percentile 1.21, 75th 3.00), so the ratio varies by more than 100%.",
+     "source": "Results, Area ratio, paragraph 1; Figure 5E; Table 2",
+     "quote": "There is considerable variation in the area ratio, and the interquartile range of the segmented area ratio is 1.79 ( Table 2 ), a value on the same order as the median value of 1.88, meaning that the area ratio varies by more than 100%. The peak value of 1.12",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -185,9 +197,9 @@
     },
     {
      "claim": "fig5bc-area-intersegment-variation",
-     "statement": "fig5bc-area-intersegment-variation",
-     "source": null,
-     "quote": "",
+     "statement": "Variation in PVS area is much larger between PVS segments than along the length of a single segment.",
+     "source": "Results, Area ratio, paragraph 2; Figure 5B and 5C",
+     "quote": "From Figure 5 , it is clear that the variation in PVS area is much larger between segments of PVS than along the length of a single PVS segment. We quantified this difference by plotting the median PVS area from each segment and the interquartile range of each segment",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -214,9 +226,9 @@
     },
     {
      "claim": "area-ratio-per-location",
-     "statement": "area-ratio-per-location",
-     "source": null,
-     "quote": "",
+     "statement": "The peak of the segmented area ratio distribution ranges from 0.6 to 11.43 across the 14 locations, and in all but one location the ratio's variation along the vessel lies within 30% of the peak, so variation between segments dominates.",
+     "source": "Results, Area ratio, paragraph 2; Additional File 3 (Additional File 4 in the list)",
+     "quote": "The peak of the area ratio distribution ranges from 0.6 to 11.43 across the different locations. Although their area ratio varies along the length of each vessel, in all but one case, this variation occurs within 30% of the peak",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -242,9 +254,9 @@
     },
     {
      "claim": "fig5d-polynomial-closest-area-ratio",
-     "statement": "fig5d-polynomial-closest-area-ratio",
-     "source": null,
-     "quote": "",
+     "statement": "Of the three fits, the polynomial fit matches the segmentation's area ratio most closely in 73% of cross sections, the spline fit in 19% and the ellipse fit in 8%, and its distribution matches the segmentation's best.",
+     "source": "Results, Area ratio, paragraph 3; Figure 5D and 5E",
+     "quote": "The distribution of the PVS-to-vessel area ratio in segmentations is matched most closely by the polynomial fit ( Figure 5E ), and the value of the area ratio in segmentations is matched most closely by the polynomial fit in 73% of cases ( Figure 5D ) ... the ellipse fit gives the closest match in only 8% of cases ... The spline fit gives the closest match in 19% of the cases",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -272,9 +284,9 @@
     },
     {
      "claim": "table2-fit-area-ratio-peaks",
-     "statement": "table2-fit-area-ratio-peaks",
-     "source": null,
-     "quote": "",
+     "statement": "The area ratio distribution peaks at 1.21 for the polynomial fit (close to the segmentation's 1.12), 2.08 for the ellipse fit, which does not narrow at the ends, and 1.48 for the spline fit, whose ratio varies little because it scales with vessel size alone.",
+     "source": "Results, Area ratio, paragraph 3; Table 2; Figure 5E",
+     "quote": "The peak of the area ratio distribution for the polynomial fit is 1.21, similar to the peak of the segmentation distribution of 1.12 ... has a significantly higher peak of 2.08 because it does not narrow at the ends. The spline fit gives the closest match in 19% of the cases and has a peak of 1.48",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -302,10 +314,21 @@
     },
     {
      "claim": "fig6a-resistance-power-law",
-     "statement": "fig6a-resistance-power-law",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The hydraulic resistance per unit length of the segmented PVS is well predicted by a power law in PVS area (R2 = 0.944), with exponent -1.75 (95% CI -1.763 to -1.737), close to the -2 of a shape scaled in size alone.",
+     "source": "Results, Hydraulic Resistance, paragraph 2; Figure 6A",
+     "quote": "The hydraulic resistance can be reasonably predicted with a power-law fit as a function of the PVS area alone (R 2 = 0.944). The exponent in the power law fit is \u22121.75 (95% confidence interval \u22121.763, \u22121.737)",
+     "statistics": [
+      {
+       "about": "power-law exponent of resistance on PVS area",
+       "test": "power-law fit",
+       "ci": {
+        "level": 0.95,
+        "low": -1.763,
+        "high": -1.737
+       },
+       "n": "all segmented cross sections of the 14 segments"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -331,9 +354,9 @@
     },
     {
      "claim": "fig6b-resistance-segmentation-peak",
-     "statement": "fig6b-resistance-segmentation-peak",
-     "source": null,
-     "quote": "",
+     "statement": "The distribution of segmented PVS hydraulic resistance per unit length over all cross sections peaks at 1.73e15 Pa s/m^4, with a median of 3.84e15 Pa s/m^4.",
+     "source": "Discussion, paragraph 4; Conclusion; Table 2; Figure 6B",
+     "quote": "Here, we report the distribution of hydraulic resistances for thousands of PVS cross sections, with its peak at 1.73\u00d710 15 Pa\u00b7 s/m 4",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -360,9 +383,9 @@
     },
     {
      "claim": "resistance-per-location",
-     "statement": "resistance-per-location",
-     "source": null,
-     "quote": "",
+     "statement": "Variation in resistance is much larger between locations than along each PVS; the per-location peaks range from 3.23e14 to 1.98e16, and in 65% of vessels all the variation lies within 37% of the peak.",
+     "source": "Results, Hydraulic Resistance, paragraph 2; Figure 6B; Additional File 5",
+     "quote": "it is evident that the variation between locations is much larger than that along the PVS at each location. The peak of hydraulic resistance distributions ranges from 3.23\u00d710 14 to 1.98\u00d710 16 across different locations, whereas, in 65% of the vessels, all the variation occurs within 37% of the peak of the distribution",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -389,9 +412,9 @@
     },
     {
      "claim": "fig5b-polynomial-closest-resistance",
-     "statement": "fig5b-polynomial-closest-resistance",
-     "source": null,
-     "quote": "",
+     "statement": "The distribution of hydraulic resistance of the polynomial fit matches that of the segmentation most closely, followed by the ellipse fit, and the polynomial fit is the best match for the majority of cross sections; the distribution peaks are 1.44e15 (polynomial), 7.06e14 (ellipse), 1.07e16 (spline) and 1.32e15 (optimal annulus) Pa s/m^4.",
+     "source": "Results, Hydraulic Resistance, paragraph 2; Figure 6B and 6C; Table 2. The Results sentence cites Figure 5B, which is the resistance distribution of Figure 6B",
+     "quote": "Figure 5B shows that the distribution of hydraulic resistances for the polynomial fit matches that of the segmentation most closely, followed by the ellipse fit",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -421,9 +444,9 @@
     },
     {
      "claim": "ellipse-annulus-underestimate",
-     "statement": "ellipse-annulus-underestimate",
-     "source": null,
-     "quote": "",
+     "statement": "The resistance distribution of the optimal elliptical annulus is very similar to that of the ellipse fit, and both tend to underestimate the resistance of the segmented PVS.",
+     "source": "Results, Hydraulic Resistance, paragraph 3; Figure 6B",
+     "quote": "The distribution of resistances for the optimal elliptical annulus is very similar to that of the ellipse fit ... Though both the ellipse fit and annulus tend to underestimate the resistance of the PVS",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -453,9 +476,9 @@
     },
     {
      "claim": "spline-resistance-five-times",
-     "statement": "spline-resistance-five-times",
-     "source": null,
-     "quote": "",
+     "statement": "The spline fit's resistance is considerably larger than the segmentation's, its distribution peak about 5 times larger, despite a larger area ratio, because the spline PVS narrows rapidly away from the vessel.",
+     "source": "Results, Hydraulic Resistance, paragraph 3; Figure 6B inset",
+     "quote": "The resistance for the spline fit is considerably larger than that of the segmentation (distribution peak is 5 times larger)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -484,9 +507,9 @@
     },
     {
      "claim": "fig7-velocity-profiles",
-     "statement": "fig7-velocity-profiles",
-     "source": null,
-     "quote": "",
+     "statement": "In a representative cross section, the polynomial fit's velocity profile resembles the segmentation's, the ellipse fit gives much higher velocities and the spline fit much lower; these trends are generally consistent across cross sections.",
+     "source": "Results, Hydraulic Resistance, paragraph 4; Figure 7 legend",
+     "quote": "In this example case, the velocity profile for the polynomial fit is similar to the velocity profile in the segmentation, whereas the ellipse fit results in much higher velocities, and the spline fit results in much lower velocities.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -516,9 +539,9 @@
     },
     {
      "claim": "vessel-radius-peak",
-     "statement": "vessel-radius-peak",
-     "source": null,
-     "quote": "",
+     "statement": "The fitted vessel radius distribution peaks at 28 um.",
+     "source": "Discussion, paragraph 2; Results, Characteristics of the typical PVS shape, paragraph 2; Figure 8A and 9C",
+     "quote": "We approximated the cross-sectional shape of the vessel as a circle and found that the peak of the vessel radius distribution is 28 \u03bc m",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -544,9 +567,9 @@
     },
     {
      "claim": "fig8-ellipse-parameters",
-     "statement": "fig8-ellipse-parameters",
-     "source": null,
-     "quote": "",
+     "statement": "The ellipse fit shows an elongated, eccentric PVS with the vessel slightly below its center; R1 peaks at 28 um and R3 at 35 um, R3/R1 at 0.80, R2/R1 at 2.89, R3/R2 at 0.398, the vertical offset Ov at 0.24, and the horizontal offset Oh is centered near zero with a much wider distribution than Ov.",
+     "source": "Results, Characteristics of the typical PVS shape, paragraphs 2 to 5; Figure 8A, 8C, 8D, 8E and 8F",
+     "quote": "the distribution of R 1 , the vessel radius, is similar to that of R 3 , the minor axis length (distribution peaks at 28 \u03bc m and 35 \u03bc m, respectively, see Figure 8A ), and the ratio between them ( R 3 / R 1 ) is generally close to 1 (distribution peaks at 0.80, Figure 8E )",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -573,9 +596,9 @@
     },
     {
      "claim": "fig9c-pvs-two-lobes",
-     "statement": "fig9c-pvs-two-lobes",
-     "source": null,
-     "quote": "",
+     "statement": "The PVS usually consists of two mostly or entirely disconnected lobes on either side of the vessel; the polynomial fit's HC (top of PVS above top of vessel) peaks at zero, and when the lobes connect the channel is narrow, usually less than 0.5 R1.",
+     "source": "Results, Characteristics of the typical PVS shape, paragraph 2; Figure 9C; Table 3",
+     "quote": "The distribution peaks at zero ( Figure 9C ), suggesting that the top of the vessel is most often very nearly aligned with the top of the PVS and that the PVS is often separated into two lobes. Even when the two sides are connected, the channel connecting them is quite narrow, usually less than 0.5 R 1 .",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -601,9 +624,9 @@
     },
     {
      "claim": "fig9e-pvs-width-asymmetry",
-     "statement": "fig9e-pvs-width-asymmetry",
-     "source": null,
-     "quote": "",
+     "statement": "The PVS is about twice as wide as the vessel radius and asymmetric about the vessel; the short-side width WS/R1 peaks near 1.1, the long-side width WL/R1 near 1.9, and WS/WL near 0.5.",
+     "source": "Results, Characteristics of the typical PVS shape, paragraphs 3 and 5; Figure 9E; Table 3",
+     "quote": "The short side is significantly shorter than the long side (distribution peaks of 1.1 and 1.9, respectively, Figure 9E ) and for the ratio between them, W S / W L , the distribution peaks at approximately 0.5, indicating that the two PVS sides are typically asymmetric",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -629,9 +652,9 @@
     },
     {
      "claim": "left-right-no-difference",
-     "statement": "left-right-no-difference",
-     "source": null,
-     "quote": "",
+     "statement": "The PVS widths on the left and right sides of the vessel do not differ significantly.",
+     "source": "Results, Characteristics of the typical PVS shape, paragraph 5",
+     "quote": "Since there was no statistically significant difference between the left and right sides, we report the distribution of the short ( W S ) and long ( W L ) sides of each cross section.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -657,9 +680,9 @@
     },
     {
      "claim": "fig9a-heights-taper",
-     "statement": "fig9a-heights-taper",
-     "source": null,
-     "quote": "",
+     "statement": "The PVS is tallest next to the vessel and narrows far from it; the heights H1/R1, H2/R1 and H3/R1 peak at 1.34, 0.792 and 0.307, so H1 is about 4 times H3.",
+     "source": "Results, Characteristics of the typical PVS shape, paragraph 6; Figure 9A; Table 3",
+     "quote": "the distributions of heights of the PVS, H 1 , H 2 , and H 3 , peak at 1.34, 0.792, and 0.307, respectively, indicating that the PVS is larger closer to the vessel and smaller at the ends of the PVS. H 1 , the height of the PVS close to the vessel, is 4 times larger than H 3",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -685,9 +708,9 @@
     },
     {
      "claim": "fig9f-pvs-concave",
-     "statement": "fig9f-pvs-concave",
-     "source": null,
-     "quote": "",
+     "statement": "The bottom edge of the PVS is most often concave; the distribution of (H2 - H3)/(H1 - H2) peaks at 0.108, below the value of 1 that separates concave from convex.",
+     "source": "Results, Characteristics of the typical PVS shape, paragraph 7; Figure 9F",
+     "quote": "The peak of the curvature distribution is 0.108, showing that the PVS is most often concave",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -832,7 +855,7 @@
  ],
  "entries": [
   {
-   "name": "000491-raicevic-2023",
+   "name": "raicevic-2023",
    "type": "reproduction",
    "title": "Sizes and shapes of perivascular spaces around pial arteries (Raicevic et al. 2023)",
    "description": "Tests the findings of Raicevic, Forer, Ladron-de-Guevara, Du, Nedergaard, Kelley and Boster (2023) on dandiset 000491, which holds the 3D two-photon stacks and the final vessel and PVS segmentations of 14 pial artery segments in 9 mice. From the deposited segmentations it takes normal cross sections, measures PVS and vessel areas, fits the ellipse, spline and polynomial shapes and the vessel circle, and computes the hydraulic resistance per unit length, then compares the distributions with the paper's. The 2D time series used to validate the segmentation are not in the dandiset.",
@@ -847,7 +870,7 @@
     {
      "path": "reproduce_raicevic_2023.ipynb",
      "title": "Reproducing Raicevic et al. (2023) from dandiset 000491",
-     "executed": "notebooks/000491-raicevic-2023/reproduce_raicevic_2023.html"
+     "executed": null
     }
    ]
   }

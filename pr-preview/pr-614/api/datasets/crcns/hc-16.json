@@ -5,7 +5,7 @@
   "label": "CRCNS:hc-16"
  },
  "page": "datasets/crcns/hc-16/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 1,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "crcns-hc-16-talbot-2018-01",
+   "id": "talbot-2018-01",
    "dataset": {
     "archive": "crcns",
     "id": "hc-16",
     "version": "unversioned",
-    "doi": "10.6080/K01V5C44"
+    "doi": "10.6080/K01V5C44",
+    "relation": "primary"
    },
    "datasets": [
     "crcns:hc-16"
@@ -64,7 +65,7 @@
    "tier": "agent_verified",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "crcns-hc-16-talbot-2018",
+   "entry": "talbot-2018",
    "entry_title": "CA1 place cells and network coordination in Fmr1-null mice (Talbot et al. 2018)",
    "summary": "Fmr1-null place cells resembled wild-type ones on single-cell measures, as the paper reports, but most evidence for discoordinated network discharge did not hold up here. Weaker pass-by-pass covariance between Fmr1-null place cell pairs held, though not at the paper's values; weaker Kendall correlations at gamma and theta timescales, less recurrent network states and weaker ensemble coordination during arena rotation were not seen. Spatial firing quality differed by genotype, mostly in interneurons. No isolation measures or waveforms are given, so all sorted clusters stood in for the paper's well-isolated cells. Slice physiology, LFP phase coupling and the link to place avoidance could not be tested, as those recordings were not deposited.",
    "description": "Tests the findings of Talbot, Sparks, Dvorak, Curran, Alarcon and Fenton (2018) that can be tested on CRCNS hc-16, which holds CA1 spike trains with tracked positions from 8 wild-type and 7 Fmr1-null mice in a large box and a stationary and rotating circular arena. It compares cell classes, place cell properties, overdispersion, pass-by-pass covariance, Kendall correlations, locomotion and frame-specific positional information between genotypes. The slice recordings, LFP, sleep recordings and avoidance sessions of the paper are not in the data set.",
@@ -72,16 +73,29 @@
     {
      "path": "reproduce_talbot_2018.ipynb",
      "title": "Reproducing Talbot et al. (2018) from CRCNS hc-16",
-     "executed": "notebooks/crcns-hc-16-talbot-2018/reproduce_talbot_2018.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "fig1ab-baseline-transmission",
-     "statement": "fig1ab-baseline-transmission",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Baseline CA3-CA1 synaptic responses do not differ between naive WT and Fmr1-null slices; training enhances them in both genotypes, and Fmr1-null mice, unlike WT, show the enhancement after control exposure as well, with responses almost twice those of naive mice.",
+     "source": "Results, Exaggerated Baseline and Learning-Induced Changes, paragraph 1; Figure 1A and 1B",
+     "quote": "Synaptic responses from the exposed Fmr1-null group were almost twice as large as the task-naive Fmr1-null and the WT groups (Figure 1B)",
+     "statistics": [
+      {
+       "about": "training effect, area under the stimulus-response curve",
+       "test": "two-way genotype x training ANOVA",
+       "statistic": "F(2, 42) = 25.7",
+       "p": 1e-08
+      },
+      {
+       "about": "genotype x training interaction",
+       "test": "two-way genotype x training ANOVA",
+       "statistic": "F(1, 42) = 3.49",
+       "p": 0.04
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -97,10 +111,43 @@
     },
     {
      "claim": "fig1cd-potentiation",
-     "statement": "fig1cd-potentiation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Post-tetanic and early potentiation after 100 Hz stimulation are greater in exposed Fmr1-null than in exposed WT mice and smaller in trained mice of both genotypes; late potentiation does not differ between genotypes but is weakest in the trained groups.",
+     "source": "Figure 1C and 1D legend; Results, Exaggerated Baseline and Learning-Induced Changes, paragraph 1",
+     "quote": "The de novo protein-synthesis-independent PTP and early-potentiation changes were greater in exposed Fmr1-null mice than in exposed WT mice ... De novo protein-synthesis-dependent late potentiation was not different between the genotypes",
+     "statistics": [
+      {
+       "about": "PTP, exposed Fmr1-null against exposed WT",
+       "test": "two-way genotype x training ANOVA, genotype effect",
+       "statistic": "t(42) = 2.79",
+       "p": 0.008
+      },
+      {
+       "about": "early potentiation, exposed Fmr1-null against exposed WT",
+       "test": "two-way genotype x training ANOVA, genotype effect",
+       "statistic": "t(42) = 3.62",
+       "p": 0.0008
+      },
+      {
+       "about": "PTP, training effect",
+       "statistic": "F(2, 42) = 13.72",
+       "p": 1e-05
+      },
+      {
+       "about": "early potentiation, training effect",
+       "statistic": "F(2, 42) = 14.42",
+       "p": 1e-05
+      },
+      {
+       "about": "late potentiation, genotype",
+       "statistic": "t(42) = 0.84",
+       "p": 0.4
+      },
+      {
+       "about": "late potentiation, training effect",
+       "statistic": "F(2, 42) = 19.36",
+       "p": 1e-06
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -116,9 +163,9 @@
     },
     {
      "claim": "figs1-avoidance-equal",
-     "statement": "figs1-avoidance-equal",
-     "source": null,
-     "quote": "",
+     "statement": "Fmr1-null mice learn the active place avoidance task as well as WT mice (the slice cohort).",
+     "source": "Results, Exaggerated Baseline and Learning-Induced Changes, paragraph 1; Figure S1",
+     "quote": "Fmr1-null mice performed as well as WT mice (Figure S1) in the hippocampus- and LTP-dependent active place avoidance task",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -135,9 +182,9 @@
     },
     {
      "claim": "unit-and-cell-counts",
-     "statement": "unit-and-cell-counts",
-     "source": null,
-     "quote": "",
+     "statement": "Of 1,115 clusters, 499 came from 12 WT and 616 from 9 Fmr1-null mice; 226 WT and 334 Fmr1-null well-isolated cells formed the data set.",
+     "source": "Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1; Table S2",
+     "quote": "Of the 1,115 single-unit waveform clusters that were identified, 499 were recorded from 12 WT mice and 616 were recorded from 9 Fmr1-null mice (Table S2) ... 226 WT and 334 Fmr1-null presumptive cells comprised the dataset",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -156,10 +203,17 @@
     },
     {
      "claim": "interneuron-proportion",
-     "statement": "interneuron-proportion",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "A lower proportion of the well-isolated cells is classified as interneurons in WT (28, 12.4%) than in Fmr1-null mice (98, 29.3%).",
+     "source": "Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1",
+     "quote": "A lower proportion of these were classified as interneurons in WT mice (28, 12.4%) than Fmr1-null mice (98, 29.3%; test of proportions z = 9.4, p = 10\ufffd17)",
+     "statistics": [
+      {
+       "test": "test of proportions",
+       "statistic": "z = 9.4",
+       "p": 1e-17,
+       "n": "226 WT and 334 Fmr1-null cells"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -180,10 +234,16 @@
     },
     {
      "claim": "place-cell-proportion",
-     "statement": "place-cell-proportion",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Place cells are less prevalent in Fmr1-null mice (141, 42.2%) than in WT mice (108, 47.8%).",
+     "source": "Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1",
+     "quote": "when the putative principal cells were classified as place cells (WT n = 108 [47.8%], Fmr1 null n = 141 [42.2%]), the prevalence was lower in the Fmr1-null mice (test of proportions z = 2.04, p = 0.02)",
+     "statistics": [
+      {
+       "test": "test of proportions",
+       "statistic": "z = 2.04",
+       "p": 0.02
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -204,10 +264,35 @@
     },
     {
      "claim": "figs3-nonspatial-properties-similar",
-     "statement": "figs3-nonspatial-properties-similar",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Waveform width, burst probability, interspike interval and overall firing rate do not differ between genotypes.",
+     "source": "Figure S3C to S3F; Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1",
+     "quote": "The fundamental extracellular waveform and non-spatial discharge characteristics of the classified cells were indistinguishable between the genotypes",
+     "statistics": [
+      {
+       "about": "action potential width, genotype",
+       "test": "two-way genotype x cell class ANOVA",
+       "statistic": "F(1, 386) = 0.97",
+       "p": 0.32
+      },
+      {
+       "about": "burst probability, genotype",
+       "test": "two-way genotype x cell class ANOVA",
+       "statistic": "F(1, 386) = 0.69",
+       "p": 0.41
+      },
+      {
+       "about": "interspike interval, genotype",
+       "test": "two-way genotype x cell class ANOVA",
+       "statistic": "F(1, 386) = 2.78",
+       "p": 0.1
+      },
+      {
+       "about": "overall firing rate, genotype",
+       "test": "two-way genotype x cell class ANOVA",
+       "statistic": "F(1, 386) = 0.32",
+       "p": 0.57
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -227,10 +312,37 @@
     },
     {
      "claim": "fig2-spatial-quality-similar",
-     "statement": "fig2-spatial-quality-similar",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In a fixed environment, spatial firing quality (coherence, proportion of active pixels, information content, number of place fields, in-field rate) differs between place cells and interneurons but not between genotypes.",
+     "source": "Figure 2B to 2F; Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1",
+     "quote": "Spatial firing quality differs between place cells and interneurons, but not between genotypes, as assessed by two-way genotype 3 cell class ANOVAs",
+     "statistics": [
+      {
+       "about": "spatial coherence, genotype",
+       "test": "two-way genotype x cell class ANOVA",
+       "statistic": "F(1, 340) = 0.60",
+       "p": 0.44
+      },
+      {
+       "about": "proportion of active pixels, genotype",
+       "statistic": "F(1, 340) = 3.7",
+       "p": 0.06
+      },
+      {
+       "about": "information content, genotype",
+       "statistic": "F(1, 340) = 3.6",
+       "p": 0.06
+      },
+      {
+       "about": "number of place fields, genotype",
+       "statistic": "F(1, 340) = 0.13",
+       "p": 0.72
+      },
+      {
+       "about": "in-field firing rate, genotype",
+       "statistic": "F(1, 340) = 0.24",
+       "p": 0.62
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -250,10 +362,44 @@
     },
     {
      "claim": "tables1-place-cell-properties-similar",
-     "statement": "tables1-place-cell-properties-similar",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Firing rate, in-field rate, spatial coherence, information content and proportion of active pixels of place cells, and the firing rate of interneurons, do not differ between WT and Fmr1-null mice.",
+     "source": "Table S1; Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1",
+     "quote": "the fundamental measures of spatial discharge quality did not differ between either the WT and the Fmr1-null place cells or interneurons (Table S1)",
+     "statistics": [
+      {
+       "about": "place cell firing rate",
+       "test": "unpaired t test",
+       "statistic": "t(160) = 1.19",
+       "p": 0.23,
+       "n": "73 WT and 89 Fmr1-null place cells"
+      },
+      {
+       "about": "in-field rate",
+       "statistic": "t(160) = 1.74",
+       "p": 0.08
+      },
+      {
+       "about": "spatial coherence",
+       "statistic": "t(160) = 1.22",
+       "p": 0.23
+      },
+      {
+       "about": "information content",
+       "statistic": "t(160) = 0.45",
+       "p": 0.65
+      },
+      {
+       "about": "proportion active pixels",
+       "statistic": "t(160) = 0.35",
+       "p": 0.73
+      },
+      {
+       "about": "interneuron firing rate",
+       "statistic": "t(67) = 0.18",
+       "p": 0.85,
+       "n": "13 WT and 56 Fmr1-null interneurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -273,12 +419,24 @@
     },
     {
      "claim": "tables1-nonspatial-active-pixels",
-     "statement": "tables1-nonspatial-active-pixels",
-     "source": null,
+     "statement": "Non-spatial pyramidal cells of Fmr1-null mice discharge in a larger proportion of the environment than those of WT mice (0.40 against 0.26).",
+     "source": "Table S1, non-spatial pyramidal cells",
      "quote": "",
-     "statistics": [],
+     "statistics": [
+      {
+       "test": "unpaired t test",
+       "statistic": "t(113) = 2.37",
+       "p": 0.02,
+       "n": "58 WT and 57 Fmr1-null non-spatial pyramidal cells"
+      },
+      {
+       "test": "Mann-Whitney",
+       "statistic": "U = 1,219",
+       "p": 0.02
+      }
+     ],
      "kind": "finding",
-     "inferred": "",
+     "inferred": "Numbers and tests from Table S1; no sentence of the paper states this difference.",
      "outcome": "not_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_talbot_2018.ipynb",
@@ -295,10 +453,37 @@
     },
     {
      "claim": "figs4-remapping-similar",
-     "statement": "figs4-remapping-similar",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Place cells recorded in a square and a circular enclosure remap in both genotypes; the map similarities are near independence and their distributions do not differ between genotypes.",
+     "source": "Results, Non-spatial and Spatial Single-Cell Discharge Features, paragraph 1; Figure S4",
+     "quote": "Importantly, the WT and Fmr1-null distributions of z-transformed similarity values were not distinguishable (t54 = 0.10, p = 0.9, d = 0.03)",
+     "statistics": [
+      {
+       "about": "WT similarity against zero",
+       "test": "t test",
+       "statistic": "t(24) = 1.92",
+       "p": 0.07,
+       "n": "25 WT place cells"
+      },
+      {
+       "about": "Fmr1-null similarity against zero",
+       "test": "t test",
+       "statistic": "t(30) = 1.89",
+       "p": 0.07,
+       "n": "31 Fmr1-null place cells"
+      },
+      {
+       "about": "proportion significantly positively correlated, 8/25 against 8/31",
+       "test": "proportions test",
+       "statistic": "z = 0.85",
+       "p": 0.3
+      },
+      {
+       "about": "WT against Fmr1-null z-transformed similarities",
+       "test": "t test",
+       "statistic": "t(54) = 0.10",
+       "p": 0.9
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -314,10 +499,23 @@
     },
     {
      "claim": "fig3b-place-cell-modulation-similar",
-     "statement": "fig3b-place-cell-modulation-similar",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Theta (8 Hz) and gamma (40 Hz) phase modulation of place cell discharge is similar between genotypes.",
+     "source": "Results, Abnormal Spike-Field Coordination, paragraph 2; Figure 3B",
+     "quote": "The modulation of place cell discharge in the theta (\ufffd8 Hz) and ... low gamma (\ufffd40 Hz) bands is similar between the genotypes",
+     "statistics": [
+      {
+       "about": "theta",
+       "test": "t test",
+       "statistic": "t(169) = 0.78",
+       "p": 0.44
+      },
+      {
+       "about": "gamma",
+       "test": "t test",
+       "statistic": "t(169) = 0.61",
+       "p": 0.53
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -333,10 +531,37 @@
     },
     {
      "claim": "fig3bc-weaker-modulation-nonspatial-interneurons",
-     "statement": "fig3bc-weaker-modulation-nonspatial-interneurons",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Theta and gamma phase modulation is weaker in Fmr1-null than in WT non-spatial pyramidal cells and interneurons.",
+     "source": "Results, Abnormal Spike-Field Coordination, paragraph 2; Figure 3B and 3C",
+     "quote": "However, the modulation is weaker in Fmr1-null compared to WT non-spatial pyramidal cells",
+     "statistics": [
+      {
+       "about": "non-spatial pyramidal cells, theta",
+       "test": "t test",
+       "statistic": "t(50) = 3.52",
+       "p": 0.0009
+      },
+      {
+       "about": "non-spatial pyramidal cells, gamma",
+       "test": "t test",
+       "statistic": "t(50) = 4.25",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "interneurons, theta",
+       "test": "t test",
+       "statistic": "t(75) = 3.93",
+       "p": 0.0002
+      },
+      {
+       "about": "interneurons, gamma",
+       "test": "t test",
+       "statistic": "t(75) = 5.02",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -352,10 +577,29 @@
     },
     {
      "claim": "fig3b-phase-preference",
-     "statement": "fig3b-phase-preference",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "WT place cells fire at an earlier theta phase and a later gamma phase than Fmr1-null place cells, and WT interneurons at an earlier gamma phase than Fmr1-null interneurons.",
+     "source": "Results, Abnormal Spike-Field Coordination, paragraph 2; Figure 3B",
+     "quote": "WT place cells discharged ... at the theta trough on an earlier theta phase compared to Fmr1null place cells",
+     "statistics": [
+      {
+       "about": "place cells, theta",
+       "test": "Watson-Williams multi-sample test for equal means",
+       "statistic": "F(1, 169) = 8.97",
+       "p": 0.003
+      },
+      {
+       "about": "place cells, gamma",
+       "test": "Watson-Williams multi-sample test",
+       "statistic": "F(1, 169) = 26.88",
+       "p": 1e-07
+      },
+      {
+       "about": "interneurons, gamma",
+       "test": "Watson-Williams multi-sample test",
+       "statistic": "F(1, 75) = 10.52",
+       "p": 0.002
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -371,10 +615,43 @@
     },
     {
      "claim": "fig3d-stereotypy",
-     "statement": "fig3d-stereotypy",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Phase-frequency discharge relationships are more stereotyped (lower pairwise MSE) among WT than Fmr1-null place cells, and less stereotyped among WT than Fmr1-null non-spatial pyramidal cells and interneurons, in the theta and gamma ranges.",
+     "source": "Results, Abnormal Spike-Field Coordination, paragraph 3; Figure 3D",
+     "quote": "The relationship was more stereotyped in WT compared to Fmr1-null place cells in the theta (5\u201312 Hz) and gamma (30\u2013100 Hz) frequency ranges",
+     "statistics": [
+      {
+       "about": "place cells, theta",
+       "test": "t test",
+       "statistic": "t(7219) = 6.16",
+       "p": 1e-10
+      },
+      {
+       "about": "place cells, gamma",
+       "test": "t test",
+       "statistic": "t(7219) = 11.32",
+       "p": 1e-29
+      },
+      {
+       "about": "non-spatial pyramidal cells, theta",
+       "statistic": "t(733) = 15.30",
+       "p": 1e-46
+      },
+      {
+       "about": "interneurons, theta",
+       "statistic": "t(1980) = 14.46",
+       "p": 1e-45
+      },
+      {
+       "about": "non-spatial pyramidal cells, gamma",
+       "statistic": "t(733) = 12.92",
+       "p": 1e-34
+      },
+      {
+       "about": "interneurons, gamma",
+       "statistic": "t(1980) = 5.02",
+       "p": 1e-07
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -390,10 +667,22 @@
     },
     {
      "claim": "overdispersion-passes",
-     "statement": "overdispersion-passes",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Overdispersion is lower (spatial firing more reliable) in Fmr1-null mice when the unit is a pass through a place field (variance 4.89 against 5.81).",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 1",
+     "quote": "Overdispersion was lower (spatial firing was more reliable) in Fmr1-null mice when the unit of analysis is a pass through a place field",
+     "statistics": [
+      {
+       "test": "F test",
+       "statistic": "F(6775, 9101) = 1.19",
+       "p": 1e-17,
+       "n": "6,776 WT and 9,102 Fmr1-null passes"
+      },
+      {
+       "test": "Levene's test",
+       "statistic": "F(1, 15874) = 22.21",
+       "p": 1e-06
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -415,10 +704,22 @@
     },
     {
      "claim": "overdispersion-cells",
-     "statement": "overdispersion-cells",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Overdispersion is marginally lower in Fmr1-null mice when the unit is a place cell (5.02 against 5.98).",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 1",
+     "quote": "Overdispersion was also marginally lower in Fmr1-null mice when the unit of analysis is a place cell",
+     "statistics": [
+      {
+       "test": "t test, one-tailed",
+       "statistic": "t(176) = 1.87",
+       "p": 0.03,
+       "n": "80 WT and 98 Fmr1-null place cells"
+      },
+      {
+       "test": "Mann-Whitney, one-tailed",
+       "statistic": "U = 3,386",
+       "p": 0.06
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -439,10 +740,28 @@
     },
     {
      "claim": "fig4b-covariance-30-passes",
-     "statement": "fig4b-covariance-30-passes",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Pairs of Fmr1-null place cells with overlapping fields covary less in their pass-by-pass discharge than WT pairs (average r 0.04 against 0.09), a difference that disappears after shuffling.",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 2; Figure 4A and 4B",
+     "quote": "This greater spatial discharge reliability of individual Fmr1-null place cells is accompanied by significantly less spatial discharge covariance (Figure 4A) of the Fmr1-null cell pairs with overlapping place fields and at least 30 passes through both firing fields",
+     "statistics": [
+      {
+       "test": "t test",
+       "statistic": "t(356) = 2.39",
+       "p": 0.02,
+       "n": "109 WT and 249 Fmr1-null pairs"
+      },
+      {
+       "test": "Mann-Whitney",
+       "statistic": "U = 12,424",
+       "p": 0.2
+      },
+      {
+       "about": "after random permutation of z values within pairs",
+       "test": "t test",
+       "statistic": "t(356) = 0.8",
+       "p": 0.4
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -463,10 +782,23 @@
     },
     {
      "claim": "fig4b-covariance-40-passes",
-     "statement": "fig4b-covariance-40-passes",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "With at least 40 passes, the covariance difference holds and is larger (average r 0.06 in Fmr1-null against 0.19 in WT).",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 2; Figure 4B",
+     "quote": "In fact, the difference is maintained when at least 40 qualified passes were required",
+     "statistics": [
+      {
+       "test": "t test",
+       "statistic": "t(227) = 4.2",
+       "p": 0.0001,
+       "n": "56 WT and 173 Fmr1-null pairs"
+      },
+      {
+       "test": "Mann-Whitney",
+       "statistic": "U = 3,791",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -487,10 +819,42 @@
     },
     {
      "claim": "fig4cd-kendall-place-cells",
-     "statement": "fig4cd-kendall-place-cells",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Kendall correlations between Fmr1-null place cell spike trains are weaker than between WT ones at the 25 ms, 40 ms and 125 ms timescales, but not significantly at 1 s and 5 s.",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 3; Figure 4C and 4D",
+     "quote": "At the 25 ms (Figures 4C and 4D) and 40 ms timescales of gamma oscillations, as well as the 125 ms timescale of theta oscillations, Fmr1-null cell pair discharge correlations (n = 504 pairs) were significantly weaker than those of WT cell pairs",
+     "statistics": [
+      {
+       "about": "25 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 51,894",
+       "p": 0.0002,
+       "n": "247 WT and 504 Fmr1-null pairs"
+      },
+      {
+       "about": "40 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 53,512",
+       "p": 0.002
+      },
+      {
+       "about": "125 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 55,708",
+       "p": 0.02
+      },
+      {
+       "about": "1 s",
+       "test": "Mann-Whitney",
+       "statistic": "U = 60,801",
+       "p": 0.6
+      },
+      {
+       "about": "5 s",
+       "test": "Mann-Whitney",
+       "statistic": "U = 60,313",
+       "p": 0.5
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -511,10 +875,83 @@
     },
     {
      "claim": "fig4d-network-state-recurrence",
-     "statement": "fig4d-network-state-recurrence",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Network states recur less in Fmr1-null ensembles; the vector of pairwise Kendall correlations does not differ between the two halves of WT recordings but does in Fmr1-null recordings, at timescales from 25 ms to 5 s.",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 3; Figure 4D legend",
+     "quote": "pairwise t tests could not reject the hypothesis that the WT vector of Kendall correlations from the two halves of a recording are the same whereas the corresponding Fmr1-null comparisons were all significantly different",
+     "statistics": [
+      {
+       "about": "WT halves, 25 ms",
+       "test": "paired t test",
+       "statistic": "t(246) = 0.9",
+       "p": 0.4
+      },
+      {
+       "about": "Fmr1-null halves, 25 ms",
+       "test": "paired t test",
+       "statistic": "t(503) = 3.03",
+       "p": 0.002
+      },
+      {
+       "about": "WT halves, 40 ms",
+       "test": "paired t test",
+       "statistic": "t(246) = 0.6",
+       "p": 0.5
+      },
+      {
+       "about": "Fmr1-null halves, 40 ms",
+       "test": "paired t test",
+       "statistic": "t(503) = 3",
+       "p": 0.003
+      },
+      {
+       "about": "WT halves, 125 ms",
+       "test": "paired t test",
+       "statistic": "t(246) = 1.02",
+       "p": 0.3
+      },
+      {
+       "about": "Fmr1-null halves, 125 ms",
+       "test": "paired t test",
+       "statistic": "t(503) = 1.7",
+       "p": 0.09
+      },
+      {
+       "about": "WT halves, 250 ms",
+       "test": "paired t test",
+       "statistic": "t(246) = 1.0",
+       "p": 0.3
+      },
+      {
+       "about": "Fmr1-null halves, 250 ms",
+       "test": "paired t test",
+       "statistic": "t(503) = 2.4",
+       "p": 0.02
+      },
+      {
+       "about": "WT halves, 1 s",
+       "test": "paired t test",
+       "statistic": "t(246) = 0.9",
+       "p": 0.4
+      },
+      {
+       "about": "Fmr1-null halves, 1 s",
+       "test": "paired t test",
+       "statistic": "t(503) = 2.6",
+       "p": 0.001
+      },
+      {
+       "about": "WT halves, 5 s",
+       "test": "paired t test",
+       "statistic": "t(246) = 0.3",
+       "p": 0.7
+      },
+      {
+       "about": "Fmr1-null halves, 5 s",
+       "test": "paired t test",
+       "statistic": "t(503) = 2.0",
+       "p": 0.046
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -533,10 +970,41 @@
     },
     {
      "claim": "kendall-nonspatial-pyramidal",
-     "statement": "kendall-nonspatial-pyramidal",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Kendall correlations between Fmr1-null non-spatial pyramidal cells are weaker than between WT ones at 25 ms, 40 ms, 125 ms and 1 s, but not significantly at 5 s.",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 4",
+     "quote": "Similar to place cell ensembles, Fmr1-null cell pair discharge correlations of non-spatial pyramidal cells (n = 203 pairs) were significantly weaker than those of WT cell pairs (n = 252 pairs",
+     "statistics": [
+      {
+       "about": "25 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 22,437",
+       "p": 0.03
+      },
+      {
+       "about": "40 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 22,318",
+       "p": 0.02
+      },
+      {
+       "about": "125 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 21,745",
+       "p": 0.007
+      },
+      {
+       "about": "1 s",
+       "test": "Mann-Whitney",
+       "statistic": "U = 21,977",
+       "p": 0.01
+      },
+      {
+       "about": "5 s",
+       "test": "Mann-Whitney",
+       "statistic": "U = 23,333",
+       "p": 0.12
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -556,10 +1024,50 @@
     },
     {
      "claim": "kendall-quiet-states",
-     "statement": "kendall-quiet-states",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During quiet wakefulness and sleep, place cell pair correlations do not differ at the gamma timescales (25, 40 ms) but are weaker in Fmr1-null at 125 ms, 250 ms and 1 s.",
+     "source": "Results, Reduced Spatial Discharge Coordination, paragraph 5",
+     "quote": "Spike train correlations did not differ at the gamma timescale ... whereas the Fmr1-null correlation distribution was weaker at theta and 1 s timescales",
+     "statistics": [
+      {
+       "about": "25 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 11,248",
+       "p": 0.24,
+       "n": "125 WT pairs (35 cells, 6 mice) and 195 Fmr1-null pairs (39 cells, 4 mice)"
+      },
+      {
+       "about": "40 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 11,026",
+       "p": 0.15
+      },
+      {
+       "about": "125 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 10,583",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "250 ms",
+       "test": "Mann-Whitney",
+       "statistic": "U = 10,397",
+       "p": 0.03
+      },
+      {
+       "about": "1 s",
+       "test": "Mann-Whitney",
+       "statistic": "U = 10,629",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "5 s",
+       "test": "Mann-Whitney",
+       "statistic": "U = 10,917",
+       "p": 0.12
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -580,10 +1088,27 @@
     },
     {
      "claim": "locomotion-similar",
-     "statement": "locomotion-similar",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "WT and Fmr1-null mice do not differ in locomotion speed or path linearity during the recordings, and the change in speed between the two halves of a session does not differ between genotypes.",
+     "source": "Results, Abnormal Spike-Field Coordination, paragraph 1; Results, Reduced Spatial Discharge Coordination, paragraph 3; Figure S5B",
+     "quote": "These genotypic differences were unlikely to be due to differences in locomotion because the changes in locomotion across the two halves of the session were not distinct between the WT and Fmr1-null mice",
+     "statistics": [
+      {
+       "about": "genotype",
+       "test": "two-way genotype x epoch ANOVA",
+       "statistic": "F(1, 27) = 0.94",
+       "p": 0.94
+      },
+      {
+       "about": "epoch",
+       "statistic": "F(1, 27) = 7.39",
+       "p": 0.01
+      },
+      {
+       "about": "genotype x epoch interaction",
+       "statistic": "F(1, 27) = 2.16",
+       "p": 0.15
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -604,10 +1129,25 @@
     },
     {
      "claim": "fig5b-frame-specific-ipos",
-     "statement": "fig5b-frame-specific-ipos",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During arena rotation, room-frame positional information (Ipos) is greater in Fmr1-null than in WT place cells, and arena-frame Ipos only marginally greater.",
+     "source": "Figure 5B; Results, During Dissociation of Spatial Frames, paragraph 1",
+     "quote": "Room-specific Ipos is greater in Fmr1 null compared to WT (Mann-Whitney U = 208, p < 0.05, d = 0.45) whereas arena-specific Ipos is only marginally greater in Fmr1 null",
+     "statistics": [
+      {
+       "about": "room frame",
+       "test": "Mann-Whitney",
+       "statistic": "U = 208",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "20 WT and 31 Fmr1-null place cells"
+      },
+      {
+       "about": "arena frame",
+       "test": "Mann-Whitney",
+       "statistic": "U = 213",
+       "p": 0.06
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -629,10 +1169,18 @@
     },
     {
      "claim": "fig5c-ensemble-coordination",
-     "statement": "fig5c-ensemble-coordination",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The frame-specific positional discharge fluctuations of single place cells are less correlated with those of the rest of the ensemble in Fmr1-null than in WT mice.",
+     "source": "Figure 5C; Results, During Dissociation of Spatial Frames, paragraph 2",
+     "quote": "The association between the ensemble and the single left-out cell was weaker in Fmr1-null compared to WT place cells (Figure 5C)",
+     "statistics": [
+      {
+       "test": "t test",
+       "statistic": "t(48) = 2.4",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "20 WT and 30 Fmr1-null place cells"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -651,10 +1199,23 @@
     },
     {
      "claim": "figs6-room-frame-preference",
-     "statement": "figs6-room-frame-preference",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Session-averaged spatial firing during rotation is better organized in the room frame than in the arena frame, similarly in both genotypes.",
+     "source": "Results, During Dissociation of Spatial Frames, paragraph 1; Figure S6B",
+     "quote": "The session-averaged, frame-specific spatial firing was better organized in the room frame, and this preference was similar for the two genotypes (Figure S6)",
+     "statistics": [
+      {
+       "about": "map coherence, environment effect",
+       "test": "two-way genotype x environment ANOVA, repeated measures on environment",
+       "statistic": "F(3, 147) = 9.02",
+       "p": 1.6e-05
+      },
+      {
+       "about": "information content, environment effect",
+       "test": "two-way genotype x environment ANOVA, repeated measures on environment",
+       "statistic": "F(3, 147) = 4.17",
+       "p": 0.046
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -676,10 +1237,17 @@
     },
     {
      "claim": "fig6-covariance-sem-predicts-errors",
-     "statement": "fig6-covariance-sem-predicts-errors",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Across nine mice, the number of shock zone entries during training is positively correlated with the SEM of the pass-by-pass covariance of place cell pairs (r = 0.61).",
+     "source": "Results, Correlated Network Discharge Predicts Cognitive Performance, paragraph 1",
+     "quote": "this index of poor performance was positively correlated with inconsistently coordinated discharge during passes across the firing fields of pairs of place cells",
+     "statistics": [
+      {
+       "test": "Pearson correlation",
+       "statistic": "r = 0.61",
+       "p": 0.04,
+       "n": "9 mice (5 WT, 4 Fmr1-null)"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -695,10 +1263,36 @@
     },
     {
      "claim": "fig6-kendall-predicts-errors",
-     "statement": "fig6-kendall-predicts-errors",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Across nine mice, shock zone entries are negatively correlated with the mouse's average place cell Kendall correlation, strongest at 25 ms (r = -0.87), 40 ms (r = -0.80) and 125 ms (r = -0.62), and not significant at 250 ms and longer.",
+     "source": "Results, Correlated Network Discharge Predicts Cognitive Performance, paragraph 2",
+     "quote": "Indeed, place avoidance performance was negatively correlated with Kendall\u2019s correlation; the relationship was strongest at the gamma and theta timescales of 25 ms",
+     "statistics": [
+      {
+       "about": "25 ms",
+       "test": "Pearson correlation, one-tailed",
+       "statistic": "r = -0.87",
+       "p": 0.001,
+       "n": "9 mice"
+      },
+      {
+       "about": "40 ms",
+       "test": "Pearson correlation, one-tailed",
+       "statistic": "r = -0.80",
+       "p": 0.005
+      },
+      {
+       "about": "125 ms",
+       "test": "Pearson correlation, one-tailed",
+       "statistic": "r = -0.62",
+       "p": 0.04
+      },
+      {
+       "about": "250 ms",
+       "test": "Pearson correlation, one-tailed",
+       "statistic": "r = -0.47",
+       "p": 0.1
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -714,10 +1308,23 @@
     },
     {
      "claim": "discussion-single-cell-measures-no-relation",
-     "statement": "discussion-single-cell-measures-no-relation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Avoidance performance is not predicted by single-cell place field quality (map coherence r = -0.32, information content r = 0.27).",
+     "source": "Discussion, Experience-Dependent Synaptic Function Abnormalities, paragraph 2",
+     "quote": "no such relationship was identified between cognitive variables and single-cell measures of place field quality",
+     "statistics": [
+      {
+       "about": "map coherence",
+       "test": "Pearson correlation",
+       "statistic": "r = -0.32",
+       "p": 0.2
+      },
+      {
+       "about": "information content",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.27",
+       "p": 0.24
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -733,10 +1340,45 @@
     },
     {
      "claim": "fig6-avoidance-behavior",
-     "statement": "fig6-avoidance-behavior",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the nine recorded mice, Fmr1-null and WT mice explore alike, learn the avoidance equally, and extinguish alike in the first extinction session, but Fmr1-null mice enter the former shock zone less often in the second extinction session.",
+     "source": "Figure 6B to 6H",
+     "quote": "During the second extinction session, there were significant effects of genotype",
+     "statistics": [
+      {
+       "about": "number of entries, genotype",
+       "test": "genotype x session repeated-measures ANOVA",
+       "statistic": "F(1, 28) = 0.045",
+       "p": 0.8
+      },
+      {
+       "about": "time to first entry, genotype",
+       "statistic": "F(1, 28) = 0.10",
+       "p": 0.8
+      },
+      {
+       "about": "shocks per entry, genotype",
+       "statistic": "F(1, 28) = 1.19",
+       "p": 0.28
+      },
+      {
+       "about": "first extinction, genotype",
+       "test": "two-way genotype x 10 min block ANOVA",
+       "statistic": "F(1, 21) = 1.33",
+       "p": 0.3
+      },
+      {
+       "about": "second extinction, genotype",
+       "test": "two-way genotype x 10 min block ANOVA",
+       "statistic": "F(1, 18) = 7.00",
+       "p": 0.02
+      },
+      {
+       "about": "pretraining distance",
+       "test": "t test",
+       "statistic": "t(7) = 1.03",
+       "p": 0.5
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -752,9 +1394,9 @@
     },
     {
      "claim": "figs5a-power-spectra-similar",
-     "statement": "figs5a-power-spectra-similar",
-     "source": null,
-     "quote": "",
+     "statement": "CA1 LFP power spectra in the theta and gamma ranges do not differ between genotypes.",
+     "source": "Results, Abnormal Spike-Field Coordination, paragraph 1; Figure S5A",
+     "quote": "Although the power spectra of LFP oscillations recorded from the CA1 pyramidal cell layer is indistinguishable between the genotypes in \ufffd8 Hz theta and 30\u2013100 Hz gamma ranges",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -867,7 +1509,7 @@
  ],
  "entries": [
   {
-   "name": "crcns-hc-16-talbot-2018",
+   "name": "talbot-2018",
    "type": "reproduction",
    "title": "CA1 place cells and network coordination in Fmr1-null mice (Talbot et al. 2018)",
    "description": "Tests the findings of Talbot, Sparks, Dvorak, Curran, Alarcon and Fenton (2018) that can be tested on CRCNS hc-16, which holds CA1 spike trains with tracked positions from 8 wild-type and 7 Fmr1-null mice in a large box and a stationary and rotating circular arena. It compares cell classes, place cell properties, overdispersion, pass-by-pass covariance, Kendall correlations, locomotion and frame-specific positional information between genotypes. The slice recordings, LFP, sleep recordings and avoidance sessions of the paper are not in the data set.",
@@ -882,7 +1524,7 @@
     {
      "path": "reproduce_talbot_2018.ipynb",
      "title": "Reproducing Talbot et al. (2018) from CRCNS hc-16",
-     "executed": "notebooks/crcns-hc-16-talbot-2018/reproduce_talbot_2018.html"
+     "executed": null
     }
    ]
   }

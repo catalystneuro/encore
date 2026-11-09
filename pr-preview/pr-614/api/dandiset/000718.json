@@ -5,10 +5,10 @@
   "label": "DANDI:000718"
  },
  "page": "datasets/dandi/000718/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
-  "reproduced": 3,
+  "reproduced": 2,
   "partially_reproduced": 0,
   "not_reproduced": 2,
   "blocked": 21
@@ -26,19 +26,20 @@
   "blocked": 0
  },
  "outcome_counts_links": {
-  "reproduced": 0,
+  "reproduced": 1,
   "partially_reproduced": 0,
   "not_reproduced": 0,
   "blocked": 0
  },
  "attempts": [
   {
-   "id": "000718-zaki-2024-01",
+   "id": "zaki-2024-01",
    "dataset": {
     "archive": "dandi",
     "id": "000718",
     "version": "0.260825.1902",
-    "doi": "10.48324/dandi.000718/0.260825.1902"
+    "doi": "10.48324/dandi.000718/0.260825.1902",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:000718"
@@ -64,7 +65,7 @@
    "tier": "agent_verified",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "000718-zaki-2024",
+   "entry": "zaki-2024",
    "entry_title": "Offline ensemble co-reactivation in the EEG/EMG experiment (Zaki et al. 2024)",
    "summary": "Most of the paper's main findings, including retrospective linking and offline ensemble recruitment, could not be tested here, because the dandiset holds only two of nine mice and one 10 min offline recording per period. Burst skew above shuffled data held, but burst frequency above shuffle was blocked, as the Methods do not say how bursts are counted in surrogates. Preferential co-bursting of the overlap and neutral ensembles during wake did not reproduce in the one usable mouse, and the slowing before bursts was not seen in a telemetry proxy for movement. Minor checks held: the mice match the source data and the high-shock mouse froze more (64% against 9%).",
    "description": "Tests the findings of Zaki et al. (2024) that can be tested on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment (one high-shock, one low-shock) with their encoding and recall sessions, the first offline recording after encoding, and cell registration for the high-shock mouse. It checks the deposited freezing against the paper's per-mouse values, compares freezing between the two mice, tests offline population bursts and their skew against shuffled activity and against movement, and compares overlap-neutral with overlap-aversive co-bursting in wake. The one-hour offline, behaviour-only, inhibitory tagging and no-shock experiments are not in the dandiset.",
@@ -72,17 +73,17 @@
     {
      "path": "reproduce_zaki_2024.ipynb",
      "title": "Reproducing Zaki et al. (2024) from dandiset 000718",
-     "executed": "notebooks/000718-zaki-2024/reproduce_zaki_2024.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "source-data-link",
-     "statement": "source-data-link",
-     "source": null,
+     "statement": "The two deposited mice are the mice of the same names in the paper's per-mouse source data, with the same shock group, and the freezing computed from the dandiset's freezing intervals agrees with the per-mouse freezing the paper reports for them.",
+     "source": "Extended Data Figure 9b and 9c; source-data repository denisecailab/RetrospectiveMemoryLinkingData_2024",
      "quote": "",
      "statistics": [],
-     "kind": "finding",
+     "kind": "link",
      "inferred": "",
      "outcome": "reproduced",
      "blocked_by": null,
@@ -93,16 +94,22 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_inputs",
      "where": null,
      "proposed": null
     },
     {
      "claim": "ed9b-aversive-freezing-high-vs-low",
-     "statement": "ed9b-aversive-freezing-high-vs-low",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the calcium imaging and EEG/EMG experiment, high-shock mice froze more during aversive recall than low-shock mice (t7 = 8.99, p = 0.020).",
+     "source": "Extended Data Figure 9b",
+     "quote": "High-shock mice froze more during Aversive recall than low-shock mice",
+     "statistics": [
+      {
+       "statistic": "t7 = 8.99",
+       "p": 0.02,
+       "n": "4 low-shock and 5 high-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -120,10 +127,16 @@
     },
     {
      "claim": "offline-bursts-above-shuffle",
-     "statement": "offline-bursts-above-shuffle",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During offline periods, hippocampal population bursts occur more often than expected from shuffled neuronal activity, so CA1 neurons fire in a more coordinated way than chance.",
+     "source": "Results, Neutral ensemble recruited into population bursts, paragraph 1; Extended Data Figure 3l and 3m",
+     "quote": "True burst frequencies were greater than shuffled burst frequencies in every mouse ... suggesting that during the offline period, hippocampal CA1 neurons fire in a more coordinated manner than would be expected from shuffled neuronal activities",
+     "statistics": [
+      {
+       "statistic": "t7 = 6.159",
+       "p": 0.000463,
+       "n": "8 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -142,10 +155,16 @@
     },
     {
      "claim": "offline-skew-above-shuffle",
-     "statement": "offline-skew-above-shuffle",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The mean population activity during offline periods is more right-skewed than in shuffled data, showing brief burst-like activations that need coordinated activity of groups of neurons.",
+     "source": "Extended Data Figure 3n and 3o",
+     "quote": "The true skew was greater than the shuffled skew in every mouse ... supporting the idea that the mean population activity undergoes brief burst-like activations requiring the coordinated activity of groups of neurons",
+     "statistics": [
+      {
+       "statistic": "t7 = 13.36",
+       "p": 3e-06,
+       "n": "8 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -163,9 +182,9 @@
     },
     {
      "claim": "burst-locomotion-pause",
-     "statement": "burst-locomotion-pause",
-     "source": null,
-     "quote": "",
+     "statement": "Offline population bursts coincide with the mouse briefly slowing down about 1 s before the burst and resuming its movement about 1 to 2 s later.",
+     "source": "Figure 2d and 2e; Extended Data Figure 6e; Results, Co-reactivation occurs more during wake, paragraph 1",
+     "quote": "Mice showed a robust and brief slowing down around 1 s before each burst event, before increasing locomotion back up around 2 s later.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -185,10 +204,16 @@
     },
     {
      "claim": "fig5c-wake-overlap-neutral-coburst",
-     "statement": "fig5c-wake-overlap-neutral-coburst",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "After a strong (high-shock) aversive experience, during wake in the offline period the overlap ensemble co-bursts more with the neutral ensemble than with the aversive ensemble (t4 = 4.94, P = 0.016).",
+     "source": "Figure 5c (left); Methods, \"Ensemble co-participation analysis\"",
+     "quote": "Left, wake high-shock mice had higher co-bursting of overlap \u00d7 neutral than overlap \u00d7 aversive",
+     "statistics": [
+      {
+       "statistic": "t4 = 4.94",
+       "p": 0.016,
+       "n": "5 high-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -210,10 +235,35 @@
     },
     {
      "claim": "fig1bc-retrospective-not-prospective",
-     "statement": "fig1bc-retrospective-not-prospective",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Fear spreads from an aversive context to a neutral context experienced 2 days before (retrospective linking) but not to one experienced 2 days after (prospective), with no difference in aversive recall between the groups.",
+     "source": "Figure 1a to 1c; Results, Retrospective memory linking across days, paragraph 1",
+     "quote": "There was no difference in freezing in the aversive context between groups ... In the retrospective group, mice froze more in the neutral context compared with in the novel context ... in the prospective group, there was no difference in freezing between the neutral and novel contexts",
+     "statistics": [
+      {
+       "about": "aversive recall freezing, prospective against retrospective (Figure 1b)",
+       "statistic": "t34 = 0.36",
+       "p": 0.72,
+       "n": "16 retrospective and 20 prospective mice"
+      },
+      {
+       "about": "direction by context interaction (Figure 1c)",
+       "statistic": "F1,32 = 4.90",
+       "p": 0.034,
+       "n": "8 retrospective neutral, 8 retrospective novel, 12 prospective neutral and 8 prospective novel mice"
+      },
+      {
+       "about": "neutral against novel, retrospective group (Figure 1c)",
+       "test": "post hoc test",
+       "statistic": "t32 = 2.586",
+       "p": 0.029
+      },
+      {
+       "about": "neutral against novel, prospective group (Figure 1c)",
+       "test": "post hoc test",
+       "statistic": "t32 = 0.452",
+       "p": 0.6546
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -229,10 +279,38 @@
     },
     {
      "claim": "fig1ef-high-shock-drives-linking",
-     "statement": "fig1ef-high-shock-drives-linking",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "High-shock mice froze more than low-shock mice in the aversive context, and froze more in the neutral than in the novel context, while low-shock mice did not.",
+     "source": "Figure 1d to 1f",
+     "quote": "Mice froze more in the aversive context after receiving a high shock versus low shock ... High-shock mice froze more in the neutral versus novel contexts ... and low-shock mice froze no differently",
+     "statistics": [
+      {
+       "about": "aversive recall freezing, high against low shock (Figure 1e)",
+       "statistic": "t18,8 = 5.877",
+       "p": 1.2e-05,
+       "n": "10 low-shock and 12 high-shock mice"
+      },
+      {
+       "about": "effect of context (Figure 1f)",
+       "statistic": "F1,20 = 17.32",
+       "p": 4.8e-05,
+       "n": "10 low-shock and 12 high-shock mice"
+      },
+      {
+       "about": "context by amplitude interaction (Figure 1f)",
+       "statistic": "F1,20 = 4.99",
+       "p": 0.037
+      },
+      {
+       "about": "neutral against novel, high-shock mice (Figure 1f)",
+       "statistic": "t11 = 4.37",
+       "p": 0.002
+      },
+      {
+       "about": "neutral against novel, low-shock mice (Figure 1f)",
+       "statistic": "t9 = 1.23",
+       "p": 0.249
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -248,10 +326,23 @@
     },
     {
      "claim": "fig1g-aversive-freezing-predicts-linking",
-     "statement": "fig1g-aversive-freezing-predicts-linking",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In high-shock mice, aversive recall freezing correlates with the strength of retrospective memory linking (R2 = 0.45, P = 0.016), but not in low-shock mice.",
+     "source": "Figure 1g",
+     "quote": "Aversive memory strength was correlated with the strength of retrospective memory linking in high-shock mice ... but not in low-shock mice",
+     "statistics": [
+      {
+       "about": "high-shock mice",
+       "statistic": "R2 = 0.45",
+       "p": 0.016,
+       "n": "12 high-shock mice"
+      },
+      {
+       "about": "low-shock mice",
+       "statistic": "R2 = 0.0003",
+       "p": 0.963,
+       "n": "10 low-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -267,10 +358,35 @@
     },
     {
      "claim": "ed1n-offline-hippocampus-needed",
-     "statement": "ed1n-offline-hippocampus-needed",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Chemogenetic inhibition of the hippocampus in the 12 h after aversive encoding prevents retrospective memory linking and leaves the aversive memory intact.",
+     "source": "Extended Data Figure 1l to 1p; Results, Retrospective memory linking across days, paragraph 3",
+     "quote": "We found that this prevented retrospective memory linking (that is, selective freezing in the neutral context compared with in the novel context) while leaving the aversive memory intact",
+     "statistics": [
+      {
+       "about": "group by context interaction (Extended Data Figure 1n)",
+       "statistic": "F1,42 = 4.00",
+       "p": 0.05,
+       "n": "12 saline neutral, 10 saline novel, 12 PSEM neutral and 12 PSEM novel mice"
+      },
+      {
+       "about": "neutral against novel, saline group (Extended Data Figure 1n)",
+       "test": "post hoc test",
+       "statistic": "t19.84 = 2.57",
+       "p": 0.03
+      },
+      {
+       "about": "neutral against novel, PSEM group (Extended Data Figure 1n)",
+       "test": "post hoc test",
+       "statistic": "t22 = 0.31",
+       "p": 0.76
+      },
+      {
+       "about": "aversive recall freezing, PSEM against saline (Extended Data Figure 1p)",
+       "statistic": "t13.9 = 0.32",
+       "p": 0.748,
+       "n": "7 saline and 9 PSEM mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -286,10 +402,23 @@
     },
     {
      "claim": "ed2-cocaine-retrospective-linking",
-     "statement": "ed2-cocaine-retrospective-linking",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "A cocaine experience also drives retrospective memory linking to a neutral context experienced 2 days before.",
+     "source": "Extended Data Figure 2g to 2i; Results, Retrospective memory linking across days, paragraph 2",
+     "quote": "we also found evidence that a highly salient, appetitive experience (that is, cocaine exposure) also drove retrospective memory linking to a neutral context memory formed 2 days before",
+     "statistics": [
+      {
+       "about": "locomotion during neutral recall, cocaine against saline (Extended Data Figure 2i)",
+       "statistic": "t54 = 2.85",
+       "p": 0.01,
+       "n": "28 cocaine and 28 saline mice"
+      },
+      {
+       "about": "locomotion during novel recall, cocaine against saline (Extended Data Figure 2i)",
+       "statistic": "t54 = 1.83",
+       "p": 0.07,
+       "n": "28 cocaine and 28 saline mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -305,10 +434,29 @@
     },
     {
      "claim": "ed3-aversive-ensemble-reactivated",
-     "statement": "ed3-aversive-ensemble-reactivated",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Cells active during aversive encoding are reactivated offline and preferentially during aversive recall.",
+     "source": "Extended Data Figure 3e to 3k; Results, Offline reactivation of a past neutral ensemble, paragraph 2",
+     "quote": "we found that the ensemble of cells active during aversive encoding was reactivated offline and preferentially reactivated during aversive memory recall",
+     "statistics": [
+      {
+       "about": "recall reactivation of offline-reactivated against other aversive encoding cells (Extended Data Figure 3f)",
+       "statistic": "t7 = 19.41",
+       "p": 2e-07,
+       "n": "8 mice"
+      },
+      {
+       "about": "fraction previously active in aversive encoding, aversive against novel recall (Extended Data Figure 3g)",
+       "statistic": "t7 = 6.897",
+       "p": 0.0002,
+       "n": "8 mice"
+      },
+      {
+       "about": "offline activity, aversive against remaining ensemble (Extended Data Figure 3h)",
+       "statistic": "t7 = 8.538",
+       "p": 6e-05,
+       "n": "8 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -324,10 +472,27 @@
     },
     {
      "claim": "ed4f-neutral-ensemble-reactivated-high-shock",
-     "statement": "ed4f-neutral-ensemble-reactivated-high-shock",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During offline 2 the neutral ensemble is less active than the aversive and overlap ensembles in low-shock mice but no differently active in high-shock mice.",
+     "source": "Extended Data Figure 4f",
+     "quote": "The Neutral ensemble was less active than the Aversive and Overlap ensembles ... In high-shock mice ... these three ensembles were no differently active from each other",
+     "statistics": [
+      {
+       "about": "ensemble by amplitude interaction",
+       "statistic": "F3,331 = 5.36",
+       "p": 0.0013,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "neutral against aversive and overlap, low-shock mice",
+       "statistic": "t12 = 2.83",
+       "p": 0.03
+      },
+      {
+       "about": "neutral, aversive and overlap, high-shock mice",
+       "statistic": "F2,14 = 1.52",
+       "p": 0.25
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -343,10 +508,22 @@
     },
     {
      "claim": "fig3c-offline1-neutral-participation",
-     "statement": "fig3c-offline1-neutral-participation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During offline 1 a greater percentage of the neutral ensemble participates in bursts than of the remaining ensemble, in both shock groups.",
+     "source": "Figure 3c",
+     "quote": "During offline 1 in the low- and high-shock groups, a greater percentage of the neutral ensemble participated in bursts than the remaining ensemble",
+     "statistics": [
+      {
+       "about": "ensemble",
+       "statistic": "F1,13 = 16.33",
+       "p": 0.001,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "ensemble by amplitude interaction",
+       "statistic": "F1,13 = 0.0058",
+       "p": 0.94
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -362,10 +539,27 @@
     },
     {
      "claim": "fig3f-neutral-recruited-high-shock",
-     "statement": "fig3f-neutral-recruited-high-shock",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During offline 2 the neutral ensemble preferentially participates in bursts relative to the remaining ensemble in high-shock mice (t7 = 4.88) but not in low-shock mice.",
+     "source": "Figure 3d to 3f",
+     "quote": "High-shock mice showed higher neutral ensemble participation relative to the remaining ensemble ... low-shock mice showed no difference in ensemble participation",
+     "statistics": [
+      {
+       "about": "ensemble by amplitude interaction",
+       "statistic": "F1,13 = 5.186",
+       "p": 0.04,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "neutral against remaining, high-shock mice",
+       "statistic": "t7 = 4.88",
+       "p": 0.0036
+      },
+      {
+       "about": "neutral against remaining, low-shock mice",
+       "statistic": "t6 = 1.33",
+       "p": 0.23
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -381,10 +575,27 @@
     },
     {
      "claim": "fig4b-overlap-independent-participation",
-     "statement": "fig4b-overlap-independent-participation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During burst periods the overlap ensemble participates independently in more bursts than the aversive and neutral ensembles, with no difference between shock groups.",
+     "source": "Figure 4b and 4c",
+     "quote": "During burst periods, the overlap ensemble participated independently in more bursts than the aversive ensemble ... and more than the neutral ensemble ... but there was no difference in participation across low- versus high-shock mice",
+     "statistics": [
+      {
+       "about": "overlap against aversive",
+       "statistic": "t14 = 7.95",
+       "p": 2e-06,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "overlap against neutral",
+       "statistic": "t14 = 5.59",
+       "p": 0.0001
+      },
+      {
+       "about": "low- against high-shock",
+       "statistic": "F1,13 = 1.43",
+       "p": 0.25
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -400,10 +611,37 @@
     },
     {
      "claim": "fig4e-overlap-neutral-coburst",
-     "statement": "fig4e-overlap-neutral-coburst",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the one-hour offline experiment, high-shock mice show more overlap-neutral than overlap-aversive co-bursting during bursts (t7 = 4.95), low-shock mice do not, and there is no such difference outside bursts.",
+     "source": "Figure 4e and 4f; Extended Data Figure 4k to 4o",
+     "quote": "Overlap ensemble preferentially co-participated with the neutral ensemble (N) rather than with the aversive ensemble (A) ... whereas in the low-shock group, there was no difference in overlap ensemble participation with the neutral and aversive ensembles",
+     "statistics": [
+      {
+       "about": "burst periods, ensemble combination by shock interaction (Figure 4e)",
+       "statistic": "F1,13 = 12.2",
+       "p": 0.004,
+       "n": "7 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "burst periods, overlap-neutral against overlap-aversive, high-shock mice (Figure 4e)",
+       "statistic": "t7 = 4.95",
+       "p": 0.003
+      },
+      {
+       "about": "burst periods, overlap-neutral against overlap-aversive, low-shock mice (Figure 4e)",
+       "statistic": "t6 = 0.99",
+       "p": 0.36
+      },
+      {
+       "about": "non-burst periods, ensemble combination (Figure 4f)",
+       "statistic": "F1,13 = 0.027",
+       "p": 0.87
+      },
+      {
+       "about": "non-burst periods, interaction (Figure 4f)",
+       "statistic": "F1,13 = 1.11",
+       "p": 0.31
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -419,10 +657,23 @@
     },
     {
      "claim": "ed6-overlap-inhibitory",
-     "statement": "ed6-overlap-inhibitory",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The overlap ensemble is enriched in putative inhibitory neurons identified by chemotagging.",
+     "source": "Extended Data Figure 5; Extended Data Figure 6b and 6c",
+     "quote": "Here, the Overlap ensemble comprised a larger fraction of the inhibitory neuron population than any of the other ensembles ... the Overlap ensemble was composed more of inhibitory neurons than the other ensembles were",
+     "statistics": [
+      {
+       "about": "fraction of the inhibitory population per ensemble (Extended Data Figure 6b)",
+       "statistic": "F3,12 = 26.17",
+       "p": 1.5e-05,
+       "n": "5 mice"
+      },
+      {
+       "about": "fraction of each ensemble that is inhibitory (Extended Data Figure 6c)",
+       "statistic": "F3,12 = 15.29",
+       "p": 0.0002,
+       "n": "5 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -438,10 +689,23 @@
     },
     {
      "claim": "ed8-no-shock-no-coburst",
-     "statement": "ed8-no-shock-no-coburst",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Without a shock, overlap-neutral co-bursting does not exceed overlap-aversive co-bursting and no memory linking occurs.",
+     "source": "Extended Data Figure 8d, 8f and 8g; Results, Co-bursting of the overlap and neutral ensemble, paragraph 4",
+     "quote": "the co-bursting of the overlap and neutral ensembles was not different from the co-bursting of the overlap and aversive ensembles during the offline period ... these mice showed no differences in freezing in the neutral versus novel contexts during recall",
+     "statistics": [
+      {
+       "about": "co-bursting between ensemble pairs, normalized by chance (Extended Data Figure 8g)",
+       "statistic": "F2,10 = 1.29",
+       "p": 0.32,
+       "n": "6 mice"
+      },
+      {
+       "about": "freezing, neutral against novel recall (Extended Data Figure 8d)",
+       "statistic": "t5 = 1.52",
+       "p": 0.19,
+       "n": "6 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -457,10 +721,22 @@
     },
     {
      "claim": "ed7-contexts-discriminable",
-     "statement": "ed7-contexts-discriminable",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Neural activity during neutral and aversive encoding is highly discriminable, with no difference between low- and high-shock mice.",
+     "source": "Extended Data Figure 7; Results, Co-bursting of the overlap and neutral ensemble, paragraph 4",
+     "quote": "We found that the neural activity patterns for neutral and aversive contexts were highly discriminable. There were no differences between the low- and high-shock groups during encoding",
+     "statistics": [
+      {
+       "about": "SVM accuracy, true against shuffled (Extended Data Figure 7a)",
+       "statistic": "F1,12 = 38.49",
+       "p": 4.6e-05,
+       "n": "6 low-shock and 8 high-shock mice"
+      },
+      {
+       "about": "SVM accuracy, low- against high-shock (Extended Data Figure 7a)",
+       "statistic": "F1,12 = 0.015",
+       "p": 0.22
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -476,10 +752,23 @@
     },
     {
      "claim": "ed9c-eeg-cohort-linking",
-     "statement": "ed9c-eeg-cohort-linking",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the calcium imaging and EEG/EMG experiment, high-shock mice froze more in the neutral than in the novel context (t4 = 4.02, p = 0.03), while low-shock mice did not.",
+     "source": "Extended Data Figure 9c",
+     "quote": "High-shock mice froze more during Neutral vs Novel recall ... whereas low-shock mice froze no differently in Neutral vs Novel recall",
+     "statistics": [
+      {
+       "about": "high-shock mice",
+       "statistic": "t4 = 4.02",
+       "p": 0.03,
+       "n": "5 high-shock mice"
+      },
+      {
+       "about": "low-shock mice",
+       "statistic": "t3 = 1.08",
+       "p": 0.36,
+       "n": "4 low-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -495,10 +784,35 @@
     },
     {
      "claim": "fig5c-sleep-no-coburst-difference",
-     "statement": "fig5c-sleep-no-coburst-difference",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During NREM and REM sleep, overlap-neutral and overlap-aversive co-bursting do not differ in either shock group.",
+     "source": "Figure 5c (middle and right)",
+     "quote": "Middle, for NREM, there was no difference in high-shock ... or low-shock ... co-bursting. Right, for REM, there was no difference in high-shock ... or low-shock ... co-bursting",
+     "statistics": [
+      {
+       "about": "NREM, high-shock mice",
+       "statistic": "t4 = 0.53",
+       "p": 0.66,
+       "n": "5 high-shock mice"
+      },
+      {
+       "about": "NREM, low-shock mice",
+       "statistic": "t3 = -0.49",
+       "p": 0.66,
+       "n": "4 low-shock mice"
+      },
+      {
+       "about": "REM, high-shock mice",
+       "statistic": "t4 = 1.04",
+       "p": 0.63,
+       "n": "5 high-shock mice"
+      },
+      {
+       "about": "REM, low-shock mice",
+       "statistic": "t3 = -0.53",
+       "p": 0.63,
+       "n": "4 low-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -514,10 +828,16 @@
     },
     {
      "claim": "fig5c-low-shock-wake-no-difference",
-     "statement": "fig5c-low-shock-wake-no-difference",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In low-shock mice, overlap-neutral and overlap-aversive co-bursting during wake do not differ (t3 = 1.20, P = 0.32).",
+     "source": "Figure 5c (left)",
+     "quote": "low-shock mice had no difference in co-bursting between these ensembles",
+     "statistics": [
+      {
+       "statistic": "t3 = 1.20",
+       "p": 0.32,
+       "n": "4 low-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -533,10 +853,17 @@
     },
     {
      "claim": "ed9-ed10-sleep-unchanged",
-     "statement": "ed9-ed10-sleep-unchanged",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Mice wearing a Miniscope sleep normally, the intermittent recording scheme captures the time spent in each state, and sleep structure is not changed by neutral or aversive encoding.",
+     "source": "Extended Data Figure 9d to 9g and Extended Data Figure 10; Results, Co-reactivation occurs more during wake, paragraph 1",
+     "quote": "We first validated that mice could wear the Miniscope without disruptions to their sleep ... We confirmed that our calcium recording scheme reliably captured all sleep states ... There were no differences in sleep features ... after the neutral or aversive encoding compared to pre-experiment sleep",
+     "statistics": [
+      {
+       "about": "sleep duration, Miniscope against no Miniscope (Extended Data Figure 9d)",
+       "statistic": "F1,10 = 0.54",
+       "p": 0.48,
+       "n": "8 Miniscope and 4 no-Miniscope mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -552,10 +879,28 @@
     },
     {
      "claim": "fig6a-overlap-reactivated-neutral-recall",
-     "statement": "fig6a-overlap-reactivated-neutral-recall",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The overlap ensemble is reactivated more during neutral recall than during novel-context exposure in high-shock mice compared with low-shock mice (t12 = 3.2, P = 0.007).",
+     "source": "Figure 6a; Extended Data Figure 4q to 4s; Results, Ensemble co-reactivation in neutral context recall, paragraph 2",
+     "quote": "the cells that were active during both neutral and aversive encoding (overlap ensemble) were reactivated more during neutral recall than novel-context exposure in the high-shock but not the low-shock group",
+     "statistics": [
+      {
+       "about": "overlap reactivation index, high- against low-shock (Figure 6a)",
+       "statistic": "t12 = 3.2",
+       "p": 0.007
+      },
+      {
+       "about": "overlap reactivation, neutral against novel, high-shock mice (Extended Data Figure 4s)",
+       "statistic": "t7 = 8.53",
+       "p": 0.00012,
+       "n": "8 high-shock mice"
+      },
+      {
+       "about": "overlap reactivation, neutral against novel, low-shock mice (Extended Data Figure 4s)",
+       "statistic": "t5 = 0.55",
+       "p": 0.61,
+       "n": "6 low-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -571,10 +916,23 @@
     },
     {
      "claim": "fig6b-neutral-representation-changed",
-     "statement": "fig6b-neutral-representation-changed",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In high-shock mice the neutral encoding-to-recall population correlation is lower than in low-shock mice and lower than the aversive encoding-to-recall correlation.",
+     "source": "Figure 6b",
+     "quote": "During neutral recall in high-shock mice, population activity vectors were less correlated with the average neutral encoding population vector than aversive recall activity was with the average aversive encoding population vector ... Neutral encoding-to-recall correlations were also lower in high- versus low-shock mice",
+     "statistics": [
+      {
+       "about": "neutral against aversive encoding-to-recall correlation, high-shock mice",
+       "statistic": "t7 = 4.10",
+       "p": 0.009,
+       "n": "8 high-shock mice"
+      },
+      {
+       "about": "neutral encoding-to-recall correlation, high- against low-shock",
+       "statistic": "t6,92 = 2.98",
+       "p": 0.042,
+       "n": "6 low-shock and 8 high-shock mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -682,7 +1040,7 @@
  ],
  "entries": [
   {
-   "name": "000718-zaki-2024",
+   "name": "zaki-2024",
    "type": "reproduction",
    "title": "Offline ensemble co-reactivation in the EEG/EMG experiment (Zaki et al. 2024)",
    "description": "Tests the findings of Zaki et al. (2024) that can be tested on dandiset 000718, which holds two of the nine mice of the paper's calcium imaging and EEG/EMG experiment (one high-shock, one low-shock) with their encoding and recall sessions, the first offline recording after encoding, and cell registration for the high-shock mouse. It checks the deposited freezing against the paper's per-mouse values, compares freezing between the two mice, tests offline population bursts and their skew against shuffled activity and against movement, and compares overlap-neutral with overlap-aversive co-bursting in wake. The one-hour offline, behaviour-only, inhibitory tagging and no-shock experiments are not in the dandiset.",
@@ -697,7 +1055,7 @@
     {
      "path": "reproduce_zaki_2024.ipynb",
      "title": "Reproducing Zaki et al. (2024) from dandiset 000718",
-     "executed": "notebooks/000718-zaki-2024/reproduce_zaki_2024.html"
+     "executed": null
     }
    ]
   }

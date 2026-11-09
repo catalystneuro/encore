@@ -5,7 +5,7 @@
   "label": "CRCNS:fcx-3"
  },
  "page": "datasets/crcns/fcx-3/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 6,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "crcns-fcx-3-johnson-2019-01",
+   "id": "johnson-2019-01",
    "dataset": {
     "archive": "crcns",
     "id": "fcx-3",
     "version": "unversioned",
-    "doi": "10.6080/K06971S9"
+    "doi": "10.6080/K06971S9",
+    "relation": "primary"
    },
    "datasets": [
     "crcns:fcx-3"
@@ -64,7 +65,7 @@
    "tier": "runs",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "crcns-fcx-3-johnson-2019",
+   "entry": "johnson-2019",
    "entry_title": "Frontoparietal working memory iEEG (Johnson et al. 2019) from CRCNS fcx-3",
    "summary": "In this intracranial dataset the paper's behavioural results held up: identity trials were slower than spatial and temporal ones, and accuracy did not differ by condition. Its per-subject power differences after the test cue held in part, with similar subject counts but smaller shares of electrodes, and sat at low frequencies. The frontoparietal phase-slope findings did not reproduce: with the null the Methods describe, 78 of 1135 pairs were directional in delta-theta, about what trial-shuffled data give, and the paper's counts appear only with the deposited code's null, which flags shuffled data as well. The absence of ERP differences failed in one subject, under a neighbour rule the paper does not state.",
    "description": "Tests the findings of Johnson, King-Stephens, Weber, Laxer, Lin and Knight (2019) on CRCNS data set fcx-3, which holds intracranial recordings from prefrontal and parietal cortex of 7 patients doing a visuospatial working memory task. It checks the channel and trial counts, the behaviour, ERPs and power between identity, spatial and temporal trials with per-subject cluster tests, and the phase slope index between prefrontal and parietal channels over the delay and in time.",
@@ -72,15 +73,15 @@
     {
      "path": "reproduce_johnson_2019.ipynb",
      "title": "Reproducing Johnson et al. (2019) from CRCNS fcx-3",
-     "executed": "notebooks/crcns-fcx-3-johnson-2019/reproduce_johnson_2019.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "table1-electrodes",
-     "statement": "table1-electrodes",
-     "source": null,
-     "quote": "",
+     "statement": "The analysed data comprise 192 bipolar virtual electrodes in seven subjects, 4 to 54 (mean 19) in PFC and 2 to 16 (mean 8) in parietal cortex per subject, as listed per subject in Table 1, forming 1129 same-hemisphere PFC-parietal pairs.",
+     "source": "Methods, Data Acquisition and Preprocessing, paragraph 2; Table 1; Results, Directional Connectivity, paragraph 1",
+     "quote": "The final dataset contained 192 virtual electrodes, range (mean) per subject... 4\u201354 (19) PFC, 2\u201316 (8) parietal cortex",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -99,9 +100,9 @@
     },
     {
      "claim": "trial-counts",
-     "statement": "trial-counts",
-     "source": null,
-     "quote": "",
+     "statement": "After artifact rejection subjects kept on average 96 correct trials, 32 +- 3 (26 to 35) identity, 33 +- 4 (27 to 39) spatial and 31 +- 6 (20 to 39) temporal, and had 17 +- 8 (4 to 25) incorrect trials per subject.",
+     "source": "Methods, Data Acquisition and Preprocessing, paragraph 3",
+     "quote": "The final dataset included an average of 96 correct trials per subject, mean \u00b1 SD (range) trials... 32 \u00b1 3 (26\u201335) identity, 33 \u00b1 4 (27\u201339) spatial relation, 31 \u00b1 6 (20\u201339) temporal relation. There were too few incorrect trials for meaningful electrophysiological data analysis, mean \u00b1 SD (range) trials... 17 \u00b1 8 (4\u201325) per subject",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -120,10 +121,18 @@
     },
     {
      "claim": "fig1b-accuracy",
-     "statement": "fig1b-accuracy",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "All subjects were proficient at the task (accuracy 0.63 to 0.98, chance 0.5), and accuracy did not differ between conditions.",
+     "source": "Results, Behavior; Figure 1B, top",
+     "quote": "We confirmed that all subjects were proficient at the task (accuracy range 0.63\u20130.98, chance 0.5... but no effect on accuracy ( p > 0.50)",
+     "statistics": [
+      {
+       "about": "effect of condition on accuracy",
+       "test": "logit mixed-effects model, condition fixed, subject random",
+       "p": 0.5,
+       "p_relation": ">",
+       "n": "7 subjects"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -142,10 +151,39 @@
     },
     {
      "claim": "fig1b-rt-identity-slower",
-     "statement": "fig1b-rt-identity-slower",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Response times differed by condition, being longer on identity than on spatial and temporal trials, with no difference between spatial and temporal trials.",
+     "source": "Results, Behavior; Figure 1B, bottom",
+     "quote": "There was a significant effect of condition on RT ( F (1,19) > 6.50, p < 0.02, d > 1.47; Figure 1B , bottom), but no effect on accuracy ( p > 0.50). Post hoc testing revealed that RTs were longer on identity than spatial ( F (1,12) > 13.78, p < 3 \u00d7 10 \u22123 , d = 2.14) and temporal ( F (1,12) > 10.95, p < 7 \u00d7 10 \u22123 , d = 1.91) trials, with no difference between spatial and temporal trials ( p > 0.22)",
+     "statistics": [
+      {
+       "about": "effect of condition on RT",
+       "test": "linear mixed-effects model, condition fixed, subject random",
+       "statistic": "F(1,19) > 6.50, d > 1.47",
+       "p": 0.02,
+       "p_relation": "<",
+       "n": "7 subjects"
+      },
+      {
+       "about": "identity against spatial RT",
+       "test": "linear mixed-effects model, post hoc",
+       "statistic": "F(1,12) > 13.78, d = 2.14",
+       "p": 0.003,
+       "p_relation": "<"
+      },
+      {
+       "about": "identity against temporal RT",
+       "test": "linear mixed-effects model, post hoc",
+       "statistic": "F(1,12) > 10.95, d = 1.91",
+       "p": 0.007,
+       "p_relation": "<"
+      },
+      {
+       "about": "spatial against temporal RT",
+       "test": "linear mixed-effects model, post hoc",
+       "p": 0.22,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -164,10 +202,18 @@
     },
     {
      "claim": "erp-no-condition-difference",
-     "statement": "erp-no-condition-difference",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "ERPs over the processing interval did not differ between identity and spatial or temporal trials in any subject.",
+     "source": "Results, ERPs",
+     "quote": "Cluster-based permutation testing of identity vs. spatial/temporal trials indicated that ERPs did not differ between conditions in any subject (all p > 0.10)",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test, per subject",
+       "p": 0.1,
+       "p_relation": ">",
+       "corrected": "cluster-based",
+       "n": "7 subjects, identity against spatial and against temporal"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -187,10 +233,18 @@
     },
     {
      "claim": "fig2-spatial-power",
-     "statement": "fig2-spatial-power",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the identity against spatial contrast of processing-interval power, 5 of 7 subjects showed spatial > identity effects (54 +- 22% of electrodes per subject) and 2 of 7 showed identity > spatial effects (36 +- 12%).",
+     "source": "Results, Spectral Effects, paragraph 2; Figure 2",
+     "quote": "In the contrast between identity and spatial trials (Figure 2 ), 5/7 (71%) subjects showed significant spatial > identity effects (mean \u00b1 SD... 54 \u00b1 22% of electrodes/subject) and 2/7 (29%) showed identity > spatial effects (36 \u00b1 12% of electrodes/subject)",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test, per subject",
+       "p": 0.04,
+       "p_relation": "<",
+       "corrected": "cluster-based",
+       "n": "7 subjects"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -210,10 +264,18 @@
     },
     {
      "claim": "fig3-temporal-power",
-     "statement": "fig3-temporal-power",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the identity against temporal contrast of processing-interval power, 4 of 7 subjects showed temporal > identity effects (68 +- 30% of electrodes per subject) and 2 of 7 showed identity > temporal effects (37 +- 10%).",
+     "source": "Results, Spectral Effects, paragraph 2; Figure 3",
+     "quote": "In the contrast between identity and temporal trials (Figure 3 ), 4/7 (57%) subjects showed significant temporal > identity effects (68 \u00b1 30% of electrodes/subject) and 2/7 (29%) showed identity > temporal effects (37 \u00b1 10% of electrodes/subject)",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test, per subject",
+       "p": 0.04,
+       "p_relation": "<",
+       "corrected": "cluster-based",
+       "n": "7 subjects"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -231,9 +293,9 @@
     },
     {
      "claim": "power-difficulty-subjects",
-     "statement": "power-difficulty-subjects",
-     "source": null,
-     "quote": "",
+     "statement": "The subjects with identity > spatial or temporal power effects were the same subjects who had both longer RTs and lower accuracy on identity trials.",
+     "source": "Results, Spectral Effects, paragraph 2",
+     "quote": "Importantly, the subjects who exhibited significant identity > spatial/temporal effects were the same subjects who exhibited both increased RTs and decreased accuracy on identity trials",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -252,9 +314,9 @@
     },
     {
      "claim": "power-low-frequencies",
-     "statement": "power-low-frequencies",
-     "source": null,
-     "quote": "",
+     "statement": "Significant processing-interval power effects were most prominent at low frequencies, in distinct delta-theta (2 to 7 Hz) and alpha-beta (9 to 24 Hz) ranges, whatever the contrast.",
+     "source": "Results, Spectral Effects, paragraph 3; Figures 2B and 3B",
+     "quote": "Statistically significant effects were most prominent at lower frequencies, regardless of the exact contrast. Specifically, information about the contents of working memory appeared to be carried at distinct delta-theta (2\u20137 Hz) and alpha-beta (9\u201324 Hz) frequency ranges",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -273,9 +335,9 @@
     },
     {
      "claim": "fig4-maintenance-parietal-led",
-     "statement": "fig4-maintenance-parietal-led",
-     "source": null,
-     "quote": "",
+     "statement": "During maintenance, PFC-parietal connectivity was unidirectional, parietal to PFC, in both the delta-theta (z < -40.03 +- 8.73) and alpha-beta (z < -30.37 +- 2.60) ranges.",
+     "source": "Results, Task-Induced Effects, paragraph 1; Figure 4A and 4C",
+     "quote": "The maintenance interval was characterized by unidirectional parietal \u2192 PFC connectivity in both frequency ranges (threshold z < \u22121.96, p < 0.05), mean \u00b1 SD, delta-theta... z < \u221240.03 \u00b1 8.73; alpha-beta... z < \u221230.37 \u00b1 2.60",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -296,10 +358,18 @@
     },
     {
      "claim": "fig4a-delta-theta-shift",
-     "statement": "fig4a-delta-theta-shift",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "After the test cue, delta-theta directionality shifted from a unidirectional parietal-led network to a bidirectional frontoparietal one, with net PFC-led connectivity above zero in 6 of 7 subjects during processing (z > 6.01 +- 6.42).",
+     "source": "Results, Task-Induced Effects, paragraph 1; Figure 4A and 4B",
+     "quote": "However, following presentation of the test cue to select identity, spatial, or temporal information from working memory stores, delta-theta directionality shifted from a unidirectional to bidirectional frontoparietal network (processing > maintenance, F (1,2256) = 1936.10, p < 8 \u00d7 10 \u2212306 ... Importantly, the processing interval was characterized by net connectivity greater than zero in 6/7 subjects (86%), mean \u00b1 SD... z > 6.01 \u00b1 6.42",
+     "statistics": [
+      {
+       "test": "linear mixed-effects model, interval fixed, subject and pair random",
+       "statistic": "F(1,2256) = 1936.10",
+       "p": 8e-306,
+       "p_relation": "<",
+       "n": "7 subjects, 1129 electrode pairs"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -317,10 +387,17 @@
     },
     {
      "claim": "fig4c-alpha-beta-shift",
-     "statement": "fig4c-alpha-beta-shift",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Alpha-beta directionality also shifted with the test cue, but all subjects remained net parietal-led during processing (z < -12.60 +- 7.51).",
+     "source": "Results, Task-Induced Effects, paragraph 2; Figure 4C and 4D",
+     "quote": "In the alpha-beta range, there was again a shift in directionality with presentation of the test cue (processing > maintenance, F (1,2256) = 2302.30, p = 0; Figures 4C,D ). Despite the shift, however, all subjects continued to exhibit net parietal \u2192 PFC connectivity at processing, mean \u00b1 SD... z < \u221212.60 \u00b1 7.51",
+     "statistics": [
+      {
+       "test": "linear mixed-effects model, interval fixed, subject and pair random",
+       "statistic": "F(1,2256) = 2302.30",
+       "p": 0,
+       "n": "7 subjects, 1129 electrode pairs"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -338,9 +415,9 @@
     },
     {
      "claim": "directional-pairs",
-     "statement": "directional-pairs",
-     "source": null,
-     "quote": "",
+     "statement": "During processing, 1008 pairs were significantly directional in the delta-theta range and 984 in the alpha-beta range.",
+     "source": "Results, Directional Connectivity, paragraph 2; Methods, Time-Resolved PSI, paragraph 2",
+     "quote": "Time-resolved PSI was re-computed per condition over the post-cue processing interval at all electrode pairs that were found to be significantly directional overall during the processing interval ( n = 1,008 delta-theta, 984 alpha-beta)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -359,10 +436,18 @@
     },
     {
      "claim": "fig5a-delta-theta-epochs",
-     "statement": "fig5a-delta-theta-epochs",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Time-resolved delta-theta PSI differed between conditions in sustained epochs at 0 to 120 ms and 470 to 610 ms (identity against spatial) and at 0 to 170 ms and 660 to 860 ms (identity against temporal) after the test cue, the spatial late epoch ending about 50 ms before the temporal one begins.",
+     "source": "Results, Spatiotemporal Processing Effects, paragraphs 1 and 3; Figure 5A",
+     "quote": "In the contrast between identity and spatial conditions (left), significant differences were sustained at the beginning (0\u2013120 ms) and early in the second half (470\u2013610 ms) of the post-cue processing interval (FDR-corrected p < 0.05, marked in black). In the contrast between identity and temporal conditions (right), significant differences were again sustained at the beginning (0\u2013170 ms) and in the second half (660\u2013860 ms) of the processing interval",
+     "statistics": [
+      {
+       "test": "linear mixed-effects model per 10-ms time point, condition fixed, subject and pair random",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR",
+       "n": "7 subjects, 1008 delta-theta pairs"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -381,10 +466,35 @@
     },
     {
      "claim": "fig5a-identity-direction",
-     "statement": "fig5a-identity-direction",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In identity trials the PFC led parietal sites early in processing (z > 2.62 and z > 2.35 in the two contrasts' early epochs) and the parietal cortex led later (z < -3.04 and z < -3.57).",
+     "source": "Results, Spatiotemporal Processing Effects, paragraph 2; Figure 5A",
+     "quote": "Further examination of the early post-cue processing data (0\u2013120/170 ms) indicated that the PFC led parietal sites during the ongoing maintenance of identity information (mean, identity > spatial... z > 2.62, p < 9 \u00d7 10 \u22123 ; identity > temporal... z > 2.35, p < 0.02). Later in processing (470\u2013610/660\u2013860 ms), however, the parietal cortex led prefrontal sites (mean, identity < spatial... z < \u22123.04, p < 3 \u00d7 10 \u22123 ; identity < temporal... z < \u22123.57, p < 4 \u00d7 10 \u22124 )",
+     "statistics": [
+      {
+       "about": "identity PSI, 0 to 120 ms",
+       "statistic": "z > 2.62",
+       "p": 0.009,
+       "p_relation": "<"
+      },
+      {
+       "about": "identity PSI, 0 to 170 ms",
+       "statistic": "z > 2.35",
+       "p": 0.02,
+       "p_relation": "<"
+      },
+      {
+       "about": "identity PSI, 470 to 610 ms",
+       "statistic": "z < -3.04",
+       "p": 0.003,
+       "p_relation": "<"
+      },
+      {
+       "about": "identity PSI, 660 to 860 ms",
+       "statistic": "z < -3.57",
+       "p": 0.0004,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -402,10 +512,17 @@
     },
     {
      "claim": "fig5a-spatiotemporal-bidirectional",
-     "statement": "fig5a-spatiotemporal-bidirectional",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Delta-theta PSI during the selection of spatial and of temporal information stayed bidirectional (net near zero) throughout the processing interval.",
+     "source": "Results, Spatiotemporal Processing Effects, paragraph 3; Figure 5A",
+     "quote": "In contrast, the selection of spatial (Figure 5A , left) and temporal (right) information exhibited bidirectionality throughout the processing interval (all | z | < 1.60, p > 0.11)",
+     "statistics": [
+      {
+       "test": "PSI z against frequency-shuffled surrogates",
+       "statistic": "all |z| < 1.60",
+       "p": 0.11,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -423,10 +540,18 @@
     },
     {
      "claim": "fig5b-alpha-beta-no-sustained",
-     "statement": "fig5b-alpha-beta-no-sustained",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Time-resolved alpha-beta PSI showed significant condition differences at some time points but no sustained effect for either condition in either contrast.",
+     "source": "Results, Spatiotemporal Processing Effects, paragraph 4; Figure 5B",
+     "quote": "Although there were significant differences between conditions (FDR-corrected p < 0.05, marked in black), the differences were not sustained for one condition or the other during either condition-pair contrast",
+     "statistics": [
+      {
+       "test": "linear mixed-effects model per 10-ms time point, condition fixed, subject and pair random",
+       "p": 0.05,
+       "p_relation": "<",
+       "corrected": "FDR",
+       "n": "7 subjects, 984 alpha-beta pairs"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -539,7 +664,7 @@
  ],
  "entries": [
   {
-   "name": "crcns-fcx-3-johnson-2019",
+   "name": "johnson-2019",
    "type": "reproduction",
    "title": "Frontoparietal working memory iEEG (Johnson et al. 2019) from CRCNS fcx-3",
    "description": "Tests the findings of Johnson, King-Stephens, Weber, Laxer, Lin and Knight (2019) on CRCNS data set fcx-3, which holds intracranial recordings from prefrontal and parietal cortex of 7 patients doing a visuospatial working memory task. It checks the channel and trial counts, the behaviour, ERPs and power between identity, spatial and temporal trials with per-subject cluster tests, and the phase slope index between prefrontal and parietal channels over the delay and in time.",
@@ -554,7 +679,7 @@
     {
      "path": "reproduce_johnson_2019.ipynb",
      "title": "Reproducing Johnson et al. (2019) from CRCNS fcx-3",
-     "executed": "notebooks/crcns-fcx-3-johnson-2019/reproduce_johnson_2019.html"
+     "executed": null
     }
    ]
   }

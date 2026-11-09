@@ -5,7 +5,7 @@
   "label": "DANDI:001187"
  },
  "page": "datasets/dandi/001187/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 19,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "001187-daume-2024-01",
+   "id": "daume-2024-01",
    "dataset": {
     "archive": "dandi",
     "id": "001187",
     "version": "0.240904.2347",
-    "doi": "10.48324/dandi.001187/0.240904.2347"
+    "doi": "10.48324/dandi.001187/0.240904.2347",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:001187"
@@ -64,7 +65,7 @@
    "tier": "agent_verified",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "001187-daume-2024",
+   "entry": "daume-2024",
    "entry_title": "Working memory maintenance and long-term memory in human hippocampus (Daume et al. 2024)",
    "summary": "This is the paragraph to save in that file: Most of the paper's main findings held in this data, with a few central exceptions. Behaviour, neuron counts, persistent hippocampal category-neuron activity, hippocampal but not amygdala prediction of later memory, and the confidence effect in memory-selective neurons reproduced. The higher hippocampal firing for remembered pictures held with high confidence did not reach significance, likely because the paper's trial rows differ (80 neurons had both conditions, against 83). The early-delay difference appeared only late, and strong maintenance activity did not boost memory-neuron responses. The load and accuracy effects could not be settled because the paper does not say which model was fitted.",
    "description": "Tests the findings of Daume et al. (2024) on dandiset 001187, which holds the spike times of 950 units recorded in the hippocampus and amygdala of 39 epilepsy patients over 46 sessions of a Sternberg working memory task and a later recognition memory test. It covers the behaviour, the selection of category and memory-selective neurons, the mixed-effects models relating maintenance activity to later memory, and the pairing of memory-selective with category neurons.",
@@ -72,15 +73,15 @@
     {
      "path": "reproduce_daume_2024.ipynb",
      "title": "Reproducing Daume et al. (2024) from dandiset 001187",
-     "executed": "notebooks/001187-daume-2024/reproduce_daume_2024.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "sessions-and-neurons",
-     "statement": "sessions-and-neurons",
-     "source": null,
-     "quote": "",
+     "statement": "After excluding two sessions, 46 sessions are analysed, in which 883 single units pass the 0.1 Hz rate filter, 351 in the hippocampus and 532 in the amygdala, of 950 isolated.",
+     "source": "Results, paragraph 3; STAR Methods, Spike sorting",
+     "quote": "In total, we isolated 950 neurons across both areas of the MTL. Neurons with a firing rate lower than 0.1 Hz in either the WM or the LTM tasks were excluded from analysis (67 neurons (7.1%)). Analyses are based on 351 isolated neurons in the hippocampus and 532 in the amygdala",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -97,12 +98,12 @@
     },
     {
      "claim": "table-s1-counts",
-     "statement": "table-s1-counts",
-     "source": null,
+     "statement": "Per session, the numbers of recorded units in the hippocampus and the amygdala are those of Table S1.",
+     "source": "Table S1",
      "quote": "",
      "statistics": [],
      "kind": "finding",
-     "inferred": "",
+     "inferred": "Numbers from Table S1 (third number of each area column); no sentence of the text states them. Their sums (386 hippocampus, 587 amygdala) differ from the 950 and 883 of the Methods.",
      "outcome": "partially_reproduced",
      "blocked_by": null,
      "notebook": "reproduce_daume_2024.ipynb",
@@ -116,10 +117,17 @@
     },
     {
      "claim": "behaviour-overall-accuracy",
-     "statement": "behaviour-overall-accuracy",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Patients answered 93.3% of WM trials and 70.3% of LTM trials correctly (d' 1.19), both above the 50% chance level.",
+     "source": "Results, paragraph 2",
+     "quote": "Patients performed well in both parts of the task, with an average accuracy of 93.3 \u00b1 7.6 % (mean \u00b1 SD) in the WM task and 70.3 \u00b1 9.8 % (d\u2019 = 1.19 \u00b1 0.62) in the LTM task, respectively (both p < 0.0001 as compared to 50 % chance; permutation-based t-test",
+     "statistics": [
+      {
+       "test": "permutation-based t-test against 50% chance",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -135,10 +143,18 @@
     },
     {
      "claim": "fig1c-wm-accuracy-load",
-     "statement": "fig1c-wm-accuracy-load",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "WM accuracy is higher in load 1 than in load 3 trials.",
+     "source": "Results, paragraph 2; Figure 1c",
+     "quote": "In the WM task, patients performed with higher accuracy (Fig. 1c; load 1 \u2013 load 3: t(45) = 4.89, p < 0.0001",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = 4.89",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -154,10 +170,18 @@
     },
     {
      "claim": "fig1d-wm-rt-load",
-     "statement": "fig1d-wm-rt-load",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "WM responses are faster in load 1 than in load 3 trials.",
+     "source": "Results, paragraph 2; Figure 1d",
+     "quote": "and faster (Fig. 1d; t(45) = \u22124.29, p < 0.0001) in load 1 than load 3 trials",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = -4.29",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -175,10 +199,18 @@
     },
     {
      "claim": "fig1e-ltm-confidence-accuracy",
-     "statement": "fig1e-ltm-confidence-accuracy",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "LTM recognition is more accurate in high-confidence than in low-confidence trials.",
+     "source": "Results, paragraph 2; Figure 1e",
+     "quote": "In the LTM task, retrieval was more accurate (Fig. 1e; t(44) = 8.66, p < 0.0001; one patient did not use confidence ratings and was therefore excluded from all confidence-related analyses)",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(44) = 8.66",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "45 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -194,10 +226,18 @@
     },
     {
      "claim": "ltm-rt-confidence",
-     "statement": "ltm-rt-confidence",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "LTM responses are faster with high confidence (mean 1.83 s) than with low confidence (2.62 s).",
+     "source": "Results, paragraph 2",
+     "quote": "and faster (mean RT high: 1.83 \u00b1 0.57 s; mean RT low: 2.62 \u00b1 0.66 s; t(44) = \u221211.13, p < 0.0001) when patients indicated high confidence in their responses",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(44) = -11.13",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "45 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -215,10 +255,17 @@
     },
     {
      "claim": "fig1f-ltm-load",
-     "statement": "fig1f-ltm-load",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Pictures held in load 1 WM trials are later recognized better than pictures held in load 3 trials.",
+     "source": "Results, paragraph 2; Figure 1f",
+     "quote": "Items that were encoded in load 1 trials in the previous WM task were remembered better than items encoded during load 3 trials (Fig. 1f; t(45) = 2.42; p = 0.018)",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = 2.42",
+       "p": 0.018,
+       "n": "46 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -234,10 +281,18 @@
     },
     {
      "claim": "fig1g-ltm-probe",
-     "statement": "fig1g-ltm-probe",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Pictures that were also used as WM probes, and so shown twice, are later recognized better than pictures shown once.",
+     "source": "Results, paragraph 2; Figure 1g",
+     "quote": "items that were also used as the probe and therefore presented twice were remembered better than items not used as the probe (Fig. 1g; t(45) = 7.25, p < 0.0001)",
+     "statistics": [
+      {
+       "test": "permutation-based paired t-test",
+       "statistic": "t(45) = 7.25",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "46 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -253,9 +308,9 @@
     },
     {
      "claim": "category-neuron-counts",
-     "statement": "category-neuron-counts",
-     "source": null,
-     "quote": "",
+     "statement": "104 hippocampal units (29.65%) and 220 amygdala units (41.35%) are category neurons.",
+     "source": "Results, Category neurons remain persistently active when their preferred category is held in WM, paragraph 1",
+     "quote": "In the hippocampus, 104 (29.65 %) neurons qualified as category neurons, and in the amygdala 220 (41.35 %) neurons qualified as category neurons",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -272,10 +327,23 @@
     },
     {
      "claim": "fig2b-hippocampus-persistent",
-     "statement": "fig2b-hippocampus-persistent",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Hippocampal category neurons are persistently active above baseline during maintenance and fire more when an image of their preferred category is held in WM.",
+     "source": "Results, Category neurons remain persistently active, paragraph 2; Figure 2b",
+     "quote": "In the hippocampus, category neurons remained persistently active throughout the maintenance period (intercept: beta = 17.86, p = 1.38 \u00d7 10\u22123; mixed-effects GLM) and had significantly higher FRs during trials in which images from the preferred category were maintained in WM (Fig. 2b; preferred category: beta = 12.47, p = 8.82 \u00d7 10\u22127)",
+     "statistics": [
+      {
+       "about": "intercept",
+       "test": "mixed-effects GLM",
+       "p": 0.00138,
+       "n": "104 hippocampal category neurons"
+      },
+      {
+       "about": "preferred category",
+       "test": "mixed-effects GLM",
+       "p": 8.82e-07,
+       "n": "104 hippocampal category neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -294,10 +362,21 @@
     },
     {
      "claim": "fig2c-hippocampus-correct-load",
-     "statement": "fig2c-hippocampus-correct-load",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "When the preferred category is held, hippocampal category neurons fire more in correct than incorrect trials and more in load 1 than load 3 trials.",
+     "source": "Results, Category neurons remain persistently active, paragraph 2; Figure 2c",
+     "quote": "Using only preferred trials and modelling WM accuracy (2 levels, WM correct/incorrect, categorical) as well as load (2 levels, load 1/load 3, categorical) as fixed effects, we further observed that category neurons in the hippocampus had higher FRs in (1) correct than incorrect trials (beta = 16.22, p = 0.046) and (2) in load 1 than in load 3 trials (Fig. 2c; beta = 13.769, p = 0.0023)",
+     "statistics": [
+      {
+       "about": "correct against incorrect",
+       "test": "mixed-effects GLM",
+       "p": 0.046
+      },
+      {
+       "about": "load 1 against load 3",
+       "test": "mixed-effects GLM",
+       "p": 0.0023
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -315,10 +394,23 @@
     },
     {
      "claim": "fig2e-amygdala-persistent",
-     "statement": "fig2e-amygdala-persistent",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Amygdala category neurons are also persistently active during maintenance and fire more for the preferred category.",
+     "source": "Results, Category neurons remain persistently active, paragraph 3; Figure 2e",
+     "quote": "In the amygdala, category neurons also remained persistently active throughout the maintenance period across all correct trials (intercept: beta = 9.78, p = 6.76 \u00d7 10\u22124) with FRs higher for preferred than unpreferred categories (Fig. 2e; preferred category: beta = 6.91, p = 9.38 \u00d7 10\u22127)",
+     "statistics": [
+      {
+       "about": "intercept",
+       "test": "mixed-effects GLM",
+       "p": 0.000676,
+       "n": "220 amygdala category neurons"
+      },
+      {
+       "about": "preferred category",
+       "test": "mixed-effects GLM",
+       "p": 9.38e-07,
+       "n": "220 amygdala category neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -336,10 +428,21 @@
     },
     {
      "claim": "fig2f-amygdala-load-not-accuracy",
-     "statement": "fig2f-amygdala-load-not-accuracy",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "When the preferred category is held, amygdala category neurons fire more in load 1 than load 3 trials, but not more in correct than incorrect trials.",
+     "source": "Results, Category neurons remain persistently active, paragraph 3; Figure 2f",
+     "quote": "using only preferred trials category neurons in the amygdala showed a significant main effect only for load (Fig. 2f; load 1 \u2013 load 3; beta = 12.309; p = 2.46 \u00d7 10\u22127), but the effect for WM accuracy (correct \u2013 incorrect: beta = \u22126.13; p = 0.24) was not significant",
+     "statistics": [
+      {
+       "about": "load 1 against load 3",
+       "test": "mixed-effects GLM",
+       "p": 2.46e-07
+      },
+      {
+       "about": "correct against incorrect",
+       "test": "mixed-effects GLM",
+       "p": 0.24
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -357,10 +460,32 @@
     },
     {
      "claim": "fig3a-area-interactions",
-     "statement": "fig3a-area-interactions",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In a GLM over category neurons of both areas, no main effect of LTM accuracy, confidence or area is significant, nor the LTM accuracy by confidence interaction, but every interaction with area is, so the relation of maintenance activity to later memory differs between hippocampus and amygdala.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus - not the amygdala - predicts LTM formation, paragraph 1; Figure 3a",
+     "quote": "We did not observe any significant main effects nor was the interaction between LTM accuracy and confidence significant (Fig. 3a; all p > 0.26). However, all interaction terms including area showed significant modulations (confidence \u00d7 area: beta = 16.88, p = 0.025; LTM accuracy \u00d7 area: beta = 59.78, p = 0.0030; confidence \u00d7 LTM accuracy \u00d7 area: beta = \u221228.64, p = 0.0029)",
+     "statistics": [
+      {
+       "about": "main effects and the LTM accuracy by confidence interaction",
+       "test": "mixed-effects GLM",
+       "p": 0.26,
+       "p_relation": ">"
+      },
+      {
+       "about": "confidence by area",
+       "test": "mixed-effects GLM",
+       "p": 0.025
+      },
+      {
+       "about": "LTM accuracy by area",
+       "test": "mixed-effects GLM",
+       "p": 0.003
+      },
+      {
+       "about": "confidence by LTM accuracy by area",
+       "test": "mixed-effects GLM",
+       "p": 0.0029
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -379,10 +504,26 @@
     },
     {
      "claim": "fig3b-hippocampus-predicts-ltm",
-     "statement": "fig3b-hippocampus-predicts-ltm",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the hippocampus, maintenance activity of category neurons for the preferred category predicts later LTM accuracy and confidence, with an interaction between the two, so activity is higher for pictures later remembered than forgotten.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 1; Figure 3b",
+     "quote": "This revealed a significant main effect of confidence (Fig. 3b; beta = 20.30, p = 4.17 \u00d7 10\u22123) and LTM accuracy (beta = 67.90, p = 4.43 \u00d7 10\u22124), as well as a significant interaction between the two terms (beta = \u221230.80, p = 7.74 \u00d7 10\u22124) in the hippocampus",
+     "statistics": [
+      {
+       "about": "confidence",
+       "test": "mixed-effects GLM",
+       "p": 0.00417
+      },
+      {
+       "about": "LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.000443
+      },
+      {
+       "about": "confidence by LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.000774
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -400,10 +541,26 @@
     },
     {
      "claim": "fig3b-amygdala-no-prediction",
-     "statement": "fig3b-amygdala-no-prediction",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the amygdala, maintenance activity of category neurons does not predict later LTM accuracy or confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 1; Figure 3b",
+     "quote": "in the hippocampus but not in the amygdala (confidence: beta = 1.54, p = 0.69; LTM accuracy: beta = \u22122.27, p = 0.82; confidence \u00d7 LTM accuracy: beta = 1.02, p = 0.83)",
+     "statistics": [
+      {
+       "about": "confidence",
+       "test": "mixed-effects GLM",
+       "p": 0.69
+      },
+      {
+       "about": "LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.82
+      },
+      {
+       "about": "confidence by LTM accuracy",
+       "test": "mixed-effects GLM",
+       "p": 0.83
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -421,10 +578,25 @@
     },
     {
      "claim": "fig3c-hippocampus-high-confidence",
-     "statement": "fig3c-hippocampus-high-confidence",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Across hippocampal category neurons, maintenance firing for the preferred category is higher for pictures later remembered than forgotten with high confidence, but not with low confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 2; Figure 3c",
+     "quote": "In the hippocampus, FRs were higher for remembered than forgotten trials for high confidence (Fig. 3c; t(82) = 2.16, p = 0.028; some neurons were removed due to insufficient data in at least one of the conditions or since they differed \u00b13 SD from the mean across all neurons and conditions; see Methods), but not low confidence trials (t(68) = \u22121.38, p = 0.17)",
+     "statistics": [
+      {
+       "about": "high confidence, remembered against forgotten",
+       "test": "permutation-based t-test",
+       "statistic": "t(82) = 2.16",
+       "p": 0.028,
+       "n": "83 hippocampal category neurons"
+      },
+      {
+       "about": "low confidence, remembered against forgotten",
+       "test": "permutation-based t-test",
+       "statistic": "t(68) = -1.38",
+       "p": 0.17,
+       "n": "69 hippocampal category neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -442,10 +614,25 @@
     },
     {
      "claim": "fig3d-amygdala-no-difference",
-     "statement": "fig3d-amygdala-no-difference",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Across amygdala category neurons, maintenance firing does not differ between later remembered and forgotten pictures, with high or low confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 2; Figure 3d",
+     "quote": "In the amygdala, we neither observed a significant effect for high (Fig. 3d; t(158) = 0.84, p = 0.41) nor low confidence trials (t(152) = 1.15, p = 0.26)",
+     "statistics": [
+      {
+       "about": "high confidence",
+       "test": "permutation-based t-test",
+       "statistic": "t(158) = 0.84",
+       "p": 0.41,
+       "n": "159 amygdala category neurons"
+      },
+      {
+       "about": "low confidence",
+       "test": "permutation-based t-test",
+       "statistic": "t(152) = 1.15",
+       "p": 0.26,
+       "n": "153 amygdala category neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -461,10 +648,15 @@
     },
     {
      "claim": "fig3e-early-delay-cluster",
-     "statement": "fig3e-early-delay-cluster",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In hippocampal category neurons, firing differs between pictures later remembered and forgotten with high confidence early in the maintenance period, from 0 to 650 ms.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 3; Figure 3e",
+     "quote": "In the hippocampus, FRs during the beginning of the maintenance period (0 \u2013 650 ms) differed significantly between the two conditions (Fig. 3e; cluster-p = 0.0042; cluster-based permutation test",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test",
+       "p": 0.0042
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -482,10 +674,15 @@
     },
     {
      "claim": "fig3f-amygdala-no-cluster",
-     "statement": "fig3f-amygdala-no-cluster",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In amygdala category neurons, no period of the maintenance period shows a significant difference between later remembered and forgotten pictures.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 3; Figure 3f",
+     "quote": "In the amygdala, we did not observe any significant cluster throughout the entire maintenance period of the WM task (Fig. 3f; cluster-p = 0.16)",
+     "statistics": [
+      {
+       "test": "cluster-based permutation test",
+       "p": 0.16
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -501,10 +698,16 @@
     },
     {
      "claim": "fig3g-nonpreferred-no-effect",
-     "statement": "fig3g-nonpreferred-no-effect",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Maintenance activity of category neurons while non-preferred pictures are held does not predict later LTM accuracy or confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 4; Figure 3g",
+     "quote": "None of the main effects nor interactions in either of the mixed-effects GLMs showed any significant relationship between FR and the factors tested (all p > 0.06)",
+     "statistics": [
+      {
+       "test": "mixed-effects GLM",
+       "p": 0.06,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -522,10 +725,16 @@
     },
     {
      "claim": "fig3h-encoding-no-effect",
-     "statement": "fig3h-encoding-no-effect",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Activity of category neurons during the presentation of the first encoding picture, for preferred pictures, does not predict later LTM accuracy or confidence.",
+     "source": "Results, Persistent activity of category neurons in the hippocampus, paragraph 4; Figure 3h; STAR Methods, Relating WM maintenance activity to LTM formation, paragraph 2",
+     "quote": "or for the visually evoked response of category neurons when images were shown on the screen during encoding (Fig. 3h; encoding 1; 0 \u2013 2s after picture onset; preferred trials only). None of the main effects nor interactions in either of the mixed-effects GLMs showed any significant relationship between FR and the factors tested (all p > 0.06)",
+     "statistics": [
+      {
+       "test": "mixed-effects GLM",
+       "p": 0.06,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -543,9 +752,9 @@
     },
     {
      "claim": "ms-neuron-counts",
-     "statement": "ms-neuron-counts",
-     "source": null,
-     "quote": "",
+     "statement": "53 of the 351 hippocampal units (15.10%) are memory-selective, 25 of them (47%) firing more to familiar than novel pictures.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 2",
+     "quote": "Out of the 351 recorded cells, n = 53 (15.10 %) were MS cells. Of these, 25 (47%) responded more to familiar than novel items, with the remaining responding more to novel than to familiar items.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -562,10 +771,17 @@
     },
     {
      "claim": "fig4b-ms-confidence-auc",
-     "statement": "fig4b-ms-confidence-auc",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Hippocampal memory-selective neurons separate old from new pictures better for high-confidence than for low-confidence decisions (higher ROC AUC), so they carry a memory-strength signal.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 2; Figure 4b; STAR Methods, Single-neuron AUC analysis",
+     "quote": "The response of MS neurons differed significantly more for high- as compared to low-confidence trials (Fig. 4b; t(40) = 2.89, p = 0.0039; 12 neurons excluded due to insufficient data in either one of the conditions, see Methods)",
+     "statistics": [
+      {
+       "test": "permutation-based t-test",
+       "statistic": "t(40) = 2.89",
+       "p": 0.0039,
+       "n": "41 hippocampal MS neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -584,10 +800,16 @@
     },
     {
      "claim": "fig4c-overlap-chance",
-     "statement": "fig4c-overlap-chance",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "20 hippocampal neurons are both memory-selective and category neurons, an overlap no greater than chance.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 3; Figure 4c",
+     "quote": "Of the 53 MS neurons and the 104 category neurons, 20 neurons (37.8% of MS cells; 19.2 % of category neurons) were part of both groups ... This revealed that the overlap between category neurons and MS cells was not significantly higher than chance (Fig. 4c; p = 0.11)",
+     "statistics": [
+      {
+       "test": "permutation test against random selection, 1000 repetitions",
+       "p": 0.11,
+       "n": "351 hippocampal neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -603,10 +825,33 @@
     },
     {
      "claim": "fig4d-category-no-memory-signal",
-     "statement": "fig4d-category-no-memory-signal",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During LTM retrieval, hippocampal category neurons code neither familiarity nor confidence for pictures of their preferred category.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraph 4; Figure 4d",
+     "quote": "None of the effects revealed significant modulations of FRs (Fig. 4d top; confidence: beta = 6.05, p = 0.28; familiarity: beta = 4.49, p = 0.71; confidence \u00d7 familiarity: beta = \u22124.32, p = 0.57). To further confirm this result, we directly compared FRs of category neurons between preferred old and new items and did not observe a significant difference (Fig. 4d bottom; t(94) = \u22120.28, p = 0.78).",
+     "statistics": [
+      {
+       "about": "confidence",
+       "test": "mixed-effects GLM",
+       "p": 0.28
+      },
+      {
+       "about": "familiarity",
+       "test": "mixed-effects GLM",
+       "p": 0.71
+      },
+      {
+       "about": "confidence by familiarity",
+       "test": "mixed-effects GLM",
+       "p": 0.57
+      },
+      {
+       "about": "preferred old against new",
+       "test": "permutation-based t-test",
+       "statistic": "t(94) = -0.28",
+       "p": 0.78,
+       "n": "95 hippocampal category neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -624,10 +869,24 @@
     },
     {
      "claim": "fig4e-fs-strong-maintenance",
-     "statement": "fig4e-fs-strong-maintenance",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Familiarity-selective hippocampal neurons respond more during LTM retrieval to familiar pictures that were held with strong, compared with weak, maintenance activity of a simultaneously recorded category neuron.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraphs 5 and 6; Figure 4e; STAR Methods, Interaction between simultaneously recorded category- and memory-selective neurons",
+     "quote": "This analysis revealed that FRs of familiarity-selective MS cells during LTM retrieval of items that were previously accompanied by high persistent activity in the WM task were higher than those previously accompanied by low persistent activity (Fig. 4e left; Maintenance FR: beta = 14.63, p = 1.39 \u00d7 10\u22123)",
+     "statistics": [
+      {
+       "about": "strong against weak maintenance, GLM",
+       "test": "mixed-effects GLM",
+       "p": 0.00139,
+       "n": "76 FS and category neuron pairs"
+      },
+      {
+       "about": "strong against weak maintenance, per pair",
+       "test": "permutation-based t-test",
+       "statistic": "t(75) = 3.43",
+       "p": 0.0003,
+       "n": "76 FS and category neuron pairs"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -645,10 +904,24 @@
     },
     {
      "claim": "fig4f-ns-no-effect",
-     "statement": "fig4f-ns-no-effect",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The response of novelty-selective hippocampal neurons to familiar pictures does not depend on whether the paired category neuron's maintenance activity was strong or weak.",
+     "source": "Results, Activity during WM maintenance is linked to subsequent memory signal, paragraphs 5 and 6; Figure 4f",
+     "quote": "No significant relationship was observed for the activity of novelty-selective MS neurons (Fig. 4f left; Maintenance FR: beta = 0.09, p = 0.98)",
+     "statistics": [
+      {
+       "about": "GLM",
+       "test": "mixed-effects GLM",
+       "p": 0.98,
+       "n": "122 NS and category neuron pairs"
+      },
+      {
+       "about": "per pair",
+       "test": "permutation-based t-test",
+       "statistic": "t(121) = -0.48",
+       "p": 0.64,
+       "n": "122 NS and category neuron pairs"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -771,7 +1044,7 @@
  ],
  "entries": [
   {
-   "name": "001187-daume-2024",
+   "name": "daume-2024",
    "type": "reproduction",
    "title": "Working memory maintenance and long-term memory in human hippocampus (Daume et al. 2024)",
    "description": "Tests the findings of Daume et al. (2024) on dandiset 001187, which holds the spike times of 950 units recorded in the hippocampus and amygdala of 39 epilepsy patients over 46 sessions of a Sternberg working memory task and a later recognition memory test. It covers the behaviour, the selection of category and memory-selective neurons, the mixed-effects models relating maintenance activity to later memory, and the pairing of memory-selective with category neurons.",
@@ -786,7 +1059,7 @@
     {
      "path": "reproduce_daume_2024.ipynb",
      "title": "Reproducing Daume et al. (2024) from dandiset 001187",
-     "executed": "notebooks/001187-daume-2024/reproduce_daume_2024.html"
+     "executed": null
     }
    ]
   }

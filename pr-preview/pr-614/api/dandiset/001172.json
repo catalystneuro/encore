@@ -5,11 +5,11 @@
   "label": "DANDI:001172"
  },
  "page": "datasets/dandi/001172/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 13,
-  "partially_reproduced": 7,
+  "partially_reproduced": 6,
   "not_reproduced": 1,
   "blocked": 5
  },
@@ -27,18 +27,19 @@
  },
  "outcome_counts_links": {
   "reproduced": 0,
-  "partially_reproduced": 0,
+  "partially_reproduced": 1,
   "not_reproduced": 0,
   "blocked": 0
  },
  "attempts": [
   {
-   "id": "001172-lohani-2022-01",
+   "id": "lohani-2022-01",
    "dataset": {
     "archive": "dandi",
     "id": "001172",
     "version": "0.260129.0829",
-    "doi": "10.48324/dandi.001172/0.260129.0829"
+    "doi": "10.48324/dandi.001172/0.260129.0829",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:001172"
@@ -64,7 +65,7 @@
    "tier": "runs",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "001172-lohani-2022",
+   "entry": "lohani-2022",
    "entry_title": "Cholinergic and calcium dynamics across behavioural states (Lohani, Moberly et al. 2022)",
    "summary": "Most of the paper's main findings hold in this data, which covers 4 of the 6 mice. Facial movement as the best predictor of ACh and calcium, the inverted anterior-posterior gradients, and the rise in between-area correlations with facial movement and fall with locomotion all reproduced. Cortical transients at movement onset and sustained-state calcium effects held only in part, with calcium amplitudes above the paper's ranges. The claim that ACh-calcium coupling falls with locomotion only in frontal cortex did not hold, since the decrease was broad. The ECoG, scopolamine, hemodynamic correction, sensor validation and axon findings could not be tested because that data is not in the dandiset.",
    "description": "Tests the findings of Lohani, Moberly et al. (2022) on dandiset 001172, which holds dual-colour mesoscopic imaging of ACh3.0 and jRCaMP1b with face video, pupil and wheel data from 4 of the paper's 6 mice. It tests the regression of both signals on behaviour, transients at face movement and locomotion onsets, amplitudes in sustained states, and the state dependence of correlations between areas and between the two signals, using the Allen parcel masks of the paper's code. ECoG, pharmacology, control mice and cholinergic axon imaging are not in the dandiset.",
@@ -72,17 +73,17 @@
     {
      "path": "reproduce_lohani_2022.ipynb",
      "title": "Reproducing Lohani, Moberly et al. (2022) from dandiset 001172",
-     "executed": "notebooks/001172-lohani-2022/reproduce_lohani_2022.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "allen-parcel-link",
-     "statement": "allen-parcel-link",
-     "source": null,
+     "statement": "The paper's Allen parcel masks, from its code, can be laid on the dandiset's \u0394F/F pixels, so that the areas the paper names can be found in the data.",
+     "source": "Methods, Preprocessing of imaging data and Post-processing analysis; parcells_updated121519.mat and brainMask.mat in the paper's code at commit c337686",
      "quote": "",
      "statistics": [],
-     "kind": "finding",
+     "kind": "link",
      "inferred": "",
      "outcome": "partially_reproduced",
      "blocked_by": null,
@@ -93,16 +94,31 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig2a-r2-differs-across-areas",
-     "statement": "fig2a-r2-differs-across-areas",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The variance of ACh3.0 and jRCaMP1b signals explained by a ridge regression on FaceMap PCs 1 to 25, locomotion speed and pupil area differs across cortical areas (Friedman's ANOVA p < 0.001 for both, n = 6 mice).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 1; Figure 2a,b",
+     "quote": "For ACh3.0 and jRCaMp1b, the variance explained ... using this full model differed significantly across cortical areas",
+     "statistics": [
+      {
+       "about": "ACh3.0",
+       "test": "Friedman's ANOVA",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "6 mice per group"
+      },
+      {
+       "about": "jRCaMP1b",
+       "test": "Friedman's ANOVA",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "6 mice per group"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -117,15 +133,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig2b-ap-gradient-inverted",
-     "statement": "fig2b-ap-gradient-inverted",
-     "source": null,
-     "quote": "",
+     "statement": "The coupling of behaviour to fluorescence has anterior-posterior gradients that are inverted between the signals, with ACh most strongly linked to behaviour in frontal areas and calcium in posterior areas.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 1; Figure 2b",
+     "quote": "We also observed significant anterior-posterior gradients in the coupling between behavioral state and fluorescence activity that were inverted for cholinergic versus calcium signals ... with ACh release and calcium signaling most strongly linked to behavioral state variables in frontal and posterior areas, respectively",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -138,16 +154,49 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig2c-face-best-predictor-ach",
-     "statement": "fig2c-face-best-predictor-ach",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For ACh3.0, facial movement (FaceMap PC1) predicts activity better than locomotion or pupil, in single-variable models (Friedman p = 0.006, face against locomotion and against pupil p = 0.031) and as unique contribution (Friedman p = 0.003).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 1; Figure 2c",
+     "quote": "Facial movements yielded the strongest prediction accuracy compared to locomotion and pupil variation for Ach 3.0",
+     "statistics": [
+      {
+       "about": "single-variable R2 across behavioral metrics",
+       "test": "Friedman's ANOVA",
+       "p": 0.006,
+       "n": "6 mice per group"
+      },
+      {
+       "about": "unique contribution (\u0394R2) across behavioral metrics",
+       "test": "Friedman's ANOVA",
+       "p": 0.003,
+       "n": "6 mice per group"
+      },
+      {
+       "about": "R2, face PC1 against locomotion",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      },
+      {
+       "about": "R2, face PC1 against pupil",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      },
+      {
+       "about": "\u0394R2, face PC1 against locomotion",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      },
+      {
+       "about": "\u0394R2, face PC1 against pupil",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -160,16 +209,49 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig2c-face-best-predictor-calcium",
-     "statement": "fig2c-face-best-predictor-calcium",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For jRCaMP1b, facial movement (FaceMap PC1) is the most robust predictor of activity (single-variable Friedman p = 0.006; face against locomotion and pupil p = 0.031).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 1; Figure 2c",
+     "quote": "Again, facial movement (PC1) was the most robust predictor",
+     "statistics": [
+      {
+       "about": "single-variable R2 across behavioral metrics",
+       "test": "Friedman's ANOVA",
+       "p": 0.006,
+       "n": "6 mice per group"
+      },
+      {
+       "about": "unique contribution (\u0394R2) across behavioral metrics",
+       "test": "Friedman's ANOVA",
+       "p": 0.03,
+       "n": "6 mice per group"
+      },
+      {
+       "about": "R2, face against locomotion",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      },
+      {
+       "about": "R2, face against pupil",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      },
+      {
+       "about": "\u0394R2, face against locomotion",
+       "test": "post-hoc signed rank test",
+       "p": 0.031
+      },
+      {
+       "about": "\u0394R2, face against pupil",
+       "test": "post-hoc signed rank test",
+       "p": 0.063
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -182,16 +264,28 @@
      ],
      "assumed": false,
      "disagreed": true,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s7-face-onset-transients",
-     "statement": "s7-face-onset-transients",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Facial movement onset without locomotion is associated with significant whole-cortex transients in ACh (0.64 \u00b1 0.09 \u0394F/F, p = 0.001) and calcium (0.69 \u00b1 0.15 \u0394F/F, p = 0.006).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 2; Figure S7",
+     "quote": "Facial movement onset (quantified using FaceMap PC1) in the absence of locomotion was associated with desynchronization of local neuronal firing as estimated by ECoG and significant whole cortex-averaged transients in both ACh ... and calcium ... signals",
+     "statistics": [
+      {
+       "about": "ACh",
+       "test": "Student's t-test",
+       "p": 0.001
+      },
+      {
+       "about": "calcium",
+       "test": "Student's t-test",
+       "p": 0.006,
+       "n": "6 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -203,16 +297,30 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s7-locomotion-onset-transients",
-     "statement": "s7-locomotion-onset-transients",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Locomotion onset is associated with transient increases in ACh (0.68 \u00b1 0.17 \u0394F/F, p = 0.010) and calcium (1.50 \u00b1 0.11 \u0394F/F, p < 0.001).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 2; Figure S7",
+     "quote": "Locomotion onset co-occurred with an increase in facial movement and local desynchronization and was also associated with transient increases in ACh ... and calcium ... signals",
+     "statistics": [
+      {
+       "about": "ACh",
+       "test": "Student's t-test",
+       "p": 0.01,
+       "n": "6 mice"
+      },
+      {
+       "about": "calcium",
+       "test": "Student's t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "6 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -224,16 +332,30 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s7-ach-transients-same-across-states",
-     "statement": "s7-ach-transients-same-across-states",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "ACh transients vary across cortical areas (p < 0.001) but do not differ between locomotion and facial motion onsets (p = 0.734, two-way repeated measures ANOVA).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 2; Figure S7",
+     "quote": "ACh transients varied significantly across cortical areas ... but were not significantly different between locomotion and facial motion onsets",
+     "statistics": [
+      {
+       "about": "cortical area",
+       "test": "two-way repeated measures ANOVA",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "6 mice per group"
+      },
+      {
+       "about": "locomotion against facial motion onset",
+       "test": "two-way repeated measures ANOVA",
+       "p": 0.734,
+       "n": "6 mice per group"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -245,16 +367,30 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s7-calcium-transients-largest-at-locomotion",
-     "statement": "s7-calcium-transients-largest-at-locomotion",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Calcium transients vary across cortical areas (p < 0.001) and states (p = 0.005), with locomotion onset associated with the largest signal.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 2; Figure S7",
+     "quote": "Calcium transients varied significantly across cortical areas ... and states ... with locomotion onset associated with the largest signal",
+     "statistics": [
+      {
+       "about": "cortical area",
+       "test": "two-way repeated measures ANOVA",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "6 mice per group"
+      },
+      {
+       "about": "state",
+       "test": "two-way repeated measures ANOVA",
+       "p": 0.005,
+       "n": "6 mice per group"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -266,15 +402,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s7-ap-gradient-transients",
-     "statement": "s7-ap-gradient-transients",
-     "source": null,
-     "quote": "",
+     "statement": "Transient magnitudes show a significant anterior-posterior gradient for ACh but not for calcium.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 2; Figure S7",
+     "quote": "We also found a significant anterior-posterior gradient in the transient magnitudes for cholinergic but not calcium signals",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -287,16 +423,33 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig3b-ecog-desynchronization",
-     "statement": "fig3b-ecog-desynchronization",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Sustained facial movement and locomotion are associated with progressively increasing 30 to 100 Hz ECoG power.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Figure 3b",
+     "quote": "Sustained increases in facial movement and locomotion were associated with progressively increasing local circuit desynchronization, as evidenced by an increase in high frequency power",
+     "statistics": [
+      {
+       "about": "main effect of state on 30-100 Hz power",
+       "test": "repeated measures ANOVA",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "high against low facial motion",
+       "test": "post hoc LSD test",
+       "p": 0.048
+      },
+      {
+       "about": "locomotion against high facial motion",
+       "test": "post hoc LSD test",
+       "p": 0.002
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -312,10 +465,22 @@
     },
     {
      "claim": "fig3c-ach-sustained-face",
-     "statement": "fig3c-ach-sustained-face",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Sustained facial motion elevates whole-cortex ACh (low face -0.13 \u00b1 0.04, high face 0.18 \u00b1 0.08 \u0394F/F; low against high p = 0.046, post hoc LSD), with a main effect of state (p = 0.015).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Figure 3c",
+     "quote": "ACh activity varied significantly across cortical areas ... and differed by state ... Sustained facial motion significantly elevated whole-cortex Ach activity",
+     "statistics": [
+      {
+       "about": "state",
+       "test": "two-way repeated measures ANOVA",
+       "p": 0.015,
+       "n": "6 mice per group"
+      },
+      {
+       "about": "low against high facial motion",
+       "test": "post-hoc Least Significant Difference (LSD) test",
+       "p": 0.046
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -327,16 +492,21 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig3c-ach-locomotion-no-further-increase",
-     "statement": "fig3c-ach-locomotion-no-further-increase",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Locomotion does not further increase whole-cortex ACh beyond high facial motion (locomotion 0.16 \u00b1 0.06 \u0394F/F; locomotion against high face p = 0.717).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Figure 3c",
+     "quote": "but locomotion did not further increase the Ach signal",
+     "statistics": [
+      {
+       "test": "post-hoc LSD test",
+       "p": 0.717
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -348,16 +518,33 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig3c-calcium-sustained",
-     "statement": "fig3c-calcium-sustained",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Sustained facial movement and locomotion both increase whole-cortex calcium (low face -0.02 \u00b1 0.02, high face 0.17 \u00b1 0.04, locomotion 0.63 \u00b1 0.19 \u0394F/F; low against high p = 0.020, locomotion against high p = 0.044), with a main effect of state (p = 0.005).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Figure 3c",
+     "quote": "Similarly, sustained calcium activity varied significantly for cortical area ... and state ... Sustained facial movement and locomotion both increased whole cortex calcium activity",
+     "statistics": [
+      {
+       "about": "state",
+       "test": "two-way repeated measures ANOVA",
+       "p": 0.005,
+       "n": "6 mice per group"
+      },
+      {
+       "about": "low against high facial motion",
+       "test": "post-hoc LSD test",
+       "p": 0.02
+      },
+      {
+       "about": "locomotion against high facial motion",
+       "test": "post-hoc LSD test",
+       "p": 0.044
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -369,15 +556,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s7-ap-gradient-sustained",
-     "statement": "s7-ap-gradient-sustained",
-     "source": null,
-     "quote": "",
+     "statement": "Differences across sustained states have significant anterior-posterior gradients, for ACh comparing high and low facial movement, with larger increases in anterior areas, and for calcium comparing locomotion and high facial movement.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Discussion; Figure S7",
+     "quote": "there was a significant anterior-posterior gradient in the differences across states measured with Spearman\u2019s rank correlation for the cholinergic signal comparing sustained high and low facial movement and for calcium activity comparing sustained locomotion and high facial movement",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -390,16 +577,22 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig3d-ach-frontal-above-visual",
-     "statement": "fig3d-ach-frontal-above-visual",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During high facial motion ACh3.0 amplitude is higher in frontal-motor areas than in visual areas (paired t-test, p < 0.05).",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 4; Figure 3d",
+     "quote": "increased motor activity (e.g., facial movement) is associated with significantly higher ACh release in motor versus visual areas",
+     "statistics": [
+      {
+       "test": "paired t-test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -411,15 +604,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig3e-scopolamine-motor-not-visual",
-     "statement": "fig3e-scopolamine-motor-not-visual",
-     "source": null,
-     "quote": "",
+     "statement": "The muscarinic blocker scopolamine decreases cortical activity in motor but not visual areas, and the nicotinic blocker mecamylamine has no significant effect.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 4; Figure 3e",
+     "quote": "treatment with the muscarinic blocker scopolamine selectively decreased cortical activity in motor but not visual areas ... In contrast, treatment with the nicotinic blocker mecamylamine had no significant impact on cortical activity",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -436,9 +629,9 @@
     },
     {
      "claim": "fig4a-ach-correlations-up-with-face",
-     "statement": "fig4a-ach-correlations-up-with-face",
-     "source": null,
-     "quote": "",
+     "statement": "Increased facial movement is associated with significant increases in between-area correlations of ACh in anterior somatosensory and motor areas.",
+     "source": "Results, State-dependent modulation of cortical network architecture, paragraph 1; Figure 4a",
+     "quote": "We found that increased facial movement was associated with significant increases in between-area pairwise correlations in anterior somatosensory and motor areas for ACh signal",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -451,15 +644,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig4a-ach-correlations-down-with-locomotion",
-     "statement": "fig4a-ach-correlations-down-with-locomotion",
-     "source": null,
-     "quote": "",
+     "statement": "Locomotion is associated with a reduction in between-area correlations of ACh that is significant across the cortex.",
+     "source": "Results, State-dependent modulation of cortical network architecture, paragraph 1; Figure 4a",
+     "quote": "locomotion was associated with a reduction in the between-area correlations of cholinergic activity that was significant across the cortex",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -472,15 +665,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig4b-calcium-correlations-up-with-face",
-     "statement": "fig4b-calcium-correlations-up-with-face",
-     "source": null,
-     "quote": "",
+     "statement": "Increased facial movement is associated with broad, significant increases in between-area calcium correlations.",
+     "source": "Results, State-dependent modulation of cortical network architecture, paragraph 1; Figure 4b",
+     "quote": "We found that increased facial movement was associated with ... broad, significant increases for calcium signal",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -493,15 +686,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig4b-calcium-correlations-down-posterior",
-     "statement": "fig4b-calcium-correlations-down-posterior",
-     "source": null,
-     "quote": "",
+     "statement": "Locomotion occurs with modest decreases in calcium correlations that are significant primarily across posterior cortical areas.",
+     "source": "Results, State-dependent modulation of cortical network architecture, paragraph 1; Figure 4b",
+     "quote": "Locomotion also occurred with modest decreases in correlation for calcium signals that were significant primarily across posterior cortical areas",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -514,15 +707,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig5-coupling-up-with-face",
-     "statement": "fig5-coupling-up-with-face",
-     "source": null,
-     "quote": "",
+     "statement": "Sustained facial movement is associated with a significant increase in the correlation between ACh and calcium signals broadly across the cortex.",
+     "source": "Results, State-dependent modulation of cortical network architecture, paragraph 2; Figure 5",
+     "quote": "Sustained facial movement was associated with a significant increase in correlation between the two signals broadly across the cortex",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -535,15 +728,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "fig5-coupling-down-frontal-with-locomotion",
-     "statement": "fig5-coupling-down-frontal-with-locomotion",
-     "source": null,
-     "quote": "",
+     "statement": "Sustained locomotion is associated with a significant reduction in the correlation between ACh and calcium that is restricted to the frontal cortex.",
+     "source": "Results, State-dependent modulation of cortical network architecture, paragraph 2; Figure 5",
+     "quote": "sustained locomotion was associated with a significant reduction in the correlation between the two channels that was restricted to the frontal cortex",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -556,15 +749,15 @@
      ],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
+     "data": "with_labels",
      "where": null,
      "proposed": null
     },
     {
      "claim": "s3-hemodynamic-correction",
-     "statement": "s3-hemodynamic-correction",
-     "source": null,
-     "quote": "",
+     "statement": "The spatial regression on 395 nm signals removes stimulus-evoked and behaviour-related negative hemodynamic transients better than pixel-wise regression, shown in GFP and mCherry control mice and in ACh3.0 mice.",
+     "source": "Results, Dual-color mesoscopic ACh and calcium imaging, paragraph 1; Methods, Validation of hemodynamics correction; Figures S3, S4",
+     "quote": "This method outperformed conventional pixel-wise regression in its ability to remove stimulus-induced and spontaneous behavior-associated negative transients in fluorescence corresponding to hemodynamic absorption",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -581,9 +774,9 @@
     },
     {
      "claim": "s2-ach-sensor-validation",
-     "statement": "s2-ach-sensor-validation",
-     "source": null,
-     "quote": "",
+     "statement": "ACh3.0 specifically reports cholinergic signalling, ex vivo (carbachol, blocked by scopolamine) and in vivo (basal forebrain stimulation).",
+     "source": "Results, Dual-color mesoscopic ACh and calcium imaging, paragraph 1; Figure S2",
+     "quote": "we confirmed both ex vivo and in vivo that ACh3.0 specifically reported cholinergic signaling",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -600,9 +793,9 @@
     },
     {
      "claim": "s8-cholinergic-axons",
-     "statement": "s8-cholinergic-axons",
-     "source": null,
-     "quote": "",
+     "statement": "The relationship between behavioural state and cholinergic signalling is also seen with mesoscopic imaging of GCaMP6s in cholinergic axons.",
+     "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Figure S8",
+     "quote": "we observed a similar relationship between behavioral state and cholinergic axonal signaling measured via mesoscopic imaging of genetically targeted GCaMP6s-expressing fibers",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -726,7 +919,7 @@
  ],
  "entries": [
   {
-   "name": "001172-lohani-2022",
+   "name": "lohani-2022",
    "type": "reproduction",
    "title": "Cholinergic and calcium dynamics across behavioural states (Lohani, Moberly et al. 2022)",
    "description": "Tests the findings of Lohani, Moberly et al. (2022) on dandiset 001172, which holds dual-colour mesoscopic imaging of ACh3.0 and jRCaMP1b with face video, pupil and wheel data from 4 of the paper's 6 mice. It tests the regression of both signals on behaviour, transients at face movement and locomotion onsets, amplitudes in sustained states, and the state dependence of correlations between areas and between the two signals, using the Allen parcel masks of the paper's code. ECoG, pharmacology, control mice and cholinergic axon imaging are not in the dandiset.",
@@ -741,7 +934,7 @@
     {
      "path": "reproduce_lohani_2022.ipynb",
      "title": "Reproducing Lohani, Moberly et al. (2022) from dandiset 001172",
-     "executed": "notebooks/001172-lohani-2022/reproduce_lohani_2022.html"
+     "executed": null
     }
    ]
   }

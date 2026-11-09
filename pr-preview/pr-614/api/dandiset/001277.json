@@ -5,7 +5,7 @@
   "label": "DANDI:001277"
  },
  "page": "datasets/dandi/001277/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 1,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "001277-silkuniene-2025-01",
+   "id": "silkuniene-2025-03",
    "dataset": {
     "archive": "dandi",
     "id": "001277",
     "version": "0.250701.1610",
-    "doi": "10.48324/dandi.001277/0.250701.1610"
+    "doi": "10.48324/dandi.001277/0.250701.1610",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:001277"
@@ -64,7 +65,7 @@
    "tier": "agent_verified",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "001277-silkuniene-2025",
+   "entry": "silkuniene-2025-001277",
    "entry_title": "Remote focusing of electroporation by MHz pulse packets (Silkuniene et al. 2025)",
    "summary": "In this data, the one central Fig. 6 finding that could be tested did not hold, and most of the rest could not be tested. The paper says normalized YO-PRO-1 profiles decline similarly across 300, 600 and 900 ns pulses. In this data the profiles separate, with the 900 ns profile falling faster near the centre. Two findings held up: the 900 ns centre peak is highest but not significantly so, and the 900 ns spot is about 1.7 mm wide. The sharper peak with longer pulses was blocked, because the dandiset has 7 wells at 600 ns where the paper used 5 and does not say which five. The packet-rate, raised-electrode, burst-number and heating findings could not be tested because that data is not in the dandiset.",
    "description": "Tests the findings of Silkuniene, Silkunas, Pakhomova, Semenov and Pakhomov (2025) on dandiset 001277, which holds whole-well YO-PRO-1, Hoechst and propidium images of CT26 monolayers from the paper's pulse-duration experiment (Figure 6). It measures dye uptake along the diagonals of the four-electrode array, fits the Lorentzian of the Methods per well, and compares the central peak and its width across 300, 600 and 900 ns pulses, and the YP and propidium spots at 600 ns. The packet-rate, raised-electrode, burst-number and thermometry experiments are not in the dandiset.",
@@ -72,15 +73,15 @@
     {
      "path": "reproduce_silkuniene_2025.ipynb",
      "title": "Reproducing Silkuniene et al. (2025) from dandiset 001277",
-     "executed": "notebooks/001277-silkuniene-2025/reproduce_silkuniene_2025.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "fig6b-peak-900ns-not-significant",
-     "statement": "fig6b-peak-900ns-not-significant",
-     "source": null,
-     "quote": "",
+     "statement": "The central peak of YP uptake is highest for 900-ns pulse packets, but its difference from 300- and 600-ns packets is not statistically significant.",
+     "source": "Results 3.3, paragraph 2; Figure 6B",
+     "quote": "The central peak of YP uptake was higher for 900-ns pulses, but the difference from the other two pulse durations was not statistically significant",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -101,9 +102,9 @@
     },
     {
      "claim": "fig6c-normalized-decline-similar",
-     "statement": "fig6c-normalized-decline-similar",
-     "source": null,
-     "quote": "",
+     "statement": "With the peak YP emission taken as 100%, the decline of YP emission away from the centre looks similar for 300-, 600- and 900-ns pulses.",
+     "source": "Results 3.3, paragraph 2; Figure 6C",
+     "quote": "When the peak YP emission was taken as 100%, its decline sideways was similar for the three tested pulse durations",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -123,10 +124,16 @@
     },
     {
      "claim": "fig6d-longer-pulses-sharper-peak",
-     "statement": "fig6d-longer-pulses-sharper-peak",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "FWHM of the central YP peak, fitted per experiment, decreases with pulse duration from 300 to 900 ns, with a trend slope different from zero (p = 0.003).",
+     "source": "Results 3.3, paragraph 2; Figure 6D",
+     "quote": "revealed significant sharpening of the central peak when packets were built from 600- and 900-ns pulses ... The slope coefficient of the logarithmic fit of the data was different from zero at p = 0.003 (one sample, 2-sided t-test)",
+     "statistics": [
+      {
+       "test": "one-sample two-sided t-test on the fit slope",
+       "p": 0.003,
+       "n": "5 experiments per pulse duration"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -146,10 +153,25 @@
     },
     {
      "claim": "fig6d-600-900-differ-from-300",
-     "statement": "fig6d-600-900-differ-from-300",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "FWHM for 600-ns and for 900-ns packets is each significantly smaller than for 300-ns packets (Bonferroni-corrected t-tests, p = 0.028 for one and p = 0.0072 for the other).",
+     "source": "Figure 6D legend",
+     "quote": "*p=0.028, **p=0.0072 for the difference from 300-ns pulse exposure (2-sided t -test with Bonferroni correction)",
+     "statistics": [
+      {
+       "about": "one of 600 ns and 900 ns against 300 ns (the legend does not say which)",
+       "test": "two-sided t-test",
+       "p": 0.028,
+       "corrected": "Bonferroni",
+       "n": "5 experiments per pulse duration"
+      },
+      {
+       "about": "the other of 600 ns and 900 ns against 300 ns",
+       "test": "two-sided t-test",
+       "p": 0.0072,
+       "corrected": "Bonferroni",
+       "n": "5 experiments per pulse duration"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -167,9 +189,9 @@
     },
     {
      "claim": "fig6d-900ns-fwhm",
-     "statement": "fig6d-900ns-fwhm",
-     "source": null,
-     "quote": "",
+     "statement": "Packets of 900-ns pulses reduce FWHM to 1.7 +/- 0.08 mm (mean +/- s.e.), 11.1 +/- 0.6% of the 15.3-mm gap between electrodes.",
+     "source": "Results 3.3, paragraph 2; Figure 6D",
+     "quote": "900-ns pulse packets reduced FWHM to 1.7 \u00b1 0.08 mm, that was 11.1 \u00b1 0.6% of the gap between electrodes",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -189,10 +211,17 @@
     },
     {
      "claim": "fig5-yp-lorentzian-pr-gaussian",
-     "statement": "fig5-yp-lorentzian-pr-gaussian",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The decline of Pr staining (cell killing) from the centre fits a Gaussian better than a Lorentzian (R2 0.96 against 0.92), while YP fits a Lorentzian better (0.98 against 0.95), fitted from -5 to 5 mm.",
+     "source": "Results 3.2, paragraph 3; Figure 5B, left panel",
+     "quote": "For Pr data in the left panel of Fig. 5B , the coefficient of determination increased from 0.92 for Lorentzian fit to 0.96 for Gaussian fit. YP data showed the opposite trend, with the coefficients of 0.98 and 0.95 for Lorentzian and Gaussian fits",
+     "statistics": [
+      {
+       "about": "significance of each of the four fits",
+       "test": "fit significance",
+       "p": 0.0001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -211,9 +240,9 @@
     },
     {
      "claim": "fig5-yp-spot-slightly-larger-than-pr",
-     "statement": "fig5-yp-spot-slightly-larger-than-pr",
-     "source": null,
-     "quote": "",
+     "statement": "The central spot of YP staining (electroporation) is only slightly larger than the spot of Pr staining (cell killing).",
+     "source": "Results 3.2, paragraph 2; Figure 5A and 5B",
+     "quote": "the central spot of YP staining (electroporation) was just slightly larger than the spot of Pr staining (cell killing",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -232,9 +261,9 @@
     },
     {
      "claim": "fig5-raised-electrodes-weaker-centre",
-     "statement": "fig5-raised-electrodes-weaker-centre",
-     "source": null,
-     "quote": "",
+     "statement": "Raising the electrodes 1 or 2 mm above the monolayer weakens electroporation in the central spot, with practically no YP staining near electrodes at any height.",
+     "source": "Results 3.2, paragraph 1; Figure 5A and 5B",
+     "quote": "there was practically no YP staining near electrodes to start with, so the only clear effect of raising electrodes was the weakening of electroporation in the central spot",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -251,9 +280,9 @@
     },
     {
      "claim": "fig3-cancan-centre-enhancement",
-     "statement": "fig3-cancan-centre-enhancement",
-     "source": null,
-     "quote": "",
+     "statement": "All CANCAN protocols enhance electroporation at the centre of the array, while in single-pulse controls YP uptake decreases gradually toward the centre.",
+     "source": "Results 3.1, paragraph 2; Figure 3A",
+     "quote": "All CANCAN protocols visibly enhanced electroporation at the center of the array, in contrast to its gradual decrease toward the center in the control",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -270,10 +299,17 @@
     },
     {
      "claim": "fig3-lorentzian-decline",
-     "statement": "fig3-lorentzian-decline",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Under CANCAN, the decline of YP emission from the centre is bell-shaped and well fitted by a Lorentzian within -4 to 4 mm (R > 0.9, p < 0.001).",
+     "source": "Results 3.1, paragraph 3; Figure 3B and 3C",
+     "quote": "The decline of YP emission sideways from the center was bell-shaped and followed Lorentzian distribution ... The fit correlation with data in the \u22124 to 4 mm radius was nearly perfect (R>0.9, p<0.001)",
+     "statistics": [
+      {
+       "test": "Lorentzian fit correlation",
+       "statistic": "R > 0.9",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -289,9 +325,9 @@
     },
     {
      "claim": "fig4b-suppression-near-electrodes",
-     "statement": "fig4b-suppression-near-electrodes",
-     "source": null,
-     "quote": "",
+     "statement": "Higher packet rates suppress YP uptake at 6 and 7 mm from the centre (near electrodes) in a rate-dependent way, so that at 0.2 MHz uptake in the centre is 40-fold larger than near electrodes despite a field of about 14 kV/cm there against 3.3 kV/cm in the centre.",
+     "source": "Results 3.1, paragraphs 2 and 4; Figure 4A and 4B",
+     "quote": "Now, by increasing the packet repetition rate to 0.2 MHz, we achieved a 40-fold difference",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -308,9 +344,9 @@
     },
     {
      "claim": "fig4b-centre-no-rate-effect",
-     "statement": "fig4b-centre-no-rate-effect",
-     "source": null,
-     "quote": "",
+     "statement": "YP intensity in the centre of the array shows no significant effect of packet rate.",
+     "source": "Results 3.1, paragraph 4; Figure 4B",
+     "quote": "YP intensity in the center showed no significant effect of the packet rate ( t -test with Bonferroni correction, Fig. 4B )",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -327,10 +363,47 @@
     },
     {
      "claim": "fig4c-fwhm-falls-with-rate",
-     "statement": "fig4c-fwhm-falls-with-rate",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "FWHM decreases from about 4 mm at 1 Hz to about 2 mm at 1 kHz, 10 kHz and 0.2 MHz, following a logarithmic dependence from 1 Hz to 10 kHz with no further gain at 0.2 MHz.",
+     "source": "Results 3.1, paragraph 5; Figure 4C",
+     "quote": "FWHM decreased from ~4 mm at 1 Hz to ~2 mm at 1 kHz, 10 kHz, and 0.2 MHz packet rates (p = 0.03; 0.02, and 0.09, respectively; t -test with Bonferroni correction). FWHM decrease followed the logarithmic dependence from 1 Hz to 10 kHz (correlation coefficient R = 0.77, p<0.001)",
+     "statistics": [
+      {
+       "about": "1 kHz against 1 Hz",
+       "test": "t-test",
+       "p": 0.03,
+       "corrected": "Bonferroni",
+       "n": "3 experiments per rate"
+      },
+      {
+       "about": "10 kHz against 1 Hz",
+       "test": "t-test",
+       "p": 0.02,
+       "corrected": "Bonferroni",
+       "n": "3 experiments per rate"
+      },
+      {
+       "about": "0.2 MHz against 1 Hz",
+       "test": "t-test",
+       "p": 0.09,
+       "corrected": "Bonferroni",
+       "n": "3 experiments per rate"
+      },
+      {
+       "about": "logarithmic fit of FWHM on rate, 1 Hz to 10 kHz",
+       "test": "correlation",
+       "statistic": "R = 0.77",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "15 experiments"
+      },
+      {
+       "about": "slope of the log fit",
+       "test": "2-sided one-sample t test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "15 experiments"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -346,10 +419,23 @@
     },
     {
      "claim": "fig7be-burst-number-centre",
-     "statement": "fig7be-burst-number-centre",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The central YP peak grows linearly with the number of bursts in CT26 and CHO cells, except for saturation after 6 bursts (x4) in CT26 cells.",
+     "source": "Results 3.4, paragraph 2; Figure 7B and 7E",
+     "quote": "The increase was linear in both cell lines, except when it reached saturation after 6 bursts (x4) in CT26 cells",
+     "statistics": [
+      {
+       "about": "slope of linear fit, CT26 (6 bursts excluded)",
+       "test": "2-sided one-sample t test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "slope of linear fit, CHO",
+       "test": "2-sided one-sample t test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -365,10 +451,22 @@
     },
     {
      "claim": "fig7-fwhm-burst-number",
-     "statement": "fig7-fwhm-burst-number",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "FWHM increases with the number of bursts in CT26 cells but not in CHO cells (p = 0.44).",
+     "source": "Results 3.4, paragraph 2; Figure 7C and 7F",
+     "quote": "FWHM of the central peak increased proportionally to the burst number in CT26 cells, but not in CHO cells",
+     "statistics": [
+      {
+       "about": "slope of linear fit, CT26",
+       "test": "2-sided one-sample t test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "slope of linear fit, CHO",
+       "test": "2-sided one-sample t test",
+       "p": 0.44
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -384,9 +482,9 @@
     },
     {
      "claim": "fig7-sharpest-peak-1-burst-ct26",
-     "statement": "fig7-sharpest-peak-1-burst-ct26",
-     "source": null,
-     "quote": "",
+     "statement": "One burst (x4) in CT26 cells gives the sharpest peak of the study, FWHM 1.1 +/- 0.1 mm, 7.3% of the inter-electrode gap and 2.3% of the array area, with YP near electrodes 40 to 50 times smaller than at the target.",
+     "source": "Results 3.4, paragraph 3; Figure 7A and 7C",
+     "quote": "1 burst (x4) in CT26 cells produced the sharpest peak of electroporation seen in this study ... at FWHM of 1.1 \u00b1 0.1 mm, it occupied just 7.3% of the inter-electrode gap and 2.3% of the electrode array area. Off-target effects, characterized by YP emission near electrodes, were 40\u201350 times smaller than at the remote target",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -403,9 +501,9 @@
     },
     {
      "claim": "fig2-heating-below-44c",
-     "statement": "fig2-heating-below-44c",
-     "source": null,
-     "quote": "",
+     "statement": "In the worst-case heating protocol (600-ns packets with no interval, 2 or 6 bursts), temperature did not exceed 44 C even near the electrodes; it could exceed 30 C within about 2 mm of the electrodes after 2 bursts and even near the centre after 6 bursts.",
+     "source": "Methods 2.3; Figure 2",
+     "quote": "Temperature could exceed 30 \u00b0C even near the center of the array, but did not exceed 44 \u00b0C even near the electrodes",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -512,7 +610,7 @@
  ],
  "entries": [
   {
-   "name": "001277-silkuniene-2025",
+   "name": "silkuniene-2025-001277",
    "type": "reproduction",
    "title": "Remote focusing of electroporation by MHz pulse packets (Silkuniene et al. 2025)",
    "description": "Tests the findings of Silkuniene, Silkunas, Pakhomova, Semenov and Pakhomov (2025) on dandiset 001277, which holds whole-well YO-PRO-1, Hoechst and propidium images of CT26 monolayers from the paper's pulse-duration experiment (Figure 6). It measures dye uptake along the diagonals of the four-electrode array, fits the Lorentzian of the Methods per well, and compares the central peak and its width across 300, 600 and 900 ns pulses, and the YP and propidium spots at 600 ns. The packet-rate, raised-electrode, burst-number and thermometry experiments are not in the dandiset.",
@@ -527,7 +625,7 @@
     {
      "path": "reproduce_silkuniene_2025.ipynb",
      "title": "Reproducing Silkuniene et al. (2025) from dandiset 001277",
-     "executed": "notebooks/001277-silkuniene-2025/reproduce_silkuniene_2025.html"
+     "executed": null
     }
    ]
   }

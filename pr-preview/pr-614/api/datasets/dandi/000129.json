@@ -5,13 +5,13 @@
   "label": "DANDI:000129"
  },
  "page": "datasets/dandi/000129/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 10,
   "partially_reproduced": 2,
   "not_reproduced": 6,
-  "blocked": 13
+  "blocked": 12
  },
  "outcome_counts_with_outside_data": {
   "reproduced": 0,
@@ -23,7 +23,7 @@
   "reproduced": 0,
   "partially_reproduced": 0,
   "not_reproduced": 0,
-  "blocked": 0
+  "blocked": 1
  },
  "outcome_counts_links": {
   "reproduced": 0,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "000129-makin-2018-01",
+   "id": "makin-2018-01",
    "dataset": {
     "archive": "dandi",
     "id": "000129",
     "version": "0.241017.1444",
-    "doi": "10.48324/dandi.000129/0.241017.1444"
+    "doi": "10.48324/dandi.000129/0.241017.1444",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:000129"
@@ -64,7 +65,7 @@
    "tier": "agent_verified",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "000129-makin-2018",
+   "entry": "makin-2018",
    "entry_title": "Arm-movement decoding with the rEFH and seven other decoders (Makin et al. 2018)",
    "summary": "Most of Makin et al.'s main findings could not be tested here, because the dandiset holds one session where the paper used 49, and every claim that needs a test across sessions is blocked. On that one session the rEFH decoder's advantage at velocity and acceleration held, and so did the weak effect of a Kalman filter on KFlatent and the rising advantage with bin width. The rEFH's dynamic gain for position (4.45 dB against about 3) did not match, nor did position being the best-decoded variable for the rEFH, nor the losses in the figure 8 variants. The velocity-boost ratio (1.92 against the required 2) flips with the kinematics reading the Methods and code disagree on. The file has sorted units only, which probably explains the low unit count (111 against 171 to 413).",
    "description": "Tests the findings of Makin, O'Doherty, Cardoso and Sabes (2018) on dandiset 000129, which holds one session of monkey I (M1 array, 649 s of sorted-unit spikes with fingertip and cursor kinematics) from the Neural Latents Benchmark. It re-implements the paper's eight decoders (linear regression, KFobs, KFlatent static and dynamic, Wiener filter, UKF, rEFH static and dynamic) from its Methods and code, and compares them at four bin widths, three amounts of training data and four fractions of the units. The paper's tests across its 49 sessions cannot be run on one session.",
@@ -72,20 +73,20 @@
     {
      "path": "reproduce_makin_2018.ipynb",
      "title": "Decoders at 64 ms on dandiset 000129 (figures 2, 4 and 8)",
-     "executed": "notebooks/000129-makin-2018/reproduce_makin_2018.html"
+     "executed": null
     },
     {
      "path": "binwidth_training_neurons.ipynb",
      "title": "Bin width, training data and number of neurons (figures 5 to 7)",
-     "executed": "notebooks/000129-makin-2018/binwidth_training_neurons.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "units-monkey-i",
-     "statement": "units-monkey-i",
-     "source": null,
-     "quote": "",
+     "statement": "After units firing below 0.5 Hz were discarded, monkey I's sessions had between 171 and 413 units, the range reflecting that only 7 of 37 sessions included the S1 array.",
+     "source": "Methods, Data acquisition, paragraph 4",
+     "quote": "Finally, units with spike rates below 0.5 Hz were discarded. This left between 171 and 413 units for monkey I",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -105,9 +106,9 @@
     },
     {
      "claim": "fig2-refh-kf-best",
-     "statement": "fig2-refh-kf-best",
-     "source": null,
-     "quote": "",
+     "statement": "Averaged over the 49 sessions, no decoder outperforms the rEFH (+KF) for any kinematic variable, and for velocity and acceleration it is clearly superior to all other decoders.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 1; Figure 2",
+     "quote": "On average, no decoder outperforms the rEFH (+KF) for any kinematic variable. For velocity and acceleration, the rEFH (+KF) is clearly superior to any of the other decoders.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -124,10 +125,17 @@
     },
     {
      "claim": "intro-gain-over-nearest",
-     "statement": "intro-gain-over-nearest",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The rEFH (+KF) improves SNR over its nearest competitor on average by 0.14 dB for position, 1.60 dB for velocity and 1.2 dB for acceleration; the position gain is not significant at p = 0.01.",
+     "source": "Introduction, paragraph 4",
+     "quote": "average improvements over its nearest competitor in signal-to-noise ratio of 0.14 dB (position), 1.60 dB (velocity) and 1.2 dB (acceleration) ... the improvement in position is not significant at the level of p = 0.01",
+     "statistics": [
+      {
+       "about": "position gain over the nearest competitor",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -143,9 +151,9 @@
     },
     {
      "claim": "fig2-velocity-boost",
-     "statement": "fig2-velocity-boost",
-     "source": null,
-     "quote": "",
+     "statement": "Relative to the static linear map, the rEFH (+KF) raises velocity SNR by more than twice as much as KFobs and nearly twice as much as the UKF.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 1; Figure 2, second row",
+     "quote": "the average SNR boost provided by the rEFH (+KF) for velocity is more than twice that supplied by KFobs ... nearly twice that of its nearest rival, which is the unscented Kalman filter (UKF)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -167,9 +175,9 @@
     },
     {
      "claim": "fig2-kflatent-dynamic-little-effect",
-     "statement": "fig2-kflatent-dynamic-little-effect",
-     "source": null,
-     "quote": "",
+     "statement": "Adding the dynamic mapping (a second Kalman filter) to KFlatent changes its reconstruction little.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 2; Figure 2",
+     "quote": "Dynamic mapping (i.e. a KF) of KFlatent has little effect on reconstruction.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -189,9 +197,9 @@
     },
     {
      "claim": "fig2-refh-static-vel-acc",
-     "statement": "fig2-refh-static-vel-acc",
-     "source": null,
-     "quote": "",
+     "statement": "Under the static mapping alone, velocity and acceleration are reconstructed better from the rEFH than from any other filter.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 3; Figure 2",
+     "quote": "Under the static mapping alone, velocity and acceleration can be reconstructed better with the rEFH than with any other filter.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -211,9 +219,9 @@
     },
     {
      "claim": "fig2-position-dynamic-gain",
-     "statement": "fig2-position-dynamic-gain",
-     "source": null,
-     "quote": "",
+     "statement": "Position is reconstructed much more accurately from the rEFH with the dynamic than with the static mapping, by about 3 dB of SNR.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 4; Discussion, Relative reconstruction quality of position, velocity, and acceleration, paragraph 1; Figure 2",
+     "quote": "That position, on the other hand, can be reconstructed much more accurately from the rEFH with dynamic, as opposed to static, mappings ... the dynamic mapping (+KF) improves signal-to-noise by some 3 dB",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -233,9 +241,9 @@
     },
     {
      "claim": "fig2-sagittal-better",
-     "statement": "fig2-sagittal-better",
-     "source": null,
-     "quote": "",
+     "statement": "For each decoder and each derivative order, the sagittal (y) component is decoded better than the lateral (x) component.",
+     "source": "Results, Reconstruction quality of all decoders, bullet 5; Figure 2",
+     "quote": "For each decoder and derivative order (position, velocity, acceleration), variables are decoded better in the sagittal ... than lateral (x) direction",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -255,9 +263,9 @@
     },
     {
      "claim": "fig2-linear-worst",
-     "statement": "fig2-linear-worst",
-     "source": null,
-     "quote": "",
+     "statement": "Static linear regression reconstructs much worse than the other decoders.",
+     "source": "Results, Reconstruction quality of all decoders, paragraph 1; Figure 2",
+     "quote": "improvement in reconstruction over linear regression, which is much worse than the other six decoders",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -277,9 +285,9 @@
     },
     {
      "claim": "fig2-gross-failures",
-     "statement": "fig2-gross-failures",
-     "source": null,
-     "quote": "",
+     "statement": "Gross failures (negative coefficients of determination) occur only for the UKF and KFlatent (+KF), in a few sessions.",
+     "source": "Results, paragraph after the decoder list",
+     "quote": "in our experiments, such gross failures occurred only for the UKF and KFlatent (+KF)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -299,10 +307,17 @@
     },
     {
      "claim": "fig4-vel-acc-every-session",
-     "statement": "fig4-vel-acc-every-session",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For velocity and acceleration, the rEFH (+KF) is better than KFobs and the UKF in every one of the 196 session, variable and axis combinations, and significantly so across sessions.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 2; Figure 4, columns 2 and 3",
+     "quote": "For velocity and acceleration, the rEFH is superior to KFobs and the UKF for all 196 data ... For both kinematic variables, the results are significant under a bootstrap (p < 0.01",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "49 sessions from three monkeys"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -321,10 +336,16 @@
     },
     {
      "claim": "fig4-advantage-grows",
-     "statement": "fig4-advantage-grows",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The better decoded the session, the more the rEFH (+KF) outperforms the standard Kalman filter, shown by regression slopes above 1 for velocity and acceleration.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 2; Figure 4, columns 2 and 3",
+     "quote": "the better (more decodable) the session, the more the rEFH outperforms the standard Kalman filter ... confirmed with an F-test against a model with slope set to unity, intercept fit to data",
+     "statistics": [
+      {
+       "test": "F-test against a unit-slope model",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -340,10 +361,23 @@
     },
     {
      "claim": "fig4-position",
-     "statement": "fig4-position",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The rEFH (+KF) decodes position better than KFobs, but not distinguishably from the UKF.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Figure 4, column 1",
+     "quote": "The rEFH\u2019s position reconstruction is likewise superior to KFobs (p < 0.01, bootstrap). It is not, however, distinguishable from either the UKF (bootstrap not significant even at p = 0.05).",
+     "statistics": [
+      {
+       "about": "rEFH (+KF) against KFobs, position",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "rEFH (+KF) against UKF, position",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -359,9 +393,9 @@
     },
     {
      "claim": "fig4-best-variable",
-     "statement": "fig4-best-variable",
-     "source": null,
-     "quote": "",
+     "statement": "The best-decoded kinematic variable is velocity for the rEFH (+KF), but position for KFobs and the UKF.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Figure 4",
+     "quote": "the best-decoded kinematic variable is velocity for the rEFH, but position for KFobs and the UKF",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -381,9 +415,9 @@
     },
     {
      "claim": "fig4-task-similar",
-     "statement": "fig4-task-similar",
-     "source": null,
-     "quote": "",
+     "statement": "The relative advantage of the rEFH (+KF) does not differ visibly between the center-out task (monkey C) and the point-to-point task (monkeys I and L); monkey L's sessions differ most.",
+     "source": "Results, Reaching task, paragraph 1; Figure 4",
+     "quote": "But across tasks, the relative advantage of the rEFH (+KF) does not differ visibly (there are too few sessions from monkey C for a statistical test)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -394,16 +428,22 @@
      "deviations": [],
      "assumed": false,
      "disagreed": false,
-     "data": "dataset",
-     "where": null,
+     "data": "elsewhere",
+     "where": "Monkey C data, Dyer et al. 2016, biorxiv.org/content/early/2016/10/14/080861 (reference 6); no archive identifier is given in the paper",
      "proposed": null
     },
     {
      "claim": "fig5-vel-acc-all-bins",
-     "statement": "fig5-vel-acc-all-bins",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For velocity and acceleration, the rEFH (+KF) is the best decoder at every bin width (16, 32, 64 and 128 ms).",
+     "source": "Results, Bin width, bullet 1; Figure 5",
+     "quote": "For velocity and acceleration, the rEFH (+KF) is the best for all bin widths",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -419,10 +459,17 @@
     },
     {
      "claim": "fig5-position-bins",
-     "statement": "fig5-position-bins",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For position the leading decoders cannot be told apart at any bin width except 16 ms, where the UKF is better.",
+     "source": "Results, Bin width, bullet 1; Figure 5",
+     "quote": "For position, the leading decoders are not statistically differentiable at any bin width ... except at 16 ms, where the UKF is superior (bootstrap, p < 0.01)",
+     "statistics": [
+      {
+       "about": "UKF against rEFH (+KF), position, 16 ms bins",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -438,9 +485,9 @@
     },
     {
      "claim": "fig5-advantage-with-binwidth",
-     "statement": "fig5-advantage-with-binwidth",
-     "source": null,
-     "quote": "",
+     "statement": "Reconstruction improves with bin width, and so does the relative advantage of the rEFH (+KF).",
+     "source": "Results, Bin width, bullet 2; Figure 5",
+     "quote": "With increasing bin width, reconstruction improves, as expected; but so does the relative advantage of the rEFH (+KF).",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -460,9 +507,9 @@
     },
     {
      "claim": "fig5-derivative-order",
-     "statement": "fig5-derivative-order",
-     "source": null,
-     "quote": "",
+     "statement": "With increasing derivative order reconstruction quality declines (except that the rEFH is best at velocity), while the relative advantage of the rEFH (+KF) increases.",
+     "source": "Results, Bin width, bullet 3; Figure 5",
+     "quote": "With increasing derivative order (position, velocity, acceleration), the overall reconstruction quality declines (except for the rEFH, which is best at velocity), but the relative advantage of the rEFH (+KF) increases.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -482,10 +529,16 @@
     },
     {
      "claim": "fig6-training-time",
-     "statement": "fig6-training-time",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The rEFH (+KF) is the best decoder of velocity and acceleration for 80, 160 and 320 s of training data; for position it never differs significantly from the UKF, and beats KFobs at 320 s but loses to it at 80 s.",
+     "source": "Results, Seconds of data used for training; Figure 6",
+     "quote": "For velocity and acceleration, the rEFH (+KF) is again the best decoder for all amounts of training data. For position, the differences between the rEFH (+KF) and the UKF are nowhere significant, but compared to KFobs, the rEFH is superior at 320 s and inferior at 80 s (bootstrap, p = 0.01)",
+     "statistics": [
+      {
+       "about": "rEFH (+KF) against KFobs, position, 320 s and 80 s",
+       "test": "bootstrap",
+       "p": 0.01
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -501,10 +554,23 @@
     },
     {
      "claim": "fig7-vel-acc-neurons",
-     "statement": "fig7-vel-acc-neurons",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For velocity and acceleration, using a fraction 1/4, 1/2 or all of the neurons, the rEFH (+KF) outperforms all its rivals, and its percent gain in SNR grows with the number of neurons and with derivative order.",
+     "source": "Results, Number of neurons, paragraph 2; Figure 7",
+     "quote": "For velocity and acceleration, for all but the smallest fraction of neurons, the rEFH (+KF) outperforms all its rivals (bootstrap; the result holds for all comparisons at p < 0.01 except against the WF in acceleration at f = 1/4, where it holds for p < 0.05). The percent increase in SNR provided by the rEFH increases with neurons as well as derivative order.",
+     "statistics": [
+      {
+       "about": "all comparisons except WF, acceleration, f = 1/4",
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "against WF, acceleration, f = 1/4",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -520,10 +586,16 @@
     },
     {
      "claim": "fig7-position-neurons",
-     "statement": "fig7-position-neurons",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For position the rEFH's advantage is significant at p < 0.05 at f = 1/4 and 1/2, but not at f = 1, where the UKF comes close, nor at f = 1/8, where all decoders collapse.",
+     "source": "Results, Number of neurons, paragraph 2; Figure 7, left panel",
+     "quote": "Even for position, the rEFH\u2019s advantage is significant at p < 0.05, except for f = 1, where UKF performance gets close, and at the smallest fraction of neurons (f = 1/8)",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -539,9 +611,9 @@
     },
     {
      "claim": "fig7-affine-position",
-     "statement": "fig7-affine-position",
-     "source": null,
-     "quote": "",
+     "statement": "Position SNR of the decoders without a learned kinematic model (linear regression, static KFlatent, WF, static rEFH) is close to an affine function of the fraction of neurons, with correlations 0.999, 0.95, 0.98 and 1.000; static KFlatent is the most curved.",
+     "source": "Results, Number of neurons, paragraph 3; Figure 7, left panel",
+     "quote": "SNRs for the decoders that do not learn the kinematics explicitly ... are quite close to affine functions (i.e. linear with offset) of the fraction of neurons used (\u03c1 = 0.999, 0.95, 0.98, 1.000, respectively). SNR for KFlatent is clearly the most curved of these functions.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -560,9 +632,9 @@
     },
     {
      "claim": "fig7-kinematic-model-saturates",
-     "statement": "fig7-kinematic-model-saturates",
-     "source": null,
-     "quote": "",
+     "statement": "Position SNR of the four decoders that learn a kinematic state-transition model (KFobs, KFlatent (+KF), UKF, rEFH (+KF)) rises much faster at first with added neurons, then saturates.",
+     "source": "Results, Number of neurons, paragraph 3; Figure 7, left panel",
+     "quote": "In contrast, reconstruction quality for the four decoders (KFobs, KFlatent [+KF], UKF, rEFH [+KF]) that did learn a model of kinematic evolution ... initially grows much more quickly with the addition of neurons, before saturating.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -581,9 +653,9 @@
     },
     {
      "claim": "fig8-velocity-variants",
-     "statement": "fig8-velocity-variants",
-     "source": null,
-     "quote": "",
+     "statement": "Under the static mapping, about 0.7 dB of the rEFH's velocity advantage over the UKF is lost when the updated visible units are left out of decoding, and 0.4 dB when standard-normal visible units replace Poisson ones; Kalman filtering does not remove these differences.",
+     "source": "Results, Variant decoders for the rEFH, paragraph 3; Figure 8",
+     "quote": "Under a static mapping, some (about 0.7 dB) of that velocity-decoding advantage is lost when the updated visible units are neglected, and a little less (0.4 dB) lost when standard-normal units are used ... The differential between velocity decoders cannot be eliminated by Kalman filtering",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -604,9 +676,9 @@
     },
     {
      "claim": "fig8-position-variants",
-     "statement": "fig8-position-variants",
-     "source": null,
-     "quote": "",
+     "statement": "For position the rEFH variants change the static but not the dynamic mapping; with the Kalman filter all three variants decode position about equally.",
+     "source": "Results, Variant decoders for the rEFH, paragraph 2; Figure 8, first panel",
+     "quote": "For position, the variants affect the static, but not the dynamic, mappings.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -623,9 +695,9 @@
     },
     {
      "claim": "fig8-gaussian-still-beats-ukf",
-     "statement": "fig8-gaussian-still-beats-ukf",
-     "source": null,
-     "quote": "",
+     "statement": "The rEFH keeps an advantage over the UKF when its visible units are standard normal instead of Poisson, so the noise model accounts for only part of its advantage.",
+     "source": "Discussion, The importance of nonlinear tuning, Poisson emissions, and a latent state, paragraph 1; Figure 8, medium-gray bars",
+     "quote": "the rEFH\u2019s advantage over the UKF is not abolished by abandoning the final \u2018correction\u2019, sc., Poisson rather than normally distributed spike counts (figure 8, medium-gray bars)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -646,10 +718,16 @@
     },
     {
      "claim": "fig9-taps",
-     "statement": "fig9-taps",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Adding taps improves both the rEFH (+KF) and the UKF; at 32, 64 and 128 ms the best rEFH decoder beats the best UKF at velocity and acceleration and is indistinguishable at position, while at 16 ms the UKF is better at position and velocity.",
+     "source": "Results, Augmenting the decoders with taps, paragraph 2; Figure 9",
+     "quote": "this introduction of taps improves the performance of the rEFH (figure 9), as it does the UKF. As before, at all but the smallest bin width, the best rEFH decoder is superior to the best UKF at velocity and acceleration reconstruction, and indistinguishable at position reconstruction (bootstrap; p < 0.01). At that smallest bin width (16 ms), however, the UKF is superior in both position and velocity decoding.",
+     "statistics": [
+      {
+       "test": "bootstrap",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -665,9 +743,9 @@
     },
     {
      "claim": "kflatent-modest",
-     "statement": "kflatent-modest",
-     "source": null,
-     "quote": "",
+     "statement": "KFlatent is only modestly better than the standard Kalman filter; nonlinear tuning (the UKF) improves on the standard filter more.",
+     "source": "Discussion, The importance of nonlinear tuning, Poisson emissions, and a latent state, paragraph 1; Figures 2 and 5 to 7",
+     "quote": "yet its performance is only modestly superior to that of the standard Kalman filter, KFobs ... What does improve the standard KF is the addition of tuning to nonlinear and tapped functions of the kinematic state",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -687,9 +765,9 @@
     },
     {
      "claim": "advantage-grows-with-derivative",
-     "statement": "advantage-grows-with-derivative",
-     "source": null,
-     "quote": "",
+     "statement": "At 64 ms and with each amount of training data, the relative advantage of the rEFH (+KF) over the other decoders increases from position to velocity to acceleration.",
+     "source": "Results, The rEFH against its nearest rivals, all session and monkeys, paragraph 3; Results, Seconds of data used for training; Figures 2, 4 and 6",
+     "quote": "Overall, the relative advantage provided by the rEFH increases with derivatives.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -709,9 +787,9 @@
     },
     {
      "claim": "static-refh-position-worse",
-     "statement": "static-refh-position-worse",
-     "source": null,
-     "quote": "",
+     "statement": "Under the static mapping alone the rEFH reconstructs position significantly worse than the UKF, while the rEFH (+KF) is not distinguishable from it.",
+     "source": "Discussion, Relative reconstruction quality of position, velocity, and acceleration, paragraph 1; Figure 8, first panel",
+     "quote": "Despite superior velocity and acceleration decoding, the rEFH (+KF) reconstructs position little better than the UKF (the differences are not significant); and under a static mapping, significantly worse.",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -801,7 +879,7 @@
  ],
  "entries": [
   {
-   "name": "000129-makin-2018",
+   "name": "makin-2018",
    "type": "reproduction",
    "title": "Arm-movement decoding with the rEFH and seven other decoders (Makin et al. 2018)",
    "description": "Tests the findings of Makin, O'Doherty, Cardoso and Sabes (2018) on dandiset 000129, which holds one session of monkey I (M1 array, 649 s of sorted-unit spikes with fingertip and cursor kinematics) from the Neural Latents Benchmark. It re-implements the paper's eight decoders (linear regression, KFobs, KFlatent static and dynamic, Wiener filter, UKF, rEFH static and dynamic) from its Methods and code, and compares them at four bin widths, three amounts of training data and four fractions of the units. The paper's tests across its 49 sessions cannot be run on one session.",
@@ -816,12 +894,12 @@
     {
      "path": "reproduce_makin_2018.ipynb",
      "title": "Decoders at 64 ms on dandiset 000129 (figures 2, 4 and 8)",
-     "executed": "notebooks/000129-makin-2018/reproduce_makin_2018.html"
+     "executed": null
     },
     {
      "path": "binwidth_training_neurons.ipynb",
      "title": "Bin width, training data and number of neurons (figures 5 to 7)",
-     "executed": "notebooks/000129-makin-2018/binwidth_training_neurons.html"
+     "executed": null
     }
    ]
   }

@@ -5,7 +5,7 @@
   "label": "DANDI:000579"
  },
  "page": "datasets/dandi/000579/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 10,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "000579-tseng-2022-01",
+   "id": "tseng-2022-01",
    "dataset": {
     "archive": "dandi",
     "id": "000579",
     "version": "0.230728.1727",
-    "doi": "10.48324/dandi.000579/0.230728.1727"
+    "doi": "10.48324/dandi.000579/0.230728.1727",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:000579"
@@ -64,28 +65,28 @@
    "tier": "runs",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "000579-tseng-2022",
+   "entry": "tseng-2022",
    "entry_title": "Shared and specialized coding across posterior cortex during navigation decisions (Tseng et al. 2022)",
-   "summary": "The behavioral findings largely held up in this data, but most neural findings could not be tested. Performance dropped after rule switches and recovered, strategy shifted toward bias then back to rule-following, and running became more variable, all as reported. Visually guided trials updated rule belief more than normal trials, unlike the paper, and the paper does not describe how the update was computed. The photoinhibition experiments are not in the dataset, and the single-neuron encoding gradients depend on GLM fits that were too large to rerun. Population decoding reproduced the V1-to-A cue gradient, while RSC being most active in the stem held only in part. I did not create `summaries/000579-tseng-2022-01.md`.",
+   "summary": "The behavioral findings largely held up in this data, but most neural findings could not be tested. Performance dropped after rule switches and recovered, strategy shifted toward bias then back to rule-following, and running became more variable, all as reported. Visually guided trials updated rule belief more than normal trials, unlike the paper, and the paper does not describe how the update was computed. The photoinhibition experiments are not in the dataset, and the single-neuron encoding gradients depend on GLM fits that were too large to rerun. Population decoding reproduced the V1-to-A cue gradient, while RSC being most active in the stem held only in part. I did not create `summaries/tseng-2022-01.md`.",
    "description": "Tests the findings of Tseng, Chettih, Arlt, Barroso-Luque and Harvey (2022) on dandiset 000579, which holds 300 two-photon imaging sessions of 8 mice running a virtual Y-maze with rule switches. It tests the neuron counts, the behaviour around rule switches, the stored strategy and dynamic-choice models, a refit reinforcement learning model, running trajectories, activity by trial epoch and population decoders fit on a subsample of sessions, with a second notebook that fits the decoders of every V1 and PM field session and of the sessions with the Figure 8C cue offset. The GLM encoding analyses and the shattering dimensionality are beyond the run's time, and the photoinhibition sessions are not in the dandiset.",
    "notebooks": [
     {
      "path": "reproduce_tseng_2022.ipynb",
      "title": "Reproducing Tseng et al. (2022) from dandiset 000579",
-     "executed": "notebooks/000579-tseng-2022/reproduce_tseng_2022.html"
+     "executed": null
     },
     {
      "path": "decoders_v1_pm_offset.ipynb",
      "title": "Population decoders of every V1 and PM field session, and of the sessions with the cue offset at 0.76",
-     "executed": "notebooks/000579-tseng-2022/decoders_v1_pm_offset.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "neuron-counts",
-     "statement": "neuron-counts",
-     "source": null,
-     "quote": "",
+     "statement": "The neural analyses use 93,881 layer 2/3 neurons from 141 sessions of 8 mice, parcellated into V1 (14,373), PM (9,564), AM (14,974), MM (9,885), RSC (23,036) and A (22,049).",
+     "source": "Results, Calcium imaging of neural activity across posterior cortex, paragraph 1; STAR Methods, Area parcellation",
+     "quote": "assigned coordinates to 93,881 layer 2/3 neurons imaged from 141 sessions of 8 mice ... we obtained 14,373 neurons in V1, 9,564 neurons in PM, 14,974 neurons in AM, 9,885 neurons in MM, 23,036 neurons in RSC, and 22,049 neurons in area A",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -105,9 +106,9 @@
     },
     {
      "claim": "fig1d-switch-performance",
-     "statement": "fig1d-switch-performance",
-     "source": null,
-     "quote": "",
+     "statement": "Performance is high before a rule switch, typically falls below chance after it, and recovers gradually to high accuracy by the end of the block.",
+     "source": "Results, Mice learned flexible cue-choice associations, paragraph 2; Figure 1D; Figure S1B",
+     "quote": "Their behavioral performance was high before rule switches and typically dropped below chance after switches before gradually recovering to high accuracy by the end of a block, without signs of anticipating rule switches",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -127,9 +128,9 @@
     },
     {
      "claim": "lstm-choice-accuracy",
-     "statement": "lstm-choice-accuracy",
-     "source": null,
-     "quote": "",
+     "statement": "The strategy LSTM predicts the mouse's choices in held-out sessions with 80.2% \u00b1 5.1% accuracy (mean \u00b1 SD).",
+     "source": "Results, Decision-making strategy varied, paragraph 1; STAR Methods, LSTM model",
+     "quote": "The LSTM accurately predicted a mouse's choices in held-out sessions (80.2% \u00b1 5.1%, mean \u00b1 SD)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -148,10 +149,16 @@
     },
     {
      "claim": "figs1h-lstm-beats-rl",
-     "statement": "figs1h-lstm-beats-rl",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The LSTM predicts choices better (higher log likelihood) than the best reinforcement learning model (model 4, separate learning rates for rewarded and unrewarded trials).",
+     "source": "Figure S1H",
+     "quote": "Log likelihood of the LSTM was greater than the RL model (p = 5.95 \u00d7 10-22, Wilcoxon signed rank test)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 5.95e-22,
+       "n": "216 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -170,9 +177,9 @@
     },
     {
      "claim": "fig1i-strategy-after-switch",
-     "statement": "fig1i-strategy-after-switch",
-     "source": null,
-     "quote": "",
+     "statement": "Before a switch mice show little choice bias and follow the rule; after a switch the probability of the actual choice falls near chance, bias-following rises moderately, and rule-following then recovers gradually.",
+     "source": "Results, Decision-making strategy varied, paragraph 2; Figure 1I",
+     "quote": "On average, prior to a rule switch, mice performed with little choice bias and followed the correct rule ... After a rule switch, the randomness of choices increased rapidly, as seen by near chance levels of the model's probability of the actual choice, and bias-following increased moderately. Then, rule-following recovered gradually for the new rule belief",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -192,10 +199,23 @@
     },
     {
      "claim": "visually-guided-rule-update",
-     "statement": "visually-guided-rule-update",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Visually guided trials do not update rule belief more than normal trials in the 30 trials after a switch (0.013 \u00b1 0.0055 against 0.0080 \u00b1 0.0023; p = 0.34).",
+     "source": "STAR Methods, Decision-making strategy variables, last paragraph",
+     "quote": "The rule update per trial was 0.013 \u00b1 0.0055 for visually guided trials and 0.0080 \u00b1 0.0023 for normal trials (difference = 0.0052 \u00b1 0.0057, p = 0.34, hierarchical bootstrap mean \u00b1 SEM, n = 265 switches)",
+     "statistics": [
+      {
+       "about": "visually guided against normal trials, all trials",
+       "test": "hierarchical bootstrap",
+       "p": 0.34,
+       "n": "265 switches"
+      },
+      {
+       "about": "visually guided against normal trials, correct trials only",
+       "test": "hierarchical bootstrap",
+       "p": 0.89,
+       "n": "265 switches"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -215,10 +235,37 @@
     },
     {
      "claim": "fig1l-photoinhibition-performance",
-     "statement": "fig1l-photoinhibition-performance",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Inhibiting RSC or PPC lowers task performance compared with control trials and with S1 inhibition; the RSC against PPC difference is not significant (p = 0.058).",
+     "source": "Results, Photoinhibition of posterior cortical areas, paragraph 1; Figure 1L",
+     "quote": "Inhibiting either RSC or PPC led to markedly lower task performance compared to control trials or trials in which part of primary somatosensory cortex (S1) was inhibited",
+     "statistics": [
+      {
+       "about": "control against RSC or PPC",
+       "test": "hierarchical bootstrap",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "control against S1",
+       "test": "hierarchical bootstrap",
+       "p": 0.0002,
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "S1 against RSC or PPC",
+       "test": "hierarchical bootstrap",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "RSC against PPC",
+       "test": "hierarchical bootstrap",
+       "p": 0.058,
+       "n": "164 sessions from 7 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -234,10 +281,44 @@
     },
     {
      "claim": "fig1m-rule-following-decrease",
-     "statement": "fig1m-rule-following-decrease",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Inhibition of PPC and RSC decreases rule-following compared with control trials and with S1 inhibition; bias-following increases, strongly in a subset of mice.",
+     "source": "Results, Photoinhibition of posterior cortical areas, paragraph 2; Figure 1M; Figure S1K",
+     "quote": "PPC and RSC inhibition decreased rule-following compared to control trials and S1 inhibition",
+     "statistics": [
+      {
+       "about": "rule-following, each target against control",
+       "test": "hierarchical bootstrap",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "rule-following, RSC and PPC against S1",
+       "test": "hierarchical bootstrap",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "bias-following, S1 against control",
+       "test": "hierarchical bootstrap",
+       "p": 0.025,
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "bias-following, RSC against control",
+       "test": "hierarchical bootstrap",
+       "p": 0.018,
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "bias-following, PPC against control",
+       "test": "hierarchical bootstrap",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "164 sessions from 7 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -253,10 +334,25 @@
     },
     {
      "claim": "figs1m-rule-bias-uncorrelated",
-     "statement": "figs1m-rule-bias-uncorrelated",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Across sessions, the change in rule-following under RSC or PPC inhibition is not correlated with the change in bias-following.",
+     "source": "Figure S1M",
+     "quote": "Pearson correlation 0.18 (p = 0.10 vs. zero) for RSC and -0.03 (p = 0.74) for PPC",
+     "statistics": [
+      {
+       "about": "RSC",
+       "test": "Pearson correlation against zero",
+       "statistic": "r = 0.18",
+       "p": 0.1,
+       "n": "164 sessions from 7 mice"
+      },
+      {
+       "about": "PPC",
+       "test": "Pearson correlation against zero",
+       "statistic": "r = -0.03",
+       "p": 0.74,
+       "n": "164 sessions from 7 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -272,9 +368,9 @@
     },
     {
      "claim": "fig2c-running-variability-after-switch",
-     "statement": "fig2c-running-variability-after-switch",
-     "source": null,
-     "quote": "",
+     "statement": "Running trajectories of choice-matched trials become less correlated with one another after a rule switch.",
+     "source": "Results, Running trajectories reflected the within-trial dynamics, paragraph 1; Figure 2C",
+     "quote": "This variability in running trajectories increased following a rule switch",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -293,9 +389,9 @@
     },
     {
      "claim": "fig2f-latency-strategy",
-     "statement": "fig2f-latency-strategy",
-     "source": null,
-     "quote": "",
+     "statement": "Dynamic choice crosses threshold sooner on trials with higher rule-following or bias-following.",
+     "source": "Results, Running trajectories reflected the within-trial dynamics, paragraph 3; Figure 2F",
+     "quote": "As expected, the latency to dynamic choice crossing a threshold was shorter on trials with higher rule- or bias-following",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -317,9 +413,9 @@
     },
     {
      "claim": "fig2g-choice-commitment",
-     "statement": "fig2g-choice-commitment",
-     "source": null,
-     "quote": "",
+     "statement": "With high rule-following, choice commitment starts near chance and rises during the maze; with low rule-following it stays low until late; with high bias-following it is high from trial onset.",
+     "source": "Results, Running trajectories reflected the within-trial dynamics, paragraph 3; Figure 2G; Figure S2L",
+     "quote": "On trials with high rule-following, choice commitment started near chance but increased rapidly during maze traversal ... when rule-following was low, choice commitment was low until late in the trial ... when mice followed a bias, choice commitment was high at trial onset",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -339,9 +435,9 @@
     },
     {
      "claim": "cue-biased-running-uncorrelated",
-     "statement": "cue-biased-running-uncorrelated",
-     "source": null,
-     "quote": "",
+     "statement": "Cue-biased running varies across mice and sessions and is not correlated with task performance or with the time course of dynamic choice.",
+     "source": "Results, Running trajectories reflected the within-trial dynamics, paragraph 2; Figure S2H, S2I, S2K",
+     "quote": "this behavior was variable across mice and sessions and was uncorrelated with task performance and the time course of dynamic choice",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -361,9 +457,9 @@
     },
     {
      "claim": "fig4h-activity-by-epoch",
-     "statement": "fig4h-activity-by-epoch",
-     "source": null,
-     "quote": "",
+     "statement": "RSC is most active in the maze stem and least active in the feedback period/ITI, when area A is more active.",
+     "source": "Results, Encoding of dynamic choice was enriched in RSC, paragraph 4; Figure 4H",
+     "quote": "RSC was also most active in the maze stem and least active during feedback and ITI periods, when area A was more active",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -385,9 +481,9 @@
     },
     {
      "claim": "fig3i-glm-fit",
-     "statement": "fig3i-glm-fit",
-     "source": null,
-     "quote": "",
+     "statement": "The GLM explains a fraction 0.25 \u00b1 0.17 (mean \u00b1 SD) of the Poisson deviance of single neurons on held-out test data.",
+     "source": "Results, Calcium imaging of neural activity, paragraph 2; Figure 3I; Figure S3E",
+     "quote": "The GLM explained a substantial amount of moment-to-moment variability in a neuron's activity (fraction of Poisson deviance explained: 0.25 \u00b1 0.17, mean \u00b1 SD",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -404,9 +500,9 @@
     },
     {
      "claim": "well-fit-neurons",
-     "statement": "well-fit-neurons",
-     "source": null,
-     "quote": "",
+     "statement": "42,998 neurons have test fraction deviance explained above 0.2 (V1 7,775, PM 4,934, AM 6,878, MM 3,991, RSC 10,329, A 9,091); 68,532 pass a threshold of 0.1.",
+     "source": "STAR Methods, Generalized Linear Models, Fitting procedure; Figure S3D",
+     "quote": "42,998 neurons were selected, including 7,775 neurons in V1, 4,934 neurons in PM, 6,878 neurons in AM, 3,991 neurons in MM, 10,329 neurons in RSC, and 9,091 neurons in area A",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -423,9 +519,9 @@
     },
     {
      "claim": "glm-cv-vs-test",
-     "statement": "glm-cv-vs-test",
-     "source": null,
-     "quote": "",
+     "statement": "Fraction explained deviance on the CV held-out data differs very little from that on the test data (0.0010 \u00b1 0.0006, mean \u00b1 SEM), so encoding measured on CV held-out data is not inflated by overfitting.",
+     "source": "STAR Methods, Quantification of fraction explained deviance (without re-fitting); Figure S3E",
+     "quote": "We confirmed that the difference in the fraction explained deviance evaluated on the CV held-out data and test data was sufficiently small (0.0010 \u00b1 0.0006, mean \u00b1 SEM",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -442,10 +538,25 @@
     },
     {
      "claim": "fig3m-movement-task-gradient",
-     "statement": "fig3m-movement-task-gradient",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Area A has higher encoding of instantaneous movement and lower encoding of task variables than every other area, and V1 has higher task-variable encoding than every other area.",
+     "source": "Results, Distinct encoding gradients, paragraph 1; Figure 3M",
+     "quote": "the encoding of task variables exhibited an anterior-posterior gradient with highest strength in V1, intermediate in RSC, and lowest in area A, whereas movement encoding strength exhibited a gradient in the opposite direction",
+     "statistics": [
+      {
+       "about": "A against every other area, movement (higher) and task variables (lower)",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "42,998 well-fit neurons from 8 mice"
+      },
+      {
+       "about": "V1 against every other area, task variables",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "42,998 well-fit neurons from 8 mice"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -461,10 +572,23 @@
     },
     {
      "claim": "fig3o-cue-gradient",
-     "statement": "fig3o-cue-gradient",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Cue encoding during stem traversal is strongest in V1 (higher than every other area), strong in AM and PM, weaker in RSC and weakest in A (lower than every other area).",
+     "source": "Results, Distinct encoding gradients, paragraph 2; Figure 3O; Figure S4K",
+     "quote": "Encoding of the visual cue identity was strongest in V1 and neighboring areas AM and PM, weaker in RSC, and weakest in area A",
+     "statistics": [
+      {
+       "about": "V1 higher than every other area",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "A lower than every other area",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -480,10 +604,24 @@
     },
     {
      "claim": "figs4l-strategy-distributed",
-     "statement": "figs4l-strategy-distributed",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Encoding of decision-making strategy variables, with their interactions, is moderate and does not differ between areas, except AM against A.",
+     "source": "Results, Distinct encoding gradients, paragraph 3; Figure 3R; Figure S4L",
+     "quote": "Variables related to the decision-making strategy, including their interactions with other task variables, collectively exhibited a moderate encoding strength distributed evenly across posterior cortex",
+     "statistics": [
+      {
+       "about": "all area pairs except AM against A",
+       "test": "hierarchical bootstrap",
+       "p": 0.03,
+       "p_relation": ">",
+       "corrected": "Benjamini-Hochberg (not significant after correction)"
+      },
+      {
+       "about": "AM against A",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -499,9 +637,9 @@
     },
     {
      "claim": "figs4p-previous-outcome",
-     "statement": "figs4p-previous-outcome",
-     "source": null,
-     "quote": "",
+     "statement": "The previous trial's outcome is encoded much more strongly than its cue or choice, and evenly over space.",
+     "source": "Results, Distinct encoding gradients, paragraph 3; Figure S4P to S4S",
+     "quote": "The previous trial's outcome was much more strongly encoded than the previous trial's cue or choice",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -518,10 +656,35 @@
     },
     {
      "claim": "fig4b-dynamic-choice-stem",
-     "statement": "fig4b-dynamic-choice-stem",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "During stem traversal, dynamic choice is encoded more than reported choice in all areas, most in RSC (above V1, PM and A, not different from AM and MM), while reported choice encoding is not above zero.",
+     "source": "Results, Encoding of dynamic choice was enriched in RSC, paragraph 1; Figure 4A, 4B",
+     "quote": "during traversal of the maze stem, encoding of dynamic choice was distributed across all areas but enriched in RSC and adjacent medial areas, accounting for a substantial amount of neural activity compared to near-zero encoding of reported choice",
+     "statistics": [
+      {
+       "about": "dynamic against reported choice, each area",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "dynamic choice, RSC against V1, PM or A",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "dynamic choice, RSC against AM or MM",
+       "test": "hierarchical bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      },
+      {
+       "about": "reported choice, each area against zero",
+       "test": "hierarchical bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -537,10 +700,23 @@
     },
     {
      "claim": "fig4c-reported-choice-feedback",
-     "statement": "fig4c-reported-choice-feedback",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In the feedback period/ITI, reported choice is encoded more than dynamic choice in all areas, and RSC encodes reported choice more than every other area.",
+     "source": "Results, Encoding of dynamic choice was enriched in RSC, paragraph 1; Figure 4C",
+     "quote": "In contrast, during the feedback and ITI periods, we observed greater encoding of reported choice than dynamic choice",
+     "statistics": [
+      {
+       "about": "reported against dynamic choice, each area",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "reported choice, RSC against each other area",
+       "test": "hierarchical bootstrap",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -556,10 +732,22 @@
     },
     {
      "claim": "figs5i-dynamic-choice-over-roll",
-     "statement": "figs5i-dynamic-choice-over-roll",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "In all areas except V1 and A, dynamic choice is encoded more than roll velocity during stem traversal.",
+     "source": "Figure S5I",
+     "quote": "For all areas except V1 and area A, the mean fraction explained deviance for dynamic choice was greater than roll velocity, which controls left-right movements in the maze (AM: p = 0.006; PM, MM and RSC: p < 10-3)",
+     "statistics": [
+      {
+       "about": "AM",
+       "test": "hierarchical bootstrap",
+       "p": 0.006
+      },
+      {
+       "about": "PM, MM and RSC",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -575,10 +763,29 @@
     },
     {
      "claim": "figs5m-movement-history-control",
-     "statement": "figs5m-movement-history-control",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "With past and upcoming movement added to the GLM, dynamic choice encoding drops but stays above zero in all areas and higher in RSC than in V1, PM and A.",
+     "source": "Results, Encoding of dynamic choice was enriched in RSC, paragraph 3; Figure S5M",
+     "quote": "Encoding of dynamic choice in models with movement history was significantly greater than zero in all 6 areas (p < 10-3), and was higher in RSC compared to V1, PM and area A (p < 10-3)",
+     "statistics": [
+      {
+       "about": "with against without movement history, each area",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "each area against zero",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "RSC against V1, PM and A",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -594,10 +801,23 @@
     },
     {
      "claim": "fig4g-position-rsc",
-     "statement": "fig4g-position-rsc",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Maze position is encoded in all areas, most strongly in RSC (above V1, PM and A, not different from AM and MM).",
+     "source": "Results, Encoding of dynamic choice was enriched in RSC, paragraph 4; Figure 4F, 4G",
+     "quote": "Encoding of maze position was present in all areas, but strongest in RSC, with a similar medial-to-lateral gradient as choice encoding",
+     "statistics": [
+      {
+       "about": "RSC against V1, PM or A",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "RSC against AM or MM",
+       "test": "hierarchical bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -613,9 +833,9 @@
     },
     {
      "claim": "fig5e-cue-movement-distributed",
-     "statement": "fig5e-cue-movement-distributed",
-     "source": null,
-     "quote": "",
+     "statement": "Cue and movement have the highest mutual information between encoding strength and area, yet their equivalent random fractions are above 0.75 and equivalent jitters near 0.6, closer to fully distributed than fully modular.",
+     "source": "Results, Encoding of most variables is highly distributed, paragraph 2; Figure 5E, 5F; Figure S6A",
+     "quote": "Cue and movement were the two variables with the highest mutual information between encoding strength and posterior cortical area. However, their equivalent random fractions were greater than 0.75 ... Similarly, their equivalent jitters were near 0.6",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -632,9 +852,9 @@
     },
     {
      "claim": "fig5e-position-choice-strategy-distributed",
-     "statement": "fig5e-position-choice-strategy-distributed",
-     "source": null,
-     "quote": "",
+     "statement": "Maze position and choice are even more distributed (equivalent random fraction near 0.9), and decision-making strategy is the most distributed (near 1).",
+     "source": "Results, Encoding of most variables is highly distributed, paragraph 2; Figure 5E",
+     "quote": "The encoding of maze position and choice were even more distributed than cue and movement, with equivalent random fractions near 0.9. All other variables were also highly distributed, with decision-making strategy being the most distributed (random fraction near one)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -651,9 +871,9 @@
     },
     {
      "claim": "fig6b-location-from-profiles",
-     "statement": "fig6b-location-from-profiles",
-     "source": null,
-     "quote": "",
+     "statement": "Neurons in V1, A and RSC are typically decoded to their own areas from their encoding profiles, while neurons in AM and MM are decoded across all of posterior cortex.",
+     "source": "Results, Single-neuron encoding profiles confirm functional gradients, paragraph 1; Figure 6A, 6B",
+     "quote": "Neurons in V1, A, and RSC were typically predicted to reside in their actual areas of origin, indicating that these neurons had distinctive encoding profiles, in contrast to neurons from AM and MM that were predicted to reside in all sites across posterior cortex",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -670,9 +890,9 @@
     },
     {
      "claim": "fig6d-three-gradients",
-     "statement": "fig6d-three-gradients",
-     "source": null,
-     "quote": "",
+     "statement": "Non-negative factorization of the decoded locations is dominated by three factors (reconstruction error 33.8% \u00b1 3.1% with three, 55% with one), forming spatial gradients peaking in V1, RSC and A.",
+     "source": "Results, Single-neuron encoding profiles confirm functional gradients, paragraph 2; Figure 6D; Figure S6I; STAR Methods, Non-negative matrix factorization",
+     "quote": "Strikingly, these factors formed three distinct spatial gradients that dominated the anatomical organization of encoding with peaks in V1, RSC and A, respectively",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -689,9 +909,9 @@
     },
     {
      "claim": "figs6g-factor-profiles",
-     "statement": "figs6g-factor-profiles",
-     "source": null,
-     "quote": "",
+     "statement": "Cue weighs most in factor 1, maze position and choice in factor 2, and movement in factor 3.",
+     "source": "Results, Single-neuron encoding profiles confirm functional gradients, paragraph 2; Figure S6G",
+     "quote": "cue was greatest in factor 1, maze position and choice were greatest in factor 2, and movement was greatest in factor 3",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -708,9 +928,9 @@
     },
     {
      "claim": "encoding-dimensionality",
-     "statement": "encoding-dimensionality",
-     "source": null,
-     "quote": "",
+     "statement": "The number of principal components needed for 70% of variance is 8, 6 and 3 for GLM coefficients, encoding strengths and decoded locations, and 35, 23 and 16 for 95%.",
+     "source": "STAR Methods, Analysis of dimensionality of encoding across neurons versus encoding across cortical space",
+     "quote": "The number of principal components needed to explain 70% of the variance in the three matrices was 8, 6, and 3, respectively, and further, 35, 23, and 16 principal components were needed to explain 95% of the variance",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -727,10 +947,35 @@
     },
     {
      "claim": "fig7def-encoding-correlations",
-     "statement": "fig7def-encoding-correlations",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Correlations in single-neuron encoding strength between cue, dynamic choice and movement are similar across areas and close to zero; only A differs for cue against movement.",
+     "source": "Results, Conjunctive structure of encoding, paragraph 2; Figure 7D to 7F",
+     "quote": "Strikingly, the correlations in encoding between pairs of cue, choice, and movement variables were similar across areas, despite major differences in the encoding strengths of these variables between areas ... In addition, the correlation coefficients were close to zero",
+     "statistics": [
+      {
+       "about": "cue and dynamic choice, all area pairs",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      },
+      {
+       "about": "cue and movement, A against each other area",
+       "test": "bootstrap",
+       "p": 0.013,
+       "p_relation": "<"
+      },
+      {
+       "about": "cue and movement, pairs among the other 5 areas",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      },
+      {
+       "about": "dynamic choice and movement, all area pairs",
+       "test": "bootstrap",
+       "p": 0.05,
+       "p_relation": ">"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -746,10 +991,24 @@
     },
     {
      "claim": "fig7g-area-decoding-strength-vs-correlation",
-     "statement": "fig7g-area-decoding-strength-vs-correlation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "A neuron's area is decoded well from encoding strengths, poorly from encoding correlations, and barely better from both than from strengths alone.",
+     "source": "Results, Conjunctive structure of encoding, paragraph 3; Figure 7G, 7H",
+     "quote": "Although decoding based on encoding correlations allowed above-chance performance, it was poor relative to decoding from encoding strengths alone. Further, decoding with both encoding correlations and encoding strengths was barely improved from decoding with encoding strengths alone",
+     "statistics": [
+      {
+       "about": "strengths only against correlations only, all areas except AM",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "strengths only against strengths plus correlations, all areas",
+       "test": "Wilcoxon signed-rank test",
+       "p": 0.03,
+       "p_relation": ">",
+       "corrected": "not significant after multiple comparison correction"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -765,10 +1024,17 @@
     },
     {
      "claim": "figs8d-l2-vs-group-lasso",
-     "statement": "figs8d-l2-vs-group-lasso",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "GLMs fit with L2 regularization perform slightly worse on test data than with group lasso (difference -0.0175 \u00b1 0.0052), and the main encoding results hold with L2.",
+     "source": "STAR Methods, Quantification of fraction explained deviance (without re-fitting); Figure S8D to S8J",
+     "quote": "The performance of the models on test data was worse on average than those with group lasso (difference in fraction of explained deviance",
+     "statistics": [
+      {
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "93,881 neurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -784,9 +1050,9 @@
     },
     {
      "claim": "figs8k-robust-to-threshold",
-     "statement": "figs8k-robust-to-threshold",
-     "source": null,
-     "quote": "",
+     "statement": "With a looser fit threshold (fraction deviance explained above 0.1, 68,532 neurons), the area differences in movement, task, cue, choice, position and strategy encoding are the same.",
+     "source": "Results, Calcium imaging of neural activity, paragraph 2; Figure S8K to S8O",
+     "quote": "for subsequent analyses, we focused on well fit neurons although results were robust to this criterion",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -803,9 +1069,9 @@
     },
     {
      "claim": "fig6h-embedding-overlap",
-     "statement": "fig6h-embedding-overlap",
-     "source": null,
-     "quote": "",
+     "statement": "In the two-dimensional encoding embedding, area distributions overlap; their centroids are offset, but many neurons lie closer to the centroid of another area than to that of their own area.",
+     "source": "Results, Single-neuron encoding profiles confirm functional gradients, paragraph 3; Figure 6H; Figure S6L",
+     "quote": "Although the centroids of the distributions (i.e. most typical encoding profiles) were offset from one another, many neurons were functionally closer to the centroid of a different area than to the centroid of the area where they resided",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -822,10 +1088,24 @@
     },
     {
      "claim": "figs5l-dynamic-choice-over-cue-biased-running",
-     "statement": "figs5l-dynamic-choice-over-cue-biased-running",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "At maze positions where cue and reported choice are equally decodable from running, single neurons encode dynamic choice more than cue-biased running in all areas except V1 and PM, and population decoders decode dynamic choice better than cue-biased running in all areas.",
+     "source": "Figure S5L; Results, Encoding of dynamic choice was enriched in RSC, paragraph 3",
+     "quote": "For single neuron encoding magnitudes, dynamic choice was greater than cue-biased running (p < 10-3) for all areas except V1 and PM. For population decoding performance, dynamic choice was greater than cue-biased running (p < 10-3) for all areas",
+     "statistics": [
+      {
+       "about": "single-neuron encoding, PM excluded with V1, the other four areas",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "population decoding, all six areas",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "998 decoders"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -841,9 +1121,9 @@
     },
     {
      "claim": "fig3q-cue-decoding",
-     "statement": "fig3q-cue-decoding",
-     "source": null,
-     "quote": "",
+     "statement": "Cue decoded from populations of about 100 nearby neurons follows the same gradient as single-neuron cue encoding.",
+     "source": "Results, Distinct encoding gradients, paragraph 2; Figure 3Q",
+     "quote": "which was corroborated with decoding of these variables from the activity of ~100 simultaneously recorded neurons",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -865,10 +1145,18 @@
     },
     {
      "claim": "fig4d-partial-correlation",
-     "statement": "fig4d-partial-correlation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Population decoders trained on reported choice are more related to dynamic choice (partial correlation 0.35 \u00b1 0.02) than to reported choice (0.14 \u00b1 0.02), a difference of 0.21 \u00b1 0.02.",
+     "source": "Results, Encoding of dynamic choice was enriched in RSC, paragraph 2; Figure 4D",
+     "quote": "Partial correlations were greater for dynamic choice than reported choice, revealing that even decoders trained to predict reported choice were more closely related to dynamic choice",
+     "statistics": [
+      {
+       "about": "difference of the two partial correlations against zero",
+       "test": "bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "974 decoders"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -889,10 +1177,25 @@
     },
     {
      "claim": "figs5f-dynamic-choice-decoding",
-     "statement": "figs5f-dynamic-choice-decoding",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "From populations of about 100 neurons, dynamic choice is decoded better (Spearman 0.59 \u00b1 0.02) than reported choice (0.26 \u00b1 0.02), both above chance.",
+     "source": "Figure S5F",
+     "quote": "Decoding of both dynamic and reported choice was above chance (p < 10-3, bootstrap), but decoding of reported choice was less accurate than dynamic choice",
+     "statistics": [
+      {
+       "about": "each decoder type against chance",
+       "test": "bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "974 decoders"
+      },
+      {
+       "about": "dynamic minus reported choice decoding",
+       "test": "bootstrap",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "974 decoders"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -913,9 +1216,9 @@
     },
     {
      "claim": "fig8cd-position-specific-decoders",
-     "statement": "fig8cd-position-specific-decoders",
-     "source": null,
-     "quote": "",
+     "statement": "Cue and choice decoders trained at one maze position lose accuracy when tested at other positions.",
+     "source": "Results, Flexible, high-dimensional representations, paragraph 1; Figure 8C, 8D",
+     "quote": "decoders trained to predict cue or choice at one maze position degraded in accuracy when tested at other maze positions",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -939,10 +1242,24 @@
     },
     {
      "claim": "fig8g-shattering-dimensionality",
-     "statement": "fig8g-shattering-dimensionality",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Shattering dimensionality for conjunctions of cue, choice, position, movement and rule belief is well above chance and similar across areas, and nearly identical to that of populations drawn from all areas.",
+     "source": "Results, Flexible, high-dimensional representations, paragraph 2; Figure 8F, 8G; Figure S8A to S8C",
+     "quote": "Shattering dimensionality for all conjunctions in all areas was well above chance, and interestingly, shattering dimensionality for each conjunction was similar across posterior cortex ... Almost all differences between areas were not statistically significant and fell within a range of < 10% classification accuracy for each conjunction",
+     "statistics": [
+      {
+       "about": "all pairs among all-area and the 6 areas, Figure 8G",
+       "test": "hierarchical bootstrap",
+       "p": 0.01,
+       "p_relation": ">",
+       "corrected": "not significant after multiple comparison correction"
+      },
+      {
+       "about": "cue, dynamic choice and position, RSC against A (Figure S8B)",
+       "test": "hierarchical bootstrap",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -1079,7 +1396,7 @@
  ],
  "entries": [
   {
-   "name": "000579-tseng-2022",
+   "name": "tseng-2022",
    "type": "reproduction",
    "title": "Shared and specialized coding across posterior cortex during navigation decisions (Tseng et al. 2022)",
    "description": "Tests the findings of Tseng, Chettih, Arlt, Barroso-Luque and Harvey (2022) on dandiset 000579, which holds 300 two-photon imaging sessions of 8 mice running a virtual Y-maze with rule switches. It tests the neuron counts, the behaviour around rule switches, the stored strategy and dynamic-choice models, a refit reinforcement learning model, running trajectories, activity by trial epoch and population decoders fit on a subsample of sessions, with a second notebook that fits the decoders of every V1 and PM field session and of the sessions with the Figure 8C cue offset. The GLM encoding analyses and the shattering dimensionality are beyond the run's time, and the photoinhibition sessions are not in the dandiset.",
@@ -1094,12 +1411,12 @@
     {
      "path": "reproduce_tseng_2022.ipynb",
      "title": "Reproducing Tseng et al. (2022) from dandiset 000579",
-     "executed": "notebooks/000579-tseng-2022/reproduce_tseng_2022.html"
+     "executed": null
     },
     {
      "path": "decoders_v1_pm_offset.ipynb",
      "title": "Population decoders of every V1 and PM field session, and of the sessions with the cue offset at 0.76",
-     "executed": "notebooks/000579-tseng-2022/decoders_v1_pm_offset.html"
+     "executed": null
     }
    ]
   }

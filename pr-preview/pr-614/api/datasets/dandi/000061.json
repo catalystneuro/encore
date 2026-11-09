@@ -5,7 +5,7 @@
   "label": "DANDI:000061"
  },
  "page": "datasets/dandi/000061/",
- "generated": "2026-11-09T08:07:10+00:00",
+ "generated": "2026-11-09T14:04:58+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 6,
@@ -33,12 +33,13 @@
  },
  "attempts": [
   {
-   "id": "000061-girardeau-2017-02",
+   "id": "girardeau-2017-02",
    "dataset": {
     "archive": "dandi",
     "id": "000061",
     "version": "0.250624.0426",
-    "doi": "10.48324/dandi.000061/0.250624.0426"
+    "doi": "10.48324/dandi.000061/0.250624.0426",
+    "relation": "primary"
    },
    "datasets": [
     "dandi:000061"
@@ -61,7 +62,7 @@
    "tier": "agent_verified",
    "deprecated": "",
    "deprecated_on": null,
-   "entry": "000061-girardeau-2017",
+   "entry": "girardeau-2017-000061",
    "entry_title": "Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)",
    "summary": "Several main findings held up in this data, one did not, and most could not be tested. Hippocampus-amygdala reactivation in post-run NREM held when all cells were used (13 of 15 sessions). So did the lack of central nuclei reactivation and the higher BLA pyramidal firing in REM and NREM sleep, which rests on one rat. Ripple-peak reactivation was only partly tested, and unchanged REM firing in BLA interneurons did not hold (p = 0.020). The pyramidal-pair reactivation and ripple-subgroup findings could not be tested because the dataset lacks putative cell types. The air puff learning findings could not be tested because it lacks position tracking.",
    "description": "Tests the claims of Girardeau, Inema and Buzsaki (2017), written from the full text, the supplement and the paper's code, on dandiset 000061, which holds sorted units of the hippocampus and the amygdala, sleep states, ripple, air puff and reward events from four rats on an air puff linear track task. It tests the unit counts, habituation over days, BLA firing by sleep state, hippocampus-BLA and hippocampus-central nuclei reactivation (explained variance) with all cells, and the ripple rate before and after training. Claims on putative pyramidal cells and on position are blocked, as the dandiset holds neither.",
@@ -69,15 +70,15 @@
     {
      "path": "reproduce_girardeau_2017.ipynb",
      "title": "Reproducing Girardeau et al. (2017) from dandiset 000061",
-     "executed": "notebooks/000061-girardeau-2017/reproduce_girardeau_2017.html"
+     "executed": null
     }
    ],
    "outcomes": [
     {
      "claim": "unit-counts",
-     "statement": "unit-counts",
-     "source": null,
-     "quote": "",
+     "statement": "Over 61 sessions in 4 rats, 7,390 well-isolated units were recorded (rat 1, 2,444; rat 2, 1,294; rat 3, 1,138; rat 4, 2,514), of which 2,038 were in the BLA, 782 in the central nuclei, 1,560 in the piriform cortex and 1,210 in the hippocampus.",
+     "source": "Results, BLA recordings and sleep physiology, paragraph 1; Supplementary Table 1",
+     "quote": "Over the course of a total of 61 sessions, we recorded 7,390 well-isolated units (rat 1, 2,444; rat 2, 1,294; rat ... 3, 1,138; rat 4, 2,514). On the basis of histological reconstruction of probe placement and probe movement record, 2,038 of these were in the BLA, 782 in the central nuclei, 1,560 in the piriform cortex and 1,210 in the hippocampus",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -97,10 +98,39 @@
     },
     {
      "claim": "rats-learn-puff-location",
-     "statement": "rats-learn-puff-location",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Rats learned the daily location of the air puff. The speed ratio between the previous and the current danger zone rises from pre-run to run and post-run, reversing between pre-run and post-run.",
+     "source": "Results, Rats learn the daily location of an aversive air puff on a linear track, paragraph 1; Figure 1b, right; Supplementary Fig. 1b",
+     "quote": "Therefore, the systematic reversal in the speed ratio (previous/current danger zone) between pre- and ... post-run indicates learning of the new air puff location (Fig. 1b and Supplementary Fig. 1b).",
+     "statistics": [
+      {
+       "about": "speed ratio over pre-run, run and post-run",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 40.48, d.f. = 2",
+       "p": 1.31e-13,
+       "n": "55 sessions in 4 animals"
+      },
+      {
+       "about": "speed ratio, pre-run against run",
+       "test": "post hoc t-test",
+       "statistic": "t(51) = -8.49",
+       "p": 2.5e-11,
+       "corrected": "Bonferroni (on the significance thresholds; the P shown is uncorrected)"
+      },
+      {
+       "about": "speed ratio, pre-run against post-run",
+       "test": "post hoc t-test",
+       "statistic": "t(51) = -5.08",
+       "p": 5.3e-06,
+       "corrected": "Bonferroni (on the significance thresholds; the P shown is uncorrected)"
+      },
+      {
+       "about": "speed ratio, run against post-run",
+       "test": "post hoc t-test",
+       "statistic": "t(50) = 4.43",
+       "p": 5.1e-05,
+       "corrected": "Bonferroni (on the significance thresholds; the P shown is uncorrected)"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -116,10 +146,39 @@
     },
     {
      "claim": "each-rat-learns-puff-location",
-     "statement": "each-rat-learns-puff-location",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The speed ratio changes across pre-run, run and post-run in each of the four rats taken alone, indicating that every rat learned the new air puff location.",
+     "source": "Supplementary Fig. 1b legend",
+     "quote": "The reversal of ratio between pre and post RUN indicates that all animals learned the new location during RUN and remembered it during post-RUN",
+     "statistics": [
+      {
+       "about": "speed ratio over pre-run, run and post-run, rat 1",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 13.26, d.f. = 2",
+       "p": 0.000214,
+       "n": "11 sessions"
+      },
+      {
+       "about": "the same, rat 2",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 7.02, d.f. = 2",
+       "p": 0.00556,
+       "n": "10 sessions"
+      },
+      {
+       "about": "the same, rat 3",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 27.41, d.f. = 2",
+       "p": 3.9469e-07,
+       "n": "14 sessions"
+      },
+      {
+       "about": "the same, rat 4",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 4.36, d.f. = 2",
+       "p": 0.021754,
+       "n": "16 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -135,10 +194,58 @@
     },
     {
      "claim": "dz-speed-slower-post-run",
-     "statement": "dz-speed-slower-post-run",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Speed in the current danger zone is lower in post-run than in pre-run, and in run and post-run rats run slower in the current than in the previous danger zone.",
+     "source": "Results, Rats learn the daily location of an aversive air puff on a linear track, paragraph 2; Figure 1b, left; Figure 1c",
+     "quote": "This was quantitatively reflected by the significantly slower speed in the current danger zone in post-run compared to pre-run (Fig. 1b,c).",
+     "statistics": [
+      {
+       "about": "speed over epochs (pre-run, run, post-run)",
+       "test": "two-way repeated measures ANOVA, session effect",
+       "statistic": "F = 41.51, d.f. = 2",
+       "p": 7.48e-14,
+       "n": "55 sessions in 4 animals"
+      },
+      {
+       "about": "speed, current against previous danger zone",
+       "test": "two-way repeated measures ANOVA, air puff location effect",
+       "statistic": "F = 11.81, d.f. = 1",
+       "p": 0.0012
+      },
+      {
+       "about": "epoch by danger zone",
+       "test": "two-way repeated measures ANOVA, interaction",
+       "statistic": "F = 30.53, d.f. = 2",
+       "p": 4.46e-11
+      },
+      {
+       "about": "previous against current danger zone speed, pre-run",
+       "test": "post hoc paired t-test",
+       "statistic": "t(52) = 3.45",
+       "p": 0.0011,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "previous against current danger zone speed, run",
+       "test": "post hoc paired t-test",
+       "statistic": "t(51) = -6.84",
+       "p": 9.7e-09,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "previous against current danger zone speed, post-run",
+       "test": "post hoc paired t-test",
+       "statistic": "t(51) = -3.10",
+       "p": 0.00307,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "current danger zone speed, pre-run against post-run",
+       "test": "post hoc paired t-test",
+       "statistic": "t(53) = 5.47",
+       "p": 1.21e-06,
+       "corrected": "Bonferroni"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -154,9 +261,9 @@
     },
     {
      "claim": "puff-location-no-speed-bias",
-     "statement": "puff-location-no-speed-bias",
-     "source": null,
-     "quote": "",
+     "statement": "The location of the air puff on the track does not correlate with the speed in the current danger zone in pre-run, run or post-run.",
+     "source": "Results, Rats learn the daily location of an aversive air puff on a linear track, paragraph 2",
+     "quote": "The location of the air puff on the track did not correlate with the speed in the current danger zone in pre-run, training or post-run",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -173,9 +280,9 @@
     },
     {
      "claim": "habituation-over-days",
-     "statement": "habituation-over-days",
-     "source": null,
-     "quote": "",
+     "statement": "The aversive valence of the air puff diminishes over training days; rats run more laps per unit time as they habituate.",
+     "source": "Results, Rats learn the daily location of an aversive air puff on a linear track, paragraph 2; Supplementary Fig. 1c",
+     "quote": "The aversive valence of the air puff gradually diminished with training days (Supplementary Fig. 1c).",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -196,10 +303,25 @@
     },
     {
      "claim": "bla-pyr-sleep-firing-increase",
-     "statement": "bla-pyr-sleep-firing-increase",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "BLA pyramidal cells fire faster in REM sleep and, to a lesser extent, in NREM sleep than in wakefulness.",
+     "source": "Results, BLA recordings and sleep physiology, paragraph 1; Figure 2c",
+     "quote": "we found a specific increase in the firing rate of BLA pyramidal cells, but not interneurons, during REM sleep and, to a lesser extent, NREM sleep relative to wakefulness",
+     "statistics": [
+      {
+       "about": "NREM/wake firing rate ratio of BLA pyramidal cells",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 14.25",
+       "p": 4.07e-46,
+       "n": "675 monosynaptically identified pyramidal cells"
+      },
+      {
+       "about": "REM/wake firing rate ratio of BLA pyramidal cells",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 13.54",
+       "p": 8e-42,
+       "n": "675 monosynaptically identified pyramidal cells"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -218,10 +340,25 @@
     },
     {
      "claim": "bla-int-sleep-firing",
-     "statement": "bla-int-sleep-firing",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "BLA interneurons do not change their firing rate between REM sleep and wake, and fire slightly less in NREM sleep than in wake.",
+     "source": "Figure 2c legend",
+     "quote": "Interneurons do not change firing rates between REM and wake ... and slightly decrease firing rates during NREM compared to wake",
+     "statistics": [
+      {
+       "about": "REM/wake firing rate ratio of BLA interneurons",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 1.25",
+       "p": 0.21,
+       "n": "175 monosynaptically identified interneurons"
+      },
+      {
+       "about": "NREM/wake firing rate ratio of BLA interneurons",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = -6.00",
+       "p": 1.97e-09,
+       "n": "175 monosynaptically identified interneurons"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -239,10 +376,18 @@
     },
     {
      "claim": "hpc-bla-reactivation-post-sleep",
-     "statement": "hpc-bla-reactivation-post-sleep",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Hippocampus-BLA pyramidal cell pair correlations of the run are reinstated in post-sleep NREM, measured as explained variance (EV) exceeding the reverse explained variance (REV) across sessions.",
+     "source": "Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1; Figure 3a-c",
+     "quote": "The EV and REV, calculated using hippocampus\u2013BLA pyramidal cell pairs, showed significant reactivations between the hippocampus and BLA during post-NREM (Fig. 3c).",
+     "statistics": [
+      {
+       "about": "EV against REV, NREM, pyramidal pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.72",
+       "p": 0.00019,
+       "n": "25 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -258,10 +403,39 @@
     },
     {
      "claim": "reactivation-all-cell-pairs",
-     "statement": "reactivation-all-cell-pairs",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Hippocampus-BLA NREM reactivation holds when pyramidal cells and interneurons are both included.",
+     "source": "Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1; Supplementary Fig. 5a",
+     "quote": "Reactivations were maintained when both pyramidal cells and interneurons were included in the EV calculation (Supplementary Fig. 5).",
+     "statistics": [
+      {
+       "about": "EV against REV, NREM, all cell pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.79",
+       "p": 0.00014,
+       "n": "27 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, 0-20 min of post-NREM, all cell pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.91",
+       "p": 8.85e-05,
+       "n": "17 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, 20-40 min, all cell pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 2.98",
+       "p": 0.00282,
+       "n": "17 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, 40-60 min, all cell pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = -0.71",
+       "p": 0.14458,
+       "n": "17 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -281,10 +455,39 @@
     },
     {
      "claim": "reactivation-decay",
-     "statement": "reactivation-decay",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Hippocampus-BLA reactivation decays over the first hour of post-sleep NREM (mean EV - REV 2.89, 1.72 and 1.31% in successive 20-min NREM periods).",
+     "source": "Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1; Figure 3c, right",
+     "quote": "The gradual decay in reactivations over the first hour of NREM sleep ... paralleled the previously described decay for pairs of hippocampal neurons",
+     "statistics": [
+      {
+       "about": "EV - REV across the three 20-min NREM periods",
+       "test": "Kruskal-Wallis test",
+       "statistic": "chi2 = 8.53, d.f. = 2",
+       "p": 0.014,
+       "n": "19 sessions"
+      },
+      {
+       "about": "EV against REV, 0-20 min of post-NREM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.38 (as printed)",
+       "p": 0.00013,
+       "n": "19 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, 20-40 min",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.5",
+       "p": 0.00046,
+       "n": "19 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, 40-60 min",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 2.15",
+       "p": 0.0312,
+       "n": "19 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -300,10 +503,31 @@
     },
     {
      "claim": "no-rem-reactivation",
-     "statement": "no-rem-reactivation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Hippocampus-BLA and hippocampus-piriform cortex reactivations are not significant in REM sleep.",
+     "source": "Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2; Figure 3c, left",
+     "quote": "Reactivations during REM sleep ... were not significant in any structure",
+     "statistics": [
+      {
+       "about": "EV against REV, REM, pyramidal pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.88",
+       "p": 0.377,
+       "n": "23 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, REM, all cell pairs (Supplementary Fig. 5a)",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = -0.71",
+       "p": 0.47583,
+       "n": "25 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, REM, hippocampus-piriform pyramidal pairs (Fig. 3d)",
+       "test": "Wilcoxon signed rank test",
+       "p": 0.301,
+       "n": "15 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -319,10 +543,24 @@
     },
     {
      "claim": "piriform-weaker-reactivation",
-     "statement": "piriform-weaker-reactivation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Piriform cortex neurons show weaker reactivation with hippocampal CA1 neurons than BLA neurons do, though still significant in NREM.",
+     "source": "Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2; Figure 3d",
+     "quote": "Neurons in the piriform cortex showed weaker experience-induced ... reactivation with their CA1 partner neurons (Fig. 3d",
+     "statistics": [
+      {
+       "about": "EV - REV, hippocampus-BLA against hippocampus-piriform",
+       "test": "Wilcoxon one-tailed rank sum test",
+       "statistic": "z = 2.38",
+       "p": 0.0092,
+       "n": "25 hippocampus-BLA and 14 hippocampus-piriform sessions"
+      },
+      {
+       "about": "EV against REV, hippocampus-piriform, NREM, pyramidal pairs",
+       "test": "Wilcoxon signed rank test",
+       "p": 0.0052,
+       "n": "17 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -338,10 +576,25 @@
     },
     {
      "claim": "cen-no-reactivation",
-     "statement": "cen-no-reactivation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "There are no reactivations between the central amygdala nuclei and the hippocampus.",
+     "source": "Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2; Figure 3e",
+     "quote": "while there were no reactivations at all between the central nuclei and the hippocampus (Fig. 3e)",
+     "statistics": [
+      {
+       "about": "EV against REV, NREM, all cell pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.36",
+       "p": 0.717,
+       "n": "19 sessions in 3 rats"
+      },
+      {
+       "about": "EV against REV, REM, all cell pairs",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = -0.40",
+       "p": 0.687,
+       "n": "19 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -359,12 +612,69 @@
     },
     {
      "claim": "intra-structure-reactivation",
-     "statement": "intra-structure-reactivation",
-     "source": null,
+     "statement": "Within the hippocampus and within the BLA, pair correlations are reactivated in NREM but not in REM sleep.",
+     "source": "Supplementary Fig. 4; Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1",
      "quote": "",
-     "statistics": [],
+     "statistics": [
+      {
+       "about": "hippocampus, all pairs, NREM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.95",
+       "p": 7.75e-05,
+       "n": "38 sessions in 3 rats"
+      },
+      {
+       "about": "hippocampus, pyramidal pairs, NREM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.99",
+       "p": 6.45e-05,
+       "n": "38 sessions in 3 rats"
+      },
+      {
+       "about": "BLA, all pairs, NREM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 2.74",
+       "p": 0.00606,
+       "n": "34 sessions in 4 rats"
+      },
+      {
+       "about": "BLA, pyramidal pairs, NREM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.16",
+       "p": 0.00157,
+       "n": "32 sessions in 4 rats"
+      },
+      {
+       "about": "hippocampus, all pairs, REM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.04",
+       "p": 0.965,
+       "n": "34 sessions in 3 rats"
+      },
+      {
+       "about": "hippocampus, pyramidal pairs, REM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = -0.67",
+       "p": 0.499,
+       "n": "34 sessions in 3 rats"
+      },
+      {
+       "about": "BLA, all pairs, REM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.84",
+       "p": 0.39948,
+       "n": "28 sessions in 4 rats"
+      },
+      {
+       "about": "BLA, pyramidal pairs, REM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 1.40",
+       "p": 0.158,
+       "n": "26 sessions in 4 rats"
+      }
+     ],
      "kind": "finding",
-     "inferred": "",
+     "inferred": "No sentence states this finding. It is read from the tests in the Supplementary Fig. 4 legend (titled \"Intra-structure reactivations for hippocampus and BLA\"), with the REM part also covered by the Results sentence that REM reactivations were not significant in any structure.",
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": null,
@@ -378,9 +688,9 @@
     },
     {
      "claim": "bla-ripple-up-subgroup",
-     "statement": "bla-ripple-up-subgroup",
-     "source": null,
-     "quote": "",
+     "statement": "A subset of BLA neurons is positively modulated during hippocampal SPW-Rs, 25.8% of interneurons (42 of 163) and 11.1% of pyramidal cells (137 of 1,233).",
+     "source": "Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1; Figure 4a",
+     "quote": "A fraction of BLA neurons were significantly and positively modulated (\u2018upmodulation\u2019; 42 of 163 interneurons (25.8%), 137 of 1,233 pyramidal cells (11.1%)) ... during hippocampal SPW-Rs (Fig. 4).",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -397,9 +707,9 @@
     },
     {
      "claim": "bla-ripple-down-subgroup",
-     "statement": "bla-ripple-down-subgroup",
-     "source": null,
-     "quote": "",
+     "statement": "Another subset of BLA neurons is negatively modulated during hippocampal SPW-Rs, 14.7% of interneurons (24 of 163) and 8.3% of pyramidal cells (102 of 1,233).",
+     "source": "Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1; Figure 4a",
+     "quote": "or negatively modulated (\u2018downmodulation\u2019; 24 of 163 interneurons (14.7%), 102 of 1,233 pyramidal cells (8.3%)) during hippocampal SPW-Rs (Fig. 4)",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -416,10 +726,25 @@
     },
     {
      "claim": "ripple-modulated-cells-larger-reactivation",
-     "statement": "ripple-modulated-cells-larger-reactivation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Reactivation (EV - REV) is larger for hippocampus-BLA pairs whose BLA cell is ripple-modulated than for pairs with a non-modulated BLA cell.",
+     "source": "Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1; Supplementary Fig. 5b",
+     "quote": "Moreover, reactivations calculated using SPW-R-modulated BLA cells were larger than for nonmodulated pairs (Supplementary Fig. 5b).",
+     "statistics": [
+      {
+       "about": "EV - REV, ripple-modulated against non-modulated BLA partners, all cells",
+       "test": "Wilcoxon ranksum test",
+       "statistic": "z = 2.71",
+       "p": 0.00662,
+       "n": "19 sessions in 3 rats"
+      },
+      {
+       "about": "EV - REV, ripple-modulated against non-modulated BLA partners, pyramidal pairs",
+       "test": "Wilcoxon ranksum test",
+       "statistic": "z = 2.57",
+       "p": 0.00992,
+       "n": "18 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "not_reproduced",
@@ -438,9 +763,9 @@
     },
     {
      "claim": "run-correlated-pair-fractions",
-     "statement": "run-correlated-pair-fractions",
-     "source": null,
-     "quote": "",
+     "statement": "During run, 6.69% of hippocampus-BLA pyramidal pairs (2,521 of 37,660) are significantly positively correlated, 3.34% (1,258) negatively, and 89.96% (33,881) not reliably correlated.",
+     "source": "Results, Ripple-modulated BLA cells are preferentially involved in reactivations, paragraph 1; Supplementary Table 2",
+     "quote": "During run, a fraction of hippocampal\u2013BLA pyramidal neuron pairs showed significantly positively correlated spike trains (2,521 of 37,660; 6.69%). Another small percentage (1,258 of 37,660; 3.34%) was negatively correlated, while the remaining majority (33,881 of 37,660; 89.96%) was not reliably correlated",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -457,10 +782,25 @@
     },
     {
      "claim": "reactivation-involves-ripple-up-cells",
-     "statement": "reactivation-involves-ripple-up-cells",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Among nine groups of hippocampus-BLA pyramidal pairs formed by run correlation and BLA ripple modulation, the pairs with a significant positive run correlation and an upmodulated BLA partner show the largest pre-NREM to post-NREM increase in correlation, and differ from every other group.",
+     "source": "Results, Ripple-modulated BLA cells are preferentially involved in reactivations, paragraph 1; Figure 5a; Supplementary Fig. 6a; Supplementary Table 2",
+     "quote": "Hippocampus\u2013BLA pairs with significant, positive run correlations and SPW-R upmodulation of the BLA partner showed the largest pre-NREM to post-NREM change",
+     "statistics": [
+      {
+       "about": "the nine groups of pairs by run correlation and BLA ripple modulation",
+       "test": "one-way ANOVA",
+       "statistic": "F = 29.09, d.f. = 8",
+       "p": 1.1e-45,
+       "n": "37,660 pairs in 3 rats"
+      },
+      {
+       "about": "the upmodulated, positively correlated group against the other groups",
+       "test": "post hoc comparisons",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Tukey-Kramer (Fig. 5a legend, which gives P < 0.01; the Online Methods say Bonferroni)"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -476,9 +816,9 @@
     },
     {
      "claim": "pair-group-ev",
-     "statement": "pair-group-ev",
-     "source": null,
-     "quote": "",
+     "statement": "EV computed within each of the nine pair groups confirms the dominant contribution of the pairs with positive run correlation and an upmodulated BLA partner.",
+     "source": "Results, Ripple-modulated BLA cells are preferentially involved in reactivations, paragraph 1; Supplementary Fig. 6b",
+     "quote": "The dominant contribution of this specific subgroup of cell pairs to reactivations was confirmed by calculating the EVs across the nine subgroups",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -495,10 +835,46 @@
     },
     {
      "claim": "contributing-up-cells-gain-increase",
-     "statement": "contributing-up-cells-gain-increase",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Upmodulated BLA cells in the quartile contributing most to the reactivation increase their SPW-R gain from pre-NREM to post-NREM, while upmodulated cells of the other three quartiles do not.",
+     "source": "Results, Ripple-modulated BLA cells are preferentially involved in reactivations, paragraph 2; Figure 5b; Supplementary Fig. 8a",
+     "quote": "We found that upmodulated BLA neurons in the most strongly contributing quartile showed a specific increase in SPW-R gain (that is, firing rate during versus outside SPW-R) from pre-NREM to post-NREM compared to the upmodulated cells of the remaining three, low-contribution quartiles",
+     "statistics": [
+      {
+       "about": "post-NREM against pre-NREM gain, upmodulated cells of the highest-contribution quartile",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = -3.913",
+       "p": 4.57e-05,
+       "n": "63 cells in 3 rats"
+      },
+      {
+       "about": "the same, upmodulated cells of the remaining three quartiles",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = 2.408",
+       "p": 0.992,
+       "n": "73 cells in 3 rats"
+      },
+      {
+       "about": "second quartile, upmodulated cells (Supplementary Fig. 8a)",
+       "test": "Wilcoxon signed rank one-tailed test",
+       "statistic": "z = 0.7839",
+       "p": 0.7834,
+       "n": "18 cells"
+      },
+      {
+       "about": "third quartile, upmodulated cells (Supplementary Fig. 8a)",
+       "test": "Wilcoxon signed rank one-tailed test",
+       "statistic": "z = 1.8873",
+       "p": 0.9704,
+       "n": "16 cells"
+      },
+      {
+       "about": "fourth quartile, upmodulated cells (Supplementary Fig. 8a)",
+       "test": "Wilcoxon signed rank one-tailed test",
+       "statistic": "z = 1.5420",
+       "p": 0.9384,
+       "n": "39 cells"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -514,9 +890,9 @@
     },
     {
      "claim": "ev-independent-of-firing-rate",
-     "statement": "ev-independent-of-firing-rate",
-     "source": null,
-     "quote": "",
+     "statement": "Hippocampus-BLA EV does not depend on firing rates; EV exceeds REV across firing-rate octiles of the pairs, of the BLA cells and of the hippocampal cells.",
+     "source": "Results, Ripple-modulated BLA cells are preferentially involved in reactivations, paragraph 2; Supplementary Fig. 9",
+     "quote": "This control showed that EV did not depend on firing rates (Supplementary Fig. 9).",
      "statistics": [],
      "kind": "finding",
      "inferred": "",
@@ -533,10 +909,25 @@
     },
     {
      "claim": "reactivation-peaks-at-ripples",
-     "statement": "reactivation-peaks-at-ripples",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Reactivation strength of the whole-run template around hippocampal ripple peaks is higher in post-NREM than in pre-NREM, for pyramidal pairs and for all cell pairs.",
+     "source": "Supplementary Fig. 11a",
+     "quote": "Mean z-scored peri-ripple reactivation strength of the whole training session ... reactivation strength in a 500ms window around ripple peaks (grey bar in a) was significantly higher in post-NREM",
+     "statistics": [
+      {
+       "about": "post-NREM against pre-NREM ripple-peak reactivation strength, whole training session, pyramidal cell pairs",
+       "test": "Wilcoxon one-tailed signed rank test",
+       "statistic": "z = -3.175",
+       "p": 0.000749,
+       "n": "25 sessions in 3 rats"
+      },
+      {
+       "about": "the same, all cell pairs",
+       "test": "Wilcoxon one-tailed signed rank test",
+       "statistic": "z = -2.895",
+       "p": 0.00189,
+       "n": "27 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "partially_reproduced",
@@ -555,10 +946,18 @@
     },
     {
      "claim": "airpuff-trajectory-ripple-reactivation",
-     "statement": "airpuff-trajectory-ripple-reactivation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The hippocampus-BLA correlation pattern of the air puff trajectory is reactivated more around post-NREM ripples than around pre-NREM ripples.",
+     "source": "Figure 6a, top; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1",
+     "quote": "reactivation strength in a 500-ms window around ripple peaks (gray bars) was significantly higher in post-NREM compared to pre-NREM for air puff trajectory",
+     "statistics": [
+      {
+       "about": "post-NREM against pre-NREM ripple-peak reactivation strength, air puff trajectory, pyramidal pairs",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = -3.793",
+       "p": 7.42e-05,
+       "n": "25 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -574,10 +973,18 @@
     },
     {
      "claim": "safe-trajectory-no-ripple-reactivation",
-     "statement": "safe-trajectory-no-ripple-reactivation",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The hippocampus-BLA correlation pattern of the safe trajectory is not significantly more reactivated around post-NREM ripples than around pre-NREM ripples (pyramidal pairs).",
+     "source": "Figure 6a, bottom; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1",
+     "quote": "significantly higher in post-NREM compared to pre-NREM for air puff trajectory ... but not for safe trajectory",
+     "statistics": [
+      {
+       "about": "post-NREM against pre-NREM ripple-peak reactivation strength, safe trajectory, pyramidal pairs",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = -0.780",
+       "p": 0.217,
+       "n": "25 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -593,10 +1000,18 @@
     },
     {
      "claim": "aversive-direction-stronger",
-     "statement": "aversive-direction-stronger",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The post-NREM minus pre-NREM change in reactivation strength at the ripple peak is larger for the air puff trajectory than for the safe trajectory (pyramidal pairs).",
+     "source": "Figure 6b; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1",
+     "quote": "The pre-NREM vs. post-NREM difference in reactivation strength (RS) at the ripple peak is significantly higher for the air puff trajectory compared to safe trajectory",
+     "statistics": [
+      {
+       "about": "post-NREM minus pre-NREM ripple-peak reactivation strength, air puff against safe trajectory",
+       "test": "Wilcoxon one-tail signed rank-test",
+       "statistic": "z = -2.798",
+       "p": 0.00257,
+       "n": "25 sessions"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -612,10 +1027,32 @@
     },
     {
      "claim": "direction-all-cell-pairs",
-     "statement": "direction-all-cell-pairs",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "With all cell types included, both the air puff and the safe trajectory patterns are more reactivated around post-NREM than pre-NREM ripples, and the post minus pre difference does not differ significantly between the two trajectories.",
+     "source": "Supplementary Fig. 11b,c",
+     "quote": "Reactivation strength in a 500ms window around ripple peaks (grey bar in a) was significantly higher in post-NREM compared to pre-NREM for airpuff ... and safe trajectories ... Pre/Post peak differences (postNREM - preNREM; see methods) in reactivation strength are not significantly different for safe and airpuff trajectories when all cell types are included",
+     "statistics": [
+      {
+       "about": "post-NREM against pre-NREM, air puff trajectory, all cell pairs",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = -3.327",
+       "p": 0.000438,
+       "n": "27 sessions in 3 rats"
+      },
+      {
+       "about": "post-NREM against pre-NREM, safe trajectory, all cell pairs",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = -1.789",
+       "p": 0.036,
+       "n": "27 sessions in 3 rats"
+      },
+      {
+       "about": "post minus pre difference, air puff against safe, all cell pairs",
+       "test": "Wilcoxon one-tailed signed rank test",
+       "statistic": "z = -1.333",
+       "p": 0.0912,
+       "n": "27 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -634,10 +1071,23 @@
     },
     {
      "claim": "bla-rate-same-across-directions",
-     "statement": "bla-rate-same-across-directions",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "Firing rates of BLA cells do not differ significantly between the safe and the air puff trajectories.",
+     "source": "Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1",
+     "quote": "Because the firing rates of BLA cells did not significantly differ between safe and air puff trajectories",
+     "statistics": [
+      {
+       "about": "BLA pyramidal cells",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 1.101",
+       "p": 0.27
+      },
+      {
+       "about": "all BLA cells",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.302",
+       "p": 0.763
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -653,10 +1103,17 @@
     },
     {
      "claim": "ripple-rate-unchanged",
-     "statement": "ripple-rate-unchanged",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The occurrence rate of SPW-Rs does not differ between pre-NREM and post-NREM.",
+     "source": "Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1; Supplementary Fig. 11d",
+     "quote": "The occurrence rate of SPW-R was also not significantly different between the pre-NREM and postNREM epochs",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = -1.289",
+       "p": 0.192,
+       "n": "41 sessions in 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "reproduced",
@@ -674,10 +1131,25 @@
     },
     {
      "claim": "contributing-pairs-run-sleep-coupling",
-     "statement": "contributing-pairs-run-sleep-coupling",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "For the 2.5% most strongly contributing hippocampus-BLA pairs, the pre-run to post-run change in correlation correlates with the pre-NREM to post-NREM change (r = 0.27), but not for the 2.5% least contributing pairs.",
+     "source": "Results, NREM contributes to reinstatement of new place-threat representations, paragraph 1; Figure 7b; Supplementary Fig. 7c",
+     "quote": "We found that for strongly contributing, but not for weakly contributing, pairs the increase between pre-run and post-run coactivity was significantly correlated with the increase in coactivity between pre-NREM and post-NREM (Fig. 7b).",
+     "statistics": [
+      {
+       "about": "strongly contributing pairs (2.5% highest contributions)",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.27",
+       "p": 2.11e-16,
+       "n": "866 pairs, 3 rats"
+      },
+      {
+       "about": "weakly contributing pairs (2.5% lowest contributions)",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.03",
+       "p": 0.305,
+       "n": "845 pairs, 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -693,10 +1165,25 @@
     },
     {
      "claim": "contributing-quartiles-run-sleep-coupling",
-     "statement": "contributing-quartiles-run-sleep-coupling",
-     "source": null,
-     "quote": "",
-     "statistics": [],
+     "statement": "The coupling between run and sleep correlation changes holds when the most and least contributing quartiles of pairs are compared (r = 0.13 against r = 0.013).",
+     "source": "Results, NREM contributes to reinstatement of new place-threat representations, paragraph 1; Figure 7c; Supplementary Fig. 7b",
+     "quote": "This result was maintained when the most strongly and the most weakly contributing quartiles (instead of 2.5th percentiles) of the distribution were compared (Fig. 7c).",
+     "statistics": [
+      {
+       "about": "most strongly contributing quartile",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.13",
+       "p": 1.07e-32,
+       "n": "9,415 pairs, 3 rats"
+      },
+      {
+       "about": "least contributing quartile",
+       "test": "Pearson correlation",
+       "statistic": "r = 0.013",
+       "p": 0.22,
+       "n": "9,415 pairs, 3 rats"
+      }
+     ],
      "kind": "finding",
      "inferred": "",
      "outcome": "blocked",
@@ -732,55 +1219,55 @@
     },
     {
      "kind": "metadata_error",
-     "statement": "Still present (found by 000061-girardeau-2017-01; the version and the files are unchanged, and the draft holds the same assets). The epochs table is stored in milliseconds although its columns say seconds; in all 40 files its last stop time is exactly 1000 times the LFP duration.",
+     "statement": "Still present (found by girardeau-2017-01; the version and the files are unchanged, and the draft holds the same assets). The epochs table is stored in milliseconds although its columns say seconds; in all 40 files its last stop time is exactly 1000 times the LFP duration.",
      "found": null,
      "status": null
     },
     {
      "kind": "metadata_error",
-     "statement": "Still present (found by 000061-girardeau-2017-01). Video timestamps are stated in seconds but are in milliseconds and are not on the session clock; the first timestamp matches the start of the video's epoch in 1 of 114 videos, while the spans match the epoch durations in 93 of 114.",
+     "statement": "Still present (found by girardeau-2017-01). Video timestamps are stated in seconds but are in milliseconds and are not on the session clock; the first timestamp matches the start of the video's epoch in 1 of 114 videos, while the spans match the epoch durations in 93 of 114.",
      "found": null,
      "status": null
     },
     {
      "kind": "format_error",
-     "statement": "Still present (found by 000061-girardeau-2017-01). In ten files the spike_times_index is wrong at the first units; unit 1's spike times fall back once, after 65536 times k spikes, and unit 0 stops where unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0 and 1 of these files were left out of the analyses.",
+     "statement": "Still present (found by girardeau-2017-01). In ten files the spike_times_index is wrong at the first units; unit 1's spike times fall back once, after 65536 times k spikes, and unit 0 stops where unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0 and 1 of these files were left out of the analyses.",
      "found": null,
      "status": null
     },
     {
      "kind": "data_missing",
-     "statement": "Still present (found by 000061-girardeau-2017-01). Seven files have no units table, sixteen have no sleep states and fourteen have no ripple events; the Rat09 files have no hippocampal units and no ripples.",
+     "statement": "Still present (found by girardeau-2017-01). Seven files have no units table, sixteen have no sleep states and fourteen have no ripple events; the Rat09 files have no hippocampal units and no ripples.",
      "found": null,
      "status": null
     },
     {
      "kind": "data_missing",
-     "statement": "Still present (found by 000061-girardeau-2017-01). There is no position tracking and no air puff location, only the puff times and the raw video frames, so behaviour on the track cannot be measured without tracking about 1.9 million frames; laps and the air puff direction can only be inferred from reward and puff times.",
+     "statement": "Still present (found by girardeau-2017-01). There is no position tracking and no air puff location, only the puff times and the raw video frames, so behaviour on the track cannot be measured without tracking about 1.9 million frames; laps and the air puff direction can only be inferred from reward and puff times.",
      "found": null,
      "status": null
     },
     {
      "kind": "metadata_insufficient",
-     "statement": "Still present in the dandiset (found by 000061-girardeau-2017-01). Unit region labels are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven, pir, plc01, PLCo1, cpu, hpc, HIP, no label), some in two cases, Rat09-20140328 has no location column, and the electrode table gives every channel as unknown. The paper's Supplementary Fig. 3 names the structures the codes match (BLA, BLV, LaDL, BMA, BMP, Pir, VEn, DEn), which lets this attempt read them; the dandiset still does not describe them.",
+     "statement": "Still present in the dandiset (found by girardeau-2017-01). Unit region labels are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven, pir, plc01, PLCo1, cpu, hpc, HIP, no label), some in two cases, Rat09-20140328 has no location column, and the electrode table gives every channel as unknown. The paper's Supplementary Fig. 3 names the structures the codes match (BLA, BLV, LaDL, BMA, BMP, Pir, VEn, DEn), which lets this attempt read them; the dandiset still does not describe them.",
      "found": null,
      "status": null
     },
     {
      "kind": "metadata_insufficient",
-     "statement": "Still present (found by 000061-girardeau-2017-01). The trials table of the Rat08 and Rat09 files is described only as \"experimental trials\"; its intervals of 3 to 5 s fall partly outside the run and are not laps.",
+     "statement": "Still present (found by girardeau-2017-01). The trials table of the Rat08 and Rat09 files is described only as \"experimental trials\"; its intervals of 3 to 5 s fall partly outside the run and are not laps.",
      "found": null,
      "status": null
     },
     {
      "kind": "metadata_insufficient",
-     "statement": "Still present (found by 000061-girardeau-2017-01). The ripple annotations carry an undescribed number in each label (for example \"Ripple peak 156\"), one per file, presumably the detection channel; ripples, puffs and rewards are stored as annotation series under stimulus presentation.",
+     "statement": "Still present (found by girardeau-2017-01). The ripple annotations carry an undescribed number in each label (for example \"Ripple peak 156\"), one per file, presumably the detection channel; ripples, puffs and rewards are stored as annotation series under stimulus presentation.",
      "found": null,
      "status": null
     },
     {
      "kind": "methods_unavailable",
-     "statement": "Partly fixed (found by 000061-girardeau-2017-01, when the paper's text was not available). The full text was supplied for this attempt and the paper links its code (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package), which the claims file's reader read; the dandiset itself still links no analysis code, its related resources naming only the paper.",
+     "statement": "Partly fixed (found by girardeau-2017-01, when the paper's text was not available). The full text was supplied for this attempt and the paper links its code (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package), which the claims file's reader read; the dandiset itself still links no analysis code, its related resources naming only the paper.",
      "found": null,
      "status": null
     }
@@ -810,7 +1297,7 @@
  ],
  "entries": [
   {
-   "name": "000061-girardeau-2017",
+   "name": "girardeau-2017-000061",
    "type": "reproduction",
    "title": "Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)",
    "description": "Tests the claims of Girardeau, Inema and Buzsaki (2017), written from the full text, the supplement and the paper's code, on dandiset 000061, which holds sorted units of the hippocampus and the amygdala, sleep states, ripple, air puff and reward events from four rats on an air puff linear track task. It tests the unit counts, habituation over days, BLA firing by sleep state, hippocampus-BLA and hippocampus-central nuclei reactivation (explained variance) with all cells, and the ripple rate before and after training. Claims on putative pyramidal cells and on position are blocked, as the dandiset holds neither.",
@@ -825,7 +1312,7 @@
     {
      "path": "reproduce_girardeau_2017.ipynb",
      "title": "Reproducing Girardeau et al. (2017) from dandiset 000061",
-     "executed": "notebooks/000061-girardeau-2017/reproduce_girardeau_2017.html"
+     "executed": null
     }
    ]
   }
