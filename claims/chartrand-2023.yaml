@@ -138,6 +138,8 @@ claims:
     homology_type. Reproduced when every count is within its
     tolerance. The 250 and 71 counts need transcriptomes and reconstructions and are not
     tested here; the count of dandiset files not in P is reported.
+  depends_on:
+  - dandiset-cell-link
 - id: fig1a-human-types-separated
   statement: In transcriptomic reference data, many human L1 t-types form separated clusters while
     mouse L1 t-types vary more continuously, suggesting stronger transcriptomic specialization in
@@ -274,6 +276,7 @@ claims:
     below 1e-7.
   depends_on:
   - patchseq-counts
+  - dandiset-cell-link
 - id: fig2b-subclass-ephys-profiles
   statement: LAMP5 cells show small sag and adaptation, PAX6 cells minimal sag and a high initial
     firing rate, while MC4R and L1 VIP cells show strong sag.
@@ -286,10 +289,11 @@ claims:
   data: with_labels
   depends_on:
   - fig2c-subclass-ephys-differences
+  - dandiset-cell-link
   criterion: On the cells and features of fig2c-subclass-ephys-differences. Reproduced when (i)
     the median sag of MC4R and of L1 VIP each exceeds that of LAMP5 and of PAX6, (ii) PAX6 has the
-    lowest median sag of the four, and (iii) PAX6 has the highest median first_isi_inv_hero.
-    Not reproduced otherwise. Dunn's FDR-corrected p for each pair is reported; the paper states
+    lowest median sag of the four, and (iii) the median first_isi_inv_hero of PAX6 exceeds that
+    of LAMP5 and of MC4R. Not reproduced otherwise. Dunn's FDR-corrected p for each pair is reported; the paper states
     the ordering in words and reports no pairwise values in the text read.
 - id: figs3a-sag-adaptation
   statement: Spike adaptation properties are strongly and inversely related to sag across human L1
@@ -313,6 +317,8 @@ claims:
     sag show less change of spike upstroke from the first to the third spike. The ratio's order
     is open (O1); the direction is judged on the change, whichever order the ratio has, and the
     slope's sign is reported with the order used.
+  depends_on:
+  - dandiset-cell-link
 - id: fig2c-lamp5-gradient
   statement: Within the LAMP5 subclass, sag and initial firing rate decrease from the NMBR to the
     DBP to the LCP2 t-type.
@@ -332,6 +338,8 @@ claims:
     positive Spearman rho with that code (values decreasing from NMBR to DBP to LCP2). If the dandiset lacks the Amsterdam and Szeged LAMP5
     cells the code includes, the test runs on what it holds and the notes say so; the same test
     on P alone is shown as a variant.
+  depends_on:
+  - dandiset-cell-link
 - id: fig2d-subclass-morphology
   statement: Human L1 subclasses differ morphologically in vertical orientation of axons and
     dendrites, axon extent and shape, and dendrite branching (Kruskal-Wallis, FDR p < 1e-3).
@@ -372,6 +380,8 @@ claims:
     medical_conditions, donor_sex and donor_age columns stand in for them. Reproduced
     when no feature has FDR p < 0.05 for any of the three; not reproduced when any does. The
     smallest uncorrected p and its feature are reported for each.
+  depends_on:
+  - dandiset-cell-link
 - id: figs6a-tumor-dendrite-branching
   statement: Cells from tumor patients have higher dendritic branching than cells from epilepsy
     patients, not explained by brain area or subclass.
@@ -410,6 +420,8 @@ claims:
     input_resistance_ss has FDR p < 0.05 and no other region has a median input resistance below
     MTG's with Dunn's FDR p < 0.05. The other features of Fig. S6C (sag_peak_t, downstroke_rheo,
     avg_rate_max) are reported.
+  depends_on:
+  - dandiset-cell-link
 - id: fig3b-l1-cytoarchitecture
   statement: Human L1 is thicker than mouse L1 but not less dense, with smaller cell bodies.
   source: Results, Cross-species differences in L1, paragraph 1; Figure 3B and S6D
@@ -473,6 +485,9 @@ claims:
     at least 2 of 4 subclasses differ at p < 0.05 in that direction. Partially reproduced when the
     directions hold with FDR p < 0.05 but not all below 1e-38. When the readings disagree the
     claim is methods_underspecified with both shown.
+  depends_on:
+  - dandiset-cell-link
+  - mouse-cell-link
 - id: fig3e-tea-validation
   statement: The human versus mouse electrophysiological differences found against VISp are
     replicated against mouse TEa, so they are not regional.
@@ -498,6 +513,9 @@ claims:
     same direction; partially reproduced when most do. When the readings give different outcomes
     the claim is methods_underspecified with both shown. The paper names no deposit for the mouse TEa electrophysiology; if it is not public
     the claim is blocked data_missing.
+  depends_on:
+  - dandiset-cell-link
+  - mouse-cell-link
 - id: figs3g-morphology-input-resistance
   statement: Passive models built on reconstructed morphologies explain input resistance
     variability in human (R2 = 0.35) but not mouse (R2 = 0.03) LAMP5 cells.
@@ -541,6 +559,9 @@ claims:
     at p < 0.05 and D-type does not differ at p < 0.05. Needs the nucleated-patch sweeps in the
     dandiset, the patch diameters (measured from images, Fig. 3F) and mouse LAMP5 recordings
     whose deposit the paper does not name; the claim is blocked for whichever is missing.
+  depends_on:
+  - dandiset-cell-link
+  - mouse-cell-link
 - id: fig3g-variability-dimensions
   statement: Human and mouse L1 subclasses have a similar amount of morpho-electric variability but
     along different features; sag and spike shape adaptation vary in human but little in mouse,
@@ -564,6 +585,9 @@ claims:
     significant features and their mean epsilon2 are reported for both species and called
     similar when each mouse value is within 10% of the human one, a reading named here, not
     part of the outcome.
+  depends_on:
+  - dandiset-cell-link
+  - mouse-cell-link
 - id: fig4b-mc4r-sag-irregularity
   statement: MC4R (rosehip) cells are distinguished from the rest of human L1 by strong sag and by
     irregular firing (Mann-Whitney, FDR p < 1e-4).
@@ -582,6 +606,8 @@ claims:
     (irregularity ratio, O1). The group is read as (a) the MC4R subclass, as the code does, or (b)
     each MC4R t-type in turn, as the legend's "MC4R t-types" allows. Reproduced when, under a
     reading, both features have FDR p < 1e-4 with the group higher.
+  depends_on:
+  - dandiset-cell-link
 - id: fig4b-adarb2-irregular-firing
   statement: Both rosehip t-types have strong sag, but only ADARB2 MC4R fires irregularly, with
     stronger and faster sag than SST CHRNA4.
@@ -606,6 +632,8 @@ claims:
     peak), (b) shorter median sag_tau (Table S1, "rapid time constant"); when they give different
     outcomes the claim is methods_underspecified with both shown. The Dunn p for every pair is
     reported.
+  depends_on:
+  - dandiset-cell-link
 - id: fig4b-mc4r-axon
   statement: MC4R cells are quantitatively distinct from other L1 types in maximum axonal path
     distance and axon branch frequency.
@@ -648,6 +676,9 @@ claims:
     LAMP5's, the MC4R condition holds, and most mouse cells above 0.4 are LAMP5, the largest group
     Lamp5 Ntn1 Npy2r; when the readings give different outcomes the claim is
     methods_underspecified with both shown.
+  depends_on:
+  - dandiset-cell-link
+  - mouse-cell-link
 - id: fig5b-tnfaip8l3-ephys
   statement: PAX6 TNFAIP8L3 cells are distinguished from all other human L1 cells by a high initial
     firing rate at rheobase and an after-depolarization following the last spike.
@@ -669,6 +700,8 @@ claims:
     "ADP slope", O1); adp_deltav is shown as a variant. Reproduced when both have FDR p < 0.01
     with TNFAIP8L3 higher. With 2 cells the smallest possible two-sided exact p is about 1e-4,
     so the threshold can be met.
+  depends_on:
+  - dandiset-cell-link
 - id: fig5b-tnfaip8l3-dendrites
   statement: PAX6 TNFAIP8L3 cells have more dendritic branches and a horizontal dendritic extent
     over 550 um wide.
@@ -695,6 +728,9 @@ claims:
     t-type; first_isi_inv_hero and sag_depol (depolarizing sag ratio, O1). The paper reports no
     test; reproduced when the Lamp5 Krt73 cells' median first_isi_inv_hero and median sag_depol
     both exceed those of every other mouse subclass. The 4 Lamp5 Krt73 cells' values are listed.
+  depends_on:
+  - dandiset-cell-link
+  - mouse-cell-link
 - id: fig5c-cacna1g
   statement: Both human PAX6 t-types match the alpha7 marker signature and strongly express the
     T-type calcium channel gene CACNA1G.
@@ -725,6 +761,8 @@ claims:
     readings, NMBR-LCP2 is the only within-subclass pair that is high and the mean within-subclass
     d' is below the mean between-subclass d'. Within-subclass pairs are those inside LAMP5, MC4R
     and PAX6 (other is not a subclass, as get_distances in the code treats it).
+  depends_on:
+  - dandiset-cell-link
 - id: fig6b-dprime-correlation
   statement: Electrophysiological and transcriptomic d' of human L1 t-type pairs are correlated
     (Pearson r = 0.59, p = 0.00016).
@@ -795,6 +833,8 @@ claims:
     is kept. Preprocessing follows O3; readings (a) and (b). Random seed 0 as the code sets.
     Reproduced when, under both readings, all four F1 values are within tolerance; partially
     reproduced when three are.
+  depends_on:
+  - dandiset-cell-link
 - id: figs8a-classifier-cv
   statement: A multi-class classifier assigns human L1 subclasses from electrophysiology with 82%
     cross-validated accuracy, balanced across subclasses.
@@ -818,6 +858,8 @@ claims:
     code prints, (ii) balanced accuracy, the mean diagonal of the row-normalized confusion
     matrix, as the text's "balanced across subclasses" allows. Reproduced when any reading is
     within tolerance.
+  depends_on:
+  - dandiset-cell-link
 - id: figs8b-classifier-holdout
   statement: Trained on the primary dataset with site-dependent features excluded, the classifier
     reaches 81% accuracy on held-out cells recorded at other sites.
@@ -839,6 +881,39 @@ claims:
     Score readings (i) accuracy, as the code prints, (ii) balanced accuracy. Reproduced when
     either is within tolerance. The held-out cells are part of the paper's recordings; if the
     dandiset does not hold them the claim is blocked data_missing.
+  depends_on:
+  - dandiset-cell-link
+# --- Links to the paper's outside material (added by the author of the attempt, 2026-10-31) ---
+- id: dandiset-cell-link
+  kind: link
+  statement: The dandiset's files can be matched one to one to the cells of the paper's per-cell
+    table, and the matched records agree on what both describe.
+  source: Data and materials availability; the code's data/human_l1_dataset_2023_02_06.csv and
+    data/aibs_features_E.csv (github.com/AllenInstitute/patchseq_human_L1 at commit
+    7777857c1b89b19735e45fd9c9bd7493cc1d805c)
+  data: with_labels
+  criterion: Files are matched by their LIMS session_id to the Ephys_Roi_Result number in the
+    table's nwb_path, and the file's cell name (general/source_script file_name) is compared with
+    the table's cell_name. Reproduced when every file matches one table row, no row matches two
+    files, the matched records agree on donor sex and age (in whole years), and the long square
+    features computed here from the files agree with the paper's aibs_features_E.csv within 1%
+    for most cells in most features; partially reproduced when at least 90% of files match and
+    agree; not reproduced otherwise. Cell names that differ, and features that do not agree, are
+    reported. The table supplies the t-type, subclass, layer, region and donor condition the files
+    lack to the claims that list this claim under depends_on.
+- id: mouse-cell-link
+  kind: link
+  statement: The files of DANDI 000020 (version 0.210913.1639) can be matched one to one to the
+    paper's strict mouse L1 cells, and the matched records agree on what both describe.
+  source: Methods (mouse data from DANDI 000020); the code's data/mouse_l1_dataset_2023_02_06.csv,
+    mouse_l1_dataset_strict.csv and aibs_mouse_features_E.csv (commit
+    7777857c1b89b19735e45fd9c9bd7493cc1d805c)
+  data: with_inputs
+  criterion: Files are matched by the session id in their path to the Ephys_Roi_Result number in
+    the table's nwb_path, and cell names are compared. Reproduced when every strict mouse L1 cell
+    has one file and the matched records agree on cell name and on the long square features
+    within 1% for most cells in most features; partially reproduced when at least 90% of the
+    cells have a file and agree; not reproduced otherwise.
 checks:
 - date: 2026-10-23
   kind: agent
