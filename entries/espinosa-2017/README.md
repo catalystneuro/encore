@@ -11,7 +11,7 @@ open-field videos. It holds none of the paper's prefrontal recordings, in vitro 
 | Light changes a minority of basal forebrain units: 29 inhibited, 56 excited, 245 unaffected | Not reproduced |
 | Excited units have higher spontaneous rates | Reproduced |
 | Discharge during light differs between the three classes | Reproduced |
-| Excited units respond with slower kinetics | Not reproduced |
+| Excited units respond with slower kinetics | Partially reproduced (test holds under one reading, values do not) |
 | Responses to light and tail pinch cross-tabulated (Supplementary Figure 4) | Not reproduced |
 | Histology and in vitro recordings (Supplementary Figures 1 to 3) | Blocked: data missing |
 | Prefrontal units and LFP (Figures 2 to 4, Supplementary Figures 6 to 11, Table 2; 16 claims) | Blocked: data missing |
@@ -23,7 +23,9 @@ reasoning and the differences from the paper's method.
 
 The data set's own per-unit flags give 56 excited, 30 inhibited and 244 unaffected units, close to
 the paper's counts, while the classification method as the claims file reads it from the paper
-gives other counts under every reading. The attempt record, with the reasons and the differences
+gives other counts under every reading. The data set's own cross-correlograms show the authors' bins,
+pulses and normalization, which are among those readings, so the difference lies in the test that
+turns a curve into a class. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/espinosa-2017-01.yaml`](../../attempts/espinosa-2017-01.yaml).
 
-The archives are tar.gz files, streamed once each from start to end; a run takes about 11 minutes.
+The archives are tar.gz files, streamed once each from start to end; a run takes about 18 minutes.

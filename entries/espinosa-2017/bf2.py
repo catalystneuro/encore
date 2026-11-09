@@ -20,6 +20,12 @@ Parameters and where they come from:
   their inter-event intervals; both interval sequences are permuted, keeping the first event.
   The seed is fixed per unit (a standard choice).
 - Percent change: (mean normalized rate over the pulse - 1) x 100 (claims file, opening comment).
+- Bin convention "stored": the one that reproduces the data set's own cross-correlograms (column 6
+  of data_correlation.mat) exactly, found by reconstructing them in the notebook; used as a variant.
+- Exponential fits (fig1e): windows w1 and w2 from the claims file criterion, w1 read as the first
+  local extremum in the direction of the response; w1max (the round-1 reading of w1) kept as a
+  variant. The bound on the time constant (1 ms to 20 s) and the starting values are standard
+  choices.
 """
 import io
 import tarfile
@@ -172,12 +178,20 @@ def shuffle_intervals(times, rng):
     return times[0] + np.r_[0, np.cumsum(rng.permutation(isi))]
 
 
-def peth_counts(spikes, onsets, binsize, half=15.0):
-    """Spike counts per pulse and bin; bins centred on 0 (central bin -binsize/2 to +binsize/2)."""
+def peth_counts(spikes, onsets, binsize, half=15.0, convention="centred"):
+    """Spike counts per pulse and bin; bins centred on multiples of binsize (central bin -binsize/2 to
+    +binsize/2). "centred": every bin full width, spikes on an edge go to the later bin. "stored": the
+    convention of the data set's own cross-correlograms (column 6 of data_correlation.mat), which the
+    notebook reconstructs exactly: the window cut at -half and +half, so the two end bins are half
+    wide, and spikes on an edge go to the earlier bin."""
     nb = int(round(half / binsize))
-    edges = (np.arange(-nb, nb + 2) - 0.5) * binsize
     centres = np.arange(-nb, nb + 1) * binsize
-    idx = np.searchsorted(spikes, onsets[:, None] + edges[None, :])
+    if convention == "stored":
+        edges = np.r_[-half, (np.arange(-nb, nb) + 0.5) * binsize, half]
+        idx = np.searchsorted(spikes, onsets[:, None] + edges[None, :], side="right")
+    else:
+        edges = (np.arange(-nb, nb + 2) - 0.5) * binsize
+        idx = np.searchsorted(spikes, onsets[:, None] + edges[None, :])
     return np.diff(idx, axis=1), centres
 
 
@@ -195,21 +209,21 @@ def normalize(counts, reading):
     return s / s.sum() * nbins if s.sum() > 0 else np.full(nbins, np.nan)
 
 
-def classify_unit(spikes, onsets, binsize, reading_n, n_shuffle=100, seed=0, pulse=5.0):
+def classify_unit(spikes, onsets, binsize, reading_n, n_shuffle=100, seed=0, pulse=5.0, convention="centred"):
     """Normalized discharge and its shuffles for one unit, and the classes under r1, r2, r3.
 
     Returns dict with the normalized curve, the bin centres, the pulse mean, the percent change and
     the class (+1 excited, -1 inhibited, 0 unaffected) under each reading.
     """
     rng = np.random.default_rng(seed)
-    counts, centres = peth_counts(spikes, onsets, binsize)
+    counts, centres = peth_counts(spikes, onsets, binsize, convention=convention)
     curve = normalize(counts, reading_n)
     pb = (centres > 0) & (centres <= pulse + 1e-9)
     sh = np.empty((n_shuffle, len(centres)))
     for k in range(n_shuffle):
         s = shuffle_intervals(spikes, rng)
         o = shuffle_intervals(onsets, rng)
-        c, _ = peth_counts(s, o, binsize)
+        c, _ = peth_counts(s, o, binsize, convention=convention)
         sh[k] = normalize(c, reading_n)
     m = np.nanmean(curve[pb])
     sh_m = np.nanmean(sh[:, pb], axis=1)
@@ -234,18 +248,36 @@ def _expo(t, a, b, tau):
     return a + b * (1 - np.exp(-t / tau))
 
 
+def first_extremum(y, direction):
+    """Index of the first local extremum of y in the response's direction (+1 for a rise, -1 for a
+    fall), counted from index 1: the first bin after which the curve stops moving further from its
+    start. The last index when it never turns."""
+    for k in range(1, len(y) - 1):
+        if direction * y[k] >= direction * y[k + 1]:
+            return k
+    return len(y) - 1
+
+
 def fit_tau(curve, centres, window, pulse=5.0):
     """Time constant (ms) of a single exponential approaching a plateau, fitted to the normalized
-    discharge from light onset: w1 up to the first extremum of the response (the bin of largest
-    absolute deviation from 1 within the pulse), w2 over the whole pulse (claims file criterion).
-    The bin before onset (centre <= 0, last pre-onset bin) gives the starting value at t = 0."""
+    discharge from light onset (claims file criterion). Windows: w1 from light onset to the first
+    extremum of the response (first_extremum, in the direction of the pulse mean against 1); w1max,
+    the window used in round 1 and kept as a variant, up to the pulse bin of largest absolute
+    deviation from 1; w2 over the whole pulse. The bin centred on onset (t = 0, straddling it) gives
+    the starting value. Fewer than three points (for w1, an extremum in the first pulse bin) cannot
+    fit three parameters and give NaN."""
     sel = (centres >= 0) & (centres <= pulse + 1e-9)
     t = centres[sel]
     y = curve[sel]
+    if not np.isfinite(y).all():
+        return np.nan
     if window == "w1":
+        k = first_extremum(y, 1 if np.mean(y[1:]) > 1 else -1)
+        t, y = t[: k + 1], y[: k + 1]
+    elif window == "w1max":
         k = int(np.argmax(np.abs(y[1:] - 1))) + 1
         t, y = t[: k + 1], y[: k + 1]
-    if len(t) < 3 or not np.isfinite(y).all():
+    if len(t) < 3:
         return np.nan
     try:
         p, _ = curve_fit(_expo, t, y, p0=[y[0], y[-1] - y[0], 0.3],
