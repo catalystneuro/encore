@@ -1,0 +1,291 @@
+schema_version: 3
+id: wang-2014-01
+datasets:
+- archive: crcns
+  id: hc-5
+  version: unversioned
+  doi: 10.6080/K0KS6PHF
+  relation: primary
+paper: doi:10.1038/nn.3904
+date: '2026-11-09'
+entry: wang-2014
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42692838519
+outcomes:
+- claim: cells-per-recording
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The counts are per recording of the paper's three rats, from the pre or post sessions of their
+    muscimol recordings, whose doors opened after 9 (rat 1) or 10 s (rats 2 and 3) of wheel running. The
+    data set holds one rat (i01), recorded in June 2008 without injections, whose alternation wheel runs
+    last a median of 19.7 s (150 runs, 5th to 95th percentile 14.0 to 27.6 s, shortest 12.1 s), so it
+    is not one of the paper's rats and has no pre or post sessions. Episode and place cells were not counted
+    on its sessions, as no claim of the paper is about them.
+- claim: fig1d-theta-power
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions of the alternation task; the data set has no muscimol, saline,
+    pre or post session (no description, note or file name mentions an injection, and theta during running
+    is present in all 13 sessions).
+- claim: fig1e-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: fig1e-performance-restored
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol and post sessions; none in the data set (see fig1d-theta-power).
+- claim: figs1-activity-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: fig2c-wheel-field-info
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions of the paper's wheel task; none in the data set (see fig1d-theta-power).
+- claim: fig2b-wheel-sequence-lost
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre, muscimol and post sessions; none in the data set (see fig1d-theta-power).
+- claim: figs4a-residual-fields-early
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: fig2d-wheel-rate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: fig2e-wheel-theta-sequences
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: fig2h-maze-field-info
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: fig2i-maze-order-preserved
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre, muscimol and post sessions; none in the data set (see fig1d-theta-power).
+- claim: fig2j-maze-theta-sequences
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre and muscimol sessions; none in the data set (see fig1d-theta-power).
+- claim: figs5-compression-lost
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs pre, muscimol and post sessions; none in the data set (see fig1d-theta-power).
+- claim: fig3c-model-theta-builds-fields
+  outcome: partially_reproduced
+  notebook: reproduce_wang_2014.ipynb
+  output: claim:fig3c-model-theta-builds-fields
+  assumed: true
+  notes: A simulation; it uses no recorded data, so it says nothing about the data set. With theta (adopted
+    noise reading, 5 seeds) activity is confined to theta cycles (population minimum over maximum 0.002)
+    and the bump moves forward within 98% of cycles by a median 0.45 rad, so theta sequences are present
+    in 5 of 5 seeds; without theta they are present in 0 of 5 and the activity is scattered (concentration
+    0.19 against 0.84). Fields with theta last 0.431 s, 3.01 cycles of 7 Hz around the peak (2.96 to 3.12
+    over seeds, 2 of 5 above three cycles), 2.98 cycles counting every run, against 1.33 and 0.65 cycles
+    without theta (ratios 2.26 and 4.57). With a 0.05 ms step the mean is 3.00 (3 of 5 seeds above three),
+    with 30 s simulated 2.98 (0 of 5); with the shared-noise variant 2.88 (0 of 5). The sequence part
+    and the disruption by removing theta hold; the field length sits at the criterion's threshold of three
+    cycles and does not clearly exceed it, hence partially reproduced. The paper's Supplementary Figure
+    10f shows field durations of about 1.2 s for this model, longer than the 0.43 s found here, so this
+    implementation may differ from the paper's in a way the Supplementary Modeling does not reveal (asked
+    of the authors under findings).
+  deviations:
+  - The model is integrated from Supplementary Modeling (equations 1-3, N = 100, tau = 10 ms, J1 = 15,
+    J0 = 30, tau_R = 0.1 s, tau_F = 0.3 s, U = 0.05, g = 1.5, k = 2.5, delta = 0.2 rad, Ornstein-Uhlenbeck
+    noise of 10 ms and s.d. 5) and Supplementary Table 1. The duration (10 s, first 1 s discarded), Euler
+    step (0.1 ms), initial state (uniform rates near 1 Hz) and seeds (0-4) are the standard choices the
+    criterion names; a 0.05 ms step and 30 s are shown for fig3c.
+  - Assumption. The noise is written eta(t), with no index for the unit. It is taken as independent noise
+    in each unit, from the paper's Figure 3c,d (the no-theta panels show activity scattered independently
+    over the neurons) and the Results ("Without the synchronized change in the network excitability, neurons
+    in the network were activated randomly"). One process shared by all units, the equation as printed,
+    is shown as a variant.
+  - The paper gives no measure of theta sequences or fields in the model; the claims file's measures are
+    used (bump displacement within each cycle; time a unit's rate, smoothed over a cycle, stays above
+    half its peak). Two thresholds were set here to apply them, activity confined to cycles (population
+    minimum over maximum below 0.1 within a cycle) and forward movement in at least 90% of cycles; fields
+    are measured around each unit's peak, with every run above half the peak shown too.
+- claim: fig3d-model-cues-keep-fields
+  outcome: reproduced
+  notebook: reproduce_wang_2014.ipynb
+  output: claim:fig3d-model-cues-keep-fields
+  assumed: true
+  notes: A simulation; it uses no recorded data. Adopted noise reading, 5 seeds. Without theta and with
+    cues (I_L = 5), no seed has theta sequences at any cue speed (population minimum over maximum 0.75
+    to 0.79 against 0.004 to 0.005 with theta), the bump travels at 1.00 times the cue speed, and fields
+    around the peak last 8.34, 5.90 and 3.32 cycles of 8 Hz at cue speeds pi/5, 2pi/5 and 4pi/5 rad/s,
+    above three cycles in 5 of 5 seeds at each speed (counting every run 1.33, 4.48 and 3.23 cycles).
+    With theta and cues, sequences are present at 2pi/5 and 4pi/5 in 5 of 5 seeds but not at pi/5 (forward
+    movement in 69% of cycles, below the 90% threshold). With the shared-noise variant, fields without
+    theta last 2.78, 3.00 and 2.28 cycles (above three in 2, 2 and 0 of 5 seeds), so the outcome rests
+    on the noise reading.
+  deviations:
+  - The model is integrated from Supplementary Modeling (equations 1-3, N = 100, tau = 10 ms, J1 = 15,
+    J0 = 30, tau_R = 0.1 s, tau_F = 0.3 s, U = 0.05, g = 1.5, k = 2.5, delta = 0.2 rad, Ornstein-Uhlenbeck
+    noise of 10 ms and s.d. 5) and Supplementary Table 1. The duration (10 s, first 1 s discarded), Euler
+    step (0.1 ms), initial state (uniform rates near 1 Hz) and seeds (0-4) are the standard choices the
+    criterion names; a 0.05 ms step and 30 s are shown for fig3c.
+  - Assumption. The noise is written eta(t), with no index for the unit. It is taken as independent noise
+    in each unit, from the paper's Figure 3c,d (the no-theta panels show activity scattered independently
+    over the neurons) and the Results ("Without the synchronized change in the network excitability, neurons
+    in the network were activated randomly"). One process shared by all units, the equation as printed,
+    is shown as a variant.
+  - The paper gives no measure of theta sequences or fields in the model; the claims file's measures are
+    used (bump displacement within each cycle; time a unit's rate, smoothed over a cycle, stays above
+    half its peak). Two thresholds were set here to apply them, activity confined to cycles (population
+    minimum over maximum below 0.1 within a cycle) and forward movement in at least 90% of cycles; fields
+    are measured around each unit's peak, with every run above half the peak shown too.
+  - The cue speed for Figure 3d is not given; the criterion's readings (2pi/5 rad/s, the 2D case's speed,
+    and half and twice it) are all run. Following the cue is judged as the bump's mean travel within 20%
+    of the cue speed, a threshold set here.
+- claim: figs10-model-dc-no-fields
+  outcome: reproduced
+  notebook: reproduce_wang_2014.ipynb
+  output: claim:figs10-model-dc-no-fields
+  assumed: true
+  notes: A simulation; it uses no recorded data. Adopted noise reading, 5 seeds. With theta the field
+    sequence travels at 2.99 rad/s and fields last 0.431 s. Without theta, at I = 10 the bump (concentration
+    0.88) travels at 14.85 rad/s and at I = 6 at 6.36 rad/s, faster than with theta in 5 of 5 seeds, and
+    fields last 0.147 and 0.224 s, shorter in 5 of 5. At I = 4 the bump is weak (concentration 0.30) and
+    travels at 2.61 rad/s, faster in 1 of 5 seeds. The shared-noise variant gives a faster bump at all
+    three levels (3.96, 6.42, 14.68 rad/s).
+  deviations:
+  - The model is integrated from Supplementary Modeling (equations 1-3, N = 100, tau = 10 ms, J1 = 15,
+    J0 = 30, tau_R = 0.1 s, tau_F = 0.3 s, U = 0.05, g = 1.5, k = 2.5, delta = 0.2 rad, Ornstein-Uhlenbeck
+    noise of 10 ms and s.d. 5) and Supplementary Table 1. The duration (10 s, first 1 s discarded), Euler
+    step (0.1 ms), initial state (uniform rates near 1 Hz) and seeds (0-4) are the standard choices the
+    criterion names; a 0.05 ms step and 30 s are shown for fig3c.
+  - Assumption. The noise is written eta(t), with no index for the unit. It is taken as independent noise
+    in each unit, from the paper's Figure 3c,d (the no-theta panels show activity scattered independently
+    over the neurons) and the Results ("Without the synchronized change in the network excitability, neurons
+    in the network were activated randomly"). One process shared by all units, the equation as printed,
+    is shown as a variant.
+  - The paper gives no measure of theta sequences or fields in the model; the claims file's measures are
+    used (bump displacement within each cycle; time a unit's rate, smoothed over a cycle, stays above
+    half its peak). Two thresholds were set here to apply them, activity confined to cycles (population
+    minimum over maximum below 0.1 within a cycle) and forward movement in at least 90% of cycles; fields
+    are measured around each unit's peak, with every run above half the peak shown too.
+  - Assumption. The high DC level is not given; the readings I = 4, 6 and 10 differ in outcome at I =
+    4. I = 10 is adopted because Supplementary Figure 10c plots the DC input from 1 to 10 and its panel
+    b shows the high level as a bump crossing the network in a fraction of a second; I = 6 gives the same
+    outcome.
+- claim: fig4b-linear-track-info
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol and post-muscimol recordings on a novel linear track; the data set holds no linear
+    track session (its sessions are the alternation maze with a wheel, the home cage and an open platform).
+- claim: fig4b-linear-track-theta-modulation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the linear track recordings; none in the data set (see fig4b-linear-track-info).
+- claim: fig4a-linear-track-remap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the linear track recordings; none in the data set (see fig4b-linear-track-info).
+- claim: figs11-control-fields-stable
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs two control visits of a novel linear track; none in the data set (see fig4b-linear-track-info).
+- claim: fig5c-platform-info
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol and saline control recordings on a novel large platform. The data set has five
+    open-platform sessions of rat i01 (the .xml describes them as open-field exploration with chocolate
+    pellets), recorded without injections and with no label of novelty; there is no muscimol group, so
+    the comparison cannot be made, and the claim's variant (muscimol against post-muscimol) is not possible
+    either.
+- claim: fig5b-platform-wall-fields
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol platform recordings; none in the data set (see fig5c-platform-info).
+- claim: figs14-no-stable-fields
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol platform recordings; none in the data set (see fig5c-platform-info).
+- claim: figs15-higher-speed
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol and post or control platform recordings; none in the data set (see fig5c-platform-info).
+- claim: figs16-small-platform
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs muscimol and post-muscimol recordings on a smaller platform; none in the data set.
+- claim: fig6-repeated-muscimol-low
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs repeated muscimol visits of the same platform on days 1 to 3; none in the data set (see
+    fig5c-platform-info).
+- claim: fig6-repeated-post-normal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the post-muscimol visits of days 1 to 3; none in the data set (see fig5c-platform-info).
+- claim: fig6-familiar-impervious
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs a muscimol visit after familiarization; none in the data set (see fig5c-platform-info).
+findings:
+- kind: data_missing
+  statement: CRCNS hc-5 names this paper among three that used some of its data, but it holds none of
+    the recordings the paper's findings rest on. Its 13 sessions are of one rat (i01) recorded on 1 to
+    19 June 2008 (dates in the .xml files) in the alternation maze with 15-20 s wheel runs (median 19.7
+    s over 150 runs), its home cage and an open platform. No session is a muscimol, saline, pre- or post-injection
+    session (no description, note or file name mentions an injection, and theta during running is present
+    in all sessions), there is no linear track, and the paper's rats ran 9 or 10 s before the doors opened.
+    All 26 claims on recorded data are blocked; the data are consistent with the rat of Pastalkova et
+    al. (2008) and Mizuseki et al. (2009), the other papers the descriptor names.
+- kind: metadata_insufficient
+  statement: The MS in every file name (i01_maze08_MS.001) is not explained. The .cat.evt files show that
+    it marks a maze recording (M) concatenated with the following sleep recording (S); read as medial
+    septum, it suggests septal injections that the data set does not contain.
+- kind: metadata_error
+  statement: The processed files of i01_maze13.002 and i01_maze15.001 label the task WheelHomeCage, while
+    the descriptor and their .xml describe large open-field exploration, and they hold no laps or wheel
+    runs.
+- kind: metadata_error
+  statement: The .xml description of i01_maze08.001 says home cage wheel running, while its processed
+    file and the descriptor give an alternation session (28 laps with trial outcomes). The .xml and the
+    descriptor give 53 min for i01_maze13.003, whose data last 60.2 min. The descriptor lists i01_maze08.006.tar.gz;
+    the bucket holds i01_maze8.006.tar.gz.
+- kind: metadata_error
+  statement: The .meta files of the platform sessions give the recording start date as Sun Apr 22 2012,
+    while their .xml dates are in June 2008; the 2012 date appears to be that of a conversion.
+- kind: metadata_insufficient
+  statement: The descriptor's field list for the processed MATLAB structure (Spike.xMM, Track.xMM, Laps.lapID)
+    fits only the three MATLAB 7.3 files (*_BehavElectrDataLFP.mat). The ten MATLAB 5 files (*_BehavElectrData.mat)
+    use other names (Spike.X, Track.X, Laps.NLap, Par), which also differ between sessions (Clu.FirRateHz
+    in some, Clu.FirRate in others), and their units of position and speed are not stated and differ between
+    sessions (x up to about 1,300 in five alternation sessions, 460 in i01_maze13.003; wheel speed up
+    to about 1,000, but 18,400 in i01_maze13.003). Spike.res is a 1-based index into the tracking table,
+    which is not stated; read so, the stored position at every spike equals the tracking table's. The
+    descriptor gives 125 neural channels; 12 of 13 sessions have 102.
+- kind: format_error
+  statement: In i01_maze13.002, i01_maze13.003 and i01_maze15.001 the spike theta-phase array (Spike.thPhase)
+    is shorter than the spike-time array (1,120,025 against 1,161,841; 1,243,637 against 1,303,858; 2,931,046
+    against 3,166,564), so the phases cannot be assigned to spikes. In 9 of the other 10 sessions the
+    stored spike phase equals the tracking table's theta phase at the spike for only 5 to 41% of spikes,
+    so the two fields are different phase estimates, which the files do not say.
+- kind: other
+  statement: In i01_maze8.006 the LFP channel's theta barely differs between running and stillness (theta/delta
+    2.84 against 2.65) and its correlation with running is flat, so the shared clock of LFP and behaviour
+    could not be established there; in the other 12 sessions it peaks within a second of zero lag.
+- kind: methods_unavailable
+  statement: For the authors. The model's noise eta(t) is printed without a unit index; is it independent
+    in each unit, as Figure 3c,d suggest, or shared by all units? The outcome of Figure 3d depends on
+    it here (fields without theta are kept with independent noise, not with shared noise). What DC level
+    is the high level of Supplementary Figure 10b, and how long were the simulations and what was the
+    integration step? With the published parameters, fields with theta last about 0.43 s (three theta
+    cycles), against the about 1.2 s of Supplementary Figure 10f for the same release probability; what
+    measure of field duration, or which other setting, gives that value?
