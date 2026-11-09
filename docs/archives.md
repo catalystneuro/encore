@@ -50,7 +50,10 @@ The workflows take a dataset in any of these forms.
   read only the parts needed over range requests (`remfile` lacks what
   `zipfile` needs to read a member), and load members in memory
   (`scipy.io.loadmat`, or `h5py` for MATLAB 7.3 files). Do not download whole
-  files to disk. The data set's `docs/` folder describes the files.
+  files to disk. Some data sets keep their files under `<id>/live/` instead
+  (with older ones under `<id>/old/`). The data set's `docs/` folder describes
+  the files; its text is also under `paper/` as `<id>.data-description.txt`
+  (with the PDF where there is one), put in the paper store with the paper.
 - **In an entry.** The entry names the data set as `crcns:<id>/unversioned`
   under `related`.
 

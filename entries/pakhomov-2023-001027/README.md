@@ -23,7 +23,7 @@ protocols as the paper defines the packets, so whether the deposit or the figure
 unresolved. The Packet 1 dishes were imaged on another day with about twice the background, and the
 files record no exposure or gain, so the fig8a-equal-center-uptake failure may rest on a difference
 between imaging days. The files give no pixel size and do not identify the electrodes. The attempt record, with the reasons and the differences from the paper's
-method, is [`attempts/pakhomov-2023-03.yaml`](../../attempts/pakhomov-2023-03.yaml).
+method, is [`attempts/pakhomov-2023-04.yaml`](../../attempts/pakhomov-2023-04.yaml).
 
 - `reproduce_pakhomov_2023.ipynb`: the analysis. It takes about five minutes, most of it streaming
   the ten 350-MB images.
