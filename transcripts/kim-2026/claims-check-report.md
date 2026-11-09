@@ -1,24 +1,29 @@
-I've checked the file against the paper and made corrections, and I marked it **ready** (`ready: true`). Only `claims/001868/` was changed, and nothing was committed or pushed.
+I checked the claims file against the paper and made eight corrections, including one new claim. The file is ready for an attempt.
 
-**Checker result:** `37 claims, 37 quotes, 68 statistical values, 1 problems`. The schema and every quote pass. The one problem is fig4i's p = 2.0e-4: the paper prints exactly "p = 2.0e-4", but the checker only searches for "2e-4". The value is correct, so I left it.
+**Checker result:** `43 claims, 43 quotes, 125 statistical values, 2 problems`. Both problems are values the checker could not match because of how they are printed: p 9.0e-4 (`figs2de-behaviour-increase-comparison`) and p 2.0e-4 (`fig4ij-pyramidal-modulation-increase`). I found both in the text ("p = 9.0e-4" in the fig. S2E legend and "P = 2.0 × 10 −4" in the Results), and both are right. The file passes schema validation.
 
-I checked the criteria against the paper's code at the commit the file names (`d1922d1`). Most of the code references were accurate: filters, animal order, test sidedness, effect sizes, the control spike threshold, the early/late split and the subgroup rule.
+I cloned the paper's code at the commit the file cites (d1922d1) and spot-checked the code details the criteria rely on. Most matched; the figs4b one did not.
 
-**Changes, by claim**
-- **fig2e-density-and-radius-increase:** added a selection step the script applies and the criterion left out: sessions with no activated cell within 200 µm are dropped.
-- **figs2-density-peak-200um:** rewritten from the fig. S2 script, which uses 4 and 5 µA, 8 shells out to 800 µm, and medians per current, week and shell. Pooled and per-week readings must agree.
-- **fig3b-tracked-counts:** added that the code counts how long cells stay active over 5 weekly bins.
-- **fig3i-more-high-intensity-cells:** removed a made-up "2 of 3 animals" rule. The legend's weeks 0 vs 4 and the code's weeks 0–1 vs 3–4 are now both readings, as are count vs fraction; they must agree.
-- **fig3n-late-recruited:** the labels on p = 3.09e-19 and 3.29e-17 now say the paper doesn't state whether they are the overall Kruskal-Wallis p or the pairwise post-hoc p.
-- **fig4d-waveform-separation:** the code runs a one-sided test where the legend says two-sided; the code's version is now named as a variant.
-- **fig4g-modulated-count-mouse1:** the group-level test had been chosen by the agent, since the paper and code give none. It is now marked open, with two readings that must agree, else `methods_underspecified`.
-- **fig4i-pyramidal-modulation-increase:** the statement now says "driven primarily by", as the paper does.
-- **fig5e-pyramidal-fraction:** added that this figure's code keeps responses with z-score below 50, not the below-100 cut used for Fig. 4.
-- **figs6-imaging-short-window:** the criterion said the code only exports data, and so it had made up its measures. The code computes both measures and their tests, so I rewrote the criterion from it.
-- **figs3-all-cells-modulation-latency:** new claim for fig. S3B/C (modulation of all modulated cells rises, latency falls mildly), which had no claim. Its method comes from the fig. S3 code.
+**Changes, by claim:**
+- **figs4b-pl-latency-distance:**
+  - The criterion said the code does not define PL latency, jitter or the fitted segment, but it does. Latency is the mean over bootstrap draws of the peak-bin time; jitter is its variance in ms². Bins are 120 µm wide starting at 60 µm. The code fits latency on binned medians over 120 to 840 µm and jitter on the unbinned responses. These now come from the code, with the legend's "binned means" kept as the other reading.
+  - The expected range was wrong: 0.235 ± 0.062 gives 0.173 to 0.297, not the 0.18 to 0.297 the criterion states. I set it to 0.2385 ± 0.0585.
+- **fig3lm-deconvolved-spikes-subgroup:**
+  - Added three effect sizes the text gives but the file left out (spike count week 0 r < 0.01, week 1 r = 0.08; onset week 0 r < 0.01).
+  - Added to the statement the finding its own quote states: the subgroup's spike counts rise and onset falls from early to late, while the remaining neurons change little. The criterion now says how this is tested.
+- **fig3n-newly-recruited-weaker:**
+  - Two statistics were labelled "across groups", but the text attaches them to the newly recruited versus weeks 2 to 4 subgroup comparison. I relabelled them.
+  - The expected "subgroup neurons at week 0" is now "week-0 group neurons", because the text and legend describe that group as all tracked neurons at week 0.
+  - The criterion now says the paper does not state whether each printed P is the omnibus Kruskal-Wallis P or the post hoc pairwise P.
+- **figs2de-behaviour-increase-comparison:**
+  - Removed "over the same weeks as the controls" from the statement; it comes from the code, not the paper.
+  - Late weeks 2 and 3 (the code) and late weeks 2 to 4 (Figs. 2C and 2E, which the legend says the data are reproduced from) are now both readings.
+- **figs9a-coupling-700ms (new claim):** Fig. S9A reports its own tests and the Results cite it, but no claim covered it. The Results say it shows coupling among PL cells; the legend and code describe the Fig. 6F computation without Mouse 6. Both are readings.
 
-**Still open**
-- The supplement (figs. S1–S9) is not in the text. Claims on supplementary panels rest on the Results sentence and the code.
-- fig2a-steepest-early: "steepest decline in weeks 0–1" remains our reading, since the paper gives neither the fit form nor a test.
-- figs3-all-cells-modulation-latency: the paper gives no threshold for "decreased mildly", so that part is judged on the direction of the medians only.
-- Whether the dataset holds the control mice and per-spike waveforms is for the author to find.
+**What remains open:**
+- The fig. S2D and S2E sample sizes do not match Figs. 2C and 2E, although the legend says the data are reproduced from them.
+- Several imaging claims rest on definitions the paper does not give, which the file takes from the code and lists as readings: dF/F, onset, and how the high-intensity subgroup is chosen.
+- The paper does not give the control-animal currents for fig. S7.
+- I did not re-read every code citation, only a sample.
+
+**Ready:** yes. The `checks` entry at the end of the file records each change and these open problems, with `ready: true`. Nothing was committed.
