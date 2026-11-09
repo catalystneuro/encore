@@ -476,9 +476,12 @@ def mt_coherence(x, y, fs, nw=2.0, jackknife=True):
     return freqs, np.tanh(np.maximum(z, 0)) ** 2
 
 
-def coh_to_bits(coh, freqs, fmax=None):
+def coh_to_bits(coh, freqs, fmax=None, fmin=None):
     """Normal mutual information, the integral over frequency of -log2(1 - coh) (Methods,
-    Between-condition coherence; coh_to_bits in ecogtools), in bits/s."""
+    Between-condition coherence; coh_to_bits in ecogtools), in bits/s. fmin, when given,
+    leaves out the frequencies below it (a variant; by default every frequency above 0)."""
     sel = freqs > 0 if fmax is None else (freqs > 0) & (freqs <= fmax)
+    if fmin is not None:
+        sel = sel & (freqs >= fmin - 1e-9)
     df = freqs[1] - freqs[0]
     return (-np.log2(1 - np.clip(coh[..., sel], 0, 1 - 1e-9))).sum(-1) * df
