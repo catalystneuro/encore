@@ -1,0 +1,667 @@
+# Claims for Fedele, Burnos, Boran, Krayenbuehl, Hilfiker, Grunwald & Sarnthein (2017),
+# Scientific Reports 7, 13836, on CRCNS ieeg-1.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-09, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (PMC5653833, Europe PMC JATS XML flattened), main text,
+# Tables 1 and 2, figure legends and Methods, and the supplement (41598_2017_13064_MOESM1_ESM.pdf,
+# from the publisher), which holds only Table S1. The text of Table S1 keeps the channel names
+# and rates but loses its colours; the PDF page was rendered to read them: channels excluded
+# from the analysis are filled gray, resected channels (RA) red, and the HFO area of each HFO
+# type green, cell by cell in the Ripples, FR and FRandR rows. The colours are vector fills in
+# the PDF and can be read programmatically. The CRCNS data description (paper/ieeg-1.data-
+# description.txt) was read for the layout of the deposit only; no claim is taken from it.
+#
+# Code: the Methods link https://github.com/HFO-detect/HFO-detect-matlab, read at commit
+# f39736734031c9e37e0b101536be8d8be35906db (2017-07-14). It holds the HFO detectors only: the
+# morphology detector of Burnos et al. 2016 (hfo-detect-toolbox/Morphology Detector, with
+# Filter_AsBurnos2016.mat, the Stockwell transform st.m, and the detector parameters in
+# func_prepareMorphologyDetector.m: minimum duration 0.02 s for ripples and 0.01 s for FR, as
+# the Methods say; filtering with filtfilt), plus line-length and RMS detectors. The function
+# it calls, RUN_MorphologyDetector, is not in the repository. It holds no code for the FRandR
+# overlap, the HFO rates, the HFO area, the test-retest analysis, the outcome statistics or the
+# spectral analysis. Those methods come from the paper alone. The deposit holds the detected
+# events (R, FR and FRandR start and end samples per bipolar channel), so the detector need not
+# be rerun for any claim except as a check.
+#
+# Data the paper used (Results paragraph 1, Table 1, Methods). 20 consecutive patients with
+# drug-resistant focal epilepsy operated after invasive monitoring, March 2012 to April 2016:
+# 9 with mesial temporal lobe epilepsy (TLE, patients 1 to 9, bilateral depth electrodes in
+# amygdala, hippocampus, entorhinal and perirhinal cortex) and 11 with extratemporal epilepsy
+# (ETE, patients 10 to 20, grids, strips and depth electrodes). Outcome by ILAE class (Table 1):
+# ILAE 1 in patients 1 to 6 and 10 to 16 (13 seizure free); ILAE 3 in 7 and 8; ILAE 5 in 9, 17,
+# 18 and 20; ILAE 6 in 19. Follow-up months per patient in Table 1. Recordings: iEEG at 4 kHz,
+# down-sampled to 2 kHz, common intracranial reference, transformed to bipolar channels. From
+# each night up to six 5-minute intervals of interictal slow-wave sleep, at least 3 h from
+# seizures; nights and intervals per patient in Table 1 (1 to 6 nights, 1 to 39 intervals).
+# Channels where stimulation evoked motor or language responses were excluded; in TLE only the
+# 3 most mesial bipolar channels of each electrode were kept (gray cells of Table S1 mark the
+# exclusions). Measured variables: detected ripples (80-250 Hz), fast ripples (FR, 250-500 Hz)
+# and FR co-occurring with ripples (FRandR), their rates per channel in events/min (Table S1),
+# the resected channels (Table S1, red), and outcome (Table 1).
+#
+# Methods fixed by the paper and used by several claims:
+# - HFO rate of a channel: events per minute (Table S1, Fig. 3A).
+# - HFO area (Methods, Definition of the HFO area by rate thresholding): the channels whose rate
+#   exceeds the 95th percentile of the patient's distribution of channel rates, computed with
+#   Matlab prctile.m (its default method: sorted values placed at percentiles 100(i-0.5)/n,
+#   linear interpolation, the extreme values beyond the end points). One area per HFO type.
+# - Outcome classes (Methods, Clinical validation): TP, HFO area not fully inside the RA (at
+#   least one area channel not resected) and recurrent seizures (ILAE 2-6); FP, not fully inside
+#   and ILAE 1; FN, fully inside and recurrent seizures; TN, fully inside and ILAE 1. PPV, NPV,
+#   sensitivity, specificity and accuracy as defined there. 95% CI by the binomial method for
+#   n < 10 and the asymptotic method for n > 10; significance at p < 0.05.
+# - Test-retest (Methods, Test-retest reliability): for each pair of 5-min intervals the
+#   normalized scalar product of the channel rate vectors; null from 5000 random permutations of
+#   the channel order of each interval; a pair is significant when its scalar product exceeds
+#   the 97.5th percentile of the null. Nights: the mean rate of each night, pairs of nights.
+#
+# Open details, each with the readings the text allows (the author runs them all):
+# - How a channel's rate is pooled over intervals: (a) all events over the total recorded time
+#   of the patient; (b) the mean over intervals of per-interval rates; (c) the mean over nights
+#   of per-night mean rates (Methods, Test-retest, "we took the mean HFO rate for each night").
+#   Fig. 3 legend says the HFO area "averaged over all intervals"; (d) a channel is in the area
+#   when it is in the per-interval area in at least half of the intervals. Table S1's rates
+#   (claim table-s1-rates) decide among (a) to (c); the reading that matches them is used for
+#   the area in every other claim, and (d) is shown as a variant.
+# - Which channels enter the percentile: (a) the channels not grayed in Table S1; (b) all bipolar
+#   channels of the deposit. "Exceeds" is read as strictly greater (Methods, "exceeded"); greater
+#   or equal is a variant.
+# - The resected channels come from Table S1 (red), unless the deposit marks them; the paper
+#   names no other source.
+# - The HFO type of the test-retest values of Table 1: Fig. 3 shows FRandR; Table 1 does not
+#   say. Readings: (a) FRandR; (b) ripples; (c) FR.
+# - The permutation null: (a) one null per interval pair (each interval's channel order
+#   permuted 5000 times); (b) one null pooled over all pairs of the patient, as Fig. 3B plots a
+#   single random distribution.
+# - "Normalized scalar product": the dot product divided by the product of the vector norms
+#   (cosine), the standard meaning; the paper says it is about 1 for overlapping distributions,
+#   which this reading gives for non-negative rates.
+# - The test of the follow-up comparison and the chi2 tests are named but not their variants;
+#   see the claims.
+#
+# Inconsistencies in the paper: the specificity CI is 78-100% in the Results and 75-100% in the
+# Discussion; the Clopper-Pearson interval for 13/13 is 75.3-100%. The Table 1 legend gives
+# test-retest medians for TLE patients "irrespective of outcome" as >98%; Table 1 gives 0.67 for
+# patient 8 (ILAE 3) and 1.00 for patient 9 (ILAE 5), whose median is 0.835. The Fig. 1 legend
+# labels PR "posterior hippocampus left". Patient 19 has a 4 x 8 grid in the Discussion and an
+# 8 x 4 grid in Table 1.
+schema_version: 2
+paper: doi:10.1038/s41598-017-13064-1
+claims:
+- id: cohort
+  statement: The study included 20 patients, 9 with mesial temporal lobe epilepsy and 11 with
+    extratemporal epilepsy; 13 became seizure free (ILAE 1) and 7 had recurrent seizures, a
+    seizure-free rate of 65%.
+  source: Results, paragraph 1; Table 1
+  quote: We included 20 patients (Table 1 ) of whom 9 with mesial temporal lobe epilepsy (TLE)
+    and 11 with extratemporal epilepsy (ETE). Complete seizure freedom (ILAE 1 - International
+    League Against Epilepsy, class 1) was reached in 13 patients, while 7 patients suffered from
+    recurrent seizures (seizure-free rate = 65%)
+  statistics:
+  - about: seizure-free rate
+    ci:
+      level: 0.95
+      low: 41
+      high: 85
+      unit: "%"
+    n: 20 patients
+  expected:
+  - quantity: patients
+    value: 20
+    tolerance: 0
+  - quantity: TLE patients
+    value: 9
+    tolerance: 0
+  - quantity: ETE patients
+    value: 11
+    tolerance: 0
+  - quantity: seizure-free patients (ILAE 1)
+    value: 13
+    tolerance: 0
+  criterion: Counts of patients are exact (tolerance 0, as they are counts of whole patients).
+    The epilepsy type and ILAE class of each patient are compared with Table 1. Reproduced when
+    the deposit holds 20 patients and the counts match; the per-patient comparison is reported.
+- id: table1-nights-intervals
+  statement: The number of recorded nights and of 5-minute intervals varies across patients as
+    listed in Table 1 (from 1 night and 1 interval in patients 7 and 17 to 6 nights in patient 4
+    and 39 intervals in patient 3).
+  source: Methods, Data selection; Table 1, columns Nights and Intervals
+  quote: The amount of nights and intervals varied across patients (Table 1 ).
+  criterion: For each patient the count of distinct nights and of 5-minute intervals in the
+    deposit is compared with Table 1 (Nights; Intervals). Reproduced when all 20 patients match
+    on both; partially reproduced when at least 16 match on both; not reproduced otherwise.
+    Every mismatch is listed.
+- id: hfo-amplitudes
+  statement: Detected ripples had median amplitude 27.4 microvolt peak-to-peak (interquartile
+    range 15.0) and FR median amplitude 9.2 microvolt peak-to-peak (interquartile range 7.5).
+  source: Results, The HFO area predicted seizure outcome, paragraph 1
+  quote: Automatic HFO detection yielded ripples (median amplitude 27.4 µVpp (peak-to-peak),
+    interquartile range 15.0 µVpp) and FR (median amplitude 9.2 µVpp, interquartile range 7.5
+    µVpp)
+  expected:
+  - quantity: ripple median amplitude
+    value: 27.4
+    tolerance: 2.74
+    unit: microvolt peak-to-peak
+  - quantity: ripple amplitude interquartile range
+    value: 15.0
+    tolerance: 1.5
+    unit: microvolt peak-to-peak
+  - quantity: FR median amplitude
+    value: 9.2
+    tolerance: 0.92
+    unit: microvolt peak-to-peak
+  - quantity: FR amplitude interquartile range
+    value: 7.5
+    tolerance: 0.75
+    unit: microvolt peak-to-peak
+  criterion: Events are the deposit's R and FR markings on the bipolar channels (Methods, Data
+    acquisition, bipolar montage). The paper does not say on which signal the amplitude is
+    taken or how events are pooled. Readings of the signal; (a) the band-passed signal of the
+    event's band, with the detector's filters (Methods; ripples 80-240 Hz, FR 250-490 Hz, FIR
+    equiripple, applied with filtfilt as in func_prepareMorphologyDetector.m, coefficients
+    Filter_AsBurnos2016.mat of the linked repository), amplitude = maximum minus minimum
+    within the event; (b) the same on the unfiltered bipolar signal. Readings of the pooling;
+    (i) all events of all patients pooled; (ii) only events on channels not excluded (Table S1
+    gray). Reproduced when, under one reading, all four values are within tolerance; partially
+    reproduced when the two medians are.
+- id: followup-not-different
+  statement: Mean follow-up was 29 +- 15 months for patients with poor outcome and 23 +- 11
+    months for good outcome, and the two distributions did not differ (Wilcoxon rank sum test,
+    p = 0.25).
+  source: Results, The HFO area predicted seizure outcome, paragraph 1; Table 1, column
+    Postoperative follow-up
+  quote: The mean follow-up for poor outcome (29 ± 15 mo) was longer than for good outcome (23 ±
+    11 mo) but the two distributions are indistinguishable (Wilcoxon rank sum test, p = 0.25)
+  statistics:
+  - test: Wilcoxon rank sum test
+    p: 0.25
+    n: 7 patients with poor outcome and 13 with good outcome
+  expected:
+  - quantity: mean follow-up, poor outcome (ILAE 2-6)
+    value: 29
+    tolerance: 2.9
+    unit: months
+  - quantity: mean follow-up, good outcome (ILAE 1)
+    value: 23
+    tolerance: 2.3
+    unit: months
+  - quantity: SD of follow-up, poor outcome
+    value: 15
+    tolerance: 1.5
+    unit: months
+  - quantity: SD of follow-up, good outcome
+    value: 11
+    tolerance: 1.1
+    unit: months
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon rank sum test of
+    follow-up months between ILAE 1 and ILAE 2-6 patients at p < 0.05 (Methods, Clinical
+    validation). Follow-up months come from the deposit when it holds them, else from Table 1.
+    The paper does not say whether the exact or the normal approximation was used; the
+    approximation with continuity correction (Matlab ranksum's default for these sizes) is
+    the main reading and the exact test a variant. SD is the sample SD (n - 1). Reproduced
+    when p >= 0.05 and the means and SDs are within tolerance; the p-value is reported.
+- id: table-s1-rates
+  statement: The per-channel rates of ripples, FR and FRandR (events/min) of every patient are
+    those listed in Table S1, and the channels marked there as the HFO area of each type are
+    those whose rate exceeds the 95th percentile.
+  source: Supplementary Table 1S
+  quote: The rates of ripple, FR and FRandR events are given in events/minute for each channel.
+    Channels with the HFO rate exceeding the 95% percentile of the HFO distribution define the
+    HFO area and are highlighted in green.
+  criterion: Rates per channel from the deposit's R, FR and FRandR markings, under readings
+    (a), (b) and (c) of the pooling over intervals named in the opening comment. Channels are
+    matched by their bipolar label. A channel's rate matches when it is within 10% of the Table
+    S1 value or within 0.1 events/min (the table's rounding), whichever is larger. Reproduced
+    when, under one reading, at least 95% of the channel and type values of all 20 patients
+    match; partially reproduced at 80% or more. The HFO area per patient and type is then
+    computed as in the opening comment and compared with the green cells of Table S1; the
+    count of patient and type areas that agree exactly is reported. The reading that matches
+    best is used for the HFO area in the dependent claims.
+- id: fig1-patient4
+  statement: In patient 4 (right hippocampal sclerosis, seizure free) the HFO types differ in
+    their distribution over channels; several channels have FRandR rate 0; the ripple area was
+    not resected, and the FRandR area, channel AR1-AR2, was resected.
+  source: Figure 1E-G legend
+  quote: Note that several channels have FRandR rate = 0. ... The ripple area was not resected (
+    E ). The resection of the FRandR area ( G , channel AR1-AR2) led to seizure freedom.
+  depends_on:
+  - table-s1-rates
+  criterion: Patient 4's channel rates and HFO areas as in table-s1-rates, on the mesial
+    temporal channels the figure shows (the channels not grayed in Table S1). Reproduced when
+    the FRandR area is AR1-2 alone and resected, the ripple area contains at least one channel
+    outside the RA (Table S1 red), and at least two channels have FRandR rate 0.0 at the
+    precision of Table S1.
+- id: frandr-area-resection-per-patient
+  statement: The FRandR area was fully inside the resected area in all 13 seizure-free patients
+    and in 3 of the 7 patients with recurrent seizures (7, 8, 9), and not fully resected in 4
+    patients with recurrent seizures (17, 18, 19, 20).
+  source: Table 1, column FRandR area resected?; Discussion, FRandR in patients with recurrent
+    seizures, paragraphs 1-2
+  quote: Among the 7 patients with recurrent seizures, FRandR were fully resected in 3 FN and
+    not fully resected in 4 TP
+  depends_on:
+  - table-s1-rates
+  expected:
+  - quantity: patients with FRandR area fully resected among the 13 seizure-free
+    value: 13
+    tolerance: 0
+  - quantity: patients with FRandR area fully resected among the 7 with recurrent seizures
+    value: 3
+    tolerance: 0
+  criterion: FRandR area per patient as in the opening comment, resected channels from Table S1
+    (red) unless the deposit marks them. A patient's area is fully resected when every area
+    channel is resected. The per-patient result is compared with Table 1 (FRandR area resected?
+    Y for 1-16, N for 17-20). Reproduced when all 20 patients agree; partially reproduced when
+    the counts are off by one patient. Readings of the pooling and of the channel set as in
+    the opening comment; the outcome is the one they all give, or as stated there.
+- id: ripple-fr-area-resection-per-patient
+  statement: The ripple and FR areas were resected in the patients marked in Table 1 (ripple
+    area resected in 7 of 13 seizure-free and 4 of 7 recurrent-seizure patients; FR area in 9
+    of 13 and 5 of 7).
+  source: Table 1, columns Ripple area resected? and FR area resected?
+  inferred: Per-patient values read from Table 1; the counts follow from the column values and
+    match Table 2. No sentence states them.
+  depends_on:
+  - table-s1-rates
+  expected:
+  - quantity: ripple area fully resected, seizure free
+    value: 7
+    tolerance: 0
+  - quantity: ripple area fully resected, recurrent seizures
+    value: 4
+    tolerance: 0
+  - quantity: FR area fully resected, seizure free
+    value: 9
+    tolerance: 0
+  - quantity: FR area fully resected, recurrent seizures
+    value: 5
+    tolerance: 0
+  criterion: As frandr-area-resection-per-patient, for ripples and FR. Reproduced when at least
+    19 of 20 patients agree with Table 1 for each type and the counts match; partially
+    reproduced when at least 17 of 20 agree for each.
+- id: table2-frandr-prediction
+  statement: Defining the HFO area by FRandR, its resection predicted seizure outcome with
+    specificity 100% (CI 78-100%), sensitivity 57% (CI 18-90%), NPV 81% (CI 54-96%), PPV 100%,
+    and accuracy 85% (CI 62-97%, p = 0.002, chi2 test).
+  source: Results, The HFO area predicted seizure outcome, paragraph 1; Table 2
+  quote: When defining the HFO area by FRandR (FRandR area, Fig. 1 ), we achieved specificity
+    100%, CI [78–100%] ... The low sensitivity (57%, CI [18–90%]) ... Analogous considerations
+    hold for the NPV (81%, CI [54–96%]) ... Therefore, the overall accuracy of our algorithm
+    (85%, CI [62–97%], p = 0.002 chi2-test)
+  statistics:
+  - about: specificity
+    ci:
+      level: 0.95
+      low: 78
+      high: 100
+      unit: "%"
+    n: 13 seizure-free patients
+  - about: sensitivity
+    ci:
+      level: 0.95
+      low: 18
+      high: 90
+      unit: "%"
+    n: 7 patients with recurrent seizures
+  - about: NPV
+    ci:
+      level: 0.95
+      low: 54
+      high: 96
+      unit: "%"
+    n: 16 patients with the FRandR area fully resected
+  - about: accuracy
+    test: chi2-test
+    p: 0.002
+    ci:
+      level: 0.95
+      low: 62
+      high: 97
+      unit: "%"
+    n: 20 patients
+  depends_on:
+  - frandr-area-resection-per-patient
+  expected:
+  - quantity: specificity
+    value: 100
+    tolerance: 0
+    unit: "%"
+  - quantity: sensitivity
+    value: 57
+    tolerance: 0
+    unit: "%"
+  - quantity: NPV
+    value: 81
+    tolerance: 0
+    unit: "%"
+  - quantity: PPV
+    value: 100
+    tolerance: 0
+    unit: "%"
+  - quantity: accuracy
+    value: 85
+    tolerance: 0
+    unit: "%"
+  criterion: Counts TP, FP, FN, TN from frandr-area-resection-per-patient and the definitions of
+    Methods, Clinical validation; percentages rounded to whole numbers must equal the paper's
+    (tolerance 0, as each is a ratio of small whole counts and any change of one patient moves
+    it by more than 4 points). CIs by the Clopper-Pearson binomial method, which gives every
+    printed interval except the specificity lower bound (75.3, which the Discussion prints as
+    75); the asymptotic (Wald) method the Methods name for n > 10 is shown as a variant. The
+    chi2 test is on the 2 x 2 table of area resection (fully, not fully) by outcome (ILAE 1,
+    ILAE 2-6); the paper does not say which variant; readings (a) Pearson without continuity
+    correction (gives p = 0.0023 on the paper's counts), (b) with Yates correction, (c) Fisher's
+    exact test. Reproduced when the five percentages match and p < 0.05 under reading (a).
+- id: table2-ripple-fr-prediction
+  statement: With the area defined by ripples, specificity was 54%, sensitivity 43%, NPV 64%,
+    PPV 33% and accuracy 50%; by FR, 69%, 29%, 64%, 33% and 55%.
+  source: Table 2
+  inferred: Values read from Table 2; no sentence of the text states them.
+  depends_on:
+  - ripple-fr-area-resection-per-patient
+  expected:
+  - quantity: ripple specificity
+    value: 54
+    tolerance: 0
+    unit: "%"
+  - quantity: ripple sensitivity
+    value: 43
+    tolerance: 0
+    unit: "%"
+  - quantity: ripple NPV
+    value: 64
+    tolerance: 0
+    unit: "%"
+  - quantity: ripple PPV
+    value: 33
+    tolerance: 0
+    unit: "%"
+  - quantity: ripple accuracy
+    value: 50
+    tolerance: 0
+    unit: "%"
+  - quantity: FR specificity
+    value: 69
+    tolerance: 0
+    unit: "%"
+  - quantity: FR sensitivity
+    value: 29
+    tolerance: 0
+    unit: "%"
+  - quantity: FR NPV
+    value: 64
+    tolerance: 0
+    unit: "%"
+  - quantity: FR PPV
+    value: 33
+    tolerance: 0
+    unit: "%"
+  - quantity: FR accuracy
+    value: 55
+    tolerance: 0
+    unit: "%"
+  criterion: As table2-frandr-prediction, for ripples and FR, without CIs or test. Tolerance 0
+    on percentages rounded to whole numbers, for the reason given there. Reproduced when all
+    ten values match.
+- id: frandr-more-specific
+  statement: The FRandR area was more specific in predicting seizure freedom than the ripple
+    and FR areas separately (specificity 100% against 54% and 69%).
+  source: Table 2 legend; Discussion, FRandR are more specific than FR and ripple separately,
+    paragraph 1
+  quote: Defining the HFO area by FR co-occurring with ripples was more specific in predicting
+    seizure freedom than FR and ripples separately.
+  depends_on:
+  - table2-frandr-prediction
+  - table2-ripple-fr-prediction
+  criterion: The paper reports no test of the difference. Reproduced when the FRandR
+    specificity exceeds both the ripple and the FR specificity computed in the claims it
+    depends on.
+- id: engel-prediction
+  statement: Taking Engel class I (ILAE 1-3) as good outcome, the FRandR area gives sensitivity
+    80% (CI 28-99%), NPV 94% (CI 70-100%) and accuracy 95% (CI 75-100%, p = 0.001, chi2 test).
+  source: Results, The HFO area predicted seizure outcome, paragraph 1
+  quote: When taking as outcome measure the Engel class I (ILAE 1–3), values improve to
+    sensitivity 80%, CI [28–99%], NPV 94%, CI [70 100%], and accuracy 95%, CI [75 100%], p =
+    0.001 (chi2-test)
+  statistics:
+  - about: sensitivity
+    ci:
+      level: 0.95
+      low: 28
+      high: 99
+      unit: "%"
+    n: 5 patients with ILAE 4-6
+  - about: NPV
+    ci:
+      level: 0.95
+      low: 70
+      high: 100
+      unit: "%"
+    n: 16 patients with the FRandR area fully resected
+  - about: accuracy
+    test: chi2-test
+    p: 0.001
+    ci:
+      level: 0.95
+      low: 75
+      high: 100
+      unit: "%"
+    n: 20 patients
+  depends_on:
+  - frandr-area-resection-per-patient
+  expected:
+  - quantity: sensitivity
+    value: 80
+    tolerance: 0
+    unit: "%"
+  - quantity: NPV
+    value: 94
+    tolerance: 0
+    unit: "%"
+  - quantity: accuracy
+    value: 95
+    tolerance: 0
+    unit: "%"
+  criterion: As table2-frandr-prediction with ILAE 1-3 as good outcome (patients 7 and 8 move
+    from FN to TN). The chi2 readings are those named there; on the paper's counts (a) gives p
+    = 0.0001, (b) p = 0.0012 and (c) p = 0.0010, so the printed value fits (b) or (c), while
+    the p = 0.002 of table2-frandr-prediction fits (a). Reproduced when the three percentages
+    match and p < 0.05 under every reading; each p-value is reported.
+- id: ete-soz-not-resected
+  statement: In all seizure-free ETE patients (10-16) the resection was limited to 1-2 cm2 and
+    the seizure onset zone was not fully resected, while the FRandR area was always fully
+    resected.
+  source: Discussion, FRandR predict seizure freedom in the individual patient, paragraph 2
+  quote: While the SOZ was therefore not fully resected in all ETE patients, the HFO area as
+    defined by FRandR was always fully resected.
+  depends_on:
+  - frandr-area-resection-per-patient
+  criterion: Needs the SOZ channels of patients 10-16, which the paper does not list (it shows
+    them only for patient 17, Fig. 2B). Reproduced when, for each of patients 10-16, at least
+    one SOZ channel is outside the RA and the FRandR area is fully inside it. The resection
+    size cannot be tested from channel data and is not judged.
+- id: fig2-patient17
+  statement: In patient 17 (recurrent seizures) the resected area does not comprise all
+    channels of the HFO area, and the HFO area is smaller than the seizure onset zone.
+  source: Figure 2B-C legend
+  quote: The HFO area (contacts filled yellow) is smaller than the SOZ. ( C ) The resected area
+    (RA) does not comprise all channels of the HFO area.
+  depends_on:
+  - table-s1-rates
+  criterion: FRandR area of patient 17 as in table-s1-rates; resected channels from Table S1
+    (red). Reproduced when at least one FRandR area channel is outside the RA and at least one
+    is inside it (Discussion, "parts of the HFO area were indeed included"). The comparison
+    with the SOZ is tested only if the SOZ channels are available, as fewer area channels than
+    SOZ channels.
+- id: fig3-patient1
+  statement: In patient 1 (seizure free) the FRandR area was channel PHR1-2 in each of 4 nights
+    and in the resected area for all intervals, and 99% of the scalar products between interval
+    pairs exceeded significance.
+  source: Figure 3A-C legend
+  quote: The HFO area comprises channel PHR1-2 for each night. The HFO area was stable over
+    nights and included in the RA. ... 99% of the true distribution exceeded significance ...
+    The HFO area was inside the resected area for all intervals.
+  depends_on:
+  - table-s1-rates
+  expected:
+  - quantity: fraction of significant interval-pair scalar products, patient 1
+    value: 0.99
+    tolerance: 0.099
+  criterion: FRandR rates of patient 1 per night (mean over the night's intervals) and per
+    interval; the HFO area per night and per interval by the 95th percentile rule; test-retest
+    as in the opening comment, readings (a) and (b) of the permutation null. Reproduced when
+    the area is PHR1-2 in every night, every per-interval area lies inside the RA (Table S1
+    red), and the fraction is within tolerance under one reading. With intervals that have no
+    FRandR on any channel the area is empty, which counts as inside the RA.
+- id: test-retest-group
+  statement: Across 18 patients the share of significant scalar products had median 97.5%
+    (lower quartile 67%) over pairs of 5-minute intervals and median 100% (lower quartile 100%)
+    over pairs of nights.
+  source: Results, Test-retest reliability of the spatial distribution of HFO rates, paragraph
+    2; Table 1, columns Test - retest intervals and nights
+  quote: Across the group of 18 patients (Table 1 ), the percentage of significant scalar
+    products had median of 97.5% (lower quartile 67%) when taking pairs of all 5 minutes
+    intervals, and a median of 100% (lower quartile 100%) when taking pairs of entire nights.
+  expected:
+  - quantity: median share of significant interval pairs
+    value: 97.5
+    tolerance: 9.75
+    unit: "%"
+  - quantity: lower quartile, interval pairs
+    value: 67
+    tolerance: 6.7
+    unit: "%"
+  - quantity: median share of significant night pairs
+    value: 100
+    tolerance: 10
+    unit: "%"
+  - quantity: lower quartile, night pairs
+    value: 100
+    tolerance: 10
+    unit: "%"
+  criterion: Test-retest as in the opening comment, on the 18 patients with more than one
+    interval (all but 7 and 17; night pairs exist only for the 16 with more than one night).
+    Quartiles with Matlab prctile (the Methods name it for percentiles). HFO type readings (a)
+    FRandR, (b) ripples, (c) FR, and permutation null readings (a) and (b) of the opening
+    comment. Reproduced when, under one reading, the four values are within tolerance. The
+    per-patient values are compared with Table 1 and the count within 0.1 of it is reported.
+- id: test-retest-by-group
+  statement: Over intervals, the median share of significant scalar products was above 98% in
+    TLE patients irrespective of outcome, 97% in ETE patients with good outcome and only 36% in
+    ETE patients with poor outcome.
+  source: Results, Test-retest reliability of the spatial distribution of HFO rates, paragraph
+    2; Discussion, Automated detection predicts seizure outcome, paragraph 2
+  quote: Over the intervals of TLE patients, the median was >98% irrespective of outcome. Over
+    the intervals of ETE patients, the median was 97% for patients with good outcome and only
+    36% for patients with poor outcome.
+  depends_on:
+  - test-retest-group
+  expected:
+  - quantity: median, TLE patients
+    value: 98
+    tolerance: 9.8
+    unit: "%"
+  - quantity: median, ETE patients with good outcome (10-16)
+    value: 97
+    tolerance: 9.7
+    unit: "%"
+  - quantity: median, ETE patients with poor outcome (18-20)
+    value: 36
+    tolerance: 3.6
+    unit: "%"
+  criterion: Per-patient interval values from test-retest-group, under the reading that
+    reproduced it. The paper reports no test. "Irrespective of outcome" is read two ways; (a)
+    the median over all 8 TLE patients with more than one interval exceeds 98% (Table 1 gives
+    0.985); (b) the median exceeds 98% within each outcome group (Table 1 gives 0.985 for ILAE
+    1 and 0.835 for patients 8 and 9, so the paper's own table does not support (b)). The TLE
+    part is judged on (a), median at least 98% minus 10% of 98. Reproduced when the three
+    values are within tolerance and the ETE poor-outcome median is the lowest.
+- id: spectral-classes
+  statement: Of 6182 FRandR events on the highest-rate FRandR channel in each patient's HFO
+    area, 45% had two spectral peaks (second peak median 240 Hz), 28% one peak in the HFO range
+    (median 184 Hz) and 27% no prominent peak above 100 Hz.
+  source: Results, Spectral analysis of ripples co-occurring with FR, paragraph 1; Figure 4
+  quote: Out of 6182 detected events, 45% exhibited two distinct peaks in ripple and FR band with
+    the second peak at median frequency 240 Hz (Fig. 4A ), 28% had only one peak in the HFO
+    range (median frequency 184 Hz, Fig. 4B ), and 27% did not show a prominent peak >100 Hz in
+    the HFO range.
+  depends_on:
+  - table-s1-rates
+  expected:
+  - quantity: FRandR events analysed
+    value: 6182
+    tolerance: 618
+  - quantity: bimodal events
+    value: 45
+    tolerance: 4.5
+    unit: "%"
+  - quantity: median frequency of the second peak, bimodal
+    value: 240
+    tolerance: 24
+    unit: Hz
+  - quantity: unimodal events
+    value: 28
+    tolerance: 2.8
+    unit: "%"
+  - quantity: median peak frequency, unimodal
+    value: 184
+    tolerance: 18.4
+    unit: Hz
+  - quantity: events without a peak
+    value: 27
+    tolerance: 2.7
+    unit: "%"
+  criterion: From the Methods, Spectral analysis. Per patient, the bipolar channel of the FRandR
+    area with the highest FRandR rate; every FRandR event on it; Stockwell transform of 0.6 s of
+    signal centred on the event (st.m of the linked repository); the instantaneous power
+    spectrum averaged over the duration of the FR part of the event (the deposit's FR marking
+    overlapping the FRandR); a fit of four gaussians to the spectrum over 80-500 Hz by least
+    squares (lsqcurvefit); peaks and troughs found on the fitted curve. Bimodal, a trough
+    between 150 and 250 Hz and at least one peak above 200 Hz; unimodal, a single peak above
+    100 Hz detectable in the ripple band; otherwise no peak. Open, with readings; the centre of
+    the 0.6 s window, (a) the FRandR midpoint, (b) the FR midpoint; the signal transformed, (a)
+    the unfiltered bipolar signal, (b) the signal high-passed at 80 Hz; the gaussian starting
+    values and bounds, not given, (a) four gaussians at 100, 200, 300 and 400 Hz with widths
+    of 50 Hz, (b) starting peaks at the four largest local maxima of the spectrum; a peak, (a)
+    a local maximum of the fitted curve, (b) a fitted gaussian centre with positive amplitude
+    inside the band. Patients whose FRandR area is empty contribute no events. The event count
+    tolerance is 10%. Reproduced when the three shares are within tolerance under one reading
+    and the two median frequencies are; partially reproduced when the shares are in the same
+    order (bimodal largest) under one reading.
+- id: spectral-tle-ete-no-difference
+  statement: The spectral classes of FRandR events did not differ significantly between TLE
+    and ETE channels.
+  source: Results, Spectral analysis of ripples co-occurring with FR, paragraph 1
+  quote: No significant difference was observed between TLE and ETE channels.
+  depends_on:
+  - spectral-classes
+  criterion: A claim of absence; the paper names no test, only significance at p < 0.05
+    (Methods, Clinical validation). Main reading, a chi2 test of the 3 x 2 table of spectral
+    class (bimodal, unimodal, none) by epilepsy type over events, at p < 0.05. Variant, a
+    Wilcoxon rank sum test of the per-patient bimodal fraction between the 9 TLE and 11 ETE
+    channels. Reproduced when the main test gives p >= 0.05; the class shares per group and
+    the variant are reported.
+- id: tp-patients-hfo-area-location
+  statement: In the patients whose HFO area was not fully resected, the area lay outside the
+    resection; in patient 18 over occipital contacts ipsilateral to a resection that included
+    parietal cortex, in patient 19 over the parietal and not the resected temporal cavernoma,
+    and in patient 20 at the anterior margin while the resection was at the posterior margin
+    of the occipito-temporal gyrus.
+  source: Discussion, FRandR in patients with recurrent seizures, paragraph 2
+  quote: In patient 18, our analysis identified the HFO area over occipital contacts ipsilateral
+    to the resection, which included parietal cortex. ... The HFO area included the parietal
+    cavernoma but not the temporal cavernoma. The surgical choice was to resect only the
+    temporal cavernoma. In patient 20, the resection included the seizure onset area in the
+    posterior margin of the left occipito-temporal gyrus but the HFO area was in the anterior
+    margin.
+  depends_on:
+  - frandr-area-resection-per-patient
+  criterion: FRandR area channels of patients 18, 19 and 20 as in frandr-area-resection-per-
+    patient. Channel locations from the deposit's electrode schemes and channel labels. For
+    each patient, reproduced when at least one area channel lies outside the RA in the region
+    the Discussion names (patient 18, an occipital contact; patient 19, a contact of the
+    parietal grid; patient 20, an anterior contact of the grid). Judged per patient; reproduced
+    when all three hold, partially when one or two do. Where a contact's region cannot be read
+    from the schemes, that patient is not judged and the notes say why.
