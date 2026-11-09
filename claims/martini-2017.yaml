@@ -43,7 +43,8 @@
 # subtracted; a perisomatic halo scaled by 0.7 and subtracted; dF/F0 with F0 the 8th percentile of
 # corrected fluorescence in a symmetric 6 s sliding window; response amplitude as above; tuning by
 # linear regression of all single-presentation response amplitudes on the amplitude of the
-# corresponding waveform, one regression per waveform type, scored with the Benjamini-Hochberg-
+# corresponding waveform (one regression per waveform type is the main reading, open detail 12),
+# scored with the Benjamini-Hochberg-
 # Yekutieli false discovery rate procedure at P < 0.05 (fdr_bh) over the neurons of a field;
 # non-significant coefficients set to zero; mixed selectivity when significant for several features.
 #
@@ -77,6 +78,11 @@
 #     identified by mouse or field. The paper also gives the example field two sizes: n = 31
 #     neurons (Figure 3B) and n = 29 neurons with n = 465 pairs (Figure 3F, "the field of view in
 #     A"); 465 is the number of pairs of 31 neurons.
+# (12) the form of the tuning regression: the Methods compute "the linear regression between
+#     magnitude of all calcium responses and amplitude of the corresponding stimulus waveforms".
+#     Readings are three separate regressions, one per waveform type on its own 120 responses
+#     (as Figure 2B plots), and one regression of all 360 responses on the three waveform
+#     amplitudes (zero for the other two types) with a shared intercept, giving three slopes.
 schema_version: 2
 paper: doi:10.1093/cercor/bhx019
 claims:
@@ -178,13 +184,14 @@ claims:
   criterion: The paper does not say which mouse, field or ROI holds this neuron (open detail 11). The
     author identifies it by matching the field and ROI mask of Figure 2C (black arrow) to the mean
     images of the fields; if no field matches, the claim cannot be tested. Coefficients are the
-    slopes of three separate regressions of all single-presentation responses (Methods, Measurements
-    of Response Properties) on amplitude. Amplitude in normalized units 1, 3, 5 and dF/F0 as a
-    fraction is the main reading (Figure 2B legend; open detail 3), the command voltage as a variant.
-    Reproduced when the velocity coefficient is the largest of the three and each coefficient lies
-    in its interval (the tolerances span the paper's interval, taking the wider side); partially
-    reproduced when only the order holds. The tolerance on each coefficient is the larger
-    distance from the value to a bound of the paper's interval.
+    slopes of the regression of all single-presentation responses (Methods, Measurements of
+    Response Properties) on amplitude, three separate regressions as the main reading and the
+    single regression with three slopes as a variant (open detail 12). Amplitude in normalized
+    units 1, 3, 5 and dF/F0 as a fraction is the main reading (Figure 2B legend; open detail 3), the
+    command voltage as a variant. Reproduced when the velocity coefficient is the largest of the
+    three and each coefficient lies within its tolerance; partially reproduced when only the order
+    holds. The tolerance on each coefficient is the larger distance from the value to a bound of
+    the paper's interval, so it covers the whole interval and a little more on its narrower side.
 - id: responsive-fraction
   statement: About half (50.2%) of all neurons in the data set responded to whisker stimulation.
   source: Results, paragraph 3; Discussion, paragraph 3
@@ -217,9 +224,10 @@ claims:
   - dataset-size
   criterion: Tuning as the Methods (Measurements of Response Properties) give it, a neuron being
     tuned when at least one of its three regression coefficients is significant after the false
-    discovery rate correction at P < 0.05. Readings run (open details 4 and 5) are BH ('pdep') and BY
-    ('dep'), with the family of all 3 x N p-values of a field or of the N p-values per feature, and
-    slopes of either sign or positive only. The percentage is computed pooled over neurons and, as
+    discovery rate correction at P < 0.05. Readings run (open details 4, 5 and 12) are BH ('pdep')
+    and BY ('dep'), with the family of all 3 x N p-values of a field or of the N p-values per
+    feature, slopes of either sign or positive only, and three separate regressions or one
+    regression with three slopes. The percentage is computed pooled over neurons and, as
     Figure 2E plots, as the mean over fields. Reproduced when a reading gives 71.8% within the
     tolerance and non-tuned neurons are the majority.
 - id: fig2e-all-categories
@@ -252,8 +260,8 @@ claims:
   depends_on:
   - fig2de-tuned-fraction
   criterion: The tuning procedure is run separately on recordings 1 and 2 and on recordings 3 and 4
-    of each field, with the reading of fig2de-tuned-fraction. Identical tuning to a feature means
-    the coefficient is significant in both halves or in neither. The denominator is not stated;
+    of each field, with the reading of fig2de-tuned-fraction. The paper does not define identical
+    tuning; the reading used is that the coefficient is significant in both halves or in neither. The denominator is not stated;
     readings are all neurons, neurons tuned in the full data, and neurons tuned in at least one half.
     Reproduced when both percentages fall within their tolerances under one reading.
 - id: shuffle-significance
@@ -266,12 +274,17 @@ claims:
   - fig2de-tuned-fraction
   - fig2e-all-categories
   - fig3g-si-no-spatial-organization
+  - fig4c-barrel-septum-tuned
+  - fig4d-border-distance-by-feature
   criterion: For each neuron and feature the responses are shuffled across the amplitudes of that
     waveform type 1000 times and the p-value is the fraction of shuffled slopes at least as extreme
     as the observed one. Whether the false discovery rate correction is then applied is not stated;
-    both readings are run. Reproduced when, with this tuning, non-tuned neurons remain the majority,
-    all four tuned classes are represented, and the SI test of fig3g-si-no-spatial-organization still
-    finds no difference from shuffled data (P >= 0.05).
+    both readings are run. The paper does not list which results it compared; every result that
+    rests on tuning is taken. Reproduced when, with this tuning, non-tuned neurons remain the
+    majority, all four tuned classes are represented, the SI test of
+    fig3g-si-no-spatial-organization still finds no difference from shuffled data (P >= 0.05), and,
+    where fig4c-barrel-septum-tuned and fig4d-border-distance-by-feature can be tested, their
+    Fisher and Kolmogorov-Smirnov tests still give P >= 0.05.
 - id: fig3b-example-correlation
   statement: In an example field the mean pairwise correlation was 0.14, against 0.0022 when
     responses were shuffled across stimulus presentations.
@@ -360,16 +373,18 @@ claims:
     value: -0.15
     tolerance: 0.015
     unit: 1/mm
-  - quantity: slope of correlation against distance, shuffled, example field
+  - quantity: slope of correlation against distance, shuffled, example field (tolerance the paper's
+      SEM of the shuffled median slope over fields, 0.014, as 10% of a value near zero is below
+      the spread the paper reports for shuffled slopes)
     value: 0.0025
-    tolerance: 0.00025
+    tolerance: 0.014
     unit: 1/mm
   depends_on:
   - fig3b-example-correlation
   criterion: The example field of fig3b-example-correlation. The slope is that of the least-squares
-    line of pair correlation on distance between ROI centroids, in mm (open detail 8). The
-    shuffled slope is near zero, so 10% of it is a strict bound; it is reproduced when it lies
-    within 0.01 per mm of zero, reported against the paper's value. Most of the fall-off within 100
+    line of pair correlation on distance between ROI centroids, in mm, over all pairs, with pairs
+    up to 300 um as a variant (Results, "over up to 300 um"; open detail 8). Both slopes are judged
+    on their expected values and tolerances. Most of the fall-off within 100
     um is judged with 100 um bands taken from the sentence - reproduced when the drop in mean
     correlation from 0-100 um to 100-200 um exceeds the drop from 100-200 um to 200-300 um.
 - id: fig3e-correlation-falls-with-distance
@@ -495,7 +510,9 @@ claims:
     slopes - reproduced when P >= 0.05, not reproduced when P < 0.05, with the median difference
     given either way. The paper does not say which 26 fields enter (open detail 9); the main
     reading takes all pairs of all neurons (465 pairs of 31 neurons in the example) in fields with
-    at least two tuned neurons, since SI is zero for every pair otherwise. SI of unit-length tuning
+    at least two tuned neurons, since SI is zero for every pair otherwise; pairs of tuned neurons
+    only, and fields with at least two neurons tuned to a common feature, are shown as variants. The
+    true and shuffled slopes over the same pairs are compared in each. SI of unit-length tuning
     vectors is shown as a variant, as the paper's slope magnitudes may imply a normalized scale.
     The paper's SEM for the true median (0.000675) is about 0.1% of the value and is not used as
     the tolerance; 10% is used.
@@ -574,3 +591,20 @@ claims:
     in every group it is significantly tuned to (the Methods allow mixed selectivity) and uses the
     unsigned distance, as the text says "distance ... to the nearest barrel border". Single-feature
     neurons only, and the signed distance (inside barrels positive), are shown as variants.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header. The tuning regression was stated as fixed at one regression per waveform type. The Methods say "the linear regression between magnitude of all calcium responses and amplitude of the corresponding stimulus waveforms", which also allows one regression of all responses with three slopes. Added open detail 12 with both readings.
+  - fig2ab-example-neuron. The criterion asked each coefficient to lie in the paper's interval while its tolerances are wider on one side. It now judges each coefficient on its tolerance, as the expected values say, and runs both regression readings (open detail 12).
+  - fig2de-tuned-fraction. Added the two regression forms of open detail 12 to the readings run.
+  - tuning-consistency. The criterion gave "identical tuning" a definition as if from the paper. It now says the paper does not define it and names the reading used.
+  - shuffle-significance. The paper's "no qualitative change in results" covers every result that rests on tuning, including the barrel-map tests of Figure 4C and 4D. Added them to the criterion where they can be tested, and to depends_on.
+  - fig3d-example-correlation-distance. The shuffled slope's expected tolerance (0.00025) disagreed with the criterion's own bound (0.01, not from the paper). Set the tolerance to the paper's SEM of the shuffled median slope over fields (0.014 per mm), with the reason, and judged both slopes on their tolerances. Added pairs up to 300 um as a variant, since the Results examine distances "up to 300 um".
+  - fig3g-si-no-spatial-organization. Which pairs enter the 26 fields is open (detail 9); added pairs of tuned neurons only and fields with two neurons tuned to a common feature as variants shown next to the main reading.
+  - Open. responsive-fraction rests on a definition of a responding neuron the paper does not give; the two readings in the criterion are this file's tests, and the outcome rests on that assumption.
+  - Open. The example neuron (Figure 2A-C) and the example field (Figure 3) are not identified by mouse or field; those claims depend on matching figure images to the data. The paper gives the example field 31 neurons (Figure 3B) and 29 neurons with 465 pairs (Figure 3F).
+  - Open. The SI scale (raw dot product as the Methods write it, or unit-length vectors) cannot be settled; the paper's slope magnitudes fit a normalized scale better than raw coefficients near 0.01. The paper's SEM of the true median SI slope (0.000675) looks like a misprint; 10% is used.
+  - Open. Whether the Figure 3 gradient beyond 200 um is fitted to the far pairs only or to all pairs of the 30 fields is not stated; both readings are named.
