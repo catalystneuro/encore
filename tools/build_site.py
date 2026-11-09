@@ -2134,12 +2134,37 @@ def build(data: dict, output: Path) -> None:
         page = output / page_of(key)
         page.mkdir(parents=True, exist_ok=True)
         (page / "index.html").write_text(page_claims(data, key))
+    renamed_redirects(data, output)
     (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     (output / "sitemap.xml").write_text(sitemap(data))
     (output / "robots.txt").write_text(robots(data))
     (output / "404.html").write_text(page_not_found(data))
+
+
+def renamed_redirects(data: dict, output: Path) -> None:
+    """Pages that moved when records went from dataset-first to paper-first names (papers/renamed.yaml): an earlier
+    attempt's page, under its old id, and an executed notebook, under its entry's old name."""
+    path = ROOT / "papers" / "renamed.yaml"
+    if data["demo"] or not path.is_file():
+        return
+    renamed = load_yaml(path) or {}
+    earlier = {a["id"]: a["key"] for key in current_attempts(data) for a in earlier_attempts(data, key)}
+    for old, new in (renamed.get("attempts") or {}).items():
+        if new in earlier:
+            target = page_of(earlier[new]) + new + "/"
+            depth = page_of(earlier[new]).count("/") + 1
+            (output / page_of(earlier[new]) / old).mkdir(parents=True, exist_ok=True)
+            (output / page_of(earlier[new]) / old / "index.html").write_text(redirect_page(target, "../" * depth))
+    for old, new in (renamed.get("entries") or {}).items():
+        if old == new or not (output / "notebooks" / new).is_dir():
+            continue
+        (output / "notebooks" / old).mkdir(parents=True, exist_ok=True)
+        for nb in (output / "notebooks" / new).glob("*.html"):
+            stub = output / "notebooks" / old / nb.name
+            if not stub.exists():
+                stub.write_text(redirect_page(f"notebooks/{new}/{nb.name}", "../../"))
 
 
 def redirect_page(target: str, root: str) -> str:
