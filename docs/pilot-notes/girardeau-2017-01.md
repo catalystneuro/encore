@@ -1,0 +1,59 @@
+# 000061, Girardeau et al. 2017
+
+Four claims reproduced, one not reproduced and one blocked, all on the
+dandiset. Round 1 gave its own outcome for each claim without seeing the
+record and agreed with all six, though it gave a different reason for the
+block; round 2 agreed again and nothing was proposed, so there was no third
+round. The paper reports that joint hippocampus and basolateral amygdala
+(BLA) patterns from an aversive run are reactivated in later sleep in rats,
+peaking at sharp-wave ripples and involving a subgroup of BLA cells that
+fire more at ripples. The paper is not open access, so the claims were taken
+from the abstract alone, none has a reported number, and every method was
+chosen and fixed in the claims file. Post-sleep reactivation, its peak at
+ripples, the ripple-up BLA subgroup and its weight in the patterns were
+tested on 15 sessions from 3 rats, and stronger reactivation of the air-puff
+direction does not hold (p = 0.11). `rats-learn-puff-location` is blocked as
+`too_large`, changed from `data_missing` after round 1: the dandiset holds no
+position tracking, and tracking the 1920573 raw run frames (1328 GB
+uncompressed) would take about 190 hours to stream. Some outcomes rest on
+weak ground: in `hpc-bla-reactivation-post-sleep` Rat10 is positive in 5 of
+8 patterns (p = 0.74); much of the ripple peak is already present in
+pre-sleep, so only the post minus pre contrasts speak to reactivation; and
+in `reactivation-involves-ripple-up-cells` the up units fire faster (1.66
+against 0.41 Hz), and the rate-matched difference does not hold at session
+level (9 of 13, p = 0.22).
+
+The dandiset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is
+a contributor). In ten files the spike_times_index is wrong at the first
+units: unit 1's spike times fall back once, after 65536 times k spikes, and
+the first part of unit 1 is the end of unit 0, so units 0 and 1 of these
+files were left out. The epochs table is stored in milliseconds although its
+columns say seconds, its last stop time exactly 1000 times the LFP duration
+in all 40 files, and the video timestamps are also in milliseconds and not
+on the session clock (the first timestamp matches the start of its epoch in
+1 of 114 videos). Seven files have no units table, sixteen have no sleep
+states and fourteen have no ripple events, and Rat09 has no hippocampal
+units and no ripples, so it cannot enter a hippocampus and BLA analysis.
+There is no position tracking, only the raw video frames, so run direction
+can only be inferred from reward times. Other findings: unit region labels
+are undescribed short codes, some in two cases for the same region,
+Rat09-20140328 has no location column and every electrode's location is
+unknown, so which labels make up the paper's BLA cannot be told; the
+`trials` table of the Rat08 and Rat09 files is described only as
+"experimental trials" and its intervals of 3 to 5 s are not laps; the ripple
+annotations carry an undescribed number in each label; and neither the paper
+(as far as the abstract shows) nor the dandiset links analysis code.
+
+Round 2 found five passages the printed outputs did not support, among them
+a video streaming time left over from an earlier run, and all were
+corrected without changing an outcome. Untracked dotfiles and a `scripts/`
+directory that the author did not create appeared in the repository during
+the run and were left alone. The author's points on the protocol: an
+abstract alone gives no reported numbers or tolerances; step 5 assumes there
+is code to read; the rule on blocking a claim for its unit selection does
+not cover dropping a whole animal; no guidance on an abstract sentence that
+describes the task setup; whether to repair broken data or leave it out; a
+lap-direction clock check where shifting by whole laps only flips the
+labels; how to count a lap that starts before the run; and a chance level
+for the BLA selection computed with the author's own procedure when the
+paper reports none.

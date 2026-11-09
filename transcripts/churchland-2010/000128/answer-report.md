@@ -1,0 +1,9 @@
+I answered all three questions and set `answered: 2026-10-22` on each. Only `claims/000128/` and `questions/000128.yaml` changed, and nothing is committed. No statements or expected values changed. `tools/claims_check.py` reports 0 problems. The supplement has no `.txt`, so I extracted its text to a temporary file and checked the quotes against that.
+
+1. **fig6-peri-movement-space-best (T1 vs T2 proto-trial selection):** T1 can be set aside and T2 alone stands. The paper doesn't say how the two velocity components combine, but its selection kept "typically ~90% of all trials" and left all 108 maze conditions in the analyses. For a straight horizontal reach the vertical velocity is flat, so a per-component threshold can't keep those conditions, and a reading that empties conditions isn't the paper's. Header M1 and the criteria of fig4d and fig6-peri-movement-space-best now run T2 only.
+
+2. **fig4d-mean-correlation-jarray (S1 vs S2 tuning measure):** S2 is dropped. The paper never defines "tuning", but with its thresholds it had J-array neurons tuned in both epochs: Figure 4D reports a distribution with mean r = 0.13, p = 0.03. A measure that selects none can't be the paper's, and the Methods use one measure for both thresholds. Header M6 and the criteria of fig3, fig4d, fig6-peri-movement-space-best and prep-dimensionality now use S1 only.
+
+3. **suppfig1-population-averages ("maximum rate"):** The paper doesn't say what the maximum is taken over. The legend says only "normalizing each neuron's activity by its maximum rate". The criterion now names both readings, (a) the maximum over all conditions and times and (b) the maximum over the four plotted conditions, and both are run.
+
+The answers to questions 1 and 2 rely on the attempt's reported counts (73.8% of trials kept and two conditions emptied under T1; no qualifying J-array neuron under S2). I did not look at the data.

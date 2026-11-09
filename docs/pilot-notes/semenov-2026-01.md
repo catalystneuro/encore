@@ -1,0 +1,114 @@
+# 001515, Semenov et al. 2026
+
+No claim reproduced, one partially reproduced, none not reproduced and 24
+blocked, all for missing data; the nine claims that also use an input from
+outside the dataset are counted apart and are all blocked for missing data.
+All 34 claims are on the dandiset. The first verification round agreed with all
+34 outcomes as they stood and the second with all 34, and nothing was proposed
+after the second, so there was no third round. It pins version 0.261006.1841,
+the only published version; the paper cites none. The paper, Semenov,
+Silkuniene, Silkunas, Pakhomova, Bixler, Ibey, Kochunov and Pakhomov,
+"Sub-microsecond optical measurements of cell membrane charging and lesioning by
+pulsed electric fields" in Bioelectrochemistry, images CHO cells stained with
+the potentiometric dyes Di-8-ANEPPS and FluoVolt at 900 ns into 1-us pulses (275
+ns into 0.3-us pulses), in sets of 40 baseline and 60 pulse images as the field
+is raised from 43 to 1400 V/cm, and reports the polarization pattern and the
+charging at the anodic and cathodic poles (Figs. 1 to 4), its change with Gd3+
+and a conductivity calibration by Eq. (2) (Fig. 5), Fluo-4 calcium responses
+(Fig. 6) and membrane recovery by a two-pulse protocol at a 5-us interval (Fig.
+7). The claims were written from the version of record, from a PDF supplied by a
+person, without opening the figures; the paper names no supplement and links no
+code, and the claims file follows the checked file for the same paper on
+dandiset 001516, with `fig1-schwan-pattern` and `fig4b-poles-alike-570-780`
+added; the claims that use the calculated IMP need the tau-against-radius fit of
+reference [20] as an outside input. The only claim that could be tested is
+`fig5b-conductivity-calibration`, which uses no recordings: Eq. (2) with the
+constants of Methods 2.3 gives an IMP reduction of 1.33% (reading a) or 1.20%
+(reading b) for a 10-fold rise of membrane conductivity, outside 2 +- 0.2%, and
+11.87% (a) or 11.75% (b) for a 100-fold rise, inside 12 +- 1.2%; in a grid of
+radii 5 to 15 um and membrane thicknesses 3 to 7 nm, a variant, no combination
+puts both values within tolerance under reading (a). The other 33 claims are
+blocked because the dandiset holds none of the paper's recordings. The author's
+first run gave the same outcomes. The author asked no questions of a reader, so
+the reader's run and the author-answers run changed nothing. Round 1 agreed with
+every outcome, checked the Eq. (2) code against an independent implementation,
+and asked for the full set of session descriptions, a per-file table of peak,
+peak_frame and n_cells, and a figure of one file's mean image with the mask; in
+reply all three were added, the session descriptions reducing to 4 texts of 73
+files each once the subject ID and amplitude are replaced, none naming
+Di-8-ANEPPS, Gd3+, Fluo-4, calcium, a second pulse, a train, 0.3 us, 900 ns,
+1.6 mm or V/cm, and the figure showed that touching cells form one part of the
+mask, so n_cells was corrected to count connected parts of the mask, not cells.
+Round 2 agreed with all 34, rebuilt the derived statistics from the per-file
+table, and found sentences the outputs did not support (the 9 files said to
+have the sign of the other anode side where the code counts files that differ
+from the majority of their subject's files with the same stated anode side,
+frame 0 called about half as bright where the median ratio is 0.59, the grid
+result not said to be for reading (a), a run time of six minutes that no output
+shows, and a round-1 cell number that had moved), all corrected; it checked
+reading (b) over the grid itself and found no combination either. Neither
+verifier could run the pixel-level helpers, numpy and h5py not being installed
+in their environment, and neither examined dandisets 001516 to 001518. The
+author's run took about 30 minutes (20:06 to 20:37 UTC) and nothing failed; the
+notebook ran in about 3 minutes at first, most of it streaming all 292 files,
+180 s after the author-answers run, 337 s for the whole entry after round 1 and
+231 s at the end. Untracked dotfiles and a `scripts` folder at the repository
+root, which the author did not create, were left alone.
+
+The dandiset names this paper (IsPublishedIn) but holds none of its recordings.
+Its 292 files, from 37 subjects in four sessions, are FluoVolt strobe-imaging
+time courses of 70 frames each at one 1-us pulse amplitude per cell (20 to 100
+V across electrodes stated as 1.00 mm apart), the protocol the paper attributes
+to its reference [20] (Semenov et al. 2025, Bioelectrochemistry 168, 109143);
+the paper's sets of 40 baseline and 60 pulse images at 900 ns with field
+escalation, and its Di-8-ANEPPS, 0.3-us, Gd3+, two-pulse and Fluo-4 Ca2+
+recordings, are absent, so 33 of the 34 claims cannot be tested. Dandisets
+001516, 001517 and 001518 also name this paper and may hold these data; they are
+separate targets and were not read. The laser delay of each frame is not
+recorded, the files giving only a start time and a nominal 6 Hz; the data show
+that the 70 frames are successive delays across the pulse (the response rises
+and falls over a median 19 frames at half peak, at frames 16 to 34 in forward
+files and at the same frames counted from the end in backward files), so the
+backward files hold the time course in reverse order, and a step of about 50 ns
+is consistent with this but not shown. Pulses are given in volts with no field
+strength, while the paper uses electrodes 1.6 mm apart and field strengths from
+Sim4Life modelling, so its V/cm values cannot be assigned to these files; at the
+same 40 V the response differs between sessions (median peak index 25.9% on
+2023-05-08, 11.9% on 2023-09-26). The stated anode side does not fix the sign of
+the response: in 35 of 37 subjects the sign flips between the files stated as
+anode above and below, but 9 files differ in sign from the majority of the other
+files of their subject with the same stated anode side (groups with a tied
+majority are not counted), and across sessions files stated as anode above are
+brighter at the top of the cells (2023-05-08) or at the bottom (2023-09-25,
+2023-09-26), and both in different subjects of 2023-10-10, with the image
+orientation relative to the electrodes not stated. Each subject has two files
+for each combination of recording order and anode side with nothing to tell the
+two apart, subject CHO-20230925-c1 has 4 files where the others have 8, and each
+file images a field of several cells (2 to 12 connected parts of the membrane
+mask) where the paper analyses one cell per experiment, with no file saying
+which cell, if any, the subject is. File sub-CHO-20230926-c1_obj-bcvqko shows a
+different field of view from the other files of its subject (median correlation
+of mean images 0.079, against 0.995 for files of one subject) and a session
+start of 2024-12-16, fourteen months after that subject's other files, and its
+response is weak (peak index 1.3%). In 220 of 292 files frame 0 is less than 0.8
+times as bright as the median frame (median ratio 0.59), which the description
+does not explain. The archive summary gives the species as "Cricetulus griseus -
+Cricetulus aureus" for a CHO cell line (the files give NCBITaxon_10029, C.
+griseus only), every subject has an age of P1D, and the image series
+description mentions sine wave exposures, which no file holds. Of the paper
+itself, Eq. (2) with the constants of Methods 2.3 gives a 1.33% IMP reduction
+for a 10-fold rise of membrane conductivity, where Results 3.5 states about 2%;
+the 100-fold value (11.87%) matches the stated 12%.
+
+The author's points on the protocol: it says only that data not public anywhere
+else are `data_missing`, while dandisets 001516, 001517 and 001518 name the same
+paper and may hold the missing data, so `data_missing` was kept and the siblings
+named in each blocked claim's notes without reading them; it does not say how a
+claim that needs no recordings counts toward the dataset, and fig5b was tested
+under the default `data: dataset` with a note that it uses no recordings; for
+the FluoVolt claims both `data_missing` and `metadata_insufficient` apply, and
+`data_missing` was given as the main reason with the other named in the notes,
+as step 1.5 allows; and step 2 assumes trial tables and decoding, so with no
+claim using the recordings the data check used a membrane polarization index
+per frame, compared between forward and backward files, anode sides and
+amplitudes, with standard parameters said to be so in the helper.

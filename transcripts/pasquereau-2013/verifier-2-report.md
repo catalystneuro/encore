@@ -1,78 +1,61 @@
-# Verifier report, round 2: Pasquereau & Turner 2013 on DANDI 001636 (0.260518.1819)
+**Round 2 verification: Pasquereau & Turner 2013 on DANDI:001636 (draft)**
 
-**Tally.** The claims file has 28 claims, and the attempt record gives an outcome for all 28:
-- 4 reproduced
-- 3 partially reproduced
-- 3 not reproduced
-- 18 blocked: 1 for missing data and 17 as methods underspecified (`false-positive-rate`, the 15 claims that depend on which responses are detected, and `trial-correlations`)
+The claims file has 28 claims. The attempt record gives 28 outcomes: 4 reproduced, 3 partially reproduced, 3 not reproduced and 18 blocked (17 methods_underspecified, 1 data_missing).
 
-I saved the paper's full text from Europe PMC under `paper/`.
-
-## 1. Agreement with the stated outcomes
+**1. Outcomes**
 
 I agree with all 28.
 
-**`false-positive-rate`.** In round 1 I said not reproduced. I now accept blocked (methods_underspecified).
-- The claim is about the paper's procedure, and this run can only measure a reconstruction of it.
-- Stationary Poisson spike trains give 0.15 with the reconstructed detection (cell 37), so the rate mostly measures the reconstruction.
-- A threshold calibrated to a false-positive rate of 0.01 moves the fractions of torque-related cells further from the paper's (cell 38). So the stated rate alone does not explain the gap.
-- The record cites a protocol rule for this case. I could not read that protocol. The claims file itself only states the blocking rule for the claims that use the detected responses.
+The one change from round 1 is `false-positive-rate`, where I had said not_reproduced and the record keeps blocked (methods_underspecified). I now accept blocked:
+- The claims file's header (lines 31–35) treats a pseudo-onset rate outside 0.0033–0.03 as showing that "the procedures differ".
+- Poisson spike trains give 0.16–0.19 with eight seeds (cell 40), against 0.23 observed (cell 38). So the excess comes from the detection as reconstructed here, and the test says nothing about the paper's own rate.
+- I cannot see the protocol rule the author cites.
+- The tension sits in the claims file: this claim's criterion only says when it is "Reproduced", which would otherwise default to not_reproduced. It is not a misreading of the paper.
 
-**Kinematics and EMG.** I agree with these outcomes on their criteria, with one caveat that the record already states. The torque command differs between the two states, so none of them can be attributed to MPTP. `emg-m2-larger` (reproduced) is the weakest. Its only same-command comparison runs the other way on triceps longus 1 (46.7 against 1.3, p = 0.013, with 40 and 6 channel-sessions; cell 87).
+The other 27 match round 1 and the current outputs:
+- **cell-counts:** cell 25.
+- **antidromic-latency:** cell 35, CSN p = 0.0190 against 0.0167 (False).
+- **Kinematics:** cells 83 and 87.
+- **EMG:** cells 93, 97 and 101.
 
-## 2. Statements the outputs do not support
+I recomputed the baseline rates, torque-related fractions, earliest latencies and reciprocal-plus-unidirectional shares from the new per-cell table (cell 23). All match the notebook.
 
-**Cell 98.** "against 24 to 33 per group in the paper"
-- The paper's counts are 24, 33, 22 and 31, so the range is 22 to 33.
+**2. Sentences the outputs do not support**
 
-**Cell 48, and the `ptn-more-responsive` notes.** "the CSN fraction is below the expected 30.4%" and "the CSN fraction is outside tolerance"
-- The PTN fraction is also outside tolerance: 68.9% against 62.1 ± 6.2, whose upper bound is 68.3 (cell 47).
+- **README, line 52:** "It took 5.2 min in the latest run (1.8 to 4.5 min in earlier runs)". Cell 111 prints "Notebook run time: 1.7 min".
+- **Summary (cell 110) and README lines 37–39:** "compared at the same per-trial command step … the m2 response is smaller after MPTP, not larger". Cell 94 supports this only at one step (twice the smallest), and only with 66 against 11 channel-sessions. On triceps longus 2 at that step m2 is larger after MPTP (52.2 against 113.0, n = 4, p = 0.36). The attempt record's notes are qualified correctly; the summary and README are not.
+- **Cell 95:** "so it does not rise simply with command size within a state". Cell 93 shows this holds before MPTP only (0.86, 41.85, then 17.09 with n = 5). After MPTP m2 rises with command size (1.81 → 194.4).
+- **Cell 110:** "The header now marks the 16 claims blocked by the false-positive rate". Cell 0 marks 16 claims "run, blocked", but that count includes `false-positive-rate` itself, and cell 0's own text says 15 claims depend on it.
+- **Cell 43, minor:**
+  - "Both rates are more than 3 times the paper's" is true but understates the gap: 0.23 and 0.46 are about 23 and 46 times 0.01.
+  - Its "cannot tell whether the paper's procedure differs" sits awkwardly next to the earlier "so the procedure here differs from the paper's".
+- **Cell 43 and the record's notes, "14 cell-directions … can never respond":** true only for a baseline SD of exactly 0 (cell 22). Cell 23 shows near-silent cells with thresholds of about 0 that do respond. For example, v5801.1 has a baseline of 0.00, thresholds of 0.00, and an extension "response" at 30 ms. This adds to the detection's false positives, but every dependent claim is blocked, so no conclusion changes.
 
-**Summary (cell 103), and the `methods_unavailable` finding.** "Poisson spike trains give the same"
-- Poisson gives 0.15 against 0.22 observed (cells 35 and 37), so about a third of the observed rate is not explained.
-- Cell 39 says the same thing more strongly: "the excess comes from the detection procedure, not from activity in the hold period". Most of the rate comes from the procedure, not all of it.
+Every other "**Result:**" sentence, the rest of the Summary and README, and the record's notes match the printed outputs.
 
-**Cell 92, and the `emg-onset-unchanged` notes.** "Pre-MPTP responses are small …, which delays their detected onset"
-- Nothing tests this, and the threshold is relative (2 SD of the baseline).
-- At the middle command size the post-MPTP onset is the later one (28.8 against 45.6 ms, cell 90).
+The record gives my round-1 reasons faithfully and in my own words, including problems 6–9 and the section C items. Its cell numbers are round-1 indices, which have since shifted (for example, round-1 cell 33 is now cell 38).
 
-**Cell 88.** "the median m2 is 0.61 at the smallest command size, 40.8 at the middle and 194.6 at the largest"
-- The three medians mix states.
-- The values left out work against a simple increase with command size: post-MPTP at the middle size is 1.81, and pre-MPTP at the largest is 17.09 (n = 5) (cell 87).
-- The attempt record's notes give the middle-size post-MPTP value, but not the largest-size pre-MPTP one.
+**3. Round-1 points**
 
-**Cell 80, and the `kinematics-slower` notes.** "session means 8.5 to 145.3 deg/s … lower than the paper's 130 to 200 deg/s"
-- The upper end overlaps the paper's range.
-- The supported statement is that the mean is 58.7 deg/s and only one response comes from a session in the window (cells 79 and 97).
+Resolved:
+- **Problem 1:** the cell 0 header now marks the dependent claims as run and blocked.
+- **Problem 2:** cell 35 prints each antidromic test against its threshold.
+- **Problem 4:** the filter is now run on synthetic movements (cell 88).
+- **Problem 6:** the P/NP choice is recorded as a deviation.
+- **Problem 7:** the approximate chi-square p is stated, and the threshold variants keep responses that last to the end of the window.
+- **Section C, spike windows:** cell 42 shows every window lies inside its trial.
+- **Section C, per-cell results:** cell 23 adds the per-cell table.
+- **Section C, command size:** comparisons at the same per-trial step are added (cells 84, 88 and 94).
 
-**README.** "It takes a few minutes"
-- Cell 104 prints 1.5 min. This is minor.
+Addressed as far as the data allow:
+- **Problem 3, the torque confound:** each conclusion and note now says the effect cannot be attributed to MPTP.
+- **Problem 5, pre-MPTP noise crossings:** counts are printed and the cell 98 conclusion says many pre-MPTP responses are brief crossings of a small signal.
 
-**Checked and supported.** Every other "Result:" sentence, the rest of the Summary and README, and every outcome note and finding in the attempt record matches the printed numbers.
+What remains that bears on a conclusion:
+- `emg-m2-larger` is "reproduced" on the criterion, but it is not evidence of an MPTP effect. At the one comparable command step the pooled median goes the other way (cell 94). The record says this; the Summary and README overstate the reverse finding (item 2).
+- The kinematic and EMG "not reproduced" outcomes carry the same confound. The record states it.
 
-I also checked the paper-inconsistency finding against the paper:
-- The text gives 16.3 and 3.6 spikes/s, and Table 1 gives 18.3 and 3.2.
-- Table 1's CSN counts are 13/13 and 10/11 against 11/13 and 8/9, and the table marks the change "## p < 0.01 (χ² test)".
-
-**Round-1 reasons in the record.** They state my round-1 reasons faithfully and in my own words, with my problem points folded into the claims they concern. Two small gaps:
-- Two points from my problem 1 are left out: the expected ~12% of false responses among those detected, and that the Methods' literal t-test reading also fails. Neither changes an outcome.
-- The `velocity-matched-magnitude` reason repeats a sentence of mine that contradicts itself ("no pre-MPTP session reaches 130 deg/s (maximum 145)"). What cell 97 shows is that no pre-MPTP response comes from a session in the window. That error is mine, not the author's.
-
-## 3. Round-1 points
-
-**Resolved:**
-- **Monkey L.** There is now a table of torque-command excursions for every file: 1 hold-window excursion in 2048 trials (cell 7).
-- **Angle scale (problem 3).** Active movements are within 2% of the derived columns (cell 11), so the small torque-induced movements are in the data. The files have no torque-sensor channel.
-- **Kinematic latency measure (problem 4).** The causal and not-moving variants were added, and post-MPTP latency is still shorter (F = 781 and 743, cell 82).
-- **DSI categories (problem 5).** A variant classifies by DSI value (p = 0.42, cell 70).
-- **First crossing as onset (problem 6).** A variant takes the first crossing overall; 6 of 202 responses have an earlier one.
-- **Pooled correlations and the zero cell (problem 7).** Within-state results are reported, and the smallest expected count is given as 2.2.
-- **Short pre-MPTP EMG responses (problem 8).** 63.6% of pre-MPTP durations are 10 ms or less.
-- **m1/m2 ratios (problem 9).** Ratios over channel-sessions with m2 > 0 are now given.
-- **Threshold diagnostics.** Example SDFs with their thresholds, and the false-positive rate split by baseline rate and by number of trials, were added (cells 37 and 38).
-
-**Resolved as far as the data allow, but still bearing on conclusions:**
-- **Detection procedure (problem 1).** The paper's procedure cannot be recovered. Every claim that uses the detected responses stays blocked.
-- **Torque command differs by state (problem 2).** The outcomes of `kinematics-slower`, `kinematic-latency-unchanged`, `emg-m2-larger`, `emg-duration-longer` and `emg-onset-unchanged` all compare different stimuli. The only same-command check has 12 post-MPTP sessions, and 1 to 6 post-MPTP EMG channel-sessions per channel. Where it can be read, it removes the effect (or reverses it, for triceps longus 1 m2). The record says the differences cannot be attributed to MPTP, which is the right reading. The outcomes rest on the criteria alone.
-
-**Still open:** I have not inspected the plotted figures. My judgements rest on the printed outputs.
+Not bearing on a conclusion:
+- **Problem 8:** the claims file's reading of the detection rule, where the paper's Methods text reads closer to the t-test variant. Both readings are shown and both block.
+- **Claims file header, line 23:** "no unit appears in two files" is no longer true of the draft. The attempt handles this as a deviation; it is not a misreading of the paper.
+- **Still unchecked:** I could not check the claims file's expected values against the supplementary table, because no PDF reader is available here.

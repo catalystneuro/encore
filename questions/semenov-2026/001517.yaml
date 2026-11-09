@@ -1,0 +1,26 @@
+# Questions from attempt semenov-2026-03 (author revision after verifier round 1, 2026-11-02)
+# about claims/001517/10.1016-j.bioelechem.2026.109283.yaml, asked under docs/protocol.md, "Hand over
+# for verification". The verifier reported this as an issue in the claims file; the claim was tested as
+# the file has it.
+dataset: DANDI:001517
+paper: doi:10.1016/j.bioelechem.2026.109283
+questions:
+- claim: fig2a-fluovolt-stable
+  asked: 2026-11-02
+  question: Should the criterion of fig2a-fluovolt-stable allow for the number of tests it makes? Each
+    start/end reading runs 24 paired t-tests at p < 0.05 with n = 4 (6 pulse comparisons at 1000 to
+    1400 V/cm and 18 baseline comparisons), and the claim fails if any one of them is significant. With
+    no change at all, the chance that at least one of 24 independent tests falls below 0.05 is about 70%
+    (1 - 0.95^24), so the criterion fails a stable recording more often than not. A reading that
+    corrects for the number of tests (for example Bonferroni or Holm over the 24), or that asks for a
+    change larger than some size in % dF, would test what the paper says.
+  passage: Without PEF (first 40 datapoints, or ~ 7 s in each set), measurements were stable, indicating
+    no significant photosensitization or dye bleaching ... but the dye response in each set stayed stable
+    through the 60 pulses applied (Results 3.2, paragraph 2); the Fig. 2 legend names a 2-tailed paired
+    t-test. The paper reports no test for this statement and does not say how many comparisons it made.
+  why: Under the adopted far background the claim fails on 2 significant tests of 24 under reading (a)
+    and 5 under reading (b), with changes of 2.5 to 7.0% dF against responses of 40 to 70%. Under reading
+    (b) the smallest p is below 0.0005 (360 V/cm cathodic baseline, -4.2%) and the next is 0.002, so a
+    Bonferroni correction over 24 tests (p < 0.0021) would leave one or two significant baseline changes;
+    under reading (a) it would leave none (smallest p 0.005), so the readings would disagree and the claim would become blocked
+    (methods_underspecified) under the criterion's own rule for disagreeing readings.

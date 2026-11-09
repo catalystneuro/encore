@@ -52,8 +52,8 @@
 #   - Exploration time is whisking epochs including touch epochs, excluding touches >100 ms.
 #   - The touch spike window of a cell runs from its onset latency to its touch response cutoff
 #     t_on. Latency is where the 1 ms PCTH rises above the pre-touch mean (-50 to 0 ms) by two
-#     standard deviations. t_on is the first window size at which the increase of the cumulative
-#     count of spikes indexed to the closest touch onset falls below the 95th percentile of the
+#     standard deviations. t_on is the first window size, after the curve's rise, at which the
+#     increase of the cumulative count of spikes indexed to the closest touch onset falls below the 95th percentile of the
 #     slopes of 1000 spike-time shuffles, the curves smoothed by a degree-11 polynomial.
 #   - Phase tuning is a 12-bin histogram fitted by A[1 + cos(theta - phi_pref)] + B, A, B > 0;
 #     modulation depth A / (A + B).
@@ -737,7 +737,10 @@ claims:
     p: 0.019
     n: 11 cells
   criterion: As whisking-rate-l4-no-change, for the 11 L5 cells. Reproduced when p < 0.05 with the
-    median whisking rate higher, under both readings of whisking periods.
+    median of the per-cell differences (whisking minus non-whisking) positive, under both readings
+    of whisking periods; the increase is the direction of the paired signed-rank test. The group
+    medians are not the measure; Table 1 gives them (13.5 and 12.8 spikes/s) and they are shown
+    only for comparison.
 - id: fig3c-touch-spikes-l4c2
   statement: In L4 C2 neurons 70.6 +- 20.9% (mean +- s.d.) of spikes during exploration are coupled
     to touch, within an average of 14.9% of exploration time.
@@ -759,15 +762,22 @@ claims:
     the time since the closest touch onset, less the cell's latency; y_ton(t_i) is the number of
     spikes within t_i of onset; the cutoff t_on is the first t_i where the increment falls below
     the 95th percentile of the increments of 1000 surrogate curves from shuffled spike times,
-    curves smoothed by a degree-11 polynomial before differencing. The touch-coupled fraction is
+    curves smoothed by a degree-11 polynomial before differencing. The cutoff is the point where
+    the curve levels off after its rise (Results, paragraph 7, "At some window size, the curve
+    levels off ... This transition point defines the proportion of touch-coupled spikes"; Methods,
+    "these curves rise steeply and then plateau"; the example cell's window is 8 to 40 ms), so
+    t_on is the first t_i at which the smoothed increment, having been above the surrogates' 95th
+    percentile at an earlier t_i, falls below it. A dip of the polynomial before the rise is not
+    the cutoff; the literal search from t_i = 1 ms is shown as a variant only. The touch-coupled fraction is
     y_ton(t_on) over all exploration spikes; the time fraction is the time within [latency,
     latency + t_on] after touch onsets over exploration time. Open details, (1) the step of t_i,
     taken as 1 ms (the paper's bin for touch analyses); (2) the shuffle, read as (a) spike times
     drawn uniformly over exploration time or (b) the cell's spike times circularly shifted within
     each trial's exploration time; (3) "closest touch onset", read as (a) the nearest onset before
-    the spike or (b) the nearest onset either side. All four combinations of (2) and (3) are run;
-    reproduced when both values are within tolerance under all, methods_underspecified when they
-    disagree.
+    the spike or (b) the nearest onset either side; (4) the range of t_i over which y_ton is built
+    and fitted, which the paper does not give, read as (r100) 0 to 100 ms (the limit for prolonged
+    touches) or (r200) 0 to 200 ms. All combinations of (2), (3) and (4) are run; reproduced when
+    both values are within tolerance under all, methods_underspecified when they disagree.
 - id: fig3c-touch-spikes-outside
   statement: L4 neurons outside C2 have far fewer touch-coupled spikes, 8.4 +- 13.3%, in 3.5% of
     exploration time.
@@ -842,10 +852,11 @@ claims:
   criterion: After fig3c-touch-spikes-l4c2, the spikes not attributed to touch are indexed by the
     time to the closest preferred phase of a whisk cycle (preferred phase from the cosine fit;
     whisking epochs including those with non-monotonic phase, phase circular), y_whisk(t_i) built
-    and its cutoff t_w found by the same shuffle rule (Methods). The fraction is (touch spikes +
+    and its cutoff t_w found by the same shuffle rule (Methods), with the same start of the search
+    (the first t_i at which the increment, having been above chance, falls below it). The fraction is (touch spikes +
     phase spikes) over exploration spikes; the time is the union of touch windows and windows of
     +-t_w around each cycle's preferred phase, truncated at cycle margins (Figure 3B legend), over
-    exploration time. Open details as fig3c-touch-spikes-l4c2, plus (4) whether the phase window
+    exploration time. Open details as fig3c-touch-spikes-l4c2, plus (5) whether the phase window
     is +-t_w or t_w wide in total; all combinations are run, with the same rule for disagreement.
 - id: fig3d-touch-phase-outside
   statement: L4 neurons outside C2 have fewer touch or phase coupled spikes than L4 C2, 33.0 +-
@@ -935,10 +946,13 @@ claims:
     touch, the threshold chosen on half the data and performance measured on the other half;
     repeated to give 95% bounds. Open details, (1) the non-touch epochs, read as (a) the 30 ms
     before touch in the same responses or (b) 10 ms windows drawn from exploration time away from
-    touch; (2) the performance measure, read as (a) the fraction of touches detected at the best
+    touch, under (a) with the sample taken, as the paper does not say which, as (a1) the 10 ms
+    window ending at onset, (a2) the earliest full window (-30 to -20 ms) or (a3) all pre-touch
+    windows; (2) the performance measure, read as (a) the fraction of touches detected at the best
     post-touch time point or (b) the percent correct over touch and non-touch samples, at the
     best post-touch time point, in both cases with the threshold that maximizes percent correct
-    on the training half (the Methods' "optimal threshold"); (3) whether the 1000 draws pair across neurons by touch
+    on the training half (the Methods' "optimal threshold", which they do not define further; no
+    other criterion for it is in the paper); (3) whether the 1000 draws pair across neurons by touch
     (they cannot, as neurons were recorded apart; independent draws are used, as the Methods
     imply). The number of neurons where the mean performance first reaches 95% is found for each
     reading of (1) and (2); reproduced when it is within tolerance under all, else
@@ -974,9 +988,15 @@ claims:
     time error from 100 bootstrap runs (Figure 4, figure supplement 1). Open details, (1) the
     uncertainty, read as (a) the RMS error, (b) the half width of the 95% bound of decoded time
     or (c) 1.96 times the RMS error; (2) train and test split, read as (a) half and half as for
-    touch detection or (b) independent resampled sets for training and testing. Reproduced when
-    the minimum over time points, at or near 10 ms after onset, is within tolerance under one
-    reading of (1) for both readings of (2); the readings that match are said. Also shown, that
+    touch detection or (b) independent resampled sets for training and testing; (3) the times the
+    decoder chooses among, which the paper does not give ("for every time point what was the most
+    likely time elapsed from touch onset"), read as (c-all) every 1 ms over the sampled -30 to +50
+    ms response where a full window fits or (c-post) every 1 ms from onset on (the Results'
+    "integrating in 10 ms windows after touch"); (4) the smoothing of zero counts in the
+    likelihood, not given, read as add-one (Laplace) smoothing, a smaller pseudocount shown as a
+    variant. Reproduced when the minimum over time points, at or near 10 ms after onset, is within
+    tolerance under one reading of (1) for both readings of (2) and both of (3); the readings that
+    match are said. Also shown, that
     the error falls with population size (Figure 4B inset).
 - id: fig4c-phase-decoding
   statement: Even 1000 L4 neurons give only a rough estimate of whisking phase, a resolution of 24
@@ -995,14 +1015,19 @@ claims:
     tolerance: 3.3
     unit: deg
   criterion: Methods, Population decoding. Per neuron, spikes aligned to the phase of each whisk
-    cycle with peak amplitude >2.5 deg, binned in 120 bins over -pi to pi; neurons drawn with
+    cycle with peak amplitude >2.5 deg, binned in 120 bins over -pi to pi; the cycles are the
+    whisking cycles of Methods, Whisker analysis, as for phase tuning (whisking epochs lie outside
+    touch epochs, "Whisking cycles during licking or within 70 ms after touch were excluded", and
+    "Whisking epochs used for phase analysis had monotonic phase for a complete whisking cycle"); neurons drawn with
     replacement and their responses circularly shifted to give uniformly distributed preferred
     phases; a naive Bayes classifier discriminates the population response at two phases; the
     phase difference reaching 76% correct is found, median over 100 runs (Figure 4C legend).
     Open details, (1) the response per cycle, read as (a) the spike count in each phase bin of one
     cycle (Poisson or multinomial likelihood over cycles) or (b) the cycle-averaged rate per bin
     used as a Poisson mean; (2) the shifts, read as (a) random uniform shifts or (b) shifts that
-    place preferred phases evenly. Reproduced when both values are within tolerance and C2 is
+    place preferred phases evenly; (3) bins with no spikes in the likelihood, which the paper
+    does not treat, read as add-one (Laplace) smoothing of counts or a floor rate under (1)(b), the
+    paper giving no value for either. Reproduced when both values are within tolerance and C2 is
     better than outside under all readings, else methods_underspecified.
 - id: fig5c-modulation-index
   statement: Touch response magnitude of L4 C2 neurons is strongly modulated by touch order,
@@ -1119,9 +1144,14 @@ claims:
   depends_on:
   - fig6cd-ff-near-binomial
   criterion: Methods, last paragraph, and Figure 6D. Per L4 C2 cell, spike trains simulated as a
-    Poisson process with an absolute refractory period of 2.3 ms (the median minimum ISI) and a
-    time-varying rate equal to the cell's touch PSTH (1 ms bins), one simulated train per real
-    touch; FF computed as for the data in 10 ms sliding windows. Open details, (1) which touches,
+    Poisson process with an absolute refractory period of 2.3 ms (the median minimum ISI) whose
+    average touch response is matched to the data (Methods, "with average touch response matched
+    to the data"), so the output PSTH, not the input rate, equals the cell's touch PSTH (1 ms bins),
+    so the rate is raised to make up for the spikes the refractory period removes, as the free
+    rate lambda(t) = r(t) / (1 - integral of r over [t - 2.3 ms, t)) of Berry and Meister (1998),
+    the paper's cited method, or by adjusting the rate until the simulated PSTH matches; using
+    the PSTH directly as the rate is not the paper's model and is shown as a variant only. One
+    simulated train per real touch; FF computed as for the data in 10 ms sliding windows. Open details, (1) which touches,
     read as all >250 ms touches pooled, or per group as fig6cd; (2) the comparison, which the
     paper gives only as a figure, read as (a) the population mean data FF below the model's at
     the window of the data minimum, by more than the sum of the two s.e.m. (Figure 6D error

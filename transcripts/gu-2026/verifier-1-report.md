@@ -1,0 +1,36 @@
+**A. Outcomes**
+
+The claims file has 29 claims. The notebook tests 9 and treats 20 as blocked: 4 as metadata_insufficient and 16 as too_large.
+
+| Claim | My outcome | Reason |
+|---|---|---|
+| fig1c-learning | reproduced | Cell 12: in all 5 rats the peak (last) day is above the first day and above 25%, and Spearman ρ > 0 (0.67 to 1.0). |
+| fig1e-trial-counts | not_reproduced | Cell 14: the best reading (b) has only 4 of 10 counts within tolerance. Trial counts for M, K and L are 12–22% below the paper (K: 2959 vs 3779). COM counts for M, K and L are out (K 245 vs 315, L 250 vs 309). Every rat does have ≥100 COM trials (min 120). |
+| fig1d-initial-switch-bias | reproduced | Cell 16: the first-day ratio is above 2 in 5 of 5 rats under both readings, binomial p = 0.031. K (2.31) and L (2.25) are only just above 2. Chance (2) matches the paper. |
+| fig1d-switch-bias-declines | partially_reproduced | Cell 18: day effect 0.933 (CI 0.920–0.946), p = 2e-23, within 0.92 ± 0.092. The final ratio is 1.85 (mean) or 1.84 (pooled), outside 1.5 ± 0.15 under both readings. |
+| figs1f-multiple-com | reproduced | Cell 20: under both thresholds, 87–96% of COM trials have one event, and every rat has ≥5 trials with ≥2 events (and ≥2 arms). |
+| fig1g-com-corrective | reproduced | Cell 22: the final choice is above the initial in all 5 rats, rank-sum p < 0.05 in all (M 0.028, E 0.0004, J < 1e-4, K 0.0008, L 0.004), under both thresholds. M does not reach the paper's p < 0.01, which the criterion does not require. |
+| fig1g-com-matches-run-through | reproduced | Cell 24: median p over 100 draws is 0.19–0.75 in all rats. Only 5–12 daily values per rat, so power is low. J's COM median is higher by 0.12. |
+| fig1h-final-choice-less-switching | not_reproduced | Cell 26: the paired t-test reaches p < 0.01 in only 2 rats (J, K) under both thresholds. E (0.013/0.015) and L (0.013/0.027) miss narrowly. The partial bar is 3 rats, though the two sign-test conditions hold in 4 rats. If "holds" in the partial clause meant p < 0.05, the outcome would be partial. |
+| fig1h-final-ratio-near-one | reproduced | Cell 28: no rat differs from 1 by the sign test under either threshold. For M (5 days) the test cannot reach p < 0.05 at all (minimum two-sided p = 0.0625), so this is a weak absence result. |
+| fig3b-extended-before-stopping, fig3b-distance-predicts-com, fig3c-distant-after-stopping, fig3d-distant-vs-inbound | blocked (metadata_insufficient) | They need decoded MAP positions. The `scratch/triggered` tables are unlabelled, and the archive metadata has no description or variables for the obj files. The notebook never tried to match their trigger times to its own COM times (see B6). |
+| figs7b-no-swr | blocked as too_large; I think it is partly testable | The 1 kHz LFP (39 files, 152 GB) is in the archive, and cell 30 measured 52 MB/s. SWR detection (150–250 Hz consensus, speed < 4 cm/s) needs only LFP, CA1 channels, speed and the COM and poke times the notebook already has, and only short windows. Rat M has 4 LFP files for 5 days. |
+| figs6, figs3, figs11b, fig4a-local-extended-correct, fig4a-remote-correct, fig4b, figs11a, fig4c, fig4d, fig4e, figs11c, fig5a, fig5b, figs8, figs10 | blocked (too_large), agreed | They all need the decoder posterior or remote/local-extended events. These are not in the archive and would have to be rebuilt from 12.5 TB of raw voltage. |
+
+**B. Problems**
+
+1. **[affects a conclusion] Blocked list, figs7b-no-swr.** The too_large reason contradicts cell 30's own measurement. The LFP is present and can be streamed, and the claim needs no decoder output. At least the per-rat comparison (COM ripple rate vs both end-of-trial rates, the partial criterion) could be tested.
+2. **[affects a conclusion] fig1e (cell 14).** The trial shortfall for M, K and L (−287, −820, −271) is not investigated. The Statescript outerCount matches the built trials within about 1 per session (cell 6), so the trial definition is probably not the cause. More likely the paper used sessions or days that are not in the archive, or counted trials differently. This explains the not_reproduced outcome, but the cause is not shown.
+3. **[does not affect a conclusion] `load_day` / `detect_com`, reading (b).** The "0.1 of arm length" threshold uses the observed min–max of head positions on the segment (85–87 cm, cell 8), not the 96 cm track length. So reading (b) is about 8.6 cm, not 9.6 cm. The two readings still bracket 9.6 cm, and neither reaches 5 counts within tolerance.
+4. **[does not affect a conclusion] `detect_com`.** The reversal is the first negative run over 100 ms anywhere in the visit, even before the head passes the threshold. My synthetic test confirmed this: a 150 ms wiggle at 3 cm followed by a 30 cm entry gave t_rev at the wiggle. Every deep entry into a non-final arm has to end with backing out, so the COM/no-COM decision is barely affected. Only t_rev, and so the 0.8 s position check, can be wrong. Other synthetic checks behaved correctly: threshold 10 cm vs proportional, no reversal → no COM, `nearby_control`, `is_switch`, `infer_sequence`.
+5. **[does not affect a conclusion] Sessions with fewer than 20 trials (cells 20, 22, 24, 26).** These cells use T, which keeps the 4 sessions with fewer than 20 trials (54 trials), against point 2 of the claims file. Cell 24 (matches-run-through) runs only the 10 cm reading.
+6. **[does not affect a conclusion] Cell 30.** "metadata_insufficient" for the fig3 claims is asserted without any attempt to identify the triggered tables, for example by aligning their trigger times with the detected t_rev. The claims stay blocked either way, because the decoder is still missing.
+7. **[does not affect a conclusion] fig1c, chance level.** The 25% chance is the paper's figure. The rats almost never repeat an arm (52 of 14,708 transitions), so effective chance is closer to 33%. First-day values for M, E and J (0.27–0.34) sit at that level. Peak values (≥0.51) clear both.
+8. **[does not affect a conclusion] Sequence labels (cells 9–10).** The inferred cycles (3-4-2-1-3 for M, E and J; 1-2-4-3-1 for K and L) agree with the Results and Figure 1B but not Figure S1E. They are confirmed by the data: reward equals final == correct arm in 99.96% of trials.
+
+**C. What I could not check**
+
+- **Content of the `scratch/triggered` tables.** The archive API gives no description. An output with the column names, the trigger times aligned to the notebook's COM t_rev and trial ends, and the window lengths would have settled whether any fig3 claim is testable.
+- **Cause of the trial-count shortfall.** Per-day or per-session counts set against Figure 1C's day counts (M: 6 days in the paper, 5 in the archive; J: 11 vs 12), and a count of run epochs not tagged "Session", would have shown whether data is missing or defined differently.
+- **Whether the LFP can support SWR detection.** An output of the `filtered data` band, the electrodes table with CA1 locations, and the 150–250 Hz power around a few COM times would have answered this for figs7b.
+- **Sensitivity of fig1h.** A paired t-test with days of undefined ratio kept as 0/1-smoothed counts, rather than dropped, would show whether E and L cross p < 0.01.

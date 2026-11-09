@@ -1,0 +1,1047 @@
+# Claims for Shin, Ogando, Abdeladim, ... Lecoq & Adesnik (2025), "Recurrent pattern completion
+# drives the neocortical representation of sensory inference", Nature Neuroscience 28, 2319-2329,
+# on dandiset 000248 ("Allen Institute Openscope - Illusion project").
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (CC BY 4.0), full text from Europe PMC in
+# paper/10.1038-s41593-025-02055-5.txt: main text, figure legends, Methods and the Extended Data
+# figure legends (Extended Data Figs. 1 to 10). The Supplementary Information (Supplementary
+# Results, Supplementary Discussion, Supplementary Figs. 1 to 8) is not in paper/ and was not
+# read. The main findings are shown in the main and Extended Data figures; the Supplementary
+# Figures are cited for support only (Supp. Fig. 1 heatmaps of the subsets, Supp. Fig. 2 mesoscope
+# area borders, Supp. Fig. 3 other decoders, Supp. Fig. 4, Supp. Fig. 6). The claim that rests on
+# a Supplementary Figure (supp3-decoder-types) says so. The bioRxiv preprint (10.1101/2023.06.05.543698,
+# version 1) is also in paper/; it was not used. No PDF was supplied, so no figure was read.
+#
+# Code. The paper's Code availability names a Code Ocean capsule, 10.24433/CO.6659254.v2
+# (codeocean.com/capsule/2540707); it returned HTTP 403 from this run and was not read. Read in
+# its place, as the first author's public code for this dataset (its data path is
+# 'S:\OpenScopeData\00248_v240130\'): github.com/hs13/IC_paper_code at commit
+# 50e04eaf7c9192a067c129f3c1f174a27f10c406 (2024-10-27, "Initial commit"), cited below as "the
+# code". It holds the Neuropixels analysis only, in MATLAB: postprocessnwb_v240130.m (reads the
+# NWB files, trial parsing, response windows), analyzeStaticICtxi.m (IC-encoder, LC-encoder and
+# segment responder definitions), analyzeRFCI.m (receptive fields), merge_postprocessed.m,
+# analyzeICtxi_SVM_areas.m and aggregateICtxi_SVM_trainICRC_areas.m / _trainREx_areas.m (decoding),
+# plot_SVM_*.m, analyze_CCGfftlong.m and computeCCGpeaktroughs.m (raw cross-correlograms),
+# analyzeMouseEye.m, aggregateMouseEye.m and aggregate_fixedgaze.m (eye tracking). The
+# cross-correlogram correction and the Fig. 2d count are not in it; they were read in the same
+# author's larger repository github.com/hs13/Analyze_IC_OpenScope_v240130 at commit
+# 4ee15852ca19bf32ff876ede0598f3099f2e4208 (aggregate_ctxqcCCGfftlong.m), which the paper does not
+# link and which is cited as "the larger repository", a lower source than the Methods and the code.
+# No code for the 2p analyses or for the Figure 1 percentages was found.
+#
+# Data the paper describes. Three kinds of experiment.
+# (1) Neuropixels (this dandiset; Data availability gives dandiset 000248): 12 sessions from 12
+# mice, six probes targeted to V1, LM, RL, AL, PM and AM, Allen Brain Observatory pipeline,
+# Kilosort2, spike times per unit. The Methods' Animals list Sst-IRES-Cre;Ai32 (n = 10) and
+# PV-IRES-Cre;Ai32 (n = 4) mice, 14 in all, against 12 elsewhere; the code's CCG script names 12
+# subjects (sub-619293, 619296, 620333, 620334, 625545, 625554, 625555, 630506, 631510, 631570,
+# 633229, 637484). Analyzed units are regular-spiking (RS) units, trough-to-peak width >= 0.4 ms
+# (the code uses the NWB units column waveform_duration > 0.4). A unit's area is the location
+# label of its peak channel (code; 'VISp' and not 'VISpm' for V1). Stimuli, monocular on a monitor
+# 15 cm from the right eye. IC blocks (Extended Data Fig. 1b) ICwcfg1 (default, white circles on
+# black), ICwcfg0 (rotated 315 degrees), ICkcfg1 and ICkcfg0 (black-white inverted); each image
+# 0.4 s with 0.4 s ITI; in ICwcfg1 the IC and LC images 400 times and the others at least 50; in
+# configuration 0 each image 30 times. Images per IC block (code trial codes): blank 0, X 101,
+# TC1 105, IC1 106, LC1 107, TC2 109, LC2 110, IC2 111, IRE1 506, IRE2 511, TRE1 1105, TRE2 1109,
+# XRE1 1201, XRE2 1299, In BR/BL/TL/TR 1301 to 1304, Out BR/BL/TL/TR 1305 to 1308. In the NWB
+# stimulus table of an IC block the code takes every second row from the first non-zero frame
+# (image rows alternate with ITI rows) and maps the frame value to these codes. Receptive field
+# block (RFCI) 16-degree drifting grating patches at 9 positions (center and 8 at 16 degrees), each
+# presentation 4 directions of 0.25 s, 10 repeats; size tuning block (sizeCI) 0 to 64 degrees.
+# Eye tracking video at 30 Hz with pupil ellipse fits in the NWB (EyeTracking); running wheel.
+# (2) 2p calcium imaging (not in this dandiset): V1L2/3 (CaMKII-tTA;tetO-GCaMP6s, 11 sessions from 5
+# mice for decoding; 29 sessions from 5 mice for Fig. 1), V1L4 (Scnn1a-Tg3-Cre;Ai162, 8 sessions
+# from 2 mice), 2p mesoscope (19 sessions from 5 mice); z-scored neuropil-corrected fluorescence.
+# (3) 2p holographic optogenetics (24 sessions from 4 mice, GCaMP6m-ChRmine) and the 2p holographic
+# mesoscope (11 sessions from 2 Vglut1-Cre;Ai203 mice). Not in this dandiset.
+# Outside data. The paper deposits "Additional postprocessed data" in the same Code Ocean capsule
+# and does not say what they are; it does not say where the 2p and holography recordings are. The
+# 2p and holography claims are marked data dataset (the paper's own recordings); the author is to
+# find whether any public copy exists.
+#
+# Shared methods, cited below by name.
+# "IC response": per trial, the mean spike rate from 0 to 400 ms after image onset (code,
+# postprocessnwb_v240130.m and merge_postprocessed.m, 1 ms bins).
+# "IC-encoder" (Methods, Definition of functional subsets; code analyzeStaticICtxi.m): in one IC
+# block, Kruskal-Wallis across blank, IC1, LC1, LC2 and IC2 trials at p < 0.05, then Tukey-Kramer
+# comparisons (MATLAB multcompare default); IC1-encoder when IC1 differs from blank at p < 0.05 with
+# AUROC against blank > 0.5 and neither LC1 nor LC2 differs from blank; IC2 likewise. LC-encoders
+# (Extended Data Fig. 10a) the same with IC and LC exchanged.
+# "segment responder" (Methods; code): BR-segment responder when Kruskal-Wallis across blank and
+# the 8 segment images is p < 0.05, a rank-sum test of In BR against Out BR trials is p < 0.05 with
+# AUROC > 0.5, and the unit is neither IC- nor LC-encoder; likewise BL, TL, TR. The Methods name
+# only the rank-sum test; the Kruskal-Wallis gate is the code's.
+# "decoder" (Methods, Decoding analysis; code analyzeICtxi_SVM_areas.m): block ICwcfg1; units of
+# one area (RS units for Neuropixels; code aggregate scripts load the 'RS' files); response as the
+# IC response; training classes IC1, LC1, LC2, IC2, trials balanced to the smallest class by taking
+# its first trials; tenfold stratified partition (cvpartition), test sets not overlapping; each
+# fold z-scores every unit by the training trials' mean and SD (NaN set to 0); linear SVM in
+# MATLAB fitcecoc (default one-vs-one coding, templateSVM with Standardize true). Cross-validation
+# accuracy is the mean over the four classes of the fraction of test trials decoded correctly,
+# averaged over folds. Probe trials are decoded by each of the ten fold models and the fractions
+# averaged. Neuropixels areas are kept in a session when it has >= 50 RS units there; 2p areas
+# when >= 100 neurons. Open detail, could change the outcome: the code calls fitcecoc with
+# OptimizeHyperparameters 'auto' (MATLAB Bayesian optimization of the coding and SVM
+# hyperparameters, its default settings), which the Methods do not mention. Readings, run both:
+# (a) fixed defaults, linear SVM with C = 1, one-vs-one; (b) C chosen by an inner cross-validation
+# on the training folds, the Python counterpart of the code's search.
+# "inference score" (Results; code aggregateICtxi_SVM_trainICRC_areas.m line 171): with P(x -> y)
+# the fraction of x trials decoded as y, ((P(TRE1->IC1) - P(TRE1->LC1)) + (P(TRE2->IC2) -
+# P(TRE2->LC2)))/2 per session; tested against 0 across sessions with a two-sided Wilcoxon
+# signed-rank test (the same test as IC against LC fractions paired by session).
+# The Statistics section says tests are nonparametric and two-sided unless noted.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000248"
+paper: doi:10.1038/s41593-025-02055-5
+claims:
+- id: fig1e-npx-exclusive-center
+  statement: In the Neuropixels data, 18 of 1,804 V1 RS units respond exclusively to the grating
+    patch at the center position (the illusory gap region) of the receptive field mapping block.
+  source: Methods, Definition of functional subsets of neurons, paragraph 1; Figure 1e legend
+  quote: In the Neuropixels data, there were n = 18 exclusively center-responsive neurons of 1,804
+    V1 RS units
+  expected:
+  - quantity: exclusively center-responsive V1 RS units
+    value: 18
+    tolerance: 1.8
+    unit: units
+  - quantity: V1 RS units, all 12 sessions
+    value: 1804
+    tolerance: 180.4
+    unit: units
+  criterion: V1 RS units as in the opening comment. Per RF trial (one presentation of the four
+    directions, 1 s), the mean rate from 0 to 1000 ms after onset (code, postprocessnwb_v240130.m,
+    every fourth row of the RFCI table), standard (not inverse) patches only. The Methods test
+    each position against gray-screen trials with a Wilcoxon rank-sum test, Bonferroni-Holm
+    corrected, and keep units significant at the center only. The RF block has no gray-screen
+    trials (0 s ITI), so what forms the gray-screen sample is open. Readings, (a) the code
+    (analyzeRFCI.m, RFsigexclclassic with RFindclassic = center), a Wilcoxon signed-rank test of
+    each position's trial rates against the unit's mean rate in the longest spontaneous block,
+    the position of largest mean response being the center and the only one significant after the
+    Holm step; (b) the Methods, a rank-sum test of each position's trial rates against rates in
+    1 s windows tiled over the longest spontaneous (gray screen) block, Holm corrected over the 9
+    positions, center the only significant position. Reproduced when, under one reading, both
+    counts are within tolerance.
+- id: fig1f-npx-ic-ire-responsive
+  statement: Of the exclusively center-responsive V1 RS units, 66.7% respond substantially to the
+    IC image and 77.8% to the real-edge (IRE) image of their preferred IRE orientation, although
+    the IC image has no contrast in their receptive field.
+  source: Figure 1f legend; Results, Mouse V1 neurons respond to ICs despite the absence of contrast
+    within their receptive fields, paragraph 2
+  quote: Bottom, individual neurons with substantially I C -responsive (left; 66.7%) and I RE
+    -responsive (right; 77.8%) neurons marked in magenta on the y axis
+  depends_on:
+  - fig1e-npx-exclusive-center
+  expected:
+  - quantity: IC-responsive fraction of exclusively center-responsive units
+    value: 66.7
+    tolerance: 6.67
+    unit: percent
+  - quantity: IRE-responsive fraction of exclusively center-responsive units
+    value: 77.8
+    tolerance: 7.78
+    unit: percent
+  criterion: Units of fig1e-npx-exclusive-center. Preferred IRE orientation is the IRE image with
+    the strongest mean IC response (Results, paragraph 2); the IC image is the one with the illusory
+    bar of that orientation. Neither the Methods nor the code read fixes the test for
+    "substantially responsive" or the block. Readings, test (a) the code's analyzeStaticICtxi.m,
+    Kruskal-Wallis across blank, IC and IRE of that orientation at p < 0.05 with Tukey-Kramer
+    comparison against blank at p < 0.05 and mean above blank (sigmcBICREl1/2); (b) a rank-sum test
+    of those trials against blank trials at p < 0.05 with AUROC > 0.5. Block (i) ICwcfg1 only, two
+    orientations (135 and 45 degrees); (ii) ICwcfg1 and ICwcfg0 together, four orientations.
+    Reproduced when, under one combination, both fractions are within tolerance.
+- id: fig1g-npx-orientation-match
+  statement: For IRE-responsive exclusively center-responsive V1 RS units, the preferred
+    orientation of the illusory bar matches that of the real bar in 78.6% of units.
+  source: Figure 1g legend; Results, Mouse V1 neurons respond to ICs despite the absence of contrast
+    within their receptive fields, paragraph 2
+  quote: Comparison of the preferred orientation between illusory bars (I C stimuli) and real bars
+    (I RE stimuli) for I RE -responsive and exclusively center-responsive V1 RS units, showing a
+    78.6% match
+  depends_on:
+  - fig1f-npx-ic-ire-responsive
+  expected:
+    quantity: units whose preferred IC and IRE orientations match
+    value: 78.6
+    tolerance: 7.86
+    unit: percent
+  criterion: Preferred IC (IRE) orientation is that of the IC (IRE) image with the strongest mean
+    IC response (Results, paragraph 2), among the IRE-responsive units of fig1f under the same
+    readings. Reproduced when, under the reading that reproduces fig1f, the match is within
+    tolerance; the fraction is reported for every reading.
+- id: results-npx-units-per-session
+  statement: The Neuropixels sessions hold 150 +/- 20 V1 RS units and 597 +/- 46 higher visual area
+    RS units per session (mean +/- s.e.m., 12 sessions).
+  source: Results, A subpopulation of V1 neurons respond to ICs but not to its inducing segments,
+    paragraph 4
+  quote: 12 sessions from 12 mice; mean ± s.e.m. = 150 ± 20 V1 RS units and 597 ± 46 higher visual
+    area RS units across sessions
+  expected:
+  - quantity: V1 RS units per session, mean
+    value: 150
+    tolerance: 20
+    unit: units
+  - quantity: higher visual area (LM, RL, AL, PM, AM) RS units per session, mean
+    value: 597
+    tolerance: 46
+    unit: units
+  criterion: RS units and areas as in the opening comment, with no further quality filter (the
+    code computes an ISI, amplitude cutoff and presence ratio filter and does not apply it).
+    Tolerances are the paper's s.e.m.
+- id: methods-npx-ic-encoder-count
+  statement: Across the ICwcfg0 and ICwcfg1 blocks, 159 of 1,804 V1 RS units are IC-encoders.
+  source: Methods, Definition of functional subsets of neurons, paragraph 2
+  quote: Across ICwcfg0 and ICwcfg1, 159 of 1,804 V1 RS units were identified as IC-encoders in the
+    Neuropixels dataset
+  expected:
+    quantity: V1 RS IC-encoders across ICwcfg0 and ICwcfg1
+    value: 159
+    tolerance: 15.9
+    unit: units
+  criterion: IC-encoder and IC response as in the opening comment, in each block separately with
+    that block's IC1 and IC2 images. "Across" is open. Readings, (a) units that are IC-encoders in
+    at least one of the two blocks; (b) the sum of the two blocks' counts. Reproduced when the count
+    is within tolerance under one reading.
+- id: ed6b-npx-v1-group-counts
+  statement: The Neuropixels data hold 87 V1 IC-encoders and 636 V1 segment responders (the sets
+    whose layer distribution Extended Data Fig. 6b shows).
+  source: Extended Data Fig. 6b legend
+  quote: For the Neuropixels dataset, proportion of V1 IC-encoders (left, n = 87) and V1 segment
+    responders (right, n = 636) in each layer
+  expected:
+  - quantity: V1 IC-encoders
+    value: 87
+    tolerance: 8.7
+    unit: units
+  - quantity: V1 segment responders
+    value: 636
+    tolerance: 63.6
+    unit: units
+  criterion: IC-encoder and segment responder as in the opening comment (segment responders the
+    union over BR, BL, TL, TR). Which units and block are open (Fig. 2d gives 79 and 526, the
+    Methods 159 across two blocks). Readings, (a) RS units, block ICwcfg1; (b) all units not
+    classified as noise, block ICwcfg1; (c) RS units, union of ICwcfg1 and ICwcfg0. Reproduced when
+    both counts are within tolerance under one reading. The layer proportions are shown, with no
+    value to match.
+- id: fig2d-npx-ccg-hva-input
+  statement: V1 IC-encoders (n = 79) are more likely than V1 segment responders (n = 526) to receive
+    putative excitatory connections from higher visual areas, by cross-correlogram analysis.
+  source: Figure 2d legend; Results, A subpopulation of V1 neurons respond to ICs but not to its
+    inducing segments, paragraph 4
+  quote: V1 IC-encoders ( n = 79) are substantially more likely than V1 segment responders ( n =
+    526) to receive putative excitatory connections from higher visual areas (LM, RL, AL, PM and AM)
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 7.0e-6
+    n: 79 V1 IC-encoders and 526 V1 segment responders, 12 sessions from 12 mice
+  expected:
+  - quantity: V1 IC-encoders in the analysis
+    value: 79
+    tolerance: 7.9
+    unit: units
+  - quantity: V1 segment responders in the analysis
+    value: 526
+    tolerance: 52.6
+    unit: units
+  criterion: Methods, Cross-correlogram analysis. Spike trains of cortical RS units over the
+    ICwcfg1 block in 1 ms bins; CCG(tau) = sum over t of x1(t) x2(t + tau) divided by the square
+    root of the two spike counts, tau up to +/- 100 ms (code analyze_CCGfftlong.m); the CCG of the
+    same trains smoothed with a 25 ms window is subtracted; a putative excitatory connection from an
+    HVA unit to a V1 unit when the corrected CCG peak in the 1 to 10 ms window with the HVA unit
+    leading exceeds 7 times the SD of the CCG flank (50 to 100 ms from zero). Groups as in the
+    opening comment, in ICwcfg1 (larger repository, aggregate_ctxqcCCGfftlong.m lines 285 to 287).
+    Open details, each could change the outcome. Smoothing window shape, (a) a 25-bin boxcar, (b) a
+    Gaussian kernel 25 ms long with s.d. 5 ms, the kernel the paper uses for PSTHs (Extended Data
+    Fig. 4b legend). Flank SD taken from (i) the uncorrected CCG (larger repository,
+    line 77), (ii) the corrected CCG. Per V1 unit measure, (x) the fraction of the session's HVA RS
+    units with a connection to it (larger repository, Pin_flank.HVA), (y) the number of such units.
+    Reproduced when, under every combination, IC-encoders have the higher median and a two-sided
+    rank-sum test gives p < 0.05; not reproduced when none does; when the readings differ the
+    claim is blocked as methods_underspecified with all results shown. Group sizes are compared
+    with the expected counts.
+- id: fig3a-npx-v1-decoding
+  statement: A linear SVM decodes the four images IC1, LC1, LC2 and IC2 from V1 activity in the
+    Neuropixels data with tenfold cross-validation accuracy above the chance of 0.25.
+  source: Figure 3a; Results, Representation of IC inference across the mouse visual cortical
+    hierarchy, paragraph 3
+  quote: The tenfold cross-validation performance was substantially above chance, indicating that
+    neural activity patterns evoked by these four images were highly distinct at the multivariate
+    level
+  criterion: The decoder of the opening comment on V1 RS units, sessions with >= 50 of them. The
+    paper reports no test for Fig. 3a; the code tests the per-session accuracy against 0.25 with a
+    Wilcoxon signed-rank test (aggregateICtxi_SVM_trainICRC_areas.m line 147). Reproduced when the
+    mean accuracy exceeds 0.25 with that test at p < 0.05 under both decoder readings. Accuracy for
+    the other five areas is reported.
+- id: fig3c-npx-v1-inference
+  statement: In Neuropixels V1, TRE trials are decoded as the matching IC image more often than as
+    the matching LC image (0.51 against 0.22), so IC inference is represented in V1.
+  source: Figure 3c; Results, Representation of IC inference across the mouse visual cortical
+    hierarchy, paragraph 4
+  quote: Applying inference decoding to Neuropixels V1 recordings revealed that T RE was
+    substantially more likely to be decoded as I C than as L C (Fig. 3c ; decoding probability for I
+    C vs. L C was 0.51 vs. 0.22, P < 0.05 Wilcoxon signed-rank test)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: "<"
+    n: 12 sessions from 12 mice
+  expected:
+  - quantity: probability TRE decoded as the corresponding IC, V1, mean over sessions
+    value: 0.51
+    tolerance: 0.051
+  - quantity: probability TRE decoded as the corresponding LC, V1, mean over sessions
+    value: 0.22
+    tolerance: 0.022
+  depends_on:
+  - fig3a-npx-v1-decoding
+  criterion: The decoder and inference score of the opening comment on V1 RS units. The IC value
+    is the mean of P(TRE1->IC1) and P(TRE2->IC2), the LC value the mean of P(TRE1->LC1) and
+    P(TRE2->LC2), each averaged over sessions. Reproduced when, under a decoder reading, both values
+    are within tolerance and the signed-rank test of IC against LC gives p < 0.05 with IC higher;
+    partially reproduced when the test holds and a value is outside tolerance.
+- id: fig3d-npx-areas-inference
+  statement: In the Neuropixels data almost every visual area decodes TRE as IC more than as LC,
+    significantly in V1, LM, RL, AL and PM and not in AM, with V1, LM and AL the strongest.
+  source: Figure 3d legend; Results, Representation of IC inference across the mouse visual cortical
+    hierarchy, paragraph 5
+  quote: In the Neuropixels dataset, almost every visual area was substantially biased toward
+    decoding T RE as I C than L C , with V1, LM and AL showing the strongest representations of the
+    IC
+  statistics:
+  - about: V1, 12 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0132
+  - about: LM, 8 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0156
+  - about: RL, 11 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0244
+  - about: AL, 10 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0039
+  - about: PM, 12 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0342
+  - about: AM, 11 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.1748
+  criterion: The decoder and inference score of the opening comment per area, sessions with >= 50
+    RS units in the area (the paper keeps 12, 8, 11, 10, 12, 11 sessions for V1, LM, RL, AL, PM,
+    AM; the counts found are reported). "Strongest" is open, readings (a) the three largest mean
+    inference scores, (b) the three smallest p-values. Reproduced when at least five areas give p <
+    0.05 with IC above LC and V1, LM and AL are the strongest three under reading (a) or (b);
+    partially reproduced when three or four areas are significant, or when five are and the
+    ranking fails under both readings; not reproduced otherwise.
+- id: ed7a-npx-no-area-above-v1
+  statement: No higher visual area shows a substantially larger inference performance than V1,
+    although decoding accuracy and inference scores differ across areas.
+  source: Results, Representation of IC inference across the mouse visual cortical hierarchy,
+    paragraph 9; Extended Data Fig. 7a and 7c legends
+  quote: Notably, none of the higher visual areas showed a substantially larger inference
+    performance compared to V1 (Extended Data Fig. 7a,c )
+  statistics:
+  - about: cross-validation accuracy across the six areas, Neuropixels (Extended Data Fig. 7a)
+    test: Kruskal-Wallis test
+    p: 0.0019
+  - about: TRE inference score across the six areas, Neuropixels (Extended Data Fig. 7a)
+    test: Kruskal-Wallis test
+    p: 0.0249
+  - about: cross-validation accuracy across areas, XRE decoders (Extended Data Fig. 7c)
+    test: Kruskal-Wallis test
+    p: 0.0005
+  - about: XRE inference score across areas (Extended Data Fig. 7c)
+    test: Kruskal-Wallis test
+    p: 0.0022
+  depends_on:
+  - fig3d-npx-areas-inference
+  - ed7b-npx-xre-inference
+  criterion: A claim of absence. Per-session TRE inference scores (fig3d) and XRE inference scores
+    (ed7b) per area. The paper's test is a Kruskal-Wallis across areas followed by pairwise
+    comparisons it does not name. Readings, (a) two-sided Wilcoxon signed-rank of V1 against each
+    HVA over sessions with both, the pairwise test the code uses between areas
+    (plot_SVM_trainICRC_areas.m line 245); (b) Tukey-Kramer comparisons after the Kruskal-Wallis
+    (MATLAB multcompare default). Reproduced when no HVA has a significantly larger score than V1
+    (p < 0.05) for either score; not reproduced when one does. Extended Data Fig. 7c is said to show
+    the data of panel b, which mixes the Neuropixels and 2p areas; its Kruskal-Wallis values are
+    compared on the six Neuropixels areas and the reading is a deviation. The Kruskal-Wallis
+    p-values found are reported against the paper's.
+- id: ed7b-npx-xre-inference
+  statement: Decoders trained on the XRE real-bar images classify IC1 and IC2 trials as the XRE
+    image whose real bar matches the illusory bar, above chance in all six Neuropixels areas.
+  source: Extended Data Fig. 7b legend; Results, Representation of IC inference across the mouse
+    visual cortical hierarchy, paragraph 7
+  quote: As with T RE inference decoding (Fig. 2 ), layer 2/3 of V1 and LM consistently show high
+    inference scores (*p < 0.05, Wilcoxon signed-rank test compared to chance of 0.5
+  statistics:
+  - about: V1, 12 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0005
+  - about: LM, 8 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0078
+  - about: RL, 11 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0049
+  - about: AL, 10 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0020
+  - about: PM, 12 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0005
+  - about: AM, 11 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0137
+  criterion: The decoder of the opening comment trained on XRE1 against XRE2 trials (codes 1201,
+    1299) of ICwcfg1, probed with IC1 and IC2 trials (code svmdesc trainREx); XRE inference score
+    (P(IC1->XRE1) + P(IC2->XRE2))/2 (Extended Data Fig. 7b legend) per session and area, sessions
+    with >= 50 RS units. Reproduced when the score is above 0.5 with a signed-rank p < 0.05 in all
+    six areas; partially reproduced in four or five; not reproduced otherwise.
+- id: ed6ef-npx-ic-not-greater
+  statement: In the Neuropixels data, IC images do not evoke larger population average responses
+    than LC images in any area, averaged over all units or over visually responsive units.
+  source: Extended Data Fig. 6e and 6f legends
+  quote: I C images do not evoke greater responses than L C images (*p < 0.05 one-tailed Wilcoxon
+    signed-rank test for testing I C > L C ; note that none of the visual areas showed significance)
+  statistics:
+  - about: all units, V1
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.9614
+  - about: all units, LM
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.9805
+  - about: all units, RL
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.7676
+  - about: all units, AL
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.7217
+  - about: all units, PM
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.9895
+  - about: all units, AM
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.8398
+  - about: visually responsive units, V1
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.9788
+  - about: visually responsive units, LM
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.9805
+  - about: visually responsive units, RL
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.7114
+  - about: visually responsive units, AL
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.7842
+  - about: visually responsive units, PM
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.9866
+  - about: visually responsive units, AM
+    test: one-tailed Wilcoxon signed-rank test, IC > LC
+    p: 0.6499
+  criterion: A claim of absence, on the paper's test. Same sessions as fig3d (>= 50 RS units in the
+    area); ICwcfg1; per session, the IC response averaged over (e) all RS units of the area, (f)
+    visually responsive RS units (Kruskal-Wallis across blank, IC1, LC1, LC2, IC2 at p < 0.05,
+    Extended Data Fig. 6d legend), on IC trials (IC1 and IC2 pooled) and on LC trials (LC1 and LC2
+    pooled); one-tailed signed-rank test of IC > LC across sessions. Reproduced when no area gives p
+    < 0.05 in either panel; not reproduced when any does. The mean IC minus LC difference per area
+    is reported.
+- id: ed2b-npx-fixed-gaze
+  statement: Limiting the Neuropixels analysis to fixed-gaze trials (pupil within 8 degrees of its
+    modal position) leaves 11 exclusively center-responsive V1 RS units, and their responses to ICs
+    and orientation match do not change the conclusion.
+  source: Extended Data Fig. 2b to 2e legends; Results, Mouse V1 neurons respond to ICs despite the
+    absence of contrast within their receptive fields, paragraph 3
+  quote: When analyzing only fixed-gaze trials, there were n = 11 exclusively center-responsive V1
+    RS units; 10 sessions had eye tracking data and of these, 9 sessions had a valid receptive field
+    mapping block where the fixed-gaze constraint left at least one trial in each position
+  depends_on:
+  - fig1e-npx-exclusive-center
+  - fig1g-npx-orientation-match
+  expected:
+  - quantity: exclusively center-responsive V1 RS units, fixed-gaze trials
+    value: 11
+    tolerance: 1.1
+    unit: units
+  - quantity: sessions with eye tracking data
+    value: 10
+    tolerance: 0
+    unit: sessions
+  - quantity: sessions with a valid fixed-gaze receptive field block
+    value: 9
+    tolerance: 0
+    unit: sessions
+  criterion: Fixed-gaze trials per the Methods (Eye tracking analysis), pupil position within 8
+    visual degrees of the modal pupil position throughout the trial. The code (analyzeMouseEye.m)
+    uses the NWB EyeTracking pupil fits, a threshold of 20 camera pixels (its stand-in for 8
+    degrees) on the maximum distance from the mode during the trial, and drops likely blinks. The
+    paper gives no pixel to degree conversion, so the threshold is open. Readings, (a) 8 visual
+    degrees, when the dataset gives pupil or gaze position in degrees; (b) the code's 20 camera
+    pixels. Then fig1e, fig1f and fig1g are repeated on fixed-gaze trials only, in the sessions whose
+    fixed-gaze RF trials cover all 9 positions. Session counts must match exactly. The paper shows
+    the match against a shuffle null (Extended Data Fig. 2e) and gives no threshold for it; the
+    95th percentile of 1,000 shuffles of the preferred IC orientations among those units is a
+    standard choice, recorded as a deviation, and the match fraction is also compared with the
+    78.6% of fig1g. Reproduced when the unit count is within tolerance and the match exceeds that
+    percentile; partially reproduced when one holds.
+- id: ed2f-npx-rf-match
+  statement: Receptive field positions mapped with fixed-gaze trials match those mapped with all
+    trials for 81% of the 398 V1 RS units with significant receptive fields.
+  source: Extended Data Fig. 2f legend
+  quote: Match proportion is 0.81 among 398 V1 RS units with significant receptive fields (p < 0.05
+    Kruskal-Wallis test across responses to 9 positions in the receptive field mapping block)
+  expected:
+  - quantity: fraction of units with the same RF position under fixed-gaze and all trials
+    value: 0.81
+    tolerance: 0.081
+  - quantity: V1 RS units with significant receptive fields
+    value: 398
+    tolerance: 39.8
+    unit: units
+  criterion: RF position is the position of largest mean RF-trial response (code analyzeRFCI.m,
+    RFindclassic); significant receptive field when the Kruskal-Wallis across the 9 positions gives
+    p < 0.05 (legend). Fixed-gaze trials as in ed2b, sessions with eye tracking. Open, which mapping
+    must be significant. Readings, (a) significant with all trials; (b) significant with
+    fixed-gaze trials; (c) both. Reproduced when both values are within tolerance under one reading.
+- id: ed2g-npx-pupil-area
+  statement: Pupil area during the presentation does not differ across the images of the IC block.
+  source: Extended Data Fig. 2g legend
+  quote: Pupil area, z-scored across each recording session, during visual presentation of various
+    images in the IC block (n = 10 sessions with eye tracking data; p = 0.7220 Friedman test)
+  statistics:
+  - test: Friedman test
+    p: 0.722
+    n: 10 sessions with eye tracking data
+  criterion: A claim of absence, on the paper's test. Pupil area from the NWB pupil fits, z-scored
+    over the session; per trial its mean over the 0 to 0.4 s presentation (the code's
+    aggregateMouseEye.m also computes the end and maximum value; the mean is used, the others
+    shown); per session and image the mean over trials; a Friedman test with sessions as blocks.
+    Open, which images. Readings, (a) IC1, LC1, LC2, IC2 of ICwcfg1, the images the code compares;
+    (b) all 22 images of ICwcfg1. Reproduced when p >= 0.05 under the readings; when they differ,
+    blocked as methods_underspecified.
+- id: ed2a-npx-gaze-confined
+  statement: Eye gaze is confined to a small region that fits within the illusory gap, with no
+    systematic difference in pupil position among IC1, LC1, LC2 and IC2 presentations.
+  source: Extended Data Fig. 2a legend; Results, A subpopulation of V1 neurons respond to ICs but
+    not to its inducing segments, paragraph 3
+  quote: Mouse eye gaze is confined to a small region that fits within the illusory gap region.
+    There are no systematic differences in pupil position among I C1 vs. L C1 vs. L C2 vs. I C2
+    presentations
+  criterion: The paper names no test and gives no pixel to degree conversion. Pupil center from the
+    NWB pupil fits during the 0 to 0.4 s presentation of IC1, LC1, LC2, IC2 trials in ICwcfg1. A
+    claim of absence with no test in the paper, so any test is a reader's choice and is recorded as
+    a deviation. "No systematic differences" is read as no difference consistent across sessions,
+    a Friedman test with sessions as blocks of the per-session image means of x and of y (the test
+    the paper uses for pupil area, Extended Data Fig. 2g). Reproduced when neither gives p < 0.05.
+    Per-session Kruskal-Wallis tests across the four images (10 sessions, two coordinates, many
+    trials each) are shown as a variant and do not decide the outcome. The confinement part is reported as the extent of the 0.01 isoline of
+    each session's 2D density in camera pixels, with no conversion to degrees.
+- id: supp3-decoder-types
+  statement: Decoders of other kinds (quadratic and radial basis function SVMs, a fully connected
+    neural network) give results highly consistent with the linear SVM.
+  source: Results, Representation of IC inference across the mouse visual cortical hierarchy,
+    paragraph 8; Supplementary Fig. 3 (not read); Methods, Decoding analysis, paragraph 3
+  quote: In addition, different types of decoders yielded highly consistent results (Supplementary
+    Fig. 3 )
+  criterion: Supplementary Fig. 3 was not available, so which dataset and areas it shows is not
+    known. Methods, SVMs with linear, quadratic polynomial and RBF kernels, and an ANN (input layer
+    of one node per unit, two hidden layers of 100 nodes, four softmax outputs, Adam, cross-entropy
+    loss, 50,000 epochs), all with tenfold cross-validation. Tested on the Neuropixels areas, a
+    reading recorded as a deviation. Reproduced when each decoder gives the same sign and
+    significance (signed-rank p < 0.05) as the linear SVM for the TRE inference score in V1, LM and
+    AL; partially reproduced when two of three agree.
+- id: fig1ik-2p-exclusive-center
+  statement: In the 2p data, 310 of 18,576 V1L2/3 neurons are exclusively center-responsive; 21.3%
+    of them respond to the IC and 43.2% to the IRE image, and preferred IC and IRE orientations
+    match in 54.5%.
+  source: Figure 1i to 1k legend; Methods, Definition of functional subsets of neurons, paragraph 1
+  quote: Bottom, individual neurons with substantially I C -responsive (left; 21.3%) and I RE
+    -responsive (right; 43.2%) neurons marked in magenta on the y axis. There was a 54.5% match
+  expected:
+  - quantity: exclusively center-responsive V1L2/3 neurons
+    value: 310
+    tolerance: 31
+    unit: neurons
+  - quantity: V1L2/3 neurons
+    value: 18576
+    tolerance: 1857.6
+    unit: neurons
+  - quantity: IC-responsive fraction
+    value: 21.3
+    tolerance: 2.13
+    unit: percent
+  - quantity: IRE-responsive fraction
+    value: 43.2
+    tolerance: 4.32
+    unit: percent
+  - quantity: IC-IRE orientation match
+    value: 54.5
+    tolerance: 5.45
+    unit: percent
+  criterion: 2p imaging, 29 sessions from five mice, not in this dandiset. Methods as in fig1e to
+    fig1g on z-scored fluorescence averaged over the 1 s presentation, with the same open details.
+- id: fig2b-2p-ic-encoder-fraction
+  statement: About 4.3% of V1L2/3 neurons are IC-encoders (selective for one of the two IC images
+    with no substantial response to either LC image), 8.5% over both white-circle configurations.
+  source: Results, A subpopulation of V1 neurons respond to ICs but not to its inducing segments,
+    paragraph 3; Methods, Definition of functional subsets of neurons, paragraph 2
+  quote: Using these stimuli, we identified approximately 4.3% of neurons in V1L2/3 with
+    selectivity for one of the two I C images, and no substantial responses to either L C image
+  expected:
+  - quantity: IC-encoder fraction in V1L2/3, one configuration
+    value: 4.3
+    tolerance: 0.43
+    unit: percent
+  - quantity: IC-encoder fraction in V1L2/3, both white-circle configurations
+    value: 8.5
+    tolerance: 0.85
+    unit: percent
+  - quantity: V1L2/3 IC-encoders across ICwcfg0 and ICwcfg1 (Methods, 1,569 of 18,576)
+    value: 1569
+    tolerance: 156.9
+    unit: neurons
+  criterion: 2p imaging, not in this dandiset. IC-encoder as in the opening comment on z-scored
+    fluorescence over the 1 s presentation.
+- id: fig2c-2p-orientation-tuning
+  statement: V1L2/3 IC-encoders are tuned to the orientation of the illusory bar of their IC image,
+    measured with single long bars, for white-circle and black-circle blocks alike.
+  source: Figure 2c legend; Extended Data Fig. 5b legend
+  quote: Indeed, IC-encoders in V1L2/3 were tuned to the orientation of the illusory bar in the I C
+    image (I C1 -encoders were tuned to 135°, and I C2 -encoders were tuned to 45°)
+  statistics:
+  - about: illusory bar against orthogonal orientation, Fig. 2c
+    test: Wilcoxon signed-rank test
+    p: 1.8e-5
+    n: 11 sessions from five mice
+  - about: white-circles block, Extended Data Fig. 5b
+    test: Wilcoxon signed-rank test
+    p: 0.0017
+    n: 93 IC1-encoders and 159 IC2-encoders
+  - about: black-circles block, Extended Data Fig. 5b
+    test: Wilcoxon signed-rank test
+    p: 2.6e-8
+    n: 409 IC1-encoders and 482 IC2-encoders
+  criterion: 2p imaging, not in this dandiset. Reproduced when the response to the single bar at the
+    illusory bar's orientation exceeds that at the orthogonal orientation by a signed-rank test at
+    p < 0.05 over IC-encoders.
+- id: ed4c-2p-ic-encoder-rf-anywhere
+  statement: IC-encoders' receptive fields are not biased toward the illusory gap region, while
+    segment responders' receptive fields are biased toward the segments that define them.
+  source: Extended Data Fig. 4c legend; Results, A subpopulation of V1 neurons respond to ICs but
+    not to its inducing segments, paragraph 6
+  quote: IC-encoders’ receptive fields are not biased toward the illusory gap region (n = 367/386 I
+    C1 /I C2 -encoders in 24 sessions from 4 mice). On the contrary, segment responders’ receptive
+    fields are biased toward the image segments that are used to define them
+  criterion: 2p imaging, not in this dandiset. The paper names no test for panel c; Extended Data
+    Fig. 4g, a different set of sessions (images scaled up 1.5 times, 10 sessions from 5 mice),
+    compares with 95% bootstrapped confidence intervals of IC-responsive and LC-responsive neurons;
+    that comparison is borrowed for panel c, and the borrowing and the two rules below are a
+    reader's reading, recorded as a deviation. Reproduced when the IC-encoders' fraction with RF at the center is
+    inside that interval and each segment responder group's most common RF position is its segment.
+- id: ed5cd-2p-rf-size
+  statement: IC-encoders do not have larger receptive fields than other V1L2/3 neurons, by size
+    tuning and by the number of grating patches they respond to.
+  source: Results, A subpopulation of V1 neurons respond to ICs but not to its inducing segments,
+    paragraph 6; Extended Data Fig. 5c and 5d legends
+  quote: Furthermore, IC-encoders did not have substantially larger receptive fields compared to
+    other neurons in V1L2/3
+  criterion: 2p imaging, not in this dandiset. A claim of absence; the paper's comparison is the 95%
+    bootstrapped confidence interval of the number of patches IC-encoders respond to against that
+    of IC-responsive neurons (Extended Data Fig. 5d). Reproduced when the intervals overlap.
+- id: fig3e-2p-l23-not-l4
+  statement: Inference decoding is significant in V1L2/3 and not in V1L4, so V1L2/3 is the lowest
+    region of the visual hierarchy where IC inference is represented.
+  source: Results, Representation of IC inference across the mouse visual cortical hierarchy,
+    paragraph 4; Figure 3e legend
+  quote: Whereas V1L2/3 showed substantial inference decoding performance, V1L4 did not (Fig. 3e )
+  statistics:
+  - about: V1L4, 8 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.3125
+  - about: V1L2/3, 11 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0049
+  criterion: 2p imaging, not in this dandiset. Decoder and inference score of the opening comment on
+    z-scored fluorescence over the 1 s presentation. Reproduced when V1L2/3 gives p < 0.05 with IC
+    above LC and V1L4 does not.
+- id: fig3e-2p-mesoscope-areas
+  statement: In the 2p mesoscope data, V1 and LM show significant IC inference, and RL, AL, PM and
+    AM do not.
+  source: Results, Representation of IC inference across the mouse visual cortical hierarchy,
+    paragraph 5; Figure 3e legend
+  quote: Similarly, L2/3 of V1 and LM showed the strongest IC representation in the 2p mesoscope
+    dataset (Fig. 3e )
+  statistics:
+  - about: mesoscope V1, 19 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0196
+  - about: LM, 8 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.0391
+  - about: RL, 15 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.2293
+  - about: AL, 2 sessions
+    test: Wilcoxon signed-rank test
+    p: 1.0
+  - about: PM, 6 sessions
+    test: Wilcoxon signed-rank test
+    p: 0.4375
+  - about: AM, 1 session
+    test: Wilcoxon signed-rank test
+    p: 1.0
+  criterion: 2p mesoscope, not in this dandiset. As fig3e-2p-l23-not-l4, areas with >= 100 neurons.
+    Reproduced when V1 and LM give p < 0.05 with IC above LC.
+- id: ed7b-2p-xre-inference
+  statement: XRE inference decoding gives results consistent with TRE inference decoding in the 2p
+    data, significant in V1L2/3, mesoscope V1, LM and RL and not in V1L4, AL, PM or AM.
+  source: Extended Data Fig. 7b legend; Results, Representation of IC inference across the mouse
+    visual cortical hierarchy, paragraph 7
+  quote: When applying X RE inference decoding to different visual areas, we found consistent
+    results as T RE inference decoding
+  statistics:
+  - about: V1L4
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.4609
+  - about: V1L2/3
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0020
+  - about: mesoscope V1
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0007
+  - about: LM
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0078
+  - about: RL
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.0054
+  - about: AL, 2 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.5
+  - about: PM, 6 sessions
+    test: Wilcoxon signed-rank test against 0.5
+    p: 0.4375
+  - about: AM, 1 session
+    test: Wilcoxon signed-rank test against 0.5
+    p: 1.0
+  criterion: 2p imaging, not in this dandiset. As ed7b-npx-xre-inference on the 2p sessions, areas
+    with >= 100 neurons. Reproduced when V1L2/3, mesoscope V1, LM and RL give p < 0.05 above 0.5
+    and V1L4 does not.
+- id: ed5e-2p-inverted
+  statement: Inference decoding indicates IC inference in V1L2/3 for white-circle and for
+    black-circle (inverted) blocks alike.
+  source: Extended Data Fig. 5e legend; Results, Representation of IC inference across the mouse
+    visual cortical hierarchy, paragraph 8
+  quote: We found that inference decoding indicated the representation of IC inference in V1L2/3
+    regardless of black–white inversion (Extended Data Fig. 5e )
+  statistics:
+  - about: white-circles blocks
+    test: Wilcoxon signed-rank test
+    p: 0.0020
+    n: 11 sessions
+  - about: black-circles blocks
+    test: Wilcoxon signed-rank test
+    p: 0.0273
+    n: 9 sessions
+  criterion: 2p imaging, not in this dandiset. Reproduced when both block types give p < 0.05 with
+    IC above LC.
+- id: ed4hi-2p-scaled-images
+  statement: With IC block images scaled up 1.5 times, decoding accuracy is above chance and the
+    TRE inference score above zero in V1L2/3.
+  source: Extended Data Fig. 4h and 4i legend
+  quote: Decoder performance for images scaled up by 1.5× (n = 10 sessions from 5 mice)
+  statistics:
+  - about: cross-validation accuracy against 0.25
+    test: Wilcoxon signed-rank test
+    p: 0.002
+  - about: TRE inference score against 0
+    test: Wilcoxon signed-rank test
+    p: 0.002
+  criterion: 2p imaging, not in this dandiset. Reproduced when both tests give p < 0.05 in the
+    stated direction.
+- id: ed3-2p-robust-gap-mapping-contrast
+  statement: V1L2/3 neurons with receptive fields in the gap respond to illusory bars with the
+    orientation selectivity of real bars also with larger gaps, dense receptive field mapping and
+    contrast bars.
+  source: Results, Mouse V1 neurons respond to ICs despite the absence of contrast within their
+    receptive fields, paragraph 3; Extended Data Fig. 3 legend
+  quote: We further verified the illusory bar responsiveness and orientation selectivity for
+    exclusively center-responsive V1 neurons using larger illusory gap sizes (Extended Data Fig.
+    3a–d ), denser receptive field mappings (Extended Data Fig. 3e–h ) and contrast bars instead of
+    outline bars
+  expected:
+  - quantity: exclusively center-responsive neurons, 24-degree gap sessions
+    value: 32
+    tolerance: 3.2
+    unit: neurons
+  - quantity: center-RF neurons, dense mapping sessions
+    value: 71
+    tolerance: 7.1
+    unit: neurons
+  - quantity: exclusively center-responsive neurons, 50% contrast sessions
+    value: 38
+    tolerance: 3.8
+    unit: neurons
+  criterion: 2p imaging, not in this dandiset. Reproduced when in each variant the IC-IRE
+    orientation match exceeds the 95th percentile of shuffled matches (the null the legends show).
+- id: fig4a-2p-zeroing-ic-encoders
+  statement: Zeroing out IC-encoders in the input of a trained V1L2/3 decoder abolishes the TRE
+    inference performance, while zeroing out segment responders does not.
+  source: Figure 4a legend; Results, Neurons that respond emergently to ICs mediate the
+    representation of inference in V1, paragraphs 2 and 4
+  quote: Indeed, this abolished the IC inference performance; T RE -responses were no longer biased
+    toward being classified as I C compared to L C (Fig. 4a , right)
+  statistics:
+  - about: cross-validation accuracy across subsets
+    test: Friedman test
+    p: 1.1e-5
+    n: 24 sessions from four mice
+  - about: TRE inference performance across subsets
+    test: Friedman test
+    p: 0.0019
+    n: 24 sessions from four mice
+  - about: TRE inference, first subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 0.0177
+  - about: TRE inference, second subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 0.1228
+  - about: TRE inference, third subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 0.0089
+  criterion: 2p holography sessions (visual block), not in this dandiset. The legend gives the
+    per-subset p-values in the figure's order without naming the subsets in text; read from the
+    Results, the non-significant one (0.1228) is the IC-encoders-zeroed decoder. Reproduced when
+    zeroing IC-encoders gives a TRE inference test p >= 0.05 and zeroing segment responders gives p
+    < 0.05 with IC above LC.
+- id: fig4b-2p-ic-encoders-only
+  statement: A decoder trained only on IC-encoders (30 +/- 4 per session) shows high TRE inference
+    performance, while one trained only on segment responders (69 +/- 8) does not, though both
+    discriminate IC from LC images.
+  source: Figure 4b legend; Results, Neurons that respond emergently to ICs mediate the
+    representation of inference in V1, paragraphs 3 and 4
+  quote: Despite training this decoder on the activity of drastically fewer cells, it showed high
+    levels of IC inference performance (Fig. 4b , right)
+  statistics:
+  - about: cross-validation accuracy across subsets
+    test: Friedman test
+    p: 0.0025
+  - about: cross-validation accuracy against 0.25, first subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 1.8e-5
+  - about: cross-validation accuracy against 0.25, second subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 1.8e-5
+  - about: cross-validation accuracy against 0.25, third subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 5.6e-5
+  - about: TRE inference score across subsets
+    test: Friedman test
+    p: 0.0208
+  - about: TRE inference, first subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 0.0177
+  - about: TRE inference, second subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 0.0004
+  - about: TRE inference, third subset of the figure
+    test: Wilcoxon signed-rank test
+    p: 0.2472
+  expected:
+  - quantity: IC-encoders per session
+    value: 30
+    tolerance: 4
+    unit: neurons
+  - quantity: segment responders per session
+    value: 69
+    tolerance: 8
+    unit: neurons
+  criterion: 2p holography sessions, not in this dandiset. Reproduced when the IC-encoder-only
+    decoder's TRE inference test gives p < 0.05 with IC above LC, the segment-responder-only
+    decoder's does not, and both decoders' cross-validation accuracy is above 0.25 at p < 0.05.
+- id: fig5c-2p-holo-ic-responsive
+  statement: Photoactivating IC-encoders evokes larger activity in nonphotoactivated IC-responsive
+    neurons than in non-IC-responsive neurons, while photoactivating segment responders does not.
+  source: Results, Neurons that encode IC inference drive neural pattern completion within V1,
+    paragraph 4; Figure 5c; Extended Data Fig. 8b legend
+  quote: Despite this heterogeneity, targeting IC-encoders evoked substantially larger activity in I
+    C -responsive neurons compared to non-I C -responsive neurons during the photoactivation window
+  statistics:
+  - about: IC-encoder ensembles
+    test: one-tailed Wilcoxon signed-rank test
+    p: 0.0023
+    n: 32 holographic ensembles
+  - about: segment responder ensembles
+    test: one-tailed Wilcoxon signed-rank test
+    p: 0.966
+    n: 37 holographic ensembles
+  criterion: 2p holography, not in this dandiset. Reproduced when the IC-encoder test gives p < 0.05
+    and the segment responder test does not.
+- id: fig5-2p-holo-suppression
+  statement: Photoactivating a sparse ensemble of V1L2/3 excitatory neurons leads on average to a
+    prolonged suppression of the nonphotoactivated population.
+  source: Results, Neurons that encode IC inference drive neural pattern completion within V1,
+    paragraph 4; Figure 5c
+  quote: Consistent with prior reports, photoactivating a sparse ensemble of excitatory neurons in
+    V1L2/3 led to a prolonged suppression of the nonphotoactivated population on average
+  criterion: 2p holography, not in this dandiset. No test is reported; reproduced when the mean
+    baseline-subtracted response of nonphotoactivated neurons after the photoactivation window is
+    below zero.
+- id: fig5d-2p-ic-encoder-pattern-completion
+  statement: Holographic activation of IC-encoders is decoded as the corresponding IC image, both
+    from all neurons and from nonphotoactivated neurons only (median 0.372), in the absence of any
+    visual stimulus.
+  source: Figure 5d legend; Results, Neurons that encode IC inference drive neural pattern
+    completion within V1, paragraph 6
+  quote: Indeed, the decoder constructed with nonphotoactivated neurons was able to classify
+    IC-encoder photoactivation trials as the corresponding I C image
+  statistics:
+  - about: all imaged neurons
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 7.9e-7
+    n: 32 IC-encoder ensembles
+  - about: nonphotoactivated neurons
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 4.3e-5
+    n: 32 IC-encoder ensembles
+  expected:
+    quantity: median decoding performance, nonphotoactivated neurons
+    value: 0.372
+    tolerance: 0.0372
+  criterion: 2p holography, not in this dandiset. Reproduced when both tests give p < 0.05 above
+    chance (0.25).
+- id: fig5e-2p-segment-no-completion
+  statement: Holographic activation of segment responders is decoded as the corresponding IC image
+    from all neurons, but not from nonphotoactivated neurons (median 0.228).
+  source: Figure 5e legend; Results, Neurons that encode IC inference drive neural pattern
+    completion within V1, paragraph 6
+  quote: In contrast, photoactivating a similar number of segment responders did not evoke
+    decodable activity patterns (Fig. 5e , right, and Extended Data Fig. 9c,d,g,h )
+  statistics:
+  - about: all imaged neurons
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 0.0029
+    n: 37 segment responder ensembles
+  - about: nonphotoactivated neurons
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 0.3254
+    n: 37 segment responder ensembles
+  expected:
+    quantity: median decoding performance, nonphotoactivated neurons
+    value: 0.228
+    tolerance: 0.0228
+  criterion: 2p holography, not in this dandiset. Reproduced when the all-neuron test gives p < 0.05
+    and the nonphotoactivated test does not.
+- id: ed9b-2p-holo-near-visual
+  statement: Decoding IC-encoder holography trials with a decoder trained on visual trials
+    approaches the cross-validation accuracy on held-out visual trials (0.4029 against 0.4818), and
+    the effect correlates with the number of targets.
+  source: Results, Neurons that encode IC inference drive neural pattern completion within V1,
+    paragraphs 6 and 7; Extended Data Fig. 9b
+  quote: mean ± s.e.m. performance for decoding holography trials as visual image labels was 0.4029
+    ± 0.0296, whereas cross-validation accuracy was 0.4818 ± 0.0165
+  expected:
+  - quantity: holography trials decoded as the expected visual label, mean
+    value: 0.4029
+    tolerance: 0.0296
+  - quantity: cross-validation accuracy of the same decoders, mean
+    value: 0.4818
+    tolerance: 0.0165
+  criterion: 2p holography, not in this dandiset. Tolerances are the paper's s.e.m.; the Spearman
+    correlation with target number is reproduced when positive at p < 0.05.
+- id: ed10-2p-lc-encoders-weaker
+  statement: LC-encoders are less potent than IC-encoders at driving pattern completion, even when
+    matched in visual information.
+  source: Results, Neurons that encode IC inference drive neural pattern completion within V1,
+    paragraph 8; Extended Data Fig. 10e and 10g legends
+  quote: LC-encoders were substantially less potent at driving pattern completion of L C
+    representations compared to IC-encoders
+  statistics:
+  - about: nonphotoactivated decoding across LC-encoder, IC-encoder and segment responder ensembles
+    test: Kruskal-Wallis test, then Bonferroni-Holm corrected Wilcoxon rank-sum tests
+    p: 0.0012
+    n: 35, 32 and 37 ensembles
+  - about: same, bootstrapped groups matched in visual information
+    test: Kruskal-Wallis test, then Bonferroni-Holm corrected Wilcoxon rank-sum tests
+    p: 0.0022
+    n: 48 ensembles per group
+  criterion: 2p holography, not in this dandiset. Reproduced when both Kruskal-Wallis tests give p
+    < 0.05 and IC-encoders exceed LC-encoders in the corrected rank-sum test.
+- id: fig6d-meso-ic-encoders-local
+  statement: On the 2p holographic mesoscope, photoactivating V1 IC-encoders is decoded as the
+    corresponding image from all neurons, but not from nonphotoactivated neurons in higher visual
+    areas.
+  source: Figure 6d legend; Results, IC encoding is mediated by a looped circuit in the visual
+    cortical hierarchy, paragraph 4
+  quote: In stark contrast to pattern completion effects within V1L2/3 (Fig. 5d,e , right), V1
+    segment responders, but not V1 IC-encoders, drove IC representation in higher visual areas
+  statistics:
+  - about: all neurons
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 0.001
+    n: 11 IC-encoder ensembles
+  - about: nonphotoactivated neurons in higher visual areas
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 0.3501
+    n: 11 IC-encoder ensembles
+  criterion: 2p holographic mesoscope, not in this dandiset. Reproduced when the all-neuron test
+    gives p < 0.05 and the higher visual area test does not.
+- id: fig6e-meso-segment-feedforward
+  statement: On the 2p holographic mesoscope, photoactivating V1 segment responders drives IC
+    representations in nonphotoactivated neurons of higher visual areas.
+  source: Figure 6e legend; Results, IC encoding is mediated by a looped circuit in the visual
+    cortical hierarchy, paragraph 4
+  quote: These data demonstrate that V1 segment responders drive feedforward communication of the
+    bottom-up sensory information to higher visual areas
+  statistics:
+  - about: all neurons
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 0.0047
+    n: 22 segment responder ensembles
+  - about: nonphotoactivated neurons in higher visual areas
+    test: one-tailed Wilcoxon signed-rank test against chance
+    p: 0.0457
+    n: 22 segment responder ensembles
+  expected:
+    quantity: median decoding performance, nonphotoactivated higher visual area neurons
+    value: 0.278
+    tolerance: 0.0278
+  criterion: 2p holographic mesoscope, not in this dandiset. Reproduced when both tests give p <
+    0.05 above chance.
+- id: ed6cd-npx-ic-encoders-all-areas
+  statement: IC-encoders are found in every visual area, in the Neuropixels and in the calcium
+    imaging data.
+  source: Results, Representation of IC inference across the mouse visual cortical hierarchy,
+    paragraph 1; Extended Data Fig. 6c and 6d legends
+  quote: Using the same approach as above for V1, we could identify IC-encoders throughout these
+    visual areas both in the electrophysiology and in the calcium imaging datasets
+  criterion: Neuropixels part. IC-encoder as in the opening comment, block ICwcfg1, RS units of each
+    area, sessions with >= 50 RS units in the area (Extended Data Fig. 6 legend). Per session and
+    area, the proportion of IC-encoders among all RS units (panel c) and among visually responsive
+    RS units (panel d, Kruskal-Wallis across blank, IC1, LC1, LC2, IC2 at p < 0.05). The paper gives
+    no numbers for the proportions; they are reported. Reproduced when each of V1, LM, RL, AL, PM
+    and AM holds at least one IC-encoder; the 2p part is not in this dandiset.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2d-npx-ccg-hva-input, the checker could not find p 7.0e-6 in the text; the legend prints "P = 7.0 × 10 −6", so the value is right and left as is.
+  - fig2d-npx-ccg-hva-input, smoothing reading (b) named only a 25 ms Gaussian; added the s.d. of 5 ms of the 25 ms Gaussian kernel the paper uses for PSTHs (Extended Data Fig. 4b legend), so the kernel is from the paper.
+  - ed2b-npx-fixed-gaze, the 8 degree threshold was called the main method though the paper gives no pixel to degree conversion, and the 20 pixel code threshold a variant; both are now named as readings.
+  - ed2b-npx-fixed-gaze, the 95th percentile of the shuffle null was presented as the paper's test; the legend shows the null and the match with no threshold, so it is now named a standard choice recorded as a deviation, and the match is also compared with the 78.6% of fig1g.
+  - ed2a-npx-gaze-confined, the paper names no test; the criterion passed only if 20 or more per-session tests, Bonferroni corrected over x and y only, all failed, an agent-made rule likely to fail by chance. It now decides on a Friedman test across sessions (the test of Extended Data Fig. 2g), reading "systematic" as consistent across sessions, with the per-session tests as a variant, and says every test here is a reader's choice.
+  - ed4c-2p-ic-encoder-rf-anywhere, the criterion took the bootstrapped interval of Extended Data Fig. 4g without saying that panel comes from other sessions (images scaled 1.5 times); now said, and recorded as a reader's reading.
+  - ed7b-2p-xre-inference, the statement and statistics left out AL, PM and AM (p = 0.5000, 0.4375, 1.0000 in the Extended Data Fig. 7b legend); added, and the criterion now states its rule.
+  - fig4b-2p-ic-encoders-only, the statement says both decoders discriminate IC from LC, but the cross-validation tests against 0.25 (P = 1.8e-5, 1.8e-5, 5.6e-5, Fig. 4b legend) were missing; added, and the criterion now includes them.
+  - ed6cd-npx-ic-encoders-all-areas, added; the Results state that IC-encoders are found throughout the visual areas (Extended Data Fig. 6c,d) and no claim covered it.
+  - Open, supp3-decoder-types rests on Supplementary Fig. 3, which is not in paper/; its criterion (areas V1, LM, AL, sign and significance agreement) is the reader's and cannot be checked against the paper.
+  - Open, ed3-2p-robust-gap-mapping-contrast uses the same 95th percentile shuffle rule as ed2b, which the legends do not give; left, as the data are not in this dandiset.
+  - Open, the Code Ocean capsule the paper links (10.24433/CO.6659254.v2) was not read by the first reader and not by this check; criteria citing github.com/hs13 code and the unlinked larger repository could not be checked here against the code.
+  - Open, fig1e-npx-exclusive-center, the Methods' rank-sum test against gray-screen trials cannot be applied as written, since the receptive field block has 0 s ITI; the two readings stand.

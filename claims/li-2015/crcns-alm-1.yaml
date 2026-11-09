@@ -1,0 +1,752 @@
+# Claims for Li, Chen, Guo, Gerfen & Svoboda (2015), Nature 519, 51-56, "A motor cortex circuit for
+# motor planning and movement", doi:10.1038/nature14178, on CRCNS data set alm-1
+# (doi:10.6080/K0RF5RZT).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-07,
+# protocol as stated in docs/protocol.md (Reader), version pilot-13.
+#
+# Text read: the version of record, as text extracted from the PDF supplied under paper/ (main
+# text, Methods, legends of Figures 1 to 5 and Extended Data Figures 1 to 7). The paper has no
+# separate Supplementary Information. The extraction prints "=" as "5", "<" as ",", ">" as ".",
+# "±" as "6" and a minus sign as "2"; quotes keep these glyphs as printed. PDF pages 2, 3 and 5
+# were opened to read Fig. 1d, 2c, 2d, 3e, 3f, 3i and 5b, which the text garbles.
+#
+# Code. The paper links no analysis code. The data set's description says it holds MATLAB scripts;
+# they are files of the data set and were not read. Every method below is from the paper's text.
+#
+# Data the paper used. 52 mice (age > P60). Behaviour, whisker-based object location
+# discrimination, head-fixed (n = 42 mice in the Results): pole at an anterior (lick left) or
+# posterior (lick right) position; sample epoch 1.3 s from pole movement onset to 0.1 s after pole
+# retraction onset; delay epoch 1.3 s; auditory go cue (3.4 kHz, 0.1 s); response by licking one of
+# two lickports; licks before the cue are "lick early" trials. Photoinhibition of ALM (Fig. 1), 5
+# VGAT-ChR2-EYFP and 3 PV-ires-Cre x ReaChR mice, 8 mice in Fig. 1d, 1.3 s in the sample or delay
+# epoch, 25% of trials. Electrophysiology (Figs 2 and 3), left ALM, NeuroNexus 32-channel silicon
+# probes, 9 Sim1_KJ18-Cre, 3 Rbp4-Cre and 4 Tlx_PL56-Cre mice injected with AAV-FLEX-ChR2, plus 1
+# Sim1_KJ18-Cre x Ai32 and 2 Tlx_PL56-Cre x Ai32 mice: 1,408 single units, 19 mice, 99 sessions;
+# 1,245 putative pyramidal (spike width > 0.45 ms), 124 fast-spiking (< 0.35 ms), 39 excluded.
+# Antidromic tagging, by photostimulating PT axons in the reticular formation through an implanted
+# fibre or IT axons in contralateral ALM through a window (pairs of 1 ms pulses 10 ms apart, every
+# 500 ms), with a collision test: 45 PT and 27 IT neurons. Simultaneous recording and subthreshold
+# PT photoactivation (ED Fig. 7), 2 mice, 8 sessions, 91 neurons. Two-photon calcium imaging
+# (Fig. 4), GCaMP6s, 4 C57Bl/6Crl mice, 59 fields of view, PT and IT neurons labelled
+# retrogradely. Photoactivation behaviour (Fig. 5, ED Figs 3 and 6), 7 Sim1_KJ18-Cre x Ai32 and 7
+# Tlx_PL56-Cre x Ai32 mice; untrained mice in ED Fig. 3f, g. Anatomy (ED Figs 3 and 4). Variables:
+# spike times per unit and trial, spike waveforms, trial type (lick right or lick left), outcome
+# (correct, error, lick early), epoch times, lick or mouth-movement traces, photostimulus timing,
+# raw voltage traces for the antidromic responses. By its description the data set holds the
+# electrophysiology, 1,408 units from 99 sessions in 19 mice, with cell type labels (pyramidal, FS,
+# PT, IT), trial types, epoch times, photostimulation type per trial, lick traces and raw voltage
+# traces. The photoinhibition and photoactivation behaviour, the imaging and the anatomy are not
+# named in it.
+#
+# Shared methods for the electrophysiology claims, from the Methods unless marked open.
+# - Lick right trials are contralateral to the recorded left ALM, lick left trials ipsilateral
+#   (Results, ALM contains neurons with bilateral selectivity, paragraph 2).
+# - Epochs. Sample, pole movement onset to 0.1 s after pole retraction onset (1.3 s); delay, the
+#   1.3 s before the go cue (Methods, Behaviour). The length of the response epoch is open: the
+#   paper does not give it. Readings, (a) 1.3 s after the go cue, as long as the other epochs;
+#   (b) 1.5 s, the response window in Methods, Behaviour. Fig. 2c plots about 1.5 s after the cue.
+# - Trials. Correct trials only ("Only trials in which mice correctly reported pole locations were
+#   included", Methods, Electrophysiology data analyses; Fig. 2b legend). Whether lick early
+#   trials are dropped from the neural analyses is open; they are dropped from performance
+#   (Methods, Behavioural data analyses). Readings, (a) dropped, (b) kept. Trials with axonal
+#   photostimulation are not named in the neural analyses; they are left out, as the analyses
+#   describe the task without stimulation, and the claim notes say so.
+# - Selectivity test. Two-tailed t-test on spike counts of lick right against lick left trials,
+#   per epoch, P < 0.05, not corrected (Results; Methods). Pooled or Welch variance is open; the
+#   pooled (Student) test is the standard reading, Welch a variant.
+# - Time courses use a 200 ms averaging window (Fig. 2c and ED Fig. 2a legends); the step is open
+#   and cannot change an outcome beyond the window; a step of 10 ms is a standard choice.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: alm-1
+  doi: 10.6080/K0RF5RZT
+paper: doi:10.1038/nature14178
+claims:
+- id: fig1d-photoinhibition-ipsilateral-bias
+  statement: Unilateral photoinhibition of ALM during the delay epoch biases licking to the side of
+    the inhibited hemisphere; inhibiting left ALM raises performance on lick left trials and lowers
+    it on lick right trials, and inhibiting right ALM does the reverse.
+  source: Results, ALM is required for movement planning, paragraph 2; Figure 1d
+  quote: Unilateral photoinhibition (Methods) of anterior lateral motor cortex (ALM, centred at 2.5
+    mm anterior, 1.5 mm lateral), limited to the delay epoch, produced an ipsilateral bias ...
+    Inhibiting left ALM caused a tendency to lick the left port, resulting in increased performance
+    in 'lick left' trials and decreased performance in 'lick right' trials
+  statistics:
+  - about: left ALM, delay epoch, lick right performance decrease (stars read from Fig. 1d)
+    test: one-tailed test, bootstrap
+    p: 0.001
+    p_relation: "<"
+    n: 8 mice
+  - about: left ALM, delay epoch, lick left performance increase (stars read from Fig. 1d)
+    test: one-tailed test, bootstrap
+    p: 0.01
+    p_relation: "<"
+    n: 8 mice
+  - about: right ALM, delay epoch, lick left performance decrease (stars read from Fig. 1d)
+    test: one-tailed test, bootstrap
+    p: 0.001
+    p_relation: "<"
+    n: 8 mice
+  - about: right ALM, delay epoch, lick right performance increase (stars read from Fig. 1d)
+    test: one-tailed test, bootstrap
+    p: 0.05
+    p_relation: "<"
+    n: 8 mice
+  criterion: As in Methods, Behavioural data analyses. Performance is the fraction correct,
+    lick early trials excluded, computed separately for lick right and lick left trials. The
+    change is photoinhibition minus control performance. Its P value is the fraction of 10^4
+    bootstrap rounds, resampling with replacement animals, sessions within animal and trials
+    within session, that give a change of the opposite sign (one-tailed). Reproduced when, for
+    delay epoch inhibition of each hemisphere, the contralateral trial type loses performance
+    and the ipsilateral gains it, each at P < 0.05; partially reproduced when this holds for
+    one hemisphere or for the contralateral loss only.
+- id: fig1d-sample-epoch-smaller-bias
+  statement: The ipsilateral bias is smaller when ALM is photoinhibited during the sample epoch
+    than during the delay epoch.
+  source: Results, ALM is required for movement planning, paragraph 2; Figure 1d
+  quote: This ipsilateral bias was smaller when photoinhibiting during the sample epoch.
+  criterion: Performance changes as in fig1d-photoinhibition-ipsilateral-bias. The paper reports
+    no test of sample against delay. Reproduced when, for each hemisphere, the performance change
+    on the contralateral trial type is smaller in magnitude for sample than for delay epoch
+    inhibition.
+- id: task-performance
+  statement: Mice performed the task at 78.4% correct on average, with responses before the go
+    cue on fewer than 13% of trials (n = 42 mice).
+  source: Results, ALM is required for movement planning, paragraph 1
+  quote: "(mean per cent correct, 78.4%; responses before the go cue, ,13%)"
+  expected:
+  - quantity: mean per cent correct
+    value: 78.4
+    tolerance: 7.84
+    unit: "%"
+  criterion: Per cent correct excludes lick early trials (Methods, Behavioural data analyses).
+    The figure is over 42 mice, more than the electrophysiology mice; how the mean is taken is
+    open. Readings, (a) mean over sessions, (b) mean over mice of per-mouse means, (c) pooled
+    trials. Which trials enter is also open (the paper does not say whether photostimulation
+    trials are left out); readings, control (unstimulated) trials only, or all trials. Reproduced when the mean is within tolerance under
+    one reading and the fraction of lick early trials is below 13% (14.3% with the 10%
+    tolerance) under the same reading.
+- id: unit-counts
+  statement: 1,408 single units were recorded in left ALM from 19 mice in 99 sessions; by spike
+    width, 1,245 are putative pyramidal neurons (> 0.45 ms), 124 fast-spiking neurons (< 0.35 ms)
+    and 39 intermediate units excluded.
+  source: Methods, Electrophysiology data analyses, paragraph 1; Extended Data Fig. 1a
+  quote: A total of 1,408 single units were recorded across 99 recording sessions ... Units with
+    spike width ,0.35 ms were defined as fast-spiking neurons (124/1,408) and units with spike
+    width .0.45 ms as putative pyramidal neurons (1,245/1,408)
+  expected:
+  - quantity: single units
+    value: 1408
+    tolerance: 140.8
+  - quantity: putative pyramidal neurons
+    value: 1245
+    tolerance: 124.5
+  - quantity: fast-spiking neurons
+    value: 124
+    tolerance: 12.4
+  - quantity: intermediate units, excluded
+    value: 39
+    tolerance: 3.9
+  criterion: Spike width is the trough-to-peak interval of the mean spike waveform (Methods).
+    Reproduced when all four counts are within tolerance; the numbers of mice and sessions are
+    reported.
+- id: fig2-selective-fraction
+  statement: 73% (912 of 1,245) of putative pyramidal neurons distinguish the trial types in at
+    least one epoch.
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 1; Methods,
+    Electrophysiology data analyses, paragraph 2
+  quote: A large fraction (73%, 912/1,245) of neurons distinguished trial types (P , 0.05,
+    two-tailed t-test, not corrected for multiple comparisons)
+  expected:
+  - quantity: fraction of putative pyramidal neurons selective
+    value: 0.73
+    tolerance: 0.073
+  - quantity: selective neurons
+    value: 912
+    tolerance: 91.2
+  depends_on:
+  - unit-counts
+  criterion: A neuron is selective when the shared selectivity test is significant in the
+    sample, delay or response epoch (Methods). Under each reading of the response epoch length
+    and of lick early trials. Reproduced when both values are within tolerance under one reading.
+- id: fig2d-response-categories
+  statement: Of the selective neurons, 219 have selectivity only in the sample or delay epochs
+    (preparatory only), and the rest have peri-movement selectivity in the response epoch, alone
+    or together with preparatory selectivity (389 and 304 of 912).
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 1; Figure 2d
+  quote: subsets of neurons showed selective preparatory activity (Fig. 2b, left column; Fig. 2d,
+    219/912 neurons), peri-movement activity during the response epoch (Fig. 2b, right column;
+    389/912), or both (Fig. 2b, middle column; 304/912)
+  expected:
+  - quantity: preparatory only
+    value: 219
+    tolerance: 21.9
+  - quantity: peri-movement only (text reading)
+    value: 389
+    tolerance: 38.9
+  - quantity: preparatory and peri-movement (text reading)
+    value: 304
+    tolerance: 30.4
+  depends_on:
+  - fig2-selective-fraction
+  criterion: Preparatory means significant in the sample or delay epoch, peri-movement means
+    significant in the response epoch (Methods). The text and Fig. 2d disagree on the two larger
+    counts. Readings, (a) the text, 389 peri-movement only and 304 both; (b) the figure, whose
+    bars read about 0.43 for both and 0.33 for peri-movement only, that is 389 both and 304
+    peri-movement only. Counts may also be compared as fractions of the selective neurons found
+    here. Reproduced when all three counts (or fractions) are within tolerance under one
+    reading of the labels, the response epoch and lick early trials; the text and figure
+    disagreement is recorded as a deviation.
+- id: fig2c-selectivity-time-course
+  statement: Selectivity emerges in the sample epoch, increases through the delay epoch and is
+    largest at the beginning of the response epoch.
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 1; Figure 2c and
+    Extended Data Fig. 1d, f
+  quote: Selectivity emerged in the sample epoch, increased throughout the delay epoch, and reached
+    a maximum at the beginning of the response epoch
+  depends_on:
+  - fig2-selective-fraction
+  criterion: Two measures from the paper. (1) ED Fig. 1f, the number of putative pyramidal
+    neurons significantly selective in 200 ms windows (two-tailed t-test, P < 0.05). (2) Fig. 2c
+    bottom, the population selectivity of the 912 selective neurons, the spike rate difference
+    between preferred and non-preferred trial type, with the preferred type set from 10 trials
+    and the difference taken on the remaining trials (Methods). Which 10 trials is open; a
+    random draw is the standard choice. What counts as "emerged" and "the beginning" is open.
+    Readings, (a) both measures in the last 200 ms of the sample epoch exceed their value in the
+    200 ms before sample onset, the last 200 ms of the delay exceed the first 200 ms of the delay,
+    and the maximum over the trial falls within 0.5 s after the go cue; (b) the same with the
+    maximum within 0.2 s after the cue. Reproduced when all three hold for both measures under
+    one reading; partially reproduced when they hold for one measure.
+- id: fig2c-dynamic-single-neurons
+  statement: Individual neuron responses are dynamic while selectivity at the population level is
+    stable.
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 1; Figure 2c bottom
+    and Extended Data Fig. 2a
+  quote: Individual neuron responses were dynamic, despite stable selectivity at the level of the
+    population
+  depends_on:
+  - fig2-selective-fraction
+  criterion: The paper's measure is the population response correlation of Fig. 2c, Pearson's
+    correlation between the population response vector at each time and the vector at the go cue,
+    all neurons treated as simultaneous, each neuron's response mean-subtracted and normalized
+    to the variance of its response across the trial in 200 ms bins (Methods). Which trials and
+    how the two trial types enter the vector are open. Readings, (a) the vector of
+    selectivities (lick right minus lick left rates); (b) the two trial types' rates
+    concatenated. The paper gives no threshold. Reproduced when the mean correlation in the
+    sample epoch and the first 0.5 s of the delay is below 0.5, while the population selectivity
+    of fig2c-selectivity-time-course stays above zero from the end of the sample epoch through
+    the delay; the 0.5 bound is read from Fig. 2c, whose grey trace stays between about 0 and
+    0.5 before the cue, and is an assumption.
+- id: ed2-error-trials-predict-choice
+  statement: On error trials, when mice lick opposite to the instructed direction, ALM activity
+    predicts the licking direction; most selective neurons switch their trial type preference.
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 1; Extended Data Fig.
+    2b, c
+  quote: On error trials, when mice licked in the opposite direction to the instruction provided by
+    object location (Fig. 1a), a majority of ALM neurons switched their trial type preference to
+    predict the licking direction, as indicated by the negative correlations
+  depends_on:
+  - fig2-selective-fraction
+  criterion: As in ED Fig. 2c. For each of the 912 selective neurons and each epoch (sample,
+    delay, response), selectivity is the firing rate on lick right minus lick left trials,
+    computed on correct trials and on error trials, with error trials labelled by the instructed
+    trial type (pole position), so that negative correlation means activity follows the lick.
+    Pearson's r between correct and error selectivity across neurons. Neurons without error
+    trials of both types are left out; a minimum number of error trials is not given and is
+    open (readings, at least 1, or at least 5, of each type). The paper gives r but no test of it;
+    a two-sided test of Pearson's r at P < 0.05 is a standard choice. The "majority" is the
+    fraction of neurons whose error selectivity has the sign opposite to their correct
+    selectivity. Reproduced when r is negative with P < 0.05 and that fraction exceeds one half
+    in all three epochs under one reading; partially reproduced for one or two epochs.
+- id: fig2e-equal-contra-ipsi
+  statement: Among selective putative pyramidal neurons, contra-preferring and ipsi-preferring
+    neurons are present in equal proportions (427 contra-preferring and 485 ipsi-preferring in
+    Fig. 2c).
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 2; Figure 2c, e
+  quote: The contra-preferring and ipsi-preferring neurons were present in equal proportions (Fig.
+    2c, e).
+  expected:
+  - quantity: contra-preferring selective neurons (Fig. 2c axis)
+    value: 427
+    tolerance: 42.7
+  - quantity: ipsi-preferring selective neurons (Fig. 2c axis)
+    value: 485
+    tolerance: 48.5
+  depends_on:
+  - fig2-selective-fraction
+  criterion: The counts are read from the neuron-number axes of Fig. 2c, which sort by preference;
+    no sentence prints them. Preference for Fig. 2e is from total spike counts across the three
+    epochs, lick right against lick left (Methods); the Fig. 2c sort may instead use the
+    preferred type set from 10 trials (Methods, "To compute selectivity (Fig 2c)"). Readings for
+    the counts, (a) total spike counts over all correct trials, (b) the 10-trial split. A claim of absence. The paper names no test for Fig. 2e;
+    the test it uses for the same question in Fig. 3f, j is a bootstrap over neurons, P the
+    fraction of resamples with more ipsi-preferring than contra-preferring neurons, one-tailed
+    (Methods). Reproduced when that test does not find more contra-preferring neurons (P >= 0.05)
+    and the counts are within tolerance; the fraction contra-preferring is reported.
+- id: ed1-no-population-contra-bias
+  statement: The overall spike count of the recorded population shows no significant
+    contralateral bias (P = 0.13, two-tailed t-test against 0).
+  source: Results, ALM contains neurons with bilateral selectivity, paragraph 2; Extended Data
+    Fig. 1
+  quote: Significant contralateral bias also did not appear in the overall spike count across the
+    recorded population of neurons (Extended Data Fig. 1; P 5 0.13, two-tailed t-test against 0)
+  statistics:
+  - test: two-tailed t-test against 0
+    p: 0.13
+  depends_on:
+  - fig2-selective-fraction
+  criterion: A claim of absence, judged on the paper's two-tailed t-test against 0 at P < 0.05.
+    Per neuron, the spike count difference between lick right and lick left trials. Which
+    neurons and which window are open. Readings, (a) the 912 selective neurons, counts over the
+    sample, delay and response epochs together (the measure of Fig. 2e); (b) all 1,245 putative
+    pyramidal neurons, same window; (c) all 1,408 units, same window, as ED Fig. 1 shows FS and
+    pyramidal neurons. Reproduced when the test is not significant under every reading; not
+    reproduced when it is significant under every reading. The mean difference and P are reported for each.
+- id: ed1-fast-spiking-properties
+  statement: Fast-spiking neurons have higher baseline firing rates and are less selective than
+    putative pyramidal neurons.
+  source: Methods, Electrophysiology data analyses, paragraph 1; Extended Data Fig. 1b to e
+  quote: Fast-spiking neurons had higher baseline firing rates and were less selective than
+    putative pyramidal neurons (Extended Data Fig. 1).
+  depends_on:
+  - unit-counts
+  criterion: The paper reports no test and does not define baseline. Baseline readings, (a) the
+    firing rate before sample onset in each trial (the whole pre-sample period), (b) the 0.5 s
+    before sample onset. Selectivity readings, (a) the fraction of neurons significant by the
+    shared selectivity test, (b) the absolute spike rate difference between trial types over the
+    three epochs. Reproduced when the FS mean and median baseline rates exceed the pyramidal
+    ones and FS are less selective under one reading of each; a two-sided rank-sum test is
+    reported as a variant.
+- id: tagging-counts
+  statement: 73 neurons were antidromically activated from PT axons and 134 from IT axons; 45 and
+    27 passed the collision test (PT and IT neurons), 22 and 106 failed it, and 6 and 1 could not
+    be tested and were excluded.
+  source: Methods, Electrophysiology data analyses, paragraph 3; Results, A movement command
+    emerges in the pyramidal tract neurons, paragraph 1; Extended Data Fig. 5f
+  quote: Neurons that passed the collision test were classified as pyramidal tract neurons (45/73)
+    or intratelencephalic neurons (27/134). Neurons that failed the test were classified as
+    pyramidal-tract-activated (22/73) or intratelencephalic-activated (106/134)
+  expected:
+  - quantity: PT neurons
+    value: 45
+    tolerance: 4.5
+  - quantity: IT neurons
+    value: 27
+    tolerance: 2.7
+  - quantity: PT-activated neurons
+    value: 22
+    tolerance: 2.2
+  - quantity: IT-activated neurons
+    value: 106
+    tolerance: 10.6
+  criterion: Counts of neurons classified by the collision test. Reproduced when the PT and IT
+    counts are within tolerance; the activated counts are reported, and partially reproduced
+    applies when only those differ.
+- id: antidromic-latency-jitter
+  statement: PT neurons have shorter antidromic latencies than IT neurons (mean 2.7 against 4.6
+    ms) and both have small jitter (mean s.d. 0.1 and 0.2 ms), smaller than PT-activated (8.3 ms,
+    2.8 ms) and IT-activated neurons (9.8 ms, 2.4 ms); the mean jitter of tagged neurons is 0.15 ms.
+  source: Methods, Electrophysiology data analyses, paragraph 3; Results, A movement command
+    emerges in the pyramidal tract neurons, paragraph 1; Extended Data Fig. 5e
+  quote: Pyramidal tract neurons and intratelencephalic neurons had shorter mean antidromic spike
+    latencies (pyramidal tract neurons, 2.7 ms; intratelencephalic neurons, 4.6 ms) and smaller
+    temporal jitter (mean s.d. of the antidromic spike latency, pyramidal tract neurons, 0.1 ms;
+    intratelencephalic neurons, 0.2 ms) than the pyramidal-tract-activated (mean latency, 8.3 ms;
+    jitter, 2.8 ms) and intratelencephalic-activated neurons (mean latency, 9.8 ms; jitter, 2.4 ms)
+  expected:
+  - quantity: PT mean latency
+    value: 2.7
+    tolerance: 0.27
+    unit: ms
+  - quantity: IT mean latency
+    value: 4.6
+    tolerance: 0.46
+    unit: ms
+  - quantity: PT mean jitter
+    value: 0.1
+    tolerance: 0.05
+    unit: ms
+  - quantity: IT mean jitter
+    value: 0.2
+    tolerance: 0.05
+    unit: ms
+  - quantity: PT-activated mean latency
+    value: 8.3
+    tolerance: 0.83
+    unit: ms
+  - quantity: PT-activated mean jitter
+    value: 2.8
+    tolerance: 0.28
+    unit: ms
+  - quantity: IT-activated mean latency
+    value: 9.8
+    tolerance: 0.98
+    unit: ms
+  - quantity: IT-activated mean jitter
+    value: 2.4
+    tolerance: 0.24
+    unit: ms
+  - quantity: mean jitter of tagged neurons
+    value: 0.15
+    tolerance: 0.015
+    unit: ms
+  depends_on:
+  - tagging-counts
+  criterion: Latency is from light pulse onset to the antidromic spike; jitter is the s.d. of the
+    latency over pulses, per neuron, averaged over neurons (Methods). Which pulses count is open.
+    Readings, (a) the first pulse of each pair only, (b) both pulses; spontaneous-spike collision
+    trials left out. ED Fig. 5g shows that IT responses to the second pulse have less jitter, so
+    reading (a) is the main one. The rounding of the printed values (one decimal) is wider than
+    10% for the PT and IT jitter values; their tolerance is 0.05 ms, half the last printed
+    digit, so a value matches when it rounds to the printed value. The 0.15 ms mean is read as the mean over the 72 PT and IT neurons. Reproduced when
+    the PT and IT values match and the PT mean latency is below the IT mean; partially reproduced
+    when only the order and the activated-neuron values hold.
+- id: ed5g-it-second-pulse-jitter
+  statement: After a conditioning pulse, IT neurons respond to a second light pulse 10 ms later
+    with less temporal jitter.
+  source: Methods, Electrophysiology data analyses, paragraph 3; Extended Data Fig. 5g
+  quote: following a conditioning stimulus, the responses of intratelencephalic neurons to a second
+    light pulse (10 ms later) showed less temporal jitter (Extended Data Fig. 5g)
+  depends_on:
+  - antidromic-latency-jitter
+  criterion: Per IT neuron, the s.d. of antidromic spike latency to the first and to the second
+    pulse of each pair. The paper reports no test. Reproduced when the mean second-pulse jitter
+    is below the first-pulse jitter and most IT neurons show the decrease; a two-sided Wilcoxon
+    signed-rank test is reported as a variant.
+- id: fig3ei-both-types-preparatory-and-movement
+  statement: Both IT and PT neurons display preparatory and movement-related activity.
+  source: Results, A movement command emerges in the pyramidal tract neurons, paragraph 2; Figure
+    3e, i
+  quote: Both intratelencephalic and pyramidal tract neurons displayed preparatory and
+    movement-related activity (Fig. 3e, i)
+  depends_on:
+  - tagging-counts
+  criterion: Categories as in fig2d-response-categories, applied to the selective PT and IT
+    neurons. Reproduced when each of the two populations contains neurons with preparatory
+    selectivity and neurons with peri-movement selectivity; the fractions in the three categories
+    are reported (Fig. 3e reads about 0.18, 0.43 and 0.40 for PT; Fig. 3i about 0.22, 0.56 and
+    0.22 for IT, preparatory only, both and movement only).
+- id: fig3fj-contra-preferring-pt-not-it
+  statement: Contra-preferring neurons outnumber ipsi-preferring neurons among PT neurons but not
+    among IT neurons.
+  source: Results, A movement command emerges in the pyramidal tract neurons, paragraph 2; Figure
+    3f, j insets
+  quote: Contra-preferring neurons outnumbered ipsi-preferring neurons for the pyramidal tract
+    neurons (Fig. 3f; P , 0.05, bootstrap, Methods), but not the intratelencephalic neurons (Fig.
+    3j, P 5 0.74)
+  statistics:
+  - about: PT neurons, more contra-preferring
+    test: one-tailed test, bootstrap
+    p: 0.05
+    p_relation: "<"
+    n: PT neurons (45 tagged; whether all or only the selective ones enter is not stated)
+  - about: IT neurons, more contra-preferring
+    test: one-tailed test, bootstrap
+    p: 0.74
+    n: IT neurons (27 tagged; whether all or only the selective ones enter is not stated)
+  depends_on:
+  - tagging-counts
+  criterion: Preference from total spike counts across the three epochs, lick right against lick
+    left (Methods). Bootstrap as in Methods, neurons resampled with replacement, P the fraction of
+    resamples with more ipsi-preferring neurons, one-tailed; 10^4 resamples, the number the
+    behaviour bootstrap uses, as a standard choice. Which neurons enter is open. Readings, (a)
+    all PT (IT) neurons; (b) the selective PT (IT) neurons by the shared test. Reproduced when PT
+    has P < 0.05 and IT has P >= 0.05 under one reading; partially reproduced when only one
+    holds. Fractions contra-preferring are reported (Fig. 3f inset reads about 0.65, Fig. 3j
+    about 0.45).
+- id: fig3f-late-contra-selectivity-pt
+  statement: Robust contralateral selectivity emerges in PT neurons starting 570 ms before the
+    response epoch (34% spike rate modulation, P < 0.05), but not in IT neurons (-19%, P = 0.40)
+    nor in all task-selective neurons (8%, P = 0.13).
+  source: Results, A movement command emerges in the pyramidal tract neurons, paragraph 2; Results,
+    Pyramidal tract neurons drive upcoming movements, paragraph 1; Figure 3f, j
+  quote: Robust contralateral selectivity (the spike count difference for lick right trials and
+    lick left trials) emerged in pyramidal tract neuron responses starting 570 ms before the
+    response epoch (Fig. 3f; 34% spike rate modulation; P , 0.05, two-tailed t-test against 0 in
+    spike counts), but not for intratelencephalic neurons (219% ... spike rate modulation; P 5
+    0.40) nor for all task-selective neurons (8% spike rate modulation; P 5 0.13)
+  statistics:
+  - about: PT neurons, contra-selectivity against 0
+    test: two-tailed t-test against 0 in spike counts
+    p: 0.05
+    p_relation: "<"
+  - about: IT neurons, contra-selectivity against 0
+    test: two-tailed t-test against 0 in spike counts
+    p: 0.4
+  - about: all task-selective neurons, contra-selectivity against 0
+    test: two-tailed t-test against 0 in spike counts
+    p: 0.13
+  expected:
+  - quantity: onset of PT contra-selectivity before the go cue
+    value: 570
+    tolerance: 100
+    unit: ms
+  - quantity: PT spike rate modulation
+    value: 34
+    tolerance: 3.4
+    unit: "%"
+  - quantity: IT spike rate modulation
+    value: -19
+    tolerance: 1.9
+    unit: "%"
+  - quantity: all task-selective neurons, spike rate modulation
+    value: 8
+    tolerance: 0.8
+    unit: "%"
+  depends_on:
+  - tagging-counts
+  - fig2-selective-fraction
+  criterion: Contra-selectivity is the lick right minus lick left firing rate per neuron, averaged
+    over neurons, correct trials (Methods), in 200 ms windows. The onset tolerance is 100 ms, half
+    the 200 ms averaging window, because the onset cannot be placed more finely. Open details,
+    with readings. Which PT and IT neurons are averaged, (a) all of them (Fig. 3f legend, "across
+    all pyramidal tract neurons"), (b) the selective ones (Methods, "averaged across the selective
+    neurons"). How the onset is found, (a) the first time from which the PT population
+    contra-selectivity stays significantly above 0 (two-tailed t-test across neurons, P < 0.05)
+    until the cue, (b) the same without requiring it to stay. The window of the modulation and
+    the t-test, (a) from 570 ms before the cue to the cue, (b) the same window to the end of the
+    response epoch. What the percentage divides by, (a) the mean firing rate over both trial
+    types in the same window, (b) the mean rate before sample onset. Reproduced when, under one
+    combination, the PT t-test is significant and IT and all-selective tests are not, with the
+    onset and the three modulations within tolerance; partially reproduced when the pattern of
+    significance holds but values fall outside tolerance.
+- id: reaction-time
+  statement: The reaction time after go cue onset is 61.1 +/- 10.5 ms across mice (mean +/- s.d.).
+  source: Results, Pyramidal tract neurons drive upcoming movements, paragraph 1
+  quote: "reaction time post cue onset across mice: 61.1 6 10.5 ms, mean 6 s.d."
+  expected:
+    quantity: mean reaction time across mice
+    value: 61.1
+    tolerance: 10.5
+    unit: ms
+  criterion: The tolerance is the paper's stated spread across mice. Reaction time is from go cue
+    onset to the first mouth movement or lick detected by the photodiode and infrared laser diode
+    (Methods, Behaviour). Which trials and mice are open. Readings, (a) correct trials of the
+    electrophysiology mice; (b) all trials with a response after the cue. Per mouse the mean,
+    then mean and s.d. across mice. Reproduced when the mean across mice is within tolerance
+    under one reading.
+- id: fig4-imaging-intermingled
+  statement: In calcium imaging, contra-preferring and ipsi-preferring neurons are found in every
+    field of view and are spatially intermingled; neither the nearest-neighbour probability of
+    shared selectivity (P = 0.34) nor the distance between nearest neurons of the same selectivity
+    (P = 0.61) differs from chance.
+  source: Results, A movement command emerges in the pyramidal tract neurons, paragraph 3; Figure
+    4f; Methods, Calcium imaging data analyses, paragraph 3
+  quote: The probability that nearby neurons share the same selectivity was not different from
+    randomized data (P 5 0.34, bootstrap, Methods). The distance between nearest neurons with the
+    same selectivity was also not different from chance (P 5 0.61, bootstrap)
+  statistics:
+  - about: nearest-neighbour shared selectivity against shuffled labels
+    test: bootstrap
+    p: 0.34
+    n: 59 fields of view, 4 mice
+  - about: distance between nearest neurons of the same selectivity against shuffled labels
+    test: bootstrap
+    p: 0.61
+    n: 59 fields of view, 4 mice
+  criterion: A claim of absence, judged on the paper's bootstrap tests with shuffled response
+    type labels (Methods, Calcium imaging data analyses). Reproduced when neither test gives P <
+    0.05.
+- id: fig4h-imaging-pt-contra-bias
+  statement: In layer 5 imaging, about a quarter of labelled PT (182 of 534) and IT (174 of 542)
+    neurons are selective; 67% (122 of 182) of selective PT neurons are contra-preferring, more
+    than half, while 48% (83 of 174) of IT neurons are, and PT neurons are more often
+    contra-preferring than IT neurons.
+  source: Results, A movement command emerges in the pyramidal tract neurons, paragraph 4; Figure
+    4g, h
+  quote: Approximately a quarter of the labelled pyramidal tract (182/534) and intratelencephalic
+    (174/542) neurons were selective (Methods). Consistent with electrophysiological tagging (Fig.
+    3), we observed more contra-preferring than ipsi-preferring neurons in the pyramidal tract
+    neuron population (67%, 122/182, Fig. 4g, h; P , 0.001, binomial test), but not in the
+    intratelencephalic neurons
+  statistics:
+  - about: PT, contra-preferring against ipsi-preferring
+    test: binomial test
+    p: 0.001
+    p_relation: "<"
+    n: 182 selective PT neurons
+  - about: IT, contra-preferring against ipsi-preferring
+    test: binomial test
+    p: 0.05
+    p_relation: ">"
+    n: 174 selective IT neurons
+  - about: PT against IT, fraction contra-preferring
+    test: chi-squared test
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: labelled PT neurons
+    value: 534
+    tolerance: 53.4
+  - quantity: labelled IT neurons
+    value: 542
+    tolerance: 54.2
+  - quantity: selective PT neurons
+    value: 182
+    tolerance: 18.2
+  - quantity: selective IT neurons
+    value: 174
+    tolerance: 17.4
+  - quantity: fraction of selective PT neurons contra-preferring
+    value: 0.67
+    tolerance: 0.067
+  - quantity: fraction of selective IT neurons contra-preferring
+    value: 0.48
+    tolerance: 0.048
+  criterion: Selective as in Methods, Calcium imaging data analyses (task-related by Kruskal-Wallis
+    across 0.33 s bins at P < 0.01 in contra or ipsi trials, then Wilcoxon rank-sum between trial
+    types at P < 0.05), layer 5 (450 to 700 um). Contra or ipsi preference is from the average
+    calcium signal during the trial epochs (Results, A movement command emerges in the pyramidal
+    tract neurons, paragraph 3); how the epochs are combined is open. Reproduced when the values are within tolerance
+    and the three tests agree with the paper.
+- id: imaging-overall-counts
+  statement: Of 4,706 imaged cells, 58% (2,740) are task-related and 57% of these (1,575) are
+    trial-type selective; 61% (971) of selective cells are contra-preferring.
+  source: Methods, Calcium imaging data analyses, paragraphs 2 and 4
+  quote: This criterion identified 58% (2,740/4,706) cells as task related ... 57% (1575/2740) of
+    task related cell are trial-type selective ... Overall, imaging detected a slight majority of
+    contra-preferring neurons (61%, 971/1,575)
+  expected:
+  - quantity: task-related fraction
+    value: 0.58
+    tolerance: 0.058
+  - quantity: selective fraction of task-related cells
+    value: 0.57
+    tolerance: 0.057
+  - quantity: contra-preferring fraction of selective cells
+    value: 0.61
+    tolerance: 0.061
+- id: contra-ipsi-selectivity-forms
+  statement: Contra-preferring neurons include most of the neurons with large spike count
+    differences between trial types, while ipsi-preferring neurons more often express their
+    selectivity through suppression of activity on contra trials.
+  source: Methods, Calcium imaging data analyses, paragraph 4; Extended Data Fig. 1d
+  quote: Contra-preferring neurons include a majority of the neurons with large spike count
+    differences, whereas ipsi-preferring neurons tend to express their selectivity more often
+    through contra-suppression.
+  depends_on:
+  - fig2e-equal-contra-ipsi
+  criterion: The paper gives no threshold for "large" and no definition of contra-suppression.
+    Per selective putative pyramidal neuron, the absolute spike count difference over the three
+    epochs. Readings for "large", (a) the top quarter, (b) the top tenth of absolute differences.
+    Contra-suppression is read as a firing rate on lick right trials below the rate before sample
+    onset, with the rate on lick left trials not below it. Reproduced when contra-preferring
+    neurons are more than half of the large group under one reading, and ipsi-preferring neurons
+    show contra-suppression more often than contra-preferring neurons show ipsi-suppression
+    (the same rule with trial types swapped).
+- id: fig5-pt-activation-contralateral-bias
+  statement: Subthreshold photostimulation of PT neurons during the delay epoch biases licking to
+    the contralateral side; in left ALM it lowers performance on lick left trials, and in right
+    ALM on lick right trials. Stimulation during the sample epoch also causes a significant
+    contralateral bias.
+  source: Results, Pyramidal tract neurons drive upcoming movements, paragraphs 2 and 3; Figure 5b
+  quote: Subthreshold photostimulation of the pyramidal tract neurons during the delay epoch biased
+    licking to the contralateral direction. Subthreshold stimulation of pyramidal tract neurons in
+    the left ALM produced a rightward bias, resulting in a decrease in performance in the lick left
+    trials and vice versa (Fig. 5) ... Notably, stimulation of pyramidal tract neurons during the
+    sample epoch also caused a significant contralateral bias (Fig. 5b)
+  statistics:
+  - about: left ALM, delay epoch, lick left performance decrease (stars read from Fig. 5b)
+    test: one-tailed test, bootstrap
+    p: 0.001
+    p_relation: "<"
+  - about: left ALM, sample epoch, lick left performance decrease (stars read from Fig. 5b)
+    test: one-tailed test, bootstrap
+    p: 0.01
+    p_relation: "<"
+  - about: right ALM, delay epoch, lick right performance decrease (stars read from Fig. 5b)
+    test: one-tailed test, bootstrap
+    p: 0.001
+    p_relation: "<"
+  criterion: Performance and bootstrap as in fig1d-photoinhibition-ipsilateral-bias; data from
+    subthreshold powers pooled (0.12 to 0.8 mW average power, Fig. 5 legend). Reproduced when the
+    three decreases are significant at P < 0.05; partially reproduced when the delay effects hold
+    and the sample effect does not.
+- id: ed6b-pt-dose-response
+  statement: The behavioural effect of PT neuron activation grows monotonically with laser power.
+  source: Results, Pyramidal tract neurons drive upcoming movements, paragraph 2; Extended Data Fig.
+    6b
+  quote: The effect size was monotonically dependent on laser power (Extended Data Fig. 6b).
+  criterion: Delay epoch photostimulation only (ED Fig. 6b legend). Per mouse and in the mean
+    over mice, the performance change on the contralateral-bias trial type at each average power
+    plotted in ED Fig. 6b (0.12, 0.24, 0.8 mW; not every mouse was tested at every power, and
+    only one at 0.8 mW). Reproduced when the mean change grows in magnitude with each step
+    of power; partially reproduced when it grows overall (highest power larger than lowest) with
+    one reversal.
+- id: ed6d-it-activation-inconsistent
+  statement: Subthreshold photostimulation of IT neurons also changes behaviour, but the changes
+    vary across mice and depend non-monotonically on laser intensity.
+  source: Results, Pyramidal tract neurons drive upcoming movements, paragraph 4; Extended Data Fig.
+    6d
+  quote: Subthreshold photostimulation of the intratelencephalic neurons also caused behavioural
+    changes, but these varied across mice and depended non-monotonically on laser intensity
+  criterion: Per mouse, delay epoch performance change against average power as in
+    ed6b-pt-dose-response. Reproduced when at least one power gives a performance change outside
+    the 95% band of control resampling (ED Fig. 6 legend) and the sign or the order across powers
+    differs between mice, with at least one mouse non-monotonic.
+- id: ed3-high-power-contralateral-licking
+  statement: High-power unilateral photostimulation of ALM IT or PT neurons triggers contralateral
+    licking with short latencies, also in untrained mice and as premature licks in trained mice,
+    while stimulation of vibrissal motor cortex causes whisker protraction but not licking.
+  source: Results, Pyramidal tract neurons control directional licking, paragraph 2; Extended Data
+    Fig. 3e to g
+  quote: Unilateral photostimulation of ALM intratelencephalic or pyramidal tract neurons ('high'
+    power, 0.8 mW, 2 ms pulses at 20 Hz, Methods) triggered contralateral licking with short
+    latencies (Extended Data Fig. 3e), even in untrained mice (Extended Data Fig. 3f) ...
+    Photostimulating the vibrissal motor cortex (anterior 1 mm, lateral 1 mm) caused whisker
+    protraction but not licking
+  criterion: Reproduced when, in ALM stimulation trials, licks to the contralateral port
+    outnumber ipsilateral licks during stimulation for both lines, the fraction of stimulation
+    trials with early (premature) licks in trained mice and with licking in untrained mice is
+    above zero at high power, and vM1 stimulation produces no increase in lick rate over
+    baseline (n = 8 trained mice, n = 6 untrained mice, ED Fig. 3e, f legends). The paper gives
+    no test for these; the comparisons are read from ED Fig. 3e, f.
+- id: ed3d-non-overlapping-it-pt
+  statement: Retrograde tracers in the ipsilateral pontine nucleus and contralateral ALM label
+    non-overlapping populations of PT and IT neurons (fewer than 4% doubly labelled, n = 2 mice),
+    intermingled in layer 5B.
+  source: Results, Pyramidal tract neurons control directional licking, paragraph 1; Extended Data
+    Fig. 3d
+  quote: Injection of retrograde tracers in the ipsilateral pontine nucleus and the contralateral
+    ALM labelled non-overlapping populations of intratelencephalic neurons and pyramidal tract
+    neurons (Extended Data Fig. 3d) (doubly labelled neurons, ,4%, n 5 2 mice)
+  criterion: Reproduced when the fraction of doubly labelled neurons is below 4% (4.4% with the
+    10% tolerance).
+- id: ed7-pt-stimulation-persistent-activity
+  statement: Subthreshold stimulation of PT neurons during the sample epoch causes changes in ALM
+    activity and a directional bias that persist for seconds after the photostimulus ends.
+  source: Results, Pyramidal tract neurons drive upcoming movements, paragraph 3; Extended Data Fig.
+    7
+  quote: Simultaneous recordings and optogenetics revealed that subthreshold stimulation of
+    pyramidal tract neurons caused changes in ALM activity and a directional bias that persisted
+    for seconds after cessation of the photostimulus
+  criterion: Data of ED Fig. 7 (2 mice, 8 sessions, 91 neurons, left ALM, sample epoch
+    stimulation). The paper gives no test for the neural change. Population selectivity as in
+    ED Fig. 7d (preferred minus non-preferred trial type, preference from control trials) on
+    control and photostimulation trials. Readings for "changes in activity", (a) a difference in
+    population selectivity in the delay epoch, after the stimulus ends, between photostimulation
+    and control trials (paired t-test across neurons, P < 0.05); (b) the fraction of neurons
+    whose delay epoch spike counts differ between photostimulation and control trials of the same
+    type (two-tailed t-test, P < 0.05) exceeding 5%, the rate expected by chance at that
+    threshold (an assumption). Reproduced when one reading holds and
+    lick left performance falls with sample stimulation (ED Fig. 7b).
+checks:
+- date: 2026-11-07
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - task-performance. The criterion fixed control trials only; the paper does not say which trials the 78.4% uses. Named it open, with readings control trials only or all trials.
+  - ed2-error-trials-predict-choice. The criterion required P < 0.05 for r, which the paper does not report; now marked as a standard choice. The statement's "majority" was only reported; the fraction of neurons switching sign must now exceed one half, as the ED Fig. 2c legend says.
+  - fig2e-equal-contra-ipsi. The counts 427 and 485 come from the Fig. 2c sort, which the Methods may base on the 10-trial preferred type, while Fig. 2e uses total spike counts. Named both as readings.
+  - ed1-no-population-contra-bias. Added reading (c), all 1,408 units, since ED Fig. 1 shows FS and pyramidal neurons and the text says "the recorded population"; said the outcome must hold under every reading, as for a claim of absence.
+  - antidromic-latency-jitter. The expected tolerances for PT and IT jitter (0.01, 0.02 ms) contradicted the criterion's rounding rule; set to 0.05 ms, half the last printed digit, to match it.
+  - fig3ei-both-types-preparatory-and-movement. The Fig. 3i fractions were misread (0.2, 0.65, 0.15); the PDF shows about 0.22, 0.56, 0.22.
+  - fig3fj-contra-preferring-pt-not-it. The inset fractions read about 0.65 (Fig. 3f) and 0.45 (Fig. 3j), not 0.7 and 0.5. The n fields gave 45 and 27 neurons although which neurons enter the bootstrap is open; reworded.
+  - fig4h-imaging-pt-contra-bias. Added how imaging preference is set (average calcium signal during the trial epochs, Results), with how epochs combine named as open.
+  - ed6b-pt-dose-response. The criterion listed 0.06 mW, which ED Fig. 6b does not plot for PT neurons; the powers are 0.12, 0.24 and 0.8 mW, and not every mouse was tested at each.
+  - ed3-high-power-contralateral-licking. The criterion left out two parts of the statement, licking in untrained mice and premature licks in trained mice; added them, and said the paper gives no test.
+  - Open, not settled. fig2d-response-categories. The text (389 peri-movement only, 304 both) and Fig. 2d (about 0.43 both, 0.33 peri-movement only) disagree; confirmed from the PDF; the criterion keeps both readings.
+  - Open, not settled. fig5-pt-activation-contralateral-bias. Results define subthreshold as < 0.25 mW, yet the Fig. 5 legend pools 0.12 to 0.8 mW and ED Fig. 3 calls 0.8 mW high power. The criterion follows the legend; a run limited to 0.12 and 0.24 mW is a variant.
+  - Open, not settled. fig2c-dynamic-single-neurons. The 0.5 bound on the population response correlation is read from Fig. 2c and remains an assumption; the paper gives no threshold.
