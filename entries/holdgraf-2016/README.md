@@ -24,8 +24,8 @@ stimulus audio. The behavioural control data are not in it.
 | The shift correlates with response strength | Not reproduced |
 | The shift lies mostly on the STG | Reproduced |
 | No eSTRF shift after pink noise | Blocked: no electrode qualifies |
-| Seed to target coherence rises after context | Reproduced (assumption; not reproduced proposed) |
-| AFTER coherence is closer to MIDDLE | Reproduced (assumption; not reproduced proposed) |
+| Seed to target coherence rises after context | Not reproduced (assumption) |
+| AFTER coherence is closer to MIDDLE | Not reproduced (assumption) |
 | No change in theta to HFB coupling | Reproduced |
 | Envelope coherence: theta rise for unfiltered speech in temporal electrodes only | Reproduced (assumption) |
 | Wavelet HFB power rises, low frequencies fall in frontal electrodes | Reproduced |
@@ -37,10 +37,10 @@ The eSTRFs predict held-out trials in far fewer electrodes than the paper report
 claims rest on 9 electrodes from three subjects; a check of the alignment of stimulus and
 response finds no offset, and no drift over the session, that would explain this. Three coherence
 outcomes rest on the multitaper bandwidth, which the paper does not give:
-supp6a-connectivity-increase, supp6a-after-closer-to-middle and supp7-envelope-coherence. Both
-supp6a outcomes also reverse when the coherence is integrated from the tapers' half-bandwidth
-(10 Hz) instead of from 2.5 Hz, and a change to not reproduced is proposed for the next
-verification round. The data set holds 416 channels against the
+supp6a-connectivity-increase, supp6a-after-closer-to-middle and supp7-envelope-coherence. The
+supp6a coherence is integrated from the tapers' half-bandwidth (10 Hz), the lowest frequency
+they resolve; integrated from 2.5 Hz, both supp6a claims are reproduced. The third verification
+round agreed with this change of outcome. The data set holds 416 channels against the
 paper's 524, its stored values are not in the stated units, and its subjects cannot be matched to
 the paper's. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/holdgraf-2016-01.yaml`](../../attempts/holdgraf-2016-01.yaml).
