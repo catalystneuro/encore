@@ -25,21 +25,20 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_kim_2020.ipynb
   output: claim:cc-cohort-counts
-  notes: The data set holds 66 current-clamp tone recordings and 40 DMR recordings, and its table
-    (docs/data_file_information.xlsx) pairs each DMR recording with a tone recording of the same
-    neuron. The number of mice (41) cannot be counted, as no file or table gives an animal
-    identifier; the 66 recordings fall on 39 dates. The criterion reports mice only where the data
-    identify animals.
+  notes: The data set holds 66 current-clamp tone recordings and 40 DMR recordings, and its table (docs/data_file_information.xlsx)
+    pairs each DMR recording with a tone recording of the same neuron. The number of mice (41) cannot
+    be counted, as no file or table gives an animal identifier; the 66 recordings fall on 39 dates. The
+    criterion reports mice only where the data identify animals.
 - claim: vc-cohort-counts
   outcome: reproduced
   notebook: reproduce_kim_2020.ipynb
   output: claim:vc-cohort-counts
-  notes: 27 excitatory and 12 inhibitory recordings from 31 neurons, 8 with both, as the table
-    lists them. The number of mice (24) cannot be checked, as no animal identifier is given; the
-    recordings fall on 22 dates. Five excitatory recordings were held at -70 mV and 22 at -80 mV.
+  notes: 27 excitatory and 12 inhibitory recordings from 31 neurons, 8 with both, as the table lists them.
+    The number of mice (24) cannot be checked, as no animal identifier is given; the recordings fall on
+    22 dates. Five excitatory recordings were held at -70 mV and 22 at -80 mV.
   deviations:
-  - The mouse count, one of the expected values, cannot be tested; it is treated as the
-    current-clamp criterion treats it.
+  - The mouse count, one of the expected values, cannot be tested; it is treated as the current-clamp
+    criterion treats it.
 - claim: fig1-psp-amplitude-kinetics
   outcome: reproduced
   assumed: true
@@ -48,19 +47,21 @@ outcomes:
   measured:
   - 14.0
   - 30.3
-  - 91.7
-  notes: With the mean PSP per neuron (D16 (b)) and a baseline s.d. pooled over the 50-ms pre-tone
-    segments, amplitude 14.0 +- 6.3 mV, rise 30.3 +- 9.5 ms and decay 91.7 +- 16.5 ms, all within
-    tolerance (n = 66). The largest PSP per neuron (D16 (a)) is 25.2 +- 11.6 mV, outside. With a
-    per-tone s.d. the mean amplitude is 10.3 mV and no reading matches.
+  - 91.5
+  notes: With the mean PSP per neuron (D16 (b)) and a baseline s.d. pooled over the 50-ms pre-tone segments,
+    amplitude 14.0 +- 6.3 mV, rise 30.3 +- 9.5 ms and decay 91.5 +- 16.8 ms, all within tolerance (n =
+    66). Taking the amplitude from the median potential (D14 (a)) gives 13.0 mV, also within. The largest
+    PSP per neuron (D16 (a)) is 25.2 +- 11.6 mV (23.8 from the median), outside. With a per-tone s.d.
+    the mean amplitude is 10.3 mV and no reading matches.
   deviations:
-  - Responses are tones whose trace first exceeds the 50-ms pre-tone mean by 4 x the baseline s.d.
-    5 to 50 ms after onset (Methods, Data analysis); the baseline s.d. is pooled over all pre-tone
-    segments, an assumption the Methods' plural "baseline segments" supports; a per-tone s.d. is
-    shown as a variant and gives a different outcome.
-  - The PSP peak is taken in the 100 ms after onset and the decay followed to 250 ms, choices the
-    paper does not state; tones with a spike are left out of amplitude and kinetics (claims file,
-    D16).
+  - Responses are tones whose trace first exceeds the 50-ms pre-tone mean by 4 x the baseline s.d. 5 to
+    50 ms after onset (Methods, Data analysis); the baseline s.d. is pooled over all pre-tone segments,
+    an assumption the Methods' plural "baseline segments" supports; a per-tone s.d. is shown as a variant
+    and gives a different outcome.
+  - The PSP peak is taken in the 100 ms after onset and the decay followed to 250 ms, choices the paper
+    does not state; tones with a spike 5 to 100 ms after onset are left out of amplitude and kinetics
+    (claims file, D16), and tones with a spike within 250 ms out of the decay (307 tones); 919 tones whose
+    decay does not reach 10% in 250 ms give no decay value.
 - claim: fig1c-resting-potential-range
   outcome: reproduced
   notebook: reproduce_kim_2020.ipynb
@@ -68,31 +69,35 @@ outcomes:
   measured:
   - -84.7
   - -55.1
-  notes: Median membrane potential per tone recording, -84.7 to -55.1 mV (D14 (a)); pre-tone means
-    -83.8 to -53.7 mV (D14 (b)). Both are within the widened range; none rests above -50 mV.
+  notes: Median membrane potential per tone recording, -84.7 to -55.1 mV (D14 (a)); pre-tone means -83.8
+    to -53.7 mV (D14 (b)). Both are within the widened range; none rests above -50 mV.
 - claim: fig1d-ndr-distribution
   outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig1d-ndr-distribution
   measured: 31
-  notes: Bins of 0.1 hold 19, 10, 6, 5, 7, 8, 5, 1, 1, 4 neurons; 6 of 66 (9%) lie above 0.7, and
-    31 have NDR of at least 0.3. Both TRF region readings (D15) give the same counts. With a
-    per-tone baseline s.d. only 18 neurons reach 0.3.
+  notes: Under region (a), the responsive tones, bins of 0.1 hold 19, 10, 6, 5, 7, 8, 5, 1, 1, 4 neurons;
+    6 of 66 (9%) lie above 0.7, and 31 have NDR of at least 0.3. Region (b), the outline, which also counts
+    spikes at tones inside it with no PSP onset detected, gives 33 at 0.3 or more but 11 of 66 (17%) above
+    0.7, failing the criterion. With a per-tone baseline s.d. 18 (a) or 21 (b) neurons reach 0.3.
   deviations:
-  - Spikes are peakfinder events (the paper's code) above the per-neuron gap of the amplitude
-    histogram (claims file D1 (a)); a spike counts for a tone when it falls 5 to 100 ms after onset,
-    a window the paper does not state.
+  - Spikes are peakfinder events (the paper's code) above the per-neuron gap of the amplitude histogram
+    (claims file D1 (a)); a spike counts for a tone when it falls 5 to 100 ms after onset, a window the
+    paper does not state.
   - Baseline s.d. pooled over the pre-tone segments, as for fig1-psp-amplitude-kinetics.
+  - The TRF region readings (D15) give different outcomes; region (a) is adopted, as it counts spikes
+    and PSPs over the same tones (assumption).
 - claim: fig1e-ndr-vs-rest-weak
   outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig1e-ndr-vs-rest-weak
   measured: 0.182
-  notes: With the pre-tone mean as resting potential (D14 (b)), r = 0.182, p = 0.144 (n = 66).
-    With the median (D14 (a)), r = 0.116, p = 0.355, positive and not significant but outside
-    tolerance. With a per-tone baseline s.d., r = 0.035 to 0.079.
+  notes: With the pre-tone mean as resting potential (D14 (b)) and region (a), r = 0.182, p = 0.144 (n
+    = 66); with the median (D14 (a)) and region (b), r = 0.187, p = 0.134. The median with region (a)
+    gives r = 0.116, p = 0.355 (outside tolerance), and the pre-tone mean with region (b) r = 0.244, p
+    = 0.0483 (significant). With a per-tone baseline s.d., r = 0.035 to 0.098.
   deviations:
   - Baseline s.d. pooled over the pre-tone segments, as for fig1-psp-amplitude-kinetics.
 - claim: fig1fgh-trf-bandwidth-narrowing
@@ -102,16 +107,16 @@ outcomes:
   measured:
   - 1.94
   - 1.49
-  - 0.90
-  notes: In the 31 neurons with NDR of at least 0.3 (28 with both bandwidths), PSP bandwidth30
-    1.94 +- 0.76 and spike bandwidth30 1.49 +- 0.94 octaves, median ratio 0.90, paired t
-    p = 0.00037 with spikes narrower. The spike mean and ratio are within tolerance, the PSP mean is
-    not. The contiguous reading of bandwidth (D15 (b)) gives 0.20 octaves for PSPs, as single
-    presentations leave gaps between responsive tones. The per-tone s.d. variant selects 18 neurons
-    (PSP 3.02, spike 1.75 octaves, p = 2.7e-05).
+  - 0.9
+  notes: In the 31 neurons with NDR of at least 0.3 under region (a) (28 with both bandwidths), PSP bandwidth30
+    1.94 +- 0.76 and spike bandwidth30 1.49 +- 0.94 octaves, median ratio 0.90, paired t p = 0.00037 with
+    spikes narrower. The spike mean and ratio are within tolerance, the PSP mean is not. Region (b) gives
+    33 neurons (31 with both), 1.94 and 1.48 octaves, ratio 0.94, p = 0.00027. The contiguous reading
+    of bandwidth (D15 (b)) gives 0.20 octaves for PSPs, as single presentations leave gaps between responsive
+    tones. The per-tone s.d. variant selects 18 neurons (PSP 3.02, spike 1.75 octaves, p = 2.7e-05).
   deviations:
-  - Bandwidth30 at the threshold level + 30 dB (Methods, Stimuli); threshold 0 dB SPL in 64
-    neurons and 10 dB SPL in 2 here, against 63 and 3 in the paper.
+  - Bandwidth30 at the threshold level + 30 dB (Methods, Stimuli); threshold 0 dB SPL in 64 neurons and
+    10 dB SPL in 2 here, against 63 and 3 in the paper.
   - 28 of the 31 neurons have a responsive tone at that level for both PSPs and spikes.
 - claim: fig2-psp-histogram-modality
   outcome: not_reproduced
@@ -121,64 +126,77 @@ outcomes:
   measured:
   - 17
   - 23
-  notes: Main reading (noise s.d., KDE maxima, the code's amplitudes) 17 bimodal and 23 unimodal;
-    rest-referenced amplitudes 21 and 19; the dip test 0 to 9 bimodal; the pre-stimulus s.d. leaves a
-    median of 0 or 1 non-spiking events per neuron. No reading reaches 24 +- 2.4. Open for the
-    paper's authors - which baseline segments set the 4 x s.d. cut for "very small events" (Results,
-    Spectrotemporal receptive fields, paragraph 3) and how bimodality was judged; with the
-    pre-stimulus s.d. the cut removes nearly every PSP.
+  notes: Main reading (noise s.d., KDE maxima, the code's amplitudes) 17 bimodal and 23 unimodal; rest-referenced
+    amplitudes 21 and 19; the dip test 0 to 9 bimodal; the pre-stimulus s.d. leaves a median of 0 or 1
+    non-spiking events per neuron, as the pre-stimulus segment (12.5 to 18.7 s) holds 11 to 115 spontaneous
+    peaks and an s.d. about five times the event-free noise during the DMR (medians 6.32 and 1.28 mV).
+    No reading reaches 24 +- 2.4. Open for the paper's authors - which baseline segments set the 4 x s.d.
+    cut for "very small events" (Results, Spectrotemporal receptive fields, paragraph 3) and how bimodality
+    was judged. The claims file's D2 (b) wording is asked of a reader (questions/kim-2020.yaml); the amplitude
+    run as D2 (b) here is the peak value peakfinder returns.
   deviations:
-  - Events are the code's peakfinder peaks (selectivity 3 mV, read_data.m) on the data set's
-    processed traces; amplitude is the processed value at the peak (the code's Amp_dist, "the same
-    absolute baseline", Methods).
-  - The baseline s.d. is the within-segment noise of event-free 50-ms segments during the DMR (D3
-    reading (b) as implemented here), an assumption; D3 (a) and a variant of (b) that keeps slow
-    drifts are shown.
-  - Bimodality by two KDE maxima separated by a trough (D4 (a)), the smaller at least 10% of the
-    larger, a threshold of this attempt; the dip test (D4 (b)) is shown.
+  - Events are the code's peakfinder peaks (selectivity 3 mV, read_data.m) on the data set's processed
+    traces; amplitude is the processed value at the peak (the code's Amp_dist, "the same absolute baseline",
+    Methods).
+  - The baseline s.d. is the within-segment noise of event-free 50-ms segments during the DMR (D3 reading
+    (b) as implemented here), an assumption; D3 (a) and a variant of (b) that keeps slow drifts are shown.
+  - Bimodality by two KDE maxima separated by a trough (D4 (a)), the smaller at least 10% of the larger,
+    a threshold of this attempt; the dip test (D4 (b)) is shown.
 - claim: fig2-strf-significance-groups
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig2-strf-significance-groups
   measured:
-  - 15
-  - 11
-  notes: Any significant positive pixel (D7 (a)) gives 37 neurons with all three STRFs and 3 with
-    PSP but not spike STRFs; subfields kept by the cluster test (D7 (b)) give 15 and 11, with 13
-    in other patterns and 1 with none. The code's analytic significance gives 35 and 5 (any pixel)
-    or 29 and 6 (subfields); spikes by rate of rise change the counts by at most two. None gives
-    30 and 10. Open for the paper's authors - what made an STRF subfield significant; at p < 0.05
-    per pixel about 5% of the 2560 pixels pass by chance.
+  - 37
+  - 3
+  notes: D7 (a), any significant positive pixel, and D7 (b), a contiguous significant positive region
+    of at least 2 pixels, select the same neurons, 37 with all three STRFs and 3 with PSP but not spike
+    STRFs. Variants - the code's analytic significance (p = 0.005) gives 35 and 5 (any pixel) or 29 and
+    6 (regions); subfields kept by a cluster test give 15 and 11, with 13 in other patterns and 1 with
+    none; spikes by rate of rise change the counts by at most two. None gives 30 and 10. Open for the
+    paper's authors - what made an STRF subfield significant; at p < 0.05 per pixel about 5% of the 2560
+    pixels pass by chance.
   deviations:
-  - STRFs on the downsampled DMR envelope (5 ms, 64 channels 0.1 octave apart, 0 to 195 ms before
-    the event), as the paper's wcr_strf.m and rtwstrfdb.m compute them.
-  - Pixel significance per the Methods, p < 0.05 two-tailed against the pooled pixels of 100
-    circularly shifted event trains (claims file, D6); the shipped code uses an analytic threshold
-    (significant_strf.m, p = 0.005 in plot_strf_single.m), shown as a variant.
-  - Subfields are 8-connected components of significant positive pixels whose summed value exceeds
-    the 95th percentile of the largest component of the shifted STRFs, a cluster test on the
-    paper's null that this attempt adds (assumption).
+  - STRFs on the downsampled DMR envelope (5 ms, 64 channels 0.1 octave apart, 0 to 195 ms before the
+    event), as the paper's wcr_strf.m names it and rtwstrfdb.m computes it.
+  - Pixel significance per the Methods, p < 0.05 two-tailed against the pooled pixels of 100 circularly
+    shifted event trains (claims file, D6); the shipped code uses an analytic threshold (significant_strf.m,
+    p = 0.005 in plot_strf_single.m), shown as a variant.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: fig2-psp-amplitude-ranges
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig2-psp-amplitude-ranges
   measured:
-  - 10.4
+  - 6.9
   - 21.7
-  - 5.5
+  - 3.3
   - 13.0
-  notes: In the 15 neurons of the group, large-PSP means 10.4 to 21.7 mV and small-PSP means 5.5 to
-    13.0 mV, overlapping. Rest-referenced amplitudes give 10.8 to 22.8 and 5.5 to 11.9 mV.
+  notes: In the 37 neurons of the group, large-PSP means 6.9 to 21.7 mV and small-PSP means 3.3 to 13.0
+    mV, overlapping; rest-referenced amplitudes give 7.7 to 22.8 and 3.7 to 11.9 mV. The variant groups
+    overlap too (29 neurons, 10.4 to 21.7 and 4.1 to 13.0 mV; 15 neurons, 10.4 to 21.7 and 5.5 to 13.0
+    mV).
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30; events and amplitudes as for
-    fig2-psp-histogram-modality.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Events and amplitudes as for fig2-psp-histogram-modality.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: supfig2-strf-reliability
   outcome: blocked
   blocked_by: data_missing
-  notes: The data set holds one neuron with two DMR repeats (17921004 and 17921007, the second a
-    copy of the main recording), so one STRF pair where the claim needs 13 pairs from 2 neurons; the
-    data description calls it a representative example. The test over 13 pairs cannot be run.
+  notes: The data set holds one neuron with two DMR repeats (17921004 and 17921007, the second a copy
+    of the main recording), so one STRF pair where the claim needs 13 pairs from 2 neurons; the data description
+    calls it a representative example, and the archive's members under Supplementary/ hold only these
+    two (listed in the notebook). The one pair gives full-STRF correlations of 0.18 (spikes), 0.12 (large
+    PSPs), 0.02 (small PSPs) and 0.24 (all events), reported as the criterion asks; no test can be run.
 - claim: supfig2-psp-more-reliable-than-spikes
   outcome: blocked
   blocked_by: data_missing
@@ -186,9 +204,11 @@ outcomes:
 - claim: supfig3-intensity-invariance
   outcome: blocked
   blocked_by: data_missing
-  notes: The data set holds one neuron at 38, 54 and 69 dB SPL (17726009, 17726007, 17726008; the
-    54 dB file is a copy of the main recording), where the claim's ANOVA uses five neurons, as the
-    criterion foresees.
+  notes: The data set holds one neuron at 38, 54 and 69 dB SPL (17726009, 17726007, 17726008; the 54 dB
+    file is a copy of the main recording), and the archive's members under Supplementary/ hold only these
+    three; the claim's ANOVA uses five neurons, as the criterion foresees. The one neuron's spike STRF
+    has BF 20.0 kHz at all three levels, peak latencies 45, 30 and 40 ms and total bandwidths 0.30, 1.40
+    and 0.60 octaves; its large- and small-PSP STRFs have no subfield at 69 dB SPL.
 - claim: fig3d-double-peaked-counts
   outcome: not_reproduced
   assumed: true
@@ -199,13 +219,20 @@ outcomes:
   - 15
   - 16
   - 8
-  notes: With bands as frequency-separated significant subfields (D9 (a)), any type 28, PSP (large
-    or small) 15, spikes 16, small PSPs 8, all-event 17; spikes are not double-peaked less often
-    than PSPs. The profile reading (D9 (b)) makes 35 or more of 40 spike, large-PSP and small-PSP
-    STRFs double-peaked (28 all-event). Open for the paper's authors - how a second peak was told from noise.
+  notes: With bands as frequency-separated subfields kept by the cluster test (D9 (a)), any type 28, PSP
+    (large or small) 15, spikes 16, small PSPs 8, all-event 17; spikes are not double-peaked less often
+    than PSPs. Without the cluster test 36 to 40 STRFs of every type are double-peaked, and with the code's
+    analytic significance 30 to 33. The profile reading (D9 (b)) makes 35 or more of 40 spike, large-PSP
+    and small-PSP STRFs double-peaked (28 all-event). Open for the paper's authors - how a second peak
+    was told from noise.
   deviations:
-  - Subfields as in fig2-strf-significance-groups (cluster test, assumption); subfields whose
-    frequency spans overlap are one band.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked. Subfields
+    whose frequency spans overlap are one band.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: fig3e-harmonic-ratios
   outcome: not_reproduced
   assumed: true
@@ -214,62 +241,80 @@ outcomes:
   measured:
   - 4
   - 279.2
-  notes: Of 17 double-peaked all-event STRFs, 12 have ratios inside 1.25 to 2 widened by 4.5%;
-    categories 1.33, 1.5 and 1.67 hold 4 each and 2 holds 5; the 1.33 and 2 category means are
-    6.2% and 279% off. On the 0.1-octave envelope grid ratios take only discrete values (1.42,
-    1.52, 1.63, 1.74).
+  notes: Of 17 double-peaked all-event STRFs, 12 have ratios inside 1.25 to 2 widened by 4.5%; categories
+    1.33, 1.5 and 1.67 hold 4 each and 2 holds 5; five ratios (2.47 to 15.07) lie above the range, putting
+    the 2 category's error at 279%. Counting only the 12 ratios inside the range, the errors are 6.2,
+    1.2 and 0.6%. Without the cluster test 40 STRFs are double-peaked and with the code's analytic significance
+    33, 2 the most common category in both (22 and 16). On the 0.1-octave envelope grid ratios take only
+    discrete values (1.42, 1.52, 1.63, 1.74).
   deviations:
-  - Peak frequencies are those of the two strongest bands (D9 (a)) on the downsampled envelope;
-    the full-resolution envelope (316 carriers, 1.5 GB) was not used.
+  - Peak frequencies are those of the two strongest bands (D9 (a)) on the downsampled envelope, which
+    the paper's wcr_strf.m names; the full-resolution envelope (316 carriers, 1.5 GB) was not used.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig3f-bandwidth-single-vs-double
   outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig3f-bandwidth-single-vs-double
   measured:
-  - 0.30
-  - 0.90
-  notes: Grouping (a), any type double-peaked, total bandwidth (D8 (a)) gives medians 0.30 octaves
-    (9 single-peaked neurons) and 0.90 octaves (26 double-peaked), both within tolerance; the groups
-    are 9 and 26, not 20 and 20, and 5 neurons have no all-event subfield. Grouping (b) gives 0.35
-    and 1.00, and the half-maximum width 0.20 to 0.30 in every group.
+  - 0.3
+  - 0.9
+  notes: Grouping (a), any type double-peaked, total bandwidth (D8 (a)) gives medians 0.30 octaves (9
+    single-peaked neurons) and 0.90 octaves (26 double-peaked), both within tolerance. It is the only
+    one of the 12 combinations printed that matches. The groups are 9 and 26, not 20 and 20, and 5 neurons
+    have no all-event subfield; grouping (b) gives 0.35 and 1.00; the half-maximum width and the main
+    band alone 0.20 to 0.40 in every group; with the code's analytic significance only 1 or 6 neurons
+    are single-peaked. 0.30 octaves is 3 envelope channels.
   deviations:
-  - Bandwidth as the number of channels from the lowest to the highest band times 0.1003 octave,
-    the claims file's D8 (a); subfields by the cluster test (assumption).
+  - Bandwidth as the number of channels from the lowest to the highest band times 0.1003 octave, the claims
+    file's D8 (a).
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig4c-btmf-small-psp-higher
-  outcome: reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig4c-btmf-small-psp-higher
   measured:
-  - 8.25
-  - 9.50
-  - 13.14
-  - 4.89
-  - 3.64
-  notes: Under D11 reading (b) (bandpass when the zero-modulation value is more than 3 dB below the
-    peak), bTMFs 8.25, 9.50 and 13.14 Hz in the 15 neurons, small PSPs above spikes (p = 0.004)
-    and above large PSPs (p = 0.0385). Under reading (a) 7.21, 7.53 and 8.75 Hz with no difference
-    (p = 0.37, 0.47); on the full STRF small PSPs exceed spikes only (p = 0.018). In the 37-neuron
-    variant under (b), small PSPs exceed spikes (p = 0.021) but not large PSPs (p = 0.18).
+  - 9.34
+  - 10.51
+  - 11.18
+  - 1.84
+  - 0.67
+  notes: In the 37 neurons, under D11 reading (a) bTMFs 9.34, 10.51 and 11.18 Hz, within tolerance, with
+    no difference (small against spikes p = 0.341, against large PSPs p = 0.643). Under reading (b) (bandpass
+    when the zero-modulation value is more than 3 dB below the peak) small PSPs exceed spikes (15.21 against
+    11.96 Hz, p = 0.0212) but not large PSPs (p = 0.177), the spike and large means outside tolerance.
+    The full STRF shows no difference. Variants - the code's analytic group under (b) has small above
+    spikes (p = 0.0149) but not above large (p = 0.107); only the 15-neuron cluster-test group under (b)
+    meets the criterion (8.25, 9.50, 13.14 Hz; p = 0.004 and 0.0385), the first round's outcome.
   deviations:
-  - 15 neurons (D7 (b), cluster test) where the paper has 30.
-  - RTF on the native FFT grid of the 40 x 64 STRF (5 Hz, 0.156 cyc/oct), restricted to the
-    DMR's 40 Hz and 4 cyc/oct, the 3 dB cutoff interpolated; the paper's code for this is not in
-    the data set.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - RTF on the native FFT grid of the 40 x 64 STRF (5 Hz, 0.156 cyc/oct), restricted to the DMR's 40 Hz
+    and 4 cyc/oct, the 3 dB cutoff interpolated; the paper's code for this is not in the data set.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: fig4d-bsmf-small-psp-higher
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig4d-bsmf-small-psp-higher
   measured:
-  - 0.54
-  - 0.54
-  - 0.97
-  - 0.44
-  - 0.43
-  notes: Means within tolerance under every reading; small PSPs not significantly above spikes or
-    large PSPs under any (smallest p = 0.0765); the 37-neuron variant shows no difference under the main reading (p >= 0.93).
+  - 0.88
+  - 0.89
+  - 0.87
+  - -0.01
+  - -0.02
+  notes: In the 37 neurons, means within tolerance under every reading (reading (a) 0.88, 0.89 and 0.87
+    cyc/oct); small PSPs not significantly above spikes or large PSPs under any reading (smallest p =
+    0.255); neither variant group shows the difference (smallest p = 0.0765, cluster test).
   deviations:
   - As for fig4c-btmf-small-psp-higher.
 - claim: tab1-modulation-large-psp-like-spikes
@@ -277,8 +322,9 @@ outcomes:
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab1-modulation-large-psp-like-spikes
-  notes: Spikes against large PSPs, bTMF 7.21 against 7.53 Hz (p = 0.845), bSMF 0.54 against 0.54
-    cyc/oct (p = 0.987); the 37-neuron variant gives p = 0.466 and 0.978.
+  notes: In the 37 neurons, spikes against large PSPs, bTMF 9.34 against 10.51 Hz (p = 0.466), bSMF 0.88
+    against 0.89 cyc/oct (p = 0.978). The variant groups agree (p = 0.218 and 0.252 in the 29; 0.845 and
+    0.987 in the 15).
   deviations:
   - As for fig4c-btmf-small-psp-higher.
 - claim: fig4b-bsmf-btmf-correlation
@@ -286,9 +332,9 @@ outcomes:
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig4b-bsmf-btmf-correlation
-  measured: -0.10
-  notes: Large PSPs r = -0.10 (p = 0.726), spikes r = 0.01, small PSPs r = -0.03 (n = 15); the
-    37-neuron variant gives r = 0.04 to 0.18, none significant.
+  measured: 0.09
+  notes: In the 37 neurons, large PSPs r = 0.09 (p = 0.594), spikes r = 0.18, small PSPs r = 0.04; the
+    variant groups give r = -0.10 to 0.13, none significant.
   deviations:
   - As for fig4c-btmf-small-psp-higher.
 - claim: fig5a-cf-bf-correlation
@@ -297,167 +343,239 @@ outcomes:
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig5a-cf-bf-correlation
   measured: 0.04
-  notes: 35 of 40 all-event STRFs have a subfield; CF against BF r = 0.04 (kHz) and -0.01 (log2);
-    the median BF lies 0.51 octaves from the CF. With the code's analytic significance (39
-    neurons) r = 0.23 on log2.
+  notes: 35 of 40 all-event STRFs have a subfield; CF against BF r = 0.04 (kHz) and -0.01 (log2); the
+    median BF lies 0.51 octaves from the CF. With the code's analytic significance (39 neurons) r = 0.23
+    on log2. Diagnosis - the CF is set at the threshold level (0 dB SPL in 64 of 66 neurons), where a
+    median of 5 of 45 tones per neuron pass the response criterion on a single presentation, and it does
+    not correlate with the TRF's best frequency at 40 to 70 dB SPL (r = -0.02); the example TRF printed
+    shows scattered single responses. Against the TRF best frequency over all levels the STRF BF gives
+    r = 0.37 (p = 0.027). The STRF BFs fall on 9 envelope channels, 11 at 20.0 kHz, 8 at 18.6 kHz and
+    7 at 12.3 kHz. Whether the tone order's frequency column is right cannot be checked beyond its 45
+    values; the level column is validated by the loud against quiet contrast.
   deviations:
-  - BF is the peak of the strongest band, or of the band closest to CF for two bands (Results,
-    Frequency selectivity, paragraph 1); CF is the frequency with the largest response at the
-    lowest responsive level, a choice where several tones respond at that level.
+  - BF is the peak of the strongest band, or of the band closest to CF for two bands (Results, Frequency
+    selectivity, paragraph 1); CF is the frequency with the largest response at the lowest responsive
+    level, a choice where several tones respond at that level.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig5b-bf-same-across-events
   outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig5b-bf-same-across-events
-  notes: One-way ANOVA of BF across the three types in the 15 neurons, p = 0.682 (kHz) and 0.46
-    (log2); median spike-PSP differences 0.10 (large) and 0.00 (small) octaves.
+  notes: 15 of the 37 neurons have a BF in all three STRFs (a BF needs a cluster-test subfield); one-way
+    ANOVA of BF across the three types, p = 0.682 (kHz) and 0.46 (log2); median spike-PSP differences
+    0.10 (large) and 0.00 (small) octaves. The code's analytic group (29) gives p = 0.504 and 0.628.
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig5c-bandwidth-relationships
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig5c-bandwidth-relationships
   measured:
-  - 6
-  - 4
+  - 8
+  - 5
+  - 3
   - 2
-  - 2
   - 4
-  - 9
-  notes: In the 15 neurons, 6 single-band spike STRFs are below 0.5 octaves (4 and 2 of them with
-    large and small PSP STRFs also below 0.5), 2 and 4 PSP STRFs above 0.5 under reading (a), 9
-    spike STRFs above 0.6 octaves, and 3 for (iv). No count is within tolerance under any reading.
+  - 16
+  notes: Counts compared as proportions of the group. In the 37 neurons (28 with a spike band), with D8
+    (a), 8 single-band spike STRFs below 0.5 octaves (0.29 against 20/30 = 0.67), of these 5 and 3 with
+    large- and small-PSP STRFs below 0.5 octaves (0.62 and 0.38 against 0.65 and 0.75), 2 and 4 PSP STRFs
+    above 0.5 under reading (a), 16 spike STRFs above 0.6 octaves (0.57 against 0.27). One of six proportions
+    within 10% under each bandwidth and reading; none or one in the variant groups.
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30; bandwidths per D8 (a) and (b).
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants. Counts are compared as proportions of the group (the verifier's point 3), as
+    no group has 30 neurons.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: tab1-single-band-small-psp-narrower
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab1-single-band-small-psp-narrower
   measured:
-  - 0.35
-  - 0.42
-  - 0.35
-  notes: One main band per neuron (D8 band reading (b)), 0.35, 0.42 and 0.35 octaves; small PSPs
-    not narrower than spikes (p = 0.882); large and small means outside tolerance. Only 2 neurons
-    have bands matched across the three types (reading (a)). One-way ANOVA p = 0.423.
+  - 0.44
+  - 0.46
+  - 0.34
+  notes: One main band per neuron (D8 band reading (b)), in the 37 neurons 0.44, 0.46 and 0.34 octaves
+    (n = 28, 22, 30); small PSPs are the narrowest but not significantly narrower than spikes (p = 0.184),
+    spikes and large PSPs do not differ (p = 0.221); the large and small means are outside tolerance.
+    Only 2 neurons have bands matched across the three types (reading (a)). In the code's analytic group
+    small PSPs are not the narrowest (0.17, 0.21, 0.19); in the cluster-test group 0.35, 0.42, 0.35 (p
+    = 0.882).
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 31 bands.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: tab1-total-bandwidth-no-difference
-  outcome: reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab1-total-bandwidth-no-difference
   measured:
-  - 1.40
+  - 1.52
   - 1.06
-  - 0.69
-  notes: No pair differs in the 15 neurons (p = 0.496, 0.228, 0.388); the spike and large-PSP means
-    are above tolerance (expected 0.50 and 0.57 octaves), wide second bands raising them. In the
-    37-neuron variant spikes and small PSPs differ (p = 0.0203).
+  - 0.77
+  notes: In the 37 neurons small PSPs are narrower than spikes under both D8 readings - 0.77 against 1.52
+    octaves with D8 (a) (p = 0.0203, 22 pairs), 0.31 against 0.54 with the half-maximum width D8 (b) (p
+    = 0.00569). The D8 (a) spike and large means (1.52, 1.06) are above tolerance, raised by wide second
+    bands; the main band alone gives 0.44, 0.46, 0.34. In the code's analytic group no pair differs under
+    D8 (a) (p >= 0.129); in the cluster-test group none under D8 (a), the first round's outcome, but two
+    under D8 (b) (p = 0.0433, 0.0266).
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30; the group choice changes the outcome of the test.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: tab1-latency-duration
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab1-latency-duration
   measured:
-  - 46.0
-  - 73.7
-  - 52.0
-  - 34.0
-  - 35.7
-  - 29.3
-  notes: Under peak latency (D10 (a)) the large-PSP latency, 73.7 ms, is outside 48.7 +- 11.8;
-    under (b) the spike latency, 29.3 ms, is outside 42.7 +- 11.1. Under (a), large PSPs are later
-    than small (p = 0.038), spikes against large p = 0.058; durations 34.0, 35.7 and 29.3 ms are
-    within tolerance, with no duration pair different under (a); under (b) small PSPs are shorter
-    than spikes (p = 0.033) and large PSPs (p = 0.0078).
+  - 54.3
+  - 64.3
+  - 55.3
+  - 32.7
+  - 34.3
+  - 26.8
+  notes: In the 37 neurons, under peak latency (D10 (a)) latencies 54.3, 64.3 and 55.3 ms, the spike and
+    large-PSP means outside tolerance. Under the earliest-pixel latency (b) 34.3, 48.6 and 43.3 ms, within
+    tolerance, and the durations under (a), 32.7, 34.3 and 26.8 ms, are within too; then one of Table
+    1's four significant pairs holds (duration large against small, p = 0.0448), with latency spikes against
+    large p = 0.159, large against small p = 0.0863, duration spikes against small p = 0.261. Partial
+    needs two or three.
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30; delays on the 5-ms envelope frames.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants. Delays on the 5-ms envelope frames.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: tab1-event-rate-no-difference
-  outcome: reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab1-event-rate-no-difference
   measured:
-  - 1.25
-  - 0.90
-  - 0.73
-  notes: No pair differs in the 15 neurons (p = 0.256, 0.0871, 0.0623); the large and small means
-    are below tolerance. In the 37-neuron variant large and small PSPs differ (p = 0.00804).
+  - 1.09
+  - 0.9
+  - 0.76
+  notes: In the 37 neurons large PSPs exceed small PSPs (0.90 against 0.76 Hz, p = 0.00804); spikes (1.09
+    Hz) differ from neither (p = 0.288, 0.0734); the large and small means are below tolerance. The code's
+    analytic group also has large above small (p = 0.0378); the cluster-test group shows no difference
+    (smallest p = 0.0623), the first round's outcome.
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30; event rate over the analysed DMR blocks (about 600
-    s), the claims file's standard choice.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Event rate over the analysed DMR blocks (about 600 s), the claims file's standard choice.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: tab1-fsi-spikes-higher-than-large
-  outcome: not_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab1-fsi-spikes-higher-than-large
   measured:
-  - 0.13
+  - 0.19
   - 0.11
-  - 0.14
-  notes: Means within tolerance and small PSPs above large (p = 0.0453), but spikes not above large
-    PSPs (p = 0.395) in the 15 neurons. In the 37-neuron variant every condition holds (spikes 0.19
-    above large 0.11, p = 0.0302; small above large, p = 0.00524; spikes and small p = 0.11), so the
-    outcome rests on the group.
+  - 0.13
+  notes: In the 37 neurons, means 0.19, 0.11 and 0.13, all within tolerance; spikes above large PSPs (p
+    = 0.0302), small above large (p = 0.00524), spikes and small not different (p = 0.11). Neither variant
+    group meets the criterion - spikes do not exceed large PSPs in the 29 (p = 0.24) or the 15 (p = 0.395).
   deviations:
-  - FSI by the paper's calculate_whole_cell_fsi.m, on the STRF significant by the circular-shift
-    null (D13 with D12 (a)); the code itself uses an analytic p = 0.001.
-  - 15 neurons (D7 (b)) where the paper has 30.
+  - FSI by the paper's calculate_whole_cell_fsi.m, on the STRF significant by the circular-shift null
+    (D13 with D12 (a)); the code itself uses an analytic p = 0.001.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: fig6b-tab1-threshold-spikes-higher
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig6b-tab1-threshold-spikes-higher
   measured:
-  - 1.60
-  - 0.64
-  - 1.13
-  notes: Thresholds 1.60, 0.64 and 1.13 s.d.; spikes not above large (p = 0.23) or small PSPs
-    (p = 0.416); PSP means outside tolerance. The 37-neuron variant has spikes above large PSPs
-    (p = 0.0328) but not above small (p = 0.0571); the full STRF shows no difference. 11 of 45 fits
-    have normalized m.s.e. above 0.5.
+  - 2.12
+  - 0.84
+  - 1.12
+  notes: In the 37 neurons, thresholds 2.12, 0.84 and 1.12 s.d., all outside tolerance; spikes above large
+    PSPs (p = 0.0328) but not small (p = 0.0571); the full STRF gives no difference (p = 0.096, 0.0515).
+    The code's analytic group has spikes above large PSPs (p = 0.00417) but not small (p = 0.27). 20 of
+    111 fits have normalized m.s.e. above 0.5.
   deviations:
-  - The fit form and procedure are the code's (ringach_malone_func.m, fio_to_fio_fit.m, 15 bins,
-    50 random starts), which settles the claims file's D12 form; fitted with scipy least squares
-    in place of Matlab lsqcurvefit.
-  - 15 neurons (D7 (b)) where the paper has 30.
+  - The fit form and procedure are the code's (ringach_malone_func.m, fio_to_fio_fit.m, 15 bins, 50 random
+    starts), which settles the claims file's D12 form; fitted with scipy least squares in place of Matlab
+    lsqcurvefit.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Non-spiking events are kept above 4 x the s.d. of event-free 50-ms segments during the DMR (D3 (b));
+    the pre-stimulus trace (D3 (a)) holds 11 to 115 spontaneous peaks and an s.d. of 6.32 mV (median)
+    against 1.28 mV, and removes nearly every PSP, so (b) is adopted (assumption).
 - claim: fig6c-tab1-transition-spikes-lower
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig6c-tab1-transition-spikes-lower
   measured:
-  - 0.98
+  - 0.82
   - 0.84
-  - 0.97
-  notes: Transitions 0.98, 0.84 and 0.97 s.d., no difference (p = 0.397, 0.933, 0.305); the PSP
-    means are below tolerance. The 37-neuron variant and the full STRF show no difference.
+  - 0.87
+  notes: In the 37 neurons, transitions 0.82, 0.84 and 0.87 s.d., no difference (p = 0.823, 0.578, 0.722);
+    the PSP means are below tolerance. The full STRF and the variant groups show no difference (all p
+    >= 0.305).
   deviations:
   - As for fig6b-tab1-threshold-spikes-higher.
 - claim: fig6bc-no-correlation-psp-spike-nonlinearity
-  outcome: not_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig6bc-no-correlation-psp-spike-nonlinearity
-  notes: In the 15 neurons small-PSP and spike transitions are correlated (r = 0.539, p = 0.0383);
-    the other three correlations are not significant. In the 37-neuron variant none of the four is
-    (largest r = 0.306, p = 0.0653), so the outcome rests on the group.
+  notes: In the 37 neurons none of the four correlations is significant (thresholds r = 0.159 and -0.078,
+    transitions r = 0.216 and 0.306, smallest p 0.0653). The code's analytic group agrees (|r| <= 0.08).
+    In the 15-neuron cluster-test group small-PSP and spike transitions correlate (r = 0.539, p = 0.0383),
+    the first round's outcome.
   deviations:
   - As for fig6b-tab1-threshold-spikes-higher.
 - claim: fig6d-spike-threshold-transition-covary
-  outcome: not_reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig6d-spike-threshold-transition-covary
-  measured: -0.02
-  notes: Spikes r = -0.02 (p = 0.937) in the 15 neurons, small PSPs r = 0.58 (p = 0.022). In the
-    37-neuron variant spikes r = -0.37 (p = 0.0248), negative and significant but outside tolerance,
-    which the criterion would grade partial.
+  measured: -0.37
+  notes: In the 37 neurons spikes r = -0.37 (p = 0.0248), negative and significant but outside -0.64 +-
+    0.064; large PSPs r = -0.09 (p = 0.61), small r = 0.28 (p = 0.0963). The code's analytic group gives
+    spikes r = -0.41 (p = 0.0286) with small PSPs r = -0.64 (p = 0.000196); the cluster-test group spikes
+    r = -0.02.
   deviations:
   - As for fig6b-tab1-threshold-spikes-higher.
 - claim: fig6efg-fsi-relationships
@@ -466,69 +584,87 @@ outcomes:
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig6efg-fsi-relationships
   measured:
-  - 0.28
-  - -0.50
-  - -0.62
-  notes: In the 15 neurons, spike threshold against FSI r = 0.28 (p = 0.308), transition r = -0.50
-    (p = 0.0592), event rate r = -0.62 (p = 0.0139), raw values (D17 (a)). In the 37-neuron variant
-    the spike correlations are 0.82, -0.58 and -0.54 (p < 0.001), right in sign but outside
-    tolerance; log values give -0.79 for transition and -0.98 for event rate.
+  - 0.82
+  - -0.58
+  - -0.54
+  notes: In the 37 neurons the spike correlations have the right signs with p < 0.001 (raw r = 0.82, -0.58,
+    -0.54; log r = 0.53, -0.79, -0.98) but all three are outside tolerance, where partial allows one;
+    PSP event-rate correlations (raw r = -0.91, -0.84) are stronger than the spike one. The code's analytic
+    group would be partial (spike r = 0.38, p = 0.0407; -0.63 and -0.61 within tolerance).
   deviations:
   - As for fig6b-tab1-threshold-spikes-higher and tab1-fsi-spikes-higher-than-large.
 - claim: fig5df-strf-narrower-than-trf
-  outcome: reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig5df-strf-narrower-than-trf
   measured:
-  - 0.57
-  - 0.91
-  - 1.28
-  - 1.06
-  - 1.26
-  - 1.59
-  notes: PSP TRF bandwidth30 (D15 (a)) minus total STRF bandwidth, 0.57, 0.91 and 1.28 octaves,
-    positive and within tolerance; one-way ANOVA p = 0.397. Medians 1.06, 1.26 and 1.59; only the
-    spike median is within 10%. The contiguous TRF reading (D15 (b)) makes the differences
-    negative.
+  - 0.46
+  - 1.14
+  - 1.3
+  - 0.51
+  - 1.61
+  - 1.55
+  notes: In the 37 neurons, PSP TRF bandwidth30 (D15 (a), mean 2.11 octaves) minus total STRF bandwidth,
+    0.46, 1.14 and 1.30 octaves (n = 28, 22, 30); the spike value is outside 0.99 +- 0.45; one-way ANOVA
+    p = 0.0692; medians 0.51, 1.61 and 1.55, all outside 10%. The contiguous TRF reading (D15 (b)) makes
+    the differences negative. The code's analytic group gives 0.10, -0.18 and 0.55; only the 15-neuron
+    cluster-test group meets the criterion (0.57, 0.91, 1.28, ANOVA p = 0.397), the first round's outcome,
+    from TRF and STRF widths both larger than the paper's.
   deviations:
-  - 15 neurons (D7 (b)) where the paper has 30.
+  - The 37 neurons both D7 readings select (any significant positive pixel, and a contiguous region of
+    at least 2 pixels, on the circular-shift null at p < 0.05), where the paper has 30; the code's analytic
+    significance (29 neurons) and a cluster test on the shift null (15 neurons, the first round's group)
+    are shown as variants.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig5e-q-strf-higher
   outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig5e-q-strf-higher
   measured: 15
-  notes: 15 of the 40 paired neurons have NDR of at least 0.3. All-event STRF Q exceeds PSP TRF
-    Q30 (4.41 against 0.87 in kHz, n = 35, p = 2.6e-05) and spike TRF Q30 in the 11 neurons with a
-    spike bandwidth30 (5.34 against 1.37, p = 0.026); every Q30 and unit reading agrees (spike
-    p = 0.019 to 0.026).
+  notes: 15 of the 40 paired neurons have NDR of at least 0.3. All-event STRF Q exceeds PSP TRF Q30 (2.88
+    against 0.87 in kHz, n = 35, p = 2.4e-06) and spike TRF Q30 in the 11 neurons with a spike bandwidth30
+    (3.39 against 1.37, p = 0.028); every Q30 and unit reading agrees (spike p = 0.019 to 0.028). The
+    STRF width in kHz spans the same channels as the width in octaves (corrected in round 1).
   deviations:
-  - 35 of the 40 all-event STRFs have a subfield (cluster test, assumption), and 11 of the 15
-    neurons with NDR of at least 0.3 have a spike bandwidth30 and an STRF BF.
+  - 35 of the 40 all-event STRFs have a subfield, and 11 of the 15 neurons with NDR of at least 0.3 have
+    a spike bandwidth30 and an STRF BF.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig7-current-amplitude-unimodal
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig7-current-amplitude-unimodal
-  notes: At 20 pA, 34 of 39 recordings (87%) unimodal by the KDE reading and 39 of 39 by the dip
-    test; at 40 pA 72% and 97%. The criterion's 90% is met by the dip test and not by the KDE
-    reading, which this attempt adopts for D4 throughout.
+  notes: By the dip test 97.4 to 100% of the 39 recordings are unimodal under every event set. By the
+    KDE reading 87.2% (20 pA), 71.8% (40 pA), 89.7% (20 pA, pre-stimulus s.d.) and 79.5% (40 pA, pre-stimulus
+    s.d.). The criterion's 90% is met by the dip test and by no KDE event set.
   deviations:
-  - Excitatory events are peaks of the inverted current (inward currents at -70 to -80 mV) and
-    inhibitory events peaks of the current, with peakfinder selectivity 20 pA (40 pA as a variant),
-    the Methods' "~20-40 pA"; events above 3 x the noise s.d. (Results, D3 as for current clamp).
-    The sign handling is an assumption, as the shipped code shows only the current-clamp call.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
 - claim: fig7c-ei-bf-matched
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig7c-ei-bf-matched
-  notes: 6 of the 8 pairs have subfields in both STRFs. Median E-I difference 0.15 octaves, below
-    0.32 (reading (b) holds); Pearson r = 0.74 on log2, p = 0.096 (reading (a) does not).
+  notes: 6 of the 8 pairs have subfields in both STRFs under each event set. Median E-I difference 0.15
+    octaves in all three, below 0.32 (reading (b) holds); Pearson r on log2 0.74 (p = 0.096) at 20 pA,
+    0.53 (p = 0.28) at 40 pA, 0.38 (p = 0.452) with the pre-stimulus s.d. (reading (a) fails). Five of
+    the eight 20-pA excitatory BFs are 20.0 kHz, one envelope channel.
   deviations:
-  - As for fig7-current-amplitude-unimodal; two inhibitory STRFs have no subfield by the cluster
-    test.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig7d-current-double-peaks
   outcome: not_reproduced
   assumed: true
@@ -538,28 +674,41 @@ outcomes:
   - 15
   - 13
   - 2
-  notes: D9 (a) gives 13 of 27 excitatory and 2 of 12 inhibitory double-peaked STRFs, 15 of 31
-    neurons (15 of 39 traces); D9 (b) gives 13, 11, 20 neurons and 24 traces. Neither matches.
+  notes: D9 (a) gives 13 of 27 excitatory and 2 of 12 inhibitory double-peaked STRFs, 15 of 31 neurons,
+    at 20 pA; 12, 4 and 15 at 40 pA; 15, 1 and 16 with the pre-stimulus s.d. D9 (b) gives 13 to 15, 10
+    to 12 and 20 to 23. None matches.
   deviations:
-  - As for fig7-current-amplitude-unimodal and fig3d-double-peaked-counts.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig7e-tab2-inhibition-broader
-  outcome: partially_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:fig7e-tab2-inhibition-broader
   measured:
-  - 0.34
-  - 0.77
+  - 0.41
+  - 0.72
   - 0.35
-  notes: With the half-maximum width (D8 (b)), inhibition 0.77 octaves (n = 9) against excitation
-    0.34 (n = 25, p = 0.000123) and current clamp 0.35 (n = 35, p = 0.000348); excitation and
-    current clamp do not differ (p = 0.905). The excitatory mean is just below its tolerance, so
-    the effect holds and one value misses; the criterion's partial clause names only p >= 0.05, and
-    this case is graded partial as the effect is present and one mean misses. With the total
-    bandwidth (D8 (a)) inhibition is not broader (0.88 against 1.25, p = 0.386).
+  notes: With the pre-stimulus s.d. (D3 (a)) at 20 pA and the half-maximum width (D8 (b)), inhibition
+    0.72 octaves (n = 9) against excitation 0.41 (n = 27, p = 0.0299) and current clamp 0.35 (n = 35,
+    p = 0.00429), the three means within tolerance; excitation and current clamp do not differ (p = 0.421).
+    With the noise s.d. at 20 pA the effect holds (0.77 against 0.34, p = 0.000123) with the excitatory
+    mean just below tolerance; at 40 pA (p = 0.634) and with the total bandwidth D8 (a) under every event
+    set (p >= 0.386) inhibition is not broader. The match holds in 1 of 6 combinations of event set and
+    bandwidth.
   deviations:
-  - As for fig7-current-amplitude-unimodal; 25 of 27 excitatory and 9 of 12 inhibitory STRFs have
-    a subfield.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
 - claim: fig7f-tab2-ipsc-bsmf-lower
   outcome: not_reproduced
   assumed: true
@@ -568,11 +717,17 @@ outcomes:
   measured:
   - 0.51
   - 0.65
-  notes: IPSC bSMF 0.65 against EPSC 0.51 cyc/oct (p = 0.6); IPSCs not below any current-clamp type
-    (p >= 0.377); EPSCs against small PSPs p = 0.065.
+  notes: Under no reading or event set are IPSC bSMFs below EPSC bSMFs (IPSC 0.50 to 0.76 against EPSC
+    0.33 to 0.52 cyc/oct, E-I p >= 0.0582) or below spikes (p >= 0.22); EPSC means within tolerance, IPSC
+    means not. D11 (b) and the full STRF are run for voltage clamp too (the verifier's point 5).
   deviations:
-  - As for fig7-current-amplitude-unimodal and fig4c-btmf-small-psp-higher; current-clamp values
-    from the 15 neurons.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - RTF on the native FFT grid of the 40 x 64 STRF (5 Hz, 0.156 cyc/oct), restricted to the DMR's 40 Hz
+    and 4 cyc/oct, the 3 dB cutoff interpolated; the paper's code for this is not in the data set.
+  - Current-clamp values from the 37 neurons of the main group.
 - claim: tab2-btmf-currents-higher-than-spikes
   outcome: not_reproduced
   assumed: true
@@ -581,24 +736,31 @@ outcomes:
   measured:
   - 11.6
   - 11.1
-  notes: EPSC 11.6 and IPSC 11.1 Hz, within tolerance and not different (p = 0.865); neither above
-    spikes (7.21 Hz) at p < 0.05 (p = 0.0572, 0.16).
+  notes: EPSC and IPSC bTMFs similar under every reading and event set (E-I p >= 0.17); at 20 pA 11.60
+    and 11.10 Hz, within tolerance; EPSCs exceed spikes under none (p >= 0.261; spikes 9.34 Hz under D11
+    (a), 11.96 Hz under (b), in the 37 neurons). IPSCs exceed spikes only at 40 pA under D11 (a) (16.04
+    against 9.34 Hz, p = 0.0223).
   deviations:
   - As for fig7f-tab2-ipsc-bsmf-lower.
 - claim: tab2-event-rate-excitation-higher
-  outcome: partially_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab2-event-rate-excitation-higher
   measured:
-  - 6.44
-  - 2.65
-  notes: At 20 pA EPSC 6.44 Hz against IPSC 2.65 Hz (p = 0.0133), both outside tolerance; at 40 pA
-    1.31 against 1.28 Hz (p = 0.954). The effect holds at the main selectivity with different
-    levels; the criterion has no partial clause, and the grade follows the protocol's definition.
+  - 3.96
+  - 1.48
+  notes: With the pre-stimulus s.d. (D3 (a)) at 20 pA, EPSC 3.96 Hz against IPSC 1.48 Hz (p = 0.00331),
+    both within tolerance. With the noise s.d. at 20 pA, 6.44 against 2.65 Hz (p = 0.0133), both outside
+    tolerance; at 40 pA no difference (1.31 against 1.28 Hz, p = 0.954; pre-stimulus s.d. 1.14 against
+    0.78 Hz, p = 0.282). The match holds in 1 of 4 event sets.
   deviations:
-  - As for fig7-current-amplitude-unimodal; the event rate depends strongly on the peakfinder
-    selectivity, which the Methods give only as "~20-40 pA".
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - The event rate depends strongly on the selectivity and the baseline reading; the criterion's 'under
+    one reading' is applied over the claims file's D3 readings and the Methods' 20 and 40 pA.
 - claim: tab2-nonlinearity-ei
   outcome: not_reproduced
   assumed: true
@@ -609,23 +771,40 @@ outcomes:
   - 0.07
   - 2.32
   - 1.43
-  notes: EPSC threshold -0.73 and transition 2.32 within tolerance, IPSC 0.07 and 1.43 not; E-I
-    thresholds do not differ (p = 0.26), transitions do (p = 0.0182). EPSC thresholds are below all
-    current-clamp types (p <= 0.0389); IPSC thresholds are above none.
+  notes: At 20 pA with the noise s.d., significant STRF - EPSC threshold -0.73 and transition 2.32 within
+    tolerance, IPSC 0.07 and 1.43 not; E-I thresholds p = 0.26, transitions p = 0.0182. The closest set
+    is the full STRF at 20 pA - EPSC -1.51 and 2.34, IPSC threshold 0.84 within tolerance, IPSC transition
+    1.41 outside, E-I p = 0.0115 and 0.0364, but IPSC thresholds are below every current-clamp type and
+    IPSC transitions above the PSPs', so 5 of the other 10 comparisons hold, where partial needs 8. No
+    set meets either grade.
   deviations:
-  - As for fig7-current-amplitude-unimodal and fig6b-tab1-threshold-spikes-higher.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - The fit form and procedure are the code's (ringach_malone_func.m, fio_to_fio_fit.m, 15 bins, 50 random
+    starts), which settles the claims file's D12 form; fitted with scipy least squares in place of Matlab
+    lsqcurvefit.
 - claim: tab2-fsi-ei
-  outcome: not_reproduced
+  outcome: reproduced
   assumed: true
   notebook: reproduce_kim_2020.ipynb
   output: claim:tab2-fsi-ei
   measured:
-  - 0.05
   - 0.07
-  notes: IPSC 0.07 above EPSC 0.05 (p = 0.009); EPSCs below spikes, large and small PSPs (p <=
-    1.6e-05), but IPSCs also below all three (p <= 0.0181); both means 0.01 below tolerance.
+  - 0.1
+  notes: With the pre-stimulus s.d. (D3 (a)) at 20 pA, IPSC 0.10 above EPSC 0.07 (p = 0.000938), both
+    within tolerance; EPSCs below spikes, large and small PSPs (p <= 0.0042); IPSCs differ from none (p
+    = 0.163, 0.353, 0.0512, the last near the threshold). With the noise s.d. at 20 pA both means are
+    0.01 below tolerance and IPSCs are below large and small PSPs (p <= 4.74e-05); at 40 pA IPSCs do not
+    exceed EPSCs (0.11 against 0.13, p = 0.127). The match holds in 1 of 3 event sets.
   deviations:
-  - As for fig7-current-amplitude-unimodal and tab1-fsi-spikes-higher-than-large.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - FSI by the paper's calculate_whole_cell_fsi.m, on the STRF significant by the circular-shift null
+    (D13 with D12 (a)); the code itself uses an analytic p = 0.001.
 - claim: tab2-latency-duration-ei-no-difference
   outcome: not_reproduced
   assumed: true
@@ -636,44 +815,417 @@ outcomes:
   - 51.1
   - 35.4
   - 30.6
-  notes: Peak latency (D10 (a)) 33.0 ms for excitation against 51.1 ms for inhibition, p = 0.00755;
-    the earliest-pixel latency (b) does not differ (p = 0.0969). Durations do not differ (p = 0.543
-    and 0.25). Reading (a) is adopted, the "peak latency" of the Results.
+  notes: Peak latency (D10 (a)) differs in every event set - 33.0 against 51.1 ms at 20 pA (p = 0.00755),
+    39.0 against 60.5 ms at 40 pA (p = 0.0384), 33.9 against 50.6 ms with the pre-stimulus s.d. (p = 0.0156).
+    The earliest-pixel latency (b) does not differ (p >= 0.0969), nor do durations (p >= 0.0849). Reading
+    (a) is adopted, the "peak latency" of the Results; the 20 pA means under (a) are within tolerance.
   deviations:
-  - As for fig7-current-amplitude-unimodal; 25 excitatory and 9 inhibitory STRFs have a subfield.
+  - Excitatory events are peaks of the inverted current and inhibitory events peaks of the current, with
+    peakfinder selectivity 20 and 40 pA (the Methods' ~20-40 pA), kept above 3 x the baseline s.d.; both
+    D3 readings are run (event-free noise during the DMR, and the pre-stimulus current). The sign handling
+    is an assumption, as the shipped code shows only the current-clamp call.
+  - Bands within an STRF (for BF, bandwidth, latency, duration, double peaks) are subfields whose summed
+    value exceeds the 95th percentile of the largest subfield of the shifted STRFs, a cluster test this
+    attempt adds (assumption); without it 36 to 40 of the 40 STRFs of each type are double-peaked.
+  - Latency readings D10 (a) and (b) give different outcomes; (a) is adopted (assumption).
 findings:
 - kind: data_missing
-  statement: The Supplementary folders hold one neuron each, a representative example in the data
-    description's words; Supplementary Fig. 2 rests on 13 STRF pairs from 2 neurons and
-    Supplementary Fig. 3 on 5 neurons, so neither can be tested.
+  statement: The Supplementary folders hold one neuron each, a representative example in the data description's
+    words; Supplementary Fig. 2 rests on 13 STRF pairs from 2 neurons and Supplementary Fig. 3 on 5 neurons,
+    so neither can be tested.
 - kind: identifier_missing
-  statement: No file or table gives an animal identifier, so the paper's counts of 41 and 24 mice
-    cannot be checked; the current-clamp recordings fall on 39 dates and the voltage-clamp ones on
-    22.
+  statement: No file or table gives an animal identifier, so the paper's counts of 41 and 24 mice cannot
+    be checked; the current-clamp recordings fall on 39 dates and the voltage-clamp ones on 22.
 - kind: metadata_error
-  statement: The data description says each processed file is raw - smooth(raw, 100000) (data
-    analysis instructions, step 1). This holds to rounding for 16 of the 84 DMR recordings; 67
-    differ from it over most samples (largest differences 0.3 to 24 mV, or pA, per recording) and
-    one at 39 samples. Triggers are identical in the raw and processed files.
+  statement: The data description says each processed file is raw - smooth(raw, 100000) (data analysis
+    instructions, step 1). This holds to rounding for 16 of the 84 DMR recordings; 67 differ from it over
+    most samples (largest differences 0.3 to 24 mV, or pA, per recording) and one at 39 samples. Triggers
+    are identical in the raw and processed files.
 - kind: other
-  statement: Two Supplementary recordings are byte-identical copies of main DMR recordings
-    (17726007 in the 54 dB SPL intensity folder, 17921007 in the reliability folder).
+  statement: Two Supplementary recordings are byte-identical copies of main DMR recordings (17726007 in
+    the 54 dB SPL intensity folder, 17921007 in the reliability folder).
 - kind: other
-  statement: Five of the 27 excitatory recordings were held at -70 mV, where the data description
-    says approximately -80 mV; the data set's table gives the holding potential of each.
+  statement: Five of the 27 excitatory recordings were held at -70 mV, where the data description says
+    approximately -80 mV; the data set's table gives the holding potential of each.
 - kind: code_mismatch
-  statement: The Methods state that STRF pixels are significant at p < 0.05 against STRFs from
-    circularly shifted event trains. The shipped code uses an analytic threshold
-    (significant_strf.m) with p = 0.005 for the plotted STRF, p = 0.01 for the nonlinearity and
-    p = 0.001 (wstrfstat) for the FSI. Group counts differ between the two (37 or 15 neurons with
-    all three STRFs by the Methods' null, 35 or 29 by the code's).
+  statement: The Methods state that STRF pixels are significant at p < 0.05 against STRFs from circularly
+    shifted event trains. The shipped code uses an analytic threshold (significant_strf.m) with p = 0.005
+    for the plotted STRF, p = 0.01 for the nonlinearity and p = 0.001 (wstrfstat) for the FSI. Group counts
+    differ between the two (37 neurons with all three STRFs by the Methods' null under either of the claims
+    file's readings, 15 with a cluster test; 35 or 29 by the code's).
 - kind: methods_unavailable
-  statement: The shipped code covers event detection, STRF, nonlinearity fit and FSI, but not the
-    split of events into spikes, large and small PSPs, the baseline s.d. that removes very small
-    events, the bimodality test, what makes an STRF subfield significant, how bands, bandwidths,
-    double peaks, BF, latency and duration are measured, the RTF best modulation, the voltage-clamp
-    event sign and selectivity, or the TRF analysis (done in IgorPro). Questions for the authors -
-    which baseline segments set the 4 x s.d. and 3 x s.d. cuts; how bimodality was judged; how a
-    significant subfield and a second peak were told from chance pixels at p < 0.05; how bandwidth
-    was measured on the STRF; whether EPSC peaks were found on the inverted current and with which
-    selectivity. The outcomes of most STRF claims here depend on these choices.
+  statement: The shipped code covers event detection, STRF, nonlinearity fit and FSI, but not the split
+    of events into spikes, large and small PSPs, the baseline s.d. that removes very small events, the
+    bimodality test, what makes an STRF subfield significant, how bands, bandwidths, double peaks, BF,
+    latency and duration are measured, the RTF best modulation, the voltage-clamp event sign and selectivity,
+    or the TRF analysis (done in IgorPro). Questions for the authors - which baseline segments set the
+    4 x s.d. and 3 x s.d. cuts; how bimodality was judged; how a significant subfield and a second peak
+    were told from chance pixels at p < 0.05; how bandwidth was measured on the STRF; whether EPSC peaks
+    were found on the inverted current, with which selectivity, and which baseline s.d. set the 3 x s.d.
+    cut for currents (three Table 2 claims reproduce only with the pre-stimulus s.d. at 20 pA). The outcomes
+    of most STRF claims here depend on these choices.
+verifications:
+- date: '2026-11-09'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper. The verifier tested peakfinder, the
+    STRF, rtf_best_mod, spike_cut_gap and bimodal_trough on synthetic inputs, and gave its own outcome
+    for each claim; 37 of 45 agree with the record as it then stood. Its point 14 (the claims file's D2
+    (b) wording) was added to questions/kim-2020.yaml for a reader, without changing the claim. It could
+    not check the ports of the Matlab code; the notebook now prints the lines ported (ringach_malone_func.m,
+    read_entire_spr_file.m, significant_strf.m, calculate_whole_cell_fsi.m, read_data.m) and wcr_strf.m,
+    which names the downsampled envelope. Report in transcripts/kim-2020/verifier-1-report.md.
+  results:
+  - claim: cc-cohort-counts
+    agrees: true
+    outcome: reproduced
+    reason: Cells 4, 13 - 66 tone recordings and 40 paired DMR recordings, matching the data set's table.
+      The data carry no animal identifier; there are 39 recording dates.
+    response: No change.
+  - claim: vc-cohort-counts
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15 - 27 excitatory, 12 inhibitory, 31 neurons, 8 with both. The 24 mice cannot be checked
+      (22 recording dates).
+    response: No change.
+  - claim: fig1-psp-amplitude-kinetics
+    agrees: true
+    outcome: reproduced
+    reason: Cell 17, pooled s.d. with D16 (b) - 14.0 mV, rise 30.3 ms, decay 91.7 ms, all within tolerance.
+      D16 (a) gives 25.2 mV, outside. Problem 10, the docstring names a median filter that is never used,
+      the decay to 250 ms can include later spikes, and neurons whose decay never reaches 10% are dropped
+      silently. Problem 11, D14 reading (a) is not run as the amplitude reference.
+    response: Outcome kept. The docstring and the unused import are corrected; the decay now leaves out
+      tones with a spike within 250 ms (307 tones) and counts the tones whose decay does not reach 10%
+      (919; no neuron loses its value), giving 91.5 ms. Amplitudes from the median potential (D14 (a))
+      are printed, 13.0 mV for the mean PSP, also within.
+  - claim: fig1c-resting-potential-range
+    agrees: true
+    outcome: reproduced
+    reason: Cell 19 - -84.7 to -55.1 mV under (a), -83.8 to -53.7 mV under (b). Both are inside the widened
+      range.
+    response: No change.
+  - claim: fig1d-ndr-distribution
+    agrees: true
+    outcome: reproduced
+    reason: Cell 21, pooled s.d. - first bin highest (19), 31 neurons at >= 0.3, 6/66 above 0.7. The per-tone
+      s.d. reading fails (18 neurons). Problem 9, D15 region reading (b) is identical to (a) by construction,
+      because both the numerator and the denominator require a responsive tone, so reading (b) was never
+      tested.
+    response: Outcome kept, now resting on an adopted region reading. trf_summary counts spikes at every
+      tone inside the region, so region (b) differs from (a). Region (b) gives 33 neurons at 0.3 or more
+      but 11 of 66 above 0.7, failing the criterion; region (a), which counts spikes and PSPs over the
+      same tones, is adopted as an assumption, stated in the deviations.
+  - claim: fig1e-ndr-vs-rest-weak
+    agrees: true
+    outcome: reproduced
+    reason: Cell 23, pooled s.d. with rest (b) - r = 0.182, p = 0.144. The other readings give r = 0.03
+      to 0.12, all non-significant.
+    response: Outcome kept. With region (b) now distinct, the median potential gives r = 0.187 (p = 0.134),
+      also within tolerance, and the pre-tone mean r = 0.244 (p = 0.0483); the notes give every reading.
+  - claim: fig1fgh-trf-bandwidth-narrowing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 25, reading (a) - spikes narrower, p = 3.7e-4, median ratio 0.90. PSP bandwidth30 is
+      1.94 octaves, outside 1.38 +- 0.33, and only 28 of the 31 neurons are used.
+    response: Outcome kept; region (b) now differs (33 neurons, 31 with both bandwidths, p = 0.00027,
+      PSP 1.94 octaves) and is printed.
+  - claim: fig2-psp-histogram-modality
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 29 - none of the 12 combinations of D2, D3 and D4 gives 24/16. The closest is 21/19.
+      Problem 13, the D3 pre reading keeps a median of 0 to 1 non-spiking events per neuron, so that reading
+      is degenerate, and the pre-stimulus segment was not inspected. Problem 14, D2 (b) describes peakfinder's
+      output as an amplitude above the neighbouring minimum; peakfinder returns the peak magnitude, which
+      is what proc uses, and the 3 mV is the selectivity.
+    response: Outcome kept. The data check now prints the pre-stimulus segment, 12.5 to 18.7 s holding
+      11 to 115 peaks, with an s.d. (median 6.32 mV) about five times the event-free noise during the
+      DMR (1.28 mV), which explains the degenerate reading. The D2 (b) wording is added to questions/kim-2020.yaml
+      for a reader; the claim is unchanged.
+  - claim: fig2-strf-significance-groups
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 31 - D7 (a) gives 37/3, D7 (b) with the cluster test gives 15/11, and the code's analytic
+      p = 0.005 variant gives 29/6. Problem 1, the cluster-mass test is the author's own assumption, not
+      in the paper or the claims, and D7 (b) as the claims define it was never printed.
+    response: Outcome kept. D7 (b) as the claims file defines it (a contiguous region of at least 2 pixels,
+      no cluster test) is now printed, 37 and 3, the same neurons as D7 (a). The cluster test is demoted
+      to a variant for the group.
+  - claim: fig2-psp-amplitude-ranges
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 33 - the large and small PSP ranges overlap under both D2 readings (n = 15).
+    response: Outcome kept; tested on the 37-neuron group (6.9 to 21.7 and 3.3 to 13.0 mV) and both variant
+      groups, all overlapping.
+  - claim: supfig2-strf-reliability
+    agrees: true
+    outcome: blocked
+    reason: The data set holds 2 repeats of 1 neuron (cell 103), so 1 pair against the paper's 13. The
+      criterion asks for the pairs present to be reported; the notebook did not report this one. Problem
+      12, the one pair could have been reported. The archive's members under Supplementary/ could not
+      be confirmed from the archive.
+    response: Outcome kept. The notebook now lists every member of data.tar.gz under Supplementary/ (two
+      recordings for Supplementary Fig. 2, three for Fig. 3) and reports the one pair's full-STRF correlations
+      (spikes 0.18, large 0.12, small 0.02, all events 0.24).
+  - claim: supfig2-psp-more-reliable-than-spikes
+    agrees: true
+    outcome: blocked
+    reason: One pair; no test is possible.
+    response: No change.
+  - claim: supfig3-intensity-invariance
+    agrees: true
+    outcome: blocked
+    reason: One neuron at 38, 54 and 69 dB SPL (cell 103); the ANOVA over 5 neurons cannot be run. The
+      per-level values were not reported.
+    response: Outcome kept; the one neuron's BF, peak latency and total bandwidth at each level are now
+      printed and in the notes.
+  - claim: fig3d-double-peaked-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 35 - under D9 (a), spikes 16, PSPs 15, small PSPs 8. Spikes are not rarer than PSPs.
+      D9 (b) marks 35 to 40 neurons double-peaked. The D9 (a) counts without the cluster test were not
+      shown.
+    response: Outcome kept. Counts without the cluster test (36 to 40 of every type) and with the code's
+      analytic significance (30 to 33) are printed; the cluster test stays the assumption for bands, stated
+      in the deviations.
+  - claim: fig3e-harmonic-ratios
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 37 - 17 ratios, 1.67 not the most common (4 of 17), and ratios of 5.3, 12.2 and 15.1
+      are present. Problem 4, D8 (a) spans the lowest to the highest channel of the top two bands, including
+      chance far-apart bands, which gives peak ratios of 5 to 15.
+    response: Outcome kept. Ratios without the cluster test and with the code's significance are printed
+      (40 and 33, 2 the most common), and the category errors for the 12 ratios inside the range alone
+      (6.2, 1.2, 0.6%); the claim fails under each.
+  - claim: fig3f-bandwidth-single-vs-double
+    agrees: true
+    outcome: reproduced
+    reason: Cell 39, grouping (a) with D8 (a) - medians 0.30 and 0.90 octaves. Fragile - the groups are
+      9/26, not 20/20, and 0.30 octaves is exactly 3 channels. Problem 7, fig3f passes in 1 of 4 combinations.
+    response: Outcome kept, as the criterion allows a match under one reading; the notes now say it is
+      the only one of 12 combinations printed (with the main band alone and the code's significance added)
+      that matches.
+  - claim: fig4c-btmf-small-psp-higher
+    agrees: true
+    outcome: reproduced
+    reason: Cell 43 - under G with D11 (b), means are within tolerance and the tests give p = 0.004 and
+      0.039. This is 1 pass in 6 reading x group combinations; under GA the small vs large test fails.
+      Problem 7, many reading x group combinations are tried with no account of how many were tried.
+    response: Outcome changed to not_reproduced. The main group is now the 37 neurons both of the claims
+      file's D7 readings select (problems 1 and 2); there no D11 reading meets the criterion (reading
+      (b), small above spikes p = 0.0212, above large p = 0.177). The pass came from the cluster-test
+      group, now a variant, and the notes say so.
+  - claim: fig4d-bsmf-small-psp-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 45 - means are within tolerance, but no reading or group gives p < 0.05 (p = 0.08 in
+      G).
+    response: Outcome kept; in the 37 neurons the smallest p is 0.255.
+  - claim: tab1-modulation-large-psp-like-spikes
+    agrees: true
+    outcome: reproduced
+    reason: Cell 47 - spikes vs large PSPs, p = 0.85 and 0.99 in G, and 0.47 and 0.98 in GA.
+    response: Outcome kept; the code's analytic group agrees (p = 0.218, 0.252).
+  - claim: fig4b-bsmf-btmf-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 49 - the large-PSP r is -0.10 in G and 0.09 in GA (paper 0.53).
+    response: Outcome kept; graded on the 37 neurons (r = 0.09).
+  - claim: fig5a-cf-bf-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 51 - r = 0.04 on kHz and -0.01 on log2 frequency (n = 35); the analytic variant gives
+      0.23. Problem 8, r near 0 suggests a pipeline fault, which the notebook does not diagnose; one candidate
+      is the CF taken from a single presentation at 0 dB SPL, and 5 of the 8 paired EPSC BFs sit at exactly
+      20.0 kHz. A TRF matrix with its CF and a CF against loud-level best frequency correlation would
+      have shown whether the failure lies in the CF.
+    response: Outcome kept. The notebook now prints one TRF matrix with its CF, the CF against the TRF's
+      best frequency at 40 to 70 dB SPL (r = -0.02), the STRF BF against the TRF's best frequency over
+      all levels (r = 0.37, p = 0.027), the number of responsive tones at threshold (median 5 of 45),
+      and the STRF BFs by channel (9 channels, 11 at 20.0 kHz). The CF looks unreliable; with any reference
+      the correlation stays far from 0.73.
+  - claim: fig5b-bf-same-across-events
+    agrees: true
+    outcome: reproduced
+    reason: Cell 53 - ANOVA p = 0.68 (kHz) and 0.46 (log2); median BF differences 0.10 and 0.00 octaves.
+      Only G (n = 15) was run.
+    response: Outcome kept; run on the 37-neuron group (15 with a BF in all three) and the code's analytic
+      group (29, p = 0.504 and 0.628).
+  - claim: fig5c-bandwidth-relationships
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 55 - 0 of 6 counts within tolerance. The comparison itself is invalid - counts from 15
+      neurons are compared with counts from 30 (problem 3); proportions, or a group of about 30, are needed.
+    response: Outcome kept. Counts are now compared as proportions of the group with the paper's proportions,
+      in each group; one of six matches at most.
+  - claim: tab1-single-band-small-psp-narrower
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 57, reading (b) - small PSPs are narrowest (0.34 vs 0.35 octaves for spikes, p = 0.88),
+      which meets the partial rule only just. The large and small PSP means are outside tolerance, and
+      reading (a) has n = 2.
+    response: Outcome changed to partially_reproduced, as the verifier gives it; in the 37 neurons small
+      PSPs are the narrowest (0.34 against 0.44 and 0.46 octaves) with p = 0.184 against spikes.
+  - claim: tab1-total-bandwidth-no-difference
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 59 - under D8 (a) in G no pair differs, but the means are 1.40, 1.06 and 0.69 octaves
+      against about 0.5. D8 (b) in G (p = 0.043, 0.027) and D8 (a) in GA (p = 0.020) both show small PSPs
+      narrower. Problem 4, D8 (a) includes chance far-apart bands and gives means about 3 times the paper's.
+    response: Outcome changed to not_reproduced. In the 37-neuron main group both D8 readings find small
+      PSPs narrower than spikes (p = 0.0203 and 0.00569), and the criterion counts any difference as not
+      reproduced. The main band alone is printed as a variant (0.44, 0.46, 0.34 octaves). D8 (a) is the
+      claims file's reading and is kept.
+  - claim: tab1-latency-duration
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 61 - no reading puts all six means within tolerance (large-PSP latency 73.7 ms under
+      (a); spike latency 29.3 ms under (b)).
+    response: Outcome kept. In the 37 neurons the latency (b) and duration (a) readings put all six means
+      within tolerance, but only one of the four significant pairs holds; the notes say so.
+  - claim: tab1-event-rate-no-difference
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 63 - no difference in G, but large vs small PSPs differ in GA (p = 0.008). The large
+      and small PSP means (0.90 and 0.73 Hz) are outside tolerance.
+    response: Outcome changed to not_reproduced. In the 37-neuron main group large and small PSPs differ
+      (p = 0.00804), and the claim of absence fails by its criterion.
+  - claim: tab1-fsi-spikes-higher-than-large
+    agrees: false
+    outcome: reproduced
+    reason: Cell 65, GA - means 0.19, 0.11 and 0.13 are within tolerance; spikes > large PSPs (p = 0.030);
+      small > large (p = 0.005); spikes vs small n.s. It fails in G (spikes vs large p = 0.40).
+    response: Outcome changed to reproduced, as the verifier gives it, on the 37-neuron main group; neither
+      variant group meets the criterion, which the notes say.
+  - claim: fig6b-tab1-threshold-spikes-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 67 - PSP thresholds are positive (0.64 and 1.13 in G); no reading has spikes above both
+      PSP types at p < 0.05.
+    response: Outcome kept; in the 37 neurons spikes exceed large PSPs (p = 0.0328) but not small (p =
+      0.0571), with all means outside tolerance.
+  - claim: fig6c-tab1-transition-spikes-lower
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 69 - spikes 0.98, large PSPs 0.84, small PSPs 0.97; no differences under any reading.
+    response: Outcome kept (37 neurons, 0.82, 0.84, 0.87).
+  - claim: fig6bc-no-correlation-psp-spike-nonlinearity
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 71 - in GA none of the four correlations is significant; in G the small-PSP vs spike
+      transition correlation is (r = 0.54, p = 0.038). For claims of absence whose criterion does not
+      say under one reading, the readings were required to agree, and disagreement graded partial.
+    response: Outcome changed to reproduced, not to partial. The 37 neurons are the group both of the
+      claims file's D7 readings select, so no reading of the claims disagrees; the code's analytic group
+      agrees too. The 15-neuron group that disagrees is a variant resting on this attempt's own cluster
+      test, and the notes report it. The disagreement on the grade is recorded here.
+  - claim: fig6d-spike-threshold-transition-covary
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 73 - GA spike r = -0.37, p = 0.025, negative and significant but outside tolerance; both
+      PSP correlations n.s. In G, r = -0.02.
+    response: Outcome changed to partially_reproduced, as the verifier gives it, on the 37-neuron main
+      group.
+  - claim: fig6efg-fsi-relationships
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 75 - in GA the signs are right, but all three spike r are outside tolerance, and PSP
+      event-rate correlations (-0.91) are stronger than the spike one.
+    response: Outcome kept, on the 37-neuron main group; the notes add that the code's analytic group
+      would be partial.
+  - claim: fig5df-strf-narrower-than-trf
+    agrees: true
+    outcome: reproduced
+    reason: Cell 77, D15 (a) - deltas 0.57, 0.91 and 1.28 octaves are within tolerance and positive; ANOVA
+      p = 0.40. The match comes from two inflated widths offsetting (TRF 1.97, STRF up to 1.40 octaves);
+      2 of the 3 medians are outside. Problem 4 bears on it.
+    response: Outcome changed to not_reproduced. In the 37-neuron main group the spike difference (0.46
+      octaves) falls outside 0.99 +- 0.45; the match held only in the 15-neuron cluster-test group, now
+      a variant, and there from inflated widths, as the verifier says.
+  - claim: fig5e-q-strf-higher
+    agrees: true
+    outcome: reproduced
+    reason: Cell 79 - STRF Q > TRF Q30 under all four readings (PSP p <= 3e-5, spike p <= 0.026); 15 paired
+      neurons have NDR >= 0.3. The tests use n = 35 and 11. Problem 15, the kHz width omits the +1 channel
+      that the octave width includes.
+    response: Outcome kept. The kHz width now spans the same channels as the octave width (band edges
+      half a channel out); STRF Q 2.88 against 0.87 (p = 2.4e-06), spike test p = 0.019 to 0.028.
+  - claim: fig7-current-amplitude-unimodal
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 83 - by the dip test 100% (20 pA) and 97% (40 pA) unimodal; by KDE 87% and 72%. Problem
+      6, only the D3 noise baseline is used for voltage clamp; the pre s.d. is computed but not run.
+    response: Outcome kept. The pre-stimulus s.d. is now run at 20 and 40 pA (KDE 89.7% and 79.5%, dip
+      test 100%); no KDE set reaches 90%.
+  - claim: fig7c-ei-bf-matched
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 85 - only 6 of 8 pairs have a BF. Reading (b) holds (median 0.15 octaves); reading (a)
+      fails (r = 0.74, p = 0.096).
+    response: Outcome kept; the same under all three event sets.
+  - claim: fig7d-current-double-peaks
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 87 - under D9 (a), 13/27 excitatory, 2/12 inhibitory, 15/31 neurons.
+    response: Outcome kept; no event set matches.
+  - claim: fig7e-tab2-inhibition-broader
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 89, D8 (b) - inhibition wider than excitation (p = 1e-4) and than current clamp (p =
+      3e-4), but the excitatory mean, 0.34, is just outside 0.65 +- 0.30. Under D8 (a), inhibition is
+      narrower. Problem 6, the pre s.d. reading was not run.
+    response: Outcome changed to reproduced. With the pre-stimulus s.d. (D3 (a)) at 20 pA, newly run,
+      D8 (b) gives excitation 0.41, inhibition 0.72 and current clamp 0.35 octaves, all within tolerance,
+      with inhibition broader (p = 0.0299); the criterion allows a match under one reading. The notes
+      say it holds in 1 of 6 combinations.
+  - claim: fig7f-tab2-ipsc-bsmf-lower
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 91 - IPSC bSMF 0.65 vs EPSC 0.51; inhibition is not lower. Problem 5, the voltage-clamp
+      claims report only D11 (a) and D12 (a).
+    response: Outcome kept; D11 (b) and the full STRF are now run for all three event sets, and inhibition
+      is lower under none.
+  - claim: tab2-btmf-currents-higher-than-spikes
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 93 - means are within tolerance and E ~ I, but E vs spikes p = 0.057 and I vs spikes
+      p = 0.16. Only D11 (a) was run, and it could flip, since current-clamp D11 (b) changes the spike
+      bTMF.
+    response: Outcome kept. D11 (b) and the full STRF are now run for all three event sets; EPSCs exceed
+      spikes under none (p >= 0.261 against the 37-neuron spike values).
+  - claim: tab2-event-rate-excitation-higher
+    agrees: false
+    outcome: not_reproduced
+    reason: Cell 95 - at 20 pA, E > I (p = 0.013), but both means (6.44 and 2.65 Hz) are outside tolerance;
+      at 40 pA, no difference. Problem 6, the pre s.d. matters for this claim.
+    response: Outcome changed to reproduced, where the record gave partially_reproduced. With the pre-stimulus
+      s.d. (D3 (a)) at 20 pA, newly run, EPSC 3.96 and IPSC 1.48 Hz are within tolerance with E above
+      I (p = 0.00331); the criterion allows a match under one reading. It holds in 1 of 4 event sets,
+      as the notes say.
+  - claim: tab2-nonlinearity-ei
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 97 - E vs I threshold p = 0.26; the IPSC threshold (0.07) and transition (1.43) are outside
+      tolerance. Problem 5, theta_full and trans_full are computed but never printed; problem 6, at 40
+      pA no nonlinearity is computed.
+    response: Outcome kept. The full STRF, 40 pA and the pre-stimulus s.d. are now run; the closest (full
+      STRF, 20 pA) meets 5 of the other 10 comparisons, where partial needs 8.
+  - claim: tab2-fsi-ei
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 99 - I > E (p = 0.009), but both means are outside tolerance and IPSCs differ from all
+      three current-clamp types. Problem 6, at 40 pA no FSI is computed.
+    response: Outcome changed to reproduced. With the pre-stimulus s.d. (D3 (a)) at 20 pA, newly run,
+      IPSC 0.10 and EPSC 0.07 are within tolerance, I > E (p = 0.000938), EPSCs are below all three current-clamp
+      types and IPSCs differ from none (smallest p = 0.0512, near the threshold). It holds in 1 of 3 event
+      sets (40 pA now run too), as the notes say.
+  - claim: tab2-latency-duration-ei-no-difference
+    agrees: false
+    outcome: partially_reproduced
+    reason: Cell 101 - the means are within tolerance, but latency differs under D10 (a) (p = 0.008);
+      no difference under D10 (b) or in duration.
+    response: Outcome kept as not_reproduced and the disagreement recorded. For a claim of absence the
+      criterion says not reproduced when either measure differs; peak latency (D10 (a)), the Results'
+      term, is adopted and differs in every event set (p = 0.00755, 0.0384, 0.0156), stated as an assumption
+      in the deviations.

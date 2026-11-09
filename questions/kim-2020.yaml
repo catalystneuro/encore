@@ -1,0 +1,27 @@
+# Questions from attempt kim-2020-01 (author-revise-1, 2026-11-09) about the claims file
+# claims/kim-2020.yaml. Each is asked under docs/protocol.md, Author, step 1.6, and "Hand over for
+# verification": the round-1 verifier reported it, and the attempt tests the claims as the file
+# has them.
+paper: doi:10.1038/s41467-020-14835-7
+questions:
+- claim: fig2-psp-histogram-modality
+  also: [fig2-psp-amplitude-ranges, fig2-strf-significance-groups]
+  asked: 2026-11-09
+  question: Detail D2 gives reading (b) of the PSP amplitude as "peakfinder's amplitude above the
+    neighbouring minimum". The passage it rests on says the detector uses the amplitude difference
+    to nearby minima (about 3 mV) to find peaks, and then that "all the events used the same
+    absolute baseline". Read together, the 3 mV is the detector's selectivity, and the amplitude
+    is the value of the trace at the peak above one common baseline, which is also what
+    peakfinder returns. Should reading (b) be the peak value of the (baseline-subtracted) trace,
+    that is the magnitude peakfinder returns, in place of the amplitude above the neighbouring
+    minimum?
+  passage: Methods, Data analysis - "The peak finding algorithm is based on local maxima using the
+    first and second derivatives and the amplitude difference to nearby minima (~3 mV for
+    current-clamp recordings; ~20 - 40 pA for voltage-clamp recordings). Thus, all the events used
+    the same absolute baseline."
+  why: The amplitude reading sets the split into large and small PSPs and the histogram modality
+    (fig2-psp-histogram-modality), and the amplitude ranges of fig2-psp-amplitude-ranges. The
+    attempt ran the peak value of the processed trace as reading (b), as the verifier found the
+    paper's code does; an amplitude above the neighbouring minimum, as the claims file words it,
+    would be smaller for events that ride on earlier ones and could change the bimodal count. The
+    outcomes stay as tested; none of the claims reproduces under either amplitude run.

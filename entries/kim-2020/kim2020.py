@@ -38,13 +38,16 @@ DT_ENV = 480 / 96000  # 5 ms per envelope frame (DF / Fs)
 NLAG = 40             # [code] tbefore = 0.2 s, tafter = 0 (data_analysis_instructions.txt)
 
 
-def stream_tar(name, want=None):
+def stream_tar(name, want=None, seen=None):
     """Yield (member name, bytes) for members of a tarball, streamed once from the bucket.
 
-    want(name) -> bool selects members; others are skipped without being kept."""
+    want(name) -> bool selects members; others are skipped without being kept. When `seen` is a
+    list, (name, size) of every member is appended to it, so the listing can be printed."""
     with fsspec.open(BASE + name, block_size=2 ** 24) as f:
         tf = tarfile.open(fileobj=f, mode="r|gz")
         for m in tf:
+            if seen is not None:
+                seen.append((m.name, m.size))
             if m.isfile() and (want is None or want(m.name)):
                 yield m.name, tf.extractfile(m).read()
 
@@ -53,14 +56,23 @@ def loadmat_bytes(b):
     return {k: v for k, v in scipy.io.loadmat(io.BytesIO(b)).items() if not k.startswith("__")}
 
 
+CODE_FILES = ("ringach_malone_func.m", "calculate_whole_cell_fsi.m", "read_entire_spr_file.m",
+              "rtwstrfdb.m", "wcr_strf.m", "significant_strf.m", "read_data.m", "fio_to_fio_fit.m",
+              "data_analysis_instructions.txt")
+
+
 def load_codes():
-    """The downsampled DMR envelope (frequency x frame, in dB about its mean) and the tone
-    presentation order, from codes.tar.gz."""
-    out = {}
+    """The downsampled DMR envelope (frequency x frame, in dB about its mean), the tone
+    presentation order, the text of the Matlab files in CODE_FILES (so the ported lines can be
+    printed) and the listing of codes.tar.gz, from codes.tar.gz."""
+    out = {"code": {}, "listing": []}
     for name, b in stream_tar("codes.tar.gz",
                               lambda n: n.endswith(SPR_DS) or n.endswith(SPR_DS[:-4] + "_param.mat")
-                              or n.endswith(TONE_PARAMS)):
-        if name.endswith(".spr"):
+                              or n.endswith(TONE_PARAMS) or n.split("/")[-1] in CODE_FILES,
+                              seen=out["listing"]):
+        if name.split("/")[-1] in CODE_FILES:
+            out["code"][name.split("/")[-1]] = b.decode("latin-1")
+        elif name.endswith(".spr"):
             s = np.frombuffer(b, dtype="<f4")
             # [code] read_entire_spr_file.m: blocks of NF x NT (column-major), MdB*s - RMSP
             env = s.reshape(-1, NT, NF).reshape(-1, NF).T * MDB + MDB / 2
@@ -341,12 +353,14 @@ def faxis_default():
 
 def subfields(sig, min_pix=2, rel=0.0, mass_thr=None):
     """Positive subfields of a significant STRF: 8-connected components of significant positive
-    pixels with at least `min_pix` pixels [claims] D7 reading (b). At p < 0.05 per pixel about
-    5% of pixels pass by chance, in streaks, so a component is kept as a subfield only when its
-    mass (sum of its pixel values) exceeds the 95th percentile of the largest component mass of
-    the circularly shifted STRFs (`mass_thr`) [assumption: the paper's own null, applied to
-    subfields as a cluster test; without it noise components make nearly every STRF
-    double-peaked]. Alternative reading: components whose peak is at least `rel` of the STRF's
+    pixels with at least `min_pix` pixels [claims] D7 reading (b), which with mass_thr=None is
+    how the notebook selects the neurons with significant STRFs. For the bands of an STRF (BF,
+    bandwidth, latency, duration, double peaks) a component is kept only when its mass (sum of
+    its pixel values) exceeds the 95th percentile of the largest component mass of the
+    circularly shifted STRFs (`mass_thr`) [assumption: at p < 0.05 per pixel about 5% of pixels
+    pass by chance, in streaks; this applies the paper's own null to subfields as a cluster
+    test; without it noise components make nearly every STRF double-peaked]. The neuron groups
+    built from this cluster test are a variant only. Alternative reading: components whose peak is at least `rel` of the STRF's
     largest significant value. Components whose
     frequency spans overlap are merged into one band. Returns bands sorted by peak value, each
     a dict with channel range lo..hi, peak channel and delay, peak value."""
@@ -447,7 +461,9 @@ def strf_measures(rf, sig, faxis, cf=None, min_pix=2, mass_thr=None, rel=0.0):
     lo = min(b["lo"] for b in use)
     hi = max(b["hi"] for b in use)
     out["total_a"] = (hi - lo + 1) * OCT_PER_CH
-    out["total_a_khz"] = (faxis[hi] - faxis[lo]) / 1000
+    # in kHz from the lower edge of channel lo to the upper edge of channel hi, so that it
+    # spans the same channels as the octave width
+    out["total_a_khz"] = (faxis[hi] * 2 ** (OCT_PER_CH / 2) - faxis[lo] * 2 ** (-OCT_PER_CH / 2)) / 1000
     out["single_a"] = [(b["hi"] - b["lo"] + 1) * OCT_PER_CH for b in use]
     out["single_main"] = (main["hi"] - main["lo"] + 1) * OCT_PER_CH
     P = np.clip(sig, 0, None).max(axis=1)
@@ -636,9 +652,8 @@ def tone_analysis(raw, trig, tone_freq, tone_atten, spike_amp_cut=None, sd_readi
         sd = pre.std(1)
     w = RESP_MS * fs // 1000
     post = np.stack([raw[t:t + w] for t in trig]) - pre_mean[:, None]
-    # spikes clipped out of the PSP trace: values above the spike threshold set to the median
-    # filtered trace over 3 ms [standard: amplitudes and kinetics are of PSPs]
-    from scipy.ndimage import median_filter
+    # tones with a spike 5 to 100 ms after onset are left out of PSP amplitudes and kinetics
+    # ([claims] D16); no spike is clipped from the trace
     has_spk = np.array([np.any((spk >= t + ONSET_MS[0] * fs // 1000) & (spk < t + w)) for t in trig])
     above = post > (4 * sd)[:, None]
     first = np.where(above.any(1), above.argmax(1), -1)
@@ -647,7 +662,7 @@ def tone_analysis(raw, trig, tone_freq, tone_atten, spike_amp_cut=None, sd_readi
     freq = np.asarray(tone_freq, float)
     level = 70 - np.asarray(tone_atten, float)
     return dict(freq=freq, level=level, resp=resp, spike=has_spk & resp, post=post,
-                has_spk=has_spk, lat=lat, sd=sd, pre_mean=pre_mean, cut=cut, nspk=len(spk))
+                has_spk=has_spk, lat=lat, sd=sd, pre_mean=pre_mean, cut=cut, nspk=len(spk), spk=spk)
 
 
 def psp_amp_kinetics(post, resp, spike):
@@ -677,7 +692,11 @@ def trf_summary(t, region="a", bw="a"):
     outline (between the lowest and highest responsive frequency at each level from threshold
     up); bandwidth (a) log2(highest / lowest responsive frequency) at threshold + 30 dB, (b)
     the contiguous responsive range around the CF at that level. NDR = tones with a spike over
-    tones with a PSP, within the region, one spike per tone [paper] Methods."""
+    tones with a PSP, within the region, one spike per tone [paper] Methods. A tone with a
+    spike counts in the numerator when it lies in the region, whether or not its PSP onset was
+    detected 5 to 50 ms after onset, so that region (b) can count spikes at tones inside the
+    outline that region (a) leaves out; the spike bandwidth30 likewise uses tones with a spike
+    inside the region."""
     f, L, r, s = t["freq"], t["level"], t["resp"], t["spike"]
     out = dict(cf=np.nan, thr=np.nan, bw_psp=np.nan, bw_spk=np.nan, ndr=np.nan,
                bw_psp_khz=np.nan, bw_spk_khz=np.nan, n_resp=int(r.sum()))
@@ -697,7 +716,7 @@ def trf_summary(t, region="a", bw="a"):
             if m.any():
                 reg |= (L == lv) & (f >= f[m].min()) & (f <= f[m].max())
     npsp = (r & reg).sum()
-    out["ndr"] = (t["has_spk"] & r & reg).sum() / npsp if npsp else np.nan
+    out["ndr"] = (t["has_spk"] & reg).sum() / npsp if npsp else np.nan
     lv = thr + 30
     freqs = np.unique(f)
 
@@ -722,7 +741,7 @@ def trf_summary(t, region="a", bw="a"):
         return np.log2(hi / lo), (hi - lo) / 1000
 
     out["bw_psp"], out["bw_psp_khz"] = width(r)
-    out["bw_spk"], out["bw_spk_khz"] = width(t["has_spk"] & r)
+    out["bw_spk"], out["bw_spk_khz"] = width(t["has_spk"] & reg)
     return out
 
 
@@ -775,10 +794,12 @@ def stream_data(log=print):
     """One pass over data.tar.gz. Tone recordings are kept as float32 traces; DMR recordings
     are reduced to events as they load. For each folder, the processed file is compared with
     raw - smooth(raw, 1e5) (the data descriptor's recipe), and every response trace is hashed
-    to find recordings deposited twice."""
+    to find recordings deposited twice. Returns the recordings and the listing (name, size) of
+    every member of the tarball."""
     import hashlib
     rec, pending = {}, {}
-    for name, b in stream_tar("data.tar.gz", lambda n: n.endswith(".mat")):
+    listing = []
+    for name, b in stream_tar("data.tar.gz", lambda n: n.endswith(".mat"), seen=listing):
         d = loadmat_bytes(b)
         del b
         folder, fname = name.rsplit("/", 1)
@@ -805,7 +826,7 @@ def stream_data(log=print):
         r["trig_proc_equal"] = bool(np.array_equal(np.ravel(trig), np.ravel(other_trig)))
         r.update(reduce_dmr(raw, trig, kind, proc=pr))
         log(f"{kind} {fid} events reduced")
-    return list(rec.values())
+    return list(rec.values()), listing
 
 
 # ----------------------------------------------------------------------------------------
