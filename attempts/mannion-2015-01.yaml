@@ -1,0 +1,462 @@
+schema_version: 3
+id: mannion-2015-01
+datasets:
+- archive: crcns
+  id: vim-3
+  version: unversioned
+  doi: 10.6080/K0JS9NC2
+  relation: primary
+paper: doi:10.7717/peerj.1038
+date: 2026-11-08
+entry: mannion-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42461502178
+outcomes:
+- claim: localiser-masks-ventral-dorsal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion needs the participants' cortical surfaces and their V1, V2 and V3 definitions
+    with the ventral and dorsal halves of each area. The data set holds the functional runs only; its
+    descriptor says anatomical images and visual area definitions are not part of it, and the paper's
+    code reads them from a local database (config.py roi_dir /sci/anat/db_ver1). They are not public
+    elsewhere. As a volume check, not the paper's test, the voxels responding to upper-field
+    presentation lie below those responding to lower-field presentation in 6 of 7 participants (by
+    1.6 to 13.7 mm; p1011 the reverse).
+- claim: presentation-source-interaction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs psc responses in V1, V2 and V3 (localiser masks restricted to each area), and the area
+    definitions are not in the data set or public elsewhere. A volume variant on all localiser voxels
+    of the occipital slab, without motion correction and without the area factor, gives a presentation
+    by source interaction of F(1,6) = 2.94, p = 0.137; it is not the paper's region and decides
+    nothing.
+- claim: interaction-not-area-dependent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the area factor (V1, V2, V3), whose definitions are not in the data set. Also depends on
+    presentation-source-interaction, which is blocked.
+- claim: lower-field-below-greater
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs responses averaged over V1 to V3, whose definitions are not in the data set. In the volume
+    variant (not V1 to V3) lower-field responses are 0.997 psc for patches from below and 0.870 from
+    above, t(6) = 2.73, p = 0.034; it decides nothing.
+- claim: upper-field-no-source-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs responses averaged over V1 to V3, whose definitions are not in the data set. In the volume
+    variant upper-field responses are 0.963 and 0.965 psc for below and above, t(6) = -0.06, p = 0.957;
+    it decides nothing.
+- claim: fig4-top-five-matching-source
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs per-image responses averaged over V1 to V3, whose definitions are not in the data set. In
+    the volume variant 4 of the 5 most upper-preferred pairs are from above and 5 of the 5 most
+    lower-preferred from below; it decides nothing.
+- claim: fig4-qualitative-content
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-top-five-matching-source, which is blocked for missing V1 to V3 definitions. The
+    stimulus screenshots it would view are in the data set (120 PNG files).
+- claim: fig5a-mean-luminance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4-top-five-matching-source (the upper minus lower response difference in V1 to
+    V3), which is blocked. The DKL conversion also needs the CIE coordinates of the monitor's primaries
+    and the conversion function, which the claims file says come from a local PsychoPy calibration and
+    the unlinked package monitors.conversions; neither the paper, its code at 571e9312, nor the data set
+    gives them, so this outside input is not public.
+- claim: fig5-no-other-pixel-relations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5a-mean-luminance, blocked for the same reasons (V1 to V3 responses and the
+    monitor calibration).
+- claim: fig5bc-spatial-frequency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5a-mean-luminance, blocked for the same reasons (V1 to V3 responses and the
+    monitor calibration).
+- claim: fig5def-orientation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5bc-spatial-frequency, blocked for the same reasons.
+- claim: fig5-no-other-filter-relations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig5bc-spatial-frequency, blocked for the same reasons.
+- claim: no-radial-bias-in-patches
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The test needs no responses, only the 120 stimulus screenshots, which are in the data set, and
+    the DKL transform, which needs the CIE coordinates of the monitor's primaries (Methods, Image patch
+    analysis). These are given neither in the paper, nor in its code (a local PsychoPy monitor profile
+    and the unlinked package monitors.conversions), nor in the data set, so the screenshots cannot be
+    put in DKL space as the paper did. 118 of the 120 patches have R, G and B not all equal in more
+    than half their pixels inside the mask, so the chromatic channels depend on the calibration. The
+    claims file lists fig5bc-spatial-frequency under depends_on for the filter method only; that claim
+    is blocked for the V1 to V3 responses, which this test does not use, and the filter method itself
+    was run here. As a variant on which no outcome rests, the test was run as imstats.py runs it under
+    two assumed calibrations (sRGB and Adobe RGB primaries) at 78.7 pixels per degree, and under sRGB
+    at 78.2. None of the 12 paired t-tests has p < 0.05 under any of the three (smallest p 0.063, 0.065
+    and 0.064, each the luminance channel for patches from below on the right, t(29) = -1.93 to -1.92),
+    and none of the 4 luminance tests does; the mean 45 minus 135 degree difference is at most 7% of the
+    mean output. The patch geometry was checked on the screenshots.
+- claim: figs2-task-no-condition-difference
+  outcome: reproduced
+  notebook: reproduce_mannion_2015.ipynb
+  output: claim:figs2-task-no-condition-difference
+  notes: Window 0.4 to 0.9 s, two-way repeated measures ANOVA over 7 participants. Reading (a), task.py
+    as written, presentation F(1,6) = 2.60, p = 0.158, source F = 0.00, p = 0.979, interaction F = 0.45,
+    p = 0.529. Reading (b), assignment by absolute run time, presentation F = 0.00, p = 0.987, source
+    F = 0.01, p = 0.947, interaction F = 1.04, p = 0.347. Variant (c), binning the whole of 32 to 332 s,
+    no effect below p = 0.27. Variant (d), which keeps targets falling exactly on an event onset
+    (dropped by task.py's strict window, 1023 targets in reading (a) and 918 in (b)), no effect below
+    p = 0.49. Variant (e), assignment to the event in progress (starting up to 2 s before the target),
+    interaction F = 5.77, p = 0.053, the other effects p >= 0.43. Condition means 0.036 to 0.043, range
+    over mean 0.039 to 0.083. The mean response peaks at 0.6 s in all four conditions under readings
+    (a), (c) and (e); under (b) and (d) it peaks at 0.7 s for lower/above and 0.6 s for the others.
+    Every participant has
+    103 to 200 assigned targets per condition in every reading. The notebook prints the lines of
+    task.py (bin edges, p1004 rule, any key as a response, the skipping of presses and targets at or
+    before 32 s, the 0 to 2 s assignment) that the helper
+    follows. Of six other window and reading combinations shown,
+    one gives a presentation effect (reading (a), 0.6 to 0.9 s, p = 0.034). Under reading (a) a target
+    is labelled by the event starting 32 to 34 s after it (task.py line 141, printed); that these labels
+    are unrelated to the target's own event is inferred from the code, not measured. 6214 targets after 32 s; 3642
+    were assigned to an image event under reading (a), 3821 under (b) and 4979 under (c), the others
+    falling on null events or on no event.
+  deviations:
+  - The paper reports no test for Figure S2; the test is group.py tasks(), as the criterion says. The
+    ANOVA is computed as paired contrasts over participants (exact for a 2 by 2 within-subject design,
+    F = t squared) in place of the code's fmri_tools.stats.anova, which is not public.
+  - Variant (c), with bins over the whole of 32 to 332 s, is an addition of this attempt shown for
+    information; task.py puts every press and target after 300 s into its last bin.
+  - Variants (d), the assignment window with its start included, and (e), assignment to the event in
+    progress, are additions of this attempt on the timing of reading (b), shown for information.
+- claim: figs3-residual-no-condition-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The residuals are taken from the GLM of the V1 to V3 localiser regions, whose area definitions
+    are not in the data set.
+- claim: figs3-residual-upper-larger
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As figs3-residual-no-condition-difference. In the volume variant the region's mean squared
+    residual is larger for upper presentation in 5 of 7 participants, not on average (p1011 dominates);
+    it decides nothing.
+inputs:
+- what: The paper's analysis code, followed where the claims file cites it (task.py for the task
+    performance, imstats.py for the patch extraction, Gabor filter bank and radial-bias test). The
+    notebook fetches task.py and imstats.py from the commit and prints the lines it follows.
+  source: https://github.com/mannion-lab/ul_sens_fmri_analysis at commit
+    571e9312c251ff2166be91a57201112036e5e80d
+- what: The experiment code's config.py, for the aperture size and eccentricity of the patches and the
+    task timing constants; fetched by the notebook, which prints the lines used.
+  source: https://github.com/mannion-lab/ul_sens_fmri at commit 5e98dd81512fa3d226a971a6217426535b682d85
+- what: Assumed monitor calibrations for the radial-bias variant only, in place of the unpublished
+    measured one, the primaries of sRGB (ITU-R BT.709, D65) and of Adobe RGB (1998), with the Smith and
+    Pokorny cone fundamentals as used by Brainard (1996), which the Methods cite; constants written in
+    vim3.py. No outcome rests on them.
+  source: Brainard DH (1996), Cone contrast and opponent modulation color spaces, in Kaiser and Boynton,
+    Human Color Vision, 2nd edition, as cited by the paper; primaries from the published sRGB (IEC
+    61966-2-1) and Adobe RGB (1998) specifications
+findings:
+- kind: data_missing
+  statement: The data set holds the raw functional runs, event sequences, task records and stimulus
+    screenshots, but not the anatomical images, cortical surfaces, retinotopic mapping or V1, V2 and V3
+    definitions that every response measure of the paper uses. The descriptor says so and asks users to
+    request them on the CRCNS forum. 15 of the 16 claims are blocked, 14 of them for this reason.
+- kind: metadata_insufficient
+  statement: The data set holds the 120 stimulus screenshots, but not the measured CIE coordinates of the
+    monitor's primaries needed to convert their pixel values to DKL space, in which the image
+    statistics of Figure 5 and the radial-bias test are computed; nor are they in the paper or its code
+    (a local PsychoPy monitor profile and the unlinked package monitors.conversions). The patches are in
+    colour (R, G and B differ in most pixels of 118 of the 120 patches), so the chromatic channels
+    cannot be formed without them.
+- kind: metadata_error
+  statement: The data set's README.txt says it contains fMRI measurements in areas V1, V2 and V3. The
+    files are whole volumes of a 35-slice occipital slab with no area labels, so no measurement in V1,
+    V2 or V3 can be formed from the data set alone.
+- kind: metadata_insufficient
+  statement: The NIfTI files are named by scanner series number (for p1003 series 3, 4, 6 to 13, for
+    p1010 series 4 to 13), while the sequence and task files are named by run, and the descriptor does
+    not give the mapping. The participant configurations of the paper's code take the series in order
+    as runs 1 to 10; a leave-one-run-out fit supports this for six participants, and for p1011 it could
+    not be confirmed.
+- kind: other
+  statement: For p1011 the timing of the event sequences and the run order could not be confirmed from
+    the data without motion correction; the held-out runs barely follow their own sequences (mean t 0.7
+    and 1.1, against 2.6 to 4.9 in the others), and a coarse motion index reaches 3.6 mm by run 10,
+    against at most 1.8 mm in the other participants. Its upper-field responsive voxels also lie above
+    its lower-field ones, the reverse of the other six.
+- kind: metadata_insufficient
+  statement: For p1004 runs 1 to 5 the target column of the task lookup does not describe the task the
+    participant performed; the paper's code redefines the targets as white 9 and black 5 for those runs
+    (the participant misunderstood the instructions). The descriptor does not say so, and the four
+    button keys used in the task files are not described.
+- kind: code_mismatch
+  statement: The Figure S2 legend describes task performance for target onsets near each condition, but
+    task.py skips targets and button presses at or before 32 s, bins the others in absolute run time and
+    assigns each target to the event starting within 2 s after the bin time plus 32 s (lines 53, 99 and
+    141 to 145, printed in the notebook), so the condition labels come from events about 32 s after the
+    target. It also puts every press and target after 300 s into one last bin. With the
+    assignment by absolute time the conclusion of no difference is unchanged.
+verifications:
+- date: 2026-11-08
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness and model, separate context, did not write
+    the notebook)
+  reviewed: The handover of the first run, the executed notebook with the Result cells and the Summary
+    section removed, the helper module and the claims file. The introduction (cell 0) still held a table
+    of outcomes and the section headings named them, and the verifier saw and quoted these; the verifier also read the paper under paper/ and
+    checked the archive's file list. Report in transcripts/crcns-vim-3/verifier-1-report.md.
+  results:
+  - claim: localiser-masks-ventral-dorsal
+    agrees: true
+    outcome: blocked
+    reason: The criterion needs cortical surfaces and V1 to V3 definitions. The archive has only
+      crcns_vim-3.tar.gz plus docs, and the descriptor says area definitions and anatomicals are not
+      included. Cell 9's volume S-I check is a proxy, not the criterion.
+    response: No change of outcome. The notebook now lists every member of the tar archive by kind and
+      directory (280 participant files, 120 stimulus files and README.txt), so the absence of anatomical,
+      surface and area files is shown from the stream and not only from the descriptor.
+  - claim: presentation-source-interaction
+    agrees: true
+    outcome: blocked
+    reason: No V1 to V3 definitions. Cell 15's whole-slab volume variant (interaction p = 0.137) is
+      correctly kept out of the outcome.
+    response: No change.
+  - claim: interaction-not-area-dependent
+    agrees: true
+    outcome: blocked
+    reason: Needs the area factor, which needs V1 to V3 definitions.
+    response: No change.
+  - claim: lower-field-below-greater
+    agrees: true
+    outcome: blocked
+    reason: Needs V1 to V3.
+    response: No change.
+  - claim: upper-field-no-source-difference
+    agrees: true
+    outcome: blocked
+    reason: Needs V1 to V3.
+    response: No change.
+  - claim: fig4-top-five-matching-source
+    agrees: true
+    outcome: blocked
+    reason: The ranking needs V1 to V3 responses. The volume variant's 4/5 count is not the criterion.
+    response: No change.
+  - claim: fig4-qualitative-content
+    agrees: true
+    outcome: blocked
+    reason: It depends on the ten pairs from the blocked ranking.
+    response: No change.
+  - claim: fig5a-mean-luminance
+    agrees: true
+    outcome: blocked
+    reason: Needs the V1 to V3 difference term. A calibration substitute would not unblock it.
+    response: No change.
+  - claim: fig5-no-other-pixel-relations
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5a.
+    response: No change.
+  - claim: fig5bc-spatial-frequency
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5a.
+    response: No change.
+  - claim: fig5def-orientation
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5a.
+    response: No change.
+  - claim: fig5-no-other-filter-relations
+    agrees: true
+    outcome: blocked
+    reason: Same reason as fig5a.
+    response: No change.
+  - claim: no-radial-bias-in-patches
+    agrees: false
+    outcome: blocked
+    reason: Blocked (metadata_insufficient), partly testable. It needs no responses, only the 120
+      screenshots, which are in the archive. The only thing missing is the monitor's CIE coordinates,
+      and the claims file leaves the choice of a substitute to the author. The luminance-only variant
+      (4 tests, 45 against 135 degrees) could have been run under a stated calibration, but it was not.
+      The summary labels it "blocked, data missing", though it needs only the screenshots and a
+      calibration.
+    response: The reason is now metadata_insufficient, and the finding on the calibration is now of that
+      kind. A new section runs the test as imstats.py does (patch extraction, Gabor bank, mean over
+      spatial frequency, 12 paired t-tests) under two assumed calibrations (sRGB and Adobe RGB
+      primaries) and at 78.7 and 78.2 pixels per degree; none of the 12 tests, and none of the 4
+      luminance tests, has p < 0.05 (smallest p 0.063). It prints the imstats.py and config.py lines
+      followed, shows a crop of each patch location, checks the geometry and the colour inside the
+      patches, and checks the numpy Gabor kernel and filter against OpenCV. The outcome stays blocked,
+      as the verifier gives it, since the result rests on a calibration that is not the paper's.
+  - claim: figs2-task-no-condition-difference
+    agrees: true
+    outcome: reproduced
+    reason: In the criterion window 0.4 to 0.9 s, reading (a) gives presentation p = 0.158, source
+      p = 0.979, interaction p = 0.529; reading (b) gives 0.987, 0.947, 0.347. No effect reaches
+      p < 0.05 under either reading the claims file requires; rm_anova_2x2 matches statsmodels AnovaRM on
+      synthetic data. Problems not affecting the conclusion. Targets landing exactly on an event onset
+      are dropped by the strict 0 to 2 s window (918 in reading (b), 1023 in (a)); no reading assigns to
+      the event in progress; the 0.6 to 0.9 s window gives presentation p = 0.034 under reading (a),
+      printed without comment; presses and targets after 300 s fall in the last bin. task.py itself, and
+      per-condition target counts, could not be checked.
+    response: No change of outcome. The notebook now prints the lines of task.py at the pinned commit
+      (bin edges with > and >=, the p1004 rule, any key as a response, the strict 0 to 2 s assignment),
+      which the helper follows. Two variants were added, (d) with targets on an event onset kept (no
+      effect below p = 0.49) and (e) with assignment to the event in progress (smallest p 0.053, the
+      interaction). Targets per participant and condition are printed for every reading (103 to 200).
+      The conclusion now says the null depends to some degree on the window under reading (a). Variant
+      (c) already covers the last bin.
+  - claim: figs3-residual-no-condition-difference
+    agrees: true
+    outcome: blocked
+    reason: The residuals are defined in V1 to V3.
+    response: No change.
+  - claim: figs3-residual-upper-larger
+    agrees: true
+    outcome: blocked
+    reason: Same reason.
+    response: No change.
+- date: 2026-11-08
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness and model, separate context, did not write
+    the notebook)
+  reviewed: The full executed notebook of the second run with its conclusions and summary, the helper
+    module, the claims file and this record. Report in transcripts/crcns-vim-3/verifier-2-report.md.
+  results:
+  - claim: localiser-masks-ventral-dorsal
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: presentation-source-interaction
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: interaction-not-area-dependent
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: lower-field-below-greater
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: upper-field-no-source-difference
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig4-top-five-matching-source
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig4-qualitative-content
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig5a-mean-luminance
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig5-no-other-pixel-relations
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig5bc-spatial-frequency
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig5def-orientation
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: fig5-no-other-filter-relations
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: no-radial-bias-in-patches
+    agrees: true
+    outcome: blocked
+    reason: I agree. The 12 tests and the 4 luminance tests now run under sRGB and Adobe RGB primaries, at
+      78.7 and 78.2 px per degree. All are null (cell 18). The measured CIE coordinates are still not
+      public, so the outcome correctly stays blocked. Cell 19 says the Gabor filter matches OpenCV's to
+      1.3e-15, but cell 18 prints 8.9e-16; the conclusion still holds, but the number is wrong.
+    response: No change of outcome. Cell 19 now gives the printed figures, 2.2e-16 for the kernels and 8.9e-16 for
+      the filter output.
+  - claim: figs2-task-no-condition-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree. In the criterion window, reading (a) has smallest p 0.158 and reading (b) has 0.347
+      (cell 13). Variants (c), (d) and (e) are all at p >= 0.053. Under reading (a), that its condition
+      labels are close to random is shown by no printed output; it is an inference from the code and
+      should be stated as one. The printed lines of task.py do not show how it treats presses and targets
+      at or before 32 s, so the claim that labels come from events 32 s away rests on code that is not
+      shown; this affects only the wording of the code_mismatch finding, since both readings are null.
+      The lag profile, and so the peak at 0.6 s in all four conditions, is printed only for reading (a).
+    response: No change of outcome. The task.py lines that skip presses and targets at or before 32 s (53 to 54
+      and 99 to 100) are now printed with the others, and the conclusion and the code_mismatch finding
+      cite them and line 141. The conclusion now states the 32 s labelling as an inference from the code
+      that no output measures. The peak lag is now printed for every reading; it is 0.6 s in all four
+      conditions under (a), (c) and (e), and under (b) and (d) 0.7 s for lower/above, which the
+      conclusion and the notes now say.
+  - claim: figs3-residual-no-condition-difference
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
+  - claim: figs3-residual-upper-larger
+    agrees: true
+    outcome: blocked
+    reason: I agree. The tar listing in cell 3 now comes from the stream itself. It shows 280 participant
+      files, 120 stimulus files and README.txt, and no anatomy, surface or area files. The volume-variant
+      numbers quoted in the notes match cells 9 and 21. Each note says that no outcome rests on them.
+    response: No change.
