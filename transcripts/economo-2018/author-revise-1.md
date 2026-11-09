@@ -1,125 +1,899 @@
-# 000006 · author-revise-1 · run 38606505414
+# 000006 · author-revise-1 · run 39510738851
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ----; cat transcripts/000006/verifier-1-report.md; ls entries/000006-economo-2018 entries/000006-economo-2018/*
+cat transcripts/000006/verifier-1-report.md; ls entries/000006-economo-2018 entries/000006-economo-2018/*; grep -n "" docs/protocol.md | sed -n '1,400p' | grep -n -i "step 6\|Hand over\|verifications\|proposed" | head -40
 ```
 
 ```
-# Protocol for an attempt
+**A. Outcomes (31 claims in the claims file)**
 
-Version: `pilot-6`. Record this version in the attempt's provenance.
-
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
-
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
-
-## Author
-
-[... 368 more lines not kept]
+| Claim | My outcome | Reason |
+|---|---|---|
+| pt-types-transcriptomic | reproduced | Cell 25: the criterion's counting rule gives 27 clusters, and the PT cells fall in Slco2a1, Hpgd and Npsr1 only. |
+| pt-upper-thalamus-projection | reproduced | Cell 28: reading (c) gives 8 of 12, the same 8 as the thalamus group. Readings (a) and (b) give 11. A match under one reading is enough. |
+| pt-lower-medulla-projection | reproduced | Cell 28: reading (c) gives 4 of 12, and all 4 of the medulla group reach the intermediate reticular nucleus. |
+| pt-types-shared-targets | part 1 reproduced; part 2 blocked (methods_underspecified) | Superior colliculus 12 of 12 (cell 28). Part 2 can only be tested on the bulk-labelling images, and the paper gives no method for them. The test on the reconstructions is only a variant. |
+| pt-retrograde-sublaminae | blocked (methods_underspecified) | Anatomy.zip holds 657 jpgs and no counts (cell 34). The counting method is open, and no folder holds superior colliculus labelling. |
+| pt-projection-cluster-mapping | reproduced | Cell 30, reading (b): medulla 62 of 62 in Slco2a1; thalamus 72 + 19 = 91 of 94. |
+| pt-types-account-for-all-pt | partially_reproduced | Cell 28: superior colliculus 17 of 18 under both readings (AA0134 has 0 termini and 0 mm there); 0 of 18 lack both thalamus and medulla. The criterion has no partial rule, so this is my label for one part holding. |
+| pt-marker-genes | blocked (data_missing) | Confirmed: no smFISH data in the dandiset or in Anatomy.zip. |
+| pt-bulk-sc-fold-change-correlation | reproduced | Cell 32: r = 0.874 (0.87 ± 0.087). I checked the replicate columns against the sample key. |
+| pt-tagged-units | not_reproduced | Cell 36: 44 PTupper and 56 PTlower (code rule) or 42 and 63 (session rule), against 61 ± 6.1 and 69 ± 6.9; mice 8 and 4 match. The cause is missing data: on the processed data the same rule gives 61 and 69, and the dandiset lacks 11 sessions (
+[... 67 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep 000006; cat attempts/000006-economo-2018-01.yaml; ls claims/000006; cat claims/000006/*; cat entries/000006-economo-2018/entry.yaml entries/000006-economo-2018/README.md; ls transcripts/000006; ls paper 2>/dev/null; wc -l entries/000006-economo-2018/alm.py
+sed -n 150,520p docs/protocol.md
 ```
 
 ```
+that each statement says what the paper says, no more and no less; that each
+quote is word for word (the quote checker, `tools/claims_check.py`, does this
+mechanically); that each source points at the place; that the statistics are
+the paper's and are results, not thresholds; that every part of every
+criterion's method is taken from the paper or its code, as cited; and that the
+paper's main findings each have a claim. The checker corrects what it can
+show is wrong, and records each change, with its reason, under `checks` at
+the end of the file. A claims file is ready for an attempt when its last check
+says so.
+
+### 6. Answer questions
+
+When an attempt needs something the claims file does not give, the author asks
+(author, step 6). A reader answers each question from the paper, in the claims
+file, and marks it answered in `questions/<dandiset>.yaml`. An answer
+the paper does not give is said to be that: the claim stays as it is, and the
+author treats the detail as open (step 3, on details none of the sources fix).
+
+## Author
+
+[... 315 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls attempts | grep 000006; cat attempts/000006-economo-2018-02.yaml; ls transcripts/000006/
+```
+
+```
+<persisted-output>
+Output too large (34KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/7a8e4726-293c-493e-8170-23e70efb9193/tool-results/bqrvehfey.txt
+
+Preview (first 2KB):
 000006-economo-2018-01.yaml
-schema_version: 1
-id: 000006-economo-2018-01
-dandiset: "000006"
-dandiset_version: 0.220126.1855
+000006-economo-2018-02.yaml
+schema_version: 2
+id: 000006-economo-2018-02
+dataset:
+  archive: dandi
+  id: "000006"
+  version: 0.220126.1855
+  doi: 10.48324/dandi.000006/0.220126.1855
 paper: doi:10.1038/s41586-018-0642-9
-date: 2026-10-14
+date: 2026-10-20
 entry: 000006-economo-2018
 provenance:
   kind: agent
   accountable:
     name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-6
-inputs:
-- what: The paper's MATLAB analysis code (defineDataset.m, loadAndProcessData.m, simplePlots.m,
-    Projections.m, CDCorrelation.m), read for the epochs, the trial and unit selection, the
-    selectivity test and the coding direction measures; and the processed data file
-[... 281 more lines not kept]
+[... 22 more lines not kept]
 ```
 
-**Agent calls Bash**
+**Agent calls Read**
 
-```bash
-cat transcripts/000006/author-report.md; grep -rl "verifications:" attempts | head; ls schemas* tools; grep -n "verifications\|proposed\|response\|agreed\|agree" -r tools/entry.py | head -60
-```
-
-```
-All six protocol steps are done. The entry passes `check` and runs from a clean environment in 50 s with no errors, and the handover package is in `executed/000006-economo-2018/handover/`. I did not verify my own work and did not commit anything.
-
-I used the abstract only. The paper is paywalled at Nature and has no PubMed Central copy. I also read its public Data availability statement, but only to find the linked data and code.
-
-The pinned version is 0.220126.1855. The paper cites no DANDI version, and this is the only published one. The draft has the same 53 files and sizes and differs only in metadata.
-
-## 1. Outcomes
-
-| Claim | Outcome | Key numbers |
-|---|---|---|
-| pt-types-transcriptomic | blocked: data missing | |
-| pt-types-shared-targets | blocked: data missing | |
-| pt-upper-thalamus-projection | blocked: data missing | |
-| pt-lower-medulla-projection | blocked: data missing | |
-| pt-preparatory-activity | reproduced | 72 of 100 tagged units selective in the delay; shuffle p = 0.001 |
-| pt-upper-early-preparatory | reproduced | 27 of 44 PTupper selective in the sample epoch; p = 0.001 |
-| pt-upper-persistent | reproduced | late delay 27 of 44; sample/late-delay cosine 0.495, p = 0.016 |
-| pt-lower-late-and-motor | partially reproduced | late delay > sample, p = 0.0096; response > sample, p = 0.088 |
-| pt-types-differ-in-timing | not reproduced | sample PTupper > PTlower p = 0.134; response goes the opposite way (0.84 against 0.64) |
-
-[... 65 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "import json;d=json.load(open('schemas/attempt.schema.json'));print(json.dumps(d['properties']['verifications'],indent=1))"; grep -n "verifications:" -A40 attempts/000582-sargolini-2006-01.yaml | head -60
-```
-
-```
+```json
 {
- "type": "array",
- "items": {
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-   "date",
-   "kind",
-   "by",
-   "results"
-  ],
-  "properties": {
-   "date": {
-    "type": "string",
-    "format": "date"
-   },
-   "kind": {
-    "enum": [
-     "agent",
-     "person",
-[... 88 more lines not kept]
+ "file_path": "attempts/000006-economo-2018-02.yaml"
+}
+```
+
+```
+1	schema_version: 2
+2	id: 000006-economo-2018-02
+3	dataset:
+4	  archive: dandi
+5	  id: "000006"
+6	  version: 0.220126.1855
+7	  doi: 10.48324/dandi.000006/0.220126.1855
+8	paper: doi:10.1038/s41586-018-0642-9
+9	date: 2026-10-20
+10	entry: 000006-economo-2018
+11	provenance:
+12	  kind: agent
+13	  accountable:
+14	    name: CatalystNeuro
+15	  agent:
+16	    harness: Claude Code (GitHub Actions)
+17	    model: claude-opus-5-5
+18	    protocol: pilot-10
+19	inputs:
+20	- what: The paper's MATLAB analysis code (defineDataset.m, loadAndProcessData.m, MySmooth.m, Projections.m,
+[... 458 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls claims/ | grep 000006; grep -n "depends_on\|^- id\|  id:" claims/000006*.yaml | head -80; ls questions | grep 000006; cat entries/000006-economo-2018/entry.yaml; git log --oneline -12
+```
+
+```
+000006
+grep: claims/000006*.yaml: No such file or directory
+000006.yaml
+schema_version: 1
+name: 000006-economo-2018
+type: reproduction
+title: Two types of pyramidal tract neuron in mouse motor cortex (Economo et al. 2018)
+description: Tests the findings of Economo et al. (2018) that the claims file, written from the full
+  text, lists. The dandiset holds silicon probe recordings from the anterior lateral motor cortex of
+  12 mice in a delayed response task, with tagged PTupper and PTlower units. The notebook rebuilds the
+  paper's smoothed rates from the files, applies the paper's unit selection, single-unit measures and
+  coding directions with the hierarchical bootstrap under every reading the claims file names, and
+  compares the two types. The claims on sequencing and axon reconstructions are tested on the paper's
+  Figshare record.
+license: Apache-2.0
+notebooks:
+- path: reproduce_economo_2018.ipynb
+  title: Reproducing Economo et al. (2018) from dandiset 000006
+  runtime_minutes: 12
+helpers:
+[... 18 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+ls claims/000006; grep -n "depends_on\|^- id:\|^  - id:\|^  id:" -A2 claims/000006/*.yaml | grep -v "^--$" | head -120
+```
+
+```
+10.1038-s41586-018-0642-9.yaml
+119:  id: "000006"
+120-paper: doi:10.1038/s41586-018-0642-9
+121-claims:
+122:- id: pt-types-transcriptomic
+123-  statement: In ALM scRNA-seq, glutamatergic neurons form 27 clusters and PT neurons map to three of them (Slco2a1,
+124-    and the closely related Npsr1 and Hpgd), and with axonal reconstructions this suggests that PT
+142:- id: pt-upper-thalamus-projection
+143-  statement: Of 12 reconstructed PT neurons, 8 innervate the thalamus.
+144-  source: Results, Two types of PT neuron in layer 5, paragraph 2; Fig. 2a, b; Extended Data Fig. 2
+161:- id: pt-lower-medulla-projection
+162-  statement: The other 4 of 12 reconstructed PT neurons bypass the thalamus and branch in the medulla,
+163-    including the reticular nuclei with premotor neurons for orofacial movements.
+178:- id: pt-types-shared-targets
+179-  statement: Both PT types project to several shared targets; all reconstructed cells innervate the
+180-    superior colliculus, and both types send collaterals to the subthalamic nucleus, zona incerta and
+195:- id: pt-retrograde-sublaminae
+196-  statement: Thalamus-projecting PT neurons lie in upper L5b and medulla-projecting PT neurons in lower
+197-    L5b; few neurons are co-labelled from thalamus and medulla (2.2%, 22 of 984) while many are
+222:- id: pt-projection-cluster-mapping
+[... 101 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 489,522p claims/000006/*.yaml; sed -n 672,900p claims/000006/*.yaml
+```
+
+```
+- id: pt-upper-early-preparatory
+  statement: Along the early coding direction (CDearly, first 400 ms of the sample epoch), selectivity is
+    larger and more consistent across trials in the PTupper population than in the PTlower population.
+  source: Results, Preparatory activity, paragraph 2; Fig. 5a, b
+  quote: In this projection, selectivity was larger and more consistent across trials in the PTupper population
+    compared to the PTlower population (Fig. 5b).
+  depends_on:
+  - pt-tagged-units
+  criterion: CDearly and selectivity with the shared bootstrap. The paper reports no test or window for
+    "larger". Readings for the window over which bootstrap selectivity is averaged, (a) -2.5 to -2.1
+    s, the CDearly window, (b) the sample epoch -2.5 to -1.5 s. The paper gives no rule for
+    "larger"; readings fixed here, (i) the bootstrap median of the PTupper mean exceeds that of
+    PTlower, (ii) in addition the PTupper 5th percentile exceeds the PTlower median. "More consistent
+    across trials" is read as a smaller spread of the bootstrap (which resamples trials) relative to
+    its median, the s.d. over median; the paper names no measure. Reproduced when both hold,
+    partially reproduced when larger holds alone, not reproduced when larger does not hold. Answer of
+    2026-10-20 - the paper does not say which rule decides. The Results give "larger" with no number or
+    test, Fig. 5b and its legend show only the bootstrap median and 5-95% band, and Projections.m draws
+    the curves with no comparison between populations. Both rules stay; when they give different
+    outcomes the claim is methods_underspecified.
+[... 226 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; wc -l alm.py; python -c "
+import json;nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i,c in enumerate(nb['cells']):
+  s=''.join(c['source']); print(i,c['cell_type'],c.get('metadata',{}).get('tags'),len(s.splitlines()),'|',s.splitlines()[0][:110] if s else '')
+"; ls ../../executed/000006-economo-2018/ 2>/dev/null
+```
+
+```
+Exit code 2
+1159 alm.py
+0 markdown None 75 | # Reproducing Economo et al. (2018) from dandiset 000006
+1 code None 20 | import time
+2 markdown None 4 | ## Data check
+3 code ['sanity'] 37 | summary = meta["assetsSummary"]
+4 markdown None 11 | The files match the archive's summary: 53 files and 12 mice. Each mouse has one tagged type only:
+5 code ['sanity'] 15 | trials = pd.concat([s["trials"].assign(subject=s["subject"], session=s["session"]) for s in sessions], ignore_
+6 markdown None 6 | The trial table holds `start_time` on the session clock and `pole_in_time`, `pole_out_time` and
+7 code ['sanity'] 41 | # Clock of the licks: first lick in the 2 s after the go cue, against the trial's direction,
+8 markdown None 6 | Licks share the trial clock: after the go cue the first lick is on the trial's side in nearly all
+9 code ['sanity'] 34 | # How the spike times and the lick times are stored.
+10 markdown None 9 | The spike times are not sorted in most units, which breaks the NWB convention for `spike_times`,
+11 code ['sanity'] 35 | # The paper's processed data (Ephys.zip on Figshare), every session: how the files were built, the
+12 markdown None 8 | In all 53 sessions of the dandiset every unit's stored spike times equal trial start + go cue time
+13 code ['sanity'] 29 | # Units of the dandiset under both readings of the unit inclusion, and the dandiset's units against
+14 markdown None 10 | Neither reading of the unit inclusion gives the paper's counts on the dandiset: the code's rule
+15 code ['sanity'] 28 | # Status of each finding of the earlier attempt (000006-economo-2018-01), checked again here.
+16 markdown None 5 | The version is the one the earlier attempt read, and nothing in it has changed: all seven findings
+17 markdown None 9 | ## Per-unit measures and the shared bootstrap
+[... 89 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; python -c "
+import json;nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i,c in enumerate(nb['cells']):
+  if i in (1,9,10,11,12,13,14,17,18,19,20,103,104,72,73,108,109): print('=====',i,c['cell_type']); print(''.join(c['source']))
+"
+```
+
+```
+===== 1 code
+import time
+import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+import alm
+
+pd.set_option("display.width", 220)
+pd.set_option("display.max_columns", 40)
+pd.set_option("display.max_rows", 300)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+started = time.time()
+sessions = alm.load_all()
+meta = alm.dandiset_metadata()
+print(f"loaded {len(sessions)} files from dandiset {alm.DANDISET_ID} version {alm.DANDISET_VERSION} "
+[... 384 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; grep -n "^def \|^[A-Z_]* = " alm.py
+```
+
+```
+/bin/bash: line 1: cd: entries/000006-economo-2018: No such file or directory
+57:DANDISET_ID = "000006"
+58:DANDISET_VERSION = "0.220126.1855"
+60:EPOCHS = {                      # seconds from the go cue, defineDataset.m
+67:GOOD_QUALITY = {"Excellent", "Good", "single"}
+68:MIN_CORRECT = 50                # more than this many correct trials of each direction
+69:MIN_SPIKES_PER_TRIAL = 3.2
+70:MIN_PERFORMANCE = 0.65          # fraction correct, each direction
+71:EDGE_TRIALS = 10                # trials dropped at each end of a unit's range
+72:SELECTIVITY_P = 0.01
+73:TYPES = ("PTupper", "PTlower")
+74:PROJECTION = {"PTupper": "thalamus-projecting", "PTlower": "medulla-projecting"}
+76:DT = 0.005
+77:TIME = np.round(-3.3975 + DT * np.arange(1280), 4)
+78:SMOOTH = 10
+79:CD_WINDOWS = {"early": (-2.5, -2.1), "late": (-0.4, 0.0), "go": (0.0, 0.4)}
+80:N_BOOT = 1000
+81:BOOT_TRIALS = 50
+82:BURST_ISI = 0.005
+83:BURST_FRACTION = 0.1
+[... 63 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "entries/000006-economo-2018/alm.py",
+ "offset": 186,
+ "limit": 200
+}
+```
+
+```
+186	def trial_of_spikes(spikes: np.ndarray, trials: pd.DataFrame) -> np.ndarray:
+187	    """Index of the trial each spike falls in (from one trial start to the next), -1 before
+188	    the first trial."""
+189	    return np.searchsorted(trials.start.to_numpy(), spikes, side="right") - 1
+190	
+191	
+192	def scored(trials: pd.DataFrame) -> np.ndarray:
+193	    """Trials without early licks or photostimulation (the code's '~lickearly&~stim')."""
+194	    return ((trials.response != "early lick") & ~trials.stim).to_numpy()
+195	
+196	
+197	def correct_trials(trials: pd.DataFrame) -> np.ndarray:
+198	    """Correct trials without early licks or photostimulation (the code's 'hit&~lickearly&~stim')."""
+199	    return ((trials.response == "correct") & ~trials.stim).to_numpy()
+200	
+201	
+202	def session_rule(session: dict) -> dict:
+203	    """Reading (b) of the claims file's unit inclusion, the Methods' session rule: the session's
+204	    performance is above 65% for both trial types and it has at least 50 correct trials of each
+205	    type (scored trials only)."""
+[... 180 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "entries/000006-economo-2018/alm.py",
+ "offset": 800,
+ "limit": 360
+}
+```
+
+```
+800	
+801	    def tell(self):
+802	        return self.f.tell()
+803	
+804	    def read(self, n=-1):
+805	        return self.f.read(n)
+806	
+807	
+808	def figshare_zip(url: str) -> zipfile.ZipFile:
+809	    """A zip file of the Figshare record, read by range requests, in memory."""
+810	    real = requests.head(url, allow_redirects=True, timeout=60).url
+811	    return zipfile.ZipFile(_Seekable(remfile.File(real)))
+812	
+813	
+814	def processed_members() -> list[str]:
+815	    """Names of the processed data files in Ephys.zip."""
+816	    return sorted(n for n in figshare_zip(FIGSHARE_EPHYS_ZIP).namelist() if n.endswith("_psth.mat"))
+817	
+818	
+819	def _processed_unit(mat_obj, meta, tt, psth, j, member, time_ok):
+[... 340 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; python -c "
+import json;nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i,c in enumerate(nb['cells']):
+  if c['cell_type']=='code' and 44<=i<=99 and i not in (72,): print('=====',i,c['metadata'].get('tags')); print(''.join(c['source']))
+"
+```
+
+```
+===== 44 ['claim:pt-tagged-units']
+rows = []
+for sel, col in SELECT.items():
+    for ct in alm.TYPES:
+        t = tagged[(tagged.cell_type == ct) & tagged[col]]
+        rows.append({"reading": sel, "type": ct, "units": len(t), "mice": t.subject.nunique()})
+counts = pd.DataFrame(rows)
+print(counts.to_string(index=False))
+print("Tagged units before exclusion:", len(tagged), "(the paper: 143)")
+ok = {sel: bool((abs(counts[(counts.reading == sel) & (counts.type == "PTupper")].units.iloc[0] - 61) <= 6.1)
+                and (abs(counts[(counts.reading == sel) & (counts.type == "PTlower")].units.iloc[0] - 69) <= 6.9)
+                and counts[(counts.reading == sel) & (counts.type == "PTupper")].mice.iloc[0] == 8
+                and counts[(counts.reading == sel) & (counts.type == "PTlower")].mice.iloc[0] == 4) for sel in SELECT}
+print("Within tolerance under the reading:", ok)
+print("Processed data, the code's rule:", proc[proc.included].cell_type.value_counts().to_dict(),
+      "; mice", proc[proc.included].groupby("cell_type").subject.nunique().to_dict())
+===== 47 ['claim:pt-depth']
+for sel in SELECT:
+    t = pop_table(alm.TYPES, sel, "unit")
+    for label, frame in (("all units", t), ("without right-hemisphere PTlower", t[~((t.cell_type == "PTlower") & (t.hemisphere == "right"))])):
+[... 362 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; python -c "
+import json;nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i in (22,28,29,41,113,115):
+  c=nb['cells'][i]; print('=====',i); print(''.join(c['source']))
+"; sed -n 528,600p alm.py; cat requirements.in; grep -i pillow requirements.lock.txt
+```
+
+```
+===== 22
+t0 = time.time()
+seq = alm.read_seq()
+anno = seq["anno"]
+print(f"Seq.zip read in {time.time() - t0:.0f} s: annotation {anno.shape}, single-cell expression {seq['sc'].shape} "
+      f"(genes x cells), bulk {seq['bulk'].shape} (genes x samples)")
+print("Regions:", anno.region_label.value_counts().to_dict(), "; classes:", anno.class_label.value_counts().to_dict())
+print("cluster_metadata.csv: clusters", len(seq["cluster_metadata"]), "; labels of its PT-like clusters:",
+      seq["cluster_metadata"][seq["cluster_metadata"].cluster_label.str.contains("L5b ALM")].cluster_label.tolist())
+neurons = alm.read_axons()
+print("Axons.zip: objects", len(neurons), "; axons", sum(n.Name.endswith("-A") for n in neurons),
+      "; dendrites", sum(n.Name.endswith("-D") for n in neurons))
+anatomy = alm.figshare_zip(alm.FIGSHARE_ANATOMY_ZIP).namelist()
+folders = pd.Series([n.split("/")[1] for n in anatomy if n.count("/") >= 2 and not n.startswith("__MACOSX")]).value_counts()
+print("Anatomy.zip folders (files):", folders.to_dict())
+print("File types in Anatomy.zip:", pd.Series([n.rsplit(".", 1)[-1] for n in anatomy if "." in n.split("/")[-1]]).value_counts().to_dict())
+===== 28
+structures = ["Thalamus", "Medulla", "Intermediate reticular nucleus", "Superior colliculus motor related",
+              "Superior colliculus sensory related", "Subthalamic nucleus", "Zona incerta", "Midbrain reticular nucleus"]
+axons = alm.axon_targets(neurons, structures)
+[... 201 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  head -60 questions/000006.yaml; grep -n "status\|claim:" questions/000006.yaml | head -40; grep -n -i "question" docs/protocol.md | head -20
+```
+
+```
+# Questions from attempt 000006-economo-2018-02 (author, 2026-10-20) about
+# claims/000006/10.1038-s41586-018-0642-9.yaml. Each claim was run under every reading named here;
+# the attempt record says which ones decide the outcome.
+dandiset: "000006"
+paper: doi:10.1038/s41586-018-0642-9
+questions:
+- claim: pt-tagged-units
+  attempt: 000006-economo-2018-02
+  asked: 2026-10-20
+  question: The criterion says the reading of the unit selection that reproduces the 61 and 69 units is
+    the one the other electrophysiology claims use. On the dandiset neither does (the code's rule keeps
+    44 PTupper and 56 PTlower units, the Methods' session rule 42 and 63), because 11 of the paper's
+    sessions are not in it. Which selection should the other claims use when neither reading matches?
+  passage: Methods, Electrophysiology data analysis ("Units recorded during behavioural sessions in which
+    performance was not greater than 65% ... 13 units were rejected; 130 were kept"); the claims file's
+    opening comment, Unit inclusion.
+  why: pt-spike-rates-similar, pt-variance-explained and pt-single-neuron-early-selectivity give
+    different outcomes under the two selections, and are blocked until it is fixed. On the paper's
+    processed data the code's rule gives 61 and 69.
+  answered: 2026-10-20
+[... 63 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; sed -n 595,610p alm.py; ls ../../.venv* ../../ 2>/dev/null | head; which python; python -c "import remfile, PIL, scipy; print('ok')"
+```
+
+```
+Exit code 1
+def summarise(boot: dict) -> dict:
+    """Per alignment, projection reading and coding direction: the 5th, 50th and 95th
+    percentiles of the bootstrap selectivity at each bin, and per iteration its mean over the
+    windows of `SUMMARY_WINDOWS` (bins with centres in [start, end))."""
+    out = {}
+    for align in ("go", "lick"):
+        for reading, cds in boot.get(align, {}).items():
+            for cd, sel in cds.items():
+                q5, q50, q95 = np.nanpercentile(sel, [5, 50, 95], axis=0)
+                out[(align, reading, cd)] = {
+                    "q5": q5, "q50": q50, "q95": q95,
+                    "means": {w: sel[:, bins(win, "cd")].mean(axis=1) for w, win in SUMMARY_WINDOWS.items()}}
+    return out
+
+
+def binned_cd_correlation(units: list[dict], animal_key: str, trial_range: str, rng: np.random.Generator,
+../../:
+LICENSE
+README.md
+[... 13 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "venv\|uv \|pip" tools/entry.py | head -20
+```
+
+```
+280:    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
+290:    venv = (output_dir / ".venv").resolve()
+291:    python = venv / "bin" / "python"
+295:    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
+296:                ["uv", "pip", "install", "--quiet", "--python", str(python),
+298:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+312:            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 270,320p tools/entry.py; uv venv --quiet --python 3.12 $TMPDIR/venv 2>&1 | tail -2; uv pip install --quiet --python $TMPDIR/venv/bin/python -r entries/000006-economo-2018/requirements.lock.txt 2>&1 | tail -3
+```
+
+```
+if LOCAL_PATH.search(code):
+        report.error(where, "names a local path; stream the data from the archive")
+    if LONG_LITERAL.search(code):
+        report.error(where, f"contains a literal of more than {MAX_LITERAL_NUMBERS} numbers; "
+                            "results must be computed from the data")
+
+
+# --- lock and run -------------------------------------------------------------
+
+def lock(entry_dir: Path) -> int:
+    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
+                        "requirements.in", "-o", "requirements.lock.txt"], cwd=entry_dir)
+    if r.returncode == 0:
+        print(f"wrote {(entry_dir / 'requirements.lock.txt').relative_to(ROOT)}")
+    return r.returncode
+
+
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    output_dir.mkdir(parents=True, exist_ok=True)
+[... 31 more lines not kept]
+```
+
+**Agent**
+
+Test environment built. Let me check the axon and anatomy snippets quickly before editing the notebook.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; timeout 900 $TMPDIR/venv/bin/python -c "
+import io, numpy as np, pandas as pd, alm
+from PIL import Image
+neurons = alm.read_axons()
+n = next(n for n in neurons if n.Name == 'AA0134-A')
+an = np.atleast_1d(n.Anatomy); print(len(an), n.Nodes.shape)
+names = pd.Series([str(a.safeName) for a in an])
+ids = n.Nodes[:, 4].astype(int); ends = ~np.isin(ids, n.Nodes[:, 3].astype(int))
+print(names.value_counts().head(30).to_dict()); print(names[ends].value_counts().to_dict())
+anatomy = alm.figshare_zip(alm.FIGSHARE_ANATOMY_ZIP).namelist()
+folders = sorted({x.split('/')[1] for x in anatomy if x.count('/')>=2 and not x.startswith('__MACOSX')})
+print(folders)
+z = alm.figshare_zip(alm.FIGSHARE_ANATOMY_ZIP)
+for f in folders:
+    js = sorted(x for x in anatomy if x.split('/')[1:2]==[f] and x.lower().endswith('.jpg') and not x.startswith('__MACOSX'))
+    if not js: print(f,'none'); continue
+    info = z.getinfo(js[0]); img = Image.open(io.BytesIO(z.read(js[0])))
+    print(f, len(js), js[0], img.size, img.mode, info.file_size, img.info.get('dpi'))
+"
+```
+
+```
+2368 (2368, 5)
+{'Intermediate reticular nucleus': 235, 'medial longitudinal fascicle': 209, 'pyramid': 188, 'Gigantocellular reticular nucleus': 149, 'Midbrain reticular nucleus': 141, 'medial lemniscus': 138, 'Parvicellular reticular nucleus': 121, 'Pontine reticular nucleus caudal part': 113, 'Pontine gray': 100, 'Medullary reticular nucleus': 95, 'Medulla': 72, 'Magnocellular reticular nucleus': 66, 'Red nucleus': 66, 'tectospinal pathway': 55, 'cerebal peduncle': 50, 'corticospinal tract': 48, 'Inferior olivary complex': 47, 'Nucleus raphe magnus': 44, 'Caudoputamen': 43, 'Superior central nucleus raphe': 38, 'Nucleus raphe pallidus': 31, 'internal capsule': 29, 'fiber tracts': 28, 'Substantia nigra reticular part': 26, 'facial nerve': 24, 'corpus callosum': 23, 'Medulla motor related': 21, 'Substantia nigra compact part': 20, 'Pontine reticular nucleus': 18, 'Midbrain': 16}
+{'Intermediate reticular nucleus': 6, 'medial longitudinal fascicle': 4, 'Parvicellular reticular nucleus': 4, 'Pontine gray': 4, 'Midbrain reticular nucleus': 3, 'medial lemniscus': 3, 'Tegmental reticular nucleus': 2, 'Medullary reticular nucleus': 1, 'Medulla': 1, 'Gigantocellular reticular nucleus': 1, 'Pontine reticular nucleus caudal part': 1, 'tectospinal pathway': 1, 'facial nerve': 1, 'Pons': 1, 'Superior central nucleus raphe': 1, 'Red nucleus': 1, 'Subthalamic nucleus': 1}
+['BL648_Thal_Med_H2b_Ch01', 'BL648_Thal_Med_H2b_Ch02', 'BL772_ThalMed_anterograde_Ch01', 'BL772_ThalMed_anterograde_Ch02', 'BL777_Medulla_ChR2-YFP_Ch01', 'BL780_Thalamus_ChR2-YFP_Ch01']
+BL648_Thal_Med_H2b_Ch01 108 Anatomy/BL648_Thal_Med_H2b_Ch01/648_jSV101_H2B_SL1_3xPT_jpgs0000.jpg (8600, 6200) L 845890 None
+BL648_Thal_Med_H2b_Ch02 108 Anatomy/BL648_Thal_Med_H2b_Ch02/BL648_Thal_Med_H2b_Ch020000.jpg (8600, 6200) L 1090470 None
+BL772_ThalMed_anterograde_Ch01 110 Anatomy/BL772_ThalMed_anterograde_Ch01/772_jSV108_172124_1002_PSjpgs0001.jpg (8600, 6200) L 808296 None
+BL772_ThalMed_anterograde_Ch02 110 Anatomy/BL772_T
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; cat > $TMPDIR/edit_nb.py <<'EOF'
+import json
+p = "reproduce_economo_2018.ipynb"
+nb = json.load(open(p))
+cells = nb["cells"]
+
+
+def code(src, tags=None):
+    md = {"tags": tags} if tags else {}
+    return {"cell_type": "code", "execution_count": None, "metadata": md, "outputs": [], "source": src.strip("\n").splitlines(True)}
+
+
+def mdc(src):
+    return {"cell_type": "markdown", "metadata": {}, "source": src.strip("\n").splitlines(True)}
+
+
+assert cells[115]["source"][0].startswith("## Summary")
+assert "claim:pt-lower-movement-termination" in cells[104]["metadata"]["tags"]
+assert "claim:pt-cdgo-onset" in cells[90]["metadata"]["tags"]
+assert "claim:pt-tagged-units" in cells[44]["metadata"]["tags"]
+assert "claim:pt-retrograde-sublaminae" in cells[41]["metadata"]["tags"]
+assert "claim:pt-types-account-for-all-pt" in cells[29]["metadata"]["tags"]
+
+SPLIT_MD = """
+## Missing units against the file format (variant)
+
+Two things separate the dandiset's results from the paper's: the 11 missing sessions, and rates
+rebuilt from the files' spike times on the file's clock (where spikes of a neighbouring trial are
+counted). The paper's processed data restricted to the tagged units the dandiset also holds
+(`per_unit_same`, `boots_same`) have the dandiset's units and the paper's per-trial rates. A
+difference between the dandiset and these comes from the files; a difference between these and
+all the paper's units comes from the missing units. Selection (a), range (a), mouse (a). No outcome
+rests on this section.
+"""
+
+SPLIT_CODE = r'''
+frames3 = [("dandiset files", pop_table(alm.TYPES, "code", "unit")),
+           ("processed, same units", pop_table(alm.TYPES, None, "unit", per_unit_same)),
+           ("processed, all units", pop_table(alm.TYPES, None, "unit", per_unit_proc))]
+rows = []
+for label, f in frames3:
+    up, low = f[f.cell_type == "PTupper"], f[f.cell_type == "PTlower"]
+    r = {"population": label, "units (PTupper, PTlower)": (len(up), len(low))}
+    for m in ("baseline rate", "peak rate"):
+        r[f"{m}: medians Hz"] = (round(up[m].median(), 2), round(low[m].median(), 2))
+        r[f"{m}: t-test p"] = round(stats.ttest_ind(up[m], low[m]).pvalue, 4)
+    b = f["burst fraction"] > alm.BURST_FRACTION
+    r["bursting (PTupper, PTlower)"] = (int(b[up.index].sum()), int(b[low.index].sum()))
+    sig = (f[["p sample", "p delay", "p response"]] < alm.SELECTIVITY_P).any(axis=1)
+    r["selective in any epoch"] = f"{int(sig.sum())} of {len(f)} ({sig.mean():.1%})"
+    late = f["p late delay"] < alm.SELECTIVITY_P
+    r["late delay selective"] = (f"{int(late[up.index].sum())} of {len(up)} ({late[up.index].mean():.1%})",
+                                 f"{int(late[low.index].sum())} of {len(low)} ({late[low.index].mean():.1%})")
+    a_up, a_low = up["early d'"].abs(), low["early d'"].abs()
+    r["early |d'| means"] = (round(a_up.mean(), 3), round(a_low.mean(), 3))
+    r["early |d'|: t-test p"] = round(stats.ttest_ind(a_up, a_low).pvalue, 4)
+    for col, n_top in (("accuracy", 10), ("rectified accuracy", 21)):
+        d = decoding_rows(f, label, col, n_top)
+        r[f"{col}: >= 70% (PTupper, PTlower)"] = (d["PTupper >= 0.70"], d["PTlower >= 0.70"])
+        r[f"{col}: means %"] = (round(d["PTupper mean %"], 2), round(d["PTlower mean %"], 2))
+        r[f"{col}: PTupper in top {n_top}"] = d[f"PTupper in top {n_top}"]
+    rows.append(r)
+print("Per-unit measures:")
+print(pd.DataFrame(rows).set_index("population").T.to_string())
+
+
+def boot_get(population, ct, pr, cd):
+    if population == "dandiset files":
+        return sel_summary(ct, "code", "unit", "subject", pr, cd)
+    if population == "processed, all units":
+        return sel_summary(ct, None, None, "subject", pr, cd, processed=True)
+    return boots_same[ct][("go", pr, cd)]
+
+
+rows = []
+for label, _ in frames3:
+    for pr in ("proj a", "proj b"):
+        e = early_rows(lambda ct: boot_get(label, ct, pr, "early"), label)[0]
+        per = persistent_row(boot_get(label, "PTupper", pr, "early"), label)
+        lo, upg = boot_get(label, "PTlower", pr, "go"), boot_get(label, "PTupper", pr, "go")
+        rows.append({"population": label, "projection": pr,
+                     "CDearly medians (PTupper, PTlower)": (round(e["PTupper median"], 2), round(e["PTlower median"], 2)),
+                     "larger (i)": e["larger (i)"], "larger (ii)": e["larger (ii)"],
+                     "sd/median (PTupper, PTlower)": (round(e["PTupper sd/median"], 3), round(e["PTlower sd/median"], 3)),
+                     "persistent: bins not significant": per["bins not significant"],
+                     "persistent (b) p": round(per["(b) p, -0.4 to 0 s"], 3),
+                     "PTlower decay p": round(float((boot_get(label, "PTlower", pr, "early")["means"]["late delay"] <= 0).mean()), 3),
+                     "CDgo onsets ms (PTlower, PTupper)": (1000 * alm.onset(lo["q5"]), 1000 * alm.onset(upg["q5"])),
+                     "CDgo run end s (PTlower, PTupper)": (alm.first_run_end(lo["q5"]), alm.first_run_end(upg["q5"]))})
+print("\nShared bootstrap (mouse (a); bin centres, first significant bin):")
+print(pd.DataFrame(rows).to_string(index=False))
+
+# The same units in the files and in the processed data: how much the file's clock moves each unit's rates.
+cols = ["baseline rate", "peak rate", "accuracy", "rectified accuracy", "early d'"]
+same = (pop_table(alm.TYPES, "code", "unit")[["subject", "session", "id", "cell_type"] + cols]
+        .merge(pop_table(alm.TYPES, None, "unit", per_unit_same)[["subject", "session", "id"] + cols],
+               on=["subject", "session", "id"], suffixes=(" files", " processed")))
+print(f"\nThe same units, files against processed data ({len(same)} units matched):")
+rows = []
+for ct in alm.TYPES:
+    g = same[same.cell_type == ct]
+    for c in cols:
+        d = g[f"{c} files"] - g[f"{c} processed"]
+        rows.append({"type": ct, "measure": c, "median files": g[f"{c} files"].median(),
+                     "median processed": g[f"{c} processed"].median(), "median difference": d.median(),
+                     "min difference": d.min(), "max difference": d.max(), "units higher in files": int((d > 0).sum()),
+                     "of": len(g)})
+print(pd.DataFrame(rows).round(3).to_string(index=False))
+'''
+
+BOOTS_SAME = r'''
+# Variant: the processed data restricted to the tagged units the dandiset also holds, under the code's
+# rule; it has the dandiset's units and the paper's per-trial rates (section "Missing units against the
+# file format").
+t0 = time.time()
+per_unit_same = per_unit_proc[per_unit_proc.in_dandiset]
+boots_same = {}
+for ct in alm.TYPES:
+    pop = [u for u in proc_units if u["included"] and u["in_dandiset"] and u["cell_type"] == ct]
+    boots_same[ct] = alm.summarise(alm.bootstrap(pop, "subject", "unit", alm.seeded(f"bootstrap processed same units {ct}")))
+print(f"processed data, units the dandiset holds: {per_unit_same[per_unit_same.included].cell_type.value_counts().to_dict()}; "
+      f"bootstraps in {time.time() - t0:.0f} s")
+'''
+
+AA0134 = r'''
+# Where the axon of AA0134 runs: the structures of its axon nodes (the 25 most frequent) and of its termini.
+a134 = next(n for n in neurons if n.Name == "AA0134-A")
+node_names = pd.Series([str(a.safeName) for a in np.atleast_1d(a134.Anatomy)])
+ends134 = ~np.isin(a134.Nodes[:, 4].astype(int), a134.Nodes[:, 3].astype(int))
+print("AA0134 axon nodes:", len(node_names), "; termini:", int(ends134.sum()))
+print("Nodes by structure:", node_names.value_counts().head(25).to_dict())
+print("Termini by structure:", node_names[ends134].value_counts().to_dict())
+print("Any node in a structure named for the superior colliculus:", bool(node_names.str.contains("colliculus", case=False).any()))
+'''
+
+ANATOMY = r'''
+# The image stacks of Anatomy.zip: one image of each folder, its size in pixels and mode. The files
+# carry no pixel size (no dpi or scale in the image metadata).
+from PIL import Image
+
+z_anatomy = alm.figshare_zip(alm.FIGSHARE_ANATOMY_ZIP)
+for folder in sorted(folders.index):
+    jpgs = sorted(n for n in anatomy if n.split("/")[1:2] == [folder] and n.lower().endswith(".jpg"))
+    img = Image.open(io.BytesIO(z_anatomy.read(jpgs[0])))
+    print(f"{folder}: {len(jpgs)} images; {jpgs[0].split('/')[-1]}: {img.size[0]} x {img.size[1]} pixels, mode {img.mode}, "
+          f"{z_anatomy.getinfo(jpgs[0]).file_size / 1e6:.2f} MB, dpi {img.info.get('dpi')}")
+'''
+
+TAGGED = r'''
+# The processed data hold more tagged units than the 143 the paper sorted: by quality and the code's rule.
+print("Tagged units in the processed data:", len(proc), "(the paper: 143 tagged units, 130 kept)")
+print(pd.crosstab([proc.cell_type, proc.quality], proc.included, margins=True).to_string())
+print("Of good quality (Excellent, Good, single):", int(proc.quality.isin(alm.GOOD_QUALITY).sum()),
+      "; reasons for leaving units out:", proc[~proc.included].reason.str.split(", ").explode().value_counts().to_dict())
+'''
+
+ONSET = r'''
+# The 5th percentile of CDgo selectivity in the first 100 ms after the go cue (bin centres), selection
+# (a), range (a), mouse (a), projection (a): on the dandiset, on the processed data for the units the
+# dandiset holds, and on all the paper's units.
+first = (alm.TIME > 0) & (alm.TIME <= 0.1)
+tab = {"time ms": 1000 * alm.TIME[first]}
+for ct in alm.TYPES:
+    tab[f"{ct} files"] = sel_summary(ct, "code", "unit", "subject", "proj a", "go")["q5"][first]
+    tab[f"{ct} processed, same units"] = boots_same[ct][("go", "proj a", "go")]["q5"][first]
+    tab[f"{ct} processed, all"] = sel_summary(ct, None, None, "subject", "proj a", "go", processed=True)["q5"][first]
+print(pd.DataFrame(tab).round(2).to_string(index=False))
+'''
+
+LICK = r'''
+# How often the lick-aligned rates are cut: a trial's spikes reach 3.0 s after its go cue, so bins
+# later than that after the last lick count no spikes. Share of correct trials in the included units'
+# ranges whose rebuilt last lick is more than 2.5, 2.6 or 2.8 s after the go cue (bins up to 0.5, 0.4
+# and 0.2 s after it are then cut).
+for ct in alm.TYPES:
+    rel = np.concatenate([u["last_lick_rel"][u["in_range"]] for u in alm.selected(units, ct, "code")])
+    rel = rel[np.isfinite(rel)]
+    print(f"{ct}: {len(rel)} unit-trials; last lick median {np.median(rel):.3f} s, 95th percentile "
+          f"{np.percentile(rel, 95):.3f} s after the go cue; later than 2.5 / 2.6 / 2.8 s: "
+          + " / ".join(f"{np.mean(rel > x):.2%}" for x in (2.5, 2.6, 2.8)))
+'''
+
+cells.insert(115, code(SPLIT_CODE))
+cells.insert(115, mdc(SPLIT_MD))
+cells.insert(105, code(LICK, ["claim:pt-lower-movement-termination"]))
+cells.insert(91, code(ONSET, ["claim:pt-cdgo-onset"]))
+cells.insert(45, code(TAGGED, ["claim:pt-tagged-units"]))
+cells.insert(42, code(ANATOMY, ["claim:pt-retrograde-sublaminae"]))
+cells.insert(30, code(AA0134, ["claim:pt-types-account-for-all-pt"]))
+cells.insert(20, code(BOOTS_SAME))
+src = "".join(cells[1]["source"]).replace("import time\n", "import io\nimport time\n", 1)
+cells[1]["source"] = src.splitlines(True)
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False)
+open(p, "a").write("\n")
+EOF
+git diff --stat; head -c 300 reproduce_economo_2018.ipynb | cat -A | head -5; python $TMPDIR/edit_nb.py && git diff --stat
+```
+
+```
+{$
+ "cells": [$
+  {$
+   "cell_type": "markdown",$
+   "id": "0f7ea877",$
+ .../reproduce_economo_2018.ipynb                   | 218 +++++++++++++++++++++
+ 1 file changed, 218 insertions(+)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; python - <<'EOF'
+import json, uuid
+p="reproduce_economo_2018.ipynb"; nb=json.load(open(p))
+for c in nb["cells"]:
+    if "id" not in c: c["id"]=uuid.uuid4().hex[:8]
+s=json.dumps(nb, indent=1, ensure_ascii=False)+"\n"
+open(p,"w").write(s)
+EOF
+git diff reproduce_economo_2018.ipynb | tail -8; git diff reproduce_economo_2018.ipynb | grep '^[-+]' | grep -v '^+++\|^---' | grep '^-' | head
+```
+
+```
++    "                     \"of\": len(g)})\n",
++    "print(pd.DataFrame(rows).round(3).to_string(index=False))"
++   ],
++   "id": "6f3572ae"
++  },
+   {
+    "cell_type": "markdown",
+    "id": "bd53b5fa",
+-   ]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  time python tools/entry.py all entries/000006-economo-2018 2>&1 | tail -30
+```
+
+```
+error: entries/000006-economo-2018/reproduce_economo_2018.ipynb: reads an image file; figures must be computed from the data
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-bulk-sc-fold-change-correlation' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-cd-change-at-go-cue' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-cd-stability' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-cdgo-onset' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-cohort-control' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-depth' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-lower-bursting' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-lower-cdearly-decay' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-lower-heterogeneous-rates' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-lower-movement-termination' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-marker-genes' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-projection-cluster-mapping' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-retrograde-sublaminae' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt-selective-any-epoch' has no outcome; give every claim one, blocked included
+error: attempts/000006-economo-2018-01.yaml: claim 'pt
+[... 12 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "image file\|def all_\|def cmd_all\|\"all\"\|has no outcome\|IMAGE" tools/entry.py | head -20
+```
+
+```
+61:EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
+225:            report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
+266:    if EMBEDDED_IMAGE.search(code):
+269:        report.error(where, "reads an image file; figures must be computed from the data")
+373:    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover"])
+390:    if args.command in ("check", "all"):
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 55,70p tools/entry.py; sed -n 195,270p tools/entry.py; sed -n 370,420p tools/entry.py
+```
+
+```
+ROOT = Path(__file__).resolve().parents[1]
+PYTHON_VERSION = "3.13"
+HARNESS = ["ipykernel", "nbconvert"]      # needed to execute, not part of the entry
+MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one literal is "embedded data"
+
+EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
+READS_A_FIGURE = re.compile(r"""(imread|Image\.open|IPython\.display\.Image|display\.Image)\s*\(""")
+LOCAL_PATH = re.compile(r"""["'](?:~/|/(?:Users|home|tmp|mnt|media|Volumes|data|scratch)/|[A-Za-z]:[\\/])""")
+LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
+
+
+class Report:
+    def __init__(self):
+        self.errors: list[str] = []
+
+            c.get("data") == "with_labels" for c in data.get("claims", []))
+        for c in data.get("claims", []):
+            for other in c.get("depends_on", []):
+                if other not in ids:
+                    report.error(path.relative_to(ROOT), f"claim {c['id']!r} depends on {other!r}, which is not in the file")
+[... 103 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -127,1437 +901,1143 @@ python -c "import json;d=json.load(open('schemas/attempt.schema.json'));print(js
 ```bash
 cd entries/000006-economo-2018; python - <<'EOF'
 import json
-nb=json.load(open('reproduce_economo_2018.ipynb'))
-for i,c in enumerate(nb['cells']):
-    print(f"=== cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
-    print(''.join(c['source']))
+p="reproduce_economo_2018.ipynb"; nb=json.load(open(p))
+NEW = '''# The image stacks of Anatomy.zip, from the archive's directory (no image is opened): images per folder
+# and their compressed sizes. The files hold images only, with no scale or cell annotation beside them.
+z_anatomy = alm.figshare_zip(alm.FIGSHARE_ANATOMY_ZIP)
+for folder in sorted(folders.index):
+    jpgs = sorted(n for n in anatomy if n.split("/")[1:2] == [folder] and n.lower().endswith(".jpg"))
+    mb = np.array([z_anatomy.getinfo(n).file_size for n in jpgs]) / 1e6
+    print(f"{folder}: {len(jpgs)} images, {mb.min():.2f} to {mb.max():.2f} MB each; first {jpgs[0].split('/')[-1]}")
+'''
+for c in nb["cells"]:
+    if "Image.open" in "".join(c["source"]):
+        c["source"] = NEW.strip("\n").splitlines(True)
+s=json.dumps(nb, indent=1, ensure_ascii=False)+"\n"; open(p,"w").write(s)
 EOF
+cd ../..; python tools/entry.py check entries/000006-economo-2018 2>&1 | grep -v "01.yaml"
 ```
 
 ```
-<persisted-output>
-Output too large (41.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/4ea7c38b-9f46-41c6-aba2-7724bd4ad2a0/tool-results/bbm906127.txt
-
-Preview (first 2KB):
-=== cell 0 [markdown] tags=None
-# Reproducing Economo et al. (2018) from dandiset 000006
-
-**Paper.** Economo MN, Viswanathan S, Tasic B, et al. (2018). Distinct descending motor cortex
-pathways and their roles in movement. *Nature* 563, 79-84.
-[doi:10.1038/s41586-018-0642-9](https://doi.org/10.1038/s41586-018-0642-9). The paper is not open
-access and has no copy in PubMed Central, so this attempt used its **abstract only**. Its public
-Data availability statement was read to find the linked data and code.
-
-**Dandiset.** [DANDI:000006](https://dandiarchive.org/dandiset/000006/0.220126.1855), version
-0.220126.1855. The paper cites no DANDI version (it points to CRCNS and Figshare). This is the
-only published version, and it is pinned for that reason. The draft holds the same 53 files with
-the same sizes; it differs only in metadata added later (ORCID, affiliations, funders, anatomy
-terms and a link to the DataLad source), none of which the analysis uses.
-
-**What the dandiset holds.** Spike-sorted units from silicon probe recordings in the anterior
-[... 13 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/4ea7c38b-9f46-41c6-aba2-7724bd4ad2a0/tool-results/bbm906127.txt"
-}
-```
-
-```
-1	=== cell 0 [markdown] tags=None
-2	# Reproducing Economo et al. (2018) from dandiset 000006
-3	
-4	**Paper.** Economo MN, Viswanathan S, Tasic B, et al. (2018). Distinct descending motor cortex
-5	pathways and their roles in movement. *Nature* 563, 79-84.
-6	[doi:10.1038/s41586-018-0642-9](https://doi.org/10.1038/s41586-018-0642-9). The paper is not open
-7	access and has no copy in PubMed Central, so this attempt used its **abstract only**. Its public
-8	Data availability statement was read to find the linked data and code.
-9	
-10	**Dandiset.** [DANDI:000006](https://dandiarchive.org/dandiset/000006/0.220126.1855), version
-11	0.220126.1855. The paper cites no DANDI version (it points to CRCNS and Figshare). This is the
-12	only published version, and it is pinned for that reason. The draft holds the same 53 files with
-13	the same sizes; it differs only in metadata added later (ORCID, affiliations, funders, anatomy
-14	terms and a link to the DataLad source), none of which the analysis uses.
-15	
-16	**What the dandiset holds.** Spike-sorted units from silicon probe recordings in the anterior
-17	lateral motor cortex (ALM) of 12 mice in a delayed response task (lick left or right after a go
-18	cue, depending on the position of a pole presented in the sample epoch), with trial tables and
-19	lick times. Tagged pyramidal tract (PT) units carry the label `PTupper` (8 mice) or `PTlower`
-20	(4 mice). The single-cell and bulk RNA-seq, the anatomy and the axonal reconstructions of the
-[... 643 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/000006-economo-2018/alm.py"
-}
-```
-
-```
-1	"""Loading and measures for the ALM recordings of dandiset 000006.
-2	
-3	Economo, Viswanathan, Tasic et al. (2018), Nature, doi:10.1038/s41586-018-0642-9.
-4	
-5	Each NWB file (NWB 2.0.2) holds one session of one mouse in a delayed response task: a trial
-6	table (`start_time` in seconds on the session clock; `pole_in_time`, `pole_out_time` and
-7	`cue_start_time` in seconds from the trial start; `type` lick left or lick right; `response`
-8	correct, incorrect, early lick or no response; `is_good`; `stim_present`), the times of left and
-9	right licks, and a units table with spike times. Tagged pyramidal tract units have ids above 1000
-10	and `cell_type` PTupper or PTlower; the other units are `unidentified`. Files are streamed from
-11	the archive at the pinned version; nothing is written to disk.
-12	
-13	Where the parameters come from. The paper's Methods were not available (the paper is not open
-14	access). Every choice below follows the analysis code the paper links to, the MATLAB scripts in
-15	Ephys.zip of the Figshare record doi:10.25378/janelia.7007846 (version 1):
-16	
-17	- `EPOCHS`, in seconds from the go cue: defineDataset.m.
-18	- `GOOD_QUALITY`, `MIN_CORRECT`, `MIN_SPIKES_PER_TRIAL`, `MIN_PERFORMANCE` and `EDGE_TRIALS`:
-19	  loadAndProcessData.m (unit inclusion, and the trial range of each unit in ObjToLickPSTH).
-20	  The code counts spikes per trial over the range of trials in which the unit fired.
-[... 376 more lines not kept]
+22 error(s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && curl -sIL https://ndownloader.figshare.com/files/13292708 | grep -i -E "content-length|location|HTTP" | head
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000006-economo-2018 && python - <<'EOF'
-import alm, zipfile, remfile, requests
-url = requests.head(alm.FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
-z = zipfile.ZipFile(alm._Seekable(remfile.File(url)))
-tot=0
-for i in z.infolist():
-    tot+=i.compress_size
-    print(i.filename, i.file_size, i.compress_size)
-print("total", tot)
-EOF
+cd  git stash -q; python tools/entry.py check entries/000006-economo-2018 2>&1 | tail -1; git stash pop -q; git status --short
 ```
 
 ```
-Exit code 1
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "entries/000006-economo-2018/alm.py", line 36, in <module>
-    import h5py
-ModuleNotFoundError: No module named 'h5py'
-```
-
-**Agent calls Bash**
-
-```bash
-ls -a; ls .venv* envs 2>/dev/null | head; sed -n 1,80p tools/entry.py | grep -n "venv\|uv\|env"
-```
-
-```
-.
-..
-.bash_profile
-.bashrc
-.claude
-.env
-.env.development
-.env.development.local
-.env.local
-.env.production
-.env.production.local
-.env.test
-.env.test.local
-.git
-.gitconfig
-.github
-.gitignore
-.gitmodules
-.idea
-.mcp.json
-[... 31 more lines not kept]
+22 error(s)
+ M entries/000006-economo-2018/reproduce_economo_2018.ipynb
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+?? .mcp.json
+?? .profile
+?? .ripgreprc
+?? .vscode
+?? .zprofile
+?? .zshrc
+?? scripts
 ```
 
 **Agent**
 
-I'll make a working environment from the entry's lock file to explore the code and processed data.
+The check's 22 errors all concern the earlier attempt record (-01), which predates the current claims file and was failing before my changes. I'll run the notebook.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q env6 && uv pip install -q -p env6/bin/python -r entries/000006-economo-2018/requirements.lock.txt 2>&1 | tail -3; env6/bin/python -c "import h5py, remfile; print('ok')"
+cd  time python tools/entry.py run entries/000006-economo-2018 2>&1 | tail -30
 ```
 
 ```
-ok
-Shell cwd was reset to
+Installed kernelspec registry-000006-economo-2018 in executed/000006-economo-2018/.venv/share/jupyter/kernels/registry-000006-economo-2018
+pass  reproduce_economo_2018.ipynb  (661 s)
+
+real	11m5.835s
+user	21m26.689s
+sys	0m24.321s
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000006-economo-2018 && $TMPDIR/env6/bin/python - <<'EOF'
-import alm, zipfile, remfile, requests
-url = requests.head(alm.FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
-z = zipfile.ZipFile(alm._Seekable(remfile.File(url)))
-tot=0
-for i in z.infolist():
-    tot+=i.compress_size
-    print(i.filename, i.file_size, i.compress_size)
-print("total", tot)
+cd  python - <<'EOF' > $TMPDIR/out.txt
+import json
+nb=json.load(open("executed/000006-economo-2018/reproduce_economo_2018.ipynb"))
+for i,c in enumerate(nb["cells"]):
+    if c["cell_type"]!="code": continue
+    print("=====",i,c["execution_count"],c["metadata"].get("tags"))
+    for o in c.get("outputs",[]):
+        if "text" in o: print("".join(o["text"]))
+        elif "data" in o and "text/plain" in o["data"] and "image/png" not in o["data"]: print("".join(o["data"]["text/plain"]))
 EOF
+wc -l $TMPDIR/out.txt; grep -n "=====" $TMPDIR/out.txt | head -80
 ```
 
 ```
-Code/CDCorrelation.asv 8740 1885
-Code/CDCorrelation.m 8742 1885
-Code/decodingAccuracy.asv 5104 1606
-Code/decodingAccuracy.m 5106 1616
-Code/defineDataset.m 2145 520
-Code/doROC.m 953 327
-Code/getClr.m 1046 337
-Code/loadAndProcessData.asv 13216 3251
-Code/loadAndProcessData.m 13171 3251
-Code/MySmooth.m 459 273
-Code/plotPSTH.m 2165 757
-Code/plotRatesAndSelectivity.m 1329 518
-Code/plotTrialsByCell.m 3297 1046
-Code/ProcessedData/ 0 0
-Code/ProcessedData/data_structure_anm369962_WR29.5_psth.mat 40219641 38723186
-Code/ProcessedData/data_structure_anm369962_WR29_psth.mat 8810094 8317460
-Code/ProcessedData/data_structure_anm369963_WR30.5_psth.mat 19226257 18176026
-Code/ProcessedData/data_structure_anm369963_WR30_psth.mat 15332376 14684414
-Code/ProcessedData/data_structure_anm369964_WR31_psth.mat 15077322 14451438
-Code/ProcessedData/data_structure_anm372793_WR33_psth.mat 29641797 27800665
-[... 16 more lines not kept]
+1118 /tmp/claude-1001/out.txt
+1:===== 1 1 None
+4:===== 3 2 ['sanity']
+101:===== 5 3 ['sanity']
+124:===== 7 4 ['sanity']
+151:===== 9 5 ['sanity']
+162:===== 11 6 ['sanity']
+213:===== 13 7 ['sanity']
+252:===== 15 8 ['sanity']
+262:===== 18 9 None
+269:===== 19 10 None
+272:===== 20 11 None
+275:===== 21 12 None
+284:===== 23 13 ['sanity']
+294:===== 26 14 ['claim:pt-types-transcriptomic']
+332:===== 29 15 ['claim:pt-upper-thalamus-projection', 'claim:pt-lower-medulla-projection', 'claim:pt-types-shared-targets', 'claim:pt-types-account-for-all-pt']
+385:===== 30 16 ['claim:pt-upper-thalamus-projection', 'claim:pt-lower-medulla-projection', 'claim:pt-types-shared-targets', 'claim:pt-types-account-for-all-pt']
+408:===== 31 17 ['claim:pt-types-account-for-all-pt']
+414:===== 37 18 ['claim:pt-projection-cluster-mapping']
+428:===== 40 19 ['claim:pt-bulk-sc-fold-change-correlation']
+[... 35 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out.txt",
+ "offset": 150,
+ "limit": 330
+}
+```
+
+```
+150	
+151	===== 9 5 ['sanity']
+152	Units with spike times out of order: 1120 of 1149
+153	Units with more backward steps than trials: 0
+154	Spikes stored before an earlier-timed spike (flagged): 370517 of 15418565 (2.40%)
+155	  spikes counted in the baseline epoch: 1026782; flagged 119584 (11.65%)
+156	  spikes counted in the sample epoch: 1012913; flagged 16359 (1.62%)
+157	  spikes counted in the delay epoch: 3232765; flagged 37324 (1.15%)
+158	  spikes counted in the response epoch: 1397243; flagged 10231 (0.73%)
+159	
+160	Lick time series out of order: 105 of 106 ; backward steps 14360 in 180679 licks
+161	
+162	===== 11 6 ['sanity']
+163	Processed data files (_psth.mat) in Ephys.zip, all read below: 14
+164	
+165	read in 51 s: 150 tagged units in 64 sessions
+166	
+167	Stored spike times equal to trial start + go cue + processed time, in stored order: 1149 of 1149 units in 53 sessions; processed units not in the file: 0
+168	Start of each trial's processed spike window, seconds from the pole coming in (session medians):
+169	       first 10: first - pole_in  others: first - pole_in
+[... 310 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out.txt",
+ "offset": 480,
+ "limit": 420
+}
+```
+
+```
+480	  unit depth field, without right-hemisphere PTlower: PTupper 631.6 um, PTlower 895.1 um
+481	  manipulator depth, all units: PTupper 1117.1 um, PTlower 1373.8 um
+482	  manipulator depth, without right-hemisphere PTlower: PTupper 1117.1 um, PTlower 1188.9 um
+483	
+484	===== 54 25 ['claim:pt-spike-rates-similar']
+485	                 reading       measure  PTupper median  PTupper sd  PTlower median  PTlower sd  t-test p  medians in tolerance
+486	    sel code, range unit baseline rate           4.933       3.672           6.689       5.849     0.074                 False
+487	    sel code, range unit     peak rate          18.369      11.177          20.958      22.916     0.030                 False
+488	     sel code, range all baseline rate           4.877       3.560           6.593       5.750     0.069                 False
+489	     sel code, range all     peak rate          17.737      10.372          19.629      21.894     0.028                 False
+490	 sel methods, range unit baseline rate           4.862       3.755           5.513       5.975     0.435                 False
+491	 sel methods, range unit     peak rate          18.369      11.169          15.172      22.564     0.356                 False
+492	  sel methods, range all baseline rate           4.678       3.641           5.363       5.891     0.440                  True
+493	  sel methods, range all     peak rate          17.737      10.358          14.375      21.552     0.336                 False
+494	processed data (variant) baseline rate           4.265       3.528           5.182       4.827     0.178                  True
+495	processed data (variant)     peak rate          17.647      13.818          17.167      22.044     0.142                  True
+496	
+497	===== 57 26 ['claim:pt-lower-heterogeneous-rates']
+498	                 reading       measure  PTupper var  PTlower var  PTlower larger  Bartlett p  F test p
+499	    sel code, range unit baseline rate      13.4825      34.2147        
+[... 400 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out.txt",
+ "offset": 900,
+ "limit": 220
+}
+```
+
+```
+900	sel methods, range unit, mouse subject, proj a        True         True                13.980    4.071        17.599         6.292        True        True                 True              1.442              1.308    True
+901	sel methods, range unit, mouse subject, proj b        True         True                13.983    4.190        17.797         6.350        True        True                 True              1.428              1.298    True
+902	 sel methods, range unit, mouse animal, proj a        True         True                14.166    4.071        17.720         6.292        True        True                 True              1.552              1.308    True
+903	 sel methods, range unit, mouse animal, proj b        True         True                14.352    4.190        17.780         6.350        True        True                 True              1.478              1.298    True
+904	 sel methods, range all, mouse subject, proj a        True         True                12.555    3.593        15.954         5.611        True        True                 True              1.422              1.302    True
+905	 sel methods, range all, mouse subject, proj b        True         True                12.765    3.682        15.967         5.800        True        True                 True              1.412              1.288    True
+906	  sel methods, range all, mouse animal, proj a        True         True                12.264    3.593        15.213         5.611        True        True                 True              1.428              1.302    True
+907	  sel methods, range all, mouse animal, proj b        True         True                12.346    3.682        15.401         5.800        True        True                 True              1.422              1.288    True
+908	
+909	Run ends under the other time stamps differ by half a bin and give the same order: True
+910	
+911	Variant, the paper's units:
+912	                              reading  mean 0-0.4 s PT
+[... 207 more lines not kept]
+```
+
+**Agent**
+
+The re-run reproduces every number from before, and the new outputs answer the verifier's open questions. Now I'll update the conclusions. Let me read the current result cells.
+
+**Agent calls Bash**
+
+```bash
+cd entries/000006-economo-2018; python -c "
+import json;nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i,c in enumerate(nb['cells']):
+  s=''.join(c['source'])
+  if c['cell_type']=='markdown' and (i in (33,34,46,49,55,77,96,97,106,107,112,113,117,118,121,123,124,125) ): print('=====',i); print(s)
+"; cat README.md
+```
+
+```
+===== 33
+**Result: reproduced.** Under reading (c), 4 of the 12 neurons have more termini in the medulla than in the thalamus, the paper's 4, all of them the medulla group, and all 4 have termini and axon in the medulla and in the intermediate reticular nucleus. Under readings (a) and (b) only 1 of the 4 lacks thalamic termini and axon. Six of the eight thalamus-group neurons also have medullary termini (1 to 10). The 4 is a reported count, so it holds under the reading that matches. The answer named the readings; the earlier run was blocked, as the claims file then gave no rule.
+===== 34
+**Result: blocked (methods underspecified).** The first part holds: all 12 neurons have axon and termini in the superior colliculus, all of it in the motor-related part. The second part's intended test is the bulk labelling images of Extended Data Fig. 2e, for which the paper gives no method of analysis, so it is not tested. On the reconstructions, a variant, neurons of both groups reach the subthalamic nucleus (6 thalamus-group and 3 medulla-group neurons by termini, 6 and 4 by axon length), the zona incerta (5 and 3; 7 and 3) and the midbrain reticular nucleus (8 and 4 under both). The answer made the test on the reconstructions a variant; the earlier run had the claim reproduced on it.
+===== 46
+## pt-tagged-units
+
+> The recordings yield 61 identified PTupper cells from 8 mice and 69 identified PTlower neurons
+> from 4 mice after exclusions (130 of 143 tagged units kept).
+
+Criterion: reproduced when one reading of the unit selection gives both unit counts within
+tolerance (61 +/- 6.1, 69 +/- 6.9) and the mouse counts exactly (8, 4). When neither reading
+matches, the other claims use the code's per-unit rule (claims file, from a reader's answer).
+===== 49
+**Result: not reproduced.** The dandiset holds 117 tagged units (the paper sorted 143). The code's rule keeps 44 PTupper and 56 PTlower units, and the session rule keeps 42 and 63, from 8 and 4 mice under both. Only the session r
+[... 167 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && mkdir -p code6 && cd code6 && $TMPDIR/env6/bin/python - <<'EOF'
-import sys; sys.path.insert(0,'entries/000006-economo-2018')
-import alm, zipfile, remfile, requests
-url = requests.head(alm.FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
-z = zipfile.ZipFile(alm._Seekable(remfile.File(url)))
-for i in z.infolist():
-    if i.filename.endswith('.m'):
-        z.extract(i)
-EOF
-cat Code/defineDataset.m Code/loadAndProcessData.m Code/decodingAccuracy.m
-```
-
-```
-function [tag, parent] = defineDataset()
-global tLine 
-
-tLine = [0 -1.3 -1.5 -2.5 -2.7];
-
-set(0, 'DefaultAxesFontSize', 14);
-
-parent = fullfile(cd, 'ProcessedData');
-
-tag.group.fn = {};
-tag.group.num = [];
-
-tag.group.fn{end+1} = 'data_structure_anm369962_WR29_psth.mat';  tag.group.num(end+1) = 1;
-tag.group.fn{end+1} = 'data_structure_anm369963_WR30_psth.mat';  tag.group.num(end+1) = 1;
-tag.group.fn{end+1} = 'data_structure_anm369964_WR31_psth.mat';  tag.group.num(end+1) = 1;
-tag.group.fn{end+1} = 'data_structure_anm372794_WR43_psth.mat';  tag.group.num(end+1) = 1;
-
-tag.group.fn{end+1} = 'data_structure_anm369962_WR29.5_psth.mat';  tag.group.num(end+1) = 1;
-tag.group.fn{end+1} = 'data_structure_anm369963_WR30.5_psth.mat';  tag.group.num(end+1) = 1;
-
-[... 693 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/code6/Code && grep -n "minCorrect\|minError\|maxTrials\|sm = \|bootiter =" *.m; cat simplePlots.m | head -120
-```
-
-```
-CDCorrelation.m:4:global sm minCorrect maxTrials bootiter zwid minError
-CDCorrelation.m:6:sm = 19;
-CDCorrelation.m:7:minCorrect = 50;
-CDCorrelation.m:8:maxTrials = 500;
-CDCorrelation.m:9:bootiter = 100;
-CDCorrelation.m:11:minError = -1;
-Projections.m:4:global sm minCorrect maxTrials bootiter minError
-Projections.m:6:sm = 19;
-Projections.m:7:minCorrect = 50;
-Projections.m:8:maxTrials = 50;
-Projections.m:9:bootiter = 100;
-Projections.m:10:minError = -1;
-VarianceExplained.m:4:global sm minCorrect maxTrials bootiter minError
-VarianceExplained.m:6:sm = 39;
-VarianceExplained.m:7:minCorrect = 50;
-VarianceExplained.m:8:maxTrials = 50;
-VarianceExplained.m:9:bootiter = 1000;
-VarianceExplained.m:10:minError = -1;
-decodingAccuracy.m:4:global sm minCorrect maxTrials bootiter minError
-decodingAccuracy.m:6:sm = 19;
-[... 137 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000006-economo-2018 && time $TMPDIR/env6/bin/python - <<'EOF'
-import alm, numpy as np
-mat = alm.read_figshare_processed()
-print(mat.keys())
-print(type(mat['meta']), len(np.atleast_1d(mat['meta'])))
-m = np.atleast_1d(mat['meta'])[0]
-print(m._fieldnames)
-for f in m._fieldnames:
-    v=getattr(m,f); print(f, type(v), np.shape(v), v if np.size(v)<20 else '')
-o=np.atleast_1d(mat['obj'])[0]
-print(o._fieldnames)
-print(o.sessionMeta._fieldnames if hasattr(o.sessionMeta,'_fieldnames') else o.sessionMeta)
-tt=np.atleast_1d(mat['tt'])[0]; print(tt._fieldnames)
-print(mat['time'][:3], mat['time'][-3:], len(mat['time']))
-EOF
-```
-
-```
-dict_keys(['__header__', '__version__', '__globals__', 'time', 'tt', 'psth', 'meta', 'obj'])
-<class 'numpy.ndarray'> 4
-['trialTypeFlags', 'trialTypeStr', 'trialOutcomeStr', 'trialOutcomeFlags', 'unitQuality', 'channel', 'depth', 'manipulatorDepth', 'unitNum', 'unitNumber', 'collision', 'filename', 'animal']
-trialTypeFlags <class 'numpy.ndarray'> (2, 306) 
-trialTypeStr <class 'numpy.ndarray'> (2,) ['l_n' 'r_n']
-trialOutcomeStr <class 'numpy.ndarray'> (8,) ['HitR' 'HitL' 'ErrR' 'ErrL' 'NoLickR' 'NoLickL' 'LickEarly' 'StimTrials']
-trialOutcomeFlags <class 'numpy.ndarray'> (8, 306) 
-unitQuality <class 'numpy.ndarray'> (57,) 
-channel <class 'numpy.ndarray'> (57,) 
-depth <class 'numpy.ndarray'> (57,) 
-manipulatorDepth <class 'int'> () 1100
-unitNum <class 'numpy.ndarray'> (57,) 
-unitNumber <class 'int'> () 57
-collision <class 'numpy.ndarray'> (57,) 
-filename <class 'str'> () data_structure_anm372906_2017-06-08.mat
-animal <class 'int'> () 40
-['timeUnitIds', 'timeUnitNames', 'trialTimeUnit', 'trialTypeStr', 'trialIDs', 'trialStartTimes', 'trialTypeMat', 'trialPropertiesHash', 'timeSeriesHash', 'eventSeriesHash', 'sessionMeta']
-['parent', 'tokens', 'vmFlag', 'probeName', 'probeType', 'badchans', 'location', 'depth', 'siteGroups', 'siteLabels', 'tokenval', 'fn', 'fileStartTm', 'trialStartTm', 'cueStartTm', 'bitcode', 'trig', 'numchans', 'fs', 'cuetm', 'spikeSorter', 'taggedDepth', 'unitNums']
-['lickearly', 'hit', 'miss', 'R', 'L', 'lickL', 'lickR', 'no', 'stim', 'trialypeflags', 'trialtypenames', 'unitQuality', 'trialtypeflags', 'filename']
-[-3.3975 -3.3925 -3.3875] [2.9875 2.9925 2.9975] 1280
-[... 4 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000006-economo-2018 && cat > $TMPDIR/explore.py <<'EOF'
-import alm, numpy as np, pandas as pd, time, requests, zipfile, remfile
-t0=time.time()
-url = requests.head(alm.FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
-z = zipfile.ZipFile(alm._Seekable(remfile.File(url)))
-names = [n for n in z.namelist() if n.endswith('_psth.mat')]
-mats = {}
-for n in names:
-    mats[n] = alm.read_figshare_processed(n)
-    print(n, round(time.time()-t0))
-import pickle; pickle.dump(mats, open('/tmp/claude/mats.pkl','wb')) if False else None
-rows=[]
-for n, mat in mats.items():
-    for i,(m,o,tt) in enumerate(zip(np.atleast_1d(mat['meta']), np.atleast_1d(mat['obj']), np.atleast_1d(mat['tt']))):
-        nums = np.atleast_1d(m.unitNum); q = np.atleast_1d(m.unitQuality)
-        hit = np.asarray(tt.hit,bool); L=np.asarray(tt.L,bool); R=np.asarray(tt.R,bool); le=np.asarray(tt.lickearly,bool); st=np.asarray(tt.stim,bool)
-        last_hit = np.flatnonzero(hit).max()+1
-        for j,num in enumerate(nums):
-            u = np.atleast_1d(o.eventSeriesHash.value)[j]
-            tr = np.asarray(u.eventTrials).astype(int)
-            spt = len(tr)/np.ptp(tr) if len(tr) and np.ptp(tr)>0 else 0
-            t1 = max(tr.min(),1)+10 if len(tr) else 0; t2 = min(tr.max(), last_hit)-10 if len(tr) else -1
-            idx = np.arange(1,len(hit)+1); rng_=(idx>=t1)&(idx<=t2)
-            nL = (rng_&hit&L&~le&~st).sum(); nR=(rng_&hit&R&~le&~st).sum()
-            mL = (rng_&~hit&L&~le&~st).sum(); mR=(rng_&~hit&R&~le&~st).sum()
-            rows.append(dict(file=n.split('/')[-1], sess=i, fname=m.filename, num=int(num), quality=str(q[j]),
-                spt=spt, nL=nL, nR=nR, pL=nL/(nL+mL) if nL+mL else np.nan, pR=nR/(nR+mR) if nR+mR else np.nan, ntrials=len(hit)))
-df=pd.DataFrame(rows)
-df['tagged']=(df.num>1000)&(df.num<2000)
-df['goodq']=df.quality.isin(['Excellent','Good','single'])
-df['inc']=df.goodq&(df.nL>50)&(df.nR>50)&(df.spt>3.2)&(df.pL>0.65)&(df.pR>0.65)
-MP=['anm369962','anm369963','anm369964','anm372794']
-df['type']=np.where(df.file.str.contains('|'.join(MP)),'PTlower','PTupper')
-df.to_csv('entries/000006-economo-2018/.proc_units.csv' if False else __import__('os').environ['TMPDIR']+'/proc_units.csv', index=False)
-tg=df[df.tagged]
-print(tg.groupby('type').agg(n=('num','size'), goodq=('goodq','sum'), inc=('inc','sum')))
-print(df[df.num>=2000].shape, df.num.max())
-print(tg.groupby(['type','file']).agg(n=('num','size'), inc=('inc','sum'), sessions=('sess','nunique')))
-print(df.groupby('file').fname.unique())
-print(time.time()-t0)
-EOF
-$TMPDIR/env6/bin/python $TMPDIR/explore.py
-```
-
-```
-Exit code 2
-/bin/bash: line 42: cd: entries/000006-economo-2018: No such file or directory
-/tmp/claude-1001/env6/bin/python: can't open file '/tmp/claude-1001/explore.py': [Errno 2] No such file or directory
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/explore.py <<'EOF'
-import alm, numpy as np, pandas as pd, time, requests, zipfile, remfile, os, pickle
-t0=time.time()
-url = requests.head(alm.FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
-z = zipfile.ZipFile(alm._Seekable(remfile.File(url)))
-names = [n for n in z.namelist() if n.endswith('_psth.mat')]
-mats = {}
-for n in names:
-    mats[n] = alm.read_figshare_processed(n)
-    print(n, round(time.time()-t0), flush=True)
-rows=[]
-for n, mat in mats.items():
-    for i,(m,o,tt) in enumerate(zip(np.atleast_1d(mat['meta']), np.atleast_1d(mat['obj']), np.atleast_1d(mat['tt']))):
-        nums = np.atleast_1d(m.unitNum); q = np.atleast_1d(m.unitQuality)
-        hit = np.asarray(tt.hit,bool); L=np.asarray(tt.L,bool); R=np.asarray(tt.R,bool); le=np.asarray(tt.lickearly,bool); st=np.asarray(tt.stim,bool)
-        last_hit = np.flatnonzero(hit).max()+1
-        for j,num in enumerate(nums):
-            u = np.atleast_1d(o.eventSeriesHash.value)[j]
-            tr = np.atleast_1d(u.eventTrials).astype(int)
-            spt = len(tr)/np.ptp(tr) if len(tr) and np.ptp(tr)>0 else 0
-            t1 = max(tr.min(),1)+10 if len(tr) else 0; t2 = min(tr.max(), last_hit)-10 if len(tr) else -1
-            idx = np.arange(1,len(hit)+1); rng_=(idx>=t1)&(idx<=t2)
-            nL = (rng_&hit&L&~le&~st).sum(); nR=(rng_&hit&R&~le&~st).sum()
-            mL = (rng_&~hit&L&~le&~st).sum(); mR=(rng_&~hit&R&~le&~st).sum()
-            rows.append(dict(file=n.split('/')[-1], sess=i, fname=m.filename, num=int(num), quality=str(q[j]),
-                spt=spt, nL=nL, nR=nR, pL=nL/(nL+mL) if nL+mL else np.nan, pR=nR/(nR+mR) if nR+mR else np.nan, ntrials=len(hit)))
-df=pd.DataFrame(rows)
-df['tagged']=(df.num>1000)&(df.num<2000)
-df['goodq']=df.quality.isin(['Excellent','Good','single'])
-df['inc']=df.goodq&(df.nL>50)&(df.nR>50)&(df.spt>3.2)&(df.pL>0.65)&(df.pR>0.65)
-MP=['anm369962','anm369963','anm369964','anm372794']
-df['type']=np.where(df.file.str.contains('|'.join(MP)),'PTlower','PTupper')
-df.to_csv(os.environ['TMPDIR']+'/proc_units.csv', index=False)
-tg=df[df.tagged]
-print(tg.groupby('type').agg(n=('num','size'), goodq=('goodq','sum'), inc=('inc','sum')))
-print((df.num>=2000).sum(), df.num.max())
-print(tg.groupby(['type','file']).agg(n=('num','size'), inc=('inc','sum'), sessions=('sess','nunique')))
-print(df.groupby('file').fname.unique().to_string())
-print(time.time()-t0)
-EOF
-$TMPDIR/env6/bin/python $TMPDIR/explore.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/explore.py", line 1, in <module>
-    import alm, numpy as np, pandas as pd, time, requests, zipfile, remfile, os, pickle
-ModuleNotFoundError: No module named 'alm'
-```
-
-**Agent calls Bash**
-
-```bash
-PYTHONPATH=. $TMPDIR/env6/bin/python $TMPDIR/explore.py
-```
-
-```
-Code/ProcessedData/data_structure_anm369962_WR29.5_psth.mat 7
-Code/ProcessedData/data_structure_anm369962_WR29_psth.mat 10
-Code/ProcessedData/data_structure_anm369963_WR30.5_psth.mat 14
-Code/ProcessedData/data_structure_anm369963_WR30_psth.mat 17
-Code/ProcessedData/data_structure_anm369964_WR31_psth.mat 21
-Code/ProcessedData/data_structure_anm372793_WR33_psth.mat 26
-Code/ProcessedData/data_structure_anm372794_WR43_psth.mat 30
-Code/ProcessedData/data_structure_anm372795_WR42_psth.mat 34
-Code/ProcessedData/data_structure_anm372797_WR36_psth.mat 37
-Code/ProcessedData/data_structure_anm372904_WR39_psth.mat 41
-Code/ProcessedData/data_structure_anm372905_WR38_psth.mat 44
-Code/ProcessedData/data_structure_anm372906_WR40_psth.mat 47
-Code/ProcessedData/data_structure_anm372907_WR41_psth.mat 51
-Code/ProcessedData/data_structure_anm372909_WR34_psth.mat 54
-          n  goodq  inc
-type                   
-PTlower  85     78   69
-PTupper  65     65   61
-1 2001
-                                                   n  inc  sessions
-[... 31 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/match.py <<'EOF'
-import alm, numpy as np, pandas as pd, os
-proc = pd.read_csv(os.environ['TMPDIR']+'/proc_units.csv')
-proc['subject']=proc.fname.str.extract(r'(anm\d+)')
-proc['date']=proc.fname.str.extract(r'(\d{4}-\d\d-\d\d)')[0].str.replace('-','')
-sessions = alm.load_all()
-recs = alm.tagged_units(sessions)
-d = pd.DataFrame([{k:v for k,v in r.items() if k in ('subject','session','id','cell_type','quality','included','reason','spikes_per_trial','n_correct_L','n_correct_R','performance_L','performance_R')} for r in recs])
-tg = proc[proc.tagged]
-m = tg.merge(d, left_on=['subject','date','num'], right_on=['subject','session','id'], how='outer', indicator=True)
-print(m._merge.value_counts())
-print(pd.crosstab([m.type.fillna(m.cell_type), m._merge], [m.inc.fillna('na'), m.included.fillna('na')]))
-pd.set_option('display.width',250)
-x=m[(m._merge=='both')&(m.inc!=m.included)]
-print(x[['subject','date','num','type','quality_x','quality_y','spt','spikes_per_trial','nL','n_correct_L','nR','n_correct_R','pL','performance_L','pR','performance_R','reason']].to_string())
-# sessions in proc not in dandiset
-ds = {(s['subject'],s['session']) for s in sessions}
-ps = set(zip(proc.subject, proc.date))
-print('proc sessions', len(ps), 'dandiset', len(ds), 'proc not in ds', sorted(ps-ds), 'ds not in proc', sorted(ds-ps))
-print(m[m._merge!='both'].groupby(['_merge','subject','date']).size())
-EOF
-PYTHONPATH=. $TMPDIR/env6/bin/python $TMPDIR/match.py
-```
-
-```
-_merge
-both          117
-left_only      33
-right_only      0
-Name: count, dtype: int64
-inc               False    True     
-included          False na  True  na
-type    _merge                      
-PTlower left_only     0  1     0  13
-        both         15  0    56   0
-PTupper left_only     0  2     0  17
-        both          2  0    44   0
-Empty DataFrame
-Columns: [subject, date, num, type, quality_x, quality_y, spt, spikes_per_trial, nL, n_correct_L, nR, n_correct_R, pL, performance_L, pR, performance_R, reason]
-Index: []
-proc sessions 65 dandiset 53 proc not in ds [('anm369962', '20170315'), ('anm369963', '20170308'), ('anm372793', '20170505'), ('anm372793', '20170511'), ('anm372794', '20170623'), ('anm372795', '20170713'), ('anm372795', '20170717'), ('anm372797', '20170614'), ('anm372905', '20170713'), ('anm372907', '20170609'), ('anm372907', '20170611'), ('anm372909', '20170519')] ds not in proc []
-_merge     subject    date    
-left_only  anm369962  20170315    6
-           anm369963  20170308    4
-           anm372793  20170505    3
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p ../../paper && cd ../../paper && curl -sL -A "Mozilla/5.0" https://www.nature.com/articles/s41586-018-0642-9 -o economo2018.html; ls -la; cat $TMPDIR/code6/Code/doROC.m
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/env6/bin/python - <<'EOF'
-import re, html
-s=open('economo2018.html').read()
-t=re.sub(r'<script.*?</script>|<style.*?</style>','',s,flags=re.S)
-t=re.sub(r'<[^>]+>','\n',t); t=html.unescape(t)
-t=re.sub(r'\n\s*\n+','\n',t)
-open('economo2018_page.txt','w').write(t)
-for kw in ['Abstract','Extended Data Fig. 5','Extended Data Fig. 9','n = 61','69']:
-    for m in re.finditer(re.escape(kw), t):
-        print('---',kw, m.start()); break
-print(len(t))
-EOF
-grep -n "n = 61\|n = 69\|61 \|Extended Data Fig. 9" economo2018_page.txt | head -20
-```
-
-```
---- Abstract 1266
---- Extended Data Fig. 5 25748
---- Extended Data Fig. 9 31470
---- 69 26126
-46871
-1022:Extended Data Fig. 9 Decoding of trial type in PT neuron types.
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "^Abstract" economo2018_page.txt; sed -n '/^Abstract$/,+4p' economo2018_page.txt | head; grep -n "Extended Data Fig. [5-9]\|Extended Data Fig. 10" economo2018_page.txt; sed -n '/Extended Data Fig. 5 /,/Extended Data Table/p' economo2018_page.txt | head -80
-```
-
-```
-98:Abstract
-Abstract
-Activity in the motor cortex predicts movements, seconds before they are initiated. This preparatory activity has been observed across cortical layers, including in descending pyramidal tract neurons in layer 5. A key question is how preparatory activity is maintained without causing movement, and is ultimately converted to a motor command to trigger appropriate movements. Here, using single-cell transcriptional profiling and axonal reconstructions, we identify two types of pyramidal tract neuron. Both types project to several targets in the basal ganglia and brainstem. One type projects to thalamic regions that connect back to motor cortex; populations of these neurons produced early preparatory activity that persisted until the movement was initiated. The second type projects to motor centres in the medulla and mainly produced late preparatory activity and motor commands. These results indicate that two types of motor cortex output neurons have specialized roles in motor control.
-                                    This is a preview of subscription content, 
-access via your institution
-Access options
-855:Extended Data Fig. 5 Electrophysiology and trial-averaged spike rates for identified PT neurons.
-876:Extended Data Fig. 6 Variance in trial-averaged activity explained by PT cell class.
-903:Extended Data Fig. 7 Late delay epoch coding direction and similarity with other trial epochs.
-964:Extended Data Fig. 8 Comparison between identified PT populations and simultaneously recorded untagged neurons.
-1022:Extended Data Fig. 9 Decoding of trial type in PT neuron types.
-1071:Extended Data Fig. 10 Movement termination signals in PT
-Extended Data Fig. 5 Electrophysiology and trial-averaged spike rates for identified PT neurons.
-a
-, PT
-upper
- neurons (
-n
- = 61). Left, inter-spike interval histograms; right: trial-averaged activity on lick right (blue) and lick left trials (red). Grey shaded area in inter-spike interval histograms represents the interv
-[... 73 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n '/Extended Data Fig. 7 Late/,/Supplementary/p' economo2018_page.txt | tr '\n' ' ' | sed 's/  */ /g' | fold -w 200 | sed -n '1,40p'
-```
-
-```
-Extended Data Fig. 7 Late delay epoch coding direction and similarity with other trial epochs. a , Time course of the linear combination of neuronal activity that best differentiates trial types in th
-e 400 ms immediately before the go cue (late coding direction; CD late ) on lick right (blue) and lick left (red) trials for PT upper (top; n  = 61) and PT lower (bottom; n  = 69) neurons. b ,
- Difference in CD late projections on lick right and lick left trials (selectivity) in each population. Selectivity along CD late is present in both populations, and persists after the go cue, but is 
-not strongly modulated during movement initiation. Shaded regions represent the s.d. of the distribution produced by hierarchical bootstrapping ( n  = 1,000 iterations) in a and 5–95% confidence
- intervals in b (denoting region significantly greater than zero, P  < 0.05 one-sided test, bootstrap). c , A coding direction (CD) was calculated at all individual time points. Heat maps represen
-t the correlation (inner product) of the CD between pairs of time points. In PT upper neurons (top), the coding direction remained similar across the sample and delay epochs. In PT lower neurons (bott
-om), coding directions in the delay epoch were largely orthogonal to coding directions calculated in the sample epoch. The upcoming movement direction is encoded in a persistent manner in the PT upper
- population, but not the PT lower population. Right, expanded view of the change in coding direction around the time of the go cue. An abrupt change in the coding direction occurs immediately after th
-e go cue onset in the PT lower population. A change also occurs in the PT upper population, but more slowly (over several hundred milliseconds), largely after initiation of movement. d , Correlation (
-Pearson’s r ) between CD early vector weights and CD late vector weights for PT upper neurons (top) and PT lower neurons (bottom). e , Correlation between the CD and CD late normalized to the mean c
-orrelation
-[... 25 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd .. && grep -n paper .gitignore; git status --short
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000006-economo-2018 && PYTHONPATH=. $TMPDIR/env6/bin/python -c "
-import alm,h5py,remfile
-p,u=alm.asset_urls()[0]
-f=h5py.File(remfile.File(u),'r'); print(list(f['units'].keys())); print(list(f['processing'].keys()) if 'processing' in f else None)
+cd entries/000006-economo-2018; python -c "
+import json;nb=json.load(open('reproduce_economo_2018.ipynb'))
+for i,c in enumerate(nb['cells']):
+  s=''.join(c['source'])
+  if c['cell_type']=='markdown' and s.startswith('**Result'): print(i, s[:90])
+for i in (35,46,59,78):
+  print('=====',i); print(''.join(nb['cells'][i]['source']))
 "
 ```
 
 ```
-['cell_type', 'depth', 'electrodes', 'electrodes_index', 'id', 'quality', 'spike_times', 'spike_times_index']
-[]
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000006-economo-2018/alm.py",
- "old_string": "    rec[\"spikes_per_trial\"] = len(in_trial) / max(last - first, 1)",
- "new_string": "    # The code divides by range(eventTrials), the last trial with a spike minus the first.\n    rec[\"spikes_per_trial\"] = len(in_trial) / max(last - first, 1)"
-}
-```
-
-```
-The file entries/000006-economo-2018/alm.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000006-economo-2018/alm.py",
- "old_string": "    x = np.column_stack([epoch_rates(np.sort(sp), cue, window) for sp in session[\"units\"].spikes])\n    sd = x.std(axis=0)\n    x = (x - x.mean(axis=0)) / np.where(sd > 0, sd, 1)\n    correct = 0\n    for i in range(len(y)):\n        others = np.ones(len(y), bool)\n        others[i] = False\n        c1 = x[others & y].mean(axis=0)\n        c0 = x[others & ~y].mean(axis=0)\n        guess = np.sum((x[i] - c1) ** 2) < np.sum((x[i] - c0) ** 2)\n        correct += guess == y[i]",
- "new_string": "    raw = np.column_stack([epoch_rates(np.sort(sp), cue, window) for sp in session[\"units\"].spikes])\n    correct = 0\n    for i in range(len(y)):\n        others = np.ones(len(y), bool)\n        others[i] = False\n        # z-score with the mean and spread of the training trials only\n        mu, sd = raw[others].mean(axis=0), raw[others].std(axis=0)\n        x = (raw - mu) / np.where(sd > 0, sd, 1)\n        c1 = x[others & y].mean(axis=0)\n        c0 = x[others & ~y].mean(axis=0)\n        guess = np.sum((x[i] - c1) ** 2) < np.sum((x[i] - c0) ** 2)\n        correct += guess == y[i]"
-}
-```
-
-```
-The file entries/000006-economo-2018/alm.py has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000006-economo-2018/alm.py",
- "old_string": "def mcnemar_one_sided(first_only: int, second_only: int) -> float:\n    \"\"\"Exact one-sided McNemar p that the second condition is more often positive.\"\"\"\n    n = first_only + second_only\n    return float(stats.binomtest(second_only, n, 0.5, alternative=\"greater\").pvalue) if n else 1.0\n\n\n# The paper's processed data, used only in the data check to show how the files' spike times\n# were built. Ephys.zip of doi:10.25378/janelia.7007846 (version 1), file 13292708.\nFIGSHARE_EPHYS_ZIP = \"https://ndownloader.figshare.com/files/13292708\"\nFIGSHARE_CHECK_FILE = \"Code/ProcessedData/data_structure_anm372906_WR40_psth.mat\"",
- "new_string": "def mcnemar_one_sided(first_only: int, second_only: int) -> float:\n    \"\"\"Exact one-sided McNemar p that the second condition is more often positive.\"\"\"\n    n = first_only + second_only\n    return float(stats.binomtest(second_only, n, 0.5, alternative=\"greater\").pvalue) if n else 1.0\n\n\ndef roc_accuracy(rates: np.ndarray, is_right: np.ndarray) -> float:\n    \"\"\"Single-unit decoding accuracy of trial type, as doROC.m and decodingAccuracy.m\n    (Extended Data Fig. 9): the best fraction of trials classified correctly by one threshold\n    on the trial rates, with the polarity chosen by the area under the ROC curve.\"\"\"\n    thresholds = np.unique(rates)\n    above = rates[None, :] >= thresholds[:, None]\n    n_r, n_l = is_right.sum(), (~is_right).sum()\n    tp = (above & is_right).sum(axis=1) / n_r\n    fp = (above & ~is_right).sum(axis=1) / n_l\n    auc = abs(np.trapezoid(fp, tp)) if hasattr(np, \"trapezoid\") else abs(np.trapz(fp, tp))\n    right_high = ((above & is_right).sum(axis=1) + (~above & ~is_right).sum(axis=1)) / len(rates)\n    right_low = ((above & ~is_right).sum(axis=1) + (~above & is_right).sum(axis=1)) / len(rates)\n    return float((right_high if auc >= 0.5 else right_low).max())\n\n\n# The paper's processed data, Ephys.zip of doi:10.25378/janelia.7007846 (version 1), file\n# 13292708. One file per animal and recording period (two for anm369962 and anm369963), each\n# holding several sessions. Read in the data check to show how the files' spike times were\n# built and which of the paper's units the dandiset holds, and in variants that rerun the\n# tests on the paper's units.\nFIGSHARE_EPHYS_ZIP = \"https://ndownloader.figshare.com/files/13292708\"\nFIGSHARE_CHECK_FILE = \"Code/ProcessedData/data_structure_anm372906_WR40_psth.mat\"\n# defineDataset.m: group 1 (\"MP\", medulla-projecting) holds these animals, group 2 (\"TP\") the rest\nMP_ANIMALS = (\"anm369962\", \"anm369963\", \"anm369964\", \"anm372794\")"
-}
-```
-
-```
-The file entries/000006-economo-2018/alm.py has been updated successfully. (file state is current in your context — no need to Read it back)
+27 **Result: reproduced.** Under the criterion's rule the ALM glutamatergic cells of the anno
+32 **Result: reproduced.** Under reading (c), 8 of the 12 neurons have more termini in the th
+33 **Result: reproduced.** Under reading (c), 4 of the 12 neurons have more termini in the me
+34 **Result: blocked (methods underspecified).** The first part holds: all 12 neurons have ax
+35 **Result: partially reproduced.** The 18 neurons of Supplementary data table 1 are all in 
+38 **Result: reproduced.** Under reading (b), all 62 medulla-labelled PT neurons are in Slco2
+41 **Result: reproduced.** With the bulk samples as counts per million, as the legend says (t
+45 **Result: blocked.** pt-retrograde-sublaminae (methods underspecified): the only data are 
+49 **Result: not reproduced.** The dandiset holds 117 tagged units (the paper sorted 143). Th
+52 **Result: reproduced.** With the code's selection, included PTupper units lie at a mean un
+55 **Result: not reproduced.** With the code's selection and the unit's range, peak rates dif
+58 **Result: reproduced.** With the code's selection and the unit's range, PTlower rates are 
+61 **Result: partially reproduced.** With the code's selection, 11 of 56 PTlower units (19.6%
+64 **Result: not reproduced.** With the code's selection and the unit's range, 99 of 100 unit
+68 **Result: reproduced.** With the code's selection and the unit's range, the median ratio o
+71 **Result: partially reproduced.** (a) With the code's selection and the unit's range, 29 o
+74 **Result: blocked (methods underspecified).** With the code's selection and the unit's ran
+77 **Result: blocked (methods underspecified), as it depends on pt-upper-early-preparatory.**
+80 **Result: reproduced.** With the code's selection and the unit's range, the PTlower CDearl
+83 **Result: reproduced.** With the code's selection and the unit's range: (a) CDearly and CD
+[... 43 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-grep -i "^numpy\|^scipy\|^pandas" requirements.lock.txt; cat requirements.in
+cd  python -c "
+import json;nb=json.load(open('entries/000006-economo-2018/reproduce_economo_2018.ipynb'))
+for i in (45,92,120): print('=====',i); print(''.join(nb['cells'][i]['source']))
+"; sed -n 633,671p claims/000006/*.yaml
 ```
 
 ```
-numpy==2.5.4
-pandas==3.0.6
-scipy==1.18.1
-dandi
-h5py
-matplotlib
-numpy
-pandas
-remfile
-requests
-scipy
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/000006-economo-2018/alm.py",
- "old_string": "    auc = abs(np.trapezoid(fp, tp)) if hasattr(np, \"trapezoid\") else abs(np.trapz(fp, tp))",
- "new_string": "    auc = abs(np.trapezoid(tp, fp))"
-}
-```
-
-```
-The file entries/000006-economo-2018/alm.py has been updated successfully. (file state is current in your context — no need to Read it back)
+===== 45
+**Result: blocked.** pt-retrograde-sublaminae (methods underspecified): the only data are image stacks (657 jpg files, no tables), no folder is named for superior colliculus labelling, which the 77.1% needs, and neither the paper nor its code gives a method for counting labelled and co-labelled cells. The answer confirmed this; the outcome is unchanged. pt-marker-genes (data missing): no smFISH images or puncta counts are in the dandiset or in any file of the Figshare record, and the paper names no other archive for them. The answer changed the claim to data dataset, so it is blocked as data missing, where the earlier run used other.
+===== 92
+**Result: partially reproduced.** With the code's selection and the unit's range, no PTlower unit reaches 70% with rectified rates, as in the paper, and the Mann-Whitney test holds (p = 0.0000 to four decimals). But only 8 of 44 PTupper units reach 70% (11 pass the recomputed cut of 0.654, as does 1 PTlower unit), against 15 +/- 1.5; 16 of the 21 most predictive units are PTupper, against 20 +/- 2; and while the PTupper mean, 61.8 +/- 1.3%, is within 62.7 +/- 1.1%, the PTlower mean, 56.2 +/- 0.5%, is below 56.7 +/- 0.4%. The variants give 6 to 8 PTupper units at 70%, 16 or 17 of 21, and PTlower means of 55.8% to 56.1%. On the paper's units: 15 and 0 units at 70%, 20 of 21, and means of 62.7% and 56.6%, the paper's numbers. The answer fixed the selection; the outcome is unchanged.
+===== 120
+**Result: blocked (methods underspecified).** Two of the six claims it summarises are blocked: pt-upper-early-preparatory, and pt-upper-persistent through its dependency on the first, so this claim is blocked for the same reason. Of the others, pt-single-neuron-early-selectivity, pt-lower-cdearly-decay and pt-lower-late-and-motor are reproduced and pt-cdgo-onset is partially reproduced. pt-upper-persistent's own test does not hold with the code's selection and the unit's range (p = 0.053 for the mean over the last 400 ms). The answer
+[... 39 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat >> alm.py <<'EOF'
-
-
-def processed_members() -> list[str]:
-    """Names of the processed data files in Ephys.zip."""
-    url = requests.head(FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
-    with zipfile.ZipFile(_Seekable(remfile.File(url))) as z:
-        return sorted(n for n in z.namelist() if n.endswith("_psth.mat"))
-
-
-def processed_session_units(mat: dict, index: int, member: str) -> list[dict]:
-    """The code's inclusion rule (loadAndProcessData.m, ObjToLickPSTH) applied to the tagged
-    units of session `index` of a processed file, with each unit's epoch rates on its correct
-    trials. Spike times in the processed data are seconds from the go cue, with the trial of
-    each spike (1-based)."""
-    obj, meta, tt = (np.atleast_1d(mat[k])[index] for k in ("obj", "meta", "tt"))
-    subject = member.split("data_structure_")[1].split("_")[0]
-    session = str(meta.filename).split("_")[-1].split(".")[0].replace("-", "")
-    hit, left, right = (np.asarray(getattr(tt, k), bool) for k in ("hit", "L", "R"))
-    scored = ~np.asarray(tt.lickearly, bool) & ~np.asarray(tt.stim, bool)
-    trial_no = np.arange(1, len(hit) + 1)
-    last_hit = trial_no[hit].max()
-    numbers = np.atleast_1d(meta.unitNum)
-    quality = np.atleast_1d(meta.unitQuality)
-    depth = np.atleast_1d(meta.depth)
-    out = []
-    for j, number in enumerate(numbers):
-        if not 1000 < number < 2000:
-            continue
-        unit = np.atleast_1d(obj.eventSeriesHash.value)[j]
-        times = np.atleast_1d(unit.eventTimes).astype(float)
-        trials = np.atleast_1d(unit.eventTrials).astype(int)
-        first, last = max(trials.min(), 1), trials.max()
-        in_range = (trial_no >= first + EDGE_TRIALS) & (trial_no <= min(last, last_hit) - EDGE_TRIALS)
-        rec = {"subject": subject, "session": session, "id": int(number),
-               "cell_type": "PTlower" if subject in MP_ANIMALS else "PTupper",
-               "quality": str(quality[j]), "depth": float(depth[j]),
-               "spikes_per_trial": len(times) / max(np.ptp(trials), 1)}
-        for side, of_side in (("L", left), ("R", right)):
-            hits = in_range & scored & of_side & hit
-            misses = in_range & scored & of_side & ~hit
-            rec[f"n_correct_{side}"] = int(hits.sum())
-            rec[f"performance_{side}"] = hits.sum() / (hits.sum() + misses.sum()) if hits.sum() + misses.sum() else np.nan
-        reasons = []
-        if rec["quality"] not in GOOD_QUALITY:
-            reasons.append("quality")
-        if rec["n_correct_L"] <= MIN_CORRECT or rec["n_correct_R"] <= MIN_CORRECT:
-            reasons.append("too few correct trials")
-        if rec["spikes_per_trial"] <= MIN_SPIKES_PER_TRIAL:
-            reasons.append("low rate")
-        if not (rec["performance_L"] > MIN_PERFORMANCE and rec["performance_R"] > MIN_PERFORMANCE):
-            reasons.append("performance")
-        rec["included"] = not reasons
-        rec["reason"] = ", ".join(reasons)
-        use = in_range & scored & hit & (left | right)
-        rec["is_right"] = right[use]
-        rec["rates"] = {}
-        for name, (a, b) in EPOCHS.items():
-            inside = (times >= a) & (times < b)
-            counts = np.bincount(trials[inside], minlength=len(hit) + 1)[1:]
-            rec["rates"][name] = counts[use] / (b - a)
-        out.append(rec)
-    return out
-
-
-def read_processed(sessions: list[dict]) -> tuple[list[dict], pd.DataFrame, pd.DataFrame]:
-    """Read every processed file. Returns the tagged unit records of every processed session
-    (`processed_session_units`); per unit of every session also in the dandiset, whether the
-    file's spike times equal trial start + go cue + the processed time in stored order; and per
-    such session, the start of the processed spike windows relative to the pole coming in, for
-    the first ten trials and for the others."""
-    by_key = {(s["subject"], s["session"]): s for s in sessions}
-    records, storage, shifts = [], [], []
-    for member in processed_members():
-        mat = read_figshare_processed(member)
-        for i in range(len(np.atleast_1d(mat["meta"]))):
-            recs = processed_session_units(mat, i, member)
-            meta = np.atleast_1d(mat["meta"])[i]
-            subject = member.split("data_structure_")[1].split("_")[0]
-            session = str(meta.filename).split("_")[-1].split(".")[0].replace("-", "")
-            s = by_key.get((subject, session))
-            for r in recs:
-                r["in_dandiset"] = s is not None
-            records.extend(recs)
-            if s is None:
-                continue
-            per_unit, spans = compare_with_processed(s, mat, i)
-            storage.append(per_unit.assign(subject=subject, session=session))
-            offset = spans["first"] - spans["pole_in"]
-            shifts.append({"subject": subject, "session": session, "trials": len(spans),
-                           "first 10: first - pole_in": offset.iloc[:EDGE_TRIALS].median(),
-                           "others: first - pole_in": offset.iloc[EDGE_TRIALS:].median()})
-        del mat
-    return records, pd.concat(storage, ignore_index=True), pd.DataFrame(shifts)
-EOF
-```
-
-```
-(Bash completed with no output)
-```
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/env6/bin/python - <<'EOF'
-p='alm.py'; s=open(p).read()
-s=s.replace('''        rows.append({"unit": int(number), "spikes": len(rel), "equal_in_stored_order": bool(same)})''','''        rows.append({"unit": int(number), "spikes": len(rel), "in_file": stored is not None,
-                     "equal_in_stored_order": bool(same)})''')
-s=s.replace('''            offset = spans["first"] - spans["pole_in"]
-''','''            offset = (spans["first"] - spans["pole_in"]).replace([np.inf, -np.inf], np.nan)
-''')
-open(p,'w').write(s)
-EOF
-grep -n "in_file\|offset = " alm.py
-```
-
-```
-412:        rows.append({"unit": int(number), "spikes": len(rel), "in_file": stored is not None,
-506:            offset = (spans["first"] - spans["pole_in"]).replace([np.inf, -np.inf], np.nan)
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/t.py <<'EOF'
-import alm, numpy as np, pandas as pd, time
-r=np.array([1,2,3,4,5,6.]); y=np.array([0,0,0,1,1,1],bool)
-print(alm.roc_accuracy(r,y), alm.roc_accuracy(r,~y), alm.roc_accuracy(np.array([1,1,2,2.]),np.array([0,1,0,1],bool)))
-t0=time.time()
-sessions=alm.load_all()
-recs, storage, shifts = alm.read_processed(sessions)
-print(time.time()-t0)
-d=pd.DataFrame([{k:v for k,v in r.items() if k not in ('rates','is_right')} for r in recs])
-print(pd.crosstab([d.cell_type,d.in_dandiset],d.included))
-print(storage.groupby('in_file').equal_in_stored_order.agg(['sum','size']))
-print(shifts.describe())
-print(shifts.to_string())
-EOF
-PYTHONPATH=. $TMPDIR/env6/bin/python $TMPDIR/t.py
-```
-
-```
-Exit code 1
-1.0 1.0 0.5
-Traceback (most recent call last):
-  File "/tmp/claude-1001/t.py", line 6, in <module>
-    recs, storage, shifts = alm.read_processed(sessions)
-                            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-  File "entries/000006-economo-2018/alm.py", line 504, in read_processed
-    per_unit, spans = compare_with_processed(s, mat, i)
-                      ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-  File "entries/000006-economo-2018/alm.py", line 407, in compare_with_processed
-    unit = obj.eventSeriesHash.value[j]
-           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^
-TypeError: 'mat_struct' object is not subscriptable
-```
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/env6/bin/python - <<'EOF'
-p='alm.py'; s=open(p).read()
-s=s.replace('''        unit = obj.eventSeriesHash.value[j]
-        rel = np.asarray(unit.eventTimes, float)
-        trial = np.asarray(unit.eventTrials).astype(int) - 1''','''        unit = np.atleast_1d(obj.eventSeriesHash.value)[j]
-        rel = np.atleast_1d(unit.eventTimes).astype(float)
-        trial = np.atleast_1d(unit.eventTrials).astype(int) - 1''')
-open(p,'w').write(s)
-EOF
-PYTHONPATH=. $TMPDIR/env6/bin/python $TMPDIR/t.py
-```
-
-```
-1.0 1.0 0.5
-111.32157349586487
-included               False  True 
-cell_type in_dandiset              
-PTlower   False            1     13
-          True            15     56
-PTupper   False            2     17
-          True             2     44
-          sum  size
-in_file            
-True     1149  1149
-           trials  first 10: first - pole_in  others: first - pole_in
-count   53.000000                  53.000000                53.000000
-mean   285.830189                   2.189651                -0.839304
-std     57.095647                   0.906405                 0.203794
-min    139.000000                   1.729715                -0.970919
-25%    248.000000                   1.731575                -0.969603
-50%    282.000000                   1.772675                -0.927717
-75%    319.000000                   2.259770                -0.811183
-max    459.000000                   5.837170                -0.155084
-[... 54 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/edit_nb.py <<'PYEOF'
-import nbformat
+cd entries/000006-economo-2018; cat > $TMPDIR/edit2.py <<'EOF'
+import json, uuid
 p = "reproduce_economo_2018.ipynb"
-nb = nbformat.read(p, as_version=4)
-C = nb.cells
-def code(src, tag=None):
-    c = nbformat.v4.new_code_cell(src)
-    if tag: c.metadata["tags"] = [tag]
-    return c
-def md(src): return nbformat.v4.new_markdown_cell(src)
-def find(prefix):
-    return next(i for i, c in enumerate(C) if c.source.startswith(prefix))
-
-# header: tested or blocked only
-h = C[0].source
-h = h.replace("| Claim | Tested | Outcome |\n|---|---|---|", "| Claim | Tested |\n|---|---|")
-for line in h.splitlines():
-    if line.startswith("| pt-") and line.count("|") == 4:
-        h = h.replace(line, line.rsplit("|", 2)[0] + "|")
-h = h.replace("""Data availability statement was read to find the linked data and code.""",
-"""Data availability statement was read to find the linked data and code. After the first round of
-verification, the public legends of Extended Data Figs 5 to 10 were read for the number of units
-the paper used (61 PTupper, 69 PTlower) and for the single-unit decoding measure of Extended Data
-Fig. 9; both are used in variants only, and the criteria were not changed.""")
-h = h.replace("""One processed file is read in the data check only,
-to show how the files' spike times were built.""", """The processed data are read in the data check, to
-show how the files' spike times were built and which of the paper's units the dandiset holds, and
-in variants that rerun the tests on the paper's 61 and 69 units.""")
-C[0].source = h
-
-i = find("Each session's tagged units are counted")
-proc_cell = code('''# The paper's processed data (Ephys.zip on Figshare), every session: how the files' spike times
-# were built, the code's inclusion rule on the paper's own units, and which of them the dandiset holds.
-started = time.time()
-proc_records, storage_all, shifts = alm.read_processed(sessions)
-proc = pd.DataFrame([{k: v for k, v in r.items() if k not in ("rates", "is_right")} for r in proc_records])
-print(f"Processed data read in {time.time() - started:.0f} s: {len(proc)} tagged units in "
-      f"{proc.groupby(['subject', 'session']).ngroups} sessions")
-print("\\nStored spike times equal to trial start + go cue + processed time, in stored order:",
-      int(storage_all.equal_in_stored_order.sum()), "of", len(storage_all), "units in",
-      storage_all.groupby(["subject", "session"]).ngroups, "sessions; units of the processed data not in the file:",
-      int((~storage_all.in_file).sum()))
-print("Start of each trial's processed spike window, seconds from the pole coming in (median per session):")
-print(shifts[["first 10: first - pole_in", "others: first - pole_in"]].describe().round(3).to_string())
-print("Sessions where the first ten trials' windows start later than the others':",
-      int((shifts["first 10: first - pole_in"] > shifts["others: first - pole_in"]).sum()), "of", len(shifts))
-
-print("\\nThe code's inclusion rule on the processed data (the Extended Data legends give n = 61 PTupper, 69 PTlower):")
-print(pd.crosstab(proc.cell_type, proc.included, margins=True).to_string())
-print("\\nBy whether the session is in the dandiset:")
-print(pd.crosstab([proc.cell_type, proc.in_dandiset], proc.included).to_string())
-both = proc.merge(units_df, on=["subject", "session", "id"], suffixes=(" processed", " dandiset"))
-print(f"\\nTagged units in both: {len(both)} of the dandiset's {len(units_df)}; same cell type "
-      f"{int((both['cell_type processed'] == both['cell_type dandiset']).sum())}; same inclusion decision "
-      f"{int((both['included processed'] == both['included dandiset']).sum())}; same reasons "
-      f"{int((both['reason processed'] == both['reason dandiset']).sum())}")
-print("Reasons for leaving out, dandiset units:")
-for t in alm.TYPES:
-    reasons = units_df[(units_df.cell_type == t) & ~units_df.included].reason.str.split(", ").explode()
-    print(" ", t, reasons.value_counts().to_dict())
-missing = proc[~proc.in_dandiset]
-print("\\nProcessed sessions with tagged units that are not in the dandiset:")
-print(missing.groupby(["cell_type", "subject", "session"]).agg(tagged=("id", "size"), included=("included", "sum")).to_string())
-print("Included units in them:", missing[missing.included].cell_type.value_counts().to_dict())''', "sanity")
-C.insert(i + 1, proc_cell)
-C.insert(i + 2, md("PROCESSED_MD"))
-
-i = find("# Per unit: selectivity p-value")
-C.insert(i + 1, code('''# Units in the sessions whose clock the decoding check could not establish (the data check).
-unchecked = main.merge(not_shown[["subject", "session"]], on=["subject", "session"])
-print("Included units in those sessions:", len(unchecked))
-print(unchecked[["subject", "session", "id", "cell_type"] + [f"p {e}" for e in alm.EPOCHS]].round(4).to_string(index=False))
-
-# Units recorded in one animal on different days may be the same neuron. Depths of the included
-# units by session, and a subset with one session per animal (the session with the most included
-# tagged units, the earliest if tied), used as a variant below.
-print("\\nDepths (um) of included units by animal and session:")
-print(main.groupby(["cell_type", "subject", "session"]).depth.agg(lambda d: ", ".join(f"{x:.0f}" for x in sorted(d))).to_string())
-near = [bool(((main.subject == u.subject) & (main.session != u.session) & ((main.depth - u.depth).abs() <= 20)).any())
-        for u in main.itertuples()]
-print("Included units with a unit of the same animal within 20 um on another day:", sum(near), "of", len(main))
-counts = main.groupby(["subject", "session"]).size().rename("n").reset_index()
-chosen = counts.sort_values(["subject", "n", "session"], ascending=[True, False, True]).groupby("subject").head(1)
-chosen_keys = set(zip(chosen.subject, chosen.session))
-one = main[[k in chosen_keys for k in zip(main.subject, main.session)]]
-records_one = [r for r in records if (r["subject"], r["session"]) in chosen_keys]
-print("One session per animal:", one.groupby("cell_type").size().to_dict(), "units in", len(chosen_keys), "sessions")
-
-# The same per-unit table on the paper's units from the processed data.
-proc_main = unit_table(proc_records)
-print("Paper's units (processed data), included:", proc_main.groupby("cell_type").size().to_dict())
-print("\\nFraction selective (p < 0.01) per epoch, paper's units:")
-print(proc_main.groupby("cell_type")[[f"p {e}" for e in alm.EPOCHS]].agg(lambda p: (p < 0.01).mean()).round(3).to_string())
-print("\\nSame, one session per animal:")
-print(one.groupby("cell_type")[[f"p {e}" for e in alm.EPOCHS]].agg(lambda p: (p < 0.01).mean()).round(3).to_string())'''))
-C.insert(i + 2, md("VARIANTS_MD"))
-
-def after(tag_prefix_src, cell):
-    j = find(tag_prefix_src)
-    C.insert(j + 1, cell)
-
-after("rng = np.random.default_rng(1)\n", code('''# Variants: one session per animal, and the paper's units from the processed data.
-rng = np.random.default_rng(11)
-for name, recs, table in (("one session per animal", records_one, one), ("paper's units (processed data)", proc_records, proc_main)):
-    f, k, n, null, p = shuffle_fraction(recs, alm.TYPES, "delay", rng)
-    per_type = "; ".join(f"{t} {(table[table.cell_type == t]['p delay'] < 0.01).sum()} of {(table.cell_type == t).sum()}" for t in alm.TYPES)
-    print(f"Variant {name}: delay epoch {k} of {n} ({f:.3f}); null 99th percentile {np.quantile(null, 0.99):.3f}; p = {p:.4f} ({per_type})")''', "claim:pt-preparatory-activity"))
-
-after("rng = np.random.default_rng(2)\n", code('''# Variants: one session per animal, and the paper's units from the processed data.
-rng = np.random.default_rng(12)
-for name, recs in (("one session per animal", records_one), ("paper's units (processed data)", proc_records)):
-    f, k, n, null, p = shuffle_fraction(recs, ("PTupper",), "sample", rng)
-    f0, k0, n0, _, p0 = shuffle_fraction(recs, ("PTupper",), "baseline", rng)
-    print(f"Variant {name}: PTupper sample epoch {k} of {n} ({f:.3f}); null 99th percentile {np.quantile(null, 0.99):.3f}; "
-          f"p = {p:.4f}; baseline {k0} of {n0} (p = {p0:.4f})")''', "claim:pt-upper-early-preparatory"))
-
-after("rng = np.random.default_rng(3)\n", code('''# Variants: one session per animal, and the paper's units from the processed data.
-rng = np.random.default_rng(13)
-for name, recs in (("one session per animal", records_one), ("paper's units (processed data)", proc_records)):
-    f, k, n, _, p = shuffle_fraction(recs, ("PTupper",), "late delay", rng)
-    o, nl, ps, ds, dl = similarity_test(recs, "PTupper", rng)
-    r, p_r = stats.pearsonr(ds, dl)
-    print(f"Variant {name}: (a) {k} of {n} ({f:.3f}), p = {p:.4f}; (b) cosine {o:.3f}, null 95th percentile "
-          f"{np.quantile(nl, 0.95):.3f}, p = {ps:.4f}; Pearson r = {r:.3f} (p = {p_r:.4g})")''', "claim:pt-upper-persistent"))
-
-after("def mcnemar_table(", code('''# Variants: one session per animal, and the paper's units from the processed data.
-for name, table in (("one session per animal", one), ("paper's units (processed data)", proc_main)):
-    for thr in (0.01, 0.05, 0.001):
-        for later in ("late delay", "response"):
-            fa, fb, only_a, only_b, n, p = mcnemar_table(table, "PTlower", "sample", later, thr)
-            print(f"Variant {name}, p < {thr}: sample {fa:.3f} against {later} {fb:.3f} (n = {n}); "
-                  f"only sample {only_a}, only {later} {only_b}; McNemar p = {p:.4g}")
-low_p = proc_main[proc_main.cell_type == "PTlower"]
-print("\\nPaper's units, PTlower by animal (fraction selective, p < 0.01):")
-print(low_p.groupby("subject")[["p sample", "p late delay", "p response"]].agg(lambda p: (p < 0.01).mean()).round(3)
-      .join(low_p.groupby("subject").size().rename("units")).to_string())''', "claim:pt-lower-late-and-motor"))
-
-after("def fisher(", code('''# Variants: one session per animal, and the paper's units from the processed data.
-for label, table in (("one session per animal", one), ("paper's units (processed data)", proc_main)):
-    fa, ka, na, fb, kb, nb, pa = fisher(table, "sample", "PTupper", "PTlower")
-    ga, la, ma, gb, lb, mb, pb = fisher(table, "response", "PTlower", "PTupper")
-    _, _, _, _, _, _, pr = fisher(table, "response", "PTupper", "PTlower")
-    print(f"Variant {label}: (a) sample PTupper {ka}/{na} ({fa:.3f}) against PTlower {kb}/{nb} ({fb:.3f}), p = {pa:.4g}; "
-          f"(b) response PTlower {la}/{ma} ({ga:.3f}) against PTupper {lb}/{mb} ({gb:.3f}), p = {pb:.4g} (reverse p = {pr:.4g})")
-
-# The measure of Extended Data Fig. 9 (decodingAccuracy.m): each unit's best single-threshold
-# accuracy in classifying correct lick-left and lick-right trials from its sample epoch rate;
-# also with rates rectified at the baseline (the mean over both trial types of the baseline epoch
-# rate). The legend gives 15 of 61 PTupper against 3 of 69 PTlower at 70% or more, and a mean
-# accuracy of 64.4 +/- 1.0% against 58.9 +/- 0.6% (two-sided Mann-Whitney p = 1e-4); rectified,
-# 15 of 61 against 0 of 69 (62.7 +/- 1.1% against 56.7 +/- 0.4%, p = 9e-7).
-def accuracies(recs, rectified):
-    rows = []
-    for r in recs:
-        if not r["included"]:
-            continue
-        x = r["rates"]["sample"]
-        if rectified:
-            base = r["rates"]["baseline"]
-            x = np.maximum(x - np.mean([base[~r["is_right"]].mean(), base[r["is_right"]].mean()]), 0)
-        rows.append({"cell_type": r["cell_type"], "subject": r["subject"], "acc": alm.roc_accuracy(x, r["is_right"])})
-    return pd.DataFrame(rows)
+nb = json.load(open(p))
+cells = nb["cells"]
 
 
-for label, recs in (("dandiset", records), ("paper's units (processed data)", proc_records)):
-    for rectified in (False, True):
-        acc = accuracies(recs, rectified)
-        up, low = acc[acc.cell_type == "PTupper"].acc, acc[acc.cell_type == "PTlower"].acc
-        k_up, k_low = int((up >= 0.7).sum()), int((low >= 0.7).sum())
-        p_f = stats.fisher_exact([[k_up, len(up) - k_up], [k_low, len(low) - k_low]], alternative="greater").pvalue
-        p_mw = stats.mannwhitneyu(up, low, alternative="two-sided").pvalue
-        print(f"{label}{', rectified' if rectified else ''}: accuracy >= 0.70 PTupper {k_up}/{len(up)} ({k_up / len(up):.3f}) "
-              f"against PTlower {k_low}/{len(low)} ({k_low / len(low):.3f}), one-sided Fisher p = {p_f:.4g}; "
-              f"mean {up.mean():.3f} +/- {up.sem():.3f} against {low.mean():.3f} +/- {low.sem():.3f}, Mann-Whitney p = {p_mw:.3g}; "
-              f"range {acc.acc.min():.3f} to {acc.acc.max():.3f}")''', "claim:pt-types-differ-in-timing"))
+def append(i, start, text):
+    s = "".join(cells[i]["source"])
+    assert s.startswith(start), (i, s[:60])
+    cells[i]["source"] = (s.rstrip("\n") + " " + text).splitlines(True)
 
-nbformat.write(nb, p)
-PYEOF
-$TMPDIR/env6/bin/python $TMPDIR/edit_nb.py && grep -c PROCESSED_MD reproduce_economo_2018.ipynb
-```
 
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/edit_nb.py", line 1, in <module>
-    import nbformat
-ModuleNotFoundError: No module named 'nbformat'
-```
+append(35, "**Result: partially reproduced.** The 18 neurons",
+       "The axon of AA0134 (second cell) has 2368 nodes and 36 termini, and no node lies in a structure named for the "
+       "superior colliculus; it runs through the midbrain reticular nucleus (141 nodes) and the tectospinal pathway (55) to "
+       "the intermediate reticular nucleus (235 nodes, 6 termini) and other reticular nuclei of the pons and medulla.")
+append(45, "**Result: blocked.** pt-retrograde-sublaminae",
+       "The two H2B folders of brain BL648, its thalamus and medulla retrograde labelling, hold 108 images each (0.78 to "
+       "2.07 MB); nothing beside them gives a scale, cell positions or counts, so the co-labelling count would need a cell "
+       "detection method, which the paper does not give. Opened outside the notebook while preparing (not run here, and "
+       "deciding nothing), one image of each folder is 8600 by 6200 pixels, greyscale.")
+append(49, "**Result: not reproduced.** The dandiset holds 117",
+       "The processed data hold 150 tagged units (second cell): 143 of good quality (Excellent or Good), the paper's 143, "
+       "and 7 PTlower units of Fair quality, which the code's quality filter leaves out; of the 143 the code's rule keeps "
+       "130, the paper's number.")
+append(55, "**Result: not reproduced.** With the code's selection",
+       "On the processed data for the same 44 and 56 units the dandiset holds (section \"Missing units against the file "
+       "format\"), peak rates also differ (p = 0.03) and baseline rates do not (p = 0.085), so the difference from the "
+       "paper's units comes from the missing sessions, not from the files. The files raise every unit's baseline rate "
+       "(median 0.99 Hz for PTupper and 0.97 Hz for PTlower), as spikes of neighbouring trials fall in the baseline epoch.")
+append(61, "**Result: partially reproduced.** With the code's selection, 11 of 56",
+       "The processed data for the same units give the same counts, 2 of 44 and 11 of 56, so the PTupper share is out of "
+       "tolerance because units are missing: with 44 units one unit is 2.3%, and 3.3 +/- 0.33% cannot be reached.")
+append(64, "**Result: not reproduced.** With the code's selection",
+       "On the processed data for the 100 units the dandiset holds, 97 are selective; the count is bounded by the number of "
+       "units the dandiset holds.")
+append(71, "**Result: partially reproduced.** (a)",
+       "The processed data for the same units give the dandiset's counts, 29 of 44 and 38 of 56; as fractions (65.9% and "
+       "67.9%) they are close to those of the paper's units (65.6% and 63.8%).")
+append(77, "**Result: blocked (methods underspecified), as it depends on pt-upper-early-preparatory.** Its own test does not",
+       "On the processed data for the same 44 PTupper units neither reading holds either (85 and 153 bins not significant, "
+       "p = 0.060 and 0.066), so its own test fails here because units are missing, not because of the files.")
+append(89, "**Result: partially reproduced.** With the code's selection",
+       "The processed data for the same units give 9 PTupper and 3 PTlower units at 70% and 8 PTupper units in the top 10, "
+       "as the dandiset, so the shortfall comes from the missing units.")
+append(92, "**Result: partially reproduced.** With the code's selection",
+       "The processed data for the same units give 9 PTupper and 0 PTlower units at 70%, 15 PTupper units in the top 21, "
+       "and means of 62.33% and 56.84%: the counts fall short because units are missing, and the PTlower mean moves out of "
+       "tolerance with the files, whose baseline rates, the rectification threshold, are higher.")
+append(96, "**Result: partially reproduced.** With the code's selection",
+       "In the first 100 ms after the go cue (second cell), the PTlower 5th percentile first rises above zero in the 37.5 ms "
+       "bin in the files, in the processed data for the same units and in all the paper's units alike, so its distance from "
+       "24 ms does not come from the data but from the method shared by all three; what in it is not tested here. The "
+       "PTupper 5th percentile first rises above zero at 77.5 ms in the files, 82.5 ms in the same units processed and 57.5 "
+       "ms in all the paper's units, so most of its delay comes from the missing units.")
+append(106, "**Result: blocked (methods underspecified).** With the code's selection",
+       "The crossing times are taken from the bootstrap median with no interval, so the one-bin difference at level 0.5 "
+       "has no measure of uncertainty.")
+append(112, "**Result: blocked (methods underspecified).** With the code's selection",
+       "A trial's spikes reach 3.0 s after its go cue, so lick-aligned bins later than that count no spikes; the last lick "
+       "is more than 2.5 s after the go cue in 0.16% of PTupper and 0.17% of PTlower unit-trials (third cell), so this "
+       "cut does not bear on the result.")
+append(117, "**Result: blocked (methods underspecified), as it depends on pt-upper-early-preparatory.** Its own test, with",
+       "The CDearly part fails because the PTlower cohort is more selective than the PTupper cohort, while among the PT "
+       "types PTupper is the more selective (3.97 against 2.09).")
+append(120, "**Result: blocked (methods underspecified).** Two of the six",
+       "Without the dependency rule the criterion would give partially reproduced, with pt-single-neuron-early-selectivity "
+       "reproduced on the PTupper side and pt-lower-late-and-motor on the PTlower side; the claims file makes the two "
+       "blocked claims part of this one, so it is blocked.")
 
-**Agent calls Bash**
+SPLIT_RESULT = """
+**What the split shows.** On the same 100 units, the files and the processed data agree on the per-unit
+measures except the baseline rate: every unit's baseline rate is higher in the files (median by 0.99 Hz
+for PTupper and 0.97 Hz for PTlower, 0.14 to 6.47 Hz), as spikes of neighbouring trials fall in the
+baseline epoch, while decoding accuracy differs by a median of 0.000 and early d' by 0.002 and 0.012.
+The results that fail on the dandiset fail on the same units from the processed data too: peak rates
+differ (t-test p = 0.03), 9 PTupper units reach 70% accuracy and 8 of the 10 best are PTupper, the late
+delay counts are 29 and 38, PTupper CDearly selectivity is not significant in 85 and 153 bins before
+the go cue (p = 0.060 and 0.066 over the last 400 ms), and the PTupper CDgo onset is 82.5 and 87.5 ms.
+On all the paper's units they hold, so these failures come from the missing units. The files move the
+rectified PTlower mean (56.20% against 56.84% on the same units), the rectified PTupper count at 70% (8
+against 9), rule (ii) of larger CDearly selectivity under projection (a) (fails on the files, holds on
+the same units processed) and the PTlower CDearly decay p (0.348 against 0.474). The PTlower CDgo onset
+is 37.5 ms in all three.
+"""
+assert "".join(cells[121]["source"]).startswith("## Missing units against the file format")
+cells.insert(123, {"cell_type": "markdown", "id": uuid.uuid4().hex[:8], "metadata": {}, "source": SPLIT_RESULT.strip("\n").splitlines(True)})
 
-```bash
-python $TMPDIR/edit_nb.py && grep -c "PROCESSED_MD\|VARIANTS_MD" reproduce_economo_2018.ipynb && git diff --stat
-```
-
-```
-2
- entries/000006-economo-2018/alm.py                 | 134 ++++++++++-
- .../reproduce_economo_2018.ipynb                   | 265 +++++++++++++++++++--
- 2 files changed, 376 insertions(+), 23 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import nbformat; nb=nbformat.read('reproduce_economo_2018.ipynb',4); print(nb.cells[0].source[-700:])"; cd ../.. && time python tools/entry.py all entries/000006-economo-2018 2>&1 | tail -20
-```
-
-```
-PTupper animals "TP" (thalamus-projecting), and fixes the epochs, the trial and unit selection and
-the selectivity test used here (see `alm.py`). The processed data are read in the data check, to
-show how the files' spike times were built and which of the paper's units the dandiset holds, and
-in variants that rerun the tests on the paper's 61 and 69 units.
-
-| Claim | Tested |
-|---|---|
-| pt-types-transcriptomic | no |
-| pt-types-shared-targets | no |
-| pt-upper-thalamus-projection | no |
-| pt-lower-medulla-projection | no |
-| pt-preparatory-activity | yes |
-| pt-upper-early-preparatory | yes |
-| pt-upper-persistent | yes |
-| pt-lower-late-and-motor | yes |
-| pt-types-differ-in-timing | yes |
-Installed kernelspec registry-000006-economo-2018 in executed/000006-economo-2018/.venv/share/jupyter/kernels/registry-000006-economo-2018
-0 error(s)
-pass  reproduce_economo_2018.ipynb  (150 s)
-
-[... 4 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls executed/000006-economo-2018/; python - <<'EOF'
-import nbformat
-nb=nbformat.read('executed/000006-economo-2018/reproduce_economo_2018.ipynb',4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type!='code': continue
-    if i in (1,3,5): continue
-    out=''.join(o.get('text','') if o.output_type=='stream' else str(o.get('data',{}).get('text/plain','')) for o in c.outputs)
-    print(f"=== cell {i} tags={c.metadata.get('tags')}\n{out}")
+i = 124
+s = "".join(cells[i]["source"])
+assert s.startswith("## Summary")
+old = "and later CDgo onsets than the paper's (30 to 40 and 55 to 80 ms against 24 and 48 ms)."
+assert old in s
+s = s.replace(old, old + " The same code on the processed data for the 100 units the dandiset holds (section \"Missing units "
+              "against the file format\") separates the two causes: the failures of counts and tests (unit counts, the "
+              "spike rate test, decoding counts, late delay counts, PTupper persistence, the PTupper CDgo onset) come from "
+              "the missing units; the files raise every unit's baseline rate by a median of about 1 Hz, which moves the "
+              "rectified PTlower decoding mean out of tolerance; and the PTlower CDgo onset is 37.5 ms on all three, so "
+              "its distance from 24 ms comes from the method here, not the data.")
+cells[i]["source"] = s.splitlines(True)
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False)
+open(p, "a").write("\n")
 EOF
+python $TMPDIR/edit2.py && git diff --stat
 ```
 
 ```
-<persisted-output>
-Output too large (31.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/4ea7c38b-9f46-41c6-aba2-7724bd4ad2a0/tool-results/bodlhznr2.txt
-
-Preview (first 2KB):
-reproduce_economo_2018.ipynb
-result.json
-=== cell 7 tags=['sanity']
-Licks are stated in {'Seconds'} (timestamps)
-First lick after the go cue, true labels (shift 0) and labels of the next trial (shift 1):
-first lick         none  other side  trial side
-shift response                                 
-0     correct        21         481       11689
-      early lick     18         139         510
-      incorrect      45        1832           8
-      no response   398           3           5
-1     correct        21        6789        5381
-      early lick     18         343         306
-      incorrect      45        1074         766
-      no response   398           5           3
-
-[... 17 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/4ea7c38b-9f46-41c6-aba2-7724bd4ad2a0/tool-results/bodlhznr2.txt",
- "offset": 40
-}
-```
-
-```
-40	anm372793 20170508      1     284     0.482                     0.518     0.567               0.743
-41	anm372793 20170512      2     224     0.844                     0.612     0.509               0.000
-42	anm372793 20170513     47     300     0.987                     0.532     0.557               0.000
-43	anm372793 20170514     67     213     0.981                     0.552     0.573               0.000
-44	anm372794 20170621      4     158     0.854                     0.525     0.544               0.000
-45	anm372794 20170622      4     267     0.764                     0.539     0.569               0.000
-46	anm372794 20170624     50     208     0.981                     0.585     0.529               0.000
-47	anm372794 20170625     56     280     0.982                     0.518     0.579               0.000
-48	anm372794 20170626     34     257     0.981                     0.580     0.553               0.000
-49	anm372794 20170627      4     313     0.671                     0.508     0.537               0.000
-50	anm372795 20170714      4     193     0.953                     0.508     0.451               0.000
-51	anm372795 20170715      1     164     0.665                     0.524     0.476               0.000
-52	anm372795 20170716      4     235     0.966                     0.570     0.583               0.000
-53	anm372795 20170718      2     157     0.834                     0.471     0.541               0.000
-54	anm372797 20170615     76     150     0.980                     0.553     0.587               0.000
-55	anm372797 20170617      1     115     0.496                     0.079     0.426               0.574
-56	anm372904 20170615      1     308     0.893                     0.573     0.516               0.000
-57	anm372904 20170616      1     284     0.187                     0.572     0.525               1.000
-58	anm372904 20170617      1     250     0.764                     0.548     0.496               0.000
-59	anm372904 20170618     70     286     0.
-[... 489 more lines not kept]
+.../reproduce_economo_2018.ipynb                   | 278 +++++++++++++++++++--
+ 1 file changed, 261 insertions(+), 17 deletions(-)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000006-economo-2018 && PYTHONPATH=. $TMPDIR/env6/bin/python -c "
-import alm; m=alm.dandiset_metadata(); print(m['description'])"
+cd  grep -l "^verifications:" attempts/*.yaml | head -3; f=$(grep -l "^verifications:" attempts/*.yaml | head -1); awk '/^verifications:/,0' $f | head -50; grep -n -A30 "verifications" schemas/attempt* 2>/dev/null | head -80; ls schemas 2>/dev/null || ls tools
 ```
 
 ```
-Extracellular electrophysiology recordings performed on mouse anterior lateral motor cortex (ALM) in delay response task. Neural activity from two neuron populations, pyramidal track upper and lower, were characterized, in relation to movement execution. Some files, as originally (re)distributed from e.g. http://datasets.datalad.org/?dir=/labs/svoboda/Economo_2018 were found to be broken and would not be able available among reorganized files under sub-* directories.
+attempts/000003-senzai-2017-01.yaml
+attempts/000004-chandravadia-2020-01.yaml
+attempts/000005-yu-2016-01.yaml
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier queried the archive metadata and tested
+    helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for
+    each claim; all 31 agree with the record.
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: GC 609 is inside 527 to 645, but MC 568 is outside 450 to 550.
+    response: No change needed.
+  - claim: first-stage-labels
+    agrees: true
+    outcome: partially_reproduced
+[... 67 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/edit_md.py <<'PYEOF'
-import nbformat
-p = "reproduce_economo_2018.ipynb"
-nb = nbformat.read(p, as_version=4)
-C = nb.cells
-def find(s):
-    hits = [i for i, c in enumerate(C) if s in c.source]
-    assert len(hits) == 1, (s, hits)
-    return hits[0]
-def rep(old, new):
-    i = find(old); C[i].source = C[i].source.replace(old, new)
-
-rep('''print("Included units in them:", missing[missing.included].cell_type.value_counts().to_dict())''',
-'''print("Included units in them:", missing[missing.included].cell_type.value_counts().to_dict())
-print("\\nDandiset description:", meta["description"])''')
-
-C[find("PROCESSED_MD")].source = '''The paper's processed data hold 150 tagged units in 64 sessions. In all 53 sessions of the
-dandiset, every unit's stored spike times (1149 of 1149 units) equal trial start + go cue time + the
-processed spike time, in the processed order. The files' spike times were therefore built the same
-way in every session, including the seven sessions whose clock the decoding check could not
-establish. In all 53 sessions the spike windows of the first ten trials start later, relative to the
-pole coming in, than those of the other trials (session medians 1.73 to 5.84 s after the pole comes
-in, against -0.97 to -0.16 s); the code leaves out the first ten trials of each unit.
-
-The code's inclusion rule applied to the processed data keeps 61 PTupper and 69 PTlower units, the
-numbers in the Extended Data legends, so the rule used here gives the paper's selection. All 117
-tagged units of the dandiset are in the processed data, with the same cell type, the same inclusion
-decision and the same reasons, so the 15 PTlower units left out here were left out by the paper's
-code too. The difference in counts comes from the sessions deposited: 11 processed sessions with
-tagged units are not in the dandiset, and they hold 17 included PTupper and 13 included PTlower
-units (44 + 17 = 61, 56 + 13 = 69). The dandiset's description says that some files were found to
-be broken and were left out. Variants below rerun each test on the paper's 130 units, from the
-processed data.'''
-
-C[find("VARIANTS_MD")].source = '''The five included units in the sessions whose clock the decoding check could not establish are
-listed with their p-values. Their spike times equal those of the processed data (data check), so
-they are on the same clock as the other units. Units recorded in one animal on different days may be
-the same neuron. The files hold no waveforms, and 44 of the 100 included units lie within 20 um of a
-unit of the same animal recorded on another day, so repeats cannot be ruled out. Each claim below
-therefore also gives the result on one session per animal (20 PTupper and 16 PTlower units in 12
-sessions), and on the paper's 61 PTupper and 69 PTlower units from the processed data. These
-variants do not change the outcomes.'''
-
-rep('''The spike times are not sorted in 1120 of 1149 units, which breaks the NWB convention for
-`spike_times`. In the one session compared with the paper's processed data, every unit's stored
-spike times are exactly''', '''The spike times are not sorted in 1120 of 1149 units, which breaks the NWB convention for
-`spike_times`. In the session compared here with the paper's processed data (all sessions are
-compared further below), every unit's stored spike times are exactly''')
-
-rep('''(25% to 85% of its units), at test thresholds from 0.05 to 0.001 (76 to 67 units), without flagged
-spikes (73) and without the trials marked not good (72).''', '''(25% to 85% of its units), at test thresholds from 0.05 to 0.001 (76 to 67 units), without flagged
-spikes (73) and without the trials marked not good (72). With one session per animal 26 of 36 units
-are selective (p = 0.001), and among the paper's 130 units from the processed data 89 are
-(p = 0.001).''')
-
-rep('''unit (25% to 100% of its units). The fraction is 0.795 at p < 0.05 and 0.432 at p < 0.001, and
-26 of 44 units are selective without flagged spikes.''', '''unit (25% to 100% of its units). The fraction is 0.795 at p < 0.05 and 0.432 at p < 0.001, and
-26 of 44 units are selective without flagged spikes. With one session per animal 8 of 20 units are
-selective (null 99th percentile 0.100, p = 0.001), and among the paper's 61 PTupper units 40 are
-(p = 0.001).''')
-
-rep('''sign of their d' in the late delay. Both parts hold without flagged spikes (p = 0.001 and 0.011)
-and without the trials marked not good (p = 0.001 and 0.017).''', '''sign of their d' in the late delay. Both parts hold without flagged spikes (p = 0.001 and 0.011),
-without the trials marked not good (p = 0.001 and 0.017), with one session per animal ((a) 12 of
-20, p = 0.001; (b) cosine 0.670, p = 0.006) and on the paper's 61 PTupper units ((a) 38 of 61,
-p = 0.001; (b) cosine 0.514, p = 0.002).''')
-
-rep('''parts hold (p = 0.0033 and 0.018); at p < 0.05 neither does (p = 0.054 and 0.14). The rate in the
-response epoch differs from baseline in 53 of 56 PTlower units, and in 37 of 44 PTupper units.''',
-'''parts hold (p = 0.0033 and 0.018); at p < 0.05 neither does (p = 0.054 and 0.14). The rate in the
-response epoch differs from baseline in 53 of 56 PTlower units, and in 37 of 44 PTupper units. The
-variants give the same split. With one session per animal (16 units), part (a) holds (0.250 against
-0.625, p = 0.016) and part (b) does not (0.438, p = 0.23). On the paper's 69 PTlower units, part (a)
-holds (0.507 against 0.652, p = 0.049) and part (b) does not (0.551, p = 0.37). On those units both
-parts hold at p < 0.001 (p = 0.0053 and 0.036), and neither does at p < 0.05 (p = 0.061 and 0.19).''')
-
-rep('''This variant does not change the outcome. Each animal has one type only, so a difference between
-types is also a difference between 8 and 4 animals.''', '''With one session per animal, (a) is not significant (0.400 against 0.250, p = 0.28) and (b) is
-reversed (0.438 against 0.800). On the paper's 130 units from the processed data, (a) is not
-significant (0.656 against 0.507, p = 0.062) and (b) is reversed (0.551 against 0.770; p = 0.007 for
-the reverse), so the reversal does not come from the units missing from the dandiset. The paper's
-own measure of early information, single-unit decoding accuracy in the sample epoch (Extended Data
-Fig. 9), goes the abstract's way. At 70% accuracy or more, it finds 7 of 44 PTupper against 1 of 56
-PTlower units here (Fisher p = 0.012), and 12 of 61 against 1 of 69 on the paper's units
-(p = 0.0005), where the legend gives 15 of 61 against 3 of 69. The mean accuracy on the paper's
-units is 0.638 against 0.586 (legend 0.644 and 0.589). With rates rectified at baseline, it finds
-12 of 61 against 0 of 69 (legend 15 of 61 against 0 of 69). These variants support part (a) under the paper's
-measure but not under the criterion's, and none supports part (b). They do not change the outcome.
-Each animal has one type only, so a difference between types is also a difference between 8 and 4
-animals.''')
-
-rep('''of change between epochs (McNemar) and between types (Fisher) are choices made here.''',
-'''of change between epochs (McNemar) and between types (Fisher) are choices made here. The dandiset
-holds 44 of the paper's 61 PTupper and 56 of its 69 PTlower units; variants rerun every test on the
-paper's 130 units from its processed data and give the same outcomes.''')
-
-rep('''- `stop_time` of the trial table is NaN in every file;''', '''- 11 sessions of the paper's processed data that hold tagged units are not in the dandiset. They
-  hold 17 of the paper's 61 PTupper and 13 of its 69 PTlower units. The description says some
-  files were broken and left out, without naming them.
-- In every session the first ten trials' spike windows are shifted by about 2.7 s against the
-  other trials, in the files as in the processed data.
-- `stop_time` of the trial table is NaN in every file;''')
-nbformat.write(nb, p)
-PYEOF
-python $TMPDIR/edit_md.py && echo ok
+cd  sed -n 313,370p schemas/attempt.schema.json; grep -n "outcome\"" -A12 schemas/attempt.schema.json | sed -n 1,40p | grep -n "enum" -A8 | head -20
 ```
 
 ```
+"additionalProperties": false,
+              "required": [
+                "claim",
+                "agrees"
+              ],
+              "properties": {
+                "claim": {
+                  "type": "string"
+                },
+                "agrees": {
+                  "type": "boolean"
+                },
+                "reason": {
+                  "description": "The verifier's reason, in its own words.",
+                  "type": "string"
+                },
+                "response": {
+                  "description": "What the author changed or replied, kept apart from the verifier's reason.",
+                  "type": "string"
+                },
+[... 58 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  tail -20 questions/000006.yaml
+```
+
+```
+answered: 2026-10-20
+  answer: No. The Methods (Histology and imaging) describe sectioning,
+    immunolabelling and imaging only, and the Figshare record holds no anatomy code. The counting method
+    is open, and the claim stays methods_underspecified. Also, the folder names in Anatomy.zip name no
+    superior colliculus labelling, which the 77.1% needs. Recorded in the criterion.
+- claim: pt-types-shared-targets
+  attempt: 000006-economo-2018-02
+  asked: 2026-10-20
+  question: The second part of the statement (both types send collaterals to the subthalamic nucleus, zona
+    incerta and midbrain reticular nucleus) is quoted from the bulk labelling of Extended Data Fig. 2e.
+    The attempt tested it on the reconstructions. Is that the intended test?
+  passage: Extended Data Fig. 2e legend.
+  why: The reconstructions support it (both groups reach all three structures); the images were not
+    analysed.
+  answered: 2026-10-20
+  answer: No. The second part is stated in the Extended Data Fig. 2e legend, from
+    the bulk labelling ("Bulk projections of PTupper and PTlower populations"), with no measure or count.
+    Its intended test is those images, for which the paper gives no method of analysis. The test on the
+    reconstructions is a variant. The first part, on the superior colliculus, is stated of the
+    reconstructions and is tested on them. Recorded in the criterion.
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat >> questions/000006.yaml <<'EOF'
+- claim: pt-selective-any-epoch
+  attempt: 000006-economo-2018-02
+  asked: 2026-10-20
+  question: The verifier of round 1 reported that several criteria judge counts out of the paper's 61
+    PTupper and 69 PTlower units, which the dandiset cannot reach as it holds 44 and 56 of them under the
+    code's rule (11 sessions are missing). They are pt-selective-any-epoch (122 of 130), pt-preparatory-activity
+    part (a) (40 and 44), the 70% counts and the top 10 and top 21 of pt-upper-decoding and
+    pt-upper-decoding-rectified, and the PTupper share of pt-lower-bursting (3.3%, where one of 44 units is
+    2.3%). Should these be judged as counts, as now, or as fractions of the units the dandiset holds?
+  passage: Results, Cell-type-specific recordings and Preparatory activity; Extended Data Fig. 9c, d legend.
+    The paper reports the counts with their fractions (122 of 130, 94%; 15 of 61, 24.6%).
+  why: As fractions some would hold. 29 of 44 and 38 of 56 late delay selective units are 65.9% and 67.9%,
+    against the paper's 65.6% and 63.8%; 99 of 100 selective units is 99%, against 94%. On the processed
+    data for the same 100 units the counts are the dandiset's, so the shortfall comes from the missing
+    units.
+- claim: pt-cohort-control
+  attempt: 000006-economo-2018-02
+  asked: 2026-10-20
+  question: The verifier of round 1 reported that the criterion's CDearly test asks whether the
+    PTlower-cohort median lies inside the PTupper cohort's 5-95% interval, in either direction. Here it
+    lies above it (9.82 against 4.0 to 8.9), that is the PTlower cohort is the more selective, the opposite
+    of the PT difference (PTupper 3.97 against PTlower 2.09). Is a difference in the opposite direction a
+    failure of "not explained by the animal cohorts", or should the test ask only whether the cohorts
+    reproduce the PT difference?
+  passage: Results, Preparatory activity, paragraph 2 ("Differences in coding between PTupper and PTlower
+    neurons could not be explained by variation across animal cohorts"); Extended Data Fig. 8 legend.
+  why: Read as the claim's words, the CDearly part would hold (the cohorts do not reproduce the PT
+    difference), and the claim's own test would give reproduced, not partially reproduced. The claim is
+    blocked through pt-upper-early-preparatory either way.
+EOF
+tail -3 questions/000006.yaml; python -c "import yaml;yaml.safe_load(open('questions/000006.yaml'))" && echo ok
+```
+
+```
+why: Read as the claim's words, the CDearly part would hold (the cohorts do not reproduce the PT
+    difference), and the claim's own test would give reproduced, not partially reproduced. The claim is
+    blocked through pt-upper-early-preparatory either way.
 ok
 ```
 
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    neuron of the table, has neither termini nor axon there (13 medullary termini). The readings of projecting\n    (termini, axon length) agree. Over all 22 neurons of the file, a variant, 19 reach it. What the answer",
+ "new_string": "    neuron of the table, has neither termini nor axon there (13 medullary termini). The readings of projecting\n    (termini, axon length) agree. Over all 22 neurons of the file, a variant, 19 reach it. No node of AA0134's\n    axon (2368 nodes, 36 termini) lies in a structure named for the superior colliculus; it runs through the\n    midbrain reticular nucleus (141 nodes) and the tectospinal pathway (55) to the intermediate reticular\n    nucleus (235 nodes, 6 termini) and other reticular nuclei of the pons and medulla. What the answer"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    named for superior colliculus labelling, which the 77.1% needs. What the answer changed - it confirmed that",
+ "new_string": "    named for superior colliculus labelling, which the 77.1% needs. The two H2B folders of brain BL648, its\n    thalamus and medulla retrograde labelling, hold 108 images each (0.78 to 2.07 MB), with no scale, cell\n    positions or counts beside them, so a co-labelling count would need a cell detection method the paper does\n    not give. One image of each folder, opened outside the notebook while preparing, is 8600 by 6200 pixels,\n    greyscale; this decides nothing. What the answer changed - it confirmed that"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    included PTupper and 13 included PTlower units. What the answer changed - when neither reading matches, the other claims use the",
+ "new_string": "    included PTupper and 13 included PTlower units. The processed data hold 150 tagged units, the paper's 143 of\n    good quality (Excellent or Good) and 7 PTlower units of Fair quality that the code's quality filter leaves\n    out; of the 143 the code's rule keeps 130. What the answer changed - when neither reading matches, the other claims use the"
+}
+```
+
+```
+<tool_use_error>String to replace not found in file.
+String:     included PTupper and 13 included PTlower units. What the answer changed - when neither reading matches, the other claims use the</tool_use_error>
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    included PTupper and 13 included PTlower units. What the answer changed - when neither reading matches, the",
+ "new_string": "    included PTupper and 13 included PTlower units. The processed data hold 150 tagged units, the paper's 143 of\n    good quality (Excellent or Good) and 7 PTlower units of Fair quality that the code's quality filter leaves\n    out; of the 143 the code's rule keeps 130. What the answer changed - when neither reading matches, the"
+}
+```
+
+```
+<tool_use_error>String to replace not found in file.
+String:     included PTupper and 13 included PTlower units. What the answer changed - when neither reading matches, the</tool_use_error>
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    neither test differs (p = 0.18 and 0.14), so the difference here may come from the 11 missing sessions.\n    What the answer",
+ "new_string": "    neither test differs (p = 0.18 and 0.14). On the processed data for the same 44 and 56 units the dandiset\n    holds, peak rates also differ (p = 0.03) and baseline rates do not (p = 0.085), so the difference comes from\n    the 11 missing sessions, not from the files. The files raise every unit's baseline rate (median 0.99 Hz for\n    PTupper and 0.97 Hz for PTlower), as spikes of neighbouring trials fall in the baseline epoch. What the answer"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    (18.8%) and 2 of 61 (3.3%), p = 0.0058. What the answer changed - it fixed the selection; the outcome is\n    unchanged.",
+ "new_string": "    (18.8%) and 2 of 61 (3.3%), p = 0.0058. The processed data for the same units give the dandiset's 2 of 44\n    and 11 of 56, so the PTupper share is out of tolerance because units are missing; with 44 units one unit is\n    2.3%, and 3.3 +/- 0.33% cannot be reached. What the answer changed - it fixed the selection; the outcome is\n    unchanged."
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    paper's 130 units from the processed data, 121 or 125 are selective, within tolerance. What the answer\n    changed - it fixed the selection; the outcome is unchanged.",
+ "new_string": "    paper's 130 units from the processed data, 121 or 125 are selective, within tolerance; of the 100 the\n    dandiset holds, 97. Whether such counts should be judged as fractions when units are missing is asked in\n    questions/000006.yaml. What the answer changed - it fixed the selection; the outcome is unchanged."
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    below zero) in both populations under the four open readings and under the variants. On the paper's units\n    (a) gives 40 of 61 and 44 of 69 and (b) holds. What the answer",
+ "new_string": "    below zero) in both populations under the four open readings and under the variants. On the paper's units\n    (a) gives 40 of 61 and 44 of 69 and (b) holds; on the processed data for the same 100 units, 29 of 44 and 38\n    of 56, the dandiset's counts. As fractions (65.9% and 67.9%) they are close to those of the paper's units\n    (65.6% and 63.8%). What the answer"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    the CDearly window. On the paper's 61 PTupper units both readings hold (p = 0.007 and 0.011). What the",
+ "new_string": "    the CDearly window. On the paper's 61 PTupper units both readings hold (p = 0.007 and 0.011); on the\n    processed data for the 44 the dandiset holds neither does (85 and 153 bins not significant, p = 0.060 and\n    0.066), so its own test fails because units are missing, not because of the files. What the"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    of 69, 64.4% and 58.8%, and all ten best units are PTupper. What the answer changed - it fixed the\n    selection; the outcome is unchanged.",
+ "new_string": "    of 69, 64.4% and 58.8%, and all ten best units are PTupper. The processed data for the same 100 units give\n    the dandiset's 9 and 3 at 70% and 8 of the top 10, so the shortfall comes from the missing units. What the\n    answer changed - it fixed the selection; the outcome is unchanged."
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    mean (56.2%) is below 56.7 +/- 0.4%. On the paper's units 15 and 0 at 70%, 20 of 21, 62.7% and 56.6%. What\n    the answer changed - it fixed the selection; the outcome is unchanged.",
+ "new_string": "    mean (56.2%) is below 56.7 +/- 0.4%. On the paper's units 15 and 0 at 70%, 20 of 21, 62.7% and 56.6%. On\n    the processed data for the same 100 units, 9 and 0 at 70%, 15 of 21, 62.33% and 56.84%; the counts fall short\n    because units are missing, and the PTlower mean moves out of tolerance with the files, whose baseline rates,\n    the rectification threshold, are higher. What the answer changed - it fixed the selection; the outcome is\n    unchanged."
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    are 30 to 40 ms and 55 to 80 ms, also out of tolerance. What the answer changed - it fixed the selection;\n    the outcome is unchanged.",
+ "new_string": "    are 30 to 40 ms and 55 to 80 ms, also out of tolerance. In the first 100 ms after the go cue the PTlower 5th\n    percentile first rises above zero in the 37.5 ms bin in the files, in the processed data for the same units\n    and in all the paper's units alike, so its distance from 24 ms comes from the method shared by all three,\n    not from the data (what in the method is not tested); the PTupper 5th percentile first rises above zero at\n    77.5, 82.5 and 57.5 ms, so most of its delay comes from the missing units. What the answer changed - it\n    fixed the selection; the outcome is unchanged."
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    (partially reproduced). The code's variant and the paper's units give the same order. What the answer",
+ "new_string": "    (partially reproduced). At level 0.5 with the 4 and 8 mice the two differ by one 5 ms bin (0.3675 against\n    0.3725 s), on a bootstrap median with no interval. The code's variant and the paper's units give the same\n    order. What the answer"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    +0.3 s, against 0.79 for PTupper). What the answer changed",
+ "new_string": "    +0.3 s, against 0.79 for PTupper). Lick-aligned bins later than 3.0 s after the go cue count no spikes, but\n    the last lick is more than 2.5 s after the go cue in only 0.16% of PTupper and 0.17% of PTlower unit-trials,\n    so this cut does not bear on the result. The windows also fail for CDlate on the paper's own units and\n    licks. What the answer changed"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    populations keep the PT difference. What the answer changed",
+ "new_string": "    populations keep the PT difference. The CDearly part fails because the PTlower cohort is the more selective,\n    the opposite of the PT difference (PTupper 3.97 against PTlower 2.09); whether that should count as a failure\n    is asked in questions/000006.yaml. What the answer changed"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    reproduced. What the answers changed - pt-single-neuron-early-selectivity moved from blocked to reproduced;",
+ "new_string": "    reproduced. Without the dependency rule the criterion would give partially reproduced\n    (pt-single-neuron-early-selectivity on the PTupper side, pt-lower-late-and-motor on the PTlower side).\n    What the answers changed - pt-single-neuron-early-selectivity moved from blocked to reproduced;"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    order). Trial membership of a spike cannot be recovered in full from the files.",
+ "new_string": "    order). Trial membership of a spike cannot be recovered in full from the files. On the same 100 tagged\n    units, every unit's baseline rate is higher in the files than in the paper's processed data (median by 0.99\n    Hz for PTupper and 0.97 Hz for PTlower units)."
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Grep**
+
+```json
+{
+ "pattern": "13 included PTlower units",
+ "path": "attempts/000006-economo-2018-02.yaml",
+ "output_mode": "content",
+ "-A": 2
+}
+```
+
+```
+No matches found
+```
+
+**Agent calls Grep**
+
+```json
+{
+ "pattern": "included PTupper and 13",
+ "path": "attempts/000006-economo-2018-02.yaml",
+ "output_mode": "content",
+ "-A": 3
+}
+```
+
+```
+176:    the processed data; the dandiset lacks 11 of the paper's sessions, which hold 17 included PTupper and 13
+177-    included PTlower units. What the answer changed - when neither reading matches, the other claims use the
+178-    code's per-unit rule, so they now run on the 44 and 56 units, with the session rule as a variant. This
+179-    claim's outcome is unchanged.
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "attempts/000006-economo-2018-02.yaml",
+ "old_string": "    included PTlower units. What the answer changed - when neither reading matches, the other claims use the",
+ "new_string": "    included PTlower units. The processed data hold 150 tagged units, the paper's 143 of good quality\n    (Excellent or Good) and 7 PTlower units of Fair quality that the code's quality filter leaves out; of the\n    143 the code's rule keeps 130. What the answer changed - when neither reading matches, the other claims use the"
+}
+```
+
+```
+The file attempts/000006-economo-2018-02.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
+```
+
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-p="reproduce_economo_2018.ipynb"; nb=nbformat.read(p,4)
-old='''- In every session the first ten trials' spike windows are shifted by about 2.7 s against the
-  other trials, in the files as in the processed data.'''
-new='''- In every session the spike windows of the first ten trials start later, relative to the pole
-  coming in, than those of the other trials, in the files as in the processed data.'''
-n=0
-for c in nb.cells:
-    if old in c.source: c.source=c.source.replace(old,new); n+=1
-print(n); nbformat.write(nb,p)
+cd  cat >> attempts/000006-economo-2018-02.yaml <<'EOF'
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier checked the archive and the Anatomy.zip listing
+    for the blocked claims and tested the helper functions on synthetic inputs. 28 of its 31 outcomes agree
+    with the record; for pt-upper-persistent, pt-cohort-control and pt-types-differ-in-timing it gives the
+    outcome of the claim's own test, where the record blocks them through a blocked dependency.
+  results:
+  - claim: pt-types-transcriptomic
+    agrees: true
+    outcome: reproduced
+    reason: The criterion's counting rule gives 27 clusters, and the PT cells fall in Slco2a1, Hpgd and Npsr1
+      only.
+    response: No change needed.
+  - claim: pt-upper-thalamus-projection
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c) gives 8 of 12, the same 8 as the thalamus group. Readings (a) and (b) give 11. A match
+      under one reading is enough.
+    response: No change needed.
+  - claim: pt-lower-medulla-projection
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c) gives 4 of 12, and all 4 of the medulla group reach the intermediate reticular nucleus.
+    response: No change needed.
+  - claim: pt-types-shared-targets
+    agrees: true
+    outcome: blocked
+    reason: Part 1 reproduced, superior colliculus 12 of 12. Part 2 can only be tested on the bulk-labelling
+      images, and the paper gives no method for them; the test on the reconstructions is only a variant.
+    response: No change needed.
+  - claim: pt-retrograde-sublaminae
+    agrees: true
+    outcome: blocked
+    reason: Anatomy.zip holds 657 jpgs and no counts. The counting method is open, and no folder holds superior
+      colliculus labelling. It could not check whether the BL648 H2B stacks would allow the thalamus-medulla
+      co-labelling count, for want of a sample image and its resolution.
+    response: Added the number and sizes of the images in each folder, read from the archive's directory; the
+      check forbids opening images in the notebook, so the pixel size of one image per folder (8600 by 6200,
+      greyscale), found while preparing, is mentioned as not run here. No scale or cell positions come with
+      them, so a count would need a cell detection method the paper does not give. Outcome kept.
+  - claim: pt-projection-cluster-mapping
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), medulla 62 of 62 in Slco2a1; thalamus 72 + 19 = 91 of 94.
+    response: No change needed.
+  - claim: pt-types-account-for-all-pt
+    agrees: true
+    outcome: partially_reproduced
+    reason: Superior colliculus 17 of 18 under both readings (AA0134 has 0 termini and 0 mm there); 0 of 18
+      lack both thalamus and medulla. The criterion has no partial rule, so this is its label for one part
+      holding. It could not check why AA0134 has no superior colliculus node, for want of a list of the
+      structures its axon nodes fall in.
+    response: Added the structures of AA0134's axon nodes and termini. None lies in a structure named for the
+      superior colliculus; the axon runs through the midbrain reticular nucleus and the tectospinal pathway to
+      the reticular nuclei of the pons and medulla. Outcome kept.
+  - claim: pt-marker-genes
+    agrees: true
+    outcome: blocked
+    reason: Confirmed, no smFISH data in the dandiset or in Anatomy.zip.
+    response: No change needed.
+  - claim: pt-bulk-sc-fold-change-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.874 (0.87 +/- 0.087). It checked the replicate columns against the sample key.
+    response: No change needed.
+  - claim: pt-tagged-units
+    agrees: true
+    outcome: not_reproduced
+    reason: 44 PTupper and 56 PTlower (code rule) or 42 and 63 (session rule), against 61 +/- 6.1 and 69 +/-
+      6.9; mice 8 and 4 match. The cause is missing data, as the same rule gives 61 and 69 on the processed
+      data and the dandiset lacks 11 sessions (problem 1). Also, the processed data hold 150 tagged units,
+      not the paper's 143, and the notebook does not reconcile the two (problem 10).
+    response: Added a table of the processed data's tagged units by quality and inclusion. They are the paper's
+      143 of good quality and 7 PTlower units of Fair quality, which the code's quality filter leaves out; of
+      the 143 the code's rule keeps 130. Outcome kept.
+  - claim: pt-depth
+    agrees: true
+    outcome: reproduced
+    reason: 636 um against 1004 um, and 636 against 892 um without the right hemisphere.
+    response: No change needed.
+  - claim: pt-spike-rates-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Main reading, the peak t-test gives p = 0.030 (< 0.05). PTlower medians are also out of tolerance
+      (6.69 Hz baseline, 20.96 Hz peak). Separately, a trial's spikes are taken by time window on the file's
+      clock, so at least 11.65% of baseline-epoch spikes belong to the previous trial, which inflates baseline
+      rates; it could not check how much this moves results without the processed-data variant restricted to
+      the 100 units the dandiset holds (problem 3).
+    response: Added a section that reruns the measures on the processed data for the 100 units the dandiset
+      holds. There peak rates also differ (p = 0.03), so the failure comes from the missing units. On these
+      units every unit's baseline rate is higher in the files (median by 0.99 and 0.97 Hz), which quantifies
+      problem 3; spikes are not reassigned by stored order, as a trial boundary is detectable only where the
+      time steps backwards. Outcome kept.
+  - claim: pt-lower-heterogeneous-rates
+    agrees: true
+    outcome: reproduced
+    reason: PTlower variance is larger. Bartlett and F test, baseline p = 0.002, peak p < 1e-4.
+    response: No change needed.
+  - claim: pt-lower-bursting
+    agrees: true
+    outcome: partially_reproduced
+    reason: Fisher p = 0.035; PTlower 19.6% is in tolerance, PTupper 4.5% (2 of 44) is not. With 44 units,
+      3.3 +/- 0.33% cannot be reached (one unit is 2.3%) (problem 2).
+    response: Added the same units on the processed data (2 of 44 and 11 of 56, the same counts) and said in
+      the conclusion and notes that the share cannot be reached with 44 units. Asked in questions/000006.yaml
+      whether such counts should be judged as fractions. Outcome kept.
+  - claim: pt-selective-any-epoch
+    agrees: true
+    outcome: not_reproduced
+    reason: 99 (or 96 to 100 under other readings) against 122 +/- 12.2. The fraction is 0.99 against the
+      paper's 0.94; the count fails because units are missing (problems 1 and 2).
+    response: Added the same units on the processed data (97 of 100) and asked in questions/000006.yaml whether
+      the counts of this and the other count claims should be judged as fractions when units are missing.
+      Outcome kept, as the criterion judges the count.
+  - claim: pt-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: Main reading, maximum ratio 1.08 (PTupper) and 1.23 (PTlower), both at most 1.3. The session-rule
+      variant exceeds the bound for PTlower (1.36).
+    response: No change needed.
+  - claim: pt-preparatory-activity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Part (b) holds under every reading. Part (a) counts are 29 and 38, against 40 +/- 4 and 44 +/- 4.4;
+      as fractions, 66% and 68% against 66% and 64% (problem 2).
+    response: Added the same units on the processed data (29 of 44 and 38 of 56) and the fractions; asked in
+      questions/000006.yaml whether such counts should be judged as fractions. Outcome kept.
+  - claim: pt-upper-early-preparatory
+    agrees: true
+    outcome: blocked
+    reason: Methods underspecified. Main reading, "larger" holds under rule (i) and fails under (ii); "more
+      consistent" fails (PTupper spread 0.31 against PTlower 0.25). That is partial under (i) and not
+      reproduced under (ii).
+    response: No change needed.
+  - claim: pt-upper-persistent
+    agrees: false
+    outcome: not_reproduced
+    reason: Reading (a) fails (68 to 165 of 420 bins not significant); reading (b) gives p = 0.053 and 0.058.
+      Close to the threshold; the processed-data variant passes.
+    response: Outcome kept as blocked, with the disagreement recorded. The claims file makes it depend on
+      pt-upper-early-preparatory, which is blocked, and the protocol blocks a claim that depends on a blocked
+      claim; its own test is reported as not holding. Added the processed data for the same 44 PTupper units,
+      where neither reading holds either (85 and 153 bins, p = 0.060 and 0.066), so the failure comes from the
+      missing units, not from the files.
+  - claim: pt-lower-cdearly-decay
+    agrees: true
+    outcome: reproduced
+    reason: p from 0.30 to 0.40 under every reading (main 0.348; paper 0.34).
+    response: No change needed.
+  - claim: pt-cd-stability
+    agrees: true
+    outcome: reproduced
+    reason: PTupper is higher under both measures and every reading (r 0.49 against 0.18; inner product 0.46
+      against 0.22).
+    response: No change needed.
+  - claim: pt-single-neuron-early-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: Measure (a), unit range, 0.410 and 0.237, both in tolerance; t-test p = 0.0012, Mann-Whitney p =
+      0.0041.
+    response: No change needed.
+  - claim: pt-upper-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: Means 64.3% and 58.7% in tolerance; Mann-Whitney p = 1e-4; PTlower count 3 matches. PTupper count
+      is 9 against 15 +/- 1.5, and 8 (not 10) of the top 10 are PTupper (problems 1 and 2).
+    response: Added the same units on the processed data (9 and 3 at 70%, 8 of the top 10, as the dandiset), so
+      the shortfall comes from the missing units; asked in questions/000006.yaml whether such counts should be
+      judged as fractions. Outcome kept.
+  - claim: pt-upper-decoding-rectified
+    agrees: true
+    outcome: partially_reproduced
+    reason: Mann-Whitney test holds, PTlower 0 reach 70%, PTupper mean 61.8% in tolerance. Out of tolerance,
+      PTupper count 8 (15 +/- 1.5), top 21 has 16 PTupper (20 +/- 2), PTlower mean 56.20% (needs at least
+      56.3%). The borderline PTlower mean does not change the outcome, as other conditions decide it (problem
+      3).
+    response: Added the same units on the processed data (9 and 0 at 70%, 15 of 21, means 62.33% and 56.84%).
+      The counts fall short because units are missing, and the PTlower mean leaves tolerance with the files,
+      whose baseline rates, the rectification threshold, are higher. Outcome kept.
+  - claim: pt-lower-late-and-motor
+    agrees: true
+    outcome: reproduced
+    reason: CDlate, larger (a and b), faster and longer all hold under all 16 readings.
+    response: No change needed.
+  - claim: pt-cdgo-onset
+    agrees: true
+    outcome: partially_reproduced
+    reason: PTlower is earlier under every reading, but the onsets are 30 to 45 ms and 75 to 85 ms, against 24
+      +/- 5 and 48 +/- 5. The onsets are also out of tolerance on the paper's own units (37.5 and 57.5 ms,
+      about 13 ms late for PTlower), which points to a systematic difference in the onset or projection method
+      that the notebook does not look into (problem 8); the q5 curves from 0 to 0.1 s were needed.
+    response: Added the 5th percentile from 0 to 0.1 s on the dandiset, the processed data for the same units
+      and all the paper's units. The PTlower onset is the 37.5 ms bin in all three, so its offset comes from
+      the method shared by all three, not from the data; what in it is not tested. The PTupper onset is 77.5,
+      82.5 and 57.5 ms, so most of its delay comes from the missing units. Outcome kept.
+  - claim: reaction-time
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive, the files hold lick times only and no video. Lick latency (median 0.122 s)
+      measures something else.
+    response: No change needed.
+  - claim: pt-cd-change-at-go-cue
+    agrees: true
+    outcome: blocked
+    reason: Methods underspecified. Level 0.5 meets the criterion (PTlower shorter and PTupper at least 0.2 s);
+      level 0.75 gives PTupper 0.19 s < 0.2 s, so only partial. At level 0.5 the main reading separates the
+      types by one bin (0.3675 against 0.3725 s), on a median with no uncertainty, and PTlower's 0.37 s is
+      hardly "rapid"; the code variant gives 0.07 s (problem 9).
+    response: The conclusion and notes now say that at level 0.5 the types differ by one bin on a bootstrap
+      median with no interval. Outcome kept.
+  - claim: pt-lower-movement-termination
+    agrees: true
+    outcome: blocked
+    reason: Methods underspecified (at best partial). CDlate selectivity stays significant after the last lick
+      under every reading (5 to 29 bins). CDgo passes only with window (a) and the subject reading of a mouse.
+      The notebook's own check of the rebuilt last lick prints False (subject, projection (a), CDgo, window (a)
+      flips) (problem 4). Lick-aligned rates hold only spikes up to 3.0 s after the go cue, which biases toward
+      "selectivity ceases", not quantified (problem 5). The windows fail for CDlate even on the paper's own
+      units and licks, so they likely do not capture the claim (problem 6).
+    response: Added the share of unit-trials whose last lick is more than 2.5 s after the go cue (0.16% PTupper,
+      0.17% PTlower), so the cut does not bear on the result. Problem 4 was already in the conclusion and notes;
+      problem 6 is now in the notes. Outcome kept.
+  - claim: pt-cohort-control
+    agrees: false
+    outcome: partially_reproduced
+    reason: Main reading, the CDgo onsets agree within the PT difference, but the PTlower-cohort CDearly median
+      (9.82) lies above the PTupper-cohort 95th percentile (8.86). The CDearly test fails because the PTlower
+      cohort is more selective than the PTupper cohort, the opposite direction to the PT-type difference; the
+      criterion does not test whether the cohorts explain that difference (problem 7). The dandiset lacks the
+      unidentified units of 11 sessions (problem 1).
+    response: Outcome kept as blocked, with the disagreement recorded. The claims file makes it depend on
+      pt-upper-early-preparatory, which is blocked, and the protocol blocks a claim that depends on a blocked
+      claim; its own test gives partially reproduced, as the verifier finds. Problem 7 is now in the conclusion
+      and notes and is asked in questions/000006.yaml.
+  - claim: pt-types-differ-in-timing
+    agrees: false
+    outcome: partially_reproduced
+    reason: Of the six claims it depends on, single-neuron early selectivity (PTupper side) and late-and-motor
+      (PTlower side) are reproduced; persistent, early-preparatory and onset are not.
+    response: Outcome kept as blocked, with the disagreement recorded. Two of the six claims it depends on are
+      blocked (pt-upper-early-preparatory, and pt-upper-persistent through it), and the protocol blocks a
+      claim that depends on a blocked claim. The conclusion and notes now say the criterion would give
+      partially reproduced without that rule.
 EOF
+python -c "import yaml;d=yaml.safe_load(open('attempts/000006-economo-2018-02.yaml'));print(len(d['verifications'][0]['results']), len(d['outcomes']))"; python tools/entry.py check entries/000006-economo-2018 2>&1 | grep -v "01.yaml"
 ```
 
 ```
-1
+31 31
+22 error(s)
 ```
-
-**Agent**
-
-Now the attempt record.
 
 **Agent calls Bash**
 
 ```bash
-cd ../.. && python - <<'EOF'
-import re
-p='attempts/000006-economo-2018-01.yaml'; s=open(p).read()
-def rep(old,new):
-    global s
-    assert s.count(old)==1, old
-    s=s.replace(old,new)
-rep('''    times of the files were built. Both from Ephys.zip.''','''    times of the files were built. Both from Ephys.zip. After the first verification round, all
-    14 processed data files were read, in the data check (how the spike times of every session were
-    built, and which of the paper's units the dandiset holds) and in variants that rerun each test on
-    the paper's 61 PTupper and 69 PTlower units. No outcome rests on them.''')
-# preparatory
-rep('''    p < 0.001. The selective units lie at nominal depths of 430 to 1600 um; the files give no layer
-    per unit, so the statement's "layer 5" is not checked.''','''    p < 0.001. The selective units lie at nominal depths of 430 to 1600 um; the files give no layer
-    per unit, so the statement's "layer 5" is not checked. With one session per animal 26 of 36
-    units are selective (p = 0.001), and among the paper's 130 units from its processed data 89 are
-    (p = 0.001).''')
-rep('''  - Units recorded on different days in one animal are counted separately, as in the code; they
-    may be the same neurons.
-- claim: pt-upper-early-preparatory''','''  - Units recorded on different days in one animal are counted separately, as in the code; they
-    may be the same neurons (44 of 100 lie within 20 um of a unit of the same animal on another
-    day, and the files hold no waveforms). A variant keeps one session per animal.
-  - The dandiset holds 44 of the paper's 61 PTupper and 56 of its 69 PTlower units; the code's
-    inclusion rule gives the paper's counts on its processed data and the same decision for every
-    unit the dandiset holds.
-- claim: pt-upper-early-preparatory''')
-rep('''    p < 0.05, 0.432 at p < 0.001; 26 of 44 without flagged spikes.''','''    p < 0.05, 0.432 at p < 0.001; 26 of 44 without flagged spikes. One session per animal gives 8
-    of 20 (null 99th percentile 0.100, p = 0.001); the paper's 61 PTupper units give 40 of 61
-    (p = 0.001).''')
-rep('''    the late delay. Both parts hold without flagged spikes and without the trials marked not good.''','''    the late delay. Both parts hold without flagged spikes, without the trials marked not good,
-    with one session per animal ((a) 12 of 20, p = 0.001; (b) cosine 0.670, p = 0.006) and on the
-    paper's 61 PTupper units ((a) 38 of 61, p = 0.001; (b) cosine 0.514, p = 0.002).''')
-rep('''    neither (0.054 and 0.14). The response epoch rate differs from baseline in 53 of 56 PTlower
-    units and 37 of 44 PTupper units.''','''    neither (0.054 and 0.14). The response epoch rate differs from baseline in 53 of 56 PTlower
-    units and 37 of 44 PTupper units. The variants give the same split. With one session per
-    animal (16 units) part (a) holds (p = 0.016) and part (b) does not (p = 0.23). On the paper's
-    69 PTlower units from its processed data, (a) holds (0.507 against 0.652, p = 0.049) and (b)
-    does not (0.551, p = 0.37); there both parts hold at p < 0.001 and neither at p < 0.05.''')
-rep('''    similarity is above its shuffle null (p = 0.007) and PTlower's is not (0.177, p = 0.43).''','''    similarity is above its shuffle null (p = 0.007) and PTlower's is not (0.177, p = 0.43). On
-    the paper's 130 units from its processed data, (a) is 0.656 against 0.507 (p = 0.062) and (b)
-    is reversed (0.551 against 0.770, p = 0.007 for the reverse); with one session per animal, (a)
-    p = 0.28 and (b) is reversed (0.438 against 0.800). The paper's measure of early information
-    (Extended Data Fig. 9, single-unit decoding accuracy in the sample epoch, at least 70%) goes the
-    abstract's way, with 7 of 44 PTupper against 1 of 56 PTlower units here (Fisher p = 0.012) and
-    12 of 61 against 1 of 69 on the paper's units (p = 0.0005), where the legend gives 15 of 61
-    against 3 of 69. Part (a) is thus supported under the paper's measure but not under the
-    criterion's; part (b) is reversed under every variant.''')
-rep('''  - Each animal holds one type (8 PTupper and 4 PTlower animals), so type and animal are
-    confounded; the PTlower recordings include sessions in both hemispheres.''','''  - Each animal holds one type (8 PTupper and 4 PTlower animals), so type and animal are
-    confounded; the PTlower recordings include sessions in both hemispheres.
-  - The dandiset lacks 17 of the paper's 61 PTupper and 13 of its 69 PTlower units; the variant on
-    the paper's units gives the same outcome.''')
-rep('''findings:
-''','''findings:
-- kind: data_missing
-  statement: 11 sessions of the paper's processed data (Figshare doi:10.25378/janelia.7007846) that
-    hold tagged units are not in the dandiset. They hold 17 of the 61 PTupper and 13 of the 69
-    PTlower units the paper analysed, so the dandiset holds 44 and 56. Every tagged unit the
-    dandiset does hold is in the processed data with the same label and the same inclusion
-    decision under the paper's code. The dandiset's description says some files were found to be
-    broken and were left out, without naming them.
-''')
-rep('''- kind: other
-  statement: In the paper's processed data the first ten trials of the session checked have spike
-    windows shifted by about 2.7 s against the other trials; the paper's code leaves out the first
-    ten trials of each unit, which hides this. The files carry the same shift.''','''- kind: other
-  statement: In the paper's processed data, in every one of the 53 sessions the dandiset holds, the
-    spike windows of the first ten trials start later relative to the pole than those of the other
-    trials (by about 2.7 s in the session examined in detail); the paper's code leaves out the first
-    ten trials of each unit, which hides this. The files carry the same shift, as their spike times
-    equal the processed ones in every unit.''')
-open(p,'w').write(s)
+cd  grep -n "—\|rather" attempts/000006-economo-2018-02.yaml questions/000006.yaml entries/000006-economo-2018/README.md; python -c "
+import json;nb=json.load(open('entries/000006-economo-2018/reproduce_economo_2018.ipynb'))
+for i,c in enumerate(nb['cells']):
+  s=''.join(c['source'])
+  if '—' in s or 'rather' in s: print(i)
+"; grep -nE "^    [^ ].*[^ ]: " attempts/000006-economo-2018-02.yaml | head
+```
+
+```
+14:    name: CatalystNeuro
+16:    harness: Claude Code (GitHub Actions)
+17:    model: claude-opus-5-5
+18:    protocol: pilot-10
+526:    agrees: true
+527:    outcome: reproduced
+528:    reason: The criterion's counting rule gives 27 clusters, and the PT cells fall in Slco2a1, Hpgd and Npsr1
+530:    response: No change needed.
+532:    agrees: true
+533:    outcome: reproduced
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+d=yaml.safe_load(open('attempts/000006-economo-2018-02.yaml'))
+def walk(x,path=""):
+    if isinstance(x,dict):
+        for k,v in x.items(): walk(v,path+"."+str(k))
+    elif isinstance(x,list):
+        for i,v in enumerate(x): walk(v,path+f"[{i}]")
+    elif isinstance(x,str) and ": " in x: print(path, x[:80])
+walk(d)
+q=yaml.safe_load(open('questions/000006.yaml')); walk(q)
 EOF
 ```
 
@@ -1565,277 +2045,129 @@ EOF
 (Bash completed with no output)
 ```
 
+**Agent**
+
+Record and questions are in place. Now a short README addition, then a final re-run so the executed copy carries the updated conclusions.
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/000006-economo-2018/README.md",
+ "old_string": "paper's numbers; those runs are variants, and no outcome rests on them. The spike and lick times in",
+ "new_string": "paper's numbers; those runs are variants, and no outcome rests on them. Run on the processed data for\nonly the 100 units the dandiset holds, the code gives the dandiset's counts and test results, so most\nfailures here come from the missing units; the files' clock raises every unit's baseline rate by about\n1 Hz. The spike and lick times in"
+}
+```
+
+```
+The file entries/000006-economo-2018/README.md has been updated successfully.
+```
+
 **Agent calls Bash**
 
 ```bash
-cat >> attempts/000006-economo-2018-01.yaml <<'EOF'
-verifications:
-- date: 2026-10-14
-  kind: agent
-  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
-  reviewed: The executed notebook of the first run with the conclusion cells and the summary
-    removed, the helper module and the claims file. The header still listed the outcomes.
-  results:
-  - claim: pt-types-transcriptomic
-    agrees: true
-    outcome: blocked
-    reason: The archive holds only 53 NWB ephys files (Units, ElectrodeGroup, BehavioralEvents). No
-      RNA-seq (the paper puts it in GEO GSE119182) and no reconstructions.
-    response: No change.
-  - claim: pt-types-shared-targets
-    agrees: true
-    outcome: blocked
-    reason: There is no anatomy in the dandiset or the asset metadata. The units only carry
-      cell_type labels.
-    response: No change.
-  - claim: pt-upper-thalamus-projection
-    agrees: true
-    outcome: blocked
-    reason: PTupper is a label only. Neither the files nor the asset metadata name an injection
-      site or projection target, and the label-to-target mapping comes from external MATLAB code.
-    response: No change.
-  - claim: pt-lower-medulla-projection
-    agrees: true
-    outcome: blocked
-    reason: Same as for pt-upper-thalamus-projection.
-    response: No change.
-  - claim: pt-preparatory-activity
-    agrees: true
-    outcome: reproduced
-    reason: 72 of 100 units are delay-selective; the shuffle null has median 0.010 and 99th
-      percentile 0.040, p = 0.001. This holds for each type, in all 12 animals (0.25 to 0.85), at
-      thresholds 0.05 to 0.001, and in both variants. Layer cannot be checked. Among its problems,
-      the unit counts disagree with the paper (61 PTupper and 69 PTlower in the Extended Data
-      legends) and this is never checked; units on consecutive days may be the same neuron; the
-      overlap of trials puts 11.7% flagged spikes in the baseline epoch, a lower bound;
-      spikes_per_trial divides by last - first where the trial count is last - first + 1; the
-      decoding check z-scores with the left-out trial; the baseline fraction (about 3%, 4.5% for
-      PTupper) hints at slight inflation; and the header still held the outcome table. Only the
-      first two bear on conclusions, and on the type comparisons.
-    response: Added a data check that reads all of the paper's processed data. The code's inclusion
-      rule there gives 61 and 69 units, and every tagged unit of the dandiset gets the same decision
-      as in the processed data. The difference comes from 11 sessions missing from the dandiset
-      (recorded as a data_missing finding). Added variants with one session per animal and on the
-      paper's 130 units (26 of 36 and 89 of 130 selective, both p = 0.001), and the depths of
-      units by session. The spikes per trial follow the code, which divides by range(eventTrials),
-      so they were kept and the reason is now in a comment. The decoding check now z-scores with
-      the training trials only; its numbers barely moved (median 0.893). The overlap and the baseline
-      fraction were already shown and are left as stated. The outcomes were removed from the header
-      table.
-  - claim: pt-upper-early-preparatory
-    agrees: true
-    outcome: reproduced
-    reason: 27 of 44 PTupper units are sample-selective, against a null 99th percentile of 0.045,
-      p = 0.001. The baseline reference is 2 of 44, and the variants agree.
-    response: Added variants with one session per animal (8 of 20, p = 0.001) and on the paper's 61
-      PTupper units (40 of 61, p = 0.001).
-  - claim: pt-upper-persistent
-    agrees: true
-    outcome: reproduced
-    reason: (a) 27 of 44 are late-delay selective, p = 0.001. (b) The cosine is 0.495 against a null
-      95th percentile of 0.433, p = 0.016 (0.007 with another seed). The Pearson variant gives
-      r = 0.50, p = 6e-4. Persistence is moderate, as only 17 of 27 sample-selective units keep
-      their sign.
-    response: Added variants with one session per animal and on the paper's 61 PTupper units; both
-      parts hold in each.
-  - claim: pt-lower-late-and-motor
-    agrees: true
-    outcome: partially_reproduced
-    reason: (a) sample 0.482 against late delay 0.714, McNemar p = 0.0096, which holds. (b) sample
-      against response 0.643, p = 0.088, which fails. This depends on the threshold, as at
-      p < 0.001 both parts pass and at p < 0.05 neither does. The partial outcome is fragile in both
-      directions, the unit counts differ from the paper's 69, and units pooled across sessions may
-      be the same neuron.
-    response: Added variants with one session per animal and on the paper's 69 PTlower units from
-      its processed data. Both give the same split, (a) holding and (b) not; the threshold
-      dependence is the same on the paper's units. The 15 PTlower units left out here are left out
-      by the paper's code too. Outcome kept.
-  - claim: pt-types-differ-in-timing
-    agrees: true
-    outcome: not_reproduced
-    reason: (a) sample 27/44 against 27/56, p = 0.134. (b) is reversed, response PTlower 0.643
-      against PTupper 0.841 (p = 0.022 for PTupper > PTlower). The by-animal comparison agrees. The
-      paper's own measure points the other way, as the coding-direction variant has PTupper 0.47
-      against PTlower 0.22, consistent with Extended Data Fig. 7c; that variant does not change the
-      outcome. It asked for a test with the measure of Extended Data Fig. 9 (single-unit decoding
-      accuracy in the sample epoch, at least 70%, paper 15/61 against 3/69).
-    response: Added the Extended Data Fig. 9 measure, following decodingAccuracy.m and doROC.m. It
-      supports part (a), with 7 of 44 against 1 of 56 here (p = 0.012) and 12 of 61 against 1 of 69 on
-      the paper's units. Added variants with one session per animal and on the paper's 130 units.
-      Under both, part (a) is not significant by the criterion and part (b) stays reversed (on the
-      paper's units 0.551 against 0.770, p = 0.007 for the reverse), so the reversal does not
-      come from the missing units. Outcome kept, as the criterion decides it.
+cd  python tools/entry.py run entries/000006-economo-2018 2>&1 | tail -2; python - <<'EOF'
+import json
+a=json.load(open("executed/000006-economo-2018/reproduce_economo_2018.ipynb"))
+def outs(nb): return [[o.get("text","") if "text" in o else o.get("data",{}).get("text/plain","") for o in c.get("outputs",[])] for c in nb["cells"] if c["cell_type"]=="code"]
+import re
+o=outs(a)
+txt="\n".join("".join("".join(x) for x in c) for c in o)
+for k in ["0.053","37.5","56.1981","0.16%","Of good quality (Excellent, Good, single): 143","Notebook ran"]:
+    print(k, k in txt)
+print(any(o.get("output_type")=="error" for c in a["cells"] for o in c.get("outputs",[])))
 EOF
-python tools/entry.py check entries/000006-economo-2018 2>&1 | tail -5
-```
-
-```
-0 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='attempts/000006-economo-2018-01.yaml'; s=open(p).read()
-old=s[s.index("thresholds 0.05 to 0.001, and in both variants. Layer cannot be checked. Among its problems,"):s.index("    response: Added a data check")]
-new='''thresholds 0.05 to 0.001, and in both variants. Layer cannot be checked. Problems it listed
-      across claims, marked as affecting a conclusion, are that the unit counts disagree with the
-      paper (61 PTupper and 69 PTlower in the Extended Data legends) and the notebook never checks
-      this, and that units on consecutive days may be the same neuron, so unit-level p-values may
-      overstate n. Marked as not affecting a conclusion are the trial overlap (11.7% of baseline
-      spikes flagged, a lower bound), the clock left unverified in 7 sessions, spikes_per_trial
-      dividing by last - first where the trial count is last - first + 1, the decoding check
-      z-scoring with the left-out trial, a baseline fraction (about 3%, 4.5% for PTupper) that hints
-      at slight inflation, and the outcome table left in the header.
-'''
-s=s.replace(old,new); open(p,'w').write(s)
-EOF
-python tools/entry.py check entries/000006-economo-2018 2>&1 | tail -2; grep -n "—\|rather" attempts/000006-economo-2018-01.yaml entries/000006-economo-2018/README.md; python -c "
-import nbformat;nb=nbformat.read('entries/000006-economo-2018/reproduce_economo_2018.ipynb',4)
-print([i for i,c in enumerate(nb.cells) if '—' in c.source or 'rather' in c.source])"
-```
-
-```
-0 error(s)
-[]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-p='attempts/000006-economo-2018-01.yaml'; s=open(p).read()
-old="""      paper's 130 units (26 of 36 and 89 of 130 selective, both p = 0.001), and the depths of
-      units by session."""
-new="""      paper's 130 units (26 of 36 and 89 of 130 selective, both p = 0.001), and the depths of
-      units by session. The spike times of all 1149 units in all 53 sessions equal those of the
-      processed data, which checks the clock of the 7 sessions the decoding could not; the 5
-      included units in them are listed with their p-values."""
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-
-p='entries/000006-economo-2018/README.md'; s=open(p).read()
-old="""The epochs, trial and unit selection and the selectivity test follow the analysis code on the
-paper's Figshare record (doi:10.25378/janelia.7007846)."""
-new="""The epochs, trial and unit selection and the selectivity test follow the analysis code on the
-paper's Figshare record (doi:10.25378/janelia.7007846). Applied to the paper's processed data on that
-record, the code's selection gives the paper's 61 PTupper and 69 PTlower units. The dandiset holds 44
-and 56 of them, as 11 sessions are missing from it. Variants rerun every test on the paper's units
-and give the same outcomes."""
-assert old in s; s=s.replace(old,new)
-s=s.replace("It takes about a minute, half of it streaming the files.","It takes about three minutes, most of it streaming the files and the processed data.")
-s=s.replace("- `alm.py`: loading the files, the code's unit inclusion rule, epoch rates, the selectivity test and\n  its label-shuffle null.","- `alm.py`: loading the files and the paper's processed data, the code's unit inclusion rule, epoch\n  rates, the selectivity test and its label-shuffle null, and the single-unit decoding accuracy.")
-open(p,'w').write(s)
-
-p='claims/000006/10.1038-s41586-018-0642-9.yaml'; s=open(p).read()
-old="""# Chance for a fraction of selective units"""
-new="""# After the first verification round, the public legends of Extended Data Figs 5 to 10 were read
-# (the number of units, 61 PTupper and 69 PTlower, and the decoding measure of Extended Data
-# Fig. 9). They are used in variants only; no criterion was changed.
-# Chance for a fraction of selective units"""
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-grep -n "runtime_minutes" entries/000006-economo-2018/entry.yaml; grep -n "alm.py\|reproduce_" entries/000006-economo-2018/README.md
-```
-
-```
-14:  runtime_minutes: 2
-30:- `reproduce_economo_2018.ipynb`: the analysis. It takes about three minutes, most of it streaming the files and the processed data.
-31:- `alm.py`: loading the files and the paper's processed data, the code's unit inclusion rule, epoch
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/  runtime_minutes: 2/  runtime_minutes: 3/' entries/000006-economo-2018/entry.yaml && python tools/entry.py all entries/000006-economo-2018 2>&1 | tail -3
 ```
 
 ```
 Installed kernelspec registry-000006-economo-2018 in executed/000006-economo-2018/.venv/share/jupyter/kernels/registry-000006-economo-2018
-0 error(s)
-pass  reproduce_economo_2018.ipynb  (147 s)
+pass  reproduce_economo_2018.ipynb  (666 s)
+0.053 True
+37.5 True
+56.1981 True
+0.16% True
+Of good quality (Excellent, Good, single): 143 True
+Notebook ran True
+False
 ```
 
 **Agent calls Bash**
 
 ```bash
-python - <<'EOF'
-import nbformat
-nb=nbformat.read('executed/000006-economo-2018/reproduce_economo_2018.ipynb',4)
-out='\n'.join(''.join(o.get('text','') for o in c.outputs if o.output_type=='stream') for c in nb.cells if c.cell_type=='code')
-for k in ["Median accuracy","1149 of 1149","Tagged units in both","p = 0.0160","McNemar p = 0.04937","p = 0.06245","7/44","12/61 (0.197) against PTlower 1/69","26 of 36","8 of 20","cosine 0.670","cosine 0.514","Dandiset description"]:
-    print(k, k in out)
-err=[o for c in nb.cells if c.cell_type=='code' for o in c.outputs if o.output_type=='error']
-print('errors',len(err))
+cd  python - <<'EOF' > $TMPDIR/out2.txt
+import json
+nb=json.load(open("executed/000006-economo-2018/reproduce_economo_2018.ipynb"))
+for i,c in enumerate(nb["cells"]):
+    if c["cell_type"]!="code": continue
+    print("=====",i,c["execution_count"],c["metadata"].get("tags"))
+    for o in c.get("outputs",[]):
+        if "text" in o: print("".join(o["text"]))
+        elif "data" in o and "text/plain" in o["data"] and "image/png" not in o["data"]: print("".join(o["data"]["text/plain"]))
 EOF
-git status --short | grep -v "^??"
+diff $TMPDIR/out.txt $TMPDIR/out2.txt; git status --short
 ```
 
 ```
-Median accuracy True
-1149 of 1149 True
-Tagged units in both True
-p = 0.0160 True
-McNemar p = 0.04937 True
-p = 0.06245 True
-7/44 True
-12/61 (0.197) against PTlower 1/69 True
-26 of 36 True
-8 of 20 True
-cosine 0.670 True
-cosine 0.514 True
-Dandiset description True
-errors 0
- M attempts/000006-economo-2018-01.yaml
- M claims/000006/10.1038-s41586-018-0642-9.yaml
+2c2
+< loaded 53 files from dandiset 000006 version 0.220126.1855 in 55 s
+---
+> loaded 53 files from dandiset 000006 version 0.220126.1855 in 56 s
+165c165
+< read in 51 s: 150 tagged units in 64 sessions
+---
+> read in 52 s: 150 tagged units in 64 sessions
+1035c1035
+< cohort bootstraps in 188 s
+---
+> cohort bootstraps in 192 s
+1116,1117c1116,1117
+< ===== 124 54 None
+< Notebook ran in 650 s
+---
+> ===== 125 54 None
+> Notebook ran in 656 s
+ M attempts/000006-economo-2018-02.yaml
  M entries/000006-economo-2018/README.md
- M entries/000006-economo-2018/alm.py
- M entries/000006-economo-2018/entry.yaml
- M entries/000006-economo-2018/reproduce_economo_2018.ipynb
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import nbformat;nb=nbformat.read('entries/000006-economo-2018/reproduce_economo_2018.ipynb',4)
-print(sum(len(c.get('outputs',[])) for c in nb.cells if c.cell_type=='code'))"; python tools/entry.py check entries/000006-economo-2018 | tail -1
-```
-
-```
-0
-0 error(s)
+[... 13 more lines not kept]
 ```
 
 **Agent**
 
-No outcome changed. The verifier agreed with all nine (four blocked, three reproduced, one partially reproduced, one not reproduced), and every new variant points the same way. The entry re-runs from a clean environment in 147 s with no errors, `check` passes, and the round is recorded under `verifications` in `attempts/000006-economo-2018-01.yaml`. Nothing is committed.
+No outcome changed in this round. The entry ran from a clean environment in 11 minutes, twice, and gave the same numbers both times; all results that were already there match the previous run exactly.
 
-**What I added or corrected, point by point**
+**Where the verifier disagreed.** The verifier gave three outcomes that differ from the record. I kept all three as blocked and recorded the disagreement:
+- **pt-upper-persistent:** the verifier says not reproduced.
+- **pt-cohort-control:** the verifier says partially reproduced.
+- **pt-types-differ-in-timing:** the verifier says partially reproduced.
 
-- **Unit counts (point 1).** I ran the paper's inclusion rule on all 14 of its processed data files from Figshare. It gives exactly the paper's 61 PTupper and 69 PTlower units. All 117 tagged units in the dandiset get the same label, the same decision and the same reasons there.
-  - The shortfall comes from 11 processed sessions with tagged units that are not in the dandiset. They hold 17 included PTupper and 13 included PTlower units (44 + 17 = 61, 56 + 13 = 69). I recorded this as a new `data_missing` finding.
-  - The 15 PTlower units left out here are also left out by the paper's code, which corrects the verifier's guess that the paper kept most of them.
-- **Same neuron on several days (point 2).** I added the depth of each unit by session: 44 of 100 units lie within 20 µm of a unit of the same animal on another day, and the files hold no waveforms. I also added a variant using one session per animal.
-- **Variants on the paper's 130 units.** Every claim now has the one-session-per-animal variant and a rerun on the paper's 130 units from the processed data.
-  - Both give the same split on pt-lower-late-and-motor: part (a) holds, part (b) does not.
-  - On pt-types-differ-in-timing, the response-epoch reversal persists on the paper's units (PTlower 0.551 against PTupper 0.770), so it does not come from the missing units.
-- **Clock in all sessions (C3, C4).** The spike times of all 1149 units in all 53 sessions equal the processed ones. This checks the clock in the seven sessions the decoding check could not settle; their five included units are listed with their p-values. The first ten trials are shifted in every session.
-- **Extended Data Fig. 9 measure (C5).** I added the single-unit sample-epoch decoding accuracy, following `decodingAccuracy.m` and `doROC.m`. It supports part (a) of pt-types-differ-in-timing:
-  - 7 of 44 PTupper against 1 of 56 PTlower units here (p = 0.012);
-  - 12 of 61 against 1 of 69 on the paper's units, where the paper reports 15 of 61 against 3 of 69.
+The verifier judged each one on its own test. The claims file makes each depend on a blocked claim (pt-upper-early-preparatory, or pt-upper-persistent through it), and the protocol blocks a claim whose dependency is blocked. The notes now give what each claim's own test shows. The other 28 outcomes agree with the verifier.
 
-  The outcome stays not reproduced, because the criterion decides it, and part (b) is reversed under every variant.
-- **Decoding check (point 7).** The z-scoring now uses only the training trials. The median accuracy is now 0.893.
-- **Header (point 9).** I removed the outcomes from the header table.
-- **Text.** I updated the conclusions, summary, README, the attempt record's notes, deviations and findings, the `inputs` entry, and a note in the claims file that the Extended Data legends were read after round 1 for variants only. The runtime in `entry.yaml` is now 3 minutes.
+**Added to the notebook** (output the verifier asked for):
+- **A new section re-running the measures on the paper's processed data for only the 100 units the dandiset holds.** This separates the two causes of failure:
+  - The failures of counts and tests come from the missing sessions: unit counts, the spike-rate test (p = 0.03 on these units too), decoding counts, late-delay counts, PTupper persistence (p = 0.060 and 0.066) and the PTupper CDgo onset.
+  - The files' clock raises every unit's baseline rate, by a median of about 1 Hz. That moves the rectified PTlower decoding mean out of tolerance (56.20% against 56.84%).
+- **CDgo onset over 0 to 0.1 s.** The PTlower onset is 37.5 ms in the files, the same units processed, and all the paper's units. So its distance from the paper's 24 ms comes from the shared method, not the data. I did not test which part of the method causes it.
+- **Lick-aligned window cut.** Only 0.16% (PTupper) and 0.17% (PTlower) of unit-trials have a last lick more than 2.5 s after the go cue, so the 3.0 s cut does not bear on pt-lower-movement-termination.
+- **AA0134.** None of its axon nodes lies in the superior colliculus.
+- **The 150 tagged units.** They are the paper's 143 of good quality plus 7 Fair-quality PTlower units, which the code's filter leaves out.
+- **Anatomy.zip images.** Each folder's image count and file sizes, read from the archive's directory.
 
-**What I did not change**
+**Text corrected or added:**
+- The conclusions now state the one-bin margin in pt-cd-change-at-go-cue and the opposite direction of the cohort difference in pt-cohort-control.
+- The summary, the README, the claim notes and one dandiset finding (the raised baseline rates) are updated to match.
+- The round is recorded under `verifications`, with the verifier's reasons and my responses.
+- I added two questions to `questions/000006.yaml` for a reader:
+  - whether the count criteria should be judged as fractions when units are missing;
+  - whether the cohort-control test should count a difference in the opposite direction as a failure.
 
-- **Spikes per trial (point 6).** I kept the division by last − first, because the paper's code does the same (`range(eventTrials)`). A comment in `alm.py` now says so.
-- **Points 3, 4 and 8.** These are the threshold sensitivity, the trial overlap and the slight baseline inflation. They were already shown in the notebook and are left as stated.
-- **Paper text.** It is saved under `paper/` (the Nature page and its text, with the abstract and Extended Data legends). The full text is still paywalled, so the criteria were not revised.
+**Not done:**
+- **Reassigning spikes to trials by stored order.** A trial boundary shows only where the time steps backwards, so the assignment would stay ambiguous. The verifier offered the processed-data comparison as an alternative, and I added that.
+- **Opening the anatomy images in the notebook.** The entry check forbids reading images. The pixel size I found while preparing (8600 by 6200, greyscale) is mentioned as not run in the notebook and decides nothing.
+- **The earlier record.** `tools/entry.py check` reports 22 errors, all in that record (`attempts/000006-economo-2018-01.yaml`), which lacks the newer claims. They were there before my changes, and I left that record as it was.
+
+There are also untracked files in the working tree that I did not create (`.bashrc`, `.gitconfig`, `.idea`, `scripts` and others). You may want to make sure the workflow doesn't commit them.
 
 ## End of run
 
-50 turns, 19 minutes, result: success.
+66 turns, 31 minutes, result: success.

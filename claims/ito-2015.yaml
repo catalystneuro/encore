@@ -1,0 +1,854 @@
+# Claims for Ito & Doya (2015), J Neurosci 35(8):3499-3514, on dandiset 001642.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record, open access, as served by PMC (PMC4339358), stored in
+# paper/10.1523-jneurosci.1962-14.2015.txt: abstract, Introduction, Materials and Methods,
+# Results, Discussion and the figure legends. The paper has no supplement. No PDF was available.
+# The display equations of the Methods (decision-tree probability, normalized likelihood,
+# Markov model, DFQ update and choice rule, parameter drift, mutual information, BIC, and the
+# regression model (2)) are images on PMC and are missing from the text; only the words around
+# them were read. Where a criterion needs one of them, it is named as open with the readings
+# the surrounding text allows. Figure panels (such as the windows drawn in Fig. 6A) could not
+# be read. The paper links no code, so no code was read.
+#
+# Data the paper used, as it reports them. Seven male Long-Evans rats. 86 recording sessions,
+# 78,107 trials: 12,185 single fixed-choice, 22,234 double fixed-choice, 36,292 free-choice and
+# 3505 extinction-test trials. Each trial starts with a start tone; a center-hole poke of
+# 500-1000 ms brings one of three cue tones (left tone 900 Hz, right tone 6500 Hz, choice tone
+# white noise, 1000-2000 ms); after cue offset the rat pokes the left or right hole and hears
+# a reward tone (followed by a sucrose pellet) or a no-reward tone. Reward probabilities
+# (left, right) are (50%, 0%) for the left tone, (0%, 50%) for the right tone, and one of
+# (90, 50), (50, 90), (50, 10), (10, 50) per block for the choice tone. Block sequence per
+# repeat: two single fixed-choice blocks (left tone, then right tone), two double fixed-choice
+# blocks (left and right tones at random), four free-choice blocks (choice tone), with
+# extinction tests of 5 unrewarded trials for left and right tones between the third and fourth
+# blocks and for the choice tone between the sixth and seventh. Repeated two or three times per
+# session. Wait-error trials (leaving the center hole early) and error trials (no L/R poke in
+# 60 s) end with an error tone. Six task events per trial: E1 center-hole entry, E2 cue onset,
+# E3 cue offset, E4 center-hole exit, E5 L/R-hole entry, E6 L/R-hole exit; E0 is 2 s before E1
+# and E7 2 s after E6 (the Methods print "2 s after E8", a typo). Phases 1 to 7 lie between
+# them; the mean durations of Phases 2 to 6 are 0.75, 1.50, 0.54, 0.76 and 0.38 s.
+# Units: spike-sorted single units from three bundles of eight microwires per rat, DLS and DMS
+# in the left hemisphere, VS in the right. 260 DLS, 178 DMS and 179 VS neurons passed the
+# stability criteria; of these 190, 105 and 119 were phasically active neurons (PANs), the
+# only units analysed. Behavioural model comparison used 202 sessions (101 training, 101
+# test), more than the 86 recording sessions; the paper does not say where the others are from.
+#
+# Methods fixed by the paper and used throughout (Materials and Methods):
+#  - Unit inclusion: the five exclusion conditions of Electrophysiological recording, the
+#    cross-correlation duplicate check, then PAN = proportion of time spent in ISIs longer than
+#    1 s greater than 0.4.
+#  - EASH: spike times within Phases 2 to 6 of each trial scaled linearly onto the mean phase
+#    durations above, spike counts per phase preserved; Phases 1 and 7 (2 s each) unscaled;
+#    10 ms bins.
+#  - Mutual information (Figs. 5, 9, 10): firing F in a window takes four levels f1 to f4;
+#    the event X is binary (left or right action; fixed- or free-choice block; rewarded or
+#    not). MI is in bits/s. Fig. 5 uses 100 ms EASH bins and all trials of single fixed,
+#    double fixed and free-choice blocks. Figs. 9 and 10 use the last 20 trials of each block
+#    and a sliding window of the preceding 500 ms, step 50 ms. Significance threshold for a
+#    region average, p < 0.01, is the second largest of 100 region averages of MI with random
+#    binary events.
+#  - Regression (Figs. 7, 8): y(t), the spike count of trial t in a time bin, on a constant, the
+#    trial index t, a(t) (1 left, 2 right), r(t) (1 reward, 0 none), a(t-1), r(t-1), QL(t) and
+#    QR(t) from the FQ-learning model with time-varying parameters. For each neuron and bin, the
+#    subset of regressors with the smallest BIC is chosen, and a regressor is coded when its
+#    coefficient has p < 0.01 in that model. Action-value coding is QL or QR coded; state-value
+#    coding is QL and QR coded with the same sign; policy coding is both with opposite signs.
+#
+# Details the paper leaves open and that bear on several claims (each criterion names those
+# it needs):
+#  - O1, MI estimation. The four firing levels and any bias correction are referred to Ito and
+#    Doya (2009) and not restated. Readings: (a) levels as quartiles of the neuron's spike
+#    counts in that window across the trials used (equal occupancy), no bias correction;
+#    (b) the same with the mean MI of the random-event shuffles subtracted. The plug-in
+#    estimate from the 4 x 2 table is used in both, divided by the window length for bits/s.
+#  - O2, smoothing of EASHs for Fig. 4. The Methods use a 10 ms Gaussian (unit exclusion), the
+#    Fig. 3 legend 30 ms. Readings: (a) 10 ms SD; (b) 30 ms SD; (c) none.
+#  - O3, trials in EASHs and Fig. 5. "Whole trials" may (a) exclude or (b) include the
+#    extinction-test trials; wait-error and error trials have no action and are left out.
+#  - O4, chi-square tests of proportions. Readings: 2 x 2 test (a) without or (b) with Yates
+#    continuity correction.
+#  - O5, "Mann-Whitney U test" for proportions of coding neurons (Figs. 8 and 6). Read as a
+#    Mann-Whitney U test on per-neuron 0/1 coding indicators, two-sided.
+#  - O6, regression time bins for Fig. 8, "500 ms before and after the seven trial events".
+#    Readings: (a) 500 ms windows before and after each event in real time; (b) the
+#    same windows on the EASH time axis. Which seven events is not stated either: the Methods
+#    define six task events E1 to E6 and the time points E0 and E7, so the readings are
+#    (i) E1 to E7, (ii) E0 to E6. The Results refer to phases (Phase 1, first half of
+#    Phase 4, Phase 5); a phase result is taken from the windows lying in that phase.
+#
+# Readings and outcomes. Where a criterion lists readings of what a reported number counts
+# (trial-counts, trials-per-block), the claim holds when it matches under any of them. Where
+# the readings are of a method (any O above, a window, a test, how trials are combined), the
+# notebook runs each, the outcome is the one they all give, and when they disagree the claim
+# is blocked as methods_underspecified.
+#  - O7, trials in the regression. The values come from the free-choice model, so readings are
+#    (a) free-choice trials only, (b) all choice trials with QL and QR carried through the
+#    session. The text says the full model has "six variables (including the constant
+#    variable for β0)" and "26 models" (2^6 garbled), which does not match the eight terms
+#    listed; reading (c) of the subset search keeps all eight terms as candidates (2^8 subsets,
+#    or 2^7 with the constant always in).
+#  - O8, FQ model. The update and choice equations are missing. The text's description implies
+#    Q of the chosen action moves toward kappa1 after reward and toward -kappa2 after no reward
+#    with rate alpha1, the unchosen Q decays toward 0 with rate alpha2 (= alpha1 in FQ), and
+#    P(left) is a logistic function of QL - QR. Initial values, the priors of the particle
+#    filter and the search for sigma_alpha and sigma_kappa are referred to Ito and Doya (2009).
+#    5000 particles; QL and QR are the means of the predictive distribution.
+#
+# Paper inconsistencies noted: the Results cite "Fig. 7F" for state-value neurons, meaning
+# Fig. 8F; the Discussion cites Fig. 8C for action-value neurons, meaning Fig. 8E; E7 is defined
+# as "2 s after E8".
+#
+# All claims use the dataset's own recordings and behaviour (data: dataset). The paper relies on
+# no outside data.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001642"
+paper: doi:10.1523/jneurosci.1962-14.2015
+claims:
+- id: trial-counts
+  statement: The analysis covers 78,107 trials in 86 recording sessions from seven rats, of which
+    12,185 are single fixed-choice, 22,234 double fixed-choice, 36,292 free-choice and 3505
+    extinction-test trials.
+  source: Results, opening section, paragraph 2
+  quote: Here, we report the results of all 78,107 trials in 86 recording sessions, performed by
+    seven rats, consisting of 12,185 single fixed-choice trials (16.4%), 22,234 double
+    fixed-choice trials (30.0%), 36,292 free-choice trials (48.9%), and 3505 extinction test
+    trials (4.7%)
+  expected:
+  - quantity: trials
+    value: 78107
+    tolerance: 7810.7
+  - quantity: recording sessions
+    value: 86
+    tolerance: 8.6
+  - quantity: rats
+    value: 7
+    tolerance: 0
+  - quantity: single fixed-choice trials
+    value: 12185
+    tolerance: 1218.5
+  - quantity: double fixed-choice trials
+    value: 22234
+    tolerance: 2223.4
+  - quantity: free-choice trials
+    value: 36292
+    tolerance: 3629.2
+  - quantity: extinction-test trials
+    value: 3505
+    tolerance: 350.5
+  criterion: The rat count must match exactly. The paper does not say which trials it counts
+    (the four categories sum to 74,216, not 78,107). Readings are (a) all trials started,
+    including wait-error and error trials; (b) trials with an L/R choice only. Reproduced when,
+    under one reading, every count is within tolerance.
+- id: trials-per-block
+  statement: Completing a block took 22.56 ± 8.70 trials for single fixed-choice blocks, 47.11 ±
+    20.29 for double fixed-choice blocks and 41.10 ± 27.58 for free-choice blocks (mean ± SD).
+  source: Results, opening section, paragraph 2
+  quote: Numbers of trials required to complete one block were 22.56 ± 8.70 for single
+    fixed-choice blocks, 47.11 ± 20.29 for double fixed-choice blocks, and 41.10 ± 27.58 for
+    free-choice blocks, (mean ± SD)
+  expected:
+  - quantity: mean trials per single fixed-choice block
+    value: 22.56
+    tolerance: 8.70
+  - quantity: mean trials per double fixed-choice block
+    value: 47.11
+    tolerance: 20.29
+  - quantity: mean trials per free-choice block
+    value: 41.10
+    tolerance: 27.58
+  - quantity: SD of trials per single fixed-choice block
+    value: 8.70
+    tolerance: 0.87
+  - quantity: SD of trials per double fixed-choice block
+    value: 20.29
+    tolerance: 2.03
+  - quantity: SD of trials per free-choice block
+    value: 27.58
+    tolerance: 2.76
+  criterion: The tolerance of each mean is the stated SD (protocol); each SD is checked to 10%.
+    The paper leaves open which trials are counted and which blocks enter. Readings are
+    (a) choice trials only (the block rule counts "choice trials"), completed blocks only;
+    (b) all trials including wait-error and error trials, completed blocks only; (c) as (a)
+    with the last, possibly unfinished, block of a session included; (d) as (b) with it
+    included. Extinction trials are not counted in any reading. Reproduced when, under one
+    reading, all six values are within tolerance.
+- id: fig2c-extinction-differs
+  statement: During extinction tests, choice probabilities for the left and right tones differ
+    significantly from those for the choice tone.
+  source: Results, Behavioral performance, paragraph 1; Figure 2B and 2C
+  quote: Choice probabilities during extinction tests were significantly different between the
+    left and right tones and the choice tone (Fig. 2C; p < 0.0001, χ2 test)
+  statistics:
+  - test: χ2 test
+    p: 0.0001
+    p_relation: "<"
+  criterion: Choices over the five trials of each extinction test (Fig. 2C legend). The
+    contingency table of the χ2 test is not given. Readings are (a) left-tone trials against
+    choice-tone trials after a left-optimal free-choice block, and right-tone trials against
+    choice-tone trials after a right-optimal block, each a 2 x 2 table of left and right
+    choices; (b) one 2 x 2 table of choices of the previously optimal action, fixed tones pooled
+    against the choice tone pooled. Reproduced when, under every reading, every test gives p <
+    0.0001 with the fixed tones further from 50% than the choice tone.
+- id: fig2b-extinction-time-course
+  statement: In extinction tests the choice-tone choice probability shifts toward 50% after the
+    first unrewarded trial, while the left- and right-tone choice probabilities stay biased
+    after five unrewarded trials.
+  source: Results, Behavioral performance, paragraph 1; Figure 2B
+  quote: whereas the choice probabilities for the free-choice tone shifted toward 50% following
+    the first nonrewarded trial (orange lines, Fig. 2B), choice probabilities for the left and
+    right tones remained biased even after five no-reward trials
+  criterion: Left-choice probability at each of the five extinction trials, per tone, with the
+    choice tone split by the optimal action of the previous free-choice block (Fig. 2B legend),
+    with 95% confidence intervals of a binomial proportion (the interval method is not given;
+    the readings are Wilson and Clopper-Pearson intervals). Reproduced when, under both readings,
+    (1) for both choice-tone groups the probability at trial 2 is closer to 0.5 than at trial 1,
+    and (2) at trial 5 the 95% interval for the left tone lies above 0.5 and that for the right
+    tone below 0.5.
+- id: fig2d-f-decision-trees
+  statement: Choice-tone choices depend on the previous one or two trials' actions and rewards
+    (a decision tree that expands symmetrically), while left- and right-tone choices stay
+    biased toward left and right whatever the previous experience.
+  source: Results, Behavioral performance, paragraph 2; Figure 2D to 2F
+  quote: The decision tree for choice tones expands symmetrically (Fig. 2D), indicating that
+    action selection was sensitive to past experiences ... action probabilities for the left or
+    right tones (in both single and double fixed-choice blocks) are biased toward 1 (Fig. 2E) or
+    0 (Fig. 2F), respectively, indicating insensitivity to past experiences
+  criterion: Conditional left-choice probabilities for d = 1 and d = 2 from counts NL and NR after
+    each experience sequence, within choice-tone trials and within left- and right-tone trials
+    (single and double fixed-choice blocks), as the Methods define (Decision trees); 95%
+    binomial intervals as in fig2b-extinction-time-course. Experience sequences are taken over
+    consecutive trials of the same tone within a session (the Methods say "sequences of choice
+    behavior in choice-tone trials"); whether they run across block borders is open, and both
+    are readings. The paper gives no test or threshold. Reproduced when, under every reading,
+    (1) for choice tones P(L) after L1 exceeds P(L) after R1 with non-overlapping 95% intervals,
+    and (2) every d = 1 and d = 2 conditional probability is above 0.5 for the left tone and
+    below 0.5 for the right tone. For (2), the readings are all sequences, and sequences with
+    at least 10 trials (a sparse branch is not a reliable estimate; the paper gives no floor).
+- id: fig2g-fq-variable-best
+  statement: Of six DFQ-learning variants and the Markov models, the FQ-learning model with
+    time-varying parameters predicts held-out rat choices in free-choice blocks best.
+  source: Results, Behavioral performance, paragraph 5; Figure 2G
+  quote: found that the FQ-learning model with time-varying parameters predicted rat behaviors
+    best (Fig. 2G). Prediction accuracy was higher than that of Markov models
+  statistics:
+  - about: other models against FQ-learning (variable), as marked in Fig. 2G (which models carry
+      the marks could not be read)
+    test: paired-sample Wilcoxon's signed rank test
+    p: 0.05
+    p_relation: "<"
+  criterion: Choice-tone trials of free-choice blocks; models Q (alpha2 = kappa2 = 0), FQ
+    (alpha1 = alpha2) and DFQ, each with constant or time-varying parameters, and Markov models
+    of order d (Methods, Evaluation of decision-making models). Sessions split into training
+    and test halves (the paper used 101 and 101 sessions; how the split was made is not
+    given, so the readings are alternate sessions and a seeded random half, both shown);
+    parameters fitted by maximum likelihood on training data, the time-varying models with a
+    particle filter of 5000 particles. Model equations as O8 (opening comment). The normalized
+    likelihood formula is missing; it is read as the geometric mean of per-trial choice
+    likelihoods, which is 0.5 at chance, computed per test session for the paired Wilcoxon
+    test across sessions. Reproduced when, under every reading, FQ (variable) has the highest
+    normalized likelihood of test data and exceeds every Markov model.
+- id: actor-critic-near-chance
+  statement: A regular actor-critic model with constant parameters predicts test choices close
+    to chance, with normalized likelihood 0.5080.
+  source: Results, Behavioral performance, last paragraph
+  quote: We also tested a regular actor-critic model with constant variables (Sutton and Barto,
+    1998), but the normalized likelihood of test data was close to the chance level (0.5080; data
+    not shown)
+  expected:
+  - quantity: normalized likelihood of test data, actor-critic
+    value: 0.5080
+    tolerance: 0.0508
+  criterion: The paper names the model only as a regular actor-critic model with constant
+    parameters (Sutton and Barto, 1998) and gives neither its equations nor its parameters.
+    "Constant" is read as in Fig. 2G, parameters constant across sessions, fitted by maximum
+    likelihood on the training sessions and scored on the test sessions as in
+    fig2g-fq-variable-best. The readings of the model are the tabular actor-critic for one
+    state and two actions (critic V and actor preferences both updated by the reward prediction
+    error, softmax choice with a free inverse temperature) with (a) one learning rate shared by
+    critic and actor, (b) separate learning rates. Reproduced when every reading is within
+    tolerance; blocked as methods_underspecified when the readings disagree.
+  depends_on:
+  - fig2g-fq-variable-best
+- id: neuron-counts
+  statement: Stable recordings were made from 260 DLS, 178 DMS and 179 VS neurons, of which 190,
+    105 and 119 were phasically active neurons.
+  source: Results, Activity patterns of phasically active neurons, paragraph 1
+  quote: Stable recordings were made from 260 neurons in DLS, 178 neurons in DMS, and 179 neurons
+    in VS from seven rats ... Among these, 190, 105, and 119 neurons from DLS, DMS, and VS,
+    respectively, were classified as PANs
+  expected:
+  - quantity: stable DLS neurons
+    value: 260
+    tolerance: 26
+  - quantity: stable DMS neurons
+    value: 178
+    tolerance: 17.8
+  - quantity: stable VS neurons
+    value: 179
+    tolerance: 17.9
+  - quantity: DLS PANs
+    value: 190
+    tolerance: 19
+  - quantity: DMS PANs
+    value: 105
+    tolerance: 10.5
+  - quantity: VS PANs
+    value: 119
+    tolerance: 11.9
+  criterion: Counts of units per region; PANs by the rule of the Methods (proportion of time in
+    ISIs longer than 1 s greater than 0.4), over the whole session. The Results also name
+    waveforms as a basis of the PAN class, but the Methods give no waveform rule, so none is
+    applied. If the dataset holds only
+    curated units, the stable counts are compared as deposited and the PAN rule is applied to
+    them. Reproduced when all six counts are within tolerance.
+- id: fig4b-vs-phase1
+  statement: More than 60% of VS PANs increase their activity as the rat approaches the center
+    hole (Phase 1), significantly more than in DLS and DMS.
+  source: Results, Activity patterns of phasically active neurons, paragraph 3; Figure 4B
+  quote: The proportion of neurons that increased their activity as a rat approached the center
+    hole (trial Phase 1) was >60% in VS, significantly larger than in DLS and DMS (p = 0.0015 and
+    p < 0.0001, respectively, χ2 test)
+  statistics:
+  - about: VS against DLS
+    test: χ2 test
+    p: 0.0015
+  - about: VS against DMS
+    test: χ2 test
+    p: 0.0001
+    p_relation: "<"
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: proportion of VS PANs activated in Phase 1, lower bound
+    value: 0.60
+    tolerance: 0.06
+  criterion: Per PAN, the EASH over all trials (O3), normalized to a maximum of 1 (Fig. 4A
+    legend), smoothing as O2. A neuron is activated in a phase when its normalized EASH reaches
+    0.5 during that phase (Fig. 4B legend); readings are (a) any bin at or above 0.5 in the
+    phase, (b) the first crossing of 0.5 falls in the phase (the sort of Fig. 4A). 2 x 2 χ2
+    tests between regions, O4. Reproduced when, under every reading, the VS proportion exceeds
+    0.54 and VS exceeds DLS and DMS with p < 0.05 in both tests.
+- id: fig4b-dms-phase5
+  statement: More than 60% of DMS PANs are activated between center-hole exit and L/R-hole entry
+    (Phase 5), significantly more than in DLS and VS.
+  source: Results, Activity patterns of phasically active neurons, paragraph 3; Figure 4B
+  quote: After a rat's exit from the center hole until its entrance into the L/R hole (trial Phase
+    5), >60% of DMS neurons were activated, which was significantly larger than the proportions of
+    DLS and VS (p = 0.00021 for DLS, p = 0.040 for VS, χ2 test)
+  statistics:
+  - about: DMS against DLS
+    test: χ2 test
+    p: 0.00021
+  - about: DMS against VS
+    test: χ2 test
+    p: 0.040
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: proportion of DMS PANs activated in Phase 5, lower bound
+    value: 0.60
+    tolerance: 0.06
+  criterion: As fig4b-vs-phase1, for Phase 5. Reproduced when, under every reading, the DMS
+    proportion exceeds 0.54 and DMS exceeds DLS and VS with p < 0.05 in both tests.
+- id: fig4b-vs-phase7
+  statement: During pellet retrieval (Phase 7) the proportion of activated neurons is
+    significantly larger in VS than in DLS.
+  source: Results, Activity patterns of phasically active neurons, paragraph 3; Figure 4B
+  quote: During the trial phase of receiving a sugar pellet (trial Phase 7), the proportion of
+    activated neurons was significantly larger in VS than in DLS (p = 0.0040, χ2 test)
+  statistics:
+  - test: χ2 test
+    p: 0.0040
+  depends_on:
+  - neuron-counts
+  criterion: As fig4b-vs-phase1, for Phase 7. Reproduced when, under every reading, the VS
+    proportion exceeds the DLS proportion with p < 0.05.
+- id: fig4c-activation-duration
+  statement: VS PANs stay active longer than DLS and DMS PANs, and DLS PANs have the shortest
+    activation, shorter than VS and DMS.
+  source: Results, Activity patterns of phasically active neurons, paragraph 3; Figure 4C
+  quote: VS neurons maintained activation longer (more than half of peak activity) than DLS (p <
+    0.0001, Mann–Whitney U test) and DMS neurons (p < 0.0001, Mann–Whitney U test), and DLS
+    neurons had shorter durations of activation than VS neurons and DMS neurons (p < 0.0001 for
+    VS, p = 0.040 for DMS, Mann–Whitney U test)
+  statistics:
+  - about: VS against DLS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: VS against DMS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: DLS against DMS
+    test: Mann–Whitney U test
+    p: 0.040
+  depends_on:
+  - neuron-counts
+  criterion: Per PAN, the activity ratio of each phase (time the normalized EASH is above 0.5,
+    divided by the phase duration), averaged over the seven phases (Fig. 4C legend); EASH as in
+    fig4b-vs-phase1 (O2, O3). Two-sided Mann-Whitney U tests between regions. Reproduced when,
+    under every reading of O2 and O3, the region means (Fig. 4C plots the average) order VS >
+    DMS > DLS and all three tests give p < 0.05.
+- id: fig5b-state-info-vs
+  statement: Information about the block type (fixed- or free-choice) is strongest in VS,
+    especially during the approach to the center hole (Phase 1).
+  source: Results, Information coding of state, action, and reward, paragraph 2; Figure 5A and 5B
+  quote: State information (fixed- or free-choice block) was strongest in VS, especially, during
+    the approach to the center hole (trial Phase 1) (p < 0.0001 for DLS, p = 0.022 for DMS,
+    Mann–Whitney U tests)
+  statistics:
+  - about: VS against DLS, Phase 1
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: VS against DMS, Phase 1
+    test: Mann–Whitney U test
+    p: 0.022
+  depends_on:
+  - neuron-counts
+  criterion: Per PAN, MI between firing and block type (fixed-choice blocks, single and double,
+    against free-choice blocks) in each 100 ms EASH bin over all trials (Methods, Mutual
+    information; O1, O3). The test's unit of comparison is not stated; readings are per-neuron
+    MI (a) averaged over the bins of Phase 1, (b) in each Phase 1 bin, the result read from the
+    bins that pass. Two-sided Mann-Whitney U tests. Reproduced when, under every reading, VS
+    exceeds DLS and DMS with p < 0.05 and the VS region average exceeds the shuffle threshold in
+    Phase 1.
+- id: fig5e-action-info-rises-dls
+  statement: Action information (left or right choice) starts rising during cue presentation
+    (Phase 3) only in DLS.
+  source: Results, Information coding of state, action, and reward, paragraph 2; Figure 5C to 5E;
+    Discussion, paragraph 1
+  quote: Action information (left or right hole choice) started increasing during the tone
+    presentation (trial Phase 3) specifically in DLS (Fig. 5C–E)
+  depends_on:
+  - neuron-counts
+  criterion: Region averages of per-PAN action MI in 100 ms EASH bins (O1, O3), against the
+    shuffle threshold of the Methods (100 random-event repeats, second largest, p < 0.01).
+    Reproduced when, under every reading, the DLS average exceeds its threshold in at least one
+    Phase 3 bin and the DMS and VS averages exceed theirs in no Phase 3 bin.
+- id: fig5e-action-info-cue-offset-dls
+  statement: In the 100 ms before cue offset, action information is significantly higher in DLS
+    than in DMS and VS.
+  source: Results, Information coding of state, action, and reward, paragraph 3; Figure 5E
+  quote: Action information during the 100 ms before the offset of the cue tone was significantly
+    higher in DLS than in DMS and VS (p = 0.0175 for DMS, p = 0.00091 for VS, Mann–Whitney U
+    tests)
+  statistics:
+  - about: DLS against DMS
+    test: Mann–Whitney U test
+    p: 0.0175
+  - about: DLS against VS
+    test: Mann–Whitney U test
+    p: 0.00091
+  depends_on:
+  - neuron-counts
+  criterion: Per-PAN action MI in the 100 ms EASH bin ending at E3 (O1, O3); two-sided
+    Mann-Whitney U tests. Reproduced when, under every reading, DLS exceeds DMS and VS with p <
+    0.05 in both tests.
+- id: fig5e-action-info-center-exit
+  statement: In the 100 ms before center-hole exit, action information in DMS is higher than in
+    DLS (not significant) and VS, and is weakest in VS.
+  source: Results, Information coding of state, action, and reward, paragraph 3; Figure 5D and 5E
+  quote: Immediately after the offset of the cue tone (trial Phase 4) action information in DMS
+    rapidly increased and became higher than that in DLS and VS during the 100 ms before the
+    offset from the center hole, while information in VS was weakest (p = 0.16 for DLS, p = 0.0027
+    for VS, p < 0.0001 for DLS vs VS, Mann–Whitney U tests)
+  statistics:
+  - about: DMS against DLS
+    test: Mann–Whitney U test
+    p: 0.16
+  - about: DMS against VS
+    test: Mann–Whitney U test
+    p: 0.0027
+  - about: DLS against VS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  depends_on:
+  - neuron-counts
+  criterion: Per-PAN action MI in the 100 ms EASH bin ending at E4 (O1, O3); two-sided
+    Mann-Whitney U tests. Reproduced when, under every reading, the region means order DMS > DLS
+    > VS, and DMS against VS and DLS against VS give p < 0.05. DMS against DLS is reported;
+    its significance is not part of the claim.
+- id: fig5d-action-info-phase5-dms
+  statement: During action execution (Phase 5), action information is highest in DMS.
+  source: Results, Information coding of state, action, and reward, paragraph 3; Figure 5D
+  quote: During action execution (trial Phase 5), the action information was the highest in DMS
+    (p < 0.0001 for DLS, p < 0.0001 for VS, p < 0.0001 for DLS vs VS, Mann–Whitney U tests)
+  statistics:
+  - about: DMS against DLS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: DMS against VS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: DLS against VS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  depends_on:
+  - neuron-counts
+  criterion: Per-PAN action MI in the 100 ms EASH bins of Phase 5 (O1, O3); the bins compared
+    are not stated, so the readings are (a) the mean over Phase 5 bins, (b) the bin of the
+    DMS region peak. Two-sided Mann-Whitney U tests. Reproduced when, under every reading, DMS
+    exceeds DLS and VS with p < 0.05 in both tests. The DLS against VS test is reported.
+- id: fig5g-reward-info
+  statement: Reward information rises in all regions after L/R-hole entry and is strongest in VS,
+    then DMS, with DLS significantly below both.
+  source: Results, Information coding of state, action, and reward, paragraph 4; Figure 5F and 5G
+  quote: Reward information was strongest in VS, followed by DMS, and reward information in DLS
+    was significantly less than that in VS and DMS (p = 0.012 for DLS vs DMS, p < 0.0001 for DLS vs
+    VS, p = 0.13 for DMS vs VS, Mann–Whitney U tests)
+  statistics:
+  - about: DLS against DMS
+    test: Mann–Whitney U test
+    p: 0.012
+  - about: DLS against VS
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: DMS against VS
+    test: Mann–Whitney U test
+    p: 0.13
+  depends_on:
+  - neuron-counts
+  criterion: Per-PAN reward MI (rewarded against unrewarded choices) in 100 ms EASH bins (O1,
+    O3). The window of the test is not stated; readings are the mean over the bins of (a) Phase
+    6, (b) Phases 6 and 7, (c) the bin of the VS region peak. Two-sided Mann-Whitney U tests.
+    Reproduced when, under every reading, (1) the region average of each region first exceeds
+    its shuffle threshold (Methods, Mutual information) after E5, in Phase 6, and (2) the means
+    order VS > DMS > DLS and DLS is below DMS and VS with p < 0.05.
+- id: fig6-event-coding-proportions
+  statement: Proportions of event-coding neurons follow the MI results. State-coding neurons
+    during cue presentation are most common in VS, action-coding neurons in DLS before action
+    execution and in DMS during it, and reward-coding neurons in VS during L/R poking.
+  source: Results, Information coding of state, action, and reward, paragraph 4; Figure 6D
+  quote: the proportion of state-coding neurons during cue presentation (trial Phase 3) was the
+    largest in VS, and the proportion of action-coding neurons was the largest in DLS before
+    action execution and in DMS during action execution. The proportion of reward-coding neurons
+    was the largest in VS during the L/R poking (Fig. 6D)
+  statistics:
+  - about: differences between regions, as marked in Fig. 6D (which pairs carry the marks could
+      not be read)
+    test: χ2 test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - neuron-counts
+  criterion: Over all trials (Fig. 6D; O3), a PAN codes an event when firing differs between
+    the two conditions by a Mann-Whitney U test with p < 0.01 (Fig. 6 legend). Windows from the
+    legend; action command (AC) the 500 ms before E4, action the 500 ms after E4, Reward1 the
+    500 ms before E6, Reward2 the 500 ms after E6. The state window is drawn only in Fig. 6A,
+    which could not be read; readings are (a) all of Phase 3 on the EASH axis, (b) the 500 ms
+    before E3. Reward "during the L/R poking" is read as Reward1. Reproduced when, under every
+    reading, VS has the largest state and Reward1 proportions, DLS the largest AC proportion and
+    DMS the largest action proportion. The paper's χ2 tests between regions (O4) are reported;
+    which pairs it marked significant could not be read from the figure.
+- id: fig6-above-chance
+  statement: Every proportion of event-coding neurons, in every region, in fixed-choice blocks,
+    free-choice blocks and all trials, is significantly larger than chance.
+  source: Figure 6B to 6D legend
+  quote: All populations are significantly larger than the chance level (binomial test, p < 0.01)
+  statistics:
+  - test: binomial test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig6-event-coding-proportions
+  criterion: As fig6-event-coding-proportions, for fixed-choice trials (Fig. 6B), free-choice
+    trials (Fig. 6C) and all trials (Fig. 6D); state coding exists only for all trials. The
+    chance level is not given; it is read as 0.01, the selection threshold. One-sided binomial
+    test per region and event. Reproduced when every test gives p < 0.01.
+- id: fig6bc-similar-fixed-free
+  statement: The proportions of action- and reward-coding neurons are similar in fixed- and
+    free-choice blocks.
+  source: Results, Information coding of state, action, and reward, paragraph 4; Figure 6B and 6C
+  quote: These proportions in the population were similar in fixed-choice and free-choice blocks
+    (Fig. 6B,C)
+  depends_on:
+  - fig6-event-coding-proportions
+  criterion: The paper names no test. Proportions of AC, action, Reward1 and Reward2 neurons per
+    region, computed separately in fixed-choice and free-choice trials, as in
+    fig6-event-coding-proportions. Reproduced when the region with the largest proportion is the
+    same in both block types for each event. The difference per event and region, with a 2 x 2
+    χ2 test (O4), is reported.
+- id: fig8a-d-action-reward-coding
+  statement: Substantial proportions of neurons in all three regions code the current action
+    before and after action execution and the reward after L/R poking, and rewards of the
+    previous trial are coded in all phases in all regions; a significant proportion of DMS
+    neurons codes the previous action during action execution.
+  source: Results, Model-based analysis of action value and state value coding, paragraph 3;
+    Figure 8A to 8D
+  quote: Substantial proportions of neurons in DLS, DMS, and VS coded actions before and after
+    action execution (Fig. 8A) ... a significant proportion of DMS neurons coded previous actions
+    during action execution (trial Phase 5; Fig. 8B). Substantial proportions of neurons in all
+    subareas coded rewards after the start of L/R hole poking (Fig. 8C), and rewards in the
+    previous trial were also strongly coded in all trial phases in all striatal regions (Fig. 8D)
+  statistics:
+  - about: proportion against chance
+    test: binominal test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig2g-fq-variable-best
+  - neuron-counts
+  criterion: Regression with BIC selection as the Methods give it (opening comment; O6, O7,
+    O8), coding at p < 0.01 per coefficient. Proportions per region and window against chance
+    by a one-sided binomial test at p < 0.01 (Fig. 8 legend); the chance level is not given and
+    is read as 0.01. Reproduced when, under every reading, (1) a(t) is coded above chance in every
+    region in at least one window before and one after E4, (2) r(t) above chance in every
+    region in at least one window after E5, (3) r(t-1) above chance in every region in at least
+    one window of every phase, and (4) a(t-1) above chance in DMS in a Phase 5 window.
+- id: fig8e-action-value-dms
+  statement: The proportion of action-value-coding neurons is highest in DMS during action
+    execution, significantly above DLS.
+  source: Results, Model-based analysis of action value and state value coding, paragraph 4;
+    Figure 8E
+  quote: the proportion of action-value coding neurons was highest in DMS during action execution
+    (Fig. 8E; p = 0.00058 for DLS, p = 0.081 for VS, Mann–Whitney U test)
+  statistics:
+  - about: DMS against DLS
+    test: Mann–Whitney U test
+    p: 0.00058
+  - about: DMS against VS
+    test: Mann–Whitney U test
+    p: 0.081
+  depends_on:
+  - fig8a-d-action-reward-coding
+  criterion: Action-value coding is QL or QR coded (Fig. 8E legend), regression as in
+    fig8a-d-action-reward-coding. Per-neuron 0/1 indicators in the Phase 5 windows compared by
+    Mann-Whitney U tests (O5). Reproduced when, under every reading, DMS has the highest
+    proportion of the three regions in a Phase 5 window and exceeds DLS there with p < 0.05.
+    DMS against VS is reported; its significance is not part of the claim.
+- id: fig8e-qr-dms
+  statement: Most action-value-coding DMS neurons represent QR, and the proportion coding QR
+    during action execution is significantly larger in DMS than in DLS.
+  source: Results, Model-based analysis of action value and state value coding, paragraph 4
+  quote: The majority of these action value-coding neurons in DMS represented QR, the action
+    value for right hole choice, and the proportion of neurons coding QR during action execution
+    was significant larger in DMS than in DLS (p = 0.00017, Mann–Whitney U test)
+  statistics:
+  - test: Mann–Whitney U test
+    p: 0.00017
+  depends_on:
+  - fig8e-action-value-dms
+  criterion: As fig8e-action-value-dms, with QR coding alone. Reproduced when, under every reading,
+    more than half of the DMS action-value-coding neurons in the Phase 5 window code QR and the
+    DMS proportion coding QR exceeds the DLS proportion with p < 0.05.
+- id: fig8f-state-value-vs
+  statement: State-value-coding neurons (QL and QR coded with the same sign) are most common in VS
+    in all phases, significantly more than in DLS and DMS in Phase 1 and in the first half of
+    Phase 4.
+  source: Results, Model-based analysis of action value and state value coding, paragraph 5;
+    Figure 8F (cited as Fig. 7F in the text)
+  quote: The proportion of state-value coding neurons was the highest in VS in all trial phases,
+    especially in starting phase (trial Phase 1) and action initiation phase (trial Phase 4), the
+    proportion was significantly larger in VS than in DLS and DMS (p = 0.039 for DMS and p =
+    0.0027 for DLS, in trial Phase 1; p = 0.024 for DMS and p = 0.0045 for DLS, first half of Phase
+    4; Mann–Whitney U test)
+  statistics:
+  - about: VS against DMS, Phase 1
+    test: Mann–Whitney U test
+    p: 0.039
+  - about: VS against DLS, Phase 1
+    test: Mann–Whitney U test
+    p: 0.0027
+  - about: VS against DMS, first half of Phase 4
+    test: Mann–Whitney U test
+    p: 0.024
+  - about: VS against DLS, first half of Phase 4
+    test: Mann–Whitney U test
+    p: 0.0045
+  depends_on:
+  - fig8a-d-action-reward-coding
+  criterion: State-value coding as the Fig. 8F legend defines it, regression as in
+    fig8a-d-action-reward-coding, Mann-Whitney U tests on 0/1 indicators (O5). Reproduced when,
+    under every reading, VS has the largest proportion in every phase (at least one window per
+    phase) and exceeds DLS and DMS with p < 0.05 in a Phase 1 window and in the window covering
+    the first half of Phase 4.
+- id: no-policy-coding
+  statement: No region has a significant number of policy-coding neurons (QL and QR coded with
+    opposite signs) in any time bin.
+  source: Results, Model-based analysis of action value and state value coding, paragraph 5
+  quote: We did not find significant numbers of policy-coding neurons (those with significant
+    correlations with both action values with opposite signs), in any subarea or in any time bin
+    (data not shown)
+  depends_on:
+  - fig8a-d-action-reward-coding
+  criterion: A claim of absence, on the paper's test for Fig. 8, a one-sided binomial test of the
+    proportion against chance at p < 0.01, with chance read as 0.01 (as in
+    fig8a-d-action-reward-coding; the paper names one chance level for all panels of Fig. 8 and
+    does not give it). Reproduced when, under every reading of O6 to O8, no region and window
+    gives p < 0.01; not reproduced when, under every reading, one does; blocked when they
+    disagree. The largest proportion is reported either way.
+- id: fig9-temporal-order-all-blocks
+  statement: In every block type, action information rises first in DLS during cue presentation,
+    then in DMS after cue offset (Phase 4), and last in VS after the onset of action execution
+    (Phase 5); the pattern holds in free-choice blocks too.
+  source: Results, Action-command information in fixed- and free-choice blocks, paragraph 1;
+    Figure 9A to 9D
+  quote: Action information in the single and double fixed-choice blocks started to rise first in
+    DLS during cue presentation and then in DMS after cue offset (trial Phase 4), and finally in
+    VS after onset of action execution (trial Phase 5) (Fig. 9A,B). Contrary to expectation, this
+    temporal pattern of action information was seen also in free-choice blocks (Fig. 9C,D)
+  depends_on:
+  - neuron-counts
+  criterion: Per PAN and block type (single fixed, double fixed, free with higher probabilities
+    (90, 50) and (50, 90), free with lower probabilities (50, 10) and (10, 50)), action MI from
+    the last 20 trials of each block, in a sliding window of the preceding 500 ms with 50 ms
+    steps (Fig. 9 legend), averaged per region; first time the average exceeds the p < 0.01
+    shuffle threshold (the triangle of Fig. 9). How the last 20 trials of several blocks of one
+    type in a session are combined is not stated; readings are (a) pooled into one MI estimate
+    per neuron, (b) MI per block, averaged. O1 applies. The rise of a region is the start of
+    its sustained rise into action execution, the first crossing after which the average stays
+    above threshold through Phase 5, since Fig. 10C reports a transient VS peak during cue
+    presentation in single fixed-choice blocks, which the paper does not count as the VS rise.
+    The first crossing is reported too. Reproduced when, under every reading, (1) in single and
+    double fixed-choice blocks the rise falls in Phase 3 for DLS, in Phase 4 for DMS and in
+    Phase 5 for VS, and (2) in both free-choice block types the rises come in the same order,
+    DLS, then DMS, then VS (the text says only that "this temporal pattern" was seen; Fig. 10A
+    says the DLS rise is later in free-choice blocks); their phases are reported.
+- id: fig9-dms-never-above-dls
+  statement: In no block type is the action command in DMS stronger than in DLS.
+  source: Results, Action-command information in fixed- and free-choice blocks, paragraph 1;
+    Figure 9
+  quote: There were no conditions in which the action command in DMS was stronger than in DLS
+  depends_on:
+  - fig9-temporal-order-all-blocks
+  criterion: A claim of absence for which the paper gives no test. Action command is action MI
+    before action execution (Fig. 9 legend, upcoming action for Phases 2 to 4), as in
+    fig9-temporal-order-all-blocks, in the two windows the paper tests in Fig. 10 (the 500 ms
+    before E3 and the 500 ms before E4). Judged with the test the paper uses to compare MI
+    between regions (Results, Information coding of state, action, and reward), a Mann-Whitney
+    U test across neurons, two-sided at p < 0.05. Reproduced when, under every reading, DMS is
+    not significantly above DLS in any block type and window; not reproduced when, under every
+    reading, it is somewhere; blocked when the readings disagree. The differences are reported
+    either way. Note that fig5e-action-info-center-exit has DMS above DLS, not significantly, in
+    the 100 ms before E4 over all trials.
+- id: fig10a-dls-fixed-above-free
+  statement: In DLS, action information is significantly stronger in fixed-choice than in
+    free-choice blocks in Phase 3 and Phase 4; it rises right after cue onset in fixed-choice
+    blocks, more slowly in free-choice blocks with higher rewards, and later and weaker with
+    lower rewards.
+  source: Results, Action-command information in fixed- and free-choice blocks, paragraph 2;
+    Figure 10A
+  quote: Action information in free-choice blocks with higher rewards increased more slowly than
+    that in fixed-choice blocks, and action information in free-choice blocks with lower rewards
+    appeared later and was weaker. There were significant differences in action information
+    between fixed-choice blocks and free-choice blocks in trial Phase 3 (during the 500 ms before
+    cue presentation) and trial Phase 4 (during the 500 ms before center hole exit) (p = 0.00047
+    and p = 0.00037, respectively, paired-Mann–Whitney U test)
+  statistics:
+  - about: Phase 3
+    test: paired-Mann–Whitney U test
+    p: 0.00047
+  - about: Phase 4
+    test: paired-Mann–Whitney U test
+    p: 0.00037
+  depends_on:
+  - fig9-temporal-order-all-blocks
+  criterion: Per-PAN action MI as in fig9-temporal-order-all-blocks. Windows from the text, the
+    500 ms windows ending at the end of Phase 3 and of Phase 4 ("500 ms before cue
+    presentation" is read as the 500 ms before cue offset, the end of Phase 3, since the
+    window must lie in Phase 3; the 500 ms before cue onset is shown as a variant). Fixed is SF
+    and DF, free is FH and FL; readings of how they are combined are (a) the per-neuron mean of
+    the two block types, (b) trials pooled. "Paired-Mann-Whitney U test" is read as (a) the
+    Wilcoxon signed-rank test over neurons, (b) the Mann-Whitney U test unpaired. Reproduced
+    when, under every reading, fixed exceeds free with p < 0.05 in both windows and the DLS
+    region average crosses threshold first in SF or DF, then FH, then FL, with FL's peak in
+    Phases 3 and 4 the lowest of the four.
+- id: fig10b-dms-fixed-above-free
+  statement: In DMS too, action information is significantly stronger in fixed-choice than in
+    free-choice blocks in Phases 3 and 4, against the paper's prediction.
+  source: Results, Action-command information in fixed- and free-choice blocks, paragraph 2;
+    Figure 10B
+  quote: In DMS, action information was stronger in single and double fixed-choice blocks than in
+    free-choice blocks (Fig. 10B), similar to that in DLS, with significant differences in trial
+    Phases 3 and 4 (p = 0.040 for Phase 3, p = 0.0029 for Phase 4, paired-Mann–Whitney U test)
+  statistics:
+  - about: Phase 3
+    test: paired-Mann–Whitney U test
+    p: 0.040
+  - about: Phase 4
+    test: paired-Mann–Whitney U test
+    p: 0.0029
+  depends_on:
+  - fig9-temporal-order-all-blocks
+  criterion: As fig10a-dls-fixed-above-free, for DMS, without the order of crossings. Reproduced
+    when, under every reading, fixed exceeds free with p < 0.05 in both windows.
+- id: fig10c-vs-no-fixed-free-difference
+  statement: In VS, action information shows a transient peak during cue presentation only in
+    single fixed-choice blocks and stays low until action execution, with no significant
+    difference between fixed- and free-choice blocks in Phases 3 and 4.
+  source: Results, Action-command information in fixed- and free-choice blocks, paragraph 2;
+    Figure 10C
+  quote: Action information in VS had a transient peak during cue presentation only in single,
+    fixed-choice blocks and remained low until the onset of action execution (Fig. 10C) with no
+    significant differences between fixed- and free-choice blocks in trial Phases 3 and 4 (p =
+    0.23 and p = 0.28, respectively, paired-Mann–Whitney U test)
+  statistics:
+  - about: Phase 3
+    test: paired-Mann–Whitney U test
+    p: 0.23
+  - about: Phase 4
+    test: paired-Mann–Whitney U test
+    p: 0.28
+  depends_on:
+  - fig9-temporal-order-all-blocks
+  criterion: A claim of absence, on the paper's test as in fig10a-dls-fixed-above-free (each of
+    its readings of the test, as the test itself is ambiguous), at p < 0.05. Reproduced when,
+    under every reading, neither window gives p < 0.05; not reproduced when, under every
+    reading, either does; blocked when the readings disagree. The effect sizes are reported. The SF peak is reported, as whether the SF region
+    average crosses threshold in Phase 3 while DF, FH and FL do not.
+- id: fig10d-dls-stay-above-switch
+  statement: In free-choice blocks, DLS action information is stronger in stay trials than in
+    switch trials in Phase 3, while DMS shows no difference between stay and switch trials.
+  source: Results, Action-command information in fixed- and free-choice blocks, paragraph 3;
+    Figure 10D and 10E
+  quote: In DLS, action information was stronger in stay trials than in switch trials in trial
+    Phase 3 (during the 500 ms before cue presentation) (p = 0.019, Mann–Whitney U test). In DMS,
+    however, we could not find any difference in the action-command signal between switch and stay
+    trials
+  statistics:
+  - about: DLS, stay against switch, Phase 3
+    test: Mann–Whitney U test
+    p: 0.019
+  depends_on:
+  - fig10a-dls-fixed-above-free
+  criterion: Free-choice trials split by whether the action repeats the previous trial's (stay)
+    or not (switch). The trials used are not stated; the Fig. 9 legend and the Results for
+    Fig. 9 say the last 20 trials of each block (the Fig. 10 legend does not), so readings are (a) the last 20 trials of each free-choice block, (b)
+    all free-choice trials. Per-PAN action MI in the Phase 3 window of
+    fig10a-dls-fixed-above-free (O1); two-sided Mann-Whitney U test. Reproduced when, under every
+    reading, DLS stay exceeds switch with p < 0.05 and, for DMS (a claim of absence on the same
+    test), neither the Phase 3 nor the Phase 4 window gives p < 0.05.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - All claims after trials-per-block said "Reproduced when, under one reading" for readings of a method (O1 to O8, windows, tests, pooling). The protocol requires every such reading to give the outcome, else methods_underspecified. Changed to "under every reading", and stated the rule in the opening comment. The "any reading" rule is kept for trial-counts and trials-per-block, whose readings are of what a number counts.
+  - Opening comment, O6. The Fig. 8 legend's "seven trial events" is not defined (the Methods define E1 to E6 plus E0 and E7). Added readings (i) E1 to E7, (ii) E0 to E6.
+  - fig2b-extinction-time-course. The CI method is not given. Wilson was the deciding choice and Clopper-Pearson only shown. Both are now readings.
+  - fig2d-f-decision-trees. The 10-trial floor was the agent's choice and decided the outcome. With and without the floor are now readings.
+  - fig2g-fq-variable-best. The statistics said every other model differs from FQ (variable) at p < 0.05. The Fig. 2G marks could not be read, so `about` now says that.
+  - actor-critic-near-chance. The criterion let the author pick the model and accept it. Replaced with named readings of a regular actor-critic (shared or separate learning rates, softmax), constant parameters fitted and tested as in Fig. 2G, all readings must agree.
+  - neuron-counts. Added that the Results also cite waveforms for the PAN class but the Methods give no waveform rule, so none is applied.
+  - fig4c-activation-duration. Ordered by medians. Fig. 4C plots the region average and the Discussion speaks of the averaged duration, so changed to means. O3 is now named alongside O2.
+  - fig5g-reward-info. The statement's rise of reward information in all regions after L/R-hole entry was not tested. Added that each region's average first crosses its shuffle threshold in Phase 6.
+  - fig6-event-coding-proportions. The χ2 statistic now says which pairs carry the Fig. 6D marks could not be read.
+  - fig9-temporal-order-all-blocks. The criterion failed on any VS crossing before Phase 5. Fig. 10C reports a transient VS peak in single fixed-choice blocks during the cue, so the rise is now the start of the sustained rise. Free-choice blocks were held to the fixed-block phases, but the text claims only "this temporal pattern" and Fig. 10A says the DLS rise is later there. They are now held to the order DLS, DMS, VS.
+  - fig9-dms-never-above-dls. Cited "the paper's test of Fig. 10 between regions", but Fig. 10 tests compare blocks within a region. Now cites the between-region Mann-Whitney U test of the Fig. 5 results. Also notes the non-significant DMS > DLS of fig5e-action-info-center-exit.
+  - fig10c-vs-no-fixed-free-difference. The absence rule referred to "the reading used for fig10a". Now every reading of the test must agree.
+  - fig10d-dls-stay-above-switch. Said the Fig. 10 legend gives the last 20 trials, but only the Fig. 9 legend and Results do. Corrected.
+  - no-policy-coding. Applied the every-reading rule. Open problem. The chance level of the Fig. 8 binomial tests is not given. 0.01 is a reading for single coefficients, but for a joint event (both QL and QR coded) it is conservative, and the paper gives nothing else.
+  - Open, fig2g-fq-variable-best and actor-critic-near-chance. The paper's model comparison used 202 sessions (101 training, 101 test), more than the 86 recording sessions, and does not say where the others come from. The normalized-likelihood, model and BIC equations are missing from the text (images), so the criteria rest on readings of the surrounding words.
+  - Open, throughout. Whether the Mann-Whitney U tests are one- or two-sided is not stated. Two-sided is used. Effects reported near p = 0.04 (fig4c DLS against DMS, fig10b Phase 3) could depend on it.

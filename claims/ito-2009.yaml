@@ -1,0 +1,1427 @@
+# Claims for Ito & Doya (2009), J Neurosci 29(31):9861-9874, on dandiset 001641.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record, open access, as served by PMC (PMC6666589), stored in
+# paper/10.1523-jneurosci.6157-08.2009.txt: abstract, Introduction, Materials and Methods,
+# Results, Discussion, figure legends and Tables 1 to 3. Supplement read: the supplemental
+# Methods (Supplemental_Material.pdf, 4 pages, the particle filter), extracted in the same
+# file; its equations are garbled in the extraction and were read only for what the words say.
+# Not available: supplemental Data 1 (left-choice probability against QL - QR), Data 2 (rasters
+# of the Fig. 7 neurons and tone responses) and Data 3 (NAc core against shell). The main
+# findings do not rest on them; the claims that cite them (suppdata1-choice-vs-q-difference,
+# core-shell-no-difference) say so. No PDF of the main text was available, so the figure panels
+# could not be read. The display equations of the Methods (conditional probability, Markov
+# prediction, Q update, choice rule, likelihood, normalized likelihood, parameter drift,
+# regression models, class borders and mutual information) are images on PMC and are missing
+# from the text; only the words around them were read. The paper links no code, so no code was
+# read.
+#
+# Data the paper used, as it reports them. Six male Long-Evans rats; 70 recording sessions;
+# 60,221 trials: 39,175 choice trials (tone A, 4700 Hz), 12,707 no-choice trials (tone B,
+# 2000 Hz) and 8329 error trials. A trial starts with a start tone (2300 Hz, 1 s); a center-hole
+# poke of 500-1000 ms brings tone A (75%) or tone B (25%), 1000-2000 ms, which must be held
+# through. After tone A the rat pokes the left or right hole within 1 min and hears a reward
+# tone (500 Hz, 1 s, then a sucrose pellet) or a no-reward tone (500 Hz, 250 ms). After tone B
+# it must not poke L or R; a reward tone and pellet follow 1 s after center-hole exit. Error
+# trials end with an error tone (9500 Hz). Reward probabilities (left, right) per block are one
+# of (90, 50), (50, 90), (50, 10), (10, 50) %, all four in every four blocks, never the same
+# twice running; a block lasts at least 20 choice trials and ends when the more advantageous
+# side was chosen in 80% of the last 20 choice trials. Units: spike-sorted single units from
+# bundles of eight microwires, two bundles in the right NAc and one or two in the right VP,
+# advanced 125 um per session; 148 NAc and 66 VP neurons. Measured variables used: event times
+# (center-hole entry and exit, cue onset and type, L/R entry, reward or no-reward tone, pellet
+# pick-up), choices, outcomes, block reward probabilities, spike times, recording region (NAc
+# core or shell, VP).
+#
+# Methods fixed by the paper and used throughout (Materials and Methods unless named):
+#  - Behavioural sequences: no-choice and error trials removed; the remaining choice trials
+#    form the sequence; e(t) is one of L1, L0, R1, R0. Conditional left-choice probability is
+#    NL / (NL + NR) after a given experience sequence, with a 99% interval from
+#    betainv([0.005 0.995], NL, NR) (Model-free behavioral analysis).
+#  - Fig. 2C to 2E plot, for a four-trial sequence, the left-choice probability after each of
+#    its prefixes in time order (P(L|R0), P(L|R0 L1), ... ; Fig. 2B and 2C legends and Results,
+#    History dependence, paragraph 2).
+#  - Markov model of order d: P(a | last d experiences) = (Na + 1) / (NL + NR + 2), counts from
+#    the training data.
+#  - Q models: Qi(1) = 0 for fixed parameters; F-Q has alpha1 = alpha2, standard Q has
+#    alpha2 = kappa2 = 0; the local matching law is alpha1 = alpha2, kappa1 = 1, kappa2 = 0 with
+#    P(L) = QL / (QL + QR). Time-varying models: alpha1, alpha2, kappa1, kappa2 drift by
+#    Gaussian noise of SD sigma_alpha and sigma_kappa per trial; particle filter with 5000
+#    particles (supplemental Methods), initial QL, QR, alpha1, alpha2 uniform on [0, 1] and
+#    kappa1, kappa2 uniform on [0, 4]; the prediction is the mean of P(L) over the predictive
+#    distribution. Free parameters fitted by maximum likelihood on 35 training sessions, scored
+#    by the normalized likelihood of 35 test sessions.
+#  - Neural time bins (Fig. 8A legend): phase 1, 1 s before center-hole entry; phase 2, 1 s
+#    after cue onset; phase 3, 1 s before center-hole exit; phase 4, 1 s after center-hole
+#    exit; phase 5, 1 s after reward or no-reward tone onset. Spike counts in these bins.
+#  - Coding neurons by PETH comparison: two-sided Mann-Whitney U test at p < 0.01 of per-trial
+#    spike counts. State, phase 2, choice against no-choice trials. Action command, phase 3,
+#    and action, phase 4, left against right choice trials. Reward, phase 5, rewarded against
+#    unrewarded choice trials. Action value (phases 1 to 3, last 20 choice trials of each
+#    block) QL-coding when (90, 50) differs from (10, 50) and (50, 90) does not differ from
+#    (50, 10); QR-coding the converse.
+#  - Regression (Fig. 8C, 8D): spike count in phases 1 to 3 of the last 20 choice trials of each
+#    block, on the block's reward probabilities QL and QR, or on QL + QR and QL - QR; a
+#    coefficient is significant at p < 0.01 (t test); a neuron codes one regressor when that one
+#    is significant and the other is not.
+#  - Mutual information (Fig. 9): spike count in a 500 ms window, step 100 ms, aligned to cue
+#    onset or center-hole exit; four firing classes whose borders are chosen per neuron by
+#    exhaustive search to minimize the variance of the class counts; binary event; plug-in
+#    estimate minus the first-order bias term (Panzeri and Treves, 1996) built from M and the
+#    numbers of nonzero cells UFX, UF, UX; divided by the window length for per-second values;
+#    averaged over all neurons of a region. Action and reward use choice trials, state uses
+#    choice and no-choice trials, QL and QR are the F-Q (time-varying) estimates binarized at
+#    the median. Threshold (p < 0.01) is the second largest of 100 region averages with random
+#    binary events.
+#
+# Details the paper leaves open and that bear on several claims (each criterion names those
+# it needs):
+#  - O1, Q update. The equation is missing. Its words (alpha1 learning rate of the chosen
+#    action, alpha2 forgetting rate of the unchosen one, kappa1 strength of reinforcement by
+#    reward, kappa2 strength of aversion from no reward; equivalence with Barraclough et al.
+#    (2004) when alpha1 = alpha2) allow (a) chosen Q <- (1 - alpha1) Q + alpha1 kappa1 after
+#    reward, (1 - alpha1) Q - alpha1 kappa2 after no reward, unchosen Q <- (1 - alpha2) Q;
+#    (b) as (a) with kappa1 and -kappa2 added without the factor alpha1. Choice rule P(L) =
+#    1 / (1 + exp(-(QL - QR))), as the supplemental Methods, equation (1), writes it for the
+#    first two components of h. The readings give the same fits under a reparameterization
+#    with fixed parameters but different parameter values, and different fits when parameters
+#    drift.
+#  - O2, normalized likelihood. The equation is missing; read as the geometric mean of the
+#    per-trial likelihood of the observed choice over all trials of the sessions scored (0.5 at
+#    chance, 1 for exact deterministic prediction, as the Methods state). Per session for the
+#    paired Wilcoxon tests.
+#  - O3, training and test split. Not given. Readings are (a) alternate sessions in recording
+#    order over all rats; (b) alternate sessions in recording order within each rat; (c) a
+#    seeded random half. The reading whose choice-trial counts give 19,986 training and
+#    19,186 test trials, if any, is reported; the outcomes are judged under every reading.
+#  - O4, parameter search. Not given. Table 2 values lie on steps of 0.05 (alpha, kappa) and
+#    0.005 or 0.01 (sigma), so readings are (a) a grid on those steps; (b) a continuous
+#    optimizer started from the grid optimum.
+#  - O5, drift bounds. Whether alpha is kept in [0, 1] (and kappa in any range) during the
+#    random walk is not given. Readings are (a) no bounds; (b) alpha clipped to [0, 1].
+#  - O6, Markov predictions for the first d trials of a session, whose history is incomplete.
+#    Readings are (a) predicted with P(L) = 0.5; (b) left out of the score of every model.
+#  - O7, histories. The Methods count conditional probabilities "during a block of choice
+#    trials". Readings are (a) histories lying within one block; (b) histories within one
+#    session, across block borders.
+#  - O8, Mann-Whitney tests of conditional probabilities (Fig. 2B, 2C). What is ranked is not
+#    given. Readings are (a) the 0/1 left-choice indicators of the trials that follow each of
+#    the two histories, pooled over sessions; (b) per-session conditional probabilities.
+#    Two-sided.
+#  - O9, Mann-Whitney tests of percentages of coding neurons between regions (and between core
+#    and shell). Read as a two-sided Mann-Whitney U test on per-neuron 0/1 coding indicators,
+#    normal approximation with tie correction. This is the only reading the words give, and it
+#    gives the paper's p-values from the paper's counts (two-sided: 12 of 148 against 12 of 66,
+#    p = 0.03; 11 of 148 against 14 of 66, p = 0.004; 80 of 148 against 33 of 66, p = 0.58).
+#  - O10, binomial test against chance (Fig. 8). The chance level is not given. Readings are
+#    (a) 0.01, the test level; (b) 0.01 x 0.99, a significant result in one comparison and none
+#    in the other, for action-value, state-value and policy neurons. One-sided.
+#  - O11, Wilcoxon signed-rank test of preferences against 50%. What is tested is not given.
+#    Readings are (a) the signed-rank test, across the coding neurons of a type, of each
+#    neuron's difference of mean spike counts between the two conditions in the coding bin;
+#    (b) the same test on the signs alone (+1 or -1), which is a sign test. Two-sided.
+#  - O12, MI window placement. Windows are "set based on" the alignment time. Readings are
+#    (a) a window centred on each time point; (b) a window ending at it; (c) a window starting
+#    at it. Random events for the threshold are drawn (a) with probability 0.5; (b) with the
+#    frequency of the real event in the session.
+#  - O13, QL and QR for MI and Table 3. Readings are (a) the predictive mean at trial t, given
+#    e(1:t-1); (b) the posterior mean after e(t). Medians for binarization are taken (a) per
+#    session; (b) over all sessions.
+#  - O14, error trials in the state-coding test. Readings are (a) successful choice and
+#    no-choice trials only; (b) all trials in which tone A or tone B was presented, counting
+#    the 1 s after cue onset.
+#  - O15, firing rate "during the task". Readings are (a) spikes over the whole recording of
+#    the session; (b) spikes from the first trial start to the last trial end.
+#
+# Readings and outcomes. Where a criterion lists readings of what a reported number counts
+# (trial-counts, block-structure, tone-discrimination-errors, fig2c-sequence-frequencies), the
+# claim holds when it matches under any of them. Where the readings are of a method (any O
+# above, a window), the notebook runs each, the outcome is the one they all give, and when
+# they disagree the claim is blocked as methods_underspecified. Claims of absence are judged on
+# the paper's test as written.
+#
+# Tolerances. The default is 10% of the reported value, or the reported SD for a mean. For the
+# normalized likelihoods (Fig. 5) the tolerance is 0.005: the values lie between 0.508 and
+# 0.5375, close to chance (0.5), and 10% of the value (about 0.05) would accept any model at
+# chance; 0.005 is about a sixth of the reported span. Their order is judged by the criteria.
+#
+# Paper inconsistencies noted: the Results say the constant-parameter Q models are "poorer than
+# that of the first- or second-order Markov models", but F-Q and DF-Q (constant), 0.531, exceed
+# the first-order Markov model, 0.528; the Results cite "previous reward shown in Fig. 8C,D"
+# for Fig. 9; training and test choice trials (19,986 + 19,186 = 39,172) are three fewer than
+# the 39,175 choice trials; "44/2 = 128" is 4^4/2 garbled.
+#
+# All claims use the dataset's own recordings and behaviour (data: dataset, the default). The
+# paper relies on no outside data.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001641"
+paper: doi:10.1523/jneurosci.6157-08.2009
+claims:
+- id: trial-counts
+  statement: The analysis covers 60,221 trials in 70 recording sessions from six rats, of which
+    39,175 are choice trials, 12,707 no-choice trials and 8329 error trials.
+  source: Results, Behavioral data, paragraph 1
+  quote: Here, we report the results of all 60,221 trials in 70 recording sessions performed by
+    six rats, consisting of 39,175 choice trials (65.1%), 12,707 no-choice trials (21.1%), and
+    8329 error trials (13.8%)
+  expected:
+  - quantity: trials
+    value: 60221
+    tolerance: 6022.1
+  - quantity: recording sessions
+    value: 70
+    tolerance: 7
+  - quantity: rats
+    value: 6
+    tolerance: 0
+  - quantity: choice trials
+    value: 39175
+    tolerance: 3917.5
+  - quantity: no-choice trials
+    value: 12707
+    tolerance: 1270.7
+  - quantity: error trials
+    value: 8329
+    tolerance: 832.9
+  criterion: The rat count must match exactly. Choice trials are successful tone-A trials,
+    no-choice trials successful tone-B trials, and error trials those ended by the error tone
+    (Behavioral task). Readings of the total are (a) all trials started; (b) trials in which a
+    cue tone was presented. Reproduced when, under one reading, every count is within
+    tolerance.
+- id: block-structure
+  statement: A block took 105.6 trials on average, and a session held 8.1 blocks on average, from
+    5 to 12.
+  source: Results, Behavioral data, paragraph 1
+  quote: On average, 105.6 trials were required in one block, and 8.1 blocks (from 5 to 12
+    blocks) were performed in one session
+  depends_on:
+  - trial-counts
+  expected:
+  - quantity: mean trials per block
+    value: 105.6
+    tolerance: 10.56
+  - quantity: mean blocks per session
+    value: 8.1
+    tolerance: 0.81
+  - quantity: fewest blocks in a session
+    value: 5
+    tolerance: 0.5
+  - quantity: most blocks in a session
+    value: 12
+    tolerance: 1.2
+  criterion: The paper does not say which trials a block counts or whether a session's last,
+    possibly unfinished, block counts. Readings are (a) all trials, including no-choice and
+    error trials, every block; (b) as (a), completed blocks only; (c) choice trials only, every
+    block; (d) as (c), completed blocks only. Reproduced when, under one reading, all four
+    values are within tolerance (the range bounds are whole numbers, so the fewest blocks must
+    be 5 and the most 11 to 13).
+- id: reaction-time
+  statement: In choice trials the time from center-hole exit to L or R hole entry was under 1 s
+    in 72% of trials, with a median of 0.75 s.
+  source: Results, Reaction time and tone discrimination, paragraph 2
+  quote: The reaction time in the choice trials, the time period from the exit of the center
+    hole to the entry of the left or right hole, was <1 s in 72% of the trials and had a median
+    of 0.75 s
+  expected:
+  - quantity: fraction of choice trials with reaction time under 1 s
+    value: 72
+    tolerance: 7.2
+    unit: percent
+  - quantity: median reaction time
+    value: 0.75
+    tolerance: 0.075
+    unit: s
+  criterion: Over all choice trials of the 70 sessions, pooled. Reproduced when both values are
+    within tolerance.
+- id: tone-discrimination-errors
+  statement: Rats rarely failed to poke after tone A (0.39% of choice trials) or poked wrongly
+    after tone B (0.73% of no-choice trials), so they discriminated the tones well.
+  source: Results, Reaction time and tone discrimination, paragraph 2
+  quote: The errors in the choice trials, in which rats did not perform any nose pokes within 1
+    min for tone A presentation, were only 0.39% of the choice trials. The errors in no-choice
+    trials, in which rats performed a nose poke at the left or right hole within 1 s for tone B
+    presentation, were 0.73% of the no-choice trials
+  expected:
+  - quantity: no-response errors after tone A
+    value: 0.39
+    tolerance: 0.039
+    unit: percent
+  - quantity: L or R poke errors after tone B
+    value: 0.73
+    tolerance: 0.073
+    unit: percent
+  criterion: The denominators are not fixed. Readings are (a) the error count over the
+    successful trials of that tone (39,175 and 12,707); (b) the error count over the
+    successful trials of that tone plus those errors. Errors from leaving the center hole
+    during the cue are not counted in either. Reproduced when, under one reading, both values
+    are within tolerance.
+- id: fig2b-reward-stronger-than-noreward
+  statement: Both L1 and R0 in the previous trial raise the left-choice probability (0.68 and
+    0.62), more after L1; both R1 and L0 lower it (0.30 and 0.39), more after R1. So rewarded
+    experience modulates choice more than unrewarded experience.
+  source: Results, History dependence of action choice, paragraph 1; Figure 2B
+  quote: Both the experience L1 and R0 in the previous trial increased the probability of a left
+    choice in the current trial [Fig. 2B, green arrow, P(L|L1) = 0.68; green arrowhead, P(L|R0) =
+    0.62]. The left choice probability after L1 was significantly higher than after R0
+    (Mann–Whitney U test, p < 0.0001) ... The left probability after R1 was significantly lower
+    than after L0 [Fig. 2B, brown arrow, P(L|R1) = 0.30; brown arrowhead, P(L|L0) = 0.39]
+    (Mann–Whitney U test, p < 0.0001)
+  statistics:
+  - about: P(L|L1) against P(L|R0)
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  - about: P(L|R1) against P(L|L0)
+    test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: P(L|L1)
+    value: 0.68
+    tolerance: 0.068
+  - quantity: P(L|R0)
+    value: 0.62
+    tolerance: 0.062
+  - quantity: P(L|R1)
+    value: 0.30
+    tolerance: 0.030
+  - quantity: P(L|L0)
+    value: 0.39
+    tolerance: 0.039
+  criterion: Conditional probabilities as the Methods define them (opening comment), pooled over
+    all sessions; histories as O7; tests as O8. Reproduced when, under every reading, the four
+    values are within tolerance, P(L|L1) > P(L|R0) > 0.5 > P(L|L0) > P(L|R1), and both tests
+    give p < 0.0001.
+- id: fig2b-two-back-history
+  statement: The experience two trials back still affects choice; P(L|R0 L1) = 0.66 differs from
+    P(L|L1 L1) = 0.72.
+  source: Results, History dependence of action choice, paragraph 2; Figure 2B and 2C
+  quote: the conditional probability P(L|R0 L1) = 0.66 (Fig. 2B,C, blue arrowhead), which is the
+    probability of a left choice (at trial t) after R0 (at trial t − 2) and L1 (at trial t − 1),
+    significantly differs from P(L|L1 L1) = 0.72 (Fig. 2B,C, blue arrow) ... (Mann– Whitney U
+    test, p < 0.0001)
+  statistics:
+  - test: Mann–Whitney U test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: P(L|R0 L1)
+    value: 0.66
+    tolerance: 0.066
+  - quantity: P(L|L1 L1)
+    value: 0.72
+    tolerance: 0.072
+  criterion: As fig2b-reward-stronger-than-noreward (O7, O8). Reproduced when, under every
+    reading, both values are within tolerance, P(L|L1 L1) > P(L|R0 L1), and the test gives
+    p < 0.0001.
+- id: fig2c-sequence-frequencies
+  statement: Of the 128 mirror-paired four-trial sequences, L1 L1 L1 L1 (with R1 R1 R1 R1) is the
+    most frequent (6.87%), R0 L1 L1 L1 (with L0 R1 R1 R1) the second (2.87%), R0 L0 R0 L0 (with
+    L0 R0 L0 R0) the third (2.55%), and L0 L0 L0 L0 with R0 R0 R0 R0 make 1.28%.
+  source: Results, History dependence of action choice, paragraphs 2 and 3
+  quote: the sequence L1 L1 L1 L1 and R1 R1 R1 R1 was observed most frequently (6.87% of all
+    observed sequences of four trials). The sequence R0 L1 L1 L1 and L0 R1 R1 R1 was observed
+    second most frequently (2.87%) ... The sequences R0 L0 R0 L0 and L0 R0 L0 R0 were observed
+    third most frequently (2.55%) ... L0 L0 L0 L0 and R0 R0 R0 R0, which consisted of 1.28% of
+    all observed sequences across the four trials
+  expected:
+  - quantity: L1 L1 L1 L1 with R1 R1 R1 R1
+    value: 6.87
+    tolerance: 0.687
+    unit: percent
+  - quantity: R0 L1 L1 L1 with L0 R1 R1 R1
+    value: 2.87
+    tolerance: 0.287
+    unit: percent
+  - quantity: R0 L0 R0 L0 with L0 R0 L0 R0
+    value: 2.55
+    tolerance: 0.255
+    unit: percent
+  - quantity: L0 L0 L0 L0 with R0 R0 R0 R0
+    value: 1.28
+    tolerance: 0.128
+    unit: percent
+  criterion: All windows of four consecutive choice trials, histories as O7. Whether a pair's
+    percentage is the sum of the two mirror sequences or each one's share is not fixed;
+    readings are (a) the sum; (b) the mean of the two. Reproduced when, under one reading, all
+    four values are within tolerance and the first three are the three most frequent pairs in
+    that order.
+- id: fig2c-reward-effects-fade
+  statement: After repeated L1 the left-choice probability rises and converges near 0.75, and the
+    effect of an earlier R0 fades under following L1s, so P(L|L1 L1 L1 L1) and P(L|R0 L1 L1 L1)
+    do not differ (both 0.74).
+  source: Results, History dependence of action choice, paragraph 2; Figure 2C
+  quote: increased with the number of L1 experiences and converged around 0.75 ... There was no
+    significant difference between P(L|L1 L1 L1 L1) = 0.74 and P(L|R0 L1 L1 L1) = 0.74
+    (Mann–Whitney U test, p = 0.94)
+  statistics:
+  - test: Mann–Whitney U test
+    p: 0.94
+  expected:
+  - quantity: P(L|L1 L1 L1 L1)
+    value: 0.74
+    tolerance: 0.074
+  - quantity: P(L|R0 L1 L1 L1)
+    value: 0.74
+    tolerance: 0.074
+  criterion: Prefix probabilities as the opening comment, histories as O7. The absence is judged
+    on the paper's test, a Mann-Whitney U test at p < 0.05 (two-sided), under reading O8 (a),
+    the 0/1 choices that follow each history; reading O8 (b) is shown as a variant. Reproduced
+    when the test does not find a difference, both values are within tolerance, and
+    P(L|L1) < P(L|L1 L1) < P(L|L1 L1 L1 L1), as the paper's own values are (0.68, 0.72, 0.74),
+    with P(L|L1 L1 L1 L1) within 0.075 (10%) of 0.75; P(L|L1 L1 L1) is reported. The difference
+    is reported either way.
+- id: fig2d-switching
+  statement: After an unrewarded choice rats tended to choose the other action (switching), as
+    seen in the alternating unrewarded sequences R0 L0 R0 L0 and L0 R0 L0 R0.
+  source: Results, History dependence of action choice, paragraph 3; Figure 2D
+  quote: These results illustrate that there was a “switching” behavior in which rats tended to
+    choose the other action after one action was not rewarded
+  criterion: Prefix probabilities for R0 L0 R0 L0 and L0 R0 L0 R0 (O7), with 99% intervals.
+    Reproduced when, under every reading, after each prefix ending in L0 the left-choice
+    probability is below 0.5 and after each prefix ending in R0 it is above 0.5. The paper gives
+    no test; the 99% intervals are reported.
+- id: fig2e-persevering
+  statement: After two or more unrewarded left choices the left-choice probability gradually
+    rises, and P(L|L0 L0 L0) and P(L|L0 L0 L0 L0) are both above 0.5, so rats sometimes persevere
+    after repeated non-reward.
+  source: Results, History dependence of action choice, paragraph 3; Figure 2E
+  quote: The probability of a left choice gradually increased after two or more left choices with
+    no reward. In particular, P(L|L0 L0 L0) and P(L|L0 L0 L0 L0) were both >0.5
+  criterion: Prefix probabilities for L0 L0 L0 L0 (and mirrored for R0 R0 R0 R0, as 1 - P(L)),
+    O7. The paper gives no test. Reproduced when, under every reading, P(L|L0 L0) <
+    P(L|L0 L0 L0) < P(L|L0 L0 L0 L0) ("gradually increased after two or more") and both P(L|L0 L0 L0)
+    and P(L|L0 L0 L0 L0) exceed 0.5 for the left sequence; partially reproduced when this
+    holds for the probabilities above 0.5 but not for the rise.
+- id: fig3-lsq-switching
+  statement: Fitted by least squares to the six four-trial sequences of Fig. 2C and 2D, the local
+    matching law and standard Q-learning cannot represent switching, while F-Q and DF-Q can;
+    the averaged residual errors are 0.0102, 0.0073, 0.0010 and 0.0002.
+  source: Results, Modeling rats' strategies with a reinforcement learning model, paragraph 3;
+    Figure 3; Table 1
+  quote: The results showed that the local matching law (Fig. 3A) and the standard Q-learning
+    model (Fig. 3B) were not able to represent switching behavior, whereas the F-Q- and
+    DF-Q-learning models were (Fig. 3C,D). The averaged residual errors of the local matching
+    law, the standard Q, F-Q, and DF-Q models were 0.0102, 0.0073, 0.0010, and 0.0002,
+    respectively
+  depends_on:
+  - fig2c-reward-effects-fade
+  - fig2d-switching
+  expected:
+  - quantity: averaged residual error, local matching law
+    value: 0.0102
+    tolerance: 0.00102
+  - quantity: averaged residual error, standard Q
+    value: 0.0073
+    tolerance: 0.00073
+  - quantity: averaged residual error, F-Q
+    value: 0.0010
+    tolerance: 0.0001
+  - quantity: averaged residual error, DF-Q
+    value: 0.0002
+    tolerance: 0.00002
+  criterion: Data are the prefix probabilities of L1 L1 L1 L1, R1 R1 R1 R1, R0 L1 L1 L1,
+    L0 R1 R1 R1, R0 L0 R0 L0 and L0 R0 L0 R0 (24 points). Each model starts from QL = QR = Q0
+    (a free parameter), applies the sequence and predicts P(L) after each prefix; parameters
+    minimize the squared error (Results, paragraph 3; Table 1). Model equations as O1. The
+    "averaged residual error" is not defined; readings are (a) the mean squared error over the
+    24 points; (b) the mean squared error over the 12 points of the three left-ending
+    sequences with each mirror pair averaged. "Represents switching" is read from Fig. 3 as
+    the model's P(L) after each L0 of R0 L0 R0 L0 below 0.5 and after each R0 above 0.5.
+    Reproduced when, under every reading, the residuals are in the order local matching >
+    standard Q > F-Q > DF-Q, each within tolerance, and switching is represented by F-Q and
+    DF-Q but not by the local matching law and standard Q. Partially reproduced when the order
+    and the switching hold but a value is out of tolerance.
+- id: table1-lsq-parameters
+  statement: The least-squares fits give the parameters of Table 1 (alpha1, alpha2, kappa1,
+    kappa2, Q0) for each model.
+  source: Table 1
+  inferred: Numbers only in Table 1; no sentence states them.
+  depends_on:
+  - fig3-lsq-switching
+  expected:
+  - quantity: standard Q alpha1
+    value: 0.37
+    tolerance: 0.037
+  - quantity: standard Q kappa1
+    value: 2.37
+    tolerance: 0.237
+  - quantity: standard Q Q0
+    value: 1.00
+    tolerance: 0.10
+  - quantity: F-Q alpha1
+    value: 0.96
+    tolerance: 0.096
+  - quantity: F-Q kappa1
+    value: 0.99
+    tolerance: 0.099
+  - quantity: F-Q kappa2
+    value: 0.64
+    tolerance: 0.064
+  - quantity: F-Q Q0
+    value: 0.00
+    tolerance: 0.01
+  - quantity: DF-Q alpha1
+    value: 0.52
+    tolerance: 0.052
+  - quantity: DF-Q alpha2
+    value: 0.88
+    tolerance: 0.088
+  - quantity: DF-Q kappa1
+    value: 1.18
+    tolerance: 0.118
+  - quantity: DF-Q kappa2
+    value: 1.44
+    tolerance: 0.144
+  - quantity: DF-Q Q0
+    value: 0.71
+    tolerance: 0.071
+  - quantity: local matching law alpha1
+    value: 0.05
+    tolerance: 0.005
+  - quantity: local matching law Q0
+    value: 0.07
+    tolerance: 0.007
+  criterion: As fig3-lsq-switching. A reported 0.00 cannot take 10% of itself, so it is given
+    0.01, one step of the table's printed precision (two decimals). Readings as O1 (the
+    parameter values depend on the form of the update). Reproduced when, under one reading of
+    O1, all values are within tolerance; partially reproduced when at least 10 of the 14 are. The O1 reading that gives
+    the match is reported.
+- id: fig5-markov-accuracy
+  statement: The first- to fourth-order Markov models reach normalized likelihoods of 0.528,
+    0.532, 0.534 and 0.532 on test data; the third order is best and the fourth is lower,
+    presumably by overfitting its 256 parameters.
+  source: Results, Prediction of choices by models, paragraph beginning "Figure 5 shows"; Figure 5
+  quote: The normalized likelihood of the first-order Markov model was 0.528 ... The normalized
+    likelihood for the second- and third-order Markov models increased to 0.532 and 0.534,
+    respectively ... The performance of the fourth-order model was 0.532, lower than that of the
+    third-order model
+  expected:
+  - quantity: normalized likelihood, Markov order 1
+    value: 0.528
+    tolerance: 0.005
+  - quantity: normalized likelihood, Markov order 2
+    value: 0.532
+    tolerance: 0.005
+  - quantity: normalized likelihood, Markov order 3
+    value: 0.534
+    tolerance: 0.005
+  - quantity: normalized likelihood, Markov order 4
+    value: 0.532
+    tolerance: 0.005
+  criterion: Markov prediction as the Methods give it, counts from the 35 training sessions,
+    scored on the 35 test sessions with the normalized likelihood (O2); split O3; first trials
+    O6; histories over choice trials within a session. Reproduced when, under every reading,
+    all four values are within tolerance and order 3 is the highest. Partially reproduced when
+    order 3 is highest but a value is out of tolerance.
+- id: fig5-constant-models
+  statement: With constant parameters, standard Q, F-Q and DF-Q (0.527, 0.531, 0.531) predict much
+    better than the local matching law (0.508), but worse than the first- or second-order Markov
+    models.
+  source: Results, Prediction of choices by models, paragraph beginning "Predictions by the
+    standard Q-"; Figure 5; Table 2
+  quote: Predictions by the standard Q-, F-Q-, and DF-Q-learning models with constant parameters
+    (α and κ) were much better (0.527, 0.531, and 0.531, respectively) than the predictions of
+    the local matching law (0.508), but poorer than that of the first- or second-order Markov
+    models
+  depends_on:
+  - fig5-markov-accuracy
+  expected:
+  - quantity: normalized likelihood, standard Q (constant)
+    value: 0.527
+    tolerance: 0.005
+  - quantity: normalized likelihood, F-Q (constant)
+    value: 0.531
+    tolerance: 0.005
+  - quantity: normalized likelihood, DF-Q (constant)
+    value: 0.531
+    tolerance: 0.005
+  - quantity: normalized likelihood, local matching law
+    value: 0.508
+    tolerance: 0.005
+  criterion: Parameters constant across sessions, fitted by maximum likelihood on the training
+    sessions (O4), Qi(1) = 0 in each session, scored on the test sessions (O2, O3); equations
+    O1; local matching law with P(L) = QL / (QL + QR). Reproduced when, under every reading,
+    all four values are within tolerance and the three Q models exceed the local matching law.
+    The comparison with the Markov models is reported; the paper's own numbers place F-Q and
+    DF-Q (constant) above the first-order Markov model (opening comment), so it is not part of
+    the outcome.
+- id: fig5-variable-models-best
+  statement: With time-varying parameters standard Q, F-Q and DF-Q improve to 0.5304, 0.5375 and
+    0.5368, and F-Q with time-varying parameters predicts best of all models.
+  source: Results, Prediction of choices by models, paragraph beginning "With time-varying
+    parameters"; Figure 5
+  quote: With time-varying parameters, the performance of the standard Q, F-Q, and DF-Q models
+    improved (0.5304, 0.5375, and 0.5368, respectively). The F-Q-learning model with
+    time-varying parameters produced the best prediction performance
+  depends_on:
+  - fig5-markov-accuracy
+  - fig5-constant-models
+  expected:
+  - quantity: normalized likelihood, standard Q (variable)
+    value: 0.5304
+    tolerance: 0.005
+  - quantity: normalized likelihood, F-Q (variable)
+    value: 0.5375
+    tolerance: 0.005
+  - quantity: normalized likelihood, DF-Q (variable)
+    value: 0.5368
+    tolerance: 0.005
+  criterion: Particle filter as the supplemental Methods and the opening comment give it, 5000
+    particles, sigma_alpha and sigma_kappa fitted on the training sessions (O4), drift O5,
+    equations O1, scored on the test sessions (O2, O3). Each variable model is reported against
+    its constant version. Reproduced when, under every reading, the three values are within
+    tolerance, each exceeds its constant version, and F-Q (variable) has the highest normalized
+    likelihood of all models of Fig. 5; partially reproduced when F-Q or DF-Q (variable) is
+    highest and the values are in tolerance but F-Q is not first.
+- id: fig5-fq-dfq-beat-all-models
+  statement: Per test session, the F-Q and DF-Q models with time-varying parameters predict
+    significantly better than every other model, including the third-order Markov model.
+  source: Results, Prediction of choices by models, paragraph beginning "A statistical test";
+    Figure 5 legend
+  quote: the prediction accuracies of both the F-Q- and DF-Q-learning models with time-varying
+    parameters were significantly higher than those of all other models (paired-sample
+    Wilcoxon's signed rank test, p < 0.05 for third Markov model, p < 0.01 for other models)
+  statistics:
+  - about: F-Q and DF-Q (variable) against the third-order Markov model
+    test: paired-sample Wilcoxon's signed rank test
+    p: 0.05
+    p_relation: "<"
+    n: 35 test sessions
+  - about: F-Q and DF-Q (variable) against the other models
+    test: paired-sample Wilcoxon's signed rank test
+    p: 0.01
+    p_relation: "<"
+    n: 35 test sessions
+  depends_on:
+  - fig5-variable-models-best
+  criterion: Per-session normalized likelihoods of the 35 test sessions (O2), two-sided paired
+    Wilcoxon signed-rank tests of F-Q (variable) and of DF-Q (variable) against each of the
+    other nine models of Fig. 5 (standard Q variable, three constant Q models, local matching
+    law, Markov orders 1 to 4). The paper does not say whether the tests are one- or
+    two-sided; both are readings. Readings O1, O3 to O6. Reproduced when, under every reading,
+    both models exceed every other model with p < 0.05 against the third-order Markov model and
+    p < 0.01 against the rest; partially reproduced when all comparisons give p < 0.05 with the
+    F-Q and DF-Q medians higher.
+- id: fig5-fq-dfq-no-difference
+  statement: The F-Q and DF-Q models with time-varying parameters do not differ in prediction
+    accuracy (p = 0.067), so F-Q, with fewer parameters, is regarded as the better model.
+  source: Results, Prediction of choices by models, paragraph beginning "A statistical test"
+  quote: There was no significant difference between these two models (paired-sample Wilcoxon's
+    signed rank test, p = 0.067)
+  statistics:
+  - test: paired-sample Wilcoxon's signed rank test
+    p: 0.067
+    n: 35 test sessions
+  depends_on:
+  - fig5-variable-models-best
+  criterion: A claim of absence, judged on the paper's test, a two-sided paired Wilcoxon
+    signed-rank test of per-session normalized likelihoods of F-Q (variable) against DF-Q
+    (variable) over the 35 test sessions at p < 0.05, under every reading of O1, O3 to O5. The
+    paper does not give the side; the test is run two-sided, as a test of no difference with no
+    direction named, and the one-sided p is shown as a variant.
+    Reproduced when the test does not find a difference; the median difference is reported
+    either way.
+- id: binary-prediction-accuracy
+  statement: Taking left when the predicted P(L) exceeds 0.5 and right otherwise, the best model
+    predicts 68% of choices correctly, averaged over the 35 test sessions.
+  source: Results, Prediction of choices by models, paragraph beginning "With time-varying
+    parameters"
+  quote: If we take binary predictions from the choice probability [left for PL(t) > 0.5, right
+    for PL(t) < 0.5], the average percentage of correct predictions over 35 test sessions is 68%
+  depends_on:
+  - fig5-variable-models-best
+  expected:
+  - quantity: correct binary predictions, mean over test sessions
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  criterion: The sentence follows the statement that F-Q (variable) is best and does not name
+    the model; read as F-Q (variable). Percentage correct per test session, averaged over the
+    35 sessions; trials with P(L) = 0.5 exactly count as half correct. Readings O1, O3 to O5.
+    Reproduced when, under every reading, the value is within tolerance.
+- id: table2-ml-parameters
+  statement: The maximum-likelihood parameters on the training data are those of Table 2 (for
+    example F-Q constant alpha 0.55, kappa1 1.25, kappa2 0.55; F-Q variable sigma_alpha 0.005,
+    sigma_kappa 0.07).
+  source: Table 2
+  inferred: Numbers only in Table 2; no sentence states them.
+  depends_on:
+  - fig5-constant-models
+  - fig5-variable-models-best
+  expected:
+  - quantity: standard Q (constant) alpha1
+    value: 0.45
+    tolerance: 0.045
+  - quantity: standard Q (constant) kappa1
+    value: 1.25
+    tolerance: 0.125
+  - quantity: F-Q (constant) alpha1
+    value: 0.55
+    tolerance: 0.055
+  - quantity: F-Q (constant) kappa1
+    value: 1.25
+    tolerance: 0.125
+  - quantity: F-Q (constant) kappa2
+    value: 0.55
+    tolerance: 0.055
+  - quantity: DF-Q (constant) alpha1
+    value: 0.60
+    tolerance: 0.060
+  - quantity: DF-Q (constant) alpha2
+    value: 0.45
+    tolerance: 0.045
+  - quantity: DF-Q (constant) kappa1
+    value: 1.20
+    tolerance: 0.120
+  - quantity: DF-Q (constant) kappa2
+    value: 0.45
+    tolerance: 0.045
+  - quantity: local matching law alpha1
+    value: 0.01
+    tolerance: 0.001
+  - quantity: standard Q (variable) sigma_alpha
+    value: 0.005
+    tolerance: 0.0005
+  - quantity: standard Q (variable) sigma_kappa
+    value: 0.10
+    tolerance: 0.010
+  - quantity: F-Q (variable) sigma_alpha
+    value: 0.005
+    tolerance: 0.0005
+  - quantity: F-Q (variable) sigma_kappa
+    value: 0.07
+    tolerance: 0.007
+  - quantity: DF-Q (variable) sigma_alpha
+    value: 0.010
+    tolerance: 0.0010
+  - quantity: DF-Q (variable) sigma_kappa
+    value: 0.07
+    tolerance: 0.007
+  criterion: As fig5-constant-models and fig5-variable-models-best. The parameter values depend on
+    O1 and O3 to O5, and a grid step (O4 a) is coarser than 10% for the smallest values.
+    O1 is a reading of what the reported values are (the parameterization), O3 to O5 readings
+    of method. Reproduced when, under one reading of O1 and every reading of O3 to O5, all 16
+    values are within tolerance; partially reproduced when at least 8 are. The O1 reading that
+    matches is reported.
+- id: table3-parameter-averages
+  statement: Across all data the time-varying estimates average, for F-Q, alpha1 0.47 ± 0.25,
+    kappa1 1.61 ± 0.77, kappa2 1.10 ± 0.87, and for DF-Q, alpha1 0.45 ± 0.19, alpha2 0.46 ± 0.19,
+    kappa1 1.69 ± 0.77, kappa2 1.24 ± 0.92; standard Q alpha1 0.45 ± 0.23, kappa1 1.86 ± 0.68.
+  source: Table 3
+  inferred: Numbers only in Table 3; no sentence states them.
+  depends_on:
+  - fig5-variable-models-best
+  expected:
+  - quantity: standard Q (variable) alpha1 mean
+    value: 0.45
+    tolerance: 0.23
+  - quantity: standard Q (variable) kappa1 mean
+    value: 1.86
+    tolerance: 0.68
+  - quantity: F-Q (variable) alpha1 mean
+    value: 0.47
+    tolerance: 0.25
+  - quantity: F-Q (variable) kappa1 mean
+    value: 1.61
+    tolerance: 0.77
+  - quantity: F-Q (variable) kappa2 mean
+    value: 1.10
+    tolerance: 0.87
+  - quantity: DF-Q (variable) alpha1 mean
+    value: 0.45
+    tolerance: 0.19
+  - quantity: DF-Q (variable) alpha2 mean
+    value: 0.46
+    tolerance: 0.19
+  - quantity: DF-Q (variable) kappa1 mean
+    value: 1.69
+    tolerance: 0.77
+  - quantity: DF-Q (variable) kappa2 mean
+    value: 1.24
+    tolerance: 0.92
+  criterion: Per-trial estimates (O13) from the time-varying models with the Table 2 sigmas,
+    over all 70 sessions. The paper does not say over what the average and SD are taken;
+    readings are (a) over all choice trials pooled; (b) over sessions, of per-session means.
+    The tolerance of each mean is its SD (protocol); each SD is also reported against the
+    table. Readings O1, O5, O13.
+    Reproduced when, under every reading, all nine means are within tolerance.
+- id: fig4-strategy-tracking
+  statement: With time-varying parameters, F-Q and DF-Q capture win-stay-lose-switch behaviour by
+    raising kappa2 close to kappa1, and persevering behaviour by a negative kappa2, which the
+    standard Q model cannot.
+  source: Results, Prediction of choices by models, paragraphs beginning "Figure 4A–F" and
+    "Figure 4, B, D, and F"; Figure 4
+  quote: This behavior was captured by the F-Q- and DF-Q-learning models, with both models showing
+    an increase in the nonreward aversion parameter κ2 close to the reward reinforcement
+    parameter κ1 ... The F-Q and DF-Q models captured this behavior by exhibiting a negative
+    value for the aversion parameter κ2 (Fig. 4H)
+  depends_on:
+  - fig5-variable-models-best
+  criterion: The paper shows representative sessions and does not identify them, so the claim is
+    tested as existence of such episodes. Win-stay-lose-switch episode, a run of at least 10
+    choice trials in which the rat repeated every rewarded choice and switched after every
+    unrewarded one, as Results describe it. Persevering episode, a run of consecutive choices
+    of the less advantageous side, rewarded or not, in a (10, 50) or (50, 10) block, as the
+    Results describe Fig. 4B, D, F ("continued to choose the less advantageous left action").
+    The paper gives no run length; 5, 10 and 15 trials are readings for both kinds of episode,
+    and the outcome is the one they all give. Reproduced when, under every reading of O1, O5
+    and O13, some
+    win-stay-lose-switch episode has F-Q (variable) kappa2 within 25% of kappa1 at its end, some
+    persevering episode has F-Q (variable) kappa2 below 0, and over all such episodes the F-Q
+    (variable) mean per-trial likelihood exceeds that of standard Q (variable). The 25% reads
+    "close to"; the paper gives no bound.
+- id: suppdata1-choice-vs-q-difference
+  statement: The actual left-choice probability, plotted against QL - QR from the standard Q, F-Q
+    and DF-Q models, confirms that the models' predictions are meaningful.
+  source: Results, Prediction of choices by models, paragraph beginning "With time-varying
+    parameters"; supplemental Data 1 (not available)
+  quote: the meaningful performances of the standard Q, F-Q, and DF-Q models were also conformed
+    by plotting the actual left-choice probability for the difference between QL and QR
+    (supplemental Data 1
+  depends_on:
+  - fig5-variable-models-best
+  criterion: Supplemental Data 1 is not in the text read, so its bins and models (constant or
+    variable) are not known. Readings are the variable and the constant versions of each
+    model, with QL - QR (O13 a) in ten equal-count bins over all choice trials. Reproduced
+    when, under every reading, the left-choice fraction rises with QL - QR (Spearman correlation
+    of bin centres and fractions above 0.9) for all three models.
+- id: neuron-counts
+  statement: Analysis used 148 NAc neurons and 66 VP neurons from six rats in 70 sessions.
+  source: Results, Neuronal recording data, paragraph 1
+  quote: Subsequent analysis was performed for a total of 148 NAc neurons and 66 VP neurons from
+    six rats during 70 sessions
+  expected:
+  - quantity: NAc neurons
+    value: 148
+    tolerance: 14.8
+  - quantity: VP neurons
+    value: 66
+    tolerance: 6.6
+  criterion: Units whose estimated position lies in the NAc or VP (Histology). Reproduced when
+    both counts are within tolerance.
+- id: firing-rates
+  statement: VP neurons fire faster than NAc neurons during the task (10.2 ± 9.1 against 2.6 ±
+    2.6 Hz, mean ± SD).
+  source: Results, Neuronal activity in the NAc and VP, paragraph 1
+  quote: VP neurons showed a higher firing rate than NAc neurons overall. The average and SD of
+    the firing rate of VP neurons and NAc neurons during the task were 10.2±9.1 and 2.6±2.6 Hz,
+    respectively
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: mean VP firing rate
+    value: 10.2
+    tolerance: 9.1
+    unit: Hz
+  - quantity: mean NAc firing rate
+    value: 2.6
+    tolerance: 2.6
+    unit: Hz
+  - quantity: SD of VP firing rates
+    value: 9.1
+    tolerance: 0.91
+    unit: Hz
+  - quantity: SD of NAc firing rates
+    value: 2.6
+    tolerance: 0.26
+    unit: Hz
+  criterion: Per neuron, spikes over the task period divided by its duration (O15); mean and SD
+    over neurons per region. The paper gives no test. Reproduced when, under every reading, the
+    VP mean exceeds the NAc mean and the two means are within tolerance; the SDs are reported
+    and partially reproduced is given when a mean holds but an SD is outside 10%.
+- id: fig8b-state-coding
+  statement: After cue onset (phase 2), 54% of NAc neurons (80 of 148) and 50% of VP neurons (33
+    of 66) fire differently for the choice and the no-choice tone (state-coding neurons).
+  source: Results, Neuronal activity in the NAc and VP, paragraph 4; Figure 8B
+  quote: After the onset of the cue tone (phase 2), 54% (80 of 148) of NAc neurons and 50% (33 of
+    66) of VP neurons showed different firing patterns in response to the choice tone and the
+    no-choice tone
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc state-coding neurons
+    value: 80
+    tolerance: 8
+  - quantity: VP state-coding neurons
+    value: 33
+    tolerance: 3.3
+  criterion: Mann-Whitney U test at p < 0.01 of phase-2 spike counts, choice against no-choice
+    trials (opening comment), trials O14. Reproduced when, under every reading, both counts
+    are within tolerance.
+- id: fig8b-action-value-psth
+  statement: By block comparison of firing, few neurons code an action value; QL-coding neurons
+    are 6, 8 and 7% of NAc neurons and 11, 18 and 21% of VP neurons in phases 1 to 3, and
+    QR-coding neurons 7, 8 and 5% (NAc) and 11, 9 and 11% (VP).
+  source: Results, Neuronal activity in the NAc and VP, paragraph 4; Figure 8B; Figure 7E and 7F
+  quote: Before the onset of the nose poke action at the center hole (phase 1), the percentage of
+    QL-coding neurons in the NAc was 6% (9 of 148), and 11% (7 of 66) in the VP ... The
+    percentage of QR-coding neurons in the NAc was 7% (11 of 148), and 11% (7 of 66) in the VP
+    ... The percentage of QL-coding neurons in the NAc was 8% (12 of 148) and 18% (12 of 66) in
+    the VP. The percentage of QR-coding neurons in the NAc was 8% (12 of 148) and 9% (6 of 66) in
+    the VP. Before the initiation of action (phase 3), QL-coding neurons represented 7% (11 of
+    148) of the neurons in the NAc and 21% (14 of 66) of those in the VP. QR-coding neurons
+    represented 5% (8 of 148) of the neurons in the NAc and 11% (7 of 66) of those in the VP
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc QL-coding, phase 1
+    value: 9
+    tolerance: 0.9
+  - quantity: VP QL-coding, phase 1
+    value: 7
+    tolerance: 0.7
+  - quantity: NAc QR-coding, phase 1
+    value: 11
+    tolerance: 1.1
+  - quantity: VP QR-coding, phase 1
+    value: 7
+    tolerance: 0.7
+  - quantity: NAc QL-coding, phase 2
+    value: 12
+    tolerance: 1.2
+  - quantity: VP QL-coding, phase 2
+    value: 12
+    tolerance: 1.2
+  - quantity: NAc QR-coding, phase 2
+    value: 12
+    tolerance: 1.2
+  - quantity: VP QR-coding, phase 2
+    value: 6
+    tolerance: 0.6
+  - quantity: NAc QL-coding, phase 3
+    value: 11
+    tolerance: 1.1
+  - quantity: VP QL-coding, phase 3
+    value: 14
+    tolerance: 1.4
+  - quantity: NAc QR-coding, phase 3
+    value: 8
+    tolerance: 0.8
+  - quantity: VP QR-coding, phase 3
+    value: 7
+    tolerance: 0.7
+  criterion: Block comparisons by Mann-Whitney U test at p < 0.01 on the last 20 choice trials
+    of each block (opening comment). Several blocks of one type in a session are pooled. The
+    10% tolerance is under one neuron for most counts, so each count is also judged within
+    ±2 neurons. Reproduced when, under that rule, all 12 counts match; partially reproduced
+    when at least 9 do and every count is below 25% of its region.
+- id: fig8b-action-command-coding
+  statement: Before action initiation (phase 3), 11% of NAc neurons (17 of 148) and 18% of VP
+    neurons (12 of 66) code the action to be chosen (action command-coding neurons).
+  source: Results, Neuronal activity in the NAc and VP, paragraph 4; Figure 8B
+  quote: Neurons encoding the action to be chosen before execution represented 11% (17 of 148) of
+    the neurons in the NAc and 18% (12 of 66) of those in the VP (action command-coding neurons)
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc action command-coding neurons
+    value: 17
+    tolerance: 1.7
+  - quantity: VP action command-coding neurons
+    value: 12
+    tolerance: 1.2
+  criterion: Mann-Whitney U test at p < 0.01 of phase-3 spike counts, left against right choice
+    trials. Reproduced when both counts are within tolerance.
+- id: fig8b-action-coding
+  statement: After action onset (phase 4), 41% of NAc neurons (61 of 148) and 39% of VP neurons
+    (26 of 66) code the selected action.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 4; Figure 8B
+  quote: After the action onset (phase 4), the proportion of action-coding neurons increased to
+    41% (61 of 148) in the NAc and 39% (26 of 66) in the VP
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc action-coding neurons
+    value: 61
+    tolerance: 6.1
+  - quantity: VP action-coding neurons
+    value: 26
+    tolerance: 2.6
+  criterion: Mann-Whitney U test at p < 0.01 of phase-4 spike counts, left against right choice
+    trials. Reproduced when both counts are within tolerance.
+- id: fig8b-reward-coding
+  statement: After the reward or no-reward tone (phase 5), 63% of NAc neurons (93 of 148) and 68%
+    of VP neurons (45 of 66) code reward availability.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 4; Figure 8B
+  quote: After the onset of the reward tone or no-reward tone (phase 5), 63% (93 of 148) of NAc
+    neurons and 68% (45 of 66) of VP neurons coded reward availability
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc reward-coding neurons
+    value: 93
+    tolerance: 9.3
+  - quantity: VP reward-coding neurons
+    value: 45
+    tolerance: 4.5
+  criterion: Mann-Whitney U test at p < 0.01 of phase-5 spike counts, rewarded against unrewarded
+    choice trials. Reproduced when both counts are within tolerance.
+- id: fig8b-nac-vp-same-event-coding
+  statement: The NAc and VP do not differ in the percentages of neurons coding trial type, action
+    command, chosen action and reward outcome.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 5; Figure 8B
+  quote: Comparison of the percentages of coding neurons in the NAc and VP revealed no
+    differences with trial type, action command, chosen action, and reward outcome (Mann–Whitney
+    U test, p = 0.59, p = 0.19, p = 0.80, and p = 0.45, respectively)
+  statistics:
+  - about: state-coding, NAc against VP
+    test: Mann–Whitney U test
+    p: 0.59
+  - about: action command-coding, NAc against VP
+    test: Mann–Whitney U test
+    p: 0.19
+  - about: action-coding, NAc against VP
+    test: Mann–Whitney U test
+    p: 0.80
+  - about: reward-coding, NAc against VP
+    test: Mann–Whitney U test
+    p: 0.45
+  depends_on:
+  - fig8b-state-coding
+  - fig8b-action-command-coding
+  - fig8b-action-coding
+  - fig8b-reward-coding
+  criterion: A claim of absence, judged on the paper's test, a Mann-Whitney U test as O9 at
+    p < 0.05, for each of the four types. Reproduced when none of the four finds a difference;
+    not reproduced when any does. The four differences of percentages are reported either way.
+- id: fig8b-ql-vp-higher
+  statement: QL-coding neurons are a larger share of VP than of NAc neurons after cue onset
+    (phase 2) and before action initiation (phase 3).
+  source: Results, Neuronal activity in the NAc and VP, paragraph 5; Figure 8B
+  quote: Surprisingly, the percentages of QL-coding neurons both after cue onset (phase 2) and
+    before action initiation (phase 3) were significantly higher in the VP than in the NAc
+    (Mann–Whitney U test, p = 0.03 < 0.05, p = 0.004 < 0.01, respectively)
+  statistics:
+  - about: phase 2
+    test: Mann–Whitney U test
+    p: 0.03
+  - about: phase 3
+    test: Mann–Whitney U test
+    p: 0.004
+  depends_on:
+  - fig8b-action-value-psth
+  criterion: Mann-Whitney U test as O9 on QL-coding indicators, NAc against VP, per phase.
+    Reproduced when, in both phases, the VP percentage is higher with p < 0.05; partially
+    reproduced when this holds in one phase.
+- id: fig8b-qr-no-region-difference
+  statement: QR-coding neurons do not differ in share between the VP and NAc in phases 2 and 3.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 5; Figure 8B
+  quote: whereas those of QR-coding neurons were not significantly different between areas at the
+    two different times (Mann–Whitney U test, p = 0.81, and 0.17)
+  statistics:
+  - about: phase 2
+    test: Mann–Whitney U test
+    p: 0.81
+  - about: phase 3
+    test: Mann–Whitney U test
+    p: 0.17
+  depends_on:
+  - fig8b-action-value-psth
+  criterion: A claim of absence, judged on the paper's test, a Mann-Whitney U test as O9 at
+    p < 0.05 on QR-coding indicators, NAc against VP, in phases 2 and 3. Reproduced when
+    neither finds a difference; the differences are reported either way.
+- id: preference-balance
+  statement: Among state-coding neurons (48% NAc, 36% VP preferring tone A), action
+    command-coding neurons (53%, 50% preferring left) and action-coding neurons (57%, 50%
+    preferring left), the share with each preference does not differ from 50%.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 6
+  quote: Of the state-coding neurons, 48% (38 of 80) in the NAc and 36% (12 of 33) in the VP
+    showed a greater response to tone A than to tone B. Of the action command-coding neurons, 53%
+    (9 of 17) in the NAc and 50% (6 of 12) in the VP showed greater activity in left-selected
+    trials than in right-selected trials. In the action-coding neurons, 57% (35 of 61) in the NAc
+    and 50% (13 of 26) in the VP showed greater activity in left-selected than in right-selected
+    trials. All of these populations were not significantly different from 50% (Wilcoxon's
+    signed rank test, p > 0.05)
+  statistics:
+  - test: Wilcoxon's signed rank test
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig8b-state-coding
+  - fig8b-action-command-coding
+  - fig8b-action-coding
+  expected:
+  - quantity: NAc state-coding neurons preferring tone A
+    value: 48
+    tolerance: 4.8
+    unit: percent
+  - quantity: VP state-coding neurons preferring tone A
+    value: 36
+    tolerance: 3.6
+    unit: percent
+  - quantity: NAc action command-coding neurons preferring left
+    value: 53
+    tolerance: 5.3
+    unit: percent
+  - quantity: VP action command-coding neurons preferring left
+    value: 50
+    tolerance: 5.0
+    unit: percent
+  - quantity: NAc action-coding neurons preferring left
+    value: 57
+    tolerance: 5.7
+    unit: percent
+  - quantity: VP action-coding neurons preferring left
+    value: 50
+    tolerance: 5.0
+    unit: percent
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon signed-rank test at
+    p < 0.05 within each of the six populations. The test as written is reading O11 (a); the
+    sign test, O11 (b), is shown as a variant. Preference is the sign of the difference of mean
+    spike counts in the coding bin. Reproduced when none of the six tests finds a departure
+    from 50%; the six percentages are reported against the expected values either way.
+- id: nac-noreward-preference
+  statement: 73% of NAc reward-coding neurons (68 of 93) respond more to the no-reward than to
+    the reward tone, more than the 50% of chance, while the VP share (56%, 25 of 45) does not
+    differ from 50%.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 6
+  quote: However, 73% (68 of 93) of the reward-coding neurons in the NAc showed a larger response
+    to the no-reward than to the reward tone. This percentage of cells was significantly larger
+    than the 50% predicted by chance (Wilcoxon's signed rank test, p < 0.0001). The percentage
+    of reward-coding neurons in the VP (56%; 25 of 45), however, was not significantly different
+    from 50% (Wilcoxon's signed rank test, p > 0.05)
+  statistics:
+  - about: NAc
+    test: Wilcoxon's signed rank test
+    p: 0.0001
+    p_relation: "<"
+  - about: VP
+    test: Wilcoxon's signed rank test
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - fig8b-reward-coding
+  expected:
+  - quantity: NAc reward-coding neurons preferring no reward
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  - quantity: VP reward-coding neurons preferring no reward
+    value: 56
+    tolerance: 5.6
+    unit: percent
+  criterion: Preference by the sign of the phase-5 difference of mean spike counts. For the NAc,
+    under both readings of O11, the NAc percentage is above 50% and the test gives p < 0.0001.
+    The VP part is a claim of absence judged on O11 (a) at p < 0.05, with O11 (b) as a variant.
+    Reproduced when the NAc part holds under every reading and the VP test finds no departure;
+    partially reproduced when one part holds.
+- id: core-shell-no-difference
+  statement: Splitting NAc neurons into tentative core and shell groups by electrode position, the
+    same analyses find no difference between core and shell neurons.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 7; supplemental Data 3 (not
+    available)
+  quote: The same analysis described above found no significant differences between core and
+    shell neurons (supplemental Data 3
+  depends_on:
+  - fig8b-nac-vp-same-event-coding
+  criterion: Supplemental Data 3, which holds the tests, is not in the text read. A claim of
+    absence, read as the analysis of fig8b-nac-vp-same-event-coding and fig8b-ql-vp-higher
+    (Mann-Whitney U test as O9 at p < 0.05 on per-neuron coding indicators) with core and shell
+    in place of NAc and VP, for state, action command, action, reward, and QL and QR coding in
+    phases 1 to 3. Core and shell as assigned in the dataset from Fig. 6; if the dataset does not
+    assign them, the claim cannot be tested. Reproduced when no test finds a difference.
+- id: fig8c-regression-action-value
+  statement: By regression on the block reward probabilities, QL-coding neurons are 9, 10 and 7%
+    of NAc neurons and 15, 24 and 26% of VP neurons in phases 1 to 3, and QR-coding neurons 11, 9
+    and 6% (NAc) and 9, 17 and 14% (VP).
+  source: Results, Neuronal activity in the NAc and VP, paragraph 8; Figure 8C
+  quote: QL-coding neurons, which were found to have a significant regression coefficient to QL (t
+    test, p < 0.01) but not to QR, were present in percentages of 9, 10, and 7% in the NAc, and
+    15, 24, and 26% in the VP for different time bins (Fig. 8A, phases 1–3) ... QR-coding neurons,
+    which were found to have a significant regression coefficient to QR (t test, p < 0.01) but
+    not to QL, were present in percentages of 11, 9, and 6% in the NAc, and 9, 17, and 14% in the
+    VP
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc QL-coding, phase 1
+    value: 9
+    tolerance: 0.9
+    unit: percent
+  - quantity: NAc QL-coding, phase 2
+    value: 10
+    tolerance: 1.0
+    unit: percent
+  - quantity: NAc QL-coding, phase 3
+    value: 7
+    tolerance: 0.7
+    unit: percent
+  - quantity: VP QL-coding, phase 1
+    value: 15
+    tolerance: 1.5
+    unit: percent
+  - quantity: VP QL-coding, phase 2
+    value: 24
+    tolerance: 2.4
+    unit: percent
+  - quantity: VP QL-coding, phase 3
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  - quantity: NAc QR-coding, phase 1
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: NAc QR-coding, phase 2
+    value: 9
+    tolerance: 0.9
+    unit: percent
+  - quantity: NAc QR-coding, phase 3
+    value: 6
+    tolerance: 0.6
+    unit: percent
+  - quantity: VP QR-coding, phase 1
+    value: 9
+    tolerance: 0.9
+    unit: percent
+  - quantity: VP QR-coding, phase 2
+    value: 17
+    tolerance: 1.7
+    unit: percent
+  - quantity: VP QR-coding, phase 3
+    value: 14
+    tolerance: 1.4
+    unit: percent
+  criterion: Regression as the opening comment, y = b0 + b1 QL + b2 QR with QL and QR the block's
+    reward probabilities as fractions; the equation is missing, and the text names no other
+    regressor, so none is added. The 10% tolerance is under one neuron for most values, so each
+    is also judged within ±2 neurons of the reported percentage. Reproduced when, under that
+    rule, all 12 values match; partially reproduced when at least 9 do.
+- id: fig8c-ql-vp-higher
+  statement: In the regression analysis, QL-coding neurons are a larger share of VP than of NAc
+    neurons in phases 2 and 3.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 8; Figure 8C
+  quote: In phases 2 and 3, there were significant differences in the size of the population of
+    QL-coding neurons in the NAc, and in the VP (p = 0.007 and 0.0001 < 0.01, Mann–Whitney U test)
+  statistics:
+  - about: phase 2
+    test: Mann–Whitney U test
+    p: 0.007
+  - about: phase 3
+    test: Mann–Whitney U test
+    p: 0.0001
+  depends_on:
+  - fig8c-regression-action-value
+  criterion: Mann-Whitney U test as O9, NAc against VP, on regression QL-coding indicators.
+    Reproduced when, in both phases, the VP share is higher with p < 0.01; partially reproduced
+    when both give p < 0.05 or one gives p < 0.01.
+- id: fig8c-regression-detects-more
+  statement: Regression detects slightly more action value-coding neurons (Fig. 8C) than the
+    block comparison (Fig. 8B), and the two are consistent.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 8
+  quote: These regression analysis results were consistent with those obtained by comparing the
+    perievent time histograms (Fig. 8B). However, the number of the detected action value-coding
+    neurons was slightly larger in Figure 8C than in Figure 8B
+  depends_on:
+  - fig8b-action-value-psth
+  - fig8c-regression-action-value
+  criterion: Total QL- plus QR-coding neurons over phases 1 to 3 and both regions, regression
+    against block comparison. Reproduced when the regression total is larger, and the region
+    with the larger QL share in phases 2 and 3 is the VP in both analyses.
+- id: fig8d-state-value-vp-higher
+  statement: State value-coding neurons are 12, 8 and 8% of NAc neurons and 18, 20 and 20% of VP
+    neurons in phases 1 to 3, with the VP share larger in phases 2 and 3.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 8; Figure 8D
+  quote: State value-coding neurons, which were found to have a significant regression
+    coefficient to [QL(t) + QR(t)] but not to [QL(t) − QR(t)], were present in percentages of 12,
+    8, and 8% in the NAc, and 18, 20, and 20% in the VP (Fig. 8D). In phases 2 and 3, these
+    differences between the sizes of the populations in the NAc and VP were significant (p =
+    0.02 and 0.02 < 0.05, respectively; Mann–Whitney U test)
+  statistics:
+  - about: phase 2
+    test: Mann–Whitney U test
+    p: 0.02
+  - about: phase 3
+    test: Mann–Whitney U test
+    p: 0.02
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc state value-coding, phase 1
+    value: 12
+    tolerance: 1.2
+    unit: percent
+  - quantity: NAc state value-coding, phase 2
+    value: 8
+    tolerance: 0.8
+    unit: percent
+  - quantity: NAc state value-coding, phase 3
+    value: 8
+    tolerance: 0.8
+    unit: percent
+  - quantity: VP state value-coding, phase 1
+    value: 18
+    tolerance: 1.8
+    unit: percent
+  - quantity: VP state value-coding, phase 2
+    value: 20
+    tolerance: 2.0
+    unit: percent
+  - quantity: VP state value-coding, phase 3
+    value: 20
+    tolerance: 2.0
+    unit: percent
+  criterion: Regression y = b0 + b1 (QL + QR) + b2 (QL - QR) on the last 20 choice trials of each
+    block (Methods, Regression analysis); t test at p < 0.01; Mann-Whitney U test as O9.
+    Percentages judged within ±2 neurons where 10% is under one neuron. Reproduced when the six
+    values match and the VP share is higher in phases 2 and 3 with p < 0.05; partially
+    reproduced when the test result holds and at least four values match.
+- id: fig8d-policy
+  statement: Policy-coding neurons are 10, 9 and 7% of NAc neurons and 11, 15 and 14% of VP neurons
+    in phases 1 to 3.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 8; Figure 8D
+  quote: Policy-coding neurons, which were found to have a significant regression coefficient to
+    [QL(t) − QR(t)] but not to [QL(t) + QR(t)], were present in percentages of 10, 9, and 7% in
+    the NAc, and 11, 15, and 14% in the VP (Fig. 8D)
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: NAc policy-coding, phase 1
+    value: 10
+    tolerance: 1.0
+    unit: percent
+  - quantity: NAc policy-coding, phase 2
+    value: 9
+    tolerance: 0.9
+    unit: percent
+  - quantity: NAc policy-coding, phase 3
+    value: 7
+    tolerance: 0.7
+    unit: percent
+  - quantity: VP policy-coding, phase 1
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: VP policy-coding, phase 2
+    value: 15
+    tolerance: 1.5
+    unit: percent
+  - quantity: VP policy-coding, phase 3
+    value: 14
+    tolerance: 1.4
+    unit: percent
+  criterion: As fig8d-state-value-vp-higher, for the QL - QR coefficient. Reproduced when the six
+    values match (±2 neurons where 10% is under one neuron); partially reproduced when at least
+    four do.
+- id: fig8-above-chance
+  statement: Every coding population of Figure 8 is larger than expected by chance.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 8; Figure 8 legend
+  quote: All percentages shown in Figure 8 were significantly larger than those predicted by
+    chance (p < 0.01, binomial test)
+  statistics:
+  - test: binomial test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig8b-state-coding
+  - fig8b-action-value-psth
+  - fig8b-action-command-coding
+  - fig8b-action-coding
+  - fig8b-reward-coding
+  - fig8c-regression-action-value
+  - fig8d-state-value-vp-higher
+  - fig8d-policy
+  criterion: One-sided binomial test of each count of Fig. 8B to 8D against the chance level O10.
+    Reproduced when, under every reading, every population gives p < 0.01; partially reproduced
+    when at least 90% of them do.
+- id: fig9-state-information
+  statement: Information about the trial type (state) in the NAc and VP rises right after cue onset
+    and again after center-hole exit.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 9; Figure 9A and 9B
+  quote: The information coding state in the NAc and VP (green lines) increased immediately after
+    the onset of the cue tone, and again after exiting from the center hole
+  depends_on:
+  - neuron-counts
+  criterion: MI as the opening comment, tone A against tone B, choice and no-choice trials,
+    averaged per region, windows O12. "Immediately after" is read as within 0.5 s of cue onset.
+    Reproduced when, under every reading and in both regions, the state MI exceeds the threshold
+    within 0.5 s after cue onset and is higher there than in the 0.5 s before it, and the curve
+    aligned to center-hole exit has a local maximum above threshold after the exit that
+    exceeds its value at the exit.
+- id: fig9-action-information
+  statement: Information about the chosen action is very weak before center-hole exit, rises
+    rapidly after it, and peaks around entry to the L or R hole.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 9; Figure 9B
+  quote: Information related to action choice was very weak in both the NAc and VP before the
+    onset of the choice (before the exit of the center hole), but increased rapidly after the
+    choice onset, and showed a peak around the time of entry to the left or right hole
+  depends_on:
+  - neuron-counts
+  - reaction-time
+  criterion: MI between firing and left or right choice, choice trials, aligned to center-hole
+    exit, windows O12. Reproduced when, under every reading and in both regions, the mean MI over
+    windows before the exit is below a fifth of the peak, and the peak lies after the exit
+    within 0.5 s of the median reaction time (L or R entry).
+- id: fig9-reward-information
+  statement: Information about reward rises when the reward or no-reward tone is presented at L or
+    R entry, then decreases gradually but lasts until the next trial.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 9; Figure 9B; Discussion,
+    Information coding in NAc and VP, paragraph 1
+  quote: Information related to the reward started to increase at the presentation of
+    reward/no-reward tone, which was presented at the time of entry to the left or right hole.
+    The reward information gradually decreased, but was sustained until the subsequent trial
+  depends_on:
+  - neuron-counts
+  criterion: MI between firing and reward outcome, choice trials, aligned to center-hole exit
+    (Fig. 9B) and, for the next trial, to the next cue onset (Fig. 9A, "previous reward"), with
+    the previous trial's outcome as the event; windows O12. Reproduced when, under every reading
+    and in both regions, reward MI is below threshold before the L or R entry, rises above it
+    after, and the previous-trial reward MI is above threshold around the next cue onset.
+- id: fig9-action-value-information-low
+  statement: Information about the action values QL and QR is above the significance threshold in
+    the NAc and VP but low and without clear peaks, while state, action and reward information
+    are robust.
+  source: Results, Neuronal activity in the NAc and VP, paragraph 10; Figure 9; Discussion,
+    Information coding in NAc and VP, last paragraph but one
+  quote: Information regarding action values QL and QR in the NAc and VP were found to be larger
+    than the threshold values, indicating a significant level of information (p < 0.01) (see
+    Materials and Methods). However, this level of information was still relatively low and
+    without clear peaks, whereas information about state, action, and reward was robustly
+    represented in the NAc and VP
+  depends_on:
+  - fig5-variable-models-best
+  - fig9-state-information
+  - fig9-action-information
+  - fig9-reward-information
+  criterion: QL and QR from F-Q with time-varying parameters (Table 2 sigmas), binarized at the
+    median (O13), MI as the opening comment, windows O12. Reproduced when, under every reading
+    and in both regions, QL and QR MI exceed the threshold in most windows (over half), their
+    peak is below the peaks of state, action and reward MI, and their maximum is less than
+    twice their median over windows (no clear peak); partially reproduced when the comparison
+    with the other events holds but the above-threshold or flatness part does not.
+- id: action-information-outlasts-reward-peak
+  statement: Information about the chosen action in the NAc and VP lasts beyond the peak of reward
+    information.
+  source: Discussion, Information coding in NAc and VP, paragraph 3; Figure 9
+  quote: In particular, we showed that a representation of information regarding action in the
+    NAc and VP lasted beyond the peak of information regarding reward (Fig. 9)
+  depends_on:
+  - fig9-action-information
+  - fig9-reward-information
+  criterion: On the curves of Fig. 9B (O12). Reproduced when, under every reading and in both
+    regions, action MI is above threshold at the time of the reward MI peak and in the window
+    0.5 s after it.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - block-structure. The criterion said the range bounds must be 5 and 12 exactly, against its own tolerances (12 with 1.2). Now the most blocks may be 11 to 13, as the tolerance gives.
+  - fig2c-reward-effects-fade. The rise allowed a 0.02 slack and the convergence a 0.05 bound, neither from the paper. Now judged on the order of the paper's own values, P(L|L1) < P(L|L1 L1) < P(L|L1 L1 L1 L1) (0.68, 0.72, 0.74), with the last within the default 10% of 0.75.
+  - fig2d-switching. The rule that the 99% interval excludes 0.5 in six of eight prefixes was made up; the paper gives no test. Removed; the intervals are reported.
+  - fig2e-persevering. The 0.02 slack on the rise was made up. Removed; the rise is strict, as "gradually increased" says.
+  - table1-lsq-parameters. The tolerance of the reported 0.00 (F-Q Q0) was 0.05, said to be "the step of the table's other values", but Table 1 is printed to 0.01. Set to 0.01, one step of the printed precision.
+  - table2-ml-parameters. Reproduced needed only 13 of 16 values, and "one reading" covered the method readings O3 to O5. Now all 16 values must match, under one reading of O1 (what the values are) and every reading of O3 to O5.
+  - fig5-fq-dfq-beat-all-models. The criterion fixed the tests as two-sided; the paper does not say. One- and two-sided are now both readings.
+  - fig5-fq-dfq-no-difference. Sidedness not given; the test is run two-sided, the reading for a test of no difference, with the one-sided p shown. Open, since one-sided would make p = 0.067 about half and could find the difference.
+  - table3-parameter-averages. Whether the averages are over pooled trials or over sessions is not given. Added both as readings.
+  - fig4-strategy-tracking. The persevering episode was a run of unrewarded choices, but the paper describes it as continuing to choose the less advantageous side. Changed to that. The run lengths were fixed by the writer; 5, 10 and 15 are now readings that must all give the outcome.
+  - Opening comment, O9. Added that the reading reproduces the paper's p-values from its counts (0.03, 0.004, 0.58 against 0.59).
+  - Checked and left as they are. The particle count (5000), the choice rule (supplement equation 1) and the unbounded random walk of the parameters (supplement equations 14 and 15) are in the supplement as the file says. All quotes, sources, p-values and expected values match the text. The paper's main findings each have a claim, and no claim comes from another paper.
+  - Open. Thresholds that judge qualitative words in the Fig. 9 claims (within 0.5 s, a fifth of the peak, twice the median), in suppdata1-choice-vs-q-difference (Spearman above 0.9) and in fig4-strategy-tracking (kappa2 within 25% of kappa1) are the writer's readings of words the paper gives no number for.
+  - Open. Supplemental Data 1 and 3 are not in the text read, so suppdata1-choice-vs-q-difference and core-shell-no-difference are judged on readings of their missing methods.

@@ -1,0 +1,89 @@
+dandiset: "001708"
+paper: doi:10.64898/2025.12.15.693905
+questions:
+- claim: figs3-neutral-unmodulated
+  asked: 2026-11-05
+  question: >-
+    The criterion takes the trials of all NEUTRAL units of all files, and expects 32 cells with 69
+    and 70 trials. The dataset has 36 NEUTRAL units. Four are in 'evoked' files, labelled "NEUT";
+    the other 32, labelled "Neutral", are the ongoing and evoked/ongoing cells. The 36 give 76 to 79
+    trials. The paper's n = 32 is the second set, which is also the set of the ongoing analyses.
+    Should the criterion take the 32 NEUTRAL cells of the 'ongoing' and 'evoked/ongoing' files?
+  passage: >-
+    "In contrast, NEUTRAL-cells (n = 32; 69 withdrawal-aligned and 70 heat-aligned trials) exhibited
+    no discernible modulation associated with either heat onset or withdrawal behavior" (Results,
+    Evoked ON/OFF activity unfolds over multiple timescales, paragraph 9). The Methods (Experiments,
+    paragraph 4) count 24 NEUTRAL cells in the evoked protocol and 12 in the ongoing protocol, 36 in
+    all.
+  why: >-
+    With all 36 units the cell count (36 against 32 +- 3.2) and the withdrawal-aligned trial count
+    (76 to 78 against 69 +- 6.9) fall outside tolerance, and the claim is partially reproduced.
+    With the 32 cells the counts are exactly 32, 69 and 70, and the absence of modulation holds
+    either way (Wilcoxon p 0.14 to 0.70).
+  answered: 2026-11-05
+  answer: >-
+    Changed. The criterion now takes the NEUTRAL units of the 'evoked/ongoing' and 'ongoing' files,
+    and Table S11 is added to the source. Table S11 gives "45, 35, 4" for Evoked, "0,0,20" for
+    Evoked/Ongoing and "25,25,12" for Ongoing, 36 NEUTRAL cells in all, so the paper's n = 32 is
+    20 + 12, the same set as the ongoing analyses ("NNEUTRAL = 32"). Expected values are
+    unchanged; the counts with all 36 units are still reported.
+- claim: fig3bc-psd-peaks
+  asked: 2026-11-05
+  question: >-
+    The criterion gives the FFT grid of the code as a resolution of 1.65e-4 Hz. Fifty times the spike
+    count of the first ON cell in archive order gives a grid of 1.341e-4 Hz, and that grid puts the
+    class-mean peaks at 286.86 s and 298.33 s, the paper's values to the second decimal. Is the 1.65e-4
+    Hz a misreading? And can the reported FWHMs of 16.92 and 16.12 s come from the method the criterion
+    describes? The supplement gives 0.00067 Hz as the lowest realizable frequency of a 1500 s segment,
+    and a FWHM of about 16.9 s at a 287 s peak is about 2e-4 Hz, narrower than one over the segment
+    length. The verifier fed a synthetic spike train with a pure 300 s modulation through the method and
+    got a FWHM of 9.6e-4 Hz, about 86 s.
+  passage: >-
+    "TON peak = 286.86 s, full width at half maximum (FWHM) = 16.92 s; TOFF peak = 298.33 s, FWHM = 16.12
+    s" (Results, RVM ON- and OFF-cells exhibit slow quasi-periodic structure during ongoing activity,
+    paragraph 2); the supplement, "Spike train power spectra", on the lowest realizable frequency of a
+    1500 s record.
+  why: >-
+    If no reading of the criterion can give a width below the resolution set by the segment length, the
+    FWHM half of the claim cannot be reproduced by any analysis of these data, and the outcome
+    (partially reproduced, periods only) says nothing about the dataset. A reader could amend the
+    criterion's resolution and say whether the FWHM should be judged at all.
+- claim: fig6d-heart-rate-peaks
+  asked: 2026-11-05
+  question: >-
+    The criterion reproduces the claim when a peak near a multiple of 300 s is the highest peak below
+    0.01 Hz, a rule it names as open. On these data that rule is decided by a peak at about the record
+    length (1243 s on 1500 s segments, 2486 s over whole recordings), likely drift or leakage. With
+    double-detected beats removed, the whole-recording spectrum has local maxima at 932.3 and 621.5 s, but
+    they are not the highest. Should the rule leave out peaks within a factor of about two of the record
+    length, or compare the 600 s and 900 s peaks with their neighbours, as Figure 6d marks them?
+  passage: >-
+    "spectral peaks in heart rate were observed at ... multiples of this period (Figure 6d)" (Results,
+    Low-frequency coherence between RVM activity and heart rate, paragraph 3); the Figure 6 legend,
+    "Combined averaged heart rate power spectrum over all animals".
+  why: >-
+    The outcome is not reproduced only because the highest peak is at the record length. A rule that
+    looks at local maxima near 600 and 900 s would pass on whole recordings with cleaned beats and fail
+    on segments, so the outcome could change.
+- claim: fig5b-train-no-difference
+  asked: 2026-11-05
+  question: >-
+    The criterion of fig5b-train-r2, which this claim takes its inputs from, fits the 12 ongoing NEUTRAL
+    cells over their whole recordings (the Methods' "full recording period") and the code's 1500 s segment
+    as a variant. Matched cell by cell, the code's stored fits (combined_data.csv) of these 12 cells agree
+    with fits on the 1500 s segments (median relative difference of the null log likelihoods 0.0003,
+    Spearman r of the training pseudo-R2 0.993) and not with fits on the whole recordings (1.28, r 0.112).
+    The stored NEUTRAL training median (0.0281) is also closer to the segments' (0.0303) than to the whole
+    recordings' (0.0216). The paper's results therefore come from the segments. Does the claims file's
+    rule ("the Methods are the main reading and the code a variant, except where the Methods' value cannot
+    produce the reported result") make the segments the main reading for the fig5b and Table 1 claims?
+  passage: >-
+    "For cells with available ongoing-activity recordings, we extracted a 1500 s segment (or 960 s for
+    the shorter NEUTRAL cell datasets) relative to the start of the first post-ongoing activity trial.
+    ... Because noxious stimulation had no effect on NEUTRAL-cell firing rates, the full recording period
+    from all neutral cells was used for GP modeling." (Methods, Data processing, paragraph 2.)
+  why: >-
+    On whole recordings the paper's test finds a training difference (ON against NEUTRAL Bonferroni p 0.036,
+    Kruskal-Wallis p 0.034, blocks by file), so fig5b-train-no-difference is not reproduced. On the code's
+    segments it finds none (0.108 and 0.098, the paper's 0.117), so the outcome would be reproduced. The
+    other fig5b and Table 1 claims hold on both inputs.

@@ -1,0 +1,1149 @@
+# Claims for Park, Wong-Campos et al. (2025), "Dendritic excitations govern back-propagation via a
+# spike-rate accelerometer", Nat Commun 16, 1333, on dandiset 001266.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, protocol
+# version pilot-10 as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record (PMC11794848, Europe PMC full text) with its Supplementary
+# Information (Figs. S1 to S25, MOESM1), the Peer Review File (MOESM2), the Description of Additional
+# Supplementary Files (MOESM3) and the Reporting Summary (MOESM9, no text extracted). The file
+# paper/10.1101-2023.06.02.543490.txt is an earlier bioRxiv preprint with a different title and was
+# not used.
+#
+# Code read: the paper links no analysis code ("All analysis was performed in MATLAB"; the analysis
+# scripts are not published). It links simulation code only, as Supplementary Software, read from
+# the journal's static content (no repository or commit exists):
+#   Supplementary Software 1, 41467_2025_55819_MOESM7_ESM.zip (sha256 9eab52ac...7049249): the
+#     NEURON conductance-based CA1 model (main.py, run_simulation.py, parameters_list.py, mod files,
+#     MATLAB plotting of Figs. S19 and S20 phase diagrams).
+#   Supplementary Software 2, 41467_2025_55819_MOESM8_ESM.zip (sha256 a5a1b593...0c6b6): the
+#     two-compartment Izhikevich model, Two_compartment_Izhikevich.m. It differs from the Methods
+#     and Fig. S21 in two details: somatic reset -65 (Fig. S21a gives vrs = -55) and initial
+#     dendritic u = -18 (Methods give -13). The Methods' values are the main reading; the code's are
+#     a variant.
+# Neither holds any method for the analysis of the recordings.
+#
+# Outside material the dataset needs: the Source Data file, 41467_2025_55819_MOESM10_ESM.xlsx
+# (https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-025-55819-9/MediaObjects/
+# 41467_2025_55819_MOESM10_ESM.xlsx, sha256 142a0621e8581da59891f5a9e0b9f86983b5c2f080d6fba617eb02130044774d).
+# The dandiset's description names it as "an index mapping files on DANDI to paper figure panels".
+# Its sheet "Raw data in Dandi_Archive" maps each DANDI file name (sub-...) to a figure panel; its
+# other sheets give per-cell values for Figs. 5b, 5f, 5h, 6b, S1c, S2d, S3f, S12c, S16d, S16g, S17d,
+# S18e, S18h, S24 and S25f, g. The index lists example recordings for Figs. 1c-f, 2, 3, 4a, 4c-d,
+# 5a, 5c, 5e, 5g, 6a, S2, S3b, S4a, S4e, S5a, S13a, S14a-c, S15, S16-S18, S22 and S25. Only the
+# index sheet was read here, for its panel names; no recording was opened.
+#
+# The data the paper reports: acute coronal hippocampal slices (300 µm) from CD1 mice of either sex,
+# 2 to 4 postnatal weeks, after in utero electroporation of Optopatch-V (LR-Voltron2 with
+# LR-CheRiff-eYFP), dye JFX608. CA1 pyramidal neurons were imaged at 34 °C on a custom 1-photon
+# microscope with micromirror-patterned 594 nm voltage imaging, at 1 kHz unless stated (2 kHz in
+# Fig. S2), and patterned 488 nm optogenetic stimulation; with 2-photon or HiLo structural images;
+# in some cells whole-cell patch clamp at the soma (100 kHz). The experiments and their samples:
+# branch, soma and soma plus dendrite stimulation (20 ms, 5 Hz, 54 trials; 17 neurons, 15 animals;
+# Figs. 2, 3, S8 to S12); dendrite stimulation distance series (35 dendrites, 13 cells, 11 animals,
+# Fig. 3i); ramps (188 ramps, 56 cells, 44 animals, Fig. S13); steps (43 stimulated branches, 16
+# cells, 13 animals, Fig. 4b); wide-field stimulation (9 cells, 9 animals, Fig. 4c-e); patch current
+# pulses 3 to 100 Hz (29 recordings, 14 cells, 11 animals, Fig. S14); drugs on dSpikes (BaCl2 9
+# cells, 4-AP 4 cells, TTX 4 cells, Ni2+ 5 and 6 cells; Figs. S16 to S18); plateau experiments with
+# electric field stimulation (EFS) of the temporoammonic path with picrotoxin and 1 mM Mg2+ (28
+# cells, 12 animals, Fig. 5b; timing 8 and 5 cells, Fig. 5d; ramps and steps 7 or 8 cells, 5 animals,
+# Fig. 5e-h; drugs D-AP5 6, TTX 4, Ni2+ 4, vehicle 11 cells, Fig. 6); temperature 34 against 24 °C
+# (6 cells, 4 animals, Fig. S25); validation (Figs. S1 to S5). The measured variables are the
+# camera movies (Voltron2 fluorescence, which falls with depolarization), the stimulus timing and
+# patterns, eYFP images, structural images, and patch clamp current and voltage. The dandiset's
+# description gives the patch clamp channel scalings.
+#
+# Shared method, from the Methods unless marked; criteria refer to it.
+#   Fluorescence is taken from regions of the raw movie (not the PCA-denoised or 3D-reconstructed
+#   maps, Results paragraph 3), either by the maximum-likelihood pixel weighting of ref. 33 or by
+#   the unweighted mean of a user-drawn region ("These two approaches gave similar results"), and
+#   photobleaching is corrected by dividing by a regression fit to the mean fluorescence.
+#   Depolarization is -dF (Voltron2 fluorescence falls with voltage).
+#   Every somatic spike is a bAP. Spikes are found by high-pass filtering and a threshold with a
+#   maximum; the threshold was set by hand. dSpikes are found the same way in a distal region,
+#   typically > 300 µm from the soma, as large narrow events, typically < 5 ms full width at half
+#   maximum. Distances are measured in the image plane, ignoring z.
+#   Open, none of the paper, its legends, its supplement or its code fixes them:
+#   (1) The high-pass filter. Readings run: (a) subtraction of a 20 ms moving median; (b) a
+#       zero-phase Butterworth high-pass at 20 Hz. Both are standard choices that keep events
+#       shorter than 5 ms.
+#   (2) The dSpike threshold. The paper's reading, shown in Figs. 2b and S10c, is a threshold
+#       between the two modes of the distal amplitude histogram; it is placed at the histogram's
+#       trough for each recording, and the FWHM < 5 ms rule is applied.
+#   (3) Which distal event belongs to which bAP. Standard choice that cannot change a count by more
+#       than chance overlaps: the distal peak within 5 ms after the somatic peak.
+#   (4) The somatic spike threshold. Standard choice: 5 times the robust s.d. of the filtered
+#       trace; the paper reports zero false positives and negatives at the soma (Fig. S2), so this
+#       cannot change the outcome.
+#   Area under the curve (AUC) is the time integral of -dF in a distal dendrite > 200 µm from the
+#   soma (Methods; Figs. 5c, 6a, S24). The integration window is open. Readings: (a) from stimulus
+#   onset until the cumulative area stops rising (the cumulative curve of Fig. S22a); (b) from
+#   stimulus onset to the end of the stimulus epoch before the next stimulus.
+#   Statistics: two-tailed paired or unpaired Student's t-tests, or one-way ANOVA with Bonferroni's
+#   post hoc test (Methods, Statistics).
+#   Readings (protocol, Reader, step 3). Where a criterion lists readings of a reported number
+#   (which trials, cells or spikes it counts), the claim is reproduced if it matches under any of
+#   them. Where it lists readings of an open method detail (the filter, the dSpike threshold, an
+#   integration window, a fit's form, how a time or distance is taken), every reading is run and
+#   the outcome is the one they all give; when they give different outcomes the claim is
+#   methods_underspecified, with every result shown. This holds for every criterion below, also
+#   where it says "under both".
+#
+# Data: claims on one example recording use the dataset with the Source Data index as labels
+# (with_labels, depending on source-data-index). Claims on pooled recordings use the dataset; the
+# paper gives no list of the pooled recordings, and finding them is the author's. Simulation claims
+# use the paper's Supplementary Software (with_inputs).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001266"
+paper: doi:10.1038/s41467-025-55819-9
+claims:
+- id: source-data-index
+  kind: link
+  statement: The dandiset's files are the recordings the paper's Source Data index assigns to
+    figure panels, so that example panels can be found by file name.
+  source: Data availability; Source Data file, sheet "Raw data in Dandi_Archive"; dandiset description
+  quote: The voltage imaging data generated in this study are on the DANDI archive under accession
+    code 001266
+  data: with_labels
+  criterion: Files are matched by the name in the index's column "File name on DandiArchive"
+    against the dandiset's subject and session names. Reproduced when every file the index names
+    is found; partially reproduced when at least half are; not reproduced otherwise. Where the
+    index's file name and the legend's label differ (Fig. 2 "D1 stim" is listed as file ..._D3;
+    Fig. 3 lists files D1, D2, D4, soma and D4+soma for the legend's D2, soma and Soma + D2), the
+    file for each panel is the one whose trial and event counts match the legend (54 trials each;
+    Fig. 2, 8 dSpikes; Fig. 3 D2, 49 -dSpikes and 35 +dSpikes; soma, 161 and 6; Soma + D2, 116 and
+    54; Fig. S8a, 80 and 12; Fig. S8c-d D4, 85 and 11). The readings for the legend's D2 are (a)
+    file D2 and (b) file D4 (the combined file is named D4+soma); both are reported.
+- id: fig2a-dspike-dichotomy
+  statement: In the Fig. 2 neuron, stimulation of proximal oblique dendrites evoked two somatic
+    spikes per trial; in most trials the distal dendrites showed only an attenuated copy, and in 8
+    of 54 trials a single rapid dSpike, always on the second somatic spike.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 1; Figure 2a, 2c
+  quote: Each stimulus evoked two spikes at the soma ... in some cases (8 of 54 trials), the dendrites
+    produced a single rapid spike ... the dendritic excitations always emerged from the second
+    somatic spike, never the first
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: trials with a dSpike, of 54
+    value: 8
+    tolerance: 0.8
+  criterion: In the Fig. 2 recording (index entry "branch_stim (Fig.2)"), bAPs and dSpikes are
+    counted per trial as in the shared method, distal region > 300 µm (legend). Reproduced when
+    the count is within tolerance under both filter readings and no dSpike follows the first
+    somatic spike of a trial.
+- id: fig2b-bimodal-distal-amplitudes
+  statement: Spike amplitudes have a unimodal distribution at the soma and a bimodal one in the
+    distal dendrite.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 1; Figure 2b
+  quote: A histogram of event amplitudes in the soma and dendrites showed a unimodal distribution at
+    the soma and a clearly bimodal distribution in the distal dendrites
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The paper names no test of modality. For the Fig. 2 recording, the amplitude (-dF/F at
+    the bAP's peak) of every bAP at the soma and in the distal region (> 300 µm). Readings, from
+    the figure (a histogram with a threshold between two groups) and two standard tests, (a)
+    Hartigan's dip test, p < 0.05 for the distal amplitudes and p >= 0.05 for the soma; (b) a
+    two-component Gaussian mixture preferred over one component by BIC in the distal amplitudes
+    and not at the soma. Reproduced when both readings agree that the distal distribution is
+    bimodal and the somatic one is not; when they differ, methods_underspecified.
+- id: fig2e-f-dspike-maps
+  statement: bAPs without a dSpike are confined to the soma and proximal dendrites, while bAPs with
+    a dSpike are amplified in the distal dendrites.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 2; Figure 2e, 2f
+  quote: In the -dSpike trials the bAP was primarily confined to the soma and proximal apical and
+    basal dendrites ... In the +dSpike trials, the depolarization was amplified in the distal
+    dendrites
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: For the Fig. 2 recording, spike-triggered averages of -dF normalized by dF_ref (the
+    fluorescence change during the passive return to baseline, Methods; Fig. 1d legend, mean from
+    10 to 20 ms after the spike) along the apical trunk in 10-pixel segments (Methods,
+    Kymographs). Reproduced when the -dSpike average at > 300 µm is below half its value at the
+    soma and the +dSpike average at > 300 µm is at least its value at the soma. The paper gives
+    no number; half and equal are the readings of "confined" and "amplified" used here, and the
+    ratios are reported.
+- id: fig2h-length-constant
+  statement: The peak amplitude of bAPs without a dSpike decays exponentially along the apical trunk
+    with a length constant of 255 ± 10 µm (mean ± s.e.m., 93 spikes).
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 2; Figure 2h
+  quote: Plots of the peak spike amplitude along the apical trunk showed exponential decay of the
+    -dSpike events (length constant 255 ± 10 μm, mean ± s.e.m., n = 93 spikes)
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: length constant of -dSpike bAP amplitude along the apical trunk
+    value: 255
+    tolerance: 10
+    unit: µm
+  criterion: Tolerance is the paper's s.e.m. The amplitude (-dF/F_ref) of each -dSpike bAP in
+    10-pixel segments along the trunk is fitted with an exponential in distance from the soma, one
+    fit per spike, and the length constants are averaged. Open, as the paper does not say, (1)
+    which 93 spikes; readings (a) the -dSpike bAPs of the Fig. 2 recording, (b) the -dSpike bAPs of
+    all Fig. 2 and Fig. 3 recordings of that neuron; (2) the fit; readings (a) A exp(-x/lambda),
+    (b) A exp(-x/lambda) + c. Reproduced when the mean is within tolerance under one reading of
+    (1) for both readings of (2), and each reading is shown.
+- id: fig3-subthreshold-no-dendritic-initiation
+  statement: Subthreshold depolarization follows the stimulus location and decays smoothly outside
+    it; dSpikes never initiated in the dendrites.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 3; Figure 3d-f, S10, S11
+  quote: We only observed diffusive-like propagation of the subthreshold voltages, never dSpikes that
+    initiated in the dendrites.
+  data: dataset
+  criterion: In the branch, soma and soma plus dendrite recordings, every dSpike is checked for a
+    somatic spike whose peak precedes the distal peak (shared method, item 3). Reproduced when no
+    dSpike lacks a preceding somatic spike.
+- id: fig3-two-motifs-location-independent
+  statement: Neurons produced only two kinds of excitation, perisomatic bAPs and distal dSpikes,
+    and neither spatial profile depended on which dendrite was stimulated.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 4; Figures S9 to S11
+  quote: the neurons produced precisely two kinds of excitations ... neither spatial profile depended
+    on the location of the driving stimulus
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The paper names no measure. For the neuron of Figs. 2, 3 and S8 (index entries
+    branch_stim), the -dSpike and the +dSpike spike-triggered amplitude profiles along the trunk
+    (-dF/F_ref, 10-pixel segments) for each stimulus location. Reproduced when, for each class,
+    every pair of locations' profiles has Pearson r >= 0.9 and the +dSpike profiles all exceed the
+    -dSpike profiles beyond 300 µm. The threshold 0.9 is a reading of "precisely two kinds", not
+    the paper's; the correlations are reported.
+- id: fig3h-dspike-peak-distance
+  statement: The amplitude of dSpikes relative to the first bAP peaks in the distal trunk, 313 ±
+    41 µm from the soma (mean ± s.d., 22 stimulated regions, 17 neurons).
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 4; Figure 3g, 3h
+  quote: was maximum in the distal dendritic trunk (313 ± 41 µm from the soma, mean ± s.d., n = 22
+    stimulated regions (soma or proximal branch), 17 neurons, 15 animals
+  data: dataset
+  expected:
+  - quantity: distance of peak dF_max/dF_1 from the soma
+    value: 313
+    tolerance: 41
+    unit: µm
+  criterion: Tolerance is the paper's s.d. For each recording with soma or proximal (< 200 µm)
+    stimulation, dF_1 is the amplitude of the first bAP after stimulus onset and dF_max the
+    amplitude of a later dSpike (Fig. 3h legend) in each trunk segment; the distance of the
+    segment with the largest ratio is taken, and the mean over stimulated regions is compared.
+    Open, the paper does not say whether ratios are of trial averages or averaged over trials;
+    readings (a) ratio of the averages, (b) average of single-trial ratios. Reproduced when the mean
+    is within tolerance under both.
+- id: fig3g-later-bap-ratio
+  statement: Later bAPs that carry a dSpike have a larger amplitude ratio to the first bAP than
+    later bAPs without one.
+  source: Figure 3g
+  quote: g Amplitude ratio of later bAPs to the first bAP (∆F max /∆F 1 ). Data sorted by the
+    presence ( + dSpike) vs. absence (-dSpike) of dSpike.
+  data: dataset
+  criterion: Per stimulated region (soma or proximal < 200 µm, 22 regions), the mean ratio at the
+    distal region for later bAPs with and without dSpikes. The paper reports no test; the
+    Methods' paired two-tailed t-test across regions is applied. Reproduced when the +dSpike ratio
+    is higher with p < 0.05.
+- id: figs12-bap-velocity
+  statement: bAPs propagate along the apical trunk at 141 ± 30 µm/ms (mean ± s.d., 17 neurons).
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 4; Figure S12
+  quote: Mean propagation velocity of bAPs along the apical trunk was 141 ± 30 µm/ms (mean ± s.d., n
+    = 17 neurons, 15 animals
+  data: dataset
+  expected:
+  - quantity: mean bAP propagation velocity along the apical trunk
+    value: 141
+    tolerance: 30
+    unit: µm/ms
+  criterion: Tolerance is the paper's s.d. Per neuron, with soma stimulation (Fig. S12a), the time
+    of each spike's peak along the trunk; sub-frame timing by SNAPT (Methods, time at 50% of the
+    local maximum from a quadratic spline fit to the spike-triggered average). Open, how velocity
+    is taken from the delays; readings (a) the slope of a line fitted to distance against delay,
+    (b) the mean of segment-wise distance over delay. Reproduced when the mean over neurons is
+    within tolerance under both readings. The Source Data (sheet Supplementary Fig 12) gives the
+    17 per-neuron values for comparison.
+- id: fig3e-soma-third-bap
+  statement: In the Fig. 3 neuron, soma stimulation never evoked dSpikes on the first two bAPs and
+    evoked one on the third bAP in 6 of 54 trials.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 5; Figure 3e
+  quote: Stimulation of the soma alone never evoked dSpikes on the first two bAPs, and occasionally
+    evoked a dSpike on the third bAP (6 of 54 trials)
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: trials with a dSpike on the third bAP, of 54
+    value: 6
+    tolerance: 0.6
+  criterion: The soma recording of the Fig. 3 neuron (index entry "branch_stim (Fig.3)", file
+    ..._soma). Reproduced when no first or second bAP carries a dSpike and the count is within
+    tolerance.
+- id: fig3d-distal-first-bap
+  statement: In the Fig. 3 neuron, stimulation of distal dendrite D2 evoked a dSpike on the first
+    bAP in 35 of 54 trials (65%).
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 5; Figure 3d
+  quote: Stimulation of distal dendrite D2 alone evoked dSpikes on the first bAP, with 65% probability
+    (35 of 54 trials
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: trials with a dSpike on the first bAP, of 54
+    value: 35
+    tolerance: 3.5
+  criterion: The recording for the legend's D2 is identified as in source-data-index (readings,
+    file D2 or file D4). Reproduced when the count is within tolerance under the reading whose
+    total counts match the legend; when neither matches, both are shown and the claim is
+    methods_underspecified.
+- id: fig3f-soma-plus-distal
+  statement: In the Fig. 3 neuron, simultaneous soma and D2 stimulation gave two quick bAPs without
+    dSpikes and then a third bAP that evoked a dSpike in all 54 trials.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 5; Figure 3f
+  quote: Simultaneous stimulation at soma and D2 produced two quick bAPs which failed to evoke
+    dSpikes, and then the third bAP (12 – 17 ms after stimulus onset) triggered a dSpike with 100%
+    probability (54 of 54 trials
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: trials with a dSpike on the third bAP, of 54
+    value: 54
+    tolerance: 5.4
+  criterion: The combined recording (file ..._D4+soma). Reproduced when the count is within
+    tolerance and at most 10% of first and second bAPs carry a dSpike.
+- id: fig3i-distance-dependence
+  statement: The probability that the first bAP evokes a dSpike rises sigmoidally with the distance
+    of the stimulus from the soma, reaching a plateau of about 80% beyond 300 µm, and is near zero
+    for stimuli within 200 µm.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 5; Figure 3i
+  quote: Proximal stimuli ( < 200 μm from the soma) almost never evoked dSpikes on the first bAP ...
+    the probability of evoking a dSpike with the first bAP followed a sigmoidal distance
+    dependence, with a plateau of ~80% success rate for stimuli > 300 µm from the soma
+  data: dataset
+  expected:
+  - quantity: plateau of first-bAP dSpike probability for stimuli beyond 300 µm
+    value: 80
+    tolerance: 8
+    unit: "%"
+  criterion: For each of the 35 dendrite stimulations, the fraction of trials whose first bAP
+    carries a dSpike, against the distance of the stimulus from the soma (Fig. 3i legend). Open,
+    the paper does not say how the distance of a stimulus region is taken or what the plateau
+    is; readings for distance, (a) the centroid of the stimulus polygon's eYFP fluorescence, (b)
+    the point of the polygon nearest the soma; readings for the plateau, (a) the upper asymptote
+    of a logistic fit, (b) the mean probability of stimuli beyond 300 µm. Reproduced when every
+    reading gives a plateau within tolerance and the mean probability for stimuli within 200 µm
+    is below 10% (a reading of "almost never", not the paper's number).
+- id: fig3-predepolarization-rule
+  statement: dSpikes arise if and only if the distal dendrites have been depolarized for at least
+    15 ms before the bAP arrives.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 6
+  quote: dSpikes arose if and only if the distal dendrites had been depolarized for at least 15 ms
+    prior to arrival of a bAP.
+  data: dataset
+  criterion: The paper states the rule from its examples and gives no test. For every bAP in the
+    branch, soma and soma plus dendrite recordings, the time the distal region (> 300 µm) has been
+    depolarized before the bAP, from the first frame after stimulus onset at which the
+    stimulus-triggered average distal -dF exceeds 2 s.d. of its pre-stimulus baseline (a standard
+    onset choice). Reproduced when at least 90% of dSpikes follow >= 15 ms of distal
+    depolarization and at least 90% of bAPs that follow < 15 ms fail; the full table is reported.
+- id: figs13-ramp-first-spike
+  statement: Under a gradual optogenetic ramp to the soma or proximal dendrites, the first somatic
+    spike almost always evokes a dSpike (92%).
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 7; Figure S13
+  quote: For this stimulus waveform, the first somatic spike almost always evoked a dSpike (92%, 188
+    ramps, 56 cells, 44 animals
+  data: dataset
+  expected:
+  - quantity: fraction of first bAPs of a ramp that evoke a dSpike
+    value: 92
+    tolerance: 9.2
+    unit: "%"
+  criterion: The ramp recordings (3 s linear ramps, soma or proximal < 150 µm). The text says 188
+    ramps and the Fig. S13d legend "92% out of 225 bAPs". Readings, (a) the fraction of ramps whose
+    first bAP carries a dSpike, (b) the fraction of all first bAPs counted over recordings
+    including repeats. Reproduced when one reading is within tolerance; both are shown.
+- id: fig4a-step-example
+  statement: In the Fig. 4a neuron, a step stimulus to a proximal apical dendrite evoked a bAP
+    without a dSpike, then two bAPs with dSpikes, then a series of bAPs without dSpikes.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 1; Figure 4a
+  quote: a step stimulus to a proximal apical dendrite evoked a bAP without a dSpike, then two bAPs
+    with dSpikes, then a series of bAPs without dSpikes
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The recording of index entry "branch_adaptation (Fig.4a)". Reproduced when the
+    sequence of failures and dSpikes in at least one trial is failure, dSpike, dSpike, then only
+    failures, and the most common sequence over trials is reported.
+- id: fig4b-dspike-window
+  statement: Under step stimulation dSpikes fail for the first 18 ± 7 ms, succeed until 83 ± 47 ms
+    after onset, and then fail (mean ± s.d., 43 stimulated branches, 16 cells).
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 1; Figure 4b
+  quote: dSpikes failed for the first 18 ± 7 ms (mean ± s.d.), then there was a period where dSpikes
+    succeeded which lasted until 83 ± 47 ms after stimulus onset, followed by subsequent dSpike
+    failures
+  data: dataset
+  expected:
+  - quantity: time of window opening (end of initial failures) after stimulus onset
+    value: 18
+    tolerance: 7
+    unit: ms
+  - quantity: time of window closing (last dSpike) after stimulus onset
+    value: 83
+    tolerance: 47
+    unit: ms
+  criterion: Tolerances are the paper's s.d. The step recordings (> 200 ms, soma or proximal
+    dendrites). Open, the paper does not say how the two times are taken per branch; readings,
+    (a) per stimulated branch, the time of the first and of the last dSpike in each trial,
+    averaged over trials, then mean over branches; (b) per branch, the first and last time at
+    which the trial-pooled dSpike fraction per 10 ms bin is above zero. Reproduced when both
+    means are within tolerance under both readings.
+- id: fig4b-few-late-dspikes
+  statement: Sustained somatic spiking produced very few dSpikes later than 100 ms after stimulus
+    onset, whatever the stimulus strength or location.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 1; Figure 4b
+  quote: Sustained spiking at the soma led to very few dSpikes later than 100 ms after stimulus onset,
+    regardless of stimulus strength or location.
+  data: dataset
+  criterion: In the step recordings, the percent of bAPs carrying a dSpike before and after 100 ms
+    from onset (Fig. 4b bottom). Reproduced when the later percent is below one fifth of the
+    earlier and below 10% (a reading of "very few"); both percents are reported.
+- id: fig4ce-period-doubling
+  statement: Wide-field optogenetic stimulation evoked a period-doubling bifurcation, bAPs
+    alternately succeeding and failing to evoke dSpikes, with all bAPs after about 180 ms failing
+    (9 cells).
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 3; Figure 4c-e
+  quote: this stimulus reliably evoked a period-doubling bifurcation ... ( n = 9 cells from 9 animals,
+    Fig. 4c, d ). The dSpike window persisted to ~180 ms after stimulus onset, but, despite the
+    stronger stimulus, all bAPs after ~180 ms failed to evoke dSpikes
+  data: dataset
+  expected:
+  - quantity: end of the dSpike window under wide-field stimulation
+    value: 180
+    tolerance: 18
+    unit: ms
+  criterion: In the wide-field recordings, bAP frequency from inter-peak intervals and amplitude
+    normalized to the mean of the final 5 bAPs of the epoch (Methods, Period doubling; Fig. 4e).
+    Alternation holds in a cell when successive normalized amplitudes alternate above and below 1
+    for at least 4 consecutive bAPs (the alternating motif of Fig. 4e right). Reproduced when at
+    least 7 of 9 cells alternate and the time of the last dSpike, averaged over cells, is within
+    tolerance. The paper gives neither number; 4 consecutive bAPs and 7 of 9 cells are readings of
+    "alternately" and "reliably", not the paper's, and the counts are reported.
+- id: fig4d-example-alternation
+  statement: In the Fig. 4c-d neuron, the first 12 bAPs under wide-field stimulation showed two bAP
+    failures followed by alternating dSpikes and failures.
+  source: Figure 4d
+  quote: Amplitude maps of the first 12 bAPs showing two bAP failures, followed by alternating dSpikes
+    and bAP failures.
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The recording of index entry "branch_bifurcation (Fig.4c,d)". Reproduced when the
+    first 12 bAPs read failure, failure, then alternate dSpike and failure, in at least one trial.
+- id: figs15-stochastic
+  statement: Even stronger wide-field stimuli evoked an epoch of seemingly random interplay of bAPs
+    and dSpikes, varying from trial to trial while somatic spiking stayed regular, followed by
+    sustained dSpike failures.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 3; Figure S15
+  quote: Even stronger stimuli evoked an epoch of seemingly random interplay of bAPs and dSpikes
+    (Fig. S15 ), followed by sustained dSpike failures.
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The recording of index entry "period_doubling (Fig. S15)". Reproduced when the
+    sequence of dSpikes and failures differs between at least two trials while somatic spike
+    times stay within 2 ms of each other across trials for the same bAP index, and later bAPs
+    fail.
+- id: figs14-low-rate-attenuation
+  statement: With somatic current pulses at 3 Hz, distal bAP amplitudes attenuate progressively,
+    without dSpikes.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 2; Figure S14d
+  quote: At low frequencies (e.g., 3 Hz), membrane depolarization did not accumulate sufficiently to
+    trigger dSpikes; instead, we observed a progressive attenuation of bAP amplitudes in the
+    distal dendrites
+  data: dataset
+  criterion: In the patch clamp pulse recordings (2 nA, 2 ms), the distal (> 300 µm) -dF/F of each
+    spike relative to the last spike at 3 Hz (Fig. S14d, 29 recordings). The paper reports no test;
+    the Methods' paired two-tailed t-test is applied to the first against the last spike's distal
+    amplitude across recordings. Reproduced when the first exceeds the last with p < 0.05 and no
+    dSpike is found at 3 Hz.
+- id: figs14-high-rate-window
+  statement: With somatic current pulses at 80 Hz or more, bAPs first fail, then a series of
+    dSpikes arises, then failures again.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 2; Figure S14e, f
+  quote: At frequencies ≥ 80 Hz, however, we observed a characteristic motif of bAP failure, then a
+    series of dSpikes, and then failures again
+  data: dataset
+  criterion: Maximum distal amplitude per frequency normalized to each dataset's minimum (Fig.
+    S14e), and the sequence of successes at 80 Hz (Fig. S14f). Reproduced when dSpikes occur at
+    80 Hz and above and not below, and the 80 Hz sequence in most recordings starts with at least
+    one failure and ends with failures.
+- id: figs16-ba-increases-dspikes
+  statement: BaCl2 (150 µM) increased the dSpike probability under soma stimulation from 11 ± 2%
+    to 64 ± 10% (mean ± s.e.m., 9 cells).
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S16e-g
+  quote: 'BaCl 2 : 11 ± 2% before to 64 ± 10% after, mean ± s.e.m., n = 9 cells from 6 animals, p <
+    0.001, paired t-test'
+  statistics:
+  - test: paired t-test
+    p: 0.001
+    p_relation: "<"
+    n: 9 cells from 6 animals
+  - about: same test, as the Fig. S16 legend gives it
+    test: two-sided paired Student's t-test
+    p: 0.00068
+    n: 9 cells from 6 animals
+  data: dataset
+  expected:
+  - quantity: dSpike probability, baseline
+    value: 11
+    tolerance: 2
+    unit: "%"
+  - quantity: dSpike probability, BaCl2
+    value: 64
+    tolerance: 10
+    unit: "%"
+  criterion: Tolerances are the paper's s.e.m. dSpike probability is the percent of bAPs carrying
+    a dSpike (Source Data column "dSpike (%)"), per cell, for 20 or 30 ms soma stimuli at 5 Hz
+    (59 repeats). Reproduced when both means are within tolerance and a two-sided paired t-test
+    gives p < 0.001 for an increase. The Source Data sheet gives per-cell values.
+- id: figs16-4ap-increases-dspikes
+  statement: 4-AP (5 mM) increased the dSpike probability from 19 ± 4% to 92 ± 4% (mean ± s.e.m., 4
+    cells).
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S16b-d
+  quote: '4-AP: 19 ± 4% before to 92 ± 4% after, mean ± s.e.m., n = 4 cells from 3 animals, p < 0.001,
+    paired t-test'
+  statistics:
+  - test: paired t-test
+    p: 0.001
+    p_relation: "<"
+    n: 4 cells from 3 animals
+  - about: same test, as the Fig. S16d legend gives it
+    test: two-sided paired Student's t-test
+    p: 0.001
+    n: 4 cells from 3 animals
+  data: dataset
+  expected:
+  - quantity: dSpike probability, baseline
+    value: 19
+    tolerance: 4
+    unit: "%"
+  - quantity: dSpike probability, 4-AP
+    value: 92
+    tolerance: 4
+    unit: "%"
+  criterion: As figs16-ba-increases-dspikes. The text gives p < 0.001 and the legend p = 0.001;
+    reproduced when both means are within tolerance and a two-sided paired t-test gives p <= 0.001
+    for an increase. Note that the example recording of the index ("after_4AP (Fig.S16c)") is
+    named TTX20nM+4AP5mM.
+- id: figs17-ttx-decreases-dspikes
+  statement: Low TTX (20 nM) did not affect somatic spiking but decreased the dSpike probability
+    from 44 ± 15% to 11 ± 8% (mean ± s.e.m., 4 cells).
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S17a-d
+  quote: 'This low TTX dose did not affect spiking at the soma, but the mean dSpike probability was
+    significantly decreased (control: 44 ± 15%, TTX: 11 ± 8%, mean ± s.e.m., n = 4 cells from 3
+    animals, p = 0.008, paired t-test'
+  statistics:
+  - test: paired t-test
+    p: 0.008
+    n: 4 cells from 3 animals
+  data: dataset
+  expected:
+  - quantity: dSpike probability, control
+    value: 44
+    tolerance: 15
+    unit: "%"
+  - quantity: dSpike probability, TTX 20 nM
+    value: 11
+    tolerance: 8
+    unit: "%"
+  criterion: Tolerances are the paper's s.e.m. dSpike probability as figs16-ba-increases-dspikes,
+    for stimuli over about 100 µm across the soma and proximal dendrites (20 ms, 5 Hz, 59 to 118
+    repeats). Reproduced when both means are within tolerance and a two-sided paired t-test gives
+    p < 0.05 for a decrease; the number of somatic spikes per stimulus before and after is
+    reported.
+- id: figs17e-ttx-high-dose
+  statement: At 100 nM, TTX eliminated distal dSpikes while somatic spiking continued.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S17e
+  quote: In some experiments, a higher concentration of TTX (100 nM) eliminated all dSpikes at distal
+    dendrites, while preserving somatic spiking
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The example of index entries "after_TTX (100nM; Fig.S17e)" and its baseline. Reproduced
+    when the 100 nM recording has somatic spikes and no distal dSpike, while the baseline has
+    dSpikes.
+- id: figs18e-ni-no-effect-on-dspikes
+  statement: The CaV blocker Ni2+ (100 to 500 µM) did not affect dSpikes.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S18a-e
+  quote: The dSpikes were not affected by addition of the Ca V blocker Ni 2+ (100-500 µM; Fig. S18a–e
+    ), suggesting that they are not mediated by VGCCs.
+  data: dataset
+  criterion: A claim of absence. The legend names no test; the Methods' test for paired treatment
+    data is the two-sided paired t-test at 0.05 (n = 5 cells from 4 animals), on dSpike
+    probability as figs16-ba-increases-dspikes. Which Ni2+ concentration Fig. S18e pools is not
+    said (the example has 100 and 500 µM). The Source Data sheet for Fig. S18e gives the per-cell
+    values the paper tested; the recordings whose dSpike probabilities match them are the ones
+    tested. Where they cannot be matched, the readings are (a) the highest concentration each
+    cell received, (b) 100 µM, (c) 500 µM, all run. Reproduced when the test gives p >= 0.05 on
+    the matched recordings, or under every reading; when the readings disagree,
+    methods_underspecified. The mean change is reported either way.
+- id: figs18-ni-blocks-calcium-spikes
+  statement: Under strong drive, dSpikes occasionally triggered broad (> 20 ms) dendritic spikes;
+    Ni2+ (500 µM) eliminated them while preserving dendritic Na+ spikes, and reduced their
+    frequency significantly (6 cells).
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S18f-h
+  quote: Addition of Ni 2+ (500 μM) eliminated these broad spikes, confirming their dependence on VGCC
+    activation.
+  statistics:
+  - test: two-sided paired Student's t-test
+    p: 0.017
+    n: 6 cells from 6 animals
+  data: dataset
+  criterion: Putative Ca2+ spikes are distal depolarizations lasting > 20 ms (Fig. S18f legend),
+    counted per ramp (3 s), mean of three trials per cell, pooled from the wide-field and the
+    Ba2+ ramp experiments (Fig. S18h legend). Open, how duration is measured; readings (a) full
+    width at half maximum, (b) time above the dSpike threshold. Reproduced when under both
+    readings the count falls with Ni2+ with p < 0.05 in a two-sided paired t-test and dSpikes
+    remain under Ni2+.
+- id: figs18g-ba-increases-calcium-spikes
+  statement: Adding Ba2+ (150 µM) increased the incidence of putative dendritic Ca2+ spikes under
+    soma-targeted ramp stimulation.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 4; Figure S18g
+  quote: Addition of K V blocker Ba 2+ (150 µM) to otherwise untreated neurons increased the
+    prevalence of putative Ca 2+ spikes
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: The example of index entries "baseline (Fig.S18g)", "after_Ba2+ (Fig.S18g)" and
+    "after_Ba2+_NiCl (Fig.S18g)", with Ca2+ spikes as in figs18-ni-blocks-calcium-spikes.
+    Reproduced when the count is higher after Ba2+ than at baseline and lower again after Ni2+.
+- id: fig4f-g-model-accelerometer
+  statement: In the multi-compartment CA1 model, step stimulation at the soma gives a dSpike motif
+    of failure, success, success, failures, and wide-field stimulation gives alternating successes
+    and failures followed by repeated failures.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 5; Figure 4f, 4g
+  quote: a simulated step-wise optogenetic stimulation at the soma led to a dSpike motif of failure,
+    success, success, failures ... Simulated wide-field optogenetic stimulation with the same model
+    parameters evoked a period-doubling bifurcation with alternating dSpike successes and failures,
+    followed by repeated failures
+  data: with_inputs
+  criterion: Supplementary Software 1 run as provided with the Table 1 parameters; a bAP succeeds
+    when the compartment 500 µm from the soma peaks above -40 mV (Methods, Parameter fitting).
+    Reproduced when the soma run gives the motif and the wide-field run alternates and then fails.
+- id: figs20-model-robustness
+  statement: In the model, the accelerometer motif of bAP failure, dSpikes, then failure persists
+    over a wide range of dendritic NaV density, NaV slow inactivation, A-type KV density and
+    stimulus strength.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 6; Figure S20c-e
+  quote: the spike-rate accelerometer motif of bAP failure, dSpikes, and then failure persisted over a
+    wide range of parameters
+  data: with_inputs
+  criterion: The parameter sweeps of Supplementary Software 1 (Model Robustness, parameters_list.py)
+    with the -40 mV at 500 µm rule. Reproduced when the motif occupies a contiguous region in each
+    of the three phase diagrams that includes the Table 1 parameters.
+- id: figs20ab-model-patch-vs-opto
+  statement: In the model, a 2 nA dendritic current injection evokes dendrite-localized sodium
+    spikes, while optogenetic stimulation of the same dendrite evokes a somatic spike first that
+    then back-propagates, explaining the absence of dendrite-initiated dSpikes in the experiments.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 3; Figure S20a, b
+  quote: the absence of dendrite-initiated dSpikes in our experiments was likely due to the more
+    gradual, weaker, and spatially distributed nature of optogenetic vs. patch clamp stimuli
+  data: with_inputs
+  criterion: The "Oblique Patch Clamp and Optogenetic Stimulus" runs of Supplementary Software 1.
+    Reproduced when the current injection peaks first in the stimulated dendrite and the
+    optogenetic stimulus peaks first at the soma.
+- id: figs21-izhikevich
+  statement: A two-compartment Izhikevich model reproduces the opening and closing of the dSpike
+    window under soma stimulation and period-doubling under combined soma and dendrite stimulation.
+  source: Results, Dendritic spike-rate accelerometer, period-doubling, and stochastic back-propagation, paragraph 6; Figure S21
+  quote: which also captured the opening and closing of the dSpike window (i.e. spike-rate
+    accelerometer) and the period-doubling under simultaneous distal and proximal stimulation
+  data: with_inputs
+  criterion: Two_compartment_Izhikevich.m with the Methods' parameters (gs = 0.16, gD = 0 for soma
+    only; gs = 0.3, gD = 0.05 combined; vrs = -55 and initial u_D = -13), and as a variant with the
+    script's own (-65, -18). Reproduced when the soma run gives dendritic failure, spikes, then
+    failure, and the combined run alternates, under the Methods' parameters.
+- id: fig5a-plateau-collision
+  statement: Combining soma optogenetic stimulation with EFS of distal synaptic inputs evoked a
+    long-lasting (about 120 ms) dendritic plateau potential and a burst of somatic spikes, unlike
+    either stimulus alone.
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 2; Figure 5a
+  quote: Remarkably, combining optogenetic and electrical stimuli evoked a long-lasting ( ~ 120 ms)
+    plateau potential in the dendrites and a burst of spikes on top of a strong subthreshold
+    depolarization at the soma
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: plateau duration
+    value: 120
+    tolerance: 12
+    unit: ms
+  criterion: The recording of index entry "Plateau_induction (Fig.5a)". Duration is the time the
+    distal (> 200 µm) -dF stays above half its peak (a standard measure; the paper names none).
+    Reproduced when the combined stimulus gives a duration within tolerance, more somatic spikes
+    than the optogenetic stimulus alone, and neither single stimulus gives a distal event lasting
+    over 60 ms.
+- id: fig5b-supralinear-auc
+  statement: The distal AUC for combined stimulation was on average 3.1 ± 0.7-fold the sum of the
+    AUCs for optical and EFS stimuli alone (mean ± s.e.m.), and more than twice that sum in 15 of 28
+    cells.
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 3; Figure 5b
+  quote: The average AUC combined was 3.1 ± 0.7-fold greater than AUC optical + AUC electrical (mean ±
+    s.e.m.) and for more than half of the cells studied (15 of 28 cells from 12 animals)
+  data: dataset
+  expected:
+  - quantity: mean AUC combined over AUC optical plus AUC electrical
+    value: 3.1
+    tolerance: 0.7
+  - quantity: cells with ratio above 2, of 28
+    value: 15
+    tolerance: 1.5
+  criterion: Tolerance of the mean is the paper's s.e.m. AUC as in the shared method (both window
+    readings), at a distal dendrite > 200 µm, with 30 ms soma stimulation and one 0.1 ms EFS pulse.
+    Reproduced when both values are within tolerance under both window readings; when the window
+    readings disagree, methods_underspecified. The Source Data sheet Figure 5 gives per-cell
+    values.
+- id: fig5d-timing-window
+  statement: Nonlinear amplification was greatest when optical and electrical stimuli overlapped;
+    for EFS before bAPs it fell sigmoidally, by half in 87 ms, and for EFS after bAPs exponentially
+    with a 35 ms time constant.
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 3; Figure 5c, 5d
+  quote: 'For ‘EFS before bAPs’, the amplification followed a sigmoidal profile, decaying by half in
+    87 ms. For ‘EFS after bAPs’, the amplification decayed exponentially with a time constant of 35
+    ms.'
+  data: dataset
+  expected:
+  - quantity: half-decay of amplification, EFS before bAPs
+    value: 87
+    tolerance: 8.7
+    unit: ms
+  - quantity: exponential time constant, EFS after bAPs
+    value: 35
+    tolerance: 3.5
+    unit: ms
+  criterion: Per cell (8 cells, 30 ms stimulus), combined AUC against dTime, scaled to [0, 1]
+    (Methods; Fig. 5d legend). Fits to the pooled points, an exponential from -245 to 0 ms and a
+    sigmoid from 0 to +245 ms (legend). The legend's fit ranges place EFS after bAPs at negative
+    dTime; the file names (interval_-100ms and so on) are read the same way. Open, the fits'
+    forms; readings (a) exp(dTime/tau) and 1/(1 + exp((dTime - t_half)/k)), both without offset,
+    (b) the same fitted to the per-time means. Reproduced when both values are within tolerance
+    under both readings and the per-time mean is highest at the dTime nearest 0 (stimuli
+    overlapping, Results paragraph 3); when the readings disagree, methods_underspecified.
+- id: fig5d-single-bap-no-plateau
+  statement: A single bAP (10 ms soma stimulus) did not evoke a nonlinear dendritic response at any
+    timing relative to EFS (5 cells).
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 4; Figure 5c, 5d
+  quote: Triggering a single bAP by a 10 ms optogenetic stimulus targeted to the soma did not evoke a
+    nonlinear dendritic response, regardless of timing relative to the EFS
+  data: dataset
+  criterion: Per cell and dTime, combined AUC over AUC optical plus AUC electrical, as
+    fig5b-supralinear-auc. The paper's threshold for a nonlinear response is "> 200% nonlinearity"
+    (Results, paragraph 3). Reproduced when no cell's ratio exceeds 2 at any dTime.
+- id: fig5ef-late-efs-no-plateau
+  statement: During a 3 s optogenetic ramp, EFS early (0.5 s) evoked plateau potentials but EFS late
+    (2.5 s, somatic rate 24 ± 4 Hz) did not (AUC 5.6 ± 3.6 against 1.6 ± 1.0, mean ± s.d.).
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 5; Figure 5e, 5f
+  quote: The early EFS reliably evoked plateau potentials (AUC 5.6 ± 3.6, mean ± s.d.), whereas the
+    late EFS, which occurred when the average spike rate was 24 ± 4 Hz (mean ± s.d.), did not (AUC
+    1.6 ± 1.0, mean ± s.d., n = 7 cells from 5 animals, p = 0.01, paired t-test
+  statistics:
+  - test: paired t-test
+    p: 0.01
+    n: 7 cells from 5 animals (the Fig. 5f legend gives 8 neurons from 5 animals)
+  data: dataset
+  expected:
+  - quantity: AUC, early EFS
+    value: 5.6
+    tolerance: 3.6
+  - quantity: AUC, late EFS
+    value: 1.6
+    tolerance: 1.0
+  - quantity: somatic spike rate at late EFS
+    value: 24
+    tolerance: 4
+    unit: Hz
+  criterion: Tolerances are the paper's s.d. The AUC unit is not given (the Source Data label is
+    "Area (a.u.)"); the Source Data sheet Figure 5 gives per-cell values, and the AUCs here are
+    compared with them in the same units after the same integration. Open, the sample, 7 cells
+    (text) or 8 (legend); both are run. Reproduced when, under one sample and both window readings,
+    the means are within tolerance and a two-sided paired t-test gives p < 0.05 for early above
+    late; when the window readings disagree, methods_underspecified.
+- id: fig5gh-weak-step-equal
+  statement: Under a weak 3 s optogenetic step, EFS at 0.5 s and at 2.5 s were equally effective
+    at inducing plateau potentials (AUC 4.5 ± 2.0 and 4.0 ± 2.0, mean ± s.d., p = 0.19).
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 5; Figure 5g, 5h
+  quote: 'In this case EFS at 0.5 s and at 2.5 s were equally effective at inducing plateau potentials
+    (0.5 s: AUC 4.5 ± 2.0, mean ± s.d., 2.5 s: AUC 4.0 ± 2.0, mean ± s.d., p = 0.19, n = 7 cells from
+    5 animals, paired t-test'
+  statistics:
+  - test: paired t-test
+    p: 0.19
+    n: 7 cells from 5 animals (the Fig. 5h legend gives 8 neurons from 5 animals)
+  data: dataset
+  expected:
+  - quantity: AUC, EFS at 0.5 s
+    value: 4.5
+    tolerance: 2.0
+  - quantity: AUC, EFS at 2.5 s
+    value: 4.0
+    tolerance: 2.0
+  criterion: A claim of absence, judged on the paper's two-sided paired t-test at 0.05, on the 7
+    cells of the text, with the legend's 8 as a variant. Reproduced when p >= 0.05; the mean
+    difference is reported either way.
+- id: fig6-dap5-reduces-plateau
+  statement: Blocking NMDARs with D-AP5 (50 µM) reduced the plateau area to 42 ± 7% of baseline,
+    against 107 ± 5% for vehicle (mean ± s.e.m.).
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 6; Figure 6a, 6b
+  quote: Block of NMDARs by D-AP5 (50 µM) reduced the plateau area to 42 ± 7% of baseline ( n = 6
+    cells from 5 animals, mean ± s.e.m.) compared to vehicle control (107 ± 5% of baseline, n = 11
+    cells from 8 animals; p < 0.001, one-way ANOVA with Bonferroni’s post hoc test
+  statistics:
+  - test: one-way ANOVA with Bonferroni's post hoc test
+    p: 3.6e-7
+    corrected: Bonferroni
+    n: 6 D-AP5 cells from 5 animals and 11 vehicle cells from 8 animals
+  data: dataset
+  expected:
+  - quantity: plateau AUC, D-AP5, percent of baseline
+    value: 42
+    tolerance: 7
+    unit: "%"
+  - quantity: plateau AUC, vehicle, percent of baseline
+    value: 107
+    tolerance: 5
+    unit: "%"
+  criterion: Tolerances are the paper's s.e.m. Per cell, combined-stimulus (30 ms soma, 0.1 ms EFS)
+    AUC after treatment over AUC before (Methods, % baseline), at > 200 µm. A one-way ANOVA over
+    vehicle, D-AP5, TTX and Ni2+ with Bonferroni post hoc tests against vehicle. Reproduced when
+    the means are within tolerance and the D-AP5 comparison has p < 0.001.
+- id: fig6-ni-reduces-plateau
+  statement: Blocking VGCCs with Ni2+ (100 µM) largely eliminated the plateau potential (18 ± 5%
+    of baseline, mean ± s.e.m.).
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 6; Figure 6a, 6b
+  quote: Block of voltage-gated Ca 2+ channels (VGCCs) by Ni 2+ (100 µM) largely eliminated the
+    plateau potential (AUC 18 ± 5% of baseline, n = 4 cells from 4 animals, mean ± s.e.m.
+  statistics:
+  - test: one-way ANOVA with Bonferroni's post hoc test
+    p: 1.8e-8
+    corrected: Bonferroni
+    n: 4 Ni2+ cells from 4 animals and 11 vehicle cells from 8 animals
+  data: dataset
+  expected:
+  - quantity: plateau AUC, Ni2+, percent of baseline
+    value: 18
+    tolerance: 5
+    unit: "%"
+  criterion: As fig6-dap5-reduces-plateau; reproduced when the mean is within tolerance and the
+    Ni2+ comparison has p < 0.001.
+- id: fig6-ttx-reduces-plateau
+  statement: Blocking dendritic NaV channels with TTX (20 nM) also eliminated plateau potentials (26
+    ± 8% of baseline, mean ± s.e.m.).
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 8; Figure 6a, 6b
+  quote: Block of dendritic Na V channels by TTX (20 nM) also eliminated plateau potentials (AUC 26 ±
+    8% of baseline, n = 4 cells from 3 animals, mean ± s.e.m.
+  statistics:
+  - test: one-way ANOVA with Bonferroni's post hoc test
+    p: 8.8e-8
+    corrected: Bonferroni
+    n: 4 TTX cells from 3 animals and 11 vehicle cells from 8 animals
+  data: dataset
+  expected:
+  - quantity: plateau AUC, TTX, percent of baseline
+    value: 26
+    tolerance: 8
+    unit: "%"
+  criterion: As fig6-dap5-reduces-plateau; reproduced when the mean is within tolerance and the TTX
+    comparison has p < 0.001.
+- id: figs24-drugs-selective
+  statement: The drugs' effects on the plateau were much larger than their effects on the AUC for
+    EFS or optogenetic stimulation alone.
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 8; Figure S24
+  quote: The drug effects on the plateau were much larger than their effects on the AUC for EFS or
+    optogenetic stimulation alone
+  statistics:
+  - about: D-AP5 against baseline
+    test: two-sided paired Student's t-test
+    p: 0.0005
+    n: 6 cells from 5 animals
+  - about: TTX against baseline
+    test: two-sided paired Student's t-test
+    p: 0.0022
+    n: 4 cells from 3 animals
+  - about: Ni2+ against baseline
+    test: two-sided paired Student's t-test
+    p: 0.00037
+    n: 4 cells from 4 animals
+  data: dataset
+  criterion: The Fig. S24 legend does not say which response its p-values compare; the readings are
+    (a) the combined response, (b) each response. Per cell and drug, AUC after over AUC before for
+    optical alone, EFS alone and combined. Reproduced when for every drug the mean fall of the
+    combined AUC exceeds the mean fall of each single-stimulus AUC, and the combined comparison
+    has p < 0.05 in a two-sided paired t-test.
+- id: figs23-dendrite-drives-soma
+  statement: Subtracting the somatic signal from the dendritic signal reveals a slowly rising and
+    falling dendritic depolarization lasting up to about 300 ms after the optogenetic stimulus,
+    which drives the high-frequency somatic firing.
+  source: Results, Plateau potentials are evoked by collision of synaptic inputs and dSpikes, paragraph 9; Figure S23
+  quote: This procedure revealed the slowly rising and falling dendritic depolarization (presumably
+    dominated by VGCC and NMDAR currents) which persisted for up to ~300 ms after the end of the
+    optogenetic stimulus to the soma
+  data: dataset
+  expected:
+  - quantity: longest persistence of dendrite minus soma depolarization after stimulus end
+    value: 300
+    tolerance: 30
+    unit: ms
+  criterion: In the combined-stimulus recordings (Fig. S23, 9 neurons), -dF/F at the dendritic
+    region with the largest plateau minus that at the soma. Persistence is the time after the 30
+    ms stimulus ends until the difference returns within 2 s.d. of its pre-stimulus baseline
+    (a standard choice). Reproduced when the longest persistence over cells is within tolerance
+    and the difference is positive in most cells.
+- id: figs25-temperature
+  statement: Cooling from 34 to 24 °C increased the dSpike probability (first bAP 0% against 29 ±
+    16%; any bAP 16 ± 3% against 50 ± 12%, mean ± s.e.m., 6 cells).
+  source: Methods, Slice preparation, paragraph 2; Figure S25f, g
+  quote: We observed a significant increase in dSpike probability at 24 °C (0% vs. 29 ± 16% by the
+    first bAP, p = 0.09; 16 ± 3% vs. 50 ± 12% by any bAP, p = 0.02; mean ± s.e.m., n = 6 cells from
+    4 animals, paired t-test)
+  statistics:
+  - about: first bAP, 34 against 24 °C
+    test: paired t-test
+    p: 0.09
+    n: 6 cells from 4 animals
+  - about: any bAP, 34 against 24 °C
+    test: paired t-test
+    p: 0.02
+    n: 6 cells from 4 animals
+  - about: any bAP, as the Fig. S25g legend gives it
+    test: two-sided paired Student's t-test
+    p: 0.03
+    n: 6 cells from 4 animals
+  data: dataset
+  expected:
+  - quantity: dSpike probability by the first bAP, 34 °C
+    value: 0
+    tolerance: 0
+    unit: "%"
+  - quantity: dSpike probability by the first bAP, 24 °C
+    value: 29
+    tolerance: 16
+    unit: "%"
+  - quantity: dSpike probability by any bAP, 34 °C
+    value: 16
+    tolerance: 3
+    unit: "%"
+  - quantity: dSpike probability by any bAP, 24 °C
+    value: 50
+    tolerance: 12
+    unit: "%"
+  criterion: Tolerances are the paper's s.e.m.; a reported 0% needs a count of 0. Soma stimulation
+    30 ms at 5 Hz. "By the first bAP" is the percent of trials whose first bAP carries a dSpike.
+    "By any bAP" is open; readings (a) the percent of all bAPs carrying a dSpike, (b) the percent
+    of trials with a dSpike on any bAP. Reproduced when, under one reading, all four values are
+    within tolerance and the any-bAP increase has p < 0.05 in a two-sided paired t-test.
+- id: figs1-no-perturbation
+  statement: Optopatch-V expression did not change resting potential, rheobase, capacitance, input
+    resistance or spike rates relative to neighboring non-expressing neurons.
+  source: Results, paragraph 2; Figure S1
+  quote: No significant difference was found between the groups (p > 0.05, two-sided paired
+    Student’s t-test).
+  statistics:
+  - test: two-sided paired Student's t-test
+    p: 0.05
+    p_relation: ">"
+    n: 16 cells from 6 animals for each group
+  data: dataset
+  criterion: A claim of absence, judged on the paper's two-sided paired t-test at 0.05 for each
+    property (16 pairs of an expressing and a neighboring non-expressing cell). Rheobase is the
+    smallest 500 ms step that evokes a spike (Methods). Reproduced when no property gives p <
+    0.05; the differences are reported.
+- id: figs2-imaging-fidelity
+  statement: Optical recording at 1 kHz detected every spike up to 90 Hz with no false positives or
+    negatives (7 cells, 2212 spikes), with a single-trial noise-equivalent voltage of 1.2 ± 0.5 mV
+    (2.5 ± 0.8 mV at 2 kHz) and sensitivity of about 12% dF/F per 100 mV.
+  source: Results, paragraph 2; Figure S2
+  quote: The single-trial optical noise-equivalent voltage was 1.2 ± 0.5 mV at 1 kHz and 2.5 ± 0.8 mV
+    at 2 kHz (mean ± s.d., n = 7 neurons, 4 animals) ... with zero false-positives or false-negatives
+    up to the maximum observed spike rate of 90 Hz (n = 7 cells, 2212 spikes)
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: noise-equivalent voltage at 1 kHz
+    value: 1.2
+    tolerance: 0.5
+    unit: mV
+  - quantity: noise-equivalent voltage at 2 kHz
+    value: 2.5
+    tolerance: 0.8
+    unit: mV
+  - quantity: fluorescence sensitivity
+    value: 12
+    tolerance: 1.2
+    unit: "% dF/F per 100 mV"
+  - quantity: false positive and false negative optical spikes
+    value: 0
+    tolerance: 0
+  criterion: The paired patch and imaging recordings listed in the index for Fig. S2 (7 cells). The
+    paper does not define the noise-equivalent voltage; readings, (a) the s.d. of the
+    bleach-corrected subthreshold fluorescence divided by the dF/F per mV from the -70 to +20 mV
+    step (Fig. S2d), (b) the s.d. of the difference between the optical trace scaled to mV and the
+    patch trace down-sampled to the frame rate (Fig. S2a), in subthreshold periods.
+    Optical spikes are matched to patch spikes within one frame. Reproduced when all values are
+    within tolerance (tolerances are the paper's s.d. or 10%).
+- id: figs2d-frame-rate-same-sensitivity
+  statement: Fluorescence changes for a step from -70 to +20 mV were the same at 1 kHz and 2 kHz.
+  source: Figure S2d
+  quote: Fluorescence changes upon a voltage step from -70 to +20 mV were the same for 1 kHz vs. 2 kHz
+    camera frame rates (p > 0.05, two-sided paired Student’s t-test)
+  statistics:
+  - test: two-sided paired Student's t-test
+    p: 0.05
+    p_relation: ">"
+    n: 7 cells from 4 animals
+  data: with_labels
+  depends_on:
+  - source-data-index
+  criterion: A claim of absence, judged on the paper's two-sided paired t-test at 0.05, on dF/F at
+    +20 mV per cell at the two frame rates. Reproduced when p >= 0.05.
+- id: figs3-eyfp-dosimetry
+  statement: Dosimetry by eYFP fluorescence had 7.8-fold lower variance than dosimetry by blue laser
+    power (0.084 against 0.66).
+  source: Figure S3f
+  quote: Dosimetry via eYFP fluorescence had 7.8-fold lower variance than did dosimetry via raw blue
+    laser power (0.084 vs. 0.66, n = 18 cells and 6 animals; p = 9.9 x 10-5, F-test)
+  statistics:
+  - test: F-test
+    p: 9.9e-5
+    n: 18 cells and 6 animals
+  data: dataset
+  expected:
+  - quantity: variance of normalized slope, eYFP dosimetry
+    value: 0.084
+    tolerance: 0.0084
+  - quantity: variance of normalized slope, laser power dosimetry
+    value: 0.66
+    tolerance: 0.066
+  criterion: Per cell, slopes of charge against blue intensity and against cumulative eYFP in the
+    linear regime (I < 1 mW/mm2), each normalized to its group mean (legend). Reproduced when both
+    variances are within tolerance and an F-test of equal variances gives p < 0.05.
+- id: figs4-stimulus-localization
+  statement: Patterned optogenetic stimuli are localized; somatic photocurrent fell to half when
+    stimuli were offset by 11 ± 4 µm and to 20% at 23 ± 7 µm (10 cells), and dendritic responses
+    fell to half at 11 ± 5 µm and to 20% at 34 ± 14 µm (29 branches) (mean ± s.d.).
+  source: Results, paragraph 2; Figure S4d, S4h
+  quote: The induced photocurrent fell to half maximum when stimuli were offset by 11 ± 4 μm and to
+    20% of maximum at 23 ± 7 μm ... Evoked responses, |∆F|, fell to half maximum for stimuli at 11 ±
+    5 μm offset and to 20% of maximum at 34 ± 14 μm offset
+  data: dataset
+  expected:
+  - quantity: soma photocurrent half-maximum offset
+    value: 11
+    tolerance: 4
+    unit: µm
+  - quantity: soma photocurrent 20% offset
+    value: 23
+    tolerance: 7
+    unit: µm
+  - quantity: dendritic response half-maximum offset
+    value: 11
+    tolerance: 5
+    unit: µm
+  - quantity: dendritic response 20% offset
+    value: 34
+    tolerance: 14
+    unit: µm
+  criterion: Tolerances are the paper's s.d. Per cell or branch, responses normalized to 0 µm offset
+    and the offsets of half and 20% found by linear interpolation (a standard choice). Reproduced
+    when all four means are within tolerance.
+- id: figs5-focal-selectivity
+  statement: Voltage signals fall to half at 4 µm transverse offset from an in-focus branch and
+    plateau at 11% (IQR 7 to 24%) beyond 20 µm.
+  source: Results, paragraph 2; Figure S5b
+  quote: 'The |∆F| signal fell to half maximum at transverse offsets of 4 μm (n = 49 branches, 21 cells,
+    median). At offsets > 20 μm, the fluorescence signal plateaued at 11% (median, IQR: 7 - 24%) of
+    maximum'
+  data: dataset
+  expected:
+  - quantity: median half-maximum offset
+    value: 4
+    tolerance: 0.4
+    unit: µm
+  - quantity: median plateau beyond 20 µm
+    value: 11
+    tolerance: 4
+    unit: "%"
+  criterion: Rectangular ROIs shifted in 5 µm steps up to 25 µm from the branch centre; -dF during
+    bAPs normalized to 0 µm (legend). Half offset by linear interpolation (a standard choice).
+    Open, the plateau; "offsets > 20 μm" with 5 µm steps up to 25 µm allows (a) the 25 µm point,
+    (b) the mean of the 20 and 25 µm points. Reproduced when both medians are within tolerance.
+    The 5 µm step makes the half offset coarse; the tolerance of 0.4 µm is the protocol's 10%. The
+    plateau's tolerance is the paper's spread, the narrower side of its IQR (11 - 7; the IQR runs
+    to 24%).
+- id: fig1-denoising-variance
+  statement: The first principal components of the pixel waveforms hold more than 96% of their
+    variance (the first five, Fig. S7b; the first three, Methods).
+  source: Methods, PCA-based filtering; Figure S7b
+  quote: The first 5 PCA eigenvectors account for > 96% of the pixel-to-pixel waveform variance
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: variance of raw data explained by the first five components
+    value: 96
+    tolerance: 9.6
+    unit: "%"
+  criterion: For the stimulus-triggered average movie of Fig. S7a (distal stimulus, 11 trials, the
+    Fig. 3a recording), PCA of the pixel waveforms. The paper gives a bound, > 96%, for the first
+    five components (Fig. S7b legend) and for the first three (Methods); readings (a) five, (b)
+    three. Reproduced when under one reading the share is at least 86.4% (the bound less the 10%
+    tolerance); both shares are reported. The Results' > 93% is of the 2D and 3D voltage maps from
+    the whole reconstruction (Figs. S6, S7), which this claim does not test.
+- id: fig3-cheriff-current
+  statement: From cumulative eYFP fluorescence, dendrite-targeted optogenetic stimulation drives
+    dendritic CheRiff currents of about 130 pA.
+  source: Results, Distal dendritic depolarization favors dendritic spikes, paragraph 3
+  quote: Based on the cumulative eYFP fluorescence evoked by our dendrite-targeted optogenetic
+    stimulation, we estimate dendritic CheRiff currents of ~130 pA
+  data: with_labels
+  depends_on:
+  - source-data-index
+  expected:
+  - quantity: estimated dendritic CheRiff current
+    value: 130
+    tolerance: 13
+    unit: pA
+  - quantity: eYFP counts of the Fig. 3a distal stimulus
+    value: 69
+    tolerance: 6.9
+  criterion: The Peer Review File (response to Reviewer 2, page 5 of the manuscript) gives the
+    method; the Fig. 3a distal stimulus (the legend's D2, file as in source-data-index) "generated
+    ~69 eYFP counts. Using the calibration in Fig. S3e, this corresponds to ~130 pA". The
+    calibration is a fit of charge against cumulative eYFP over the soma recordings of Fig. S3e
+    (0.5 s pulses, Fig. S3b). Open, how charge becomes current; readings (a) charge over the 0.5 s
+    calibration pulse, (b) charge over the 20 ms stimulus (the eYFP image may be cumulative over
+    either). Reproduced when the eYFP count and the current are within tolerance, by the header's
+    rule for method readings; if the calibration recordings or the eYFP image are not in the
+    dataset, the claim cannot be tested.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - checker. The one "value not found" report, figs24-drugs-selective p = 0.0005, is the Fig. S24 legend's "5.0 x 10-4", which the checker does not match; the value is the paper's, no change.
+  - header. Added the protocol's rule for readings. Readings of a reported number pass under any of them; readings of an open method detail must all agree, or the claim is methods_underspecified. Several criteria said "under both" and did not say what happens when readings disagree.
+  - fig5b-supralinear-auc, fig5d-timing-window, fig5ef-late-efs-no-plateau. These passed under "one" reading of the integration window or of the fit's form. Those are method details, not readings of a number, so all readings must now agree (protocol, Reader, step 3). The 7 or 8 cell sample in fig5ef stays an any-reading.
+  - fig5d-timing-window. The statement says amplification was greatest when the stimuli overlapped (Results paragraph 3), and the criterion did not test it. Added a check that the per-time mean peaks at the dTime nearest 0.
+  - fig3-cheriff-current. The criterion said the paper gives no method. The Peer Review File (response to Reviewer 2) gives it. The Fig. 3a distal stimulus gave ~69 eYFP counts, which the Fig. S3e calibration turns into ~130 pA. The criterion now follows it, adds the 69 counts as an expected value, and names as open how charge becomes current. Data changed to with_labels, depending on source-data-index, since it uses the Fig. 3a recording.
+  - fig1-denoising-variance. The statement gave the Results' > 93% as the variance the PCA-denoised maps explain. The paper gives that for the 2D and 3D maps of the whole reconstruction, and the criterion did not test it. The criterion also passed at 93%, which is not the 96% expected value less its tolerance. Now the claim covers only the > 96% bound, with readings of five components (Fig. S7b) and three (Methods), passing at 86.4%. The quote is now the Fig. S7b legend. Data changed to with_labels, since it uses the Fig. 3a recording.
+  - figs14-low-rate-attenuation. The criterion called a test of a ratio against 1 a paired t-test and did not say the paper reports no test. It now applies the Methods' paired t-test to the first against the last spike and says the test is not the paper's.
+  - figs18e-ni-no-effect-on-dspikes. "The highest concentration each cell received" was a choice the paper does not make. The criterion now matches recordings to the Source Data sheet for Fig. S18e and runs all three readings only where they cannot be matched.
+  - figs4-stimulus-localization. The statement left out the somatic 20% offset (23 ± 7 µm), which is an expected value, and the sample sizes. Both added.
+  - figs5-focal-selectivity. The plateau's tolerance was 10%, but the paper states a spread (IQR 7 to 24%), so the tolerance is now 4, the narrower side of the IQR. The plateau's offsets are named as open, either the 25 µm point, or the 20 and 25 µm points.
+  - figs2-imaging-fidelity. The noise-equivalent voltage had one reading, but the paper does not define it. Added a second reading, from the difference between the optical and the down-sampled patch traces.
+  - fig4ce-period-doubling, fig3i-distance-dependence. Marked the criteria's own thresholds (4 alternating bAPs and 7 of 9 cells; under 10% for "almost never") as readings, not the paper's numbers.
+  - open. The plateau duration in fig5a-plateau-collision (time above half peak) and the persistence in figs23-dendrite-drives-soma (return within 2 s.d. of baseline) use one standard measure each. The paper names none, and another measure could change the outcome against ~120 ms and ~300 ms. Not settled.
+  - open. Paragraph numbers in the sources of the Plateau section (paragraphs 5 to 9) could not be checked, because the main text is one unbroken line and the main PDF is not under paper/. Not settled.
+  - open. Several criteria use thresholds the paper does not give. They are marked as readings and their results are reported (fig2e-f-dspike-maps, fig3-two-motifs-location-independent, fig3-predepolarization-rule, fig4b-few-late-dspikes, figs15-stochastic). A different threshold could change those outcomes.
