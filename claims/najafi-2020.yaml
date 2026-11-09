@@ -1,0 +1,907 @@
+# Claims for Najafi, Elsayed, Cao, Pnevmatikakis, Latham, Cunningham & Churchland (2020), Neuron
+# 105, 165-179, on dandiset 000016.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC6952547, NIHMS1545193), full text
+# with Results, figure legends and STAR Methods, and its supplement (NIHMS1545193-supplement-1.pdf,
+# legends of Figures S1 to S15), as extracted under paper/. The version of record PDF was not read;
+# the main figures were not seen, only their legends. The bioRxiv preprint (10.1101/354340) is an
+# earlier version and was not used.
+#
+# Code read: github.com/farznaj/imaging_decisionMaking_exc_inh, commit
+# b7352acd22197facd0c54475c4deb26a65086c46 (2023-09-07), the paper's analysis code. It holds MATLAB
+# preprocessing (CNMF, inhibitory identification, trial alignment, ROC in imaging/), behaviour
+# (behavior/, logistic regression of trial history) and Python decoding (utils/lassoClassifier/, SVM
+# per time bin, stability, weights, noise-correlation shuffles, learning). The batch scripts that
+# set the parameters of the published runs are not in it, and its scripts do not agree on every
+# setting; where a criterion follows the code, the file and setting are named.
+#
+# Data the paper used (STAR Methods, Quantification and statistical analysis). Gad2-IRES-Cre x Ai14
+# mice (tdTomato in all GABAergic neurons), GCaMP6f injected in layer 2/3 of left PPC, two-photon
+# imaging at about 30 Hz (512 x 512 pixels). 135 sessions from 4 mice (45, 48, 7 and 35 sessions per
+# mouse; the paper calls them mouse 1 to 4 and gives no other name), median 213, 253, 264 and 222
+# trials per session. On average 480 neurons per session, about 40 inhibitory, 330 excitatory and
+# 100 unsure (neither class). In 3 mice (mice 1, 2 and 4 by Figure S1C; the code's learning script
+# uses fni16, fni17 and fni19) the same field of view was imaged through learning, 35 to 48 days.
+# Behaviour of 10 mice is in Figure 1B and S1B; only the 4 imaged mice are in the dandiset by its
+# description. Task: a 1 s train of simultaneous clicks and flashes at 5 to 27 Hz; the mouse licks
+# left or right for high or low rate against a 16 Hz boundary (rewarded randomly at 16 Hz); trial
+# events are the initiation tone, centre lick, stimulus, go tone, first side lick (the choice) and
+# confirmation lick (reward). Measured variables: CNMF ROIs with their class (excitatory,
+# inhibitory, unsure), Delta F/F traces and inferred spiking activity (FOOPSI deconvolution), lick
+# and wheel (running) signals, trial outcomes and stimulus rates. The dandiset's description says
+# each NWB file is one session, with ROI type and quality, a trial table and trial-segmented
+# responses aligned to trial events.
+#
+# Methods common to all claims on recorded data, from the STAR Methods unless the code is named.
+# - Analyses use inferred spiking activity, normalised so each neuron's maximum is 1, averaged in
+#   non-overlapping bins of 3 frames (97 ms), aligned to the choice (first side lick after the go
+#   tone). The "0-97 ms before choice" bin is the 3 frames before the choice frame
+#   (svm_excInh_trainDecoder_eachFrame.py, "time bin -1 always includes average of 3 frames
+#   before eventI"); the choice frame is the frame nearest the first side lick (findFrame0.m).
+# - Trials (code, behavior/setTrs2rmv.m and set_outcomes_allResp.m) exclude the first trials of a
+#   session, helped trials, and trials without a correct or incorrect choice; change-of-mind trials
+#   are left out of choice-aligned traces.
+# - Single-neuron ROC: AUC between left-choice ("ipsi", the code's name) and right-choice trials,
+#   correct trials only, excluding 16 Hz trials (code, choicePref_ROC_exc_inh.m, outcome2ana
+#   'corr'). Selectivity 2*|AUC-0.5|. Significance against 50 label shuffles; the code fits a normal
+#   distribution to the shuffled AUCs and calls a neuron selective when
+#   normpdf(AUC)/normpdf(mean) <= 0.05 (choicePref_ROC_exc_inh_plots_setVars.m lines 469-470,
+#   equivalent to |z| >= 2.45); this follows the code where the Methods' "probability of the actual
+#   AUC being drawn from the shuffled AUC distribution" is open. Sessions need at least 10 trials of
+#   each choice (code, thMinTrs = 10).
+# - Decoders: linear SVM (sklearn LinearSVC, L2, squared hinge) per 97 ms bin; each neuron z-scored
+#   per bin over the session's trials (code, with 5e-4 added to the SD); left and right trials
+#   matched by random subsampling; 50 repetitions of a random 90/10 train/test split; C chosen from
+#   10^(-6 to 6 in steps of 0.2) divided by the number of trials, the one with minimum mean test
+#   error (code, smallestC = 0, as the Methods' "smallest error"), separately per bin; accuracy is
+#   the mean over the 50 repetitions; shuffled control scores the same predictions against permuted
+#   test labels. All-neuron decoders include unsure neurons; excitatory decoders use 50 random
+#   subsamples of as many excitatory neurons as the session has inhibitory neurons. At least 10
+#   correct trials per choice. Figures 3, 4 and 7 use correct trials (code, corrTrained = 1 in
+#   svm_excInh_trainDecoder_eachFrame_plots_sumAllMice.py and the stability scripts).
+# - Statistics: two-tailed t-test (STAR Methods); the code uses unpaired tests (ttest2, ttest_ind)
+#   throughout. Correlations are Pearson's.
+# - Where a criterion names readings, the notebook runs each; the outcome is the one they all
+#   give, and when they give different outcomes the claim is blocked as methods_underspecified,
+#   with every result shown.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000016"
+paper: doi:10.1016/j.neuron.2019.09.045
+claims:
+- id: data-composition
+  statement: The imaging dataset has 135 sessions from 4 mice (45, 48, 7 and 35 sessions), with on
+    average 480 neurons per session, about 40 inhibitory, 330 excitatory and 100 unclassified;
+    inhibitory neurons are 11% of the population.
+  source: STAR Methods, Quantification and statistical analysis; Results, paragraph 3
+  quote: Our simultaneous imaging and decision-making dataset includes 135 sessions from 4 mice (45,
+    48, 7, and 35 sessions per mouse). Median number of trials per session is 213, 253, 264, and
+    222, for each mouse. On average, 480 neurons were imaged per session, out of which ~40 neurons
+    were inhibitory and ~330 were excitatory
+  expected:
+  - quantity: sessions
+    value: 135
+    tolerance: 13.5
+  - quantity: median trials per session, mouse 1
+    value: 213
+    tolerance: 21.3
+  - quantity: median trials per session, mouse 2
+    value: 253
+    tolerance: 25.3
+  - quantity: median trials per session, mouse 3
+    value: 264
+    tolerance: 26.4
+  - quantity: median trials per session, mouse 4
+    value: 222
+    tolerance: 22.2
+  - quantity: neurons per session, mean
+    value: 480
+    tolerance: 48
+  - quantity: inhibitory neurons per session, mean
+    value: 40
+    tolerance: 4
+  - quantity: excitatory neurons per session, mean
+    value: 330
+    tolerance: 33
+  - quantity: inhibitory fraction of neurons
+    value: 0.11
+    tolerance: 0.011
+  criterion: Mice are matched to the paper's mouse 1 to 4 by their session counts (45, 48, 7, 35).
+    Neurons are the ROIs kept as good quality; counts per session from the ROI type labels. The
+    session counts per mouse are compared as well; trials per session are counted (a) as all trials
+    in the trial table and (b) as trials with a correct or incorrect choice, the paper not saying
+    which. The inhibitory fraction is read (a) as inhibitory over all neurons and (b) as inhibitory
+    over excitatory plus inhibitory. Reproduced when every value is within tolerance under one
+    reading of each.
+- id: fig1b-psychometric
+  statement: Choices depend strongly on stimulus rate, at chance at the 16 Hz boundary and more
+    accurate for rates further from it.
+  source: Results, paragraph 1; Figure 1B
+  quote: 'Decisions depended strongly on stimulus rate: performance was at chance when the stimulus
+    rate was at the category boundary, and was better at rates further from the category boundary'
+  criterion: Figure 1B uses 10 mice; only the 4 imaged mice can be tested here, which is recorded
+    as a deviation. Per mouse, trials of all sessions with a left or right choice; the fraction of
+    "high" choices per stimulus rate, and a logistic regression of the high choice on rate (as the
+    legend's glmfit). The paper gives no test; the fit's slope is the measure, as a positive slope
+    is choice accuracy rising with distance from the boundary. Chance at 16 Hz holds by design (the
+    Methods reward 16 Hz randomly) and the fraction of high choices at 16 Hz is reported. Reproduced
+    when, in every mouse, the slope is positive at p < 0.05.
+- id: figs1b-trial-history
+  statement: Choice depends on current stimulus strength, on the previous trial's outcome and on
+    the time since the previous trial; the effect of a previous success is stronger after a short
+    ITI, and ITI has no significant effect after a failure.
+  source: Figure S1B; Results, paragraph 1
+  quote: 'Top left: strength of the sensory evidence affects the animal''s choices: the stronger the
+    evidence, the higher the impact. Top middle: Success of a previous trial also affects animal''s
+    decision; the effect is stronger when the previous success occurs after a short ITI (<7sec).
+    Top Right: Same but for previous incorrect trials; the effect of ITI after a failure was not
+    significant'
+  criterion: The model of STAR Methods eq. 1 per session (glmfit, binomial, logit), predicting a
+    left choice. Stimulus strength as six bins of |rate - 16 Hz| of width 2 Hz (0-2, 2-4, ..., 10-12
+    Hz; code, behavior/trialHist_logisRegress_setVar.m with vec_ratesdiff = 0:2:12), signed by the
+    side the rate favours; previous success and previous failure each split at an ITI of 7 s (code,
+    vec_iti); trials with ITI over 30 s set aside (code). The ITI is the time from the previous
+    choice to the current stimulus onset (Methods). The figure plots coefficients averaged over
+    animals (10 mice; here 4) with SEM. The paper names no test; the two-tailed t-test of the
+    Methods is used across mice, and across sessions per mouse as a second reading. Reproduced when
+    the stimulus coefficients grow with strength (the largest bin above the smallest), the short-ITI
+    success coefficient exceeds the long-ITI one significantly, and the two failure coefficients do
+    not differ significantly (absence judged on that t-test).
+- id: fig1gi-inferred-spiking-differs
+  statement: Inferred spiking activity differs significantly between inhibitory and excitatory
+    neurons throughout the trial, and in the bin just before the choice in every mouse.
+  source: Results, paragraph 4; Figure 1G, H and I
+  quote: The magnitude of inferred spiking activity was significantly different for inhibitory vs.
+    excitatory neurons throughout the trial ( Figure 1G ; t-test, p<0.001). Just before the choice
+    (97 ms, average of 3 frames), this difference was clear ( Figure 1H ) and significant for all
+    mice ( Figure 1I , t-test; p<0.001)
+  statistics:
+  - about: inhibitory against excitatory, through the trial, example mouse
+    test: t-test
+    p: 0.001
+    p_relation: "<"
+    n: 46 days, example mouse
+  - about: inhibitory against excitatory, 0-97 ms before choice, each mouse
+    test: t-test
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: excitatory neurons pooled over all sessions (Figure 1H)
+    value: 41723
+    tolerance: 4172
+  - quantity: inhibitory neurons pooled over all sessions (Figure 1H)
+    value: 5142
+    tolerance: 514
+  criterion: Correct trials (code, excInh_FRs.py). The bin 0-97 ms before the choice; activity
+    averaged over trials per neuron. The paper does not say over what unit its t-test runs; the code
+    (excInh_FRs.py) tests both, so the readings are (a) an unpaired two-tailed t-test across days of
+    the day means (legend of 1I, mean +/- SEM across days) and (b) the same test on neurons pooled
+    over days. The text does not say which cell type is higher; the direction is reported.
+    Reproduced when p < 0.001 in every mouse, and for the example-mouse time course in every
+    choice-aligned bin of at least one mouse under reading (a).
+- id: fig2a-example-session
+  statement: In an example session (285 excitatory and 29 inhibitory neurons), 24 excitatory (8%)
+    and 5 inhibitory (17%) neurons were significantly choice selective just before the choice.
+  source: Figure 2A legend
+  quote: Data correspond to the 97 ms window preceding choice (285 excitatory and 29 inhibitory
+    neurons) ... 5 inhibitory and 24 excitatory neurons (17% and 8%, respectively) were significantly
+    choice selective
+  expected:
+  - quantity: significantly selective excitatory neurons, example session
+    value: 24
+    tolerance: 2.4
+  - quantity: significantly selective inhibitory neurons, example session
+    value: 5
+    tolerance: 0.5
+  criterion: The session is not named; it is the session with 285 excitatory and 29 inhibitory
+    neurons, if exactly one has these counts. ROC as in the opening comment. The shuffle makes
+    counts vary from run to run, like a random seed; as a standard choice the 50-shuffle procedure
+    is repeated 20 times, and the claim is reproduced when the median count is within tolerance. Not testable if no session has
+    these counts.
+- id: fig2bc-fraction-selective-similar
+  statement: Excitatory and inhibitory neurons have a similar fraction of significantly
+    choice-selective neurons just before the choice (median across mice 13% and 16%, about 43
+    excitatory and 6 inhibitory neurons per session); the difference is significant in mouse 4.
+  source: Results, Individual excitatory and inhibitory neurons are similarly choice-selective,
+    paragraph 1; Figure 2C
+  quote: Importantly, excitatory and inhibitory neurons were similar in terms of the fraction of
+    choice-selective neurons ( Figure 2B , C ; Figure S3B , C )
+  statistics:
+  - about: excitatory against inhibitory fraction, per mouse (a star in mouse 4 only, by the Figure
+      S3D legend)
+    test: t-test
+    p: 0.05
+    p_relation: "<"
+    n: 45, 48, 7 and 35 sessions per mouse
+  expected:
+  - quantity: fraction of selective excitatory neurons, median across mice
+    value: 0.13
+    tolerance: 0.013
+  - quantity: fraction of selective inhibitory neurons, median across mice
+    value: 0.16
+    tolerance: 0.016
+  - quantity: selective excitatory neurons per session
+    value: 43
+    tolerance: 4.3
+  - quantity: selective inhibitory neurons per session
+    value: 6
+    tolerance: 0.6
+  criterion: ROC as in the opening comment, bin 0-97 ms before the choice (Methods). Per session
+    the fraction of each cell type that is selective; per mouse the mean over sessions, then the
+    median over the 4 mice. A claim of absence, judged on the paper's test, an unpaired two-tailed
+    t-test across sessions per mouse at p < 0.05 (Methods and code, ttest2). The paper reports a
+    significant difference in mouse 4 only. Reproduced when the two medians are within tolerance and
+    no significant difference is found in mice 1, 2 and 3; partially reproduced when only the
+    t-tests hold. The per-session counts are read as the median across mice of the mean count per
+    session. The normal-fit criterion is the code's; an empirical p from the 50 shuffles (two-sided,
+    fraction of shuffles at least as far from 0.5) is shown as a variant.
+- id: fig2bd-selectivity-time-course
+  statement: The fraction of choice-selective neurons and the magnitude of choice selectivity
+    increase gradually over the trial and peak just after the choice.
+  source: Results, Individual excitatory and inhibitory neurons are similarly choice-selective,
+    paragraph 1; Figure 2B and 2D
+  quote: The fraction of choice-selective neurons ( Figure 2B ) and the magnitude of choice
+    selectivity ( Figure 2D ) gradually increased over the trial, peaking just after the animal
+    reported its choice
+  criterion: ROC per 97 ms bin of the choice-aligned traces, as in the opening comment; per mouse
+    the mean over sessions for each bin and cell type (the figure shows an example mouse, mean over
+    45 days). "Just after" is not fixed; readings are (a) the peak falls in the first bin after the
+    choice (0-97 ms) and (b) it falls within 300 ms after the choice, the window the Methods give
+    for the confirmation lick. Reproduced when, in at least the example mouse (the one with 45
+    sessions) and for both measures and both cell types, the earliest choice-aligned bin is below
+    the bin before the choice and the peak lies in the window.
+- id: fig2de-selectivity-magnitude-similar
+  statement: The magnitude and time course of choice selectivity are similar for excitatory and
+    inhibitory neurons.
+  source: Results, Individual excitatory and inhibitory neurons are similarly choice-selective,
+    paragraph 1; Figure 2D and 2E
+  quote: as well as the magnitude and time course ( Figure 2D , E ) of choice selectivity
+  criterion: Selectivity 2*|AUC-0.5| from correct trials (code), averaged over the neurons of each
+    cell type per session, bin 0-97 ms before choice. A claim of absence, judged on the paper's
+    test, an unpaired two-tailed t-test across sessions per mouse at p < 0.05 (Methods; code
+    choicePref_ROC_exc_inh_plotsAllMice.m, ttest2). Reproduced when no mouse shows a significant
+    difference; partially reproduced when one mouse does; the mean difference per mouse is
+    reported either way. For the time course the same test is shown per bin.
+- id: figs3d-same-spiking-selectivity
+  statement: Restricted to excitatory and inhibitory neurons with the same spiking activity,
+    choice selectivity is still similar, and the difference in mouse 4 of Figure 2C disappears.
+  source: Results, Individual excitatory and inhibitory neurons are similarly choice-selective,
+    paragraph 1; Figure S3D
+  quote: D, ROC analysis restricted to those excitatory and inhibitory neurons that had the same
+    spiking activity. Choice selectivity is still similar between the two cell types. Note that the
+    significant difference observed for mouse 4 in Figure 2C is absent after controlling for the
+    difference in spiking activity of inhibitory and excitatory neurons
+  depends_on:
+  - fig2bc-fraction-selective-similar
+  criterion: Matching as the Methods give for Figure S10D, E and as the code does
+    (choicePref_ROC_exc_inh_plotsAllMice_sameFR.m) per session, the median activity over trials in
+    the bin 0-97 ms before choice for each neuron, the range of medians cut into 50 bins, and only
+    the neurons of both types in the bin that holds the most inhibitory neurons kept. A claim of
+    absence, judged on the unpaired two-tailed t-test across sessions per mouse at p < 0.05 (code,
+    ttest2) on the session-mean selectivity and the session fraction selective. Reproduced when no
+    mouse, mouse 4 included, shows a significant difference.
+- id: figs3c-wider-window
+  statement: ROC on the window from 200 ms before to 300 ms after the choice gives a larger
+    fraction of selective neurons, 21% of excitatory and 27% of inhibitory (median across mice),
+    about 69 excitatory and 11 inhibitory neurons per session.
+  source: Figure S3C
+  quote: 'Fraction selective neurons at this time window (median across mice): excitatory: 21%;
+    inhibitory: 27%, resulting in approximately 11 inhibitory and 69 excitatory neurons with
+    significant choice selectivity per session'
+  expected:
+  - quantity: fraction of selective excitatory neurons, median across mice
+    value: 0.21
+    tolerance: 0.021
+  - quantity: fraction of selective inhibitory neurons, median across mice
+    value: 0.27
+    tolerance: 0.027
+  - quantity: selective excitatory neurons per session
+    value: 69
+    tolerance: 6.9
+  - quantity: selective inhibitory neurons per session
+    value: 11
+    tolerance: 1.1
+  criterion: As fig2bc-fraction-selective-similar, with activity averaged over the window before
+    the ROC. The code (choicePref_ROC_exc_inh.m, aveAllTimes = -1) averages the bins from 2 before
+    to 3 after the choice bin, 194 ms before to 291 ms after; readings are (a) that and (b) the
+    frames from 200 ms before to 300 ms after the choice. Reproduced when all four values are
+    within tolerance.
+- id: figs3e-correct-error-correlation
+  statement: Choice selectivity on correct and on error trials is positively correlated across
+    neurons, so most neurons reflect the choice more than the stimulus, and within each mouse this
+    correlation is very similar for excitatory and inhibitory neurons; it is weaker in mouse 4.
+  source: Results, Individual excitatory and inhibitory neurons are similarly choice-selective,
+    paragraph 2; Figure S3E
+  quote: Importantly, however, within each subject, this correlation was very similar for
+    excitatory vs. inhibitory neurons ( Figure S3E ), suggesting that the tendency for neurons to
+    be modulated by the choice vs. the stimulus was similar in excitatory and inhibitory neurons
+  statistics:
+  - about: example session, excitatory neurons
+    test: Pearson correlation
+    statistic: r = 0.58
+    p: 0.001
+    p_relation: "<"
+  - about: example session, inhibitory neurons
+    test: Pearson correlation
+    statistic: r = 0.55
+    p: 0.007
+  criterion: Per session and neuron, AUC on correct trials and AUC on error trials (same left
+    against right labels, bin 0-97 ms before choice); Pearson r across neurons per cell type; per
+    mouse the mean r across sessions. Sessions need at least 10 error trials of each choice (the
+    code's ROC threshold, applied to error trials; a reading). Reproduced when the mean r is
+    positive for both types in every mouse, the excitatory and inhibitory means do not differ in any
+    mouse by the paper's unpaired two-tailed t-test across sessions at p < 0.05, and mouse 4 has the
+    lowest mean r for at least one type.
+- id: fig3bc-decoding-similar
+  statement: Choice can be decoded from population activity well above chance, and inhibitory
+    populations decode it as accurately as excitatory populations of the same size, in every
+    mouse.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 2; Figure 3B and 3C
+  quote: Classification accuracy of inhibitory neurons was well above chance and was very similar to
+    that of excitatory neurons ( Figure 3B , red and blue traces overlap; Figure S4 ... Similar
+    classification accuracy for excitatory and inhibitory populations was observed in all subjects
+    ( Figure 3C )
+  criterion: Decoders as in the opening comment, correct trials, bin 0-97 ms before the choice, per
+    session the accuracy averaged over the 50 repetitions (and over the 50 excitatory subsamples).
+    Per mouse, accuracy is above chance when it exceeds the shuffled control by an unpaired
+    two-tailed t-test across sessions at p < 0.05. Equality is a claim of absence, judged on the
+    paper's unpaired two-tailed t-test across sessions per mouse (code,
+    svm_excInh_trainDecoder_eachFrame_plots_sumAllMice.py, ttest_ind) at p < 0.05. Reproduced when
+    in every mouse both cell types are above chance and do not differ; partially reproduced when
+    they differ in one mouse. Mean accuracies are reported.
+- id: fig3b-decoding-time-course
+  statement: Accuracy of the all-neuron choice decoder grows after stimulus onset and peaks at the
+    time of the choice.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 1; Figure 3B
+  quote: Classification accuracy gradually grew after stimulus onset and peaked at the time of the
+    choice ( Figure 3B , black)
+  criterion: All-neuron decoder trained and tested on each 97 ms bin of choice-aligned traces,
+    correct trials; per mouse the mean over sessions. Figure 3B is one session; tested on the mouse
+    means. "At the time of the choice" is read as (a) the peak in one of the two bins around the
+    choice (97 ms before to 97 ms after) and (b) the peak within 300 ms of the choice. Reproduced
+    when in every mouse the earliest choice-aligned bin is lower than the bin before the choice and
+    the peak lies in the window.
+- id: fig3df-weights-similar
+  statement: In the decoder trained on all neurons, excitatory and inhibitory neurons receive
+    weights of matched magnitude throughout the trial and with very similar distributions.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 3; Figure 3D, E and F
+  quote: The weight magnitudes of excitatory and inhibitory neurons were matched for the entire
+    trial ( Figure 3D ), and the distributions of weights was very similar ( Figures 3E , F )
+  statistics:
+  - about: excitatory against inhibitory absolute weight, per mouse (Figure 3F)
+    test: t-test
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: excitatory neurons pooled over all sessions (Figure 3E)
+    value: 42019
+    tolerance: 4202
+  - quantity: inhibitory neurons pooled over all sessions (Figure 3E)
+    value: 5172
+    tolerance: 517
+  criterion: All-neuron decoder at the best C, weights averaged over the 50 repetitions, each
+    session's weight vector normalised to unit length (Methods); mean |w| per cell type per session
+    at 0-97 ms before choice and per bin. Figure 3F marks a significant difference (star) in some
+    mice that the text does not name. Judged on the paper's unpaired two-tailed t-test across
+    sessions per mouse at p < 0.05. Reproduced when no mouse differs, partially reproduced when one
+    or two mice do, not reproduced otherwise; the pooled counts are compared with the expected
+    values, and the mean |w| per mouse is reported.
+- id: fig3hi-mixed-no-advantage
+  statement: A population of half excitatory and half inhibitory neurons decodes choice with
+    accuracy similar to that of an excitatory population of the same size, so a mixed population
+    offers no major advantage.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 4; Figure 3H and 3I
+  quote: Classification accuracy was similar for both decoders ( Figure 3H , I ), arguing that a
+    mixed population offers no major advantage to decoding
+  criterion: As the code (svm_excInh_trainDecoder_eachFrame.py, excInhHalf and allExc2inhSize) the
+    mixed population is all n inhibitory neurons plus a random subsample of n excitatory neurons,
+    and the control is 2n excitatory neurons, both over 50 subsamples; correct trials, bin 0-97 ms
+    before choice. A claim of absence, judged on the paper's unpaired two-tailed t-test across
+    sessions per mouse at p < 0.05. Reproduced when no mouse shows a significant difference
+    between the two decoders in either direction; the difference per mouse is reported.
+- id: figs5-fluorescence-decoding
+  statement: Excitatory and inhibitory populations are equally choice selective when decoders are
+    trained on fluorescence traces.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 2; Figure S5
+  quote: Excitatory and inhibitory populations were equally choice selective even when the analysis
+    was performed on raw calcium traces ( Figure S5 )
+  criterion: As fig3bc-decoding-similar, with the CNMF denoised fluorescence traces (Figure S5A
+    uses those of Figure 1D middle; code option do_Ctrace) in place of inferred spikes. The legend
+    calls them fluorescence traces and the text raw calcium traces; readings are (a) the denoised
+    traces and (b) Delta F/F traces. Same test and outcome rule.
+- id: figs6ab-previous-choice-stimulus
+  statement: Population activity is weakly informative about the previous trial's choice and about
+    the stimulus category (the stimulus category weakly except in mouse 4), and excitatory and
+    inhibitory populations are similarly selective for both.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 5; Figure S6A and S6B
+  quote: Excitatory and inhibitory populations were similarly selective for previous choice (
+    Figure S6A ). The population activity was also somewhat informative about whether the stimulus
+    was above or below the category boundary ( Figure S6B ). Again, excitatory and inhibitory
+    populations were similarly selective
+  criterion: Decoders as in the opening comment. Stimulus category uses stimulus-aligned trials
+    with equal numbers of left and right choices in each category (Methods). For previous choice the
+    paper gives no alignment or window; readings are (a) choice-aligned traces, bin 0-97 ms before
+    the choice, and (b) the first bins of the trial, before stimulus onset (the code's
+    trialHistAnalysis option, which uses the ITI period). Above chance by the unpaired two-tailed
+    t-test across sessions against the shuffle; equality judged on the same test between cell types.
+    Reproduced when, for both decoders, the all-neuron decoder is above chance in most mice and no
+    mouse shows a significant excitatory to inhibitory difference; partially reproduced when one
+    mouse does. The Figure S6B legend excepts mouse 4 from the weak stimulus-category signal, not
+    from the excitatory to inhibitory comparison; the all-neuron accuracy per mouse is reported. The
+    bin for stimulus category is (a) 0-97 ms before stimulus offset and
+    (b) the bin of peak all-neuron accuracy; the paper fixes neither.
+- id: figs6c-outcome-decoding
+  statement: Population activity is strongly selective for trial outcome, reaching about 80%
+    accuracy (median across mice) about 400 ms after the confirmation lick, with inhibitory neurons
+    slightly more accurate than excitatory neurons after reward.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 5; Figure S6C
+  quote: Classification accuracy gradually increases and reaches 80% (median across mice)
+    approximately 400ms after the animal confirms his choice (Figure S1A). Inhibitory neurons
+    showed slightly higher selectivity for the outcome
+  expected:
+    quantity: outcome decoding accuracy about 400 ms after the confirmation lick, median across mice
+    value: 80
+    tolerance: 8
+    unit: percent
+  criterion: Outcome-aligned trials (aligned to the confirmation lick, the reward time), with equal
+    numbers of left and right choice trials for each outcome (Methods); decoders otherwise as in the
+    opening comment. The all-neuron accuracy at the bin containing 400 ms after the confirmation
+    lick, mean over sessions per mouse, median over mice, within tolerance. Inhibitory above
+    subsampled excitatory in every mouse (the text's "small but consistent difference"), in the
+    mean over bins after the confirmation lick (the paper's "after reward delivery"); the end of the
+    window is open, read as (a) 500 ms after the confirmation lick and (b) the end of the
+    outcome-aligned traces. The paper gives no test for this difference; the unpaired two-tailed
+    t-test across sessions per mouse is reported. Reproduced when both hold.
+- id: figs6de-incorrect-trials
+  statement: Decoders trained on correct trials predict the choice on incorrect trials with high
+    accuracy, slightly lower than on correct trials, and the reduction is similar for excitatory and
+    inhibitory populations in every mouse.
+  source: Figure S6D and S6E
+  quote: Importantly, for all mice, the change in classification accuracy was quite similar for
+    excitatory and inhibitory neurons (right), indicating that both populations reflect choice vs.
+    stimulus to a comparable degree
+  criterion: Decoders trained on correct trials at each bin and tested on held-out correct trials
+    and on incorrect trials (code, testIncorr); bin 0-97 ms before choice. Accuracy on incorrect
+    trials is high when above the shuffle by the unpaired two-tailed t-test across sessions per
+    mouse. The reduction (correct minus incorrect) of inhibitory and subsampled excitatory decoders
+    is compared by the same test; a claim of absence. Reproduced when incorrect-trial accuracy is
+    above the shuffle in every mouse and the reductions do not differ significantly in any mouse;
+    mouse 4 should have the largest reduction for the all-neuron decoder.
+- id: fig4bd-stability-similar
+  statement: Choice decoders lose accuracy at a similar rate away from their training time for
+    excitatory and inhibitory populations, and their stability duration is indistinguishable.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 6; Figure 4B, C and D; Figure S7A
+  quote: This drop in accuracy occurred at a similar rate for excitatory and inhibitory populations
+    ( Figure 4B ). To quantify this, we determined the time window over which classifier accuracy
+    remained within 2 standard deviations of the accuracy at the training time ( Figure 4C ). This
+    was indistinguishable for excitatory and inhibitory neurons ( Figure 4D ; Figure S7A )
+  criterion: Decoders trained at each bin and tested at every bin on held-out trials (Methods),
+    correct trials. For the decoder trained at 0-97 ms before choice, a test bin counts as stable
+    when its accuracy is at least the accuracy at the training bin minus 2 standard deviations
+    across the 50 repetitions (Methods and Figure 4C legend). The code
+    (svm_excInh_trainDecoder_eachFrame_stabTestTimes_setVars_post.py) uses 2 standard errors
+    (SD over the square root of the number of repetitions); since the Methods say standard
+    deviations, the code's choice is shown as a variant. Stability duration is the number of stable
+    bins times 97 ms (code, bins not required to be contiguous; contiguous bins around the training
+    bin shown as a variant). Excitatory durations are averaged over the 50 subsamples. Sessions
+    where the training-bin accuracy does not exceed the shuffle are left out (code, one-tailed
+    t-test across repetitions; the code's alpha 0.001 and the Methods' general 0.05 are both
+    readings). A claim of absence, judged on the code's test, an unpaired two-tailed t-test of the
+    four mouse means (svm_excInh_trainDecoder_eachFrame_stabTestTimes_plots.py, ttest_ind across
+    mice); the per-mouse test across sessions is shown as a variant. Reproduced when that test finds
+    no difference.
+- id: figs7c-angle-stability
+  statement: The angle between decoders trained at different times shows a similar time course of
+    stability for excitatory and inhibitory populations.
+  source: Results, Choice is decoded with equal accuracy from both excitatory and inhibitory
+    populations, paragraph 6; Figure S7C
+  quote: An alternate method for assessing stability, computing the angle between the weights of
+    pairs of classifiers trained at different time windows, likewise suggested that excitatory and
+    inhibitory populations are similarly stable
+  criterion: Angle in degrees between the weight vectors (averaged over repetitions) of decoders
+    trained at each pair of bins, per session and cell type (excitatory over the 50 subsamples). The
+    paper gives no summary or test; readings are (a) the mean angle over all pairs of bins and (b)
+    the mean angle between the decoder at 0-97 ms before choice and each other bin. A claim of
+    absence, judged on the paper's unpaired two-tailed t-test across sessions per mouse at p < 0.05.
+    Reproduced when no mouse shows a significant difference.
+- id: fig5a-nonselective-model
+  statement: In a model with non-selective inhibition, inhibitory neurons decode the choice less
+    accurately than excitatory neurons for every ratio of excitatory-to-inhibitory to
+    inhibitory-to-excitatory connection strength.
+  source: Results, Modeling rules out decision circuits with non-selective inhibition, paragraph 2;
+    Figure 5A; Figure S8
+  quote: For this value (and indeed for all other values), inhibitory neurons had lower
+    classification accuracy than excitatory neurons ( Figure 5A , bottom; Figure S8 , left),
+    inconsistent with our experimental results
+  criterion: A simulation, not a test on recorded data. The linearised rate model of the STAR
+    Methods with the printed parameters (sigma 1.25, delta 0.75, wEE 0.25, wII -2, wIE(0) 0.87,
+    wEI(0) -0.87, c 0.1, NE 4000, NI 1000, n 50, h0 0.1), decoding accuracy Phi(sqrt(S/N)/2) from
+    the input-averaged S/N, one network per point, the product wIE*wEI held at the reference while
+    the ratio varies. The range of the ratio is not given; the range is read from Figure 5 if the
+    PDF is supplied, otherwise 0.1 to 10 on a log scale (a standard choice). Reproduced when
+    inhibitory accuracy is below excitatory at every value.
+- id: fig5bc-selective-models-match
+  statement: In signal-selective and SNR-selective models, inhibitory and excitatory neurons have
+    matched decoding accuracy near the biologically plausible regime of equal excitatory-to-inhibitory
+    and inhibitory-to-excitatory strengths; in all three models, accuracy rises faster for
+    inhibitory than for excitatory neurons as the excitatory-to-inhibitory strength increases.
+  source: Results, Modeling rules out decision circuits with non-selective inhibition, paragraphs 3
+    and 4; Figure 5B and 5C
+  quote: In this circuit architecture, inhibitory and excitatory neurons had matched classification
+    accuracy when the connection strength from excitatory to inhibitory neurons was about the same
+    as the strength from inhibitory to excitatory ... Thus, in all panels of Figure 5 ,
+    classification accuracy increases faster for inhibitory neurons than excitatory ones as the
+    excitatory to inhibitory connection strength increases
+  criterion: A simulation, not a test on recorded data. As fig5a-nonselective-model; signal-selective
+    with rho 0.75 and the input split by population, averaged over 25 networks and 100 random picks
+    of 50 neurons; SNR-selective with W_IE scaled by (r_j/NE)^4 and rescaled to the same mean.
+    Reproduced when, for each model, the excitatory and inhibitory accuracy curves cross within a
+    factor of 2 of a ratio of 1 (a reading of "about the same" and "near"), and when inhibitory
+    accuracy rises faster than excitatory with the ratio in all three models.
+- id: figs9-signal-selective-best
+  statement: The signal-selective model has the highest decoding accuracy of the three models at
+    every connection-strength ratio and level of differential correlations, in both cell types.
+  source: Results, Modeling rules out decision circuits with non-selective inhibition, paragraph 6;
+    Figure S9
+  quote: For all values of this parameter and in both cell types, signal-selective model has the
+    highest classification accuracy for decoding the animal's choice
+  criterion: A simulation, not a test on recorded data. As fig5bc-selective-models-match, with
+    differential correlations added as Sigma to Sigma + epsilon Delta h Delta h^T for epsilon 0,
+    0.25 and 0.5 (Figure S8 legend; which Sigma is garbled in the text, read as both Sigma_EE and
+    Sigma_II, and as Sigma_EE only, two readings). The paper says "significantly" without a test; the
+    claim is judged on the ordering. Reproduced when the signal-selective accuracy is highest at
+    every ratio, epsilon and cell type.
+- id: fig6a-same-selectivity-correlations
+  statement: Noise correlations are stronger between neurons with the same choice selectivity than
+    between neurons with opposite selectivity, for excitatory-inhibitory, excitatory-excitatory and
+    inhibitory-inhibitory pairs, significant in every mouse except mouse 3 for EE and II pairs; the
+    same holds in the spontaneous pre-trial period.
+  source: Results, Correlations are stronger between similarly tuned neurons, paragraph 1; Figure
+    6A; Figure S10A
+  quote: Indeed, neurons with the same choice selectivity had stronger correlations ( Figure 6A )
+  statistics:
+  - about: same against opposite selectivity, each pair type and mouse
+    test: t-test
+    p: 0.05
+    p_relation: "<"
+  criterion: As the Methods and code (imaging/corr_excInh_plots.m and corr_excInh_setVars.m)
+    neurons are "ipsi" or "contra" preferring by the sign of AUC - 0.5 at 0-97 ms before choice (AUC
+    from correct trials; significance not required); noise correlations from the same bin on trials
+    with a choice, after subtracting each choice's mean response from its trials; Pearson r per
+    pair; each neuron's r averaged over its partners of the given type and preference. Spontaneous
+    correlations use the bin 0-97 ms before the initiation tone, without subtraction. The code tests
+    same against opposite with an unpaired t-test on neurons pooled over sessions (ttest2); the
+    across-session test (the legend's mean +/- SEM across days) is shown as a variant. Reproduced
+    when same exceeds opposite significantly (p < 0.05) for EI pairs in all four mice and for EE and
+    II pairs in mice 1, 2 and 4, and spontaneous correlations show the same pattern by the same test
+    (the text's "the same correlation effects"; Figure S10A gives no test of its own); partially
+    reproduced when this holds for at least two of the three pair types.
+- id: fig6bc-inhibitory-correlations-higher
+  statement: Inhibitory pairs have significantly higher noise correlations than excitatory pairs,
+    with intermediate values for excitatory-inhibitory pairs, also for spontaneous correlations and
+    for neurons matched in spiking activity.
+  source: Results, Correlations are stronger between similarly tuned neurons, paragraph 2; Figure
+    6B and 6C; Figure S10B to S10E
+  quote: Inhibitory pairs had significantly higher noise correlations compared to excitatory pairs
+    ... This was true even when we restricted the analysis to inhibitory and excitatory neurons with
+    the same inferred spiking activity ( Figure S10D , E ). Finally, similar to previous reports ...
+    we found intermediate correlations for pairs consisting of one inhibitory neuron and one
+    excitatory neuron ( Figure S10B , C )
+  expected:
+  - quantity: excitatory neurons in the example mouse distribution (Figure 6B)
+    value: 11867
+    tolerance: 1187
+  - quantity: inhibitory neurons in the example mouse distribution (Figure 6B)
+    value: 1583
+    tolerance: 158
+  criterion: Per-neuron noise correlation as in fig6a-same-selectivity-correlations, averaged over
+    partners of the same type (EE, II) or the other type (EI), bin 0-97 ms before choice; spontaneous
+    as there; matched activity by the 50-bin "max bin" rule of the Methods. Readings for the test,
+    an unpaired two-tailed t-test (Methods), are (a) across sessions per mouse on session means
+    (Figure 6C, mean +/- SEM across days) and (b) on neurons pooled over sessions (code,
+    utils/plotHist.m). Reproduced when II exceeds EE significantly in every mouse for noise,
+    spontaneous and matched-activity correlations, with EI between them in the mean; the expected
+    counts are matched by one mouse (the example mouse is not named).
+- id: fig7-noise-correlations-limit-decoding
+  statement: Removing noise correlations by building pseudo populations increases choice decoding
+    accuracy of the full population in every mouse.
+  source: Results, Noise correlations limit decoding accuracy, paragraph 2; Figure 7A and 7B
+  quote: In all mice, removing noise correlations resulted in a consistent increase in
+    classification accuracy ( Figure 7B ; filled vs. open circles), establishing that noise
+    correlations limit population accuracy in PPC
+  criterion: All neurons, bin 0-97 ms before choice; neurons ranked by |AUC - 0.5| and added one at
+    a time from the most selective (Methods); the AUC used for ranking is from all trials with a
+    choice in the code (svm_excInh_trainDecoder_eachFrame.py), and from correct trials as a variant.
+    Pseudo populations shuffle trial order independently for each neuron within left-choice and
+    within right-choice trials (Methods). The change is pseudo minus real accuracy at the largest
+    ensemble (Methods; code changeCA_shflTrsEachN). Trials are correct trials (as the other Figure 3
+    decoders); all trials with a choice is a second reading. Reproduced when the mean change across
+    sessions is positive in every mouse and significant by the two-tailed t-test across sessions at p
+    < 0.05, read as (a) a one-sample test of the per-session changes and (b) an unpaired test of
+    pseudo against real accuracy, in every mouse.
+- id: fig8ab-learning-accuracy
+  statement: During learning, choice decoding accuracy increases and correlates with behavioural
+    performance across sessions, for all, excitatory and inhibitory populations (r = 0.55, 0.35,
+    0.32 in mouse 2 and 0.57, 0.63, 0.32 in mouse 3).
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 1; Figure 8A, 8B and 8D
+  quote: Classification accuracy of the choice decoder increased consistently as animals became
+    experts in decision-making ( Figure 8A , left; Figure 8D , black), leading to a strong
+    correlation between classifier accuracy and mouse performance over training ( Figure 8B , left)
+  statistics:
+  - about: accuracy against performance, example mouse, each population
+    test: Pearson correlation
+    p: 0.001
+    p_relation: "<"
+  - about: accuracy against performance, mice 2 and 3, each population
+    test: Pearson correlation
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: r, all neurons, mouse 2
+    value: 0.55
+    tolerance: 0.055
+  - quantity: r, excitatory, mouse 2
+    value: 0.35
+    tolerance: 0.035
+  - quantity: r, inhibitory, mouse 2
+    value: 0.32
+    tolerance: 0.032
+  - quantity: r, all neurons, mouse 3
+    value: 0.57
+    tolerance: 0.057
+  - quantity: r, excitatory, mouse 3
+    value: 0.63
+    tolerance: 0.063
+  - quantity: r, inhibitory, mouse 3
+    value: 0.32
+    tolerance: 0.032
+  criterion: The 3 mice imaged through learning (by Figure S1C, mice 1, 2 and 4; the code's
+    fni16, fni17, fni19). A decoder per session, bin 0-97 ms before choice. Trials are all outcomes
+    in the code's learning script (svm_excInh_trainDecoder_eachFrame_beh_sumAllMice_plots.py,
+    corrTrained = 0); readings are (a) all trials with a choice, balanced only by choice, and (b)
+    equal numbers of correct and incorrect trials within each choice (the code's
+    decodeChoiceEqCorrIncorr option). Performance is the fraction correct on easy trials (Figure 8B
+    legend); easy as the code (svm_excInh_trainDecoder_eachFrame_stabAngles_setVars_behCA.py,
+    thQStimStrength = [3]), the outermost of
+    four equal bins of |rate - 16 Hz| on each side. The legend's "mouse 2" and "mouse 3" can be read
+    as (a) the second and third of the three learning mice in the paper's numbering (mice 2 and 4)
+    and (b) the paper's mice 2 and 3; the example mouse is the remaining one. Reproduced when in each
+    learning mouse r is positive with p < 0.05 for all three populations and the six reported values
+    are within tolerance under one reading of the mouse names; partially reproduced when only the
+    signs and p-values hold.
+- id: fig8ce-choice-signal-onset
+  statement: The choice signal emerges progressively earlier in the trial as mice become experts,
+    so the onset of above-chance decoding correlates negatively with performance (r = -0.60, -0.34,
+    -0.38 in mouse 2 and -0.60, -0.27, -0.28 in mouse 3 for all, excitatory and inhibitory).
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 1; Figure 8C and 8E
+  quote: This resulted in a negative correlation between mouse performance and the onset of
+    super-threshold decoding accuracy ( Figure 8C , left; Figure 8E , black)
+  statistics:
+  - about: onset against performance, mice 2 and 3, each population
+    test: Pearson correlation
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: r, all neurons, mouse 2
+    value: -0.60
+    tolerance: 0.06
+  - quantity: r, excitatory, mouse 2
+    value: -0.34
+    tolerance: 0.034
+  - quantity: r, inhibitory, mouse 2
+    value: -0.38
+    tolerance: 0.038
+  - quantity: r, all neurons, mouse 3
+    value: -0.60
+    tolerance: 0.06
+  - quantity: r, excitatory, mouse 3
+    value: -0.27
+    tolerance: 0.027
+  - quantity: r, inhibitory, mouse 3
+    value: -0.28
+    tolerance: 0.028
+  depends_on:
+  - fig8ab-learning-accuracy
+  criterion: Decoders and mice as fig8ab-learning-accuracy, at every bin of choice-aligned traces.
+    Per session and bin, accuracy against the shuffle by a t-test across the 50 repetitions; the
+    onset is the start of the first run of significant bins lasting at least 500 ms (5 bins, code
+    th1), in ms from the choice; sessions without such a run are left out (Methods). The Methods
+    give p < 0.05; the code (svm_excInh_trainDecoder_eachFrame_plots.py) uses 0.001, shown as a
+    variant. The code tests excitatory data against the inhibitory shuffle at one line (line 600);
+    the excitatory shuffle is used, as the Methods describe. Reproduced when the correlation is
+    negative with p < 0.05 for all three populations in each learning mouse and the six values are
+    within tolerance under one reading of the mouse names; partially reproduced when only the signs
+    and p-values hold.
+- id: fig8de-learning-parallel
+  statement: The choice signal emerges at the same time in excitatory and inhibitory populations,
+    and its magnitude and timing are matched for the two cell types throughout learning.
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 1; Figure 8A to 8E
+  quote: Importantly, the choice signal emerged at the same time in both populations, and its
+    magnitude and timing was matched for the two cell types throughout learning ( Figure 8A - C ,
+    middle, right; Figure 8D - E , blue, red)
+  depends_on:
+  - fig8ab-learning-accuracy
+  - fig8ce-choice-signal-onset
+  criterion: Early and late days as the Methods give, by behavioural performance below the 20th or
+    above the 80th percentile of all days; readings are (a) every day beyond the percentile (code,
+    perc_thb = [20, 80]) and (b) only the run of days at the start (early) or end (late) of training
+    beyond it (the Methods' "initial" and "last" days). Accuracy (bin 0-97 ms before choice) and
+    onset of inhibitory and subsampled excitatory decoders in early and in late days. A claim of
+    absence, judged on the paper's unpaired two-tailed t-test across days per mouse at p < 0.05.
+    Reproduced when, in every learning mouse, neither accuracy nor onset differs between the cell
+    types in early or late days, and late accuracy exceeds early accuracy for both types (Figure 8D)
+    by the same test.
+- id: figs13c-equal-trials
+  statement: The learning-related increase in decoding accuracy remains when the number of
+    trials is equal in every session.
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 1; Figure S13C
+  quote: 'This was not due to the presence of more correct trials in later sessions: an improvement
+    in classification accuracy was clear even when the number of correct trials was matched for
+    each session ( Figure S13C )'
+  depends_on:
+  - fig8de-learning-parallel
+  criterion: Decoders trained on correct trials only (legend), with the same number of trials in
+    every session of a mouse, the minimum over its sessions (code, same_HRLR_acrossDays). Late
+    accuracy above early accuracy for all neurons by the unpaired two-tailed t-test across days at p
+    < 0.05 in every learning mouse; early and late days as fig8de-learning-parallel.
+- id: figs12-licking-running
+  statement: Licking and running do not explain the learning-related changes; centre-spout licks
+    before left and right choices are similar early and late in training, and decoding remains
+    accurate in sessions where running did not differ between choices.
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 2; Figure S12
+  quote: Nonetheless, when we restricted our analysis to days in which running distance was
+    indistinguishable for the two choices (0-97 ms before the choice, t-test, P>0.05), classifiers
+    could still accurately predict the choice ( Figure S12D )
+  criterion: Licks to the centre spout in the 250 ms before the choice, as a lick-rate trace per
+    choice (the bin width is not given; 10 ms is a standard choice that cannot change the sign of
+    a correlation much, shown with 1 ms as a variant); per session the Pearson r of the left-choice
+    and right-choice traces; early against late days (as fig8de-learning-parallel) by the unpaired
+    two-tailed t-test, a claim of absence. Running distance from the wheel encoder in the bin 0-97 ms
+    before choice, left against right by a t-test per session; on sessions with P > 0.05, all-neuron
+    accuracy above the shuffle. Reproduced when lick correlations do not differ between early and
+    late days in any learning mouse and accuracy is above the shuffle in the selected sessions of
+    every mouse.
+- id: fig8f-correlations-decrease
+  statement: Pairwise noise correlations are higher early in training than late, for all
+    combinations of neuron types.
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 3; Figure 8F
+  quote: Pairwise correlations in neural activity were higher early in training, when mice were
+    novices, compared to late in training, when mice approached expert behavior ( Figure 8F ,
+    unsaturated colors above saturated colors). This was observed for all combinations of neural
+    pairs ( Figure 8F )
+  criterion: Noise correlations as fig6bc-inhibitory-correlations-higher (EE, II, EI), early and
+    late days as fig8de-learning-parallel. The paper gives no test; the Methods' two-tailed t-test
+    (unpaired, across days per mouse) at p < 0.05 is used. Reproduced when early exceeds late
+    significantly for all three pair types in every learning mouse; partially reproduced when early
+    exceeds late in the mean for every type and mouse but not significantly in all.
+- id: figs13ab-pseudo-learning
+  statement: Decoding accuracy of pseudo populations, which lack noise correlations, also increases
+    significantly with training, so reduced noise correlations do not alone explain the improved
+    accuracy.
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 3; Figure S13A and S13B
+  quote: Interestingly, a significant increase in the classification accuracy of pseudo populations
+    was present ( Figure S13A , B )
+  criterion: Pseudo populations as fig7-noise-correlations-limit-decoding, for all, subsampled
+    excitatory and inhibitory decoders, bin 0-97 ms before choice, trials as fig8ab; early and late
+    days as fig8de-learning-parallel. Reproduced when late exceeds early by the unpaired two-tailed
+    t-test across days at p < 0.05 in every learning mouse for the all-neuron decoder, and in the
+    same direction for both cell types.
+- id: fig8g-fraction-selective-triples
+  statement: The fraction of choice-selective neurons increases about threefold from early to late
+    training, in both excitatory and inhibitory neurons.
+  source: Results, Selectivity increases in parallel in inhibitory and excitatory populations during
+    learning, paragraph 3; Figure 8G
+  quote: Indeed, the fraction of choice-selective neurons increased threefold during training, in
+    both excitatory and inhibitory neurons ( Figure 8G )
+  expected:
+    quantity: late over early fraction of choice-selective neurons
+    value: 3
+    tolerance: 0.3
+  criterion: ROC as in the opening comment, bin 0-97 ms before choice; early and late days as
+    fig8de-learning-parallel; per mouse the mean fraction over early and over late days. The ratio
+    can be read (a) per mouse and cell type, then the mean over mice, and (b) on fractions pooled
+    over the three mice. Reproduced when, for both cell types, the ratio is within tolerance under
+    one reading and late exceeds early by the unpaired two-tailed t-test across days in every
+    learning mouse (code choicePref_ROC_exc_inh_plotsAllMice.m, ttest2); partially reproduced when
+    the increase is significant but the ratio outside tolerance.
+- id: figs2-temporal-dynamics-similar
+  statement: Excitatory and inhibitory neurons have similar temporal dynamics, with similar
+    distributions of peak-activity times across the trial.
+  source: Results, paragraph 4; Figure S2
+  quote: Diverse temporal dynamics were evident in both cell types ( Figure 1E , F ) and did not
+    appreciably differ between the two ( Figure S2 )
+  criterion: Per session, the fraction of neurons of each type whose trial-averaged activity peaks
+    in each 100 ms window, traces aligned to each trial event and concatenated (Figure S2 and 1E
+    legends); the alignment windows around each event are not given, and the windows used by the
+    dataset's trial-segmented responses are used. The paper gives no test; the Methods' unpaired
+    two-tailed t-test across sessions per mouse in each window, a claim of absence. With many
+    windows, readings are (a) uncorrected p < 0.05 and (b) Bonferroni over windows. Reproduced when,
+    in every mouse, the number of windows that differ is no more than expected by chance under (a)
+    (binomial test at 0.05) and none differs under (b).
+- id: figs14-neuropil
+  statement: CNMF removes neuropil contamination as well as annulus subtraction; for an example
+    component the two traces correlate with r = 0.96.
+  source: STAR Methods, Neuropil Contamination removal; Figure S14
+  quote: The comparison showed a very high degree of similarity between the two traces ( Figure S14
+    ; example component; r=0.96)
+  expected:
+    quantity: correlation of CNMF and annulus-subtracted traces, example component
+    value: 0.96
+    tolerance: 0.04
+  criterion: Needs the raw movies; footprints binarised at 20% of their maximum, annulus at 3
+    pixels from the mask and 7 pixels wide, background subtracted, compared with the CNMF Delta F/F
+    trace (Methods). The example component is not named; reproduced when the median r over
+    components with annuli free of other sources is within tolerance (r cannot exceed 1, so the
+    tolerance is the room to 1).
+- id: figs15-labeling-specificity
+  statement: In GAD-Cre;Ai14 mice 98.2% of tdTomato neurons in PPC express GABA, and all GABA
+    neurons express tdTomato.
+  source: STAR Methods, Immunofluorescence staining for TdTomato and GABA; Figure S15
+  quote: '98.2 % of tdTomato neurons expressed GABA, and all of the GABAergic neurons expressed
+    tdTomato'
+  expected:
+    quantity: fraction of tdTomato neurons expressing GABA
+    value: 98.2
+    tolerance: 1.8
+    unit: percent
+  criterion: Needs the immunostained coronal sections (5 sections including PPC). Counts of
+    tdTomato, GABA and double-labelled cells; tolerance is the room to 100%. Reproduced when the
+    fraction is within tolerance and no GABA cell lacks tdTomato.
+checks:
+- date: "2026-10-21"
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2bc-fraction-selective-similar. Statement left out the significant difference in mouse 4 that the Figure 2C
+    legend (star) and the Figure S3D legend report; added.
+  - fig3hi-mixed-no-advantage. Statement and criterion read the paper's "similar" as one-sided (mixed no more
+    accurate); the paper says the accuracies were similar, so the absence is now judged on a difference in either
+    direction.
+  - figs6ab-previous-choice-stimulus. The criterion excepted mouse 4 from the excitatory to inhibitory comparison,
+    but the Figure S6B legend excepts mouse 4 only from the weak stimulus-category signal; the exception was moved to
+    the statement and the comparison now covers every mouse, partially reproduced when one mouse differs, as in
+    fig3bc-decoding-similar.
+  - figs6c-outcome-decoding. The rule of a significant difference in at least two mice was not in the paper, which
+    gives no test for it; replaced by the direction in every mouse (the text's "small but consistent difference"),
+    with the t-test reported, and the open end of the post-reward window given two readings.
+  - fig5bc-selective-models-match. The criterion tested the faster rise of inhibitory accuracy in all three models,
+    which the statement and quote did not state; the sentence of the Results that says so was added to both.
+  - fig6a-same-selectivity-correlations. The statement includes the pre-trial (spontaneous) result but the criterion
+    gave it no outcome rule; it is now judged on the same test and pattern.
+  - fig8ab-learning-accuracy. The code file for the easy-trial threshold was misnamed; corrected to
+    svm_excInh_trainDecoder_eachFrame_stabAngles_setVars_behCA.py, where thQStimStrength is [3].
+  - fig8de-learning-parallel. "late accuracy exceeds early accuracy" named no test; now the same unpaired two-tailed
+    t-test across days as the rest of the criterion.
+  - fig8f-correlations-decrease. The rule of significance in at least two of three mice was not in the paper;
+    replaced by significance in every learning mouse, with a partial outcome when only the direction holds.
+  - Code citations spot-checked at commit b7352acd (ROC normal-fit rule, thMinTrs, 2 Hz stimulus bins, 7 s ITI split
+    and 30 s cut, 2 x SE stability rule, 500 ms onset run and alpha 0.001, line 600, perc_thb, corrTrained); they
+    match.
+  - Open. fig3df-weights-similar. The Figure 3F legend marks significant differences (star) in mice the text does not
+    name, and the main figure PDF is not under paper/; the paper itself may fall in the criterion's partial band.
+    Not settled without the figure.
+  - Open. figs3e-correct-error-correlation. The minimum number of error trials per choice is not given by the paper;
+    the criterion's 10 is the code's threshold for correct trials carried over, one reading only.
+  - Open. figs1b-trial-history. The Methods' worked example (ITI 5 s sets S1) contradicts the Methods' definition of
+    S1 as long ITI; the criterion follows the definition and the code (split at 7 s), which agree.
+  - Open. fig5bc-selective-models-match. "About the same" and "near" are read as a crossing within a factor of 2 of a
+    ratio of 1, a single reading the paper does not fix.

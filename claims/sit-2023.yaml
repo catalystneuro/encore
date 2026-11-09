@@ -1,0 +1,720 @@
+# Claims for Sit & Goard (2023), Nature Communications 14:1992, on dandiset 000483.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (publisher's PDF supplied by a person, extracted to text):
+# main text, figure legends, Methods and Statistical information. The Supplementary Information
+# (Figures S1 to S7 and Table S1) was not in the paper store and was not read. The main
+# findings and their statistics are all stated in the main text; the supplement holds the
+# detail of three of them (Figure S5, Figure S6 and Table S1), and the claims that rest on it
+# say so. The figures could not be opened (no PDF renderer), so no number below is read from a
+# figure.
+#
+# Code read: the repository the paper links, given there as
+# github.com/ucsb-goard-lab/Neurotar-HDExperiments; the repository is in fact
+# github.com/ucsb-goard-lab/Neurotar-HD-Experiments, commit c6344f5 (2023-03-14). It holds
+# MATLAB classes, not figure scripts: Cue.m (tuning curves, preferred direction, flip score,
+# Gaussian fits), ControlledRotation.m (trial segmentation and the heading-selection test),
+# FreelyMoving.m (the Rayleigh-vector test), LightDarkExperiment.m and its subclasses (light and
+# dark segmentation), Separator.m, and _ReviewerCode/reviewer_reclassify_attempt.m (a GMM
+# clustering run). No code for the V-tests, the coherent-remapping offsets, the flip-score
+# F-tests, the LDA, the decoding or the statistics is in it. The lab's HeadingDecoder
+# repository (github.com/ucsb-goard-lab/HeadingDecoder, commit ca9842e, 2022-07-14), whose
+# README says it is part of this paper's analyses, is not linked by the paper; it was read and
+# is used only as a named variant ("other software" in the protocol's order). The helper
+# leaveOneOutAligner it and the reviewer code call is not in kevinksit/GeneralHelperCode
+# (commit 8ccc95c) and was not found.
+#
+# Data the paper used (as reported). 26 mice (12 male, 14 female), 6 to 12 weeks old at
+# surgery. Somata: Emx1-Cre x ROSA-LNL-tTA x TITL-GCaMP6s or Slc17a7-IRES2-Cre x
+# TITL2-GC6s-ICL-TTA2 mice expressing GCaMP6s. Axons: AAV GCaMP7b in ADN or in AM/PM (the
+# Results say wild-type mice, the Methods say AAV-Syn-Flex-jGCaMP7b in Emx1-Cre mice). Two-photon
+# imaging of posterior dysgranular RSC at 10 Hz, head-fixed in an air-floated chamber (Neurotar
+# Mobile HomeCage) that reports chamber position, angle (heading) and speed.
+#   - Free chamber, single cue, mouse-driven: 4 recordings over 3 mice, 2665 neurons (Fig. 1D, E).
+#   - Motor-rotated chamber, single cue (3 to 7 rpm, 90 to 120 s rotations with 5 s rests,
+#     2 to 6 repeats): 16 recordings over 5 mice, 3179 neurons (Fig. 1G, H).
+#   - Head rotation (2 rpm, chamber fixed) against chamber rotation, same field: 5 recordings
+#     over 4 mice, with ROIs matched across the two (Fig. 2).
+#   - Remapping: chamber in four quadrants of cues, all replaced in darkness between two
+#     recordings (contexts A and B): 12 recordings over 4 mice (Fig. 3).
+#   - Dual symmetric cues (A-B-A-B), light-on and light-off repeats: ADN axons 17 recordings
+#     over 4 mice, AM/PM axons 7 recordings over 3 mice (Fig. 4); RSC somata 36 recordings over
+#     6 mice (Figs. 5, 6); rotation in both directions 4 recordings over 2 mice (Fig. S5);
+#     animal-controlled against motor-controlled arena 7 recordings over 3 mice (Fig. S6);
+#     standard rotation against visual-cue-only rotation (a false floor that does not turn),
+#     number of recordings not given (Fig. 5J, K).
+# Measured variables: fluorescence of somata or axon ROIs, dF/F, inferred spikes (OASIS, AR(1),
+# on dF/F), chamber heading, position and speed, light condition.
+# The dandiset's description says it holds all the accompanying data of the paper. The paper
+# also deposited processed data on Dryad (doi:10.25349/D91G8Q) and Source Data with the
+# article; no claim needs them, but the author may use them to check the link.
+#
+# Methods shared by the claims, with their sources. "Methods" is the paper's Methods section;
+# "code" is Neurotar-HD-Experiments at c6344f5.
+#   - Activity: inferred spikes from OASIS with an AR(1) kernel on dF/F (Methods, Analysis of
+#     calcium data); dF/F = (F - F0)/F0 with F0 the mode of the neuropil-corrected fluorescence
+#     (Methods, eq. 2). If the dataset holds no inferred spikes, the deconvolution's other
+#     parameters are open; the call left commented in Cue.m is deconvolveCa(dff, 'ar1',
+#     'foopsi', 'optimize_pars'), which is the reading to use.
+#   - Tuning curve: heading in 60 bins of 6 degrees, mean activity per bin, then a 15 degree
+#     moving average (Methods; code Cue.binData, movmean over 15/6 bins); per trial, then
+#     averaged over trials (Methods).
+#   - Trials (rotation experiments): one full rotation of the chamber (Methods). Code
+#     (ControlledRotation.getTrialResponses): heading glitches (steps of 20 to 350 degrees)
+#     replaced by the previous value; breaks at wraps of heading and at rests (more than 20
+#     consecutive frames with a change under 0.5 degree); segments under 50 frames dropped, and
+#     segments whose 25th or 75th heading percentile lies more than 50 degrees from +-90 dropped.
+#   - Light and dark segments (dual-cue experiments; the code hard-codes them as there were no
+#     stimulus files): somata, 1950-frame recordings are one repeat of 950-frame segments,
+#     7550-frame recordings three repeats and 15050-frame recordings six repeats of 1250-frame
+#     segments; axons, three repeats of 1250 frames. Each repeat is a light segment then a dark
+#     segment (Separator.m; Methods, the first repeat is always light-on).
+#   - Heading selection, rotation experiments (Methods; code ControlledRotation
+#     .calculateHeadDirection): 1000 iterations; in each, the trials are split at random into two
+#     halves and the correlation of the two half-mean tuning curves is taken, for the real
+#     trials and for trials each circularly shifted by an independent random amount (same
+#     split); the two sets of 1000 correlations are compared by a two-sample KS test (p < 0.1)
+#     and Cohen's d (> 0.8, pooled SD); a Gaussian (one term for a single cue, two terms for
+#     dual cues) is fitted to the min-max rescaled trial-mean tuning curve and to the shuffled
+#     trial means, and the real r2 must exceed the 90th percentile of the shuffled r2. The code
+#     also requires the fitted amplitude a1 > 0 and fits with its bounds (single: a0 and a1 in
+#     [0, 1], b1 in pi/2 +- pi/6, c1 in [0, pi/2]; double: a0 in [0, 0.2], a1, a2 in [0, 1], b1 in
+#     pi/2 +- pi/24, b2 in 3pi/2 +- pi/24, c in [0, 2pi]; x from 0 to 2pi over the 60 bins);
+#     these are followed. For dual-cue recordings the code's default runs the test on all
+#     trials, light and dark together, and the reviewer code calls it so; that is followed.
+#   - Cross-validated alignment (Methods): for each trial, the peak bin of the mean of the other
+#     trials sets that trial's circular shift; for light/dark data the shifts come from light-on
+#     trials and are applied to light-off trials. The target position of the peak is not in the
+#     Methods; the code's Gaussian bounds (b1 near pi/2) and its shift point of bin 15 imply the
+#     peak is put at bin 15 (90 degrees on a 0 to 360 axis), which is followed.
+#   - Flip score (Methods, eq. 5; code Cue.calculateFlipScore): circular autocorrelation of the
+#     tuning curve (smoothed with MATLAB smoothdata defaults), CC at 180 degrees minus the mean
+#     of CC at 90 and 270 degrees.
+#   - V-test: circ_vtest of the Circular Statistics Toolbox against 0 degrees (Methods,
+#     Statistical information). The subscript of V in the paper (V32, V66) is read as n:
+#     with u = V sqrt(2/n), V32 = 14.1 gives p = 2.1e-4 and V66 = 25.6 gives p = 4.2e-6, near the
+#     printed 2.5e-4 and 4.9e-6.
+#   - Decoding (Methods, Decoding RSC somatic activity): trials are the full rotations before
+#     and after each rest that separates light-on from light-off (and light-off from light-on);
+#     each trial resampled to 200 bins; trials aligned across recordings into pseudopopulations;
+#     Bayesian decoding (Etter et al. 2020) of "the raw calcium data", trained on even and tested
+#     on odd timepoints; 1000 bootstrap iterations, each sampling with replacement 332 neurons
+#     (the smallest class) from the class decoded, or from all three classes in their rough
+#     proportions for "all tuned cells"; decoder error |decoded - actual| per frame; decoder
+#     accuracy per trial the fraction of frames with error under 18 degrees; mean and 2.5 and
+#     97.5 percentiles over iterations; p of a light-on against light-off comparison is one minus
+#     the fraction of iterations in which a t-test passes at alpha 0.05 (Statistical
+#     information; decoding error across recordings is compared by paired t-tests). Open, with
+#     readings: the decoder input, (a) dF/F ("raw calcium data", Methods) or (b) inferred spikes
+#     (HeadingDecoder); the decoder, (a) the naive Bayes decoder of Etter et al. 2020 on
+#     binarized activity, with 60 heading states of 6 degrees, or (b) HeadingDecoder's (activity
+#     times row-rescaled leave-one-trial-out tuning curves, normalized, filtered over 10 samples,
+#     maximum taken; 180 resample bins; up to 15 trials each side of the transition); the
+#     t-test, (a) paired over trials or (b) unpaired; chance, (a) 0.18 (Methods) or (b) 0.10
+#     (Figure 6A legend, which equals 36/360 and HeadingDecoder's 18/180). The Methods come first;
+#     every reading is run.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000483"
+paper: doi:10.1038/s41467-023-37704-5
+claims:
+- id: fig1-free-heading-fraction
+  statement: In head-fixed mice moving a free floating chamber with a single cue, 14.0% of RSC
+    neurons (373 of 2665) are heading selective, with no head movement.
+  source: Results, Neurons in the RSC represent heading in the absence of physical head
+    movements, paragraph 2; Figure 1D, E
+  quote: revealing that a proportion of neurons in RSC faithfully represent heading (14.0%,
+    373/2665 neurons
+  expected:
+  - quantity: percentage of heading-selective neurons, free chamber
+    value: 14.0
+    tolerance: 1.4
+    unit: percent
+  criterion: The 4 free-chamber recordings over 3 mice. Method from the Methods (Analysis of
+    calcium data, paragraph 2) and code FreelyMoving.m. The Rayleigh vector length of each
+    neuron's tuning curve (inferred spikes, 6 degree bins, 15 degree smoothing) is compared with
+    1000 values from the spike data circularly shifted in time by a random amount; a neuron is
+    selective when its RVL meets or exceeds the 99th percentile (Methods). The code keeps only
+    frames with chamber speed above 2 (FreelyMoving.checkIsMoving), which the Methods do not
+    mention; and its default threshold is the 95th percentile. Readings, run in turn, (a) all
+    frames, 99th percentile; (b) moving frames only, 99th percentile; (c) the code's 95th
+    percentile on moving frames, as a variant. Reproduced when (a) or (b) gives a percentage
+    within tolerance; (c) is reported.
+- id: fig1g-rotation-heading-fraction
+  statement: With the chamber rotated by a motor (single cue), 14.2% of RSC neurons (452 of
+    3179, 16 recordings over 5 mice) are heading selective by the paper's reliability and
+    Gaussian-fit test, a percentage similar to the free-chamber experiments.
+  source: Results, Neurons in the RSC represent heading in the absence of physical head
+    movements, paragraph 3; Figure 1G
+  quote: we found a similar percentage heading neurons as in the experiments without controlled
+    rotation, comprising 14.2% (452/3179 neurons) of the total number of cells recorded (n = 16
+    recordings over 5 mice
+  expected:
+  - quantity: percentage of heading-selective neurons, controlled rotation
+    value: 14.2
+    tolerance: 1.42
+    unit: percent
+  - quantity: heading-selective neurons, controlled rotation
+    value: 452
+    tolerance: 45
+  criterion: The heading-selection test of the opening comment (Methods; code
+    ControlledRotation.calculateHeadDirection) with a single-term Gaussian, on inferred spikes
+    of every neuron of the 16 single-cue controlled-rotation recordings. Reproduced when the
+    percentage is within tolerance. The test uses random splits and shuffles; the random seed
+    is a standard choice that should not change the count beyond a few cells.
+- id: selection-shuffled-control
+  statement: Run on pre-shuffled data, the heading-selection test passes no cells, so the count
+    of heading-selective cells is not due to chance.
+  source: Methods, Analysis of calcium data, paragraph 4
+  quote: When repeating these procedures using pre-shuffled data, no cells passed these
+    criteria, suggesting that the number of heading selective cells is accurate, and not due to
+    chance
+  depends_on:
+  - fig1g-rotation-heading-fraction
+  criterion: The test of fig1g-rotation-heading-fraction, run after circularly shifting each
+    trial's tuning curve by an independent random amount before the test, as in the commented
+    calculateHeadDirection_shuff of Cue.m (code). The Methods do not say on which recordings;
+    the single-cue controlled-rotation recordings are used, as the claim follows that test.
+    Reproduced when no cell passes; partially reproduced when some pass but no more than 1% of
+    cells (the combined significance of p = 0.01 the Methods give for the thresholds); not
+    reproduced above 1%.
+- id: fig1h-preferred-headings-tile
+  statement: The preferred headings of heading-selective cells tile the whole circumference of
+    the chamber, including headings with the cue outside the visual field, with a moderate
+    overrepresentation near 0 degrees, where the cue is centered in front of the mouse.
+  source: Results, Neurons in the RSC represent heading in the absence of physical head
+    movements, paragraph 3; Figure 1H
+  quote: showing that heading-responsive cells tile the entire circumference of the chamber, even
+    when the cue card is outside of the visual field of the mouse; though we note there is a
+    moderate overrepresentation of responses when the cue is centered in front of the mouse
+    near 0°
+  depends_on:
+  - fig1g-rotation-heading-fraction
+  criterion: The cells selected in fig1g-rotation-heading-fraction; the preferred heading of
+    each is the peak bin of its trial-mean tuning curve, cross-validated as in the Methods
+    (sorted by "cross-validated angle of peak response", Figure 1H legend). Heading 0 is the cue
+    centered in front of the mouse (Results); how the dataset's heading maps to the cue is the
+    author's to find. The paper gives no measure of tiling or of overrepresentation, so both
+    are open, with these readings, (a) every one of the 60 bins of 6 degrees holds at least one
+    preferred heading; (b) every 90 degree quadrant, including the one centered on 180 degrees,
+    holds at least 10% of the preferred headings. For the overrepresentation, the share of
+    preferred headings within 45 degrees of 0 exceeds 25% (its share under uniformity).
+    Reproduced when the overrepresentation holds and tiling holds under (a) or (b).
+- id: fig2f-head-chamber-same-preference
+  statement: Matched ROIs have on average the same preferred heading relative to the wall
+    pattern whether the head is rotated in a fixed chamber or the chamber is rotated around a
+    fixed head (V-test against 0 degrees, V = 14.1, p = 2.5e-4), though not all cells keep their
+    preference.
+  source: Results, Heading cells exhibit similar preferred directions during rotation of the
+    animal or the environment; Figure 2E, F
+  quote: matched ROIs on average have the same heading preference with respect to wall pattern
+    across conditions ... (V32 = 14.1, p = 2.5 × 10−4, V-test for nonuniformity against 0°
+  statistics:
+  - test: V-test for nonuniformity against 0 degrees
+    statistic: V32 = 14.1
+    p: 2.5e-4
+    n: 32 (the subscript of V, read as the number of matched cells), 5 recordings over 4 mice
+  expected:
+  - quantity: V statistic
+    value: 14.1
+    tolerance: 1.41
+  criterion: The 5 head-rotation recordings, each paired with its chamber-rotation recording of
+    the same field; ROIs matched across the two (a single set of ROIs after derotation,
+    manually checked, Results). Per ROI the difference in preferred heading, head rotation minus
+    chamber rotation, wrapped to +-180; circ_vtest against 0. Open, with readings, the cells,
+    (a) matched ROIs heading-selective in both conditions, (b) in either condition, (c) in the
+    chamber-rotation condition; the preferred heading, (i) the peak of the trial-mean tuning
+    curve (Figure 2F legend, "peak heading preference"), (ii) the code's 'fit' method
+    (Cue.calculatePreferredDirection, recommended in the code's README). Reproduced when a
+    reading gives p < 0.05 with V > 0; the V and n of each reading are reported, and the one
+    whose n is 32 is named.
+- id: fig3c-coherent-remapping
+  statement: When all the wall cues are replaced, heading cells remap coherently, each shifting
+    its preferred heading by about the same angle as the rest of the population in its
+    recording (V-test of the Delta phase offsets against 0 degrees, V = 25.6, p = 4.9e-6).
+  source: Results, Changing visual cues elicits coherent remapping in RSC neurons; Figure 3C
+  quote: changing contexts caused the population of heading cells to coherently remap, as
+    indicated by low Δ phase offsets (V66 = 25.6, p = 4.9 × 10−6
+  statistics:
+  - test: V-test for nonuniformity against 0 degrees
+    statistic: V66 = 25.6
+    p: 4.9e-6
+    n: 66 (the subscript of V, read as the number of neurons), 12 recordings over 4 mice
+  expected:
+  - quantity: V statistic
+    value: 25.6
+    tolerance: 2.56
+  criterion: The 12 remapping recordings (single-cue class in the code, RemappingExperiment).
+    Per neuron n, Delta phase offset = (pref A(n) - pref B(n)) minus the expected offset of the
+    other neurons of its recording, wrapped to +-180; circ_vtest against 0 over all neurons of
+    all recordings (Methods, Calculation of coherent remapping). Open, with readings, the
+    expected offset, (i) the median over the other neurons of their differences pref A - pref B
+    (Methods text) or (ii) the median of their pref A minus the median of their pref B (the
+    Methods equation); the cells, (a) heading-selective in both contexts, (b) in either; the
+    preferred heading, the peak of the trial-mean tuning curve or the code's 'fit' method.
+    Reproduced when a reading gives p < 0.05 with V > 0; every reading's V and n are reported.
+- id: fig4-axons-light-on-shape
+  statement: In the light-on condition with two symmetric cues, ADN axons in RSC show unimodal
+    heading tuning curves, while visual cortical (AM/PM) axons show bimodal tuning curves with
+    peaks about 180 degrees apart.
+  source: Results, The ADN and visual cortex send distinct information to RSC, paragraph 2;
+    Figure 4D, E
+  quote: In the light-on condition, ADN axons show a unimodal tuning curve, whereas visual
+    cortical axons show a bimodal tuning curve
+  criterion: The 17 ADN and 7 AM/PM axon recordings (AxonExperiment, three light/dark repeats).
+    Light-on tuning curves, cross-validated alignment on light-on trials. The paper's measure of
+    bimodality is the flip score (Methods). The axons shown are open, with readings, (a) axons
+    passing the heading-selection test with a two-term Gaussian; (b) all axons. Reproduced when,
+    under a reading, the flip score of the mean aligned light-on curve is below 0 for ADN and
+    above 0 for visual axons, and the mean flip score of single visual axons exceeds that of
+    ADN axons (two-sample KS test, p < 0.05, the paper's test for two distributions).
+- id: fig4-axons-light-off
+  statement: In the light-off condition ADN axons keep their heading tuning for several trials,
+    while visual cortical axons lose their tuning.
+  source: Results, The ADN and visual cortex send distinct information to RSC, paragraph 2;
+    Figure 4D, E legends
+  quote: In the light-off condition, ADN axons maintain their response for several trials,
+    whereas visual cortical axons lose their tuning
+  depends_on:
+  - fig4-axons-light-on-shape
+  criterion: Same recordings, axons and readings as fig4-axons-light-on-shape; light-off trials
+    aligned with the light-on shifts (Methods). The paper gives no test; the measure is the
+    paper's heading-selection test run on light-off trials only (the code's 'dark' option of
+    calculateHeadDirection), with a two-term Gaussian. Reproduced when the fraction of axons
+    selective in light-off is higher for ADN than for visual axons (two-sample comparison of
+    per-recording fractions; Fisher's exact test on the pooled counts as a variant), and the
+    mean aligned light-off curve of ADN axons peaks within 18 degrees (the decoder's accuracy
+    window) of the light-on peak bin while that of visual axons has a peak-to-trough range
+    under half of its light-on range. "For several trials" is not tested further.
+- id: figs5-rotation-direction
+  statement: The diversity of RSC responses (a second peak in light, as in visual axons, and a
+    single peak in the dark, as in ADN axons) persists regardless of the direction of chamber
+    rotation (bootstrapped KS test, p = 0.0094, 4 recordings over 2 mice).
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 1; Figure S5
+  quote: These responses persisted regardless of rotation direction (Figure S5, p = 0.0094,
+    bootstrapped KS-test, n = 4 recordings over 2 mice)
+  statistics:
+  - test: bootstrapped KS-test
+    p: 0.0094
+    n: 4 recordings over 2 mice
+  criterion: Figure S5, where the test is shown, was not read (supplement missing). The Methods
+    give the test (p is one minus the fraction of bootstrap iterations in which a two-sample KS
+    test passes at alpha 0.05) but not what is compared. Readings the text allows, (a) the
+    distribution of differences in preferred heading between clockwise and counterclockwise
+    rotation for heading-selective cells against the same differences with cells paired at
+    random (as the shuffles of Figures 2F and 3C); (b) the correlations of each cell's
+    clockwise and counterclockwise tuning curves against those of randomly paired cells.
+    Reproduced when a reading gives p < 0.05 with the real pairs closer than the random ones.
+    The number of bootstrap iterations is not given for this test; 1000, as for the decoding,
+    is the reading.
+- id: figs6-arena-control
+  statement: The diversity of RSC responses persists whether or not the mouse is in control of
+    the arena (bootstrapped KS test, p = 0.031, 7 recordings over 3 mice).
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 1; Figure S6
+  quote: or whether or not the animal was in control of the arena (Figure S6, 0.031,
+    bootstrapped KS-test, n = 7 recordings over 3 mice)
+  statistics:
+  - test: bootstrapped KS-test
+    p: 0.031
+    n: 7 recordings over 3 mice
+  criterion: As for figs5-rotation-direction, with animal-controlled against motor-controlled
+    rotation in place of the two directions. Figure S6 was not read (supplement missing), so
+    what is compared is open, with the readings (a) and (b) of figs5-rotation-direction.
+    Reproduced when a reading gives p < 0.05 with the real pairs closer than the random ones.
+- id: fig5-three-classes
+  statement: Clustering the Gaussian-fit coefficients of RSC somatic tuning curves in light-on
+    and light-off conditions gives an optimum of three functional classes (heading, landmark and
+    alignment cells), though the responses span a continuum.
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 1; Figure 5B; Methods, Clustering of RSC soma responses
+  quote: We found that the data were optimally clustered into three functional classes ...
+    although we note that the responses span a continuum
+  criterion: The 36 dual-cue RSC soma recordings over 6 mice; heading-selective cells only (two-
+    term Gaussian test of the opening comment), as the reviewer code clusters is_head_direction
+    cells and the Results speak of tuned cells. For each cell, the light-on and light-off
+    tuning curves are aligned (cross-validated, light-on shifts), rescaled together to [0, 1]
+    (code rowrescale on the concatenation) and each fitted with the two-term Gaussian (Methods,
+    eq. 4; code LightDarkExperiment.calculateTuningFits2); the features are a1, a2, c1, c2 of
+    both fits (8 values; Methods). Silhouette evaluation of Gaussian mixture models (Methods)
+    for k = 2, 3 and 4. The cells clustered are open, with readings, (a) heading-selective cells
+    only, as above (the Results give class shares "of the total number of tuned cells"); (b) all
+    cells (Methods, "all cells were fit with a sum of Gaussians"). Both are run. Reproduced when
+    the silhouette value at k = 3 exceeds those at k = 2 and k = 4 (a local maximum, Methods).
+    The reviewer code's fit (calculateTuningFits, on
+    unaligned curves centered on their peak) is a variant and is reported.
+- id: fig5-class-proportions
+  statement: 12.1% of RSC neurons are tuned in the dual-cue experiment; of these, landmark cells
+    are the plurality (33%), followed by alignment cells (28%) and heading cells (22%).
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 3; Figure 5C to E
+  quote: Of the total number of tuned cells (12.1 ± 1.1%), landmark cells made up the plurality
+    of cells (33 ± 3.5%), followed by alignment cells (28 ± 1.9%, mean ± s.e.m.), and heading
+    (22 ± 2.3%) cells
+  depends_on:
+  - fig5-three-classes
+  expected:
+  - quantity: tuned cells, percentage of all RSC neurons
+    value: 12.1
+    tolerance: 1.1
+    unit: percent
+  - quantity: landmark cells, percentage of tuned cells
+    value: 33
+    tolerance: 3.5
+    unit: percent
+  - quantity: alignment cells, percentage of tuned cells
+    value: 28
+    tolerance: 1.9
+    unit: percent
+  - quantity: heading cells, percentage of tuned cells
+    value: 22
+    tolerance: 2.3
+    unit: percent
+  criterion: Tolerances are the paper's s.e.m. Classes from a 3-component GMM on the features of
+    fig5-three-classes (the reviewer code fits it with 20 replicates and up to 1000
+    iterations, followed). Then, per the Methods, cells whose minimum Mahalanobis distance to the
+    component centroids is "significantly greater" go to a null cluster; archetypal light-on and
+    light-off curves are built from each component's mean coefficients (eq. 4, with b1 and b2 at
+    the code's pi/2 and 3pi/2); each cell goes to the class whose archetypes have the smallest
+    summed cosine distance to its two curves. Classes are named by their archetypes as in the
+    Results (heading, unimodal in light and dark; landmark, bimodal in light and absent in dark;
+    alignment, bimodal in light and unimodal in dark). Open, with readings, the outlier rule,
+    (a) squared Mahalanobis distance beyond the 95th percentile of a chi-square with 8 degrees of
+    freedom, (b) no outlier step (the reviewer code); the averaging, (i) mean over recordings,
+    (ii) mean over mice, (iii) pooled cells. The F-test degrees of freedom of Figure 5F to H
+    imply 332 heading, 522 landmark and 409 alignment cells (2n - 2), and 332 is the smallest
+    class in the decoding Methods; those counts are reported for comparison. The heat-map axis
+    labels of Figure 5, as extracted from the PDF text (the figure could not be viewed), read
+    332, 409 and 552 cells for the three classes and 1569 for Figure 5A; pooled, 332, 552 and
+    409 of 1569 are 21%, 35% and 26%, close to the reported shares, so 552 may be the landmark
+    count, which disagrees with the 522 implied by F(1,1042). Reproduced when a
+    reading puts all four values within tolerance with landmark > alignment > heading;
+    partially reproduced when the order holds but a value falls outside.
+- id: fig5e-alignment-peaks-coregistered
+  statement: In alignment cells the single light-off peak is always at the location of one of
+    the two light-on peaks, so landmark and heading responses are coregistered.
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 2; Figure 5E
+  quote: The light-off peak in these alignment cells was always at the same location as one of
+    the two peaks in the light-on condition
+  depends_on:
+  - fig5-class-proportions
+  criterion: The alignment cells of fig5-class-proportions; aligned light-on and light-off
+    tuning curves (light-on shifts applied to both, Methods). The paper gives no test; the
+    paper's test for angles clustered at a value is the V-test (Methods), which is used. Per
+    cell, the offset of the light-off peak bin from the nearer of the two light-on peaks (the
+    peak bin and the peak bin of the other half circle), wrapped to +-180; circ_vtest against 0.
+    Reproduced when p < 0.05 with V > 0; the share of cells with an offset within 18 degrees is
+    reported.
+- id: fig5f-heading-flip-unchanged
+  statement: Heading cells show no significant difference in flip score between light-on and
+    light-off conditions.
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 3; Figure 5F
+  quote: Heading cells showed no significant difference in flip score across conditions (F1,662 =
+    0.18, p = 0.67
+  statistics:
+  - test: F-test (mixed-effects model)
+    statistic: F(1,662) = 0.18
+    p: 0.67
+    n: heading cells (332, from the degrees of freedom)
+  depends_on:
+  - fig5-class-proportions
+  criterion: A claim of absence. Flip score (Methods, eq. 5; code Cue.calculateFlipScore) of each
+    heading cell's light-on and light-off tuning curve. The paper's test is an F-test on the
+    light condition in a (generalized) linear mixed-effects model with mouse as random effect
+    (Methods, Statistical information, mixed models control for cells within the same animal;
+    the residual df 2n - 2 fit one fixed effect and an intercept), run as fitlme-style flip ~
+    light + (1|mouse). Reproduced when p >= 0.05; not reproduced when p < 0.05. The difference
+    in mean flip score is reported either way, and a model with a random intercept per cell as
+    well is shown as a variant.
+- id: fig5gh-landmark-alignment-flip-drop
+  statement: Landmark and alignment cells have significantly lower flip scores in light-off
+    than in light-on (landmark F(1,1042) = 1062.5, p = 3.1e-161; alignment F(1,816) = 209.5,
+    p = 2.0e-42).
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 3; Figure 5G, H
+  quote: both landmark (F1,1042 = 1062.5, p = 3.1 × 10−161) and alignment (F1,816 = 209.5, p =
+    2.0 × 10−42) cells have significantly lower flip scores in the light-off than the light-on
+    condition
+  statistics:
+  - about: landmark cells, light-off against light-on flip score
+    test: F-test (mixed-effects model)
+    statistic: F(1,1042) = 1062.5
+    p: 3.1e-161
+    n: landmark cells (522, from the degrees of freedom)
+  - about: alignment cells, light-off against light-on flip score
+    test: F-test (mixed-effects model)
+    statistic: F(1,816) = 209.5
+    p: 2.0e-42
+    n: alignment cells (409, from the degrees of freedom)
+  depends_on:
+  - fig5-class-proportions
+  criterion: As fig5f-heading-flip-unchanged, for landmark and for alignment cells. Reproduced
+    when both classes have p < 0.05 with the light-off flip score lower; partially reproduced
+    when one does.
+- id: fig5i-axons-in-clusters
+  statement: Projected into the soma clusters' discriminant space, ADN axons fall mostly within
+    the heading cluster and visual axons mostly within the landmark cluster, with some overlap
+    with the alignment cluster.
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 4; Figure 5I
+  quote: finding that ADN axons and visual axons are mostly restricted to the boundaries of the
+    heading and landmark clusters, respectively (Fig. 5I), although there is some overlap with
+    the alignment cluster boundary
+  depends_on:
+  - fig5-class-proportions
+  - fig4-axons-light-on-shape
+  criterion: An LDA model trained on the soma features and their GMM classes (Methods,
+    Clustering of RSC soma responses) projects the axon features (same Gaussian fits, Methods,
+    Clustering of axonal responses) onto its first two discriminants; each soma class has a 95%
+    ellipse (Methods; read as the 95% region of a bivariate normal fitted to the class's
+    points). Axons as in fig4-axons-light-on-shape, readings (a) and (b). "Mostly" is read as
+    more than half. Reproduced when, under a reading, more than half of ADN axons lie inside the
+    heading ellipse and more than half of visual axons inside the landmark ellipse; partially
+    reproduced when only one holds. The shares inside the alignment ellipse are reported.
+- id: fig5k-visual-cue-only
+  statement: When only the visual cues rotate (no proprioceptive or somatosensory input), the
+    visual contributions to tuning are retained, but heading-cell responses are strongly
+    degraded.
+  source: Results, A functional class of RSC neurons coregisters visual and heading signals,
+    paragraph 4; Figure 5J, K
+  quote: We found that the visual contributions to tuning were retained in visual cue only
+    rotation, but the loss of proprioceptive and somatosensory information strongly degraded
+    the heading cell responses
+  depends_on:
+  - fig5-class-proportions
+  criterion: Neurons matched between a standard-rotation and a visual-cue-only recording (Figure
+    5K legend), classed in the standard recording. The paper gives neither the number of
+    recordings nor a measure or test. Readings, (a) the fraction of cells of each class that
+    pass the heading-selection test in the visual-only recording; (b) the peak-to-trough range of
+    the class's mean aligned light-on tuning curve (light-on shifts from the standard recording)
+    in visual-only relative to standard rotation. Reproduced when, under a reading, landmark
+    cells keep a bimodal light-on curve in visual-only rotation (flip score of the class mean
+    above 0) and heading cells lose more than landmark cells (lower fraction or lower relative
+    range). Blocked if the dataset holds no visual-cue-only recordings.
+- id: fig6a-population-light-on
+  statement: Decoding heading from all tuned RSC cells within single 100 ms frames is accurate in
+    the light-on condition despite the symmetric cues (mean decoder accuracy 0.82, 95% CI 0.78
+    to 0.86).
+  source: Results, Contributions of distinct classes to representation of heading, paragraph 1;
+    Figure 6A
+  quote: When sampling across all the classes, the heading network shows remarkable accuracy,
+    even in the presence of symmetric visual cues (mean decoder accuracy = 0.82, 95% CI = [0.78,
+    0.86]
+  statistics:
+  - test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.78
+      high: 0.86
+    n: 1000 bootstrap samples of 332 neurons
+  expected:
+  - quantity: mean decoder accuracy, all tuned cells, light-on
+    value: 0.82
+    tolerance: 0.04
+  depends_on:
+  - fig5-class-proportions
+  criterion: The decoding method of the opening comment, sampling from all three classes.
+    Tolerance is the half-width of the paper's 95% CI. Reproduced when a reading of the decoder
+    gives a mean within tolerance; every reading is reported.
+- id: fig6a-population-light-off
+  statement: In the light-off condition the decoder's accuracy from all tuned cells drops (mean
+    0.44, 95% CI 0.34 to 0.54; p = 7.6e-3 against light-on) but stays above chance.
+  source: Results, Contributions of distinct classes to representation of heading, paragraph 1;
+    Figure 6A, bottom
+  quote: When transitioning from light-on to light-off, there is a drop in the performance of
+    the decoder, although the performance remains above chance ... (mean decoder accuracy =
+    0.44, 95% CI = [0.34, 0.54], p = 7.6 × 10−3
+  statistics:
+  - test: bootstrapped t-test
+    p: 7.6e-3
+    n: 1000 bootstrapped samples
+  - test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.34
+      high: 0.54
+  expected:
+  - quantity: mean decoder accuracy, all tuned cells, light-off
+    value: 0.44
+    tolerance: 0.1
+  depends_on:
+  - fig6a-population-light-on
+  criterion: As fig6a-population-light-on, light-off trials. Above chance means the 95% interval
+    excludes chance (Methods), under either chance reading (0.18 or 0.10). Reproduced when, under
+    a decoder reading, the mean is within tolerance, the interval excludes chance and the
+    bootstrapped t-test of light-on against light-off gives p < 0.05 with light-off lower.
+- id: fig6b-heading-cells
+  statement: Heading cells alone decode heading accurately in both light-on (0.61, 95% CI 0.56 to
+    0.66) and light-off (0.44, 95% CI 0.36 to 0.52) conditions, with no significant difference
+    between them (p = 0.11).
+  source: Results, Contributions of distinct classes to representation of heading, paragraph 2;
+    Figure 6B, top
+  quote: We found that heading cells were able to accurately decode in both light-on (mean
+    decoder accuracy = 0.61, 95% CI = [0.56, 0.66]) and light-off conditions (mean decoder
+    accuracy = 0.44, 95% CI = [0.36, 0.52]), suggesting that they contribute to the heading
+    signal in both conditions (p = 0.11
+  statistics:
+  - test: bootstrapped t-test
+    p: 0.11
+    n: 1000 bootstrapped samples
+  - about: light-on accuracy
+    test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.56
+      high: 0.66
+  - about: light-off accuracy
+    test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.36
+      high: 0.52
+  expected:
+  - quantity: mean decoder accuracy, heading cells, light-on
+    value: 0.61
+    tolerance: 0.05
+  - quantity: mean decoder accuracy, heading cells, light-off
+    value: 0.44
+    tolerance: 0.08
+  depends_on:
+  - fig5-class-proportions
+  criterion: The decoding method of the opening comment on heading cells only. The values are
+    judged under each decoder reading; reproduced when a reading puts both within tolerance and
+    both intervals exclude chance. The absence of a light difference is judged on the paper's
+    bootstrapped t-test alone, not significant when p >= 0.05; the claim is not reproduced if p
+    < 0.05 under the reading that matches the values.
+- id: fig6b-landmark-cells
+  statement: Landmark cells decode heading very well in light-on (0.80, 95% CI 0.75 to 0.84) but
+    fall to chance in light-off (0.20, 95% CI 0.14 to 0.27; p = 8.0e-4).
+  source: Results, Contributions of distinct classes to representation of heading, paragraph 2;
+    Figure 6B, middle
+  quote: landmark cells have very high decoder performance in the light-on condition (mean
+    decoder accuracy = 0.80, 95% CI = [0.75, 0.84]), with an overrepresentation of decoder
+    errors at 180°, which immediately plummets to chance levels in the light-off condition (mean
+    decoder accuracy = 0.20, 95% CI = [0.14, 0.27]; p = 8.0 × 10−4
+  statistics:
+  - test: bootstrapped t-test
+    p: 8.0e-4
+    n: 1000 bootstrapped samples
+  - about: light-on accuracy
+    test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.75
+      high: 0.84
+  - about: light-off accuracy
+    test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.14
+      high: 0.27
+  expected:
+  - quantity: mean decoder accuracy, landmark cells, light-on
+    value: 0.80
+    tolerance: 0.05
+  - quantity: mean decoder accuracy, landmark cells, light-off
+    value: 0.20
+    tolerance: 0.07
+  depends_on:
+  - fig5-class-proportions
+  criterion: The decoding method on landmark cells only; tolerances from the paper's intervals
+    (the larger half-width). Reproduced when, under a decoder reading, both means are within
+    tolerance, the light-on against light-off p < 0.05, and the light-off interval includes
+    chance. Under the 0.10 chance reading the paper's own light-off interval excludes chance;
+    the outcome under each chance reading is reported.
+- id: fig6b-alignment-cells
+  statement: Alignment cells decode between heading and landmark cells, better in light-on (0.71,
+    95% CI 0.66 to 0.76) and fairly accurately in light-off (0.51, 95% CI 0.43 to 0.59), with no
+    significant difference (p = 0.54).
+  source: Results, Contributions of distinct classes to representation of heading, paragraph 2;
+    Figure 6B, bottom
+  quote: alignment cells show decoder performance that is between that of heading and landmark
+    cells, taking advantage of improved decoding from the visual cues in the light-on condition
+    (mean decoder accuracy = 0.71, 95% CI = [0.66, 0.76]), but retaining fairly accurate heading
+    in the light-off condition (mean decoder accuracy = 0.51, 95% CI = [0.43, 0.59], p = 0.54
+  statistics:
+  - test: bootstrapped t-test
+    p: 0.54
+    n: 1000 bootstrapped samples
+  - about: light-on accuracy
+    test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.66
+      high: 0.76
+  - about: light-off accuracy
+    test: bootstrap confidence interval
+    ci:
+      level: 0.95
+      low: 0.43
+      high: 0.59
+  expected:
+  - quantity: mean decoder accuracy, alignment cells, light-on
+    value: 0.71
+    tolerance: 0.05
+  - quantity: mean decoder accuracy, alignment cells, light-off
+    value: 0.51
+    tolerance: 0.08
+  depends_on:
+  - fig5-class-proportions
+  criterion: The decoding method on alignment cells only. Reproduced when, under a decoder
+    reading, both means are within tolerance, the light-on mean lies between those of heading
+    and landmark cells, and the light-off interval excludes chance. The absence of a light
+    difference is judged on the bootstrapped t-test alone (p >= 0.05); the claim is not
+    reproduced if p < 0.05 under the reading that matches the values.
+- id: fig6b-180-errors
+  statement: Decoding from landmark cells in light-on gives an overrepresentation of 180 degree
+    errors from the symmetric cues, while heading cells show no preponderance of 180 degree
+    errors.
+  source: Results, Contributions of distinct classes to representation of heading, paragraphs 1
+    and 2; Figure 6B
+  quote: As expected based on their tuning curves, heading cells did not exhibit a preponderance
+    of 180° errors, suggesting they do not represent visual information directly
+  depends_on:
+  - fig6b-heading-cells
+  - fig6b-landmark-cells
+  criterion: Light-on decoder errors of the class decoders, under each decoder reading. The paper
+    gives no measure; the measure is the share of frames with an absolute error within 18 degrees
+    of 180 (the paper's accuracy window, moved to 180), against its share of 0.10 under uniform
+    errors. Reproduced when that share exceeds 0.10 for landmark cells and is no more than 0.10
+    for heading cells.
+- id: fig6-heading-below-population
+  statement: In light-on, heading cells alone decode worse than the whole tuned population, so
+    alone they may not give an optimal representation of instantaneous heading.
+  source: Results, Contributions of distinct classes to representation of heading, paragraph 2;
+    Figure 6B, right (the text cites "Fig. 6C, right", but the class comparison is the right
+    panel of Figure 6B by its legend); Table S1
+  quote: Since their decoder performance is lower than the population in the light-on condition,
+    heading cells alone may be insufficient for ... providing an optimal representation of
+    instantaneous heading
+  depends_on:
+  - fig6a-population-light-on
+  - fig6b-heading-cells
+  criterion: Table S1, which holds the class comparisons (linear mixed-effects models, Figure 6
+    legend), was not read (supplement missing), so the model is open. Readings, (a) the 95%
+    bootstrap intervals of light-on accuracy for heading cells and for all tuned cells do not
+    overlap; (b) a linear mixed-effects model of per-trial light-on decoder error with class
+    (heading or total) as fixed effect and, as random intercept, (i) recording or (ii) mouse
+    (Statistical information, mixed models control for cells within the same animal) gives
+    p < 0.05 with heading cells worse. Reproduced when a reading holds under a decoder reading.
+checks:
+- date: 2026-10-23
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs5-rotation-direction. The statement said "RSC tuning persists"; the paper says the diversity of responses (visual-like and ADN-like) persisted. Statement narrowed to that.
+  - figs6-arena-control. Same change to its statement.
+  - fig5-three-classes. The criterion clustered heading-selective cells only, from the reviewer code; the Methods say "all cells were fit". Named the cells clustered as open, with readings (a) tuned cells and (b) all cells.
+  - fig5-class-proportions. Added the heat-map counts of Figure 5 as extracted from the PDF text (332, 409, 552 of 1569), which pooled give shares close to the reported ones, and noted that 552 disagrees with the 522 landmark cells implied by F(1,1042).
+  - fig6-heading-below-population. The source cited Figure 6B, right without saying that the text cites Fig. 6C, right; added that. Added mouse as a second reading of the random intercept, from the Statistical information.
+  - checker. Its one problem, p 0.0008 of fig6b-landmark-cells not found, is a format mismatch; the text prints "8.0 × 10−4", which matches.
+  - Open. The Supplementary Information (Figures S5, S6, Table S1) is not in the paper store, so what figs5-rotation-direction and figs6-arena-control compare, and the model of fig6-heading-below-population, rest on readings only.
+  - Open. The figures could not be viewed (no PDF renderer), so the class counts of Figure 5 (552 or 522 landmark cells) could not be settled.
+  - Open. The measures of fig1h-preferred-headings-tile, fig4-axons-light-off, fig5e-alignment-peaks-coregistered, fig5k-visual-cue-only and fig6b-180-errors are not given by the paper; the thresholds in their criteria are readings named as such, not the paper's.
+  - Open. The code repositories were not re-read in this check; the code details in the opening comment and criteria are taken as recorded.

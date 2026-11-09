@@ -1,0 +1,411 @@
+# Claims for Tian, Zhang, Du, Huang, Bizimana, Nishimura & Ai (2025), ACS Sensors 10(8)
+# 5826-5833, on dandiset 001559.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (open access, CC-BY 4.0), as served by Europe PMC
+# (PMC12351538), extracted text in paper/10.1021-acssensors.5c01093.txt: main text, Methods,
+# figure legends of Figures 1 to 5 and the Discussion. No PDF was supplied, so numbers and P
+# values printed only inside the figures could not be read. The Supporting Information PDF
+# (se5c01093_si_001.pdf; sequence alignment, Figure S1, brightness comparisons in Figure S2,
+# the HEK 293T spectrum in Figure S3, and Table S1) and Movies S1 to S3 were not in the text.
+# The claims that rest on them (lysate-brightness, cell-brightness, hek-spectrum,
+# table-s1-fold-gains) quote the main text and say what is missing. The findings this dandiset
+# holds (Figure 4) rest on the main text, the Figure 4 legend and the Methods only.
+#
+# Code: the paper links no analysis code. Its data statement only names Addgene plasmids
+# pcDNA3-eBRIC (#241800) and pAAV-hSyn-eBRIC (#241801). The dandiset description says it
+# includes "the python scripts used for analysis and for figure generation" of Figure 4.
+# Those are files of the dataset, which the reader may not open, so no code was read and
+# every method below comes from the paper. If the author finds that those scripts fix a
+# detail named here as open, that is a question for a reader.
+#
+# The dandiset ("In-vivo Cortical Recording for eBRIC") is described as holding the raw data
+# of Figure 4 only. The data of Figure 4, as the paper reports them: C57BL/6J mice (n = 6 in
+# the Methods; Figure 4D shows one representative mouse) with AAV-hSyn-eBRIC injected at four
+# sites in the whisker barrel cortex under a 4 mm craniotomy with a PDMS window, imaged at
+# least 3 weeks later under isoflurane (about 0.5% maintenance). Bioluminescence was recorded
+# through the objective of a two-photon microscope with the excitation laser blocked, on a
+# photomultiplier tube (Hamamatsu H10770B-50, 645/65 filter, home-built preamplifier) while
+# 2.5 mM DTZ was infused through a tail vein catheter at 25 uL/min. Two stimulating needle
+# electrodes (plus a ground) in the whisker pad, at two distinct locations, delivered 5 Hz
+# trains for 5 s at 2 mA and at 4 mA. Measured variable: the PMT bioluminescence signal over
+# time (arbitrary units), with stimulation times, electrode and current per trial. Also part
+# of Figure 4: two-photon fluorescence images of eBRIC expression (4x and 20x objectives,
+# FITC-dextran vessels) and laser speckle contrast images of blood flow during whisker pad
+# stimulation. The Figure 4D traces are smoothed with a 1-s moving average.
+#
+# The other figures (in vitro protein work, HeLa, HEK 293T, primary neurons, the BLA footshock
+# experiment in awake BALB/cJ mice) are not described as part of this dandiset; their claims
+# are listed to cover the paper's main findings.
+#
+# Details of Figure 4 the paper does not fix: the sampling rate of the PMT signal, the number
+# of trials per condition, the baseline and response windows, how a response is measured,
+# which electrode is "region 1", and any test. Criteria below name the readings the text
+# allows for each, and mark a choice as standard where it cannot change the outcome.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001559"
+paper: doi:10.1021/acssensors.5c01093
+claims:
+- id: fig4b-expression-healthy
+  statement: Two-photon fluorescence shows robust eBRIC expression in neuronal somata and
+    processes in the whisker barrel cortex, and the neurons look healthy and intact three
+    months after surgery.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4B
+  quote: Two-photon excited fluorescence revealed robust eBRIC expression
+    in neuronal somata and processes. Neurons appeared healthy and morphologically
+    intact even three months after surgery
+  criterion: The paper judges this by eye from images and gives no measure, so it can only be
+    checked qualitatively. Reproduced when the dandiset's two-photon fluorescence images show
+    labelled cell bodies and processes in the transduced region. Whether an image is from three
+    months after surgery is reported from the file metadata if it is given; health and
+    morphology are not judged.
+- id: fig4c-speckle-responsive-region
+  statement: Laser speckle contrast imaging shows that the region of viral expression responds
+    with blood flow changes to electrical stimulation of the whisker pad.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4C legend
+  quote: Laser speckle contrast imaging was used
+    to confirm that the viral expression was in a region that responded
+    to electrical stimulation of the whisker pad
+  criterion: The paper gives no measure or test for the speckle result. Reproduced when speckle
+    data are present for a mouse and show a change in speckle contrast (blood flow) over the
+    eBRIC-expressing region during whisker pad stimulation compared with before it, judged
+    from the images or traces as the paper shows them. No threshold is fixed by the paper;
+    the size of the change is reported. Blocked if the dandiset holds no speckle data.
+- id: fig4d-steady-baseline
+  statement: Infusing DTZ at 25 uL/min through the tail vein gives a steady level of baseline
+    bioluminescence during the recording.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D
+  quote: Infusion at 25 μL/min generated a steady level
+    of baseline bioluminescence
+  criterion: The paper gives no measure of steadiness. As a reading of "steady" that the
+    analysis can apply, for each recording the pre-stimulus baseline of each trial (the mean of
+    the signal in the 5 s before stimulus onset; 5 s matches the stimulus length, a standard
+    choice) is computed, and the change of baseline over the recording is compared with the
+    mean evoked response at 4 mA in the same recording (response as in fig4d-evoked-increase).
+    Reproduced when, in the mouse or mice tested, the baseline changes from the first to the
+    last trial by less than the mean 4 mA evoked response, so responses stand out from any
+    drift. The baseline over time is shown for every recording. This threshold is not the
+    paper's; the outcome is to be read with that in mind and the drift reported as numbers.
+- id: fig4d-evoked-increase
+  statement: Whisker pad stimulation (5 Hz for 5 s) at 4 mA and at 2 mA, through each of the
+    two electrodes, gives clear increases in cortical eBRIC bioluminescence.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D
+  quote: clear increases in bioluminescence
+    were observed with stimulation (4 and 2 mA) at both electrodes on
+    the whisker pad
+  criterion: From the Figure 4D legend, traces smoothed with a 1-s moving average and averaged
+    over trials per electrode and current. The response window, the baseline window and the
+    test are not given. The baseline is the 5 s before stimulus onset (a standard choice).
+    The response window has two readings the text allows, as the Results describe a delayed
+    peak for one electrode, (a) the 5-s stimulation period, (b) the stimulation period and the
+    5 s after it. Response per trial is the mean signal in the response window minus the
+    baseline mean. The paper reports no test, so the test has two readings, both one-sided
+    against zero on the trial responses, (1) a Wilcoxon signed-rank test, (2) a one-sample
+    t-test; an increase is counted when the mean response over trials is positive and the
+    test gives p < 0.05. With fewer than 5 trials in a condition, (1) cannot reach p < 0.05
+    and only (2) is applied. The windows (a, b) and tests (1, 2) are method details the paper
+    leaves open, so the outcome is the one they all give, and methods_underspecified when they
+    differ. Figure 4D shows one representative mouse that the paper does not identify, so
+    there are two readings of which mice must show it, (i) at least one mouse, as in the
+    figure, (ii) every mouse recorded with both currents and both electrodes; the claim is
+    reproduced if it holds under either. Reproduced when all four conditions (two electrodes
+    by two currents) show an increase; the notebook shows every combination.
+- id: fig4d-4ma-single-trials
+  statement: At 4 mA the response is strong enough to detect individual stimulation events, in
+    single trials without averaging.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D; Discussion,
+    paragraph 4
+  quote: with
+    the 4 mA condition producing a sufficiently strong response to detect
+    individual stimulation events
+  depends_on:
+  - fig4d-evoked-increase
+  criterion: The paper gives no detection rule. "Individual stimulation events" has two
+    readings, (a) single 5-s stimulation trials, as the Discussion puts it ("clear neural
+    responses to single whisker pad shocks in individual trials"), (b) single pulses of the
+    5 Hz train. Reading (b) cannot be resolved in traces smoothed with the 1-s moving average
+    of the legend; it is tested on the unsmoothed signal by averaging it at each pulse time
+    within a trial (event-triggered on the 0.2-s pulse period) and is shown as a variant. For
+    reading (a), with windows as in fig4d-evoked-increase, a trial is detected when its
+    response exceeds k times the standard deviation of its smoothed baseline, with k = 2 or
+    k = 3 named as the two readings of a threshold the paper does not give. The windows and
+    the threshold are method details the paper leaves open, so under reading (a) the outcome
+    is the one all windows and both thresholds give, and methods_underspecified when they
+    differ. Reproduced when most 4 mA trials (more than half) in the mouse or mice tested, as
+    in the two readings of fig4d-evoked-increase, are detected. The paper does not say that
+    2 mA trials fail to be detected, so the 2 mA fraction is reported and does not decide the
+    claim. Every fraction is reported.
+- id: fig4d-electrode-timing
+  statement: The responses to the two electrode locations differ in timing; stimulation of
+    region 1 gives a delayed peak, and region 2 an earlier rise after stimulation onset.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 1; Figure 4D
+  quote: Stimulation of region 1
+    resulted in a delayed peak response, while region 2 elicited an earlier
+    rise in signal following stimulation onset
+  depends_on:
+  - fig4d-evoked-increase
+  criterion: Per electrode and current, the trial-averaged trace smoothed with a 1-s moving
+    average (Figure 4D legend), baseline the 5 s before onset. Time to peak is the time of the
+    maximum within the stimulation period and the 5 s after it; time of rise is the first time
+    after onset at which the averaged trace exceeds half its peak above baseline (a standard
+    choice, not the paper's). The paper does not say which electrode is region 1, and the
+    colours of Figure 4D could not be read without the PDF; if the dataset labels the
+    electrodes 1 and 2, those labels are used, otherwise both assignments are shown and the
+    claim is tested as (a) one electrode has both the later peak and the later rise. The paper
+    does not say at which current; the readings are 4 mA, 2 mA, or both. Reproduced when
+    region 1 has the later time to peak and region 2 the earlier time of rise at either
+    current, in the representative mouse reading (at least one mouse) of
+    fig4d-evoked-increase; the values for every mouse are reported.
+- id: fig5-bla-footshock-increase
+  statement: In awake head-fixed mice, footshock (0.8 mA, 1 s, every 40 s, 13 trials) gives a
+    significant and consistent increase in BLA bioluminescence with eBRIC and sDTZ, larger than
+    in mice expressing the Ca2+-insensitive control BREP.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Figure 5B and 5C
+  quote: As expected,
+    we observed a significant and consistent increase in bioluminescence
+    in the eBRIC group in response to footshocks
+  criterion: As in the Figure 5C legend, each mouse's response averaged over its 13 trials, and
+    the eBRIC and BREP groups (4 and 3 mice) compared with an unpaired two-tailed t-test. The
+    P value is printed only in the figure and was not read. The response measure follows "an
+    established procedure" cited in the Methods and is not given in the text. Reproduced when
+    eBRIC responses exceed BREP responses at p < 0.05.
+- id: fig5-brep-minimal
+  statement: Mice expressing BREP show minimal to no change in bioluminescence under footshock.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Figure 5B and 5C
+  quote: As a negative control, we generated mice expressing BREP, a Ca 2+ -insensitive bioluminescent
+    protein, and observed minimal to no changes in bioluminescence under
+    electric footshock stimulation
+  criterion: The paper reports no test of the BREP change on its own and no threshold for
+    "minimal"; its only test is the eBRIC against BREP comparison of fig5-bla-footshock-increase.
+    The BREP group mean response over 13 trials and its s.d. (Figure 5C, 3 mice) are reported.
+    Absent a test or threshold from the paper, the claim is judged against the paper's own
+    comparison only, reproduced when the BREP response is smaller than the eBRIC response in
+    that test, and its size relative to zero is reported.
+  depends_on:
+  - fig5-bla-footshock-increase
+- id: fig5-10hz-imaging
+  statement: eBRIC with sDTZ allowed BLI of the awake mouse brain at 10 Hz (100 ms exposures
+    without intervals).
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Methods, BLI of BLA
+    Ca2+ Dynamics in Awake Mice
+  quote: The combination of eBRIC and sDTZ
+    allowed digitalization at a frequency of 10 Hz, which has not been
+    achieved in previous studies
+  expected:
+  - quantity: BLI frame rate
+    value: 10
+    tolerance: 1
+    unit: Hz
+- id: fig5-double-bric
+  statement: Under the same footshock condition, the eBRIC response in the BLA is nearly twice
+    that of BRIC in the authors' earlier experiments.
+  source: Results, In Vivo BLI of Ca2+ Dynamics in Live Mice, paragraph 2; Discussion,
+    paragraph 2
+  quote: Compared to prior experiments with BRIC
+    under the same stimulation condition, the response magnitude of eBRIC has nearly doubled
+  data: with_inputs
+  expected:
+  - quantity: ratio of eBRIC to BRIC footshock response magnitude
+    value: 2
+    tolerance: 0.2
+  criterion: The BRIC values come from "prior experiments with BRIC under the same stimulation
+    condition", which the text does not identify at this sentence. The candidates the paper
+    names are the BRIC paper, Tian et al. 2022, Nat. Commun. 13 3967
+    (doi:10.1038/s41467-022-31673-x), and the bioRxiv preprint on water-soluble luciferins
+    (doi:10.1101/2024.04.30.591933) listed in the paper's notes; which of them, if either,
+    holds BRIC footshock BLA data is for the author to establish. The eBRIC value comes from
+    Figure 5C. The ratio of the eBRIC group mean response to
+    the BRIC group mean response, each as the mean over mice of the 13-trial average.
+    "Nearly doubled" is read as the expected value 2 with 10% tolerance.
+- id: fig1a-lysate-18fold
+  statement: After three rounds of directed evolution, eBRIC shows an 18.2-fold Ca2+-induced
+    increase in bioluminescence (39 uM Ca2+ against no Ca2+) in bacterial cell lysates.
+  source: Results, Engineering and Characterization of eBRIC In Vitro, paragraph 2; Figure 1A
+  quote: Through three rounds of directed evolution, we successfully
+    generated a drastically enhanced BRIC (eBRIC) variant with an 18.2-fold
+    Ca 2+ -included bioluminescence increase in cell lysates
+  expected:
+  - quantity: eBRIC bioluminescence ratio, 39 uM Ca2+ against 0 Ca2+, lysate
+    value: 18.2
+    tolerance: 1.82
+- id: fig1b-mutations
+  statement: eBRIC carries five mutations from BRIC, two in teLuc, one in mScarlet-I and two in
+    the CaM-M13 region, and the two CaM-M13 mutations are mainly responsible for the larger
+    response.
+  source: Results, Engineering and Characterization of eBRIC In Vitro, paragraph 3; Figure 1A
+    to 1C
+  quote: During this process, five mutations were identified ... Notably, the two mutations in the CaM-M13 region are primarily
+    responsible for the observed response enhancement
+- id: fig1d-purified-response
+  statement: In purified protein, the response between 65 nM and 1.35 uM Ca2+ rises from
+    1.7-fold (BRIC) to 4.6-fold (eBRIC), and the change between 0 and 39 uM Ca2+ from 6.5-fold
+    to about 17-fold.
+  source: Results, Engineering and Characterization of eBRIC In Vitro, paragraph 4; Figure 1D
+  quote: From BRIC to eBRIC, the response between 65 nM and 1.35
+    μM of Ca 2+ increased from 1.7-fold to 4.6-fold, while
+    the overall Ca 2+ -induced change between 0 and 39 μM
+    of free Ca 2+ increased from 6.5-fold to ∼17-fold
+  expected:
+  - quantity: BRIC response, 65 nM to 1.35 uM Ca2+
+    value: 1.7
+    tolerance: 0.17
+  - quantity: eBRIC response, 65 nM to 1.35 uM Ca2+
+    value: 4.6
+    tolerance: 0.46
+  - quantity: BRIC response, 0 to 39 uM Ca2+
+    value: 6.5
+    tolerance: 0.65
+  - quantity: eBRIC response, 0 to 39 uM Ca2+
+    value: 17
+    tolerance: 1.7
+- id: fig1e-kd
+  statement: The apparent Kd of eBRIC for Ca2+ is 2.3 uM with a Hill coefficient of 1.3, from a
+    four-parameter Hill fit to bioluminescence at 600 nm (3 technical replicates); BRIC's was
+    133 nM.
+  source: Figure 1E legend; Results, Engineering and Characterization of eBRIC In Vitro,
+    paragraph 4
+  quote: A four-parameter Hill equation was used
+    to fit the data to determine the dissociation constant ( K d = 2.3 μM and Hill coefficient = 1.3)
+  expected:
+  - quantity: eBRIC apparent Kd
+    value: 2.3
+    tolerance: 0.23
+    unit: uM
+  - quantity: eBRIC Hill coefficient
+    value: 1.3
+    tolerance: 0.13
+  - quantity: BRIC apparent Kd
+    value: 133
+    tolerance: 13.3
+    unit: nM
+- id: lysate-brightness
+  statement: In bacterial lysates, eBRIC is dimmer than BRIC in the Ca2+-free state and brighter
+    in the Ca2+-bound state.
+  source: Results, Engineering and Characterization of eBRIC In Vitro, paragraph 2; Figure S2
+  quote: Compared to BRIC, eBRIC displayed reduced brightness
+    in the Ca 2+ -free state but enhanced brightness in the Ca 2+ -bound state
+  criterion: Figure S2 is in the Supporting Information, which was not in the text read, so
+    its values and any test are unknown. Judged on the direction of the two differences only.
+- id: fig2b-hela-5fold
+  statement: In HeLa cells stimulated with 20 uM histamine, eBRIC reports Ca2+ oscillations,
+    and its maximal change (dBL/BL0) is nearly 5-fold that of BRIC (33 eBRIC and 34 BRIC cells,
+    unpaired two-tailed t-test).
+  source: Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons,
+    paragraph 1; Figure 2A and 2B
+  quote: Comparing this to BRIC
+    at identical conditions, the magnitude of the change (ΔBL/BL 0 ) was nearly 5-fold higher
+  expected:
+  - quantity: ratio of mean eBRIC to mean BRIC maximal dBL/BL0, HeLa
+    value: 5
+    tolerance: 0.5
+  criterion: As in the Figure 2B legend, the maximal dBL/BL0 of each cell after histamine, with
+    baselines corrected for monoexponential decay, compared between 33 eBRIC and 34 BRIC cells
+    by an unpaired two-tailed t-test. The P value is printed only in the figure and was not
+    read, and the text claims only the fold difference, so the test is reported and does not
+    decide the claim. Reproduced when the ratio of means is within tolerance.
+- id: fig2c-hek-3p5fold
+  statement: In HEK 293T cells, 10 uM acetylcholine gives a 3.5-fold (dBL/BL0) eBRIC
+    bioluminescence increase (20 cells).
+  source: Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons,
+    paragraph 1; Figure 2C
+  quote: We observed a robust 3.5-fold
+    (ΔBL/BL 0 ) bioluminescence increase
+  expected:
+  - quantity: eBRIC dBL/BL0, HEK 293T, acetylcholine
+    value: 3.5
+    tolerance: 0.35
+  criterion: The Figure 2C legend shows traces of 20 cells as mean and s.d. and does not say
+    how the 3.5-fold value is taken, so two readings, (a) the peak dBL/BL0 of the mean trace,
+    (b) the mean over cells of each cell's maximal dBL/BL0, as in Figures 2B and 3B. The claim
+    is reproduced if either is within tolerance.
+- id: fig3-neurons-7p3fold
+  statement: In cultured primary mouse neurons, high K+ depolarization gives a 7.3-fold
+    (dBL/BL0) increase in eBRIC bioluminescence, 5.6 times the response of BRIC (24 eBRIC and 17
+    BRIC cells, unpaired two-tailed t-test).
+  source: Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons,
+    paragraph 1; Figure 3B
+  quote: high K + depolarization induced a 7.3-fold increase (ΔBL/BL 0 ) in eBRIC bioluminescence, resulting in a 5.6-fold increase
+    in responsiveness from BRIC
+  expected:
+  - quantity: eBRIC maximal dBL/BL0, neurons
+    value: 7.3
+    tolerance: 0.73
+  - quantity: ratio of eBRIC to BRIC maximal dBL/BL0, neurons
+    value: 5.6
+    tolerance: 0.56
+  criterion: As in the Figure 3B legend, the maximal dBL/BL0 of each cell, 24 eBRIC and 17 BRIC
+    cells, compared by an unpaired two-tailed t-test (P value only in the figure, not read;
+    the text claims only the fold values, so the test is reported and does not decide the
+    claim). The 7.3-fold value is read as the mean over eBRIC cells of the maximal dBL/BL0.
+    Reproduced when both values are within tolerance.
+- id: cell-brightness
+  statement: In HeLa cells eBRIC is dimmer than BRIC in the Ca2+-free state and about twice as
+    bright after histamine stimulation, with a similar trend in primary neurons.
+  source: Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons,
+    paragraph 2; Figure S2
+  quote: eBRIC
+    exhibited reduced brightness in the Ca 2+ -free state but
+    demonstrated approximately twice the brightness of BRIC after stimulation.
+    A similar trend was observed in primary neurons
+  expected:
+  - quantity: ratio of eBRIC to BRIC brightness after histamine, HeLa
+    value: 2
+    tolerance: 0.2
+  criterion: Figure S2 was not in the text read, so how brightness was measured is unknown.
+    Judged on the ratio and the direction of the Ca2+-free difference.
+- id: hek-spectrum
+  statement: The emission spectrum of eBRIC in HEK 293T cells closely resembles that in lysates
+    and as purified protein, so expression in mammalian cells does not change BRET efficiency.
+  source: Results, Characterization of eBRIC in Cultured Mammalian Cells and Primary Neurons,
+    paragraph 2; Figure S3
+  quote: The spectral profile closely resembled that of eBRIC in lysates and as a purified protein, suggesting
+    that expression in mammalian cells does not alter the BRET efficiency
+  criterion: Figure S3 was not in the text read; the paper's measure of resemblance is
+    unknown.
+- id: table-s1-fold-gains
+  statement: In physiologically stimulated live cells, eBRIC is 4.5- to 5.6-fold more responsive
+    than BRIC and 7.4- to 18-fold more responsive than Orange CaMBIs.
+  source: Discussion, paragraph 1; Table S1
+  quote: Compared to Orange CaMBIs, we
+    gained 7.4- to 18-fold increase in Ca 2+ responsiveness
+    using the new eBRIC Ca 2+ sensor in physiologically stimulated
+    live cells ( Table S1 ). Compared to our
+    previously reported BRIC sensor, eBRIC
+    is 4.5- to 5.6-fold more responsive
+  data: with_inputs
+  expected:
+  - quantity: eBRIC against BRIC responsiveness, lower bound
+    value: 4.5
+    tolerance: 0.45
+  - quantity: eBRIC against BRIC responsiveness, upper bound
+    value: 5.6
+    tolerance: 0.56
+  - quantity: eBRIC against Orange CaMBIs responsiveness, lower bound
+    value: 7.4
+    tolerance: 0.74
+  - quantity: eBRIC against Orange CaMBIs responsiveness, upper bound
+    value: 18
+    tolerance: 1.8
+  criterion: Table S1 is in the Supporting Information, which was not in the text read. The
+    Orange CaMBI values come from the literature (Oh et al. 2019, Nat. Chem. Biol. 15 433,
+    doi:10.1038/s41589-019-0256-z); which cells and stimuli enter each ratio is given only in
+    Table S1. The range holds when each bound is within the range widened by 10% of each bound.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4d-evoked-increase. The criterion passed the claim under any combination of response window and test, but these are method details the paper leaves open, so the outcome must be the one all of them give (protocol, Reader step 3). Now only the reading of which mice is an either-or. Added a one-sample t-test as a second reading of the test, since the paper gives none and a signed-rank test cannot reach p < 0.05 with fewer than 5 trials.
+  - fig4d-4ma-single-trials. Same correction for windows and the k = 2 or 3 threshold. Removed the requirement that the 4 mA fraction exceed the 2 mA fraction, which the paper does not state; the 2 mA fraction is now reported only.
+  - fig5-brep-minimal. A claim of absence had no criterion. Added one that says the paper gives no test of BREP alone and judges it on the paper's eBRIC against BREP test only.
+  - fig5-double-bric. The criterion named Tian et al. 2022 as the source of the BRIC values, which the paper does not say. Now names that paper and the bioRxiv preprint listed in the paper's notes as the candidates and leaves the choice open.
+  - fig2b-hela-5fold. Removed the p < 0.05 condition; the text claims only the near 5-fold difference and the P value in the figure was not read. The test is reported.
+  - fig3-neurons-7p3fold. Same change; also said that 7.3 is read as the mean over cells of maximal dBL/BL0, as in the Figure 3B legend.
+  - fig2c-hek-3p5fold. Added a criterion naming the two readings of the 3.5-fold value (peak of the mean trace, or mean of per-cell maxima), since the legend does not fix it.
+  - Open. fig4d-steady-baseline uses a threshold (baseline drift smaller than the mean 4 mA response) and a 5-s baseline window that are not the paper's; the paper gives no measure of steadiness, so any test of this claim rests on such a choice.
+  - Open. fig4d-4ma-single-trials uses "more than half of trials" and k times the baseline s.d.; fig4d-electrode-timing uses a half-peak rise time and a peak window of the stimulation period plus 5 s. None is in the paper.
+  - Open. No PDF or Supporting Information was available, so P values printed in Figures 2B, 3B and 5C, the electrode colours of Figure 4D, Figures S1 to S3 and Table S1 were not read, and paragraph numbers in the sources could not be checked against the typeset layout.

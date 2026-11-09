@@ -1,0 +1,1207 @@
+# Claims for Vinograd, Nair, Kim, Linderman & Anderson (2024), "Causal evidence of a line
+# attractor encoding an affective state", Nature 634, 910-918, on dandiset 001037.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (open access, corrected publication 2025) as served by
+# Europe PMC (PMC11499281): main text, Methods, the legends of Figures 1 to 5 and of Extended
+# Data Figures 1 to 12. The supplementary information is a Reporting Summary only; no result
+# rests on it. No PDF was supplied, so figure panels were not read; findings shown only in a
+# panel are taken from its legend and the Results.
+#
+# Code read. The paper links only the rSLDS library, github.com/lindermanlab/ssm (read at
+# commit eb6c8aa), which has no analysis of this paper. The dandiset's description links the
+# authors' sample code, github.com/neuralcomputation/hypothalamic-dynamics (read at commit
+# 28fee70; its example data files were not opened). It is ranked below the Methods. It fixes:
+# the time constant of an rSLDS eigenvalue as abs(1/log(abs(lambda))) divided by the frame
+# rate, in seconds (the Methods give 1/log(lambda) in frames); the projection of a session
+# onto x1 or x2 as the stored rSLDS factor weights (rSLDS_factor_1, rSLDS_factor_2) times the
+# z-scored activity, smoothed with a moving average and baseline-subtracted over the window
+# stored per session in ProjectionMetadata (projection_factor names which factor is the
+# integration (x1) and which the "novel" (x2) projection); photostimulation pulse onsets at
+# frames 150, 360, 570 and 780 (10 Hz) for the 20 s ISI sessions and 140, 240, 340 and 440 for
+# the 8 s ISI sessions; observation traces aligned so that BALB/c entry falls at 50 s and
+# baseline-subtracted over their first 100 frames; and, for 2P observation fits, an rSLDS of
+# 2 states and 2 latent dimensions (l2_penalty_A 820, l2_penalty 100, alpha 0.9, 150
+# Laplace-EM iterations), and for miniscope fits 3 states and 2 dimensions (l2_penalty_A 10,
+# l2_penalty 500, alpha 0.5, 100 iterations). The notebooks call these "representative"
+# settings, so where a claim needs a new fit the number of states is also taken as the Methods
+# give it (fivefold cross-validation), and both are readings.
+#
+# Data the paper used. Male Esr1-Cre mice expressing jGCaMP7s in VMHvl Esr1 neurons.
+# (1) Microendoscope (miniscope) imaging at 30 Hz, downsampled to 10 Hz, CNMF-E traces, in 5
+# freely behaving mice, each recorded engaging in aggression (a BALB/c intruder introduced
+# twice into the home cage) and observing aggression (a Swiss Webster (SW) demonstrator
+# attacking BALB/c intruders), in random order, with a 5 min solitary baseline at the start of
+# each session; annotations of sniff and attack, observed attack, intruder entries and
+# removals (Extended Data Figs 1 to 4). (2) Two-photon imaging at 10 Hz through a GRIN lens in
+# 9 head-fixed mice on a treadmill observing aggression (SW resident and BALB/c intruders);
+# rSLDS fits identify x1 (integration) and x2 neurons (Fig. 1). (3) After removal of the
+# demonstrators, holographic photostimulation (ChRmine) in the same preparation: groups of 5
+# x1 neurons (n = 8 mice) or 5 x2 neurons (n = 7) with four pulses at 20 s ISI, and 8 s ISI
+# (n = 7); 1 mW against 5 mW per neuron; x1 stimulation followed by x2 stimulation; random
+# non-weighted neurons (n = 5); unitary x1 neurons (25 neurons, 8 mice) and unitary x2
+# neurons (18 neurons, 7 mice) with imaging of non-targeted neurons (Figs 2, 3 and 5,
+# Extended Data Figs 6 to 10, 12). Also: motion SVDs from face video of the head-fixed mice
+# (Extended Data Fig. 5) and a calibration of photostimulation spatial resolution on 17
+# reference cells (Extended Data Fig. 6). Figure 4 is a simulation of a spiking network and
+# uses no recorded data except the 36% connection density measured in Fig. 4a.
+#
+# Method details used by several criteria, from the paper unless said otherwise:
+# - Tests. The Methods say all tests are two-tailed and nonparametric. The Mann-Whitney
+#   p-values at n = 5 (0.0079) and n = 4 (0.0286) are the smallest exact two-sided values of
+#   the unpaired test, which a paired signed-rank test cannot reach, so a Mann-Whitney test is
+#   run unpaired even where the Methods say "binary paired samples". Some other printed values
+#   are exact two-sided values of the paired Wilcoxon signed-rank test and of no exact
+#   unpaired Mann-Whitney test: 0.125 and 0.1875 (printed 0.187, 0.188) at n = 5, 0.8125 at
+#   n = 7 (Extended Data Figs 3e, 3f, 4h, 5e); 0.0078 at n = 9 (Fig. 1m) fits both. For those
+#   claims both readings (unpaired Mann-Whitney, paired signed-rank over mice) are run. Kruskal-Wallis tests use
+#   one value per mouse and condition, followed by Dunn's correction, as the legends name them.
+# - Projections onto x1 and x2 follow the sample code (above).
+# - ISI windows (W). The legends compare "the average z-scored activity ... during the
+#   baseline or ISIs" without giving the windows. Baseline is the period before the first
+#   pulse. The readings are (Wa) each ISI from the end of the 2 s pulse to the next onset (for
+#   the last pulse, the same length after it), and (Wb) each ISI from one onset to the next.
+# - Dunn comparisons (C). The legends print three or four p-values per panel without saying
+#   which pairs they compare. The readings are (Ca) each ISI against baseline and (Cb) each
+#   ISI against the one before it (the first against baseline).
+# - Pulse parameters. The Results give "2 s, 20 Hz, 5 mW" and the Methods "10 Hz, 2 s, 10 ms
+#   pulse width". The attempt takes the pulse timing from the stored stimulation frames.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001037"
+paper: doi:10.1038/s41586-024-07915-x
+claims:
+# ---------------------------------------------------------------------------------------
+# Freely behaving mice, miniscope (Extended Data Figs 1 to 4)
+- id: ed1n-engaging-x1-slower
+  statement: In freely behaving mice engaging in aggression, rSLDS fits show an integration
+    dimension x1 with a longer time constant than the orthogonal dimension x2, an approximate
+    line attractor.
+  source: Extended Data Fig. 1n and 1o; Results, Line attractor for observing aggression, paragraph 1
+  quote: revealed an approximate line attractor under both conditions, exhibiting ramping and
+    persistent activity aligned and maintained across both performed and observed attack sessions
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0079
+    n: 5 mice
+  criterion: For each mouse, an rSLDS with 2 latent dimensions fit to the engaging session
+    (number of states by fivefold cross-validation, Methods, or 3 states with the sample
+    code's settings; both readings run). The cvR2 of each fit is reported; no mouse is
+    excluded by the Methods' 70% rule, since the paper reports n = 5 in both conditions while
+    the mean observation cvR2 it gives (67.2%) is below 70%. Time constants from the eigenvalues of each state's dynamics matrix as the sample code
+    computes them; x1 is the dimension with the larger time constant in the state that holds
+    the slow dynamics (the state with the largest time constant). Reproduced when the x1 time
+    constants exceed the x2 time constants across the 5 mice by a two-tailed unpaired
+    Mann-Whitney test at p < 0.05. The line attractor score, log2 of the largest over the
+    second largest time constant (Methods), is reported per mouse.
+- id: ed1p-observing-x1-slower
+  statement: In the same mice observing aggression, rSLDS fits also show an x1 dimension with a
+    longer time constant than x2.
+  source: Extended Data Fig. 1p and 1q; Results, Line attractor for observing aggression, paragraph 1
+  quote: revealed an approximate line attractor under both conditions
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0079
+    n: 5 mice
+  criterion: As ed1n-engaging-x1-slower, on the observation sessions.
+- id: ed1m-x1-observe-attack-vs-sniff
+  statement: In freely behaving mice, average x1 activity differs between sniffing the SW mouse
+    and observing the SW mouse attack a BALB/c intruder.
+  source: Extended Data Fig. 1m
+  quote: Average activity in the x 1 dimension during sniffing of the SW mouse, vs observing the SW
+    mouse a BALB\c intruder (n = 4 mice, *p = 0.0286, Two-tailed Mann Whitney U -test
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0286
+    n: 4 mice
+  depends_on:
+  - ed1p-observing-x1-slower
+  criterion: The legend is garbled and the panel was not read, so the direction is not fixed
+    from the text. Per mouse, the mean of the x1 projection of the observation session over
+    frames annotated as sniffing the SW mouse and over frames annotated as observing attack.
+    Reproduced when a two-tailed unpaired Mann-Whitney test over mice gives p < 0.05; the
+    direction is reported. The legend's n of 4 (of 5 mice) is not explained; all mice with
+    both annotations are used and the count is reported.
+- id: ed3c-x1-activity-observe-vs-engage
+  statement: The activity of x1 neurons during observed attack bouts does not differ from their
+    activity during engaged attack.
+  source: Extended Data Fig. 3c
+  quote: comparison of the activity during observing attack bouts and engaging in attack (n = 5 mice,
+    p = 0.42, Two-tailed Mann-Whitney U -test
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.42
+    n: 5 mice
+  depends_on:
+  - ed1n-engaging-x1-slower
+  - ed1p-observing-x1-slower
+  criterion: A claim of absence, judged on the paper's test. Per mouse, the mean activity of the
+    x1 neurons of each condition during attack bouts (observed or engaged). Reproduced when a
+    two-tailed Mann-Whitney test over mice gives p >= 0.05; not reproduced when p < 0.05. The
+    difference is reported either way. Which neurons are x1 neurons is not fixed beyond the
+    rSLDS weights; the readings are the five neurons with the largest absolute x1 weight (as
+    in Fig. 1i) and the neurons the dataset marks as x1, if it does.
+- id: ed3e-achw-full-session
+  statement: Over the full interaction, autocorrelation half-widths of x1 neurons are similar
+    when observing (25 +/- 0.8 s) and engaging in aggression (20 +/- 1.7 s).
+  source: Extended Data Fig. 3e
+  quote: "mean achw during observation: 25 ± 0.8s, mean achw during engagement: 20 ± 1.7s, n=5 mice,
+    p = 0.125"
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.125
+    n: 5 mice
+  expected:
+  - quantity: mean ACHW of x1 neurons, observation
+    value: 25
+    tolerance: 0.8
+    unit: s
+  - quantity: mean ACHW of x1 neurons, engagement
+    value: 20
+    tolerance: 1.7
+    unit: s
+  depends_on:
+  - ed1n-engaging-x1-slower
+  - ed1p-observing-x1-slower
+  criterion: Autocorrelation per neuron as in Methods equations 7 and 8 (the sample code's
+    autocorr_matlab). The half-width is not defined beyond its name; the reading is the first
+    lag at which the autocorrelation falls to 0.5 or below, in seconds at 10 Hz. Per mouse,
+    the mean over x1 neurons (readings of x1 neurons as in ed3c). The "full interaction" is
+    not bounded in the paper; readings are the whole session and the span from the first
+    intruder entry to the last removal. Expected values within tolerance, and, as a claim of
+    absence, a two-tailed test over mice with p >= 0.05, run as an unpaired Mann-Whitney test
+    and as a paired signed-rank test (header, Tests; the printed 0.125 is an exact
+    signed-rank value).
+- id: ed3f-achw-after-removal
+  statement: Aligned to removal of the last intruder, autocorrelation half-widths of x1 neurons
+    are similar when observing (14 +/- 1 s) and engaging (11 +/- 1.6 s).
+  source: Extended Data Fig. 3f
+  quote: "mean achw during observation: 14 ± 1s, mean achw during engagement: 11 ± 1.6s, n = 5 mice,
+    p = 0.187"
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.187
+    n: 5 mice
+  expected:
+  - quantity: mean ACHW of x1 neurons after last intruder removal, observation
+    value: 14
+    tolerance: 1
+    unit: s
+  - quantity: mean ACHW of x1 neurons after last intruder removal, engagement
+    value: 11
+    tolerance: 1.6
+    unit: s
+  depends_on:
+  - ed3e-achw-full-session
+  criterion: As ed3e-achw-full-session, on activity from the removal of the last intruder to the
+    end of the session (the paper does not give the window's end; the session end is the only
+    reading the legend allows), with both test readings (the printed 0.187 is the exact
+    signed-rank value 0.1875 at n = 5).
+- id: ed3g-decode-observed-attack
+  statement: A decoder trained on x1 activity during observation separates observed attack bouts
+    from non-attack bouts better than shuffled controls.
+  source: Extended Data Fig. 3g
+  quote: "A SVM decoder was trained on data from integration dimension activity to separate bouts of
+    observing attack from non attack bouts. Right: Quantification of the decoder accuracy performance
+    (n = 5 mice, p = 0.0079"
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0079
+    n: 5 mice
+  depends_on:
+  - ed1p-observing-x1-slower
+  criterion: As the Methods describe (Decoding behaviour from integration dimension). Attack
+    bouts separated by less than 5 s merged into trials, classes balanced; a one-dimensional
+    threshold on the normalized x1 signal fit by a linear SVM on training frames and scored on
+    held-out frames; shuffles assign the behaviour labels randomly to bouts, 20 times, and
+    1,000 times per mouse for the significance test (Methods). The Methods report accuracy
+    "on data from all other trials for each mouse" without giving the split further; the
+    readings are training on one trial and testing on all others, leave-one-trial-out, and
+    fivefold over trials. Reproduced when decoder accuracy exceeds shuffled accuracy across mice by a
+    two-tailed Mann-Whitney test at p < 0.05.
+- id: ed3h-decode-engaged-from-observed
+  statement: The decoder trained on observing attack decodes engaged attack from x1 activity
+    better than shuffled data, so x1 encodes a similar variable in both conditions.
+  source: Extended Data Fig. 3h; Results, Line attractor for observing aggression, paragraph 1
+  quote: could be reliably used to decode from held-out data instances of both observation of and
+    engagement in attack, suggesting that this dimension encodes a similar internal state variable
+    under both conditions
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0079
+    n: 5 mice
+  depends_on:
+  - ed3g-decode-observed-attack
+  criterion: The decoder of ed3g-decode-observed-attack applied to the engaging session's x1
+    signal (frames of attack against all others); the paper does not say whether the engaging
+    session is projected with the observation model's weights or its own; both readings run.
+    Reproduced when accuracy exceeds that of the shuffled decoder across mice by a two-tailed
+    Mann-Whitney test at p < 0.05.
+- id: ed4c-x1-neuron-overlap
+  statement: Around 70% of the neurons that contribute to the line attractor overlap between
+    observing and engaging in aggression.
+  source: Extended Data Fig. 4c; Results, Line attractor for observing aggression, paragraph 1
+  quote: suggesting that a highly overlapping set of neurons (70%) contributes to line-attractor
+    dynamics during observing or engaging in attack
+  expected:
+    quantity: overlap of x1 neurons between conditions, mean over 5 mice
+    value: 70
+    tolerance: 7
+    unit: percent
+  depends_on:
+  - ed1n-engaging-x1-slower
+  - ed1p-observing-x1-slower
+  criterion: The paper does not say how a neuron is counted as contributing, or the
+    denominator. Readings for contributing are (a) the top five neurons by absolute weight, as
+    in Fig. 1i, and (b) the neurons the dataset marks as x1 neurons, if it does. Readings for
+    the overlap are the shared fraction of (i) the observation set and (ii) the engagement set.
+    Reproduced when one reading gives a mean within tolerance.
+- id: ed4d-weight-dot-product
+  statement: The x1 weight vector during observation is more aligned with the x1 weight vector
+    during engagement than with the x2 weight vector.
+  source: Extended Data Fig. 4d
+  quote: rSLDS weights of the x 1 dimension during observation were compared to model weights of the x
+    1 and x 2 dimensions during engagement using a dot product of the two weight vectors. (n = 5
+    mice, ***p = 0.0079
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0079
+    n: 5 mice
+  depends_on:
+  - ed1n-engaging-x1-slower
+  - ed1p-observing-x1-slower
+  criterion: Per mouse, the dot product of the observation x1 weight vector with the engagement
+    x1 vector and with the engagement x2 vector, over neurons present in both sessions. The
+    paper does not say whether vectors are normalized or signs aligned; the readings are the
+    raw dot product and the absolute dot product of unit vectors. Reproduced when x1-x1
+    exceeds x1-x2 across mice by a two-tailed Mann-Whitney test at p < 0.05 under one reading.
+- id: ed4g-x2-more-spontaneous
+  statement: During the solitary baseline, x2 neurons show more frequent spontaneous calcium
+    transients than x1 neurons (2.3 against 1.6 events).
+  source: Extended Data Fig. 4g; Results, Line attractor for observing aggression, paragraph 2
+  quote: we did see a slightly but significantly higher frequency of spontaneous calcium transients
+    in x 2 neurons
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.012
+    n: 5 mice
+  expected:
+  - quantity: transient frequency of x1 neurons at baseline
+    value: 1.6
+    tolerance: 0.2
+    unit: events
+  - quantity: transient frequency of x2 neurons at baseline
+    value: 2.3
+    tolerance: 0.2
+    unit: events
+  depends_on:
+  - ed1n-engaging-x1-slower
+  - ed1p-observing-x1-slower
+  criterion: A transient is a crossing above 1.5 standard deviations of the z-scored activity
+    (legend) during the 5 min baseline at the start of the session (Methods, Behaviour
+    annotations). The paper does not say per what time the frequency is, which session's
+    baseline, or which model's x1 and x2 neurons are used; readings are events per baseline
+    and per minute, and the engaging and observing sessions' baselines and models. Reproduced
+    when x2 exceeds x1 across mice by a two-tailed Mann-Whitney test at p < 0.05; the values
+    are compared with the expected ones under each reading.
+- id: ed4hi-amplitude-tau-similar
+  statement: Baseline transient amplitude (0.58 against 0.71 z) and decay constant (1.7 against
+    2.3 s) do not differ between x1 and x2 neurons.
+  source: Extended Data Fig. 4h and 4i; Results, Line attractor for observing aggression, paragraph 2
+  quote: We did not detect a difference in amplitude or decay constant (tau) between x 1 and x 2
+    neurons
+  statistics:
+  - about: amplitude, x1 against x2
+    test: two-tailed Mann-Whitney U-test
+    p: 0.188
+    n: 5 mice
+  - about: decay constant, x1 against x2
+    test: two-tailed Mann-Whitney U-test
+    p: 0.34
+    n: 5 mice
+  expected:
+  - quantity: mean transient amplitude, x1
+    value: 0.58
+    tolerance: 0.04
+    unit: z-score
+  - quantity: mean transient amplitude, x2
+    value: 0.71
+    tolerance: 0.08
+    unit: z-score
+  - quantity: mean decay constant, x1
+    value: 1.7
+    tolerance: 0.6
+    unit: s
+  - quantity: mean decay constant, x2
+    value: 2.3
+    tolerance: 0.4
+    unit: s
+  depends_on:
+  - ed4g-x2-more-spontaneous
+  criterion: A claim of absence, judged on the paper's test, two-tailed over mice for each
+    measure, run as an unpaired Mann-Whitney test and as a paired signed-rank test (header,
+    Tests; the printed 0.188 is the exact signed-rank value 0.1875 at n = 5); reproduced when
+    neither measure gives p < 0.05. Transients as in
+    ed4g-x2-more-spontaneous. The decay constant fit is not described; the reading is an
+    exponential fit to the mean transient from its peak.
+# ---------------------------------------------------------------------------------------
+# Head-fixed 2P observation (Figure 1)
+- id: fig1e-2p-x1-slower
+  statement: In head-fixed mice observing aggression, rSLDS fits to 2P data show an x1
+    dimension with longer time constants than x2.
+  source: Figure 1e; Results, Line attractor for observing aggression, paragraph 4
+  quote: during observation of aggression by the head-fixed mice, rSLDS analysis identified an
+    integration dimension with slow dynamics ( x 1 ) aligned to an approximate line attractor, and an
+    orthogonal dimension with faster dynamics ( x 2 )
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0001
+    p_relation: "<"
+    n: 9 mice
+  criterion: As ed1n-engaging-x1-slower, on the 2P observation sessions, with the sample code's
+    2P settings (2 states) as the second reading. Methods add that 2P flow fields were fit
+    with an input term for the presence of the BALB/c intruder; fits with and without that
+    input are both run. The legend's P is read from its star key (four stars, P < 0.0001), the
+    only test in the figure besides panel m.
+- id: fig1f-line-attractor-score
+  statement: The line attractor score is positive across the 9 head-fixed mice.
+  source: Figure 1f
+  inferred: The legend shows the score across mice without a value or test; the statement reads
+    it from the score's definition (Methods) and the Results calling the dynamics an
+    approximate line attractor.
+  depends_on:
+  - fig1e-2p-x1-slower
+  criterion: Score = log2 of the largest time constant over the second largest (Methods,
+    Calculation of line attractor score) of each mouse's fit. The paper gives no threshold;
+    the readings are (a) the mean over mice above 0 and (b) every mouse above 0. Reproduced
+    when both hold; partially reproduced when only (a) holds.
+- id: x1-time-constant-range
+  statement: The experimentally observed network time constants of the integration dimension lie
+    in a range of about 50 to 200 s.
+  source: Results, Line-attractor neurons form ensembles, paragraph 5
+  quote: could yield network time constants ( τ n ) in the experimentally observed range (~50–200 s
+  depends_on:
+  - fig1e-2p-x1-slower
+  expected:
+    quantity: x1 time constants of the 2P observation fits
+    value: 125
+    unit: s
+  criterion: A reported range; reproduced when the x1 time constants of the 9 mice lie within
+    50 to 200 s widened by 10% of each bound (45 to 220 s); partially reproduced when the
+    median lies inside. The paper does not say which fits the range comes from; readings are
+    the 2P observation fits (9 mice) and these together with the miniscope fits. The expected
+    value is the midpoint and is not itself tested.
+- id: methods-subspace-angle
+  statement: The x1 and x2 dimensions are nearly orthogonal, with a subspace angle of 88.1 +/-
+    0.87 degrees across 9 mice.
+  source: Methods, Dynamical system models of neural data, paragraph 2
+  quote: we initially confirmed the orthogonality of these dimensions by computing the subspace angle
+    between them (88.1 ± 0.87°, n = 9 mice)
+  expected:
+    quantity: angle between the x1 and x2 columns of the emission matrix C, mean over mice
+    value: 88.1
+    tolerance: 0.87
+    unit: degrees
+  criterion: The angle between the two columns of C (the stored factor weights), per mouse,
+    averaged over the 9 2P mice.
+- id: methods-cvr2
+  statement: rSLDS models of miniscope data explain 84.7% of variance during engagement and
+    67.2% during observation of aggression (cross-validated R2).
+  source: Methods, Dynamical system models of neural data, paragraph 2
+  quote: Models fit to miniscope data during engagement of aggression obtained a cvR 2 = 84.7 ±
+    0.03%, while the same model explains 67.2 ± 0.02% of variance in data obtained from
+    observation of aggression
+  expected:
+  - quantity: cvR2, engagement, miniscope
+    value: 84.7
+    tolerance: 3
+    unit: percent
+  - quantity: cvR2, observation, miniscope
+    value: 67.2
+    tolerance: 2
+    unit: percent
+  criterion: Fivefold cross-validation, training on four portions and testing on the fifth
+    (Methods). The printed spreads (0.03% and 0.02%) are read as fractions (3 and 2 percentage
+    points), the only reading that fits a spread over 5 mice, and are used as tolerances. The
+    paper does not say whether the portions are contiguous blocks or random frames, or how R2
+    is taken (neural activity predicted from inferred latents); readings are contiguous
+    blocks and random frames. The Methods also require 70% cvR2 before downstream use, which
+    the observation value does not meet; this is reported.
+- id: fig1m-achw-x1-longer
+  statement: Neurons contributing to x1 have longer autocorrelation half-widths than those
+    contributing to x2 in head-fixed observation.
+  source: Figure 1l and 1m; Results, Line attractor for observing aggression, paragraph 4
+  quote: Neurons contributing to the integration dimension displayed more persistence than those
+    aligned with the faster dimension
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0078
+    n: 9 mice (45 x1 and 45 x2 neurons)
+  depends_on:
+  - fig1e-2p-x1-slower
+  criterion: Five neurons per dimension per mouse (45 each over 9 mice, legend of Fig. 1l), the
+    five with the largest absolute weight on that dimension (Fig. 1i). ACHW as in
+    ed3e-achw-full-session, on the observation session. Per-mouse means compared by a
+    two-tailed test, unpaired Mann-Whitney and paired signed-rank (header, Tests; 0.0078 at
+    n = 9 is an exact value of both); reproduced when x1 exceeds x2 at p < 0.05.
+- id: ed5e-motion-explains-little
+  statement: Only a small fraction of neural activity is explained by the head-fixed observer's
+    movements, and the variance explained does not differ between x1 and x2 neurons.
+  source: Extended Data Fig. 5a-e; Results, Line attractor for observing aggression, paragraph 4
+  quote: Importantly, only a small fraction of the neural activity could be explained by movements of
+    the observer mouse
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.8125
+    n: 7 mice
+  criterion: GLM of each neuron on the first ten principal components of 500 motion SVDs at lags
+    up to 10 s, ridge, tenfold cross-validation, cvR2 (Methods). The Methods call the ten
+    features "binary" without saying how they are binarized; readings are the continuous
+    components and components thresholded at their median. Reproduced when the median
+    cvR2 over neurons is below 0.1 (the paper gives no value; "small fraction" read as under
+    10% of variance, a reading named here and reported with the full distribution) and a
+    two-tailed test of per-mouse x1 against x2 means gives p >= 0.05, run as an unpaired
+    Mann-Whitney test and as a paired signed-rank test (header, Tests; the printed 0.8125 is
+    an exact signed-rank value at n = 7). Needs the face videos or their SVDs.
+# ---------------------------------------------------------------------------------------
+# Holographic perturbation of groups of five neurons (Figure 2, Extended Data Figs 5 to 9)
+- id: fig2d-x1-integration
+  statement: Photostimulation of five x1 neurons with four pulses at 20 s ISI produces
+    integration in the x1 dimension, with ISI activity rising with each pulse and not returning
+    to baseline.
+  source: Figure 2c and 2d; Results, Holographic activation shows integration, paragraph 2
+  quote: optogenetic reactivation of cohorts of five individual x 1 neurons yielded robust
+    integration of activity in the entire x 1 dimension-weighted population, as evidenced by
+    progressively increasing peak activity during the 20 s ISI after each consecutive pulse
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0363
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0013
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0067
+    n: 8 mice
+  criterion: The x1 projection of the x1-activation session (sample code). Per mouse, the mean
+    over baseline and over each ISI under readings Wa and Wb; Kruskal-Wallis with Dunn's
+    correction under readings Ca and Cb (header). Reproduced when, under one reading, at least
+    three Dunn comparisons give p < 0.05 and the mean over mice rises from the first to the
+    third ISI. Partially reproduced when the rise holds but fewer comparisons are significant.
+- id: fig2gh-x1-moves-along-attractor
+  statement: x1 photostimulation moves the population activity vector progressively along the
+    line attractor; the state-space distance from the initial point grows with each pulse,
+    both at the end of stimulation and at the end of each ISI.
+  source: Figure 2e-h; Results, Holographic activation shows integration, paragraph 3
+  quote: This revealed that the x 1 perturbations resulted in progressive, stable on-manifold
+    movement along the attractor with each consecutive stimulation, as measured by the increase in
+    both metrics
+  statistics:
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.061
+    n: 8 mice
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.029
+    n: 8 mice
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0018
+    n: 8 mice
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0059
+    n: 8 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.1965
+    n: 8 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0082
+    n: 8 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0004
+    n: 8 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.016
+    n: 8 mice
+  depends_on:
+  - fig2d-x1-integration
+  criterion: State = (x1 projection, x2 projection) of the x1-activation session. Euclidean
+    distance from t_initial to t_stim-end (onset + 2 s) and to t_post-stim (the frame before
+    the next onset; for the last pulse, onset + 21 s). t_initial is not fixed beyond "during
+    the baseline period"; readings are the mean baseline state and the last baseline frame.
+    What the distances are compared with is not given; readings are (a) each pulse against
+    the distances of baseline frames from t_initial and (b) each pulse against the first.
+    Kruskal-Wallis with Dunn's correction. Reproduced when, under one reading, the mean
+    distance rises from pulse 1 to pulse 3 for both metrics and three of four comparisons
+    give p < 0.05 for each metric, as the legends report.
+- id: ed7f-activated-x1-natural-levels
+  statement: Photoactivated x1 neurons reach peak activity comparable to their peak during
+    observation of aggression.
+  source: Extended Data Fig. 7d-f; Results, Holographic activation shows integration, paragraph 2
+  quote: Activated x 1 neurons exhibited activity levels comparable to their response during
+    observation of aggression
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: A claim of absence, judged on the paper's test. Per mouse, the mean over the five
+    targeted x1 neurons of their peak z-score during observation and during the activation
+    session; reproduced when a two-tailed Mann-Whitney test gives p >= 0.05. The difference is
+    reported.
+- id: ed8a-x1-integration-8s
+  statement: x1 activation with an 8 s ISI also produces integration in the x1 dimension.
+  source: Extended Data Fig. 8a; Results, Holographic activation shows integration, paragraph 2
+  quote: Similar results were obtained using an 8 s ISI
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.3
+    n: 7 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0012
+    n: 7 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0012
+    n: 7 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0192
+    n: 7 mice
+  criterion: As fig2d-x1-integration, on the 8 s ISI x1-activation session (onsets at frames
+    140, 240, 340, 440). Reproduced when, under one reading, three of four comparisons give p <
+    0.05 and the mean rises from the first to the third ISI.
+- id: ed8ef-x1-scales-with-power
+  statement: x1 integration scales with laser power, being larger with 5 mW than with 1 mW per
+    neuron.
+  source: Extended Data Fig. 8e and 8f; Results, Holographic activation shows integration, paragraph 2
+  quote: This activity also scaled with different laser powers
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0295
+    n: 8 mice
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.0186
+    n: 8 mice
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.045
+    n: 8 mice
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.7
+    n: 8 mice
+  criterion: Per mouse and period (baseline and each ISI, readings Wa and Wb), the mean x1
+    projection at 1 mW and at 5 mW; per period, a two-tailed Mann-Whitney test. Reproduced
+    when three of the four ISIs give 5 mW higher at p < 0.05 under one reading (the legend's
+    four values have three below 0.05; the fourth is read as the baseline or one ISI).
+- id: ed8c-model-integrates
+  statement: Given the same pulsed input, the rSLDS model fit to observation data also
+    integrates along x1, as in the data.
+  source: Extended Data Fig. 8c; Results, Holographic activation shows integration, paragraph 2
+  quote: Providing the same (digital optogenetic) input to the fit rSLDS model also resulted in
+    integration by the model along the x 1 dimension, similar to that observed in the data
+  depends_on:
+  - fig1e-2p-x1-slower
+  criterion: The paper does not say how the input enters the model. Readings are (a) the input
+    weight learned for the BALB/c-presence input of the observation fit (Methods, flow fields
+    fit with input terms) driven by a 2 s pulse at each stimulation onset; (b) a pulse added
+    to x1 at each onset, of the size of the first evoked x1 response. The model is simulated
+    forward from the baseline state with its discrete states. Reproduced when the simulated
+    x1 at the end of each ISI rises from the first to the third ISI in at least 6 of the 8
+    mice under one reading; the cross-validated R2 against the data (about 85%, Methods) is
+    reported.
+- id: ed8gi-x1-stim-no-x2
+  statement: x1 stimulation does not evoke appreciable activity in the x2 dimension.
+  source: Extended Data Fig. 8g-i; Results, Holographic activation shows integration, paragraph 2
+  quote: Importantly, x 1 stimulation did not evoke appreciable activity in x 2 dimension neurons
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: A claim of absence, judged on the paper's test. The x2 projection of the
+    x1-activation session, per mouse means of baseline and ISIs (Wa, Wb), Kruskal-Wallis with
+    Dunn's correction (Ca, Cb). Reproduced when no comparison gives p < 0.05 under the reading
+    used for fig2d-x1-integration; the size of each difference is reported.
+- id: fig2k-x2-no-integration
+  statement: Photostimulation of five x2 neurons does not produce integration; x2 activity is
+    transient and decays to baseline during each ISI.
+  source: Figure 2i-k; Results, Holographic activation shows integration, paragraph 4
+  quote: Importantly, activation of x 2 neurons did not lead to integration
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.99
+    p_relation: ">"
+    n: 7 mice
+  criterion: A claim of absence, judged on the paper's test. As fig2d-x1-integration, on the x2
+    projection of the x2-activation session; reproduced when no Dunn comparison gives p < 0.05.
+- id: ed8b-x2-no-integration-8s
+  statement: With an 8 s ISI, x2 activation also produces no integration in x2.
+  source: Extended Data Fig. 8b; Results, Holographic activation shows integration, paragraph 4
+  quote: we observed stimulus-locked transient activity in the x 2 dimension followed by a decay back
+    to the baseline during the ISI period, across stimulation paradigms
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 7 mice
+  criterion: As fig2k-x2-no-integration, on the 8 s ISI x2-activation session.
+- id: ed8jl-x2-stim-little-x1
+  statement: x2 activation has little effect on x1 activity; in the paper's test two of four
+    comparisons are not significant (P = 0.276) and two are (P = 0.0072 and 0.03).
+  source: Extended Data Fig. 8j-l; Results, Holographic activation shows integration, paragraph 4
+  quote: with little to no effect on x 1 neurons
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.276
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.276
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0072
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.03
+    n: 8 mice
+  criterion: The x1 projection of the x2-activation session, tested as fig2d-x1-integration.
+    The paper's own test finds two significant comparisons, so the claim is judged against
+    that pattern. Reproduced when, under one reading, at most two comparisons give p < 0.05
+    and the mean ISI x1 response is smaller than under x1 activation (fig2d-x1-integration) in
+    every ISI. The legend reports n = 8, though Fig. 2k has 7 mice with x2 activation; the
+    number found is reported.
+- id: fig2no-x2-off-manifold
+  statement: x2 activation moves the population vector transiently off the attractor during
+    each pulse, after which it relaxes back near its initial location.
+  source: Figure 2l-o; Results, Holographic activation shows integration, paragraph 4
+  quote: we observed that x 2 neuron activation caused transient off-manifold movements of the PAV
+    orthogonal to the attractor axis during each pulse ... After each stimulus, the PAV relaxed
+    back into the attractor, near to the initial location that it occupied before the stimulus
+  statistics:
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.1554
+    n: 7 mice
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.042
+    n: 7 mice
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.029
+    n: 7 mice
+  - about: distance at stimulation end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.029
+    n: 7 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 7 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.508
+    n: 7 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0508
+    n: 7 mice
+  - about: distance at ISI end
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0383
+    n: 7 mice
+  depends_on:
+  - fig2gh-x1-moves-along-attractor
+  criterion: As fig2gh-x1-moves-along-attractor, on the x2-activation session. Reproduced
+    when, under one reading, at least three of four stimulation-end comparisons give p < 0.05
+    and at most one ISI-end comparison does (the legends' pattern), and the mean ISI-end
+    distance is smaller than the mean stimulation-end distance.
+- id: ed9d-attractor-finite
+  statement: Integration of pulses saturates after the third pulse; a model with a finite
+    attractor fits the x1 response better than an infinite one.
+  source: Extended Data Fig. 9a-d; Results, Holographic activation shows integration, paragraph 3
+  quote: we found that integration of optogenetic stimulation pulses saturated in the x 1 dimension
+    after the third pulse, suggesting that the line attractor occupies a finite portion of the
+    neural state space
+  statistics:
+  - about: whole trace
+    test: two-tailed Mann-Whitney U-test
+    p: 0.001
+    p_relation: "<"
+    n: 8 mice
+  - about: after the third pulse
+    test: two-tailed Mann-Whitney U-test
+    p: 0.001
+    p_relation: "<"
+    n: 8 mice
+  depends_on:
+  - fig2d-x1-integration
+  criterion: The two models are described only by their predictions (further pulses add no ramp
+    once the system reaches a point, against each pulse adding the same step). Readings are
+    (a) a step model fit to the x1 trace whose cumulative level is capped at a fitted maximum,
+    against the same model uncapped; (b) the mean ISI levels compared directly, saturation
+    being ISI4 not above ISI3 while ISI3 is above ISI2. Reproduced when under (a) the capped
+    model has lower mean square error in the whole trace and after the third pulse by
+    Mann-Whitney across mice at p < 0.05, or under (b) the pattern holds across mice.
+- id: ed9i-points-along-line-attractive
+  statement: x2 stimulation after x1 has moved the system along the attractor perturbs it off
+    the line, after which it relaxes to the position reached after x1 stimulation and not to
+    baseline.
+  source: Extended Data Fig. 9e-i; Results, Holographic activation shows integration, paragraph 4
+  quote: This x 2 perturbation also resulted in transient off-manifold movements of the PAV orthogonal
+    to the line attractor, followed by relaxation to the position occupied after the previous x 1
+    stimulation
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0025
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: In the combined session, the distance from baseline of the state after each
+    stimulation (the legend's "activity distance from baseline after each photostimulation").
+    Reproduced when the state after x2 stimulation remains farther from baseline than the
+    baseline state (Dunn p < 0.05 for the post-x1 point) and does not differ from the state
+    before x2 stimulation (p >= 0.05). The time points are not given; readings are the frame
+    before the next onset and the mean over each ISI (Wa).
+- id: ed9mn-random-neurons-no-effect
+  statement: Activating randomly selected neurons that are not weighted by either dimension does
+    not produce activity along x1 or x2.
+  source: Extended Data Fig. 9j-n; Results, Holographic activation shows integration, paragraph 4
+  quote: activation of randomly selected neurons that were not weighted by either dimension did not
+    produce activity along either the x 1 or x 2 dimension
+  statistics:
+  - about: x1 dimension
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 5 mice
+  - about: x2 dimension
+    test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 5 mice
+  criterion: A claim of absence, judged on the paper's test. As fig2d-x1-integration on the x1
+    and on the x2 projection of the random-activation session; reproduced when no comparison
+    gives p < 0.05 in either.
+- id: ed5hj-no-behaviour-change
+  statement: Activating x1 or x2 ensembles does not change the head-fixed mouse's movements.
+  source: Extended Data Fig. 5f-j; Results, Holographic activation shows integration, paragraph 4
+  quote: Activation of either ensemble did not result in overt changes in the behaviour of the
+    head-fixed mouse
+  statistics:
+  - test: two-tailed Mann-Whitney U-test
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: A claim of absence, judged on the paper's test. Per mouse, the mean of each of the
+    top five motion SVDs before and during stimulation; reproduced when no two-tailed
+    Mann-Whitney test gives p < 0.05. Needs the face videos or their SVDs.
+- id: ed6k-no-spatial-clustering
+  statement: x1 and x2 neurons are not spatially clustered; distances within and between the two
+    groups do not differ.
+  source: Extended Data Fig. 6i-k; Results, Holographic activation shows integration, paragraph 1
+  quote: did not observe spatial clustering of x 1 or x 2 neurons
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: A claim of absence, judged on the paper's test. Per mouse, the mean pairwise
+    distance within x1, within x2 and between x1 and x2 neurons, from cell centroids;
+    reproduced when no Dunn comparison gives p < 0.05. Which neurons count as x1 and x2 is read
+    as in ed3c-x1-activity-observe-vs-engage.
+- id: ed7bc-no-spatial-decoding
+  statement: A linear SVM cannot separate x1 from x2 neurons by position better than shuffled
+    labels.
+  source: Extended Data Fig. 7a-c
+  quote: Accuracy of SVM decoder trained on data versus shuffled control (n=10 mice, p=0.156
+  statistics:
+  - about: accuracy
+    test: two-tailed Mann-Whitney U-test
+    p: 0.156
+    n: 10 mice
+  - about: classification width
+    test: two-tailed Mann-Whitney U-test
+    p: 0.578
+    n: 10 mice
+  criterion: A claim of absence, judged on the paper's test. Linear SVM on cell positions per
+    FOV, shuffles by random assignment of identity, 20 repeats, mean accuracy (Methods, Spatial
+    cluster decoder). The cross-validation is not given; readings are leave-one-out and
+    fivefold. Reproduced when the two-tailed Mann-Whitney test of accuracy gives p >= 0.05.
+    The n of 10 mice is more than the 9 of Fig. 1; the number found is reported.
+- id: ed6g-offtarget-15um
+  statement: Photostimulation through the GRIN lens is spatially confined; the response of a
+    reference cell is close to zero when the spiral is 15 um from its soma.
+  source: Extended Data Fig. 6d-h
+  quote: Note that at 15 µm the average response in the reference cells is close to zero
+  criterion: Per reference cell (17 cells), the mean response at each offset from the soma.
+    Reproduced when the mean at 15 um is below 10% of the mean at 0 um (the paper gives no
+    value; "close to zero" read as under a tenth of the on-soma response, a reading named
+    here). Needs the calibration recordings.
+# ---------------------------------------------------------------------------------------
+# Follower cells and functional connectivity (Figure 3, Extended Data Fig. 10)
+- id: ed10c-followers-integrate
+  statement: Non-targeted x1 neurons outside 50 um of the targeted cells integrate during group
+    x1 activation.
+  source: Extended Data Fig. 10a-c; Results, Line-attractor neurons form ensembles, paragraph 1
+  quote: even after excluding the targeted x 1 neurons themselves as well as potentially off-target
+    neurons located within a 50 µm radius of the targeted cell ... we observed integration in the
+    remaining x 1 neurons
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.001
+    p_relation: "<"
+    n: 8 mice
+  depends_on:
+  - fig2d-x1-integration
+  criterion: In the x1-activation session, x1 neurons that are not targeted and lie more than 50
+    um from every targeted cell; their weighted average activity (weights from the x1 factor),
+    tested as fig2d-x1-integration. Reproduced when at least one ISI exceeds baseline at p <
+    0.001 under one reading and the mean rises from the first to the third ISI.
+- id: ed10g-follower-decoding
+  statement: Integrated activity of targeted x1 neurons is decoded better from non-targeted x1
+    neurons (about 80% variance explained) than from non-targeted x2 or random neurons (about
+    40%).
+  source: Extended Data Fig. 10d-g; Results, Line-attractor neurons form ensembles, paragraph 1
+  quote: Decoding from non-targeted x 1 neurons can explain significantly more variance (80% versus
+    40%) than non-targeted x 2 or randomly selected neurons (n = 8 mice, *p = 0.01, ***p = 0.0003
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.01
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0003
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  expected:
+  - quantity: variance explained from non-targeted x1 neurons
+    value: 80
+    tolerance: 8
+    unit: percent
+  - quantity: variance explained from non-targeted x2 or random neurons
+    value: 40
+    tolerance: 4
+    unit: percent
+  depends_on:
+  - ed10c-followers-integrate
+  criterion: A support vector machine decoder (legend) predicting the mean activity of the
+    targeted x1 neurons from non-targeted neurons. Not given and named as open, with readings,
+    are the regression form (linear support vector regression), the number of neurons in each
+    set (equal to the smaller set, random subsets of the same size for the random set), and the
+    validation (fivefold over contiguous blocks). Reproduced when x1 exceeds both x2 and random
+    by Dunn's test at p < 0.05 and the values are within tolerance; partially when the order
+    holds without the values.
+- id: ed10hi-responses-mostly-positive
+  statement: Responses of non-targeted neurons to single x1 neuron stimulation are mostly
+    positive.
+  source: Extended Data Fig. 10h and 10i; Results, Line-attractor neurons form ensembles, paragraph 2
+  quote: These experiments revealed a slowly decaying elevation of activity during the ISI period in
+    non-targeted x 1 neurons after each pulse of activation (Fig. 3b,d ) that was mostly positive
+  criterion: A neuron's response is positive or negative when its mean response after
+    photostimulation is 1.5 standard deviations above or below its baseline (legend of
+    Extended Data Fig. 10h). The post-stimulation window is not given; readings Wa and Wb.
+    Reproduced when positive responders outnumber negative responders, pooled over the unitary
+    x1 stimulation sessions (the legend reports fractions of non-targeted neurons, not a count
+    of mice); the count per mouse is reported.
+- id: ed10lm-distance-not-explaining
+  statement: Putative follower x1 neurons lie on average 139 +/- 35 um from the targeted cell,
+    11% within 50 um, and their response is not positively correlated with distance.
+  source: Extended Data Fig. 10j-n; Results, Line-attractor neurons form ensembles, paragraph 2
+  quote: Notably, the strength of functional connectivity was not positively correlated with the
+    distance from the targeted photostimulated cell
+  expected:
+  - quantity: mean distance of putative follower x1 neurons from the targeted x1 neuron
+    value: 139
+    tolerance: 35
+    unit: um
+  - quantity: fraction of putative follower x1 neurons within 50 um
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  criterion: A putative follower is a non-targeted x1 neuron that responded to stimulation of a
+    single targeted x1 neuron, by the 1.5 SD rule of the legend of Extended Data Fig. 10h
+    (ed10hi-responses-mostly-positive). The Methods (Terminology) define putative followers
+    as lying outside 50 um, which cannot give the legend's 11% within 50 um; here responders
+    at any distance are counted, the only reading that allows that number. Expected values
+    within tolerance, and the correlation of response with distance (the legend's regression
+    line) not positive at p < 0.05. The paper gives no test; the reading is a Pearson test,
+    named here.
+- id: ed10p-exclusion-no-change
+  statement: Excluding neurons within 50 um of the targeted cell does not change the follower
+    response to single x1 neuron stimulation.
+  source: Extended Data Fig. 10o and 10p; Results, Line-attractor neurons form ensembles, paragraph 2
+  quote: was still observed even after excluding neurons in a 50 µm zone surrounding the targeted
+    neuron
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: A claim of absence, judged on the paper's test. Per mouse and ISI, the mean
+    response of non-targeted x1 neurons with and without the exclusion; reproduced when no
+    Dunn comparison gives p < 0.05.
+- id: ed10r-scales-with-number
+  statement: The response of non-targeted x1 neurons scales with the number of targeted x1
+    neurons, larger with five than with one.
+  source: Extended Data Fig. 10q and 10r; Results, Line-attractor neurons form ensembles, paragraph 2
+  quote: revealed that the response strength of the non-targeted x 1 neurons scaled with the number of
+    targeted x 1 neurons
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0239
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0063
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0074
+    n: 8 mice
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0341
+    n: 8 mice
+  criterion: Per mouse and ISI (Wa, Wb), the mean x1 projection over non-targeted x1 neurons in
+    the one-neuron and the five-neuron sessions, compared per ISI by Dunn's test. Reproduced
+    when five exceeds one in all four ISIs at p < 0.05 under one reading; partially when in two
+    or three.
+- id: fig3d-single-x1-drives-x1
+  statement: Stimulating single x1 neurons raises the activity of non-targeted x1 neurons, with
+    a slowly decaying elevation during the ISI.
+  source: Figure 3a, 3b and 3d; Results, Line-attractor neurons form ensembles, paragraph 2
+  quote: These experiments revealed a slowly decaying elevation of activity during the ISI period in
+    non-targeted x 1 neurons after each pulse of activation
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.16
+    n: 8 mice (25 targeted neurons)
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0037
+    n: 8 mice (25 targeted neurons)
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0005
+    n: 8 mice (25 targeted neurons)
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0016
+    n: 8 mice (25 targeted neurons)
+  criterion: The average z-scored activity of non-targeted x1 neurons in the unitary x1
+    sessions, per mouse (averaged over its targeted neurons), tested as fig2d-x1-integration.
+    Reproduced when, under one reading, three of four comparisons give p < 0.05, as the legend
+    reports.
+- id: fig3e-single-x1-not-x2
+  statement: Stimulating single x1 neurons does not raise activity in non-targeted x2 neurons.
+  source: Figure 3c and 3e; Results, Line-attractor neurons form ensembles, paragraph 3
+  quote: we observed little activity in non-targeted x 2 neurons after activation of unitary x 1 or x
+    2 neurons
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  criterion: A claim of absence, judged on the paper's test. As fig3d-single-x1-drives-x1 on
+    non-targeted x2 neurons; reproduced when no comparison gives p < 0.05.
+- id: fig3i-single-x2-not-x1
+  statement: Stimulating single x2 neurons gives a trend toward rising activity in non-targeted
+    x1 neurons that the text calls not statistically significant.
+  source: Figure 3f-i; Results, Line-attractor neurons form ensembles, paragraph 3
+  quote: While there was a trend to a gradual increase in activity in non-targeted x 1 neurons after
+    repeated activation of unitary x 2 neurons (Fig. 3f–h ), that increase was not statistically
+    significant
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.999
+    n: 7 mice (18 targeted neurons)
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.31
+    n: 7 mice (18 targeted neurons)
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.09
+    n: 7 mice (18 targeted neurons)
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.0316
+    n: 7 mice (18 targeted neurons)
+  criterion: A claim of absence, judged on the paper's test, as fig3d-single-x1-drives-x1 on
+    non-targeted x1 neurons in the unitary x2 sessions. Reproduced when no comparison gives p <
+    0.05. The legend itself reports one comparison at P = 0.0316 against the text's "not
+    statistically significant"; the attempt reports which comparisons reach 0.05.
+- id: fig3j-single-x2-not-x2
+  statement: Stimulating single x2 neurons does not raise activity in non-targeted x2 neurons.
+  source: Figure 3g and 3j; Results, Line-attractor neurons form ensembles, paragraph 3
+  quote: Quantification of activity in non-targeted x 2 neurons after targeting of single x 2
+    neurons (NS)
+  statistics:
+  - test: Kruskal-Wallis test with Dunn's correction
+    p: 0.05
+    p_relation: ">"
+    n: 7 mice
+  criterion: A claim of absence, judged on the paper's test. As fig3d-single-x1-drives-x1 on
+    non-targeted x2 neurons in the unitary x2 sessions; reproduced when no comparison gives p <
+    0.05.
+- id: fig4a-dense-x1-connectivity
+  statement: About 36% of x1-to-x1 pairs have influence scores above the highest x1-to-x2 pair
+    (a z-score of about 0.6), a relatively dense functional ensemble.
+  source: Figure 4a; Results, Line-attractor neurons form ensembles, paragraph 4
+  quote: we considered the percentage of x 1 → x 1 pairs that had influence scores higher than the
+    highest x 1 → x 2 pair, which had a z score of around 0.6 ... The fraction of x 1 → x 1 pairs
+    above this threshold was around 36%
+  expected:
+  - quantity: fraction of x1-to-x1 pairs above the highest x1-to-x2 influence score
+    value: 36
+    tolerance: 3.6
+    unit: percent
+  - quantity: highest x1-to-x2 influence score
+    value: 0.6
+    tolerance: 0.06
+    unit: z-score
+  criterion: Influence score = the average evoked z-scored activity of each non-targeted
+    photoactivated neuron after photostimulation of a single targeted cell (Results). The
+    averaging window is not given; readings Wa and Wb pooled over the four ISIs. The legend
+    counts 99 pairs from 7 mice; the pair counts found are reported. Reproduced when both
+    values are within tolerance under one reading.
+# ---------------------------------------------------------------------------------------
+# Network model (Figure 4, Extended Data Fig. 11); a simulation, no recorded data
+- id: fig4ce-excitatory-network
+  statement: In purely excitatory spiking networks, only relatively sparse integration
+    subnetworks (around 8 to 12%) with slow synaptic time constants (around 20 s) give network
+    time constants of 50 to 200 s; fast glutamatergic networks fail over the same densities.
+  source: Figure 4c-f; Results, Line-attractor neurons form ensembles, paragraph 5
+  quote: we found that only artificial networks based on relatively sparse connectivity (around 8–12%)
+    and slow synaptic time constants (around 20 s) could yield network time constants ( τ n ) in the
+    experimentally observed range (~50–200 s; Fig. 4c,e (red shading)). By contrast, networks with
+    fast glutamatergic connectivity failed to do so over the same range of connection densities
+  criterion: A simulation as the Methods give it (Mechanistic modelling), 1,000 neurons, a
+    200-neuron subnetwork, weights U(0, 1/N) and U(0, 1/Np), tau_n = tau_s / (1 - lambda_max).
+    Reproduced when, at tau_s = 20 s, tau_n falls in 50 to 200 s (widened 10%, 45 to 220 s) for
+    some density between 8% and 12% (widened, 7.2% to 13.2%), and at tau_s of 0.6 s or less no
+    stable density in the simulated range of 0 to 20% (legend of Fig. 4c) gives tau_n of 45 s
+    or more. Uses no recorded data.
+- id: fig4hj-inhibition-slow-dense
+  statement: With fast feedback inhibition, a network with slow transmission (20 s) and the
+    measured 36% density integrates pulsed input like the data, while a fast glutamatergic
+    network (100 ms) does not.
+  source: Figure 4g-l; Results, Line-attractor neurons form ensembles, paragraph 6
+  quote: networks simulated with a long τ s (20s) and dense σ (36%) could integrate digital
+    optogenetic stimulation in a manner like that observed experimentally ... By contrast, purely
+    glutamatergic networks ( τ s = 100 ms) were unable to integrate at the observed timescales given
+    the measured connectivity density
+  depends_on:
+  - fig4a-dense-x1-connectivity
+  criterion: The Methods network with inhibition (tau_I 50 ms, g = 1, g_inh 5 or 10, and 1 by
+    the Methods or 1.25 by the legend of Fig. 4h, both run), four
+    smoothed input pulses at 20 s ISI to a random 25% of neurons, Euler steps of 1 ms, noise
+    N(0,1)/5. The pulse width and the calcium kernel are not given (readings 2 s, as in vivo,
+    and an exponential kernel of 1 s decay as a standard choice that cannot change whether
+    activity integrates). Reproduced when the subnetwork's mean rate at the end of each ISI
+    rises from the first to the third ISI at tau_s 20 s and does not at tau_s 0.1 s, for one of
+    the g_inh values. Uses no recorded data.
+# ---------------------------------------------------------------------------------------
+# Attractor stability and connectivity (Figure 5, Extended Data Fig. 12)
+- id: fig5g-time-constant-vs-connectivity
+  statement: Across mice, the x1 time constant during observation correlates strongly with the
+    functional connectivity among x1 neurons measured as the AUC of non-targeted x1 neurons
+    after the third pulse (R2 = 0.87).
+  source: Figure 5g; Results, Attractor stability ties to connectivity, paragraph 2
+  quote: The strength of this correlation was higher after the third stimulus ( r 2 = 0.87) compared
+    with after the first stimulus ( r 2 = 0.59)
+  statistics:
+  - test: linear correlation
+    statistic: R2 = 0.87
+    p: 0.001
+    p_relation: "<"
+    n: 8 mice
+  expected:
+    quantity: R2 of x1 time constant against AUC after the third stimulus
+    value: 0.87
+    tolerance: 0.087
+  depends_on:
+  - fig1e-2p-x1-slower
+  - fig3d-single-x1-drives-x1
+  criterion: Per mouse, the x1 time constant of its observation fit (the "intrinsic leak rate"
+    over the whole session, Methods; readings are the largest time constant over states and
+    the x1 time constant of the state occupied after BALB/c removal) and the AUC of the
+    average z-scored activity of non-targeted x1 neurons in its unitary x1 sessions after the
+    third pulse (readings Wa and Wb for the window). Pearson R2 and its p-value over 8 mice.
+    Reproduced when R2 is within tolerance and p < 0.001 under one reading; partially when p <
+    0.05 with a positive slope.
+- id: ed12-first-stimulus-weaker
+  statement: The correlation is weaker after the first stimulus (R2 = 0.59) than after the third.
+  source: Extended Data Fig. 12c and 12d; Results, Attractor stability ties to connectivity, paragraph 2
+  quote: The strength of this correlation was higher after the third stimulus ( r 2 = 0.87) compared
+    with after the first stimulus ( r 2 = 0.59)
+  expected:
+    quantity: R2 of x1 time constant against AUC after the first stimulus
+    value: 0.59
+    tolerance: 0.059
+  depends_on:
+  - fig5g-time-constant-vs-connectivity
+  criterion: As fig5g-time-constant-vs-connectivity, after the first pulse. Reproduced when R2
+    is within tolerance and below the third-pulse R2 under the same reading. The Extended Data
+    Fig. 12b legend gives r2 0.87 for x2 neurons after the third stimulus, which conflicts with
+    the Results and with Fig. 12e-h; it is not used.
+- id: fig5f-ramp-not-correlated
+  statement: The rate of ramp-up along x1 does not correlate with functional connectivity
+    among x1 neurons (r2 = 0.01).
+  source: Figure 5f; Extended Data Fig. 12b-d; Results, Attractor stability ties to connectivity, paragraph 2
+  quote: By contrast, there was no correlation between functional connectivity and the rate of
+    ramp-up, suggesting that the latter might be driven by extrinsic inputs to the VMHvl
+  statistics:
+  - test: linear correlation
+    statistic: r2 = 0.01
+    p: 0.05
+    p_relation: ">"
+    n: 8 mice
+  depends_on:
+  - fig5g-time-constant-vs-connectivity
+  criterion: A claim of absence, judged on the paper's test, a linear correlation over 8 mice.
+    The rate of ramp-up is not defined; readings are (a) the slope of a linear fit to x1 from
+    BALB/c entry to the x1 maximum while the intruder is present and (b) the x1 rise over the
+    first 10 s after entry divided by 10 s. AUC after the third pulse as in fig5g. Reproduced
+    when p >= 0.05 under the reading used; r2 is reported.
+- id: ed12eh-x1-to-x2-not-correlated
+  statement: The time constant does not correlate with the influence of targeted x1 neurons on
+    non-targeted x2 neurons, so the relation is specific to the x1 subnetwork.
+  source: Extended Data Fig. 12e-h; Results, Attractor stability ties to connectivity, paragraph 2
+  quote: the correlation between attractor stability and functional connectivity was specific to
+    neurons in the integration ( x 1 ) subnetwork, and did not hold when rSLDS time constants were
+    compared with the influence strength of targeted x 1 neurons on x 2 cells
+  depends_on:
+  - fig5g-time-constant-vs-connectivity
+  criterion: A claim of absence. As fig5g-time-constant-vs-connectivity with non-targeted x2
+    neurons, for AUC and average z-score after the first and the third pulse (the four panels
+    e to h). The legend gives no test; the Pearson test of fig5g is used. Reproduced when none
+    of the four correlations gives p < 0.05.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - Header, Tests. The printed p-values 0.125 and 0.1875 at n = 5 and 0.8125 at n = 7 are exact paired signed-rank values that no exact unpaired Mann-Whitney test gives, so the header's claim that every Mann-Whitney test is unpaired was wrong for those panels; a paired signed-rank reading is added for them.
+  - ed3e-achw-full-session, ed3f-achw-after-removal, ed4hi-amplitude-tau-similar, ed5e-motion-explains-little and fig1m-achw-x1-longer, the paired signed-rank reading added to the unpaired Mann-Whitney test, for the reason above.
+  - ed3e-achw-full-session, the window of the "full interaction" was left unstated; whole session and first entry to last removal are named as readings.
+  - ed1n-engaging-x1-slower (and ed1p by reference), the criterion dropped mice with cvR2 under 70%, which would exclude observation fits (the Methods give a mean of 67.2%) while the paper reports n = 5; all mice are now kept and cvR2 is reported.
+  - ed3g-decode-observed-attack, the Methods' 1,000 shuffles per mouse for significance were missing, and the Methods' "on data from all other trials" reading (train on one trial, test on the others) is added to the two splits the file named.
+  - ed5e-motion-explains-little, the Methods call the ten GLM features binary; how they are binarized is not given and is now named as open with two readings.
+  - x1-time-constant-range, "with at most one mouse outside" had no source in the paper and was removed (the protocol's widened-range rule applies); which fits the range comes from is named as open.
+  - fig2no-x2-off-manifold, the legends' P = 0.029 (top) for panel n and P > 0.05 and P = 0.0508 for panel o were missing from statistics and are added.
+  - ed8jl-x2-stim-little-x1, the legend prints P = 0.276 twice; the second value is added.
+  - ed9i-points-along-line-attractive, the legend's n.s. P > 0.05 comparison is added.
+  - ed10g-follower-decoding, the legend's n.s. P > 0.05 comparison is added.
+  - ed10hi-responses-mostly-positive, "in at least 5 of 8 mice" had no source in the paper and was removed; the per-mouse count is reported only.
+  - ed10lm-distance-not-explaining, the 1.5 SD rule was cited to Methods, Terminology; it is from the legend of Extended Data Fig. 10h. The Terminology defines followers as outside 50 um, which conflicts with the legend's 11% within 50 um; the criterion now says so and counts responders at any distance. The Pearson test is named as a reading, since the paper gives none.
+  - fig4ce-excitatory-network, the density range over which fast networks must fail was not stated; it is the simulated 0 to 20% of the legend of Fig. 4c.
+  - fig4hj-inhibition-slow-dense, the Methods give g_inh = 1, 5, 10 and the legend of Fig. 4h gives 1.25, 5, 10; both values of the lowest gain are now run.
+  - Open, methods-cvr2. The spreads printed as 0.03% and 0.02% are read as 3 and 2 percentage points; a literal reading would give tolerances too narrow to meet, and the paper does not settle it.
+  - Open, ed4g-x2-more-spontaneous and ed4hi-amplitude-tau-similar. The printed 0.012 and 0.34 at n = 5 are exact values of neither test; they may come from an approximation, so the test behind them is not settled.
+  - Open, ed1m-x1-observe-attack-vs-sniff. The legend is garbled, so the direction of the difference and the reason for n = 4 are not given by the text.
+  - Open, ed5e-motion-explains-little and ed6g-offtarget-15um. "Small fraction" and "close to zero" have no number in the paper; the 10% thresholds are the file's readings and remain a choice the paper does not make.
+  - Open, ed12eh-x1-to-x2-not-correlated and ed10lm-distance-not-explaining. The paper gives no test for these absences; the Pearson test is taken from Fig. 5g by analogy.

@@ -1,58 +1,82 @@
-All six protocol steps are done. The entry passes `check` and runs from a clean environment in 50 s with no errors, and the handover package is in `executed/000006-economo-2018/handover/`. I did not verify my own work and did not commit anything.
+I've finished attempt `000006-economo-2018-02`: the conclusions are written from the executed numbers, the record and questions file are written, and the handover is built. I have not verified, committed or pushed anything.
 
-I used the abstract only. The paper is paywalled at Nature and has no PubMed Central copy. I also read its public Data availability statement, but only to find the linked data and code.
+**Version.** 0.220126.1855 is still the only published version, so it stays pinned (the notebook header says why). The helper constant and `entry.yaml`'s `dandi:` relation are unchanged. The run passes in about 11 minutes; two clean runs gave identical outputs.
 
-The pinned version is 0.220126.1855. The paper cites no DANDI version, and this is the only published one. The draft has the same 53 files and sizes and differs only in metadata.
+**Why so many claims are blocked.** Neither of the claims file's unit selections gives the paper's 61 and 69 units on the dandiset: the code's rule keeps 44 and 56, the session rule 42 and 63. The file says to use the selection that matches, so I ran every claim under both, plus the other readings it names. Where readings disagree, the claim is blocked and asked about in `questions/000006.yaml` (15 questions). Run on the paper's own 130 units from the Figshare processed data, the same code gives the paper's numbers for unit counts, bursting, late-delay counts, decoding, early selectivity and spike rates. So the shortfall comes from the dandiset's missing sessions, not from the code. The exception is the CDgo onsets, which come out later than the paper's even on its own data.
 
-## 1. Outcomes
+### 1. Outcomes (earlier outcome in brackets; "new" means the claim did not exist before)
 
-| Claim | Outcome | Key numbers |
+**Data elsewhere (tested on the paper's Figshare record):**
+
+| Claim | Outcome | Earlier |
 |---|---|---|
-| pt-types-transcriptomic | blocked: data missing | |
-| pt-types-shared-targets | blocked: data missing | |
-| pt-upper-thalamus-projection | blocked: data missing | |
-| pt-lower-medulla-projection | blocked: data missing | |
-| pt-preparatory-activity | reproduced | 72 of 100 tagged units selective in the delay; shuffle p = 0.001 |
-| pt-upper-early-preparatory | reproduced | 27 of 44 PTupper selective in the sample epoch; p = 0.001 |
-| pt-upper-persistent | reproduced | late delay 27 of 44; sample/late-delay cosine 0.495, p = 0.016 |
-| pt-lower-late-and-motor | partially reproduced | late delay > sample, p = 0.0096; response > sample, p = 0.088 |
-| pt-types-differ-in-timing | not reproduced | sample PTupper > PTlower p = 0.134; response goes the opposite way (0.84 against 0.64) |
+| pt-types-transcriptomic | reproduced (27 clusters under one counting reading) | blocked, data missing |
+| pt-types-shared-targets | reproduced | blocked, data missing |
+| pt-projection-cluster-mapping | reproduced (62 of 62; 91 of 94) | new |
+| pt-bulk-sc-fold-change-correlation | reproduced (r = 0.867 / 0.874) | new |
+| pt-types-account-for-all-pt | partially reproduced (17 of 18 reach the superior colliculus) | new |
+| pt-upper-thalamus-projection | blocked, methods underspecified | blocked, data missing |
+| pt-lower-medulla-projection | blocked, methods underspecified | blocked, data missing |
+| pt-retrograde-sublaminae | blocked, methods underspecified | new |
+| pt-marker-genes | blocked, other (smFISH data not public) | new |
 
-On the last claim, the paper's own coding-direction measure does point the way the abstract describes (PTupper 0.47, PTlower 0.22; PTupper higher in 83 of 100 bootstraps). I report it as a variant, so it doesn't change the outcome.
+**Data in the dandiset:**
 
-## 2. What was found about the dandiset
+| Claim | Outcome | Earlier |
+|---|---|---|
+| pt-tagged-units | not reproduced | new |
+| pt-selective-any-epoch | not reproduced | new |
+| pt-depth | reproduced | new |
+| pt-lower-cdearly-decay | reproduced (p = 0.30 to 0.40; paper 0.34) | new |
+| pt-cd-stability | reproduced | new |
+| pt-lower-late-and-motor | reproduced | partially reproduced |
+| pt-preparatory-activity | partially reproduced | reproduced |
+| pt-lower-bursting | partially reproduced | new |
+| pt-upper-decoding | partially reproduced | new |
+| pt-upper-decoding-rectified | partially reproduced | new |
+| pt-cdgo-onset | partially reproduced (37.5 and 77.5 ms against 24 and 48) | new |
+| pt-upper-early-preparatory | blocked, methods underspecified | reproduced |
+| pt-upper-persistent | blocked through its dependency; its own test fails under every reading | reproduced |
+| pt-types-differ-in-timing | blocked through its dependencies | not reproduced |
+| pt-spike-rates-similar | blocked, methods underspecified | new |
+| pt-lower-heterogeneous-rates | blocked through its dependency (its own test holds under every reading) | new |
+| pt-variance-explained | blocked, methods underspecified | new |
+| pt-single-neuron-early-selectivity | blocked, methods underspecified | new |
+| pt-cd-change-at-go-cue | blocked, methods underspecified | new |
+| pt-lower-movement-termination | blocked, methods underspecified | new |
+| pt-cohort-control | blocked, methods underspecified | new |
+| reaction-time | blocked, data missing (no video) | new |
 
-- **Contents:** 53 files from 12 mice, NWB 2.0.2. Tagged units are labelled PTupper (46 units, 8 mice) or PTlower (71 units, 4 mice). Each mouse has only one type, so a type comparison is also a comparison between groups of animals. There are no duplicate trial tables or spike trains.
-- **Spike times are unsorted in 1120 of 1149 units.** They were written as trial start + cue time + time from the cue, trial by trial. I confirmed this exactly for 57 units against the paper's processed data on Figshare. Each trial's spikes cover 6.4 s, and trial starts are 6.4 s apart, so neighbouring trials overlap on the file's clock: 11.7% of baseline-epoch spikes are detectably out of order. The first 10 trials of the checked session are shifted by about 2.7 s.
-- **Other format problems:** `stop_time` is NaN in every file, and the trial event times are relative to the trial start without the files saying so.
-- **Missing descriptions:** PTupper and PTlower are not described, and their projection targets are named only in the paper's code. Unit quality uses mixed vocabularies with empty values. Sex is unknown, genotype is empty and electrode positions are all zero.
-- **Missing data:** the transcriptomic and anatomical data are not in the dandiset.
+Every changed outcome comes from the rewritten criteria, not from the data; each is explained in the record's notes.
 
-## 3. Where the protocol was unclear, wrong or missing something
+### 2. Earlier findings
+All seven are still present, since the version has not changed; the notebook prints the evidence for each:
+- 11 sessions are missing (17 PTupper and 13 PTlower units).
+- No sequencing or anatomy is in the dandiset.
+- Spike times are unsorted and trials overlap on the file's clock.
+- `stop_time` is NaN and the trial times are relative to the trial start without saying so.
+- The PT labels are not described.
+- The quality, sex, genotype, electrode position and layer metadata are uninformative.
+- The first ten trials are shifted in the processed data.
 
-1. **Abstract-only claims have no numbers.** All criteria and tests of chance are my own. I wrote them before any claim analysis and said so in the claims file.
-2. **"Abstract only" against other public parts of the paper.** It doesn't say whether the public Data availability statement or the Extended Data legends on the paywalled page may be used. I used the statement only to find the code and data, and nothing else.
-3. **A background sentence in the abstract.** It doesn't say whether "preparatory activity has been observed in PT neurons" is a finding of the paper. I included it as a claim and labelled its source as background.
-4. **Linked code that ships processed data.** It doesn't say how to treat this case. I used the code for method choices, and read one processed file only in the data check, to explain the spike storage. No claim depends on it, so every claim is `data: dandiset`. Both are listed under `inputs`.
-5. **The clock check doesn't cover data that is on the trial clock but has trials overlapping.** I analysed on the file's clock as published, measured the overlap, and added a variant that drops the overlapping spikes the storage order reveals. No outcome changed.
-6. **Same neuron across sessions.** The protocol covers analyses that treat a unit as the same across sessions, not the reverse risk of counting one neuron several times. I stated it as an assumption and gave results by animal.
-7. **Short sessions in the clock check.** It doesn't say what to do when decoding can't decide. Seven 1-2 unit sessions couldn't be checked; I named them and assumed the clock.
-8. **Comparing the two types when each animal has one.** I tested at unit level as the code does, gave animal-level tests as variants, and recorded the confound as a deviation.
+### 3. New findings
+- The missing sessions also hold 285 PTupper-cohort and 117 PTlower-cohort unidentified units.
+- Lick times are stored trial by trial and out of order in 105 of 106 series. Rebuilt from the stored order, each trial's last lick matches the processed data in 98.1% of correct trials.
+- The files hold no session manipulator depth and no video.
 
-## 4. Runtime and failures
-
-- **Runtime:** the notebook runs in 50 s in the clean environment; loading the files takes about 20 s.
-- **Fixed during development:** a duplicate-index error in a pandas `concat`, and a `remfile` object that `zipfile` couldn't seek (worked around with a small wrapper).
-- **Left alone:** untracked files at the repository root (`.bashrc`, `.gitconfig`, `.idea`, `scripts` and others) were not created by me. An empty `.claude/` folder inside the entry comes from the harness and isn't tracked by git.
+### 4. What did not fit a repeat attempt
+- **`entry.py check` fails on the earlier record.** It checks the deprecated `-01` record against the rewritten claims file and reports 22 claims with no outcome. I can't fix this without editing `-01`, so `entry.py all` stops at the check. I ran `entry.py run` instead; the new `-02` record passes.
+- **The dependency rule over-blocks.** `pt-lower-heterogeneous-rates` uses only the rates from `pt-spike-rates-similar`, yet it is blocked because that claim is blocked.
+- **The "elsewhere" rule forbids `data_missing`.** For `pt-marker-genes`, whose data are public nowhere, I used `other` and asked whether the claim's data field is wrong.
+- **The repeat-attempt section assumes the dandiset changed.** Here the claims file changed and the data did not, so "fixed or still present" is trivially "still present" for every earlier finding.
+- **No selection is designated when neither reading matches.** The claims file names no reading for that case, and that gap causes most of the blocks.
 
 Files are in `entries/000006-economo-2018/`:
-- `reproduce_economo_2018.ipynb`
-- `alm.py`
-- `entry.yaml`
-- `README.md`
-- `requirements.in`
-- `requirements.lock.txt`
+- reproduce_economo_2018.ipynb
+- alm.py
+- README.md
+- entry.yaml
 
-Two more files are outside it:
-- `claims/000006/10.1038-s41586-018-0642-9.yaml`
-- `attempts/000006-economo-2018-01.yaml`
+Also new:
+- attempts/000006-economo-2018-02.yaml
+- questions/000006.yaml

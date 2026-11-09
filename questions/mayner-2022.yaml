@@ -1,0 +1,50 @@
+dandiset: "000036"
+paper: doi:10.1523/eneuro.0280-21.2021
+questions:
+- claim: discussion-session-effect-sizes
+  asked: 2026-10-22
+  question: The criterion takes per-session Cohen's d "as in fig4-locomotion-effect-size", with
+    the pooled SD of the opening comment (analysis.py, cohens_d). The Methods give the standard
+    pooled SD, but the code's analysis.pooled_std_dev weights each group's SD by the other group's
+    n - 1 (its groupby sorts "artificial" before "natural" while n1 counts "natural"), and the
+    paper's numbers come from that version. Which does the criterion mean, the Methods' formula or
+    the formula as the code computes it? The same question applies to fig4-locomotion-effect-size,
+    fig4-pupil-effect-size and the Cohen's d of fig3a, fig3b, ext3-1, fig5 and fig7.
+  passage: "Cohen's d was calculated with the pooled SD: ((n1 - 1) s1^2 + (n2 - 1) s2^2) / (n1 + n2
+    - 2) (Materials and Methods, Statistical analysis). Code: analysis.pooled_std_dev at commit
+    2d959bd, n1, n2 = counts[a], counts[b]; s1, s2 = values.groupby(labels).std()."
+  why: With the Methods' formula the largest per-session d here is 1.111, outside 1.25 +/- 0.125,
+    and the claim is partially reproduced; with the code's formula it is 1.194 and all three
+    values are within tolerance (reproduced). The code's formula reproduces results/effect_size.parquet
+    to 4e-15 in all 44 sessions; the Methods' formula does not (up to 0.10 apart). For
+    fig4-locomotion-effect-size r is 0.842 or 0.892, reproduced either way.
+- claim: ext3-2-sensitivity
+  asked: 2026-10-22
+  question: The agreement rule requires, for each parameter set, that L2/3 be the only significant
+    layer and AL and AM the only significant areas. Applied to the paper's own sensitivity
+    statistics (results/stats.parquet) the rule gives 28 of 108 sets, so the paper's outputs do not
+    meet "nearly all" under it. Does the paper's sentence, and the Extended Data Figures 3-2 to 3-4,
+    support a different rule, for example one judged on the layer result alone, or on L2/3 and on
+    at least one of AL and AM?
+  passage: For nearly all other combinations of parameters, we likewise find that unscrambled
+    stimuli elicit increased ND specifically in L2/3 of AL and AM (Results, Increased
+    differentiation for unscrambled stimuli is specific to areas AL and AM, paragraph 2).
+  why: Here 36 of 108 sets agree under the rule (not reproduced). L2/3 is the only significant
+    layer in all 108 sets on this dataset and in the paper's outputs, and the area result is what
+    varies (AL and AM both significant in 36 sets, AL alone in 41, AM alone in 24, neither in 7), so
+    a rule on the layer alone or on L2/3 and one of AL and AM would give a different outcome.
+- claim: fig3b-area-specific
+  asked: 2026-10-22
+  question: The expected Cohen's d for AM is 0.268, from the paper's text, which prints "Cohen's d
+    = 0.268, 95% CI [0.128, inf)". The code's printed Figure 3 output gives d = 0.128 for AM and a
+    lower bound of 0.0048 for the contrast, and the paper's per-trial values (main.parquet) give
+    0.127 to 0.128. Is 0.268 a misprint that the expected value should record?
+  passage: "specific to AL and AM [one-sided z -test; ... AL, z = 2.873, p = 0.0101, Cohen's d =
+    0.200, 95% CI [0.022, inf) f ; PM, z = -1.843, p > 0.999, Cohen's d = -0.122, 95% CI [-0.157,
+    inf) g ; AM, z = 2.446, p = 0.0356, Cohen's d = 0.268, 95% CI [0.128, inf) h ; adjusted for
+    multiple comparisons] (Results, Increased differentiation for unscrambled stimuli is specific
+    to areas AL and AM). For the other areas the printed CI bound is the contrast's lower bound
+    (PM -0.157, AL 0.022), which for AM is 0.0048 in the code's output."
+  why: The outcome rests on the significance pattern, which holds, so it does not change; but the
+    measured AM d (0.132) is recorded as outside the tolerance of 0.268 although it agrees with the
+    paper's computation.

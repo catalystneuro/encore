@@ -1,0 +1,80 @@
+# Questions from attempt prince-2025-01 (author run, 2026-11-02) about
+# claims/001371/10.1038-s41467-025-60122-8.yaml, asked under docs/protocol.md, Author, step 1.6. The
+# claims were tested as the file has them, with the paper's reading shown as a variant.
+dataset: DANDI:001371
+paper: doi:10.1038/s41467-025-60122-8
+questions:
+- claim: fig2g-pfc-no-goal-increase
+  asked: 2026-11-02
+  question: Shared method S1 counts the encoder training trials (80% of delay only trials) for the
+    rule that excludes sessions with fewer than 50 trials, following the code's _meets_exclusion_criteria.
+    The Methods count the trials of the behavioral session. Since the protocol puts the Methods before
+    the code where they disagree, should S1 count the final-task trials of the session? The same question
+    applies to every claim on decoding, in particular fig5d-stay-hpc-like-delay.
+  passage: We first excluded any sessions in which there were less than 20 single units for the brain
+    region of interest and there were less than 50 trials for the behavioral session (Methods, Decoding
+    analyses). Supplementary Table 2 gives n = 56 sessions for the CA1 and n = 47 for the PFC per-session
+    Wilcoxon tests of Figure 2e and 2g.
+  why: On this dataset, counting final-task trials includes 55 CA1 and 46 PFC sessions, close to the
+    paper's 56 and 47, while counting training trials includes 47 and 37. The rule changes two outcomes
+    of absence claims. fig2g-pfc-no-goal-increase is not reproduced under S1 (new arm switch against delay
+    only, Tukey p = 0.043; per-session Wilcoxon on the switch difference p = 0.029) and passes in model
+    reading (b) under the Methods' count (all p at or above 0.066). fig5d-stay-hpc-like-delay is not
+    reproduced under S1 (stay against delay only, new arm, Tukey p = 0.032) and passes under the Methods'
+    count (p = 0.063).
+  answered: 2026-11-02
+  answer: Changed. Shared method S1 now counts the final-task trials of the behavioral session for
+    the 50-trial rule, as the Methods say ("there were less than 50 trials for the behavioral session",
+    Methods, Decoding analyses), with warm-up trials left out because they "were not included in electrophysiological
+    analyses" (Methods). The code's count of encoder training trials (_meets_exclusion_criteria) is
+    kept as a named variant. Where the Methods and the code disagree the protocol follows the Methods
+    (Reader, step 2), and S1 did not say which it followed. The change applies to every claim that uses
+    S1, among them fig2g-pfc-no-goal-increase and fig5d-stay-hpc-like-delay; their statements, expected
+    values and criteria are unchanged.
+- claim: fig3c-theta-phase-segregation
+  asked: 2026-11-02
+  question: The criterion names two readings of the central zone, (a) the whole central arm and (b)
+    a central window the size of a goal arm centred on the update cue location, and asks the result
+    to hold under every reading. Reading (a) gives a central probability of about 0.66 in both half
+    cycles, where the paper prints 0.12 and 0.14 for central, about the size of one goal arm. Can
+    reading (a) be the paper's quantity, or should the criterion name the central window (code home_boundaries)
+    alone? The verifier of round 1 reported this reading as one the paper cannot mean.
+  passage: codes for prospective goal locations (non-local) were represented significantly more on the
+    opposite theta phase as current location representations (local) (... initial vs. central arm ...,
+    Fig. 3a-c); Figure 3c and Supplementary Table 2 give central values of 0.12 and 0.14.
+  why: Under reading (a) the central zone is decoded about five times more than either goal arm in both
+    half cycles, so its first half contrasts cannot go the paper's way, and the criterion's "under every
+    reading" makes the claim fail on that reading alone. On this dataset reading (b) also fails (first
+    half, central 0.148 against 0.129 and 0.130), so the outcome does not change here, but a later attempt
+    could be decided by reading (a) alone.
+- claim: trial-mix
+  asked: 2026-11-02
+  question: The claim tests 65, 25 and 10% as fractions of the realized final-task trials, and its criterion
+    notes that the paper's own counts (Results and Supplementary Table 1) do not give these fractions,
+    so the percentages read as programmed trial probabilities. Should the claim test the programmed
+    probabilities, which the trial table cannot show, or the realized fractions, which the paper's counts
+    already contradict? The verifier of round 1 reported that the claim expects probabilities the paper's
+    own counts do not give.
+  passage: These trial types consisted of delay only trials (65% of trials), ... (Methods, Behavioral
+    task and training); 7172 delay only and 1840 switch trials (Results) and 717 stay trials give 0.74,
+    0.19 and 0.07.
+  why: On this dataset the trial counts equal the paper's exactly (7172, 1840, 717), so the claim is not
+    reproduced only because its expected values are not what the paper's own trials show. If the percentages
+    are the programmed probabilities, the claim cannot be tested from realized trials and is better blocked
+    or restated; if they are realized fractions, it is a paper inconsistency, already recorded as a finding.
+- claim: sfig3c-retrospective-unchanged
+  asked: 2026-11-02
+  question: Shared method S7 says "The code averages 0.5 s bins of the 0.2 s grid inside the window".
+    In the code (calc_trial_by_trial_quant_data, plot_goal_coding_stats) the 0.5 s bins only label
+    the 0.2 s samples, and the window value is the plain mean of the samples whose label falls in the
+    window, with equal weight on each 0.2 s sample. Should S7 say that, so that it is not read as a mean
+    of 0.5 s bin means? The verifier of round 2 read S7 the second way. The question applies to every
+    claim that uses S7 windows.
+  passage: The post-update window is 0 to 1.5 s after the update cue (Methods); code plot_goal_coding_stats,
+    query times_binned > 0 and < 1.5 then groupby(trial columns).mean(), with times_binned from pd.cut
+    on linspace(-2.5, 2.5, 11) in calc_trial_by_trial_quant_data.
+  why: On the 0.2 s grid the three 0.5 s bins of 0 to 1.5 s hold 3, 2 and 3 samples, so a mean of 0.5
+    s bin means weights the samples unequally. This attempt follows the code's equal weights. Several
+    outcomes rest on p values between 0.036 and 0.044 (sfig3c-retrospective-unchanged, sfig12-delay-hpc-no-outcome-difference,
+    the new arm front half of sfig3ab-original-vs-update-cue), so a later attempt that reads S7 the
+    other way could reach other outcomes.

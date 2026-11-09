@@ -1,0 +1,1211 @@
+# Claims for Shukla, Rivera, Bladon & Jadhav (2026), "A Novel Cooperative Behavior Assay in Rats
+# Reveals Distinct Social Coordination Strategies of Increasing Complexity and Social Reciprocity
+# Deficits in a Model of Fragile X Syndrome", J Neurosci 46(24) e0143262026, on dandiset 001845.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (open access, CC BY 4.0), PMC13277500, as served by Europe PMC
+# (paper/10.1523-jneurosci.0143-26.2026.txt). It holds the main text, the Materials and Methods
+# and the legends of Figures 1 to 8. No PDF was supplied and no figure was seen; numbers shown
+# only in figure panels are not available here. The supplement is not in the text: Figures S1 to
+# S3 (mixed pairs, Jaccard similarity, leadership history) and Tables S1 and S2 (the gaze GLMMs)
+# were not read. The main findings rest on Figures 1 to 8, whose legends and statistics are in
+# the text. Claims on Figures S1 to S3 are written from the Results sentence that states them,
+# and their tests are not known.
+#
+# Code read: the paper links https://github.com/JadhavLab/Social_CoOp_Behavior. At commit
+# e2d560d1eadd92c2f54b98e98545ba521ac2cd3d (2026-05-19, the latest) it holds only a README, which
+# names the paper and the dandiset (version 0.260519.1308). No analysis code is there, so no
+# detail below is settled by code; every method is from the Methods and the legends, and the
+# details they leave open are named in each criterion.
+#
+# Dataset, from its archive description: "Cooperative Behavior in WT and Fmr1 Rat Dyads",
+# behavioral event timestamps, reward well visit intervals and position tracking for both
+# animals of each dyad across sessions, N = 5 pairs per genotype group. Whether it holds the
+# sensory-deprived sessions, the mixed pairs, the visual-cue task, the virtual-agent task or
+# the DeepLabCut keypoints is the author's to find.
+#
+# Data the paper used, as it reports them.
+# - Subjects. Male LE-Fmr1 em2Mcwi rats (Fmr1 -/y) and WT littermates, 23 WT and 24 Fmr1 in
+#   total, 3 to 5 months old at the start of training, single housed, food restricted to about
+#   85 to 90% of free-feeding weight. Pairs of littermates, WT-WT, Fmr1-Fmr1 and WT-Fmr1 (mixed),
+#   5 pairs each (so 10 WT rats in WT pairs and 10 Fmr1 rats in Fmr1 pairs).
+# - Apparatus. Two elevated W-mazes (80 x 80 cm, three arms, a reward well with an IR beam-break
+#   at each arm end, milk reward), in parallel, facing each other, separated by a transparent
+#   perforated acrylic divider. Overhead colour CCD camera at 30 fps. SpikeGadgets control.
+# - Cooperative task. A match is a simultaneous nose-poke by both rats at spatially
+#   corresponding wells of the two mazes; matches are rewarded every time (100% contingency),
+#   then with probability 0.5 (50% contingency); in the 50% condition, after a rewarded match
+#   only one of the two other arms is chosen at random as the next reward arm. Sessions of 20 to
+#   30 min, at least two per day, rats switching mazes after each session. Unless noted,
+#   analyses use the first 21 sessions at 100% and the first 35 at 50%.
+# - Sensory-deprived (SD) sessions. Opaque barrier and about 65 dB white noise, interspersed
+#   among 50% sessions; 3 WT, 3 Fmr1 and 5 mixed pairs (Figure 2).
+# - Visual-cue association task. Single rats, one W-maze, an LED on the far side of the partition
+#   cues the rewarded well, 100% then 50% reward, 1 to 2 sessions a day, 30 sessions; 4 WT and 4
+#   Fmr1 rats (Figure 2).
+# - Virtual-agent task. Single rats; a program picks one rewarding arm at random on each trial,
+#   never the arm just rewarded; 4 WT and 5 Fmr1 rats, 8 sessions (Figure 3).
+# - Measured variables. Nose-poke (well visit) times and wells per rat; head position per frame;
+#   DeepLabCut 2.3.9 keypoints (neck, head centre, body centre) for the gaze analysis, keypoints
+#   with likelihood < 0.6 set to NaN, interpolated and smoothed with a Gaussian kernel of sigma
+#   150 ms.
+#
+# Methods that hold for several claims, with their sources and the readings left open.
+# - Choice sequence. The sequence of reward wells a rat visits, one entry per visit. The eight
+#   triplets the Methods list (1-2-1, 1-2-3, ..., 3-2-3) contain no repeated well, so repeated
+#   pokes at the same well are one visit and a transition is a visit to a well other than the
+#   last one.
+# - Performance (Methods, Eq. 1). The ratio of matches to the pair's total arm transitions (both
+#   rats), as a percentage scaled so that the maximum, one match per two transitions, is 100%,
+#   that is 200 x matches / transitions. The equation is garbled in the text ("[ ( Total matches
+#   / Total transitions ) x 100 ] 1 / 2"); the scale factor does not change any test below.
+# - Rates (Figure 1E, 1F, 1G). "Match rate" and "transition rate" are not defined. Readings
+#   (r1) per minute of session, (r2) count per session.
+# - ANOVA readings. The legends name "Two-way RM ANOVA" with genotype and session, but every
+#   reported denominator df is that of an ordinary two-way ANOVA with session as a factor and
+#   one value per unit and session: F(1,168) and F(1,280) for 5 + 5 pairs over 21 and 35
+#   sessions, F(1,378) and F(1,630) for 10 + 10 rats, F(1,264) and F(1,594) for 33 sessions at
+#   50%. Readings (A) the ordinary two-way ANOVA genotype x session on unit-by-session values,
+#   as the df show; (B) a mixed-design repeated-measures ANOVA, genotype between, session within,
+#   unit as subject, as the name says. Both are run; where they disagree the claim is blocked as
+#   methods_underspecified.
+# - Sessions at 50%. Where the df show 33 sessions (Figures 3E, 4C, 5E) the readings are the
+#   first 33 and the first 35 sessions.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001845"
+paper: doi:10.1523/jneurosci.0143-26.2026
+claims:
+- id: fig1e-match-rate-wt-higher
+  statement: WT pairs reach significantly higher match (coordination) rates than Fmr1 pairs under
+    both the 100% and the 50% reward contingency.
+  source: Figure 1E and legend; Results, A spatial cooperation task for social coordination in
+    rat pairs
+  quote: WT pairs demonstrated significantly higher coordination rates than both Fmr1 pairs ( Fig.
+    1 E , I )
+  statistics:
+  - about: 100% contingency, genotype effect
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 26.8338
+    p: 6.289e-7
+    n: 5 WT and 5 Fmr1 pairs, 21 sessions
+  - about: 50% contingency, genotype effect
+    test: Two-way RM ANOVA
+    statistic: F(1,280) = 27.0576
+    p: 3.82e-7
+    n: 5 WT and 5 Fmr1 pairs, 35 sessions
+  criterion: Per pair and session, the match rate, a match being a simultaneous nose-poke of the
+    two rats at corresponding wells (Methods, Cooperative learning task), counted under rate
+    readings r1 and r2 of the opening comment; WT and Fmr1 pairs, first 21 sessions at 100% and
+    first 35 at 50% (Methods, Behavioral quantification). The genotype effect of the two-way
+    ANOVA under readings A and B of the opening comment. Reproduced when, in both contingencies,
+    the genotype effect has p < 0.05 with the WT mean higher.
+- id: fig1f-transition-rate-wt-higher
+  statement: Fmr1 rats make fewer task-related arm transitions than WT rats (they are slower in
+    the task), under both contingencies.
+  source: Figure 1F and legend; Results, A spatial cooperation task for social coordination in
+    rat pairs
+  quote: Fmr1 and mixed pairs were generally slower in the task, as reflected by a reduced number
+    of task-related transitions ( Fig. 1 F , G ; Fig. S1 D )
+  statistics:
+  - about: 100% contingency, genotype effect
+    test: Two-way RM ANOVA
+    statistic: F(1,378) = 11.7127
+    p: 0.0006886
+    n: 10 WT and 10 Fmr1 rats, 21 sessions
+  - about: 50% contingency, genotype effect
+    test: Two-way RM ANOVA
+    statistic: F(1,630) = 38.3755
+    p: 1.054e-9
+    n: 10 WT and 10 Fmr1 rats, 35 sessions
+  criterion: Per rat and session, the number of transitions (visits to a well other than the
+    rat's previous one), under rate readings r1 and r2; rats of the WT and Fmr1 pairs; first 21
+    and first 35 sessions. The genotype effect of the two-way ANOVA under readings A and B, with
+    rats as units (the df show 20 rats). Reproduced when, in both contingencies, p < 0.05 with the
+    WT mean higher.
+- id: fig1g-match-transition-regression
+  statement: In the 50% condition, match rate rises linearly with transition rate in both
+    genotypes, with a steeper slope and a better fit in WT (beta 0.79, R2 0.74) than in Fmr1
+    (beta 0.64, R2 0.44).
+  source: Figure 1G legend
+  quote: Linear regression between cooperative match event rates and transition rates for 50%
+    reward condition
+  statistics:
+  - about: WT
+    test: linear regression
+    statistic: beta = 0.79, R2 = 0.74
+    p: 3.696e-104
+    n: 35 sessions
+  - about: Fmr1
+    test: linear regression
+    statistic: beta = 0.64, R2 = 0.44
+    p: 1.907e-79
+  expected:
+  - quantity: WT slope
+    value: 0.79
+    tolerance: 0.079
+  - quantity: WT R2
+    value: 0.74
+    tolerance: 0.074
+  - quantity: Fmr1 slope
+    value: 0.64
+    tolerance: 0.064
+  - quantity: Fmr1 R2
+    value: 0.44
+    tolerance: 0.044
+  criterion: An ordinary least-squares regression of match rate on transition rate per genotype,
+    first 35 sessions at 50%. The legend gives n = 35 sessions, but its p-values imply far more
+    points than 35, and the units of the rates are not given. Readings of the points are (a)
+    one per pair and session, with the pair's summed transitions; (b) one per rat and session,
+    the rat's transitions against its pair's matches; (c) one per session, pairs averaged; each
+    under rate readings r1 and r2. Reproduced when, under one reading, both slopes and both R2
+    values are within tolerance and both regressions have p < 0.05; partially reproduced when
+    both are significant with WT having the higher slope and R2 but the values are out of
+    tolerance.
+- id: fig1h-above-chance-late
+  statement: Both WT and Fmr1 pairs coordinate no better than chance early in training, and above
+    chance late in training, by a permutation test that circularly shifts one rat's sequence of
+    well visits.
+  source: Figure 1H and legend; Results, A spatial cooperation task for social coordination in
+    rat pairs
+  quote: Both WT and Fmr1 rat pairs exhibited performance indistinguishable from chance during
+    early training on both reward contingency tasks; however, by late training, their performance
+    improved significantly, exceeding chance levels ( Fig. 1 H , I )
+  statistics:
+  - about: representative WT pair, late 50% session against null
+    test: circular time-shift permutation test, 1,000 permutations
+    p: 0.01
+    p_relation: "<"
+  - about: representative Fmr1 pair, late 50% session against null
+    test: circular time-shift permutation test, 1,000 permutations
+    p: 0.05
+    p_relation: "<"
+  criterion: Per pair and session, performance (Eq. 1) against a null from 1,000 circular time
+    shifts of one rat's whole sequence of reward well visits within the session, p being the
+    fraction of shifts whose performance equals or exceeds the observed one (Methods,
+    Permutation testing of coordination performance). Open, not fixed by the paper are which
+    rat is shifted (the readings, the first rat as the dataset orders them, and the second; the
+    result is reported for both) and the range of shifts (a uniform random shift over the
+    session length is the standard choice). The paper shows one pair per genotype. "Early" and
+    "late" can be read as (a) the first session at 100% and the last analysed session at 50%, as
+    the legend's examples; (b) the first and last analysed session of each contingency, as the
+    Results say. The Results state it for "Both WT and Fmr1 rat pairs", that is every pair.
+    The early and late readings name which sessions the paper means, and one of them suffices;
+    the shifted-rat readings are a method detail, and the outcome must hold under both of them,
+    else the claim is blocked as methods_underspecified. Reproduced when every pair of both genotypes has p >= 0.05 in the early
+    session(s) and p < 0.05 in the late session(s); partially reproduced when that holds in at
+    least 3 of 5 pairs per genotype, or when the late sessions are above chance in every pair but
+    the early ones are too.
+- id: fig1i-performance-wt-higher
+  statement: Cooperative performance (matches relative to transitions, Eq. 1) is significantly
+    lower in Fmr1 pairs than in WT pairs under both contingencies, so their impairment is not
+    only due to slower transitions.
+  source: Figure 1I and legend; Results, A spatial cooperation task for social coordination in
+    rat pairs
+  quote: Performance metrics for WT and Fmr1 −/y pairs in 100% (left) and 50% (right) reward
+    contingencies shows significant impairment in Fmr1 −/y pairs compared with WT pairs
+  statistics:
+  - about: 100% contingency, genotype effect
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 7.4888
+    p: 0.006876
+    n: 5 WT and 5 Fmr1 pairs, 21 sessions
+  - about: 50% contingency, genotype effect
+    test: Two-way RM ANOVA
+    statistic: F(1,280) = 7.5354
+    p: 0.006441
+    n: 5 WT and 5 Fmr1 pairs, 35 sessions
+  criterion: Performance per pair and session as Eq. 1 (opening comment), first 21 and first 35
+    sessions; the genotype effect of the two-way ANOVA under readings A and B. Reproduced when,
+    in both contingencies, p < 0.05 with the WT mean higher.
+- id: fig1j-partner-location-predicts-choice
+  statement: A multinomial logistic regression predicts a rat's next choice from its partner's
+    current location above chance in both genotypes, and more accurately in WT than in Fmr1
+    rats, under both contingencies.
+  source: Figure 1J and legend; Results, A spatial cooperation task for social coordination in
+    rat pairs
+  quote: This predictive relationship exceeded chance levels across all rat pairs. However,
+    prediction accuracy was significantly higher in WT pairs compared with both Fmr1 and
+    mixed-genotype pairs
+  statistics:
+  - about: 100%, WT real against WT shuffled
+    test: Mann-Whitney U test
+    statistic: U = 100.0
+    p: 0.0002
+  - about: 100%, Fmr1 real against Fmr1 shuffled
+    test: Mann-Whitney U test
+    statistic: U = 100.0
+    p: 0.0002
+  - about: 100%, WT real against Fmr1 real
+    test: Mann-Whitney U test
+    statistic: U = 80.00
+    p: 0.0257
+  - about: 50%, WT real against WT shuffled
+    test: Mann-Whitney U test
+    statistic: U = 100.0
+    p: 0.0002
+  - about: 50%, Fmr1 real against Fmr1 shuffled
+    test: Mann-Whitney U test
+    statistic: U = 100.0
+    p: 0.0002
+  - about: 50%, WT real against Fmr1 real
+    test: Mann-Whitney U test
+    statistic: U = 80.00
+    p: 0.0257
+  criterion: As in the Methods (Multinomial logistic regression and cross-validation), per rat
+    and contingency, a scikit-learn multinomial logistic regression (default settings, the
+    standard choice) of the rat's next well on the partner's current well, one-hot encoded,
+    scored by accuracy averaged over fivefold stratified cross-validation; the null is 1,000
+    independent shuffles of the two vectors with the cross-validation repeated, each rat's null
+    value being its mean shuffled accuracy; groups compared with a two-tailed Mann-Whitney U
+    test; 10 WT and 10 Fmr1 rats (U = 100 implies 10 per group). Open, not fixed by the paper is
+    the moment at which the partner's location is read. Readings are the partner's well (a)
+    when the focal rat leaves its current well; (b) at the focal rat's last poke before the
+    choice; (c) at the moment the focal rat arrives at its next well. Also open is whether a
+    rat's sessions of a contingency are pooled (reading p1, as "for each rat individually"
+    suggests) or scored per session and averaged (p2). Reproduced when, under every reading, in
+    both contingencies real accuracy exceeds shuffled in each genotype (p < 0.05) and WT real
+    accuracy exceeds Fmr1 real accuracy (p < 0.05); blocked as methods_underspecified when the
+    readings disagree.
+- id: figs1-mixed-pairs-impaired
+  statement: Mixed WT-Fmr1 pairs also reach lower coordination rates and performance, make fewer
+    transitions and have lower partner-based prediction accuracy than WT pairs.
+  source: Results, A spatial cooperation task for social coordination in rat pairs; Figure S1A to
+    S1D (not read)
+  quote: WT pairs demonstrated significantly higher coordination rates than both Fmr1 pairs ( Fig.
+    1 E , I ) and mixed pairs ( Fig. S1 A ) under both 100% and 50% reward contingencies ...
+    prediction accuracy was significantly higher in WT pairs compared with both Fmr1 and
+    mixed-genotype pairs
+  criterion: The tests of Figure S1 are in the supplement, which was not read. The readings are
+    the tests of the matching Figure 1 panels, with mixed pairs in place of Fmr1 pairs, as in
+    fig1e-match-rate-wt-higher, fig1f-transition-rate-wt-higher, fig1i-performance-wt-higher
+    and fig1j-partner-location-predicts-choice, each under the readings named there.
+    Reproduced when, in both contingencies, WT exceeds mixed pairs with p < 0.05 for match rate
+    and for prediction accuracy; partially reproduced when that holds in one contingency.
+    Transitions and performance are reported.
+- id: fig2b-opaque-barrier-lowers-performance
+  statement: Replacing the transparent divider with an opaque one (with white noise) lowers the
+    performance of WT and Fmr1 pairs compared with standard 50% sessions, with no genotype
+    difference in this effect.
+  source: Figure 2B and legend; Results, Cooperation deficits in Fmr1 rats are not due to sensory
+    or learning deficits
+  quote: Compared with the 50% reward condition, rats showed a significant reduction in
+    performance in the SD sessions ( Fig. 2 B , C )
+  statistics:
+  - about: session-wise, condition effect
+    test: Two-way RM ANOVA
+    statistic: F(1,4) = 9.5069
+    p: 0.03681
+    n: 3 WT and 3 Fmr1 pairs
+  - about: session-wise, genotype x condition
+    test: Two-way RM ANOVA
+    statistic: F(1,4) = 0.0181
+    p: 0.89953
+  - about: WT, transparent (last 9 sessions) against opaque
+    test: Paired t test
+    statistic: t = 12.074
+    p: 0.0068
+    n: 3 WT pairs
+  - about: Fmr1, transparent (last 9 sessions) against opaque
+    test: Paired t test
+    statistic: t = 5.227
+    p: 0.0347
+    n: 3 Fmr1 pairs
+  criterion: Performance per session as Eq. 1. Per pair, the mean over its SD sessions and the
+    mean over its transparent 50% sessions, these being the last 9 transparent sessions (legend,
+    right panel); a mixed-design ANOVA (genotype between, condition within, pair as subject; the
+    df F(1,4) fit 6 pairs) and a paired t test per genotype. Open for the left panel is which
+    transparent sessions are compared; readings are (a) the last 9 transparent sessions, (b) the
+    transparent sessions interspersed with the SD sessions. Reproduced when, under one reading,
+    the condition effect has p < 0.05 with SD lower, both paired t tests have p < 0.05 with SD
+    lower, and the genotype x condition interaction of the same ANOVA has p >= 0.05 (the absence
+    part, judged on that test); partially reproduced when the condition effect holds but a
+    paired test does not, or the interaction is significant.
+- id: fig2c-opaque-barrier-mixed-pairs
+  statement: In mixed pairs the opaque barrier also lowers performance (condition effect with WT
+    pairs), though the paired test within mixed pairs is not significant.
+  source: Figure 2C and legend
+  quote: Comparison of mean performance of rat pairs between standard and sensory-deprived
+    conditions
+  statistics:
+  - about: session-wise, condition effect, WT and mixed pairs
+    test: Two-way RM ANOVA
+    statistic: F(1,6) = 7.8071
+    p: 0.03141
+    n: 3 WT and 5 mixed pairs
+  - about: mixed pairs, standard against sensory-deprived
+    test: Paired t test
+    statistic: t = 2.050
+    p: 0.0625
+    n: 5 mixed pairs
+  criterion: As fig2b-opaque-barrier-lowers-performance, with the 3 WT pairs and 5 mixed pairs.
+    Reproduced when the condition effect has p < 0.05 with SD lower; the mixed-pair paired t
+    test is reported with its p (the paper's is not significant).
+- id: fig2e-visual-cue-learning-similar
+  statement: Both WT and Fmr1 rats learn the visual cue-reward association task; performance rises
+    over sessions at 100% reward, and there is no significant genotype effect or genotype x
+    session interaction at 100% or 50%. The Results also say Fmr1 rats learned more slowly, which
+    the reported interaction tests do not show.
+  source: Figure 2E and legend; Results, Cooperation deficits in Fmr1 rats are not due to sensory
+    or learning deficits
+  quote: Both WT and Fmr1 rats learnt to approach the reward-associated arm based on the visual cue
+    ( Fig. 2 E ), demonstrating intact visual cue-reward associative learning
+  statistics:
+  - about: 100%, genotype
+    test: Linear mixed effects model
+    statistic: F(1,7.7) = 0.825
+    p: 0.391
+    n: 4 WT and 4 Fmr1 rats
+  - about: 100%, session
+    test: Linear mixed effects model
+    statistic: F(1,152.68) = 233.229
+    p: 1.50e-32
+  - about: 100%, genotype x session
+    test: Linear mixed effects model
+    statistic: F(1,152.68) = 1.524
+    p: 0.219
+  - about: 50%, genotype
+    test: Linear mixed effects model
+    statistic: F(1,32.31) = 1.661
+    p: 0.207
+  - about: 50%, genotype x session
+    test: Linear mixed effects model
+    statistic: F(1,34.32) = 1.045
+    p: 0.314
+  criterion: A claim of absence. Percent correct per rat and session; per contingency a linear
+    mixed-effects model with genotype, session (continuous, as the df of 1 show) and their
+    interaction as fixed effects and a random intercept per rat (legend, Figure 2), F tests with
+    Satterthwaite df (the fractional df). Reproduced when the genotype effect has p >= 0.05 in
+    both contingencies and the session effect at 100% has p < 0.05 with performance rising; not
+    reproduced when the genotype effect is significant. The genotype x session terms are
+    reported. The Methods give p = 0.981 for genotype
+    in a model with contingency as a factor; that model (rat random intercept, session, genotype
+    and contingency fixed) is shown as a variant.
+- id: fig2f-cue-latency-wt-shorter
+  statement: In the visual-cue task WT rats respond to the cue with shorter latency than Fmr1
+    rats over pooled responses (100%, 22.0 against 42.2 s; 50%, 14.0 against 28.4 s); in the
+    session-wise mixed-effects models with rat as random intercept the genotype effect is not
+    significant (p = 0.058 at 100%, 0.064 at 50%).
+  source: Figure 2F and legend
+  quote: WT rats respond to the visual LED cue with lower latency relative to Fmr1 −/y rats under
+    both 100% (left) and 50% (right) reward contingencies
+  statistics:
+  - about: 100%
+    test: Mann-Whitney U test
+    p: 6.9e-227
+    n: 2,371 Fmr1 and 4,554 WT responses
+  - about: 50%
+    test: Mann-Whitney U test
+    p: 1.3e-82
+    n: 862 Fmr1 and 1,359 WT responses
+  - about: 100%, session-wise latency, genotype
+    test: Linear mixed effects model
+    statistic: F(1,6.18) = 5.386
+    p: 0.058
+  - about: 50%, session-wise latency, genotype
+    test: Mixed effects model
+    statistic: F(1,6.18) = 5.050
+    p: 0.064
+  expected:
+  - quantity: Fmr1 mean latency, 100%
+    value: 42.2
+    tolerance: 4.22
+    unit: s
+  - quantity: WT mean latency, 100%
+    value: 22.0
+    tolerance: 2.2
+    unit: s
+  - quantity: Fmr1 mean latency, 50%
+    value: 28.4
+    tolerance: 2.84
+    unit: s
+  - quantity: WT mean latency, 50%
+    value: 14.0
+    tolerance: 1.4
+    unit: s
+  - quantity: Fmr1 responses, 100%
+    value: 2371
+    tolerance: 237
+  - quantity: WT responses, 100%
+    value: 4554
+    tolerance: 455
+  criterion: Latency from cue onset to the correct poke, pooled over responses of all rats of a
+    genotype (the n are responses), two-sided Mann-Whitney U test per contingency. Open is
+    whether latency is counted to the correct poke only (the Methods say "latency to correct
+    choice") or to any poke; the reading is the correct poke, with any poke shown as a variant.
+    Reproduced when both tests have p < 0.05 with WT shorter and the means are within tolerance;
+    partially reproduced when the tests hold but a mean is out of tolerance. The session-wise
+    latency models of the legend (genotype, session and their interaction fixed, random
+    intercept per rat, per contingency) are run and reported; they are not the basis of the
+    outcome.
+- id: fig3c-triplets-by-contingency
+  statement: Under 100% reward rats mostly alternate between two arms, while under 50% they
+    explore all three arms through the optimal 1-2-3 or 1-3-2 triplets, especially WT rats.
+  source: Figure 3B and 3C; Results, Development of structured spatial and temporal coordination
+    strategies supports cooperative behavior
+  quote: Parsing each session's transitions into nonoverlapping triplets revealed that rats in the
+    100% condition predominantly alternated between two adjacent arms, while those in the 50%
+    condition engaged in comprehensive exploration of all three arms through either the 1-2-3 or
+    1-3-2 sequences, especially for WT pairs
+  criterion: The paper shows example rats and gives no test. Per rat and session, the choice
+    sequence (opening comment) cut into consecutive nonoverlapping triplets from its first visit
+    (Methods, Choice triplet counts); the fraction of optimal triplets. The Methods list eight
+    possible triplets, though twelve without a repeated well exist (2-1-3, 2-3-1, 3-1-2 and
+    3-2-1 are missing), and name 1-2-3 and 1-3-2 as optimal because they visit all three
+    wells. Readings are (o1) every triplet that visits all three wells is optimal, as the
+    rationale says; (o2) only the literal 1-2-3 and 1-3-2. Per rat, over all its triplets of
+    the first 21 (100%) or first 35 (50%) sessions, the fraction of alternation triplets (x-y-x,
+    the same under both readings) and the fraction of optimal triplets. The paper gives no
+    number for "predominantly"; it is read as more than half. Reproduced when, under every
+    reading, the median WT and median Fmr1 alternation fractions at 100% exceed 0.5, the median
+    WT optimal fraction at 50% exceeds the WT median at 100%, and the WT median optimal fraction
+    at 50% exceeds the Fmr1 median at 50%; blocked as methods_underspecified when the readings
+    disagree. The fractions per rat are reported.
+- id: fig3d-entropy-wt-lower
+  statement: The entropy of WT rats' choice sequences is lower than that of Fmr1 rats, a genotype
+    effect under both contingencies. The legend describes a larger decrease with learning in WT
+    rats, but the genotype x session interaction is not significant at either contingency.
+  source: Figure 3D and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: Session-wise comparison of entropy of choice sequences of WT and Fmr1 −/y rats during
+    100% (left) and 50% (right) reward contingencies, showing significantly higher decrease in
+    entropy with learning for WT rats
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,378) = 9.0872
+    p: 0.002748
+    n: 10 WT and 10 Fmr1 rats
+  - about: 100%, genotype x session (F value not printed)
+    test: Two-way RM ANOVA
+    p: 0.565329
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,630) = 112.9572
+    p: 2.0e-16
+    p_relation: "<"
+    n: 10 WT and 10 Fmr1 rats
+  - about: 50%, genotype x session
+    test: Two-way RM ANOVA
+    statistic: F(34,630) = 1.2891
+    p: 0.12879
+  criterion: Per rat and session, the sample entropy of the full choice sequence (Methods). The
+    embedding dimension m and tolerance r are not given; with wells coded 1, 2, 3 any r below 1
+    means exact matching, the usual r = 0.2 SD falls there, and readings are m = 2 (the
+    standard) and m = 3 (the triplet unit of the Methods), with r = 0.2 times the sequence SD.
+    The genotype effect of the two-way ANOVA under readings A and B, first 21 and first 35
+    sessions. Reproduced when, under every reading, in both contingencies the genotype effect
+    has p < 0.05 with WT entropy lower; partially reproduced when, under every reading, that
+    holds in the 50% contingency only; blocked as methods_underspecified when the readings
+    disagree. The slope of entropy over sessions per genotype and the genotype x session terms are
+    reported.
+- id: fig3e-exploration-efficiency-wt-higher
+  statement: WT rats have higher exploration efficiency (fraction of optimal choice triplets) than
+    Fmr1 rats, strongly in the 50% condition and modestly in the 100% condition.
+  source: Figure 3E and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: Exploration efficiencies of WT and Fmr1 −/y rats during 100% (left) and 50% (right)
+    contingency sessions, showing significantly higher exploration efficiency for WT rats in the
+    50% condition
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,378) = 4.0001
+    p: 0.04621
+    n: 10 WT and 10 Fmr1 rats, 21 sessions
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,594) = 42.6457
+    p: 1.410e-10
+    n: 10 WT and 10 Fmr1 rats, 33 sessions
+  criterion: Exploration efficiency per rat and session (Methods, Eq. 2), the number of optimal
+    triplets over all nonoverlapping triplets, under the readings o1 and o2 of optimal named in
+    fig3c-triplets-by-contingency; the genotype
+    effect of the two-way ANOVA under readings A and B; first 21 sessions at 100%, and at 50%
+    the first 33 and first 35 sessions. Reproduced when at 50% the genotype effect has p < 0.05
+    with WT higher under every reading; the 100% result is reported and, if also p < 0.05 with
+    WT higher, the claim is reproduced in full, otherwise partially.
+- id: fig3g-virtual-agent-performance-similar
+  statement: When foraging with a virtual agent under a 50% contingency, WT and Fmr1 rats perform
+    alike.
+  source: Figure 3G and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: In this task, both WT and Fmr1 rats achieved similar levels of task performance with
+    comparable learning rates ( Fig. 3 G )
+  statistics:
+  - about: genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,56) = 0.0032
+    p: 0.9549
+    n: 4 WT and 5 Fmr1 rats, 8 sessions
+  - about: mean performance across genotypes
+    test: Mann-Whitney U test
+    p: 0.05
+    p_relation: ">"
+  criterion: A claim of absence. Percent of correct rewarded responses per rat and session
+    (Methods), 8 sessions; the genotype effect of the two-way ANOVA under reading A, the test
+    the reported df show (as an absence claim it is judged on that test alone; reading B is
+    shown as a variant), and a Mann-Whitney U test on per-rat means. Reproduced when the genotype effect has p >= 0.05;
+    not reproduced when it is significant. The Mann-Whitney result and the group means are
+    reported.
+- id: fig3h-virtual-agent-efficiency-similar
+  statement: With a virtual agent, WT and Fmr1 rats have similar exploration efficiency; both
+    adopt structured transition strategies.
+  source: Figure 3H and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: Notably, both genotypes independently demonstrated the capacity to adopt such structured
+    transition strategies when interacting with the virtual agent ( Fig. 3 H )
+  statistics:
+  - about: genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,56) = 0.0771
+    p: 0.7823
+    n: 4 WT and 5 Fmr1 rats, 8 sessions
+  criterion: A claim of absence. Exploration efficiency per rat and session as in
+    fig3e-exploration-efficiency-wt-higher (optimal as reading o1, the Methods' rationale, with
+    o2 shown as a variant); the genotype effect of the two-way ANOVA under reading A, the test
+    the reported df show (reading B shown as a variant). Reproduced when the genotype effect has p >= 0.05; not reproduced when it
+    is significant. The group means are reported.
+- id: figs2-jaccard-similarity
+  statement: Within pairs, choice sequences are similar for both genotypes under 100% reward, but
+    under 50% reward WT pairs have more similar choice sequences than Fmr1 pairs; in the
+    sensory-deprived condition similarity falls in both genotypes alike.
+  source: Results, Development of structured spatial and temporal coordination strategies
+    supports cooperative behavior; Figure S2 (not read)
+  quote: Under the 100% reward condition, Jaccard similarity ( Fig. S2 A ; see Materials and
+    Methods) between the choice sequences of paired rats was high for both genotypes ( Fig. S2
+    B,C ). In contrast, under the 50% probabilistic condition, WT pairs exhibited significantly
+    higher similarity in their choice sequences compared with Fmr1 pairs ... similarity decreased
+    comparably across genotypes
+  criterion: The Jaccard similarity of Eq. 3, every session of one rat against every session of
+    its partner (Methods, Cross-rat choice sequence similarity analysis). The test and the
+    summary per pair are in the unread supplement. Open are the sets compared; readings are the
+    sets of (a) distinct ordered transitions (from-well, to-well), (b) distinct nonoverlapping
+    triplets, (c) distinct overlapping triplets. Open is the summary per pair; readings are the
+    mean over (i) all entries of the matrix, (ii) the lower triangle, (iii) the diagonal
+    (same-session pairs). The genotype test is not in the text read; the stand-in is a two-sided
+    Mann-Whitney U test on per-pair values (5 against 5), the test the paper uses for per-rat
+    means in Figures 3G and 5D. It is the reader's choice, and the claim should be revised once
+    Figure S2 is read.
+    Reproduced when, under every reading, the 50% WT similarity exceeds Fmr1 with p < 0.05;
+    blocked as methods_underspecified when the readings disagree. The 100% and SD values are
+    reported.
+- id: fig4b-arrival-lag-wt-shorter
+  statement: During match events WT pairs arrive at the wells with shorter lags between the two
+    rats than Fmr1 pairs, under both contingencies; in WT pairs the lag falls over 100% training.
+  source: Figure 4B and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: We observed that, under the 100% reward contingency, the mean arrival lag during match
+    events progressively decreased in WT pairs, whereas it remained consistently elevated in Fmr1
+    pairs ( Fig. 4 B ). This difference persisted under the 50% reward contingency, with WT pairs
+    exhibiting significantly shorter arrival lags than Fmr1 pairs
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 7.6763
+    p: 0.006225
+    n: 5 WT and 5 Fmr1 pairs
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,280) = 28.1429
+    p: 2.293e-7
+    n: 5 WT and 5 Fmr1 pairs
+  criterion: The Methods do not define arrival lag (the legend refers to them). Per match, the
+    absolute difference between the two rats' arrival times at the matched wells; readings of
+    arrival are (a) the start of the rat's first poke at that well, (b) the first frame its head
+    is within 40 pixels of the well centre (the radius of the Methods' cross-correlation
+    section). Mean per pair and session; genotype effect of the two-way ANOVA under readings A
+    and B; first 21 and first 35 sessions. Reproduced when, under every reading, the genotype
+    effect has p < 0.05 with WT lower in both contingencies; blocked as methods_underspecified
+    when readings disagree. The slope of the WT lag over the 100% sessions is reported.
+- id: fig4c-departure-lag-wt-shorter
+  statement: After match events WT rats depart from the wells with shorter lags between partners
+    than Fmr1 rats, under both contingencies.
+  source: Figure 4C and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: A similar pattern emerged for mean departure lag following match events, with WT rats
+    departing more promptly than Fmr1 rats ( Fig. 4 C )
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 17.0918
+    p: 5.612e-5
+    n: 5 WT and 5 Fmr1 pairs
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,264) = 21.1217
+    p: 6.686e-6
+    n: 5 WT and 5 Fmr1 pairs, 33 sessions
+  criterion: Departure lag is not defined in the Methods. Per match, the absolute difference
+    between the two rats' departure times from the matched wells; readings of departure are (a)
+    the end of the rat's last poke at that well before it visits another, (b) the last frame its
+    head is within 40 pixels of the well centre. Mean per pair and session; genotype effect of
+    the two-way ANOVA under readings A and B; first 21 sessions at 100%, first 33 and first 35
+    at 50%. Reproduced when, under every reading, p < 0.05 with WT lower in both contingencies;
+    blocked as methods_underspecified when readings disagree.
+- id: fig4d-dwell-time
+  statement: Fmr1 rats spend longer at reward wells per visit than WT rats (Results), though the
+    legend's genotype effects are not significant (p = 0.25 at 100%, p = 0.063 at 50%).
+  source: Figure 4D and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: Additionally, Fmr1 rats exhibited longer dwell times at reward wells compared with WT
+    rats ( Fig. 4 D )
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,378) = 1.3544
+    p: 0.2451
+    n: 10 WT and 10 Fmr1 rats
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,630) = 3.4673
+    p: 0.06306
+    n: 10 WT and 10 Fmr1 rats
+  criterion: Dwell time per visit, for all visits, match or not (Results); readings are (a) from
+    the first poke to the end of the last poke at the well before the rat visits another, (b)
+    the time the head is within 40 pixels of the well centre. Mean per rat and session; genotype
+    effect of the two-way ANOVA under reading A, the test the reported df show (B as a
+    variant). The Results state a difference that the
+    legend's tests do not support. Reproduced when the Fmr1 mean exceeds the WT mean in both
+    contingencies and the genotype effect has p >= 0.05 in both, as the legend reports;
+    partially reproduced when the Fmr1 mean is higher in both but the genotype effect is
+    significant in one or both (the Results sentence holds, the legend's tests do not); not
+    reproduced when WT dwell times are longer.
+- id: fig4eg-cross-correlation-wt-higher
+  statement: Cross-correlation of the two rats' well-arrival times has peaks above shuffled
+    controls in both genotypes, but correlation is higher in WT pairs and only WT pairs show
+    prominent peaks near zero lag (near-synchronous transitions).
+  source: Figure 4E to 4G and legends; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: Cross-correlation of arrival times at reward wells revealed significant peaks at multiple
+    lags for both groups, exceeding shuffled controls ... Importantly, only WT rats showed
+    prominent peaks near zero lag ... Fmr1 rats lacked this short-lag synchrony
+  statistics:
+  - about: 100%, genotype
+    test: Linear mixed-effects model
+    statistic: F(1,8524) = 18.3661
+    p: 1.843e-5
+  - about: 100%, genotype x lag
+    test: Linear mixed-effects model
+    statistic: F(40,8524) = 2.9710
+    p: 1.147e-9
+  - about: 50%, genotype
+    test: Linear mixed-effects model
+    statistic: F(1,14094) = 94.3281
+    p: 2.2e-16
+    p_relation: "<"
+  - about: 50%, genotype x lag
+    test: Linear mixed-effects model
+    statistic: F(40,14094) = 4.7761
+    p: 2.2e-16
+    p_relation: "<"
+  criterion: As the Methods (Cross-correlation analysis of well arrivals) give it. Head position
+    assigned to the nearest well when within 40 pixels of its centre, else null; downsampled to
+    1 Hz; an arrival where the well identity differs from the preceding time point; binary
+    arrival series per rat; scipy.signal.correlate in full mode divided by the product of the
+    two series' Euclidean norms; positive lag when rat 2 follows rat 1. The df (40 for lag) fix
+    41 lags, -20 to +20 s. Open are the well centres (the reading, the median head position
+    during pokes at each well), the downsampling (readings, every 30th frame; the modal well in
+    each 1 s bin), whether a change from a well to null and back to the same well is an arrival
+    (readings, yes as the text says; no), and the shuffle (the reading, a circular shift of one
+    rat's series, as in Figure 1H). Per pair, session and lag, the coefficient; a linear
+    mixed-effects model coefficient ~ genotype x lag (lag categorical) with a random intercept
+    per pair (the df fit one row per pair, session and lag). Reproduced when, in both
+    contingencies, genotype and genotype x lag have p < 0.05 with WT higher, and the mean WT
+    coefficient at lags -1 to +1 s exceeds the Fmr1 value; the near-zero peaks are shown per
+    genotype. The paper gives no test for the peaks exceeding shuffled controls; observed and
+    shuffled coefficients per genotype and lag are reported, not judged.
+- id: fig4h-peak-lag-distribution
+  statement: The distribution of lags at peak cross-correlation differs between WT and Fmr1
+    pairs in the 50% condition but not in the 100% condition.
+  source: Figure 4H and legend; Results, Development of structured spatial and temporal
+    coordination strategies supports cooperative behavior
+  quote: Correspondingly, the distribution of lags at peak correlation coefficients differed
+    between WT and Fmr1 rats, particularly under the 50% condition ( Fig. 4 H )
+  statistics:
+  - about: 100%
+    test: KS test
+    p: 0.05
+    p_relation: ">"
+  - about: 50%
+    test: KS test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig4eg-cross-correlation-wt-higher
+  criterion: The absolute lag at the maximum of each session's cross-correlation, as in
+    fig4eg-cross-correlation-wt-higher, pooled over sessions and pairs per genotype; a
+    two-sample KS test (scipy.stats.ks_2samp). Open is the range searched for the maximum;
+    readings are (a) -20 to +20 s, the lags of Figure 4G; (b) all lags of the full correlation.
+    Reproduced when, under every reading, the 50% test has p < 0.01 and the 100% test has p >=
+    0.05; partially reproduced when the 50% test is significant and the 100% test is too.
+- id: fig4i-peak-correlation-wt-higher
+  statement: Session-wise peak cross-correlation coefficients are higher in WT than in Fmr1
+    pairs under both contingencies.
+  source: Figure 4I and legend
+  quote: Session wise peak correlation coefficients for WT and Fmr1 −/y rat pairs, showing greater
+    temporal coordination for WT rat pairs
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 13.1922
+    p: 0.0003731
+    n: 5 WT and 5 Fmr1 pairs
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,280) = 18.7522
+    p: 2.075e-5
+    n: 5 WT and 5 Fmr1 pairs
+  depends_on:
+  - fig4eg-cross-correlation-wt-higher
+  criterion: The maximum coefficient of each pair-session cross-correlation (fig4eg), under the
+    two peak ranges of fig4h-peak-lag-distribution; genotype effect of the two-way ANOVA under
+    readings A and B. Reproduced when, under every reading, both contingencies give p < 0.05
+    with WT higher; blocked as methods_underspecified when readings disagree.
+- id: fig5d-leading-near-half
+  statement: Leadership is not fixed; on average rats of both genotypes lead about half of the
+    match events, with no genotype difference in the mean probability of leading estimated by a
+    state-space model.
+  source: Figure 5C and 5D and legends; Results, Dynamic turn-taking in the initiation of
+    coordinated responses
+  quote: On average, both genotypes led approximately half of the match events under both 100%
+    and 50% reward contingencies ( Fig. 5 D , E )
+  statistics:
+  - about: mean probability of leading, WT against Fmr1, each contingency
+    test: Mann-Whitney U test
+    p: 0.05
+    p_relation: ">"
+  expected:
+  - quantity: mean probability of leading, each genotype and contingency
+    value: 0.5
+    tolerance: 0.05
+  criterion: Per match the leader is the rat whose poke at its matched well began first (Methods,
+    Assignment of leader and follower). Per rat, the binary leadership series over all its match
+    events of a contingency, sessions in order, fitted with the state-space model of Smith et
+    al. (2004) as the Methods give it (Gaussian random walk, logistic observation, EM with
+    Newton-Raphson). b0 is not given; the reading is that of Smith et al. (2004), b0 = log(p0 /
+    (1 - p0)) with p0 = 0.5, chance for two rats, so b0 = 0. The rat's mean of p_k over events;
+    a two-sided Mann-Whitney U test of WT against Fmr1 rats (10 and 10) per contingency. A claim
+    of absence for the genotype test. Reproduced when both Mann-Whitney tests have p >= 0.05 and
+    every genotype mean is within 0.45 to 0.55; partially reproduced when the tests are not
+    significant but a mean is outside that range; not reproduced when a test is significant.
+    Since every pair is of one genotype and each event has one leader, the raw proportions of
+    the two rats of a pair sum to 1, so a genotype mean near 0.5 follows by construction; the
+    per-rat means are reported to show the spread.
+- id: fig5e-leading-difference-50
+  statement: The within-pair difference in the proportion of leading events does not differ by
+    genotype at 100%, but shows a small significant genotype effect at 50%, present at the start
+    of training and gone later in training (Results).
+  source: Figure 5E and legend; Results, Dynamic turn-taking in the initiation of coordinated
+    responses
+  quote: However, under the 50% reward condition, a small but significant genotype-specific
+    difference emerged, with WT and Fmr1 rats differing significantly in their likelihood of
+    assuming the leader role at the start of training ( Fig. 5 E )
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 1.6179
+    p: 0.2051
+    n: 5 WT and 5 Fmr1 pairs
+  - about: 50%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,264) = 4.1638
+    p: 0.04229
+    n: 5 WT and 5 Fmr1 pairs, 33 sessions
+  criterion: Per pair and session, the difference between the two rats' proportions of match
+    events led; the sign is not given and rat order is arbitrary, so the reading is the absolute
+    difference, with the signed difference (first rat minus second, as the dataset orders them)
+    as a variant. Genotype effect of the two-way ANOVA under readings A and B; first 21 sessions
+    at 100%, first 33 and first 35 at 50%. The 100% part is a claim of absence, judged on
+    reading A (the test the reported df show) with the absolute difference. Reproduced when the
+    50% genotype effect has p < 0.05 under every reading and the 100% effect has p >= 0.05; partially reproduced when the 50%
+    effect holds under some readings only. The genotype means of the first five and the last
+    five analysed 50% sessions are reported (the paper does not say which sessions are the
+    start; five is a display choice and decides nothing).
+- id: figs3-leadership-history
+  statement: A rat's chance of leading on a given match event depends on whether it led on the
+    preceding events.
+  source: Results, Dynamic turn-taking in the initiation of coordinated responses; Figure S3C and
+    S3D (not read)
+  quote: Furthermore, the likelihood of a rat assuming the leader role on a given trial was
+    modulated by its leadership status over the preceding trials
+  criterion: The analysis and its test are in the unread supplement (Figure S3C, S3D); the Methods
+    do not describe it, so no test can be taken from the text read. Until the supplement is read
+    into this file, the claim is blocked as methods_underspecified. Leader per match event as in
+    fig5d-leading-near-half. Shown, not judged, are per rat (a) P(lead | led the previous event)
+    against P(lead | followed it), compared across rats by a Wilcoxon signed-rank test; (b) a
+    logistic regression of leading on lead status in each of the previous 1 to 3 events. These
+    are the reader's choices, not the paper's.
+- id: fig6-marl-partner-aware
+  statement: In a multiagent reinforcement learning model of the task, partner-aware agents
+    learn to coordinate far better than partner-unaware and random agents, reaching about 70%
+    coordination efficiency after the switch to 50% reward.
+  source: Figure 6C and legend; Results, Differential reliance on two hierarchical strategies for
+    successful coordination
+  quote: Partner-aware agent pairs achieved markedly higher performance than both partner-unaware
+    and random agent pairs ( Fig. 6 C )
+  data: with_inputs
+  statistics:
+  - about: agent type
+    test: Repeated-measures ANOVA
+    statistic: F(2,198) = 225.34
+    p: 0.0001
+    p_relation: "<"
+  - about: partner-aware against partner-unaware and random
+    test: post hoc Wilcoxon tests
+    p: 0.0001
+    p_relation: "<"
+  - about: agent type
+    test: Friedman test
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: partner-aware coordination efficiency after the switch
+    value: 70
+    tolerance: 7
+    unit: "%"
+  criterion: A simulation, not a test on recorded data; no code is published. As the Methods
+    give it, tabular Q-learning, two agents on three-location grids, one agent chosen at random
+    to act first each timestep, reward +1 when both choose the same location and it differs from
+    the last rewarded location, epsilon decaying exponentially from 1.0 to 0.01 over 90% of
+    episodes, 100 episodes at 100% then 100 at 50% reward. Not given are the learning rate,
+    discount factor, timesteps per episode, number of runs and the state encoding; these must be
+    named as readings by whoever runs it. Reproduced when partner-aware agents exceed both other
+    types (Wilcoxon p < 0.05 over episodes) and reach 63 to 77% after the switch.
+- id: fig7b-fmr1-more-asynchronous-matches
+  statement: Under 50% reward, a larger proportion of Fmr1 pairs' matches occur in asynchronous
+    trials (rats starting at different wells) than WT pairs' matches; at 100% there is no
+    genotype difference.
+  source: Figure 7A and 7B and legend; Results, Differential reliance on two hierarchical
+    strategies for successful coordination
+  quote: whereas Fmr1 pairs showed a higher proportion of matches occurring during asynchronous
+    trials, particularly under the 50% reward condition ( Fig. 7 A , B )
+  statistics:
+  - about: 100%, genotype
+    test: Two-way RM ANOVA
+    statistic: F(1,168) = 1.3859
+    p: 0.2407586
+    n: 5 WT and 5 Fmr1 pairs
+  - about: 50%, genotype
+    test: Mixed-effects linear model
+    statistic: F(1,280) = 26.002
+    p: 6.292e-7
+    n: 5 WT and 5 Fmr1 pairs
+  criterion: A match is synchronous when, before it, the two rats were at corresponding wells and
+    moved together to the matched wells, and asynchronous when they started from different
+    (noncorresponding) wells (Results). Per pair and session, the proportion of matches that are
+    asynchronous. At 100%, a claim of absence, the genotype effect of the two-way ANOVA under
+    reading A, the test the reported df show (B as a variant); at
+    50%, a linear mixed-effects model with genotype, session and their interaction and a random
+    intercept per pair (the df F(1,280) also fit reading A, which is shown). Reproduced when the
+    50% genotype effect has p < 0.05 with Fmr1 higher and the 100% effect has p >= 0.05.
+- id: fig7c-trial-duration-vs-performance
+  statement: Session mean trial duration is negatively correlated with cooperative performance in
+    both genotypes (WT R = -0.51, Fmr1 R = -0.40).
+  source: Figure 7C and legend; Results, Differential reliance on two hierarchical strategies for
+    successful coordination
+  quote: Next, we found that session-level mean trial duration was negatively correlated with
+    cooperative performance, indicating that shorter, more efficient trials were associated with
+    higher performance ( Fig. 7 C )
+  statistics:
+  - about: WT
+    test: Pearson's correlation
+    statistic: R = -0.51
+    p: 2.79e-29
+  - about: Fmr1
+    test: Pearson's correlation
+    statistic: R = -0.40
+    p: 5.11e-8
+  expected:
+  - quantity: WT Pearson R
+    value: -0.51
+    tolerance: 0.051
+  - quantity: Fmr1 Pearson R
+    value: -0.40
+    tolerance: 0.04
+  criterion: Pearson correlation of session mean trial duration with performance (Eq. 1), 100%
+    and 50% sessions combined. The trial is not defined for this panel; readings are (a) the
+    asynchronous trial of the gaze analysis, from the rats being at their initial wells to the
+    follower's departure (Methods); (b) the interval between consecutive matches; (c) the
+    interval between consecutive transitions of the pair. The p-values imply a different number
+    of points per genotype; readings of the points are one per pair and session, and one per
+    rat and session. Reproduced when, under one reading, both R are within tolerance and p <
+    0.05; partially reproduced when both are negative with p < 0.05 but out of tolerance.
+- id: fig7e-gaze-final-quartile
+  statement: Follower-only gaze toward the leader increases from the first to the later quartiles
+    of a trial and is greatest just before departure; mutual gaze shows no quartile effect, and
+    there is no genotype effect.
+  source: Figure 7D and 7E and legend; Results, Differential reliance on two hierarchical
+    strategies for successful coordination
+  quote: A mixed-effects ANOVA revealed significant effects of quartile for follower-only gaze
+  statistics:
+  - about: quartile, follower-only gaze
+    test: mixed-effects ANOVA
+    statistic: F(3,54) = 11.77, partial eta squared = 0.40
+    p: 0.001
+    p_relation: "<"
+  - about: quartile, mutual gaze
+    test: mixed-effects ANOVA
+    statistic: F(3,54) = 0.56
+    p: 0.05
+    p_relation: ">"
+  - about: follower-only gaze, quartile 1 against quartiles 2, 3 and 4
+    test: post hoc comparisons
+    p: 0.05
+    p_relation: "<"
+    corrected: Holm
+  criterion: Asynchronous trials as the Methods define them (rats at distinct, nonopposing wells;
+    the follower moves while the leader waits; the trial ends when the follower departs). The
+    bearing angle of Eq. 11, from the neck-to-head vector and the head-to-partner-body vector,
+    peer-directed below 40 degrees. Per trial quartile, the fraction of frames with follower-only
+    gaze (follower toward leader, leader not toward follower) and with mutual gaze; mean per rat
+    and quartile; a mixed ANOVA with genotype between and quartile within, rat as subject (the
+    df fit 20 rats), Holm-corrected post hoc tests. Which sessions enter is not given; the
+    reading is all analysed sessions of both contingencies. Reproduced when the follower-only
+    quartile effect has p < 0.001 with quartile 4 highest, the Holm-corrected post hoc tests
+    show quartile 1 below each of quartiles 2, 3 and 4 (p < 0.05), the mutual-gaze effect has
+    p >= 0.05, and genotype and its interactions have p >= 0.05.
+- id: fig7g-gaze-100-late
+  statement: Under 100% reward, follower-only gaze becomes a stronger predictor of matching over
+    training, driven by Fmr1 pairs; in the late block the Fmr1-minus-WT contrast is positive for
+    follower-only gaze (0.34) and mutual gaze (0.60), while early and mid contrasts are not
+    significant.
+  source: Figure 7F and 7G and legends; Results, Differential reliance on two hierarchical
+    strategies for successful coordination; Table S1 (not read)
+  quote: Under the 100% reward condition, the models revealed that follower-only gaze became an
+    increasingly strong predictor of successful cooperation across training ( Fig. 7 G , left;
+    Table S1 ). Post hoc comparisons indicated that this effect was driven primarily by Fmr1
+    pairs
+  statistics:
+  - about: follower-only gaze, late, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.34 ± 0.15
+    p: 0.02
+    corrected: Tukey
+  - about: mutual gaze, late, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.60 ± 0.28
+    p: 0.03
+    corrected: Tukey
+  - about: follower-only gaze, early, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = -0.03 ± 0.21
+    p: 0.89
+  - about: follower-only gaze, mid, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.03 ± 0.18
+    p: 0.87
+  expected:
+  - quantity: late follower-only gaze contrast, Fmr1 - WT
+    value: 0.34
+    tolerance: 0.15
+  - quantity: late mutual gaze contrast, Fmr1 - WT
+    value: 0.60
+    tolerance: 0.28
+  depends_on:
+  - fig7e-gaze-final-quartile
+  criterion: Per asynchronous trial at 100% (fig7e), outcome match or not, predictors follower-only
+    and mutual gaze durations normalised by trial duration (Results), genotype and session
+    block; the model of Eq. 12, logit(P(match)) ~ (gF + gM) * Genotype * Block + (1 | animal /
+    session), binomial, logit link (glmmTMB), and between-genotype contrasts of emtrends per
+    block, Tukey adjusted (Methods, Post hoc analyses). Tolerances are the paper's stated
+    spread (the ± values). Open are the blocks (readings, thirds of the 21 sessions as 7, 7 and
+    7; thirds by the pair's own session count) and the scaling of gF and gM ("normalized";
+    readings, fraction of trial duration as the Results say; that fraction z-scored). Reproduced
+    when, under one reading, both late contrasts are positive with p < 0.05 and within
+    tolerance and the early and mid follower-only contrasts have p >= 0.05; partially
+    reproduced when the late contrasts are positive and significant but out of tolerance.
+- id: fig7h-gaze-50-fmr1-follower
+  statement: Under 50% reward, Fmr1 pairs depend more than WT pairs on follower-only gaze in every
+    training block (contrasts 0.38, 0.39 and 0.44), while mutual-gaze contrasts are not
+    significant.
+  source: Figure 7H and legend; Results, Differential reliance on two hierarchical strategies for
+    successful coordination; Table S2 (not read)
+  quote: Fmr1 pairs remained significantly more dependent on follower-only gaze, i.e., the
+    follower monitoring the leader throughout, compared with WT pairs ( Fig. 7 H , left)
+  statistics:
+  - about: follower-only gaze, early, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.38 ± 0.10
+    p: 4.28e-5
+    corrected: Tukey
+  - about: follower-only gaze, mid, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.39 ± 0.09
+    p: 6.76e-6
+    corrected: Tukey
+  - about: follower-only gaze, late, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.44 ± 0.10
+    p: 4.96e-6
+    corrected: Tukey
+  - about: mutual gaze, late, Fmr1 - WT
+    test: GLMM post hoc contrast
+    statistic: estimate = 0.20 ± 0.18
+    p: 0.28
+  expected:
+  - quantity: early follower-only gaze contrast, Fmr1 - WT
+    value: 0.38
+    tolerance: 0.10
+  - quantity: mid follower-only gaze contrast, Fmr1 - WT
+    value: 0.39
+    tolerance: 0.09
+  - quantity: late follower-only gaze contrast, Fmr1 - WT
+    value: 0.44
+    tolerance: 0.10
+  depends_on:
+  - fig7e-gaze-final-quartile
+  criterion: As fig7g-gaze-100-late, for the 50% sessions; block readings are thirds of the 35
+    sessions (12, 12 and 11, or 11, 12 and 12) and thirds by each pair's own session count.
+    Reproduced when, under one reading, all three follower-only contrasts are positive with p <
+    0.05 and within tolerance and the three mutual-gaze contrasts have p >= 0.05; partially
+    reproduced when the follower-only contrasts are positive and significant but out of
+    tolerance.
+- id: fig8b-partner-history-cooperation
+  statement: After a partner's cooperative choice, WT rats are more likely to cooperate under both
+    contingencies, Fmr1 rats only under 100% reward.
+  source: Figure 8B and legend; Results, Partner cooperation history shapes cooperative behavior
+  quote: For the 100% reward contingency, both WT and Fmr1 rats were more likely to cooperate after
+    their partner had just done so in the previous trial ( Fig. 8 B ). In contrast, for the 50%
+    reward contingency, only WT rats adjusted their behavior based on recent partner choices
+  statistics:
+  - about: WT, 100%
+    test: Wilcoxon signed-rank test
+    p: 0.01
+    p_relation: "<"
+  - about: WT, 50%
+    test: Wilcoxon signed-rank test
+    p: 0.01
+    p_relation: "<"
+  - about: Fmr1, 100%
+    test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: "<"
+  - about: Fmr1, 50%
+    test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: ">"
+  criterion: Follower trials as the Methods define them (the leader enters an arm first; the
+    follower cooperates when it chooses the matching arm). For each follower trial, the
+    partner's choice on its own most recent follower trial (Methods, Partner behavior history
+    analysis). Per rat, P(cooperate | partner cooperated) and P(cooperate | partner did not);
+    a Wilcoxon signed-rank test across rats per genotype and contingency (10 per genotype).
+    Open is whether a partner's most recent trial is sought within the session only or across
+    sessions; the reading is within the session, as Δt is a within-session interval, with
+    across sessions as a variant. Reproduced when WT is significant (p < 0.05, higher after
+    cooperation) at 100% and 50%, Fmr1 at 100%, and Fmr1 at 50% is not significant.
+- id: fig8d-fmr1-longer-delta-t
+  statement: The time between the partner's most recent follower choice and the subject's current
+    follower choice is longer in Fmr1 than in WT rats under both contingencies.
+  source: Figure 8D and legend
+  quote: Across both contingencies, Fmr1 −/y rats showed significantly longer partner-referenced Δ
+    t intervals than WT rats
+  statistics:
+  - about: 100%
+    test: Mann-Whitney U test
+    statistic: U = 6,515,700
+    p: 0.0001
+    p_relation: "<"
+  - about: 50%
+    test: Mann-Whitney U test
+    statistic: U = 4.25 × 10^6
+    p: 0.0001
+    p_relation: "<"
+  depends_on:
+  - fig8b-partner-history-cooperation
+  criterion: Δt per follower trial as in fig8b-partner-history-cooperation, pooled over trials of
+    all rats per genotype, a two-sided Mann-Whitney U test per contingency. Reproduced when both
+    tests have p < 0.0001 with the Fmr1 median longer; the U values are reported.
+- id: fig8e-glmm-partner-cooperation
+  statement: In a GLMM of cooperation on each follower trial, the partner's previous cooperation
+    has a larger effect in WT rats at 50% (beta 0.77) than in Fmr1 rats (beta 0.13), a
+    significant genotype interaction (beta 0.64); at 100% both genotypes show an effect (WT 0.36,
+    Fmr1 0.26).
+  source: Figure 8E and legend; Results, Partner cooperation history shapes cooperative behavior
+  quote: However, under the 50% contingency only WT rats adjusted their choices based on recent
+    partner behavior, while Fmr1 rats did not ( Fig. 8 E )
+  statistics:
+  - about: WT, 100%, partner cooperation
+    test: GLMM fixed effect
+    statistic: beta = 0.36
+    p: 0.001
+    p_relation: "<"
+  - about: WT, 50%, partner cooperation
+    test: GLMM fixed effect
+    statistic: beta = 0.77
+    p: 0.001
+    p_relation: "<"
+  - about: Fmr1, 100%, partner cooperation
+    test: GLMM fixed effect
+    statistic: beta = 0.26
+    p: 0.01
+    p_relation: "<"
+  - about: Fmr1, 50%, partner cooperation
+    test: GLMM fixed effect
+    statistic: beta = 0.13
+    p: 0.01
+    p_relation: "<"
+  - about: genotype x partner cooperation, 50%
+    test: GLMM fixed effect
+    statistic: beta = 0.64
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: WT partner-cooperation beta, 100%
+    value: 0.36
+    tolerance: 0.036
+  - quantity: WT partner-cooperation beta, 50%
+    value: 0.77
+    tolerance: 0.077
+  - quantity: Fmr1 partner-cooperation beta, 100%
+    value: 0.26
+    tolerance: 0.026
+  - quantity: Fmr1 partner-cooperation beta, 50%
+    value: 0.13
+    tolerance: 0.013
+  - quantity: genotype x partner-cooperation beta, 50%
+    value: 0.64
+    tolerance: 0.064
+  depends_on:
+  - fig8b-partner-history-cooperation
+  criterion: Per contingency, a binomial GLMM (logit) of cooperation on each follower trial with
+    fixed effects partner's previous choice (binary), Δt (continuous) and their interaction,
+    each interacting with genotype, plus covariates for the subject's own recent choice
+    history, random intercepts for rat and session (Methods, Generalized linear mixed-effects
+    modeling; pymer4 0.8 / lme4). Open are the own-history covariates (readings, the subject's
+    own previous follower choice; its previous two), the scaling of Δt (readings, seconds;
+    z-scored), and how the per-genotype betas are read (readings, simple effects with WT as
+    the reference level and with Fmr1 as reference). The legend gives Fmr1 at 50% beta 0.13
+    with p < 0.01 while the Results say Fmr1 rats did not adjust; the finding tested is the
+    50% genotype interaction and the WT effects. Reproduced when, under one reading, the 50%
+    interaction is positive with p < 0.001 (WT larger), the WT effects are positive with p <
+    0.001, and the betas are within tolerance; partially reproduced when the signs and
+    significance hold but a beta is out of tolerance.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1h-above-chance-late. The criterion counted 3 of 5 pairs as reproduced, a threshold the paper does not give; the Results say both genotypes' pairs, so every pair is now required, with 3 of 5 as partial. Which rat is shifted is a method detail, so the outcome must now hold for both shifted-rat readings.
+  - fig1j-partner-location-predicts-choice. Reproduced "under one reading" of method details (when the partner's location is read, pooling of sessions); the protocol requires every reading to agree for method details, else methods_underspecified. Changed to that.
+  - fig2b-opaque-barrier-lowers-performance. The statement claims no genotype difference in the effect, but the criterion did not judge it; added the genotype x condition interaction of the legend's ANOVA as the absence test.
+  - fig2e-visual-cue-learning-similar. The statement said performance rises over sessions with genotypes alike; the session effect is significant only at 100% (p = 0.301 at 50%), and the Results say Fmr1 rats learned more slowly. Statement corrected, both genotype x session terms added to statistics.
+  - fig2f-cue-latency-wt-shorter. The same panel's session-wise mixed models (rat random intercept) find no significant genotype effect (p = 0.058, 0.064); the statement and statistics now say so, and the models are reported.
+  - fig3c-triplets-by-contingency. The criterion compared fractions with a chance level the paper never uses, and under reading o2 a fraction below 1/6 does not express "predominantly alternated". Replaced with the fraction of alternation triplets (more than half, named as the reading of "predominantly") and the 50% against 100% and WT against Fmr1 comparisons the Results make.
+  - fig3d-entropy-wt-lower. The statement said WT entropy falls more with learning, but the genotype x session interactions are not significant (p = 0.565, 0.129); statement corrected and the interactions recorded. The embedding dimension m is a method detail, so every reading must agree, else methods_underspecified.
+  - fig4d-dwell-time. The criterion used the genotype test at 100% only; the legend reports both contingencies not significant, so both are now judged, with a significant result as partial.
+  - fig4eg-cross-correlation-wt-higher. The statement says peaks exceed shuffled controls, which the criterion did not address; the paper gives no test for it, so it is now reported, not judged.
+  - fig5d-leading-near-half. Added that genotype means near 0.5 follow by construction in same-genotype pairs.
+  - fig5e-leading-difference-50. Added the Results' statement that the 50% difference disappears with training; the last five sessions are reported beside the first five.
+  - fig7e-gaze-final-quartile. Added the legend's Holm-corrected post hoc tests (quartile 1 below quartiles 2 to 4) and the absence of genotype interactions to the criterion.
+  - figs2-jaccard-similarity. The criterion called the Mann-Whitney test the only per-unit group test the paper uses, which is not so (paired t, KS); it is now named as the reader's stand-in until Figure S2 is read.
+  - figs3-leadership-history. The criterion's tests were made up; the paper's analysis is only in the unread supplement. The claim is now blocked as methods_underspecified until Figure S3 is read, the former readings shown only.
+  - fig8d-fmr1-longer-delta-t. The statistic "U = 4.25 × 106" was the text's garbled 4.25 × 10^6; corrected.
+  - Checker flags for fig3e-exploration-efficiency-wt-higher (p 1.410e-10) and fig7b-fmr1-more-asynchronous-matches (p 0.2407586) were confirmed by reading; both values are printed in the legends.
+  - Open. The supplement (Figures S1 to S3, Tables S1 and S2) is not in the text; figs1, figs2 and figs3 rest on it and should be revised once it is supplied.
+  - Open. fig1g, fig7c, fig7g, fig7h and fig8e still accept a match "under one reading"; their readings are of what the reported numbers mean (points, rate units, blocks, gaze and Δt scaling), which the protocol allows, but several also change the method, and an attempt should show every reading.
+  - Open. fig6-marl-partner-aware is a simulation that uses no recorded data; it is marked with_inputs so that it is counted apart, and its learning rate, discount factor, episode length and state encoding are not given.
+  - Open. The legends name "Two-way RM ANOVA" while the df fit an ordinary two-way ANOVA; the opening comment's readings A and B cover this.

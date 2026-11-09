@@ -1,0 +1,1467 @@
+# Claims for Symanski, Bladon, Kullberg, Miller & Jadhav (2022), eLife 11, e79545, on dandiset 001539.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (eLife, PMC9799972.1, as served by Europe PMC), full text with
+# Results, all figure and figure-supplement legends, Methods, Code and Data availability. The only
+# supplementary file, Supplementary file 1 (average CA1 and PFC cell counts per session), is a table
+# that is not in the text; no claim rests on it. No PDF was supplied, so the figures were not seen;
+# where a direction is only visible in a figure, the criterion says so.
+#
+# The data the paper used. Eight male Long-Evans rats (animals 1 to 5 ran the full T-maze with an
+# 81 cm stem and 43 cm reward arms; animals 6 to 8 ran truncated mazes, two with reward wells beside
+# the odor port and one with a 40 cm stem). A trial is one odor sampling period, from the infrared
+# beam break at the odor port to its end; odor 1 (heptanol) cues reward location 1, odor 2 (ethyl
+# butyrate) reward location 2; trials with sampling under 0.5 s are excluded from all analyses
+# (Methods, Odor-place association task training). About 100 to 150 trials per day, in run epochs
+# interleaved with sleep epochs. The paper counts 38 "sessions" (39 for some LFP panels); the code
+# averages per recording day (F16/Behavior/cs_nosepokeDuration_2.m, cs_sniffRate.m), so a session is
+# read here as a recording day. Four animals ran one un-cued air session each (air at the odor port,
+# reward at a random well); Figure 1-figure supplement 1f gives three animals and four sessions.
+# Two animals carried a nasal thermocouple (12 sessions in Figure 2b, 11 sessions in Figure
+# 1-figure supplement 1e). Tetrodes in dorsal CA1 (spikes and LFP), PFC, mainly prelimbic (spikes and
+# LFP), and olfactory bulb (LFP only); LFP at 1.5 kHz referenced to a cerebellar ground screw;
+# position from an overhead camera at 30 frames/s. Units: 1,309 CA1 and 717 PFC. Spatial analyses use
+# only full-maze sessions (Results gives 26 sessions from 6 rats; Methods says the five full-maze
+# animals).
+#
+# Outside data. The paper deposited processed data (MATLAB structures) on figshare,
+# doi:10.6084/m9.figshare.19620783.v1. No claim needs them; they hold the same recordings and could
+# serve to check the dandiset against the paper's own selections.
+#
+# Code read: https://github.com/JadhavLab/Jadhav-Lab-Codes-JHB at commit
+# 88d5f8d2bb39796b8656dc42bd42969a7bbe8697 (the commit the paper cites, archived at Software
+# Heritage), folder BetaOdorProject. F16 below is BetaOdorProject/figures1-6Functions and F7 is
+# BetaOdorProject/figure7Functions; the OLD folders were not used. The code holds two pipelines that
+# often disagree. Path A is the first author's (F16, entry cs_Pipeline.m), using Chronux
+# spectrograms and time-matched pre-odor windows. Path B is the revision code (F7, entry
+# A_Figure7Wrapper.m, on a SuperRat structure), using fixed 500 ms windows and one tetrode per region.
+# Nothing says which produced each published panel, so where they differ both are named as
+# readings. Several helpers are missing from the repository (event_spikes, nFoldBayesPoisson,
+# sj_extractripples, the filter .mat files, SelectivityIndex). The code disagrees with the Methods
+# in places (cell-type thresholds, Pearson in place of Spearman, shuffle counts, a t-test in place
+# of the rank-sum for the GLM); the Methods are followed and the code's choice is named as a variant.
+#
+# Definitions shared by the criteria below (each cites its source).
+# - Trials. Completed trials with odor sampling of at least 0.5 s (Methods). Correct when the chosen
+#   reward well matches the odor (F16/Behavior/cs_getNosepokeWindow.m). Sessions are recording days.
+# - Bands. Beta 20 to 30 Hz and RR 7 to 8 Hz (Methods, Local field potential); Path A's filters and
+#   some of its statistics use 15 to 30 Hz or 18 to 30 Hz (F16/Utilities/createbetafilter.m,
+#   F16/LFPAnalysis/cs_LFPpower_prepost.m), a variant.
+# - Cell types (Methods, Single unit analysis). Interneuron when the average firing rate exceeds 7 Hz
+#   and the average spike width is under 0.3 ms; all other units putative pyramidal. The Methods do
+#   not say over which epochs the rate is taken nor how width is measured. Readings: rate over run
+#   epochs or over all epochs (Path A averages per-epoch rates over all epochs,
+#   F16/Utilities/cs_cellTypeTag.m); width as trough-to-peak or as width at half the trough (the
+#   code's cs_getSpikeWidth.m, method 2; lhcs_getSpikeWidth.m uses peak-to-trough). The code's own
+#   thresholds (8.5 Hz with a width check between 8 and 9 Hz in Path A; 9.5 Hz without width in
+#   F7/ParsePyrIN.m) are variants.
+# - Active units. At least 100 spikes during the run epochs (Results; Methods says fewer than 100
+#   spikes across all task epochs are excluded). Path A counts more than 100 spikes in any epoch
+#   (F16/Spiking/cs_listNPCells_v2.m), Path B more than 100 across all run epochs
+#   (F7/Object_selectivity.m); both are readings.
+# - Odor period active. Spikes during the odor sampling periods at least equal to the number of
+#   trials (Methods), over all trials of the day's run epochs (cs_listNPCells_v2.m line 123).
+# - Task responsive (Methods, Task responsiveness). Per odor, a Wilcoxon signed-rank test of the
+#   per-trial firing in the sampling period against a pre-odor window of the same length ending at
+#   odor onset; responsive when p < 0.05 for at least one odor. The Methods take trials that reached a
+#   reward port; both code paths use correct trials only, and Path A adds a third test on both odors
+#   pooled (cs_listNPCells_v2.m lines 119 to 125). Readings: (a) all completed trials, (b) correct
+#   trials only.
+# - Choice selectivity (Methods, Choice selectivity; Results). SI = (r1 - r2)/(r1 + r2), r the mean
+#   over correct trials of each trial's spike count divided by its sampling duration, for odor 1 and
+#   odor 2. Selective when SI lies 1.5 s.d. or more from the mean of a null made by shuffling odor
+#   labels across trials; 1000 shuffles, two-sided, as in F16/OdorSelectivitySingleCell/
+#   cs_cellSelectivityTag.m (the Methods give no shuffle count). Tested in task-responsive cells.
+# - Phase (Methods, Local field potential and Phase locking). Raw LFP (ground referenced) band-passed
+#   with a zero-phase IIR filter, Hilbert phase with zero at the peak; the tetrode with the most cells
+#   in each region on each day; spikes pooled over odor sampling periods. The Methods do not say which
+#   trials; both code paths use correct trials (F16/PhaseLocking/cs_phaseLocking.m,
+#   F7/ClaireBetaAnalysis.m), so correct trials are used. Locked when the Rayleigh test gives
+#   p < 0.05. Minimum spike count is not in the Methods; readings more than 10 spikes (Path A,
+#   cs_calcPhaseLocking.m) and more than 5 (Path B).
+# - LFP pipelines, for the power and coherence claims (Methods, Local field potential; Results).
+#   Chronux multitaper spectra and coherence, z-scored to the epoch mean, within-session differences
+#   averaged per session, Wilcoxon signed-rank across sessions. The Methods leave open the tetrodes,
+#   the windows and the taper settings. Reading A (Path A, F16/LFPAnalysis/sjcs_baselinespecgram.m,
+#   cs_FullEpochCoherence.m, cs_LFPcoh_prepost.m): moving 1 s windows stepped by 20 ms (tapers [1 1]
+#   for power, [2 3] for coherence), all tetrodes of a region with cells (all OB tetrodes) averaged,
+#   all cross-region tetrode pairs averaged, each z-scored per frequency to its epoch mean and s.d.;
+#   odor window the whole sampling period, pre-odor window of the same duration ending at odor onset.
+#   Reading B (Path B, F7/ClaireCrossCoherence.m): coherencyc with tapers [3 5] on the last 500 ms of
+#   sampling and the 500 ms before odor onset, trials with sampling of 0.5 to 2 s, one tetrode per
+#   region (the one with most units, F7/gatherEEG.m), raw LFP z-scored over the recording.
+
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001539"
+paper: doi:10.7554/elife.79545
+claims:
+- id: fig1b-performance
+  statement: During recordings the rats performed the odor-place task at a high level, 77.0% correct
+    (mean and s.e.m. over the 8 rats, 1.3%).
+  source: Results, Odor-place associative memory and decision-making task, paragraph 2; Figure 1b
+  quote: animals maintained a high level of performance on the task, indicating accurate decision
+    making based on cued recall of odor-place associations ( Figure 1b , n=8 rats, 77.0% ± 1.3%, mean
+    ± s.e.m.)
+  expected:
+  - quantity: mean over rats of the per-rat mean session performance
+    value: 77.0
+    tolerance: 1.3
+    unit: percent correct
+  criterion: Performance is the proportion of correct trials (Methods, Odor-place association task
+    training), per session (run epochs of a recording day), odor-cued sessions only. The code
+    computes it per epoch and averages (F16/Behavior/cs_performanceScatter.m); the Methods do not
+    say whether trials with sampling under 0.5 s count, and the code keeps them in the performance
+    vector (cs_getNosepokeWindow.m lines 186 to 223). Readings (a) mean over rats of each rat's mean
+    session performance, (b) mean over all sessions, each with and without the short-sampling trials.
+    Reproduced when one reading falls within 77.0 +/- 1.3%.
+- id: fig1c-sampling-duration
+  statement: Odor sampling lasted 0.82 s on average (s.e.m. across sessions 0.02 s; s.d. across
+    trials 0.25 s) and did not differ between correct and incorrect trials.
+  source: Results, Odor-place associative memory and decision-making task, paragraph 3; Figure 1c;
+    Figure 1-figure supplement 1a
+  quote: The average odor-sampling duration before odor port disengagement and odor offset was
+    0.82±0.02 s (mean ± s.e.m. across sessions), and this duration was similar between correct and
+    incorrect trials ( Figure 1c ; within-session signed-rank test, p=0.71
+  statistics:
+  - test: Wilcoxon signed-rank, within session
+    p: 0.71
+    n: 38 sessions
+  expected:
+  - quantity: mean sampling duration across sessions
+    value: 0.82
+    tolerance: 0.02
+    unit: s
+  - quantity: s.d. of sampling duration across trials
+    value: 0.25
+    tolerance: 0.025
+    unit: s
+  criterion: Duration is odor port beam-break offset minus onset (Methods). Per session the mean
+    duration on correct and on incorrect trials; a Wilcoxon signed-rank test across the 38 sessions,
+    as the Results and legend name it. Absence claim, reproduced when that test gives p >= 0.05. The
+    code tests the same per-session means with a rank-sum test (F16/Behavior/cs_nosepokeDuration_2.m
+    line 65), shown as a variant. The effect size (median paired difference) is reported.
+- id: fig1d-turn-direction
+  statement: On most trials the rat turned away from the odor port toward the side of the reward arm
+    it then chose, on correct and incorrect trials alike, so the choice is made during odor sampling.
+  source: Results, Odor-place associative memory and decision-making task, paragraph 3; Figure 1d
+  quote: Notably, we observed that on a majority of trials (95.4% ± 0.12%), the animals' turn direction
+    away from the odor port matched the direction of the T-maze reward arm that they would ultimately
+    choose on that trial
+  statistics:
+  - about: correct trials, same against opposite direction
+    test: binomial test
+    p: 0
+    n: 1,624 same and 32 opposite direction trials
+  - about: incorrect trials, same against opposite direction
+    test: binomial test
+    p: 1.4e-108
+    n: 499 same and 21 opposite direction trials
+  expected:
+  - quantity: trials with turn matching the chosen arm
+    value: 95.4
+    tolerance: 0.12
+    unit: percent
+  - quantity: correct trials, same direction
+    value: 1624
+    tolerance: 162
+  - quantity: correct trials, opposite direction
+    value: 32
+    tolerance: 3
+  - quantity: incorrect trials, same direction
+    value: 499
+    tolerance: 50
+  - quantity: incorrect trials, opposite direction
+    value: 21
+    tolerance: 2
+  criterion: Sessions on the truncated mazes are excluded (legend). Turn direction as in
+    F16/Behavior/cs_turnFromNPDirection.m, which the Methods do not describe - the 41 position samples
+    from odor port exit, the sample furthest in x from the odor port position, its sign giving left or
+    right, trials within 40 samples of the epoch end dropped. A binomial test of same against opposite
+    with null probability 0.5 (the code's binopdf(...,0.5)), per outcome. The 95.4% (with a spread of
+    0.12% as printed) is read as (a) the mean over sessions or (b) the pooled fraction of all trials;
+    the counts give 97.6% pooled. Reproduced when both binomial tests give p < 0.05 with more same than
+    opposite turns and the counts fall within tolerance; the fraction is reported under both readings.
+- id: fig1s1e-sniff-rate
+  statement: Sniff rate measured by the nasal thermocouple rose slightly during odor sampling (7.1 Hz)
+    compared with time-matched pre-odor periods (6.2 Hz).
+  source: Results, Odor-place associative memory and decision-making task, paragraph 3; Figure
+    1-figure supplement 1e
+  quote: There was a small but significant increase in sniff rate during the odor sampling period
+    (within-session increase 7.1±0.39 Hz, mean ± s.e.m.) compared to time matched pre-odor periods
+    (6.2±0.29 Hz, mean ± s.e.m.)
+  statistics:
+  - test: signed-rank test
+    p: 9.8e-4
+    n: 11 sessions across 2 animals
+  expected:
+  - quantity: sniff rate during odor sampling
+    value: 7.1
+    tolerance: 0.39
+    unit: Hz
+  - quantity: sniff rate in pre-odor periods
+    value: 6.2
+    tolerance: 0.29
+    unit: Hz
+  criterion: Thermocouple signal of the two implanted animals. The Methods do not describe sniff
+    detection; the code (F16/Behavior/cs_sniffRate.m) takes a pre-odor window of the same length as
+    each trial's sampling ending at odor onset, smooths and downsamples by 25, counts peaks
+    (Chronux findpeaks, whose threshold is not in the repository) and divides by window length,
+    averaged per day, with a signed-rank test across days. Peaks are counted here as local maxima of
+    the smoothed signal; a peak rule with a prominence threshold is shown as a variant. Reproduced
+    when the signed-rank test gives p < 0.05 with odor above pre-odor and both rates within tolerance.
+- id: fig1s1f-air-performance
+  statement: Performance on the odor-cued task was higher than on the air-cued sessions, where no
+    odor cue was given.
+  source: Figure 1-figure supplement 1f
+  quote: Performance of three animals on the odor-cued task (n = 24 sessions) versus the air-cued
+    task (n = 4 sessions) in which animals were presented with only air as a neutral stimulus
+  statistics:
+  - test: rank-sum test
+    p: 0.002
+    n: 24 odor-cued and 4 air-cued sessions, three animals
+  criterion: Per session the fraction correct (correct meaning the well the paper's task scores as
+    rewarded), in the animals that ran an air session; a rank-sum test of odor-cued against air-cued
+    sessions (legend; code F16/Behavior/cs_odorVsAirPerf.m line 98). Reproduced when p < 0.05 with
+    odor-cued performance higher. The paper gives three animals in this legend and four in the Methods;
+    both sets are shown.
+- id: fig2d-beta-power-increase
+  statement: Beta power rose from the time-matched pre-odor period to the odor sampling period in
+    CA1, PFC and OB.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 1; Figure 2d top
+  quote: We observed a strong increase in power in the beta band (20–30 Hz) during this
+    decision-making period compared to a time-matched pre-odor period across all three regions
+  statistics:
+  - about: CA1
+    test: Wilcoxon signed-rank
+    p: 2.84e-3
+    n: 38 sessions
+  - about: PFC
+    test: Wilcoxon signed-rank
+    p: 1.80e-4
+    n: 38 sessions
+  - about: OB
+    test: Wilcoxon signed-rank
+    p: 8.3e-6
+    n: 38 sessions
+  criterion: Beta power (20 to 30 Hz) per region, per session the mean over trials of odor minus
+    pre-odor power; Wilcoxon signed-rank across sessions. Run under LFP readings A and B of the opening
+    comment. Reproduced when all three regions show an increase with p < 0.05; partially reproduced
+    for one or two regions. The outcome is the one both readings give; when they differ the claim is
+    blocked as methods_underspecified with both shown.
+- id: fig2d-rr-power-no-increase
+  statement: RR power did not rise after odor onset; it fell slightly in CA1 and did not change in PFC
+    or OB.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 2; Figure 2d top
+  quote: power increases were seen during the odor sampling period only in the beta band ( Figure 2d
+    signed-rank tests, n=38 sessions, CA1 p=2.84e-3, PFC p=1.80e-4, OB p=8.3e-6) and not in the RR band
+  statistics:
+  - about: CA1, decrease
+    test: signed-rank test
+    p: 3.94e-3
+    n: 38 sessions
+  - about: PFC
+    test: signed-rank test
+    p: 0.551
+    n: 38 sessions
+  - about: OB
+    test: signed-rank test
+    p: 0.949
+    n: 38 sessions
+  criterion: As fig2d-beta-power-increase, for 7 to 8 Hz. The paper's test is the signed-rank test at
+    0.05. Reproduced when no region shows a significant increase, CA1 shows a significant decrease and
+    PFC and OB show no significant change; the effect sizes are reported. Run under readings A and B;
+    if they disagree, the claim is blocked as methods_underspecified with both shown.
+- id: fig2e-beta-coherence-increase
+  statement: Beta coherence between all three region pairs rose from the pre-odor period to odor
+    sampling.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 3; Figure 2e top
+  quote: This coherence was specific to the odor-sampling period... it significantly increased
+    compared to time-matched pre-odor periods ( Figure 2e top , signed-rank test, n=38 sessions,
+    CA1-PFC p=2.8e-3, CA1-OB p=5.1e-5, PFC-OB p=3.7e-5)
+  statistics:
+  - about: CA1-PFC
+    test: signed-rank test
+    p: 2.8e-3
+    n: 38 sessions
+  - about: CA1-OB
+    test: signed-rank test
+    p: 5.1e-5
+    n: 38 sessions
+  - about: PFC-OB
+    test: signed-rank test
+    p: 3.7e-5
+    n: 38 sessions
+  criterion: Beta (20 to 30 Hz) coherence per region pair, per session the mean over trials of odor
+    minus pre-odor coherence; Wilcoxon signed-rank across sessions, under LFP readings A and B of the
+    opening comment. Reproduced when all three pairs increase with p < 0.05; partially reproduced for
+    one or two pairs. The outcome is the one both readings give; when they differ the claim is blocked
+    as methods_underspecified with both shown.
+- id: fig2e-rr-coherence-increase
+  statement: RR coherence also rose from the pre-odor period to odor sampling for all three region
+    pairs.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 3; Figure 2e top
+  quote: Network wide coherence in the RR band also increased from the pre-odor to the odor-sampling
+    period ( Figure 2e top , signed-rank test, CA1-OB p=6.4e-4, CA1-PFC p=3.9e-3, PFC-OB p=2.4e-4)
+  statistics:
+  - about: CA1-OB
+    test: signed-rank test
+    p: 6.4e-4
+  - about: CA1-PFC
+    test: signed-rank test
+    p: 3.9e-3
+  - about: PFC-OB
+    test: signed-rank test
+    p: 2.4e-4
+  criterion: As fig2e-beta-coherence-increase, for 7 to 8 Hz.
+- id: fig2e-beta-coherence-odor-vs-reward
+  statement: Beta coherence in the last 500 ms of odor sampling was higher than in the last 500 ms
+    before reward well exit, for all three region pairs, so it is not a sign of movement preparation.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 4; Figure 2e middle
+  quote: We confirmed that beta coherence observed during the decision-making period was
+    significantly higher than coherence at the reward well between all three pairs ( Figure 2e middle ,
+    signed-rank test, CA1-PFC p=0.010, CA1-OB p=0.0012, PFC-OB p=0.0024)
+  statistics:
+  - about: CA1-PFC
+    test: signed-rank test
+    p: 0.010
+  - about: CA1-OB
+    test: signed-rank test
+    p: 0.0012
+  - about: PFC-OB
+    test: signed-rank test
+    p: 0.0024
+  criterion: Windows from the Results - the last 500 ms of odor sampling and the last 500 ms before
+    reward well exit, correct trials (rewarded) with sampling over 0.5 s, as F7/ClaireCrossCoherence.m
+    lines 1040 to 1064 do. Reward well exit is the end of the reward-well beam break; the code takes
+    the next DIO event after the pump turns off (F16/Behavior/cs_getRewardTimes.m line 101), shown as a
+    variant. Coherence under LFP reading B (its pipeline) and reading A's settings on the same windows;
+    per session odor minus reward, signed-rank across sessions. Path A's windows centred on exit
+    (F16/LFPAnalysis/cs_cohOdorVsReward.m, 0.5 s either side) are a variant. Reproduced when all three
+    pairs are higher during odor with p < 0.05; partially for one or two. The outcome is the one both
+    settings give; when they differ the claim is blocked as methods_underspecified with both shown.
+- id: fig2e-rr-coherence-odor-vs-reward
+  statement: For RR, coherence was higher during odor sampling than at the reward well for CA1-OB and
+    PFC-OB but not for CA1-PFC.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 4; Figure 2e middle
+  quote: Interestingly, this effect in RR was observed for CA1-OB and PFC-OB, but not between CA1-PFC
+    ( Figure 2e middle , signed-rank test CA1-PFC p=0.569, CA1-OB p=0.0044, PFC-OB p=0.00064)
+  statistics:
+  - about: CA1-PFC
+    test: signed-rank test
+    p: 0.569
+  - about: CA1-OB
+    test: signed-rank test
+    p: 0.0044
+  - about: PFC-OB
+    test: signed-rank test
+    p: 0.00064
+  criterion: As fig2e-beta-coherence-odor-vs-reward, for 7 to 8 Hz. Reproduced when CA1-OB and PFC-OB
+    are higher during odor with p < 0.05 and CA1-PFC gives p >= 0.05 (the paper's test for the
+    absence); partially when two of the three parts hold.
+- id: fig2d-power-odor-vs-reward
+  statement: Beta power in all three regions differed between the odor sampling and reward periods,
+    while RR power differed only in OB.
+  source: Figure 2d middle (legend)
+  quote: Change in LFP Power from odor-to-reward period (signed-rank tests ... CA1 p=0.0012, PFC
+    p=5.3e-4, OB p=4.4e-4 ... CA1 p=0.11, PFC p=0.062, OB p=4.4e-4)
+  statistics:
+  - about: beta, CA1
+    test: signed-rank test
+    p: 0.0012
+  - about: beta, PFC
+    test: signed-rank test
+    p: 5.3e-4
+  - about: beta, OB
+    test: signed-rank test
+    p: 4.4e-4
+  - about: RR, CA1
+    test: signed-rank test
+    p: 0.11
+  - about: RR, PFC
+    test: signed-rank test
+    p: 0.062
+  - about: RR, OB
+    test: signed-rank test
+    p: 4.4e-4
+  criterion: Power in the windows of fig2e-beta-coherence-odor-vs-reward, per session odor minus
+    reward, signed-rank across sessions. The legend gives no direction; the figure was not seen, so
+    the direction found is reported. Reproduced when the three beta tests and the OB RR test give
+    p < 0.05 and the CA1 and PFC RR tests give p >= 0.05; partially when four or five of the six hold.
+- id: fig2de-correct-incorrect-no-difference
+  statement: Neither power nor coherence, in beta or RR, differed between correct and incorrect
+    trials.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 7; Figure 2d and 2e bottom
+  quote: There was no significant change in the level of coherence or power in the CA1-PFC-OB network
+    in either frequency band between correct and incorrect trials ( Figure 2e bottom , signed-rank
+    tests; all p's>0.05)
+  statistics:
+  - test: signed-rank tests
+    p: 0.05
+    p_relation: ">"
+    n: 38 sessions
+  criterion: Twelve comparisons (power in three regions and coherence in three pairs, each band).
+    Correct trials subsampled at random to the number of incorrect trials in each session (legend,
+    "trial-count matched"; F7/ClaireCrossCoherence.m lines 249 to 257). Per session correct minus
+    incorrect. The paper names two tests - signed-rank across sessions (Results; code line 470) and
+    rank-sum on sessions (legend). Absence claim. Reproduced when neither test finds a difference at
+    p < 0.05 in any of the twelve comparisons, not reproduced when both find one in any, blocked as
+    methods_underspecified when they differ; under LFP readings A and B. Effect sizes are reported.
+- id: fig2g-air-beta-coherence
+  statement: Beta coherence for all three region pairs was lower on air-only trials than on
+    odor-cued correct trials, while RR coherence did not differ.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 5; Figure 2g
+  quote: RR coherence was unchanged between odor- and air-cued sessions, but beta coherence was
+    significantly lower in the absence of odor cues during air-only sessions ( Figure 2g )
+  statistics:
+  - about: beta CA1-PFC
+    test: bootstrap test
+    p: 0.001
+    p_relation: "<"
+  - about: beta CA1-OB
+    test: bootstrap test
+    p: 0.001
+    p_relation: "<"
+  - about: beta PFC-OB
+    test: bootstrap test
+    p: 0.002
+  - about: RR CA1-PFC
+    test: bootstrap test
+    p: 0.49
+  - about: RR CA1-OB
+    test: bootstrap test
+    p: 0.30
+  - about: RR PFC-OB
+    test: bootstrap test
+    p: 0.12
+  expected:
+  - quantity: odor-cued correct trials
+    value: 3174
+    tolerance: 317
+  - quantity: air trials
+    value: 134
+    tolerance: 13
+  criterion: One value per trial, the z-scored coherence averaged over the sampling period (legend and
+    code, F16/LFPAnalysis/cs_LFPcoherence_noOdor.m), pooled over sessions; odor trials are correct
+    trials of odor-cued sessions (legend). Bootstrap as the Methods give it - odor trials resampled with
+    replacement to the number of air trials, 1000 times, the mean each time, compared with the
+    observed air mean. The Methods count bootstrap means >= the air mean, which would give a p near 1
+    for a lower air mean; the code takes the smaller of the two tails. The lower tail is used (the
+    fraction of bootstrap means <= the air mean), and the code's two-tail minimum is reported too.
+    Coherence under LFP reading A (the code's pipeline here) and reading B. Reproduced when all three
+    beta pairs give p < 0.05 with air lower and all three RR pairs give p >= 0.05; partially when four
+    or five of the six hold. The outcome is the one both readings give; when they differ the claim is
+    blocked as methods_underspecified with both shown.
+- id: fig2f-swr-odor-vs-reward
+  statement: Sharp-wave ripples were rare during odor sampling and frequent at the reward wells.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 6; Figure 2f
+  quote: However, a distinct lack of SWR events at the odor port ( Figure 2f ; signed-rank test,
+    p=1.1e-7) suggests that SWR replay is unlikely to play a direct role in decision making
+  statistics:
+  - test: signed-rank test
+    p: 1.1e-7
+    n: 38 sessions
+  criterion: Detection from the Methods (Sharp-wave ripple detection) - locally referenced CA1 LFP,
+    150 to 250 Hz, Hilbert envelope above 3 s.d. of its mean for at least 15 ms on at least one CA1
+    tetrode; tetrodes are the CA1 tetrodes with cells (F16/Ripples/cs_riptettag_anycells.m). The code
+    keeps events at speed under 4 cm/s (cs_rippletimes.m), followed here. Number of SWRs per trial on
+    correct trials (legend). Windows, which the Methods do not fix - (a) the odor sampling period and
+    the reward-well period (reward-well beam break onset to exit); (b) the code's speed-defined stops
+    around the odor port and around reward onset, the latter extended to at least 1 s
+    (cs_rippleRate_NPvsReward.m). Per session the mean count per trial in each window; signed-rank
+    across sessions (legend; the code's rank-sum over trials is a variant). Reproduced when p < 0.05
+    with fewer SWRs at the odor port under a reading, and the readings agree.
+- id: fig2s1f-rr-beta-coupling
+  statement: Beta amplitude was coupled to RR phase in CA1, PFC and OB during odor sampling.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 2; Figure 2-figure supplement 1f
+  quote: During the decision-making period, we also found phase-amplitude coupling between beta and RR
+    rhythms in all three regions
+  statistics:
+  - test: modulation index against trial-shuffled null, 500 shuffles
+    p: 0.001
+    p_relation: "<"
+  criterion: Tort modulation index as in the Methods (Cross-frequency coupling) - RR phase in 18 bins
+    of 20 degrees, mean beta amplitude per bin normalized to sum 1, MI from the KL distance to the
+    uniform; null from 500 shuffles of the trial assignment of RR phase series (Methods and legend).
+    Per region, the local tetrode with most cells (as for phase locking; the Methods do not name the
+    tetrode for this analysis), odor sampling periods. The Methods do not say which trials; readings
+    all completed trials and correct trials only. The code restricts samples to high OB beta periods
+    and shuffles amplitudes across samples (F16/LFPAnalysis/cs_cfc.m), a variant. The legend shows
+    one real MI per region against a trial-shuffled null, so MI is pooled over the trials of all
+    sessions; per-session MIs are reported as a variant. Reproduced when the pooled MI exceeds all 500
+    shuffles in each region; partially when that holds in one or two regions. The outcome is the one
+    both trial readings give; when they differ the claim is blocked as methods_underspecified.
+- id: fig2s2d-phase-offsets
+  statement: During odor sampling CA1 beta led PFC beta, and CA1 RR led PFC and OB RR, though offsets
+    varied widely across sessions.
+  source: Figure 2-figure supplement 2d; Results, Beta and RR coherence is elevated during odor
+    sampling and decision making, paragraph 7
+  quote: During the full odor sampling window, CA1 beta lead PFC (p = 2e-4) and there was no
+    consistent phase difference between OB and PFC or CA1 beta (all p>0.05). Similarly, CA1 RR lead
+    PFC RR (p < 1e-5), as well as OB (p < 1e-5)
+  statistics:
+  - about: beta, CA1 leads PFC
+    p: 2.0e-4
+  - about: RR, CA1 leads PFC
+    p: 1.0e-5
+    p_relation: "<"
+  - about: RR, CA1 leads OB
+    p: 1.0e-5
+    p_relation: "<"
+  - about: beta, OB against PFC and CA1
+    p: 0.05
+    p_relation: ">"
+  criterion: The paper names no test. From F7/ClairePhaseOffset.m - per trial the circular mean of the
+    instantaneous phase difference over the last 500 ms of sampling (trials of 0.5 to 2 s), the
+    circular mean over trials per session, one tetrode per region (most units), and a test of the
+    session offsets against zero by a sign-flip null of 100,000 draws taking the smaller tail; the
+    code's circ_mtest is a variant. The legend's "full odor sampling window" against the code's last
+    500 ms gives readings (a) whole sampling period, (b) last 500 ms. The legend also says no
+    consistent offset between OB and CA1 RR, which contradicts CA1 RR leading OB; only the stated
+    leads are tested for RR. Reproduced when the CA1 beta lead over PFC and the two RR leads are
+    significant (p < 0.05) in the stated direction and the beta OB pairs are not. The outcome is the
+    one both window readings give; when they differ the claim is blocked as methods_underspecified.
+- id: fig2s1e-run-theta-shift
+  statement: After odor port exit, as the rat ran, the dominant LFP frequency in CA1 and PFC shifted
+    slightly from RR up into the theta band.
+  source: Results, Beta and RR coherence is elevated during odor sampling and decision making,
+    paragraph 1; Figure 2-figure supplement 1e
+  quote: Following odor port disengagement and the initiation of running down the track, we observed
+    a small shift in the dominant LFP frequency from RR to the theta band in CA1 and PFC
+  criterion: Full-maze animals only (legend). The paper gives no test; the code
+    (F16/LFPAnalysis/cs_peakFreqOdorVRun.m with cs_PSD.m) takes power spectra (fpass 0 to 20 Hz,
+    1 s windows) from 0 to 3 s after odor onset, splits them at 0.8 s into odor and run parts, finds
+    the peak frequency per day and compares odor and run by a signed-rank test. The search range in
+    the code is set by array indices; it is read as the theta band the paper defines, 6 to 12 Hz.
+    Readings for the windows (a) the code's 0 to 0.8 s and 0.8 to 3 s after odor onset, (b) the odor
+    sampling period and run after exit at speed over 3 cm/s. Reproduced when the run peak is higher
+    than the odor peak with signed-rank p < 0.05 in CA1 and in PFC; partially for one region. The
+    outcome is the one both window readings give; when they differ the claim is blocked as
+    methods_underspecified.
+- id: unit-counts
+  statement: The recordings gave 1,309 CA1 and 717 PFC units, of which 934 and 508 were active, 813
+    CA1 and 464 PFC active units were putative pyramidal cells (121 and 44 interneurons), 170 and 234
+    pyramidal cells were active in the odor period, and 138 and 185 of these were task responsive.
+  source: Results, Single neurons in CA1 and PFC exhibit choice selectivity during decision-making
+    period, paragraph 1; Figure 3g-h
+  quote: we first selected units that fired at least 100 spikes during the run epochs ( Figure 3g–h ,
+    'Active Cells', 934 in CA1, 508 in PFC) and categorized them into pyramidal cells and interneurons
+    based on firing rate and spike width
+  expected:
+  - quantity: CA1 units
+    value: 1309
+    tolerance: 131
+  - quantity: PFC units
+    value: 717
+    tolerance: 72
+  - quantity: CA1 active units
+    value: 934
+    tolerance: 93
+  - quantity: PFC active units
+    value: 508
+    tolerance: 51
+  - quantity: CA1 active pyramidal
+    value: 813
+    tolerance: 81
+  - quantity: PFC active pyramidal
+    value: 464
+    tolerance: 46
+  - quantity: CA1 active interneurons
+    value: 121
+    tolerance: 12
+  - quantity: PFC active interneurons
+    value: 44
+    tolerance: 4
+  - quantity: CA1 odor period active pyramidal
+    value: 170
+    tolerance: 17
+  - quantity: PFC odor period active pyramidal
+    value: 234
+    tolerance: 23
+  - quantity: CA1 task-responsive pyramidal
+    value: 138
+    tolerance: 14
+  - quantity: PFC task-responsive pyramidal
+    value: 185
+    tolerance: 19
+  criterion: Selections as defined in the opening comment (active units, cell types, odor period
+    active, task responsive), each under the readings named there; a reading is one choice for each
+    open detail. Reproduced when one reading gives every count within tolerance; partially when the
+    totals and active counts match but some later counts do not. The dandiset's units may already be
+    curated, in which case the totals compare what was deposited.
+- id: fig3-choice-selective-fraction
+  statement: About a third of task-responsive pyramidal cells were choice selective, 47 of 138 in CA1
+    and 59 of 185 in PFC.
+  source: Results, Single neurons in CA1 and PFC exhibit choice selectivity during decision-making
+    period, paragraph 2; Figure 3
+  quote: To determine significance, the SI value for each task responsive pyramidal cell was compared
+    to a distribution of SIs generated by shuffling the odor identities across trials (n=47/138, 34%
+    CA1 selective cells, n=59/185, 31% PFC selective cells)
+  expected:
+  - quantity: CA1 selective task-responsive pyramidal cells
+    value: 47
+    tolerance: 5
+  - quantity: PFC selective task-responsive pyramidal cells
+    value: 59
+    tolerance: 6
+  - quantity: CA1 fraction selective
+    value: 34
+    tolerance: 3.4
+    unit: percent
+  - quantity: PFC fraction selective
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  depends_on:
+  - unit-counts
+  criterion: Choice selectivity as defined in the opening comment, in task-responsive pyramidal cells,
+    under each reading of unit-counts. Reproduced when the fractions fall within tolerance under a
+    reading (the counts too when that reading reproduces 138 and 185).
+- id: fig3ij-si-anticorrelated
+  statement: In choice-selective pyramidal cells the selectivity index on incorrect trials was
+    anti-correlated with that on correct trials, so the cells code the upcoming choice and not the
+    odor.
+  source: Results, Single neurons in CA1 and PFC exhibit choice selectivity during decision-making
+    period, paragraph 3; Figure 3i-j
+  quote: the SIs on correct trials were anti-correlated with the SIs on incorrect trials ... Spearman
+    Rank Correlation, CA1 pyr correct-incorrect SI r =–0.58, p(47) = 1.82e-5, PFC pyr correct-incorrect
+    SI r =–0.68, p(59) = 3.47e-9
+  statistics:
+  - about: CA1
+    test: Spearman rank correlation
+    statistic: r = -0.58
+    p: 1.82e-5
+    n: 47 cells
+  - about: PFC
+    test: Spearman rank correlation
+    statistic: r = -0.68
+    p: 3.47e-9
+    n: 59 cells
+  expected:
+  - quantity: CA1 Spearman r
+    value: -0.58
+    tolerance: 0.058
+  - quantity: PFC Spearman r
+    value: -0.68
+    tolerance: 0.068
+  depends_on:
+  - fig3-choice-selective-fraction
+  criterion: SI on incorrect trials with the same formula and odor labels as on correct trials. The
+    Methods define SI on sampling-period rates; the code (F16/OdorSelectivitySingleCell/
+    cs_odorSelectivity_v2.m) uses 50 ms PSTH bins with empty bins set to 0 and averages the per-bin SI
+    from 0.2 to 1 s after odor onset. Readings (a) whole sampling period rates, (b) the code's binned
+    SI. Cells without incorrect trials of both odors are dropped and counted. Spearman correlation
+    (paper); the code's Pearson is a variant. Reproduced when both correlations are negative with
+    p < 0.05 and r within tolerance; partially when negative and significant but r out of tolerance.
+    The outcome is the one both SI readings give; when they differ the claim is blocked as
+    methods_underspecified.
+- id: fig3s1e-nonselective-si
+  statement: The Results say the correct-incorrect anti-correlation was not significant among
+    task-responsive cells that were not choice selective, while the legend reports a significant
+    anti-correlation (r = -0.34 in both regions).
+  source: Results, Single neurons in CA1 and PFC exhibit choice selectivity during decision-making
+    period, paragraph 3; Figure 3-figure supplement 1e
+  quote: This pattern was not significant within the population of neurons that were task-responsive
+    but did not meet the selectivity threshold ( Figure 3—figure supplement 1d–e )
+  statistics:
+  - about: CA1, legend
+    statistic: r = -0.34
+    p: 0.001
+    n: 91 cells
+  - about: PFC, legend
+    statistic: r = -0.34
+    p: 3.0e-4
+    n: 126 cells
+  depends_on:
+  - fig3ij-si-anticorrelated
+  criterion: As fig3ij-si-anticorrelated, in task-responsive pyramidal cells that are not choice
+    selective. The paper disagrees with itself, so two readings - (a) the Results, no significant
+    anti-correlation (Spearman p >= 0.05); (b) the legend, r near -0.34 (tolerance 0.034) with
+    p < 0.05. Reproduced under whichever reading the result matches, and the inconsistency is
+    recorded; r and p are reported for each region.
+- id: fig3s1c-odor-vs-reward-rate
+  statement: Firing rates of task-responsive pyramidal cells differed between odor sampling and
+    reward consumption, in CA1 and in PFC.
+  source: Figure 3-figure supplement 1c
+  quote: Firing rates of task-responsive pyramidal neurons during odor sampling and reward consumption
+    (Signed-rank tests ... n = 138 cells, p = 5.1e-13 ... n = 185 cells, p = 0.009)
+  statistics:
+  - about: CA1
+    test: signed-rank test
+    p: 5.1e-13
+    n: 138 cells
+  - about: PFC
+    test: signed-rank test
+    p: 0.009
+    n: 185 cells
+  depends_on:
+  - unit-counts
+  criterion: No code for this panel was found. Per cell the mean rate over odor sampling periods and
+    over reward periods (reward-well beam break onset to exit) of the same trials; the Methods do not
+    fix the reward window or the trials, so readings are correct trials (rewarded) and all completed
+    trials. Signed-rank test across cells. The direction is shown only in the figure, which was not
+    seen, and is reported. Reproduced when both regions give p < 0.05 under a reading.
+- id: fig4c-interneuron-si
+  statement: CA1 choice-selective interneurons also had selectivity on incorrect trials
+    anti-correlated with that on correct trials; PFC interneurons, few in number, did not.
+  source: Results, Single neurons in CA1 and PFC exhibit choice selectivity during decision-making
+    period, paragraph 4; Figure 4c
+  quote: For CA1 interneurons, the selectivity response showed anti-correlation during correct versus
+    incorrect trials similar to that of pyramidal cells ( Figure 4c top , r(32) = –0.80, p=3.4e-8)
+  statistics:
+  - about: CA1 interneurons
+    statistic: r = -0.80
+    p: 3.4e-8
+    n: 32 cells
+  - about: PFC interneurons
+    statistic: r = -0.38
+    p: 0.278
+    n: 10 cells
+  expected:
+  - quantity: CA1 interneuron r
+    value: -0.80
+    tolerance: 0.08
+  - quantity: CA1 selective interneurons
+    value: 32
+    tolerance: 3
+  - quantity: PFC selective interneurons
+    value: 10
+    tolerance: 1
+  depends_on:
+  - unit-counts
+  criterion: Task responsiveness and choice selectivity as for pyramidal cells (Results, "using the
+    same criteria"), in interneurons; correlation and readings as fig3ij-si-anticorrelated. Reproduced
+    when CA1 interneurons give a negative correlation with p < 0.05 and r within tolerance, and PFC
+    interneurons give p >= 0.05.
+- id: fig4d-ccg-lags
+  statement: Among CA1-PFC pairs with significant cross-correlation peaks during odor sampling, PFC
+    interneurons tended to lead CA1 interneurons and CA1 pyramidal cells, CA1 interneuron-PFC
+    pyramidal pairs were skewed too, and pyramidal-pyramidal pairs showed no skew.
+  source: Results, Single neurons in CA1 and PFC exhibit choice selectivity during decision-making
+    period, paragraph 5; Figure 4d
+  quote: We found a significant skew in CA1-PFC interneuron pairs towards the PFC interneurons leading
+    (sign rank test, x=–0.028, p=3.5e-8) ( Figure 4d ), as well as for CA1 pyramidal cell - PFC
+    interneuron pairs in the same direction (sign rank test, x=–0.013, p=0.0034)
+  statistics:
+  - about: CA1-PFC interneuron pairs
+    test: one-sample Wilcoxon signed-rank against 0 ms
+    p: 3.5e-8
+    n: 87 pairs
+  - about: CA1 interneuron-PFC pyramidal pairs
+    test: one-sample Wilcoxon signed-rank against 0 ms
+    p: 2.11e-3
+    n: 283 pairs
+  - about: CA1 pyramidal-PFC interneuron pairs
+    test: one-sample Wilcoxon signed-rank against 0 ms
+    p: 3.4e-3
+    n: 111 pairs
+  - about: CA1-PFC pyramidal pairs
+    test: one-sample Wilcoxon signed-rank against 0 ms
+    p: 0.14
+    n: 224 pairs
+  expected:
+  - quantity: central peak lag (x in the Results, median or mean, not stated), interneuron pairs
+    value: -0.028
+    tolerance: 0.0028
+    unit: s
+  - quantity: central peak lag (x in the Results, median or mean, not stated), CA1 pyramidal-PFC
+      interneuron pairs
+    value: -0.013
+    tolerance: 0.0013
+    unit: s
+  depends_on:
+  - unit-counts
+  criterion: Method from the Methods (Corrected spike cross-correlogram) - for simultaneously recorded
+    task-responsive CA1-PFC pairs, cross-correlogram from -0.15 to 0.15 s in 2.5 ms bins, one cell's
+    spikes jittered by up to +/-50 ms 1000 times, pointwise z-score against the jitter, the highest
+    peak within +/-100 ms that is significant at p < 0.05 taken as the pair's lag; positive lag is CA1
+    leading (legend). Open details and readings - spikes from (a) whole sampling periods (Methods) or
+    (b) the last 0.5 s of sampling (code, F7/ClaireCellCellInteractions.m line 1298), correct and
+    incorrect trials as the code uses; pointwise p < 0.05 as one-sided z > 1.645 or two-sided
+    |z| > 1.96. The code's 200 jitters and z > 3 are a variant. Signed-rank test of lags against 0 per
+    pair type. The Results' x is not named; the median and the mean lag are both compared with the
+    expected values, a match under either counting. Reproduced when the two interneuron-involving
+    tests quoted are significant with negative lags, the CA1 interneuron-PFC pyramidal test is
+    significant and the pyramidal-pyramidal test gives p >= 0.05; partially when two or three of these
+    four hold. The outcome is the one all window and threshold readings give; when they differ the
+    claim is blocked as methods_underspecified. Pair counts are reported against 87, 283, 111 and 224.
+- id: fig5c-local-locking
+  statement: Most CA1 task-responsive cells and a minority of PFC cells were locked to local RR; a
+    modest share of CA1 pyramidal cells and a large share of CA1 interneurons were locked to local
+    beta, while PFC cells were locked to beta no more than chance.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 1; Figure 5c
+  quote: Surprisingly though, while a modest but significant proportion of CA1 pyramidal cells were
+    also coherent to local beta (28/138, 20% binomial test p=4.6e-11) a large fraction of CA1
+    interneurons were coherent to local beta (36/83, 43%)
+  statistics:
+  - about: CA1 pyramidal cells locked to local beta against chance
+    test: binomial test
+    p: 4.6e-11
+    n: 138 cells
+  expected:
+  - quantity: CA1 pyramidal locked to local RR
+    value: 113
+    tolerance: 11
+  - quantity: CA1 interneurons locked to local RR
+    value: 74
+    tolerance: 7
+  - quantity: PFC pyramidal locked to local RR
+    value: 42
+    tolerance: 4
+  - quantity: PFC interneurons locked to local RR
+    value: 12
+    tolerance: 1
+  - quantity: CA1 pyramidal locked to local beta
+    value: 28
+    tolerance: 3
+  - quantity: CA1 interneurons locked to local beta
+    value: 36
+    tolerance: 4
+  - quantity: PFC pyramidal locked to local beta
+    value: 8
+    tolerance: 1
+  - quantity: PFC interneurons locked to local beta
+    value: 2
+    tolerance: 1
+  depends_on:
+  - unit-counts
+  criterion: Phase locking as in the opening comment, to the local tetrode, task-responsive cells. The
+    interneuron denominators differ between the Results (83 CA1, 28 PFC) and the Figure 5c legend (96
+    and 36); both are counted and reported. Chance is 0.05, the dotted line of Figure 5-figure
+    supplement 1c and the code's chance line (F7/ClaireBetaAnalysis.m line 622); binomial test,
+    one-sided, of the number locked against n and 0.05. The 1-count tolerance on the smallest counts
+    is a floor, not 10%. Reproduced when the CA1 pyramidal beta proportion exceeds chance with
+    p < 0.05, the PFC beta proportions do not, and the fractions fall within tolerance (counts scaled
+    to the n found when the denominators differ); partially when the significance pattern holds but
+    some fractions do not.
+- id: fig5d-cross-region-beta
+  statement: More CA1 interneurons were locked to PFC beta than chance, while CA1 pyramidal cells and
+    PFC cells showed no cross-regional beta locking beyond chance.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 1; Figure 5c-d
+  quote: When we assessed cross-regional spike-beta coherence, we found that there were significantly
+    more CA1 interneurons locked to PFC beta than chance
+  statistics:
+  - about: CA1 interneurons maximally locked to PFC beta, 9/83
+    test: binomial test
+    p: 1.7e-20
+    corrected: Bonferroni, alpha 0.0167
+  - about: CA1 pyramidal to PFC beta 11/138 and to OB beta 10/138; PFC cells to CA1 and OB beta
+    test: binomial test
+    p: 0.0167
+    p_relation: ">"
+    corrected: Bonferroni
+  expected:
+  - quantity: CA1 interneurons maximally locked to PFC beta
+    value: 9
+    tolerance: 1
+  - quantity: CA1 pyramidal maximally locked to PFC beta
+    value: 11
+    tolerance: 1
+  - quantity: CA1 pyramidal maximally locked to OB beta
+    value: 10
+    tolerance: 1
+  - quantity: PFC pyramidal maximally locked to CA1 beta
+    value: 10
+    tolerance: 1
+  depends_on:
+  - fig5c-local-locking
+  criterion: Each task-responsive cell tested against beta on the CA1, PFC and OB tetrodes; locked to a
+    region when the Rayleigh p is below 0.05/3 (Results; F7/ClaireBetaAnalysis.m pcrit = .05/3) and
+    assigned to the region with the smallest p (legend 5d; line 320). Binomial test of each count
+    against chance; the chance probability is not stated, readings 0.0167 and 0.05. The paper gives
+    some OB denominators as 138 where the population is PFC (185); counts are compared, not
+    denominators. Reproduced when the CA1 interneuron count to PFC beta exceeds chance at p < 0.0167
+    and the CA1 pyramidal and PFC counts do not. The outcome is the one both chance readings give;
+    when they differ the claim is blocked as methods_underspecified with both shown.
+- id: fig5gh-phase-preference
+  statement: Preferred beta and RR phases were consistent across task-responsive CA1 cells, while in
+    PFC only interneurons had a consistent preferred RR phase.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 2; Figure 5g-h
+  quote: phase preference across cells was consistent in CA1 for both rhythms ( Figure 5g–h ,
+    Rayleigh Z-test, CA1... pyr n=138, beta p=5.4e-5, RR P =5.9e-4, int n=83 beta p=2.62e-4 RR
+    p=5.61e-6)
+  statistics:
+  - about: CA1 pyramidal, beta
+    test: Rayleigh Z-test
+    p: 5.4e-5
+    n: 138 cells
+  - about: CA1 pyramidal, RR
+    test: Rayleigh Z-test
+    p: 5.9e-4
+  - about: CA1 interneurons, beta
+    test: Rayleigh Z-test
+    p: 2.62e-4
+  - about: CA1 interneurons, RR
+    test: Rayleigh Z-test
+    p: 5.61e-6
+  - about: PFC interneurons, RR
+    test: Rayleigh Z-test
+    p: 3.1e-5
+  - about: PFC pyramidal beta and RR, PFC interneuron beta
+    test: Rayleigh Z-test
+    p: 0.05
+    p_relation: ">"
+  depends_on:
+  - unit-counts
+  criterion: Each task-responsive cell's preferred phase is the mean phase of its spikes on correct
+    trials (Methods, the circular mean under a von Mises model), whether or not it is locked
+    (Results, "regardless of the significance"); local tetrode. Rayleigh test across cells per region,
+    cell type and rhythm. Reproduced when the five significant tests give p < 0.05 and the three PFC
+    tests give p >= 0.05; partially when six or seven of the eight hold.
+- id: fig5-rr-more-than-beta
+  statement: More cells were phase locked to RR than to beta, and the depth of RR modulation was
+    stronger, in CA1 and in PFC.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 2; Figure 5c; Figure 5-figure supplement 1a
+  quote: even though a higher percentage of cells in both regions were phase locked to RR ( Figure 5c
+    and z-test for proportions ... and depth of this modulation was much
+    stronger for RR compared to beta
+  statistics:
+  - about: proportion locked, CA1
+    test: z-test for proportions
+    p: 6.8e-23
+  - about: proportion locked, PFC
+    test: z-test for proportions
+    p: 8.8e-9
+  - about: Rayleigh Z, RR against beta, CA1
+    test: rank-sum test
+    p: 3.2e-26
+    n: 138 cells
+  - about: Rayleigh Z, RR against beta, PFC
+    test: rank-sum test
+    p: 0.002
+    n: 185 cells
+  depends_on:
+  - fig5c-local-locking
+  criterion: Proportions of task-responsive cells locked to RR and to beta compared by a pooled z-test
+    for two proportions (code F16/PhaseLocking/cs_plCellProportions.m, which counts a cell locked to
+    CA1 or PFC LFP; readings local LFP only, and CA1 or PFC LFP as the code does), two-sided and
+    one-sided (the code's ztestprop.m is one-sided). Rayleigh Z of each task-responsive pyramidal
+    cell's spikes for RR against beta by rank-sum (legend). Reproduced when, in each region, RR has the
+    larger proportion with p < 0.05 and larger Rayleigh Z with p < 0.05. The outcome is the one all
+    readings give; when they differ the claim is blocked as methods_underspecified.
+- id: fig5s1de-beta-rr-overlap
+  statement: The share of cells locked to both beta and RR did not differ from that expected by
+    chance from the share locked to each, in CA1 and PFC, for pyramidal cells and interneurons.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 3; Figure 5-figure supplement 1d-e
+  quote: in both CA1 and PFC, the proportion of cells that were phase locked to both beta and RR was no
+    different than chance, given the percentages of cells that were modulated by either rhythm
+  statistics:
+  - about: pyramidal, CA1
+    test: binomial test
+    p: 0.08
+  - about: pyramidal, PFC
+    test: binomial test
+    p: 0.06
+  - about: interneurons, CA1
+    test: binomial test
+    p: 0.11
+  - about: interneurons, PFC
+    test: binomial test
+    p: 0.20
+  depends_on:
+  - fig5c-local-locking
+  criterion: Chance probability the product of the fractions locked to beta and to RR (legend; code
+    F16/Spiking/jhb_plotAllProportions.m line 389); binomial test of the number locked to both against
+    n and that probability, two-sided (the legend shows a 95% binomial interval). Absence claim on the
+    paper's test - reproduced when all four give p >= 0.05, not reproduced when any gives p < 0.05;
+    the observed and chance fractions are reported.
+- id: fig5s1fh-selective-and-locked
+  statement: Choice-selective cells were no more or less likely than chance to be phase locked to beta
+    or to RR, in CA1 and PFC.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 4; Figure 5-figure supplement 1f-h
+  quote: Interestingly, we found that the number of cells that met both criteria was no different
+    than chance for either CA1 or PFC ( Figure 5—figure supplement 1f , binomial tests; all p>0.05)
+  statistics:
+  - about: pyramidal, beta, CA1
+    test: binomial test
+    p: 0.08
+  - about: pyramidal, beta, PFC
+    test: binomial test
+    p: 0.16
+  - about: interneurons, beta, CA1
+    test: binomial test
+    p: 0.4
+  - about: interneurons, beta, PFC
+    test: binomial test
+    p: 0.7
+  - about: pyramidal, RR, CA1
+    test: binomial test
+    p: 0.077
+  - about: pyramidal, RR, PFC
+    test: binomial test
+    p: 0.10
+  depends_on:
+  - fig3-choice-selective-fraction
+  - fig5c-local-locking
+  criterion: As fig5s1de-beta-rr-overlap, with chance the product of the fractions choice selective
+    and phase locked among task-responsive cells. "Phase locked" is to any region's rhythm (Results,
+    "within and across regions"); the local-only count is a reading too. Absence claim - reproduced
+    when all six tests give p >= 0.05, not reproduced when any gives p < 0.05.
+- id: fig5e-beta-mvl-correct-incorrect
+  statement: Beta-locked CA1 pyramidal cells and interneurons and PFC pyramidal cells were more
+    strongly locked to local beta on correct than on incorrect trials.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 5; Figure 5e
+  quote: We found that both pyramidal cells and interneurons in CA1 and pyramidal cells in PFC that
+    were phase-locked to the local beta rhythm exhibited a lower MVL on incorrect trials
+  statistics:
+  - about: CA1 pyramidal
+    test: signed-rank test
+    p: 0.014
+    n: 28 cells
+  - about: CA1 interneurons
+    test: signed-rank test
+    p: 0.038
+    n: 36 cells
+  - about: PFC pyramidal
+    test: signed-rank test
+    p: 0.039
+    n: 8 cells
+  depends_on:
+  - fig5c-local-locking
+  criterion: Cells - task-responsive cells locked to local beta. Method from the Methods (Phase
+    locking) - correct-trial spikes subsampled to the number of incorrect-trial spikes, the MVL of
+    the subsample bootstrapped 1000 times, the mean bootstrapped MVL compared with the incorrect-trial
+    MVL; signed-rank test across cells. The code resamples trials, not spikes, 500 times (Path A,
+    cs_phaselockBootstrap_v2.m) or subsamples both conditions 200 times and prints a t-test (Path B,
+    F7/ClaireBetaAnalysis.m lines 155 to 172 and 890); variants. Reproduced when the three groups give
+    lower incorrect MVL with p < 0.05; partially for one or two.
+- id: fig5f-rr-mvl-no-difference
+  statement: Locking to local RR did not differ between correct and incorrect trials.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 5; Figure 5f
+  quote: There was no significant effect for local RR phase locking ( Figure 5f , signed-rank test, no
+    significance found)
+  statistics:
+  - test: signed-rank test
+    p: 0.05
+    p_relation: ">"
+    n: 113 CA1 pyramidal, 74 CA1 interneurons, 42 PFC pyramidal, 12 PFC interneurons
+  depends_on:
+  - fig5c-local-locking
+  criterion: As fig5e-beta-mvl-correct-incorrect, for RR-locked cells. Absence claim - reproduced when
+    none of the four groups gives p < 0.05; the median differences are reported.
+- id: fig5s2-ca1-int-pfc-beta-accuracy
+  statement: CA1 interneurons locked to PFC beta were more strongly locked on correct than on incorrect
+    trials.
+  source: Results, CA1 and PFC cells phase lock to beta and respiratory rhythms during decision
+    making, paragraph 5; Figure 5-figure supplement 2a
+  quote: Interestingly, cross-region spike-phase coherence showed a similar relationship to decision
+    accuracy for CA1 phase-coherent interneurons ( Figure 5—figure supplement 2 n=20, p=0.0023)
+  statistics:
+  - about: Results
+    p: 0.0023
+    n: 20 cells
+  - about: Figure 5-figure supplement 2a legend, CA1 interneurons to PFC beta
+    p: 0.0031
+  depends_on:
+  - fig5d-cross-region-beta
+  criterion: As fig5e-beta-mvl-correct-incorrect, for CA1 interneurons significantly locked to PFC
+    beta; the other cross-regional combinations (legend, all p > 0.05) are reported. Which interneurons
+    form the 20 is not stated - readings locked to PFC beta at p < 0.05, or at p < 0.0167 (as in
+    fig5d-cross-region-beta). Reproduced when correct exceeds incorrect with signed-rank p < 0.05
+    under a reading.
+- id: fig6d-discrimination-time
+  statement: CA1 and PFC ensemble trajectories for the two choices separated within the odor sampling
+    period, at similar times (CA1 200 to 800 ms, PFC 400 to 700 ms after odor onset).
+  source: Results, Neural ensemble responses in CA1 and PFC during decision making predict the
+    upcoming choice, paragraph 2; Figure 6c-d
+  quote: Neural discrimination times for CA1 and PFC (n=24 sessions across 8 animals; threshold of 4
+    task-responsive cells, CA1... 200–800ms; PFC... 400–700ms) were similar ( Figure 6d ; p=0.68,
+    sign-rank test)
+  statistics:
+  - test: signed-rank test
+    p: 0.68
+    n: 24 sessions across 8 animals
+  expected:
+  - quantity: CA1 discrimination time range, low
+    value: 200
+    tolerance: 20
+    unit: ms
+  - quantity: CA1 discrimination time range, high
+    value: 800
+    tolerance: 80
+    unit: ms
+  - quantity: PFC discrimination time range, low
+    value: 400
+    tolerance: 40
+    unit: ms
+  - quantity: PFC discrimination time range, high
+    value: 700
+    tolerance: 70
+    unit: ms
+  depends_on:
+  - unit-counts
+  criterion: Method from the Methods (PCA) - sessions with at least 4 task-responsive cells per region;
+    spikes in 100 ms bins from 0 to 1 s after odor onset, correct trials (the code,
+    F16/pca/sj_columnVectors_day_npCells.m line 71); first 3 PCs; Euclidean distance between the mean
+    left-bound and right-bound trajectories; null from 1000 shuffles of trial labels (code
+    sj_PCA_AvgDis_Sess_npcells_update2.m line 232); discrimination time is the first bin whose distance
+    exceeds the null's upper bound. Cells are task-responsive pyramidal cells (Results, "We first
+    considered only pyramidal cells that were task-responsive for the ensemble analyses"); the code's
+    pyramidal cells and interneurons (npCells_PyrInt) are a variant. Open details and readings - PCA
+    fitted (c) on the session's trial-averaged bins by neurons matrix (Methods) or (d) per bin on
+    single trials (code lines 175 to 176); the bound the 95th (code) or 97.5th percentile (the upper
+    edge of a 95% interval). The code's window from -0.2 s is a variant. Each reading gives
+    per-session times; reported are the range per region and a signed-rank test of CA1 against PFC
+    over sessions with both. Reproduced when the ranges fall within the expected bounds widened by
+    tolerance and the signed-rank test gives p >= 0.05 (the absence part judged on that test). The
+    outcome is the one all readings give; when they differ the claim is blocked as
+    methods_underspecified.
+- id: fig6c-even-odd-control
+  statement: A control distance between even and odd trials of the same odor never crossed
+    significance in any session.
+  source: Results, Neural ensemble responses in CA1 and PFC during decision making predict the
+    upcoming choice, paragraph 2; Figure 6c
+  quote: A second even-odd shuffle ( Figure 6c black lines) failed to cross significance in any
+    session, suggesting the emergence of a robust discriminatory neural code during decision-making
+  depends_on:
+  - fig6d-discrimination-time
+  criterion: For each session and region of fig6d-discrimination-time, the distance between the mean
+    trajectories of even and odd trials of each odor, averaged over the two odors (legend; code
+    F16/pca/Run_PCA_SJ_copy.m lines 107 to 112), compared with the same null bound bin by bin. The
+    trace the figure code labels even-odd (sj_PCA_AvgDis_Sess_npcells_update2.m line 332) is the first
+    shuffle's distance, a variant. Reproduced when no session crosses the bound in any bin; partially
+    when at most 10% of sessions do.
+- id: fig6e-glm-choice-prediction
+  statement: A GLM on task-responsive pyramidal ensembles predicted the upcoming choice before odor
+    port exit, from 0.1 s before exit in CA1 and 0.3 s before in PFC.
+  source: Results, Neural ensemble responses in CA1 and PFC during decision making predict the
+    upcoming choice, paragraph 3; Figure 6e left
+  quote: When we performed this analysis using task-responsive putative pyramidal cells we found that
+    reward choice could be accurately predicted 0.1 s prior to odor port disengagement by CA1
+    ensembles, and 0.3 s prior by PFC ensembles ( Figure 6e left )
+  statistics:
+  - test: rank-sum test against shuffled data, per time window
+    p: 0.05
+    p_relation: "<"
+  expected:
+  - quantity: earliest significant prediction, CA1, before exit
+    value: 0.1
+    tolerance: 0.1
+    unit: s
+  - quantity: earliest significant prediction, PFC, before exit
+    value: 0.3
+    tolerance: 0.1
+    unit: s
+  depends_on:
+  - unit-counts
+  criterion: Method from the Methods (GLM) - task-responsive cells active on at least 10 trials,
+    spike counts per cell as predictors, choice (the well chosen, all completed trials, as the code
+    labels them, cs_predictChoice_GLM.m line 122) as response; binomial GLM, with the Methods' log link
+    or the code's logit (line 142); five-fold cross-validation, accuracy the fraction of test trials
+    correct; null from shuffled choice labels; rank-sum test of real against shuffled accuracy over
+    sessions per window. Tolerance is one 0.1 s window step. The alignment is open, as the Methods
+    use cumulative windows from odor onset (0-0.1 to 0-1.0 s; the plotted code,
+    cs_trialPredictionGLM.m) and the Results speak of time before exit. Readings (a) windows from
+    odor port exit minus 0.6 s to exit plus w, w from -0.5 to 0.2 s in 0.1 s steps (code
+    cs_predictChoice_GLM_v3.m), the time of a window its end; (b) the onset-aligned windows, a window's
+    time before exit read as the mean sampling duration (0.82 s, fig1c) minus its length. The
+    earliest window from which all later windows are significant is reported. Shuffles - 100 per
+    session as the code does (cs_predictChoice_GLM.m line 155), each with its own fold split. The
+    code's t-test is a variant. Reproduced when both regions predict above chance before exit and both
+    earliest times fall within tolerance; partially when only one does. The outcome is the one both
+    alignment readings give; when they differ the claim is blocked as methods_underspecified.
+- id: fig6e-glm-with-interneurons
+  statement: Adding interneurons made CA1 prediction accurate earlier, 0.2 s before exit, PFC
+    prediction did not change, and resampling pyramidal cells to the same ensemble size gave 0.1 s
+    again.
+  source: Results, Neural ensemble responses in CA1 and PFC during decision making predict the
+    upcoming choice, paragraph 3; Figure 6e right
+  quote: In this case, we found an improvement in prediction for CA1 ensembles... reward prediction
+    was now accurate starting earlier, at 0.2 s prior to decision execution. Prediction by PFC
+    ensembles remained the same
+  expected:
+  - quantity: earliest significant prediction, CA1 with interneurons, before exit
+    value: 0.2
+    tolerance: 0.1
+    unit: s
+  - quantity: earliest significant prediction, PFC with interneurons, before exit
+    value: 0.3
+    tolerance: 0.1
+    unit: s
+  - quantity: earliest significant prediction, CA1 resampled pyramidal control, before exit
+    value: 0.1
+    tolerance: 0.1
+    unit: s
+  depends_on:
+  - fig6e-glm-choice-prediction
+  criterion: As fig6e-glm-choice-prediction with task-responsive pyramidal cells and interneurons. The
+    control resamples pyramidal cells with replacement to the number of pyramidal cells plus
+    interneurons (Results); no code was found for it, and the number of resamples is not stated -
+    read as 100 resamples per session with accuracy averaged, a standard choice. Reproduced when CA1
+    with interneurons is significant earlier than CA1 pyramidal alone, PFC unchanged and the control
+    as for pyramidal cells, with the times within tolerance. The outcome is the one both alignment
+    readings of fig6e-glm-choice-prediction give; when they differ the claim is blocked as
+    methods_underspecified.
+- id: fig7-spatial-field-counts
+  statement: Many CA1 and PFC cells had spatial fields on the track, 344 of 585 in CA1 and 159 of 288 in
+    PFC.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 1; Figure 7b
+  quote: A large fraction of cells in CA1 and PFC exhibited spatial activity on the maze (see Methods
+    for details on spatial parameters, n=344 out of 585 CA1 cells; n=159 out of 288 PFC cells had
+    fields on the track)
+  expected:
+  - quantity: CA1 cells with fields
+    value: 344
+    tolerance: 34
+  - quantity: CA1 cells tested
+    value: 585
+    tolerance: 59
+  - quantity: PFC cells with fields
+    value: 159
+    tolerance: 16
+  - quantity: PFC cells tested
+    value: 288
+    tolerance: 29
+  criterion: Full-maze sessions (Results, 26 sessions from 6 rats; Methods, the five full-maze animals;
+    both sets shown). Cells are pyramidal cells that fire during run (code
+    F7/SummaryObjPlaceInteractions.m lines 349 to 351). Place fields from the Methods (Place field
+    determination) - run epochs at speed over 3 cm/s, each outbound trajectory linearized into 100
+    bins, rate map smoothed with a Gaussian of 2 bins, peak at least 1 Hz, peak at least 2 s.d. above
+    the mean of a null from circularly shifting spikes within each run, field under 75% of the
+    trajectory. Shuffle count from the code, 500 (F7/CalcLinPlaceField.m); the code's one-tailed
+    p < 0.05 in place of 2 s.d. is a variant. Reproduced when the counts fall within tolerance.
+- id: fig7b-odor-active-more-fields
+  statement: Odor-period active cells were more likely to have spatial fields than inactive cells, in
+    CA1 (71 of 108 against 273 of 477) and PFC (83 of 128 against 76 of 160).
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 2; Figure 7b
+  quote: Cells that were odor period active were more likely to have spatial fields on the track (odor
+    sampling periods were excluded in spatial responses, see Methods ), compared to cells that were not
+    ( Figure 7b , binomial test
+  statistics:
+  - about: CA1, 71/108 active against 273/477 inactive
+    test: binomial test
+    p: 0.029
+  - about: PFC, 83/128 active against 76/160 inactive
+    test: binomial test
+    p: 2.7e-5
+  expected:
+  - quantity: CA1 odor period active cells with fields
+    value: 71
+    tolerance: 7
+  - quantity: CA1 odor period active cells
+    value: 108
+    tolerance: 11
+  - quantity: PFC odor period active cells with fields
+    value: 83
+    tolerance: 8
+  - quantity: PFC odor period active cells
+    value: 128
+    tolerance: 13
+  depends_on:
+  - fig7-spatial-field-counts
+  criterion: Binomial test of the active cells with fields against n active, with null probability the
+    fraction of inactive cells with fields, one-sided upper (code F7/SummaryObjPlaceInteractions.m
+    lines 432 to 434; the code's P(X > k) is shown beside P(X >= k)). Reproduced when both regions give
+    p < 0.05 with active cells more likely to have fields.
+- id: fig7s1b-odor-active-higher-rate
+  statement: Odor-period active cells had higher mean firing rates during running than inactive cells,
+    in CA1 and PFC.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 2; Figure 7-figure supplement 1b
+  quote: Additionally, for both CA1 and PFC neurons, we found odor period active cells had higher
+    firing rates overall ( Figure 7—figure supplement 1b )
+  statistics:
+  - about: CA1
+    test: rank-sum test
+    p: 2.8e-14
+    n: 585 cells
+  - about: PFC
+    test: rank-sum test
+    p: 1.3e-5
+    n: 288 cells
+  depends_on:
+  - fig7-spatial-field-counts
+  criterion: Mean firing rate of each cell during running on the maze, excluding the odor sampling
+    periods (legend), at speed over 3 cm/s; rank-sum of active against inactive cells (code lines 485
+    and 500). Reproduced when both regions give p < 0.05 with active cells higher.
+- id: fig7c-field-properties-no-difference
+  statement: Place field width, peak rate and sparsity did not differ between odor-period active and
+    inactive cells in either region.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 2; Figure 7c; Figure 7-figure supplement 1c-d
+  quote: Surprisingly however, we found no difference in field width ( Figure 7c , rank-sum tests ...
+    field peak rate ( Figure 7—figure supplement 1c ), or field sparsity
+  statistics:
+  - about: width, CA1
+    test: rank-sum test
+    p: 0.15
+    n: 452 fields
+  - about: width, PFC
+    test: rank-sum test
+    p: 0.92
+    n: 207 fields
+  - about: peak rate, CA1
+    test: rank-sum test
+    p: 0.14
+  - about: peak rate, PFC
+    test: rank-sum test
+    p: 0.08
+  - about: sparsity, CA1
+    test: rank-sum test
+    p: 0.70
+  - about: sparsity, PFC
+    test: rank-sum test
+    p: 0.88
+  depends_on:
+  - fig7-spatial-field-counts
+  criterion: Each outbound field counted separately (Methods and legend 7c). Width by flood fill from
+    the peak to the bins where rate falls below 25% of peak; peak rate on the smoothed linearized map;
+    sparsity as Skaggs et al. 1993 (Methods). Rank-sum of active against inactive fields. Absence
+    claim - reproduced when all six tests give p >= 0.05, not reproduced when any gives p < 0.05;
+    medians are reported.
+- id: fig7s1e-trajectory-selective-odor-active
+  statement: Trajectory-selective cells were more likely than non-selective cells to be active in the
+    odor period.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 3; Figure 7-figure supplement 1e
+  quote: although trajectory-selective cells were significantly more likely than trajectory-nonselective
+    cells to respond in the decision-making period ( Figure 7—figure supplement 1e )
+  statistics:
+  - about: CA1
+    test: binomial test
+    p: 3.0e-4
+    n: 108 odor active units
+  - about: PFC
+    test: binomial test
+    p: 0.02
+    n: 128 odor active units
+  depends_on:
+  - fig7-spatial-field-counts
+  criterion: Trajectory selective as in the Methods (Trajectory selectivity) - the correlation of the
+    left and right outbound linearized tuning curves below the 5th percentile of a null from shuffling
+    trajectory identity across runs; the code has no such shuffle (a plain correlation, code line 944)
+    and uses splitter scores instead, so the Methods' rule is used with 500 shuffles (the code's count
+    for its scores, F7/CalcLinTrajectories.m) and the code's SplitterScore at p < 0.05 is a variant.
+    Binomial test as in fig7b-odor-active-more-fields, the share of trajectory-selective cells that
+    are odor active tested against the share among non-selective cells. Reproduced when both regions
+    give p < 0.05 in that direction.
+- id: fig7d-trajectory-choice-unrelated
+  statement: Among choice-selective cells, the preferred run trajectory was unrelated to the preferred
+    choice in the odor period.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 3; Figure 7d
+  quote: there was no relationship between the preferred trajectory during run periods and preferred
+    choice during the odor-cued decision-making period ( Figure 7d , rank sum test
+  statistics:
+  - about: CA1
+    test: rank-sum test
+    p: 0.26
+  - about: PFC
+    test: rank-sum test
+    p: 0.20
+  depends_on:
+  - fig3-choice-selective-fraction
+  - fig7-spatial-field-counts
+  criterion: Trajectory selectivity index from the Methods - the mean rate on each outbound run from
+    0.5 s after odor port exit once speed exceeds 3 cm/s to the run's end (goal reached or speed under
+    3 cm/s for more than 0.5 s), averaged per trajectory, (left - right)/(left + right). Rank-sum of
+    the index between choice-selective cells preferring one choice and those preferring the other
+    (code line 1065). Absence claim - reproduced when both regions give p >= 0.05; medians are
+    reported.
+- id: fig7e-odor-decoder-first-quintile
+  statement: A decoder trained on odor-period activity decoded the choice from run activity in the
+    first fifth of the track, nearest the odor port, but at chance thereafter.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 4; Figure 7e
+  quote: We found that choice identity could be decoded at the first quintile of track, nearest to the
+    odor port, but decoding accuracy diminished to chance level thereafter ( Figure 7e )
+  statistics:
+  - test: rank-sum test against shuffled data, per quintile
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig7-spatial-field-counts
+  criterion: Memoryless Poisson Bayesian decoder (Methods, Bayesian decoder) built per choice from
+    spikes in the odor sampling period, applied to spikes of each run in each fifth of the linearized
+    outbound trajectory (equal fifths of 123 cm, legend); runs from 0.5 s after odor port exit at speed
+    over 3 cm/s; null from 200 shuffles of choice labels in the training set; rank-sum of real against
+    shuffled accuracy (legend; the code's paired signed-rank over sessions, F7/Claire_Odor_Routedecoder.m
+    line 629, a variant). Cells are task-responsive cells (legend, "task-responsive ensemble
+    activity"); the code's units active on at least 10 trials (line 429) are a variant. The unit of the
+    test is sessions, as in the code. Reproduced when quintile 1 is above chance with p < 0.05 and
+    quintiles 2 to 5 are not; partially when quintile 1 is and one later quintile also is.
+- id: fig7f-spatial-decoder-all-quintiles
+  statement: Decoders trained on the spatially active ensemble in each fifth of the track decoded the
+    upcoming choice at every position along the trajectory.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 4; Figure 7f
+  quote: In contrast, the animal's upcoming behavioral choice could be accurately decoded at all
+    periods along the trajectory if instead the spatially active ensembles in each respective spatial
+    quintile was used as the training set ( Figure 7f )
+  statistics:
+  - test: rank-sum test against shuffled data, per quintile
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig7-spatial-field-counts
+  criterion: As fig7e-odor-decoder-first-quintile, but trained and tested on run activity in each
+    quintile with five-fold cross-validation over runs (Methods) and 200 label shuffles. "Spatially
+    active" is not defined; readings (a) cells with a place field on either outbound trajectory
+    (fig7-spatial-field-counts), (b) cells firing in run, active on at least 10 runs (code lines 780 and
+    998 to 1000). Reproduced when all five quintiles are above chance with p < 0.05 in CA1 and in PFC;
+    partially when four of five are in each region. The outcome is the one both readings give; when
+    they differ the claim is blocked as methods_underspecified.
+- id: fig7s1f-ensemble-rate-near-port
+  statement: In CA1 the firing rate of choice-selective ensembles during outbound runs was highest
+    within 20 cm of the odor port and fell thereafter.
+  source: Results, Representations of choice and space are maintained independently during stem
+    running, paragraph 4; Figure 7-figure supplement 1f
+  quote: This is further supported by the fact that, at least for CA1, choice-selective ensemble firing
+    rate is highest within 20 cm of the odor port, and decreases thereafter
+  depends_on:
+  - fig3-choice-selective-fraction
+  - fig7-spatial-field-counts
+  criterion: Mean over choice-selective cells of each cell's linearized outbound rate (code
+    F7/SummaryObjPlaceInteractions.m lines 834 to 873 use odor-selective cells, though the legend says
+    odor period active; both shown); null from circularly shifting each cell's curve by a random number
+    of bins 1000 times (code lines 834 to 873), a position marked when the ensemble rate exceeds the
+    null's 99th percentile (legend). The Results say choice-selective and the legend odor period
+    active, so the cell set is a reading of which subset is meant, a match under either. Reproduced
+    when the CA1 ensemble rate peaks within 20 cm of the odor port and is lower beyond 20 cm than
+    within it; the marked positions are reported.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1c-sampling-duration. The code's rank-sum is at line 65 of cs_nosepokeDuration_2.m, not line 61 (read at the cited commit).
+  - fig1s1f-air-performance. Dropped "performance was near chance" from the statement; no sentence of the paper says it, only the figure's chance line would.
+  - fig2d-beta-power-increase, fig2e-beta-coherence-increase (and fig2e-rr-coherence-increase by reference), fig2e-beta-coherence-odor-vs-reward (and fig2e-rr-coherence-odor-vs-reward, fig2d-power-odor-vs-reward), fig2g-air-beta-coherence. The criteria accepted a match under either LFP pipeline. The pipelines are method readings that can change the outcome, so the protocol requires the outcome both give, blocked as methods_underspecified when they differ; the rule now says so.
+  - fig2s2d-phase-offsets, fig2s1e-run-theta-shift, fig3ij-si-anticorrelated (and fig4c-interneuron-si by reference), fig4d-ccg-lags, fig5d-cross-region-beta, fig5-rr-more-than-beta, fig6e-glm-choice-prediction, fig6e-glm-with-interneurons, fig7f-spatial-decoder-all-quintiles. Same correction. Their readings are windows, SI definitions, thresholds, chance levels, alignments or cell sets, all method details, so a match "under a reading" is replaced by the outcome all readings give, blocked when they differ.
+  - fig2s1f-rr-beta-coupling. "Correct trials" had no source in the Methods; it is now a reading beside all completed trials. The per-session reading had an invented rule (a majority of sessions significant); the legend shows one MI per region against a trial-shuffled null, so the pooled MI is the test and per-session MIs are a variant.
+  - fig3s1c-odor-vs-reward-rate. Dropped "strongly in CA1 and weakly in PFC"; the paper gives only p-values and does not grade the effects.
+  - fig4d-ccg-lags. The Results' x = -0.028 and x = -0.013 are not named; the expected quantities were labelled medians. They are now named as median or mean, not stated, and both are compared.
+  - fig6d-discrimination-time. Pyramidal cells plus interneurons (the code) was a reading; the Results state task-responsive pyramidal cells, so the code's set is now a variant (protocol, Methods before code). Outcome rule as above.
+  - fig7e-odor-decoder-first-quintile. All units active on 10 trials (the code) was a reading; the legend states task-responsive ensembles, so it is now a variant.
+  - fig7s1f-ensemble-rate-near-port. The rule that more than half the marked positions lie in the first 20 cm was invented; it is now the Results' statement, peak within 20 cm and lower rate beyond. The cell set (choice-selective in the Results, odor period active in the legend) is named as a reading of which subset is meant.
+  - fig7b-odor-active-more-fields. The statement's 65% for PFC was computed, the legend prints 66%; the statement now gives the counts.
+  - Not settled, fig2d-beta-power-increase. The quote checker reports 1.80e-4 as not found; the paper prints "PFC p=1.80e-4" three times, the checker only tries "1.8e-4". Confirmed by reading.
+  - Not settled, fig3s1e-nonselective-si. The Results (not significant) and the legend (r = -0.34, p = 0.001 and 3.0e-4) disagree; with both readings accepted the claim fails only when p < 0.05 with r far from -0.34.
+  - Not settled, fig5d-cross-region-beta. The paper's p = 1.7e-20 for 9 of 83 cells fits neither chance level (0.0167 or 0.05), and at 0.0167 the CA1 pyramidal counts the paper calls non-significant would be significant; the claim may block on the chance reading.
+  - Not settled, fig5c-local-locking, fig5gh-phase-preference. Interneuron denominators differ between the Results (83 CA1, 28 PFC) and the legends (96, 36); kept as written, both reported.
+  - Not settled, fig6e-glm-choice-prediction. The Methods align windows to odor onset while the Results and legend give times before exit; the two readings may give different outcomes, which now blocks the claim.
+  - Code spot-checked at commit 88d5f8d2 (pcrit and chance line in ClaireBetaAnalysis.m, binocdf in SummaryObjPlaceInteractions.m, 1000 shuffles and z > 1.5 in cs_cellSelectivityTag.m, fitglm and 100 shuffles in cs_predictChoice_GLM.m, the 0.5 s window in ClaireCellCellInteractions.m, the tests in cs_sniffRate.m and cs_odorVsAirPerf.m); the rest of the code citations were not re-read.
