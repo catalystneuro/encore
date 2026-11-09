@@ -94,6 +94,11 @@
       `${counts[k]} ${esc(cfg.outcomes[k][0].toLowerCase())}`).join(' · ');
     return `<div class="bar mini" role="img" aria-label="${text}">${segs}</div><span class="small muted">${text}</span>`;
   };
+  // Claims on data outside the dataset are counted apart from the bar; a row whose claims are mostly
+  // there would otherwise look empty.
+  const elsewhere = (r) => r.elsewhere
+    ? `<div class="small muted">${r.elsewhere} ${r.elsewhere === 1 ? 'claim' : 'claims'} on data outside the dataset, counted apart</div>`
+    : '';
   const tier = (r) => r.tier
     ? `<span class="tier${r.tier === 'runs' ? ' pending' : ''}">${esc(r.tier === 'runs' ? 'Not yet verified' : '✓ ' + label('tier', r.tier))}</span>` : '';
   // 38464.5 GB reads better as 38.5 TB, and 40982 files as 41k files (exact figure on hover).
@@ -116,12 +121,12 @@
         : `<span class="tag">${esc(label('status', r.status))}</span>`;
       return `<div class="row drow">
         <div class="id"><a href="${href}">${esc(r.label)}</a></div>
-        <div><p class="title"><a href="${href}">${esc(r.paper_title || r.name)}</a></p>
+        <div><p class="title"><a href="${href}">${esc(r.name || r.paper_title)}</a></p>
           <div class="meta">${tags(r.technique)} ${tags(r.species)}
             ${size(r.size_gb)} ${files(r.files)}
-            <a href="https://doi.org/${esc(r.paper)}">Paper</a>
+            <a href="https://doi.org/${esc(r.paper)}" title="${esc(r.paper_title || r.paper)}">Paper</a>
             ${r.page ? `<a href="${root + r.page}#findings">Findings (${r.findings})</a>` : ''}</div>
-          ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}</div>` : ''}</div>
+          ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;
     },
   }[cfg.kind];
