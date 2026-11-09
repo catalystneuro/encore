@@ -1,7 +1,12 @@
 #!/bin/bash
-# One attempt on one dataset, start to finish, run from a clone of the repository:
+# One attempt on one paper, start to finish, run from a clone of the repository:
 #
-#   tools/runner/chain.sh DATASET [VERSION]      (000147, DANDI:000147 or <archive>:<id>)
+#   tools/runner/chain.sh PAPER|DATASET [VERSION]      (tingley-2021; or 000147, DANDI:000147, <archive>:<id>)
+#
+# Records are by paper (docs/paper-first.md). Given a dataset, the chain makes its paper match first, which lists
+# the dataset for its paper (merge_match.sh), and goes on under the paper's key; given a paper, it starts from
+# the claims. From the claims on, the paper's name is the chain's: its branch attempt/<paper>, its runs, its
+# files, $RUNNER_STATE/attempt-<paper>. The attempt uses every dataset papers/datasets/<paper>.yaml lists.
 #
 # Runs the roles of the attempt in GitHub Actions, one after another: the paper match, when main has none
 # for the dataset (papers.yml; docs/pipeline.md step 1), the reader's claims and their
@@ -53,8 +58,14 @@ VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
 here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
-# The dataset's folder name (000147 for DANDI, <archive>-<id> otherwise) names its files and branch.
-d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: not a dataset"; exit 1; }
+# A paper's key, or a dataset's folder name (000147 for DANDI, <archive>-<id> otherwise), names the chain's files
+# and branch; a dataset's name is replaced by its paper's once the paper match lists it for one.
+if [[ "$1" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*-[0-9]{4}(-[a-z0-9]+)?$ ]] && ! python "$here/describe.py" folder "$1" >/dev/null 2>&1; then
+  d=$1; is_paper=1
+else
+  d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: neither a paper nor a dataset"; exit 1; }
+  is_paper=""
+fi
 # The account the next run uses; verified for the rest of the dataset once a run is flagged.
 account=${RUNNER_ACCOUNT:-unverified}
 [ -e "$STATE/verified-$d" ] && account=verified
@@ -79,7 +90,12 @@ fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "atte
 mark="$STATE/attempt-$d"
 done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/main 2>/dev/null
                 git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/attempt/"$d" 2>/dev/null; } \
-  | sort -n -u | sed -nE "s/^[0-9]+ Agent run on $d: ([a-z0-9-]+) \(success\)$/\1/p"; }
+  | sort -n -u | sed -nE "s/^[0-9]+ Agent run on ($(names)): ([a-z0-9-]+) \(success\)$/\2/p"; }
+# The names the chain's runs were committed under: its own, and for a paper, its datasets' folder names, under which
+# an attempt that began before the cutover to paper-first records committed its runs.
+names(){ { echo "$d"; [ -z "$is_paper" ] || git show "origin/main:papers/datasets/$d.yaml" 2>/dev/null \
+  | python -c "import sys,yaml; sys.path.insert(0,'$here/../'); import datasets; [print(datasets.folder(datasets.key_of(x['archive'], str(x['id'])))) for x in (yaml.safe_load(sys.stdin) or {}).get('datasets') or []]" 2>/dev/null; } \
+  | paste -sd '|' -; }
 is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
 run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
@@ -128,11 +144,13 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
       # The recorder reads no paper, so it starts on the unverified account even for a dataset whose paper
       # was flagged; only a flag on the recorder's own run moves it to the verified one.
       acct=$account; [ "$role" = recorder ] && acct=${recorder_account:-${RUNNER_ACCOUNT:-unverified}}
+      # The paper match is on a dataset; every other role on the paper.
+      target="paper=$d"; [ "$role" = paper-match ] && target="dataset=$d"
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
-        out=$(gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" 2>&1) \
+        out=$(gh workflow run attempt.yml -f "$target" -f role="$role" -f version="$VERSION" -f account="$acct" 2>&1) \
           || { gh_failed "$out"; sleep 60; continue; }
       else
-        out=$(gh workflow run "$(workflow_of "$role")" -f dataset="$d" -f role="$role" -f account="$acct" 2>&1) \
+        out=$(gh workflow run "$(workflow_of "$role")" -f "$target" -f role="$role" -f account="$acct" 2>&1) \
           || { gh_failed "$out"; sleep 60; continue; }
       fi
       tls_fails=0
@@ -215,10 +233,14 @@ fi
 step(){ is_done "$1" || run_role "$1" || { end "$d STOPPED at $1"; exit 1; }; }
 # On the branch: python reads a file of the attempt's branch from stdin.
 on_branch(){ git show "origin/attempt/$d:$1" 2>/dev/null; }
-claims_file(){ git ls-tree -r --name-only origin/attempt/"$d" "claims/$d" | grep '\.yaml$' | head -n 1; }
+claims_file(){ git ls-tree --name-only origin/attempt/"$d" "claims/$d.yaml" | head -n 1; }
+# The paper's attempt records on its branch: attempts/<paper>-NN.yaml, not another paper's whose key begins with it.
+records_on_branch(){ git ls-tree -r --name-only origin/attempt/"$d" attempts | grep -E "^attempts/$d-[0-9]{2}\.yaml$" | sort; }
 
-# The paper match: the claims are read only from a paper whose data the dataset holds.
-match=$(python "$here/describe.py" match "$d")
+# The paper match: the claims are read only from a paper whose data the dataset holds. A chain given a paper
+# starts after it.
+match=matched
+[ -n "$is_paper" ] || match=$(python "$here/describe.py" match "$d")
 if [ "$match" = unchecked ]; then
   step paper-match
   out=$("$here/merge_match.sh" "$d" 2>&1); st=$?
@@ -233,7 +255,31 @@ if [ "${MATCH_ONLY:-}" = 1 ]; then
   rm -f "$mark"; end "$d MATCH $match"; exit 0
 fi
 case "$match" in
-  matched) ;;
+  matched)
+    if [ -z "$is_paper" ]; then
+      # From here the chain is the paper's: the dataset's branch held only its paper match, now on main.
+      fetch
+      p=$(python "$here/describe.py" paper "$d") || { end "$d STOPPED: the paper match is on main, but no paper lists the dataset (papers/datasets/)"; exit 1; }
+      log "the paper match lists the dataset for paper $p; going on as $p"
+      git push -q origin --delete "attempt/$d" 2>/dev/null || true
+      [ -e "$STATE/attempt-$p" ] || mv "$mark" "$STATE/attempt-$p" 2>/dev/null || true
+      rm -f "$mark"
+      [ -e "$STATE/verified-$d" ] && { mv "$STATE/verified-$d" "$STATE/verified-$p"; account=verified; }
+      d=$p; is_paper=1; mark="$STATE/attempt-$d"
+      [ -e "$STATE/verified-$d" ] && account=verified
+      if [ "$(python "$here/describe.py" published "$d")" != true ]; then
+        end "$d SKIPPED: a dataset of the paper has no published version"; exit 1
+      fi
+      fetch
+      if [ ! -e "$mark" ] || { [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; }; then
+        # A new attempt on the paper. A branch already merged into main belongs to an earlier one; start from main.
+        if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; then
+          git push -q origin --delete "attempt/$d" && log "deleted attempt/$d, merged with an earlier attempt"
+          fetch
+        fi
+        [ -e "$mark" ] || date -u +%Y-%m-%dT%H:%M:%SZ > "$mark"
+      fi
+    fi;;
   held) last_why="the paper match leaves no usable paper; confirm the verdicts in papers/match/$d.yaml (confirmed: true) or correct them"
         end "$d STOPPED: no paper matches the dataset; see papers/match/$d.yaml"; exit 1;;
   no_match) rm -f "$mark"; end "$d SKIPPED: no paper matches the dataset (papers/match/$d.yaml)"; exit 1;;
@@ -255,10 +301,13 @@ elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
   [ "$ready" = true ] || { end "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
-  # Claims mostly on data elsewhere mean the paper is likely not this dataset's: stop before the checkpoint.
-  elsewhere=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=[x for x in (yaml.safe_load(sys.stdin) or {}).get('claims') or [] if x.get('kind') != 'link']; print(str(bool(c) and 2 * sum(x.get('data') == 'elsewhere' for x in c) > len(c)).lower())")
+  # Claims mostly on data elsewhere mean the paper is likely not this dataset's: stop before the checkpoint. Not for
+  # a paper that only reuses its datasets, whose own new data are elsewhere by nature.
+  reuses=$(git show "origin/main:papers/datasets/$d.yaml" 2>/dev/null | python -c "import yaml,sys; d=(yaml.safe_load(sys.stdin) or {}).get('datasets') or []; print(str(bool(d) and all(x.get('relation') == 'reuses' for x in d)).lower())" 2>/dev/null || echo false)
+  elsewhere=false
+  [ "$reuses" = true ] || elsewhere=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=[x for x in (yaml.safe_load(sys.stdin) or {}).get('claims') or [] if x.get('kind') != 'link']; print(str(bool(c) and 2 * sum(x.get('data') == 'elsewhere' for x in c) > len(c)).lower())")
   if [ "$elsewhere" = true ]; then
-    last_why="most of the claims are on data elsewhere, so the paper is likely not the dataset's; check papers/match/$d.yaml"
+    last_why="most of the claims are on data elsewhere, so the paper is likely not its datasets'; check papers/datasets/$d.yaml and their papers/match/ files"
     end "$d STOPPED: most claims are on data elsewhere"; exit 1
   fi
   # The checkpoint: the checked claims go into main now, ahead of the attempt. A failure here does not stop it.
@@ -282,17 +331,17 @@ if [ "${open_questions:-0}" != 0 ] || is_done answer; then
 fi
 for role in verifier-1 author-revise-1 verifier-2 author-revise-2; do step "$role"; done
 fetch
-latest=$(git ls-tree -r --name-only origin/attempt/"$d" attempts | grep "^attempts/$d-" | sort | tail -n 1)
+latest=$(records_on_branch | tail -n 1)
 if git show "origin/attempt/$d:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
   log "has proposed changes: third round"
   for role in verifier-3 author-revise-3; do step "$role"; done
 fi
 # A repeat attempt, made blind, is compared with the one before it once it is verified.
-if [ "$(git ls-tree -r --name-only origin/attempt/"$d" attempts | grep -c "^attempts/$d-")" -gt 1 ]; then
+if [ "$(records_on_branch | grep -c .)" -gt 1 ]; then
   step reconcile
 fi
 
-# Finish, one dataset at a time.
+# Finish, one paper at a time.
 until mkdir "$STATE/finalize.lock" 2>/dev/null; do sleep 60; done
 trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
 log "finishing"
@@ -304,7 +353,7 @@ git checkout -q -B "attempt/$d" origin/attempt/"$d" || { end "$d STOPPED: could 
 # branch's claims file is the same or later (the reader's answers), so it is kept; any other conflict
 # stops the chain.
 if ! git merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/null; then
-  git checkout -q HEAD -- "claims/$d" 2>/dev/null
+  git checkout -q HEAD -- "claims/$d.yaml" 2>/dev/null
   if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
     git merge --abort; end "$d STOPPED: the branch does not merge with main"; exit 1
   fi
