@@ -139,8 +139,6 @@ claims:
     group remain relative consistent, indicating stable network’s connectivity over short periods.
     However, over time, the structure and strength of the brain network connections change
     significantly, reflecting long-term differences (Fig. 2B).
-  expected:
-  - {quantity: R1 seizures in baseline groups 1 to 4 (Figure 2A columns), value: 34, tolerance: 0}
   criterion: The target nodes are those boxed in Figure 2A and red in Figure 2B (baseline 1 ANT,
     2 ANT, 3 CA3, 4 DG), which agree with the R1 row of Figure S2. Figure 2A shows 9, 9, 7 and 9
     seizures; a different count is reported and does not decide the claim. Computed as in
@@ -206,7 +204,8 @@ claims:
     (p < 0.05); R4 DG against CA1 (p < 0.05), DG against CA3 (p < 0.01); R5 CA1 against CA3
     (p < 0.05), CA1 against ANT (p < 0.01); R7 DG against CA3 (p < 0.05), DG against ANT (p < 0.01).
   statistics:
-  - about: four sites within each rat
+  - about: pairwise site comparisons marked in Figure 3A for R2, R3, R4, R5 and R7 (weakest mark
+      one star); the legend names the KW test and prints no omnibus p
     test: Kruskal-Wallis
     p: 0.05
     p_relation: "<"
@@ -277,8 +276,9 @@ claims:
   criterion: Per site, per-seizure normalized durations of target groups at that site against
     non-target groups at that site, pooled across rats (Figure 3B plots per-seizure points). Target
     groups by site are DG (R1, R2), CA1 (R2), CA3 (R3, R4, R6), ANT (R5, R7). The test is not
-    named in the legend; following Methods G for independent samples, Mann-Whitney is used, with
-    an unpaired t-test shown as a variant. Reproduced when, under one normalization reading, DG,
+    named in the legend; Methods G names the paired t-test or Mann-Whitney for two samples, and
+    as these samples are independent Mann-Whitney is used, with an unpaired t-test shown as a
+    variant. Reproduced when, under one normalization reading, DG,
     CA3 and ANT each show target lower with p < 0.05; partially reproduced for two of the three.
     The CA1 result is reported, and the claim's CA1 part holds when it is not significant.
 - id: seizure-duration-proportion
@@ -355,7 +355,9 @@ claims:
     length (1 s and 0.5 s Hann windows with 50% overlap are the standard choices); the total
     range ((a) 0.5 to 120 Hz, the bands' span and Figure 4C's axis; (b) 0 to 500 Hz); channels as
     in the opening comment; the unit (seizure-channel pairs pooled). Test, Kruskal-Wallis across
-    the three conditions (Figure 4B legend) with Dunn's post hoc. Reproduced when, under one
+    the three conditions (Figure 4B legend). The post hoc test behind target against each other
+    condition is not named, and Figure 4B draws only a short mark over the target bar; readings
+    are (a) Dunn's test with Bonferroni-type adjustment; (b) Dunn's test unadjusted. Reproduced when, under one
     reading of the method and one of the bands, target differs from both sham and non-target in
     the named direction with p < 0.05 in all three bands; partially reproduced when alpha and
     gamma hold.
@@ -454,8 +456,12 @@ claims:
     to the pre window (relative change); the windows are not stated for HFOs and are taken from
     Methods D (pre from onset to stimulation start, post 5 s after the first train; for baseline
     seizures 0 to 5 s and 10 to 15 s), as Figure 6E-F also shows a Baseline group. Pairing readings
-    as in fig6cd-interictal-hfo-no-difference. Reproduced when the test is not significant under
-    reading (a); not reproduced when it is.
+    as in fig6cd-interictal-hfo-no-difference. The x-axis labels of Figure 6E-F name the red point
+    "Non-target stim" and the yellow one "Target stim", against the colour code of Figure 6C-D and
+    of Figures 3 to 5 (red for target) and against the text of Results E; the colour code is taken
+    (red is target), so Figure 6E shows target near -0.16 and non-target near -0.04 (read from the
+    plot, for comparison only). Reproduced when the test is not significant under reading (a); not
+    reproduced when it is.
 - id: fig6f-ictal-fast-ripples-reduced
   statement: During seizures, target stimulation reduced the fast ripple rate, normalized to
     pre-stimulation, compared with baseline and with non-target stimulation.
@@ -475,5 +481,36 @@ claims:
   - figs2-target-assignment
   criterion: Computed as in fig6e-ictal-ripples-no-difference, for fast ripples. Figure 6F shows
     target near -0.25, baseline near 0.2 and non-target near 0.1 (read from the plot, for
-    comparison only). Reproduced when, under one pairing reading, the target mean is below both
+    comparison only), taking the red point as target by the colour code; its x-axis label reads
+    "Non-target stim" (see fig6e-ictal-ripples-no-difference). The text says target stimulation
+    reduced fast ripples, which fits the colour code and not the labels; the stars join the red
+    point to each of the other two. Reproduced when, under one pairing reading, the target mean is below both
     others with p < 0.05 for each comparison; partially reproduced when one comparison holds.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2-r1-target-shifts, removed the expected seizure count (34, tolerance 0); the claim does not
+    rest on it and the criterion already says a different count does not decide it. The count (9,
+    9, 7, 9 in Figure 2A) stays in the criterion.
+  - fig3a-per-rat-site-differences, statistics about now says the p bound comes from the pairwise
+    marks of Figure 3A; the paper prints no omnibus Kruskal-Wallis p per rat.
+  - fig3b-same-site-target-vs-nontarget, criterion no longer says Methods G gives Mann-Whitney for
+    independent samples; Methods G lists it with the paired t-test for two samples.
+  - fig4b-psd-target-bands, the Dunn post hoc was stated as the paper's method; the paper names
+    only KW, so the post hoc is now named as open with adjusted and unadjusted readings.
+  - fig6e-ictal-ripples-no-difference and fig6f-ictal-fast-ripples-reduced, added that the x-axis
+    labels of Figure 6E-F name the red point non-target and the yellow target, against the colour
+    code of the other figures and the text; the colour code is taken, as the text supports it.
+  - Checked against the PDF and supplement images, and found right, are the Figure 3A bar values,
+    target boxes and 11 significant pairs, the Figure 3B stars, the Figure 4B stars and windows,
+    the Figure 5B inset, the Figure S2 target table and Table S1.
+  - Open, not settled, the bands that rise after target stimulation (Results text says alpha and
+    beta, Figure 4B, Abstract and Discussion say theta and alpha); kept as two readings.
+  - Open, not settled, the R7 mark in Table S1 ("0.71±0.41* **") may be one, two or three stars;
+    the criterion needs only p < 0.05, so the outcome does not depend on it.
+  - Open, not settled, the normalization formula, the cf_w sign, the GC settings, the unit of
+    analysis and the pairing of the Figure 6 paired t-test are not given by the paper; the
+    readings named in the file stand.
