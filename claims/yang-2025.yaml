@@ -1,0 +1,479 @@
+# Claims for Yang, Ni, Sun, Xing, Wang, Zhang, Zhu & Xu (2025), IEEE Trans. Neural Syst. Rehabil.
+# Eng. 33:4008-4016, doi:10.1109/TNSRE.2025.3614867, on dandiset 001212.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
+# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
+# files; only its title and description on the archive were read.
+#
+# Text read: the version of record (open access, CC BY-NC-ND), PDF supplied by a person, as text
+# (paper/10.1109-tnsre.2025.3614867.txt), with its one supplement, supp1-3614867.docx (Figures S1
+# to S3 with legends and Table S1). Figures 2 to 6 were read from the PDF (pages 4 to 7) for the
+# bars, significance marks and target boxes the text does not hold; Figure S2 from its image and
+# the transcription stored with the text; Figure S3 from its image.
+#
+# Code read: none. The paper links no code and gives no code or data availability statement. It
+# names two outside MATLAB toolboxes, the MVGC toolbox for conditional multivariate Granger
+# causality (ref. 37, Barnett and Seth 2014) and the HFO App (ref. 50), and says statistics are in
+# the figure legends; the software for statistics is not named.
+#
+# Data the paper used (Methods A to C). Male Sprague-Dawley rats, lithium-pilocarpine model of
+# temporal lobe epilepsy; 7 rats (R1 to R7) analysed, of 44 treated. Four depth electrodes per
+# rat, right hemisphere, DG, CA1, CA3 and ANT, each a recording strand and a bipolar stimulation
+# pair; LFP at 1 kHz (Intan RHD2132). Each rat had 4 baseline groups and 4 stimulation groups,
+# alternating (baseline, stimulation, baseline, ...), each recorded 5 to 10 days with at least 6
+# seizures. A stimulation group stimulates one site (each site once per rat) on closed-loop
+# seizure detection (cascade AdaBoost); 130 Hz biphasic pulses, 100 us, 200 uA, 5 s trains, 5 s
+# pause, repeated while seizure activity is detected. Each stimulation group's site was chosen at
+# random; it is a target group when the site matches the target computed from the preceding
+# baseline group's seizures (the node with significantly high weighted causal flow, cf_w, over the
+# first 5 s of seizure onset), and a non-target group otherwise. By Figure S2 there are 8 target
+# and 20 non-target groups (R2 has two target groups; every other rat one). The dandiset's
+# description matches (7 rats, 4-channel LFP, 4 baseline and 4 stimulation groups, 5 to 10 days,
+# at least 6 seizures per group).
+#
+# Measured variables: seizure duration, seizure frequency (seizures per hour), seizure duration
+# proportion (seizure time over recording time), PSD ratio by band, interictal spike (IIS) rate,
+# ripple (80-250 Hz) and fast ripple (250-500 Hz) rates.
+#
+# Method from the paper, shared by several claims.
+# - GC network (Methods B, C). cf_w from GC matrices of the 4 LFP channels (MVGC), over the first
+#   5 s after seizure onset in 1 s windows with 0.5 s overlap (9 windows). Target = node with
+#   significantly high positive cf_w.
+# - Normalization (Results B; Figure 6 legend). Stimulation-group values are normalized to the
+#   preceding baseline group ("Each baseline group served as a reference for subsequent stimulation
+#   groups"); ictal HFO rates are normalized to pre-stimulation data.
+# - PSD (Methods D). Welch PSD; bands delta 0.5-4, theta 4-8, alpha 8-12, beta 12-30, gamma 30-90,
+#   high gamma 90-120 Hz; band PSD sum over total PSD sum = PSD ratio. Stimulation groups, pre =
+#   seizure onset to stimulation start, post = 5 s after the first train; baseline groups, pre =
+#   0 to 5 s after onset, post = 10 to 15 s after onset.
+# - IIS (Methods F). Per channel, positive or negative peaks; peaks less than 200 ms apart keep the
+#   larger; peak width at most 100 ms; absolute height above mean + 5 SD of baseline. Interictal
+#   segments of 30 min at least one hour from seizures, no visible motion artifact, 10 to 15
+#   segments in early and late stages.
+# - HFO (Methods E). Short line length detector of the HFO App, then manual review; six 30 min
+#   interictal segments per recorded day.
+# - Statistics (Methods G). Mean +- SEM; paired t-test or Mann-Whitney for two samples;
+#   Kruskal-Wallis for several independent samples; alpha 0.05.
+#
+# Details these sources leave open, with the readings allowed, used by several claims.
+# - Seizure onset and end. The paper gives no rule for marking them offline. Readings are (a)
+#   seizure times deposited with the data; (b) onset and end marked from the LFP by a stated
+#   amplitude or line-length rule, as an assumption. Seizure duration is end minus onset.
+# - The sign of cf_w. Methods B defines it as "the difference between the weighted in-degree and
+#   out-degree", but says high positive values mean strong driving and Figure 2 highlights the
+#   "strongest causal outflows". Readings are (a) out-strength minus in-strength (causal outflow,
+#   as the interpretation and Figure 2 imply); (b) in-strength minus out-strength, as worded.
+# - GC settings. The VAR model order, the use of conditional (4-variable) against pairwise GC, any
+#   filtering, and how the 9 windows are combined are not given. Readings for combining are (a)
+#   cf_w per window, then averaged; (b) GC matrices averaged, then cf_w. Model order by AIC or BIC
+#   (the MVGC toolbox's own selection), capped at a stated maximum, is a standard choice. The test
+#   behind "significantly high" cf_w is not given; readings are (a) the node with the largest mean
+#   cf_w over the group's seizures; (b) a node whose cf_w over seizures is significantly above that
+#   of the other nodes (Kruskal-Wallis then pairwise Mann-Whitney, p < 0.05), more than one node
+#   allowed when they tie (Figure S2 lists two for some groups).
+# - Normalized values. The formula is not given. Readings are (a) relative change, each
+#   stimulation-group value divided by the preceding baseline group's mean, minus 1; (b) difference
+#   from the baseline mean (for seizure frequency in times/h, which is the unit Figure 3C prints);
+#   (c) z-score against the baseline group's seizures. Reading (a) fits the range of Figure 3B
+#   (all values within -1 and 1).
+# - Unit of analysis for target against non-target. Readings are (a) seizures pooled across rats
+#   (Figure 3B plots per-seizure points); (b) stimulation groups (8 target, 20 non-target).
+# - The pooled seizures for a stimulation group. Readings are (a) all its seizures; (b) only those
+#   that received stimulation.
+# - Channels. For PSD, IIS and HFO, which channels enter is not stated. Readings are (a) all four
+#   channels, each channel a sample; (b) the stimulated channel only (for PSD and ictal HFO).
+schema_version: 2
+paper: doi:10.1109/tnsre.2025.3614867
+claims:
+- id: tables1-network-stable-short-term
+  statement: In every rat the cf_w vectors of seizure onset correlate more strongly between
+    seizures of the same baseline group than between seizures of different baseline groups
+    (Pearson r, intra-group against inter-group, Mann-Whitney).
+  source: Methods C, paragraph 2; Table S1; Figure S3
+  quote: Results indicated that seizures’ brain network and electrophysiological characteristics
+    were relatively consistent in the short term; significant differences were also observed
+    between groups (see Fig. S3 and Table S1 in Supplementary materials).
+  statistics:
+  - about: intra-group against inter-group r, R1, R2, R3, R5, R6 (each)
+    test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+  - about: intra-group against inter-group r, R4
+    test: Mann-Whitney
+    p: 0.05
+    p_relation: "<"
+  - about: intra-group against inter-group r, R7 (printed "0.71±0.41* **", read as two stars)
+    test: Mann-Whitney
+    p: 0.01
+    p_relation: "<"
+  expected:
+  - {quantity: R1 intra-group r, value: 0.72, tolerance: 0.30}
+  - {quantity: R1 inter-group r, value: -0.11, tolerance: 0.55}
+  - {quantity: R2 intra-group r, value: 0.47, tolerance: 0.57}
+  - {quantity: R2 inter-group r, value: 0.09, tolerance: 0.56}
+  - {quantity: R3 intra-group r, value: 0.77, tolerance: 0.19}
+  - {quantity: R3 inter-group r, value: 0.59, tolerance: 0.34}
+  - {quantity: R4 intra-group r, value: 0.81, tolerance: 0.46}
+  - {quantity: R4 inter-group r, value: 0.79, tolerance: 0.46}
+  - {quantity: R5 intra-group r, value: 0.74, tolerance: 0.34}
+  - {quantity: R5 inter-group r, value: 0.71, tolerance: 0.28}
+  - {quantity: R6 intra-group r, value: 0.61, tolerance: 0.34}
+  - {quantity: R6 inter-group r, value: 0.36, tolerance: 0.47}
+  - {quantity: R7 intra-group r, value: 0.81, tolerance: 0.36}
+  - {quantity: R7 inter-group r, value: 0.71, tolerance: 0.41}
+  criterion: Tolerances are the SDs Table S1 reports (mean +- SD over seizure pairs). From Methods
+    C and the Figure S3 legend, for each seizure of the four baseline groups the cf_w vector (4
+    nodes) over the first 5 s after onset; Pearson r between the vectors of every two seizures;
+    intra-group pairs are those within one baseline group, inter-group pairs those across groups;
+    Mann-Whitney test of intra against inter per rat. Open, with readings named, are (a) each
+    unordered pair once, or (b) every off-diagonal cell of the matrix (each pair twice), and
+    whether self-pairs (r = 1) enter the intra-group set, (c) excluded or (d) included; the cf_w
+    sign and window-combination readings of the opening comment apply. Reproduced when, under one
+    reading, intra-group r exceeds inter-group r with Mann-Whitney p < 0.05 in all 7 rats and at
+    least 10 of the 14 means lie within tolerance; partially reproduced when the direction and
+    significance hold in at least 5 rats.
+- id: fig2-r1-target-shifts
+  statement: In rat R1 the node with the highest cf_w at seizure onset changes across the four
+    baseline groups (ANT, ANT, CA3, DG), while the cf_w pattern is consistent within each group.
+  source: Results A, paragraph 1; Figure 2A-B
+  quote: For instance, in rat R1, as shown in Fig. 2A, the c f w vector values within one baseline
+    group remain relative consistent, indicating stable network’s connectivity over short periods.
+    However, over time, the structure and strength of the brain network connections change
+    significantly, reflecting long-term differences (Fig. 2B).
+  expected:
+  - {quantity: R1 seizures in baseline groups 1 to 4 (Figure 2A columns), value: 34, tolerance: 0}
+  criterion: The target nodes are those boxed in Figure 2A and red in Figure 2B (baseline 1 ANT,
+    2 ANT, 3 CA3, 4 DG), which agree with the R1 row of Figure S2. Figure 2A shows 9, 9, 7 and 9
+    seizures; a different count is reported and does not decide the claim. Computed as in
+    tables1-network-stable-short-term, under the GC readings of the opening comment. Reproduced
+    when, under one reading, the node with the highest mean cf_w in each of R1's four baseline
+    groups is the one named; partially reproduced when three of the four match.
+- id: figs2-target-assignment
+  statement: Across the 7 rats, the targets computed from each baseline group's seizures, compared
+    with the site stimulated in the next group, give 8 target and 20 non-target stimulation groups
+    as Figure S2 shows.
+  source: Figure S2; Methods C, paragraph 3
+  inferred: Read from Figure S2 (image and the transcription stored with the text); no sentence
+    lists the targets. Per rat, baseline 1 to 4 targets and the site then stimulated are R1 ANT to
+    CA1, ANT to CA3, CA3 to ANT, DG to DG; R2 DG and CA1 to DG, CA1 to ANT, CA1 to CA1, ANT to CA3;
+    R3 CA3 to CA3, CA3 to ANT, ANT to DG, CA3 and ANT to CA1; R4 CA3 to CA1, CA3 to DG, CA3 to ANT,
+    CA3 to CA3; R5 CA3 and ANT to ANT, ANT to DG, ANT to CA1, ANT to CA3; R6 ANT to CA1, CA1 and CA3
+    to ANT, CA3 to DG, CA3 to CA3; R7 ANT to DG, ANT to ANT, ANT to CA1, ANT to CA3. Target groups
+    are R1 DG, R2 DG and CA1, R3 CA3, R4 CA3, R5 ANT, R6 CA3, R7 ANT, as boxed in Figure 3A.
+  expected:
+  - {quantity: target stimulation groups, value: 8, tolerance: 0}
+  - {quantity: non-target stimulation groups, value: 20, tolerance: 0}
+  criterion: The stimulated site of each group and the group order are taken from the dataset. The
+    targets are recomputed under the GC and significance readings of the opening comment. The
+    labels of Figure S2 are used for all later claims whatever this claim's outcome. Reproduced
+    when, under one reading, at least 24 of the 28 baseline groups give the Figure S2 target set
+    (a group with two listed targets matches when the computed set equals it, or under reading (a)
+    when the top node is one of them) and the target and non-target labels of all 28 stimulation
+    groups agree with Figure S2; partially reproduced when at least 18 baseline groups match.
+- id: fig3a-target-reduces-each-rat
+  statement: In each of the 7 rats, stimulation of the target site reduced normalized seizure
+    duration below the preceding baseline.
+  source: Results B, paragraph 1; Figure 3A
+  quote: At the individual level, 130 Hz highfrequency stimulation of the target sites
+    consistently reduced seizure duration.
+  depends_on:
+  - figs2-target-assignment
+  criterion: Seizure duration of each seizure in the 8 target groups, normalized to the preceding
+    baseline group under the readings of the opening comment. Reproduced when, under one reading,
+    the mean normalized duration is below zero (duration below the baseline mean) in all 8 target
+    groups; partially reproduced in 6 or 7. Figure 3A shows R1 DG near -0.10, R2 DG -0.37 and CA1
+    -0.09, R3 CA3 -0.23, R4 CA3 -0.14, R5 ANT -0.33, R6 CA3 -0.21, R7 ANT -0.13 (read from the
+    bars, reported for comparison, not judged).
+- id: fig3a-nontarget-can-lengthen
+  statement: Stimulation of some non-target sites increased seizure duration above the preceding
+    baseline.
+  source: Results B, paragraphs 1 and 2; Figure 3A
+  quote: In some cases, non-target sites stimulation ... increased seizure duration, worsening the
+    severity of seizures.
+  depends_on:
+  - figs2-target-assignment
+  criterion: Normalized as in fig3a-target-reduces-each-rat. Figure 3A shows positive means for
+    non-target R1 CA3 and ANT, R2 CA3, R3 DG and ANT, R4 DG and ANT, R5 CA1, R6 DG, R7 DG (10 of
+    20, read from the bars). Reproduced when, under one reading, at least 5 of the 20 non-target
+    groups have a positive mean normalized duration; not reproduced when fewer than 2 do. The
+    count, and which groups, are reported.
+- id: fig3a-per-rat-site-differences
+  statement: Within rats R2, R3, R4, R5 and R7 the four stimulation sites differ in normalized
+    seizure duration (Kruskal-Wallis), while in R1 and R6 no pair of sites differs.
+  source: Figure 3A
+  inferred: Read from the significance bars of Figure 3A, whose legend names the KW test; no
+    sentence states which pairs differ. As read, R2 DG against CA3 (p < 0.001) and CA3 against
+    ANT (p < 0.01); R3 DG against CA1 (p < 0.01), DG against CA3 (p < 0.001), CA3 against ANT
+    (p < 0.05); R4 DG against CA1 (p < 0.05), DG against CA3 (p < 0.01); R5 CA1 against CA3
+    (p < 0.05), CA1 against ANT (p < 0.01); R7 DG against CA3 (p < 0.05), DG against ANT (p < 0.01).
+  statistics:
+  - about: four sites within each rat
+    test: Kruskal-Wallis
+    p: 0.05
+    p_relation: "<"
+    n: seizures of each rat's four stimulation groups
+  depends_on:
+  - figs2-target-assignment
+  criterion: Per rat, a Kruskal-Wallis test of per-seizure normalized durations across the four
+    stimulation groups, then pairwise post hoc tests. The post hoc test is not named; readings are
+    (a) Dunn's test with Bonferroni-type adjustment (the usual post hoc for KW); (b) Dunn's test
+    unadjusted. Reproduced when, under one reading, at least 8 of the 11 significant pairs listed
+    are significant and R1 and R6 have none; partially reproduced when at least 5 are.
+- id: fig3a-target-vs-nontarget-total
+  statement: Pooled over rats, target-site stimulation shortened normalized seizure duration
+    (-0.26 +- 0.03) significantly more than non-target stimulation (0.038 +- 0.03).
+  source: Results B, paragraph 1; Figure 3A, Total panel
+  quote: Overall, target site stimulation ... significantly shortened seizure duration compared to
+    non-target site stimulation
+  statistics:
+  - test: Mann-Whitney
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - {quantity: target stimulation normalized seizure duration, value: -0.26, tolerance: 0.03}
+  - {quantity: non-target stimulation normalized seizure duration, value: 0.038, tolerance: 0.03}
+  depends_on:
+  - figs2-target-assignment
+  criterion: Tolerances are the SEMs reported. Normalization, unit of analysis and seizure set
+    under the readings of the opening comment; Mann-Whitney test of target against non-target.
+    Reproduced when, under one reading, both means are within tolerance and the test gives
+    p < 0.001 with target lower; partially reproduced when target is lower with p < 0.05 but a mean
+    falls outside tolerance or p is between 0.001 and 0.05.
+- id: fig3a-some-nontarget-shorten
+  statement: Five non-target stimulations (R2 ANT, R3 CA1, R4 CA1, R5 CA3, R7 CA3) also
+    significantly shortened seizure duration, but less than the target site of the same rat.
+  source: Results B, paragraph 1; Figure 3A
+  quote: Although some nontarget site stimulations1 (R2’s ANT, R3’s CA1, R4’s CA1, R5’s CA3, and
+    R7’s CA3) also significantly shortened seizure duration, they were generally less effective
+    than target sites.
+  depends_on:
+  - figs2-target-assignment
+  criterion: The test for "significantly shortened" is not given; Figure 3A marks only comparisons
+    between sites. Readings are (a) Mann-Whitney of the group's seizure durations against those of
+    the preceding baseline group; (b) one-sample Wilcoxon signed-rank of the normalized durations
+    against zero; (c) one-sample t-test of the normalized durations against zero; alpha 0.05
+    (Methods G). Reproduced when, under one reading, at least 4 of the 5 named groups are
+    significantly shorter than baseline and in at least 4 of the 5 rats the mean normalized
+    duration of the named group is above (less negative than) that of the rat's target group (for
+    R2 the DG target, the more effective of its two); partially reproduced when 3 of each hold.
+    Which other non-target groups also pass is reported.
+- id: fig3b-same-site-target-vs-nontarget
+  statement: For the same site, stimulation as a target shortened normalized seizure duration more
+    than stimulation of that site as a non-target, significantly for DG, CA3 and ANT but not CA1.
+  source: Figure 3B
+  quote: (B) Comparison of seizure duration reduction when the same stimulation site served as both
+    the target and non-target stimulation site.
+  statistics:
+  - about: DG, target against non-target
+    p: 0.001
+    p_relation: "<"
+  - about: CA3, target against non-target
+    p: 0.001
+    p_relation: "<"
+  - about: ANT, target against non-target
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - figs2-target-assignment
+  criterion: Per site, per-seizure normalized durations of target groups at that site against
+    non-target groups at that site, pooled across rats (Figure 3B plots per-seizure points). Target
+    groups by site are DG (R1, R2), CA1 (R2), CA3 (R3, R4, R6), ANT (R5, R7). The test is not
+    named in the legend; following Methods G for independent samples, Mann-Whitney is used, with
+    an unpaired t-test shown as a variant. Reproduced when, under one normalization reading, DG,
+    CA3 and ANT each show target lower with p < 0.05; partially reproduced for two of the three.
+    The CA1 result is reported, and the claim's CA1 part holds when it is not significant.
+- id: seizure-duration-proportion
+  statement: Target stimulation reduced normalized seizure duration proportion (-0.06 +- 0.04)
+    significantly compared with non-target stimulation (0.36 +- 0.14).
+  source: Results B, paragraph 2
+  quote: As shown in Fig. 3B, target site stimulation significantly reduced seizure duration
+    proportion (−0.06 ± 0.04, p < 0.05) compared to non-target stimulation (0.36 ± 0.14), likely
+    due to the substantial reduction in seizure duration.
+  statistics:
+  - p: 0.05
+    p_relation: "<"
+  expected:
+  - {quantity: target stimulation normalized seizure duration proportion, value: -0.06, tolerance: 0.04}
+  - {quantity: non-target stimulation normalized seizure duration proportion, value: 0.36, tolerance: 0.14}
+  depends_on:
+  - figs2-target-assignment
+  criterion: Tolerances are the SEMs reported. Seizure duration proportion is total seizure time
+    over total recording time of a group (Results B), so the unit is the stimulation group (8
+    target, 20 non-target), normalized to the preceding baseline group's proportion under readings
+    (a) relative change or (b) difference. The text cites Figure 3B, which plots normalized seizure
+    duration by site, not this quantity; no figure shows these values. The test is not named;
+    Mann-Whitney (Methods G, as used in Figure 3A and 3C) is used. Reproduced when, under one
+    reading, both means lie within tolerance and target is lower with p < 0.05; partially
+    reproduced when target is lower with p < 0.05 but a mean falls outside tolerance.
+- id: fig3c-frequency-no-difference
+  statement: Seizure frequency change did not differ between target (0.02 +- 0.17 times/h) and
+    non-target stimulation (-0.11 +- 0.19 times/h).
+  source: Results B, paragraph 2; Figure 3C
+  quote: There was no significant difference in seizure frequency improvement between target site
+    stimulation (0.02 ± 0.17 times/h) and nontarget site stimulation (−0.11 ± 0.19 times/h)
+    (Fig. 3C).
+  expected:
+  - {quantity: target stimulation normalized seizure frequency, value: 0.02, tolerance: 0.17, unit: seizures/h}
+  - {quantity: non-target stimulation normalized seizure frequency, value: -0.11, tolerance: 0.19, unit: seizures/h}
+  depends_on:
+  - figs2-target-assignment
+  criterion: A claim of absence, judged on the paper's test, Mann-Whitney (Figure 3C legend) at
+    p < 0.05, of target against non-target stimulation groups (seizures per hour of recording,
+    one value per group), normalized to the preceding baseline group as a difference in times/h,
+    the unit Figure 3C prints (relative change shown as a variant). Reproduced when the test is not
+    significant; not reproduced when it is. The difference of means and p are reported, and whether
+    the means lie within tolerance.
+- id: fig4b-psd-target-bands
+  statement: After target stimulation the change in PSD ratio was larger in low bands (alpha, and
+    theta or beta) and more negative in gamma than after sham (baseline) or non-target stimulation.
+  source: Results C, paragraph 2; Figure 4B; Discussion, paragraphs 1 and 4
+  quote: After target site stimulation, the proportion of PSD in the alpha and beta bands
+    significantly increased (p < 0.05), while the gamma band proportion significantly decreased
+    (p < 0.05) compared to baseline and non-target stimulation groups.
+  statistics:
+  - about: theta, as marked in Figure 4B
+    test: Kruskal-Wallis
+    p: 0.05
+    p_relation: "<"
+  - about: alpha, as marked in Figure 4B
+    test: Kruskal-Wallis
+    p: 0.01
+    p_relation: "<"
+  - about: gamma, as marked in Figure 4B
+    test: Kruskal-Wallis
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - figs2-target-assignment
+  criterion: The bands that rise disagree within the paper. The Results text says alpha and beta;
+    Figure 4B marks theta (p < 0.05), alpha (p < 0.01) and gamma (p < 0.01), and the Abstract and
+    Discussion say theta and alpha. Readings are (i) alpha and theta up, gamma down (Figure 4B,
+    Discussion); (ii) alpha and beta up, gamma down (Results text). Method from Methods D, Welch PSD
+    ratios per band in the pre and post windows given in the opening comment, for baseline (sham),
+    target and non-target seizures. Open, with readings, are the change measure ((a) (post - pre) /
+    pre of the ratio; (b) log2(post / pre); (c) post - pre; Figure 4B's gamma mean near -1.3 is
+    impossible as a mean relative change, so (a) may not be what was plotted); the Welch segment
+    length (1 s and 0.5 s Hann windows with 50% overlap are the standard choices); the total
+    range ((a) 0.5 to 120 Hz, the bands' span and Figure 4C's axis; (b) 0 to 500 Hz); channels as
+    in the opening comment; the unit (seizure-channel pairs pooled). Test, Kruskal-Wallis across
+    the three conditions (Figure 4B legend) with Dunn's post hoc. Reproduced when, under one
+    reading of the method and one of the bands, target differs from both sham and non-target in
+    the named direction with p < 0.05 in all three bands; partially reproduced when alpha and
+    gamma hold.
+- id: fig4b-psd-other-bands-unchanged
+  statement: In the other bands (delta and high gamma, and whichever of theta and beta is not
+    named as changed) the change in PSD ratio did not differ between conditions.
+  source: Results C, paragraph 2; Figure 4B
+  quote: No significant differences were found in other frequency bands.
+  depends_on:
+  - figs2-target-assignment
+  criterion: A claim of absence, judged on the paper's test, Kruskal-Wallis across sham, target and
+    non-target (Figure 4B legend) at p < 0.05, computed as in fig4b-psd-target-bands. Delta and
+    high gamma are judged in every reading; beta under reading (i) and theta under reading (ii).
+    Reproduced when no judged band shows a significant difference under the reading that
+    fig4b-psd-target-bands adopts (both shown when that claim was decided by neither); not
+    reproduced when any does. Effect sizes are reported.
+- id: fig5b-iis-post-seizure
+  statement: The IIS rate 15 s to 45 s after seizures was lower after target stimulation than
+    after non-target stimulation.
+  source: Results D, paragraph 1; Figure 5B
+  quote: Target stimulation significantly reduced the IIS rate within 15s to 45s post-seizure
+    compared to non-target stimulation (Fig. 5B).
+  statistics:
+  - p: 0.001
+    p_relation: "<"
+  depends_on:
+  - figs2-target-assignment
+  criterion: IIS detected as in Methods F on all channels, in the 180 s before seizure onset and
+    the 180 s after seizure end (Figure 5B time axis), as a rate per second. Open, with readings,
+    are the bin width ((a) 1 s; (b) 5 s; Figure 5B curves are fine-grained), the baseline for the
+    5 SD threshold ((a) the 180 s pre-seizure stretch; (b) the interictal segments of Methods F),
+    the peak width measure (width at half prominence, a standard choice), and the test and its
+    unit, which the legend does not name ((a) Mann-Whitney of per seizure-channel mean rates over
+    15 to 45 s; (b) paired t-test across the time bins of 15 to 45 s, target curve against
+    non-target curve, as the inset suggests). Reproduced when, under one reading, target is lower
+    with p < 0.001; partially reproduced when target is lower with p < 0.05.
+- id: fig5c-interictal-iis-no-difference
+  statement: Interictal IIS rates did not differ between stimulated and non-stimulated sites in
+    either target or non-target stimulation groups.
+  source: Results D, paragraph 2; Figure 5C
+  quote: During the interictal period, IIS rate at stimulated and non-stimulated sites in both
+    target and non-target stimulation groups showed no significant differences (Fig. 5C).
+  depends_on:
+  - figs2-target-assignment
+  criterion: A claim of absence. IIS rates from 30 min interictal segments as in Methods F, per
+    channel, in four sets (target group stimulated site, target group other sites, non-target
+    group stimulated site, non-target group other sites). The legend names no test; Methods G
+    gives Kruskal-Wallis for several independent samples, which is the test judged, at p < 0.05,
+    with pairwise Mann-Whitney shown as a variant. The unit (per segment-channel, or per group and
+    channel mean) is open; both are shown. Reproduced when the Kruskal-Wallis test is not
+    significant; not reproduced when it is. Medians (Figure 5C shows about 0.3 to 0.4 per s) are
+    reported.
+- id: fig5d-iis-seizure-correlation
+  statement: Interictal IIS rate correlates positively with seizure frequency (r = 0.57).
+  source: Results D, paragraph 2; Figure 5D
+  quote: Fig. 5D shows a positive correlation between interictal IIS rate and seizure frequency
+    (r = 0.57), indicating that higher interictal IIS rate may predict increased seizure risk.
+  expected:
+  - {quantity: Pearson r of z-scored IIS rate and seizure rate, value: 0.57, tolerance: 0.057}
+  criterion: Figure 5D plots z-scored IIS rate (per s) against z-scored seizure rate (per h), with
+    about 50 points. Pearson correlation (the paper's correlation method, Methods C). The unit of a
+    point and the z-scoring are open; readings are (a) one point per recording day, z-scored within
+    rat; (b) one point per group (baseline and stimulation, 56 groups), z-scored within rat;
+    (c) as (a) or (b) z-scored over all rats. Reproduced when, under one reading, r is within
+    tolerance and positive; partially reproduced when r is positive and significant (p < 0.05) but
+    outside tolerance.
+- id: fig6cd-interictal-hfo-no-difference
+  statement: Interictal ripple and fast ripple rates, normalized to the preceding baseline, did not
+    differ between target and non-target stimulation.
+  source: Results E, paragraph 1; Figure 6C-D
+  quote: Results revealed no significant differences in ripples and fast ripples during the
+    interictal period between target stimulation and non-target stimulation (Fig. 6C, D)
+  depends_on:
+  - figs2-target-assignment
+  criterion: A claim of absence, judged on the paper's test, the paired t-test of the Figure 6
+    legend, at p < 0.05, for ripples and fast ripples separately. HFOs detected by short line
+    length (HFO App, ref. 50) in six 30 min interictal segments per day; the window length,
+    threshold and filter are not given, so the HFO App defaults are used, and the manual review
+    cannot be repeated (automatic detections are used, a deviation). Fast ripples at 1 kHz sampling
+    are filtered from 250 Hz to just below the 500 Hz Nyquist limit. Rates normalized to the
+    preceding baseline group (relative change). The pairing is not defined, as the groups are
+    independent; readings are (a) by rat, each rat's target-group mean against the mean of its
+    non-target groups; (b) unpaired t-test across groups. Reproduced when the test is not
+    significant for either band under the paired reading (a); not reproduced when it is. Means and
+    p under both readings are reported.
+- id: fig6e-ictal-ripples-no-difference
+  statement: During seizures, ripple rates normalized to pre-stimulation did not differ between
+    target and non-target stimulation.
+  source: Results E, paragraph 2; Figure 6E
+  quote: During the ictal period, electrical stimulation showed limited effects on ripple
+    regulation, with no significant difference between target and non-target stimulation.
+  depends_on:
+  - figs2-target-assignment
+  criterion: A claim of absence, judged on the paper's test, the paired t-test of the Figure 6
+    legend, at p < 0.05, target against non-target. Ictal ripple rates in the post window normalized
+    to the pre window (relative change); the windows are not stated for HFOs and are taken from
+    Methods D (pre from onset to stimulation start, post 5 s after the first train; for baseline
+    seizures 0 to 5 s and 10 to 15 s), as Figure 6E-F also shows a Baseline group. Pairing readings
+    as in fig6cd-interictal-hfo-no-difference. Reproduced when the test is not significant under
+    reading (a); not reproduced when it is.
+- id: fig6f-ictal-fast-ripples-reduced
+  statement: During seizures, target stimulation reduced the fast ripple rate, normalized to
+    pre-stimulation, compared with baseline and with non-target stimulation.
+  source: Results E, paragraphs 2 and 3; Figure 6F
+  quote: However, Fig. 6F demonstrates that target stimulation significantly reduced fast ripple
+    frequency, closely associated with the pathological processes of epileptic seizures [61].
+  statistics:
+  - about: target against baseline
+    test: paired T-test
+    p: 0.05
+    p_relation: "<"
+  - about: target against non-target
+    test: paired T-test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - figs2-target-assignment
+  criterion: Computed as in fig6e-ictal-ripples-no-difference, for fast ripples. Figure 6F shows
+    target near -0.25, baseline near 0.2 and non-target near 0.1 (read from the plot, for
+    comparison only). Reproduced when, under one pairing reading, the target mean is below both
+    others with p < 0.05 for each comparison; partially reproduced when one comparison holds.
