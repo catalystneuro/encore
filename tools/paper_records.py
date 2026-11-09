@@ -137,6 +137,20 @@ def claims_files(key: str) -> list[Path]:
     return own + sorted((ROOT / "claims" / key).glob("*.yaml"))
 
 
+def claims_for_attempt(record: dict) -> Path | None:
+    """The claims file an attempt was tested on: before the cutover, the per-dataset file of its one dataset;
+    otherwise the paper's own."""
+    key = key_of_doi(record["paper"])
+    if key is None:
+        return None
+    used = record_datasets(record)
+    if len(used) == 1:
+        per = ROOT / "claims" / key / f'{datasets.folder(datasets.key_of(used[0]["archive"], str(used[0]["id"])))}.yaml'
+        if per.is_file():
+            return per
+    return claims_file(key) if claims_file(key).is_file() else None
+
+
 def questions_file(key: str) -> Path:
     return ROOT / "questions" / f"{key}.yaml"
 
