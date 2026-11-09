@@ -157,9 +157,12 @@ claims:
   criterion: Monosynaptic pairs by the paper's jitter test (Supplemental Experimental Procedures,
     Cell Type Classification; [-5, 5] ms jitter, 1000 surrogates, 99% global band over [-20, 20]
     ms, a significant peak or trough in any 1 ms bin at [1, 5] ms, the 0-1 ms bin ignored for
-    same-shank pairs). The visual inspection that removed spurious pairs cannot be repeated and
-    is open; readings (a) all pairs the test finds, (b) different-shank pairs only (Figure S3,
-    206 excitatory and 97 inhibitory). The hyperplane on trough-to-peak latency and asymmetry is
+    same-shank pairs). The 820 cells (557 excitatory, 263 inhibitory) come from pairs on the same
+    or different shanks (Figure 2C legend, Table S1 "exciting" and "inhibiting"), so the 30% is
+    judged on all pairs the test finds; different-shank pairs only (Figure S3, 206 excitatory
+    and 97 inhibitory, 11%) are a variant. The visual inspection that removed spurious pairs
+    cannot be repeated and is open. All three fractions are of the 2744 EC neurons (2047/2744 =
+    74.6%, 590/2744 = 21.5%), layer unknown included. The hyperplane on trough-to-peak latency and asymmetry is
     fitted to the identified cells; the classifier is not named, so a linear classifier (linear
     discriminant) is the reading, as the text says "hyperplane". If the dataset holds the
     paper's cell-type labels, the fractions are taken from them and the recomputation is a
@@ -213,7 +216,9 @@ claims:
     unit: degrees
   criterion: Sessions with both an EC3 site and a CA1 pyramidal layer site. Coherence in the
     theta band during theta epochs; the range 0.6 to 0.9 widened by 10% of each bound gives 0.54
-    to 0.99 (the expected value above states that range). The paper does not say how coherence
+    to 0.99 (the expected value above states that range). The text gives the range with a
+    citation, "(0.6–0.9; Chrobak and Buzsáki, 1998)", so whether it was measured in this study or
+    taken from that one is open; the comparison stands either way. The paper does not say how coherence
     is estimated or over which band; readings (a) multitaper coherence at the theta peak
     frequency, (b) the mean over 5-11 Hz, the band the paper uses for theta. The phase shift is
     the circular mean phase difference of the 5-11 Hz filtered signals; Figure S10 reports 0 to
@@ -248,11 +253,10 @@ claims:
     whether or not modulated; Figure 3A, 3E), referenced to EC3 theta by the maxima method. The
     ascending phase is the half cycle from trough (180) to peak (360). Readings for the phase
     range (a) the ascending half cycle, 180 to 360 degrees; (b) the shaded column of Figure 3,
-    which the figure draws at roughly 280 to 340 degrees (read from the plot, not stated). For
+    which the figure draws at roughly 265 to 360 degrees (read from the plot, not stated). For
     each interneuron group (CA1, CA3, DG, EC2, EC3, EC5) and each non-EC3 principal group, the
     bin of minimum probability is found. Reproduced when, under one reading, the minimum falls in
-    the range for every group the dataset holds, EC5 principal cells excepted when their
-    histogram is flat (claim fig3-ec5-weakest); partially reproduced when it does for most. With
+    the range for every group the dataset holds; partially reproduced when it does for most. With
     CA1 only, the claim is tested on CA1 principal cells and interneurons, with CA1 pyramidal
     layer theta as the reference if EC3 LFP is absent (Figure S10 permits it, with the 0 to 80
     degree shift recorded).
@@ -322,8 +326,10 @@ claims:
     cells' preferred phases is below that of each other principal group. Not testable without
     EC5 principal cells.
 - id: fig3d-ec2-strongest-modulation
-  statement: Among EC principal cells and among EC interneurons, EC2 cells have the largest mean
-    resultant length and the highest percentage of significantly theta-modulated cells.
+  statement: In the EC, EC2 neurons show the strongest theta modulation as a population, and among
+    EC principal cells and among EC interneurons EC2 cells have the highest percentage of
+    significantly theta-modulated cells; Figure 3D and 3H also show EC2 with the largest mean
+    resultant length.
   source: Results, Theta-phase relationship of entorhinal and hippocampal neurons, paragraph 2;
     Figure 3D and 3H
   quote: In the EC, EC2 neurons showed the strongest theta modulation as a population (Figures 3A,
@@ -355,8 +361,10 @@ claims:
     sum test; the fraction modulated over all cells passing the spike and rate criteria, compared
     by chi-square test of independence (Figure 3D legend). Reproduced when, for principal cells
     and for interneurons, EC2 exceeds EC3 and EC5 in both measures with p < 0.05; partially
-    reproduced when it holds for one cell class or one measure. Not testable without EC cells.
-    The significance marks were read from the figure; the legend prints "**p < 0.05, *p < 10-4,
+    reproduced when it holds for one cell class or one measure. Population modulation (Figures 3A
+    and 3E) is measured with the readings of fig3-ec5-weakest and EC2 must be largest of the EC
+    layers, for principal cells and for interneurons, under one reading. Not testable without EC
+    cells. The significance marks were read from the figure; the legend prints "**p < 0.05, *p < 10-4,
     red *p < 10-11".
 - id: fig3d-hippocampal-modulation
   statement: Among hippocampal principal cells, CA1 pyramidal cells have a lower mean resultant
@@ -445,11 +453,6 @@ claims:
     Figure 4A
   quote: large time offsets (50 to 85 ms) were present between EC2 and CA3/dentate principal cells
     and between EC3 and CA1 pyramidal neurons (black arrows in Figure 4A)
-  statistics:
-  - about: significant peak bins of group cross-correlograms
-    test: spike jitter test (uniform [-125, 125] ms), 99.9% global band
-    p: 0.001
-    p_relation: "<"
   expected:
     quantity: time from the EC reference spike to the peak of the target group's activity
     value: 69.25
@@ -587,8 +590,12 @@ claims:
   criterion: Linear track place fields as in the shared methods. "Robust" has no threshold in
     the paper; it is read as reproduced when, in every
     hippocampal region the dataset holds, more than half of fields with coherence > 0.7 have a
-    negative phase-position correlation, including fields whose peak rate is under 10 Hz. Not
-    testable without linear track sessions.
+    negative phase-position correlation, and fields with low peak rates do as well. The paper
+    names no rate bound beyond "as low as 5 Hz"; readings for low-rate fields (a) peak rate 10 Hz
+    or below, (b) peak rate 5 to 7 Hz. The EC part (high-coherence EC fields often but not
+    always precess) is reported as the fraction of EC fields with coherence > 0.7 and a negative
+    correlation, reproduced when it lies strictly between 0 and 100%. Not testable without
+    linear track sessions.
 - id: fig7a-precession-strength
   statement: On the linear track, a smaller share of EC place fields than hippocampal place fields
     has spatial coherence above 0.7 (CA1 37.8% of 1169, CA3 32.1% of 106, DG 28.3% of 60, EC2 10%
@@ -725,13 +732,20 @@ claims:
     spatial coherence and phase precession, while the majority of neurons keep a constant theta
     phase preference. The highest prevalence and strongest phase precession was observed in the
     CA1 region
-  criterion: From the measures of fig7a-precession-strength and fig7b-frequency-shift. Reproduced
-    when CA1 has the highest fraction of cells with a positive frequency shift and the most
-    negative median phase-position correlation of all groups the dataset holds, and EC3 the
-    lowest fraction of the EC layers. With CA1 alone, not testable as a comparison.
+  criterion: From the measures of fig7a-precession-strength, fig7b-frequency-shift and
+    figs15-ec3-no-precession. "Prevalence" is read as the fraction of principal cells with
+    significant theta power and a positive frequency shift (Figure 7B); "strongest" has no
+    measure in the paper, readings (a) the most negative median phase-position correlation
+    (Figure 7A), (b) the largest median positive frequency shift (Figure 7B). Reproduced when CA1
+    is highest in prevalence and, under one reading, in strength among the groups the dataset
+    holds; fewer than half of EC fields have coherence > 0.7 and fewer than half of EC principal
+    cells have a positive shift (the minority); and EC3 shows no group precession as judged in
+    figs15-ec3-no-precession (the paper gives "exceptional" no number and does not compare EC3
+    with EC5). With CA1 alone, not testable as a comparison.
   depends_on:
   - fig7a-precession-strength
   - fig7b-frequency-shift
+  - figs15-ec3-no-precession
 - id: fig8-ec-population-predicts-sinks
   statement: The peak firing of EC3 and EC2 principal populations precedes the theta sinks in CA1
     stratum lacunosum-moleculare and the dentate molecular layer by the delay expected from axon
@@ -780,16 +794,101 @@ claims:
     windows, 7 SD threshold), spikes aligned to the ripple power peak, mean rate per group
     (Figure S2 legend). Fold increase is the peak rate over the baseline rate; the baseline
     window is not given, readings (a) -500 to -250 ms, (b) the mean rate outside ripples. The
-    delay range 15 to 25 ms widened by 10% of each bound is 13.5 to 27.5 ms. Reproduced when the
-    CA1 fold increases are within tolerance under one reading and, where EC groups are present,
-    each successive stage peaks 13.5 to 27.5 ms later than the one before.
+    delay range 15 to 25 ms widened by 10% of each bound is 13.5 to 27.5 ms. The legend does not
+    say whether 15-25 ms is the delay between successive stages or across the whole
+    CA1-EC5-EC3-EC2 axis; readings (i) each successive stage peaks 13.5 to 27.5 ms after the one
+    before, (ii) EC2 peaks 13.5 to 27.5 ms after CA1 with EC5 and EC3 in order between. Reproduced
+    when the CA1 fold increases are within tolerance under one baseline reading and, where EC
+    groups are present, the delays hold under (i) or (ii), for peaks and for onsets (onset as the
+    first bin above baseline + 2 SD, a standard choice the paper does not state). The weaker
+    recruitment of EC principal cells than EC interneurons is judged by fold increase, layer by
+    layer, and reported.
 - id: figs19-fast-firing-minority
-  statement: In every region most principal neuron spikes occur at low instantaneous rates;
-    spikes at high rates are a minority in the EC.
+  statement: In each region and layer most principal neurons are silent or fire at low rates, with
+    only a minority discharging at high frequency at a given time; in the EC, spikes at high
+    firing rates are a minority.
   source: Figure 8 legend; Figure S19 legend
   quote: In each region and layer, most principal neurons are silent or fire at low rates, with only
     a minority of neurons discharging at high frequency at a given time
-  criterion: Instantaneous rate per spike as in the shared methods; per region, the fraction of
-    principal-cell spikes in theta epochs in the >= 40 Hz category, and in categories of 4 to 12
-    Hz. Reproduced when, in every group the dataset holds, more spikes fall at 4 to 12 Hz than at
-    >= 40 Hz, and for EC groups the >= 40 Hz fraction is below one half.
+  criterion: Instantaneous rate per spike as in the shared methods (Figure S19 legend); per
+    region, the fraction of principal-cell spikes in theta epochs in each rate category. The
+    paper gives "low" and "high" rates no bounds; readings (a) high is the >= 40 Hz category and
+    low 4 to 12 Hz, (b) high is >= 20 Hz and low below 20 Hz. Reproduced when, under one reading,
+    in every group the dataset holds more spikes fall at low than at high rates, and for EC
+    groups the high-rate fraction is below one half (Figure S19 legend, "a minority in the EC").
+    The neuron-level part (Figure 8, the proportion of principal neurons significantly modulated
+    in each category) is reported.
+- id: figs6-identified-cells
+  statement: The theta phase distributions of the groups are confirmed when only principal cells and
+    interneurons physiologically identified by their monosynaptic interactions are considered.
+  source: Results, Theta-phase relationship of entorhinal and hippocampal neurons, paragraph 2;
+    Figure S6
+  quote: The validity of the phase distribution described above was confirmed when only
+    physiologically identified principal cells and interneurons were considered (Figure S6)
+  criterion: Cells identified as excitatory or inhibitory by the jitter test of
+    fig2c-ec-cell-classes (Figure S6 legend; Table S1 "exciting" and "inhibiting"), or the
+    dataset's labels for them. Group phases as in fig3-dg-ca3-precede-ca1, readings (a) and (b),
+    computed for identified cells and for all cells of each group. The paper gives no test or
+    threshold; "confirmed" is read as each group's circular mean preferred phase in identified
+    cells within 45 degrees (reading i) or 90 degrees (reading ii, the paper's in-phase bound) of
+    that in all cells, and the same group order of phases. Reproduced when (ii) holds for every
+    group the dataset can test; (i) is reported. Not testable without identified cells.
+  depends_on:
+  - fig2c-ec-cell-classes
+- id: figs7-individual-rats
+  statement: The theta phase preferences of the neuron groups are consistent across individual rats.
+  source: Results, Theta-phase relationship of entorhinal and hippocampal neurons, paragraph 2;
+    Figure S7
+  quote: and when neuron groups from individual rats were examined separately (Figure S7)
+  criterion: Significantly modulated cells (at least 50 spikes, rate > 0.1 Hz, Rayleigh p < 0.01;
+    Figure S7 legend) per group and rat, rats ec12 and i01 pooled as the legend shows them, EC3
+    theta as reference except CA1 pyramidal layer theta in i01 (Figure S7 legend). The paper gives
+    no threshold; readings as in figs8-task-invariance, (a) circular mean preferred phases within
+    45 degrees between rats, (b) within 90 degrees. Reproduced when (b) holds for every group
+    recorded in at least two rats; (a) is reported. Not testable with one rat per group.
+- id: figs12b-burst-single-phase
+  statement: Burst spikes (ISI < 6 ms) and single spikes (ISI > 20 ms) have different theta phase
+    preferences in a significant number of CA1 and EC2 principal neurons.
+  source: Figure S12B legend; Results, Rate versus phase relationship, paragraph 2
+  quote: Note that bursting spikes (ISI < 6 msec) and single spikes (ISI > 20 msec) have different
+    phase preferences in a significant number of neurons in CA1 and EC2
+  criterion: Principal cells significantly modulated in both spike groups (at least 50 spikes in
+    each, Rayleigh p < 0.01; Figure S12 legend); burst spikes have an ISI before or after under 6
+    ms, single spikes both ISIs over 20 ms (Supplemental Experimental Procedures). The paper
+    gives no test or count. Per cell, the burst and single-spike phases differ when (a) their
+    circular difference exceeds 90 degrees (the paper's in-phase bound), (b) a Watson-Williams
+    test of the two spike groups gives p < 0.05. "A significant number" is read as a binomial test
+    of the count of differing cells against 5% at p < 0.05. Reproduced when it holds in CA1, and
+    in EC2 when present, under one reading.
+- id: discussion-ec-interneurons-with-ec2
+  statement: Most EC2 interneurons and a large proportion of EC3 interneurons fire in phase with EC2
+    principal (stellate) cells.
+  source: Discussion, EC contribution to theta LFP, paragraph 2; Figure 3B, 3C, 3F and 3G
+  quote: Most EC2 interneurons and a large proportion of EC3 interneurons fired in phase with EC2
+    stellate cells
+  criterion: Significantly modulated cells as in the shared methods, EC3 theta reference. "In
+    phase" is read with the paper's bound, a preferred phase within 90 degrees of the circular
+    mean preferred phase of significantly modulated EC2 principal cells (Results, "in phase
+    (<90° shift"). Reproduced when more than half of EC2 interneurons are in phase and the EC3
+    fraction is "large", read as (a) at least a third, (b) at least a quarter (no number in the
+    paper). Not testable without EC2 principal cells and EC interneurons.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. Three "VALUE NOT FOUND" for p = 1e-4 (fig3d-ec2-strongest-modulation, fig3d-hippocampal-modulation) are the legend's "*p < 10−4", garbled in the text; confirmed in the PDF, no change. All quotes pass.
+  - Table S1, Figure 3D and 3H marks and bar values, Figure 4 arrows and Figure 7 percentages and n were checked against the rendered pages and match the file.
+  - fig2c-ec-cell-classes. Reading (b), different-shank pairs only, cannot give the 30%; the 820 cells come from same- or different-shank pairs (Figure 2C legend, Table S1). It is now a variant, and the denominator 2744 is stated for all three fractions.
+  - fig1-ec3-ca1-theta-coherence. The 0.6-0.9 range is printed with a citation to Chrobak and Buzsáki (1998); named as open whether it is this study's measurement.
+  - fig3-interneurons-min-ascending. The shaded column of Figure 3 spans about 265 to 360 degrees, not 280 to 340; corrected. Removed the exception for EC5 principal cells, which the paper does not make (it excepts EC3 only).
+  - fig3d-ec2-strongest-modulation. The quoted sentence says EC2 has the strongest modulation "as a population" (Figures 3A, 3E), not the largest mean R; the statement now says so, with mean R from the Figure 3C legend and 3D bars, and the criterion tests population modulation too.
+  - fig4a-ec-hippocampus-offsets. Removed the statistics entry p < 0.001; it is the per-bin acceptance level of the jitter band that marks significant bins, a method threshold, not a result. It stays in the criterion.
+  - fig6-hippocampal-precession. The "under 10 Hz" bound was made up; named the low-rate bound open with two readings, and added how the EC part of the statement is judged.
+  - fig7-ca1-highest-precession. The criterion required EC3 to have the lowest fraction of the EC layers, a comparison the paper does not make; EC3 is now judged by figs15-ec3-no-precession. Named "strongest" as open, and added the EC minority part of the statement.
+  - figs2-ripple-sequence. The legend does not say whether 15-25 ms is per stage or across the CA1-EC2 axis; named both readings, added onsets, and the EC principal against interneuron recruitment.
+  - figs19-fast-firing-minority. The statement spoke of spikes where the quoted Figure 8 legend speaks of neurons; reworded to the paper. The 4-12 Hz bound for low rates was made up; now named open with two readings.
+  - Added claims figs6-identified-cells, figs7-individual-rats (Results, paragraph 2), figs12b-burst-single-phase (Figure S12B legend) and discussion-ec-interneurons-with-ec2 (Discussion), findings with no claim.
+  - Open. Several criteria rest on thresholds the paper does not give ("in phase", "essentially identical", "close correlation", "small" and "large" lags); each names its readings. Whether the dataset holds EC units, CA3/DG units, tasks besides the open field, and cell-type and layer labels is for the author.
+  - Open. fig8-ec-population-predicts-sinks needs the CSD phases of Montgomery et al. (2009), for which the paper names no archive.
