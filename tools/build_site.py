@@ -59,6 +59,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
+import paper_records  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
 import paper_match  # noqa: E402
 
@@ -171,20 +172,57 @@ def asset(name: str) -> str:
 
 # --- collecting ---------------------------------------------------------------
 
+def record_files(kind: str) -> list[tuple[Path, list[str]]]:
+    """A kind of record (claims, questions) with the datasets each is about: a paper's own file,
+    <kind>/<paper>.yaml, is about all the paper's datasets; one from before the cutover to paper-first records,
+    <kind>/<paper>/<folder>.yaml, about that folder's dataset."""
+    out = []
+    for path in sorted((ROOT / kind).glob("*.yaml")):
+        out.append((path, [d["key"] for d in paper_records.datasets_of(path.stem)]))
+    for path in sorted((ROOT / kind).glob("*/*.yaml")):
+        out.append((path, [key_of_dir(path.stem)]))
+    return out
+
+
+def transcript_folders() -> list[tuple[Path, list[str]]]:
+    """Each transcripts folder with the datasets it is about: transcripts/<paper>/ for all the paper's datasets,
+    transcripts/<paper>/<folder>/ for one."""
+    out = []
+    for d in sorted((ROOT / "transcripts").glob("*")):
+        if not d.is_dir() or d.name == "match":
+            continue
+        out.append((d, [x["key"] for x in paper_records.datasets_of(d.name)]))
+        for sub in sorted(d.glob("*")):
+            if sub.is_dir() and not sub.name.startswith("attempt-"):
+                out.append((sub, [key_of_dir(sub.name)]))
+    return out
+
+
+def attempt_rows() -> list[tuple[Path, dict, dict]]:
+    """Each attempt record once for each dataset it used: the site's pages are by dataset."""
+    out = []
+    for path in sorted((ROOT / "attempts").glob("*.yaml")):
+        a = load_yaml(path)
+        for used in paper_records.record_datasets(a):
+            out.append((path, a, used))
+    return out
+
+
 def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
     pilot = {key_of("dandi", t["dandiset"]) for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
     claims, claim_files = {}, {}
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+    for path, keys in record_files("claims"):
         data = load_yaml(path)
-        key = key_of(data["dataset"]["archive"], data["dataset"]["id"])
-        claims[(key, data["paper"])] = {c["id"]: c for c in data["claims"]}
+        claims[path] = {c["id"]: c for c in data["claims"]}
         last = (data.get("checks") or [None])[-1]
-        claim_files.setdefault(key, []).append({
+        for key in keys:
+            claim_files.setdefault(key, []).append({
             "path": str(path.relative_to(ROOT)), "paper": str(data["paper"]).removeprefix("doi:"),
             "check": None if last is None else {"ready": bool(last.get("ready")), "date": str(last.get("date"))},
             "claims": [{k: squash(c.get(k) or "") for k in ("id", "statement", "source", "quote", "criterion")}
-                       for c in data["claims"]]})
+                       for c in data["claims"]
+                       if not c.get("datasets") or dir_of(key) in c["datasets"]]})
     entries = {}
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
@@ -201,18 +239,20 @@ def collect(executed: Path | None = None) -> dict:
         return out
 
     attempts = []
-    for path in sorted((ROOT / "attempts").glob("*.yaml")):
-        a = load_yaml(path)
-        key = key_of(a["dataset"]["archive"], a["dataset"]["id"])
-        known = claims.get((key, a["paper"]), {})
+    for path, a, used in attempt_rows():
+        key = key_of(used["archive"], str(used["id"]))
+        claims_path = paper_records.claims_for_attempt(a)
+        known = claims.get(claims_path, {}) if claims_path else {}
         entry = entries.get(a.get("entry"))
         verifications = a.get("verifications") or []
         disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
         attempts.append({
             "id": a["id"],
-            "dataset": {k: str(v) for k, v in a["dataset"].items()},
+            "dataset": {k: str(v) for k, v in used.items()},
+            "datasets": [key_of(d["archive"], str(d["id"])) for d in paper_records.record_datasets(a)],
+            "missing_datasets": [{k: squash(str(v)) for k, v in m.items()} for m in a.get("missing_datasets") or []],
             "key": key, "label": dataset_label(key),
-            "dataset_version": a["dataset"].get("version"),
+            "dataset_version": used.get("version"),
             "paper": a["paper"].removeprefix("doi:"),
             "paper_title": titles.get(a["paper"].removeprefix("doi:").lower()),
             "date": str(a["date"]),
@@ -300,16 +340,24 @@ def collect(executed: Path | None = None) -> dict:
                              if r["id"].startswith("entry:") and r["relation"] == "derived_from"],
             "notebooks": notebooks_of(entry),
         })
-    transcripts = {key_of_dir(d.name): sorted(p.name for p in d.glob("*.md"))
-                   for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()}
-    # An earlier attempt's transcripts, moved aside by tools/archive_transcripts.sh.
-    archived = {f"{key_of_dir(d.name)}/{a.name}": sorted(p.name for p in a.glob("*.md"))
-                for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()
-                for a in sorted(d.glob("attempt-*")) if a.is_dir()}
+    # Each dataset's transcripts (its paper's, transcripts/<paper>/, or before the cutover, a paper's on several
+    # datasets, transcripts/<paper>/<folder>/), and an earlier attempt's, moved aside to attempt-NN/ by
+    # tools/archive_transcripts.sh. Keyed by dataset, or dataset and attempt-NN; each with the folder it is in.
+    transcripts, transcript_dirs = {}, {}
+    for d, keys in transcript_folders():
+        for key in keys:
+            transcripts[key] = sorted(p.name for p in d.glob("*.md"))
+            transcript_dirs[key] = d.relative_to(ROOT / "transcripts").as_posix()
+            for a in sorted(d.glob("attempt-*")):
+                if a.is_dir():
+                    transcripts[f"{key}/{a.name}"] = sorted(p.name for p in a.glob("*.md"))
+                    transcript_dirs[f"{key}/{a.name}"] = a.relative_to(ROOT / "transcripts").as_posix()
+    archived = {}
     return finish({
         "pipeline": pipeline_inputs(),
         "claim_files": claim_files,
         "transcripts": {**transcripts, **archived},
+        "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
         "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
@@ -326,15 +374,17 @@ def pipeline_inputs() -> dict:
     manifest = ROOT / "papers" / "manifest.yaml"
     papers = (load_yaml(manifest) or {}).get("targets", {}) if manifest.is_file() else {}
     checks, questions, items = {}, {}, {}
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+    for path, keys in record_files("claims"):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
-        checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
-                                                "date": None if last is None else str(last.get("date"))}
-    for path in sorted((ROOT / "questions").glob("*.yaml")):
+        for key in keys:
+            checks[key] = {"ready": None if last is None else bool(last.get("ready")),
+                           "date": None if last is None else str(last.get("date"))}
+    for path, keys in record_files("questions"):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
-        questions[key_of_dir(path.stem)] = sum(1 for x in q if not x.get("answered"))
-        items[key_of_dir(path.stem)] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
+        for key in keys:
+            questions[key] = sum(1 for x in q if not x.get("answered"))
+            items[key] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
     return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions,
             "question_items": items}
 
@@ -1830,7 +1880,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
         provenance_html += ('<dl class="kv" style="margin-top:14px">'
                             + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
     folder = f'{dandiset}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dandiset
-    repo_folder = f'{dir_of(dandiset)}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dir_of(dandiset)
+    repo_folder = (data.get("transcript_dirs") or {}).get(folder, dir_of(dandiset))
     runs = data.get("transcripts", {}).get(folder, [])
     if runs and not data["demo"]:
         items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(repo_folder)}/{e(name)}">{e(name)}</a></li>'
