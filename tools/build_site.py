@@ -2212,8 +2212,15 @@ def main() -> int:
         data["queue"] = json.loads(args.queue.read_text())
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
-        data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
-                          for i in json.loads(args.issues.read_text()) if i["title"].endswith(": waiting on you")}
+        # An issue's title is "<dataset label or paper key>: waiting on you" (tools/notify.py); a paper's is shown
+        # on each of its datasets.
+        data["issues"] = {}
+        for i in json.loads(args.issues.read_text()):
+            if not i["title"].endswith(": waiting on you"):
+                continue
+            name = i["title"].rsplit(": waiting on you", 1)[0]
+            for label in [dataset_label(d["key"]) for d in paper_records.datasets_of(name)] or [name]:
+                data["issues"][label] = i["url"]
     build(data, args.output)
     print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
           f"{', DEMO DATA' if data['demo'] else ''})")
