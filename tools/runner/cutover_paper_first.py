@@ -147,13 +147,33 @@ def branches(apply: bool) -> int:
                 git("checkout", MAIN, "--", *sorted(on_main), cwd=tmp)
             git("add", "-A", cwd=tmp)
             git(*COMMIT, "commit", "-q", "-m", "Paper-first names (the cutover, docs/paper-first.md)", cwd=tmp, check=False)
-            merged = subprocess.run(["git", *COMMIT, "merge", "-q", "--no-edit", "-m",
-                                     f"Merge main into attempt/{target}", MAIN], cwd=tmp,
-                                    capture_output=True, text=True)
-            if merged.returncode:
-                conflicts = git("diff", "--name-only", "--diff-filter=U", cwd=tmp).split()
-                git("merge", "--abort", cwd=tmp, check=False)
-                print(f": does not merge with main ({', '.join(conflicts[:5])}); left as it was"); bad += 1; continue
+            converted = git("rev-parse", "HEAD", cwd=tmp).strip()
+            # Main's version wins everywhere but in the branch's own paper's records, the branch's work: main has
+            # converted the same older records with later changes, which the branch never had.
+            subprocess.run(["git", *COMMIT, "merge", "-q", "--no-edit", "-X", "theirs", "-m",
+                            f"Merge main into attempt/{target}", MAIN], cwd=tmp, capture_output=True, text=True)
+            for path in git("diff", "--name-only", "--diff-filter=U", cwd=tmp).split():
+                if subprocess.run(["git", "checkout", "--theirs", "--", path], cwd=tmp, capture_output=True).returncode:
+                    git("rm", "-q", "--", path, cwd=tmp, check=False)   # gone on main
+                else:
+                    git("add", "--", path, cwd=tmp)
+            own = [p for p in git("ls-tree", "-r", "--name-only", converted, cwd=tmp).split()
+                   if re.match(rf"^(attempts/{re.escape(target)}-\d\d\.yaml|claims/{re.escape(target)}(\.yaml|/)|"
+                               rf"questions/{re.escape(target)}(\.yaml|/)|entries/{re.escape(target)}/|"
+                               rf"transcripts/(match/)?{re.escape(target)}/)", p)]
+            if own:
+                git("checkout", converted, "--", *own, cwd=tmp)
+            if git("status", "--porcelain", cwd=tmp).strip():
+                git("add", "-A", cwd=tmp)
+                state = "MERGE_HEAD" in git("rev-parse", "--git-path", "MERGE_HEAD", cwd=tmp) and \
+                    Path(tmp, git("rev-parse", "--git-path", "MERGE_HEAD", cwd=tmp).strip()).exists()
+                git(*COMMIT, "commit", "-q", "--no-edit" if state else "-m",
+                    *([] if state else [f"Merge main into attempt/{target}: the branch's own records"]), cwd=tmp)
+            check = subprocess.run([sys.executable, "tools/entry.py", "check", *sorted(
+                {"/".join(p.split("/")[:2]) for p in own if p.startswith("entries/")})], cwd=tmp,
+                capture_output=True, text=True) if any(p.startswith("entries/") for p in own) else None
+            if check is not None and check.returncode:
+                print(f": merged, but its entry does not check: {check.stdout.strip()[-300:]}"); bad += 1; continue
             if TRY:
                 print(": converts and merges (not pushed)"); continue
             if target != name and git("ls-remote", "--heads", "origin", f"attempt/{target}").strip():
