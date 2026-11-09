@@ -8,10 +8,10 @@ attempt, named by its record. The lists below link those written before
 2026-10-22, under the protocol version they ran under; the recorder adds a file
 for each attempt since, and does not change this page.
 
-- [000582, Sargolini et al. 2006 (2026-10-13)](pilot-notes/000582-sargolini-2006-01.md)
-- [000127, Chowdhury, Glaser & Miller 2020 (2026-10-13)](pilot-notes/000127-chowdhury-2020-01.md)
-- [000207, Zheng et al. 2022 (2026-10-13): first attempt by an agent following the protocol](pilot-notes/000207-zheng-2022-01.md)
-- [000147, Guan et al. 2022 (2026-10-13): second attempt by an agent following the protocol](pilot-notes/000147-guan-2022-01.md)
+- [000582, Sargolini et al. 2006 (2026-10-13)](pilot-notes/sargolini-2006-01.md)
+- [000127, Chowdhury, Glaser & Miller 2020 (2026-10-13)](pilot-notes/chowdhury-2020-01.md)
+- [000207, Zheng et al. 2022 (2026-10-13): first attempt by an agent following the protocol](pilot-notes/zheng-2022-01.md)
+- [000147, Guan et al. 2022 (2026-10-13): second attempt by an agent following the protocol](pilot-notes/guan-2022-01.md)
 
 ## Protocol pilot-3 (2026-10-13)
 
@@ -54,7 +54,7 @@ what prompted it:
 
 Point 9 (the notebook kernel) was a tool bug and is fixed.
 
-- [001097, Liu et al. 2024 (2026-10-14): first attempt under pilot-3, entirely in Actions](pilot-notes/001097-liu-2024-01.md)
+- [001097, Liu et al. 2024 (2026-10-14): first attempt under pilot-3, entirely in Actions](pilot-notes/liu-2024-01.md)
 
 ## Protocol pilot-4 (2026-10-14)
 
@@ -83,7 +83,7 @@ Revised after 001097. Each change and what prompted it:
 The ten 001097 claims blocked as `other` for want of the paper's model
 fitting are left as they are; new attempts use `not_runnable`.
 
-- [000625, Geiller et al. 2020 (2026-10-14): first attempt under pilot-4](pilot-notes/000625-geiller-2020-01.md)
+- [000625, Geiller et al. 2020 (2026-10-14): first attempt under pilot-4](pilot-notes/geiller-2020-01.md)
 
 ## Protocol pilot-5 (2026-10-14)
 
@@ -107,8 +107,8 @@ dandiset with outside data cannot say which of them failed. So:
 RDMs that are not public, are now marked `with_inputs`, and its attempt
 lists the repository under `inputs`. Its outcomes are unchanged.
 
-- [000035, Scala et al. 2021 (2026-10-14): first attempt under pilot-5](pilot-notes/000035-scala-2021-01.md)
-- [001453, Fouke et al. 2025 (2026-10-14): the last pilot target](pilot-notes/001453-fouke-2025-01.md)
+- [000035, Scala et al. 2021 (2026-10-14): first attempt under pilot-5](pilot-notes/scala-2021-01.md)
+- [001453, Fouke et al. 2025 (2026-10-14): the last pilot target](pilot-notes/fouke-2025-01.md)
 
 ## Protocol pilot-6 (2026-10-14), at the end of the pilot
 
@@ -145,13 +145,13 @@ and artifacts are now named for the dandiset and role. The four in parallel
 then used up the subscription's session limit after about two and a half
 hours; the runs it cut short were restarted from where they began.
 
-- [000006, Economo et al. 2018](pilot-notes/000006-economo-2018-01.md)
-- [001754, Knierim, McNaughton and Poe 2000](pilot-notes/001754-knierim-2000-01.md)
-- [000130, Sohn, Narain, Meirhaeghe and Jazayeri 2019](pilot-notes/000130-sohn-2019-01.md)
-- [001616, Gerken et al. 2025](pilot-notes/001616-gerken-2025-01.md)
-- [001754 again, on the fixed draft (2026-10-15)](pilot-notes/001754-knierim-2000-02.md)
-- [002014, Choi et al. 2025](pilot-notes/002014-choi-2025-01.md)
-- [001933, Chen et al. 2026](pilot-notes/001933-chen-2026-01.md)
+- [000006, Economo et al. 2018](pilot-notes/economo-2018-01.md)
+- [001754, Knierim, McNaughton and Poe 2000](pilot-notes/knierim-2000-01.md)
+- [000130, Sohn, Narain, Meirhaeghe and Jazayeri 2019](pilot-notes/sohn-2019-01.md)
+- [001616, Gerken et al. 2025](pilot-notes/gerken-2025-01.md)
+- [001754 again, on the fixed draft (2026-10-15)](pilot-notes/knierim-2000-02.md)
+- [002014, Choi et al. 2025](pilot-notes/choi-2025-01.md)
+- [001933, Chen et al. 2026](pilot-notes/chen-2026-01.md)
 
 ## Protocol pilot-7 (2026-10-15): data in other archives
 
@@ -171,49 +171,49 @@ dandiset's page shows them in a line of their own.
 
 Attempts recorded under pilot-6 keep their claims as they are.
 
-- [000004, Chandravadia et al. 2020](pilot-notes/000004-chandravadia-2020-01.md)
-- [002013, Amjad et al. 2025](pilot-notes/002013-amjad-2025-01.md)
-- [001636, Pasquereau et al. 2013](pilot-notes/001636-pasquereau-2013-01.md)
-- [001933 again, Chen et al. 2026, under pilot-7 (2026-10-15)](pilot-notes/001933-chen-2026-02.md)
-- [000041, Watson et al. 2016](pilot-notes/000041-watson-2016-01.md)
-- [000003, Senzai et al. 2017](pilot-notes/000003-senzai-2017-01.md)
-- [000044, Grosmark et al. 2016](pilot-notes/000044-grosmark-2016-01.md)
-- [000056, Peyrache et al. 2015](pilot-notes/000056-peyrache-2015-01.md)
-- [000059, Petersen et al. 2020](pilot-notes/000059-petersen-2020-01.md)
-- [000061, Girardeau et al. 2017](pilot-notes/000061-girardeau-2017-01.md)
-- [000067, Fujisawa et al. 2008](pilot-notes/000067-fujisawa-2008-01.md)
-- [000070, Churchland et al. 2012](pilot-notes/000070-churchland-2012-01.md)
-- [000121, Even-Chen et al. 2019](pilot-notes/000121-even-chen-2019-01.md)
-- [000114, Carcea et al. 2021](pilot-notes/000114-carcea-2021-01.md)
-- [000213, Tingley et al. 2018](pilot-notes/000213-tingley-2018-01.md)
-- [000218, Tingley et al. 2019](pilot-notes/000218-tingley-2019-01.md)
-- [000226, Severson et al. 2017](pilot-notes/000226-severson-2017-01.md)
-- [000232, Chang et al. 2023](pilot-notes/000232-chang-2023-01.md)
-- [000239, Xu et al. 2022](pilot-notes/000239-xu-2022-01.md)
-- [000350, Mu et al. 2019](pilot-notes/000350-mu-2019-01.md)
-- [000409, International Brain Laboratory et al. 2025](pilot-notes/000409-ibl-2025-01.md)
-- [000552, Huszar et al. 2022](pilot-notes/000552-huszar-2022-01.md)
-- [000568, Valero et al. 2022](pilot-notes/000568-valero-2022-01.md)
-- [000559, Markowitz et al. 2023](pilot-notes/000559-markowitz-2023-01.md)
-- [000718, Zaki et al. 2024](pilot-notes/000718-zaki-2024-01.md)
-- [000691, Scherrer et al. 2023](pilot-notes/000691-scherrer-2023-01.md)
-- [000727, Brezovec et al. 2022](pilot-notes/000727-brezovec-2022-01.md)
-- [000947, Schwab et al. 2020](pilot-notes/000947-schwab-2020-01.md)
-- [000971, Seiler et al. 2022](pilot-notes/000971-seiler-2022-01.md)
-- [001038, Azcorra et al. 2023](pilot-notes/001038-azcorra-2023-01.md)
-- [001075, Randi et al. 2023](pilot-notes/001075-randi-2023-01.md)
-- [001084, Vu et al. 2024](pilot-notes/001084-vu-2024-01.md)
-- [001170, Ling et al. 2023](pilot-notes/001170-ling-2023-01.md)
-- [001172, Lohani et al. 2022](pilot-notes/001172-lohani-2022-01.md)
-- [001528, Hadjas et al. 2025](pilot-notes/001528-hadjas-2025-01.md)
-- [001538, Zhai et al. 2025](pilot-notes/001538-zhai-2025-01.md)
-- [001550, Pagan et al. 2025](pilot-notes/001550-pagan-2025-01.md)
-- [001692, Bouabid et al. 2026](pilot-notes/001692-bouabid-2026-01.md)
-- [001699, Moore et al. 2025](pilot-notes/001699-moore-2025-01.md)
-- [001878, Sun et al. 2021](pilot-notes/001878-sun-2021-01.md)
-- [001712, Davatolhagh et al. 2025](pilot-notes/001712-davatolhagh-2025-01.md)
-- [001888, Hristova et al. 2025](pilot-notes/001888-hristova-2025-01.md)
-- [000005, Yu et al. 2016](pilot-notes/000005-yu-2016-01.md)
+- [000004, Chandravadia et al. 2020](pilot-notes/chandravadia-2020-01.md)
+- [002013, Amjad et al. 2025](pilot-notes/amjad-2025-01.md)
+- [001636, Pasquereau et al. 2013](pilot-notes/pasquereau-2013-01.md)
+- [001933 again, Chen et al. 2026, under pilot-7 (2026-10-15)](pilot-notes/chen-2026-02.md)
+- [000041, Watson et al. 2016](pilot-notes/watson-2016-01.md)
+- [000003, Senzai et al. 2017](pilot-notes/senzai-2017-01.md)
+- [000044, Grosmark et al. 2016](pilot-notes/grosmark-2016-01.md)
+- [000056, Peyrache et al. 2015](pilot-notes/peyrache-2015-01.md)
+- [000059, Petersen et al. 2020](pilot-notes/petersen-2020-01.md)
+- [000061, Girardeau et al. 2017](pilot-notes/girardeau-2017-01.md)
+- [000067, Fujisawa et al. 2008](pilot-notes/fujisawa-2008-01.md)
+- [000070, Churchland et al. 2012](pilot-notes/churchland-2012-01.md)
+- [000121, Even-Chen et al. 2019](pilot-notes/even-chen-2019-01.md)
+- [000114, Carcea et al. 2021](pilot-notes/carcea-2021-01.md)
+- [000213, Tingley et al. 2018](pilot-notes/tingley-2018-01.md)
+- [000218, Tingley et al. 2019](pilot-notes/tingley-2019-01.md)
+- [000226, Severson et al. 2017](pilot-notes/severson-2017-01.md)
+- [000232, Chang et al. 2023](pilot-notes/chang-2023-01.md)
+- [000239, Xu et al. 2022](pilot-notes/xu-2022-01.md)
+- [000350, Mu et al. 2019](pilot-notes/mu-2019-01.md)
+- [000409, International Brain Laboratory et al. 2025](pilot-notes/ibl-2025-01.md)
+- [000552, Huszar et al. 2022](pilot-notes/huszar-2022-01.md)
+- [000568, Valero et al. 2022](pilot-notes/valero-2022-01.md)
+- [000559, Markowitz et al. 2023](pilot-notes/markowitz-2023-01.md)
+- [000718, Zaki et al. 2024](pilot-notes/zaki-2024-01.md)
+- [000691, Scherrer et al. 2023](pilot-notes/scherrer-2023-01.md)
+- [000727, Brezovec et al. 2022](pilot-notes/brezovec-2022-01.md)
+- [000947, Schwab et al. 2020](pilot-notes/schwab-2020-01.md)
+- [000971, Seiler et al. 2022](pilot-notes/seiler-2022-01.md)
+- [001038, Azcorra et al. 2023](pilot-notes/azcorra-2023-01.md)
+- [001075, Randi et al. 2023](pilot-notes/randi-2023-01.md)
+- [001084, Vu et al. 2024](pilot-notes/vu-2024-01.md)
+- [001170, Ling et al. 2023](pilot-notes/ling-2023-01.md)
+- [001172, Lohani et al. 2022](pilot-notes/lohani-2022-01.md)
+- [001528, Hadjas et al. 2025](pilot-notes/hadjas-2025-01.md)
+- [001538, Zhai et al. 2025](pilot-notes/zhai-2025-01.md)
+- [001550, Pagan et al. 2025](pilot-notes/pagan-2025-01.md)
+- [001692, Bouabid et al. 2026](pilot-notes/bouabid-2026-01.md)
+- [001699, Moore et al. 2025](pilot-notes/moore-2025-01.md)
+- [001878, Sun et al. 2021](pilot-notes/sun-2021-01.md)
+- [001712, Davatolhagh et al. 2025](pilot-notes/davatolhagh-2025-01.md)
+- [001888, Hristova et al. 2025](pilot-notes/hristova-2025-01.md)
+- [000005, Yu et al. 2016](pilot-notes/yu-2016-01.md)
 
 ## Protocol pilot-8 (2026-10-19): the paper's own words
 
@@ -359,20 +359,20 @@ paper, goes to a reader as a question, with the passage, while the attempt runs
 every reading, that one among them. The verifiers check the analysis against
 the claims file, and report where it misreads the paper.
 
-- [001754, Knierim et al. 2000, third attempt](pilot-notes/001754-knierim-2000-03.md)
-- [crcns-ret-1, Lefebvre et al. 2008](pilot-notes/crcns-ret-1-lefebvre-2008-01.md)
-- [000005, Yu et al. 2016, second attempt](pilot-notes/000005-yu-2016-02.md)
-- [000061, Girardeau et al. 2017, second attempt](pilot-notes/000061-girardeau-2017-02.md)
-- [000582, Sargolini et al. 2006, second attempt](pilot-notes/000582-sargolini-2006-02.md)
-- [000009, Guo et al. 2017](pilot-notes/000009-guo-2017-01.md)
-- [000008, Scala et al. 2021](pilot-notes/000008-scala-2021-01.md)
-- [000010, Li et al. 2015](pilot-notes/000010-li-2015-01.md)
-- [000691, Scherrer et al. 2023, second attempt](pilot-notes/000691-scherrer-2023-02.md)
-- [001636, Pasquereau et al. 2013, second attempt](pilot-notes/001636-pasquereau-2013-02.md)
-- [000006, Economo et al. 2018, second attempt](pilot-notes/000006-economo-2018-02.md)
-- [000011, Li et al. 2016](pilot-notes/000011-li-2016-01.md)
-- [000013, Hires et al. 2015](pilot-notes/000013-hires-2015-01.md)
-- [000015, Chen et al. 2017](pilot-notes/000015-chen-2017-01.md)
-- [000019, Bouchard et al. 2013](pilot-notes/000019-bouchard-2013-01.md)
-- [000034, Buccino et al. 2020](pilot-notes/000034-buccino-2020-01.md)
-- [000128, Churchland et al. 2010](pilot-notes/000128-churchland-2010-01.md)
+- [001754, Knierim et al. 2000, third attempt](pilot-notes/knierim-2000-03.md)
+- [crcns-ret-1, Lefebvre et al. 2008](pilot-notes/lefebvre-2008-01.md)
+- [000005, Yu et al. 2016, second attempt](pilot-notes/yu-2016-02.md)
+- [000061, Girardeau et al. 2017, second attempt](pilot-notes/girardeau-2017-02.md)
+- [000582, Sargolini et al. 2006, second attempt](pilot-notes/sargolini-2006-02.md)
+- [000009, Guo et al. 2017](pilot-notes/guo-2017-01.md)
+- [000008, Scala et al. 2021](pilot-notes/scala-2021-02.md)
+- [000010, Li et al. 2015](pilot-notes/li-2015-01.md)
+- [000691, Scherrer et al. 2023, second attempt](pilot-notes/scherrer-2023-02.md)
+- [001636, Pasquereau et al. 2013, second attempt](pilot-notes/pasquereau-2013-02.md)
+- [000006, Economo et al. 2018, second attempt](pilot-notes/economo-2018-02.md)
+- [000011, Li et al. 2016](pilot-notes/li-2016-01.md)
+- [000013, Hires et al. 2015](pilot-notes/hires-2015-01.md)
+- [000015, Chen et al. 2017](pilot-notes/chen-2017-01.md)
+- [000019, Bouchard et al. 2013](pilot-notes/bouchard-2013-01.md)
+- [000034, Buccino et al. 2020](pilot-notes/buccino-2020-01.md)
+- [000128, Churchland et al. 2010](pilot-notes/churchland-2010-01.md)
