@@ -1,0 +1,476 @@
+schema_version: 2
+id: crcns-ac-4-holdgraf-2016-01
+dataset:
+  archive: crcns
+  id: ac-4
+  version: unversioned
+  doi: 10.6080/K08S4N4J
+paper: doi:10.1038/ncomms13654
+date: '2026-11-09'
+entry: crcns-ac-4-holdgraf-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42582043075
+outcomes:
+- claim: behav-no-context-baseline
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behavioural control groups (5, 9 and 15 undergraduate students who typed the words they understood)
+    are not in the data set, which holds only the patients' ECoG, events, electrode positions and stimulus
+    audio (data.zip listing and data descriptor). The paper's data availability statement names only the
+    CRCNS data set for data, and the code repository it links (github.com/choldgraf/ecogtools) is a library
+    of analysis code, as the claims file describes it. No other place for these data is named.
+- claim: behav-context-enhancement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behavioural control groups (5, 9 and 15 undergraduate students who typed the words they understood)
+    are not in the data set, which holds only the patients' ECoG, events, electrode positions and stimulus
+    audio (data.zip listing and data descriptor). The paper's data availability statement names only the
+    CRCNS data set for data, and the code repository it links (github.com/choldgraf/ecogtools) is a library
+    of analysis code, as the claims file describes it. No other place for these data is named.
+- claim: supp1a-linguistic-context
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behavioural control groups (5, 9 and 15 undergraduate students who typed the words they understood)
+    are not in the data set, which holds only the patients' ECoG, events, electrode positions and stimulus
+    audio (data.zip listing and data descriptor). The paper's data availability statement names only the
+    CRCNS data set for data, and the code repository it links (github.com/choldgraf/ecogtools) is a library
+    of analysis code, as the claims file describes it. No other place for these data is named.
+- claim: supp1a-speaker-no-difference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behavioural control groups (5, 9 and 15 undergraduate students who typed the words they understood)
+    are not in the data set, which holds only the patients' ECoG, events, electrode positions and stimulus
+    audio (data.zip listing and data descriptor). The paper's data availability statement names only the
+    CRCNS data set for data, and the code repository it links (github.com/choldgraf/ecogtools) is a library
+    of analysis code, as the claims file describes it. No other place for these data is named.
+- claim: supp1b-filter-type
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behavioural control groups (5, 9 and 15 undergraduate students who typed the words they understood)
+    are not in the data set, which holds only the patients' ECoG, events, electrode positions and stimulus
+    audio (data.zip listing and data descriptor). The paper's data availability statement names only the
+    CRCNS data set for data, and the code repository it links (github.com/choldgraf/ecogtools) is a library
+    of analysis code, as the claims file describes it. No other place for these data is named.
+- claim: supp5a-behaviour-over-trials
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behavioural control groups (5, 9 and 15 undergraduate students who typed the words they understood)
+    are not in the data set, which holds only the patients' ECoG, events, electrode positions and stimulus
+    audio (data.zip listing and data descriptor). The paper's data availability statement names only the
+    CRCNS data set for data, and the code repository it links (github.com/choldgraf/ecogtools) is a library
+    of analysis code, as the claims file describes it. No other place for these data is named.
+- claim: speech-r-count
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:speech-r-count
+  measured:
+  - 101
+  - 377
+  notes: Three of twelve readings (open details 1, 2 and 3) give a count within 92 +/- 9.2, all with the
+    z-score by non-event times (the code's zscore_by_non_events). Onset to sound end with all speech trials
+    gives 96, 0 to 2.5 s with MIDDLE trials 101 (recorded as measured, the first matching reading in the
+    criterion's order), 0 to 2.5 s with all trials 99. The per-trial baseline z-score gives 141 to 185
+    and the pooled baseline 131 to 150. The data set holds 377 good electrodes of 416, against the paper's
+    468, so 101 is 26.8% of electrodes against 19.6%; the criterion reports the total and does not judge
+    it. Speech-R electrodes are mostly temporal (66) and perisylvian (18), as the statement says.
+  deviations:
+  - HFB band edges and filter orders are not given (claims, open detail 4); 21 log-spaced centres 70 to
+    140 Hz, each band 10% of its centre wide, 2nd-order Butterworth applied forwards and backwards, as
+    a standard choice.
+  - The z-score, window and trials are open details the claims file lists; the result matches under 3
+    of 12 combinations, all with the non-event z-score.
+  - Electrodes are those marked good in channels.tsv (377); the paper's 468 come from channels the data
+    set does not hold.
+  - Pink noise triplets and the six unfiltered sentences outside any triplet in S01 to S04 are left out.
+- claim: fig3b-hfb-increase-after
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig3b-hfb-increase-after
+  notes: Over 101 Speech-R electrodes, AFTER exceeds BEFORE in a cluster from 0.36 to 1.28 s (P = 0.0001)
+    and from 1.72 to 2.02 s (P = 0.0072). The 84 Speech-R electrodes on temporal or perisylvian cortex
+    give 0.40 to 1.42 s (P = 0.0001); the per-trial baseline z-score gives P = 0.0002 for both sets. Mean
+    difference 0.084 z over 0 to 1 s. S02 and S13 have a slightly negative mean difference over 0 to 3
+    s.
+  deviations:
+  - Speech-R carried into this claim is the reading z-score by non-event times, 0 to 2.5 s, MIDDLE trials
+    (101 electrodes), the first reading within the paper's count in the claims file's order (see speech-r-count).
+  - HFB band edges and filter orders are not given (claims, open detail 4); 21 log-spaced centres 70 to
+    140 Hz, each band 10% of its centre wide, 2nd-order Butterworth applied forwards and backwards, as
+    a standard choice.
+  - Cluster test with MNE defaults (two-tailed t threshold for p = 0.05) and 10,000 permutations, -0.5
+    to 3 s (claims, open detail 11).
+- claim: supp3a-pink-noise-no-hfb-change
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp3a-pink-noise-no-hfb-change
+  notes: On the pink noise triplets of S07, S08 and S13, no AFTER minus BEFORE cluster reaches P < 0.05
+    over their 36 Speech-R electrodes (smallest P = 0.0895). Set (a), the included electrodes of these
+    subjects, is empty here. The mean AFTER minus BEFORE over 0 to 3 s is 0.041 z in both the pink noise
+    and the speech triplets of these electrodes, and the speech triplets do give significant clusters
+    (P = 0.0013), so the absence comes with an effect of the same size and less data.
+  deviations:
+  - Speech-R carried into this claim is the reading z-score by non-event times, 0 to 2.5 s, MIDDLE trials
+    (101 electrodes), the first reading within the paper's count in the claims file's order (see speech-r-count).
+  - Judged on electrode set (b) alone, as set (a) is empty.
+- claim: supp5b-hfb-stable-over-session
+  outcome: not_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp5b-hfb-stable-over-session
+  notes: The slope of mean post-stimulus HFB on triplet number is negative with a 95% bootstrap interval
+    excluding 0, for electrode values pooled (-0.0022 z per trial, -0.0028 to -0.0017) and for the mean
+    over electrodes per sound (-0.0019, -0.0029 to -0.0009). Six of seven subjects have an interval below
+    0 (S04 includes 0). About -0.1 z over 57 triplets.
+  deviations:
+  - Speech-R carried into this claim is the reading z-score by non-event times, 0 to 2.5 s, MIDDLE trials
+    (101 electrodes), the first reading within the paper's count in the claims file's order (see speech-r-count).
+  - The value is the mean HFB of every speech sound (BEFORE, MIDDLE and AFTER) and trial number the triplet
+    number; the legend does not say which sounds are used.
+- claim: fig4a-coherence-after-higher
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig4a-coherence-after-higher
+  notes: On the 84 Speech-R electrodes on temporal or perisylvian cortex (set a), AFTER/MIDDLE minus BEFORE/MIDDLE
+    coherence is +0.40 bits/s over 0 to 1 s (P = 0.0023) and +0.29 over 1 to 2.5 s (P = 0.0053); before
+    the sound +0.27 (P = 0.137). All seven subjects are positive. On all 251 temporal or perisylvian electrodes
+    (set b) only 1 to 2.5 s differs (P = 0.032; 0 to 1 s P = 0.65). Set (a) is adopted, as the Results
+    compute it on speech-responsive electrodes and its 84 is close to the paper's 78. The integrated coherence
+    is about 14 bits/s in both conditions, mostly the bias of single-trial coherence from three tapers,
+    which is the same for both conditions.
+  deviations:
+  - Speech-R carried into this claim is the reading z-score by non-event times, 0 to 2.5 s, MIDDLE trials
+    (101 electrodes), the first reading within the paper's count in the claims file's order (see speech-r-count).
+  - Assumed. The multitaper bandwidth is not given; a 400 ms window at 50 Hz has 20 samples and MNE's
+    default bandwidth gives one taper, for which single-trial coherence is 1. NW = 2 (three tapers) with
+    a jackknife over tapers, integrated from 2.5 to 25 Hz.
+  - Windows are assigned to the -1 to 0, 0 to 1 and 1 to 2.5 s ranges by their centre; the -1 to 0 s range
+    holds two windows.
+- claim: fig4b-coherence-sentence-specific
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig4b-coherence-sentence-specific
+  notes: On set (a), 1 to 2.5 s gives AFTER/MIDDLE higher with the mean over all trials subtracted (+0.20
+    bits/s, P = 0.038) and with the mean per condition (+0.29, P = 0.0025). Unlike the paper (P = 0.241),
+    0 to 1 s is also significant (P = 0.0057 and 0.0056). On set (b) the late window gives P = 0.106 and
+    0.016.
+  deviations:
+  - The multitaper choice of fig4a-coherence-after-higher (assumed).
+- claim: strf-r-count
+  outcome: not_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:strf-r-count
+  measured: 9
+  notes: With leave-one-trial-out ridge on the MIDDLE trials, 9 electrodes are STRF-R under the bootstrap
+    bound (a), 0 under the per-split percentiles (b, c); with samples to 400 ms after offset, 13, 1 and
+    1. The paper reports 53. Only about 19 electrodes have a mean held-out R2 above 0 at any ridge value;
+    the STRF-R electrodes have mean R2 0.044 to 0.226. They come from S01 (4), S02 (1) and S04 (4); none
+    from S03, S07, S08 or S13.
+  deviations:
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - HFB band edges and filter orders are not given (claims, open detail 4); 21 log-spaced centres 70 to
+    140 Hz, each band 10% of its centre wide, 2nd-order Butterworth applied forwards and backwards, as
+    a standard choice.
+  - Inputs and outputs are z-scored with each fold's training statistics; R2 is the coefficient of determination
+    on the held-out trial, as the criterion says.
+- claim: included-electrode-count
+  outcome: not_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:included-electrode-count
+  measured: 9
+  notes: 'Every STRF-R electrode is Speech-R and temporal or perisylvian under every reading, so the count
+    follows strf-r-count: 9 under the adopted readings, at most 13, against 41. 6 are temporal and 3 perisylvian.
+    Location comes from the anatomical labels in channels.tsv.'
+  deviations:
+  - Temporal lobe is the labels temporal-* and sub_temporal; perisylvian the *-inferior frontal, premotor,
+    motor and parietal labels (claims, open detail 6), read from channels.tsv, not from the brain images.
+- claim: fig8-mtf-matches-filter
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig8-mtf-matches-filter
+  notes: On 9 electrodes, temporal minus spectral MTF has a positive cluster in the region the temporal
+    filter keeps in BEFORE (centre 2.1 Hz and 0.30 cycles per band, P = 0.0078) and in AFTER (2.0 Hz,
+    0.40, P = 0.043). The larger positive clusters lie at 16 to 19 Hz (P = 0.0039 to 0.031), outside both
+    regions. For the shift, the MTF of the difference has one significant cluster, at 15.3 Hz (P = 0.0039),
+    outside the regions, and the difference of MTFs none. With 9 electrodes the smallest possible P is
+    0.0039.
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - Assumed (from the criterion, and made concrete here). Low and high modulation are below and above
+    the median of the plane's absolute temporal (11.9 Hz) and spectral (0.234 cycles per band) modulations,
+    measured at the cluster's mean position.
+  - The cluster test runs on the half plane of non-negative spectral modulation, as the amplitude spectrum
+    of a real eSTRF is symmetric.
+- claim: fig9-rms-increase
+  outcome: partially_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig9-rms-increase
+  measured: 12.03
+  notes: 'On 9 electrodes, the AFTER eSTRF gives a larger RMS output to the MIDDLE spectrograms under
+    every reading: mean increase 12.0 (P = 0.034) and 11.8 (P = 0.031) with mean coefficients, 11.5 (P
+    = 0.077) and 11.4 (P = 0.073) with z-scored coefficients; 8 of 9 electrodes are positive with mean
+    coefficients. The output RMS is about 105 here against about 4 on the paper''s Figure 9c axis, so
+    the paper''s 0.12 is on a different scale the paper does not define; as a fraction of the BEFORE RMS
+    the increase is 0.12 to 0.13. The direction and significance hold under two readings; the stated value
+    does not.'
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - The MIDDLE spectrograms are z-scored as model inputs (with the MIDDLE statistics) before the convolution;
+    the Methods do not give their scale, which sets the scale of the RMS.
+- claim: fig9-middle-generalizes-after
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig9-middle-generalizes-after
+  measured: 0.051
+  notes: On 9 electrodes, the MIDDLE eSTRF predicts AFTER better than BEFORE. With R2 over concatenated
+    trials (reading b) the improvement is 0.051 (R2 0.013 to 0.064, P = 0.021), within 0.05 +/- 0.01;
+    with R2 per trial (reading a) 0.089 (P = 0.020). 7 or 8 of 9 electrodes are positive.
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - Spectrograms and HFB of BEFORE and AFTER are z-scored with each condition's own statistics (Methods,
+    inputs and outputs z-scored); the Methods do not say which statistics.
+- claim: fig10-partial-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig10-partial-correlation
+  measured: 0.308
+  notes: On 9 electrodes, AFTER/MIDDLE partial correlation exceeds BEFORE/MIDDLE by a mean 0.308 (P =
+    0.011) without an intercept and 0.305 (P = 0.0042) with one; medians 0.16; 8 of 9 positive. The mean
+    is outside 0.18 +/- 0.018. On the 6 temporal-lobe electrodes the mean is 0.43 (P = 0.032).
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+- claim: fig10b-similarity-correlates
+  outcome: not_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig10b-similarity-correlates
+  measured: 0.625
+  notes: Across 9 electrodes, the partial correlation difference correlates with mean evoked MIDDLE HFB
+    at r = 0.63 (P = 0.072) and with the MIDDLE model score at r = 0.55 (P = 0.126). Neither is within
+    0.42 +/- 0.042 nor significant.
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - Speech-R carried into this claim is the reading z-score by non-event times, 0 to 2.5 s, MIDDLE trials
+    (101 electrodes), the first reading within the paper's count in the claims file's order (see speech-r-count).
+- claim: fig10c-stg-location
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:fig10c-stg-location
+  notes: Of the summed positive differences, 51.7% (1.44 of 2.78) lie on the 4 electrodes labelled temporal-superior
+    (reading a, above one half); 4 of 8 electrodes with a positive difference are STG (reading b, not
+    above one half). 4 of 9 included electrodes are STG. The margin is small and rests on 9 electrodes.
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - STG is the label temporal-superior in channels.tsv.
+- claim: supp3b-pink-noise-no-pcorr-change
+  outcome: blocked
+  blocked_by: other
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp3b-pink-noise-no-pcorr-change
+  notes: Too few units under the claim's rule. No electrode of S07, S08 or S13 is included in the eSTRF
+    analyses here (the paper has 12), so there is nothing to test. The eSTRFs on the pink noise triplets
+    were fit.
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+- claim: supp6a-connectivity-increase
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp6a-connectivity-increase
+  notes: With the 6 included temporal electrodes as seeds (S01, S02, S04), coherence with frontal and
+    premotor targets rises from BEFORE to AFTER (+0.173 bits/s, t = 3.24, P = 0.031) and with temporal
+    targets rises without significance (+0.110, t = 2.05, P = 0.094). The paper has 39 seeds.
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - The ridge parameter is the mode of the per-split best values over Speech-R electrodes and the three
+    conditions, leaving out values at the top of the grid (1e8). Assumed. The Methods take the mode of
+    the selected values, but 2751 of 11860 values sit at the top of any grid, where no alpha predicts
+    the held-out trial better than the null model, so the plain mode is the grid edge; the claims file
+    asks for a grid whose mode is not at an edge. Both this mode and the mode of each electrode's best
+    alpha give 1e5.
+  - Auditory spectrogram compression (cube root) and spectral sharpening (rectified difference with the
+    next lower band, as in the NSL model of the Methods' ref. 3) are standard choices; the gammatone filters
+    are applied in the frequency domain.
+  - Assumed. The Supplementary Methods say the coherence is computed like that of Figure 4; the 400 ms
+    windows and three tapers of fig4a are used, over 0 to 2.5 s.
+  - Frontal targets are the frontal-* and premotor-* labels; temporal targets the other temporal electrodes,
+    good channels only.
+- claim: supp6a-after-closer-to-middle
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp6a-after-closer-to-middle
+  notes: Mean |AFTER - MIDDLE| is 0.089 against |BEFORE - MIDDLE| 0.156 bits/s for frontal targets, and
+    0.207 against 0.214 for temporal targets, on 6 seeds. The temporal margin is small.
+  deviations:
+  - The measure of closeness is the criterion's, which it states as an assumption.
+  - The coherence choices of supp6a-connectivity-increase.
+- claim: supp6b-no-pac-change
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp6b-no-pac-change
+  notes: PAC of 3 to 8 Hz frontal/premotor phase with the HFB amplitude of the 9 included electrodes changes
+    by 0.00058 from BEFORE to AFTER (t = 1.63, P = 0.141). Variants give P = 0.055 (4 to 8 Hz) and 0.54
+    (2 to 12 Hz).
+  deviations:
+  - Every eSTRF claim rests on the 9 included electrodes found here (S01 4, S02 1, S04 4), against the
+    paper's 41 (see strf-r-count and included-electrode-count).
+  - Phase bands are +/- 1 Hz around each frequency, 2nd-order Butterworth, a standard choice; the post-stimulus
+    samples from onset to the end of each sound are concatenated.
+- claim: supp7-envelope-coherence
+  outcome: not_reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp7-envelope-coherence
+  notes: In 66 temporal Speech-R electrodes no MIDDLE minus BEFORE cluster reaches P < 0.05 (smallest
+    1.7 to 2.3 Hz, P = 0.093; 3 to 8 Hz NMI 0.187 BEFORE, 0.201 MIDDLE, 0.186 AFTER bits). No AFTER minus
+    BEFORE cluster reaches P < 0.05 in either region. In 19 frontal/premotor Speech-R electrodes MIDDLE
+    exceeds BEFORE from 6.7 to 8.3 Hz (P = 0.0012), where the paper reports no effect. The paper has 72
+    temporal electrodes.
+  deviations:
+  - Speech-R carried into this claim is the reading z-score by non-event times, 0 to 2.5 s, MIDDLE trials
+    (101 electrodes), the first reading within the paper's count in the claims file's order (see speech-r-count).
+  - Signal and envelope resampled to 100 Hz; multitaper NW = 3 (five tapers) with a jackknife, 1 to 30
+    Hz tested, Gabor wavelets of 7 cycles for the envelope; standard choices the paper does not fix.
+- claim: supp4-hfb-power-increase
+  outcome: reproduced
+  notebook: reproduce_holdgraf_2016.ipynb
+  output: claim:supp4-hfb-power-increase
+  notes: AFTER minus BEFORE power has a positive cluster over the HFB range in frontal/premotor electrodes
+    (26 to 200 Hz, P = 0.0001, n = 90) and in temporal electrodes (51 to 200 Hz, P = 0.0005, n = 192),
+    and a negative cluster in frontal electrodes from 4.2 to 19.4 Hz (P = 0.0001). Mean change 70 to 150
+    Hz, 0.23 dB frontal and 0.16 dB temporal; below 25 Hz, -0.33 dB frontal.
+  deviations:
+  - Wavelets from 3 Hz, not the claims file's standard 1 Hz, as the kept epochs (-1 to 3.5 s) are too
+    short for 5 cycles below about 3 Hz; post-stimulus 0 to 2.5 s, dB against -800 to -100 ms.
+  - Electrode groups from the channels.tsv labels (frontal-* and premotor-*, 90; temporal, 192) against
+    the paper's 75 and 217.
+findings:
+- kind: data_missing
+  statement: The behavioural control data (three groups of 5, 9 and 15 listeners) behind Figure 2b and
+    Supplementary Figures 1 and 5A are not in the data set, and the paper names no other place for them.
+    Six of the paper's claims cannot be tested.
+- kind: selection_undocumented
+  statement: The data set holds 416 channels (377 marked good) for its 7 subjects, at most 64 per subject,
+    while the paper reports grids of 48, 64, 68, 68, 62, 110 and 104 channels and 468 electrodes kept.
+    The data set does not say which channels were left out or why.
+- kind: identifier_missing
+  statement: The subjects are named S01, S02, S03, S04, S07, S08 and S13, the paper's S1 to S7, with no
+    mapping between them, so per-subject results cannot be compared with the paper's figures.
+- kind: metadata_error
+  statement: channels.tsv gives the unit as milliV and the header a resolution of 0.1, but the stored
+    float32 values have a median absolute value of about 315 in S01 and 1.7e8 to 6.2e8 in the other six
+    subjects, so the scale is neither millivolts nor the same across subjects.
+- kind: metadata_error
+  statement: The data set's explore_data notebook and its per-subject copies say the audio files are not
+    available for privacy reasons, and the README says subject folders are named like ir-07; the zip holds
+    a stimulus track per subject (stimuli/<subject>_audio.wav) and folders named sub-S01. The audio tracks
+    are on the recording's clock (the mean audio amplitude rises 2.7 to 211 times at the event onsets
+    in every subject), but S07's track is 1015 s for a 989 s recording, and S13's is at 20 kHz against
+    16 kHz in the others; neither is documented.
+- kind: metadata_insufficient
+  statement: The events tables of S01, S03, S04 and S07 hold spans with trial_type 'bad' (1 to 12 per
+    subject) that events.json does not describe, and 22 sounds overlap them; the paper does not mention
+    them. They were kept here.
+- kind: other
+  statement: One triplet in S02 and one in S03 lack a sound (46 of 47 and 38 of 39 complete), and S01
+    to S04 each have six unfiltered sentences outside any triplet (trial_num -1), which the data set does
+    not explain.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How was HFB z-scored to select Speech-R electrodes? With
+    each trial's own -800 to -100 ms baseline or a pooled baseline, 131 to 185 electrodes pass here; with
+    the whole series z-scored by its non-event times (ecogtools zscore_by_non_events) 96 to 104, near
+    the paper's 92. This attempt assumed the latter.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the ridge parameter's mode and the STRF-R bound
+    computed? Over Speech-R electrodes, a quarter of the per-split best values sit at the top of any grid,
+    so the mode of all values is the grid edge; this attempt took the mode below the edge (1e5). With
+    the held-out trial's coefficient of determination, only 9 electrodes pass the bound (the paper has
+    53). Was R2 computed per held-out trial, over a block of trials, or as a squared correlation?
+- kind: methods_unavailable
+  statement: Question for the paper's authors. What multitaper bandwidth was used for the 400 ms coherence
+    windows of Figure 4 and Supplementary Figure 6A, and over which frequencies was the coherence integrated?
+    With 20 samples per window, MNE's default bandwidth gives one taper; this attempt used three (NW =
+    2), 2.5 to 25 Hz.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. On what scale is the RMS of Figure 9c (axis about 3.6 to
+    5.0) and the mean increase of 0.12? With standardized eSTRFs applied to z-scored spectrograms the
+    RMS is about 105 here; the relative increase is 0.12 to 0.13.
