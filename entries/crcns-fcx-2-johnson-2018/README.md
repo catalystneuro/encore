@@ -11,25 +11,29 @@ task, with trial tables and the paper's MATLAB analysis scripts.
 | Accuracy and response time do not differ by condition | Reproduced, resting on assumptions |
 | 254 electrodes, 36 MTL, 116 PFC, 102 OFC | Reproduced |
 | About 100 correct trials per subject | Reproduced |
-| ERPs do not differ by condition | Not reproduced |
+| ERPs do not differ by condition | Not reproduced, resting on an assumption |
 | Sustained theta power in all regions | Not reproduced |
 | 8 electrodes with power condition effects | Not reproduced |
 | PLV peaks in theta | Reproduced |
-| Theta PSI shifts from frontal to MTL leads | Not reproduced |
+| Theta PSI shifts from frontal to MTL leads | Not reproduced, resting on an assumption |
 | Cross-spectral PSI shifts after the test cue | Not reproduced |
 | Counts of theta phase-directing electrodes and pairs | Not reproduced |
-| Equal cross-spectral strength across frequencies and directions | Not reproduced |
+| Equal cross-spectral strength across frequencies and directions | Blocked (methods underspecified) |
 | Individual theta peak bands | Not reproduced |
-| Theta PAC by condition (eight claims) | Not reproduced |
+| Theta PAC by condition (eight claims) | Blocked (methods underspecified) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The trial table and the descriptor place the task events 1.5 s earlier than the time axes of the
-derived data, which the paper's code follows, and the data show no task-locked response that
-settles it. The PSI of the paper's Methods selects no phase-directing units; the PAC claims use the
-units of the deposited code's own form of PSI. The behaviour claim is reproduced with condition as one numeric
-term, as the amended claims file judges it, on the response times of `summary_file.csv`; the trial
-tables' response times differ from those in 7 of 10 subjects and would show a condition effect. The attempt record, with the reasons and the
-differences from the paper's method, is
+The analysis windows are placed by the trial table and the descriptor, 1.5 s earlier on the
+derived time axes than the paper's deposited code places them: the trials with the two delay
+lengths part where the table puts the delay-dependent events, and not where the code does. The
+code's windows are run as a variant. The phase-directing units that the equal-strength and PAC
+claims rest on cannot be selected: the PSI of the paper's Methods selects at most 3 per system, and
+the deposited code's own form of PSI selects as many units with trials shuffled as on the real
+data. The behaviour claim is reproduced with condition as one numeric term, as the amended claims
+file judges it, on the response times of `summary_file.csv`; the trial tables' response times
+differ from those in 7 of 10 subjects, no summary of them gives the file's values, and they would
+show a condition effect. The attempt record, with the reasons and the differences from the paper's
+method, is
 [`attempts/crcns-fcx-2-johnson-2018-01.yaml`](../../attempts/crcns-fcx-2-johnson-2018-01.yaml).

@@ -11,10 +11,17 @@ Where the parameters come from. "Code" is the analysis code deposited with the d
 (analysis_scripts.tar.gz in the data set, scripts dated 2018-02-22 to 2018-04-03); "Methods" is
 the paper's Materials and methods; M1 to M10 are the shared method details of the claims file.
 
-- Segment windows (M1): encoding and precue [0, 1.5] s of data_encmain, precue delay
-  [0.6, 1.5] s of data_encmain, postcue delay [0.3, 1.2] s of data_proc, baseline [0.65, 0.85] s
-  of data_pre. Code: power_compute.m, psi_compute.m, cspsi_compute.m ("cfgt.latency"). The
-  precue delay is M1 reading (a), which the code settles.
+- Segment windows (M1): the code (power_compute.m, psi_compute.m, cspsi_compute.m,
+  "cfgt.latency") takes encoding and precue as [0, 1.5] s of data_encmain, the precue delay as
+  [0.6, 1.5] s of data_encmain (M1 reading (a)), the postcue delay as [0.3, 1.2] s of data_proc
+  and the baseline as [0.65, 0.85] s of data_pre (`WIN_CODE`). The trial table and the
+  descriptor place each segment's first sample (-1.5 s) at the table's epoch start, which puts
+  the same events 1.5 s earlier: encoding [-1.5, 0], precue [-0.9, 0], postcue [-1.2, -0.3],
+  baseline [-0.85, -0.65] s (`WIN`). The main reading is the table's placement, an assumption
+  resting on the data: the 900 and 1150 ms delay trials part where it puts the first event that
+  depends on the delay, in all three segments, and not where the code's windows put it
+  (sanity_subject). ERPs, power, PLV and both PSI measures are also computed in the code's
+  windows (`WIN_ALT`), as a variant; PAC is computed in the main windows only.
 - Filter bank (M2): the 24 band edges of power_compute.m (`BANDS`), the last band dropped for the
   512 Hz subjects s8 and s9 (code). Two-pass FIR filters designed as FieldTrip's default for
   `bpfilttype = 'fir'` (fir1 with a Hamming window, order 3 * fix(fs / low edge), capped at a
@@ -86,8 +93,18 @@ PLV_BANDS = np.arange(0, 11)        # 1-3 ... 12-20 Hz (code plv_compute.m)
 PEAK_BANDS = np.arange(1, 7)        # 1.5-4 ... 6-10 Hz, the 6 ranges of M8
 THETA_FREQS = np.arange(3, 8)       # 3 to 7 Hz (M5)
 
-WIN = {"enc": ("encmain", 0.0, 1.5), "pre": ("encmain", 0.6, 1.5), "post": ("proc", 0.3, 1.2),
-       "base": ("pre", 0.65, 0.85)}
+# The deposited code's windows (cfgt.latency in every *_compute.m script).
+WIN_CODE = {"enc": ("encmain", 0.0, 1.5), "pre": ("encmain", 0.6, 1.5), "post": ("proc", 0.3, 1.2),
+            "base": ("pre", 0.65, 0.85)}
+# The same windows placed by the trial table and the descriptor: the first sample of each
+# segment (time -1.5 s) is the table's epoch start (encmain at column H, first stimulus onset;
+# proc 0.3 s before column I, test cue offset; pre about 0.1 s after column G, 1 s before the
+# start screen), so every window lies 1.5 s earlier than the code takes it. The main reading:
+# the 900 and 1150 ms delay trials part where this placement puts the first event that depends
+# on the delay, in each segment (sanity_subject, "jitter_t").
+SHIFT_TABLE = -1.5
+WIN = {k: (s, t0 + SHIFT_TABLE, t1 + SHIFT_TABLE) for k, (s, t0, t1) in WIN_CODE.items()}
+WIN_ALT = WIN_CODE
 PAD_S = 7.5
 
 
@@ -115,6 +132,18 @@ def read_summary_file():
     df = pd.read_csv(io.StringIO(text), header=None, names=names)
     df["subject"] = df.subject.str.lower()
     return df
+
+
+def read_scripts():
+    """The deposited analysis scripts (analysis_scripts.tar.gz), as {file name: text}; read to
+    quote the lines a method detail is taken from, not run."""
+    raw = requests.get(f"{BASE}/analysis_scripts.tar.gz", timeout=120).content
+    out = {}
+    with tarfile.open(fileobj=io.BytesIO(raw), mode="r:gz") as tf:
+        for m in tf:
+            if m.isfile() and m.name.endswith(".m"):
+                out[m.name.split("/")[-1]] = tf.extractfile(m).read().decode("latin-1")
+    return out
 
 
 TRIAL_COLS = ["trial", "accuracy", "trial_type", "condition", "jitter", "rt",
@@ -452,6 +481,21 @@ def cross_spectra(A, B):
     return S, PA, PB
 
 
+def cross_spectra_x(th, the):
+    """Trial- and window-averaged cross-spectra of theta (n, a, 5, w) with envelope theta
+    (n, b, c, 5, w). Returns (a, b, c, 5, 5), as cross_spectra, one matrix product per
+    frequency pair."""
+    n, na, nf, nw = th.shape
+    nb, nc = the.shape[1:3]
+    A2 = th.transpose(2, 1, 0, 3).reshape(nf, na, n * nw)
+    B2 = np.conj(the).transpose(3, 0, 4, 1, 2).reshape(nf, n * nw, nb * nc)
+    S = np.empty((na, nb * nc, nf, nf), dtype=complex)
+    for f in range(nf):
+        for g in range(nf):
+            S[:, :, f, g] = A2[f] @ B2[g]
+    return S.reshape(na, nb, nc, nf, nf) / (n * nw)
+
+
 def psi_z(S, PA, PB, rng, nperm=1000):
     """Nolte PSI and its z against shuffles of the second signal's frequencies.
 
@@ -486,6 +530,17 @@ def psi_code(A, B, rng, nperm=1000):
     null = np.stack([np.imag(np.conj(ppm[:, rng.permutation(nf)]) * ppm[:, rng.permutation(nf)]).sum(axis=-1)
                      for _ in range(nperm)], axis=-1)
     return obs, (obs - null.mean(axis=-1)) / null.std(axis=-1, ddof=1)
+
+
+def _psi_code_pairs(th, ij, shape, rng, perm=None):
+    """psi_code for the electrode pairs `ij` of theta coefficients th (n, ch, 5, 1), as
+    (ch, ch) arrays of raw and z (NaN off the pairs). `perm` shuffles the second signal's trials."""
+    out = {"raw": np.full(shape, np.nan), "z": np.full(shape, np.nan)}
+    if ij:
+        ia, ib = np.array(ij).T
+        B = th[:, ib] if perm is None else th[perm][:, ib]
+        out["raw"][ia, ib], out["z"][ia, ib] = psi_code(th[:, ia], B, rng)
+    return out
 
 
 # ---------------------------------------------------------------- PAC
@@ -610,24 +665,28 @@ def _filter_chunks(x, fs, sel, bands, out_kind, chunk=6):
     """Band-filtered Hilbert outputs of x (trials, ch, T) at samples `sel`, channel chunks.
 
     out_kind: "power" (amplitude squared), "abs", "angle" or "complex". Returns float32 or
-    complex64 (trials, ch, nband, len(sel)).
+    complex64 (trials, ch, nband, len(sel)); with a list of index arrays for `sel`, a list of
+    such arrays from one filtering pass.
     """
+    sels = sel if isinstance(sel, list) else [sel]
     pad = Padder(x.shape[-1], fs)
     dtype = np.complex64 if out_kind == "complex" else np.float32
-    out = np.empty(x.shape[:2] + (len(bands), len(sel)), dtype=dtype)
+    outs = [np.empty(x.shape[:2] + (len(bands), len(s)), dtype=dtype) for s in sels]
     gains = [bandpass_gain(lo, hi, fs, pad.nfft, pad.npad) for lo, hi in bands]
     for c0 in range(0, x.shape[1], chunk):
         X = pad.fft(x[:, c0:c0 + chunk].astype(np.float64))
         for k, g in enumerate(gains):
-            y = pad.back(X * g, analytic=True)[..., sel]
-            if out_kind == "power":
-                y = np.abs(y) ** 2
-            elif out_kind == "abs":
-                y = np.abs(y)
-            elif out_kind == "angle":
-                y = np.angle(y)
-            out[:, c0:c0 + chunk, k, :] = y
-    return out
+            yall = pad.back(X * g, analytic=True)
+            for s, out in zip(sels, outs):
+                y = yall[..., s]
+                if out_kind == "power":
+                    y = np.abs(y) ** 2
+                elif out_kind == "abs":
+                    y = np.abs(y)
+                elif out_kind == "angle":
+                    y = np.angle(y)
+                out[:, c0:c0 + chunk, k, :] = y
+    return outs if isinstance(sel, list) else outs[0]
 
 
 def lowpass_erp(x, fs, sel, hi=30.0, chunk=8):
@@ -640,14 +699,131 @@ def lowpass_erp(x, fs, sel, hi=30.0, chunk=8):
     return out
 
 
-def segment(sub, name):
-    segname, t0, t1 = WIN[name]
+def segment(sub, name, win=WIN):
+    segname, t0, t1 = win[name]
     d = sub["seg"][segname]
     return d, window_index(d["time"], t0, t1)
 
 
 def n_amp_bands(fs):
     return len(AMP_BANDS) - (1 if fs < 600 else 0)
+
+
+def _make_pairs(regions, hemis, keep):
+    """Same-hemisphere pairs of kept electrodes: MTL-MTL, MTL-PFC and MTL-OFC (PLV section)."""
+    pairs = {"MTL-MTL": [], "MTL-PFC": [], "MTL-OFC": []}
+    for a in np.where((regions == "MTL") & keep)[0]:
+        for b in np.where(keep & (hemis == hemis[a]))[0]:
+            if regions[b] == "MTL" and b > a:
+                pairs["MTL-MTL"].append((a, b))
+            elif regions[b] in ("PFC", "OFC"):
+                pairs[f"MTL-{regions[b]}"].append((a, b))
+    return pairs
+
+
+def _plv(wins, pairs, fs):
+    """PLV readings per window and pair group (plv_compute.m bands 1-3 ... 12-20 Hz)."""
+    plv = {}
+    for w, (x, sel) in wins.items():
+        A = _filter_chunks(x, fs, sel, BANDS[PLV_BANDS], "complex")
+        U = A / np.abs(A)
+        out = {}
+        for g, pl in pairs.items():
+            vals = {"implv": [], "pli": [], "code": []}
+            for a, b in pl:
+                d = U[:, a] * np.conj(U[:, b])                   # (trials, band, T)
+                vals["implv"].append(np.abs(np.imag(d.mean(axis=0))).mean(axis=-1))
+                vals["pli"].append(np.abs(np.sign(np.imag(d)).mean(axis=0)).mean(axis=-1))
+                dd = np.exp(1j * (np.imag(A[:, a]) - np.imag(A[:, b])))
+                vals["code"].append(np.abs(dd.mean(axis=0)).mean(axis=-1))
+            out[g] = {k: np.array(v) for k, v in vals.items()}
+        plv[w] = out
+        del A, U
+    return plv
+
+
+def _psi_block(wins, pairs, fs, amp_bands, sid, tag, calibrate):
+    """Theta PSI (M5) and cross-spectral PSI (M6) in the two delay windows, single window
+    (mtmfft) and sliding windows, the code's form for the MTL-frontal pairs, and, when
+    `calibrate`, the same with the second signal's trials shuffled."""
+    psi, cs, keep_th, cs_shuf, keep_shuf = {}, {}, {}, {}, None
+    ij = [(a, b) for g in ("MTL-PFC", "MTL-OFC") for a, b in pairs[g]]
+    for w, (x, sel) in wins.items():
+        env = _filter_chunks(x, fs, sel, amp_bands, "abs")   # filtered on the full segment
+        for mode in ("mtmfft", "sliding"):
+            rng = np.random.default_rng(seed_for(f"psi|{w}|{mode}{tag}", sid))
+            th = theta_fourier(x[..., sel].astype(np.float64), fs, mode)          # (n, ch, 5, w)
+            S, PA, PB = cross_spectra(th, th)
+            raw, z = psi_z(S, PA[:, None, :], PB[None, :, :], rng)              # (ch, ch)
+            psi[(w, mode)] = {"raw": raw, "z": z}
+            if mode == "mtmfft":
+                psi[(w, "code")] = _psi_code_pairs(th, ij, raw.shape, rng)
+            # cross-spectral: theta of each amplitude envelope
+            rng = np.random.default_rng(seed_for(f"cspsi|{w}|{mode}{tag}", sid))
+            n, nch, nbb, T = env.shape
+            the = theta_fourier(env.reshape(n, nch * nbb, T).astype(np.float64), fs, mode)
+            the = the.reshape(n, nch, nbb, 5, the.shape[-1])
+            Sx = cross_spectra_x(th, the)
+            PBx = (np.abs(the) ** 2).mean(axis=(0, 4))                          # (ch, nbb, 5)
+            rawx, zx = psi_z(Sx, PA[:, None, None, :], PBx[None, :, :, :], rng)  # (ch, ch, nbb)
+            cs[(w, mode)] = {"raw": rawx, "z": zx}
+            if mode == "mtmfft":
+                keep_th[w] = (th, the)
+            if w == "post" and calibrate:
+                # calibration: the second signal's trials shuffled against the first's, which
+                # removes any trial-by-trial coupling; z should then fall above 1.96 in about
+                # 2.5% of pairs
+                rng = np.random.default_rng(seed_for(f"psi-shuffle|{mode}", sid))
+                perm = rng.permutation(n)
+                S0, _, PB0 = cross_spectra(th, th[perm])
+                psi[(w, mode, "shuf")] = dict(zip(("raw", "z"), psi_z(S0, PA[:, None, :], PB0[None, :, :], rng)))
+                if mode == "mtmfft":
+                    psi[(w, "code", "shuf")] = _psi_code_pairs(th, ij, raw.shape, rng, perm)
+                the_p = the[perm]
+                cs_shuf[mode] = psi_z(cross_spectra_x(th, the_p), PA[:, None, None, :],
+                                      PBx[None, :, :, :], rng)[1]
+                if mode == "mtmfft":
+                    keep_shuf = (th, the_p)
+                del the_p
+            del the
+        del env
+    return psi, cs, keep_th, cs_shuf, keep_shuf
+
+
+def _make_units(regions, hemis, labels, keep, pairs, cs, keep_th, cs_shuf, keep_shuf, sid, tag):
+    """Units for cross-spectral directionality and PAC: each kept electrode (phase and
+    amplitude from it) and each MTL-frontal pair in both directions, with their mean z and raw
+    cross-spectral PSI per window and form."""
+    units = []
+    for e in np.where(keep)[0]:
+        units.append({"system": regions[e], "ph": e, "amp": e})
+    for g in ("MTL-PFC", "MTL-OFC"):
+        fr = g.split("-")[1]
+        for a, b in pairs[g]:
+            units.append({"system": f"MTL->{fr}", "ph": a, "amp": b})
+            units.append({"system": f"{fr}->MTL", "ph": b, "amp": a})
+    extra = [("post_shuf", keep_shuf)] if keep_shuf is not None else []
+    for u in units:
+        for (w, mode), d in cs.items():
+            u[f"z_{w}_{mode}"] = float(d["z"][u["ph"], u["amp"], :].mean())
+            u[f"raw_{w}_{mode}"] = float(d["raw"][u["ph"], u["amp"], :].mean())
+        u["zf_post_mtmfft"] = cs[("post", "mtmfft")]["z"][u["ph"], u["amp"], :16].copy()
+        for mode, zsh in cs_shuf.items():
+            u[f"z_post_{mode}_shuf"] = float(zsh[u["ph"], u["amp"], :].mean())
+        for w, (th, the) in list(keep_th.items()) + extra:
+            rng = np.random.default_rng(seed_for(f"cspsi-code|{w}|{u['ph']}|{u['amp']}{tag}", sid))
+            nbb = the.shape[2]
+            A = np.repeat(th[:, [u["ph"]]], nbb, axis=1)
+            o, zc = psi_code(A, the[:, u["amp"]], rng)
+            u[f"z_{w}_code"], u[f"raw_{w}_code"] = float(zc.mean()), float(o.mean())
+            if w == "post":
+                u["zf_post_code"] = zc[:16].copy()
+        if extra:
+            u["z_post_code_shuf"] = u.pop("z_post_shuf_code")
+            u.pop("raw_post_shuf_code")
+        u["ph_label"], u["amp_label"] = labels[u["ph"]], labels[u["amp"]]
+        u["hemi"] = hemis[u["ph"]]
+    return units
 
 
 def analyse_subject(sub, chans, nperm_cluster=1000, pac=True, pac_readings=("a", "b"), log=print):
@@ -674,42 +850,68 @@ def analyse_subject(sub, chans, nperm_cluster=1000, pac=True, pac_readings=("a",
     tic = ti[correct]
 
     # ---- ERPs (erp_compute.m): 30 Hz low-pass, baseline from the trial mean of [0.65, 0.85] s
+    # (the code subtracts nanmean(pretrial.trial), the mean over trials of the per-trial baseline
+    # means). Variants: each trial's own baseline mean subtracted, and the windows of WIN_ALT.
     _, bsel = segment(sub, "base")
     _, esel = segment(sub, "enc")
     _, psel = segment(sub, "post")
-    base = lowpass_erp(xs["pre"], fs, bsel).mean(axis=(0, 2))
-    erp_enc = lowpass_erp(xs["enc"], fs, esel) - base[None, :, None]
-    erp_post = lowpass_erp(xs["proc"], fs, psel) - base[None, :, None]
-    rng = np.random.default_rng(seed_for("erp-no-condition-difference", sid))
-    res["erp_enc"] = cluster_test(erp_enc[:, :, None, :], tic[:, 2], "t", rng, nperm_cluster)
-    res["erp_post"] = cluster_test(erp_post[:, :, None, :], tic[:, 3], "F", rng, nperm_cluster)
-    res["erp_mean"] = {"enc": erp_enc.mean(axis=0), "post": erp_post.mean(axis=0)}
-    del erp_enc, erp_post
+    lp = {k: lowpass_erp(xs[k], fs, np.arange(xs[k].shape[-1])) for k in ("pre", "enc", "proc")}
+    for tag, win in (("", WIN), ("_alt", WIN_ALT)):
+        sl = {k: window_index(sub["seg"][s]["time"], t0, t1) for k, (s, t0, t1) in win.items()}
+        btr = lp["pre"][..., sl["base"]].mean(axis=-1)                     # (trials, ch)
+        for btag, base in (("", btr.mean(axis=0)[None, :, None]), ("_trial", btr[:, :, None])):
+            if tag == "_alt" and btag:
+                continue
+            erp_enc = lp["enc"][..., sl["enc"]] - base
+            erp_post = lp["proc"][..., sl["post"]] - base
+            rng = np.random.default_rng(seed_for(f"erp-no-condition-difference{tag}{btag}", sid)
+                                        if tag or btag else seed_for("erp-no-condition-difference", sid))
+            res[f"erp_enc{tag}{btag}"] = cluster_test(erp_enc[:, :, None, :], tic[:, 2], "t", rng, nperm_cluster)
+            res[f"erp_post{tag}{btag}"] = cluster_test(erp_post[:, :, None, :], tic[:, 3], "F", rng, nperm_cluster)
+            if not tag and not btag:
+                res["erp_mean"] = {"enc": erp_enc.mean(axis=0), "post": erp_post.mean(axis=0)}
+            del erp_enc, erp_post
+    del lp
     res["timing"]["erp"] = time.time() - T0
 
     # ---- power (power_compute.m): Hilbert power, bootstrap baseline z, 50 ms
+    # the windows of WIN_ALT come from the same filtering pass
+    _, bsel_d = segment(sub, "base", WIN_ALT)
+    _, esel_d = segment(sub, "enc", WIN_ALT)
+    _, psel_d = segment(sub, "post", WIN_ALT)
     rng = np.random.default_rng(seed_for("power", sid))
-    bpow = _filter_chunks(xs["pre"], fs, bsel, bands, "power")
+    rng_d = np.random.default_rng(seed_for("power|alt", sid))
+    bpow, bpow_d = _filter_chunks(xs["pre"], fs, [bsel, bsel_d], bands, "power")
     bmean, bsd = baseline_bootstrap(bpow, int(correct.sum()), rng)
-    del bpow
-    zs = {}
-    for name, x, sel in (("enc", xs["enc"], esel), ("post", xs["proc"], psel)):
-        p = _filter_chunks(x, fs, sel, bands, "power")
+    bmean_d, bsd_d = baseline_bootstrap(bpow_d, int(correct.sum()), rng_d)
+    del bpow, bpow_d
+    zs, zs_d = {}, {}
+    for name, x, sel, sel_d in (("enc", xs["enc"], esel, esel_d), ("post", xs["proc"], psel, psel_d)):
+        p, p_d = _filter_chunks(x, fs, [sel, sel_d], bands, "power")
         z = (p - bmean[None, :, :, None]) / bsd[None, :, :, None]
         del p
         zs[name] = resample_20hz(z, fs).astype(np.float32)
         if name == "enc":
             res["enc_time_mean_z"] = z.mean(axis=(0, 3))          # (ch, band), trials and time
         del z
+        p_d -= bmean_d[None, :, :, None]
+        p_d /= bsd_d[None, :, :, None]
+        zs_d[name] = resample_20hz(p_d, fs).astype(np.float32)
+        del p_d
     res["power_z_mean"] = {k: v.mean(axis=0) for k, v in zs.items()}  # (ch, band, t20)
+    res["power_z_mean_alt"] = {k: v.mean(axis=0) for k, v in zs_d.items()}
     res["timing"]["power"] = time.time() - T0
     rng = np.random.default_rng(seed_for("power-condition-exclusions", sid))
     res["pow_enc"] = cluster_test(zs["enc"], tic[:, 2], "t", rng, nperm_cluster)
     res["pow_post"] = cluster_test(zs["post"], tic[:, 3], "F", rng, nperm_cluster)
-    del zs
+    rng = np.random.default_rng(seed_for("power-condition-exclusions|alt", sid))
+    res["pow_enc_alt"] = cluster_test(zs_d["enc"], tic[:, 2], "t", rng, nperm_cluster)
+    res["pow_post_alt"] = cluster_test(zs_d["post"], tic[:, 3], "F", rng, nperm_cluster)
+    del zs, zs_d
     res["timing"]["power_test"] = time.time() - T0
     excl = (np.minimum(res["pow_enc"].p_subject, res["pow_post"].p_subject) < 0.05).to_numpy()
     res["excluded"] = excl
+    res["excluded_alt"] = (np.minimum(res["pow_enc_alt"].p_subject, res["pow_post_alt"].p_subject) < 0.05).to_numpy()
     keep = ~excl
 
     # ---- individual theta peak (M8), reading (a): all kept analysed electrodes
@@ -717,105 +919,24 @@ def analyse_subject(sub, chans, nperm_cluster=1000, pac=True, pac_readings=("a",
     res["peak_curve_all"] = pk
     res["peak_band_all"] = int(PEAK_BANDS[np.argmax(pk)])
 
-    # ---- phase measures on ERP-subtracted delay data (subtracterp.m, ncond = 1)
+    # ---- phase measures on ERP-subtracted delay data (subtracterp.m, ncond = 1), in the main
+    # windows (with the main exclusions) and in the code's windows (with that placement's own)
     xe = {k: v - v.mean(axis=0, keepdims=True) for k, v in (("enc", xs["enc"]), ("proc", xs["proc"]))}
-    _, pre_sel = segment(sub, "pre")
-    wins = {"pre": (xe["enc"], pre_sel), "post": (xe["proc"], psel)}
-
-    mtl = np.where((regions == "MTL") & keep)[0]
-    pairs = {"MTL-MTL": [], "MTL-PFC": [], "MTL-OFC": []}
-    for a in mtl:
-        for b in np.where(keep & (hemis == hemis[a]))[0]:
-            if regions[b] == "MTL" and b > a:
-                pairs["MTL-MTL"].append((a, b))
-            elif regions[b] in ("PFC", "OFC"):
-                pairs[f"MTL-{regions[b]}"].append((a, b))
-    res["pairs"] = pairs
-
-    # PLV (plv_compute.m bands 1-3 ... 12-20 Hz)
-    plv = {}
-    for w, (x, sel) in wins.items():
-        A = _filter_chunks(x, fs, sel, BANDS[PLV_BANDS], "complex")
-        U = A / np.abs(A)
-        out = {}
-        for g, pl in pairs.items():
-            vals = {"implv": [], "pli": [], "code": []}
-            for a, b in pl:
-                d = U[:, a] * np.conj(U[:, b])                   # (trials, band, T)
-                vals["implv"].append(np.abs(np.imag(d.mean(axis=0))).mean(axis=-1))
-                vals["pli"].append(np.abs(np.sign(np.imag(d)).mean(axis=0)).mean(axis=-1))
-                dd = np.exp(1j * (np.imag(A[:, a]) - np.imag(A[:, b])))
-                vals["code"].append(np.abs(dd.mean(axis=0)).mean(axis=-1))
-            out[g] = {k: np.array(v) for k, v in vals.items()}
-        plv[w] = out
-        del A, U
-    res["plv"] = plv
-    res["timing"]["plv"] = time.time() - T0
-
-    # PSI (M5) between MTL and frontal electrodes, and cross-spectral PSI (M6)
     nab = n_amp_bands(fs)
     amp_bands = BANDS[AMP_BANDS[:nab]]
-    psi, cs, keep_th = {}, {}, {}
-    for w, (x, sel) in wins.items():
-        env = _filter_chunks(x, fs, sel, amp_bands, "abs")   # filtered on the full segment
-        for mode in ("mtmfft", "sliding"):
-            rng = np.random.default_rng(seed_for(f"psi|{w}|{mode}", sid))
-            th = theta_fourier(x[..., sel].astype(np.float64), fs, mode)          # (n, ch, 5, w)
-            S, PA, PB = cross_spectra(th, th)
-            raw, z = psi_z(S, PA[:, None, :], PB[None, :, :], rng)              # (ch, ch)
-            psi[(w, mode)] = {"raw": raw, "z": z}
-            if mode == "mtmfft":
-                code_raw = np.full(raw.shape, np.nan)
-                code_z = np.full(raw.shape, np.nan)
-                ij = [(a, b) for g in ("MTL-PFC", "MTL-OFC") for a, b in pairs[g]]
-                if ij:
-                    ia, ib = np.array(ij).T
-                    o, zc = psi_code(th[:, ia], th[:, ib], rng)
-                    code_raw[ia, ib], code_z[ia, ib] = o, zc
-                psi[(w, "code")] = {"raw": code_raw, "z": code_z}
-            if mode != "mtmfft":
-                continue
-            # cross-spectral: theta of each amplitude envelope (code's single window)
-            rng = np.random.default_rng(seed_for(f"cspsi|{w}|{mode}", sid))
-            ea = env
-            n, nch, nbb, T = ea.shape
-            the = theta_fourier(ea.reshape(n, nch * nbb, T).astype(np.float64), fs, mode)
-            the = the.reshape(n, nch, nbb, 5, the.shape[-1])
-            Sx = np.einsum("rafw,rbcgw->abcfg", th, np.conj(the)) / (n * th.shape[-1])
-            PBx = (np.abs(the) ** 2).mean(axis=(0, 4))                          # (ch, nbb, 5)
-            rawx, zx = psi_z(Sx, PA[:, None, None, :], PBx[None, :, :, :], rng)  # (ch, ch, nbb)
-            cs[(w, mode)] = {"raw": rawx, "z": zx}
-            if mode == "mtmfft":
-                keep_th[w] = (th, the)
-        del env
-    res["psi"], res["cspsi"] = psi, cs
-    res["timing"]["psi"] = time.time() - T0
-
-    # units for cross-spectral directionality and PAC
-    units = []
-    for e in np.where(keep)[0]:
-        units.append({"system": regions[e], "ph": e, "amp": e})
-    for g in ("MTL-PFC", "MTL-OFC"):
-        fr = g.split("-")[1]
-        for a, b in pairs[g]:
-            units.append({"system": f"MTL->{fr}", "ph": a, "amp": b})
-            units.append({"system": f"{fr}->MTL", "ph": b, "amp": a})
-    for u in units:
-        for (w, mode), d in cs.items():
-            u[f"z_{w}_{mode}"] = float(d["z"][u["ph"], u["amp"], :].mean())
-            u[f"raw_{w}_{mode}"] = float(d["raw"][u["ph"], u["amp"], :].mean())
-        u["zf_post_mtmfft"] = cs[("post", "mtmfft")]["z"][u["ph"], u["amp"], :16].copy()
-        for w, (th, the) in keep_th.items():
-            rng = np.random.default_rng(seed_for(f"cspsi-code|{w}|{u['ph']}|{u['amp']}", sid))
-            nbb = the.shape[2]
-            A = np.repeat(th[:, [u["ph"]]], nbb, axis=1)
-            o, zc = psi_code(A, the[:, u["amp"]], rng)
-            u[f"z_{w}_code"], u[f"raw_{w}_code"] = float(zc.mean()), float(o.mean())
-            if w == "post":
-                u["zf_post_code"] = zc[:16].copy()
-        u["ph_label"], u["amp_label"] = labels[u["ph"]], labels[u["amp"]]
-        u["hemi"] = hemis[u["ph"]]
-    res["units"] = units
+    for tag, win, kp in (("", WIN, keep), ("_alt", WIN_ALT, ~res["excluded_alt"])):
+        _, pre_sel = segment(sub, "pre", win)
+        _, post_sel = segment(sub, "post", win)
+        wins = {"pre": (xe["enc"], pre_sel), "post": (xe["proc"], post_sel)}
+        pairs = _make_pairs(regions, hemis, kp)
+        res["pairs" + tag] = pairs
+        res["plv" + tag] = _plv(wins, pairs, fs)
+        res["timing"]["plv" + tag] = time.time() - T0
+        psi, cs, keep_th, cs_shuf, keep_shuf = _psi_block(wins, pairs, fs, amp_bands, sid, tag, calibrate=not tag)
+        res["psi" + tag], res["cspsi" + tag] = psi, cs
+        res["units" + tag] = _make_units(regions, hemis, labels, kp, pairs, cs, keep_th, cs_shuf, keep_shuf, sid, tag)
+        res["timing"]["psi" + tag] = time.time() - T0
+    pairs, units = res["pairs"], res["units"]
 
     # theta peak reading (b): phase-directing electrodes only (any electrode in a directing unit)
     pdir = sorted({i for u in units if u["z_post_mtmfft"] > 1.96 for i in (u["ph"], u["amp"])})
@@ -824,12 +945,13 @@ def analyse_subject(sub, chans, nperm_cluster=1000, pac=True, pac_readings=("a",
         res["peak_curve_dir"], res["peak_band_dir"] = pkb, int(PEAK_BANDS[np.argmax(pkb)])
     else:
         res["peak_curve_dir"], res["peak_band_dir"] = None, None
-    pdir = sorted({i for u in units if u["z_post_code"] > 1.96 for i in (u["ph"], u["amp"])})
-    if pdir:
-        pkb = res["enc_time_mean_z"][pdir][:, PEAK_BANDS].mean(axis=0)
-        res["peak_curve_dir_code"], res["peak_band_dir_code"] = pkb, int(PEAK_BANDS[np.argmax(pkb)])
-    else:
-        res["peak_curve_dir_code"], res["peak_band_dir_code"] = None, None
+    for key in ("code", "sliding"):
+        pdir = sorted({i for u in units if u[f"z_post_{key}"] > 1.96 for i in (u["ph"], u["amp"])})
+        if pdir:
+            pkb = res["enc_time_mean_z"][pdir][:, PEAK_BANDS].mean(axis=0)
+            res[f"peak_curve_dir_{key}"], res[f"peak_band_dir_{key}"] = pkb, int(PEAK_BANDS[np.argmax(pkb)])
+        else:
+            res[f"peak_curve_dir_{key}"], res[f"peak_band_dir_{key}"] = None, None
 
     # ---- PAC (M9) on the phase-directing units, postcue, per condition
     res["pac"] = []
@@ -931,6 +1053,33 @@ def sanity_subject(sub):
             m = a[d["trialinfo"][:, 4] == jit].mean(axis=(0, 1))
             hg[(k, jit)] = np.array([m[idx == j].mean() if np.any(idx == j) else np.nan for j in range(len(edges) - 1)])
     out["hg"] = hg
+    # per electrode: t of the 900 against the 1150 ms trials in each 50 ms bin, for log high-gamma
+    # amplitude and the 30 Hz low-passed signal. The test cue comes 250 ms later after the long
+    # delay, so an electrode that responds to it parts the two groups from the cue's onset on:
+    # at 0 s of encmain under the trial table's placement, at 1.5 s under the code's.
+    jt = {}
+    for k in ("pre", "encmain", "proc"):
+        d = seg[k]
+        x = d["x"]
+        ln = np.log(_filter_chunks(x, d["fs"], np.arange(x.shape[-1]), np.array([[70.0, 150.0]]), "abs")[:, :, 0])
+        lp = lowpass_erp(x, d["fs"], np.arange(x.shape[-1]))
+        edges = np.arange(-1.5, 3.0001, 0.05)
+        idx = np.digitize(d["time"], edges) - 1
+        j9 = d["trialinfo"][:, 4] == 900
+        rng = np.random.default_rng(seed_for(f"jitter|{k}", sub["subject"]))
+        perms = [rng.permutation(j9) for _ in range(200)]
+        for name, v in (("hg", ln), ("erp", lp)):
+            b = np.stack([v[..., idx == j].mean(axis=-1) for j in range(len(edges) - 1)], axis=-1)
+            jt[(k, name)] = stats.ttest_ind(b[j9], b[~j9], axis=0).statistic.astype(np.float32)
+            # null: the same count of electrode bins with |t| > 1.96 per bin, jitter labels permuted
+            jt[(k, name, "null")] = np.stack([(np.abs(stats.ttest_ind(b[p], b[~p], axis=0).statistic) > 1.96).sum(axis=0)
+                                              for p in perms]).astype(np.int16)        # (200, bins)
+            if name == "hg":
+                # trial-mean log amplitude per electrode and bin, minus its segment mean
+                m = b.mean(axis=0)
+                jt[(k, "hg_mean")] = (m - m.mean(axis=-1, keepdims=True)).astype(np.float32)
+        del ln, lp
+    out["jitter_t"] = jt
     out["evoked_edges"] = np.arange(-1.5, 3.0001, 0.05)
     out["fs"] = seg["encmain"]["fs"]
     out["n_labels"] = len(seg["encmain"]["labels"])

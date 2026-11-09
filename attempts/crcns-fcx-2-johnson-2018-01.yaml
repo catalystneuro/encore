@@ -49,22 +49,24 @@ outcomes:
     F(1,28). Accuracy (empirical logit) gives F(1,28) = 0.16, p = 0.70 over all trials and 0.44, p =
     0.51 over kept trials; the paper gives F < 0.10, p > 0.75, so the effect is absent here too but
     the F is above the paper's bound. Response time from docs/summary_file.csv, whose condition
-    means are the paper's (1659, 1335, 1475 ms), gives F(1,28) = 2.41, p = 0.13, against the paper's
-    F < 2.55, p > 0.12. The outcome rests on two assumptions: the numeric coding, which the
-    criterion states, and judging response time on summary_file.csv. With the trial tables'
-    response times (condition means 1744, 1237, 1292 ms, also within the paper's SDs) reading (c)
-    finds an effect (F(1,28) = 12.33, p = 0.0015 over all trials; 11.48, p = 0.0021 over kept
-    trials), and the outcome would be not reproduced. Reported, not judged: under (a) and (b)
-    response time differs by condition in both sources (summary_file.csv spatial against identity p
-    = 0.0018, 3-level p = 0.0076; trial tables p < 0.001), and accuracy over all trials differs
-    between spatial and identity (p = 0.023) but not under the 3-level term (p = 0.054; 0.37 over
-    kept trials). What the answer changed. The first run judged the claim on readings (a) and (b),
-    found a response-time effect under both and recorded not reproduced, and asked whether the
-    numeric reading should be named (questions/crcns-fcx-2.yaml). The reader amended the criterion
-    to judge on (c), on the printed F(1,28), and kept (a) and (b) as reported. Under (c) the outcome
-    is reproduced, with assumed set because it depends on the response-time source. The measured
-    response times are now those of summary_file.csv, the source the judged test uses; the first
-    run gave the trial tables' means.
+    means and SDs are the paper's (1659 +- 701, 1335 +- 574, 1475 +- 734 ms), gives F(1,28) = 2.41,
+    p = 0.13, against the paper's F < 2.55, p > 0.12. The outcome rests on two assumptions: the
+    numeric coding, which the criterion states, and judging response time on summary_file.csv.
+    With the trial tables' response times (condition means 1744, 1237, 1292 ms, also within the
+    paper's SDs) reading (c) finds an effect (F(1,28) = 12.33, p = 0.0015 over all trials; 11.48, p
+    = 0.0021 over kept trials), and the outcome would be not reproduced. The revision searched for
+    the source of the file's response times among summaries of the trial tables (means and medians
+    over correct, all or kept trials, other subjects' rows, blocks of 40 trials, trial type): 9 of
+    30 values are matched, all by the mean over correct trials of s6, s8 and s9, and none of the
+    other 7 subjects' values. Reported, not judged: under (a) and (b) response time differs by
+    condition in both sources (summary_file.csv spatial against identity p = 0.0018, 3-level p =
+    0.0076; trial tables p < 0.001), and accuracy over all trials differs between spatial and
+    identity (p = 0.023) but not under the 3-level term (p = 0.054; 0.37 over kept trials). What the
+    answer changed. The first run judged the claim on readings (a) and (b), found a response-time
+    effect under both and recorded not reproduced, and asked whether the numeric reading should be
+    named (questions/crcns-fcx-2.yaml). The reader amended the criterion to judge on (c), on the
+    printed F(1,28), and kept (a) and (b) as reported. Under (c) the outcome is reproduced, with
+    assumed set because it depends on the response-time source.
   deviations:
   - >-
     Accuracy enters the logit model as the empirical logit of each subject and condition, log((k +
@@ -72,9 +74,10 @@ outcomes:
     condition; the paper does not specify its logit model further.
   - >-
     The response times of the trial tables differ from those of summary_file.csv in 7 of 10
-    subjects. Both were tested. The outcome is judged on summary_file.csv, as an assumption: its
-    condition means and SDs are the ones the paper prints (Results, paragraph 2), so it holds the
-    values the paper's models were fitted to, while the trial tables' means are not the paper's.
+    subjects, and no summary of the trial tables tried gives the file's values for those 7. Both
+    were tested. The outcome is judged on summary_file.csv, as an assumption: its condition means
+    and SDs are the ones the paper prints (Results, paragraph 2), so it holds the values the paper's
+    models were fitted to, while the trial tables' means are not the paper's.
   - >-
     The F of reading (c) is the squared t of the condition slope in a REML linear mixed model with a
     subject random intercept (statsmodels), with p from F(1,28), the residual degrees of freedom
@@ -110,20 +113,33 @@ outcomes:
     8.1 incorrect (0 to 25), the paper's ranges exactly.
 - claim: erp-no-condition-difference
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_johnson_2018.ipynb
   output: claim:erp-no-condition-difference
   notes: >-
     With the code's subject-wide cluster null (all of a subject's electrodes in one test, as
-    erp_compute.m runs it), 1 of 254 electrodes has a significant cluster (s5, postcue F test, p =
-    0.034), and the criterion allows none. With a per-electrode null 13 electrodes do, fewer than the
-    25.4 expected by chance over two tests. The effect is small and isolated, but the criterion is
-    no electrode.
+    erp_compute.m runs it) and the code's baseline, 1 of 254 electrodes has a significant cluster in
+    the trial table's windows (s9 FORA_11, encoding t test, p = 0.036), and the criterion allows
+    none; in the code's windows 1 does too (s5 OFG14). Subtracting each trial's own baseline mean
+    leaves 0 electrodes significant under the subject-wide null, which would be reproduced, so the
+    outcome rests on the baseline as the code subtracts it. With a per-electrode null 27, 22 and 13
+    electrodes are significant (code's baseline, per-trial baseline, code's windows), against 25.4
+    expected by chance over two tests. The effect is small and isolated, but the criterion is no
+    electrode.
   deviations:
   - &timeaxis >-
-    Windows follow the time axes of the derived data as the deposited code does (encoding [0, 1.5] s
-    of encmain, postcue [0.3, 1.2] s of proc, baseline [0.65, 0.85] s of pre). The trial table and
-    the descriptor place the events 1.5 s earlier (the first sample of each segment is the table's
-    epoch start), and no task-locked response in the data settles which is right.
+    Assumed, the windows placed by the trial table and the descriptor (encoding [-1.5, 0] s and the
+    precue delay [-0.9, 0] s of encmain, postcue [-1.2, -0.3] s of proc, baseline [-0.85, -0.65] s of
+    pre), 1.5 s earlier than the deposited code's latencies ([0, 1.5], [0.6, 1.5], [0.3, 1.2], [0.65,
+    0.85]). The first sample of each derived segment is the table's epoch start, and the 900 and 1150
+    ms delay trials part where the table puts the first delay-dependent event in each segment (proc
+    ERPs from -0.25 to 0.75 s, p down to 0.005 against 200 permutations, around the response screen
+    at -0.3 s) and not where the code's windows put it (proc 1.0 to 2.0 s, p 0.29 to 0.94). The
+    code's windows are run as a variant for ERPs, power, PLV and both PSI measures.
+  - >-
+    The baseline subtracted is the mean over trials of each trial's baseline mean, as erp_compute.m
+    does (lines 84 to 88, nanmean(pretrial.trial)); the claims file's "subtracting the temporal mean
+    of the baseline" is also read per trial, as a variant.
   - >-
     FieldTrip's filters and cluster test are reimplemented in Python (fir1 design, two-pass,
     zero padding to 7.5 s; cluster sums, 1000 permutations, p doubled for the two-tailed t test).
@@ -132,13 +148,13 @@ outcomes:
   notebook: reproduce_johnson_2018.ipynb
   output: claim:power-theta-sustained
   notes: >-
-    Baseline-z power averaged over trials (code zbaseline.m). No subject has a region-average theta z
-    above 1.96 over half of the 50 encoding and delay time points in any region (0 of 10 MTL, 0 of 9
-    PFC, 0 of 9 OFC); per electrode 1 of 36 MTL, 1 of 116 PFC and 11 of 102 OFC meet the rule. MTL
-    alpha is below -1.96 over half the time points in 0 of 10 subjects (0 of 36 electrodes). 239 of
-    254 electrodes have some z above 1.96 above 16 Hz (reported, not judged). While preparing, the
-    same measure with the windows placed by the trial table (1.5 s earlier) was run on s1, s2 and s4
-    and also showed no sustained theta (not run in the notebook).
+    Baseline-z power averaged over trials (code zbaseline.m). In the trial table's windows the
+    region-average theta z is above 1.96 over half of the 50 encoding and delay time points in 1 of
+    10 subjects for MTL, 0 of 9 for PFC and 0 of 9 for OFC; per electrode 3 of 36 MTL, 4 of 116 PFC
+    and 8 of 102 OFC meet the rule. MTL alpha is below -1.96 over half the time points in 0 of 10
+    subjects (2 of 36 electrodes). In the code's windows the counts are 0, 0 and 0 subjects (1, 1
+    and 11 electrodes) and 0 of 10 for alpha. All 254 electrodes have some z above 1.96 above 16 Hz
+    (239 in the code's windows; reported, not judged).
   deviations:
   - *timeaxis
 - claim: power-condition-exclusions
@@ -146,16 +162,17 @@ outcomes:
   notebook: reproduce_johnson_2018.ipynb
   output: claim:power-condition-exclusions
   measured:
-  - 12
-  - 6
-  - 5
-  - 5
+  - 7
+  - 1
+  - 4
+  - 4
   notes: >-
-    With the code's subject-wide null 12 electrodes differ (6 PFC, 5 OFC, 1 MTL) in 5 subjects (s5,
-    s6, s7, s8, s10), against 8 (5 PFC, 3 OFC) in 4. With a per-electrode null 69 electrodes in 9
-    subjects. The measured values are total, PFC, OFC and subjects; 1 MTL electrode is also
-    excluded. The z and raw readings give the same test, as the z is an affine map of power shared
-    by all trials. The 12 are excluded from the later analyses, leaving 35 MTL, 110 PFC and 97 OFC.
+    In the trial table's windows the code's subject-wide null finds 7 electrodes (1 PFC, 4 OFC, 2
+    MTL) in 4 subjects (s1, s6, s8, s10), against 8 (5 PFC, 3 OFC) in 4; in the code's windows 12 (6
+    PFC, 5 OFC, 1 MTL) in 5 subjects. A per-electrode null finds 57 and 69. The measured values are
+    total, PFC, OFC and subjects in the trial table's windows. The z and raw readings give the same
+    test, as the z is an affine map of power shared by all trials. The 7 are excluded from the later
+    analyses, leaving 34 MTL, 115 PFC and 98 OFC electrodes.
   deviations:
   - *timeaxis
 - claim: plv-theta-peak
@@ -163,11 +180,12 @@ outcomes:
   notebook: reproduce_johnson_2018.ipynb
   output: claim:plv-theta-peak
   notes: >-
-    Imaginary PLV (reading a), averaged over time and the two delays: a local maximum at 3.5 to 6.5
-    Hz in 7 of 9 subjects for MTL-MTL, 8 of 9 for MTL-PFC and 4 of 7 for MTL-OFC pairs; the phase-lag
-    index (reading b) gives 9 of 9, 8 of 9 and 3 of 7, and the code's own PLV 7, 8 and 7. The rule
-    needs one subject per group, a weak test; the largest value of the spectrum is often outside
-    theta, and theta is often one of several local maxima. The alpha synchrony is not judged.
+    Imaginary PLV (reading a), averaged over time and the two delays, in the trial table's windows:
+    a local maximum at 3.5 to 6.5 Hz in 4 of 8 subjects for MTL-MTL, 7 of 9 for MTL-PFC and 5 of 7
+    for MTL-OFC pairs; the phase-lag index (reading b) gives 6 of 8, 8 of 9 and 5 of 7. In the
+    code's windows the imaginary PLV gives 7 of 9, 8 of 9 and 4 of 7. The rule needs one subject per
+    group, a weak test; the largest value of the spectrum is often outside theta, and theta is often
+    one of several local maxima. The alpha synchrony is not judged.
   deviations:
   - *timeaxis
 - claim: psi-theta-shift
@@ -176,48 +194,63 @@ outcomes:
   notebook: reproduce_johnson_2018.ipynb
   output: claim:psi-theta-shift
   measured:
-  - 172
-  - 302
+  - 170
+  - 289
   notes: >-
-    With the PSI of the Methods (Nolte, trial-averaged cross-spectrum, frequencies of one signal
-    shuffled for the null) and the code's single Hanning window, precue mean z is -0.14 (MTL-PFC)
-    and -0.13 (MTL-OFC), with 6 against 3 frontal and MTL leads in MTL-PFC but 7 against 14 in
-    MTL-OFC, and postcue does not exceed precue (p = 0.27 and 0.56 on z; 0.98 and 0.61 on raw PSI).
-    With sliding 3-cycle windows part (1) holds in both networks and part (2) only for MTL-OFC on raw
-    PSI (p = 0.027; MTL-PFC p = 0.079), which the criterion calls partial. With the code's own form
-    of PSI (psianalysis.m, conjugate added) both parts hold in both networks (precue mean z -3.9 and
-    -10.7, 98 against 53 and 196 against 76 leads; postcue minus precue p = 0.0003 and < 0.0001). The
-    pair counts are 172 and 302 (expected 172 and 303). A question for the authors is recorded under
-    findings.
+    Judged with the PSI of the Methods (Nolte, trial-averaged cross-spectrum, frequencies of one
+    signal shuffled for the null) from sliding 3-cycle windows, as M5 gives it, in the trial
+    table's windows. Neither part holds in either network: precue mean z is 0.25 (MTL-PFC) and 0.01
+    (MTL-OFC), with 45 against 55 and 82 against 87 pairs below -1.96 and above 1.96, and postcue does
+    not exceed precue (MTL-PFC raw p = 0.27; MTL-OFC raw PSI falls, p < 0.0001). Other readings. The
+    code's single window gives part (2) for MTL-PFC on raw PSI only (p = 0.014) with MTL-OFC raw PSI
+    falling (p = 0.001), which the criterion calls partial. In the code's windows sliding windows
+    give part (1) in both networks and part (2) for MTL-OFC on raw PSI only (p = 0.027), also
+    partial, and the single window gives part (2) in neither. The code's own form of PSI gives both
+    parts in both networks in the code's windows and part (1) and part (2) in one network each in
+    the table's, but with trials shuffled it passes 57% of pairs (z SD 44), as many as on the real
+    data, so it is not used. The sliding-window z is also too wide (SD 2.3 with trials shuffled),
+    which bears on part (1) only; the single window is near nominal (SD 0.92, 2.2% above 1.96). The
+    outcome rests on the window placement: in the code's windows the claims file's sliding reading
+    would be partial. The pair counts are 170 and 289 (expected 172 and 303).
   deviations:
   - >-
-    Assumed, the single Hanning window over the 900 ms segment of psi_compute.m (FieldTrip mtmfft),
-    with the Methods' PSI. The Methods' sliding 3-cycle windows cannot be placed inside a 900 ms
-    segment at 3 Hz (a 1 s window); the sliding reading run here lets windows run into the zero
-    padding. The code's own PSI is shown as a variant; it averages per-trial PSI and z-scores it
-    against a null built from trial-averaged coherency, which is not the Methods' procedure.
+    The sliding 3-cycle windows of M5 cannot be placed inside a 900 ms segment at 3 Hz (a 1 s
+    window); here they run into the zero padding of the 4 s segment. The code's single Hanning
+    window over the segment (psi_compute.m, FieldTrip mtmfft, which ignores t_ftimwin) is a variant,
+    and so is the code's own form of PSI (psianalysis.m, conjugate added), which averages per-trial
+    PSI and z-scores it against a null built from trial-averaged coherency.
   - >-
     The mixed model with random intercepts for subject and pair is computed as the within-pair F
-    test of interval (equal for two intervals per pair), with all pairs after the 12 exclusions.
+    test of interval (equal for two intervals per pair), with all pairs after the 7 exclusions.
+  - >-
+    PSI is one value per pair over 3 to 7 Hz, and the null pairs one signal's coherency at each
+    frequency with the other's at a shuffled frequency. The Methods' "electrode pair and
+    frequency-resolved" PSI with a 2 Hz bandwidth, and a null that shuffles the order of the
+    coherency spectrum, were not run.
   - *timeaxis
 - claim: crossspectral-shift
   outcome: not_reproduced
   notebook: reproduce_johnson_2018.ipynb
   output: claim:crossspectral-shift
   measured:
-  - 35
-  - 110
-  - 97
+  - 34
+  - 115
+  - 98
   notes: >-
-    With the PSI of the Methods, no precue electrode or pair passes z > 1.96 (part 2 holds), but
-    postcue exceeds precue in 1 of 7 systems on z (MTL to OFC, p = 0.036) and 0 of 7 on raw PSI.
-    With the code's form, 2 of 7 systems show the shift (MTL to PFC, MTL to OFC), and 24% to 55% of
-    precue units per system pass z > 1.96. The models hold 35 MTL, 110 PFC and 97 OFC electrodes
-    (expected 36, 111, 99) and 172 and 302 pairs.
+    With the PSI of the Methods from sliding windows in the trial table's windows, at most 1% of
+    precue units per system pass z > 1.96 (part 2 holds), but postcue exceeds precue at p < 0.05 in
+    1 of 7 systems (OFC to MTL) on z and on raw PSI, and MTL to OFC falls (p = 0.0035 on z). The
+    single window gives 0 of 7 on z and 1 of 7 on raw PSI, and the code's form 3 of 7, with 36% to
+    47% of precue units above 1.96. In the code's windows the most any reading gives is 1 (single
+    window), 2 (sliding) and 2 (code's form) of 7. No reading reaches the four systems partial
+    needs. With trials shuffled the code's form passes 57% of units (z SD 23) and the Methods' forms
+    0% and 0.1%. The models hold 34 MTL, 115 PFC and 98 OFC electrodes (expected 36, 111, 99) and
+    170 and 289 pairs.
   deviations:
   - >-
-    Cross-spectral PSI uses the code's single window only (the sliding variant was run for theta PSI
-    alone, for time).
+    Cross-spectral PSI is judged with the sliding windows of M5 (running into the zero padding at
+    the lowest frequencies, as for psi-theta-shift); the code's single window and the code's form
+    are variants.
   - *timeaxis
 - claim: phase-directing-counts
   outcome: not_reproduced
@@ -228,188 +261,391 @@ outcomes:
   - 0
   - 0
   - 0
+  - 1
+  - 3
+  - 2
   - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  - 1
   notes: >-
-    With the PSI of the Methods no electrode or pair passes postcue z > 1.96 (0 of 7 counts within
-    10%). With the code's form of PSI the counts are 21 MTL, 43 PFC, 38 OFC, 106 MTL to PFC, 70 PFC
-    to MTL, 200 MTL to OFC and 168 OFC to MTL (expected 13, 52, 38, 56, 85, 93, 115), 1 of 7 within
-    10%; subjects with directing MTL electrodes 9 (expected 8) and with MTL to OFC pairs 5
-    (expected 5). The measured values are those of the Methods' PSI, the first reading.
+    With the PSI of the Methods from sliding windows in the trial table's windows the postcue counts
+    are 0 MTL, 0 PFC, 0 OFC, 0 MTL to PFC, 1 PFC to MTL, 3 MTL to OFC and 2 OFC to MTL (0 of 7 within
+    10%), with directing MTL electrodes in 0 subjects and MTL to OFC pairs in 1; the single window
+    selects none. The code's form gives 14, 49, 47, 105, 76, 189 and 170 (expected 13, 52, 38, 56,
+    85, 93, 115), 2 of 7 within 10%, with MTL electrodes in 5 subjects and MTL to OFC pairs in 7
+    (expected 8 and 5); in the code's windows 1 of 7. The code's form passes as many units with
+    trials shuffled (57%) as on the real data (56%), and its rates per system (41% to 65%) are of
+    the order of the paper's (31% to 49%), so its counts are not evidence of phase direction. The
+    measured values are those of the sliding-window reading.
   deviations:
   - *timeaxis
 - claim: crossspectral-equal-strength
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:crossspectral-equal-strength
   notes: >-
-    On the pairs selected by the code's PSI (106 MTL to PFC and 70 PFC to MTL in 9 subjects; 200 MTL
-    to OFC and 168 OFC to MTL in 7), the code's per-frequency z differs across amplitude frequencies
-    in both networks (main effects only p = 0.017 and 7.8e-05; with the interaction p = 0.016 and
-    6.9e-05), and frequency x direction is significant (p = 0.00016 and 2.6e-06). Direction is not
-    (p = 0.21 and 0.83). The local variant (frequency only) finds no effect in MTL, PFC or OFC (p =
-    0.63, 0.30, 0.89).
+    The claim is about the phase-directing pairs, and none can be selected with a defensible basis.
+    The Methods' PSI selects 0 MTL to PFC and 1 PFC to MTL pair (sliding windows) or none (single
+    window), too few for the model (also too few units under the claim's own rule). The code's
+    form selects 57% of pairs with trials shuffled, against the 2.5% its z > 1.96 threshold implies,
+    so by the protocol's rule on chance levels its procedure is not the paper's stated one. On the
+    code's selection (not judged; 105 MTL to PFC and 76 PFC to MTL, 189 MTL to OFC and 170 OFC to
+    MTL pairs) frequency x direction is significant in both networks (p = 2e-05 and 0.00019),
+    frequency in MTL-OFC (p = 2e-09) and direction in both (p = 0.020 and 0.0057). Which form of PSI
+    selected the paper's pairs is asked of the authors under findings.
   deviations:
-  - >-
-    Assumed, the phase-directing pairs of the code's form of PSI, as the Methods' PSI selects no
-    pairs and the paper's counts are approached only under the code's form.
-  - >-
-    The model's frequency and frequency x direction tests are the within-pair F tests (random
-    intercepts, every pair having all 16 frequencies); direction is tested on pair means with a
-    subject random intercept.
   - *timeaxis
 - claim: theta-peak-bands
   outcome: not_reproduced
   notebook: reproduce_johnson_2018.ipynb
   output: claim:theta-peak-bands
   measured:
-  - 2
+  - 1
+  - 3
   - 0
   - 1
-  - 1
   notes: >-
-    Over all analysed electrodes (reading a) the maxima of the 6 filters fall at 1.5-4 Hz in 3
-    subjects, 6-10 Hz in 3, 2-5 Hz in 2, 4-7 Hz in 1 and 5-8 Hz in 1; 6 subjects peak outside the
-    paper's four bands and the overlap with its counts is 4 of 10 (partial needs 7). On the
-    directing electrodes of the code's PSI (reading b) the overlap is 5 of 10; the Methods' PSI
-    selects none. The curves are flat (trial-, time- and electrode-averaged z between about -1.2 and
-    1.7). The measured values are the counts at 2-5, 3-6, 4-7 and 5-8 Hz under reading (a).
+    In the trial table's windows, over all analysed electrodes (reading a), the maxima of the 6
+    filters fall at 1.5-4 Hz in 4 subjects, 3-6 Hz in 3, 2-5 Hz in 1, 5-8 Hz in 1 and 6-10 Hz in 1;
+    5 subjects peak outside the paper's four bands and the overlap with its counts is 4 of 10
+    (partial needs 7). For reading (b) the Methods' single-window PSI selects no electrodes, its
+    sliding-window PSI selects electrodes in 3 subjects (overlap 0 of 10), and the code's form gives
+    an overlap of 4 of 10. The curves are flat in most subjects (trial-, time- and electrode-averaged
+    z mostly within -0.9 to 2.2; s9 up to 5.5). The measured values are the counts at 2-5, 3-6, 4-7
+    and 5-8 Hz under reading (a).
   deviations:
   - The paper's visual confirmation of the peaks is not reproducible and is left out.
   - *timeaxis
 - claim: pac-mtl-spatial
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-mtl-spatial
   notes: >-
-    21 MTL electrodes in 9 subjects (code's PSI selection). Spatial model condition p = 0.0072
-    (surrogate a) and 0.016 (b), above 0.05/7 = 0.0071; condition x frequency p = 0.20 and 0.14.
-    Spatial is above identity (mean difference 0.038 z), with the largest difference at 38.5 Hz.
-    The temporal model has no condition effect below 0.05/7 (part 3 holds).
+    The PAC claims are about the theta-phase directing electrodes and pairs. The Methods'
+    PSI selects 0 MTL, 0 PFC, 0 OFC, 0 MTL to PFC, 1 PFC to MTL, 3 MTL to OFC and 2 OFC to MTL units
+    (sliding windows; none with the single window), too few for the models. The code's form, which
+    selects enough, passes as many units with trials shuffled (57%) as on the real data, against
+    the 2.5% its threshold implies, so it does not select phase-directing units and no defensible
+    selection is left. Which form selected the paper's units is asked of the authors under findings.
+    On the code's selection (not judged), in the trial table's postcue window: MTL spatial condition
+    p = 0.56 (surrogate a), spatial below identity.
   deviations:
-  - &pacsel >-
-    Assumed, the theta-phase directing units of the code's form of PSI, as the Methods' PSI selects
-    none and the paper's counts are approached only under the code's form.
   - &pacmodel >-
-    PAC on the individual theta band of reading (a) of theta-peak-bands (a 1.5-4 Hz or 6-10 Hz
-    maximum mapped to 2-5 or 5-8 Hz, an assumption), per condition with the condition's trial mean
-    removed (the code's subtracterp.m selects the temporal trials by column 5 == 2, which no trial
-    meets; the Methods' condition 3 is used). Mixed models with random intercepts computed as the
-    within-unit F tests of the balanced 2 x 16 x 19 design; the direction main effect on unit means
-    with a subject random intercept.
+    PAC as computed for the variant: the individual theta band of reading (a) of theta-peak-bands
+    (a 1.5-4 Hz or 6-10 Hz maximum mapped to 2-5 or 5-8 Hz, an assumption), per condition with the
+    condition's trial mean removed (the code's subtracterp.m selects the temporal trials by column
+    5 == 2, which no trial meets; the Methods' condition 3 is used). Mixed models with random
+    intercepts computed as the within-unit F tests of the balanced 2 x 16 x 19 design; the direction
+    main effect on unit means with a subject random intercept.
   - *timeaxis
 - claim: pac-frontal-no-condition
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-frontal-no-condition
   notes: >-
-    43 PFC and 38 OFC electrodes. Condition effects pass 0.05/7 in the PFC spatial model (condition x
-    time p = 3.7e-06), the PFC temporal model (condition x frequency x time p = 2.9e-06) and the OFC
-    spatial model (condition p = 1.8e-06), under surrogate (a); (b) gives the same pattern.
+    Blocked for the reason given under pac-mtl-spatial (no defensible selection of phase-directing
+    units). On the code's selection (not judged; 49 PFC and 47 OFC electrodes) the PFC spatial model
+    has a condition x frequency effect below 0.05/7 (p = 8.3e-05, surrogate a).
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
 - claim: pac-mtl-pfc-spatial
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-mtl-pfc-spatial
   notes: >-
-    106 MTL to PFC pairs in 7 subjects. Spatial model condition p = 0.19 (a) and 0.17 (b), with
-    spatial PAC below identity (mean difference -0.008); condition x time p = 2.3e-05 (a).
+    Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 105 MTL
+    to PFC pairs) the spatial condition effect is p = 0.23 (surrogate a).
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
 - claim: pac-mtl-pfc-temporal
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-mtl-pfc-temporal
   notes: >-
-    106 MTL to PFC pairs. Temporal model condition p = 0.36 (a) and 0.45 (b), temporal below identity
-    (mean difference -0.006).
+    Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 105 MTL
+    to PFC pairs) the temporal condition effect is p = 0.61 (surrogate a), temporal below identity.
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
 - claim: pac-pfc-mtl-no-condition
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-pfc-mtl-no-condition
   notes: >-
-    70 PFC to MTL pairs in 9 subjects. The temporal model's condition effect is p = 5.8e-06 (a) and
-    7.7e-07 (b), below 0.05/7, with temporal above identity; the spatial model's condition p =
-    0.0059 (a) is also below 0.05/7.
+    Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 76 PFC
+    to MTL pairs) the spatial condition effect is p = 0.0004 (surrogate a), below 0.05/7.
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
 - claim: pac-mtl-ofc-spatial
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-mtl-ofc-spatial
   notes: >-
-    200 MTL to OFC pairs in 5 subjects and 168 OFC to MTL pairs in 6. MTL to OFC spatial condition p
-    = 0.015 (a) and 0.031 (b), above 0.05/7; condition x frequency p = 0.61 (a). The largest spatial
-    minus identity difference is at 9.5 Hz (part 2 holds). The MTL to OFC temporal and the OFC to MTL
-    models have condition effects below 0.05/7 (part 3 fails).
+    Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 189 MTL
+    to OFC pairs) the spatial condition effect is p = 0.18 (surrogate a).
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
 - claim: pac-mtl-pfc-direction
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-mtl-pfc-direction
   notes: >-
-    106 MTL to PFC and 70 PFC to MTL pairs. Condition x direction passes 0.05/15 in both models under
-    (a) (p = 0.0029 spatial, 3.9e-05 temporal), but the relation minus identity difference is larger
-    in the PFC to MTL direction (0.021 and 0.035 against -0.008 and -0.006). The direction effect is
-    p = 0.32 and 0.96, with MTL to PFC slightly higher.
+    Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 105 MTL
+    to PFC and 76 PFC to MTL pairs) the direction effect is p = 0.26 (spatial) and 0.38 (temporal),
+    surrogate a, and both models have other effects below 0.05/15.
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
 - claim: pac-mtl-ofc-direction
-  outcome: not_reproduced
-  assumed: true
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_johnson_2018.ipynb
   output: claim:pac-mtl-ofc-direction
   notes: >-
-    200 MTL to OFC and 168 OFC to MTL pairs. In the spatial model direction p = 0.13 and condition x
-    direction p = 0.17 (a); the temporal model has effects below 0.05/15 (condition x direction p =
-    1.9e-06).
+    Blocked for the reason given under pac-mtl-spatial. On the code's selection (not judged; 189 MTL
+    to OFC and 170 OFC to MTL pairs) the spatial condition x direction effect is p = 0.00018
+    (surrogate a), and both models have effects below 0.05/15.
   deviations:
-  - *pacsel
   - *pacmodel
   - *timeaxis
+verifications:
+- date: 2026-11-09
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The handover of the run after author-answers, the executed notebook with the
+    conclusions and summary removed, the helper module and the claims file; the verifier also read
+    the paper under paper/ and listed the archive.
+  results:
+  - claim: behavior-proficient
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 16, all 120 trials, lowest 0.792, highest 0.967, every subject between 0.711 and 1.0.
+    response: No change of outcome.
+  - claim: behavior-no-difficulty-difference
+    agrees: false
+    outcome: partially_reproduced
+    reason: >-
+      Accuracy shows no effect under either reading (numeric term F 0.16, p 0.70; F 0.44, p 0.51).
+      Response time shows no effect only with the summary_file.csv values (F 2.41, p 0.13). With the
+      per-trial tables it does differ (F 12.3, p 0.0015 all trials; F 11.5, p 0.002 kept trials),
+      and the two sources disagree in 7 of 10 subjects. The summary_file.csv values are of unknown
+      provenance and were chosen because they match the paper (B2).
+    response: >-
+      Outcome kept as reproduced, resting on the response-time source (assumed), and the
+      disagreement recorded. Added the provenance check the verifier asked for: means and medians
+      over correct, all and kept trials, other subjects' rows, blocks of 40 trials and trial type
+      reproduce 9 of 30 values (s6, s8 and s9, by the mean over correct trials) and none of the
+      other 7 subjects'. The file's condition means and SDs are the paper's, so it holds the values
+      the paper's model was fitted to, and the criterion asks whether that model finds an effect;
+      the trial tables' result is reported in the notes as the outcome it would give.
+  - claim: electrode-counts
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 20, 36/116/102, and 9 and 7 subjects, all exact.
+    response: No change of outcome.
+  - claim: correct-trial-counts
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 22, means 100.9, 32.9, 34.8, 33.2 and 10.2 are within tolerance; per-subject ranges equal
+      the paper's exactly.
+    response: No change of outcome.
+  - claim: erp-no-condition-difference
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      The criterion is no electrode below p 0.05. Cell 24 finds 1 of 254 electrodes with the
+      subject-wide null and 13 with the per-electrode null. Both counts are at or below the expected
+      false-positive count (25.4), so the data are consistent with no effect, but the rule as written
+      fails. The baseline subtracted is the trial-averaged baseline, which leaves the between-trial
+      tests unchanged; per-trial correction would change the test, and the deposited script was not
+      shown (B5).
+    response: >-
+      Outcome kept, now marked assumed. The notebook quotes erp_compute.m (lines 84 to 88), which
+      subtracts nanmean(pretrial.trial), the trial mean, so the main reading follows the code. The
+      per-trial baseline was run as a variant and leaves 0 electrodes significant under the
+      subject-wide null, so the outcome rests on the code's baseline. In the trial table's windows,
+      now the main reading, 1 electrode (s9) is significant.
+  - claim: power-theta-sustained
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 26, theta is sustained in 0 of 10, 0 of 9 and 0 of 9 subjects (electrodes 1/36, 1/116,
+      11/102). MTL alpha is desynchronised in 0 of 10 subjects. Every neural outcome rests on the
+      unchecked time-axis choice (B1).
+    response: >-
+      No change of outcome. Both window placements are now run; in the trial table's windows, now
+      the main reading, theta is sustained in 1 of 10, 0 of 9 and 0 of 9 subjects and MTL alpha in 0
+      of 10.
+  - claim: power-condition-exclusions
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 28, 12 electrodes (6 PFC, 5 OFC, 1 MTL) in 5 subjects with the subject-wide null, and 69
+      with the per-electrode null; expected 8 (5 PFC, 3 OFC) in 4.
+    response: >-
+      No change of outcome. In the trial table's windows, now the main reading, 7 electrodes (1 PFC,
+      4 OFC, 2 MTL) in 4 subjects; the 12 of the code's windows are shown as a variant.
+  - claim: plv-theta-peak
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 30, imaginary PLV, a 3 to 7 Hz local maximum in MTL-MTL 7/9, MTL-PFC 8/9 and MTL-OFC 4/7
+      subjects. The one-subject rule is lenient, a noisy 11-bin spectrum often has a local maximum
+      among the four theta bins.
+    response: >-
+      No change of outcome. In the trial table's windows the counts are 4/8, 7/9 and 5/7; the
+      leniency of the one-subject rule is stated in the notes.
+  - claim: psi-theta-shift
+    agrees: false
+    outcome: partially_reproduced
+    reason: >-
+      Cell 32. Single-window (Methods) PSI, the post-versus-pre test fails in both networks (p 0.27,
+      0.56). Sliding-window PSI on raw values, OFC passes (p 0.027), PFC fails (p 0.079), which is
+      the criterion's partial case. The code's PSI form passes both networks on raw PSI (p < 1e-4),
+      but its z part rests on a miscalibrated null (B3).
+    response: >-
+      Outcome kept as not reproduced, now judged on the sliding windows of M5 (the reading the
+      verifier used) and marked assumed, and the disagreement recorded. The verifier's partial
+      result is in the deposited code's windows; the per-electrode jitter test added for B1 places
+      the events where the trial table puts them, and in those windows the sliding reading finds no
+      shift in either network (MTL-PFC raw p = 0.27, MTL-OFC raw PSI falls). The code's single
+      window there gives the partial pattern (MTL-PFC raw p = 0.014), shown as a variant. A
+      trial-shuffle calibration of each PSI form was added.
+  - claim: crossspectral-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 34, post greater than pre at p < 0.05 in 1 of 7 systems (single-window PSI) and 2 of 7
+      (code form); 4 are needed for partial. The claims file's sliding-window reading was not run
+      (B4).
+    response: >-
+      No change of outcome. Cross-spectral PSI is now computed with sliding windows (the claims
+      file's M5) and judged on them, in both window placements: 1 of 7 systems in the trial table's
+      windows, at most 2 of 7 in the code's.
+  - claim: phase-directing-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 36, 0 units in every system with single-window PSI; with the code form only 1 of 7 counts
+      is within 10% (OFC 38), and MTL to OFC is 200 against 93.
+    response: >-
+      No change of outcome. The sliding-window reading gives 0, 0, 0, 0, 1, 3 and 2 units; a
+      trial-shuffle calibration shows that the code's form selects 57% of units with the coupling
+      removed.
+  - claim: crossspectral-equal-strength
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 38, frequency p 0.016 (MTL-PFC) and 7e-5 (MTL-OFC); frequency x direction p 1.6e-4. This
+      is only on units picked by the miscalibrated code form (B3), so it is weak evidence.
+    response: >-
+      Changed to blocked (methods_underspecified). The calibration the verifier asked for shows the
+      code's form selects as many units with trials shuffled (57%) as on the real data, against the
+      2.5% its threshold implies, so by the protocol's rule on chance levels it is not the paper's
+      stated procedure; the Methods' PSI selects 0 and 1 pairs per direction. The model on the
+      code's selection is kept as a variant, not judged.
+  - claim: theta-peak-bands
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 40, overlap with the paper's counts is 4 of 10 (all electrodes) and 5 of 10
+      (code-selected electrodes); 7 are needed for partial.
+    response: >-
+      No change of outcome. In the trial table's windows the overlap is 4 of 10 (all electrodes),
+      0 of 10 (sliding-window selection) and 4 of 10 (code's selection).
+  - claim: pac-mtl-spatial
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 42/43, condition p 0.00717 against a threshold of 0.00714 (borderline), condition x
+      frequency p 0.20, peak at 38.5 Hz. Units are code-selected (B3).
+    response: &pacresp >-
+      Changed to blocked (methods_underspecified). The unit selection rests on the code's PSI form,
+      which the added calibration shows selects 57% of units with trials shuffled, as many as on the
+      real data; the Methods' PSI selects at most 3 units per system. The PAC models on the code's
+      selection are kept as a variant, not judged. PAC on all units without selection, which the
+      verifier also suggested, was not run: it tests another population than the claim's and would
+      have taken the run past the hour the notebook may take.
+  - claim: pac-frontal-no-condition
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Condition effects fall below 0.05/7, PFC spatial condition x time 3.7e-6, PFC temporal
+      three-way 2.9e-6, OFC spatial condition 1.8e-6. The within-unit F tests are anti-conservative
+      on autocorrelated PAC maps, which biases claims of absence toward failing (B7).
+    response: *pacresp
+  - claim: pac-mtl-pfc-spatial
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Condition p 0.19 (a) and 0.17 (b); the spatial minus identity difference is negative.
+    response: *pacresp
+  - claim: pac-mtl-pfc-temporal
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Condition p 0.36 and 0.45; the difference is negative.
+    response: *pacresp
+  - claim: pac-pfc-mtl-no-condition
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Temporal model condition p 5.8e-6 (a) and 7.7e-7 (b), both below 0.05/7.
+    response: *pacresp
+  - claim: pac-mtl-ofc-spatial
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Condition p 0.015 (a) and 0.031 (b), above 0.05/7. The peak at 9.5 Hz does match.
+    response: *pacresp
+  - claim: pac-mtl-pfc-direction
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Condition x direction is significant but larger for PFC to MTL (the wrong direction).
+      Direction p 0.32 and 0.96, with MTL to PFC higher.
+    response: *pacresp
+  - claim: pac-mtl-ofc-direction
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Spatial model, direction p 0.13, condition x direction p 0.17. The temporal model has effects
+      below 0.05/15.
+    response: *pacresp
 findings:
 - kind: metadata_error
   statement: >-
-    The trial table's epoch columns and the derived data's time axes disagree by 1.5 s. The first
-    sample of each derived segment (time -1.5 s) is the table's epoch start (encmain at column H,
-    "encoding and pre-cue delay epoch start"; proc 0.3 s before column I; pre about 0.1 s after
-    column G), and a derived trial of s8 matches the primary data from sample H on. The deposited
-    code takes stimulus onset at time 0 of encmain, 1.5 s after column H, while the descriptor
-    places it at H. The data show no task-locked high-gamma or evoked response that settles which
-    is right.
+    The derived data's time axes put each segment's first sample at -1.5 s, and that sample is the
+    trial table's epoch start (encmain at column H, first stimulus onset; proc 0.3 s before column
+    I, test cue offset; pre about 0.1 s after column G), so the task events lie 1.5 s earlier on the
+    time axes than 0 s suggests. The deposited scripts cut their windows from the time axes as if 0
+    s were stimulus onset, test cue offset minus 0.3 s and start screen minus 0.9 s. The data side
+    with the table: the 900 and 1150 ms delay trials part where the table puts the first
+    delay-dependent event of each segment (proc ERPs from -0.25 to 0.75 s, p down to 0.005 against
+    200 permutations) and not where the scripts' windows put it (proc 1.0 to 2.0 s, p 0.29 to 0.94).
 - kind: metadata_error
   statement: >-
     The response times of docs/summary_file.csv, which the descriptor says are "calculated on all
     correct trials", differ from the mean over correct trials of the per-trial tables in 7 of 10
-    subjects (s1 identity 1948 against 2348 ms). The paper's condition means are those of
-    summary_file.csv. Its accuracies do equal the per-trial tables.
+    subjects (s1 identity 1948 against 2348 ms), and no other summary of the trial tables tried
+    (medians, all or kept trials, other subjects' rows, blocks of 40 trials, trial type) gives them.
+    The paper's condition means are those of summary_file.csv. Its accuracies do equal the per-trial
+    tables.
 - kind: metadata_error
   statement: >-
     For s10 the trial table's epoch columns are not on the derived data's sample grid (offsets of
@@ -424,9 +660,10 @@ findings:
     The deposited psianalysis.m multiplies the Fourier coefficients without conjugating one of them,
     so its "cross-spectral density" and phase slope are not the PSI of Nolte et al. that the Methods
     cite. It also z-scores the trial mean of per-trial PSI against a null built from trial-averaged
-    coherency, which inflates z; with the conjugate added, this form gives z of 5 to 20 where the
-    Methods' PSI gives z near 0, and only this form approaches the paper's counts of phase-directing
-    electrodes.
+    coherency, a different statistic; with the conjugate added, this form passes z > 1.96 for 57% of
+    electrodes and pairs when one signal's trials are shuffled against the other's, as many as on
+    the real data (56%), and its selection rates are of the order of the paper's counts of
+    phase-directing units (31% to 49%). The Methods' PSI passes 0% to 0.1% with trials shuffled.
 - kind: code_mismatch
   statement: >-
     subtracterp.m with ncond = 3 selects the temporal trials by trialinfo column 5 == 2 (the delay
@@ -446,15 +683,17 @@ findings:
 - kind: methods_unavailable
   statement: >-
     Question for the authors. Were the behavioural mixed models fitted with condition as one numeric
-    term (and if so, with which coding), on the per-subject values of docs/summary_file.csv? The
-    printed F(1,28) fits a numeric term on 30 subject-condition values. On summary_file.csv that
-    model finds no response-time effect (p = 0.13); on the trial tables' response times it finds one
-    (p = 0.0015), so the outcome of behavior-no-difficulty-difference rests on these choices.
+    term (and if so, with which coding), on the per-subject values of docs/summary_file.csv, and how
+    were those response times computed? The printed F(1,28) fits a numeric term on 30
+    subject-condition values. On summary_file.csv that model finds no response-time effect (p =
+    0.13); on the trial tables' response times it finds one (p = 0.0015), so the outcome of
+    behavior-no-difficulty-difference rests on these choices.
 - kind: methods_unavailable
   statement: >-
     Question for the authors. Which form of PSI produced the reported PSI z values and the counts of
     phase-directing electrodes (the Methods' Nolte PSI on the trial-averaged cross-spectrum, or the
     code's mean of per-trial PSI against trial-averaged coherency), with which spectral window, and
-    where stimulus onset lies on the derived data's time axes (at 0 s, as the code reads them, or at
-    -1.5 s, as the trial table's columns place it)? The Methods' PSI selects no phase-directing
-    units here, so the PAC claims were tested on the units of the code's form, as an assumption.
+    were the analysis windows cut 1.5 s later on the derived time axes than the trial table places
+    the events, as the deposited scripts do? The Methods' PSI selects at most 3 phase-directing units
+    per system here, and the code's form selects as many with trials shuffled as on the real data,
+    so crossspectral-equal-strength and the PAC claims are blocked.
