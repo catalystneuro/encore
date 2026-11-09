@@ -1,21 +1,38 @@
-I stopped without writing a claims file, because the paper text is missing parts the claims would need. Nothing was written under `claims/crcns-hc-8/`.
+I wrote `claims/crcns-hc-8/10.3389-fphys.2016.00425.yaml` with 27 claims, and all 27 quotes pass `tools/claims_check.py` with 0 problems.
 
-**Text read:** `paper/10.3389-fphys.2016.00425.txt`, the version of record (PMC5037237, from Europe PMC full-text XML). It has the main text, the Methods (2.1 to 2.11), the Results, the Discussion and the figure legends. There is no PDF of the paper under `paper/`, only the dataset's own description, and I read that only to see which experiments the dataset holds.
+**What I read**
+- **Paper:** the version of record (PMC5037237), the Methods 2.1 to 2.11, the Results, the Discussion and all the figure legends.
+- **Supplement:** Data_Sheet_1, Figures S1 to S9 with their text.
+- **Equations:** the supplied text leaves out Equations 1 to 14. I took them from the MathML in the PMC XML (fetched through NCBI eutils) and copied the ones the criteria use into the opening comment.
+- **Code:** the paper links code only as "http://www.nicholastimme.com". From that site I read NCC Toolbox Version 1 (June 2016); its sha256 is recorded in the file. It holds the toolbox functions but not the scripts the authors ran on the cultures, which are not published.
 
-**What is missing:**
-1. **The supplement.** The text only points to it ("Click here for additional data file", journal.frontiersin.org/article/10.3389/fphys.2016.00425). Results in the main text depend on its figures:
-   - Figure S8 holds the correlation of 0.23 between complexity and susceptibility.
-   - Figure S9 holds the correlations of 0.296 and 0.197 between complexity and the size and duration fit ranges.
-   - Figure S2 holds the finite-recording-length bias that explains the second complexity peak in the cortical branching model.
-   - Figure S1 and Figures S3 to S7 hold the example sub-sampling fits and the example culture power-law fit, shape collapse and complexity analyses.
-2. **Equations 1 to 14.** Converting the XML to text dropped all of them. They define the measures the criteria would test:
-   - the power laws and the relation between the critical exponents (Eqs. 1 to 4);
-   - the shape collapse scaling (Eqs. 5 to 7);
-   - entropy, integration and neural complexity (Eqs. 8 to 10);
-   - the basic and corrected branching ratios (Eqs. 11 to 13);
-   - susceptibility (Eq. 14).
-3. **The numbers in Figure 8 and the other result figures.** The critical exponents τ, α and 1/σνz for the cultures, given as mean ± SD, appear only inside the Figure 8 panels. The main finding that the exponents agree with earlier studies rests on them. With no PDF I cannot read them, and the same goes for Figures 7, 9, 10, 11 and 12.
+**Counts**
+- 27 claims, all with quotes. 9 are simulations (chain model, Bethe lattice, cortical branching model) and 18 use the culture data.
+- No statistics are recorded. The paper prints no p-values; Figures 10 and 11 give only a star key (rank sum test with false discovery rate control), and the stars themselves could not be read.
+- 7 claims have expected values: the peak at p_trans 0.265, the all-time-bins peak at 0.28, the counts of 435 recordings and 39,529 neurons (tolerance 0, since they are exact properties of the data), about 100 neurons per recording, ISI about 7 ms, about 10,000 avalanches, and the correlations 0.23, 0.296 and 0.197.
+- All 27 claims have a criterion.
 
-**Code:** the paper names the NCC MATLAB toolbox (Marshall et al., 2016; Timme, 2016) but the text gives no repository link, and the reference list came through empty. I did not read any code.
+**Where the code settled a choice**
+- The occurrence cut drops each size or duration value seen fewer than 20 times, one by one (as the toolbox demo does).
+- Power-law fit ranges are searched largest first; surrogate count 500, acceptance at p of 0.2 or more.
+- The complexity correction subtracts data randomized by permuting each neuron's time bins, then cuts at the first peak.
+- The shape collapse searches 1/σνz from 0 to 4 at 0.001 precision.
 
-**Needed to continue:** the publisher's PDF, with its equations and figures, and the Frontiers supplementary file. Once both are under `paper/`, the claims file can be written. That makes 0 claims, 0 quotes, 0 statistics and 0 criteria, and since no claims were drafted, no open method details were named.
+**Details the paper leaves open, with the readings named**
+- **Model p_trans grid:** the Methods print "increments of 0.05", which gives three values and cannot place a peak at 0.265. Readings: steps of 0.005 or 0.01.
+- **Sub-sampling layout:** either 30 sub-samples at evenly spaced sizes, or 30 at each size from 40% to 100%.
+- **Excluded recordings:** the "too few avalanches" threshold is not stated. Readings: exclude recordings where the size, duration or shape-collapse cuts leave nothing, or keep all.
+- **False discovery rate method:** the paper cites both Benjamini-Hochberg and Benjamini-Yekutieli.
+- **Susceptibility:** Eq. 14 as printed, var(A/N), or N·var(A/N). The second fits the 0 to 5 axis of Figure S8.
+- **Curvature sign:** the code's 2a is negative for arched profiles, but the paper reports positive values. I used the absolute value.
+- **Basic branching ratio:** I followed the Methods, Eq. 11, the time average of A(t+1)/A(t). The code computes a regression slope instead, which is shown as a variant.
+- **"Slightly below 1":** within 0.05 or within 0.1 of 1.
+- **"Strong" correlation:** read as Pearson r ≥ 0.7, with Spearman as a variant. This threshold is my choice, and the criterion says so.
+- **"Most ... around":** the median or the histogram mode.
+- **Smaller choices:** rounding the ISI bin, the number of Bethe lattice runs, and how to measure the curvature of the Figure 6 distributions. These are marked as standard choices or as measures the paper does not define.
+
+**Missing from what was supplied**
+- There is no PDF of the main article. So the per-exponent means and SDs in Figure 8, the Figure 9 histograms, the significance stars of Figures 10 and 11, and the list of excluded recordings in Figure 2B are unread. The claims on those figures are judged by direction only, with no numeric targets. Supplying the main PDF would let a reader add those values.
+- The equations are missing from the supplied text, as noted above.
+
+Nothing is committed.
