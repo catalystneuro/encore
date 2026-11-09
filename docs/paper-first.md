@@ -94,3 +94,17 @@ Their existing attempts and claims are kept as they are, converted to the new na
 paper's claims once and tests them across all its datasets. Mirrors on two archives (Girardeau
 2017, Fujisawa 2008) are compared, not combined: an attempt uses one copy of each dataset, and
 the site compares attempts on the two copies.
+
+## Cutover steps
+
+With the lanes stopped (STOP_LANES, and wait for the running chains to end or stop them):
+
+1. On this branch: merge main, then `python tools/paper_keys.py` (keys for papers added since) and
+   `python tools/migrate_paper_first.py`; run the tests; commit; merge the pull request.
+2. `python tools/runner/cutover_paper_first.py branches --apply`: the open attempt branches, converted the
+   same way and renamed attempt/<paper>. Any it reports as not merging are fixed by hand.
+3. `... executed --apply` (the executed notebooks under the new entry names), `... issues --apply` (the
+   `needs-you` issues retitled by paper), `... state ~/registry-runner --apply` (queue files and marks).
+4. On the runner: a new release of tools/runner into releases/<sha>/bin and pools.yaml pointed at it;
+   `mv pool_lane.sh.paper-first pool_lane.sh` (the circuit breaker reads a chain's last line by paper).
+5. Start the lanes, and watch the first chains through the paper match and the claims.
