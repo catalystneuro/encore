@@ -159,6 +159,10 @@ def spikes_in(spikes, start, end):
 V_CODE, NV_CODE = 4, 7
 
 # Windows, relative to event 12 (end of the static holding period), seconds.
+# On every completed trial the time from event 10 to event 12 is at least the
+# trial's record field 11 (800 to 1,100 ms) plus 28 ms (see the notebook), so
+# field 11 is read as the minimum hold, timed from about event 10, and the 800
+# ms before event 12 lie inside it.
 # "data analysis focused on the last 800 ms of the static holding period"
 # (Methods, Experimental paradigm); first and last 400 ms of it (Results,
 # Neurophysiology, paragraph 2).
@@ -171,16 +175,25 @@ SIGMA_PSTH = 0.050  # Gaussian kernel, sigma 50 ms (Methods, Analysis of neuroph
 N_PER_CELL = 5      # "Five trials were performed for each target" (Methods)
 
 
-def load_all(url=URL, check_plx="data/010609/010609_1"):
+ANA_CHECK = ("data/010609/010609_1", "data/010609/010609_2", "data/010809/010809_2")
+
+
+def load_all(url=URL, check_plx="data/010609/010609_1", ana_check=ANA_CHECK):
     """One pass over the tar: every session file, reduced to its trial table
-    and spike times; the member list; and, for one session, the .plx file's
-    events and spikes to check the .mat extraction against."""
-    import struct
+    and spike times; the member list; for one session, the .plx file's
+    events and spikes to check the .mat extraction against; and, for the
+    sessions in ``ana_check``, the analog files (``read_anaad``)."""
     tf = open_stream(url)
-    members, sessions, errors, plx = [], {}, {}, None
+    members, sessions, errors, plx, ana = [], {}, {}, None, {}
     for m in tf:
         members.append((m.name, m.size))
         if not m.isfile():
+            continue
+        stem = m.name.split(".plxAnaAD")[0]
+        if ".plxAnaAD." in m.name and stem in ana_check:
+            ana.setdefault(stem, {})[m.name.rsplit(".", 1)[1]] = tf.extractfile(m).read()
+            if len(ana[stem]) == 2:
+                ana[stem] = read_anaad(ana[stem]["mat"], ana[stem]["dat"])
             continue
         if check_plx and m.name == check_plx + ".plx":
             b = tf.extractfile(m).read()
@@ -195,7 +208,44 @@ def load_all(url=URL, check_plx="data/010609/010609_1"):
                                     n_strobes=len(strobed), strobed_head=strobed[:2000])
         except Exception as exc:
             errors[m.name] = repr(exc)
-    return dict(members=members, sessions=sessions, errors=errors, plx=plx)
+    return dict(members=members, sessions=sessions, errors=errors, plx=plx, ana=ana)
+
+
+def read_anaad(mat_bytes, dat_bytes):
+    """Analog channels of one session from its ``.plxAnaAD.mat`` (sampling
+    rates, counts) and ``.plxAnaAD.dat`` (samples).
+
+    The descriptor lists the .mat variables but not the .dat layout. Read
+    from the files: the .dat starts with a Plexon file header ("PLEX") and
+    per-channel counts, and ends with ``numADChannels`` x ``baseANACounts``
+    16-bit samples; the samples are taken as the last n x channels words,
+    one channel after another, the first sample at ``beginOfData /
+    ADFrequency`` s and then at the channel's ``adfreq``. This layout is a
+    reading of the files, not documented. Returns dict(t0, fs, X[channel,
+    sample], gains)."""
+    d = sio.loadmat(io.BytesIO(mat_bytes), squeeze_me=True)
+    nch = int(d["numADChannels"])
+    counts = np.asarray(d["baseANACounts"])
+    n = int(counts[counts > 0][0])
+    x = np.frombuffer(dat_bytes[: len(dat_bytes) // 2 * 2], dtype="<i2")
+    X = x[len(x) - nch * n:].reshape(nch, n)
+    fs = float(np.atleast_1d(d["adfreq"])[0])
+    gains = np.asarray(d["slowChannelGains"])
+    return dict(t0=float(d["beginOfData"]) / float(d["ADFrequency"]), fs=fs, X=X,
+                gains=gains[gains > 0], n_samples=n, n_channels=nch)
+
+
+def late_windows(trials, delay=0.25):
+    """Variant hold windows that start no earlier than ``delay`` s after
+    event 10 (target offset, the cue to saccade to the centre): the hold
+    window [max(t12 - 0.8, t10 + delay), t12], its first part [that start,
+    t12 - 0.4] and the last 400 ms [t12 - 0.4, t12]. ``delay`` is a choice
+    for this sensitivity check (a typical saccadic latency), not from the
+    paper. Returns the (start, mid, end) times of each trial, in s."""
+    end = trials.t12.values
+    start = np.maximum(end - 0.8, trials.t10.values + delay)
+    mid = end - 0.4
+    return start, np.maximum(mid, start), end
 
 
 def read_plx_events_spikes(b):
@@ -325,21 +375,19 @@ def decode(train, test, eps=1e-3, loo=True):
     ``train`` and ``test`` are spike counts [cell, target, trial] (five trials
     per target). Leave-one-out as the Methods give it: for test trial k the
     model lambda[cell, target] is the mean of the other four training trials
-    (when train and test are the same data) and the test trial is assigned to
+    (trial k is left out of training whether or not train and test are the
+    same condition) and the test trial is assigned to
     the target of maximal likelihood. With ``loo=False`` lambda is the mean of
     all five training trials (cross-condition reading (b)). A lambda of 0 is
     replaced by ``eps`` (a standard choice). Returns the confusion counts
     [true, predicted]."""
     c, t, n = train.shape
     conf = np.zeros((t, t), int)
-    same = train is test
     for k in range(n):
-        if not loo:
-            lam = train.mean(axis=2)
-        elif same:
-            lam = (train.sum(axis=2) - train[:, :, k]) / (n - 1)
-        else:
+        if loo:
             lam = np.delete(train, k, axis=2).mean(axis=2)
+        else:
+            lam = train.mean(axis=2)
         lam = np.maximum(lam, eps)
         r = test[:, :, k]  # [cell, true target]
         ll = r.T @ np.log(lam) - lam.sum(axis=0)[None, :]  # [true, candidate]

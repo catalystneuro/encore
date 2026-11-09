@@ -7,7 +7,7 @@ cursor. The notebook streams the data set's single `data.tar.gz` from the public
 
 | Claim | Outcome |
 |---|---|
-| Neurons with a position, vision or interaction effect in the hold (39%, 13%, 9%) | Reproduced |
+| Neurons with a position, vision or interaction effect in the hold (39%, 13%, 9%) | Reproduced (vision count rests on an assumption) |
 | V and NV responses correlate alike whether endpoints differed or not | Reproduced (assumption) |
 | CV2 larger in NV; decoding better in V; cross-condition decoding lower | Reproduced (two rest on an assumption) |
 | Table 1 endpoint means; overall effect percentages; INDX1 mostly negative and its group means; rate variance higher in NV | Partially reproduced |
@@ -19,6 +19,8 @@ reasoning and the differences from the paper's method.
 
 The data set holds monkey X's sessions only (every session has monkey X's target layout), and
 which of the two condition codes is Vision is not documented: it is inferred from the aborted
-trials. The event codes and the per-trial text record are undocumented and were read from the
+trials. The data set has 359 usable monkey X sessions against the paper's 219; one unit is taken
+from each, as the paper has one neuron per session, and which unit is an assumption (the first
+sorted). The event codes and the per-trial text record are undocumented and were read from the
 data. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/shi-2013-01.yaml`](../../attempts/shi-2013-01.yaml).
