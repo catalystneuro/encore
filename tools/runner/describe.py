@@ -104,14 +104,15 @@ def main_blobs(prefix: str) -> dict[str, str]:
     shas = [(parts[3], parts[2]) for parts in listed if len(parts) == 4 and parts[1] == "blob"]
     if not shas:
         return {}
-    out = subprocess.run(["git", "cat-file", "--batch"], cwd=ROOT, input="\n".join(sha for _, sha in shas) + "\n",
-                         capture_output=True, text=True, check=True).stdout
+    # Bytes: the sizes git gives are in bytes, and the records hold non-ASCII text.
+    out = subprocess.run(["git", "cat-file", "--batch"], cwd=ROOT,
+                         input=("\n".join(sha for _, sha in shas) + "\n").encode(),
+                         capture_output=True, check=True).stdout
     texts, pos = {}, 0
     for path, _ in shas:
-        header_end = out.index("\n", pos)
+        header_end = out.index(b"\n", pos)
         size = int(out[pos:header_end].split()[2])
-        body = out[header_end + 1:header_end + 1 + size]
-        texts[path] = body
+        texts[path] = out[header_end + 1:header_end + 1 + size].decode()
         pos = header_end + 1 + size + 1
     return texts
 
