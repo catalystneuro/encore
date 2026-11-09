@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-13`. Record this version in the attempt's provenance.
+Version: `pilot-14`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
 result. A target is a dataset in a public archive and a paper it names. How
@@ -33,7 +33,10 @@ write the claims file. The other runs are made with the
 file, `verifier-1`, `author-revise-1`, `verifier-2`, `author-revise-2`, and,
 when the last of these proposes changes of outcome, `verifier-3` and `author-revise-3`. Each run's
 transcript and final report are kept in
-[`transcripts/<folder>/`](../transcripts). A dataset's folder is its identifier
+[`transcripts/<paper>/`](../transcripts). Records are filed under the paper's
+key, its first author's surname and year (`tingley-2021`; papers/keys.yaml),
+and the datasets it is tested on are listed in `papers/datasets/<paper>.yaml`
+([paper-first.md](paper-first.md)). A dataset's folder name is its identifier
 on DANDI and `<archive>-<id>` otherwise ([archives.md](archives.md)). The
 pipeline is described in [pipeline.md](pipeline.md).
 
@@ -65,7 +68,7 @@ then other software.
 
 ### 3. Write the claims file
 
-Write `claims/<folder>/<doi with / replaced by ->.yaml`. Its opening comment
+Write `claims/<paper>.yaml`, one file for the paper, across all its datasets. Its opening comment
 says which text was read (the version of record or a preprint version, and the
 supplement), and describes the data the paper used: the subjects, sessions,
 conditions and measured variables, as the paper reports them, so that the
@@ -147,6 +150,11 @@ author can find them in the dataset.
      4). Whether the dataset holds those data is the author's to find.
    - `depends_on`: the claims whose result this one uses, such as the cells
      another claim selects.
+   - `datasets`: only when the paper is tested on more than one dataset (its
+     `papers/datasets/<paper>.yaml` lists several): the folder names of the
+     ones the claim rests on. With one dataset, leave it out; every claim
+     rests on it. A claim on data in none of them is `data: elsewhere`, or
+     rests on a dataset listed as not available.
 
 ### 4. Data from outside the paper's own recordings
 
@@ -180,7 +188,7 @@ question against the paper and decides whether the claims file is to change.
 Where it is, the reader amends the claim, and the question's `answer` says
 what changed and why, citing the passage; where it is not, the answer says why
 the claim stands. The reader marks each question answered in
-`questions/<folder>.yaml`.
+`questions/<paper>.yaml`.
 
 ## Author
 
@@ -277,6 +285,9 @@ Do this before any analysis.
      procedure well enough to repeat it, and no choice has a defensible basis
      (step 6; see also chance levels, under "Record the attempt").
    - `data_unreadable` and `too_large`.
+   - `dataset_missing`: the claim rests on one of the paper's datasets that
+     this attempt could not use; the record lists it under
+     `missing_datasets`.
    - `not_runnable`: the paper's method cannot be run here, because its
      software cannot be installed in a locked environment or it cannot run
      within the time limit. Say what was tried. For an outside input that is
@@ -317,7 +328,7 @@ Do this before any analysis.
      plotting bin, a random seed) takes a standard choice, said to be one.
    - When you believe the claims file misreads the paper (a wrong expected
      value, the wrong panel, a claim that does not say what the paper says),
-     do not change the claim. Add a question to `questions/<folder>.yaml`
+     do not change the claim. Add a question to `questions/<paper>.yaml`
      (`claim`, `question`, the passage of the paper, and why the misreading
      could change the outcome), test the claim as the file has it, show the
      paper's reading as a variant where it can be run, and say in the
@@ -342,7 +353,7 @@ and record it as a finding.
 
 ### 3. Write the entry
 
-An entry is a directory `entries/<folder>-<first author>-<year>/` holding
+An entry is a directory `entries/<paper>/` holding
 `entry.yaml`, `requirements.in`, one or more notebooks, and usually a helper
 module.
 
@@ -421,7 +432,18 @@ near a threshold can move when a random split changes.
 
 ### 5. Record the attempt
 
-Write `attempts/<entry name>-<nn>.yaml`.
+Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
+
+- **`datasets`**: every dataset the attempt used, each with `archive`, `id`,
+  the pinned `version`, its `doi` where the archive gives one, and
+  `relation` as `papers/datasets/<paper>.yaml` gives it (`primary` or
+  `reuses`). Use as many of the paper's datasets as can be loaded.
+- **`missing_datasets`**: each dataset the paper's claims rest on that this
+  attempt could not use, with `archive` and `id` where it has them, and
+  `why` (not in any open archive, not yet converted, unreadable). A missing
+  dataset does not stop the attempt: test what the others allow, and block
+  each claim that needs a missing one with `dataset_missing`. The site flags
+  the attempt, so that a later one can add the dataset.
 
 - **One outcome per claim**, including blocked ones. The outcome describes the
   result, not the method:
@@ -483,7 +505,7 @@ Do not verify your own attempt. Give the verifier:
 paper, under `paper/`, but checks the analysis against the claims file, and a
 method detail the author took from the paper against the passage the author
 cites. A place where the claims file misreads the paper is reported; the
-revision adds it to `questions/<folder>.yaml` as a question for a reader, as in
+revision adds it to `questions/<paper>.yaml` as a question for a reader, as in
 step 1.6, and does not change the claim. A reader answers it after the
 attempt, in an `answer` run started by hand; the claim's outcome stays as
 tested on the claims file, and a later attempt takes up any change.
