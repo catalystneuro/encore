@@ -612,10 +612,39 @@ def notebook_of(attempt: dict, path: str | None) -> dict | None:
     return next((n for n in attempt["notebooks"] if n["path"] == path), None)
 
 
+TOP_JOURNALS = 25
+
+
+def journals_of(targets: list[dict]) -> dict[str, str]:
+    """Each target's journal for the datasets list's filter (papers/journals.yaml, tools/journals.py): one of the
+    TOP_JOURNALS journals with the most datasets, "Preprint", "Other journals", or "Not recorded"."""
+    path = ROOT / "papers" / "journals.yaml"
+    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
+    raw = {t["key"]: (known.get(norm(t.get("paper"))) or {}).get("journal") for t in targets}
+    counts: dict = {}
+    for j in raw.values():
+        if j and j != "Preprint":
+            counts[j] = counts.get(j, 0) + 1
+    top = {j for j, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[:TOP_JOURNALS]}
+    return {k: (j if j in top or j == "Preprint" else "Other journals" if j else "Not recorded") for k, j in raw.items()}
+
+
+def journal_order(rows: list[dict]) -> list[str]:
+    """The journal filter's order: the journals by number of datasets, then the groups that are not one journal."""
+    groups = ["Preprint", "Other journals", "Not recorded"]
+    counts: dict = {}
+    for r in rows:
+        if r.get("journal") and r["journal"] not in groups:
+            counts[r["journal"]] = counts.get(r["journal"], 0) + 1
+    return [j for j, _ in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))] + groups
+
+
 def rows(data: dict) -> dict[str, list]:
     current = current_attempts(data)
     by_id = {t["key"]: t for t in data["targets"]}
     dandisets, claims, findings = [], [], []
+    journal = journals_of(data["targets"])
     for t in data["targets"]:
         atts = current.get(t["key"])
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
@@ -639,6 +668,7 @@ def rows(data: dict) -> dict[str, list]:
             "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
             "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
+            "journal": journal.get(t["key"], "Not recorded"),
         })
     for atts in current.values():
         for a in atts:
@@ -1463,7 +1493,7 @@ LISTS = {
         "title": "Datasets", "noun": "datasets", "data": "data/datasets.json",
         "intro": "Every public dataset whose metadata names a paper, on the DANDI Archive and other archives. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
-        "facets": [("status", "Status"), ("archive", "Archive"), ("has", "Has a claim that is"),
+        "facets": [("status", "Status"), ("archive", "Archive"), ("journal", "Journal"), ("has", "Has a claim that is"),
                    ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("-reproduced", "Most reproduced"), ("id", "Identifier"),
@@ -1482,7 +1512,8 @@ def page_list(data: dict, kind: str) -> str:
         "facets": [{"key": k, "label": label} for k, label in spec["facets"]],
         "sorts": [{"key": k, "label": label} for k, label in spec["sorts"]],
         "outcomes": {k: list(v) for k, v in OUTCOMES.items()},
-        "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "status": list(STATUS), "tier": list(TIERS)},
+        "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "status": list(STATUS), "tier": list(TIERS),
+                  "journal": journal_order(rows_cache(data)["datasets"])},
         "labels": {
             "outcome": outcome_labels, "has": {**outcome_labels, "(none)": "Not attempted"},
             "blocked_by": {**BLOCKED_BY, "(none)": "No blocked claim"},

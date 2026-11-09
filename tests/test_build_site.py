@@ -623,3 +623,10 @@ def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
     assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
                                                 "kind": "metadata_error"}]
     assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"
+
+
+def test_the_journal_filter_names_at_most_the_top_journals(built):
+    _, out = built
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    named = {r["journal"] for r in rows} - {"Preprint", "Other journals", "Not recorded"}
+    assert len(named) <= site.TOP_JOURNALS and all(r["journal"] for r in rows)
