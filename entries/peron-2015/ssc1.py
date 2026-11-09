@@ -13,7 +13,11 @@ Parameters and where they come from:
   ``poleInReach`` event series (start and end), and the reward cue its
   ``rewardCue`` series. The sample epoch is the pole-in-reach interval, as the
   paper defines it ("a 1 s sample epoch (pole in reach)", claims file opening
-  comment; data description, "Imaging and behavior").
+  comment; "remained in place for the 1 s sample epoch", Supplemental Experimental
+  Procedures, Behavioral training; data description, "Imaging and behavior"). The
+  Figure 1C legend gives the sample epoch as "1 to 2 s"; the data's pole-in-reach
+  intervals (0.84 to 1.18 s in the median) are used as they are, so the difference
+  does not enter any result.
 - Whisking amplitude (claim results-whisking-amplitude). Reading (c) uses the
   Hilbert amplitude of whisking, as the Supplemental Experimental Procedures
   use for bout onset ("the amplitude of whisking, obtained using the Hilbert
@@ -36,6 +40,7 @@ import io
 import fsspec
 import numpy as np
 import scipy.io as sio
+from scipy.ndimage import median_filter
 from scipy.signal import butter, filtfilt, hilbert
 
 DATASET = "ssc-1"
@@ -221,12 +226,49 @@ def load_session(name: str) -> dict:
             "source_files": [str(x) for x in _list(v.imagingPlane[0].sourceFileList)][:3],
             "fields": list(v._fieldnames),
             "time_unit": int(v.timeUnit),
+            "id_strs": [str(x) for x in _list(v.idStrs)],
+            "id_strs_detailed": [str(x) for x in _list(v.idStrsDetailed)],
+            "descr_keys": [str(x) for x in _list(d.keyNames)],
+            "roi_array_fields": list(roi_defs[0]._fieldnames) if roi_defs else [],
+            "roi_fields": list(_list(roi_defs[0].rois)[0]._fieldnames) if roi_defs else [],
+            "plane_fields": list(_list(v.imagingPlane)[0]._fieldnames),
         })
     out["subvolumes"] = subs
     return out
 
 
-def whisking_amplitudes(sess: dict, band=(6.0, 30.0)) -> dict:
+ARTEFACT_LIMIT = 85.0   # degrees; |angle| above this is near the +/-90 degree limit of the tracker
+SPIKE_DEV = 20.0        # degrees from the 5-sample running median; a one- or two-sample jump
+EDGE_S = 0.2            # seconds left out at each end of a trial for the edge-trimmed Hilbert peak
+
+
+def artefact_masks(ang: np.ndarray) -> dict:
+    """Samples of the whisker angle that look like tracking errors, two ways.
+
+    ``limit``: |angle| > ARTEFACT_LIMIT (85 degrees). The angle is reported within +/-90 degrees,
+    and isolated samples jump to the limits (for example 87.3, 37.8, -89.2, 41.7 degrees on
+    successive 2 ms samples), which no whisker movement does. This mask also takes the tops of smooth
+    excursions that reach 85 to 88 degrees, which may be real.
+    ``spike``: samples more than SPIKE_DEV (20 degrees) from the median of the 5 samples around
+    them, i.e. jumps that last one or two samples (4 ms) and return; this keeps smooth excursions.
+    ``dev`` is that distance for every sample. ``ang`` must have no NaN (gaps filled first).
+    Neither threshold comes from the paper, which says nothing on tracking errors; both are
+    standard choices for removing tracker glitches, and the notebook shows other thresholds.
+    """
+    dev = np.abs(ang - median_filter(ang, size=5, mode="nearest"))
+    return {"limit": np.abs(ang) > ARTEFACT_LIMIT, "spike": dev > SPIKE_DEV, "dev": dev}
+
+
+def _fill(x: np.ndarray, drop: np.ndarray) -> np.ndarray:
+    """x with the samples in ``drop`` replaced by linear interpolation from their neighbours."""
+    x = x.copy()
+    if drop.any() and (~drop).any():
+        x[drop] = np.interp(np.flatnonzero(drop), np.flatnonzero(~drop), x[~drop])
+    return x
+
+
+def whisking_amplitudes(sess: dict, band=(6.0, 30.0), limits=(70.0, 80.0, 85.0, 88.0),
+                        spike_devs=(10.0, 20.0, 40.0)) -> dict:
     """Per-trial whisker movement amplitude, three readings (claim results-whisking-amplitude).
 
     (a) range (max minus min) of the angle over the whole trial;
@@ -234,17 +276,34 @@ def whisking_amplitudes(sess: dict, band=(6.0, 30.0)) -> dict:
     (c) the peak Hilbert amplitude of the band-passed angle over the trial
         (band: an assumption, see the module docstring).
     Only trials listed as valid whisker trials are used.
+
+    Also returned, per trial, for the tracking errors the round-1 verifier found:
+    (a) and (b) without the samples of each artefact mask (``artefact_masks``; ``_limit`` and
+    ``_spike``), and (a) with other thresholds (``range_trial_limit<L>``, ``range_trial_spike<D>``);
+    (a) after unwrapping the angle with a 180 degree period and removing spikes
+    (``range_trial_unwrap_spike``), and the number of wraps (steps over 90 degrees) per trial;
+    (c) leaving out EDGE_S (0.2 s) at each end of the trial, where filtfilt and the Hilbert
+    transform inflate the amplitude (``hilbert_peak_trim``), and the same after the samples of
+    either mask are replaced by interpolation (``hilbert_peak_trim_clean``); the number of samples
+    of each mask in the trial.
     """
     w = sess["whisker"]
     t, tr, ang = w["time"], w["trial"], w["angle"].copy()
     bad = ~np.isfinite(ang)
     if bad.any():
         ang[bad] = np.interp(np.flatnonzero(bad), np.flatnonzero(~bad), ang[~bad])
+    masks = artefact_masks(ang)
+    dev = masks["dev"]
     fs = 1000.0 / np.median(np.diff(t))
+    edge = int(round(EDGE_S * fs))
     b, a = butter(2, [band[0] / (fs / 2), band[1] / (fs / 2)], btype="band")
     valid = set(sess["valid_whisker_trials"].tolist())
     tri = sess["trials"]
-    rows = []
+    rows, extra = [], []
+
+    def rng(v):
+        return v.max() - v.min() if v.size > 10 else np.nan
+
     # Split the whisker samples by trial; samples of one trial are contiguous.
     bounds = np.flatnonzero(np.diff(tr)) + 1
     starts = np.r_[0, bounds]
@@ -263,9 +322,45 @@ def whisking_amplitudes(sess: dict, band=(6.0, 30.0)) -> dict:
         rows.append((trial, x.max() - x.min(),
                      (x[m].max() - x[m].min()) if m.sum() > 10 else np.nan,
                      amp.max()))
+        lim, spk = masks["limit"][s0:e0], masks["spike"][s0:e0]
+        clean = _fill(x, lim | spk)
+        amp_clean = np.abs(hilbert(filtfilt(b, a, clean)))
+        # Angles past the +/-90 degree limit wrap to the other sign (88, 90, -90, -89, -88, 87: a
+        # protraction past 90 degrees); unwrapping with a 180 degree period and then removing spikes
+        # gives the range of the continuous angle.
+        xu = np.unwrap(x, period=180.0)
+        du = np.abs(xu - median_filter(xu, size=5, mode="nearest"))
+        e = {"range_trial_limit": rng(x[~lim]), "range_trial_spike": rng(x[~spk]),
+             "range_trial_unwrap_spike": rng(xu[du <= SPIKE_DEV]),
+             "n_wrap": int((np.abs(np.diff(x)) > 90).sum()),
+             "range_sample_limit": rng(x[m & ~lim]), "range_sample_spike": rng(x[m & ~spk]),
+             "hilbert_peak_trim": amp[edge:-edge].max(),
+             "hilbert_peak_trim_clean": amp_clean[edge:-edge].max(),
+             "n_limit": int(lim.sum()), "n_spike": int(spk.sum())}
+        for L in limits:
+            e[f"range_trial_limit{L:g}"] = rng(x[np.abs(x) <= L])
+        for D in spike_devs:
+            e[f"range_trial_spike{D:g}"] = rng(x[dev[s0:e0] <= D])
+        extra.append(e)
     arr = np.array(rows, float)
-    return {"trial": arr[:, 0].astype(int), "range_trial": arr[:, 1],
-            "range_sample": arr[:, 2], "hilbert_peak": arr[:, 3], "fs": fs}
+    out = {"trial": arr[:, 0].astype(int), "range_trial": arr[:, 1],
+           "range_sample": arr[:, 2], "hilbert_peak": arr[:, 3], "fs": fs}
+    for k in extra[0]:
+        out[k] = np.array([e[k] for e in extra], float)
+    return out
+
+
+def hilbert_peak_synthetic(amplitude=20.0, freq=10.0, seconds=4.0, fs=500.0, band=(6.0, 30.0)):
+    """Peak Hilbert amplitude of a pure sinusoid, over the whole trace and without EDGE_S at each end.
+
+    A check of reading (c) on a known input: both should equal ``amplitude``.
+    """
+    t = np.arange(int(seconds * fs)) / fs
+    x = amplitude * np.sin(2 * np.pi * freq * t)
+    b, a = butter(2, [band[0] / (fs / 2), band[1] / (fs / 2)], btype="band")
+    amp = np.abs(hilbert(filtfilt(b, a, x)))
+    edge = int(round(EDGE_S * fs))
+    return float(amp.max()), float(amp[edge:-edge].max())
 
 
 def first_touch_times(sess: dict) -> dict:
@@ -317,7 +412,7 @@ def reduce_session(sess: dict, shifts=(0.0, -3000.0, 3000.0)) -> dict:
         d = sv["dff"]
         fin = d[np.isfinite(d)]
         subs.append({
-            "key": sv["key"], "descr": sv["descr"], "ids": sv["ids"],
+            "key": sv["key"], "descr": sv["descr"], "ids": sv["ids"], "plane": sv["plane"],
             "fov": sv["source_files"][0].split("/")[1] if sv["source_files"] else "",
             "plane_counts": np.bincount(sv["plane"][sv["plane"] >= 0], minlength=sv["n_planes"]).tolist(),
             "n_planes": sv["n_planes"], "frame_ms": float(np.median(np.diff(sv["time"]))),
@@ -328,6 +423,9 @@ def reduce_session(sess: dict, shifts=(0.0, -3000.0, 3000.0)) -> dict:
             "hash": hashlib.md5(np.ascontiguousarray(d).tobytes()).hexdigest(),
             "touch": {s: touch_response(sv, first, s) for s in shifts},
             "fields": sv["fields"], "time_unit": sv["time_unit"],
+            "id_strs": sv["id_strs"], "id_strs_detailed": sv["id_strs_detailed"],
+            "descr_keys": sv["descr_keys"], "roi_array_fields": sv["roi_array_fields"],
+            "roi_fields": sv["roi_fields"], "plane_fields": sv["plane_fields"],
         })
     red = {k: v for k, v in sess.items() if k not in ("subvolumes", "whisker")}
     red["subvolumes"] = subs
@@ -339,6 +437,10 @@ def reduce_session(sess: dict, shifts=(0.0, -3000.0, 3000.0)) -> dict:
         "kappa_pct": np.nanpercentile(w["kappa"], [1, 50, 99]).tolist(),
         "angle_nan": float(np.isnan(w["angle"]).mean()),
         "angle_abs_over_85": float(np.mean(np.abs(w["angle"]) > 85)),
+        # The first two steps of more than 90 degrees between samples, each with 6 samples on either
+        # side, to show what the tracking errors and wraps look like.
+        "jump_examples": [np.round(w["angle"][max(j - 6, 0):j + 8], 1).tolist()
+                          for j in np.flatnonzero(np.abs(np.diff(w["angle"])) > 90)[:2]],
         "time_unit": w["time_unit"],
     }
     red["whisking"] = {band: whisking_amplitudes(sess, band) for band in [(6.0, 30.0), (4.0, 30.0), (8.0, 25.0)]}

@@ -33,7 +33,9 @@ outcomes:
     outcome: blocked
     blocked_by: metadata_insufficient
     notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
-      position relative to one another (data check). The claims file's shared method M6 says the claims
+      position relative to one another (data check). Every dF/F series is described only as "dF/F for
+      ROIs in subvolume <n>", every idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty, and
+      the ROI ids number planes, not layers or classes. The claims file's shared method M6 says the claims
       that need these labels are blocked when the data set carries none. The criterion uses the class
       labels the data set carries. The Gad2 mouse an194181 and four other mice are also absent; 26,761
       ROIs of 3 mice are in the data set.
@@ -60,7 +62,11 @@ outcomes:
     notes: The five sessions hold 398, 370, 184, 231 and 268 behavioural trials. Pooled over sessions
       the mean is 290.2 (SD 91.2), and the mean of the three per-mouse means (384.0, 184.0, 249.5) is
       272.5; both are within 245 +/- 71. Counting only trials with imaging gives 238.6 pooled and 225.2
-      over mice.
+      over mice. Trial ids run from 1 without gaps in every session and the imaged trials are a subset
+      of them, consistent with tables that cover whole behavioural sessions; in each session trial 1
+      is followed by a pause of 12.5 min to 2.4 h, so dropping it would change each count by one. The
+      five sessions are the only ones deposited and how they were chosen is not documented, so they
+      may not represent the paper's imaging sessions; the agreement is weak evidence.
     deviations:
       - Five sessions of 3 of the paper's 8 mice; the paper's number covers every imaging session of 8
         mice.
@@ -72,21 +78,37 @@ outcomes:
     notes: Means over the three mice (per mouse 70.6, 99.2, 54.2 for a) are (a) 74.7 degrees for the per-trial
       angle range over the trial, (b) 29.0 over the sample epoch and (c) 26.9 for the peak Hilbert amplitude
       (6 to 30 Hz; 22.2 to 30.4 with the other bands shown); none is within 55.5 +/- 13.3 (42.2 to 68.8).
-      Two measures the criterion does not list fall inside it, the 1st to 99th percentile range of angle
-      per trial (49.2) and twice the peak Hilbert amplitude, a peak-to-peak measure (53.7 +/- 15.7). The
-      paper does not define the measure; the question is recorded as a finding for its authors. 1,443
-      trials (764, 183, 496 per mouse).
+      Tracking errors do not explain the miss. Without samples above 85 degrees (in 26, 52 and 2 trials
+      per mouse) reading (a) is 72.4, without one- or two-sample spikes 71.9, and 71.7 to 74.1 with other
+      thresholds; only dropping all samples above 70 degrees, which also cuts real protractions, gives
+      67.4. Unwrapping protractions that pass 90 degrees and wrap to the other sign gives 77.0. Leaving
+      out 0.2 s at each end of the trial, where the filter's edge effect inflates a synthetic sinusoid's
+      peak Hilbert amplitude from 20 to 22.0 (20.1 without the ends), changes reading (c) to 26.6, and
+      26.6 with artefacts interpolated. Reading (b) without artefacts is 28.6 to 29.0. Measures the criterion
+      does not list fall inside the tolerance, the mean of per-mouse medians of reading (a) (68.6), the
+      1st to 99th percentile range of angle per trial (49.2) and twice the peak Hilbert amplitude, a peak-to-peak
+      measure (53.7 +/- 15.7; 53.2 without ends and artefacts). The part of the statement the criterion
+      does not test, larger movements than about 20 degrees, holds for every full-sweep measure (29.0
+      to 77.0). The paper does not define the measure; the question is recorded as a finding for its
+      authors. 1,443 trials (764, 183, 496 per mouse).
     deviations:
       - Three of the paper's eight mice, five sessions.
       - The sample epoch is the pole-in-reach interval of the data set's poleInReach series (the paper's
         "1 s sample epoch (pole in reach)", Results, Imaging Large Neuronal Populations, paragraph 1).
+        The Figure 1C legend gives the epoch as 1 to 2 s and the claims file's opening comment as 1 s;
+        a reader is asked about the comment (questions/peron-2015.yaml). The data's intervals are used
+        as they are, so the difference does not enter the result.
       - The band used to isolate whisking before the Hilbert transform (reading c) is not given in the
         paper or in the Supplemental Experimental Procedures, which cite Huber et al. (2012); 6 to 30
         Hz is used, with 4 to 30 and 8 to 25 Hz shown. Every band gives the same outcome, so the outcome
         does not rest on it.
-      - Only trials the data set lists as valid whisker trials are used; rare angle samples at +/-90 degrees
-        (at most 0.06% of samples), which look like tracking errors, are kept, as the criterion's maximum
-        minus minimum includes them; the 1st to 99th percentile range is shown as a variant.
+      - Only trials the data set lists as valid whisker trials are used. Rare angle samples at +/-90 degrees
+        (at most 0.06% of samples), which look like tracking errors, are kept in the main readings, as the
+        criterion's maximum minus minimum includes them. Readings (a) and (b) are also shown without samples
+        above 85 degrees and without spikes over 20 degrees from a 5-sample running median, with other
+        thresholds, and after unwrapping; reading (c) without 0.2 s at each end. These are standard choices,
+        not from the paper, and every one gives the same outcome; the 1st to 99th percentile range is
+        shown as a further variant.
   - claim: fig1g-early-stereotypy
     outcome: blocked
     blocked_by: data_missing
@@ -314,9 +336,11 @@ outcomes:
     blocked_by: metadata_insufficient
     notes: The data set's ROIs carry no layer, cell-class or column label, and its planes no depth or
       position relative to one another (data check). The claims file's shared method M6 says the claims
-      that need these labels are blocked when the data set carries none. Raw ROI and neuropil fluorescence
-      are not in the session files either; they could only be re-extracted from the registered TIFFs (about
-      146 GB of archives for five sessions), which would also need the paper's neuropil masks, not deposited.
+      that need these labels are blocked when the data set carries none. The criterion allows events to
+      be extracted again, and raw ROI and neuropil fluorescence, which the session files lack, could in
+      principle be rebuilt from the registered TIFFs (146 GB of imaging archives for five sessions, of the data set's 165 GB) with the deposited
+      ROI masks and neuropil masks drawn again by the paper's rule; that was not attempted, since the
+      claim would still need the L2/3 labels the data set lacks.
   - claim: discussion-correlation-more-touch
     outcome: blocked
     blocked_by: metadata_insufficient
@@ -367,14 +391,372 @@ findings:
       touch times than with the times shifted by 3 s (3 of 9 subvolumes; median 0.0009 against 0.0083
       dF/F), so that session's imaging could not be shown to share the trial clock. In the other four
       sessions the true alignment gives the largest response in 21 of 25 subvolumes.
+  - kind: other
+    statement: The whisker angle holds tracking errors that the description does not mention. Samples
+      jump to the tracker's +/-90 degree limit for one or two samples (for example 87.3, 37.8, -89.2, 41.7 degrees
+      on successive 2 ms samples in an229717), jump briefly to a distant value (-24.1, 72.8, 72.8, 72.1,
+      -23.1 in an229719), and protractions past 90 degrees wrap to the other sign (84.6, 89.2, -87.5, -88.7,
+      89.3 in an197522). Samples above 85 degrees occur in 26 of 764, 52 of 183 and 2 of 496 valid whisker trials
+      of an197522, an229717 and an229719. The largest per-trial angle range, 179.8 degrees, spans these limits.
   - kind: methods_unavailable
     statement: Question for the paper's authors. How was the whisker movement amplitude of 55.5 +/- 13.3
       degrees (Results, paragraph 2) measured? On the three mice in the data set the per-trial angle range
-      is 74.7 degrees, its range over the sample epoch 29.0, and the peak Hilbert amplitude 26.9 (6 to
-      30 Hz band, also not given), while twice the peak Hilbert amplitude is 53.7. Which measure, epoch
-      and band were used?
+      is 74.7 degrees (72.4 without tracking errors), its range over the sample epoch 29.0, and the peak
+      Hilbert amplitude 26.9 (6 to 30 Hz band, also not given), while twice the peak Hilbert amplitude
+      is 53.7. Which measure, epoch and band were used, and how were tracking errors handled?
   - kind: methods_unavailable
     statement: Question for the paper's authors. For the event detector's validation (54% of single action
       potentials at 0.01 Hz false positives, n = 7), which recordings of Chen et al. (2013) were used,
       how were they degraded to this study's dwell time and frame rate, and what were the Savitzky-Golay
       window and the matching window?
+verifications:
+  - date: '2026-11-09'
+    kind: agent
+    by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+    reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary removed,
+      the helper module ssc1.py and the claims file, with the paper. The verifier queried the archive
+      listing (146 files, 165 GB) and tested whisking_amplitudes on synthetic inputs; it downloaded no
+      data. Its report gave its own outcome for each claim; 42 of 43 agree with the record. Problem 6 (the
+      sample epoch's length in the claims file's opening comment) is asked of a reader in
+      questions/peron-2015.yaml. Report in transcripts/peron-2015/verifier-1-report.md.
+    results:
+      - claim: table-s1-roi-counts
+        agrees: true
+        outcome: blocked
+        reason: Archive checked. 5 sessions from 3 of the 8 mice. Cell 21 counts 72%, 20% and 63% of the Table
+          S1 values, because most sessions are not deposited. The spared-whisker part can be tested for
+          those 3 mice, and D2, D3, D2 match (cell 7).
+        response: No change; the spared-whisker match was already in the notes.
+      - claim: fig2-core-counts
+        agrees: true
+        outcome: blocked
+        reason: The ROIs carry no class or layer labels (cells 5 and 22). The contents of idStrs and
+          idStrsDetailed were never printed (C1).
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: results-gaba-fraction
+        agrees: true
+        outcome: blocked
+        reason: The archive listing confirms that the Gad2 mouse, the high-resolution stacks, training sessions
+          and training videography, the trimming data and the L5 soma-dendrite pairs are all absent.
+        response: No change.
+      - claim: fig2e-fraction-imaged
+        agrees: true
+        outcome: blocked
+        reason: The archive listing confirms that the Gad2 mouse, the high-resolution stacks, training sessions
+          and training videography, the trimming data and the L5 soma-dendrite pairs are all absent.
+        response: No change.
+      - claim: fig1e-days-to-criterion
+        agrees: true
+        outcome: blocked
+        reason: The archive listing confirms that the Gad2 mouse, the high-resolution stacks, training sessions
+          and training videography, the trimming data and the L5 soma-dendrite pairs are all absent.
+        response: No change.
+      - claim: results-trials-per-session
+        agrees: true
+        outcome: reproduced
+        reason: Cell 24. The pooled mean over 5 sessions is 290.2 and the mean of 3 per-mouse means is 272.5.
+          Both are inside 245 +/- 71 = [174, 316], and so is the trials with imaging variant (238.6). This
+          rests on only 5 sessions from 3 mice, far fewer than the paper's imaging sessions, so the
+          agreement is weak evidence. The 5 deposited sessions may not be a representative sample of the
+          paper's imaging sessions, which the notebook does not discuss (problem 7). Whether the trial
+          list covers the whole behavioral session or only the imaged part was not checked (C4).
+        response: Outcome unchanged. A data-check cell now prints each session's trial ids (1 to 184 up to 1 to
+          398, without gaps), the range of imaged trial ids, which lie inside them, and the intervals
+          between trials; the tables are consistent with whole behavioural sessions, and trial 1 is
+          followed by a pause of 12.5 min to 2.4 h in every session. The conclusion and notes now say that
+          the five sessions are the only ones deposited, that how they were chosen is not documented, and
+          that the agreement is weak evidence.
+      - claim: results-whisking-amplitude
+        agrees: false
+        outcome: partially_reproduced
+        reason: None of the three listed readings lands in [42.2, 68.8]. They give (a) 74.7, (b) 29.0 and (c)
+          26.9. Two unlisted variants do. The 1-99 percentile range gives 49.2 and 2 x the Hilbert peak
+          gives 53.7. Reading (a) is inflated by +/-90 degree tracking errors; one +/-90 pair turns a 40
+          degree range into 180, the per-trial maximum is 179.8, and fixing this needs a reading (a) that
+          drops only the artefact samples (problem 1). The per-trial maximum of the Hilbert amplitude over
+          the whole trial is inflated by filter and Hilbert edge effects, about 10% on a clean sinusoid,
+          and by artefact spikes, so the passing 2 x Hilbert variant is biased upward (problem 2). The
+          qualitative part, well above about 20 degrees, holds for every full-sweep measure. Under the
+          strict criterion the outcome would be not_reproduced (problem 3). n = 3 of 8 mice.
+        response: Outcome kept as not_reproduced, and the disagreement is recorded. A new cell runs what the
+          verifier asked for (C2, C3). Without samples above 85 degrees reading (a) is 72.4, without one-
+          or two-sample spikes 71.9, and 71.7 to 74.1 with other thresholds; unwrapping protractions that
+          pass 90 degrees gives 77.0; only cutting every sample above 70 degrees, which removes real
+          protractions, gives 67.4. The artefacts touch 26 of 764, 52 of 183 and 2 of 496 trials, and most
+          of the range is real whisking (an229717 median 87.2). The edge effect is confirmed on a sinusoid
+          (22.0 against 20.1 without 0.2 s at each end), but on the data leaving out the ends moves
+          reading (c) only from 26.9 to 26.6, and twice it, with artefacts interpolated, is 53.2.
+          Per-mouse medians of reading (a) average 68.6, inside by 0.2, but the criterion averages per
+          mouse. So every listed reading stays outside the tolerance with the artefacts removed, and the
+          criterion decides the outcome (protocol, Record the attempt); the unlisted measures that fall
+          inside, and the qualitative part that holds, are in the notes. The tracking errors are a new
+          finding.
+      - claim: fig1g-early-stereotypy
+        agrees: true
+        outcome: blocked
+        reason: The archive listing confirms that the Gad2 mouse, the high-resolution stacks, training sessions
+          and training videography, the trimming data and the L5 soma-dendrite pairs are all absent.
+        response: No change.
+      - claim: supp-trim-all-chance
+        agrees: true
+        outcome: blocked
+        reason: The archive listing confirms that the Gad2 mouse, the high-resolution stacks, training sessions
+          and training videography, the trimming data and the L5 soma-dendrite pairs are all absent.
+        response: No change.
+      - claim: figs4-dendrite-soma
+        agrees: true
+        outcome: blocked
+        reason: The archive listing confirms that the Gad2 mouse, the high-resolution stacks, training sessions
+          and training videography, the trimming data and the L5 soma-dendrite pairs are all absent.
+        response: No change.
+      - claim: fig3a-active-fraction
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig3b-task-related
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig4d-sample-epoch-principal
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig4d-gaba-reward-cue
+        agrees: true
+        outcome: blocked
+        reason: No GABAergic mouse and no column labels.
+        response: No change.
+      - claim: fig3c-discriminative
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig3d-principal-touch-whisking-equal
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig3d-surround-whisking-dominates
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig3d-population-encoding
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: discussion-principal-exclusive-classes
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig6b-touch-fraction-stable
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig6b-whisking-fraction-early
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig6c-no-trimming-expansion
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig6d-neurometric-flat
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig6d-psychometric-improves
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig6efg-rfit-vectors-stabilize
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig6h-days-different
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig7-touch-declines-surround
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig3d-touch-uniform-l5-gaba
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig7-whisking-uniform
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig7ab-salt-and-pepper
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig4-neuropil-sample-principal
+        agrees: true
+        outcome: blocked
+        reason: There are no L4 axon mice. Neuropil ROIs could be drawn from the TIFFs, but the claims also need
+          column labels.
+        response: No change.
+      - claim: figs5-l4-neuropil-correlation
+        agrees: true
+        outcome: blocked
+        reason: There are no L4 axon mice. Neuropil ROIs could be drawn from the TIFFs, but the claims also need
+          column labels.
+        response: No change.
+      - claim: fig8b-direction-tuned
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: figs7-direction-stable
+        agrees: true
+        outcome: blocked
+        reason: No imaging during learning. an197522 is a learning mouse, but its deposited sessions are
+          volume-imaging sessions with no training-day index.
+        response: No change.
+      - claim: fig8de-direction-topography
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: results-di-magnitude-similar
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: fig8e-l4-neuropil-direction-map
+        agrees: true
+        outcome: blocked
+        reason: There are no L4 axon mice. Neuropil ROIs could be drawn from the TIFFs, but the claims also need
+          column labels.
+        response: No change.
+      - claim: fig8h-passive-active-overlap
+        agrees: true
+        outcome: blocked
+        reason: No anesthetized mice.
+        response: No change.
+      - claim: fig8i-no-anesthetized-topography
+        agrees: true
+        outcome: blocked
+        reason: No anesthetized mice.
+        response: No change.
+      - claim: fig8jk-neuropil-anesthetized
+        agrees: true
+        outcome: blocked
+        reason: No anesthetized mice.
+        response: No change.
+      - claim: figs3d-neuropil-correction
+        agrees: true
+        outcome: blocked
+        reason: The notebook's reason (no events) is incomplete. The criterion allows events to be re-extracted,
+          and the archive holds registered TIFFs (165 GB) plus ROI masks, so raw ROI and neuropil
+          fluorescence could in principle be rebuilt. It stays blocked because the claim needs L2/3 labels
+          (problem 5).
+        response: Outcome unchanged. The notes and the notebook's header now give the raw-TIFF route (with the
+          deposited ROI masks and neuropil masks drawn again) and say the claim stays blocked for lack of
+          L2/3 labels. The registered TIFFs are 146 GB of the data set's 165 GB (cell 3).
+      - claim: discussion-correlation-more-touch
+        agrees: true
+        outcome: blocked
+        reason: There are no layer, class or column labels (M6 rule). There are no calcium events, which M2, M3
+          and the M5 shuffle null need, and M1 forbids re-running the detector.
+        response: No change to the outcome. The data check now prints the contents the verifier could not check
+          (point C1). Every dF/F series is described only as "dF/F for ROIs in subvolume <n>", every
+          idStrs entry is "dF/F Ca TS for <id>", idStrsDetailed is empty in all 34 series, and the ROI ids
+          number planes; no field carries a layer, class or column label.
+      - claim: methods-event-detection
+        agrees: true
+        outcome: blocked
+        reason: Blocked as data_missing. The data are outside this data set (the claims file says data
+          elsewhere).
+        response: Outcome unchanged. The block stays methods_underspecified, since the protocol never blocks a
+          data elsewhere claim as data_missing (author, step 4), and the notes say why the test cannot be
+          repeated as described.
