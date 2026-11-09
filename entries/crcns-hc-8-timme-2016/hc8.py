@@ -398,7 +398,7 @@ def _integration_curve(U: sparse.csr_matrix, cnt: np.ndarray, nT: int, n_subsets
     ent = np.nan_to_num(ent)
     curve = np.zeros(N)
     w_all = rng.integers(1, 2**62, size=N, dtype=np.int64)
-    Ud = U.tocsc()
+    Ur = U.tocsr()
     from math import comb
     for k in range(2, N + 1):
         if comb(N, k) <= n_subsets:
@@ -406,11 +406,13 @@ def _integration_curve(U: sparse.csr_matrix, cnt: np.ndarray, nT: int, n_subsets
             subsets = [np.array(c) for c in combinations(range(N), k)]
         else:
             subsets = [rng.permutation(N)[:k] for _ in range(n_subsets)]
+        W = np.zeros((N, len(subsets)), dtype=np.int64)
+        for i, sub in enumerate(subsets):
+            W[sub, i] = w_all[sub]
+        H = np.ascontiguousarray((Ur @ W).T)   # hash of each unique state restricted to each subset
         vals = np.empty(len(subsets))
         for i, sub in enumerate(subsets):
-            w = np.zeros(N, dtype=np.int64)
-            w[sub] = w_all[sub]
-            inv, _ = pd.factorize(Ud @ w)
+            inv, _ = pd.factorize(H[i])
             p = np.bincount(inv, weights=cnt) / nT
             vals[i] = ent[sub].sum() + np.sum(p * np.log2(p))
         curve[k - 1] = vals.mean()
@@ -872,4 +874,21 @@ def complexity_record(args) -> dict:
         out[f"kkept_{kind}"] = cv["k_kept"]
         out[f"N_{kind}"] = cv["N"]
         out[f"nbins_{kind}"] = int(bins.size)
+    return out
+
+
+def complexity_seeds(args) -> list[dict]:
+    """Notebook 2, one recording: the complexity of the real data repeated with several generators
+    for the random subsets and the time permutation of the correction, at each number of subsets
+    per size, to show the estimator's spread. args = (index, name, seed, n_subsets_list, n_seeds)."""
+    i, name, seed, n_subsets_list, n_seeds = args
+    p = prepare(load(name, _worker_zip()))
+    X = raster_matrix(p["raster"], np.flatnonzero(p["act"]) + 1)
+    X = X[:, np.asarray(X.sum(axis=0)).ravel() > 0]
+    out = []
+    for ns in n_subsets_list:
+        for s in range(n_seeds):
+            cv = complexity(X, ns, np.random.default_rng([seed, i, 500, ns, s]), return_variants=True)
+            out.append(dict(name=name, n_subsets=ns, rep=s, C=cv["cut"], Cuncut=cv["uncut"],
+                            Craw=cv["raw"], k_kept=cv["k_kept"], N=cv["N"]))
     return out

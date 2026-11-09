@@ -165,7 +165,9 @@ def cb_point(args) -> list[dict]:
     distributions, the shape collapse curvature of the full model and extrapolated by sub-sampling
     (30 sub-samples from 40 to 100 neurons, sizes evenly spaced, Methods 2.10), the susceptibility
     (both readings) extrapolated the same way, and B_new (delays 1 to 8, A(t) <= 5, no
-    sub-sampling, Methods 2.11). args = (p_trans, n_models, t_steps, seed)."""
+    sub-sampling, Methods 2.11). For comparison with 4 p_trans, the mean avalanche size, B_basic
+    (Eq. 11) and the one-step ratio sum A(t+1) / sum A(t) over bins with A(t) > 0.
+    args = (p_trans, n_models, t_steps, seed)."""
     import hc8
     p_trans, n_models, t_steps, seed = args
     rng = np.random.default_rng(seed)
@@ -177,7 +179,10 @@ def cb_point(args) -> list[dict]:
         A = R.sum(axis=1).astype(np.int32)
         s, d, st = hc8.avalanches(A)
         rec = dict(p_trans=p_trans, model=m, n_av=int(s.size), active_frac=float((A > 0).mean()),
-                   quad_size=_quad_coef(s), quad_dur=_quad_coef(d))
+                   quad_size=_quad_coef(s), quad_dur=_quad_coef(d), mean_size=float(s.mean()),
+                   br_basic=hc8.branching_basic(A))
+        on = A[:-1] > 0
+        rec["one_step"] = float(A[1:][on].sum() / A[:-1][on].sum())
         _, curv = hc8.shape_collapse(hc8.mean_profiles(A, s, d, st))
         rec["curv_full"] = abs(curv) if np.isfinite(curv) else np.nan
         chi_full = hc8.susceptibility(A, 100)
