@@ -11,17 +11,17 @@ dataset per step, and the dashboard's Pipeline page shows them.
 
 | # | Step | Reads the paper | Runs as | Writes |
 |---|---|---|---|---|
-| 1 | Triage | no | script, and a person | `papers/triage.yaml`: corrections to the papers a target names (dataset DOIs, background reviews, a missing paper) |
+| 1 | Triage and paper match | yes | a person (triage); script, then an agent where the script cannot decide, in the `papers` environment (paper match) | `papers/triage.yaml`: a person's corrections to the papers a target names; `papers/match/<folder>.yaml`: whether each paper left is the paper behind the data |
 | 2 | Paper text | yes | script, and a person for closed papers | the paper store (below); `papers/manifest.yaml` |
 | 3 | Claims | yes | agent, `papers` environment | `claims/<folder>/<doi>.yaml` |
 | 4 | Claims check | yes | a second agent, `papers` environment | `checks` at the end of the claims file |
 | 5 | Attempt | yes | agent (author), `papers` environment | the entry, the attempt record |
 | 6 | Verification | yes | agents (verifier rounds, revisions), `papers` environment | the record's verifications |
-| 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<folder>.yaml`, and in the claims |
+| 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<folder>.yaml`, and amendments to the claims |
 | 8 | Confirmation | no | CI | executed notebooks, passing checks |
-| 9 | Record | no | agent (recorder) | README row, pilot notes; merged |
+| 9 | Record | no | agent (recorder) | pilot notes; merged |
 | 10 | Report | no | script, sent by a person | issues to the dataset's owners |
-| 11 | Upkeep | depends | runner | deprecation; repeat attempts |
+| 11 | Upkeep | depends | runner | deprecation; repeat attempts, made blind and then reconciled with the attempt before (agent `reconcile`, after verification; [protocol](protocol.md), "Repeat attempts") |
 
 New targets come from the [Track DANDI](../.github/workflows/targets.yml)
 workflow. Every day it rebuilds `targets/dandisets.json` from the archive. When
@@ -30,16 +30,60 @@ changed: new dandisets that name a paper, papers added to existing targets
 (an attempted one needs claims for each new paper), and new published versions
 of attempted dandisets, which are candidates for a repeat attempt. Merging the
 pull request puts the new targets in the runner's queue.
+A person asks for a particular attempt, such as a repeat after a conversion was
+fixed, with a run request ([queue.md](queue.md)); requests run before the
+targets the runner chooses itself.
+
+## Paper match
+
+An archive's metadata names papers loosely: a review cited as background, a
+sister project's paper, a paper whose data were deposited as another dataset, a
+mistyped DOI. The relation it gives is no guide either: `Describes` is often
+meant as `IsDescribedBy`, and even `IsDescribedBy` can point to a paper whose
+figures rest on other sessions. An attempt on such a paper tests its claims on
+data that are not the dataset, or on nothing.
+
+So before the claims are read, each paper a target names (after the corrections
+in `papers/triage.yaml`) gets a verdict in `papers/match/<folder>.yaml`:
+`primary` (the dataset is the paper's data), `partial` (it holds part of it),
+`other_data` (a research paper whose data are elsewhere; `data_in` says where),
+`background`, `not_a_paper` or `wrong_doi`. `tools/paper_match.py` settles a
+paper as `primary` from its text alone when the text carries its title and
+names this dataset and no other one, or when the archive says the paper
+describes the dataset (`IsDescribedBy`) and the paper names no dataset at all.
+Every other paper goes to an agent (`paper-match`,
+[docs/agents/paper-match.md](agents/paper-match.md)), which reads the paper's
+data statement and Methods and the dataset's archive metadata and file paths,
+never its data, and writes each verdict with a reason and quoted evidence. The
+runner (`chain.sh`) runs the match when main has none for the dataset and puts
+it straight on main (`tools/runner/merge_match.sh`).
+
+An attempt uses the paper triage names, else the first `primary` paper, else
+the first `partial` one. A dataset left with no usable paper is held: the chain
+stops and opens an issue, and the runner takes it no more, until a person reads
+the verdicts and either confirms them (`confirmed: true` on each) or corrects
+one (`verdict`, with `by:` their name). A confirmed one shows on the site as "No
+matching paper"; the paper's data, when `data_in` names a dataset, may be a
+target of its own. As a last guard, a claims file whose claims, link claims
+aside, are mostly on data elsewhere stops the chain before its checkpoint.
+
+To fill in the matches for every target, attempted or not, run a runner with
+`MATCH_ONLY=1` (`tools/runner/run_queue.sh`).
 
 Steps 3 and 4 fix every claim and its method from the paper before anyone
 analyses the data: the claims agent never sees the dataset's contents. The
 author reads the paper to understand the claims, but cannot change a claim's
-statement or method. When the claims file does not say something the attempt
-needs, the author does not choose it, even when the paper gives it: it writes
-the question, citing the passage, in
-`questions/<folder>.yaml` and leaves the claim blocked as `methods_underspecified` or runs
-the readings the claim names. The question goes to step 7; once it is answered,
-the attempt resumes from the claims file.
+statement, expected values or criterion. When the claims file does not say a
+method detail the attempt needs, the author takes it from the paper and cites
+the passage. Where the paper leaves the detail open, the author runs every
+reading, adopts the best-supported one as a stated assumption (or blocks the
+claim as `methods_underspecified` when no choice is defensible), and records
+the question for the paper's authors in the claim's notes and the attempt's
+findings. Only when the author or a verifier believes the claims file misreads
+the paper is a question written, citing the passage, in
+`questions/<folder>.yaml`. It goes to step 7, where a reader decides whether to
+amend the claims file; once it is answered, the attempt resumes from the claims
+file.
 
 When the claims check says the file is ready, the runner commits the claims
 file straight to `main`, with no pull request, once it validates against its
@@ -49,6 +93,14 @@ before any analysis of the data is merged. The Pipeline page shows them as
 done from then on. The attempt goes on in its branch; when it is merged, git
 drops the claims change `main` already has. A deprecated attempt is not held
 to the claims file that replaces its own.
+
+When a dataset's paper is a preprint that has since been published in a journal,
+the publication replaces it: `papers/triage.yaml` lists the preprint under
+`not_papers` and the publication under `papers`, and the paper store holds the
+publication's text and supplement. An attempt whose claims were read from the
+preprint is deprecated, and its claims file is removed. The runner takes a
+dataset whose latest attempt is deprecated as it takes one with no attempt, and
+reads its claims again before the new attempt.
 
 ## Access
 
@@ -72,7 +124,8 @@ naming the usage policy means the run was flagged. A flagged run commits
 nothing and fails with `FLAGGED`. The runner then puts the branch back and
 runs the role again on the verified account, along with the dataset's
 remaining roles. A missing unverified token (`UNVERIFIED-UNAVAILABLE`) is
-treated the same way. The recorder always runs on the verified account. Each
+treated the same way. The recorder reads no paper, so it starts on the unverified account even for a
+dataset whose paper was flagged. Each
 run's commit records its account.
 
 ## The paper store

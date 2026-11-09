@@ -1,0 +1,154 @@
+I wrote the notes in `docs/pilot-notes/001868-kim-2026-01.md`, which is the only file I changed, and nothing is committed. It is not a repeat attempt, and the `catalystneuro` field is empty, so the second paragraph has no CatalystNeuro opening. The two verification rounds agreed, nothing was proposed after the second, and there was no third round.
+
+One thing in the sources is inconsistent. The author's report opens with first-run totals of 12, 5 and 5, but its own table adds up to 14 reproduced, 4 partial and 4 not reproduced. So the note gives the first run as the specific outcome changes listed in the revise-1 report, not as totals.
+
+# 001868, Kim et al. 2026
+
+Sixteen claims reproduced (three on an assumption), four partially, four not
+reproduced and 19 blocked, 17 as metadata insufficient and two for missing
+data. All 43 claims are on the dandiset. The first verification round agreed
+with 38 of the 43 outcomes as they stood and the second with all 43; nothing
+was proposed after the second, so there was no third round. It pins version
+0.260715.2016, which the paper's data statement cites, the only published
+version, with the draft identical to it. The paper, Kim, Lycke, Zolotavin,
+Montes, Xie and Luan, "Learning induces activation-mechanism-dependent neural
+plasticity in an intracortical microstimulation task" in Science Advances,
+trains six Thy1-GCaMP6s mice, implanted with a 32-channel ultraflexible NET in
+S1 under a cranial window, to report microstimulation by a wheel turn over
+weeks 0 to 4, and follows the evoked spiking and two-photon calcium responses
+against six control mice stimulated without behaviour; the dandiset holds 85
+assets (7.5 GB) in NWB of the processed electrophysiology, behaviour and imaging,
+with 55 behavioural sessions and the control animals' files. The claims were
+written from the version of record in Europe PMC (PMC13544205) and the
+supplement, which holds figure legends only, and from the paper's code
+(XieLuanLab/icms-activation-plasticity at commit d1922d1); the bioRxiv preprint
+the dandiset names was not used. The check made eight changes, one of them a
+new claim (`figs9a-coupling-700ms`), corrected the expected velocity range of
+`figs4b-pl-latency-distance` to 0.2385 +- 0.0585 m/s, and left four points
+open. Reproduced are the behaviour claims, `fig2a-threshold-decrease`
+(psignifit medians of 5.39 uA early and 3.88 uA late, p = 5.32e-06),
+`fig2a-steepest-decline-early` on the claims file's reading of the figure (a
+fall of 1.837 uA from week 0 to 1 against at most 0.792 later, which the
+maximum likelihood variant reverses), `figs1e-response-times-decrease` and
+`figs5c-wheel-onset-decrease` (119.0, 133.0 and 128.0 ms); and the ephys claims
+`figs3b-modulation-increase-all`, `figs3d-modulation-stable-at-threshold`,
+`fig4g-modulated-count-mouse1` (one-sided p = 0.0443, r = 0.42, n 8 and 21, as
+in the paper), both `fig4ij` claims, `fig5fg-pl-modulation-increase`,
+`figs4de-npl-no-change`, `figs5-restricted-window-consistent` under the reading
+that keeps the 700 ms labels, `fig6f-population-coupling` and
+`figs9a-coupling-700ms`. `figs7-control-no-change` and
+`figs9-coupling-window-and-control` are reproduced on assumptions about the
+control code's timing file and trial table, which are not public: the absence
+of a change in control NPL modulation holds with the code's 700 ms baseline,
+which holds the previous burst for 5863 of 8795 bursts, and not with a baseline
+before each trial's first burst (p = 0.0059), and with single bursts as
+segments the early PL and NPL coupling differ (FDR p = 0.00428). Partial are
+`figs3c-latency-all` (time to maximum also falls at 4 uA, p = 0.0465),
+`fig5e-pyramidal-fraction-pl` (NPL fraction 0.553, 0.005 above its tolerance),
+`figs4b-pl-latency-distance` (latency rises with distance at every current, but
+the 4 uA velocity is 0.169 and 0.161 m/s, below 0.18) and
+`fig5h-pl-spike-probability-increase` (6 uA holds, 5 uA p = 0.0613 at the fixed
+seed and 0.0197 to 0.0485 under three others). Not reproduced are
+`fig4-unit-counts` (795 units and 488 modulated, 4 of 6 counts outside their
+tolerance where the criterion asks 5 inside), `fig5d-pulse-locking-stable-across-currents`
+(0.792 of pairs keep their identity, 0.774 to 0.793 under other seeds, against
+the claim's 0.80), `fig6c-kl-divergence` (PL separation does not rise under
+either reading) and `fig6d-npl-hit-miss-divergence` (PL responses diverge
+between hit and miss in both phases, and no reading puts both NPL onsets in
+tolerance). The eight volumetric Fig. 2 and fig. S2 claims and the nine planar
+Fig. 3 and fig. S6 claims are blocked as metadata insufficient, and
+`fig4d-waveform-separation` and `figs8-tracked-units` for missing data. The
+author's first run gave the same outcomes except that `fig4-unit-counts` and
+`fig5fg-pl-modulation-increase` were partially reproduced,
+`figs4de-npl-no-change` was not reproduced, `fig5d-pulse-locking-stable-across-currents` and
+`fig5e-pyramidal-fraction-pl` were reproduced, `figs4b-pl-latency-distance` was
+not reproduced, and `figs7-control-no-change` and
+`figs9-coupling-window-and-control` were blocked as methods underspecified. The
+author asked no questions of a reader, so the answer and author-answers runs
+changed nothing. Round 1 disagreed on five outcomes (`fig4-unit-counts`,
+`figs3c-latency-all`, `fig5e-pyramidal-fraction-pl`,
+`fig5h-pl-spike-probability-increase` and `figs9-coupling-window-and-control`)
+and found that the coarse psignifit grid could change an outcome, that the PL
+call named 80% of responses PL against about 66% in the paper, that cell types
+came from the stored label and not the criterion's trough-to-peak rule, that
+the mapping of stimulation channels to contact positions was never shown, and
+that the control counts and the control ephys could be tested; in reply
+psignifit was run at its default grid with the threshold at 50% of the fitted
+function, the PL call followed the paper's code (62.3% PL), the contact was
+placed at (32 - stim_channel) x 60 um as the code does, the trough-to-peak rule
+became a variant and the controls were run with the paper's control code, which
+gave the outcome changes above, and a question on `figs3d-modulation-stable-at-threshold`,
+whose reading (a) gives about twice the paper's n, went to a reader in
+`questions/001868.yaml`; `figs3c-latency-all` and
+`fig5h-pl-spike-probability-increase` were kept partial with the disagreement
+recorded. Round 2 agreed with all 43, withdrew its not reproduced for
+`figs3c-latency-all`, and found that the contact mapping fails in the nearest
+60 um and in Mice 5 and 6, that the control baseline holds the previous burst,
+that the n given to justify trial segments in `figs9-coupling-window-and-control`
+did not support it, and sentences the outputs did not support (a bimodal
+trough-to-peak histogram whose dip comes from the binning, an NPL onset of
+about 105 ms where the outputs give 75 and 87.5 ms, and ROI counts, reference
+images, voxel masks, plane counts and burst spacing never printed); in reply the
+text was corrected, data-check cells and the variants it asked for were added,
+and checking the trial segments found that the stored trial_index restarts in
+each recording block, so segments had joined trials of different blocks, which
+was fixed with no change of outcome. The sign alternation of the late PL
+clusters in Fig. 6D and a week-4 PL KL median of 0.859 under one Fig. 6C
+reading were not investigated, as neither bears on an outcome. The author's run
+went from 23:29 to about 00:52 UTC and nothing failed. The notebook ran in 734
+s at first and 887 s after the author-answers run, 28.6 minutes after round 1,
+and the final check took about 25 minutes. The untracked files in the
+repository root were left alone.
+
+The volumetric imaging gives no position of the stimulation contacts in the
+imaging volume, no activation calls and only per-ROI dF/F, not the voxel-level
+responses the activation rule uses, so no count, density or radius of
+activated neurons in Fig. 2B to 2G and fig. S2 can be formed. The planar ROIs
+are segmented separately in each session (385, 172, 388, 359, 697, 329, 543 and
+443 ROIs in Mouse 1), their roi_id_source is the row index in every session,
+and no reference images are stored in any segmentation, so the neurons tracked
+across weeks in Fig. 3 and fig. S6 cannot be found. Each unit has one mean
+waveform of 90 samples on one channel, with no waveforms in and out of
+stimulation, no multi-channel templates for UnitMatch and no labels of tracked
+units. The files hold 795 unit-sessions in the 46 sessions of weeks 0 to 4 (999
+over all 55), where the paper reports 973 units, 24 control imaging sessions
+where it reports 18, and units in 14 sessions of 4 control mice where fig. S7
+reports 15 sessions. stim_channel and the electrode table's channel_name are
+both described as Ripple channel numbers but are not the same numbering, and no
+file states the mapping: with the code's placement the contacts lie at 0 to 520
+um depth, and with the electrode table's rel_y at -156 to 1559 um. The control
+files hold 3 bursts of 10 biphasic pulses at 50 Hz per trial, 200 ms bursts
+starting 0.5 s apart, where the behavioural trains are 70 pulses at 100 Hz over
+700 ms and the Methods say the controls had similar stimulation; their survey
+imaging gives no voxel size or plane spacing, 2 to 9 of the 32 contact
+positions sit at the origin, and their trials table's trial_index restarts in
+each recording block though it is described as the index within the session.
+No per-pulse stimulation times are stored, so pulses must be placed at their
+nominal spacing, and in sessions with planar imaging the electrical_stimulation
+tables also hold 37 to 90 trains of up to 242 pulses lasting seconds, after the
+end of the electrophysiology recording. Miss trials have no response time
+except 98, so the movement-onset threshold of fig. S5 cannot be formed as
+stated, and response_time is measured from trial start, 0 to 85 ms before the
+train (56 to 85 ms in ICMS101 2023-10-27). Mouse 6 (ICMS83) has no catch
+trials, though the Methods give each block 10. Cell types are spelled
+'Pyramidal Cell', 'Narrow Interneuron' and 'unknown' in ICMS83 and 'pyramidal'
+and 'interneuron' elsewhere, and the stored type disagrees with the 0.45 ms
+trough-to-peak rule on the stored mean waveform for 72 units (29 interneurons at
+0.45 ms or more, 43 pyramidal below). Questions are put to the paper's authors:
+what bin width and smoothing the hit and miss PSTHs of Fig. 6D used and whether
+the onset is the first or the last significant cluster; whether the modulated
+set and PL labels of fig. S5 were recomputed in the 120 ms window; and, for
+fig. S7 and fig. S9C, the pulse window, blanking, time to maximum and baseline
+the control code's missing timing file sets, and whether a row of its trial
+table is a trial of 3 bursts or one burst.
+
+The author's points on the protocol: a claim that is a conjunction with one
+part untestable (figs9, the 120 ms window plus the controls) has no outcome
+rule, so it was blocked at first with the tested part in the notes; criteria
+that define no partial outcome (figs3c, fig5h, fig4-unit-counts) leave open how
+to grade a result that holds in part, so the protocol's general "holds only in
+part" was used; step 1.3's instruction to pin the version the paper cites "as
+the claims file gives it" led to a first draft header that said otherwise,
+corrected after checking the paper's text; and nothing says how to treat an
+expected value the criterion does not judge, such as fig2a's late n of 89
+against 80 +- 8, which was reported without changing the outcome.

@@ -55,6 +55,23 @@
 # active trial. Firing fields (Methods): contours from the peak down to 3 x MAD of all bins, fields
 # at least 225 cm2 with a rate of at least 1 Hz. Open: whether the mean rate for rate overlap uses
 # all of the trial or only the speed-filtered epochs; readings (a) speed-filtered, (b) whole trial.
+# Open (answered 2026-10-21, not given): whether the 1 Hz rule applies to the field's peak (field
+# reading a) or to every bin of the field (b, threshold max(3 x MAD, 1 Hz)); the Methods say only
+# "with a minimum firing rate of at least 1 Hz" and the code holds no field detection. Both readings
+# are allowed.
+#
+# Smoothing and unvisited bins, for every rate map in this file (answered 2026-10-21). The Methods
+# compute the rate per bin first and then smooth it ("the firing rate in each position bin was
+# calculated as the number of spikes recorded in the bin, divided by the time the rat spent in the
+# bin. The 2D rate map was smoothed"). The repository's calculateRateMap.m does the same: zRaw =
+# countRaw ./ (timeRaw + eps), so an unvisited bin enters the smoothing with rate 0; the rate map is
+# smoothed by smoothData.m (Gaussian, SD in bins, edges padded with the mirrored map); with 'blanks'
+# 'on' (its default) the bins with zero raw time are set to NaN after smoothing, with 'off' (the
+# template and decoder maps) they keep the smoothed value. The time per position sample is the gap
+# to the next sample, clipped at 0.1 s (maxGap), and a spike is counted at the last position sample
+# at or before it (histc). The single-cell maps' own code is not given; the reading for all maps is
+# this one (rm b with unvisited bins set to 0 in the kernel, for blanked and unblanked maps alike).
+# Spike and time maps smoothed separately (rm a) is not the paper's method.
 #
 # Template matching (object-tuning score). Methods, Template matching procedure, and the code
 # (rateMapData.m, templateMatchingScore.m, shuffledTemplateMatchingScore.m, compareThreshold.m):
@@ -170,7 +187,9 @@ claims:
     on the 219 control cells with the object placed at (75, 75) cm in the trial standing for O and at
     (35, 120) cm in the trial standing for OM. The paper does not say which control trials stand for
     O and OM; readings (a) CON2 and CON3, the trials in the same place in the session; (b) CON1 and
-    CON2. Reproduced when, under one reading, both fractions are within tolerance and a binomial test
+    CON2. Rate maps are smoothed as the opening comment's "Smoothing and unvisited bins" says (rate
+    per bin, unvisited bins 0, then smoothed; calculateRateMap.m and the Methods, Firing rate maps).
+    Reproduced when, under one reading, both fractions are within tolerance and a binomial test
     of the object-tuned count against the chance fraction gives p < 0.05 (two-sided, as all the
     paper's tests are; Methods, Statistical tests).
 - id: fig1d-field-distances
@@ -199,7 +218,9 @@ claims:
     which point of a field gives its distance, in which trial, or which field of a cell with several.
     Readings (a) the centroid of the field (the point Supplementary Figure 5G plots) in the O trial,
     nearest field; (b) as (a) averaged over the O and OM trials; (c) the field's peak bin in the O
-    trial. Reproduced when, under one reading, the mean is within tolerance, the range lies within
+    trial. The 1 Hz rule of field detection is not given further (Methods, Firing rate maps); each
+    point reading is run with the field readings (a) peak at least 1 Hz and (b) every bin at least
+    max(3 x MAD, 1 Hz). Reproduced when, under one reading, the mean is within tolerance, the range lies within
     4.8 to 80.7 cm widened by 10% of each bound, and every 45 degree sector around the object holds
     at least one field.
 - id: fig1e-object-cells-and-object-vector-cells
@@ -545,7 +566,13 @@ claims:
   criterion: The Methods' four criteria, after excluding cells whose fields would fall outside the
     arena in OM. The vector map's distance and direction bins and its smoothing are not given; the
     paper directs to the method of its references 11 and 12 (Hoydal et al. 2019; Andersson et al.
-    2021), and those papers' bins and smoothing are used. Reproduced when the count is within tolerance. The manual
+    2021), and those papers' bins and smoothing are used. Reference 12 (Andersson et al. 2021,
+    Methods, OV score) gives them, read for the answer of 2026-10-21; "distance bins of 2 cm and
+    orientation bins of 10°", rate as spikes over time per bin, "circularly smoothed with a 2D
+    Gaussian kernel with s.d. of 1.5 bins (3 cm, 15°)", 0° East. Neither paper gives the range of
+    distances; readings (r-a) 0 to the largest distance sampled in either trial, the correlation over
+    bins with a value in both maps; (r-b) 0 to the largest distance sampled in both trials. Reproduced
+    when, under one range reading, the count is within tolerance. The manual
     inspection is not repeated.
 - id: fig3b-decode-presence
   statement: A Bayesian decoder using 1 s population spike counts told the NO trial from the O trial
@@ -657,7 +684,11 @@ claims:
     trials (3 cm bins, 50 x 50, as the Methods give m = n = 50), the Pearson correlation across cells
     at each spatial bin, and the mean correlation in each of 5 distance bins. The bins are open;
     readings (a) the Methods' fixed 20 cm rings (0 to 100 cm); (b) 5 bins with equal numbers of
-    spatial bins, which the reported 489 values per bin implies. Reproduced when, under one reading,
+    spatial bins, which the reported 489 values per bin implies. The Methods do not say whether these
+    maps are speed-filtered or blanked (answered 2026-10-21); readings (pv-a) speed-filtered, as the
+    Methods' general rule for rate maps; (pv-b) not filtered, as the decoder code; each with (bl-a)
+    unvisited bins blanked and left out of that bin's correlation or (bl-b) not blanked, as the
+    decoder's 3 cm maps. Reproduced when, under one reading,
     the Kruskal-Wallis test gives p < 0.05 with correlation rising from bin 1 to bin 5 and the three
     signed-rank tests give p < 0.05 with the farther bin higher.
 - id: figs5a-decode-no-from-no-prime
@@ -752,8 +783,11 @@ claims:
     p: 4.98e-8
     n: 16 sessions
   criterion: The distance decoder with training and testing timepoints drawn by a random permutation
-    (Methods, Random partitioning). Which timepoints are permuted is open; readings (a) 1 s bins;
-    (b) position samples. Reproduced when, under one reading, the Kruskal-Wallis test gives p < 0.05
+    (Methods, Random partitioning). The timepoints are the 1 s spike-count vectors (answered
+    2026-10-21); the random partitioning is "analogous to the shuffling procedure above", where the
+    permuted timepoints are "N×1 spike count vectors" (Methods, Shuffling trial labels). Training rate
+    maps are built from the position and spike samples within the training windows. Reproduced when
+    the Kruskal-Wallis test gives p < 0.05
     with accuracy highest in bin 1 and lowest in bin 5.
 - id: figs5ghi-fields-and-rates
   statement: Firing fields were spread across the arena, not concentrated at the object, and firing
@@ -850,7 +884,10 @@ claims:
     p_relation: "<"
   criterion: Distance decoder with rate-map bins of 10 cm (the Methods' "10 cm2" read as 10 cm sides,
     as 3 cm2 is used for the 3 cm bins), spatial bins below the threshold in either trial left out
-    of both. Reproduced when all four Kruskal-Wallis tests give p < 0.05 with bin 1 highest.
+    of both. The Methods do not say whether the sampling time is that of the whole trial or of the
+    training half, nor whether testing samples in a left-out bin are kept (answered 2026-10-21; the
+    code holds no sampling analysis); the four combinations are readings. Reproduced when, under
+    one reading, all four Kruskal-Wallis tests give p < 0.05 with bin 1 highest.
 - id: tables1-without-bin-1
   statement: The effect of distance on decoding accuracy held when the bin nearest the object was left
     out.
@@ -986,8 +1023,11 @@ claims:
     n: 16 sessions
   criterion: A claim of absence, judged on the paper's tests (from the Supplementary Figure 7 legend,
     an image on PDF page 46, not in the text). Distinct words per session, trial and distance bin as in
-    fig5b-words-more-informative. Reproduced when all three tests give p >= 0.05, not reproduced when
-    any gives p < 0.05.
+    fig5b-words-more-informative. The values of the rank-sum test are not given (answered
+    2026-10-21); the legend says "n = 16 experiments" and Supplementary Figure 7C and 7D plot only
+    values per session and distance bin. Readings (w-a) each session's distinct words over the whole
+    trial, 16 against 16; (w-b) the 80 session and distance bin values of each trial. Reproduced when,
+    under one reading, all three tests give p >= 0.05, not reproduced when any gives p < 0.05.
 - id: figs7e-downsampled-words
   statement: After downsampling words to as many states as counts, words still carried more information
     than counts.
@@ -1211,9 +1251,13 @@ claims:
     tolerance: 0.05
   criterion: Pearson correlations over cells of distance tuning with the object-tuning score (opening
     comment), spatial information in bits per spike in the O trial (Methods), and NO-O spatial
-    correlation and rate overlap. The r values are printed to two digits, so a tolerance of 0.05 is
+    correlation and rate overlap. The mean rate lambda is not defined beyond "the mean firing rate in
+    the trial" (answered 2026-10-21); readings (si-a) the trial's speed-filtered spikes over
+    speed-filtered time; (si-b) the occupancy-weighted mean of the smoothed map, sum of Pi li with
+    Pi the occupancy over the trial's duration. The r values are printed to two digits, so a tolerance of 0.05 is
     used in place of 10%, being half a unit in the first digit at the scale the claim calls weak.
-    Reproduced when, under one cell reading of fig6ab-single-cell-distance-tuning, all four r are
+    Reproduced when, under one cell reading of fig6ab-single-cell-distance-tuning and one lambda
+    reading, all four r are
     within 0.05 of the printed values with the same sign and p < 0.05, and each |r| is below 0.3.
 - id: fig7-slope-variant
   statement: Using the slope of accuracy against distance in place of distance tuning gave similar weak

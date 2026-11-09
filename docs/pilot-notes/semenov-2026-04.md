@@ -1,0 +1,147 @@
+# 001518, Semenov et al. 2026
+
+One claim reproduced (on an assumption), two partially (one on an assumption),
+seven not reproduced (four on an assumption) and 12 blocked, all for missing
+data; the eight claims that also use an input from outside the dataset are
+counted apart: five not reproduced (three on an assumption) and three blocked
+for missing data. All 30 claims are on the dandiset. The first verification
+round agreed with 21 of the 30 outcomes as they stood and the second with all
+30, and nothing was proposed after the second, so there was no third round.
+It pins version 0.261006.1957. The paper, Semenov, Silkuniene, Silkunas,
+Pakhomova, Bixler, Ibey, Kochunov and Pakhomov, "Sub-microsecond optical
+measurements of cell membrane charging and lesioning by pulsed electric
+fields" in Bioelectrochemistry, images CHO-K1 cells stained with FluoVolt
+or Di-8-ANEPPS by a laser flash at 900 ns into 1-us pulses (275 ns into
+0.3-us pulses), in sets of 40 baseline and 60 pulse images, and reports
+the charging at the anodic and cathodic poles as the field is raised from
+43 to 1400 V/cm (Figs. 1 to 4), its change with Gd3+ and a conductivity
+calibration by Eq. (2) (Fig. 5), Fluo-4 calcium responses (Fig. 6) and
+membrane recovery in a two-pulse protocol (Fig. 7). The claims were written
+from the version of record, from a PDF supplied by a person, without opening
+the figures; the paper names no supplement and links no code ("Data will
+be made available on request"), and the claims that use the calculated IMP
+take the charging time constant of reference [20] (Semenov et al. 2025,
+tau = 44.5 ns/um times the cell radius) as an outside input. The 14 claims
+on the 1-us escalations and `fig5b-conductivity-calibration` were tested.
+Reproduced is `fig2b-di8-decline-within-set`, on the cathodic pole (the
+anodic pole declines in none of the sets), though most of the decline is
+a drift present at every field strength (the cathodic |dF| also falls in
+9 of 11 sets below 780 V/cm, mean -1.76%, against -3.32% from 780 V/cm).
+Partial are `fig2b-di8-climbs-to-570` (both poles rise at every step from
+150 to 570 V/cm with experiment means, the anodic pole falls from 150
+to 230 V/cm with the cell nearest the centre, and the 43 V/cm step has
+no set) and `fig5b-conductivity-calibration`, which uses no recordings
+(1.33% for a 10-fold rise against 2 +- 0.2, 11.87% for a 100-fold rise
+within 12 +- 1.2). Not reproduced are `fig2a-fluovolt-saturation` (23.5%
+at 360 V/cm against 66 +- 6.6, -35.8% at 570 V/cm against -83 +- 8.3),
+`fig4a-fluovolt-limits` (35.9% and -49.5% against 71 +- 10 and -83.5 +-
+5), `fig4a-fluovolt-cathodic-decline` (23.5% at 360 V/cm against 71 +-
+10), `fig4b-di8-limits` (largest at 1400 V/cm, 24.3% and -29.2%, against
+57 +- 14 and -55 +- 4) and `fig4b-first-10-pulses` (27.0% against 66 +-
+15), which fail at every factor; `fig3-dye-sensitivity` (6.10 and 2.37% dF
+per 100 mV against 26 and 9.1, r 0.775 and 0.481 against 0.96 and 0.78),
+`fig3-fluovolt-nonlinear` (FluoVolt does not depart from the line at 220
+mV and above, Di-8-ANEPPS departs near zero from the bleaching offset),
+`fig2a-fluovolt-stable` (baseline changes of -3.34% at 780 V/cm, p = 0.018,
+and -2.82% at 1000 V/cm, p = 0.003; 4 of 38 over all sets, about 1.9 expected
+by chance), `fig1-pole-dimming` (cathodic dF 18.1% at 780 V/cm above 13.0% at
+570 V/cm), `fig4b-cathodic-asymmetry` (both poles keep growing from 780 to
+1400 V/cm), `fig4c-equator-follows-cosine` (9 to 11 of 12 arc tests differ
+with 15-degree arcs) and `fig7b-charging-during-pulse` (anodic ratios 1.46 and
+1.62 against 1.5 +- 0.15 and 2 +- 0.2). These outcomes rest on 5.6 V/cm per V
+(1400 V/cm at 250 V), within the 4.64 to 7.19 of a two-dimensional model of the
+paper's electrodes, a pixel size of 0.267 um, background subtraction and an
+automatic membrane trace; every criterion was also run over factors from 1.5
+to 8 V/cm per V, and of the not reproduced claims only `fig2a-fluovolt-stable`
+is met at any factor run (3.5). The other 15 claims are blocked because their
+experiments are not in the dandiset. The author's first run adopted 1.72 V/cm
+per V (43 V/cm at 25 V), close to the 1.5 to 1.6 the low-field response gives
+with the paper's dye sensitivities, and gave 2 partially reproduced, 5 not
+reproduced and 23 blocked, eight Di-8-ANEPPS claims blocked because no set
+reached 570 V/cm under that mapping; its first check failed the schema (17
+errors, from `assumed: true` on blocked outcomes) and passed once fixed.
+The author asked no questions of a reader, so the reader's run and the
+author-answers run changed nothing. Round 1 disagreed with nine outcomes,
+finding the 1.72 factor circular, as it was chosen by matching the slopes
+`fig3-dye-sensitivity` tests, and 3 to 10 times below the electrode geometry,
+and would have blocked `fig3-dye-sensitivity` as metadata_insufficient;
+it also found that five outcomes do not depend on the factor, that the
+automatic trace was never checked against the paper's magnitudes, that the
+`fig3-fluovolt-nonlinear` outcome turns on an unexamined bleaching offset,
+and that no low-field set controlled for drift. In reply the factor became
+5.6, the eight blocked claims were tested, `fig3-dye-sensitivity` moved
+from partially reproduced to not reproduced with the disagreement recorded,
+and the factor sweep, a trace check, a camera-offset background, a variant
+with the offset removed and the drift control were added; the trace overlays
+showed the trace drawn inwards by bright spots in some cells and two touching
+cells in c7 traced as one, and an edge trace run as a variant changed no
+result at the adopted factor. Round 2 agreed with all 30, checked the rod
+model against the line-charge solution, found the factors between 1.72 and
+2.0 untested for `fig3-dye-sensitivity` (now run on a grid from 1.40 to
+2.30, where no factor meets both slopes), asked for the -3.9% bleaching
+offset at 25 V to be described for `fig7b-charging-during-pulse`, and found
+statements the outputs did not support (a baseline range from -1.70% where
+it is -3.04%, a slope said to scale as one over the factor with the 1.31
+and 1.46 V/cm per V drawn from it, a round-1 count of 19 where it is 21,
+and a run time of 17 minutes that no output showed), all corrected. The
+author's run took about 80 minutes (21:02 to about 22:21 UTC); the notebook
+ran in 898 s at first, most of it streaming the 190 files, 940 s after the
+author-answers run, 962 s after round 1 and about 10.5 minutes at the end.
+A `.claude/.cc-writes` directory the harness left in the entry could not
+be removed in the author's run, as approval was denied, and was gone by the
+author-answers run; untracked files at the repository root, which the author
+did not create, were left alone.
+
+The dandiset holds ten escalations of 1-us pulses, 19 sets each from 25 to
+250 V, five with FluoVolt and five with Di-8-ANEPPS, all from 2025-01-24,
+and none of the alternating sets (Fig. 2C, D), 0.3-us pulses (Fig. 4D), Gd3+
+experiments (Fig. 5), Ca2+ imaging (Fig. 6) or two-pulse experiments (Fig.
+7); its voltages span a factor of 10, so it cannot hold the paper's 43 to
+1400 V/cm escalation (a factor of 33, in 9 sets), and its FluoVolt series has
+5 experiments where the paper has n = 4. The files give the pulse amplitude
+in volts and the paper field strengths in V/cm from Sim4Life modelling,
+and neither the files, the paper nor its reference [20] give the factor
+between them. Every file states an electrode distance of 1.00 mm, while
+Methods 2.2 state 1.6 mm; a two-dimensional model of two 0.5-mm rods gives
+8.0 to 17.5 V/cm per volt at the midpoint for 1.00 mm and 4.6 to 7.2 for
+1.6 mm, while the paper's dye calibration applied to the low-field response
+implies about 1.5, so either the stated geometry and voltage do not describe
+the field, or the dyes respond less here than in the paper. The mean pole
+dF stays near half the paper's under every factor (largest FluoVolt means
+36.1% and -49.5%, Di-8-ANEPPS 24.3% and -29.2%); per experiment FluoVolt
+reaches 43.6% and -61.1%, and neither moving the trace nor following the
+edge brings the means near the paper's values. Each field of view holds 3
+to 6 cells, while the paper analysed one cell per experiment, and nothing
+in the files identifies the cell analysed or gives cell outlines. The files
+give no pixel size, no field direction and no description of which images
+carry the pulse; the field direction (cathode-facing side towards the bottom
+of the image, 94 to 106 degrees) and the pulse onset at image 41 are clear
+from the data, and with the assumed 0.267 um the mean radius is 6.7 um with
+the peak trace and 9.9 um with the edge trace, against the about 8 um the
+paper uses in Eq. (2). Frame 0 is dark (laser not fired) in 175 of 190 sets
+and 51 other frames in 45 sets are dark, which the files do not mention,
+so most baselines have 39 lit images, not 40. The paper states background
+subtraction only for Ca2+ imaging, and without it dF halves. In Di-8-ANEPPS
+both poles share a bleaching offset of -3.9% at 25 V. Of the paper itself,
+Eq. (2) with the constants the Methods give yields a 1.3% IMP reduction for
+a 10-fold rise in membrane conductivity, while Results 3.5 says about 2% (a
+15.2-fold rise is needed for 2%); the 100-fold value (11.9%) agrees with the
+stated 12%. Questions are put to the paper's authors: what field strength
+each pulse amplitude corresponds to, and whether these are the escalations
+of Fig. 2A, 2B and 3; which cell in each field of view was analysed; whether
+background was subtracted from the laser images; and the pixel size.
+
+The author's points on the protocol: the volts-to-V/cm gap is missing metadata,
+not a method, and step 1.6 covers methods, so it was handled as readings plus
+an assumption checked against the data; the schema forbids `assumed: true`
+on blocked outcomes, so the first run's blocks that rested on the mapping
+said so in their notes; when the claims file names many crossing readings
+(32 for fig3) it does not say whether "under one reading" means any single
+combination, which was taken to be the meaning; it does not say what to
+do when a criterion fails on the data present but needs missing levels,
+so not_reproduced was used when the failure held under both mappings and
+blocked when the deciding levels were absent; absence claims are judged on
+the paper's test alone while the claims file still names readings, so all were
+run and the adopted one decided; and the data check of the mapping relied on
+the paper's calibration, itself a claim, a circularity the protocol does not
+address and the notes stated.

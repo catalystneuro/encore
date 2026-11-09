@@ -1,0 +1,62 @@
+name: Notify
+run-name: "Notify: ${{ inputs.dataset }} ${{ inputs.status }}"
+
+# Tells a person when the queue runner needs them. tools/runner/chain.sh dispatches this when a
+# chain ends: a chain that stopped for a person (a claims file the reader could not write, a check
+# that did not pass, a failed run) opens the dataset's `needs-you` issue, or comments on the one
+# already open, and @-mentions whoever runs the runner; a chain that merged closes it. The issue is
+# written here, by github-actions[bot], because GitHub does not notify people of their own actions,
+# and the runner acts with its owner's credentials.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset:
+        description: "The dataset's folder name (000147, or <archive>-<id>)"
+        required: true
+      status:
+        description: "The chain's last line: '<folder> STOPPED ...', '<folder> MERGED <pr>', ..."
+        required: true
+      detail:
+        description: "Why the role stopped, when the chain knows"
+        default: ""
+      run:
+        description: "The id of the run the chain stopped at"
+        default: ""
+      mention:
+        description: "GitHub user to mention (default: whoever dispatched this)"
+        default: ""
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: notify-${{ inputs.dataset }}
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - run: pip install --no-cache-dir pyyaml
+
+      - name: Open, update or close the dataset's issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATASET: ${{ inputs.dataset }}
+          STATUS: ${{ inputs.status }}
+          DETAIL: ${{ inputs.detail }}
+          RUN: ${{ inputs.run }}
+          MENTION: ${{ inputs.mention || github.actor }}
+        run: |
+          git fetch -q origin "attempt/$DATASET" 2>/dev/null || true
+          python tools/notify.py "$DATASET" "$STATUS" --detail "$DETAIL" --run "$RUN" --mention "$MENTION"

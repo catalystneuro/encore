@@ -1,0 +1,59 @@
+name: Publish Encore
+
+# Publishes the `encore-science` package (encore_science/, docs/encore.md) to PyPI when a tag
+# encore-v<version> is pushed, the version matching encore_science/__init__.py. It uses PyPI's
+# trusted publishing: PyPI trusts this workflow, in the `pypi` environment, so no token is stored.
+#
+#   git tag encore-v0.1.0 && git push origin encore-v0.1.0
+
+on:
+  push:
+    tags: ['encore-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Check that the tag names the package's version
+        run: |
+          version=$(python -c "import re; print(re.search(r'__version__ = \"(.+?)\"', open('encore_science/__init__.py').read())[1])")
+          [ "encore-v$version" = "$GITHUB_REF_NAME" ] || { echo "::error::Tag $GITHUB_REF_NAME does not match version $version"; exit 1; }
+
+      - name: Build
+        run: |
+          pip install --no-cache-dir build twine
+          python -m build
+          twine check --strict dist/*
+          ls -la dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/encore-science/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
