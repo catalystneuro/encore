@@ -1,0 +1,576 @@
+# Claims for Martini, Molano-Mazon & Maravall (2017), Cerebral Cortex 27:3782-3789, "Interspersed
+# Distribution of Selectivity to Kinematic Stimulus Features in Supragranular Layers of Mouse Barrel
+# Cortex", doi:10.1093/cercor/bhx019, on CRCNS data set ssc-6 (doi:10.6080/K02F7KCP).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record (open access, CC BY), extracted from the PDF to
+# paper/10.1093-cercor-bhx019.txt: main text, Materials and Methods, legends of Figures 1 to 4, and
+# the supplement (text_suppmat.docx), which holds only the legends of Supplementary Figures 1 to 3.
+# These repeat the data of Figures 2C, 2F and 4B split into red, green and blue channels; no result
+# rests on the supplement alone. The PDF was not opened: no claim needed a value shown only in a
+# figure. The data set's description (paper/ssc-6.data-description.txt) was read only to know what
+# it holds; no claim comes from it.
+#
+# Code: the paper links none. It names the software used: a modified StackReg ImageJ plugin
+# (registration), Caltracer 2.5 (Yuste lab, ROI detection and traces), and the Matlab function
+# fdr_bh by David Groppe (false discovery rate); stimuli were made in Matlab. "All data supporting
+# this study are available at http://crcns.org." No analysis script was available to read, so every
+# detail the Methods leave open is named below as open.
+#
+# Data the paper used. Female CD1 mice at about postnatal day 30, under ketamine-xylazine
+# anesthesia (n = 10 mice). Layer 2/3 of barrel cortex bulk-loaded with OGB1-AM, imaged with a
+# 2-photon microscope at 100 to 350 um depth, 512 x 128 pixel frames at 1.48 pixel/um and 8.8 Hz.
+# 10 to 15 contralateral whiskers in a capillary on a piezoelectric bender moved rostro-caudally.
+# Nine stimuli, idealized position, velocity and acceleration filters, each at three amplitudes in
+# the ratio 1:3:5, randomly interleaved, 1 s apart; each stimulus 10 times per recording and 4
+# recordings per field of view (40 presentations per stimulus and field). 49 fields of view and
+# 1054 neurons after discarding experiments with excessive motion. In 3 mice, tangential
+# cytochrome-oxidase sections placed the imaged neurons on the barrel map (167, 102 and 117 neurons).
+# Measured variables: per-neuron calcium response amplitude to each presentation (mean dF/F0 of the
+# 5 frames after the stimulus minus the mean of the 3 frames before), regression tuning
+# coefficients for position, velocity and acceleration, pairwise Spearman correlations of the whole
+# fluorescence time series, pairwise distances, a tuning similarity index (SI), and distance to the
+# nearest barrel border. The data set's description says it holds, for each of ten mice, the raw
+# movies of every field (four repetitions each), the stimulus command and frame-trigger signals for
+# each movie, and, for experiments 8 to 10, histology reconstructions (PDF). It holds no ROIs,
+# traces or tuning labels: the author must segment the movies again, so neuron counts and
+# identities will not match the paper's one to one. All claims use the data set (data: dataset).
+#
+# Method fixed by the Methods (2-Photon Image Analysis; Measurements of Response Properties), used
+# by every claim: rigid registration of each movie to its first frame; ROIs outlined on the mean
+# image of all frames; mean raw fluorescence per ROI with background from unstained blood vessels
+# subtracted; a perisomatic halo scaled by 0.7 and subtracted; dF/F0 with F0 the 8th percentile of
+# corrected fluorescence in a symmetric 6 s sliding window; response amplitude as above; tuning by
+# linear regression of all single-presentation response amplitudes on the amplitude of the
+# corresponding waveform, one regression per waveform type, scored with the Benjamini-Hochberg-
+# Yekutieli false discovery rate procedure at P < 0.05 (fdr_bh) over the neurons of a field;
+# non-significant coefficients set to zero; mixed selectivity when significant for several features.
+#
+# Details the paper leaves open, named again in the claims they touch:
+# (1) the halo width, the blood-vessel background ROI, and how ROIs are carried across the four
+#     movies of a field (one ROI set on the mean of all four registered movies is the reading used;
+#     a standard choice). The motion threshold for discarding fields is not given.
+# (2) which frames count as "after" and "before" a stimulus: the first frame starting at or after
+#     the command onset is the first frame after (standard choice).
+# (3) amplitude units in the regression: normalized 1, 3, 5 (Figure 2B legend, "normalized to the
+#     smallest value") or the peak command voltage. Significance does not depend on the units when
+#     each waveform type is regressed separately; coefficient magnitudes do. dF/F0 as a fraction or
+#     as percent scales coefficients by 100.
+# (4) the test of each regression: the t test of the slope, two-sided, is the standard reading;
+#     whether a significant negative slope counts as tuning is not stated (readings: either sign;
+#     positive only).
+# (5) the false discovery rate family and variant: fdr_bh with 'pdep' (Benjamini-Hochberg) or
+#     'dep' (Benjamini-Yekutieli), the text names both authors; family of all 3 x N p-values of a
+#     field, or N p-values per feature.
+# (6) what "responded to whisker stimulation" means (50.2%): not defined.
+# (7) the correlation signal: neuropil-corrected fluorescence before dF/F0 (the Methods' "corrected
+#     fluorescence") or dF/F0; the shuffle unit (one stimulus presentation, from its onset to the
+#     next onset) and the number of shuffles for correlations (not given; 100, as for SI, is used).
+# (8) distance between neurons: between ROI centroids in the imaging plane (standard choice);
+#     whether pairs beyond 300 um are fitted.
+# (9) which 26 of the 49 fields enter the SI analysis, and the SI scale (raw dot product as the
+#     Methods write it, or of unit-length tuning vectors).
+# (10) for Figure 4D, the group of a neuron tuned to several features, and whether the distance to
+#     the border is signed.
+# (11) the example neuron (Figure 2A-C) and the example field (Figure 3A, B, D, F) are not
+#     identified by mouse or field. The paper also gives the example field two sizes: n = 31
+#     neurons (Figure 3B) and n = 29 neurons with n = 465 pairs (Figure 3F, "the field of view in
+#     A"); 465 is the number of pairs of 31 neurons.
+schema_version: 2
+paper: doi:10.1093/cercor/bhx019
+claims:
+- id: dataset-size
+  statement: Layer 2/3 neurons were imaged in 10 anesthetized mice, 49 fields of view and 1054
+    neurons in all; each stimulus was presented 10 times per recording, in 4 recordings per field.
+  source: Materials and Methods, Whisker Stimulation, paragraph 3; Results, paragraphs 1 and 3
+  quote: In a recording, each stimulus was presented 10 times; 4 recordings were done for each field
+    of view, for a total of 40 repetitions per field ... anesthetized mice (n = 10) ... n = 10 mice,
+    49 fields of view, 1054 neurons
+  expected:
+  - quantity: mice
+    value: 10
+    tolerance: 0
+  - quantity: fields of view
+    value: 49
+    tolerance: 0
+  - quantity: recordings per field of view
+    value: 4
+    tolerance: 0
+  - quantity: presentations of each stimulus per recording
+    value: 10
+    tolerance: 0
+  - quantity: neurons over all fields
+    value: 1054
+    tolerance: 105
+  criterion: Mice, fields and recordings are counted from the deposited movies and stimulus files,
+    presentations from the command signal of each stimulus file, with zero tolerance. The paper
+    discarded fields with excessive motion by a threshold it does not give (open detail 1); if the
+    data set holds more than 49 fields, the excluded ones cannot be identified from the paper, and
+    the count is reported as it is. Neurons must be segmented again from the raw movies (Caltracer
+    or an equivalent, ROIs on the mean image, as the Methods), so the count takes the 10% tolerance.
+- id: stimulus-set
+  statement: The stimulus set holds idealized position, velocity and acceleration waveforms, each at
+    three amplitudes in the ratio 1:3:5, randomly interleaved and separated by 1 s.
+  source: Materials and Methods, Stimulus Design and Whisker Stimulation, paragraph 3; Results,
+    paragraph 1
+  quote: The set included idealized "position," "velocity," and "acceleration" filters ... Each
+    waveform type was presented with 3 possible amplitudes, in the ratio 1:3:5 ... Consecutive
+    deflections were separated by 1 s ... Different deflection waveforms and amplitudes were
+    randomly interleaved in time
+  expected:
+  - quantity: distinct waveform shapes
+    value: 3
+    tolerance: 0
+  - quantity: amplitudes per shape
+    value: 3
+    tolerance: 0
+  - quantity: ratio of largest to smallest amplitude within a shape
+    value: 5
+    tolerance: 0.5
+  - quantity: ratio of middle to smallest amplitude within a shape
+    value: 3
+    tolerance: 0.3
+  - quantity: interval between consecutive deflection onsets
+    value: 1
+    tolerance: 0.1
+    unit: s
+  criterion: Read from the command signal (column 2) of the stimulus files. Each deflection is
+    classed by its shape (the three filter shapes of Figure 1B) and its peak amplitude. Reproduced
+    when the nine classes fall into three shapes with three amplitudes each in the ratios above, onsets
+    are 1 s apart, and the order of the nine classes differs between recordings (randomly
+    interleaved).
+- id: fig2ab-example-neuron
+  statement: In an example neuron, calcium responses grew most with the amplitude of the velocity
+    waveform; its regression coefficients were 0.0069 for position, 0.0169 for velocity and 0.0106
+    for acceleration.
+  source: Results, paragraph 2; Figure 2A and 2B
+  quote: the value of the regression coefficient between stimulus amplitude and neuronal response
+    was greatest for velocity [rp = 0.0069 for position (5–95% CI 0.0032–0.011); rv = 0.0169 for
+    velocity (CI 0.0132–0.021); ra = 0.0106 for acceleration (CI 0.0073–0.0151); Fig. 2B]
+  statistics:
+  - about: position coefficient
+    ci:
+      level: 0.9
+      low: 0.0032
+      high: 0.011
+  - about: velocity coefficient
+    ci:
+      level: 0.9
+      low: 0.0132
+      high: 0.021
+  - about: acceleration coefficient
+    ci:
+      level: 0.9
+      low: 0.0073
+      high: 0.0151
+  expected:
+  - quantity: position regression coefficient (tolerance to the paper's 5-95% interval, 0.0032 to
+      0.011)
+    value: 0.0069
+    tolerance: 0.0041
+  - quantity: velocity regression coefficient (interval 0.0132 to 0.021)
+    value: 0.0169
+    tolerance: 0.0041
+  - quantity: acceleration regression coefficient (interval 0.0073 to 0.0151)
+    value: 0.0106
+    tolerance: 0.0045
+  criterion: The paper does not say which mouse, field or ROI holds this neuron (open detail 11). The
+    author identifies it by matching the field and ROI mask of Figure 2C (black arrow) to the mean
+    images of the fields; if no field matches, the claim cannot be tested. Coefficients are the
+    slopes of three separate regressions of all single-presentation responses (Methods, Measurements
+    of Response Properties) on amplitude. Amplitude in normalized units 1, 3, 5 and dF/F0 as a
+    fraction is the main reading (Figure 2B legend; open detail 3), the command voltage as a variant.
+    Reproduced when the velocity coefficient is the largest of the three and each coefficient lies
+    in its interval (the tolerances span the paper's interval, taking the wider side); partially
+    reproduced when only the order holds. The tolerance on each coefficient is the larger
+    distance from the value to a bound of the paper's interval.
+- id: responsive-fraction
+  statement: About half (50.2%) of all neurons in the data set responded to whisker stimulation.
+  source: Results, paragraph 3; Discussion, paragraph 3
+  quote: Overall, 50.2% of neurons in the data set responded to whisker stimulation
+  expected:
+    quantity: percentage of neurons responding to whisker stimulation
+    value: 50.2
+    tolerance: 5.0
+    unit: percent
+  criterion: The paper does not define a responsive neuron (open detail 6). Readings the text
+    allows, each run on all segmented neurons, pooled across fields, are (a) the mean response amplitude
+    over all 360 presentations is greater than zero, one-sided signed-rank test p < 0.05; (b) at
+    least one of the nine stimuli evokes a response greater than zero (signed-rank test over its 40
+    presentations, p < 0.05), with the Benjamini-Hochberg-Yekutieli correction over the neurons and
+    stimuli of a field as the paper uses for tuning. Reproduced when a reading gives 50.2% within the
+    tolerance; the outcome rests on that reading as an assumption.
+- id: fig2de-tuned-fraction
+  statement: Most neurons were not tuned to any kinematic feature; 71.8% of all neurons were
+    non-tuned, so about 30% were tuned.
+  source: Results, paragraph 3; Figure 2D and 2E; Discussion, paragraph 3
+  quote: The analysis evidenced both tuned and non-tuned neurons, with an overall majority of
+    non-tuned cells (71.8% of all neurons were non-tuned; n = 10 mice, 49 fields of view, 1054
+    neurons; Fig. 2D,E)
+  expected:
+    quantity: percentage of neurons with no significant tuning
+    value: 71.8
+    tolerance: 7.2
+    unit: percent
+  depends_on:
+  - dataset-size
+  criterion: Tuning as the Methods (Measurements of Response Properties) give it, a neuron being
+    tuned when at least one of its three regression coefficients is significant after the false
+    discovery rate correction at P < 0.05. Readings run (open details 4 and 5) are BH ('pdep') and BY
+    ('dep'), with the family of all 3 x N p-values of a field or of the N p-values per feature, and
+    slopes of either sign or positive only. The percentage is computed pooled over neurons and, as
+    Figure 2E plots, as the mean over fields. Reproduced when a reading gives 71.8% within the
+    tolerance and non-tuned neurons are the majority.
+- id: fig2e-all-categories
+  statement: Among tuned neurons all categories of selectivity are represented, neurons tuned to
+    position only, velocity only, acceleration only, and neurons with mixed selectivity.
+  source: Results, paragraph 3; Figure 2E
+  quote: Within tuned neurons, all categories of selectivity were represented (Fig. 2E)
+  depends_on:
+  - fig2de-tuned-fraction
+  criterion: With the tuning of fig2de-tuned-fraction, neurons are classed as tuned to position
+    only, velocity only, acceleration only, or mixed (significant for two or more features; Methods).
+    Reproduced when each of the four classes holds at least one neuron over the data set, under the
+    reading that reproduces fig2de-tuned-fraction (each reading shown).
+- id: tuning-consistency
+  statement: Tuning was consistent across halves of the data; 95% of neurons had identical tuning to
+    at least one feature in the first and last pairs of recordings, and 81% to all three features.
+  source: Materials and Methods, Measurements of Response Properties, paragraph 2
+  quote: data were split into 2 subsets consisting of the first and last pairs of recordings. 95% of
+    neurons displayed identical tuning to at least one feature over the 2 subsets, and 81% displayed
+    identical tuning to all 3 features
+  expected:
+  - quantity: percentage of neurons with identical tuning to at least one feature in both halves
+    value: 95
+    tolerance: 9.5
+    unit: percent
+  - quantity: percentage of neurons with identical tuning to all three features in both halves
+    value: 81
+    tolerance: 8.1
+    unit: percent
+  depends_on:
+  - fig2de-tuned-fraction
+  criterion: The tuning procedure is run separately on recordings 1 and 2 and on recordings 3 and 4
+    of each field, with the reading of fig2de-tuned-fraction. Identical tuning to a feature means
+    the coefficient is significant in both halves or in neither. The denominator is not stated;
+    readings are all neurons, neurons tuned in the full data, and neurons tuned in at least one half.
+    Reproduced when both percentages fall within their tolerances under one reading.
+- id: shuffle-significance
+  statement: Scoring tuning by shuffling responses against stimulus amplitude (1000 repeats) in
+    place of the regression test gives no qualitative change in the results.
+  source: Materials and Methods, Measurements of Response Properties, paragraph 2
+  quote: We also assessed tuning significance via direct shuffling of responses with respect to
+    stimulus magnitude for each neuron (1000 repeats), with no qualitative change in results
+  depends_on:
+  - fig2de-tuned-fraction
+  - fig2e-all-categories
+  - fig3g-si-no-spatial-organization
+  criterion: For each neuron and feature the responses are shuffled across the amplitudes of that
+    waveform type 1000 times and the p-value is the fraction of shuffled slopes at least as extreme
+    as the observed one. Whether the false discovery rate correction is then applied is not stated;
+    both readings are run. Reproduced when, with this tuning, non-tuned neurons remain the majority,
+    all four tuned classes are represented, and the SI test of fig3g-si-no-spatial-organization still
+    finds no difference from shuffled data (P >= 0.05).
+- id: fig3b-example-correlation
+  statement: In an example field the mean pairwise correlation was 0.14, against 0.0022 when
+    responses were shuffled across stimulus presentations.
+  source: Results, paragraph 4; Figure 3A and 3B
+  quote: mean correlation coefficient was 0.14 ± 0.0062 compared with 0.0022 ± 0.0013 obtained by
+    shuffling responses of different neurons across stimulus presentations (n = 31 neurons
+  expected:
+  - quantity: mean pairwise correlation, example field (tolerance the paper's stated spread)
+    value: 0.14
+    tolerance: 0.0062
+  - quantity: mean pairwise correlation, shuffled, example field (tolerance the stated spread)
+    value: 0.0022
+    tolerance: 0.0013
+  depends_on:
+  - fig3c-correlation-above-shuffle
+  criterion: Method as fig3c-correlation-above-shuffle, on the example field. The field is not
+    identified (open detail 11); the author identifies it by matching the raster and field of Figure
+    3A to the data, and the claim cannot be tested if none matches. Reproduced when both means fall
+    within their tolerances; partially reproduced when the true mean exceeds the shuffled mean but a
+    value falls outside.
+- id: fig3c-correlation-above-shuffle
+  statement: Across the data set, pairwise correlations of neurons in a field were higher than for
+    shuffled data (0.1004 against 0.011, mean over 49 fields).
+  source: Results, paragraph 4; Figure 3C
+  quote: Taking all experiments into account, the correlation coefficient for the data set was
+    0.1004 ± 0.008 (mean ± SEM across fields of view), compared with 0.011 ± 0.0024 for shuffled
+    data (n = 49 fields of view including n = 1054 neurons; P = 1.11 × 10−9; Wilcoxon signed-rank
+    test; Fig. 3C)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 1.11e-9
+    n: 49 fields of view, 1054 neurons
+  expected:
+  - quantity: mean over fields of the mean pairwise correlation (tolerance the paper's SEM)
+    value: 0.1004
+    tolerance: 0.008
+  - quantity: mean over fields of the mean pairwise correlation, shuffled (tolerance the SEM)
+    value: 0.011
+    tolerance: 0.0024
+  depends_on:
+  - dataset-size
+  criterion: As the Methods (Measurements of Response Properties, paragraph 3) - for every pair of
+    neurons in a field, the Spearman correlation of their whole corrected fluorescence time series
+    over the four concatenated recordings; the field's value is the mean over pairs. Shuffled data
+    permute, for each neuron independently, the temporal order of its responses to the stimulus
+    presentations. Open (detail 7) - the signal is neuropil-corrected fluorescence before dF/F0 (main
+    reading, the Methods' "corrected fluorescence") or dF/F0; a presentation's segment runs from its
+    onset to the next onset, permuted over the whole concatenated series or within each recording;
+    the shuffled value is the mean over 100 permutations (a standard choice, the count the paper uses
+    for SI), one permutation shown as a variant. Reproduced when the Wilcoxon signed-rank test over
+    fields of true against shuffled means gives P < 0.05 with true above shuffled, and both means
+    fall within their tolerances; partially reproduced when the test holds and a mean falls outside.
+- id: neuropil-correlation
+  statement: Neuropil ROIs were more correlated with each other than neurons were (0.1792 against
+    0.1004 mean correlation; 10 neuropil ROIs per field).
+  source: Results, paragraph 4
+  quote: Neuropil responses were more correlated with each other than neuronal responses (for
+    neuropil, mean ± SEM coefficient was 0.1792 ± 0.0097; n = 49 fields including n = 490 ROIs; vs.
+    neurons, P = 2.13 × 10−7; Wilcoxon signed-rank test)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 2.13e-7
+    n: 49 fields, 490 neuropil ROIs
+  expected:
+    quantity: mean over fields of the mean pairwise neuropil correlation (tolerance the paper's SEM)
+    value: 0.1792
+    tolerance: 0.0097
+  depends_on:
+  - fig3c-correlation-above-shuffle
+  criterion: Ten ROIs per field chosen within the neuropil, their traces taken and correlated as for
+    neurons (fig3c-correlation-above-shuffle), the field's value the mean over the 45 pairs. The
+    size and placement of the neuropil ROIs are not given; the reading used is ROIs of the median
+    somatic ROI size placed at random in areas free of somata and vessels, with two independent
+    placements reported. Reproduced when the Wilcoxon signed-rank test over fields of neuropil
+    against neuronal means gives P < 0.05 with neuropil higher, and the neuropil mean falls within
+    the tolerance; partially reproduced when only the test holds.
+- id: fig3d-example-correlation-distance
+  statement: In the example field correlations decreased with distance, with a slope of -0.15 per mm
+    (0.0025 per mm for shuffled data), most of the fall-off within the first 100 um.
+  source: Results, paragraph 5; Figure 3D
+  quote: correlations decreased with distance, with a mean spatial gradient of −0.15 mm−1 (0.0025
+    mm−1 for shuffled data; Fig. 3D). Most of the fall-off in correlation occurred within the first
+    100 μm of distance between neurons
+  expected:
+  - quantity: slope of correlation against distance, example field
+    value: -0.15
+    tolerance: 0.015
+    unit: 1/mm
+  - quantity: slope of correlation against distance, shuffled, example field
+    value: 0.0025
+    tolerance: 0.00025
+    unit: 1/mm
+  depends_on:
+  - fig3b-example-correlation
+  criterion: The example field of fig3b-example-correlation. The slope is that of the least-squares
+    line of pair correlation on distance between ROI centroids, in mm (open detail 8). The
+    shuffled slope is near zero, so 10% of it is a strict bound; it is reproduced when it lies
+    within 0.01 per mm of zero, reported against the paper's value. Most of the fall-off within 100
+    um is judged with 100 um bands taken from the sentence - reproduced when the drop in mean
+    correlation from 0-100 um to 100-200 um exceeds the drop from 100-200 um to 200-300 um.
+- id: fig3e-correlation-falls-with-distance
+  statement: Over the data set, correlations fell with distance between neurons, with a median
+    slope of -0.29 per mm against -0.0062 per mm for shuffled data.
+  source: Results, paragraph 5; Figure 3E
+  quote: For the complete data set, the spatial gradient was −0.29 ± 0.062 mm−1 (median ± standard
+    error of median [SEM]), significantly different than for shuffled data, −0.0062 ± 0.014 mm−1 (n
+    = 49 fields of view; P = 1.31 × 10−8; Wilcoxon signed-rank test; Fig. 3E)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 1.31e-8
+    n: 49 fields of view
+  expected:
+  - quantity: median over fields of the slope of correlation on distance (tolerance the paper's SEM)
+    value: -0.29
+    tolerance: 0.062
+    unit: 1/mm
+  - quantity: median over fields of the shuffled slope (tolerance the paper's SEM)
+    value: -0.0062
+    tolerance: 0.014
+    unit: 1/mm
+  depends_on:
+  - fig3c-correlation-above-shuffle
+  criterion: For each field, the slope of the least-squares line of pair correlation (as in
+    fig3c-correlation-above-shuffle) on centroid distance in mm, and the same for shuffled data.
+    The Results examine distances "up to 300 um"; readings are all pairs and pairs up to 300 um
+    (open detail 8). Reproduced when the Wilcoxon signed-rank test over fields of true against
+    shuffled slopes gives P < 0.05 with true slopes more negative, and both medians fall within their
+    tolerances; partially reproduced when only the test holds.
+- id: correlation-gradient-beyond-200um
+  statement: For pairs of neurons more than 200 um apart the correlation-distance slope did not
+    differ from shuffled data (-0.13 against -0.109 per mm, P = 0.106), so correlations fall off over
+    about 200 um, the diameter of a barrel column.
+  source: Results, paragraph 5
+  quote: Yet for experiments with pairs of neurons separated by over 200 μm, the spatial gradient
+    decreased to −0.13 ± 0.17 mm−1, compared with −0.109 ± 0.085 mm−1 for shuffled data (median, SEM;
+    n = 30 fields of view with >4 pairs extending >200 μm; P = 0.106; Wilcoxon signed-rank test)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.106
+    n: 30 fields of view with more than 4 pairs over 200 um apart
+  expected:
+  - quantity: median slope, pairs over 200 um (tolerance the paper's SEM)
+    value: -0.13
+    tolerance: 0.17
+    unit: 1/mm
+  - quantity: median shuffled slope, pairs over 200 um (tolerance the paper's SEM)
+    value: -0.109
+    tolerance: 0.085
+    unit: 1/mm
+  - quantity: fields with more than 4 pairs over 200 um apart
+    value: 30
+    tolerance: 3
+  depends_on:
+  - fig3e-correlation-falls-with-distance
+  criterion: A claim of absence, judged on the paper's test - Wilcoxon signed-rank over fields of
+    true against shuffled slopes; reproduced when P >= 0.05, not reproduced when P < 0.05, with the
+    median difference given either way. Fields are those with more than 4 pairs over 200 um apart.
+    The text reads most directly as slopes fitted to the pairs over 200 um apart, which is the main
+    reading; slopes over all pairs of those fields are shown as a variant.
+- id: fig3f-example-si-distance
+  statement: In the example field the tuning similarity index fell with distance (slope -1.29 per mm
+    against 0.133 per mm shuffled).
+  source: Results, paragraph 6; Figure 3F
+  quote: for the example in Fig. 3F, spatial gradient = −1.29 mm−1; compared with shuffled, 0.133
+    mm−1; n = 29 neurons, n = 465 pairs
+  expected:
+  - quantity: slope of SI on distance, example field
+    value: -1.29
+    tolerance: 0.129
+    unit: 1/mm
+  - quantity: mean shuffled slope of SI on distance, example field
+    value: 0.133
+    tolerance: 0.0133
+    unit: 1/mm
+  - quantity: neuron pairs in the example field
+    value: 465
+    tolerance: 47
+  depends_on:
+  - fig3b-example-correlation
+  - fig3g-si-no-spatial-organization
+  criterion: The example field of fig3b-example-correlation (Figure 3F legend, "the field of view
+    in A"), with SI and shuffles as in fig3g-si-no-spatial-organization. The paper gives 29 neurons
+    and 465 pairs, and 31 neurons for the same field in Figure 3B (open detail 11); 465 pairs is the
+    count of 31 neurons, all pairs. The slope values depend on the SI scale (open detail 9) and
+    are compared under each reading. Reproduced when the true slope is negative, the shuffled slope
+    is above it, and both fall within their tolerances under one reading; partially reproduced when
+    only the signs and order hold.
+- id: fig3g-si-no-spatial-organization
+  statement: Pooled across fields, tuning similarity showed no consistent spatial organization; the
+    slope of SI on distance did not differ from shuffled data (median -0.467 against -0.0169 per mm,
+    26 fields, P = 0.114), so neurons tuned to different features are interspersed.
+  source: Results, paragraph 6; Figure 3G; Discussion, paragraph 1
+  quote: However, pooling across experiments indicated no consistent spatial organization of SI
+    (median slope −0.467 ± 0.000675 mm−1; for shuffled data, −0.0169 ± 0.119 mm−1; n = 26 fields of
+    view; P = 0.114; Wilcoxon signed-rank test; Fig. 3G). These results confirm a visual intuition
+    from Fig. 2F
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.114
+    n: 26 fields of view
+  expected:
+  - quantity: median over fields of the slope of SI on distance
+    value: -0.467
+    tolerance: 0.047
+    unit: 1/mm
+  - quantity: median over fields of the mean shuffled slope (tolerance the paper's SEM)
+    value: -0.0169
+    tolerance: 0.119
+    unit: 1/mm
+  - quantity: fields in the analysis
+    value: 26
+    tolerance: 3
+  depends_on:
+  - fig2de-tuned-fraction
+  criterion: As the Methods (Measurements of Response Properties, paragraph 3) - each neuron's
+    tuning vector is its three coefficients with non-significant ones set to zero; SI of a pair is
+    the dot product of the two vectors; the slope of the least-squares line of SI on centroid
+    distance in mm is compared with shuffled data, made by reassigning tuning vectors at random
+    across the neurons of the field, 100 times, the field's shuffled value being the mean slope. A
+    claim of absence, judged on the Wilcoxon signed-rank test over fields of true against shuffled
+    slopes - reproduced when P >= 0.05, not reproduced when P < 0.05, with the median difference
+    given either way. The paper does not say which 26 fields enter (open detail 9); the main
+    reading takes all pairs of all neurons (465 pairs of 31 neurons in the example) in fields with
+    at least two tuned neurons, since SI is zero for every pair otherwise. SI of unit-length tuning
+    vectors is shown as a variant, as the paper's slope magnitudes may imply a normalized scale.
+    The paper's SEM for the true median (0.000675) is about 0.1% of the value and is not used as
+    the tolerance; 10% is used.
+- id: fig4c-barrel-septum-tuned
+  statement: In 3 mice with reconstructed barrel maps, tuned neurons were evenly distributed between
+    barrel- and septum-related areas (38.8% and 35.8% tuned, P = 0.58).
+  source: Results, paragraph 7; Figure 4B and 4C
+  quote: n = 3 mice; respectively, n = 167, 102, and 117 imaged neurons, of which n = 59, 39, and 47
+    were tuned ... Tuned neurons were evenly distributed between barrel- and septum-related areas
+    (38.8% and 35.8%, respectively were tuned; P = 0.58; Fisher exact test; Fig. 4C)
+  statistics:
+  - test: Fisher exact test
+    p: 0.58
+    n: 386 neurons from 3 mice
+  expected:
+  - quantity: imaged neurons, mouse 1 of the reconstructed three
+    value: 167
+    tolerance: 17
+  - quantity: imaged neurons, mouse 2
+    value: 102
+    tolerance: 10
+  - quantity: imaged neurons, mouse 3
+    value: 117
+    tolerance: 12
+  - quantity: tuned neurons, mouse 1
+    value: 59
+    tolerance: 6
+  - quantity: tuned neurons, mouse 2
+    value: 39
+    tolerance: 4
+  - quantity: tuned neurons, mouse 3
+    value: 47
+    tolerance: 5
+  - quantity: percentage of barrel-related neurons tuned
+    value: 38.8
+    tolerance: 3.9
+    unit: percent
+  - quantity: percentage of septum-related neurons tuned
+    value: 35.8
+    tolerance: 3.6
+    unit: percent
+  depends_on:
+  - fig2de-tuned-fraction
+  criterion: The three mice are those with histology (experiments 8 to 10 in the data set's
+    description). Each neuron is placed on the barrel map by aligning the imaged field to the
+    reconstruction (Methods, Histology and Barrel Field Reconstruction) and assigned to barrel or
+    septum by its soma centre. A claim of absence, judged on the Fisher exact test of tuned against
+    non-tuned by barrel against septum over the pooled neurons - reproduced when P >= 0.05, not
+    reproduced when P < 0.05, with the two percentages given either way. If the histology PDFs do not
+    allow the registration, the claim cannot be tested.
+- id: fig4d-border-distance-by-feature
+  statement: Neurons tuned to position, velocity and acceleration did not differ in their distance
+    to the nearest barrel border (P = 0.77, 0.70 and 0.68), so feature tuning is not organized
+    relative to the barrel map.
+  source: Results, paragraph 7; Figure 4D
+  quote: Neurons tuned to different features were not located differently relative to barrel
+    borders, that is, relative to the columnar structure of barrel cortex ... Kolmogorov–Smirnov
+    2-sample test; Fig. 4D)
+  statistics:
+  - about: position against velocity
+    test: Kolmogorov-Smirnov 2-sample test
+    p: 0.77
+  - about: position against acceleration
+    test: Kolmogorov-Smirnov 2-sample test
+    p: 0.7
+  - about: velocity against acceleration
+    test: Kolmogorov-Smirnov 2-sample test
+    p: 0.68
+  depends_on:
+  - fig4c-barrel-septum-tuned
+  criterion: For each significantly tuned neuron of the three mice, the horizontal distance from
+    its soma to the nearest barrel border on the registered map. A claim of absence, judged on the
+    three Kolmogorov-Smirnov 2-sample tests - reproduced when all give P >= 0.05, not reproduced when
+    any gives P < 0.05, with the medians given. The paper does not say where a neuron tuned to several
+    features goes or whether the distance is signed (open detail 10); the main reading puts a neuron
+    in every group it is significantly tuned to (the Methods allow mixed selectivity) and uses the
+    unsigned distance, as the text says "distance ... to the nearest barrel border". Single-feature
+    neurons only, and the signed distance (inside barrels positive), are shown as variants.
