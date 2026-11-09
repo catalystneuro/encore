@@ -59,6 +59,7 @@ SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from 
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
+import paper_records  # noqa: E402
 from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
 import paper_match  # noqa: E402
 
@@ -171,20 +172,57 @@ def asset(name: str) -> str:
 
 # --- collecting ---------------------------------------------------------------
 
+def record_files(kind: str) -> list[tuple[Path, list[str]]]:
+    """A kind of record (claims, questions) with the datasets each is about: a paper's own file,
+    <kind>/<paper>.yaml, is about all the paper's datasets; one from before the cutover to paper-first records,
+    <kind>/<paper>/<folder>.yaml, about that folder's dataset."""
+    out = []
+    for path in sorted((ROOT / kind).glob("*.yaml")):
+        out.append((path, [d["key"] for d in paper_records.datasets_of(path.stem)]))
+    for path in sorted((ROOT / kind).glob("*/*.yaml")):
+        out.append((path, [key_of_dir(path.stem)]))
+    return out
+
+
+def transcript_folders() -> list[tuple[Path, list[str]]]:
+    """Each transcripts folder with the datasets it is about: transcripts/<paper>/ for all the paper's datasets,
+    transcripts/<paper>/<folder>/ for one."""
+    out = []
+    for d in sorted((ROOT / "transcripts").glob("*")):
+        if not d.is_dir() or d.name == "match":
+            continue
+        out.append((d, [x["key"] for x in paper_records.datasets_of(d.name)]))
+        for sub in sorted(d.glob("*")):
+            if sub.is_dir() and not sub.name.startswith("attempt-"):
+                out.append((sub, [key_of_dir(sub.name)]))
+    return out
+
+
+def attempt_rows() -> list[tuple[Path, dict, dict]]:
+    """Each attempt record once for each dataset it used: the site's pages are by dataset."""
+    out = []
+    for path in sorted((ROOT / "attempts").glob("*.yaml")):
+        a = load_yaml(path)
+        for used in paper_records.record_datasets(a):
+            out.append((path, a, used))
+    return out
+
+
 def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
     pilot = {key_of("dandi", t["dandiset"]) for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
     claims, claim_files = {}, {}
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+    for path, keys in record_files("claims"):
         data = load_yaml(path)
-        key = key_of(data["dataset"]["archive"], data["dataset"]["id"])
-        claims[(key, data["paper"])] = {c["id"]: c for c in data["claims"]}
+        claims[path] = {c["id"]: c for c in data["claims"]}
         last = (data.get("checks") or [None])[-1]
-        claim_files.setdefault(key, []).append({
+        for key in keys:
+            claim_files.setdefault(key, []).append({
             "path": str(path.relative_to(ROOT)), "paper": str(data["paper"]).removeprefix("doi:"),
             "check": None if last is None else {"ready": bool(last.get("ready")), "date": str(last.get("date"))},
             "claims": [{k: squash(c.get(k) or "") for k in ("id", "statement", "source", "quote", "criterion")}
-                       for c in data["claims"]]})
+                       for c in data["claims"]
+                       if not c.get("datasets") or dir_of(key) in c["datasets"]]})
     entries = {}
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
@@ -201,18 +239,20 @@ def collect(executed: Path | None = None) -> dict:
         return out
 
     attempts = []
-    for path in sorted((ROOT / "attempts").glob("*.yaml")):
-        a = load_yaml(path)
-        key = key_of(a["dataset"]["archive"], a["dataset"]["id"])
-        known = claims.get((key, a["paper"]), {})
+    for path, a, used in attempt_rows():
+        key = key_of(used["archive"], str(used["id"]))
+        claims_path = paper_records.claims_for_attempt(a)
+        known = claims.get(claims_path, {}) if claims_path else {}
         entry = entries.get(a.get("entry"))
         verifications = a.get("verifications") or []
         disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
         attempts.append({
             "id": a["id"],
-            "dataset": {k: str(v) for k, v in a["dataset"].items()},
+            "dataset": {k: str(v) for k, v in used.items()},
+            "datasets": [key_of(d["archive"], str(d["id"])) for d in paper_records.record_datasets(a)],
+            "missing_datasets": [{k: squash(str(v)) for k, v in m.items()} for m in a.get("missing_datasets") or []],
             "key": key, "label": dataset_label(key),
-            "dataset_version": a["dataset"].get("version"),
+            "dataset_version": used.get("version"),
             "paper": a["paper"].removeprefix("doi:"),
             "paper_title": titles.get(a["paper"].removeprefix("doi:").lower()),
             "date": str(a["date"]),
@@ -225,6 +265,9 @@ def collect(executed: Path | None = None) -> dict:
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
+            # The recorder's summary for the site (docs/agents/recorder.md, step 2), when the attempt has one.
+            "summary": squash((ROOT / "summaries" / f"{a['id']}.md").read_text())
+                       if (ROOT / "summaries" / f"{a['id']}.md").is_file() else None,
             "description": squash(entry.get("description")) if entry else None,
             "notebooks": notebooks_of(entry) if entry else [],
             "outcomes": [{
@@ -297,16 +340,24 @@ def collect(executed: Path | None = None) -> dict:
                              if r["id"].startswith("entry:") and r["relation"] == "derived_from"],
             "notebooks": notebooks_of(entry),
         })
-    transcripts = {key_of_dir(d.name): sorted(p.name for p in d.glob("*.md"))
-                   for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()}
-    # An earlier attempt's transcripts, moved aside by tools/archive_transcripts.sh.
-    archived = {f"{key_of_dir(d.name)}/{a.name}": sorted(p.name for p in a.glob("*.md"))
-                for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()
-                for a in sorted(d.glob("attempt-*")) if a.is_dir()}
+    # Each dataset's transcripts (its paper's, transcripts/<paper>/, or before the cutover, a paper's on several
+    # datasets, transcripts/<paper>/<folder>/), and an earlier attempt's, moved aside to attempt-NN/ by
+    # tools/archive_transcripts.sh. Keyed by dataset, or dataset and attempt-NN; each with the folder it is in.
+    transcripts, transcript_dirs = {}, {}
+    for d, keys in transcript_folders():
+        for key in keys:
+            transcripts[key] = sorted(p.name for p in d.glob("*.md"))
+            transcript_dirs[key] = d.relative_to(ROOT / "transcripts").as_posix()
+            for a in sorted(d.glob("attempt-*")):
+                if a.is_dir():
+                    transcripts[f"{key}/{a.name}"] = sorted(p.name for p in a.glob("*.md"))
+                    transcript_dirs[f"{key}/{a.name}"] = a.relative_to(ROOT / "transcripts").as_posix()
+    archived = {}
     return finish({
         "pipeline": pipeline_inputs(),
         "claim_files": claim_files,
         "transcripts": {**transcripts, **archived},
+        "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
         "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
@@ -323,15 +374,17 @@ def pipeline_inputs() -> dict:
     manifest = ROOT / "papers" / "manifest.yaml"
     papers = (load_yaml(manifest) or {}).get("targets", {}) if manifest.is_file() else {}
     checks, questions, items = {}, {}, {}
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+    for path, keys in record_files("claims"):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
-        checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
-                                                "date": None if last is None else str(last.get("date"))}
-    for path in sorted((ROOT / "questions").glob("*.yaml")):
+        for key in keys:
+            checks[key] = {"ready": None if last is None else bool(last.get("ready")),
+                           "date": None if last is None else str(last.get("date"))}
+    for path, keys in record_files("questions"):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
-        questions[key_of_dir(path.stem)] = sum(1 for x in q if not x.get("answered"))
-        items[key_of_dir(path.stem)] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
+        for key in keys:
+            questions[key] = sum(1 for x in q if not x.get("answered"))
+            items[key] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
     return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions,
             "question_items": items}
 
@@ -468,9 +521,10 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
                    if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
 
 
-def outside_note(attempts, root: str = "") -> str:
-    """Lines with the outcomes of the claims that use outside data or other archives, when there are any."""
-    out = ""
+def outside_note(attempts, root: str = "", collapsed: bool = False) -> str:
+    """Lines with the outcomes of the claims that use outside data or other archives, when there are any.
+    Collapsed (the overview), they sit in a details block that names each group and its count."""
+    out, labels = "", []
     for group, one, many, label in (
             ("with_inputs", "1 claim that also uses data from outside the dataset",
              "claims that also use data from outside the dataset", "claims using outside data"),
@@ -483,10 +537,27 @@ def outside_note(attempts, root: str = "") -> str:
         if not m:
             continue
         text = one if m == 1 else f"{m} {many}"
-        out += (f'<p class="sub small" style="margin-top:8px">Counted separately: {text}.</p>'
+        labels.append(f"{label} ({m:,})")
+        lead = text[0].upper() + text[1:] if collapsed else f"Counted separately: {text}"
+        out += (f'<p class="sub small" style="margin-top:8px">{lead}.</p>'
                 f'<div class="summary">{bar(counts, f"Outcomes of {m} {label}", "bar mini")}'
                 f'{legend(counts, compact=True)}</div>')
+    if collapsed and out:
+        names = labels[0] if len(labels) == 1 else ", ".join(labels[:-1]) + " and " + labels[-1]
+        out = f'<details class="separate"><summary class="sub small">Counted separately: {names}</summary>{out}</details>'
     return out
+
+
+def reproduced_share(counts: dict | None) -> float | None:
+    """The share of the claims tested that reproduced, a partial reproduction counting as half; None when no claim
+    was tested. It ranks the overview's most reproduced attempts and the datasets list's "Most reproduced" sort."""
+    n = sum(counts.values()) if counts else 0
+    return (counts["reproduced"] + counts["partially_reproduced"] / 2) / n if n else None
+
+
+# The overview's most reproduced attempts: verified ones only, so that an unchecked attempt cannot top the list, and
+# with enough claims that one claim reproduced is not a perfect score.
+TOP_MIN_CLAIMS = 5
 
 
 def weakest_tier(attempts: list[dict]) -> str:
@@ -558,7 +629,10 @@ def pipeline_rows(data: dict) -> list[dict]:
         rerun = bool(deprecated_on) and not reread
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
-            else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
+            else ("waiting", f"{len(missing)} not in store") if papers
+            # The manifest is written by hand from the private store (tools/papers_manifest.py), so a target
+            # added since its last run names papers the manifest has not checked yet.
+            else ("waiting", "not checked") if t.get("papers") else ("waiting", "no paper named"),
             "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
             if check != "absent" else ("todo", ""),
             "check": ("todo", "") if rerun else ("done", "ready") if check is True
@@ -605,6 +679,8 @@ def rows(data: dict) -> dict[str, list]:
             "elsewhere": sum(sum(outcome_counts(atts, g).values()) for g in ("with_inputs", "elsewhere")) if atts else None,
             "claims": len(outcomes) if atts else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
+            "reproduced": (round(share, 4) if (share := reproduced_share(outcome_counts(
+                [a for a in atts if not a.get("deprecated")]))) is not None else None) if atts else None,
             "has": sorted({o["outcome"] for o in outcomes}),
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["key"])),
@@ -826,6 +902,20 @@ def head_tags(data: dict, title: str, path: str, description: str, structured: d
     return "\n".join(tags)
 
 
+# Page views are counted by Cloudflare Web Analytics: no cookies and nothing that identifies a visitor, so no
+# consent banner. Its script is the one thing the site loads from another site, and only in a build given the
+# site's token (--analytics; the publish workflow passes the CF_ANALYTICS_TOKEN repository variable), so that
+# previews, demo builds and local builds count nothing.
+BEACON_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
+
+
+def beacon(data: dict) -> str:
+    token = data.get("analytics")
+    if not token or data["demo"] or data.get("noindex"):
+        return ""
+    return f"<script defer src=\"{BEACON_SRC}\" data-cf-beacon='{e(json.dumps({'token': token}))}'></script>"
+
+
 def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "", path: str = "",
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
@@ -866,7 +956,7 @@ the data in the dataset, with the methods available. A failure to reproduce may 
 a judgement of the paper.</footer>
 </div>
 {THEME_JS}
-{scripts}
+{scripts}{beacon(data)}
 </body></html>
 '''
 
@@ -914,14 +1004,25 @@ def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = 
     return f'<div class="panel"><h2>{link}{e(title)}</h2><div class="rows">{body}</div></div>'
 
 
-def attempt_row(a: dict, root: str) -> str:
+def attempt_row(a: dict, root: str, share: bool = False) -> str:
+    """One attempt in a list; with `share`, the share of its claims reproduced in place of its date."""
     counts = outcome_counts(a)
     page = f'{root}{page_of(a["key"])}'
+    side = (f'<span class="small"><b>{reproduced_share(counts):.0%}</b> reproduced</span>' if share
+            else f'<span class="small muted">{e(a["date"])}</span>')
     return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["label"])}</a></div>'
             f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
             f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
             f'<div class="right">{deprecated_badge() if a.get("deprecated") else tier_badge(a["tier"])}'
-            f'<span class="small muted">{e(a["date"])}</span></div></div>')
+            f'{side}</div></div>')
+
+
+def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
+    """The verified attempts with the largest share of claims reproduced, then the most claims reproduced."""
+    ranked = [a for a in attempts if not a.get("deprecated") and a["tier"] != "runs"
+              and sum(outcome_counts(a).values()) >= TOP_MIN_CLAIMS]
+    return sorted(ranked, key=lambda a: (-reproduced_share(outcome_counts(a)), -outcome_counts(a)["reproduced"],
+                                         a["key"]))[:n]
 
 
 PROGRESS_METRICS = {
@@ -934,32 +1035,46 @@ PROGRESS_METRICS = {
 
 
 def progress_data(data: dict) -> dict:
-    """Daily counts for the overview's dashboard, for all datasets and for CatalystNeuro conversions.
+    """Daily counts for the overview's dashboard.
 
     Each series is a list over the days of what was new that day: dandisets and papers on the date of their first attempt, attempts
     on their own date, and the claims (those resting on the dandiset) and findings of each dandiset's
     current attempts on the date of those attempts.
     """
-    ours = {t["key"] for t in data["targets"] if t["catalystneuro"]}
     current = [a for atts in current_attempts(data).values() for a in atts]
     if not data["attempts"]:
         return {"days": [], "series": {}}
+    # Attempts are also counted by the protocol version they followed, oldest version first.
+    def protocol(a):
+        return (a.get("agent") or {}).get("protocol") or "not recorded"
+
+    def version_order(v):
+        m = re.fullmatch(r"([a-z]+)-(\d+)", v)
+        return (0, m[1], int(m[2])) if m else (1, v, 0)
+    protocols = sorted({protocol(a) for a in data["attempts"]}, key=version_order)
+    # Datasets are also counted by their archive, in the registry's order of archives, so that each keeps its colour
+    # (its slot in that order) whichever archives have attempts.
+    order = list(ARCHIVES)
+    archives = sorted({split_key(a["key"])[0] for a in data["attempts"]}, key=lambda k: (order.index(k) if k in order else 99, k))
     start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
     series = {}
-    for subset, keep in (("all", lambda d: True), ("catalystneuro", lambda d: d in ours)):
-        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES}} for day in days}
+    for subset, keep in (("all", lambda d: True),):
+        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES},
+                     **{f"protocol:{v}": 0 for v in protocols}, **{f"archive:{k}": 0 for k in archives}} for day in days}
         first_dandiset: dict = {}
         first_paper: dict = {}
         for a in data["attempts"]:
             if not keep(a["key"]):
                 continue
             new[a["date"]]["attempts"] += 1
+            new[a["date"]][f"protocol:{protocol(a)}"] += 1
             first_dandiset[a["key"]] = min(first_dandiset.get(a["key"], a["date"]), a["date"])
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
-        for day in first_dandiset.values():
+        for key, day in first_dandiset.items():
             new[day]["datasets"] += 1
+            new[day][f"archive:{split_key(key)[0]}"] += 1
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
@@ -972,11 +1087,14 @@ def progress_data(data: dict) -> dict:
             new[a["date"]]["findings"] += len(a["findings"])
         series[subset] = {k: [new[day][k] for day in days] for k in new[days[0]]}
     return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
-            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()}}
+            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()},
+            "protocols": protocols,
+            "archives": [{"key": k, "label": ARCHIVES[k]["name"].removeprefix("the ") if k in ARCHIVES else k,
+                          "slot": (order.index(k) if k in order else len(order)) % 8 + 1} for k in archives]}
 
 
 def progress_panel(data: dict) -> str:
-    """The dashboard at the top of the overview: totals, a filter, and two charts of the effort over time.
+    """The dashboard at the top of the overview: totals and two charts of the effort over time.
 
     The page draws the charts from the JSON it carries (assets/progress.js); without scripts, the table
     below them gives the same numbers.
@@ -995,20 +1113,19 @@ def progress_panel(data: dict) -> str:
     head = "".join(f"<th>{e(label)}</th>" for label in PROGRESS_METRICS.values())
     return f'''<section class="progress" aria-label="Progress over time">
   <div class="progress-bar">
-    <div class="segmented" role="group" aria-label="Which datasets">
-      <button type="button" data-subset="all" aria-pressed="true">All datasets</button>
-      <button type="button" data-subset="catalystneuro" aria-pressed="false">Converted by CatalystNeuro</button>
-    </div>
     <span class="muted small">Totals so far; the small line is the last 7 days.</span>
   </div>
   <div class="tiles metrics">{tiles}</div>
-  <div class="grid2" style="margin-top:16px">
-    <div class="panel"><h2 id="progress-title">Datasets attempted over time</h2>
-      <p class="small muted" style="margin:0">Running total, by day.</p>
-      <div class="chart" id="progress-line"></div></div>
-    <div class="panel"><h2 id="progress-day-title">Datasets attempted, new each day</h2>
-      <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
-      <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
+  <div class="panel progress-charts">
+    <div class="grid2">
+      <div><h2 id="progress-title">Datasets attempted over time</h2>
+        <p class="small muted" style="margin:0">Running total, by day.</p>
+        <div class="chart" id="progress-line"></div></div>
+      <div><h2 id="progress-day-title">Datasets attempted, new each day</h2>
+        <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
+        <div class="chart" id="progress-outcomes"></div></div>
+    </div>
+    <div id="progress-legend" class="progress-legend"></div>
   </div>
   <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
     <div class="scroll"><table><thead><tr><th>Date</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
@@ -1084,6 +1201,8 @@ def page_overview(data: dict) -> str:
 
     recent = sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True)[:6]
     recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
+    top_html = ("".join(attempt_row(a, "", share=True) for a in most_reproduced(attempts))
+                or '<p class="empty">No verified attempt yet.</p>')
 
     dashboard = progress_panel(data)
     redirect = json.dumps({a["id"]: a["key"] for a in data["attempts"]})
@@ -1100,18 +1219,27 @@ def page_overview(data: dict) -> str:
   {dashboard}
   <div class="panel">
     <h2>Outcomes of the {n_claims:,} claims that rest on the dataset alone</h2>
-    {outcomes}{outside_note(attempts)}
+    {outcomes}{outside_note(attempts, collapsed=True)}
     {caution_block()}
   </div>
   <div class="grid2" style="margin-top:16px">{panels}</div>
-  <div class="panel" style="padding:0">
-    <h2 style="padding:18px 20px 0"><a class="more" href="datasets/?status=attempted">See all</a>Latest attempts</h2>
-    <div class="results" style="border:0;border-radius:0 0 10px 10px">{recent_html}</div>
+  <div class="panel attempts" style="padding:0">
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-panel="most-reproduced" aria-selected="true">Most
+      reproduced</button><button type="button" role="tab" data-panel="latest" aria-selected="false">Latest</button></div>
+    <section class="tabpanel" id="most-reproduced"><h2>Most reproduced</h2>
+      <p class="sub small"><a class="more" href="datasets/?status=attempted&amp;sort=-reproduced">See all</a>Verified
+      attempts with at least {TOP_MIN_CLAIMS} claims on the dataset, by the share of claims reproduced; a partial
+      reproduction counts as half.</p>
+      <div class="results">{top_html}</div></section>
+    <section class="tabpanel" id="latest"><h2>Latest attempts</h2>
+      <p class="sub small"><a class="more" href="datasets/?status=attempted">See all</a>The most recent attempts,
+      verified or not.</p>
+      <div class="results">{recent_html}</div></section>
   </div>
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
+               + TABS_JS + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
@@ -1388,7 +1516,7 @@ LISTS = {
         "facets": [("status", "Status"), ("archive", "Archive"), ("has", "Has a claim that is"),
                    ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-date", "Most recently attempted"), ("id", "Identifier"),
+        "sorts": [("-date", "Most recently attempted"), ("-reproduced", "Most reproduced"), ("id", "Identifier"),
                   ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
                   ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("name", "Title"), ("paper_title", "Paper title")],
         "csv": None,
@@ -1503,7 +1631,7 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
         for nb in en["notebooks"]:
             links = []
             if nb["executed"]:
-                links.append(f'<a href="{root}{e(nb["executed"])}">Executed, with outputs</a>')
+                links.append(f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">Executed, with outputs</a>')
             if not data["demo"]:
                 links.append(f'<a href="{REPO_URL}/blob/main/entries/{e(en["name"])}/{e(nb["path"])}">Source</a>')
             items += (f'<li style="grid-template-columns:1fr max-content"><span><strong>{e(nb["title"])}</strong><br>'
@@ -1554,6 +1682,17 @@ def version_text(a: dict) -> str:
         return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
     doi = a["dataset"].get("doi")
     return (f'version <a href="https://doi.org/{e(doi)}">{e(v)}</a>' if doi else f"version {e(v)}")
+
+
+def summary_block(atts: list[dict]) -> str:
+    """The recorder's summary of each attempt shown, at the top of the dataset's page, with who wrote it."""
+    shown = [a for a in atts if a.get("summary")]
+    if not shown:
+        return ""
+    paras = "".join((f'<p class="lede"><em>{e(a.get("paper_title") or a["paper"])}:</em> ' if len(shown) > 1 else '<p class="lede">')
+                    + f'{e(a["summary"])}</p>' for a in shown)
+    return (f'<div class="attempt-summary">{paras}<p class="sub small">Summary written by the agent that recorded the attempt, '
+            f'from its claims and the agents&rsquo; reports. A failure to reproduce may be a failure of the agent.</p></div>')
 
 
 def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -> str:
@@ -1631,7 +1770,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                           key=lambda o: rank[o["outcome"]])
             if not mine:
                 continue
-            title = (f'<a href="{root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
+            title = (f'<a href="{data.get("notebooks_root") or root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
                      else e(nb["title"]))
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span></h3>'
@@ -1741,7 +1880,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
         provenance_html += ('<dl class="kv" style="margin-top:14px">'
                             + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
     folder = f'{dandiset}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dandiset
-    repo_folder = f'{dir_of(dandiset)}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dir_of(dandiset)
+    repo_folder = (data.get("transcript_dirs") or {}).get(folder, dir_of(dandiset))
     runs = data.get("transcripts", {}).get(folder, [])
     if runs and not data["demo"]:
         items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(repo_folder)}/{e(name)}">{e(name)}</a></li>'
@@ -1845,6 +1984,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
+  {summary_block(atts)}
   <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>
@@ -1994,10 +2134,37 @@ def build(data: dict, output: Path) -> None:
         page = output / page_of(key)
         page.mkdir(parents=True, exist_ok=True)
         (page / "index.html").write_text(page_claims(data, key))
+    renamed_redirects(data, output)
     (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     (output / "sitemap.xml").write_text(sitemap(data))
+    (output / "robots.txt").write_text(robots(data))
+    (output / "404.html").write_text(page_not_found(data))
+
+
+def renamed_redirects(data: dict, output: Path) -> None:
+    """Pages that moved when records went from dataset-first to paper-first names (papers/renamed.yaml): an earlier
+    attempt's page, under its old id, and an executed notebook, under its entry's old name."""
+    path = ROOT / "papers" / "renamed.yaml"
+    if data["demo"] or not path.is_file():
+        return
+    renamed = load_yaml(path) or {}
+    earlier = {a["id"]: a["key"] for key in current_attempts(data) for a in earlier_attempts(data, key)}
+    for old, new in (renamed.get("attempts") or {}).items():
+        if new in earlier:
+            target = page_of(earlier[new]) + new + "/"
+            depth = page_of(earlier[new]).count("/") + 1
+            (output / page_of(earlier[new]) / old).mkdir(parents=True, exist_ok=True)
+            (output / page_of(earlier[new]) / old / "index.html").write_text(redirect_page(target, "../" * depth))
+    for old, new in (renamed.get("entries") or {}).items():
+        if old == new or not (output / "notebooks" / new).is_dir():
+            continue
+        (output / "notebooks" / old).mkdir(parents=True, exist_ok=True)
+        for nb in (output / "notebooks" / new).glob("*.html"):
+            stub = output / "notebooks" / old / nb.name
+            if not stub.exists():
+                stub.write_text(redirect_page(f"notebooks/{new}/{nb.name}", "../../"))
 
 
 def redirect_page(target: str, root: str) -> str:
@@ -2008,6 +2175,25 @@ def redirect_page(target: str, root: str) -> str:
             f'<meta http-equiv="refresh" content="0; url={url}">'
             f'<script>location.replace("{url}"+location.search+location.hash)</script></head>'
             f'<body><p>This page moved to <a href="{url}">{e(target)}</a>.</p></body></html>\n')
+
+
+def robots(data: dict) -> str:
+    """Crawlers: everything but the pull-request previews (also on gh-pages, under pr-preview/), and the sitemap.
+    A demo or preview build lets nothing be crawled."""
+    if data["demo"] or data.get("noindex"):
+        return "User-agent: *\nDisallow: /\n"
+    return f"User-agent: *\nDisallow: /pr-preview/\n\nSitemap: {SITE_URL}sitemap.xml\n"
+
+
+def page_not_found(data: dict) -> str:
+    """The page GitHub Pages shows for any address that has no page. It can be shown at any depth, so its links
+    start from the site's root, and it is kept out of search results."""
+    body = f'''<header class="page">
+  <h1>Page not found</h1>
+  <p class="lede">There is no page at this address. It may have moved: the dataset pages are listed on the
+  <a href="/datasets/">datasets page</a>, and the <a href="/">overview</a> has where every attempt stands.</p>
+</header>'''
+    return shell(dict(data, noindex=True), f"Page not found · {SITE_NAME}", "/", "", body, path="404.html")
 
 
 def sitemap(data: dict) -> str:
@@ -2033,18 +2219,33 @@ def main() -> int:
                         help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
+    parser.add_argument("--notebooks-from", metavar="URL",
+                        help="link executed notebooks under this site (e.g. the published one) rather than this "
+                             "build's own notebooks/, for previews, which leave the notebooks out")
+    parser.add_argument("--analytics", metavar="TOKEN", default="",
+                        help="the Cloudflare Web Analytics token of the published site, to count page views; "
+                             "for the publish workflow only")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     data = collect(args.output / "notebooks")
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    data["analytics"] = args.analytics
+    data["notebooks_root"] = args.notebooks_from
     if args.queue and args.queue.is_file():
         data["queue"] = json.loads(args.queue.read_text())
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
-        data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
-                          for i in json.loads(args.issues.read_text()) if i["title"].endswith(": waiting on you")}
+        # An issue's title is "<dataset label or paper key>: waiting on you" (tools/notify.py); a paper's is shown
+        # on each of its datasets.
+        data["issues"] = {}
+        for i in json.loads(args.issues.read_text()):
+            if not i["title"].endswith(": waiting on you"):
+                continue
+            name = i["title"].rsplit(": waiting on you", 1)[0]
+            for label in [dataset_label(d["key"]) for d in paper_records.datasets_of(name)] or [name]:
+                data["issues"][label] = i["url"]
     build(data, args.output)
     print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
           f"{', DEMO DATA' if data['demo'] else ''})")
