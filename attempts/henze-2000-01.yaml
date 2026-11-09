@@ -1,0 +1,299 @@
+schema_version: 3
+id: henze-2000-01
+datasets:
+- archive: crcns
+  id: hc-1
+  version: unversioned
+  doi: 10.6080/K02Z13FP
+  relation: primary
+paper: doi:10.1152/jn.2000.84.1.390
+date: 2026-11-09
+entry: henze-2000
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42663114705
+outcomes:
+- claim: sample-cells
+  outcome: not_reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:sample-cells
+  measured:
+  - 21
+  - 21
+  - 21
+  - 0
+  notes: The data set holds 39 cell folders, 21 recorded with a wire tetrode (D53 to D151) and 18
+    with the two-shank silicon probe (D156 to D189). The 21 tetrode cells are outside 33 +/- 3.3.
+    All 21 have a resting potential below -55 mV (kept count 21, within 22 +/- 2.2). No tetrode
+    cell has a cell type label, so the interneuron count from the data set's labels is 0 where 1
+    is expected, and the 21 pyramidal cells are simply the kept cells without a label. No folder
+    has a single extracellular channel, so no single-wire case was found. Whether these 21 are the
+    paper's analysed cells the data set does not say.
+  deviations:
+  - Resting potential is the median membrane potential outside current steps, the median over a
+    cell's files, with the intracellular scale of the descriptor's typical gain of 50; labelling
+    cannot be checked from recordings.
+- claim: fig1c-start-end-timing
+  outcome: not_reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig1c-start-end-timing
+  measured:
+  - -0.074
+  - 0.192
+  notes: Eight somatic tetrode cells qualify (the paper has 11). Over the 16 readings (O2 x O4) the
+    mean start lead ranges from -0.174 to +0.161 ms and is never within 0.01 +/- 0.02 ms; the end
+    lead is within 0.02 +/- 0.14 ms under 6 readings. Measured values are those of the first
+    reading (all spikes, dV/dt start, 2 SD start, return to threshold). The files are sampled at
+    10 or 20 kHz, a step of 0.1 or 0.05 ms, so a start difference of 0.01 +/- 0.02 ms cannot be
+    resolved from single samples; the averaged waveforms were interpolated to a 5 us grid.
+  deviations:
+  - 8 somatic cells, where the paper has 11. Somatic and dendritic are classified by the paper's
+    rule (Results, "lack of a fast afterhyperpolarization and/or an action potential peak value
+    <0 mV") applied to each cell's averaged AP, as the data set records no site for these cells.
+  - The intracellular channel of each file is chosen from the data (the non-extracellular channel
+    with a membrane potential below -30 mV and the most APs), following the descriptor's advice to
+    find the channel with intracellular spikes; only 5 folders name it.
+  - AP detection follows the Methods (peaks of the first derivative, the peak where it crosses
+    zero); the threshold (10 V/s and 8 robust SD) is a standard choice (claims file, O1).
+  - Extracellular channels are low-pass filtered at 3 kHz (zero-phase Butterworth), as the files
+    hold 1 Hz to 5 kHz (descriptor) and the paper reports 1 Hz to 3 kHz (Results, Fig. 1C legend).
+- claim: ap-duration-match
+  outcome: reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:ap-duration-match
+  measured:
+  - 1.382
+  - 1.281
+  notes: Both mean durations are within tolerance under 6 of 16 readings; the first in the
+    criterion's order (all spikes, intracellular start at the maximal second derivative,
+    extracellular start within 2 SD of baseline noise, intracellular end at return to the pre-start
+    baseline) gives 1.382 ms and 1.281 ms over 8 somatic cells. With the dV/dt start and the end at
+    return to threshold the intracellular duration is 1.547 ms (all spikes) and 1.453 ms
+    (spontaneous spikes); the extracellular duration is within tolerance under every reading
+    (1.197 to 1.281 ms).
+  deviations:
+  - The same cells, readings and methods as fig1c-start-end-timing.
+- claim: duration-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:duration-correlation
+  measured: 0.759
+  notes: With all spikes, intracellular and extracellular durations are positively related with
+    P < 0.03 under 4 of 8 readings (R 0.759 to 0.945, n = 8), but no reading gives R within 0.594
+    to 0.726 with P < 0.03; the one reading with R in tolerance (0.644) has P = 0.085. With
+    spontaneous spikes no reading reaches P < 0.03 (R 0.27 to 0.51). The measured value is the
+    first reading with P < 0.03 in the criterion's order.
+  deviations:
+  - 8 cells, where the paper has 11.
+- claim: neg-peak-precedes-intra-peak
+  outcome: reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:neg-peak-precedes-intra-peak
+  measured: 0.207
+  notes: Over 8 somatic tetrode cells the extracellular negative peak (largest channel) precedes the
+    intracellular AP peak by 0.207 +/- 0.094 ms with all spikes and 0.208 +/- 0.101 ms with
+    spontaneous spikes (0.005 to 0.33 ms per cell). Per-channel values of each cell are close to its
+    largest channel's.
+  deviations:
+  - The negative peak is the most prominent trough of the averaged extracellular trace between
+    -1 and +0.6 ms from the AP peak, a window chosen here.
+- claim: fig1c-derivative-mismatch
+  outcome: reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig1c-derivative-mismatch
+  notes: Reading (b), the negative derivative going from its negative to its positive peak faster
+    than the extracellular spike, holds in 7 of 8 somatic cells with all spikes and with
+    spontaneous spikes. Reading (a), a higher correlation with the scaled derivative over the
+    rising than the falling phase, holds in 6 of 8 (all spikes) and 5 of 8 (spontaneous).
+- claim: notch-and-ahp-landmarks
+  outcome: not_reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:notch-and-ahp-landmarks
+  notes: Of 20 pyramidal tetrode cells, a notch (local minimum of the extracellular first
+    derivative between the negative and the late positive peak) is found in 9 at 5% prominence (4
+    to 11 at 2% to 10%), and agrees with the intracellular peak within 0.2 ms in at most 4, under
+    every reading. A slope change after the late positive peak is found in all 20 cells but lies
+    within 0.2 ms of the AHP peak as the criterion defines it in at most 1. That AHP peak (the
+    minimum within 5 ms of the return to threshold) is often at the end of its window (the slow
+    AHP); with the first fast AHP trough as a variant, 0 or 1 of 12 or 13 cells agree.
+  deviations:
+  - The prominence for a local extreme to count (5%, shown at 2% and 10%) is a choice made here;
+    the paper gives no detection rule.
+- claim: fig2-interneuron-narrow
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The basket cell of Fig. 2 is a tetrode recording. None of the 21 tetrode folders has a cell
+    type; the spreadsheet covers only 2 of them and labels neither an interneuron. Its only
+    interneuron, D17212, is a silicon-probe recording. Choosing the interneuron by its narrow
+    spike would assume the finding.
+- claim: fig3b-latency-vs-amplitude
+  outcome: reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig3b-latency-vs-amplitude
+  notes: Over 20 pyramidal tetrode cells (8 somatic, 12 dendritic by the paper's rule) latency falls
+    with AP amplitude under all 8 readings (Pearson r -0.698 to -0.712, P 0.0004 to 0.0006;
+    Spearman -0.529 to -0.592, P 0.006 to 0.016), and the dendritic median latency exceeds the
+    somatic one (0.295 against 0.2025 ms, all spikes; 0.280 against 0.1975 ms, spontaneous).
+  deviations:
+  - 20 cells, as in the Fig. 3B legend, but 8 somatic and 12 dendritic where the paper has 11 and 9;
+    the site is classified from the averaged AP by the paper's rule.
+- claim: fig3a-example-pair
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig3a-example-pair
+  notes: The data set records no depth or track for the tetrode cells, so the pair cannot be
+    identified. Reading the folder names as animal, track and cell (an inference; the descriptor
+    does not explain them), two candidates have a somatic cell followed by a dendritic one, D11221
+    then D11222 (latencies 0.250 and 0.975 ms) and D13521 then D13522 (0.210 and 0.245 ms).
+    Neither matches 0.28 and 0.55 ms within tolerance.
+- claim: fig3c-backprop-velocity
+  outcome: not_reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig3c-backprop-velocity
+  measured: 0.474
+  notes: No reading gives a velocity within 1.61 +/- 0.161 m/s (0 of 24 combinations of spikes,
+    amplitude, reference and velocity readings). With all spikes the readings give 0.23 to 0.49
+    m/s; with spontaneous spikes reading (c) gives 0.79 to 2.46 m/s depending on the reference
+    amplitude. The measured value is the first reading (all spikes, peak minus threshold, somatic
+    mean reference, inverse slope of latency on distance).
+  deviations:
+  - 20 cells classified somatic or dendritic here by the paper's rule.
+- claim: fig4bc-burst-attenuation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig4bc-burst-attenuation
+  notes: Among 17 tetrode cells (kept, extracellular spike present) with at least 10 depolarizing
+    steps reaching a 5th AP, all parts of the criterion hold in 9 under reading (a) with the
+    extracellular amplitude from baseline to negative peak (O7 b), with either intracellular
+    amplitude; with the negative-to-positive amplitude (O7 a) in 6, and under reading (b) in at
+    most 2. The amplitude parts alone hold in 12 of 17 (O7 b). The majority depends on the
+    selection threshold - with at least 20 trains 6 of 13 cells, with at least 50 trains 5 of 8. In
+    the silicon-probe cells all parts hold in 1 of 7. The notch was not scored.
+  deviations:
+  - The paper does not say which cells or trains form this analysis; a cell enters with at least 10
+    steps reaching a 5th AP, a threshold chosen here (assumption; the result at 20 and 50 is shown).
+  - Steps are found on the current channel (deviation from its most common value, 5 robust SD),
+    and their depolarizing sign from the membrane potential during them; the descriptor gives no
+    step timing.
+- claim: fig4d-amplitude-correlation
+  outcome: reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig4d-amplitude-correlation
+  measured: 0.367
+  notes: Two cells give R within 0.36 to 0.44 with P < 0.0001 - D15121 (peak minus threshold
+    against negative-to-positive amplitude, R = 0.367, n = 514) and D12821 (peak minus threshold
+    against baseline-to-negative amplitude, R = 0.431, n = 95). Over 16 candidate cells and four
+    readings, 10 of 54 rows are positive with P < 0.0001, and D11222, D13522 and D17111 give
+    negative correlations with P < 0.0001 under some readings.
+  deviations:
+  - Burst spikes are those inside depolarizing steps with an interspike interval below 5 ms to a
+    neighbour (Results, "< 5-ms inter-spike intervals"); cells need at least 30 such spikes, a
+    choice made here.
+- claim: fig5-theta-smaller-spikes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Uses the behaving-animal sleep recordings of Csicsvari et al. 1999a (Methods). The data
+    set holds only the anesthetized recordings, and the paper names no archive for the others.
+- claim: theta-higher-rates
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaving-animal recordings, as for fig5-theta-smaller-spikes.
+- claim: fig6-amplitude-vs-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the histological tetrode-to-soma distances of 19 cells. No file, README or
+    spreadsheet column holds them; the spreadsheet's depth column is the electrode depth of 18
+    cells, 16 of them silicon-probe cells.
+- claim: tetrode-cell-count-estimate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig6-amplitude-vs-distance, which is blocked. The arithmetic alone (300,000
+    cells/mm3 in cylinders of 50 and 140 um radius, 60 um thick) uses no recordings.
+- claim: silent-cells-inference
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on tetrode-cell-count-estimate, which is blocked; it rests on unit counts from
+    other studies.
+- claim: fig7-vertical-spread
+  outcome: not_reproduced
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:fig7-vertical-spread
+  notes: Of 10 silicon-probe pyramidal cells with a site order, the spike is present (above 2 SD)
+    100 um or more from the soma site in 3; of the 4 whose order the spreadsheet lists, in 1.
+    Amplitude, maximal rise slope and maximal decay slope fall with distance from the soma site
+    (Spearman below 0) in 9 of 10 (4 of 4), so that part of the claim holds. Six-site shanks span
+    125 um, and the soma site is at an end of the shank in 4 of the 10 cells.
+  deviations:
+  - The files hold 1 Hz to 5 kHz, where the Fig. 7 legend gives 1 Hz to 10 kHz; the band as
+    recorded is used.
+  - For the files with six extracellular channels (D172 to D189) the spreadsheet's site order
+    names channels up to 10; the order used is the listed channel divided by two, an assumption
+    supported by the smooth amplitude profiles it gives. The outcome is the same without these
+    cells.
+  - The second shank of the 12-channel files is the listed shank shifted by one channel where that
+    gives exactly the remaining channels (descriptor, "in a similar way"); for D157 it does not,
+    and only the listed shank is used.
+- claim: propagation-velocity-range
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_henze_2000.ipynb
+  output: claim:propagation-velocity-range
+  notes: The paper's counts (25 pyramidal cells, 6 interneurons) exceed the anesthetized silicon
+    probe recordings, which hold 18 cells and one labelled interneuron, so they come from the
+    behaving-animal recordings, which the data set does not hold (claims file, reading b). On the
+    anesthetized recordings (reading a) 5 of 10 pyramidal cells give a finite velocity by the fit
+    pairing (0.18 to 0.67 m/s), 3 of them within 0.36 to 2.2 m/s, and the other 5 give a zero or
+    negative delay; the interneuron D17212 gives 0.64 m/s under the assumed site order.
+- claim: fig8-neighbouring-shanks
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The behaving-animal recordings, as for fig5-theta-smaller-spikes.
+findings:
+- kind: data_missing
+  statement: The data set holds only the anesthetized recordings. The behaving-animal recordings
+    the paper re-examines (Figures 5 and 8 and, by its counts, the propagation velocities) and the
+    histological tetrode-to-soma distances (Figure 6) are not in it, and the paper names no other
+    archive for them. Six of the paper's 21 findings cannot be tested for this reason.
+- kind: metadata_insufficient
+  statement: The per-cell spreadsheet IntraExtra.xls covers 18 of the 39 cells and only 2 of the 21
+    tetrode cells (D14521, D14921). For the other 19 there is no cell type, no somatic or dendritic
+    impalement site, no resting potential and no depth, so the paper's interneuron, its somatic
+    and dendritic groups and its Fig. 3A pair cannot be identified.
+- kind: metadata_insufficient
+  statement: Only 5 of 39 folders have a README naming the extracellular and intracellular
+    channels. The intracellular channel moves between files of one cell (channel 5 or 6 in the D112
+    files), and two binary formats are mixed without a note, 12-bit values centred on 2048 and
+    signed 16-bit values. The xml files give an amplification of 1000 for every channel, while the
+    intracellular channel matches the spreadsheet's resting potentials only with the descriptor's
+    typical gain of 50; at that gain the 16-bit files of D128 give a resting potential near -108 mV,
+    so their scale is uncertain.
+- kind: other
+  statement: The files d813101.dat and d813102.dat of D81 repeat parts of d081fre.001.dat; all 187
+    and 74% of 715 of their APs fall within 1 ms of an AP of that file at a fixed offset.
+- kind: format_error
+  statement: d15611.001.dat and d16811.001.dat have no xml (their size fits 14 channels at 20 kHz),
+    and no channel of d15611.001.dat holds intracellular APs. 19 of 169 files have no channel with
+    a membrane potential and APs.
+- kind: metadata_error
+  statement: For the cells D172 to D189, whose files hold six extracellular channels, the
+    spreadsheet column "hextrode chans" gives the site order with channel numbers up to 10, which do
+    not exist in those files. The amplitude profiles are smooth if the listed channel is halved.
+- kind: metadata_error
+  statement: The spreadsheet's file counts and recording times disagree with the zips for several
+    cells (D14921 lists 1 file where its zip holds 6), as the data set's README of April 2021 warns.
+- kind: methods_unavailable
+  statement: Question for the authors. Which cells and trains form the Fig. 4B and C analysis of
+    current-evoked trains? The Results show one cell and give no selection. This attempt took
+    every kept cell with at least 10 steps reaching a 5th AP; with 10, 9 of 17 tetrode cells show
+    all the changes the Results describe, a bare majority, and with 20 or 50 trains 6 of 13 and 5 of
+    8.
