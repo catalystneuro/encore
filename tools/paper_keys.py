@@ -80,7 +80,7 @@ def papers_with_records() -> dict[str, dict]:
         m = ENTRY.match(en["name"])
         for doi in dois:
             note(doi, "9999", title=en.get("title"), **({"name": m.group(1)} if m else {}))
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+    for path in sorted((ROOT / "claims").glob("*.yaml")) + sorted((ROOT / "claims").glob("*/*.yaml")):
         text = path.read_text()
         data = yaml.safe_load(text)
         doi = doi_of(data["paper"])

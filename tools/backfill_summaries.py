@@ -11,6 +11,8 @@ from __future__ import annotations
 
 import argparse
 import re
+
+import yaml
 import subprocess
 import sys
 from pathlib import Path
@@ -29,7 +31,9 @@ def sources(attempt_id: str) -> str:
     a_path = ROOT / "attempts" / f"{attempt_id}.yaml"
     folder = folder_of(attempt_id)
     parts = [f"=== attempts/{attempt_id}.yaml\n{a_path.read_text()}"]
-    for c in sorted((ROOT / "claims" / folder).glob("*.yaml")):
+    import paper_records
+    c = paper_records.claims_for_attempt(yaml.safe_load(a_path.read_text()))
+    if c:
         parts.append(f"=== {c.relative_to(ROOT)}\n{c.read_text()}")
     t = ROOT / "transcripts" / folder
     for r in sorted(t.glob("*report*.md")) if t.is_dir() else []:
@@ -38,7 +42,8 @@ def sources(attempt_id: str) -> str:
 
 
 def folder_of(attempt_id: str) -> str:
-    return re.sub(r"-[a-z][^-]*-\d{4}-\d{2}$", "", attempt_id)
+    """The paper an attempt is on: its id less the number (docs/paper-first.md)."""
+    return attempt_id.rsplit("-", 1)[0]
 
 
 META = re.compile(r"write tool|file-writing|no tools|I could(?:n't| not) (?:write|save)|I did not (?:write|save)|<invoke|parameter name|the paragraph above", re.I)
