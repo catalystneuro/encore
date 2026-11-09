@@ -163,12 +163,12 @@ def branches(apply: bool) -> int:
                                rf"transcripts/(match/)?{re.escape(target)}/)", p)]
             if own:
                 git("checkout", converted, "--", *own, cwd=tmp)
-            if git("status", "--porcelain", cwd=tmp).strip():
-                git("add", "-A", cwd=tmp)
-                state = "MERGE_HEAD" in git("rev-parse", "--git-path", "MERGE_HEAD", cwd=tmp) and \
-                    Path(tmp, git("rev-parse", "--git-path", "MERGE_HEAD", cwd=tmp).strip()).exists()
-                git(*COMMIT, "commit", "-q", "--no-edit" if state else "-m",
-                    *([] if state else [f"Merge main into attempt/{target}: the branch's own records"]), cwd=tmp)
+            git("add", "-A", cwd=tmp)
+            merging = Path(git("rev-parse", "--absolute-git-dir", cwd=tmp).strip(), "MERGE_HEAD").exists()
+            if merging:
+                git(*COMMIT, "commit", "-q", "--no-edit", cwd=tmp)
+            elif git("status", "--porcelain", cwd=tmp).strip():
+                git(*COMMIT, "commit", "-q", "-m", f"attempt/{target}: the branch's own records over main's", cwd=tmp)
             check = subprocess.run([sys.executable, "tools/entry.py", "check", *sorted(
                 {"/".join(p.split("/")[:2]) for p in own if p.startswith("entries/")})], cwd=tmp,
                 capture_output=True, text=True) if any(p.startswith("entries/") for p in own) else None
