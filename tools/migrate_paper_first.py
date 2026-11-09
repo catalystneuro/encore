@@ -77,6 +77,12 @@ def plan() -> dict:
         c = load(path)
         claims[path] = {"doi": paper_keys.doi_of(c["paper"]), "folder": path.parent.name}
     missing = sorted(({a["doi"] for a in attempts} | {c["doi"] for c in claims.values()}) - set(keys))
+    if missing and os.environ.get("MIGRATE_SEVERAL_FROM"):
+        # A branch's records of a paper main no longer has (claims replaced since the branch began) get a key here;
+        # the merge with main then drops them, since they are not the branch's own paper's.
+        for doi in missing:
+            keys[doi] = paper_keys.add_key(doi)
+        missing = []
     if missing:
         raise SystemExit("no key for: " + ", ".join(missing) + " (run tools/paper_keys.py)")
 
