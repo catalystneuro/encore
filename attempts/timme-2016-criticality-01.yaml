@@ -1,0 +1,341 @@
+schema_version: 3
+id: timme-2016-criticality-01
+datasets:
+- archive: crcns
+  id: hc-8
+  version: unversioned
+  doi: 10.6080/K0PC308P
+  relation: primary
+paper: doi:10.3389/fphys.2016.00425
+date: 2026-11-09
+entry: timme-2016-criticality
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42570443240
+inputs:
+- what: The NCC MATLAB toolbox the paper cites (Marshall et al., 2016), NCC Toolbox Version 1 of June
+    14th, 2016, read and ported to Python in hc8.py and models.py (power-law fitting, avalanches,
+    shape collapse, complexity, randomizations, branching ratio, Bethe lattice and cortical
+    branching model). It is code, not data; the claims file names the same file.
+  source: http://www.nicholastimme.com/software.html, zip with sha256
+    b7c912f8154f70fc82b13ab1725ed191935ed2877256cadd7e39f66737be294b
+outcomes:
+- claim: culture-counts
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:culture-counts
+  measured:
+  - 435
+  - 39529
+  - 91
+  notes: The data set holds 435 recordings and 39529 neurons (data.nNeurons, equal to the number of
+    spike trains in every file), as the paper states. The median number of neurons per recording is
+    91 and the Terrell-Scott histogram mode 93.3. Firing rates over the first 59 min have 5th and
+    95th percentiles of 0.04548 Hz and 7.70 Hz, inside the criterion's range of 0.045 to 22 Hz,
+    close to its lower bound; the minimum is 0.0155 Hz and the maximum 64.20 Hz, and non-zero rates
+    span 3.62 orders of magnitude.
+- claim: fig2d-network-isi
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig2d-network-isi
+  measured: 6.67
+  notes: Reading (a), the median mean network ISI over the 435 recordings, is 6.67 ms, within 7 +/-
+    0.7 ms; reading (b), the Terrell-Scott mode, is 8.50 ms and outside. The ISI ranges from 0.91 to
+    152.78 ms (5th to 95th percentile 2.65 to 19.81 ms).
+  deviations:
+  - The ISI is rounded to a whole number of 0.05 ms bins for rebinning, as rebin.m requires (claims
+    file, common detail 1).
+- claim: fig2e-avalanche-count
+  outcome: not_reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig2e-avalanche-count
+  measured: 83289
+  notes: After rebinning the first 59 min to the mean network ISI, the median number of avalanches
+    per recording is 83289 (reading a) and the histogram mode 81707 (reading b), against 10000 +/-
+    1000; the range is 2250 to 531966 and only 2 of 435 recordings have 9000 to 11000. How the paper
+    counted avalanches for Figure 2E is asked of the authors (findings).
+- claim: fig8-subsampling-exponents
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig8-subsampling-exponents
+  notes: Over 435 recordings, the full-system search gives tau 2.491 +/- 0.623 and alpha 2.928 +/-
+    0.648; sub-sampling with each sub-sample rebinned to its own ISI gives tau 2.106 +/- 0.407 and
+    alpha 2.730 +/- 0.579, lower means and lower SDs. 1/sigma nu z changes by 3.6% (size given
+    duration, 1.411 to 1.360) and 1.6% (shape collapse, 1.467 to 1.490). Keeping the full system's
+    bin for the sub-samples gives tau 1.745 +/- 0.465, alpha 2.356 +/- 0.504 and changes of 1.9% and
+    3.4%, the same conclusion. On one recording run with layout (b), the extrapolated values differ
+    from layout (a) by at most 0.044. One recording has no accepted duration fit.
+  deviations:
+  - Methods 2.10 do not say whether a sub-sample is rebinned to its own network ISI; the main
+    reading rebins it ("These analyses were identical to those performed in the whole recorded
+    system", Methods 2.10), and keeping the full system's bin is shown. Both give the same outcome.
+  - Layout reading (b) of the sub-sampling (30 sub-samples at every integer size) was run on one
+    recording only, as it costs about 55 times layout (a).
+  - No recording is excluded under reading (a) of the exclusion rule (all 435 keep values after the
+    cuts and at least two shape collapse durations), while Figure 2B marks some as excluded.
+- claim: fig8-exponents-match-literature
+  outcome: blocked
+  blocked_by: other
+  notes: The test needs the exponents reported by Mazzoni et al. (2007), Pasquale et al. (2008) and
+    Friedman et al. (2012). They were not retrieved in this run; a title search of arXiv for Friedman
+    et al. (2012) found no record, and there was no time to obtain the other two. The means it would
+    compare are printed under fig8-subsampling-exponents (full system tau 2.491, alpha 2.928;
+    sub-sampled tau 2.106, alpha 2.730).
+- claim: fig8-sigmanuz-methods-agree
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig8-sigmanuz-methods-agree
+  notes: Full system, size given duration 1.411 +/- 0.157 and shape collapse 1.467 +/- 0.204,
+    difference 0.056; sub-sampling (own bin) 1.360 +/- 0.226 and 1.490 +/- 0.337, difference 0.130;
+    sub-sampling (full-system bin) 1.383 and 1.517, difference 0.133 against SD 0.297. Every
+    difference is below the larger SD. Per recording the two differ by less than 0.1 in 0.67 of
+    recordings.
+- claim: eq4-exponent-relation
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:eq4-exponent-relation
+  notes: From the mean exponents, (alpha - 1)/(tau - 1) is 1.293 +/- 0.694 (search algorithm) and
+    1.565 +/- 0.778 (sub-sampling), within one propagated SD of both estimates of 1/sigma nu z. The
+    propagated SDs are about half the value, so the test accepts a wide range; per recording the
+    ratio is within 0.1 of the size given duration exponent in 0.21 of recordings and within 0.2 in
+    0.47 (medians 1.226 and 1.389).
+- claim: eq4-relation-randomized
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:eq4-relation-randomized
+  notes: The relation holds within one SD for all five randomizations that change the avalanches.
+    For wrap and Poisson, tau (3.262, 4.287) and alpha (3.659, 4.294) each differ from the real data
+    (2.491 +/- 0.623, 2.928 +/- 0.648) by more than one SD; for the jitters they do not. Swap and
+    shuffling keep A(t) and so the exponents.
+- claim: fig9-branching-ratio
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig9-branching-ratio
+  notes: B_new (delays 1 to 8, A(t) <= 10) has median 0.973, SD 0.064 and range 0.484 to 1.030; 0.736
+    of recordings lie in [0.95, 1) and 0.874 in [0.9, 1); 16 recordings are at 1 or above. B_basic
+    (Eq. 11) has median 0.798 and SD 0.088, below 0.95 in 0.947 of recordings and below 0.9 in 0.846.
+    Both band readings satisfy the criterion. Variants, brsimple median 0.586 and the per-avalanche
+    ratio of avprops median 0.404.
+- claim: fig10b-susceptibility-randomization
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig10b-susceptibility-randomization
+  notes: Under reading (b) of the susceptibility (N var(A/N)) with Benjamini-Hochberg, all five
+    randomizations that change A(t) lower the median (relative changes -9.2% to -71.9%) with
+    corrected p from 0.0231 (1-bin jitter) to 3e-138, and Poisson and wrap give the largest
+    decreases. Under Eq. 14 as printed (reading a), 1-bin jitter is not significant (corrected p
+    0.0908 BH, 0.235 BY), and under Benjamini-Yekutieli with reading (b) its corrected p is 0.0598.
+    Swap and shuffling leave the susceptibility unchanged, as the legend says.
+- claim: fig10c-curvature-randomization
+  outcome: partially_reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig10c-curvature-randomization
+  notes: The median absolute curvature of the real data is 2.29; it falls to 0.813 (10-bin jitter),
+    0.048 (100-bin jitter), 0.266 (wrap) and 0.0746 (Poisson), each with corrected p below 1e-37
+    under both corrections, and rises to 2.43 under 1-bin jitter (corrected p 0.391). The criterion
+    needs all five, so the claim holds for four. The toolbox's signed curvature is negative (arched)
+    in 0.94 of real recordings.
+- claim: fig11ac-fit-range-randomization
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig11ac-fit-range-randomization
+  notes: Poisson randomization shortens the median size fit range from 0.694 to 0.248 decades and
+    the duration range from 0.663 to 0.211 (corrected p about 4e-141). 10-bin jitter lengthens them
+    to 0.740 and 0.732 (corrected p 0.000135 and 5e-06, significant). 100-bin jitter and wrap
+    shorten both significantly, and 1-bin jitter changes neither (corrected p 0.455 and 0.398), so
+    the legend's wider statement holds for three of the four other randomizations.
+- claim: fig11bd-exponents-randomization
+  outcome: partially_reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig11bd-exponents-randomization
+  notes: Tau rises significantly under 10-bin jitter, 100-bin jitter, wrap and Poisson (median 2.50
+    to 4.53 under Poisson) and falls under 1-bin jitter (2.39, corrected p 0.0108). Alpha rises
+    significantly under 100-bin jitter, wrap and Poisson; 1-bin and 10-bin jitter do not change it
+    significantly (corrected p 0.107 and 0.401). Under Poisson the median largest fitted size falls
+    from 44 to 21, consistent with the paper's explanation.
+- claim: fig10a-complexity-randomization
+  outcome: partially_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:fig10a-complexity-randomization
+  notes: Over 180 recordings, the toolbox's complexity (correction and cut) has median 0.00192
+    bits/neuron in the real data; 1-bin, 10-bin and 100-bin jitter, wrap and Poisson lower it to
+    medians of 0.00022 to 0.00131 with corrected p from 0.00925 to 5e-31, and Poisson is among the
+    two largest decreases. Shuffling raises it to 0.145 (corrected p 4.2e-37), so five of the six
+    randomizations other than swapping meet the criterion. The cut keeps a median of 8 of 94 subset
+    sizes for the real data and 75 for shuffled data. Without the cut, all six lower complexity
+    (BH, largest corrected p 0.0264); without the correction, shuffling raises it.
+  deviations:
+  - 10 random subsets per subset size, where Methods 2.9 give up to 100, and 180 of the 435
+    recordings drawn with a fixed seed; all 435 with 10 subsets were estimated at about 68 min, over
+    the notebook limit.
+- claim: figs8-complexity-susceptibility-correlation
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:figs8-complexity-susceptibility-correlation
+  measured: 0.542
+  notes: Pearson r between the toolbox's complexity and the susceptibility over 180 recordings is
+    0.542 with Eq. 14 as printed and 0.625 with N var(A/N) (Spearman 0.585 and 0.630), against 0.23
+    +/- 0.023; the correlation is positive, as stated, but larger. Complexity without the correction
+    gives 0.221 with Eq. 14, and without the cut -0.330.
+  deviations:
+  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+- claim: figs9-complexity-fit-range-correlation
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:figs9-complexity-fit-range-correlation
+  measured:
+  - 0.143
+  - -0.049
+  notes: Pearson r of the toolbox's complexity with the size fit range is 0.143 (p 0.055) and with
+    the duration fit range -0.049 (p 0.52), against 0.296 and 0.197. Without the cut they are 0.200
+    and 0.228, without the correction 0.466 and 0.245.
+  deviations:
+  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+- claim: fig12a-swap-preserves-complexity
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:fig12a-swap-preserves-complexity
+  notes: By the paper's rank sum test, spike swapping lowers the toolbox's complexity from a median
+    of 0.00192 to 0.00066 (-65%; corrected p 3.2e-08 BH, 8.3e-08 BY), and real and swapped
+    complexity correlate with Pearson r 0.502 (Spearman 0.496), below the 0.7 reading of strong.
+    Both variants agree with the paper; without the cut the median change is -2.5% (rank sum p
+    0.422, r 0.968) and without the correction -0.2% (p 0.811, r 0.996). The disagreement comes from
+    the cut of the integration curve, which falls at different subset sizes in real and swapped
+    data.
+  deviations:
+  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+- claim: fig12b-shuffle-lowers-complexity
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:fig12b-shuffle-lowers-complexity
+  notes: With the toolbox's complexity, real complexity exceeds shuffled complexity in 0.100 of 180
+    recordings, the median rises by 0.143 (corrected p 4.2e-37) and Pearson r is 0.234. Without the
+    cut the claim holds (real greater in 0.994 of recordings, corrected p 1.1e-25, r 0.856); without
+    the correction real is never greater. Shuffling as Methods 2.5 describe is the toolbox's swap2,
+    so the claims file's variant is the same procedure.
+  deviations:
+  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+- claim: fig3-chain-model-complexity
+  outcome: reproduced
+  notebook: models.ipynb
+  output: claim:fig3-chain-model-complexity
+  notes: With the exact joint distribution, the whole-system integration is 0 bits for c = 0, 5.84
+    for c = 0.8 and 11 for c = 1; the complexity is 0 to eight decimals for c = 0 and c = 1 and 0.431
+    bits for c = 0.8.
+- claim: fig5d-bethe-small-avalanches
+  outcome: reproduced
+  notebook: models.ipynb
+  output: claim:fig5d-bethe-small-avalanches
+  notes: Of 10000 runs, 7018 end by layer 8. Their sizes after the cuts of Methods 2.7 are accepted
+    as a truncated power law (tau 1.593, sizes 4 to 12, p 0.338) and their complexity, with the
+    correction and 10 subsets per size, is 0.00637 bits/neuron (no cut 0.271, no correction 0.374).
+    The full model's sizes are accepted too (tau 1.402, 4 to 43, p 0.368) and its shape collapse
+    gives 1/sigma nu z 1.598.
+  deviations:
+  - The number of runs (10^4) is the claims file's standard choice; small avalanches are those whose
+    last active layer is 8 or less ("stopped on or before the 8th layer", Results 3.1).
+- claim: fig5e-shuffle-removes-complexity
+  outcome: reproduced
+  notebook: models.ipynb
+  output: claim:fig5e-shuffle-removes-complexity
+  notes: Shuffling leaves A(t) and the size distribution unchanged and lowers the complexity from
+    0.00637 to 0.00002 bits/neuron (ratio 0.003). Without the cut it falls from 0.271 to -0.050;
+    without the correction it rises from 0.374 to 0.414.
+- claim: fig5f-network-state-poisson-keeps-complexity
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig5f-network-state-poisson-keeps-complexity
+  notes: Permuting the order of all time bins changes the size distribution (tau 2.222 against the
+    original 1.593 +/- 0.058, sizes of 1 from 0.361 to 0.209 of avalanches), but the toolbox's
+    complexity falls from 0.00637 to 0.00001, a relative difference of 0.998, against the criterion
+    of 5%. The same states are kept, so the difference comes from the cut; without it the relative
+    difference is 0.049 and without the correction 0.020, both within 5%.
+- claim: fig6-cb-distribution-curvature
+  outcome: partially_reproduced
+  notebook: models.ipynb
+  output: claim:fig6-cb-distribution-curvature
+  notes: Averaged over 30 models, the quadratic term of the duration distribution is -1.23 at
+    p_trans 0.2, +1.39 at 0.3 and smallest in magnitude at 0.25 (-0.020), as stated. For the size
+    distribution it is +0.087 at 0.2 (SD 0.513), +1.22 at 0.3 and smallest in magnitude at 0.21, so
+    the low-p_trans size distributions do not curve downwards by this measure.
+  deviations:
+  - Curvature is the quadratic term of log10 probability on log10 size, the claims file's measure;
+    the paper does not define one.
+- claim: fig7c-cb-curvature-no-peak
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig7c-cb-curvature-no-peak
+  notes: The extrapolated absolute shape collapse curvature, averaged over 30 models, is larger at
+    p_trans 0.2 (4.258) than at 0.3 (2.999), as stated, but it rises to an interior maximum of 4.667
+    at 0.25, within 0.02 of the critical point; the full 100-neuron system peaks there too (3.508).
+  deviations:
+  - Only the p_trans grid of 0.01 (reading b) was run; the 0.005 grid (reading a) would double the
+    simulation time.
+- claim: fig7ab-cb-complexity-susceptibility-peak
+  outcome: blocked
+  blocked_by: too_large
+  notes: The test needs the complexity of 30 sub-samples of each of 30 models at 11 or 21 values of
+    p_trans, 9,900 to 18,900 complexity computations on 40 to 100 neurons and up to 180,000 active
+    bins. The culture complexity took 31.5 min for 180 recordings times 8 computations on 4
+    processes, about 5 s of CPU per computation with 10 subsets per size; at that rate the model
+    claim needs 14 to 26 hours of CPU, beyond the run. The susceptibility part was run for reference
+    on the 0.01 grid; its extrapolated mean is largest at 0.3, the largest p_trans tested, under
+    both readings, and decides nothing here.
+- claim: fig7a-complexity-boundary-rise
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig7ab-cb-complexity-susceptibility-peak, blocked for the cost of the complexity
+    of the sub-sampled cortical branching models.
+- claim: figs2-recording-length
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the complexity of 30 models per p_trans at three recording lengths, on all time bins,
+    three times the computation that blocks fig7ab-cb-complexity-susceptibility-peak (with
+    extrapolation), or 990 to 1,890 complexity computations of the whole 100-neuron system per
+    recording length without it; not run for time.
+- claim: fig7d-cb-branching-ratio-near-1
+  outcome: blocked
+  blocked_by: too_large
+  notes: Its criterion compares the p_trans where B_new is closest to 1 with the peaks of
+    fig7ab-cb-complexity-susceptibility-peak, which is blocked. B_new was computed for reference on
+    the 0.01 grid; its mean is closest to 1 at p_trans 0.28 (1.0052).
+findings:
+- kind: metadata_error
+  statement: In 47 of the 435 files, 64 spike times are later than data.nbins, which the data
+    description defines as the length of the recording in bins.
+- kind: format_error
+  statement: Six files hold 21 repeated spike times within one neuron (the same 0.05 ms bin listed
+    twice in a spike train).
+- kind: other
+  statement: data.wave_ClusParams.ref is 30 in every file (1.5 ms at the stored sr of 20000 Hz), the
+    detector dead time, while Methods 2.2 say the dead time was removed; within-neuron intervals as
+    short as 0.05 ms occur, so the stored parameter does not describe the sorting that produced
+    the spikes.
+- kind: methods_unavailable
+  statement: Question for the authors. Figure 2E and Methods 2.3 say most recordings contain around
+    10,000 avalanches after rebinning to the mean network ISI. Rebinning the first 59 min of each file
+    to its mean network ISI and counting runs of active bins gives a median of 83,289 avalanches per
+    recording. Were avalanches counted differently for Figure 2E (a different window, bin, or a
+    minimum size or duration)?
+- kind: methods_unavailable
+  statement: Question for the authors. Which recordings were excluded for too few avalanches (red
+    squares of Figure 2B), and with what threshold? Every recording here keeps size and duration
+    values after the cuts of Methods 2.7 and at least two durations for the shape collapse.
+- kind: methods_unavailable
+  statement: Question for the authors. With the complexity function of the NCC toolbox (sub-sampling
+    correction and cut at the first peak of I(k)/(k-1)) and 10 subsets per size, the cut keeps a
+    median of 8 of 94 subset sizes in the real culture data and 75 in shuffled data, and spike
+    swapping then lowers complexity by 65% and shuffling raises it, unlike Figures 10A and 12.
+    Without the cut the results agree with the paper. How often did the cut apply in the paper's
+    culture analysis with 100 subsets, and was it applied to the randomized data in the same way?
+- kind: methods_unavailable
+  statement: Question for the authors. Methods 2.4 give p_trans from 0.2 to 0.3 in increments of
+    0.05, which cannot place a peak at 0.265 (Results 3.2); what grid was used for Figure 7?

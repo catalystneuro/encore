@@ -76,8 +76,37 @@ class Report:
 
 
 def dataset_id(record: dict) -> str | None:
-    """The identifier of the dataset a claims file or attempt record is about, in its archive."""
-    return (record.get("dataset") or {}).get("id")
+    """The identifier of the one dataset a claims file or attempt record is about, in its archive: None for a
+    paper's own claims file (claims/<paper>.yaml) and for an attempt on several datasets."""
+    if record.get("datasets"):
+        return str(record["datasets"][0]["id"]) if len(record["datasets"]) == 1 else None
+    found = (record.get("dataset") or {}).get("id")
+    return str(found) if found is not None else None
+
+
+def dataset_ids(record: dict) -> list[str]:
+    """The identifiers of every dataset an attempt record used."""
+    return [str(d["id"]) for d in record.get("datasets") or ([record["dataset"]] if record.get("dataset") else [])]
+
+
+def claims_paths() -> list[Path]:
+    """Every claims file: the papers' own (claims/<paper>.yaml), and the per-dataset ones from before the cutover
+    to paper-first records (claims/<paper>/<folder>.yaml)."""
+    return sorted((ROOT / "claims").glob("*.yaml")) + sorted((ROOT / "claims").glob("*/*.yaml"))
+
+
+def claims_target(data: dict) -> tuple:
+    """How a claims file is looked up: its paper, and its dataset for a per-dataset file."""
+    return (data.get("paper"), str((data.get("dataset") or {}).get("id")) if data.get("dataset") else None)
+
+
+def lookup(index: dict, attempt: dict):
+    """The claims an attempt was tested on: the per-dataset file of its one dataset if there is one, else the
+    paper's own."""
+    one = dataset_id(attempt)
+    if one is not None and (attempt.get("paper"), one) in index:
+        return index[(attempt.get("paper"), one)]
+    return index.get((attempt.get("paper"), None))
 
 @functools.cache
 def schema(name: str) -> Draft202012Validator:
@@ -210,13 +239,13 @@ def check(entry_dir: Path) -> Report:
 
     # Claims and attempts that go with this entry.
     claims_by_target, labels_used, kinds_by_target = {}, {}, {}
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+    for path in claims_paths():
         data = validate(report, path, "claims") or {}
         ids = {c["id"] for c in data.get("claims", [])}
-        claims_by_target[(dataset_id(data), data.get("paper"))] = ids
-        kinds_by_target[(dataset_id(data), data.get("paper"))] = {
+        claims_by_target[claims_target(data)] = ids
+        kinds_by_target[claims_target(data)] = {
             c["id"]: c.get("data", "dataset") for c in data.get("claims", [])}
-        labels_used[(dataset_id(data), data.get("paper"))] = any(
+        labels_used[claims_target(data)] = any(
             c.get("data") == "with_labels" for c in data.get("claims", []))
         for c in data.get("claims", []):
             for other in c.get("depends_on", []):
@@ -230,11 +259,12 @@ def check(entry_dir: Path) -> Report:
             continue
         validate(report, path, "attempt")
         where = path.relative_to(ROOT)
-        pinned = versions.get(dataset_id(attempt))
-        version = (attempt.get("dataset") or {}).get("version")
-        # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
-        if pinned and path == mine[-1] and version != pinned:
-            report.error(where, f"dataset version {version!r} differs from {pinned!r} in entry.yaml")
+        # The entry streams the versions of its latest attempt; earlier attempts keep the versions they used.
+        for used in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else []):
+            pinned = versions.get(str(used.get("id")))
+            version = used.get("version")
+            if pinned and path == mine[-1] and version != pinned:
+                report.error(where, f"dataset {used.get('id')} version {version!r} differs from {pinned!r} in entry.yaml")
         # A repeat attempt's reconciliation points into the earlier record's findings and its own by number.
         rec = attempt.get("reconciliation")
         if isinstance(rec, dict):
@@ -258,15 +288,15 @@ def check(entry_dir: Path) -> Report:
         # tested on may already have been replaced (docs/pipeline.md), so it is not held to the current one.
         if attempt.get("deprecated"):
             continue
-        known = claims_by_target.get((dataset_id(attempt), attempt.get("paper")))
-        if labels_used.get((dataset_id(attempt), attempt.get("paper"))):
+        known = lookup(claims_by_target, attempt)
+        if lookup(labels_used, attempt):
             kinds = {f.get("kind") for f in attempt.get("findings") or []}
             if not attempt.get("inputs") or not kinds & {"metadata_insufficient", "identifier_missing"}:
                 report.error(where, "claims take names for the dataset's codes from elsewhere (`with_labels`), so "
                                     "list the source under `inputs` and record the missing names as a finding "
                                     "(metadata_insufficient or identifier_missing)")
         if known is None:
-            report.error(where, "no claims file for this dataset and paper")
+            report.error(where, "no claims file for this paper")
             continue
         recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
         for claim in sorted(known - set(recorded)):
@@ -279,7 +309,7 @@ def check(entry_dir: Path) -> Report:
         for rnd in (attempt.get("verifications") or [])[1:]:
             for r in rnd["results"]:
                 agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
-        kinds = kinds_by_target.get((dataset_id(attempt), attempt.get("paper")), {})
+        kinds = lookup(kinds_by_target, attempt) or {}
         for outcome in attempt.get("outcomes", []):
             # A claim on data in another archive names where they are, so it is never blocked for missing data,
             # and when it is tested the archive is an input. Only the latest attempt is held to this: the
@@ -292,6 +322,9 @@ def check(entry_dir: Path) -> Report:
                 if outcome.get("outcome") != "blocked" and not attempt.get("inputs"):
                     report.error(where, f"claim {outcome.get('claim')!r} was tested on data in another archive; "
                                         "list them under `inputs`")
+            if outcome.get("blocked_by") == "dataset_missing" and not attempt.get("missing_datasets"):
+                report.error(where, f"claim {outcome.get('claim')!r} is blocked for a missing dataset; list the "
+                                    "dataset under `missing_datasets`, with why it could not be used")
             verified = agreed.get(outcome.get("claim"))
             if verified and outcome.get("outcome") != verified:
                 report.error(where, f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r}, but the last "
@@ -414,10 +447,12 @@ def handover(entry_dir: Path, output_dir: Path) -> int:
     papers = {r["id"] for r in entry.get("related", []) if r["relation"] == "reproduces"}
     dandisets = {r["id"].split(":", 1)[1].split("/")[0]
                  for r in entry.get("related", []) if not r["id"].startswith(("doi:", "entry:"))}
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
-        claims = yaml.safe_load(path.read_text()) or {}
-        if dataset_id(claims) in dandisets and claims.get("paper") in papers:
-            shutil.copy(path, target / path.name)
+    # The paper's own claims file when it has one; before the cutover, the per-dataset file of this entry's dataset.
+    found = [(path, yaml.safe_load(path.read_text()) or {}) for path in claims_paths()]
+    found = [(path, c) for path, c in found if c.get("paper") in papers]
+    own = [path for path, c in found if dataset_id(c) is None]
+    for path in own or [path for path, c in found if dataset_id(c) in dandisets]:
+        shutil.copy(path, target / path.name)
     print(f"wrote {target}")
     return 0
 
