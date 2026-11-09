@@ -57,7 +57,8 @@ jobs:
               base='${{ github.event.before }}'
               git cat-file -e "$base^{commit}" 2>/dev/null || base='HEAD~1'
             fi
-            names=$(git diff --name-only "$base" HEAD -- entries | cut -d/ -f2 | sort -u)
+            # Not an entry only renamed, or whose README changed: running it would give the same notebooks.
+            names=$(python3 tools/changed_entries.py "$base" HEAD)
           fi
           entries=$(for n in $names; do [ -f "entries/$n/entry.yaml" ] && echo "$n"; done \
             | python -c "import json,sys; print(json.dumps(sys.stdin.read().split()))")

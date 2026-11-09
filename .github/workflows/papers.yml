@@ -1,12 +1,13 @@
 name: Paper run
-run-name: "Paper run: ${{ inputs.dataset || inputs.dandiset }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
+run-name: "Paper run: ${{ inputs.paper || inputs.dataset || inputs.dandiset }} ${{ inputs.role }}${{ inputs.account && inputs.account != 'verified' && format(' ({0})', inputs.account) || '' }}"
 
 # One reader run on a target (docs/protocol.md, "Reader"): writing the claims file from the
 # paper (`claims`), checking it against the paper (`claims-check`), or answering an attempt's
 # questions (`answer`); or, before them, judging whether each paper the archive names is the paper
 # behind the data (`paper-match`, docs/pipeline.md step 1), which runs an agent only for the papers
 # the cheap checks of tools/paper_match.py leave open. Started by hand from the Actions tab or with
-#   gh workflow run papers.yml -f dataset=000147 -f role=claims
+#   gh workflow run papers.yml -f dataset=000147 -f role=paper-match
+#   gh workflow run papers.yml -f paper=guan-2022 -f role=claims
 #
 # These are the only runs that write the claims file, and the paper match papers/match/<folder>.yaml. The job runs in the `papers` environment,
 # whose deploy key reads the private paper store (catalystneuro/registry-papers); the environment
@@ -22,7 +23,10 @@ on:
   workflow_dispatch:
     inputs:
       dataset:
-        description: "Dataset: 000147, DANDI:000147 or <archive>:<id>"
+        description: "For the paper match: the dataset, 000147, DANDI:000147 or <archive>:<id>"
+        required: false
+      paper:
+        description: "For the other roles: the paper's key (tingley-2021; docs/paper-first.md)"
         required: false
       dandiset:
         description: "The same, under its old name (runners started before the rename use it)"
@@ -49,7 +53,10 @@ on:
     inputs:
       dataset:
         type: string
-        required: true
+        default: ""
+      paper:
+        type: string
+        default: ""
       dandiset:
         type: string
         default: ""
@@ -74,11 +81,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: attempt-${{ inputs.dataset || inputs.dandiset }}
+  group: attempt-${{ inputs.paper || inputs.dataset || inputs.dandiset }}
   cancel-in-progress: false
 
 env:
   DATASET: ${{ inputs.dataset || inputs.dandiset }}
+  PAPER: ${{ inputs.paper }}
   ROLE: ${{ inputs.role }}
   MODEL: ${{ inputs.model }}
   ACCOUNT: ${{ inputs.account || 'verified' }}
@@ -109,10 +117,18 @@ jobs:
       - name: Start from the attempt's branch if it exists
         id: start
         run: |
-          # The dataset's folder name (000147 for DANDI, <archive>-<id> otherwise) names its files and branch.
-          FOLDER=$(python3 tools/datasets.py folder "$DATASET") || { echo "::error::Not a dataset: $DATASET"; exit 1; }
+          # The paper match is on a dataset, named by its folder (000147 for DANDI, <archive>-<id> otherwise); the
+          # other roles are on a paper, named by its key (docs/paper-first.md). The name names the files and branch.
+          if [ "$ROLE" = paper-match ]; then
+            FOLDER=$(python3 tools/datasets.py folder "$DATASET") || { echo "::error::Not a dataset: $DATASET"; exit 1; }
+            TDIR="match/$FOLDER"
+          else
+            FOLDER=$PAPER
+            [[ "$FOLDER" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || { echo "::error::Not a paper key: '$PAPER'"; exit 1; }
+            TDIR=$FOLDER
+          fi
           BRANCH="attempt/$FOLDER"
-          { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; } >> "$GITHUB_ENV"
+          { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; echo "TDIR=$TDIR"; } >> "$GITHUB_ENV"
           echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
             git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
@@ -151,7 +167,10 @@ jobs:
       - name: Put the papers under paper/
         env:
           PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
-        run: tools/get_papers.sh "$FOLDER" paper
+        run: |
+          # The paper match reads the dataset's papers; the other roles, the paper's, from each of its datasets.
+          if [ "$ROLE" = paper-match ]; then tools/get_papers.sh "$FOLDER" paper
+          else tools/get_papers.sh "$(python tools/paper_records.py datasets "$FOLDER" | paste -sd, -)" paper; fi
 
       - name: Run the paper match's cheap checks
         id: checks
@@ -263,21 +282,21 @@ jobs:
         if: always() && (steps.agent.outputs.started == 'true' || steps.checks.outputs.started == 'true') && steps.flag.outputs.flagged != 'true'
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$FOLDER"
+          out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$TDIR"
           tool="$RUNNER_TEMP/transcript.py"
           name="$FOLDER · $ROLE · run ${{ github.run_id }}"
           # The reader's changes first, so that nothing in the transcript can lose them. Only the
-          # dataset's claims: never paper/.
+          # paper's claims: never paper/.
           if [ "$ROLE" = paper-match ]; then paths=("papers/match/$FOLDER.yaml")
-          else paths=("claims/$FOLDER"); [ ! -e "questions/$FOLDER.yaml" ] || paths+=("questions/$FOLDER.yaml"); fi
+          else paths=("claims/$FOLDER.yaml"); [ ! -e "questions/$FOLDER.yaml" ] || paths+=("questions/$FOLDER.yaml"); fi
           git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
           git diff --cached --stat
           # No transcript when the paper match's checks settled every paper and no agent ran.
           [ -e "$RUNNER_TEMP/run.jsonl" ] || exit 0
-          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$FOLDER/$ROLE.md" --omit paper/ \
-            --report "$out/transcripts/$FOLDER/$ROLE-report.md" --title "$name"
+          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$TDIR/$ROLE.md" --omit paper/ \
+            --report "$out/transcripts/$TDIR/$ROLE-report.md" --title "$name"
           rm -f "$RUNNER_TEMP/run.jsonl"
-          cat "$out/transcripts/$FOLDER/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$out/transcripts/$TDIR/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -324,19 +343,21 @@ jobs:
           else
             git checkout -b "$BRANCH"
           fi
-          # Refuse anything that is not this dataset's: a guard against results being mixed up.
-          others=$(ls out/transcripts | grep -vx "$FOLDER" || true)
-          [ -z "$others" ] || { echo "::error::Transcripts for other datasets: $others"; exit 1; }
+          # Refuse anything that is not this run's: a guard against results being mixed up.
+          if [ "$ROLE" = paper-match ]; then others=$(ls out/transcripts | grep -vx match; ls out/transcripts/match 2>/dev/null | grep -vx "$FOLDER")
+          else others=$(ls out/transcripts | grep -vx "$FOLDER"); fi
+          others=$(echo "$others" | grep . || true)
+          [ -z "$others" ] || { echo "::error::Transcripts for other datasets or papers: $others"; exit 1; }
           # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.
           if [ "$ROLE" = claims ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"; fi
           if [ -s out/changes.patch ]; then
-            allowed="^(claims/$FOLDER/|questions/$FOLDER\.yaml$|papers/match/$FOLDER\.yaml$)"
+            allowed="^(claims/$FOLDER\.yaml$|questions/$FOLDER\.yaml$|papers/match/$FOLDER\.yaml$)"
             stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
             [ -z "$stray" ] || { echo "::error::Changes outside dataset $FOLDER: $stray"; exit 1; }
             git apply --index out/changes.patch
           fi
           # A transcript with nothing but its title means the agent never started; keep it out.
-          for f in out/transcripts/*/*.md; do [ -e "$f" ] || continue; [ "$(wc -l < "$f")" -gt 2 ] || rm "$f"; done
+          for f in out/transcripts/*/*.md out/transcripts/match/*/*.md; do [ -e "$f" ] || continue; [ "$(wc -l < "$f")" -gt 2 ] || rm "$f"; done
           cp -r out/transcripts . && git add transcripts
           if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
           git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
