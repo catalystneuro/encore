@@ -1154,6 +1154,28 @@ def attempt_row(a: dict, root: str, share: bool = False) -> str:
             f'{side}</div></div>')
 
 
+def paper_row(r: dict, root: str, share: bool = False) -> str:
+    """One paper in the overview's lists (a row of data/papers.json); with `share`, the share of its claims reproduced
+    in place of its date."""
+    counts = r["counts"]
+    page = f'{root}{r["page"]}'
+    side = (f'<span class="small"><b>{reproduced_share(counts):.0%}</b> reproduced</span>' if share
+            else f'<span class="small muted">{e(r["date"])}</span>')
+    datasets = ", ".join(e(d["label"]) for d in r["datasets"])
+    return (f'<div class="row drow"><div class="id"><a href="{page}">{e(r["byline"])}</a></div>'
+            f'<div><p class="title"><a href="{page}">{e(r["title"])}</a></p>'
+            f'<div class="meta"><span class="muted">{e(r["journal"])} · {datasets}</span></div>'
+            f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
+            f'<div class="right">{tier_badge(r["tier"])}{side}</div></div>')
+
+
+def most_reproduced_papers(data: dict, n: int = 6) -> list[dict]:
+    """The verified papers with the largest share of claims reproduced, then the most claims reproduced."""
+    ranked = [r for r in rows_cache(data)["papers"] if r["counts"] and r["tier"] and r["tier"] != "runs"
+              and sum(r["counts"].values()) >= TOP_MIN_CLAIMS]
+    return sorted(ranked, key=lambda r: (-reproduced_share(r["counts"]), -r["counts"]["reproduced"], r["id"]))[:n]
+
+
 def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
     """The verified attempts with the largest share of claims reproduced, then the most claims reproduced."""
     ranked = [a for a in attempts if not a.get("deprecated") and a["tier"] != "runs"
@@ -1336,9 +1358,11 @@ def page_overview(data: dict) -> str:
                   "datasets/?status=attempted"),
     ])
 
-    recent = sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True)[:6]
-    recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
-    top_html = ("".join(attempt_row(a, "", share=True) for a in most_reproduced(attempts))
+    # By paper: the registry's records are (docs/paper-first.md).
+    attempted = [r for r in rows_cache(data)["papers"] if r["counts"] and r["page"]]
+    recent = sorted(attempted, key=lambda r: (r["date"], r["id"]), reverse=True)[:6]
+    recent_html = "".join(paper_row(r, "") for r in recent) or '<p class="empty">No attempts yet.</p>'
+    top_html = ("".join(paper_row(r, "", share=True) for r in most_reproduced_papers(data) if r["page"])
                 or '<p class="empty">No verified attempt yet.</p>')
 
     dashboard = progress_panel(data)
@@ -1364,13 +1388,13 @@ def page_overview(data: dict) -> str:
     <div class="tabs" role="tablist"><button type="button" role="tab" data-panel="most-reproduced" aria-selected="true">Most
       reproduced</button><button type="button" role="tab" data-panel="latest" aria-selected="false">Latest</button></div>
     <section class="tabpanel" id="most-reproduced"><h2>Most reproduced</h2>
-      <p class="sub small"><a class="more" href="datasets/?status=attempted&amp;sort=-reproduced">See all</a>Verified
-      attempts with at least {TOP_MIN_CLAIMS} claims on the dataset, by the share of claims reproduced; a partial
+      <p class="sub small"><a class="more" href="papers/?status=attempted&amp;sort=-reproduced">See all</a>Verified
+      papers with at least {TOP_MIN_CLAIMS} claims on their datasets, by the share of claims reproduced; a partial
       reproduction counts as half.</p>
       <div class="results">{top_html}</div></section>
     <section class="tabpanel" id="latest"><h2>Latest attempts</h2>
-      <p class="sub small"><a class="more" href="datasets/?status=attempted">See all</a>The most recent attempts,
-      verified or not.</p>
+      <p class="sub small"><a class="more" href="papers/?status=attempted&amp;sort=-date">See all</a>The papers
+      attempted most recently, verified or not.</p>
       <div class="results">{recent_html}</div></section>
   </div>
 </main>'''
