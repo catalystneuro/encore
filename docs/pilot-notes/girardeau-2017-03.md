@@ -1,0 +1,113 @@
+# crcns-hc-14, Girardeau et al. 2017
+
+Thirty-five claims reproduced (20 on an assumption), two partially (both on an
+assumption), one not reproduced (on an assumption) and none blocked. The first
+verification round agreed with all 38 outcomes as they stood and the second
+with all 38; nothing was proposed after the second, so there was no third
+round. CRCNS does not version data sets, so the version is recorded as
+unversioned with the data set's DOI (10.6080/K0MS3QXD). The paper, Girardeau,
+Inema and Buzsaki in Nature Neuroscience (20:1634-1642), records with silicon
+probes in the amygdala and neighbouring structures and in dorsal CA1 of four
+rats running a linear track with an air puff at a location and direction that
+change daily, between pre-run and post-run tests and pre-sleep and post-sleep
+in the home cage, and reports that the rats learn the daily danger zone, that
+BLA pyramidal cells fire more in REM and NREM sleep than in wake, that
+hippocampus-BLA pairs reactivate in post-training NREM but not REM sleep,
+decaying over the first hour, less for piriform cortex and not for the central
+nuclei, that ripple-modulated BLA cells take a larger part in the
+reactivations, that the air puff trajectory is reactivated around SPW-Rs and
+the safe one is not, and that for the most strongly contributing pairs the
+change in correlation over NREM predicts the change from pre-run to post-run;
+the data set holds sorted spikes, positions, events, LFP and the authors'
+undocumented summary tables for 65 sessions. The claims were written from the
+version of record with its supplement, without Supplementary Table 1, an image
+that could not be rendered, and from the paper's MATLAB code at commit cdcec89,
+which settles several details the Methods leave open; the claims check made six
+small fixes, among them the directions of the post hoc tests of
+`fig1b-dz-speed-posthoc` and the absence of `fig3e-cen-no-reactivation` judged
+on the two-sided test alone, for 38 claims. Every claim could be tested, the
+sleep claims on states decoded from the authors' per-state firing-rate table
+(StatesFR), as the hand-scored states are not deposited. Reproduced are, among
+others, `units-recorded` (2,038 BLA units, the paper's number),
+`fig3c-hpc-bla-ev-nrem` (mean EV - REV 3.14 +- 0.73% against the paper's 3.13
++- 0.73%), `fig4-bla-ripple-modulation` (25.8, 11.1, 14.7 and 8.3%, the paper's
+values), `run-correlated-pairs` (2,521 of 37,660 pairs) and
+`fig7b-strong-pairs-correlated-changes` (r = 0.275 over 867 pairs against the
+paper's 0.27 over 866). Several outcomes on the decoded states hold under the
+main decoder only: `fig3c-decay` (3.04, 1.78 and 1.69% against 2.89, 1.72 and
+1.31%, with 17 sessions where 19 +- 1.9 were expected) is partial with the
+table's pre-NREM or 30-s smoothing, and `fig3d-pir-reactivation`,
+`fig3d-pir-weaker-than-bla`, `fig6a-safe-trajectory-no-reactivation` (p =
+0.060, and 0.048 under both variants) and `fig6b-airpuff-greater-than-safe` (p
+= 0.035, and 0.15 with the immobility substitute) each change under a variant;
+the decoded REM is less faithful than the decoded NREM, so the REM absence
+outcomes are weaker evidence. Partial are `fig1b-dz-speed-anova` (zone F = 2.70,
+p = 0.11, over 50 sessions against the paper's 55) and `fig1b-dz-speed-posthoc`
+(post-run p = 0.14). Not reproduced is `airpuff-location-no-bias` (pre-run r =
+-0.40, p = 0.0028, and run r = -0.34, p = 0.012), whose outcome depends on the
+location and the speed reading. The behaviour outcomes rest on an air puff
+location estimated from the head position; with a location corrected by the
+median offset, `fig1b-speed-ratio` would be partial and
+`fig1b-dz-speed-posthoc` and `figs1b-ratio-each-rat` not reproduced. The
+author's first run had 26 reproduced, 4 partially, 5 not reproduced and 3
+blocked. The author asked no questions of a reader, so the answer and
+author-answers runs changed nothing. Round 1 agreed with every outcome and
+raised the immobility substitute for NREM, Rat08's unread structure labels, the
+air puff location, the decay windows, the REM column and six smaller points;
+in reply the substitute was replaced by the decoded states, Rat08's labels were
+read from the text of StructureMapping.ods, a corrected-location variant was
+run through every behaviour claim, and nine outcomes moved to reproduced,
+three from blocked, four from not reproduced and two, among them
+`units-recorded`, from partial. Round 2 agreed with all 38 and
+found sentences the outputs did not support, among them stale text in two
+cells, archive sizes and a run time that were not printed and a Summary that
+left out `fig3d-pir-weaker-than-bla`; in reply the text was corrected, the
+sizes and run time were printed and an undefined decay window in
+Rat10-20140622 was explained, and no outcome changed. The author's run took
+about 2 h 50 min; the notebook ran in 17 min at first, 1066 s after the
+author-answers run, 1,685 s after round 1 and 29 min after round 2. One bug,
+a run epoch that took in the sleep between two run subsessions, was fixed
+before the author's final run, and nothing failed in it.
+
+The hand-scored sleep states are not deposited, nor the run intervals and lap
+classifications the analyses used; rescoring states from the LFP would mean
+streaming 461 GB of tar.gz archives, so the states were decoded from StatesFR,
+which reproduces the authors' NREM and REM pair correlations closely but not
+exactly (r = 0.88 and 0.90 for NREM, 0.78 and 0.81 for REM). The summary tables
+in AllRats-Variables.tar.gz (FinalType, StatesFR, SpikeParameters,
+PoissonRippleMod, EVcontribs, AllRippleCCGs) are undocumented, as the data
+description says; their columns could be identified against the raw spikes
+except which StatesFR column is REM (column 5 or 8), and with column 8 the
+REM/wake ratios of BLA cells would be smaller than the NREM/wake ratios, against
+Figure 2c. Only 6 of the 55 behaviour sessions carry an airpuffloc file; for the
+others the location must be inferred from the head position at the air puffs,
+which lies -3 to 18 cm (median 7.3 cm) past the file's location where both
+exist, and several behaviour outcomes change with a 7.3-cm correction. The
+structure of each shank and day comes in four formats, one per rat; Rat08's
+labels other than BLA are only in the All sheet of StructureMapping.ods, with
+other spellings, Rat08 sessions 10 to 13 list no BLA shanks, the hippocampal
+shanks are listed only for Rat10, and Rat08's two structure lists disagree on
+shank 13 of Rat08-20130712. The bucket holds 65 sessions, the paper's 61 are
+listed only in sessionindexing.mat, and Rat11-20150309, -0318, -0319 and -0324
+are left out without a stated reason. Rat08-20130722 has 152 sorted units in its
+clu files and 127 in the summary tables; the other 60 sessions agree unit for
+unit. The pair table's run correlations match correlations over the run
+subsession in 17 of 29 sessions (r > 0.999) and less well in 12 (r = 0.58 to
+0.98), so the run interval the authors used is not deposited. In Rat10-20140622
+the hippocampal cells of the pair table fire no spike over a 20-min stretch of
+decoded post-sleep NREM while the session's BLA cells fire 31,040. The archives
+are tar.gz files without an index, so reading one session's sorted spikes means
+decompressing its whole clu archive (99 GB over 65 sessions). Questions are put
+to the paper's authors: which StatesFR column is REM, and where the air puff
+location of BehavioralMeasures.m was taken from for the 49 sessions without an
+airpuffloc file.
+
+The author's points on the protocol: `docs/archives.md` describes only zip
+files, while these tar.gz archives have no index and were streamed in full; it
+has no rule for undocumented derived tables in a data set, which were used after
+checking them against the raw data; it does not say whether a substitute for
+missing sleep scoring is an assumption or a block, and it was treated as an
+assumption; it has no outcome for a claim of which only some parts can be
+tested, so the REM claims were blocked at first; and it does not say whether an
+estimated input such as the air puff location makes an outcome assumed, and
+those outcomes were marked as assumed.
