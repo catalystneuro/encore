@@ -1,0 +1,1156 @@
+schema_version: 3
+id: girardeau-2017-03
+datasets:
+- archive: crcns
+  id: hc-14
+  version: unversioned
+  doi: 10.6080/K0MS3QXD
+  relation: primary
+paper: doi:10.1038/nn.4637
+date: '2026-11-08'
+entry: girardeau-2017-crcns-hc-14
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42437266504
+outcomes:
+- claim: units-recorded
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:units-recorded
+  measured:
+  - 61
+  - 7415
+  - 2038
+  - 783
+  - 1575
+  - 1260
+  notes: 61 sessions in sessionindexing.mat (65 in the bucket). The raw clu files give 7,415 units (2,469, 1,294, 1,138, 2,514
+    per rat); the summary tables list 7,390 with the paper's split by rat and differ from the raw files only in Rat08-20130722.
+    With the BLA label (B1), 2,038 units in BLA (the paper's number; B2 gives 2,697), 783 in the central nuclei (paper 782),
+    1,575 in piriform cortex (paper 1,560) and 1,260 on the hippocampal shanks (paper 1,210), all within tolerance. Counting
+    the mixed labels VEn/Pir and BLV/Pir as piriform gives 1,609.
+  deviations:
+  - Rat08's structures other than BLA are read from the text labels of the All sheet of Rat08-Info/StructureMapping.ods; CeC
+    and CeM are counted as the central nuclei and PIr as Pir. Rat08's BLA shanks come from Structures.batch, which agrees
+    with the ods except for one shank-day the ods adds.
+  - Hippocampal shanks are taken as the shanks of the hippocampal cells of the deposited pair table (1-4 in Rat08, 17-20 in
+    Rat10 and Rat11); only Rat10 has an Hpc list.
+- claim: fig1b-dz-speed-anova
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1b-dz-speed-anova
+  assumed: true
+  notes: With all samples in the zone (the claims file's reading), 50 sessions, epoch F = 60.5 (p < 0.0001), zone F = 2.70
+    (p = 0.11), interaction F = 16.4 (p < 0.0001). With the samples moving in the air puff direction, zone p = 0.059. With
+    the corrected location, zone p = 0.49 (all samples) and 0.35 (direction-filtered), interaction p = 0.0009 and p < 0.0001;
+    the outcome is the same under every reading.
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm of the median),
+    and the direction the sign of the velocity over the second before them; only 6 sessions have an airpuffloc file, and there
+    the estimate lies -3 to 18 cm (median 7.3 cm) past the file's location in the direction of travel. The estimate is the
+    assumption; a corrected location (the file where there is one, elsewhere the estimate moved back by 7.3 cm) is a variant.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+  - '50 sessions have all six speeds (paper 55): each rat''s first session and Rat09-20140329 have no previous zone, Rat09-20140328
+    has no tracked position at its air puffs, and Rat09-20140407 and Rat11-20150402 have no run air puffs.'
+- claim: fig1b-dz-speed-posthoc
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1b-dz-speed-posthoc
+  assumed: true
+  notes: All samples, at 0.05/4, pre-run current minus previous t = 3.30 (p = 0.0018), run t = -5.59 (p = 1e-6), post-run
+    t = -1.51 (p = 0.14, not significant), current pre-run minus post-run t = 4.27 (p = 8e-5). Direction-filtered, post-run
+    p = 0.033. With the corrected location and all samples, pre-run p = 0.041 also fails (two of four, which would be not
+    reproduced); direction-filtered, three of four hold.
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm of the median),
+    and the direction the sign of the velocity over the second before them; only 6 sessions have an airpuffloc file, and there
+    the estimate lies -3 to 18 cm (median 7.3 cm) past the file's location in the direction of travel. The estimate is the
+    assumption; a corrected location (the file where there is one, elsewhere the estimate moved back by 7.3 cm) is a variant.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+  - '50 sessions have all six speeds (paper 55): each rat''s first session and Rat09-20140329 have no previous zone, Rat09-20140328
+    has no tracked position at its air puffs, and Rat09-20140407 and Rat11-20150402 have no run air puffs.'
+- claim: fig1b-speed-ratio
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1b-speed-ratio
+  assumed: true
+  notes: 50 sessions; median ratio pre-run -0.088, run 0.164, post-run 0.045; repeated measures ANOVA F = 25.4 (p < 0.0001);
+    paired t-tests pre-run minus run t = -6.57, pre-run minus post-run t = -3.56 (p = 0.0008), run minus post-run t = 3.97
+    (p = 0.0002). Direction-filtered, the same. With the corrected location and all samples, pre-run against post-run p =
+    0.031, above 0.05/3 (partially reproduced under that reading); direction-filtered with the corrected location, all three
+    pass.
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm of the median),
+    and the direction the sign of the velocity over the second before them; only 6 sessions have an airpuffloc file, and there
+    the estimate lies -3 to 18 cm (median 7.3 cm) past the file's location in the direction of travel. The estimate is the
+    assumption; a corrected location (the file where there is one, elsewhere the estimate moved back by 7.3 cm) is a variant.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+  - '50 sessions have all six speeds (paper 55): each rat''s first session and Rat09-20140329 have no previous zone, Rat09-20140328
+    has no tracked position at its air puffs, and Rat09-20140407 and Rat11-20150402 have no run air puffs.'
+- claim: figs1b-ratio-each-rat
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs1b-ratio-each-rat
+  assumed: true
+  notes: Per rat (12, 9, 14, 15 sessions), F = 9.31, 5.60, 15.03, 4.17 and p = 0.0012, 0.014, 4.6e-5, 0.026; median ratio
+    lower in pre-run than in post-run in all four. With the corrected location and all samples, rats 9 and 11 give p = 0.080
+    and 0.15 and rat 11's pre-run median is the higher (not reproduced under that reading); direction-filtered with the corrected
+    location, rat 11 gives p = 0.058 (partially reproduced).
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm of the median),
+    and the direction the sign of the velocity over the second before them; only 6 sessions have an airpuffloc file, and there
+    the estimate lies -3 to 18 cm (median 7.3 cm) past the file's location in the direction of travel. The estimate is the
+    assumption; a corrected location (the file where there is one, elsewhere the estimate moved back by 7.3 cm) is a variant.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+  - '50 sessions have all six speeds (paper 55): each rat''s first session and Rat09-20140329 have no previous zone, Rat09-20140328
+    has no tracked position at its air puffs, and Rat09-20140407 and Rat11-20150402 have no run air puffs.'
+- claim: fig1c-slower-in-dz-post-run
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig1c-slower-in-dz-post-run
+  assumed: true
+  notes: 53 sessions; danger zone value (7 bins up to the air puff) median pre-run 62.4, run 19.1, post-run 41.0 cm/s; rank-sum
+    post against pre z = -3.23, p = 0.0013 (signed-rank variant p = 6e-7). With the corrected location, 57.2 and 41.8 cm/s,
+    p = 0.0087. Mean curves span 26 to 82 cm/s over bins -30 to 20.
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm of the median),
+    and the direction the sign of the velocity over the second before them; only 6 sessions have an airpuffloc file, and there
+    the estimate lies -3 to 18 cm (median 7.3 cm) past the file's location in the direction of travel. The estimate is the
+    assumption; a corrected location (the file where there is one, elsewhere the estimate moved back by 7.3 cm) is a variant.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+- claim: figs1c-habituation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs1c-habituation
+  notes: 55 sessions; pooled Spearman rho 0.696, 0.692, 0.687 (p < 1e-8) for all, air puff and left-to-right laps; per rat
+    rho 0.97, 0.91, 0.85, 0.69, all positive, under each lap count. Track extent over the run 190 to 211 cm in every session;
+    Rat08-20130708, -0709, -0711 and Rat09-20140328 have fewer than 5 laps in a direction.
+  deviations:
+  - Training day is the session's rank among the rat's behaviour sessions; the time on the track is the run's duration.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+  - The air puff direction (for the air puff lap count) is estimated from the velocity before the run's air puffs.
+- claim: airpuff-location-no-bias
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:airpuff-location-no-bias
+  assumed: true
+  notes: All samples, Pearson r between the normalized air puff position and the current danger zone speed, pre-run r = -0.40
+    (p = 0.0028, n = 54), run r = -0.34 (p = 0.012, n = 55), post-run r = -0.09 (p = 0.50). Direction-filtered, run r = -0.30
+    (p = 0.026). With the corrected location, all samples give pre-run p = 0.015 and run p = 0.037; direction-filtered, none
+    is significant (p = 0.35, 0.064, 0.51), so the outcome depends on the location and the speed reading.
+  deviations:
+  - The air puff location of each session is the median head position at the run's air puffs (those within 40 cm of the median),
+    and the direction the sign of the velocity over the second before them; only 6 sessions have an airpuffloc file, and there
+    the estimate lies -3 to 18 cm (median 7.3 cm) past the file's location in the direction of travel. The estimate is the
+    assumption; a corrected location (the file where there is one, elsewhere the estimate moved back by 7.3 cm) is a variant.
+  - Laps are track crossings between the ends of a central 150-cm segment, following the claims file's description of ClassifyLaps.m,
+    not the script itself.
+- claim: fig2c-bla-pyr-higher-in-sleep
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig2c-bla-pyr-higher-in-sleep
+  measured:
+  - 675
+  - 175
+  - 1188
+  assumed: true
+  notes: BLA label (B1), SpikeParameters column 10 as the monosynaptic code; 675 pyramidal cells, 175 interneurons, 1,188
+    others, the paper's numbers. NREM/wake median 0.264 (70.5% positive), REM/wake median 0.364 (73.0%), both p < 1e-15. Per
+    rat the REM ratio is the larger in rats 8, 9 and 11, and equal in rat 10 (0.437 against 0.442). With column 8 as REM,
+    REM/wake median 0.085, smaller than NREM/wake (the claim would be partially reproduced). Epochs decoded as column 5 give
+    hippocampus-BLA pair correlations that follow the table's REM columns (r = 0.78, 0.81) and not its NREM columns (r = 0.09),
+    which supports column 5 as REM.
+  deviations:
+  - Rates per state are the deposited StatesFR values, as the state intervals are not deposited. StatesFR columns are undocumented.
+    Column 7 is wake (the only column that can hold the track spikes), column 6 NREM (it matches immobility-period rates),
+    and column 5 is taken as REM (hippocampal interneurons fire more there than in NREM, as in REM; column 8 does not show
+    this). Column 8 as REM is shown as a variant.
+- claim: fig2c-bla-interneurons
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig2c-bla-interneurons
+  assumed: true
+  notes: 175 monosynaptic BLA interneurons; REM/wake median 0.020, p = 0.21 (the paper's p = 0.21); NREM/wake median -0.071,
+    p < 1e-6. With column 8 as REM, REM/wake median -0.079, p < 1e-6 (the REM part would fail). With B2 (now with Rat08 labels),
+    REM/wake p = 0.0059. Epochs decoded as column 5 give hippocampus-BLA pair correlations that follow the table's REM columns
+    (r = 0.78, 0.81) and not its NREM columns (r = 0.09), which supports column 5 as REM.
+  deviations:
+  - Rates per state are the deposited StatesFR values. StatesFR columns are undocumented. Column 7 is wake (the only column
+    that can hold the track spikes), column 6 NREM (it matches immobility-period rates), and column 5 is taken as REM (hippocampal
+    interneurons fire more there than in NREM, as in REM; column 8 does not show this). Column 8 as REM is shown as a variant.
+- claim: fig2c-skewed-rates
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig2c-skewed-rates
+  notes: 675 cells; skewness of rates NREM 3.39, REM 14.03, wake 7.35; of log10 rates -0.41, -0.58, 0.12 (one zero rate left
+    out of the log in NREM and REM). Column 8 gives 7.67 and -0.02, so the outcome does not depend on the REM column.
+  deviations:
+  - Rates per state are the deposited StatesFR values. StatesFR columns are undocumented. Column 7 is wake (the only column
+    that can hold the track spikes), column 6 NREM (it matches immobility-period rates), and column 5 is taken as REM (hippocampal
+    interneurons fire more there than in NREM, as in REM; column 8 does not show this). Column 8 as REM is shown as a variant.
+- claim: fig3c-hpc-bla-ev-nrem
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3c-hpc-bla-ev-nrem
+  notes: 25 sessions (9, 9, 7 per rat; the paper's 25); EV > REV in 22; mean EV - REV 3.14 +- 0.73% (paper 3.13 +- 0.73%);
+    signed-rank p = 4.5e-5. With at least 4 or 8 cells, p = 3.5e-5 and 2.1e-5.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+- claim: fig3c-hpc-bla-ev-rem-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3c-hpc-bla-ev-rem-absent
+  notes: 25 sessions (paper 23); mean EV - REV 0.06 +- 0.10%, median 0.001%; EV > REV in 13; signed-rank p = 0.73. Keeping
+    the 20 sessions with more than 180 s of decoded REM in pre- and post-sleep gives p = 0.55.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+  - The 180-s REM requirement cannot be checked from the table; REM sessions are those with defined REM correlations, and
+    the requirement is applied with decoded REM durations as a variant.
+- claim: fig3c-decay
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3c-decay
+  measured:
+  - 3.04
+  - 1.78
+  - 1.69
+  - 17
+  assumed: true
+  notes: 'Decoded NREM. 24 qualifying sessions, 17 with EV > REV in the first window (paper 19, tolerance 1.9, so the count
+    is just outside). Mean EV - REV 3.04 +- 0.55, 1.78 +- 0.53 and 1.69 +- 0.88% (paper 2.89, 1.72, 1.31), all within tolerance;
+    signed-rank p = 1.5e-5, 0.00021, 0.035; Kruskal-Wallis p = 0.024. Variants give other outcomes: with the table''s pre-NREM
+    (20 sessions; 2.51, 1.52, 1.30%; Kruskal-Wallis p = 0.021) the third window gives p = 0.067 (partial); with 30-s smoothing
+    the first mean is 3.44% (partial); with the first revision''s immobility substitute the decay test gives p = 0.074 (not
+    reproduced). In the table pre-NREM variant Rat10-20140622 has window 2 undefined because its hippocampal cells fire
+    no spike there (0, against 20,844 and 19,394 in windows 1 and 3) while its BLA cells fire 31,040.'
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - Pre-NREM is the decoded pre-NREM, the run whole, and the windows cumulative decoded post-NREM time.
+- claim: figs5a-hpc-bla-all-cells
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs5a-hpc-bla-all-cells
+  assumed: true
+  notes: All cell types; NREM (table) 27 sessions (paper 27), mean EV - REV 3.09%, p = 3.5e-5; REM (table) p = 0.37 (with
+    more than 180 s of decoded REM, 22 sessions, p = 0.24). Decoded windows, 20 sessions with EV > REV in the first, p = 1.9e-6,
+    0.011 and 0.47 (mean 3.22, 2.20, 1.12%). With the table's pre-NREM, p = 3.8e-6 and 0.00016 in the first two windows; with
+    30-s smoothing, 3e-5 and 0.00021; with the immobility substitute, 1.9e-6 and 0.044.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+  - The 180-s REM requirement cannot be checked; REM sessions are those with defined REM correlations.
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+- claim: fig3d-pir-reactivation
+  outcome: reproduced
+  notes: 'Decoded NREM and REM. Hippocampus-Pir pyramidal pairs, NREM 14 sessions (7, 6, 1 in rats 8, 10, 11), median EV -
+    REV 0.30%, EV > REV in 9, p = 0.042; REM 11 sessions with more than 180 s of REM, median -0.04%, p = 0.18. The margins
+    are small: with 30-s smoothing REM gives p = 0.032 with REV the larger (partially reproduced), and with the immobility
+    substitute NREM gives p = 0.094.'
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3d-pir-reactivation
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - Rat08's piriform shanks come from StructureMapping.ods; sessions need at least 6 pyramidal cells in each structure and,
+    for REM, more than 180 s of REM in pre-sleep and in post-sleep.
+  assumed: true
+- claim: fig3d-pir-weaker-than-bla
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3d-pir-weaker-than-bla
+  measured:
+  - 3.09
+  - 0.87
+  assumed: true
+  notes: Decoded NREM. Hippocampus-Pir 14 sessions (7, 6, 1 per rat; the paper's 14 in the Results), mean EV - REV 0.87 +-
+    0.35%; hippocampus-BLA 24 sessions, 3.09 +- 0.76%; both within tolerance; one-tailed rank-sum p = 0.027. On the 10 Pir
+    sessions that also qualify for BLA, mean 1.03%, p = 0.063. With 30-s smoothing, 1.03 and 3.33%, p = 0.044; with the immobility
+    substitute, 0.58 and 1.97%, p = 0.083.
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - Rat08's piriform shanks come from StructureMapping.ods; run correlations from the raw spikes.
+- claim: fig3e-cen-no-reactivation
+  outcome: reproduced
+  notes: Decoded NREM and REM. Hippocampus-CeN pairs of all cell types, NREM 18 sessions, median EV - REV 0.22%, EV > REV
+    in 12, p = 0.73; REM 16 sessions, median -0.05%, EV > REV in 6, p = 0.90. With 30-s smoothing p = 0.64 and 0.71.
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig3e-cen-no-reactivation
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - Rat08's central nuclei shanks (CeC, CeM) come from StructureMapping.ods.
+  assumed: true
+- claim: figs4-intra-structure-nrem
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs4-intra-structure-nrem
+  assumed: true
+  notes: Decoded NREM. Hippocampus all cells 38 sessions, p = 6.5e-7; pyramidal 38, p = 2.5e-6; BLA all cells 36, p = 0.0031;
+    pyramidal 34, p = 0.00047 (paper 38, 38, 34, 32 sessions). EV > REV in 32, 29, 26, 26 sessions. Both variants also give
+    p < 0.005 in all four.
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - BLA is the B1 label; hippocampal shanks as in units-recorded.
+- claim: figs4-intra-structure-rem-absent
+  outcome: reproduced
+  notes: Decoded REM, sessions with more than 180 s of REM in pre- and post-sleep. Hippocampus all cells 31 sessions (one
+    with EV undefined left out), p = 0.31; pyramidal 31, p = 1.0; BLA all cells 28, p = 0.39; pyramidal 26, p = 0.47 (paper
+    34, 34, 28, 26). With 30-s smoothing, p = 0.37, 0.87, 0.23, 0.20.
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs4-intra-structure-rem-absent
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - BLA is the B1 label; hippocampal shanks as in units-recorded.
+  assumed: true
+- claim: fig4-bla-ripple-modulation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig4-bla-ripple-modulation
+  measured:
+  - 25.8
+  - 11.1
+  - 14.7
+  - 8.3
+  - 163
+  - 1232
+  notes: BLA label, cells of the 29 ripple sessions, code threshold (p < 0.0005 per direction); interneurons up 42/163 (25.8%),
+    down 24/163 (14.7%); pyramidal up 137/1232 (11.1%), down 102/1232 (8.3%). The BLA cells of the pair table give the same;
+    B2 (with Rat08's ods labels) gives 27.8, 11.1, 14.1, 7.9% of 198 and 1,526. At p < 0.001 per direction (B1) 27.0, 12.2,
+    15.3, 9.9%.
+  deviations:
+  - Ripple modulation is the deposited PoissonRippleMod table (columns 5 and 6 read as the p-values of an increase and a decrease;
+    column 7's sign agrees in every cell), as the NREM baseline cannot be rebuilt. One pyramidal cell has no p-value.
+- claim: figs5b-ripple-modulated-pairs-reactivate-more
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs5b-ripple-modulated-pairs-reactivate-more
+  measured:
+  - 6.08
+  - 1.81
+  - 7.16
+  - 1.67
+  notes: Pyramidal pairs, modulated 18 sessions mean 7.16 +- 2.20%, non-modulated 22 sessions 1.67 +- 0.59%, rank-sum z =
+    2.88, p = 0.0040; all pairs, 19 sessions 6.08 +- 1.37% against 23 sessions 1.81 +- 0.48%, z = 2.82, p = 0.0048. Each set
+    also has EV > REV (p < 0.001). The paper has 18 and 19 sessions for both sets.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+- claim: run-correlated-pairs
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:run-correlated-pairs
+  measured:
+  - 37660
+  - 6.69
+  - 3.34
+  - 595
+  notes: 37,660 pyramidal pairs (16,056, 3,836, 17,768 per rat); table p-values give 2,521 positive (6.69%), 1,258 negative
+    (3.34%), 33,881 not significant; raw spikes give 2,521 and 1,259. Group counts (BLA cell by run correlation) up 595/3,686/334,
+    none 1,774/28,065/801, down 152/2,108/123 (positive/ns/negative); 22 pairs have no ripple-modulation value.
+- claim: fig5a-up-positive-pairs-change-most
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig5a-up-positive-pairs-change-most
+  notes: 37,638 pairs; one-way ANOVA F = 29.08, p = 1.1e-45; group up/positive mean change 0.0039, next none/positive 0.0011;
+    Tukey-Kramer p-adj < 0.001 against each of the other eight; Bonferroni p < 0.002 against each. All cell pairs (variant),
+    F = 32.7, up/positive largest, Tukey p-adj < 0.01 against all, Bonferroni fails against down/positive (0.33).
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+- claim: figs6b-ev-nine-groups
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs6b-ev-nine-groups
+  notes: EV - REV per group, up/positive 14.68%, none/positive 2.42%, up/negative 1.17%, the others below 0.3% (down/negative
+    -4.13%).
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+  - Non-significant groups use p >= 0.01, as the claims file says (the deposited script's sign error is not followed).
+- claim: figs9-ev-independent-of-rate
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs9-ev-independent-of-rate
+  notes: Whole-session rate (the pair table's own FR), EV > REV in 8/8 octiles for the mean, BLA and hippocampal rates; Spearman
+    with octile rho = 0.38 (p = 0.35), 0.64 (p = 0.086), -0.14 (p = 0.74). With the run rate, 7, 7 and 6 of 8 octiles, rho
+    = 1.00 (p = 0), 0.98 (p = 3e-5), 0.62 (p = 0.10). Reproduced under the first reading only.
+  deviations:
+  - The paper does not say which rate; the two readings of the criterion are run, and they disagree.
+- claim: fig5b-top-contributors-gain-increase
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig5b-top-contributors-gain-increase
+  measured:
+  - 63
+  - 74
+  notes: Contributions computed in closed form equal the table's EV.minus (max difference 2e-16). 1,228 BLA cells in quartiles
+    of 307; upmodulated cells in the top quartile 63, gain over +-250 ms median 1.22 to 1.40, one-sided p = 5e-5; in the other
+    three 74, p = 0.99 (Q3 0.74, Q2 0.92, Q1 0.94). 1-ms gains, p = 8e-5 and 0.98.
+  deviations:
+  - Ripple gains are the deposited AllRippleCCGs pre-NREM and post-NREM gains (10-ms bins); how the table smoothed them is
+    not documented.
+- claim: fig6a-airpuff-trajectory-reactivation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig6a-airpuff-trajectory-reactivation
+  assumed: true
+  notes: Decoded NREM, 24 sessions (paper 25); median R over +-250 ms pre 0.003, post 0.017; post > pre in 20; one-sided p
+    = 0.00037. With 30-s smoothing p = 0.0014; with the immobility substitute p = 0.012.
+  deviations: &id001
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - Reactivation strength cells are the pair table's cells of each session (at least 6 of the type per structure); ripple
+    peaks from rip.evt within the decoded NREM; lap templates from the laps defined as in fig1b.
+- claim: fig6a-safe-trajectory-no-reactivation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig6a-safe-trajectory-no-reactivation
+  assumed: true
+  notes: 'Decoded NREM, 24 sessions; median pre 0.010, post 0.013, median difference 0.002; post > pre in 15; one-sided p
+    = 0.060. The margin is small: with 30-s smoothing and with the immobility substitute p = 0.048 (not reproduced).'
+  deviations: *id001
+- claim: fig6b-airpuff-greater-than-safe
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig6b-airpuff-greater-than-safe
+  assumed: true
+  notes: Decoded NREM, 24 sessions; median post - pre air puff 0.010, safe 0.002; one-sided p = 0.035 (peak bin 0.015). With
+    30-s smoothing p = 0.045; with the immobility substitute p = 0.15 (not reproduced).
+  deviations: *id001
+- claim: figs11a-whole-run-reactivation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs11a-whole-run-reactivation
+  assumed: true
+  notes: Decoded NREM; pyramidal 24 sessions, post > pre in 21, p = 4.5e-5; all cells 26 sessions, 18, p = 0.00072. Both variants
+    also give p < 0.001.
+  deviations: *id001
+- claim: figs11b-all-cells-both-trajectories
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs11b-all-cells-both-trajectories
+  assumed: true
+  notes: Decoded NREM, all cells, 26 sessions; air puff p = 0.011, safe p = 0.0018. With 30-s smoothing 0.0082 and 0.0023;
+    with the immobility substitute 0.040 and 0.026.
+  deviations: *id001
+- claim: figs11c-all-cells-difference-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:figs11c-all-cells-difference-absent
+  assumed: true
+  notes: Decoded NREM, all cells, 26 sessions; median (air puff - safe) 0.004, one-sided p = 0.38 (peak bin 0.31). With 30-s
+    smoothing p = 0.46; with the immobility substitute p = 0.43.
+  deviations: *id001
+- claim: bla-rates-safe-airpuff-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:bla-rates-safe-airpuff-absent
+  assumed: true
+  notes: Reading (a), pyramidal cells of the 25 sessions n = 1,096, median difference 0.0011 Hz, p = 0.97; all cells of the
+    27 sessions n = 1,261, p = 0.68. Reading (b) p = 0.060 and 0.38. Over all behaviour sessions (variant), pyramidal p =
+    0.013 (lower on air puff laps), all cells p = 0.079.
+  deviations:
+  - BLA is the B1 label; laps as in fig1b; the session sets are the pair-table sessions with at least 6 cells of the type.
+  - The air puff direction of each session is estimated from the velocity before the run's air puffs.
+- claim: ripple-rate-pre-post-absent
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:ripple-rate-pre-post-absent
+  assumed: true
+  notes: Decoded NREM; 39 sessions (paper 41); median rate pre 0.506/s, post 0.516/s; two-sided p = 0.80, one-sided 0.61.
+    With 30-s smoothing p = 0.47; with the immobility substitute p = 0.75.
+  deviations:
+  - 'Sleep states are not deposited. They are decoded from the authors'' StatesFR table (hc14.decode_states, an assumption):
+    each 5-s epoch takes the state of columns 5 to 8 under which the spike counts of all the session''s units are most likely
+    at the table''s rates, with log likelihoods summed over 60 s; NREM is column 6 and REM column 5, in immobile epochs (head
+    speed from positions smoothed over 1 s below 4 cm/s; the paper associates NREM with immobility, Online Methods, Preprocessing)
+    of pre-sleep and post-sleep. The decoded NREM gives hippocampus-BLA pair correlations that follow the table''s NREM columns
+    (r = 0.88 pre, 0.90 post) and per-session EV - REV with mean 3.13% against the table''s 3.21% (Spearman 0.92); the decoded
+    REM follows the table''s REM columns (r = 0.78, 0.81). Decoded minutes match those implied by StatesFR (median ratio 0.95
+    for NREM, 1.05 for REM; Spearman 0.92 and 0.94 over 54 sessions). The decoder with 30-s smoothing and the first revision''s
+    immobility substitute are variants.'
+  - Ripples are the deposited rip.evt peaks.
+- claim: fig7b-strong-pairs-correlated-changes
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig7b-strong-pairs-correlated-changes
+  notes: Reading (a), whole test epochs; top 2.5% (942 pairs, 867 defined in both test runs; paper 866) r = 0.275, p = 1.9e-16;
+    per rat r = 0.29, 0.31, 0.26. Reading (b), laps, 680 pairs, r = 0.084, p = 0.028.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+  - Test-run correlations are computed from the raw spikes; the NREM change from the pair table.
+- claim: fig7b-weak-pairs-not-correlated
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig7b-weak-pairs-not-correlated
+  notes: Reading (a) bottom 2.5%, 846 pairs (paper 845), r = 0.034, p = 0.33; reading (b) 632 pairs, r = 0.014, p = 0.72.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+- claim: fig7c-quartiles
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:fig7c-quartiles
+  notes: Reading (a); top quartile 8,299 pairs r = 0.130, p = 8e-33; bottom quartile 8,305 pairs r = 0.014, p = 0.20; second
+    r = 0.024 (p = 0.040), third r = 0.007 (p = 0.56), middle 95% r = 0.022 (p = 0.0002). Reading (b), top quartile r = 0.025,
+    p = 0.070.
+  deviations:
+  - EV and REV use the deposited pair correlations (AllRats-EVcontribs, Allcorr), as the sleep scoring is not deposited. The
+    run column equals the correlations recomputed from the raw spikes (r > 0.999 in 17 of 29 sessions, 0.58 to 0.98 in 12),
+    the pre and post columns follow pre-sleep and post-sleep, and the formula reproduces the deposited pooled EV exactly.
+findings:
+- kind: data_missing
+  statement: The hand-scored sleep states (NREM, REM, wake intervals) are not deposited, nor the run intervals and lap classifications
+    the analyses used. Rescoring states from the LFP would mean streaming 461 GB of tar.gz archives; this attempt decoded
+    them from the per-state firing rates of the StatesFR table, which reproduces the authors' NREM and REM pair correlations
+    closely but not exactly.
+- kind: metadata_insufficient
+  statement: The summary tables in AllRats-Variables.tar.gz (FinalType, StatesFR, SpikeParameters, PoissonRippleMod, EVcontribs,
+    AllRippleCCGs) are undocumented, as the data description says. Their columns could be identified against the raw spikes,
+    except which StatesFR column is REM (column 5 or 8).
+- kind: metadata_insufficient
+  statement: The structure of each shank and day comes in four formats, one per rat (Structures/*.mat for Rat09 and Rat10,
+    Structures.txt for Rat11, Batch-Files/Structures.batch and StructureMapping.ods for Rat08). Rat08's labels other than
+    BLA are only in the All sheet of the ods, with spellings that differ from the other rats (CeC and CeM for CeCM, PIr, mixed
+    labels such as VEn/Pir); Rat08 sessions 10 to 13 list no BLA shanks, and the hippocampal shanks are listed only for Rat10.
+- kind: metadata_error
+  statement: Rat08-20130722 has 152 sorted units in its clu files and 127 in the summary tables (28 only in the clu files,
+    3 only in the tables); the other 60 sessions agree unit for unit.
+- kind: selection_undocumented
+  statement: The bucket holds 65 sessions; the paper's 61 are listed only in sessionindexing.mat. Rat11-20150309, -0318, -0319
+    and -0324 are left out without a stated reason.
+- kind: metadata_insufficient
+  statement: Only 6 of the 55 behaviour sessions carry an airpuffloc file with the air puff location and direction; for the
+    others they must be inferred from the head position at the air puffs, which lies -3 to 18 cm (median 7.3 cm) past the
+    file's location in the direction of travel where both exist. Several behaviour outcomes change with a 7.3-cm correction.
+- kind: other
+  statement: The pair table's run correlations match correlations recomputed over the run subsession in 17 of 29 sessions
+    (r > 0.999) and less well in 12 (r = 0.58 to 0.98), so the run interval the authors used is not the run subsession in
+    those sessions and is not deposited.
+- kind: methods_unavailable
+  statement: Question for the authors. Which StatesFR column is REM? This attempt took column 5 over column 8; epochs decoded
+    as column 5 give hippocampus-BLA pair correlations that follow the table's REM correlations (r about 0.8), which supports
+    it. With column 8 the REM/wake ratios of BLA cells would be smaller than the NREM/wake ratios, against Figure 2c.
+- kind: methods_unavailable
+  statement: Question for the authors. Was the air puff location of BehavioralMeasures.m taken from the airpuffloc files,
+    from the puff events, or from elsewhere, and where is it for the 49 sessions without an airpuffloc file? This attempt
+    used the median head position at the air puffs, and the location-bias test (airpuff-location-no-bias) depends on it.
+- kind: other
+  statement: The session archives are tar.gz files without an index, and each clu archive (0.1 to 2.5 GB) is mostly RawKK, .fet
+    and .klg files; reading the sorted spikes of one session means decompressing the whole archive (99 GB over 65 sessions),
+    and the 65 LFP archives are 3.0 to 9.0 GB each (461 GB).
+- kind: metadata_error
+  statement: 'Rat08''s two structure lists disagree on one shank-day: StructureMapping.ods labels shank 13 of session 5 (Rat08-20130712)
+    BLA, and Structures.batch does not list it.'
+- kind: data_missing
+  statement: In Rat10-20140622 the hippocampal cells of the pair table (shanks 17 to 20) fire no spike over a 20-min stretch
+    of decoded post-sleep NREM, while the session's BLA cells fire 31,040 spikes in it; the hippocampal spikes of that stretch
+    are missing from the clu files, or the hippocampal shanks stopped recording.
+verifications:
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the handover of the first run, the executed notebook with the conclusions and summary removed, the helper
+    module and the claims file, with the paper. Its report also lists problems that apply to several claims: 1 (the substitute
+    NREM), 2 (Rat08 structures), 3 (air puff location), 4 (previous zone after a session without a location, fixed), 5 (mixed
+    BLA and Pir variant, removed), 6 (decay windows), 7 (claims tested on the authors'' tables, noted), 8 (REM column, evidence
+    added), 9 (rate reading, noted), 10 (_zbins dropped a bin where intervals touch, fixed with a test on synthetic input
+    in development), 11 (session count, explained).'
+  results:
+  - claim: units-recorded
+    agrees: true
+    outcome: partially_reproduced
+    reason: 61 sessions, 7,390 table units / 7,415 raw, BLA (B1) 2,038 and hippocampus 1,260 are within tolerance. CeN 659
+      and Pir 704 are outside (782±78, 1,560±156), and the criterion has no partial clause. The shortfall comes from Rat08's
+      1,571 unlabelled units (problem 2).
+    response: Rat08's labels are now read from the text of the All sheet of StructureMapping.ods (problem 2), with label counts
+      per rat. CeN 783 and Pir 1,575 are within tolerance; outcome changed to reproduced.
+  - claim: fig1b-dz-speed-anova
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Under the criterion''s "all samples" reading (cell 19): epoch and interaction p<1e-5, zone p=0.081. The "dir"
+      variant gives zone p=0.043. Sessions are 51, against the paper''s 55.'
+    response: 'Fixed the previous-zone carry-over (problem 4), which drops Rat09-20140329: 50 sessions, zone p = 0.11 (dir
+      0.059). Added the corrected-location variant (problem 3; zone p = 0.49) and a list of the sessions without all six speeds
+      and why (problem 11). Outcome unchanged.'
+  - claim: fig1b-dz-speed-posthoc
+    agrees: true
+    outcome: partially_reproduced
+    reason: Three of four tests pass at 0.05/4 with the right signs. Post-run current−previous gives t=−1.61, p=0.11 (cell
+      21).
+    response: Post-run p = 0.14 after the previous-zone fix. With the corrected location and all samples only two of four
+      hold; the notes say so. Outcome unchanged.
+  - claim: fig1b-speed-ratio
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA F=26.5. Median ratio is −0.085 in pre-run and +0.049 in post-run. All three paired tests pass at 0.05/3
+      in the stated directions (cell 23).
+    response: Numbers updated after the previous-zone fix (F = 25.4). The corrected-location variant gives pre-run against
+      post-run p = 0.031 under the all-samples reading (partial); recorded in the notes. Outcome unchanged, marked as resting
+      on the location estimate.
+  - claim: figs1b-ratio-each-rat
+    agrees: true
+    outcome: reproduced
+    reason: All four rats p<0.03, with pre-run median below post-run (cell 25).
+    response: Rat 9 now has 9 sessions (p = 0.014). The corrected-location variant fails in rats 9 and 11 under the all-samples
+      reading; recorded in the notes. Outcome unchanged.
+  - claim: fig1c-slower-in-dz-post-run
+    agrees: true
+    outcome: reproduced
+    reason: Rank-sum post vs pre z=−3.23, p=0.0013, n=53 (cell 27).
+    response: Added the corrected-location variant (p = 0.0087). Outcome unchanged.
+  - claim: figs1c-habituation
+    agrees: true
+    outcome: reproduced
+    reason: Pooled rho=0.70, p=4e-9, and rho>0 in 4/4 rats under all three lap counts (cell 29).
+    response: Added laps per session and direction and the track extent per session, as asked under what could not be checked.
+      Outcome unchanged.
+  - claim: airpuff-location-no-bias
+    agrees: true
+    outcome: not_reproduced
+    reason: Pre-run r=−0.40, p=0.003 and run r=−0.34, p=0.012 (cell 31). The run correlation stays significant under the "dir"
+      variant. The location estimate is in doubt (problem 3).
+    response: Added the corrected location (file values where they exist, elsewhere the estimate moved back by the 7.3-cm
+      median offset). With all samples it still gives pre-run p = 0.015 and run p = 0.037; direction-filtered none is significant.
+      Outcome unchanged, marked as resting on the location estimate.
+  - claim: fig2c-bla-pyr-higher-in-sleep
+    agrees: true
+    outcome: reproduced
+    reason: 'Counts are exactly 675/175/1,188. Medians NREM 0.26 and REM 0.36, both p≈0, REM > NREM (cell 35). Depends on
+      column 5 being REM: with column 8 it would be partial.'
+    response: 'Added evidence on the REM column (problem 8): epochs decoded as column 5 give pair correlations that follow
+      the table''s REM columns (r = 0.78, 0.81), not its NREM ones. Outcome unchanged.'
+  - claim: fig2c-bla-interneurons
+    agrees: true
+    outcome: reproduced
+    reason: REM/wake p=0.2107, which matches the paper's 0.21 at n=175. NREM/wake median −0.07, p≈0 (cell 37).
+    response: As for fig2c-bla-pyr-higher-in-sleep. Outcome unchanged.
+  - claim: fig2c-skewed-rates
+    agrees: true
+    outcome: reproduced
+    reason: Skew of the rates is 3.4, 14.0 and 7.4; skew of the log rates is −0.41, −0.58 and 0.12. Both readings hold in
+      all three states (cell 39).
+    response: No change.
+  - claim: fig3c-hpc-bla-ev-nrem
+    agrees: true
+    outcome: reproduced
+    reason: 25 sessions, mean 3.14±0.73%, p=4.5e-5 (cell 43). Computed from the authors' deposited pair table.
+    response: No change. The notes and deviations state that these claims test the authors' deposited tables (problem 7).
+  - claim: fig3c-hpc-bla-ev-rem-absent
+    agrees: true
+    outcome: reproduced
+    reason: p=0.73 over 25 sessions; the paper has 23 because the 180-s REM filter could not be applied (cell 45).
+    response: 'Added a variant that applies the 180-s filter with decoded REM durations: 20 sessions, p = 0.55. Outcome unchanged.'
+  - claim: fig3c-decay
+    agrees: true
+    outcome: not_reproduced
+    reason: 'On the substitute NREM: window 2 mean 1.10% is outside 1.72±0.44, Kruskal-Wallis p=0.074, window 3 p=0.28 (cell
+      77). The result depends on the substitute (problems 1 and 6).'
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Windows are now counted in decoded NREM time,
+      and the table''s pre-NREM is run as a variant (problem 6). Decoded: means 3.04, 1.78, 1.69%, all windows p < 0.05, Kruskal-Wallis
+      p = 0.024; outcome changed to reproduced, marked as resting on the decoded states. The table pre-NREM variant and the
+      30-s variant give partial, the old substitute not reproduced.'
+  - claim: figs5a-hpc-bla-all-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: NREM p=3.5e-5 and REM p=0.37 over 27 sessions. Substitute window 2 p=0.0507 misses the threshold (cell 79).
+    response: The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table's NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded window 2 gives p = 0.011 (table pre-NREM
+      variant 0.00016); outcome changed to reproduced.
+  - claim: fig3d-pir-reactivation
+    agrees: true
+    outcome: blocked
+    reason: The archive's file list (unpacked_filelist.txt) has no sleep-state file. The NREM half alone could decide "not
+      reproduced", but the notebook's run covers only 6 sessions from one rat (p=0.69, cell 101) because Rat08's Pir shanks
+      were never read.
+    response: Rat08's Pir shanks are now read (problem 2) and NREM and REM are decoded from StatesFR (problem 1 and the REM
+      item under what could not be checked). 14 NREM sessions p = 0.042, 11 REM sessions p = 0.18; outcome changed to reproduced,
+      marked as resting on the decoded states. With 30-s smoothing REM gives p = 0.032 (partial).
+  - claim: fig3d-pir-weaker-than-bla
+    agrees: true
+    outcome: not_reproduced
+    reason: Pir 0.26% (6 sessions, rat 10 only) against BLA 1.97% on the substitute; one-tailed p=0.079 (cell 81). Both means
+      are outside tolerance. The Pir session set is incomplete (problem 2), so this verdict is weak.
+    response: 'With Rat08''s Pir shanks and decoded NREM: 14 Pir sessions, 0.87% against BLA 3.09%, p = 0.027, both within
+      tolerance; outcome changed to reproduced. The variant that mixed table BLA with substitute Pir is removed (problem 5).'
+  - claim: fig3e-cen-no-reactivation
+    agrees: true
+    outcome: blocked
+    reason: REM states are not deposited. The NREM half gives p=0.64 over 15 sessions (cell 101).
+    response: 'Tested on decoded NREM and REM with Rat08''s CeN shanks: NREM p = 0.73 (18 sessions), REM p = 0.90 (16); outcome
+      changed to reproduced, marked as resting on the decoded states.'
+  - claim: figs4-intra-structure-nrem
+    agrees: true
+    outcome: reproduced
+    reason: p = 3.2e-4, 6.5e-5, 2.9e-3 and 2.5e-4, all with EV > REV (cell 83). On the substitute NREM.
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 6.5e-7, 2.5e-6, 0.0031, 0.00047.
+      Outcome unchanged.'
+  - claim: figs4-intra-structure-rem-absent
+    agrees: true
+    outcome: blocked
+    reason: No REM scoring in the archive.
+    response: 'Tested on decoded REM with the 180-s requirement: p = 0.31, 1.0, 0.39, 0.47; outcome changed to reproduced,
+      marked as resting on the decoded states.'
+  - claim: fig4-bla-ripple-modulation
+    agrees: true
+    outcome: reproduced
+    reason: B1 at the code's threshold gives exactly 25.8/11.1/14.7/8.3%, with 163 and 1,232 cells (cell 47). Read from the
+      authors' PoissonRippleMod table.
+    response: No change (problem 7 noted).
+  - claim: figs5b-ripple-modulated-pairs-reactivate-more
+    agrees: true
+    outcome: reproduced
+    reason: 'Pyramidal: 7.16 vs 1.67%, p=0.004. All pairs: 6.08 vs 1.81%, p=0.005. All four means within tolerance (cell 57).'
+    response: No change.
+  - claim: run-correlated-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 37,660 pairs, 6.69% positive, 3.34% negative, group 1 = 595, from both the table and the raw spikes (cell 51).
+    response: No change.
+  - claim: fig5a-up-positive-pairs-change-most
+    agrees: true
+    outcome: reproduced
+    reason: F=29.08, p=1.1e-45. up/pos is the largest group and differs from all 8 others at Tukey p<0.001 (cell 53).
+    response: No change.
+  - claim: figs6b-ev-nine-groups
+    agrees: true
+    outcome: reproduced
+    reason: up/pos EV−REV is 14.7%, the largest of the nine groups (cell 55).
+    response: No change.
+  - claim: fig5b-top-contributors-gain-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Top quartile: 63 cells, p=5e-5. Other quartiles: 74 cells, p=0.986 (cell 72). Uses the deposited gains; the two
+      smoothings the criterion asks for could not be run.'
+    response: No change; the smoothing of the deposited gains is undocumented, as the deviation says.
+  - claim: figs9-ev-independent-of-rate
+    agrees: true
+    outcome: reproduced
+    reason: 'Under the whole-session-rate reading: EV > REV in 8/8 octiles and all Spearman p ≥ 0.086 (cell 59). The run-rate
+      reading fails strongly (rho=1.0 and 0.98).'
+    response: No change; the notes say the outcome holds only under the whole-session-rate reading (problem 9).
+  - claim: fig6a-airpuff-trajectory-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: One-sided p=0.0115 over 24 sessions (cell 89). On the substitute; at 2 cm/s p=0.095 (cell 103).
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 0.00037; 30-s variant 0.0014. Outcome
+      unchanged.'
+  - claim: fig6a-safe-trajectory-no-reactivation
+    agrees: true
+    outcome: not_reproduced
+    reason: p=0.0475 (cell 91), and p=0.037 at 2 cm/s.
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 0.060; outcome changed to reproduced,
+      marked as resting on the decoded states. Both variants give p = 0.048, and the notes say the margin is small.'
+  - claim: fig6b-airpuff-greater-than-safe
+    agrees: true
+    outcome: not_reproduced
+    reason: p=0.151, peak-bin variant p=0.099 (cell 93), 2 cm/s p=0.81.
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 0.035 (30-s variant 0.045, old substitute
+      0.15); outcome changed to reproduced.'
+  - claim: figs11a-whole-run-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Pyramidal p=0.0007, all cells p=0.0009 (cell 95). Both still pass at 2 cm/s.
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 4.5e-5 and 0.00072. Outcome unchanged.'
+  - claim: figs11b-all-cells-both-trajectories
+    agrees: true
+    outcome: reproduced
+    reason: Air puff p=0.040, safe p=0.026 (cell 97). At 2 cm/s safe gives p=0.18, which would make it partial.
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 0.011 and 0.0018; both variants also
+      pass. Outcome unchanged.'
+  - claim: figs11c-all-cells-difference-absent
+    agrees: true
+    outcome: reproduced
+    reason: p=0.43 (cell 99).
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 0.38. Outcome unchanged.'
+  - claim: bla-rates-safe-airpuff-absent
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): pyramidal p=0.97, all cells p=0.68 (cell 70). The all-session variant gives pyramidal p=0.013.'
+    response: No change.
+  - claim: ripple-rate-pre-post-absent
+    agrees: true
+    outcome: reproduced
+    reason: Two-sided p=0.75 over 38 sessions (cell 85). On the substitute.
+    response: 'The substitute is replaced by states decoded from StatesFR (problem 1), checked against the table''s NREM pair
+      correlations (r = 0.88, 0.90 against 0.64, 0.59 for the substitute) and per-session EV - REV (3.13% against 3.21%),
+      with per-session minutes next to those implied by StatesFR, as asked. Decoded: p = 0.80 over 39 sessions. Outcome unchanged.'
+  - claim: fig7b-strong-pairs-correlated-changes
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): r=0.275, p=1.9e-16, n=867, against the paper''s 0.27, 2.1e-16, 866 (cell 64).'
+    response: No change.
+  - claim: fig7b-weak-pairs-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): r=0.034, p=0.33 (cell 66).'
+    response: No change.
+  - claim: fig7c-quartiles
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): top quartile r=0.130, p=8e-33; bottom quartile r=0.014, p=0.20 (cell 68).'
+    response: No change.
+- date: '2026-11-08'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the first revision, with its conclusions and summary, the helper module,
+    the attempt record and the claims file, with the paper. The report also lists sentences the outputs did not support (cells
+    11 and 13 stale; the Summary''s list of decoder-sensitive outcomes; the 470 GB and LFP archive sizes in cell 97, cell
+    0 and the findings; the README run time and its statement on checking the tables; cell 33''s qualifier), all corrected,
+    with the archive sizes and the run time now printed (cells 2 and 146).'
+  results:
+  - claim: units-recorded
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig1b-dz-speed-anova
+    agrees: true
+    outcome: partially_reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig1b-dz-speed-posthoc
+    agrees: true
+    outcome: partially_reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. With the corrected location and all samples it would be not reproduced.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig1b-speed-ratio
+    agrees: true
+    outcome: reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. With the corrected location and all samples it would be partially reproduced.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: figs1b-ratio-each-rat
+    agrees: true
+    outcome: reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. With the corrected location and all samples it would be not reproduced.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig1c-slower-in-dz-post-run
+    agrees: true
+    outcome: reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives. Cell 33's Result lacks the qualifier on the estimated air puff location that the record
+      and the Summary attach.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: figs1c-habituation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: airpuff-location-no-bias
+    agrees: true
+    outcome: not_reproduced
+    reason: The air puff location assumption is stated and defensible, but it is not clearly the better choice. In 5 of the
+      6 sessions with an airpuffloc file the estimate lies past the file's location, median 7.3 cm, so the main reading uses
+      a location known to be biased; the correction rests on 6 sessions, all from Rat08. The record says for each claim what
+      the corrected location gives.
+    response: Kept the estimated location as the main reading and the corrected location as a variant, as before; the verifier
+      finds the assumption defensible and the corrected-location results stay in the notes. The Result of fig1c-slower-in-dz-post-run
+      (cell 33) now carries the qualifier resting on the estimated air puff location, as asked.
+  - claim: fig2c-bla-pyr-higher-in-sleep
+    agrees: true
+    outcome: reproduced
+    reason: 'The REM column assumption is now well supported: epochs decoded as column 5 give pair correlations that follow
+      the table''s REM columns (r = 0.78 and 0.81) and not its NREM columns (r = 0.09).'
+    response: No change.
+  - claim: fig2c-bla-interneurons
+    agrees: true
+    outcome: reproduced
+    reason: 'The REM column assumption is now well supported: epochs decoded as column 5 give pair correlations that follow
+      the table''s REM columns (r = 0.78 and 0.81) and not its NREM columns (r = 0.09).'
+    response: No change.
+  - claim: fig2c-skewed-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig3c-hpc-bla-ev-nrem
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig3c-hpc-bla-ev-rem-absent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig3c-decay
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Reproduced only under the main decoder: the table''s pre-NREM gives partial
+      (window 3 p = 0.067), 30-s smoothing partial, the immobility substitute not reproduced. Sessions with EV > REV in the
+      first window number 17, against an expected 19 +- 1.9. The criterion lists only the three means, so I accept reproduced,
+      but this is the weakest outcome in the attempt. In the table pre-NREM variant Rat10-20140622 has window 2 undefined
+      while windows 1 and 3 are defined, and nothing explains this.'
+    response: 'Outcome kept. The Result now says the count of 17 is just outside the tolerance. The undefined window is explained
+      with a new output in cell 101: the session''s hippocampal cells fire no spike in window 2 (0, against 20,844 and 19,394
+      in windows 1 and 3) while its BLA cells fire 31,040, so no pair is defined there; added to the notes and as a data_missing
+      finding.'
+  - claim: figs5a-hpc-bla-all-cells
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: fig3d-pir-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Decoded REM is a stated and reasonable assumption, but less faithful than
+      decoded NREM (per-session EV - REV against the table''s REM has Spearman 0.71, and 0.53 with 30-s smoothing), so these
+      absence outcomes are weaker evidence than the NREM ones. Holds under the main decoder only: NREM p = 0.042, and p =
+      0.094 with the immobility substitute.'
+    response: Outcome kept; the Summary lists it among the outcomes that change with the decoder.
+  - claim: fig3d-pir-weaker-than-bla
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. The Summary leaves out that it gives p = 0.083 with the immobility substitute
+      and would then be not reproduced (cell 145); the record's notes include it.
+    response: Outcome kept. Added fig3d-pir-weaker-than-bla to the Summary's list of outcomes that change with the decoder.
+  - claim: fig3e-cen-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Decoded REM is a stated and reasonable assumption, but less faithful than decoded NREM (per-session EV - REV against
+      the table's REM has Spearman 0.71, and 0.53 with 30-s smoothing), so these absence outcomes are weaker evidence than
+      the NREM ones.
+    response: No change.
+  - claim: figs4-intra-structure-nrem
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: figs4-intra-structure-rem-absent
+    agrees: true
+    outcome: reproduced
+    reason: Decoded REM is a stated and reasonable assumption, but less faithful than decoded NREM (per-session EV - REV against
+      the table's REM has Spearman 0.71, and 0.53 with 30-s smoothing), so these absence outcomes are weaker evidence than
+      the NREM ones.
+    response: No change.
+  - claim: fig4-bla-ripple-modulation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: figs5b-ripple-modulated-pairs-reactivate-more
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: run-correlated-pairs
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig5a-up-positive-pairs-change-most
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: figs6b-ev-nine-groups
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: figs9-ev-independent-of-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig5b-top-contributors-gain-increase
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig6a-airpuff-trajectory-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: fig6a-safe-trajectory-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Holds under the main decoder only: p = 0.060, and p = 0.048 under both
+      variants.'
+    response: Outcome kept; the Summary lists it among the outcomes that change with the decoder.
+  - claim: fig6b-airpuff-greater-than-safe
+    agrees: true
+    outcome: reproduced
+    reason: 'Decoded NREM is a reasonable assumption and it is validated against the table''s NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR. Holds under the main decoder only: p = 0.035, and p = 0.15 with the immobility
+      substitute.'
+    response: Outcome kept; the Summary lists it among the outcomes that change with the decoder.
+  - claim: figs11a-whole-run-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: figs11b-all-cells-both-trajectories
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: figs11c-all-cells-difference-absent
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: bla-rates-safe-airpuff-absent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: ripple-rate-pre-post-absent
+    agrees: true
+    outcome: reproduced
+    reason: Decoded NREM is a reasonable assumption and it is validated against the table's NREM pair correlations, per-session
+      EV - REV and the minutes implied by StatesFR.
+    response: No change.
+  - claim: fig7b-strong-pairs-correlated-changes
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig7b-weak-pairs-not-correlated
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
+  - claim: fig7c-quartiles
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 38 stated outcomes. Every assumption is stated, in the deviations and in the Result headings.
+    response: No change.
