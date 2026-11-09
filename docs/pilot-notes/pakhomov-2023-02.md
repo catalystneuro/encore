@@ -1,0 +1,100 @@
+# 000875, Pakhomov et al. 2023
+
+Two claims reproduced, two partially, none not reproduced and 12 blocked
+on the dataset, with one more blocked that also needs outside data. The
+first verification round agreed with all 17 outcomes and the second with
+all 17, so there was no third round. It pins version 0.240515.1925, the
+published version; the paper names no data repository and cites no version,
+and the draft holds the same 9 assets. The paper, Pakhomov, Gudvangen,
+Mangalanathan, Kondratiev, Redondo and Semenov in Bioelectrochemistry,
+exposes CHO-K1 cells through a quadrupole array of four 1.5-mm needles
+(a small array and a large one of 8.4-mm diagonal) to packets of 600-ns
+unipolar pulses and measures YO-PRO-1 (YP) uptake, with a Sim4Life field
+simulation (Fig. 3), single cells imaged by confocal time-lapse (Fig. 4)
+and stitched 10x images of monolayers profiled along the array diagonals
+(Figs. 5 to 9). The claims were written from the accepted author manuscript
+in PubMed Central (PMC10247516), with no supplement, and the paper links no
+code. Only the four Fig. 6 claims could be tested, on profiles measured anew
+from the nine images with ROIs placed by code, as the paper's MetaMorph ROIs
+are not deposited, and on an assumed 0.65 um per pixel; the Fig. 4, 5, 7,
+8 and 9 claims are blocked as `data_missing`, and so is the Fig. 3 claim,
+as the Sim4Life model is not public. `fig6a-more-packets-more-uptake`
+reproduces: 40 packets exceed 4 at the periphery, center and least
+affected area (p = 0.016, 0.00076 and 0.00079), the order holds in all
+162 combinations of the claims file's readings and all three tests pass
+in 72. `fig6-peak-narrower` reproduces, the width at half height being
+1.051, 0.545 and 0.488 mm for 4, 20 and 40 packets and decreasing in 182
+of 216 combinations. `fig6b-peak-relative-to-periphery` is partial on an
+assumption: the primary reading gives 124.0, 86.7 and 58.7% against 200,
+100 and 100%, and 1Px4 is within 180 to 220% and above both others in 13
+of 108 combinations, all of which subtract an estimated dark offset, use
+one diagonal and take the peak as the highest ROI between the minima.
+`fig6-trough-half-of-center` is partial, center over least affected area
+being 1.40, 2.16 and 2.80 against 2-fold for all, with 10Px4 never within
+tolerance (2.66 to 10.11). The author's first run gave the same outcomes
+over 108 combinations, with fig6b partial in 7 of 72 under a background
+taken as the median inside the electrode footprints. The author asked a
+reader no questions, so the answer run and the following author run changed
+nothing. Round 1 agreed with all outcomes but found that nothing showed
+the footprints to be cell-free, which left fig6b open between partial and
+not reproduced, that two cues pointed to about 0.53 um per pixel, that
+the periphery test of fig6a fails in 60 of 108 combinations, that w2 was
+counted twice per combination and that the unsmoothed w1 depends on the
+center reading. In reply full-resolution crops showed a faint monolayer
+inside the footprints (median 0.74 to 0.94 of the monolayer outside the
+array), so b2 was run with two dark offsets (73.5 to 87.1 counts and 110
+to 200 counts), fig6b was marked `assumed`, and a scale check kept 0.65
+um, at which the small array measures 3.73 to 4.05 mm between needle edges
+against about 3.8 mm from the paper's large array. Round 2 agreed with all
+17, calling fig6b fragile, and found sentences the outputs did not support
+(that the full fig6a result needs both ends, that any common offset of 50
+counts or more gives the same fig6b outcome, nine claims where the README
+needed ten, darkest blocks said to lie off the glass bottom, and a margin
+of 1.5% called close to the 5% the Methods exclude), which were corrected;
+a dark level from blocks that cannot touch the zero padding (74.2 to 88.5
+counts) was added. The author's run took about 33 minutes (17:03 to 17:36
+UTC); the first executed copy had a wrong overlay scale in the thumbnail
+figure, which was fixed and re-run. The notebook ran in about 140 s at
+first, 134 s after the answer, and the entry in 189 s in the last run.
+
+The dandiset holds only the experiment of Fig. 6, nine dishes of 1Px4,
+5Px4 and 10Px4 at 3.2 kV, three each, against n = 3 to 4 in the legend;
+the single-cell time-lapse of Fig. 4 and the monolayer experiments of
+Figs. 5, 7, 8 and 9 are not in it, so 13 of the paper's 17 claims cannot
+be tested. The files give no pixel size or field of view, no electrode
+positions, no ROIs or measured profiles, no dark frame, and do not say
+which of the two arrays was used. At the camera scale (0.65 um per pixel)
+the geometry fits the small array and the paper's ROI extents; the dark
+electrode footprints are then 1.66 to 2.09 mm across, wider than the 1.5
+mm needles of Methods 2.3, and they hold a faint monolayer, so they give
+no cell-free background. Saturation of up to 5% of an ROI near the 10Px4
+electrodes lowers the 10Px4 periphery. The subject species is NCBITaxon
+9913 (Bos taurus, cattle) in every file and in the archive's summary, while
+the strain field and the paper say CHO cells (Chinese hamster); the age
+is "P1D", which has no meaning for a cell line, and the archive's summary
+counts 18 subjects for 9 files and 9 subject ids. Two pairs of dishes share
+a session start time to the second (dishes 20 and 22 of 5Px4; dish 09 of
+5Px4 and dish 25 of 1Px4); the images differ, no two being identical and
+the array position different in each, so the start times are not per-dish
+acquisition times and no recording is deposited twice. The ImageSeries has
+unit "n.a." and a rate of 2 Hz for a single frame, and the "200ms" in every
+file and session name is not explained, while the description says packets
+were given at 1 Hz. A question is put to the paper's authors: which ROI
+layout, ROI size and background were used for Fig. 6, and whether dishes
+were normalized before averaging, as the Fig. 6B normalized center of 1Px4
+is 121.7 to 301.3% over the readings, near 200% only on one diagonal with
+a dark offset subtracted.
+
+The author's points on the protocol: the check that every stream shares the
+clock of the trial tables does not apply to a single image per dish, and
+the contrast between treatments was used as the label check; the claims
+file says a claim holds under any combination of readings while step 1.6
+asks for the outcome all readings give or else an assumption, and the
+claims file was followed with the counts of each outcome in the notes;
+`measured` cannot express one expected value for three treatments, so it
+was left out of the trough claim and the three values given in the notes;
+it is unclear whether an assumption about a dataset property such as the
+pixel size needs `assumed: true`, and it was recorded as a deviation with
+a variant free of it; and it is unclear whether a `with_inputs` claim whose
+outside input does not exist publicly also needs a link claim, so none was
+added and fig3 was blocked as `data_missing`.

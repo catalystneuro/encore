@@ -84,11 +84,16 @@
 #   lobes form one cross section, Q summed over them (a reading; the paper treats the cross
 #   section as one channel). The pixel size follows P1.
 # (P9) Fits (Methods, Idealized geometries; Figure 4; Table 1). Ellipse, the ellipse with the
-#   centroid and second central moments of the PVS segmentation in the slice (both lobes
-#   together), R2 and R3 its semi-major and semi-minor axes, Oh and Ov the horizontal and
-#   vertical offsets of the vessel center from the ellipse center. Open, the PVS region of the
-#   ellipse fit. Readings (a) the ellipse minus its overlap with the circle, (b) ellipse area
-#   minus circle area. Spline, six control points at horizontal 0, R1, 2R1, 3R1, 4R1, 5R1 from the
+#   centroid and second central moments of the region the PVS's outer boundary encloses in the
+#   slice, the PVS segmentation (both lobes) and the vessel segmentation together, holes filled,
+#   as the outer ellipse of Tithof et al.'s elliptical annulus (reference 18). The paper fits
+#   "to the PVS and vessel segmentation" (Figure 4 legend), its major axis "includes the vessel
+#   radius" (Results), and R3 peaks at 35 um, above the 28 um vessel radius, which an ellipse of
+#   the lobes alone could not give. R2 and R3 its semi-major and semi-minor axes, Oh and Ov the
+#   horizontal and vertical offsets of the vessel center from the ellipse center. This ellipse
+#   is used by every claim that uses the ellipse fit. Open, the PVS region of the ellipse fit.
+#   Readings (a) the ellipse minus its overlap with the circle, (b) ellipse area minus circle
+#   area. Spline, six control points at horizontal 0, R1, 2R1, 3R1, 4R1, 5R1 from the
 #   vessel center and vertical 1.1111, 0.85, 0.2667, 0.1111, 0.1111, 0.1111 R1 above the PVS
 #   midline, joined by a spline and mirrored about both axes, the vessel center 0.0667 R1 below
 #   the midline (Table 1 and Methods); open, the spline type, reading an interpolating cubic
@@ -527,7 +532,8 @@ claims:
     tolerance: 0.024
   depends_on:
   - vessel-radius-peak
-  criterion: Pipeline P1 to P4, P6, P7 and P9 (ellipse). Open, the units of Ov and Oh, printed
+  criterion: Pipeline P1 to P4, P6, P7 and P9 (ellipse), the ellipse fit to the PVS and vessel
+    together as P9 states. Open, the units of Ov and Oh, printed
     without units. Readings (a) offsets over R1, (b) over R3, (c) in um. Ov positive when the
     vessel is below the ellipse center, as the text reads it. Oh "centered around zero" and
     "much wider" are read as the median of Oh within one Ov peak value of zero and the IQR of Oh

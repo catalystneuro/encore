@@ -30,6 +30,11 @@ def test_a_run_on_either_account_is_found():
     assert describe.newest_run(runs, "001636", "claims") == "5 queued"
     assert describe.newest_run(runs[1:], "001636", "claims") == "4 completed"
     assert describe.newest_run(runs, "001636", "claims-check") == ""
+    # Any account's runs carry its name, the API key's too; another dataset's runs are not taken.
+    runs = [{"databaseId": 7, "displayTitle": "Agent run: 001636 author (api)", "status": "in_progress"},
+            {"databaseId": 6, "displayTitle": "Agent run: 0016361 author", "status": "completed"}]
+    assert describe.newest_run(runs, "001636", "author") == "7 in_progress"
+    assert describe.newest_run(runs[1:], "001636", "author") == ""
 
 
 def test_only_published_datasets_are_taken():
@@ -39,14 +44,31 @@ def test_only_published_datasets_are_taken():
     assert describe.published({"archive": "crcns"})
 
 
-def test_a_dataset_whose_latest_attempt_is_deprecated_is_open_again(monkeypatch):
-    records = ["000001-demo-2020-01.yaml", "000001-demo-2020-02.yaml", "000002-demo-2021-01.yaml"]
-    deprecated = {"attempts/000001-demo-2020-01.yaml", "attempts/000002-demo-2021-01.yaml"}
-    monkeypatch.setattr(describe, "main_yaml", lambda path: {"deprecated": {"date": "2026-10-21"}} if path in deprecated else {})
-    # 000001 has a newer attempt that stands; 000002's only attempt is deprecated.
-    assert not describe.latest_deprecated("000001", records)
-    assert describe.latest_deprecated("000002", records)
-    assert not describe.latest_deprecated("000003", records)
+def test_the_queue_is_of_papers(monkeypatch):
+    t = lambda id_: {"archive": "dandi", "id": id_, "key": f"dandi:{id_}", "folder": id_, "published_version": "1",
+                     "papers": [{"doi": "10.1038/x", "preprint": False}]}
+    # 000001 and 000002 hold one paper's data; 000003 another's; 000004 is not matched yet; 000005's paper has
+    # its only attempt deprecated.
+    monkeypatch.setattr(describe, "main_targets", lambda: [t(f"00000{i}") for i in range(1, 6)])
+    monkeypatch.setattr(describe, "main_papers", lambda: (
+        {"dandi:000001": "a-2020", "dandi:000002": "a-2020", "dandi:000003": "b-2021", "dandi:000005": "c-2022"},
+        {"a-2020": ["dandi:000001", "dandi:000002"], "b-2021": ["dandi:000003"], "c-2022": ["dandi:000005"],
+         "r-2024": ["dandi:000003"]}))
+    attempts = {"a-2020": [{"id": "a-2020-01", "deprecated": False, "datasets": {"dandi:000001"}}],
+                "b-2021": [{"id": "b-2021-01", "deprecated": False, "datasets": {"dandi:000003"}}],
+                "c-2022": [{"id": "c-2022-01", "deprecated": True, "datasets": {"dandi:000005"}}]}
+    monkeypatch.setattr(describe, "main_attempts", lambda: attempts)
+    monkeypatch.setattr(describe, "branches", lambda: set())
+    monkeypatch.setattr(describe, "matched_on_main", lambda: {"000001", "000002", "000003", "000005"})
+    monkeypatch.setattr(describe, "main_yaml", lambda path: {"papers": [{"key": "r-2024"}]} if path == "targets/reuse.yaml" else {})
+    # a-2020 is open, once, for its untested dataset; b-2021 is done; the unmatched dataset goes by its folder;
+    # c-2022 is open again; the reuse paper comes last.
+    assert describe.queue() == ["a-2020", "000004", "c-2022", "r-2024"]
+    # Once a-2020's attempt has used both datasets it is done, and a paper with a branch is taken.
+    attempts["a-2020"].append({"id": "a-2020-02", "deprecated": False, "datasets": {"dandi:000001", "dandi:000002"}})
+    monkeypatch.setattr(describe, "branches", lambda: {"c-2022"})
+    assert describe.queue() == ["000004", "r-2024"]
+    assert describe.as_folders(["a-2020", "000004"], describe.main_papers()[1]) == ["000001", "000002", "000004"]
 
 
 def test_a_target_with_a_journal_paper_has_a_publication():
