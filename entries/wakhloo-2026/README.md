@@ -11,7 +11,7 @@ analyses are not about this dataset and are blocked.
 | Behavioural error falls over sessions 1 to 4, then plateaus | Reproduced |
 | Readout error falls over learning in PFC and CA1, then plateaus | Reproduced |
 | Readout error correlates with behaviour, R2 0.48 (CA1) and 0.51 (PFC) | Reproduced |
-| Theory agrees well with the empirical readout error | Not reproduced (bound of the criterion; question asked) |
+| Theory agrees well with the empirical readout error | Reproduced (criterion amended after a question; not reproduced before) |
 | Total dimension drops over sessions 1 to 4 | Reproduced |
 | Task-relevant dimension (GLM) increases over learning | Reproduced |
 | Nearly every geometric measure increases over sessions 1 to 4 | Reproduced |
