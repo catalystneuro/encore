@@ -731,3 +731,13 @@ def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
     assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
     assert data["queue_counts"]["with_a_paper"] == len(data["targets"])
 
+
+def test_the_overview_leads_with_papers():
+    """The papers are the primary index: the first tile, and the measure the charts show first."""
+    panel = site.progress_panel(site.collect())
+    assert list(site.PROGRESS_METRICS)[0] == site.PROGRESS_DEFAULT == "papers"
+    first = panel.index('data-metric="papers"')
+    assert first < panel.index('data-metric="datasets"')
+    assert 'data-metric="papers" aria-pressed="true"' in panel and 'data-metric="datasets" aria-pressed="false"' in panel
+    assert ">Papers attempted over time</h2>" in panel and ">Papers attempted, new each day</h2>" in panel
+

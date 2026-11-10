@@ -1350,13 +1350,15 @@ def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
                                          a["key"]))[:n]
 
 
+# In the order of the Overview's tiles: papers first, as the papers are the registry's primary index.
 PROGRESS_METRICS = {
-    "datasets": "Datasets attempted",
-    "papers": "Papers",
-    "attempts": "Attempts",
+    "papers": "Papers attempted",
     "claims": "Claims tested",
+    "attempts": "Attempts",
     "findings": "Findings about the data",
+    "datasets": "Datasets attempted",
 }
+PROGRESS_DEFAULT = "papers"   # the measure the charts show first
 
 
 def progress_data(data: dict) -> dict:
@@ -1429,7 +1431,7 @@ def progress_panel(data: dict) -> str:
         return ""
     totals = {m: sum(p["series"]["all"][m]) for m in PROGRESS_METRICS}
     tiles = "".join(
-        f'<button class="tile metric" type="button" data-metric="{m}" aria-pressed="{str(m == "datasets").lower()}">'
+        f'<button class="tile metric" type="button" data-metric="{m}" aria-pressed="{str(m == PROGRESS_DEFAULT).lower()}">'
         f'<div class="n">{totals[m]:,}</div><div class="l">{e(label)}</div><div class="delta"></div></button>'
         for m, label in PROGRESS_METRICS.items())
     rows = "".join(
@@ -1443,16 +1445,16 @@ def progress_panel(data: dict) -> str:
   <div class="tiles metrics">{tiles}</div>
   <div class="panel progress-charts">
     <div class="grid2">
-      <div><h2 id="progress-title">Datasets attempted over time</h2>
+      <div><h2 id="progress-title">{e(PROGRESS_METRICS[PROGRESS_DEFAULT])} over time</h2>
         <p class="small muted" style="margin:0">Running total, by day.</p>
         <div class="chart" id="progress-line"></div></div>
-      <div><h2 id="progress-day-title">Datasets attempted, new each day</h2>
-        <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
+      <div><h2 id="progress-day-title">{e(PROGRESS_METRICS[PROGRESS_DEFAULT])}, new each day</h2>
+        <p class="small muted" style="margin:0" id="progress-day-note">Each paper on the date of its first attempt.</p>
         <div class="chart" id="progress-outcomes"></div></div>
     </div>
     <div id="progress-legend" class="progress-legend"></div>
   </div>
-  <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
+  <details class="table-view panel"><summary>Table: new each day</summary>
     <div class="scroll"><table><thead><tr><th>Date</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
   </details>
   <script type="application/json" id="progress-data">{json.dumps(p, separators=(",", ":"))}</script>
@@ -1467,7 +1469,9 @@ def page_overview(data: dict) -> str:
     n_claims = sum(counts.values())
     in_queue = data["queue_counts"]["with_a_paper"]
     verified = sum(1 for atts in current.values() if weakest_tier(atts) != "runs")
+    n_papers = sum(1 for q in papers_of(data) if q["attempts"])
     tiles = [
+        (f"{n_papers:,}", "papers attempted", "papers/?status=attempted"),
         (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "datasets/?status=attempted"),
         (f"{n_claims:,}", "claims attempted", "papers/?status=attempted"),
         (f"{verified:,}", "datasets independently verified",
