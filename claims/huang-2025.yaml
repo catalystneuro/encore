@@ -45,7 +45,9 @@
 # 10th percentile of the FISSA-corrected trace; Z score against the 10 s period of lowest SD of dF/F
 # (Methods). Events (Step2, which settles the Methods' "four times the noise level") are peaks of the Z
 # trace found by findpeaks whose height above the mean of the 5 s (77-frame) window of lowest RMS is
-# at least 4 times that window's mean absolute peak-to-valley difference. Event frequency is events per
+# at least 4 times that window's mean absolute peak-to-valley difference (read literally, the
+# Methods' threshold, four times the mean Z score of the quietest window, is near zero for a Z-scored
+# trace, so the code's reading is taken as the one the Methods mean). Event frequency is events per
 # second per neuron over the window (Step4). Synchrony: percent of active cells per frame against a
 # shuffle threshold (Methods; see open detail O2); synchrony frequency is synchrony events per second.
 # Pearson correlation is the mean over all neuron pairs of the correlation of Z-scored traces;
@@ -95,8 +97,8 @@
 # O6 the dataset event frequency, the mean over neurons (a) with at least one event (Step4 sets zero
 # to NaN) or (b) over all ROIs; the averaging step is not in the repository.
 # Conflicts between the paper's sentences and its own outputs are named in the claims concerned
-# (figs4b-mi-sex-p21, figs6ab-cno-correlation-unchanged, figs7-subnetwork-number-stable,
-# figs9-layer-differences).
+# (figs4b-mi-sex-p21, figs6ab-cno-correlation-unchanged, fig4fgh-configuration-trajectory,
+# figs7-subnetwork-number-stable, figs9-layer-differences).
 schema_version: 2
 paper: doi:10.1016/j.isci.2025.112104
 claims:
@@ -174,8 +176,9 @@ claims:
   quote: we found that neuronal subnetworks were already present at P11 and that a similar number of
     subnetworks was found at P21
   criterion: The paper's measures (k-means subnetworks, O1, O3, O4 readings). Two parts. Presence holds
-    when most P11 datasets have at least one subnetwork (the paper shows five in its example, Figure
-    2B). The equal number is a claim of absence, judged on test T1's P11 minus P21 contrast of
+    when more than half of the P11 datasets have at least one subnetwork (the paper shows five in its
+    example, Figure 2B); the bound is this file's choice, since the paper gives none and the Figure 4
+    legend says some datasets had no subnetwork. The equal number is a claim of absence, judged on test T1's P11 minus P21 contrast of
     subnetwork number; it holds when p >= 0.05 in every sex and layer group. Reproduced when both
     hold; the contrast is reported either way. The repository output printed 0.575 subnetworks (95%
     CI -0.443 to 1.763, p = 0.29).
@@ -305,7 +308,8 @@ claims:
   quote: while synchrony frequency showed a gradual decline from P11 to P21
   criterion: Test T1 over all five ages (O1, O2 readings). Reproduced when the estimated marginal means
     fall at every step from P11 to P21 except at most one step that does not rise significantly, and
-    P11 minus P21 is positive with p < 0.05. The repository output printed P11 minus P13 0.054,
+    P11 minus P21 is positive with p < 0.05 (this reading of "gradual" is this file's; the paper gives
+    no rule). The repository output printed P11 minus P13 0.054,
     P13 minus P15 0.077, P15 minus P18 0.300 and P18 minus P21 0.061.
 - id: figs4a-pearson-trajectory
   statement: In females the Pearson correlation decreases gradually from P11 to P21 in L2/3 and from
@@ -395,7 +399,9 @@ claims:
     p < 0.05; multiple is a claim of absence, holding when no age contrast has p < 0.05. Reproduced when
     all three hold, partially when two do. The repository output printed single P11 minus P18 17.6
     (p < 0.001), non-cluster P11 minus P21 -18.6 (p < 0.001) and an age effect on multiple-cluster
-    neurons with p = 0.101 before bootstrapping.
+    neurons with p = 0.101 before bootstrapping; but of its ten bootstrapped age contrasts of
+    multiple-cluster neurons, P13 minus P15 is 6.2 percentage points with p = 0.029 (Figure_3.html),
+    so the paper's own test does not support the multiple-cluster part as the criterion reads it.
 - id: figs4-distance-trajectory
   statement: The largest mean differences in subnetwork size (neuron to neuron and neuron to centroid
     distances) occur between P13 and P21, and centroid to centroid distances decrease gradually, most
@@ -476,8 +482,9 @@ claims:
     detectable impact on the distances between neurons within the same subnetwork
   criterion: A claim of absence, judged on test T2's before against after contrast for each of the
     three distances (O1, O3, O4 readings). Reproduced when all three have p >= 0.05, not reproduced
-    when any is below. The repository output printed p = 0.398 (bootstrapped contrast) for neuron to neuron distances, and p = 0.145 and
-    0.746 for the CNO term of the other two before bootstrapping.
+    when any is below. The repository output (Figure_5_supp6.html, bootstrapped contrasts) printed
+    p = 0.398 for neuron to neuron distances, p = 0.097 for neuron to centroid distances and p = 0.660
+    for centroid to centroid distances.
 - id: figs7a-events-clustered
   statement: k-means on the covariance matrix groups about 25% of events into clusters, about 1% of
     events in multiple clusters, and about 30% at P11.
@@ -578,8 +585,23 @@ claims:
     value: 10
     tolerance: 1
     unit: '%'
+  data: elsewhere
+  where: Mendeley data.mendeley.com/preview/nztp6242zk (the paper's raw-data deposit, a preview link;
+    the paper does not say it holds the Figure S5 counts, and the code repository does not)
   criterion: From the paper's immunohistochemistry counts (mean over animals, Figure S5E). Settled by
     the expected values.
+- id: figs5f-hm3dq-mostly-gabaergic
+  statement: Neurons expressing the Dlx5/6-hM3Dq construct (nuclear dTomato) are predominantly
+    GABAergic.
+  source: Figure S5F; Results, Acute GABAergic transmission augmentation, paragraph 1
+  quote: while Dlx5/6-hM3Dq-positive neurons were predominantly GABAergic
+  data: elsewhere
+  where: Mendeley data.mendeley.com/preview/nztp6242zk (the paper's raw-data deposit, a preview link;
+    the paper does not say it holds the Figure S5 counts, and the code repository does not)
+  criterion: From the paper's immunohistochemistry counts (Figure S5F, percentage of GAD67-GFP-positive
+    and CamKII-positive neurons among nuclear Tom-positive neurons, mean over animals). The paper
+    prints no number. Reproduced when the GAD67-GFP-positive percentage is above 50% and above the
+    CamKII-positive percentage ("predominantly" read as a majority, this file's reading).
 - id: figs9-no-sex-difference-gabaergic-input
   statement: At P15 the densities of GABAergic synapses in the neuropil and around somata show no sex
     difference.
@@ -611,3 +633,21 @@ claims:
     when all but the VGAT part hold. The repository output printed a VGAT layer contrast of 0.95
     puncta density units, L4 higher (p < 0.001), against the main text; the Figure S9 legend names
     only Syt2 and VGAT/Syt2 puncta as higher in L4.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - figs6efg-cno-topography-unchanged. The criterion cited the pre-bootstrap ANOVA p of the CNO term (0.145, 0.746) for two of the three distances, while Figure_5_supp6.html prints the bootstrapped contrasts that are the paper's test (p = 0.097 and 0.660). Replaced with those.
+  - fig4fgh-configuration-trajectory. The criterion reported only the pre-bootstrap age effect (p = 0.101) for multiple-cluster neurons; Figure_3.html prints P13 minus P15 6.2 percentage points with p = 0.029, which fails the criterion's own rule. Added this as a conflict between the sentence and the paper's output, and listed the claim among the header's conflicts.
+  - fig2e-subnetworks-present-same-number. "Most P11 datasets" was an unmarked bound; it now reads more than half and says the bound is this file's choice, since the paper gives none.
+  - fig4b-synchrony-gradual-decline. Said that the rule for "gradual" is this file's reading; the paper gives none.
+  - figs5e-mostly-glutamatergic. The claim had the default data (the imaging dataset), but the counts are histology. Set data elsewhere, naming the Mendeley deposit and saying the paper does not state it holds these counts.
+  - Added claim figs5f-hm3dq-mostly-gabaergic (Results, Acute GABAergic transmission augmentation, paragraph 1; Figure S5F), a finding with no claim.
+  - Header. Said why the code's event threshold is taken where the Methods' literal wording (four times the mean Z of the quietest window) would be near zero.
+  - Checked against the repository at the cited commit, and found as stated, the contrasts and p-values quoted in the criteria of fig1d, fig1f, figs2f (both), figs2g (all three), fig2d, fig2e, fig2f, figs3d, figs3e, fig3a to fig3g, fig4a, fig4b, figs4a, fig4c, fig4d, fig4e (both), fig5cd, figs6ab, fig5e, figs6c, figs6d, fig5fgh, figs7-silhouette-increase-all-methods, figs7-subnetwork-number-stable and both figs9 claims; the conflicts the file names (figs4b-mi-sex-p21, figs6ab, figs7-subnetwork-number-stable, figs9 VGAT) are real.
+  - Open. The paper's own sentences conflict with its outputs for figs4b-mi-sex-p21, figs6ab-cno-correlation-unchanged, fig4fgh-configuration-trajectory (multiple-cluster part), figs7-subnetwork-number-stable and figs9-layer-differences (VGAT part); the claims are tested as written and these cannot be settled from the paper.
+  - Open. figs3c-tcc-inside-above-outside uses a Wilcoxon signed-rank test the paper does not name, and several criteria use decision rules of this file ("similar" within 5 points in figs7-method-comparison, "largest contrast" readings in fig4a, figs4a, fig4fgh, figs4-distance); each says so.
+  - Open. Whether "approximately 25% of events" (figs7a-events-clustered) counts single-cluster events only or single and multiple together is not said; the two differ by about 1 point, inside the tolerance.
+  - Open. Whether the Mendeley deposit holds the histology of Figures S5 and S9 is not known; figs9 claims use the repository xlsx, the S5 claims have no public source named by the paper.
