@@ -34,8 +34,8 @@
 # location for them. That paper deposited its projection matrices on Figshare
 # (figshare.com/projects/Behavioral_and_neural_variability_of_naturalistic_arm_movements/78666)
 # and its code at github.com/BruntonUWBio/naturalistic_arm_movements_ecog. Every claim on
-# regions uses them (data with_inputs). The eight regions, from Peterson et al. and the figure
-# legends, are taken to be middle frontal (the paper's "frontal middle"), precentral,
+# regions uses them (data with_inputs). The eight regions, as Results 3.1 names them, are taken
+# to be middle frontal (the paper's "frontal middle"), precentral,
 # postcentral, inferior parietal, supramarginal, superior temporal, middle temporal and
 # inferior temporal.
 #
@@ -85,8 +85,10 @@
 #    a standard choice (4th order, zero phase) and is not expected to change an outcome.
 # O4 Artifact rule. Readings: (a) at least 10% of channels each above 3 SD of that channel for
 #    more than 2 s in total within the block; (b) the same with more than 2 s contiguous.
-#    Applied to the preprocessed voltage (the text calls them high-amplitude bursts), with the
-#    SD over the channel's whole recording for the participant, a standard choice.
+#    Applied to the preprocessed voltage (the text calls them high-amplitude bursts). The span
+#    of "the standard deviation of the channel" is not given and can change which blocks are
+#    dropped. Readings: (i) the SD over the channel's whole recording for the participant;
+#    (ii) the SD over the channel's recording of that day.
 # O5 ROI assignment. The distance threshold for "close to any of the eight defined ROIs" is not
 #    given. Readings: (a) every good electrode with a nonzero projection weight to any of the
 #    eight ROIs, assigned to its largest-weight ROI; (b) every good electrode assigned to the
@@ -111,7 +113,9 @@
 #    two-sided test with the mean above chance.
 # O10 ANOVA sums of squares. ROIs missing for some participants make the design unbalanced; the
 #    type is not given. Standard choice type II; type I and III shown as variants. Participant
-#    is not a factor (the paper names ROI, band and interaction only).
+#    is not a factor (the paper names ROI, band and interaction only). The observations are not
+#    named either. Readings: (a) the fold accuracies pooled for Figure 2 (35 per feature, M6);
+#    (b) the participant mean accuracies (5 per feature).
 # O11 Averages over ROIs or bands (Results 3.1, post-hoc). Readings: (a) mean of all fold
 #    accuracies pooled; (b) mean of the per-feature means.
 # O12 Post-hoc test on ROIs ("statistically higher than all the other ROIs"). Not named.
@@ -237,9 +241,9 @@ claims:
     are within 10%. Sex and ages (M 44, M 20, F 19, F 31, F 33) must match the dataset's subject
     metadata. Minutes are the labelled 2-min blocks of each label over days 3 to 7, counted
     (a) before or (b) after artifact rejection (M3, O4); the table does not say which.
-    Reproduced when all electrode counts and at least 13 of the 15 minute values match under
+    Reproduced when all electrode counts and all 15 minute values are within tolerance under
     one reading, and the talking plus watching TV total is at least 120 min for all five;
-    partially reproduced when 9 to 12 minute values match.
+    partially reproduced when the electrode counts match and some minute values do not.
 - id: fig2-highest-accuracy
   statement: Across the 40 ROI and band features, the highest participant-wide classification
     accuracy of Talking against Watching TV is 69%, for high gamma in the inferior temporal lobe.
@@ -263,12 +267,6 @@ claims:
   quote: The postcentral gyrus, supramarginal gyrus, and superior, middle, and inferior temporal
     lobes have 3 or more frequency bands where the LDA classification performance is
     significantly above chance.
-  statistics:
-  - test: two-sided Student's t-test against finite chance (Combrisson and Jerbi, 2015)
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold accuracies (7 folds by 5 participants) per feature
   data: with_inputs
   criterion: Significance per M6, with the chance level and test under O9, folds under O7, ROI
     features under O5 and O6. Reproduced when, under one reading, each of the five ROIs has at
@@ -278,12 +276,6 @@ claims:
   source: Results, 3.1, paragraph 1; Figure 2
   quote: All 5 frequency bands in the inferior temporal lobe resulted in a decoding accuracy that
     was significantly higher than by chance.
-  statistics:
-  - test: two-sided Student's t-test against finite chance (Combrisson and Jerbi, 2015)
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold accuracies per feature
   data: with_inputs
   criterion: As fig2-rois-three-bands (M6, O5 to O9). Reproduced when, under one reading, all 5
     inferior temporal bands are significant; partially reproduced when 4 are.
@@ -292,12 +284,6 @@ claims:
   source: Results, 3.1, paragraph 1; Figure 2
   quote: Both the middle temporal and inferior temporal lobe are the only ROIs where the β band
     performs above chance level.
-  statistics:
-  - test: two-sided Student's t-test against finite chance (Combrisson and Jerbi, 2015)
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold accuracies per feature
   data: with_inputs
   criterion: As fig2-rois-three-bands (M6, O5 to O9). Reproduced when, under one reading, beta is
     significant in the middle and inferior temporal lobes and in no other ROI; partially
@@ -308,12 +294,6 @@ claims:
   source: Results, 3.1, paragraph 1; Figure 2
   quote: The inferior parietal and frontal middle lobes only perform above chance when high γ or θ
     bands are used, respectively.
-  statistics:
-  - test: two-sided Student's t-test against finite chance (Combrisson and Jerbi, 2015)
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold accuracies per feature
   data: with_inputs
   criterion: As fig2-rois-three-bands (M6, O5 to O9). Reproduced when, under one reading, the
     inferior parietal lobe's only significant band is high gamma and the middle frontal lobe's
@@ -332,8 +312,9 @@ claims:
     test: two-way ANOVA
     p: 0
   data: with_inputs
-  criterion: Two-way ANOVA (M7) on the fold accuracies of all participants, ROIs and bands,
-    sums of squares under O10, with the readings of O5 to O8. Reproduced when both main effects
+  criterion: Two-way ANOVA (M7) on the accuracies of all participants, ROIs and bands,
+    observations and sums of squares under O10, with the readings of O5 to O8. The paper does
+    not say how small a printed 0 is; p < 0.001 is this file's reading of it. Reproduced when both main effects
     have p < 0.001 (a printed 0) under one reading; partially reproduced when one does and the
     other has p < 0.05.
 - id: anova-no-interaction
@@ -348,9 +329,11 @@ claims:
     p: 0.46
   data: with_inputs
   criterion: A claim of absence, judged on the paper's test, the two-way ANOVA of M7 (type II
-    sums of squares, the standard choice of O10), at the 0.05 level the paper's wording implies.
-    Reproduced when the interaction term has p >= 0.05; not reproduced when p < 0.05. The F and
-    p of the interaction are reported either way, and under types I and III as variants.
+    sums of squares, the standard choice of O10, on the pooled fold accuracies, O10 (a), the
+    data of Figure 2), at the 0.05 level the paper's wording implies. Neither choice is fixed by
+    the paper, so the outcome rests on an assumption. Reproduced when the interaction term has
+    p >= 0.05; not reproduced when p < 0.05. The F and p of the interaction are reported either
+    way, and under types I and III and on participant means (O10 (b)) as variants.
 - id: posthoc-band-averages
   statement: Averaged over ROIs, high gamma has the highest accuracy (63%) and beta the lowest
     (56%, barely above the finite chance level).
@@ -455,12 +438,6 @@ claims:
   source: Results, 3.1, paragraph 6; Figure 5 and legend
   quote: On a macro level, we note that the low and high γ band is greater when a participant is
     engaged in talking versus watching TV.
-  statistics:
-  - test: two-sided Student's t-test of the LDA mean difference against zero
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold mean differences per feature
   data: with_inputs
   criterion: Mean difference Talking minus Watching TV per M8, the ROI scalar under O6, with O5,
     O7, O8, O9. Reproduced when, under one reading, every consistent feature (both tests
@@ -472,12 +449,6 @@ claims:
     TV.
   source: Results, 3.1, paragraph 6; Figure 5
   quote: Further, θ and α band activity are lower when a participant is talking vs. watching TV.
-  statistics:
-  - test: two-sided Student's t-test of the LDA mean difference against zero
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold mean differences per feature
   data: with_inputs
   criterion: As fig5-gamma-higher-talking (M8, O5 to O9). Reproduced when, under one reading,
     every consistent feature in theta or alpha has a negative difference and there is at least
@@ -488,18 +459,13 @@ claims:
   source: Results, 3.1, paragraph 6; Figure 5; Discussion, paragraph 2
   quote: The greatest difference can be seen in the precentral and postcentral lobes, with
     consistent differences seen in θ , α , low γ , and high γ .
-  statistics:
-  - test: two-sided Student's t-test of the LDA mean difference against zero
-    p: 0.01
-    p_relation: <
-    corrected: Benjamini-Hochberg FDR
-    n: 35 fold mean differences per feature
   data: with_inputs
   criterion: As fig5-gamma-higher-talking (M8, O5 to O9). "Greatest difference" is read as the
     largest absolute mean difference among the 40 features. Reproduced when, under one reading,
     the feature with the largest absolute mean difference is in the precentral or postcentral
     gyrus and theta, alpha, low gamma and high gamma are consistent in both gyri (negative for
-    theta and alpha, positive for the gammas, Discussion paragraph 2); partially reproduced when
+    theta and alpha, Results 3.1 paragraph 6, and positive for the gammas; Discussion paragraph
+    2 gives the theta and gamma signs for these gyri); partially reproduced when
     at least 6 of these 8 features are consistent with those signs.
 - id: fig5-parietal-temporal-no-gamma
   statement: In the supramarginal gyrus, inferior parietal lobe and superior temporal lobe there
@@ -566,11 +532,11 @@ claims:
   expected:
   - quantity: combinations with the same sign in all participants
     value: 9
-    tolerance: 0.9
+    tolerance: 1
   criterion: Per participant, the mean over the 7 training folds of the mean difference (M9),
-    the ROI scalar under O6, with O5, O7, O8; missing ROIs under O14. Reproduced when, under one
-    reading, the count is 8 to 10 (the 10% tolerance, rounded to whole combinations); partially
-    reproduced when it is 7 or 11.
+    the ROI scalar under O6, with O5, O7, O8; missing ROIs under O14. The tolerance is 10% of 9
+    rounded to a whole combination, since the count is an integer. Reproduced when, under one
+    reading, the count is 8 to 10; partially reproduced when it is 7 or 11.
 - id: fig6-examples
   statement: High gamma in the precentral, middle frontal and postcentral regions, and alpha in
     the precentral, inferior parietal and supramarginal regions, have the same sign in all
@@ -655,10 +621,14 @@ claims:
   quote: Further, we observed that for individual participants, performance usually exceeded
     group-level performance ( Figure 2 ).
   data: with_inputs
-  criterion: Each participant's best Figure 7 accuracy (M10, O15) against the highest
-    participant-wide accuracy of Figure 2 (claim fig2-highest-accuracy), with O5, O7, O8.
-    "Usually" is read as at least four of the five participants. Reproduced when, under one
-    reading, at least four participants exceed it; partially reproduced when three do.
+  criterion: The paper does not say which Figure 7 and Figure 2 values are compared. Readings,
+    with M10, O15, O5, O7, O8; (a) each participant's best Figure 7 accuracy against the highest
+    participant-wide accuracy of Figure 2 (claim fig2-highest-accuracy), "usually" read as at
+    least four of the five participants; (b) each of the 25 curves' best accuracy against the
+    participant-wide accuracy of the same band in its top ROI (Figure 2), "usually" read as
+    more than half of the curves. Reproduced when, under one reading, the count is met;
+    partially reproduced when three participants (a) or at least a third of the curves (b)
+    exceed it.
 - id: fig7-best-band-varies
   statement: The band that gives a participant's highest performance varies by participant;
     Participant 5 is best with theta and Participant 3 best with alpha.
@@ -672,3 +642,21 @@ claims:
     Participant 3 exists (Participant 5 is Table 1's 8, Participant 3 is Table 1's 4). Reproduced
     when, under one reading, Participant 5's best band is theta and Participant 3's is alpha;
     partially reproduced when one holds.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2-rois-three-bands, fig2-inferior-temporal-all-bands, fig2-beta-temporal-only, fig2-single-band-rois. Removed the statistics entries (t-test against finite chance, BH FDR at 0.01); the threshold marks which features count as above chance (Figure 2 legend), a method and not a result. The criteria keep it through M6.
+  - fig5-gamma-higher-talking, fig5-theta-alpha-lower-talking, fig5-pre-postcentral. Removed the statistics entries (t-test of the mean difference against zero, BH FDR at 0.01); the threshold selects the consistent features whose signs are counted (Figure 5 legend), a method and not a result. The criteria keep it through M8.
+  - table1-participants. Removed the rule that 13 of the 15 minute values suffice; the paper gives no such threshold, so every value must now be within tolerance.
+  - fig6-sign-consistency. The tolerance of 0.9 allowed only 9 while the criterion accepted 8 to 10. Set the tolerance to 1 (10% of 9 rounded to a whole combination) and gave the reason.
+  - Header O4. The SD of the channel was fixed as the whole recording, called a standard choice; it can change which blocks are dropped, so the readings (whole recording, the day's recording) are now named.
+  - Header O10, anova-roi-band-effects, anova-no-interaction. The ANOVA's observations are not given (Methods 2.2); named fold accuracies and participant means as readings. The absence claim is judged on fold accuracies with type II sums of squares, marked as resting on an assumption, with the others as variants. Said that p < 0.001 for a printed 0 is this file's reading.
+  - fig5-pre-postcentral. The criterion cited Discussion paragraph 2 for the alpha sign; that paragraph gives theta and gamma only. The alpha sign is cited to Results 3.1 paragraph 6.
+  - fig7-exceeds-group. The comparison of Figure 7 with Figure 2 was fixed one way; the paper does not say which values are compared. Added a second reading, each curve against the same band in its top ROI.
+  - Header, outside data. The eight ROI names were said to come from Peterson et al. and the legends; they are named in Results 3.1 of this paper.
+  - Open. Participant numbering (O1); the figures name a Participant 3 absent from Table 1, and the paper does not settle which numbering the figures use.
+  - Open. No PDF was supplied, so the figures (finite chance level, per-feature accuracies and intervals, per-participant matrices and Figure 7 curves) could not be read; claims rest on text and legends.
+  - Open. Several criteria use this file's operational rules where the paper gives none ("generally" as at most 5 of 25 curves in fig7-non-additive, "regularly" as three of five participants in discussion-above-80, "multiple" as at least 2 in fig4-not-single-participant); each says so.
