@@ -342,6 +342,31 @@ def collect(executed: Path | None = None) -> dict:
             "species": sorted({short_species(s) for s in t["species"] if s}),
             "catalystneuro": t.get("catalystneuro") or [],
         })
+    # A dataset that only a paper reusing it names, outside every archive's list (its own metadata names no paper):
+    # a target of the site all the same, so that an attempt on it has its rows and pages. Described in
+    # targets/reuse_datasets.json (tools/build_reuse_targets.py). The runner's queue does not take it as a target:
+    # it is reached through its paper (targets/reuse.yaml).
+    outside_path = ROOT / "targets" / "reuse_datasets.json"
+    outside = ({key_of("dandi", t["dandiset"]): t for t in json.loads(outside_path.read_text())["targets"]}
+               if outside_path.is_file() else {})
+    have = {t["key"] for t in targets}
+    for paper_key, body in sorted(paper_records.listed().items()):
+        for d in body.get("datasets") or []:
+            if d["key"] in have:
+                continue
+            have.add(d["key"])
+            t, doi = outside.get(d["key"], {}), paper_records.doi_of(paper_key)
+            targets.append({
+                "key": d["key"], "label": dataset_label(d["key"]), "name": t.get("name") or dataset_label(d["key"]),
+                "size_gb": t.get("size_gb") or 0.0, "files": t.get("asset_count") or 0,
+                "status": "attempted" if d["key"] in attempted else "open", "match": "matched", "reuse_only": True,
+                "paper": doi, "paper_title": body.get("title") or t.get("name") or dataset_label(d["key"]),
+                "papers": [doi], "n_papers": 1,
+                "technique": sorted({part.replace(" approach", "").strip()
+                                     for a in t.get("approaches") or [] if a for part in a.split(";") if part.strip()}),
+                "species": sorted({short_species(x) for x in t.get("species") or [] if x}),
+                "catalystneuro": [],
+            })
     entry_list = []
     for entry in entries.values():
         related = entry.get("related", [])
