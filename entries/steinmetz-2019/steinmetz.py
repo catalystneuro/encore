@@ -759,11 +759,16 @@ def _inv_sqrt(C):
     return (v / np.sqrt(np.maximum(w, 1e-12))[..., None, :]) @ np.swapaxes(v, -1, -2)
 
 
-def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC, pca="bin"):
+def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC, pca="all"):
     """sp1, sp2: (trials, bins, neurons). Returns the cross-validated first canonical
     correlation for every pair of time bins (rows: sp1 time, columns: sp2 time).
 
-    As jPECC.m: PCA of each bin over all trials, then per fold the first canonical
+    PCA (claims fig4d criterion as amended, questions/steinmetz-2019.yaml): pca="all" is
+    one PCA per group across time points and trials ("For each region group, principal
+    components analysis was performed across time points and trials to reduce population
+    activity to 10 dimensions", Methods, jPECC analysis), fitted on the trials and bins
+    passed in; pca="bin" is the variant of jPECC.m, one PCA per time bin over all trials.
+    Then, as jPECC.m, per fold the first canonical
     pair of the training PCs with ridge rows appended (X: lambda*I then zeros; Y:
     zeros then lambda*I), test trials projected, and the projections of all folds
     correlated. The canonical pair is computed by whitening (Cxx^-1/2 Cxy Cyy^-1/2),
@@ -772,10 +777,10 @@ def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC, pca="bin
     n, nb = sp1.shape[0], sp1.shape[1]
     nd = min(maxpc, sp1.shape[2], sp2.shape[2])
     folds = np.array_split(rng.permutation(n), kfold)
-    if pca == "bin":     # one PCA per time bin (jPECC.m; claims criterion)
+    if pca == "bin":     # one PCA per time bin (jPECC.m; a variant)
         X = np.stack([_pcs(sp1[:, t], nd) for t in range(nb)])   # (nb, n, nd)
         Y = np.stack([_pcs(sp2[:, t], nd) for t in range(nb)])
-    else:                # one PCA across time points and trials (Methods, jPECC analysis)
+    else:                # one PCA across time points and trials (Methods, jPECC analysis; criterion)
         X, Y = [], []
         for sp, L in [(sp1, X), (sp2, Y)]:
             flat = sp.reshape(-1, sp.shape[2])

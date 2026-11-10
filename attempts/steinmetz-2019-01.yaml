@@ -137,19 +137,25 @@ outcomes:
     electrodes table), with finer Allen labels (SCig, SCsg, LSr, LSc, ORBm, COA, TT, PIR, DP) mapped to
     their parent among the 42 regions (an assumption, see supptable2-sessions).
 - claim: edtable1-region-counts
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_steinmetz_2019.ipynb
   output: claim:edtable1-region-counts
-  notes: With neurons N, recordings, mice and neuron counts all match in 26 of the 42 regions
-    (recordings exact in 28, mice in 38, neurons within 10% in 37); the criterion needs 38 for
-    reproduced and 30 for partially reproduced. Totals are close, 22,273 neurons and 13,439 active
-    against 22,458 and 13,467. Recordings differ mostly by one or two sessions in which a region has
-    fewer than 13 neurons. Counted without the rule of 13 neurons per region and session, all three
-    match in 38 of 42 regions (recordings exact in 41, mice in 42), and the neurons of the 42 regions
-    number 22,434. The table thus appears to count every neuron of the 42 regions; this is asked of a
-    reader (questions/steinmetz-2019.yaml).
+  measured: 38
+  notes: Re-run after the reader's answer (questions/steinmetz-2019.yaml), which found that the
+    claims file misread the table and amended the criterion to count every neuron of the 42 regions
+    (curated, at least 0.1 Hz), with recordings read as (a) sessions with any neuron of the region or
+    (b) sessions with at least 13, and definition N as a variant. The first run tested definition N
+    and found 26 of 42 regions matching, not reproduced. Under reading a, recordings, mice and
+    neurons all match in 38 of 42 regions (recordings exact in 41, mice in 42, neurons within 10% in
+    38), the number needed for reproduced; the regions that differ are ACA, MOs, VPL and ZI (MOs has 18
+    recordings against 19 and 1,352 neurons against 1,534). The neurons number 22,434 and the active
+    ones 13,532, against 22,458 and 13,467; active counts are within 10% in 36 regions. Reading b
+    matches in 26 regions (recordings exact in 28), as does definition N. The measured value is the
+    number of matching regions under reading a.
   deviations:
   - Finer region labels are mapped to their parent (as recording-counts).
+  - Mice are counted over every neuron of the region under both readings of the recordings; counted
+    over the sessions of reading b they match in 38 regions.
 - claim: supptable2-sessions
   outcome: reproduced
   notebook: reproduce_steinmetz_2019.ipynb
@@ -158,14 +164,18 @@ outcomes:
   notes: All 39 sessions of the table are in the dataset, matched by subject and date, with matching
     ages (39 of 39) and sexes (10 of 10). Genotypes are the same lines named differently (Ai95 x
     VGlut1-Cre for RCL-GCaMP6f x VGlut-Cre, Vglut1-Cre for Vglut1-IRES2-Cre-D). The regions of each
-    session's neurons (curated, at least 0.1 Hz) match the table's areas in 38 of 39 sessions
-    (Muller 2017-01-08 lacks MOs); with neurons N, which drop regions with fewer than 13 neurons, 24
-    of 39. With region labels as given (no parent mapping) 25 of 39 match, so the outcome rests on the
-    mapping.
+    session's neurons (curated, at least 0.1 Hz) match the table's areas in 38 of 39 sessions under
+    reading a, a region with any neuron in the session (Muller 2017-01-08 lacks MOs), and in 24 under
+    reading b, a region with at least 13 neurons; neurons N give 24 as well. With region labels as
+    given (no parent mapping) 25 of 39 match, so the outcome rests on the mapping. The reader's
+    answer on edtable1-region-counts amended this criterion to take the area lists from the same
+    neurons and readings as that claim; the first run had already used the neurons of reading a as
+    its main test (38 of 39) with neurons N as a variant, so the outcome is unchanged, and reading b
+    is now shown.
   deviations:
-  - The areas of a session are those of its neurons as the Methods define a neuron ("Units passing
-    these criteria were considered to reflect the spiking activity of a neuron", Methods, Data
-    analysis); the claims file says only "areas with neurons". Neurons N are shown as a variant.
+  - The areas of a session are those of its neurons as the Methods define a neuron, with the
+    readings of edtable1-region-counts (criterion as amended); neurons N and all curated units are
+    variants.
   - Assumption. A unit labelled with a finer Allen division (SCig, SCsg, LSr, LSc, ORBm, COA, TT, PIR,
     DP; 2,262 units) lies in its parent region among the 42 (Allen CCF hierarchy). The paper does not
     say how labels were grouped.
@@ -370,35 +380,47 @@ outcomes:
   - Significance is the fraction of shuffles below the observed value (ties counting one half)
     below 0.025 or above 0.975, the reading of the criterion.
 - claim: fig4d-jpecc-vis-leads
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_steinmetz_2019.ipynb
   output: claim:fig4d-jpecc-vis-leads
-  notes: Over 17 recordings VIS leads Frontal before movement, with 3 to 5 of 16 time points from -0.2
-    to -0.05 s positive at p < 0.05, and after the stimulus, with 2 to 4 points from 0.08 to 0.12 s.
-    Over 11 recordings VIS does not lead Midbrain near 0.1 s in any reading (no significant point;
-    mean asymmetry 0.005 to 0.055). The VIS-Frontal parts hold and the VIS-Midbrain part does not. The
-    Methods' PCA across time points gives the same result.
+  notes: Re-run after the reader's answer (questions/steinmetz-2019.yaml), which amended the
+    criterion to one PCA per group across time points and trials, as the Methods say, with the
+    per-bin PCA of jPECC.m (the first run's method) as a variant. The first run, with the per-bin
+    PCA, found VIS-Midbrain not leading in any reading, partially reproduced; its one run of the
+    Methods' PCA (baseline a, trials a) agreed, but the trials b readings were not run with it. With
+    the PCA across time points, over 17 recordings VIS leads Frontal before movement at 3 to 5 of 16
+    time points from -0.2 to -0.05 s (positive, p < 0.05) and after the stimulus at 3 points from
+    0.08 to 0.12 s, in every reading. Over 11 recordings VIS leads Midbrain near 0.1 s under trials
+    reading b at one point, 0.08 s (mean 0.098, p = 0.003 with baseline a; 0.074, p = 0.025 with
+    baseline b); under trials reading a no point is significant. The criterion asks for one reading,
+    so the claim is reproduced, on a single time point at the edge of the window. With five other
+    fold seeds the point stays significant in 5 of 5 under baseline a and 3 of 5 under baseline b.
+    The per-bin variant still finds no VIS-Midbrain point.
   deviations:
   - The asymmetry index follows the Methods' diagonal slice, from (t-50, t+50) ms to (t+50, t-50) ms
     (Methods, jPECC analysis); the claims file's wording ("from (t, t) to 50 ms of lead") can be read
     as a slice along one axis.
   - The criterion's open counts are read as at least one significant positive time point in -0.2 to
     -0.05 s, and in 0.08 to 0.12 s for each pair.
-  - The Methods do the PCA "across time points and trials"; the criterion and jPECC.m do it per time
-    bin. The criterion is followed and the Methods' PCA is a variant; asked of a reader.
+  - The PCA of each group is fitted on the trials and bins of the window and alignment analysed (the
+    stimulus-aligned and movement-aligned windows each have their own PCA); the Methods say "across
+    time points and trials" without naming the window.
   - Windows are -0.05 to 0.3 s from stimulus onset and -0.3 to 0.05 s from movement onset; a region
     group is the regions of the group with at least 13 neurons in the session.
 - claim: fig4d-jpecc-no-lag-frontal-midbrain
   outcome: not_reproduced
   notebook: reproduce_steinmetz_2019.ipynb
   output: claim:fig4d-jpecc-no-lag-frontal-midbrain
-  notes: Over 9 recordings the uncorrected t-test finds 1 significant time point of 26 from -0.25 to 0
-    s with baseline a (-0.15 s, mean -0.080, p = 0.022, Midbrain leading) and 2 with baseline b
-    (smallest p 0.009). The mean index is -0.012 (a) and -0.020 (b); no point survives Bonferroni
-    correction over 26 points. The Methods' PCA variant also has 1 point (p = 0.028). The test as the
+  notes: Re-run after the reader's answer on fig4d-jpecc-vis-leads, whose method this claim takes,
+    now one PCA per group across time points and trials. Over 9 recordings the uncorrected t-test
+    finds 1 significant time point of 26 from -0.25 to 0 s under each baseline (-0.12 s, Midbrain
+    leading; mean -0.063, p = 0.028 with baseline a; -0.054, p = 0.017 with baseline b). The mean
+    index is -0.012 (a) and -0.022 (b); no point survives Bonferroni correction over 26 points. The
+    per-bin PCA of the first run, now a variant, gives 1 point with baseline a (p = 0.022) and 2 with
+    baseline b (smallest p 0.009). The outcome is unchanged, not reproduced; the test as the
     criterion gives it finds an effect, at single time points that do not survive correction.
   deviations:
-  - As fig4d-jpecc-vis-leads (diagonal slice, windows, PCA variant).
+  - As fig4d-jpecc-vis-leads (diagonal slice, windows, PCA fitted per window and alignment).
 - claim: fig3c-variance-explained
   outcome: blocked
   blocked_by: too_large
