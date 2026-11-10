@@ -69,7 +69,12 @@
 # M4 FC-SC correlation and detection (Methods, FC-SC detection and correlation;
 #    analyzeFuncConnectivity.m). SC (neuron) is the count of neurons with post-synapses in one ROI
 #    and pre-synapses in the other, SC (synapse) the count of their synapses (FlyEM confidence
-#    0.8, FlyWire cleft score 140 unless stated). FC-SC correlation is the Pearson r between
+#    0.8, FlyWire cleft score 140 unless stated). Both are the code's second SC layer
+#    (ncountMat(:,:,2), sycountMat(:,:,2), "Traced"), which every plotting function uses (rows 7
+#    and 9 of R and A): for FlyEM only neurons of Traced status (makeSCcountMatrix.m), for
+#    FlyWire synapses whose pre and post neurons both have ids (makeSCcountMatrixFw.m); the
+#    first layer, which adds FlyEM orphan bodies, is not what the figures show.
+#    FC-SC correlation is the Pearson r between
 #    log10(SC), with log of zero set to 0, and the code's |mean z-FC|, over every element of the
 #    n x n matrices including the diagonal. FC-SC detection is the mean over 100 thresholds (the
 #    0th to 99th percentiles of the nonzero SC values) of the ROC AUC of |mean z-FC| against SC
@@ -81,14 +86,24 @@
 #    checkRandSubsampleRankTestByHemiroi). On the 63 hemibrain primary ROIs, no smoothing,
 #    Poly-tCompCor, FlyWire sc140: the SC matrix of the selected synapses against 99 null SC
 #    matrices of randomly sampled synapses whose number is drawn from a normal distribution
-#    around the selected total (makeStructConnectivity.m). A normal distribution is fitted to
+#    around the selected total (makeStructConnectivity.m). The code draws each null's synapse
+#    count from N(mean, SD) with mean and SD fixed in the code, paired with each target in
+#    plotFuncConnectivity.m: FlyWire unsegregated N(1.85e6, 0.2e6) (rd185-20), segregated
+#    N(15.6e6, 0.8e6) (rd1560-80), reciprocal N(1.4e6, 0.15e6) (rd140-15); FlyEM rd140-15,
+#    rd705-40 and rd67-12 in the same order. Synapses are drawn at random from all valid
+#    synapses above the score threshold (randSubsampleFw, rtype 4). A normal distribution is fitted to
 #    the 99 null values and the two-tailed p is 2*Phi(-|x - mu| / sigma); significance at
 #    0.05/6 (Bonferroni, as the code sets it).
 # M7 PPSSI (Methods, PPSSI; makeNeuralSC.m). DBSCAN on each neuron's synapse positions with
 #    radius 3 um and minimum 1 point; for each cluster cPPSSI = ((pre - post) / (pre + post))^2;
 #    PPSSI = sum over clusters of cPPSSI times the cluster's share of the neuron's synapses.
 #    Unsegregated ranking score (1 - PPSSI) * log10(W), segregated ranking score PPSSI *
-#    log10(W), W the neuron's synapse count.
+#    log10(W), W the neuron's synapse count. makeNeuralSC.m's default radius is 1000 nm; the
+#    Methods' 3 um is followed, as in makeStructConnectivity.m and plotNeuralFC.m (3000 nm, the
+#    db3000 targets). The SC of selected synapses (makeSCcountMatrixFw.m) keeps a synapse when
+#    the cPPSSI of its pre side (in the pre neuron) and of its post side (in the post neuron)
+#    both meet the bound, and for reciprocal synapses when both sides' shortest reciprocal
+#    distance is below the bound.
 # M8 GLM (Methods, GLM Analysis; checkBehavior.m, glmFlyMB1st.m, glmFlyMB2nd.m). The speed is
 #    averaged per imaging volume; the code clips it at th, the mean over flies of each fly's SD
 #    of speed, subtracts b, the mean over flies of each fly's 10th percentile, sets negatives
@@ -150,13 +165,15 @@ claims:
     value: 23
     tolerance: 2.3
     unit: voxels
-  criterion: DistKm at 20, 30, 50, 100, 200, 300, 500 and 1000 ROIs, Poly-tCompCor (the code's
-    Figure 2 setting, README demo 2), FlyEM SC, smoothing 0 to 30 voxels by 1 (M2). For each
-    count, the size that maximizes the score of M4 with SC (neuron), as the code's "find best
-    smooth size" does. Reproduced when the median of the eight optimal sizes is within
-    tolerance and the score at the optimum exceeds the unsmoothed score at every count;
-    partially reproduced when smoothing raises the score at every count but the median optimum
-    falls outside tolerance. The optima with SC (synapse) are shown. Rests on O2 and O3.
+  criterion: DistKm at 20, 30, 50, 100, 200, 500 and 1000 ROIs, the seven counts the code's
+    Figure 2 block (checkLargeSmoothingPoltcompByRoinum, its column offsets and commit 999a2f2)
+    is laid out for; the active list at 4b92add, 20, 50, 100, 200, 500 and 1000 (README demo
+    2), is shown as a variant. Poly-tCompCor, FlyEM SC, smoothing 0 to 30 voxels by 1 (M2). For
+    each count, the size that maximizes the score of M4 with SC (neuron), as the code's max of B
+    per ROI count does. Reproduced when the median of the optimal sizes is within tolerance and
+    the score at the optimum exceeds the unsmoothed score at every count; partially reproduced
+    when smoothing raises the score at every count but the median optimum falls outside
+    tolerance. The optima with SC (synapse) are shown. Rests on O2 and O3.
 - id: figs2-1b-sckm-smoothing
   statement: For SCKm ROIs, smoothing does not help below 100 ROIs, while kernels above 16
     voxels (36.48 um) help above 100 ROIs.
@@ -183,15 +200,19 @@ claims:
     p: 0.000167
     p_relation: "<"
     corrected: Bonferroni
-    n: scores over smoothing sizes 0 to 30 voxels at each ROI count
+    n: 31 scores per group (smoothing 0 to 30 voxels), six tests (SCKm and DistKm at 20, 100
+      and 1000 ROIs)
   data: with_inputs
-  criterion: As the Figure 2c legend and the code's ranksum block (plotFuncConnectivity.m) have
-    it, at each ROI count of SCKm and DistKm (20 to 1000), the scores of M4 over the 31
-    smoothing sizes 0 to 30 with no nuisance removal against those with Poly-tCompCor, by a
-    two-sided Mann-Whitney U test at p < 1.67e-4. Reproduced when Poly-tCompCor is higher and
-    significant at every count of both ROI types with SC (neuron); partially reproduced when
-    that holds at more than half of the 16 type and count pairs. SC (synapse) is shown. Rests
-    on O2 and O3.
+  criterion: The code's ranksum block (plotFuncConnectivity.m checkLargeSmoothingPoltcompByRoinum,
+    commented at 4b92add, laid out for counts 20, 30, 50, 100, 200, 500 and 1000) runs six
+    tests, on the score of M4 with SC (neuron), the 31 smoothing sizes 0 to 30 with no nuisance
+    removal against the same with Poly-tCompCor, at the first, fourth and seventh counts (20,
+    100 and 1000 ROIs) of SCKm and of DistKm; six tests give the 0.001/6 = 1.67e-4 of the
+    legend. Its fifth test compares DistKm raw at 100 with raw at 1000, a slip in the indices;
+    raw against Poly-tCompCor at 100 ROIs is run in its place. Two-sided Mann-Whitney U test.
+    Reproduced when Poly-tCompCor is higher with p < 1.67e-4 in all six; partially reproduced
+    in four or five. The legend's "at each ROI count" allows the test at every count of the
+    seven as a variant, shown with SC (synapse). Rests on O2 and O3.
 - id: figs2-1d-highpass-degrades
   statement: Adding a temporal high-pass filter to nuisance removal degrades FC-SC agreement.
   source: Results, Comparison of the FC-SC correlation between humans and flies, paragraph 1;
@@ -199,11 +220,13 @@ claims:
   quote: the combination of a high-pass filter and nuisance factor removal overlapped for the
     purpose of noise removal, and the effect was degraded (Ext.Data.Fig.2-1d)
   data: with_inputs
-  criterion: DistKm ROIs (legend), Poly-tCompCor, no smoothing, FlyEM SC, with high-pass cut-offs
-    0.1, 0.05, 0.025, 0.02, 0.01, 0.009, 0.008, 0.005 and 0.001 Hz (the code's list; Methods
-    "from 0.1 Hz to 0.001 Hz") applied after the regression, as extractROItimeseries.m does
-    (MATLAB highpass). Reproduced when the score of M4 with any cut-off is below the score
-    without the filter at most ROI counts tested (20 to 1000). Rests on O2 and O3.
+  criterion: As the code's checkHighpassFilterPoltcompByRoinum (plotFuncConnectivity.m) sets it,
+    DistKm ROIs (legend) at 20, 50, 100, 200, 500 and 1000, Poly-tCompCor, smoothing 23 voxels
+    (s230), FlyEM SC, with high-pass cut-offs 0.1, 0.05, 0.025, 0.02, 0.01, 0.005 and 0.001 Hz
+    (Methods "from 0.1 Hz to 0.001 Hz"; extractROItimeseries.m's commented list adds 0.009 and
+    0.008, shown as a variant), applied after the regression, as extractROItimeseries.m does
+    (MATLAB highpass). Reproduced when, with SC (neuron), the score of M4 with every cut-off is
+    below the score without the filter at four or more of the six counts. Rests on O2 and O3.
 - id: fig2d-log-decline
   statement: The best FC-SC correlation falls linearly with the logarithm of the ROI count.
   source: Results, Comparison of the FC-SC correlation between humans and flies, paragraph 2;
@@ -211,9 +234,11 @@ claims:
   quote: Results showed that the correlation decreased proportionally to the logarithm of the ROI
     count (Fig. 2d).
   data: with_inputs
-  criterion: For SCKm and DistKm, the FC-SC correlation (SC neuron, FlyEM) at the score-optimal
-    smoothing of each ROI count (as in fig2b-distkm-smoothing-optimum), over the counts 20 to
-    1000 and, where the atlases exist, 5000 and 10,000. Reproduced when, for each ROI type, the
+  criterion: As the code's Figure 2d block ("this is for figure.2 SC-FC corr & detection from 20
+    to 10000 ROIs", plotFuncConnectivity.m checkSmoothingPoltcompByLargeRoinum), for SCKm and
+    DistKm at 20, 50, 100, 500, 1000, 5000, 10,000 and 20,000 ROIs, the largest FC-SC
+    correlation (SC neuron, FlyEM, row 7) over the 12 settings of smoothing 0, 3, 8, 15, 23 and
+    30 voxels with no nuisance removal or Poly-tCompCor. Reproduced when, for each ROI type, the
     slope of r on log10(ROI count) is negative and the Pearson correlation of r with log10(count)
     is -0.9 or lower (a standard bar for "linear", not the paper's). Partially reproduced when
     it holds for one type. Rests on O2 and O3.
@@ -239,13 +264,12 @@ claims:
   - quantity: highest fly FC-SC correlation at 1000 ROIs
     value: 0.67
     tolerance: 0.067
-  criterion: FC-SC correlation as in fig2d-log-decline at 50 and at 1000 ROIs. The human values
-    are from the literature and are not tested. Which values span each range is open; readings
-    (a) SCKm and DistKm with SC (neuron) only, (b) both SC kinds. A reported range holds inside
-    the range widened by 10% of each bound (0.639 to 0.891 at 50 ROIs, 0.54 to 0.737 at 1000).
-    Reproduced when, under one reading, every value at 50 ROIs and every value at 1000 ROIs
-    lies in its widened range.
-    Rests on O2 and O3.
+  criterion: FC-SC correlation as in fig2d-log-decline at 50 and at 1000 ROIs, SCKm and DistKm
+    with SC (neuron), as Figure 2d plots (legend "FC-SC correlation (neuron)"; code row 7
+    only). The human values are from the literature and are not tested. A reported range holds
+    inside the range widened by 10% of each bound (0.639 to 0.891 at 50 ROIs, 0.54 to 0.737 at
+    1000). Reproduced when both values at 50 ROIs and both at 1000 ROIs lie in their widened
+    ranges. Rests on O2 and O3.
 - id: fig2d-ten-thousand-rois
   statement: At about 10,000 ROIs the fly FC-SC correlation is 0.46 to 0.57.
   source: Results, Comparison of the FC-SC correlation between humans and flies, paragraph 2;
@@ -261,8 +285,8 @@ claims:
     value: 0.57
     tolerance: 0.057
   criterion: As fig2d-fly-values, at 10,000 ROIs (code atlases hemiCmkm10000 and
-    hemiDistKm10000). Reproduced when, under one reading of fig2d-fly-values, every value lies
-    in the range widened by 10% of each bound, 0.414 to 0.627. Rests on O2 and O3.
+    hemiDistKm10000). Reproduced when both values lie in the range widened by 10% of each bound,
+    0.414 to 0.627. Rests on O2 and O3.
 - id: discussion-twenty-rois
   statement: With optimal nuisance removal and smoothing the FC-SC correlation reaches 0.87 at
     20 ROIs, and 0.928 with Spearman correlation.
@@ -277,10 +301,11 @@ claims:
   - quantity: Spearman FC-SC correlation at 20 ROIs
     value: 0.928
     tolerance: 0.0928
-  criterion: The paper does not name the ROI type or SC kind. Readings; SCKm or DistKm at 20 ROIs,
-    SC (neuron) or (synapse), Poly-tCompCor, the score-optimal smoothing (M4, and the code's
-    Spearman SR on the same elements). Reproduced when, under one reading, both values are within
-    tolerance. Rests on O2 and O3.
+  criterion: The paper does not name the ROI type, SC kind or smoothing grid. Readings; SCKm or
+    DistKm at 20 ROIs, SC (neuron) or (synapse), the largest Pearson r and the largest Spearman
+    r (the code's SR, on the same elements as M4) over (a) Poly-tCompCor with smoothing 0 to 30
+    by 1 (Figure 2b grid, whose block plots both), or (b) the 12 settings of fig2d-log-decline.
+    Reproduced when, under one reading, both values are within tolerance. Rests on O2 and O3.
 - id: fig3d-confidence-threshold
   statement: Raising the FlyEM synapse confidence threshold to 0.8 increases the FC-SC
     correlation.
@@ -399,6 +424,11 @@ claims:
   data: elsewhere
   where: FlyEM hemibrain v1.2 (DVID) and FlyWire (Zenodo 10676866), with the hemibrain atlas of
     the code repository
+  criterion: Post-synapse count per hemibrain primary ROI, FlyEM cf0.8 against FlyWire sc140
+    (Figure 3c legend). Reproduced when FlyEM's count is higher in EB, FB, NO and PB and in the
+    mushroom body ROIs, and FlyWire's is higher in LO, ME, CAN and FLA. "Mushroom bodies (aL,
+    bL, etc.)" is open; readings (a) aL and bL, (b) every mushroom body ROI among the 63 primary ROIs of the
+    atlas (data/hemiroi.mat); reproduced under either.
 - id: figs3-1a-regional-count-similarity
   statement: Regional post-synapse counts of FlyEM and FlyWire over the 63 primary ROIs correlate
     with Pearson r = 0.778, Spearman r = 0.9, and Pearson r = 0.919 on log10 counts.
@@ -489,8 +519,8 @@ claims:
   criterion: Ranking by (1 - PPSSI) log10(W) (M7). Reproduced when ranks 1 to 4 in FlyWire are all
     APL or CT1 cells and rank 1 in FlyEM is APL.
 - id: fig4c-segregated-ranking
-  statement: The segregated ranking puts two OA-AL2b2 cells first in FlyWire, and AOTU019_R and
-    DNa02_R first in FlyEM.
+  statement: The segregated ranking puts OA-AL2b2 cells first and second in FlyWire, and AOTU019_R
+    first and DNa02_R second in FlyEM.
   source: Figure 4c; Extended Data Figure 4-1c
   quote: Segregated first (OA-AL2b2 cell) and second (OA-AL2b2 cell) ranking in FlyWire (sc140)
     connectome data.
@@ -527,18 +557,17 @@ claims:
     test: permutation test against 99 null SC matrices, normal approximation
     p: 6.5e-43
     corrected: Bonferroni
-  - about: null matrices' total connections against the unsegregated matrix (2,373,100)
-    test: normal approximation
-    p: 0.832
   data: with_inputs
   expected:
   - quantity: total connections of the unsegregated SC matrix
     value: 2373100
     tolerance: 237310
-  criterion: M6 with the synapses of FlyWire sc140 whose cluster has cPPSSI below 0.1 (M7). For
-    neuron and synapse SC, reproduced when the unsegregated FC-SC correlation is above the null
-    mean with p < 0.05/6 for both; partially reproduced for one. Not reproduced when the null
-    totals differ from the selected total at p < 0.05. Rests on O2 and O3.
+  criterion: M6 with the synapses of FlyWire sc140 whose pre-side and post-side cPPSSI are both
+    in [0, 0.1) (M7; code target sp10db3000mi1_only1). For neuron and synapse SC, reproduced
+    when the unsegregated FC-SC correlation is above the null mean with p < 0.05/6 for both;
+    partially reproduced for one. The paper's check that the null totals match the selected
+    total (p=0.832) tests the null's construction, not the finding; it is rerun and shown, and
+    a null whose totals differ at p < 0.05 makes the test invalid as built. Rests on O2 and O3.
 - id: fig4f-segregated-lower
   statement: The SC matrix of highly segregated synapses (cPPSSI 0.9 to 1) has a significantly
     lower FC-SC correlation than random synapse samples.
@@ -556,8 +585,11 @@ claims:
     p: 0
     corrected: Bonferroni
   data: with_inputs
-  criterion: As fig4e-unsegregated-higher, with the synapses of clusters with cPPSSI 0.9 or more
-    (code target sp90). Reproduced when the FC-SC correlation is below the null mean with p <
+  criterion: As fig4e-unsegregated-higher, with segregated synapses. Which synapses is open;
+    readings (a) the code's (target sp90db3000mi1, rtype 0 in makeSCcountMatrixFw.m), every
+    synapse not having both sides in [0, 0.9), so a synapse with either side at 0.9 or more is
+    kept, (b) both sides at 0.9 or more, as "synapses with a cPPSSI of 0.9-1" and the selection
+    of fig4e-unsegregated-higher read. The code's reading is the main one. Reproduced when the FC-SC correlation is below the null mean with p <
     0.05/6 for neuron and synapse SC; partially reproduced for one. Rests on O2 and O3.
 - id: fig4i-reciprocal-higher
   statement: The SC matrix of reciprocal synapses within 2 um has a significantly higher FC-SC
@@ -577,7 +609,9 @@ claims:
     corrected: Bonferroni
   data: with_inputs
   criterion: As fig4e-unsegregated-higher, with the reciprocal synapses whose shortest
-    pre-to-post distance within the neuron is 2 um or less (code target rc20, makeSCcountMatrixFw.m).
+    reciprocal distance is below 2 um on both the pre and the post side (code target
+    rc20_only1, makeSCcountMatrixFw.m, which uses "<"; the legend's "≤ 2μm" differs only at
+    the bound).
     Reproduced when the FC-SC correlation is above the null mean with p < 0.05/6 for neuron and
     synapse SC; partially reproduced for one. Rests on O2 and O3.
 - id: figs4-1-flyem-permutation
@@ -602,7 +636,8 @@ claims:
   where: FlyWire sc140 (Zenodo 10676866)
   criterion: Histogram of each reciprocal pair's shortest distance (code
     checkReciprocalSynapseDistanceFw). Reproduced when the histogram's mode lies at or below 2
-    um and acetylcholine plus GABA make up more than half of the pairs.
+    um and acetylcholine plus GABA make up more than half of the pairs. Reading "particularly
+    abundant within 2 μm" as the mode, and "majority" as more than half, are choices made here.
 - id: fig5b-walking-activation
   statement: In the group GLM of walking, the LAL, FB, IPS and GNG neuropils show strong
     activity.
@@ -660,3 +695,33 @@ claims:
     value: 852.3
     tolerance: 85.23
     unit: nm
+  criterion: The PPSSI is M7 on FlyWire sc140. The 22 ANs are from the network graph of Figure
+    5d (codex, sc50, connection threshold above 5). The paper does not say at which threshold
+    the 212 AN synapses, the 65 WPNb synapses and the 852.3 nm distance were counted; readings
+    (a) sc50 with the connection threshold of Figure 5d, (b) sc140, as Figure 5c and the PPSSI
+    use. Reproduced when every value is within tolerance under one reading.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - M4, added that every figure uses the code's second SC layer ("Traced", rows 7 and 9; FlyEM traced neurons only), which the file did not say and which changes SC for FlyEM.
+  - M6, added the null sizes the code fixes for each target (rd185-20, rd1560-80, rd140-15 and the FlyEM ones) and the full-random draw (rtype 4), from makeStructConnectivity.m and plotFuncConnectivity.m.
+  - M7, recorded that makeNeuralSC.m defaults to 1000 nm while the Methods and the SC scripts use 3 um, and that the selected-synapse SC needs both the pre and the post side to meet the bound (makeSCcountMatrixFw.m).
+  - fig2b-distkm-smoothing-optimum, ROI counts changed from eight (with 300) to the seven the code's Figure 2 block is laid out for (20 to 1000 without 300), the active six-count list shown as a variant.
+  - fig2c-smoothing-plus-poltcomp, criterion rewritten; the code's ranksum block runs six tests (SCKm and DistKm at 20, 100 and 1000 ROIs, SC neuron), which is what gives 0.001/6 = 1.67e-4, not 16 type and count pairs; its index slip in the fifth test is named; statistics n corrected to match.
+  - figs2-1d-highpass-degrades, settings corrected to the code's Extended Data 2-1d function (smoothing 23 voxels not none, seven cut-offs not nine, six ROI counts); "any cut-off" made "every cut-off" with a stated count of ROI counts.
+  - fig2d-log-decline, measure corrected to the code's Figure 2d block, the largest r over 12 settings (smoothing 0, 3, 8, 15, 23, 30 voxels by none or Poly-tCompCor) at 20 to 20,000 ROIs, not r at the score-optimal smoothing of Figure 2b.
+  - fig2d-fly-values and fig2d-ten-thousand-rois, dropped the reading with SC (synapse); the Figure 2d legend and the code plot SC (neuron) only.
+  - discussion-twenty-rois, readings changed from the score-optimal smoothing to the largest Pearson and Spearman r over the Figure 2b grid or the Figure 2d grid, since "we achieved r=0.87" names a best value and the paper does not name the grid.
+  - fig4c-segregated-ranking, statement said both FlyEM cells were first; the legend has AOTU019_R first and DNa02_R second.
+  - fig4e-unsegregated-higher, removed the p=0.832 entry from statistics; it checks the null's construction, not the finding (protocol, statistics); kept in the criterion as a validity check. Selection made exact (both sides in [0, 0.1), target sp10db3000mi1_only1).
+  - fig4f-segregated-lower, the code's selection (complement of both sides below 0.9) differs from "synapses with a cPPSSI of 0.9-1"; both are named as readings.
+  - fig4i-reciprocal-higher, selection made exact (both sides below 2 um, code "<", target rc20_only1).
+  - fig4h-reciprocal-distances, marked the mode and more-than-half readings as choices made here.
+  - fig3c-regional-detection, added a criterion (Figure 3c counts, cf0.8 against sc140) with the open reading of "mushroom bodies (aL, bL, etc.)".
+  - fig5-wagn, added a criterion naming the open connectome threshold (sc50 as Figure 5d, or sc140) for the synapse counts and the distance.
+  - Open, Figure 2 ROI counts; the pinned code's active list and the layout of its test block differ (six against seven counts); not settled from the text, both run.
+  - Open, the fifth ranksum test's indices in the code are a slip; the intended comparison is inferred, not shown.
+  - Open, no figure could be read (no PDF), so values shown only in panels (Figure 1d to 1f, Figure 2b curves, Figure 3d detection) cannot be checked here; the claims rest on the text and code.
