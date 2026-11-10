@@ -27,9 +27,9 @@ VERSIONS = {"000489": "0.230518.1811", "000448": "0.230421.1844"}
 # ---------------------------------------------------------------- archive
 
 
-def list_assets(dandiset: str) -> list[dict]:
-    """Asset records of the pinned version, sorted by path."""
-    url = f"{API}/dandisets/{dandiset}/versions/{VERSIONS[dandiset]}/assets/?page_size=200"
+def list_assets(dandiset: str, version: str | None = None) -> list[dict]:
+    """Asset records of the pinned version (or another), sorted by path."""
+    url = f"{API}/dandisets/{dandiset}/versions/{version or VERSIONS[dandiset]}/assets/?page_size=200"
     out = []
     while url:
         r = requests.get(url, timeout=60)
@@ -38,6 +38,15 @@ def list_assets(dandiset: str) -> list[dict]:
         out += j["results"]
         url = j["next"]
     return sorted(out, key=lambda a: a["path"])
+
+
+def version_info(dandiset: str, version: str | None = None) -> dict:
+    """Summary of a version (asset count, size, modified) and, for a published
+    version, its metadata (description)."""
+    v = version or VERSIONS[dandiset]
+    r = requests.get(f"{API}/dandisets/{dandiset}/versions/{v}/info/", timeout=60)
+    r.raise_for_status()
+    return r.json()
 
 
 def s3_url(dandiset: str, asset_id: str) -> str:
@@ -81,6 +90,7 @@ def dish_info(f: h5py.File) -> dict:
         "session_start_time": f["session_start_time"][()].decode(),
         "shape": f["acquisition"][k]["data"].shape,
         "description": f["acquisition"][k].attrs["description"],
+        **{a: f["acquisition"][k]["data"].attrs[a] for a in ("conversion", "offset", "resolution", "unit")},
     }
 
 
@@ -313,7 +323,8 @@ def load_stack(asset_id: str) -> np.ndarray:
         return f["acquisition/StrobeImaging/data"][()].astype(np.float32)
 
 
-def membrane_and_poles(mean_img: np.ndarray, pct: float = 85.0, cone_deg: float = 45.0, sigma: float = 6.0):
+def membrane_and_poles(mean_img: np.ndarray, pct: float = 85.0, cone_deg: float = 45.0, sigma: float = 6.0,
+                       outer: bool = False):
     """Cell membrane mask and the two pole masks along the image's vertical axis.
 
     The paper does not say how the pole regions were drawn (Methods 2.6 says only
@@ -325,7 +336,9 @@ def membrane_and_poles(mean_img: np.ndarray, pct: float = 85.0, cone_deg: float 
     outward normal of the smoothed outline points within 45 degrees of the field
     axis. The field axis is the image's vertical axis, the axis of the response
     dipole in every file (checked in the notebook); upper and lower poles are
-    returned, and which faces the cathode is decided from the data.
+    returned, and which faces the cathode is decided from the data. outer=True
+    keeps only the pole pixels that face no other part of the group (facing_out),
+    a variant.
     """
     m = ndi.gaussian_filter(mean_img, 1)
     mask = m > np.percentile(m, pct)
@@ -343,7 +356,22 @@ def membrane_and_poles(mean_img: np.ndarray, pct: float = 85.0, cone_deg: float 
     c = np.cos(np.deg2rad(cone_deg))
     upper = memb & strong & (ny < -c)
     lower = memb & strong & (ny > c)
+    if outer:
+        upper &= facing_out(filled, True)
+        lower &= facing_out(filled, False)
     return memb, upper, lower
+
+
+def facing_out(filled: np.ndarray, upper: bool) -> np.ndarray:
+    """Pixels of filled in the first run of filled pixels met from the top (upper) or
+    the bottom of their column: membrane with no other part of the group beyond it
+    along the field axis. Every recording is a group of touching cells, so the pole
+    regions of membrane_and_poles can include membrane that faces a neighbouring cell
+    (at cell contacts and notches between cells); this variant leaves it out."""
+    f = filled if upper else filled[::-1]
+    starts = f & ~np.vstack([np.zeros((1, f.shape[1]), bool), f[:-1]])
+    first = f & (np.cumsum(starts, axis=0) == 1)
+    return first if upper else first[::-1]
 
 
 def pole_traces(stack: np.ndarray, memb, upper, lower) -> dict:
@@ -405,6 +433,10 @@ def process_strobe(asset: dict, pct: float = 85.0, cone_deg: float = 45.0) -> di
         tr = pole_traces(s, memb, up, lo)
         out[f"traces_{p:.0f}_{c:.0f}"] = tr
         out[f"npx_{p:.0f}_{c:.0f}"] = (int(memb.sum()), int(up.sum()), int(lo.sum()))
+    memb, up, lo = membrane_and_poles(mean_img, pct, cone_deg, outer=True)
+    out[f"traces_{pct:.0f}_{cone_deg:.0f}_outer"] = pole_traces(s, memb, up, lo)
+    out[f"npx_{pct:.0f}_{cone_deg:.0f}_outer"] = (int(memb.sum()), int(up.sum()), int(lo.sum()))
+    out["masks_outer"] = (memb, up, lo)
     memb, up, lo = membrane_and_poles(mean_img, pct, cone_deg)
     out["masks"] = (memb, up, lo)
     out["frame_mean"] = wc_all
