@@ -17,7 +17,7 @@ recordings of Kyzar et al. (2024) during a Sternberg working memory task, which 
 | Burst differences between ACG groups and across epochs (Fig. 4f-j) | Partially reproduced (3) |
 | ACG fits, cell-type clusters and their features, rodent validation, concept cell types | Reproduced (6) |
 | Cell-type bursting (Fig. 6a-d), IN load dependence | Partially reproduced (6a,b), not reproduced (6c,d), reproduced (load dependence) |
-| Load and RT modulation by cell type (Fig. 6e,f) | Reproduced (with one of the two cell-type readings, and under two of four rounding-level variants of the ACG fit; partially reproduced is proposed) / not reproduced |
+| Load and RT modulation by cell type (Fig. 6e,f) | Partially reproduced (the interneuron concept-cell share is within tolerance under two of four rounding-level variants of the ACG fit, not under the main fit) / not reproduced |
 | CV2 and decay constants of concept cells (Fig. 6g,h; Ext. Fig. 5g,h) | Not reproduced (2) |
 | Bin-width decoding by cell type, cross-temporal by type, load 2 by type | Not reproduced (PY), partially reproduced (IN), reproduced (2) |
 
