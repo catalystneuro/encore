@@ -1,0 +1,1094 @@
+schema_version: 3
+id: alasfour-2024-01
+datasets:
+- archive: dandi
+  id: '000055'
+  version: 0.220127.0436
+  doi: 10.48324/dandi.000055/0.220127.0436
+  relation: reuses
+paper: doi:10.3389/fnhum.2024.1388267
+date: '2026-11-10'
+entry: alasfour-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42750463933
+inputs:
+- what: Electrode-to-ROI projection matrices (aal_<participant>_elecs2ROI.csv, with each region's density
+    in the first row) and the AAL region centroids (aal_01_ROIcentroids_Lside.csv) of Peterson et al.
+    (2021a); the matrices are checked against their Figshare MD5 sums.
+  source: doi:10.6084/m9.figshare.12114408.v1
+outcomes:
+- claim: roi-projection-link
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:roi-projection-link
+  notes: Four of five matrices have one row per electrode (86, 84, 106, 92); participant 01's has 98 rows
+    for 94 electrodes, and an index match agrees best with no row shift (ROI agreement 0.628, against
+    0.394 or less when shifted). The matrix's own ROI (largest Gaussian value over the left AAL regions)
+    and the ROI nearest to the dataset's mirrored position agree for 0.628, 0.512, 0.560, 0.557 and 0.641
+    of electrodes (0.641 to 0.774 among electrodes the matrix assigns to the eight ROIs); log weights
+    correlate with minus the squared distance at 0.955 to 0.959. The matrices fit these positions only
+    roughly, so ROIs from the matrices (O5 a, c) and from the positions (O5 b) are both run. The link
+    criterion was written by the author after the survey of the matrices.
+  deviations:
+  - Link claim added by the author (protocol, author step 1.4); its thresholds (90% for reproduced, half
+    for partial) are the author's.
+- claim: cohort-selection
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:cohort-selection
+  measured: 5
+  notes: Under O2 (a), at least 60 min of each of Talk and TV over the files (days 3 to 7), exactly subjects
+    01, 02, 04, 05 and 08 qualify with single-label epochs (TV minutes of the others 0 to 177.6; subject
+    03 has 838.3 min of talking and 41.9 of TV). Counting any epoch whose label includes the class adds
+    03 and 06; under O2 (b) all twelve qualify. Counted before artifact rejection only, since the other
+    participants' signals were not read. Sex is not in the dataset, so the 2 male and 3 female split cannot
+    be checked.
+  deviations:
+  - Minutes counted before artifact rejection only.
+- claim: table1-participants
+  outcome: not_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:table1-participants
+  measured:
+  - 85
+  - 80
+  - 67
+  - 100
+  - 82
+  - 763.5
+  - 1162.6
+  - 445.6
+  - 445.9
+  - 439.1
+  - 77.7
+  - 1208.5
+  - 415.7
+  - 313.4
+  - 380.6
+  - 517.6
+  - 230.0
+  - 285.8
+  - 184.5
+  - 37.9
+  notes: Good electrodes per day are 01 [85, 91, 91, 91], 02 [85, 85, 81, 80], 04 [67, 80, 81, 82, 77],
+    05 [104, 104, 100], 08 [83, 82, 87, 82, 85]; Table 1 (85, 80, 67, 104, 82) matches the minimum over
+    days for 4 of 5, the first day for 3, the electrodes good on all days for 1. Minutes before rejection
+    exceed Table 1 (01 talking 763.5 against 493, TV 1162.6 against 605); after rejection by rule (a)
+    they fall below it (01 talking 171.6); at most 4 of the 15 values are within 10% under any reading
+    (O4 a-i). Talking plus TV is at least 120 min for all five under every reading. Sex and age are not
+    in the dataset. Measured gives the minimum good count over days and the minutes before rejection.
+  deviations:
+  - Minutes are summed epoch durations of single-label epochs inside the ECoG; epochs are not all 2 min
+    long.
+- claim: fig2-highest-accuracy
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig2-highest-accuracy
+  measured: 61.3
+  notes: In 30 of 96 pipelines inferior temporal high gamma has the highest of the 40 accuracies and lies
+    within 62.1 to 75.9% (0.695 to 0.730); all 30 use O6 (a) and O5 (a) or (b). Under the main reading
+    it is 0.613, second after middle temporal high gamma (0.628). Measured is the main reading.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig2-rois-three-bands
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig2-rois-three-bands
+  notes: All five ROIs have three or more significant bands in 14 of 384 readings, all with the artifact
+    SD pooled over the participant's days (O4 a-i) and a chance level from all test samples; at least
+    four of the five in 40. Under the main reading postcentral 1, supramarginal 2, superior temporal 0,
+    middle temporal 3 and inferior temporal 2. With a chance level per fold (0.565 at alpha 0.05) no feature
+    is significant under the main pipeline.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig2-inferior-temporal-all-bands
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig2-inferior-temporal-all-bands
+  notes: All five inferior temporal bands are significant in 134 of 384 readings, all with O6 (a); none
+    are in 206. Under the main reading 2 of 5 (beta and high gamma, p = 2e-05; alpha, low gamma and theta
+    p = 0.003, 0.006 and 0.010 do not pass the FDR cut).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig2-beta-temporal-only
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig2-beta-temporal-only
+  notes: Beta is significant in exactly the middle and inferior temporal lobes in 29 of 384 readings;
+    in those two and one other in 6; nowhere in 206. Under the main reading it is significant in the supramarginal
+    gyrus and the middle and inferior temporal lobes.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig2-single-band-rois
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig2-single-band-rois
+  notes: Both parts hold in 4 of 384 readings (all O5 a-i with artifact rule b and a chance level from
+    all test samples); one of the two holds in 49. Under the main reading neither ROI has a significant
+    band, and the inferior parietal lobe exists only for participants 02 and 05. The outcome rests on
+    a small share of the readings.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: anova-roi-band-effects
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:anova-roi-band-effects
+  notes: 'Main reading, type II on the pooled fold accuracies: ROI F = 7.22, p = 1.7e-08; band F = 7.18,
+    p = 1e-05 (type I the same). Type III gives p = 0.32 and 0.19, and participant means give p = 0.0087
+    and 0.028. Over the grid both are below 0.001 in 44 of 96 fold-level readings and 59 of 192 overall.'
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: anova-no-interaction
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:anova-no-interaction
+  notes: 'Main reading, type II on fold accuracies: interaction F = 0.779 on 28 df, p = 0.789; types I
+    and III give the same p. Not significant in 77 of 96 fold-level readings (p 0.0063 to 0.988) and in
+    all 96 on participant means (p = 1.0 under the main reading). The effect is small whichever reading.'
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: posthoc-band-averages
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:posthoc-band-averages
+  measured:
+  - 58.0
+  - 54.9
+  notes: The criterion holds in 12 of 768 readings (O11 by grid by chance level). Under the main reading
+    high gamma 0.580 and beta 0.549 are both within tolerance and beta is above the chance level 0.520,
+    but theta (0.538) and alpha (0.541) are lower than beta, so beta is not the lowest. High gamma is
+    the top band in 728 of 768 readings; beta is the bottom band in 136. Measured is the main reading
+    (O11 a).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: posthoc-roi-averages
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:posthoc-roi-averages
+  measured:
+  - 58.2
+  - 51.6
+  notes: The criterion holds in 64 of 384 readings. Under the main reading middle frontal is lowest (0.516)
+    and inferior temporal highest (0.582, below the 59.4% bound, with middle temporal 0.581), and Tukey's
+    HSD separates inferior temporal from 3 of the 7 other ROIs (pairwise t-tests also 3). Inferior temporal
+    is the top ROI in 200 readings and differs from all seven in 112. Measured is the main reading (O11
+    a).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig3-three-class
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig3-three-class
+  notes: Over 12 readings (artifact a-ii, b-ii; ROI sets c-ii, a-ii, b-i; buffer a, b), every participant
+    is above its per-fold finite chance level (0.388 to 0.404) in every band in 10; under the main reading
+    participant 04 is below it in low and high gamma (0.357, 0.359). Participant 02 has the highest mean
+    in 11 and exceeds participant 04 in every band in 9, but its lowest band is 0.463 to 0.569, never
+    above 70%; its accuracies under the main reading are 0.463 to 0.547.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - The three-class scheme is not described; it is the two-class scheme with three balanced classes, scikit-learn
+    LDA, and chance for c = 3 (claims O16). Participants 01, 02, 04 and 05, as the criterion says. Run
+    on 12 readings, not the whole grid.
+- claim: fig4-not-single-participant
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig4-not-single-participant
+  notes: Under O13 (b), mean fold accuracy above the participant's finite chance level, every participant
+    has at least 2 features above chance in all 192 such readings (medians 17.5 to 26 features). Under
+    O13 (a), a t-test of the 7 fold accuracies against chance with FDR at 0.01 per participant, medians
+    are 0 to 2 and the claim fails. The outcome rests on O13 (b).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig4-missing-rois
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig4-missing-rois
+  notes: Under every ROI reading participants 02 and 04 (figure 2 and 3 under O1 a) lack at least one
+    ROI (02 precentral and middle frontal, 04 inferior parietal), but 08 lacks the inferior parietal lobe
+    under all six readings and 01 under five, and under c-i 05 too; no reading leaves exactly 02 and 04.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+- claim: fig4-participant2-high
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig4-participant2-high
+  notes: Participant 02 has the highest mean accuracy under the main reading (0.607; others 0.536 to 0.549)
+    and in 62 of 96 pipelines, with up to 7 features above 75% (2 under the main reading, maximum 0.774).
+    The first two parts with inferior temporal low and high gamma above 75% hold in 44 pipelines; both
+    above 80% in none (at most 0.800). Under the main reading inferior temporal low and high gamma are
+    0.668 and 0.697.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+- claim: fig5-gamma-higher-talking
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig5-gamma-higher-talking
+  notes: In 68 of 384 readings every consistent gamma feature is positive and both gamma bands have one.
+    Under the main reading one gamma feature is consistent, postcentral low gamma (+0.196), so the criterion
+    fails there. In readings with consistent gamma features the median share positive is 1.00. Mean differences
+    of gamma are positive in the precentral, middle frontal and postcentral regions under the main reading
+    (+0.103 to +0.202).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig5-theta-alpha-lower-talking
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig5-theta-alpha-lower-talking
+  notes: In 30 of 384 readings, all with O4 a-i, every consistent theta and alpha feature is negative
+    and both bands have one. Under the main reading none is consistent, though the alpha mean differences
+    are negative in all eight ROIs (-0.028 to -0.199).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig5-pre-postcentral
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig5-pre-postcentral
+  notes: Both parts hold in 2 of 384 readings. The largest absolute difference is in the pre- or postcentral
+    gyrus in 348 readings; all 8 named features are consistent with the expected signs in 6 readings and
+    at least 6 of 8 in 11. Under the main reading the largest difference is middle frontal low gamma (+0.202)
+    and 1 of the 8 is consistent. The outcome rests on a small share of the readings.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig5-parietal-temporal-no-gamma
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig5-parietal-temporal-no-gamma
+  notes: No gamma feature of the supramarginal gyrus, inferior parietal lobe or superior temporal lobe
+    is a consistent increase in 352 of 384 readings, including the main one (gamma differences -0.050
+    to +0.050 there, all CIs spanning 0). Theta or alpha is consistent in all three ROIs in no reading,
+    and in two of the three in 22. Under the main reading alpha differences there are -0.098 to -0.155
+    (p 0.006 to 0.30), not passing the FDR cut.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+- claim: fig5-middle-temporal-tv
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig5-middle-temporal-tv
+  measured: 0
+  notes: Four middle temporal bands consistent with a negative difference occur in no reading; three in
+    19 of 384, one or two in 11, none in 354. Under the main reading beta, low and high gamma pass the
+    accuracy test but no mean difference passes the FDR cut (alpha -0.107, p = 0.0072; beta -0.106, p
+    = 0.0080). All five middle temporal differences are negative under the main reading. Measured is the
+    main reading.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+- claim: inferior-temporal-high-gamma-inconsistent
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:inferior-temporal-high-gamma-inconsistent
+  notes: 'Main reading: accuracy 0.613, significant (p = 2.4e-05); mean difference 0.032, 95% CI -0.059
+    to 0.122, p = 0.48, not significant; its absolute difference ranks 33 of 40 (median absolute difference
+    0.082). The mean difference is not significant in any of 384 readings; the accuracy is significant
+    in 169.'
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+- claim: all-rois-but-inferior-parietal
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:all-rois-but-inferior-parietal
+  notes: It holds in 2 of 384 readings, and six of seven ROIs with the inferior parietal lobe none in
+    10; in 250 readings no ROI has a consistent band, and under the main reading only the postcentral
+    gyrus does. The outcome rests on a small share of the readings.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig6-sign-consistency
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig6-sign-consistency
+  measured: 7
+  notes: 8 to 10 combinations share a sign across participants in 49 of 192 readings (O14 by pipeline;
+    counts 0 to 14). Under the main reading O14 (a) gives 7 (middle frontal high and low gamma, inferior
+    parietal alpha, postcentral alpha and high gamma, precentral alpha and low gamma) and O14 (b) gives
+    2. Measured is the main reading, O14 (a).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  assumed: true
+- claim: fig6-examples
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig6-examples
+  notes: All six named combinations share a sign in no reading; 4 or 5 do in 44 of 192 (main reading 4
+    under O14 a, 1 under O14 b). Under the main reading precentral high gamma fails through participant
+    08 (-0.054) and supramarginal alpha through participants 02 (+0.124) and 04 (+0.036).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+- claim: fig7-non-additive
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig7-non-additive
+  notes: Under reading (b), additive when the best over k beats the top ROI by more than the 95% interval
+    of its fold accuracies, at most 5 of 25 curves are additive in 36 of 48 readings (main reading 8).
+    Under reading (a), all ROIs beating the top ROI, 22 of 25 are additive under the main reading and
+    at most 5 in only 2 readings. The outcome rests on reading (b).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - Run on the main artifact reading only, for every ROI reading, O6 and O7 (24 pipelines) under O15 (a)
+    and (b). The validation fold of O15 (a) is the training fold nearest the test fold.
+  assumed: true
+- claim: fig7-participant4-low-gamma
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig7-participant4-low-gamma
+  notes: Figure participant 4's low gamma curve never has the largest gain of the 25; it is among the
+    three largest in 5 of 96 readings. Under the main reading it ranks 9 (O1 a, Table 1's 05) or 21 (O1
+    b, 04), and the largest gain is participant 02's low gamma (0.159).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - As fig7-non-additive.
+  assumed: true
+- claim: fig7-above-70
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig7-above-70
+  measured: 71.4
+  notes: Four participants exceed 70% in 18 of 96 readings and all five in 2, where figure participant
+    4 is not both highest and within 72 to 88%. Under the main reading two do (02 0.798, 05 0.714); figure
+    participant 4 (05 under O1 a) reaches 0.708 in low and 0.714 in high gamma. Best accuracies range
+    0.546 to 0.722 (01), 0.625 to 0.882 (02), 0.592 to 0.735 (04), 0.626 to 0.766 (05), 0.558 to 0.703
+    (08). Measured is the main reading's best of low and high gamma for 05.
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - As fig7-non-additive.
+  assumed: true
+- claim: discussion-above-80
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:discussion-above-80
+  notes: At most one participant exceeds 80% in a feature or curve point in any reading (31 of 48 readings
+    have one; maximum 0.882); under the main reading none with O15 (a) and one (02, 0.820) with O15 (b).
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - As fig7-non-additive.
+  assumed: true
+- claim: fig7-exceeds-group
+  outcome: reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig7-exceeds-group
+  notes: 'Reading (a), each participant''s best curve accuracy against the highest participant-wide accuracy:
+    at least four of five exceed it in 39 of 48 readings (main: 4 of 5 against 0.628). Reading (b), each
+    curve''s best against the same band in its top ROI: more than 12 of 25 in all 48 (main: 20 and 25).'
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - As fig7-non-additive.
+  assumed: true
+- claim: fig7-best-band-varies
+  outcome: partially_reproduced
+  notebook: reproduce_alasfour_2024.ipynb
+  output: claim:fig7-best-band-varies
+  notes: 'The best band differs between participants (main reading, O15 a: high gamma for 01, 02 and 05,
+    alpha for 04 and 08), but 08''s best band is theta while 04''s is alpha in no reading; one of the
+    two holds in 16 of 48. Over readings 08''s best band is high gamma in 27 and theta in 7; 04''s is
+    low gamma in 15 and alpha in 9.'
+  deviations:
+  - The paper links no code; every open detail is run under the readings the claims file names (O4 artifact
+    rule and SD, O5 ROI assignment and density, O6 ROI feature, O7 buffer, O9 chance level), a grid of
+    96 pipelines by 4 chance levels. The outcome follows the criterion, which accepts a match under one
+    reading; the notes give how many readings match and the result under the main reading.
+  - 'Main reading, an assumption of this attempt: O4 (a) with the day''s SD (the electrodes table''s standard_deviation
+    column), O5 reading (c), O5 density (ii), O6 (a), O7 (a), and O9 alpha 0.05 with n all test samples
+    of the participant (Figure 2 legend, one dashed finite chance line).'
+  - O5 reading (c) is taken from Methods 2.1 ("The projection matrices were thresholded only to include
+    electrodes close to any of the eight defined ROIs, and the ROI label was assigned by choosing the
+    ROI closest to each electrode"); an electrode is kept when its largest Gaussian value over all left
+    AAL regions is one of the eight. Electrodes are mirrored to the left hemisphere, as the matrices'
+    left-side columns imply.
+  - Analysed electrodes are those flagged good on every day of the participant (85, 79, 58, 99, 68), an
+    assumption; Table 1's counts match no reading of the per-day flags.
+  - Only epochs labelled with exactly one of Talk, TV or Computer/phone are used; epochs with two labels
+    (for example Talk, TV) are left out, an assumption. 10-s bins with a missing value in an analysed
+    electrode are dropped (312, 182, 871, 11 and 73 bins).
+  - The Butterworth filters (order 4, zero phase, the claims file's standard choice O3) and the Hilbert
+    envelope are computed in the frequency domain on each block with 5 s of padding each side; the notebook
+    shows they agree with sosfiltfilt and scipy.signal.hilbert within 0.6%.
+  - The epochs of sub-01 ses-7 and sub-04 ses-3 are shifted by the session start minus 19:00 (8.52 h and
+    8.35 h) to the ECoG clock; the clock of sub-04 ses-3 is not established (its day decodes at 0.460).
+  - Under the main artifact reading many blocks are dropped (participant 01 keeps 303 of 1180); the rule
+    as read may differ from the paper's.
+  - As fig7-non-additive.
+  assumed: true
+findings:
+- kind: metadata_error
+  statement: In sub-01_ses-7 and sub-04_ses-3 the epochs table is timed from 19:00 while the ElectricalSeries
+    starts at the session start, 03:31:22 and 03:20:48 (starting_time 0), so the epochs end at 24.0 h
+    against 15.48 h and 15.65 h of ECoG; 223 and 77 of their Talk, TV and Computer/phone epochs lie past
+    the end of the ECoG unless the 8.52 h and 8.35 h offset is applied. In the other 19 files of these
+    participants both clocks start at 19:00.
+- kind: other
+  statement: With that offset applied, sub-01 ses-7 decodes talking against watching TV like the participant's
+    other days (0.679 against 0.592 to 0.695, trained on the other days), but sub-04 ses-3 decodes below
+    chance (0.460 against 0.714 to 0.816 on days 4 to 6), so the alignment of its annotations with its
+    ECoG is not established.
+- kind: metadata_insufficient
+  statement: The files and the archive's metadata give no sex or age for the participants (the subject
+    entries hold species and subject_id only), so Table 1's sex and age and the paper's 2 male and 3 female
+    cannot be checked.
+- kind: other
+  statement: The electrodes table's good flag changes from day to day (participant 04 has 67 to 82 good
+    electrodes on its five days; 58 are good on all days), and the paper's per-participant counts (Table
+    1) match no single rule for combining the days.
+- kind: other
+  statement: Of the 3465 epochs with a single Talk, TV or Computer/phone label in these participants'
+    files, 110 are not about 2 min long (0.1 to 482.4 s; 38 are shorter than 10 s), where the dataset's
+    documentation and the paper describe 2-min blocks.
+- kind: other
+  statement: The ECoG holds missing values (NaN) inside some labelled blocks; 1449 10-s bins of the analysed
+    electrodes were dropped for it (871 for participant 04).
+- kind: other
+  statement: The ROI projection matrices on Figshare (10.6084/m9.figshare.12114408.v1) agree only roughly
+    with the dataset's electrode positions; their ROI and the nearest ROI by the dataset's position agree
+    for 51 to 64% of electrodes, and participant 01's matrix has 98 rows for the dataset's 94 electrodes.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors, each a detail that changes outcomes here. (1) Which finite
+    chance level was used (alpha, and n per fold or per participant)? With n per fold and alpha 0.05 no
+    feature is significant here. (2) How was the artifact rule applied (total or contiguous 2 s, and the
+    SD over which span)? As read, rule (a) drops up to 74% of a participant's blocks. (3) Which electrodes
+    count as close to the eight ROIs, and is an ROI's density the matrix's density row or a count of electrodes?
+    (4) Is the feature of an ROI its electrodes or their mean? (5) Which folds form the one-fold buffer?
+    (6) Which electrodes are a participant's good electrodes when the flag changes across days? (7) Were
+    epochs with two labels (for example Talk, TV) used? (8) How was the validation set of Figure 7 formed,
+    and what were the ANOVA's observations and sums of squares? (9) Which numbering do the figures use
+    for participants (the Results name a Participant 3 not in Table 1)?
