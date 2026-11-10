@@ -1,0 +1,446 @@
+schema_version: 3
+id: mallory-2021-01
+datasets:
+- archive: dandi
+  id: '000053'
+  version: 0.210819.0345
+  doi: 10.48324/dandi.000053/0.210819.0345
+  relation: primary
+paper: doi:10.1038/s41467-021-20936-8
+date: '2026-11-10'
+entry: mallory-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42843008382
+inputs:
+- what: Which dandiset files are the paper's 11 head-fixed recordings (session names, unit and frame counts),
+    and the first unit's spikes and the behaviour of each, used only to match and check the files; figshare
+    Dataset 3 of the paper, read in place.
+  source: doi:10.6084/m9.figshare.13426103.v1
+- what: The spline LN code the claims file cites (spline_1d.m, glm_model.m, fit_model_kfold.m, compute_test_train_ind.m,
+    forward_search_kfold.m, compute_llh.m, compute_llh_increase.m), read to follow its method; no code
+    or data from it is run.
+  source: https://github.com/khardcastle/spline-lnp-model at commit 34b470f
+outcomes:
+- claim: headfixed-session-link
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:headfixed-session-link
+  notes: All 11 figshare session files match exactly one dandiset ecephys file each by subject, unit count
+    and frame count; together 2861 units from 8 mice, as the Methods state. In every pair the body position,
+    body speed and both eye positions are equal, and the first unit's spike times are equal after the
+    repair of a wrapped index entry in two files (npI3 0420 and npI4 0421 obj-1h2xem6); as stored, unit
+    0 of those two files has 65536 spikes too few.
+  deviations:
+  - The match uses the paper's figshare deposit, read in place, only to choose the files; no measurement
+    comes from it.
+- claim: fig1b-head-posture-distributions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The open field files hold body position, body speed, head direction and azimuthal head velocity
+    only; no file has head pitch, roll or their velocities (the Cohort 1 IMU data). The paper deposited
+    them on figshare, Dataset 1 (doi:10.6084/m9.figshare.13425392.v1), a 1.7 GB compressed MATLAB 5 file
+    that cannot be read in part; a question asks a reader whether the claim should be `data: elsewhere`.
+    Six of the eight values are of pitch and roll; the azimuthal head velocity percentiles alone cannot
+    reach seven of eight.'
+- claim: fig1c-head-direction-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'The open field files hold body position, body speed, head direction and azimuthal head velocity
+    only; no file has head pitch, roll or their velocities (the Cohort 1 IMU data). The paper deposited
+    them on figshare, Dataset 1 (doi:10.6084/m9.figshare.13425392.v1), a 1.7 GB compressed MATLAB 5 file
+    that cannot be read in part; a question asks a reader whether the claim should be `data: elsewhere`.
+    The criterion''s LN model searches the eight Cohort 1 variables, four of which are missing.'
+- claim: fig1c-pitch-roll-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-head-direction-cells, which is blocked because the pitch and roll are not in
+    the dandiset.
+- claim: fig1c-pitch-roll-velocity-rare
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-head-direction-cells, which is blocked because the pitch and roll are not in
+    the dandiset.
+- claim: fig1c-azimuthal-velocity-cells
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-head-direction-cells, which is blocked because the pitch and roll are not in
+    the dandiset. The Cohort 2 count could be computed from the dandiset (the six mice with 50 and 70
+    cm arenas hold 179 units, consistent with Cohort 1, leaving 1021), but the claim needs both counts
+    and the dependency blocks it.
+- claim: fig1d-conjunctive-head
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-head-direction-cells, which is blocked because the pitch and roll are not in
+    the dandiset.
+- claim: fig2-pitch-roll-shapes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-pitch-roll-cells, which is blocked because the pitch and roll are not in the
+    dandiset.
+- claim: fig2a-pitch-up-down-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2-pitch-roll-shapes, which is blocked because the pitch and roll are not in the
+    dandiset.
+- claim: fig2b-roll-left-right-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2-pitch-roll-shapes, which is blocked because the pitch and roll are not in the
+    dandiset.
+- claim: fig2-pitch-roll-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2-pitch-roll-shapes, which is blocked because the pitch and roll are not in the
+    dandiset.
+- claim: fig2c-azimuthal-velocity-shapes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-azimuthal-velocity-cells, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig2c-velocity-extrema-near-zero
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2c-azimuthal-velocity-shapes, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig2c-symmetric-asymmetric-classes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2c-azimuthal-velocity-shapes, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig2c-asymmetric-direction-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2c-symmetric-asymmetric-classes, which is blocked because the pitch and roll are
+    not in the dandiset.
+- claim: fig2c-velocity-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig2c-azimuthal-velocity-shapes, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig3ab-head-contributions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-azimuthal-velocity-cells, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig3c-freely-moving-model-fit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-azimuthal-velocity-cells, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig3e-head-no-clustering
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-azimuthal-velocity-cells, which is blocked because the pitch and roll are not
+    in the dandiset.
+- claim: fig4f-eye-movement-distributions
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig4f-eye-movement-distributions
+  measured:
+  - -3.49
+  - 5.18
+  - -2.57
+  - 1.65
+  - -6.04
+  - 6.83
+  - -2.66
+  - 2.97
+  notes: Percentiles per session about the session mean, averaged per mouse, mean over 8 mice; all eight
+    within the sem tolerance. Eh -3.49 and 5.18, Ev -2.57 and 1.65, Eh dot -6.04 and 6.83, Ev dot -2.66
+    and 2.97 (% of eye width, per s for velocities). Uncentred values also give 8 of 8. npI3 has the widest
+    ranges (Eh -7.65 to 10.96).
+  deviations:
+  - Velocity percentiles are also taken about the session mean (the criterion names the mean for positions);
+    the uncentred variant gives the same outcome.
+- claim: fig4j-eye-encoding-cells
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig4j-eye-encoding-cells
+  measured:
+  - 718
+  - 341
+  - 243
+  - 238
+  - 137
+  notes: 'Main readings (folds in turn, out-of-range bins dropped): 718 of 2861 units encode an eye variable;
+    Eh 341, Ev 243, Eh dot 238, Ev dot 137, all within tolerance. The code''s final test on the last model
+    tried gives 720, 340, 245, 238, 139. With 10-s sections assigned to folds at random (readings_folds_mallory_2021.ipynb)
+    614 units encode an eye variable (Eh 282, Ev 177, Eh dot 231, Ev dot 99), outside tolerance for the
+    total. The fraction varies by mouse from 0.144 to 0.521. 3 units have no spike in the kept bins.'
+  deviations:
+  - The LN pipeline is reimplemented in Python (mec_ln.py) from the Methods and the spline code the claims
+    file cites; fits use Newton's method to the same penalized Poisson objective, stopped when the predicted
+    fall of the objective is below 1e-6 (fminunc's default function tolerance), in place of fminunc.
+  - 'Open detail (2b), clipping each variable to its inner range, was not run: the full run was stopped
+    by the time limit while executing that notebook. Detail (1) was run under both readings.'
+- claim: fig4k-eye-conjunctive
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig4k-eye-conjunctive
+  measured:
+  - 0.955
+  - 0.272
+  - 0.242
+  notes: 0.955 of the 718 eye cells also encode B or Bs, 0.272 encode more than one eye variable, and
+    0.242 of all units encode B alone; all within tolerance. With random folds 0.964, 0.238 and 0.232
+    (two of three within).
+  deviations:
+  - The LN pipeline is reimplemented in Python (mec_ln.py) from the Methods and the spline code the claims
+    file cites; fits use Newton's method to the same penalized Poisson objective, stopped when the predicted
+    fall of the objective is below 1e-6 (fminunc's default function tolerance), in place of fminunc.
+- claim: fig5a-eh-nasal-temporal-similar
+  outcome: partially_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig5a-eh-nasal-temporal-similar
+  notes: Over all 341 Eh cells 158 prefer nasal positions (0.463, Z = -1.35, binomial P = 0.194); preference
+    reading (b) and both readings of explored range give P from 0.19 to 0.23. The two hemisphere tests
+    cannot be run, as the dandiset does not record the hemisphere of each recording; the part that can
+    be tested holds. Nasal is taken as positive horizontal eye position (Methods, Comparison between LN
+    and shuffling-based methods; Supplementary Fig. 4 labels).
+  deviations:
+  - Hemisphere tests not run (hemisphere not in the dandiset).
+  - The sign convention of nasal is taken from the Methods' pairing of velocities below 0 with temporal
+    and above 0 with nasal rotation; the test is symmetric, so it does not change the outcome.
+- claim: fig5b-ev-up-down-similar
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig5b-ev-up-down-similar
+  measured: 172
+  notes: 172 of 243 Ev cells are classified (within 17.7 of 177) under both readings of explored range;
+    84 of 172 prefer upward positions (Z = -0.30, P = 0.819); preference reading (b) gives 81 of 172,
+    P = 0.493.
+- claim: fig5-eye-position-stability
+  outcome: partially_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig5-eye-position-stability
+  measured:
+  - 0.875
+  - 0.603
+  - 0.713
+  notes: Median stability Eh 0.875 (n = 341), classified Ev 0.603 (n = 172), B 0.713 (n = 1938); Kruskal-Wallis
+    chi2 = 133.6, P = 9.7e-30; Eh against B P = 7.7e-30, Ev against B P = 0.0168, not significant at 0.0167
+    by a margin of 0.0001. The Eh and B medians are within tolerance; the Ev median is 0.117 below the
+    paper's 0.72. With all 243 Ev cells, Ev against B gives P = 0.0118, significant.
+  deviations:
+  - Stability curves share one grid of 200 points on the visualizing range and the part both halves visited,
+    so no up-sampling is needed (a standard choice).
+- claim: fig5av-eh-linear-most-stable
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig5av-eh-linear-most-stable
+  measured:
+  - 0.933
+  - 0.883
+  - 0.686
+  notes: Linear 0.933 (n = 102), quadratic 0.883 (n = 159), higher order 0.686 (n = 78); Kruskal-Wallis
+    chi2 = 43.2, P = 4.2e-10; linear against quadratic P = 0.00148, against higher P = 4.5e-10; all three
+    medians within tolerance. Both readings of explored range give the same cells.
+- claim: fig5bv-ev-low-order-more-stable
+  outcome: partially_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig5bv-ev-low-order-more-stable
+  measured:
+  - 0.826
+  - 0.732
+  - 0.109
+  notes: Linear 0.826 (n = 43), quadratic 0.732 (n = 70), higher 0.109 (n = 59); Kruskal-Wallis P = 8.2e-5;
+    linear against higher P = 1.0e-4, quadratic against higher P = 4.2e-4, linear against quadratic P
+    = 0.394. The tests hold, but only the linear median is within tolerance, where the criterion asks
+    for two; the criterion names no partial outcome, and the effect holds with lower medians.
+- claim: fig6-eye-velocity-linear-nasal
+  outcome: partially_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig6-eye-velocity-linear-nasal
+  measured:
+  - 56
+  - 36
+  - 36
+  notes: Linear Eh dot cells 56 (paper 43), 36 prefer nasal movement (Z = 2.14, P = 0.044); linear Ev
+    dot cells 36 (paper 29), 21 upward (P = 0.405). Both tests hold; the two linear counts and the nasal
+    count are outside tolerance. Both readings of explored range give the same counts.
+- claim: fig6-eye-velocity-nonlinear-temporal
+  outcome: not_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig6-eye-velocity-nonlinear-temporal
+  measured:
+  - 39
+  - 143
+  - 20
+  - 78
+  notes: '182 of 238 Eh dot and 98 to 101 of 134 to 137 Ev dot cells are nonlinear. Slope-sign rule: Eh
+    dot 39 asymmetric and 143 symmetric, 21 of 39 temporal (P = 0.749). Shuffle rule: 78 asymmetric and
+    104 symmetric, 39 to 41 of 78 temporal (P = 0.73 to 1.0). Ev dot asymmetric cells show no preference
+    (P = 0.08 to 1.0). The horizontal test fails under every combination; at most two of four class counts
+    are within tolerance.'
+- claim: fig6-eye-velocity-stability
+  outcome: not_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig6-eye-velocity-stability
+  measured:
+  - 0.965
+  - 0.823
+  - 0.772
+  notes: Eh dot 0.965 (n = 238), Ev dot 0.823 (n = 137), Bs 0.772 (n = 1187); Kruskal-Wallis P = 4.5e-45;
+    Eh dot against Bs P = 3.1e-47 (more stable, as in the paper); Ev dot against Bs P = 0.0358, not significant
+    at 0.0167, and its median is above that of Bs, so the claim that Ev dot tuning is less stable does
+    not hold. Eh dot and Bs medians are within tolerance, Ev dot is not.
+- claim: fig6v-asymmetric-more-stable
+  outcome: partially_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig6v-asymmetric-more-stable
+  measured:
+  - 0.968
+  - 0.98
+  - 0.955
+  - 0.953
+  - 0.609
+  notes: 'Slope-sign rule, explored reading (a): Eh dot linear 0.968 (n = 56), nonlinear asymmetric 0.98
+    (n = 39), symmetric 0.955 (n = 143), Kruskal-Wallis P = 0.084, pairwise P = 0.19 and 0.040, so the
+    horizontal part fails; Ev dot nonlinear asymmetric 0.953 (n = 20) against symmetric 0.609 (n = 78),
+    P = 0.00114, Kruskal-Wallis P = 1.5e-4, so the vertical part holds. Under the shuffle rule neither
+    part holds (Ev dot P = 0.34, Kruskal-Wallis P = 0.041). Medians against the paper: Eh dot 0.968, 0.98,
+    0.955 (paper 0.96, 0.94, 0.86), Ev dot 0.953, 0.609 (paper 0.85, 0.38).'
+- claim: fig7ab-eye-contributions
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig7ab-eye-contributions
+  measured:
+  - 0.638
+  - 0.283
+  - 0.106
+  - 0.11
+  - 0.053
+  - 0.036
+  notes: 'Reading (c), one held-out section (fold 1): medians B 0.638, Bs 0.283, Eh 0.106, Ev 0.110, Eh
+    dot 0.053, Ev dot 0.036 (four within tolerance); all 12 comparisons at P < 0.0033 (largest 0.0013);
+    Kruskal-Wallis P = 4.3e-176. Reading (a), fold means: the same 12 comparisons hold, two medians within
+    (B 0.625, Eh 0.102; Bs 0.305, Ev 0.106, Eh dot 0.060, Ev dot 0.046). Reading (b), the literal wording,
+    inverts the order (B 0.375, Eh dot 0.940) and matches none. n = 1247, 1068, 333, 239, 230, 136.'
+  deviations:
+  - Reading (c) takes fold 1 of the 10-fold fits as the single held-out section; compute_llh_increase.m
+    takes a section passed to it, which the code does not fix.
+- claim: fig7c-head-fixed-model-fit
+  outcome: reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig7c-head-fixed-model-fit
+  measured:
+  - 2140
+  - 0.0513
+  notes: 2140 units encode at least one variable and the median of the selected model's fold-mean log-likelihood
+    increase, as compute_llh.m computes it (nats per spike times log 2), is 0.0513 [0.0215 to 0.1128];
+    both within tolerance. In true bits per spike the median would be 0.107. With random folds 1964 units
+    (8 below the tolerance) and median 0.0534.
+  deviations:
+  - The value is in the units compute_llh.m returns (multiplied by log 2); in bits per spike it is twice
+    as large and outside tolerance.
+- claim: fig7e-eye-no-clustering
+  outcome: not_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:fig7e-eye-no-clustering
+  notes: 'Of 30 primary and secondary combinations, 3 give P < 0.005 at some k: Eh cells that also encode
+    Eh dot (n = 83 of 341, 6 of 10 k), Ev dot cells that also encode Bs (94 of 137, 8 of 10 k) and Ev
+    dot cells that also encode Eh dot (38 of 137, 2 of 10 k). The other 27 have smallest P from 0.005
+    to 0.95. 1000 label scrambles per combination.'
+  deviations:
+  - 1000 scrambles, a standard choice; the Methods give no number.
+- claim: fig8c-eye-tuning-without-landmarks
+  outcome: blocked
+  blocked_by: data_missing
+  notes: 'No session of the dandiset has a track without landmarks: the trial tables give only visual
+    contrast (0 to 100) and gain, and the paper''s figshare Dataset 3 holds the 11 landmark sessions only.
+    The 6 sessions of Figure 8 are not in either.'
+- claim: fig8e-joint-cells-preserve-eye-tuning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig8c-eye-tuning-without-landmarks; the no-landmark sessions are not in the dandiset.
+- claim: methods-hemispheres-similar
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: 'The hemisphere of each recording is not in the dandiset: every electrode location is ''unknown'',
+    and no field names the side. The per-recording fractions of eye cells are printed in the notebook
+    (0.075 to 0.521) but cannot be split by hemisphere.'
+- claim: supp3-low-false-positives
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-head-direction-cells, blocked because the pitch and roll are not in the dandiset.
+    The head-fixed part alone would need six more full runs of the LN pipeline (about 35 min each here),
+    beyond the time limit.
+- claim: supp4-ln-conservative
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-head-direction-cells, blocked because the pitch and roll are not in the dandiset.
+- claim: supp5-model-raw-tuning-agree
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig1c-pitch-roll-cells, blocked because the pitch and roll are not in the dandiset.
+- claim: supp7e-eye-velocity-extrema-near-zero
+  outcome: partially_reproduced
+  notebook: reproduce_mallory_2021.ipynb
+  output: claim:supp7e-eye-velocity-extrema-near-zero
+  measured:
+  - 145
+  - 72
+  notes: 'Eh dot: 145 of 192 peaks or valleys within half the range (Z = 7.07, P = 8.0e-13), median 0.417,
+    different from 0 (P = 0.0025), as in the paper. Ev dot: 72 of 125 (P = 0.107, not significant), median
+    0.085 (P = 0.70). Both counts outside tolerance (paper 170 and 82). The horizontal part holds; the
+    vertical does not.'
+- claim: supp9-correlation-contributions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig3ab-head-contributions, blocked because the pitch and roll are not in the dandiset.
+- claim: supp12-no-false-eye-detection
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs spike trains simulated from every cell's fitted model without its eye terms and the whole
+    LN pipeline rerun on them, one more full run of about 35 min, with the mutual-information shuffles;
+    not run within the time limit.
+findings:
+- kind: data_missing
+  statement: The open field files hold no head pitch, roll or their angular velocities (the IMU data of
+    Cohort 1), on which 19 of the paper's freely moving findings rest. The paper deposited them on figshare
+    (Dataset 1, doi:10.6084/m9.figshare.13425392.v1).
+- kind: identifier_missing
+  statement: The dandiset holds 20 head-fixed ecephys files from 9 mice (5120 units) and does not say
+    which are the paper's 11 recordings (2861 units, 8 mice). They can be found only by matching subject,
+    unit and frame counts to the paper's figshare deposit; the other 9 are gain and contrast sessions
+    that the dandiset does not describe.
+- kind: format_error
+  statement: In sub-npI3_ses-20190420_behavior+ecephys.nwb and sub-npI4_ses-20190421_obj-1h2xem6_behavior+ecephys.nwb
+    the first entry of units/spike_times_index has wrapped at 2**16 (5852 for 71388, and 12175 for 77711),
+    so unit 0 lacks its later spikes and unit 1 begins with them, out of time order. The paper's figshare
+    deposit has the right trains.
+- kind: metadata_error
+  statement: Eye position is stated in metres and eye velocity in 'unknown'; the values are in % of the
+    eye width (the unit of the paper's Results and Figure 4), the same as in the paper's deposit.
+- kind: metadata_insufficient
+  statement: The hemisphere of each head-fixed recording is not recorded (every electrode location is
+    'unknown'), so the paper's left and right comparisons cannot be made. No subject has sex or age, and
+    the open field cohorts are not identified (the six mice recorded in 50 and 70 cm arenas hold 179 units,
+    consistent with Cohort 1).
+- kind: other
+  statement: Ten behaviour-only head-fixed files repeat the behaviour of ten ecephys files, and two probe
+    insertions (npI4 2019-04-21, npJ5 2019-05-05) are each converted twice, with the same trial table
+    and unit count over spans of different length.
+- kind: other
+  statement: Two head-fixed sessions have gaps in the behaviour timestamps (npI1 0413, up to 82 s; npI3
+    0420, 217 and 308 s), and in npI3 0420 66% of the eye samples are missing.
+- kind: other
+  statement: The open field files hold 1200 units from 25 subjects, against 26 mice in the paper, and
+    include arenas of 75 and 91.4 cm that the Methods do not list.
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) How were the 10-s sections assigned to folds? In turn,
+    as compute_test_train_ind.m does, the eye-cell count is 718 (paper 711); at random it is 614. (2)
+    Was the contribution normalized as (full - reduced) / full? The literal wording of the Methods ('subtracted
+    from 1') inverts the paper's order of variables; a single held-out section, as compute_llh_increase.m,
+    matches the medians best. (3) What rule separated symmetric from asymmetric velocity cells? Neither
+    the slope-sign rule nor the shuffle rule gives the paper's 147 asymmetric Eh dot cells (39 and 78
+    here).
