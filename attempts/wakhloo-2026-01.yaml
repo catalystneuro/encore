@@ -1,0 +1,315 @@
+schema_version: 3
+id: wakhloo-2026-01
+datasets:
+- archive: dandi
+  id: "000978"
+  version: 0.240511.0307
+  doi: 10.48324/dandi.000978/0.240511.0307
+  relation: reuses
+paper: doi:10.1038/s41593-025-02183-y
+date: 2026-11-10
+entry: wakhloo-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42759493425
+inputs:
+- what: >-
+    Method details the Methods leave open, as the claims file cites them (session order, smoothing
+    bandwidths, speed from the smoothed velocity, the regulariser of 0.01 counts per bin, task
+    sampling, the GLM basis and penalty grid, the null-model rule, the mixed models and the
+    Benjamini-Hochberg set), read from code/process_rats.py, code/rat_utils.py, code/utils.py,
+    code/run-pfc-hp-analysis-rats.py, code/fit-GLMs-rat.py and
+    figures/Fig-readout-with-learning-hp-pfc.ipynb.
+  source: https://github.com/awakhloo/population_geometry_optimal_coding at commit
+    9674a6cb0c39926d70746024ce17de35f87df8f9
+- what: >-
+    The paper's own readout results, results/PFC_results_nu_dt_0.5_ns_500_P_300.npy and
+    results/CA1_results_nu_dt_0.5_ns_500_P_300.npy, read in memory for comparison only; no outcome
+    is decided from them.
+  source: https://github.com/awakhloo/population_geometry_optimal_coding at commit
+    9674a6cb0c39926d70746024ce17de35f87df8f9
+outcomes:
+- claim: eq1-generalization-error-formula
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    A theoretical result, proved in Supplementary Information section 1; no recorded data test it.
+    Its rat counterpart is tested in fig7f-theory-vs-empirical.
+- claim: eq1-sample-dependence
+  outcome: blocked
+  blocked_by: other
+  notes: A property of the form of Eq. 1; no recorded data test it.
+- claim: fig3bc-mlp-theory-tracks-error
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    A simulation of multilayer perceptrons (code/run_mlp_exps.py), not a finding on recorded data;
+    the dataset cannot test it, and it was not run here.
+- claim: fig3dg-mlp-geometry-tradeoff
+  outcome: blocked
+  blocked_by: other
+  notes: A simulation of multilayer perceptrons, not a finding on recorded data; not run here.
+- claim: fig4bf-pose-network-geometry
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: >-
+    The data are the DeepLabCut parenting mouse benchmark, outside the dataset. Testing the claim
+    needs a ResNet50 pose network trained as in the Methods; the paper's code README says the
+    training "can take a few hours" and "must be executed in a separate Python 3.8 virtual
+    environment" (code/setup_deeplabcut.py), which an entry locked to Python 3.13 cannot install,
+    and which does not fit the run's time. Not attempted.
+- claim: fig4g-pose-theory-r2
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs the trained pose network of fig4bf-pose-network-geometry; not attempted.
+- claim: fig5d-macaque-theory-and-ventral-stream
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    The data are the Majaj et al. (2015) V4 and IT responses via Brain-Score, outside the dataset
+    and public. Not attempted in this run, whose five hours went to the rat claims; a later attempt
+    can test it.
+- claim: fig5e-macaque-dimension-correlation
+  outcome: blocked
+  blocked_by: other
+  notes: Brain-Score data outside the dataset; not attempted in this run (see fig5d).
+- claim: fig5h-macaque-snf-it
+  outcome: blocked
+  blocked_by: other
+  notes: Brain-Score data outside the dataset; not attempted in this run (see fig5d).
+- claim: optimal-code-disentangled
+  outcome: blocked
+  blocked_by: other
+  notes: A theoretical result (Supplementary Information section 4); no recorded data test it.
+- claim: eq2-optimal-spectrum-flattens
+  outcome: blocked
+  blocked_by: other
+  notes: A theoretical result checked by numerical optimisation; no recorded data test it.
+- claim: fig6ce-optimal-early-low-dim-high-corr
+  outcome: blocked
+  blocked_by: other
+  notes: >-
+    A theoretical prediction; no recorded data test it. Its rat counterpart is
+    late-trends-match-optimal.
+- claim: svc-hebbian-correlation
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:svc-hebbian-correlation
+  notes: >-
+    Only the PFC and CA1 part is tested. Over the 64 rat and session values the squared Pearson
+    correlation between the theoretical Hebbian error and the linear SVC error is 0.926 in PFC and
+    0.832 in CA1 (P below 1e-24), so readings (a) and (b) both hold in both areas. With the
+    empirical Hebbian error (variant) it is 0.943 and 0.946. SVC errors run from 0.197 to 0.362
+    (PFC) and 0.200 to 0.360 (CA1). The rest of the statement (MLPs, macaque, pose network) is not
+    tested.
+  deviations:
+  - >-
+    The SVC is fitted on 4 of the 500 subsets per session (every 125th), as one per task on all
+    500 would take about 25 hours on one core; the theoretical error is the mean over all 500. On
+    the same 4 subsets the theoretical error gives r2 = 0.931 (PFC) and 0.829 (CA1).
+  - CA1 uses 24 units per subset (Methods); the paper's SVC figure used 19.
+- claim: fig7d-behavioral-error-learning
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7d-behavioral-error-learning
+  notes: >-
+    Mean behavioural error over the 8 rats is 0.668 at session 1, 0.157 at session 4 and 0.180 at
+    session 8; the drop from 1 to 4 (0.511) is larger than the change from 4 to 8 (0.023), and
+    session 4 is lower than session 1 in 8 of 8 rats. The linear mixed model over sessions 1 to 4
+    has a slope of -0.166 per session (P = 5.8e-18). The per-rat values equal those of the
+    paper's results file (largest difference 1e-14).
+- claim: fig7e-readout-error-learning
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7e-readout-error-learning
+  notes: >-
+    Theoretical error (main reading), mean over rats, PFC 0.3626, 0.3167 and 0.3320 at sessions 1,
+    4 and 8 (drop 0.0459, change after session 4 0.0153); CA1 0.3523, 0.3121 and 0.3241 (0.0401,
+    0.0119). The criterion holds in both areas under both readings (empirical Hebbian error, PFC
+    drop 0.0733 and change 0.0313) and with 19 CA1 units. Both areas rise again at session 8.
+  deviations:
+  - The random subsets use this attempt's seeds; the per-session means agree with the paper's file
+    to a median relative difference of 0.14% (PFC theory).
+- claim: figs12c-behavior-readout-r2
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:figs12c-behavior-readout-r2
+  measured:
+  - 0.493
+  - 0.508
+  notes: >-
+    Squared correlation over the 64 points between behavioural error and theoretical error, CA1
+    0.493 and PFC 0.508 (P = 1.0e-10 and 4.0e-11), both within tolerance. With the empirical
+    Hebbian error CA1 is 0.579 (outside) and PFC 0.536. With the code's 19 CA1 units the
+    theoretical reading gives 0.475, and the paper's results file gives 0.477 and 0.510. Per rat
+    the r2 ranges from 0.111 (JS34, CA1) to 0.979 (JS21, PFC).
+- claim: fig7f-theory-vs-empirical
+  outcome: not_reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7f-theory-vs-empirical
+  notes: >-
+    The correlation part holds (r = 0.983 in PFC, 0.948 in CA1, P below 1e-31), but the mean
+    absolute difference is 11.55% of the mean empirical error in PFC (0.0341 against 0.2955) and
+    10.69% in CA1 (0.0311 against 0.2914), above the criterion's 10%. With the code's 19 CA1 units
+    it is 8.91% and CA1 passes, which would make the outcome partially reproduced. The theory lies
+    above the empirical error, by 0.048 (PFC) and 0.044 (CA1) in the lowest-error quarter and 0.015
+    and 0.016 in the highest, the bias at low error the legend describes. The paper's own results
+    file gives 11.55% in PFC and 9.04% in CA1 (19 units), so the bound fails on the paper's numbers
+    in PFC as well. Whether the 10% bound misreads the legend is asked of a reader in
+    questions/wakhloo-2026.yaml; the outcome is as the claims file has it.
+- claim: fig7g-total-dimension-drops-early
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7g-total-dimension-drops-early
+  notes: >-
+    Mean total dimension, session 1 to 4, PFC 15.833 to 14.516 and CA1 19.537 to 18.130 (19 units,
+    16.027 to 15.128), lower at session 4 in 8 of 8 rats in each area; mixed slopes over sessions 1
+    to 4 of -0.426 (P = 1.3e-14) and -0.485 (P = 3.5e-08).
+- claim: fig7h-task-dimension-increases
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7h-task-dimension-increases
+  notes: >-
+    Reading (a) holds in both areas; mean task-relevant dimension at sessions 1, 4 and 8, PFC
+    7.131, 9.040 and 9.543, CA1 6.892, 9.134 and 9.008 (19 units, as the code), higher at session 4
+    in 7 of 8 PFC and 8 of 8 CA1 rats. Reading (b) fails in both areas; the PFC mean falls from
+    session 6 to 7 (9.322 to 9.238) and the CA1 mean from 5 to 6 and from 7 to 8 (9.497 to 9.008).
+    With 24 CA1 units the means are 7.926, 10.286 and 10.260. Units replaced by the null model are
+    334 of 2327 in PFC and 685 of 3357 in CA1.
+  deviations:
+  - The GLM basis is the one the code chose (position bins 10 cm, velocity bins 3 cm/s, variances
+    100 and 40); its grid search over 108 basis settings was not repeated, as each setting costs
+    about 27 minutes here.
+- claim: fig7hk-measures-increase-early
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7hk-measures-increase-early
+  notes: >-
+    From session 1 to 4 all four measures increase in PFC (task dimension 7.131 to 9.040, SSF
+    0.6323 to 0.6661, correlation 0.0182 to 0.0337, SNF 0.3426 to 0.6985); in CA1 three of four do,
+    SSF falling from 0.6905 to 0.6787. The 19-unit CA1 variant gives the same three.
+- claim: fig7-late-reversal
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:fig7-late-reversal
+  notes: >-
+    Both readings hold in both areas. (a) Session 8 minus 4, PFC total dimension +0.936 and
+    correlation -0.00764, CA1 +0.784 and -0.00603. (b) Mixed slopes over sessions 4 to 8, PFC
+    +0.197 (P = 7.5e-07) and -0.00154 (P = 7e-05), CA1 +0.169 (P = 0.0022) and -0.00130
+    (P = 0.0022). The 19-unit CA1 variant gives the same signs.
+- claim: mixed-quadratic-dim-corr-snf
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:mixed-quadratic-dim-corr-snf
+  notes: >-
+    All 12 P values below 1e-5, the largest 7.2e-07 raw (CA1 SNF quadratic term) and 1.2e-06
+    adjusted, with opposite signs in all six models (PFC dimension gamma -0.592, eta 0.0788; the
+    paper's table gives -0.574 and 0.0765). The same holds with sessions coded 1 to 8 and with 19
+    CA1 units.
+- claim: mixed-quadratic-ssf-not-nonmonotonic
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:mixed-quadratic-ssf-not-nonmonotonic
+  notes: >-
+    Quadratic term of the SSF model, PFC eta -0.00115 (P = 0.366, adjusted 0.382), CA1 eta 0.00121
+    (P = 0.313, adjusted 0.342); 19 CA1 units give P = 0.419.
+- claim: mixed-quadratic-task-dim
+  outcome: reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:mixed-quadratic-task-dim
+  notes: >-
+    PFC gamma 0.714 (P = 7.9e-06) and eta -0.0664 (P = 0.0025); CA1 gamma 1.01 (P = 5.5e-11) and eta
+    -0.109 (P = 2.3e-07); all below 0.01 raw and adjusted. The paper's table gives PFC 0.716 and
+    -0.0662, CA1 0.997 and -0.108. The poorer fit in PFC is not judged.
+- claim: mixed-linear-ssf-task-dim
+  outcome: partially_reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:mixed-linear-ssf-task-dim
+  notes: >-
+    All four slopes are positive with P < 0.05. PFC SSF 0.0119 (P = 3.0e-06), PFC task dimension
+    0.249 (P = 1.2e-07) and CA1 task dimension 0.242 (P = 2.1e-06) meet their bounds; CA1 SSF
+    0.00787 has P = 0.00106 raw and 0.00134 adjusted, just above 1e-3. With the code's 19 CA1 units
+    CA1 SSF has P = 0.00065 and the full criterion holds (the paper's table gives 0.00055 with 19
+    units), so the shortfall rests on the unit count of the Methods and on random subsets near the
+    bound.
+- claim: late-trends-match-optimal
+  outcome: partially_reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:late-trends-match-optimal
+  notes: >-
+    PFC holds under both readings (session 8 minus 4, total dimension +0.936, task dimension +0.502,
+    SSF +0.0472, correlation -0.00764; mixed slopes over sessions 4 to 8 of the same signs). In CA1
+    total dimension (+0.784), SSF (+0.0531) and correlation (-0.00603) follow the prediction but
+    the task-relevant dimension falls (-0.126; slope -0.015, P = 0.82), so the criterion fails in
+    CA1 under both readings and with 19 CA1 units. The behavioural plateau it depends on
+    (fig7d-behavioral-error-learning) is reproduced.
+- claim: glm-cross-validated-d2
+  outcome: partially_reproduced
+  notebook: reproduce_wakhloo_2026.ipynb
+  output: claim:glm-cross-validated-d2
+  measured:
+  - 0.279
+  - 0.245
+  - 0.060
+  - 0.1005
+  notes: >-
+    Under the first reading (each unit's own best score, ddof 0) the mean population D2 is 0.279 in
+    PFC and 0.245 in CA1, both within tolerance, and the standard deviation over rats of the
+    session-averaged D2 is 0.1005 in CA1 (ddof 1 0.1075), within tolerance. In PFC it is 0.0599
+    (ddof 0) or 0.0640 (ddof 1) against 0.022 +- 0.0022, and no reading brings it within tolerance
+    (0.057 to 0.066); the per-rat PFC means run from 0.161 (KL8) to 0.336 (ZT2). Counting units
+    replaced by the null model as 0 gives PFC 0.301 and CA1 0.277 (outside). One PFC unit (JS21,
+    one session) has no valid score, so that session's mean is nan as in the code and the mean
+    over sessions skips it; the nan-mean over units gives 0.281. The chosen penalty is at an end of
+    the grid for 1202 of 2327 PFC and 1750 of 3357 CA1 units. Three of the four values match, so
+    the claim holds in part. How the paper computed the spread of 0.022 is a question for its
+    authors (findings).
+  deviations:
+  - The GLM basis is the code's chosen one; its grid search was not repeated (see
+    fig7h-task-dimension-increases). The cross-validation folds are scikit-learn's unshuffled
+    KFold, as GridSearchCV uses for a regressor, so they are fixed, not random as the criterion
+    supposes.
+findings:
+- kind: metadata_insufficient
+  statement: >-
+    Rat ZT2 is split over two files that both carry session_id "01" and the same subject, with
+    different units (233 and 240). Nothing in the files or the dandiset says that they are two
+    parts of one day, or their order; the paper's code supplies it. Their time ranges (206 to 14664
+    s and 14760 to 30586 s) are consistent with that order, and no spike train or position trace
+    is repeated between them or across any files.
+- kind: other
+  statement: >-
+    Position is sampled at 27.0 frames per second (ER1) and 32.3 to 33.1 in the other files, where
+    the paper states 30 fps; sessions last 13.0 to 20.0 minutes (most 15 to 16), where the paper
+    states about 20. JS15's timestamps run from 3605 to 90718 s, about 24 hours, in a dataset
+    described as one day.
+- kind: methods_unavailable
+  statement: >-
+    The Methods give a standard deviation across rats of the session-averaged population D2 of
+    0.022 in PFC, and the paper's code does not compute it. This attempt gets 0.060 to 0.066 under
+    every reading (ddof 0 or 1, null-model units with their own score or with 0), with per-rat PFC
+    means from 0.161 to 0.336, while the CA1 value (0.1) is matched. Question for the authors - how
+    was the 0.022 computed, and over which units and sessions?
+- kind: code_mismatch
+  statement: >-
+    The Methods use 19 PFC and 24 CA1 units per subset; the paper's code
+    (run-pfc-hp-analysis-rats.py) and its results files use 19 in both areas, with the 24 commented
+    out. The fewest units kept in a session are 19 (PFC) and 24 (CA1), so either is possible. The
+    choice moves the CA1 SSF slope across the 1e-3 bound (P = 0.00106 with 24, 0.00065 with 19).
+- kind: paper_inconsistency
+  statement: >-
+    The Results give R2 = 0.48 for CA1 behaviour against readout error and the Fig. 7 legend 0.49;
+    the code prints 0.477.
+- kind: code_mismatch
+  statement: >-
+    The SVC comparison notebook (figures/SM-svm-comparison-fig.ipynb) loads an older results file
+    (abstraction/results/<area>_results_nu_dt_0.5.npy) that is not in the repository, so the
+    Supplementary Fig. 3 rat panels cannot be traced to the published results files.
