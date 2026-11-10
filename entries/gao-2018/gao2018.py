@@ -35,8 +35,8 @@ Where the parameters come from:
   standard choice in this task (an early lick restarts the epoch, so its timing differs), and
   the notebook reports how many trials it drops.
 - Neural analyses also leave out trials outside the units' observation intervals (`obs_intervals`
-  of the units table). Only BAYLORCD8 20171020 has any: its spikes end at 7221 s and its last 127
-  trials, to 8481 s, hold no spike of any unit.
+  of the units table). Only BAYLORCD8 20171020 has any: its observation intervals end at
+  7221.8 s and its last 127 trials, to 8481.4 s, hold no spike of any unit.
 - Time courses use trials whose sample and delay epochs last 1.3 s (within 10 ms), aligned to
   the go cue; trials with longer epochs are counted and dropped. A standard choice.
 """
@@ -73,6 +73,7 @@ class Session:
     site: str            # ogen site name (Fastigial / Dentate)
     site_hemisphere: str
     rec_ml: str          # recording coordinate, mediolateral, from the electrode group
+    probe: str           # probe_type, from the electrode group
     trials: pd.DataFrame
     spikes: list = field(repr=False)     # one array of spike times (s) per unit
     waveforms: np.ndarray = field(repr=False)
@@ -122,7 +123,7 @@ def _read(asset) -> Session:
         eloc = json.loads(eg.location)
         s = Session(path=asset.path, subject=nwb.subject.subject_id, genotype=nwb.subject.genotype,
                     site=site.name, site_hemisphere=sloc.get("hemisphere"),
-                    rec_ml=eloc.get("rec_coordinate_ml"), trials=trials.drop(columns=["session_directory"]),
+                    rec_ml=eloc.get("rec_coordinate_ml"), probe=eloc.get("probe_type"), trials=trials.drop(columns=["session_directory"]),
                     spikes=spikes, waveforms=wf, cell_type=ct, wf_rate=rate, obs_intervals=obs,
                     units_columns=cols, groups=groups)
         s.trials["session_file"] = trials["session_directory"].str.split("/").str[-1]
