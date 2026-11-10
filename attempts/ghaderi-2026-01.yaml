@@ -370,41 +370,33 @@ outcomes:
   - 3 subsets per session for 5 to 45 neurons (paper 100); the grid search is run with one subset, at
     5, 25 and 50 neurons only.
 - claim: fig5c-cluster-removal
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: not_reproduced
   notebook: decoding_clusters_whisker.ipynb
   output: claim:fig5c-cluster-removal
-  proposed:
-    outcome: not_reproduced
-    reason: The Methods' reading is not reproduced (cluster 25 p_FDR 0.085 in wM2 and ALM, and cluster
-      11 also significant in wS1), and the code's reading is not reproduced in 4 of its 5 runs (seed sets 1
-      and 2, cluster 25 not significant; the mean of the three sets, three other pairs significant;
-      the code's quiet rule, cluster 11 also significant in wS2). Only seed set 0 gives partial, and it
-      has no claim to be the main run. The readings therefore agree on not reproduced, except in one
-      run of one reading, which is what the verifier's second round found (decoding_clusters_whisker.ipynb
-      cells 7 and 8). The claim depends on fig4b-named-clusters, which is blocked, and the protocol blocks
-      a claim whose dependency is blocked; fig4b is blocked only on what "mostly" means for cluster 1,
-      while its parts on clusters 11 and 25, the ones this claim uses, hold under both readings, so the
-      third round is asked to judge whether the dependency still applies.
-  notes: The verified outcome is blocked; a change to not reproduced is proposed (above), as the
-    verifier's second round found. Code's nu-SVC, seed set 0, cluster 11 lowers
-    delay decoding in wM2 by 4.61 +/- 0.89 and ALM by 4.45 +/- 1.20 points (FDR p 0.0009 and 0.0002)
-    and not significantly in A1, wS1, wS2; cluster 25 by 1.30 +/- 0.53 and 1.70 +/- 0.57 (FDR p 0.048
-    both); all four within tolerance; one other pair is significant (cluster 24 in A1, 0.49 points, p
-    0.029), so partially reproduced. In seed sets 1 and 2 cluster 25 is not significant (FDR p 0.075
-    to 0.234), and the mean of the three sets has the four values within tolerance and significant
-    but three other pairs significant (cluster 2 in wM2, cluster 13 in wM2 and ALM), so not
-    reproduced; with the code's quiet rule cluster 11 is also significant in wS2, which the claim excludes
-    (and cluster 26 in wM2), so not reproduced. Seed set 0 is the only run that gives partial; it was
-    the first run, not a chosen main run. Methods' grid search, cluster 11 lowers wM2 by
-    4.17 and ALM by 4.72 points (significant) but also wS1 by 0.20 (FDR p 0.030), and cluster 25's
-    1.31 and 1.91 points are not significant (FDR p 0.085), so not reproduced. It also depends on
-    fig4b-named-clusters, blocked for the same reason; the cluster labels themselves link fully.
+  notes: Both readings give not reproduced, so the criterion's block for readings that disagree does not
+    apply. Methods' grid search (one run, clusters 11 and 25 only), cluster 11 lowers wM2 by 4.17 and ALM
+    by 4.73 points (significant) but also wS1 by 0.20 (FDR p 0.030), and cluster 25's 1.31 and 1.92
+    points are not significant (FDR p 0.085), so not reproduced. Code's nu-SVC, seed set 0, cluster 11
+    lowers delay decoding in wM2 by 4.61 +/- 0.89 and ALM by 4.45 +/- 1.20 points (FDR p 0.0009 and
+    0.0002) and not significantly in A1, wS1, wS2; cluster 25 by 1.30 +/- 0.53 and 1.70 +/- 0.57 (FDR p
+    0.048 both); all four within tolerance; one other pair is significant (cluster 24 in A1, 0.49
+    points, p 0.029), so partially reproduced. In seed sets 1 and 2 cluster 25 is not significant (FDR p
+    0.075 to 0.234), and the mean of the three sets has the four values within tolerance and
+    significant but three other pairs significant (cluster 2 in wM2, cluster 13 in wM2 and ALM), so not
+    reproduced; with the code's quiet rule cluster 11 is also significant in wS2, which the claim
+    excludes (and cluster 26 in wM2), so not reproduced. Seed set 0 is the only run that gives partial;
+    it was the first run, not a chosen main run. The claim depends on fig4b-named-clusters, which is
+    blocked on what "mostly" means for cluster 1; this claim uses fig4b only for its cluster labels,
+    which link fully (cluster-label-link), and fig4b's parts on clusters 11 and 25 hold under both
+    readings (shares in wM2 and ALM 90.4% and 83.1%), so the third verification round judged that the
+    dependency does not apply. Confidence is moderate, since the Methods' reading is one run for two
+    clusters; testing the other 27 clusters could only add failures. The outcome was blocked
+    (methods_underspecified) until the third verification round, which agreed with the change.
   deviations:
   - The decrease is with minus without the cluster (the criterion's without minus with, sign turned).
     The two decodings share their random state.
-  - The grid search was run once, for clusters 11 and 25 only (all 29 would take about 74 min per run
-    by the time this run printed; 39 min in the run the verifier read).
+  - The grid search was run once, for clusters 11 and 25 only (all 29 would take about 40 min per run
+    by the time this run printed).
   - The code's decoder was run in three seed sets and with the code's quiet rule.
 - claim: fig5d-null-space-decoding
   outcome: blocked
@@ -1060,3 +1052,37 @@ verifications:
     response: The question already asked of a reader (questions/ghaderi-2026.yaml) now quotes the Supp.
       Fig. 18 legend; the claim is unchanged and the outcome stays not reproduced as tested on the claims
       file. Cell 90 and the notes quote the legend.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig5c-cluster-removal, blocked to not
+    reproduced) and the analysis behind it in decoding_clusters_whisker.ipynb (cells 6 to 8) and
+    reproduce_ghaderi_2026.ipynb (cells 56 and 59), with the claims file and the attempt record.
+  results:
+  - claim: fig5c-cluster-removal
+    agrees: true
+    outcome: not_reproduced
+    reason: The numbers come from the data, and both readings give not reproduced. The Methods' grid
+      search has cluster 25 at p_FDR 0.085 in both wM2 and ALM and cluster 11 significant in wS1 (0.20
+      points, p_FDR 0.030). The code's decoder fails in seed sets 1 and 2 (cluster 25 p_FDR 0.075 to
+      0.234), in the mean of the three sets (three other pairs significant where the criterion allows
+      two) and with the code's quiet rule (cluster 11 significant in wS2); only seed set 0 gives
+      partial. The choices were not made to reach the result, and the outcome does not depend on the
+      average over sets. The readings do not disagree, so the fig5b rule for disagreeing readings does
+      not apply. Confidence is moderate, since the Methods reading is one run for clusters 11 and 25 with
+      p_FDR 0.085; more runs cannot easily move it to partial, and testing the other 27 clusters could
+      only add failures. The dependency on fig4b-named-clusters does not touch the parts this claim
+      uses, since it takes only the cluster labels, which link fully (cluster-label-link), and fig4b's
+      parts on clusters 11 and 25 hold under both readings (shares in wM2 and ALM 90.4% and 83.1%; Hit
+      against Nogo CR 11.54 against -0.79 Hz and 3.56 against -0.29 Hz); if the protocol's rule is meant
+      to apply mechanically, without that judgement, the outcome would stay blocked. Minor fixes, which do
+      not affect the outcome; cell 6 prints about 77 min per run for the full grid search where cell 8
+      and the notes give 74, and the Methods row "mean of sets" in cell 7 is a copy of set 0, since only
+      one Methods run was made.
+    response: Applied; the outcome is now not reproduced and the proposal is removed. The Methods
+      reading no longer has a "mean of sets" row (cell 6 averages the seed sets of the code's decoder
+      only), and "main run" is no longer used for set 0. Cell 8 refers to the run time printed above
+      in place of a fixed number, and the deviation gives the time printed in this run (about 40 min). The
+      rounding of two Methods values is corrected to the printed table (ALM 4.73, cluster 25 in ALM 1.92). Cell 8, the
+      notebook summary, the README and the notes now give not reproduced and state the verifier's
+      judgement on the dependency on fig4b-named-clusters.
