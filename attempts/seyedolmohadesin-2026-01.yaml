@@ -1,0 +1,464 @@
+schema_version: 3
+id: seyedolmohadesin-2026-01
+datasets:
+- archive: dandi
+  id: "000981"
+  version: 0.260910.1747
+  doi: 10.48324/dandi.000981/0.260910.1747
+  relation: primary
+paper: doi:10.1016/j.cub.2026.08.040
+date: 2026-11-10
+entry: seyedolmohadesin-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42729283941
+inputs:
+- what: Chemical connectomes of the hermaphrodite (White et al. 1986 as annotated by Cook et al.) and
+    the male, as synapse counts (Supplementary Information 3, 41586_2019_1352_MOESM6_ESM.xlsx) and as
+    EM serial sections (Supplementary Information 5, 41586_2019_1352_MOESM9_ESM.xlsx), used by the
+    connectome claims.
+  source: doi:10.1038/s41586-019-1352-7 (Cook et al. 2019, supplementary information)
+- what: Synapse count matrices of datasets 7 and 8 (41586_2021_3778_MOESM4_ESM.xlsx), used by the
+    connectome claims.
+  source: doi:10.1038/s41586-021-03778-8 (Witvliet et al. 2021, supplementary table)
+- what: Method details the claims file cites from the paper's code (onset frames of config.py, the
+    response windows and baseline of compile_all_traces.ipynb, the code's extra exclusion filters of
+    Fig2&3_prepare_data.ipynb, the class collapsing of Fig5.ipynb, the band-pass filter and the
+    stimulus series of compile_all_traces.ipynb and Fig4_prepare_data.ipynb). Parameters only; no
+    data.
+  source: https://github.com/venkatachalamlab/whole-brain-chemosensory-responses at commit
+    b0dbdbf50c579d056d7991b7612fcff30091ffbd
+outcomes:
+- claim: recordings-animals
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:recordings-animals
+  measured:
+  - 22
+  - 25
+  notes: The subject descriptions give 22 hermaphrodites and 25 males, and the subject ids agree.
+    Files 20220403-h3 and 20220403-m3 hold the same trace table, which is h3's traces followed by
+    m3's; split in two, every animal has traces of its own. The traces cover 189 distinct
+    sex-shared neuron names (the paper says 196 sex-shared neurons were studied) and the 6
+    male-specific neurons.
+  deviations:
+  - The shared table of 20220403-h3 and 20220403-m3 is split at the row where its first label
+    recurs; the first block (187 traces) is taken as h3's and the second (195 traces, with the
+    male-specific neurons) as m3's, because their responses match the other animals' when read with
+    h3's and m3's stimulus orders respectively (mean r 0.58 and 0.54, against 0.32 and 0.31 with the
+    other order).
+- claim: fig5b-responsive-classes
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig5b-responsive-classes
+  measured: 86
+  notes: 86 of 89 canonical classes are responsive under exclusion (a) and 85 under (b), at p <= 0.05
+    and at p < 0.05 alike (not responsive AVD, I4 and RMG, and AQR under (b)). Each subclass has 32
+    tests (8 cues, 2 windows, 2 sexes), and 22.1% of all tests are significant, so the count is near
+    its ceiling; this is the paper's test as written.
+  deviations:
+  - The code's identification-confidence filter (conf == 1) cannot be applied; the dandiset has no
+    confidence values. Its time ranges to ignore are already blank in the traces; its ganglia to
+    ignore per recording cannot be checked.
+  - Onset frames are the code's (config.py ON_stim), as the claims file says; the dandiset's
+    annotations lie 1 to 3 frames later.
+- claim: fig5b-dimorphic-classes
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig5b-dimorphic-classes
+  measured: 83
+  notes: Dimorphic and responsive (reading a, the code's) 83 classes under exclusion (a) and 82 under
+    (b); dimorphic alone (reading b) 86 and 85. All four are within 80 plus or minus 8. 20.9% of the
+    1760 subclass-cue-window sex tests have p <= 0.05, 7.6% after Benjamini-Hochberg over all of
+    them.
+- claim: fig5b-layer-counts
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig5b-layer-counts
+  measured:
+  - 24
+  - 24
+  - 34
+  - 33
+  - 15
+  - 15
+  - 13
+  - 11
+  notes: Under exclusion (a) with dimorphism reading (a), sensory 24 responsive and 24 dimorphic, inter
+    34 and 33, motor 15 and 15, pharyngeal 13 and 11. Seven of eight counts are within tolerance
+    under each of the four combinations of exclusion and dimorphism readings; the motor dimorphic
+    count (15 of 15) exceeds 13 plus or minus 1.3 in all four. The outcome rests on the assumed layer
+    of each class.
+  deviations:
+  - The layer of each canonical class is assumed, as the claims file asks (CLASSES, OPEN). The code's
+    neuron_classes.json is not public. The assignment gives the paper's totals (24, 36, 15, 14) with
+    IL1 and URA as motor and RMG, SAA, SAB, SIA and SIB as interneurons; it is listed in the
+    notebook's data check and in chemo.LAYER_CLASSES.
+- claim: fig3-each-stimulus-mixed
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig3-each-stimulus-mixed
+  notes: Under both exclusion readings each of the 8 cues has dimorphic canonical classes (22 to 54)
+    and monomorphic ones (14 to 34). A canonical class is dimorphic to a cue when any subclass is,
+    and monomorphic when it is responsive to the cue and no subclass is dimorphic to it.
+  deviations:
+  - The criterion does not say whether classes are subclasses or canonical classes; canonical classes
+    are used, as Figure 5B counts them (claims file, criterion).
+- claim: sensory-dimorphic-and-monomorphic
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:sensory-dimorphic-and-monomorphic
+  notes: 21 of 24 sensory classes are dimorphic to one cue and monomorphic to another under exclusion
+    (a) (ASJ, FLP and OLL have no monomorphic cue) and 20 of 24 under (b) (AQR, IL2, OLL and URX),
+    against at least 22. All are dimorphic to at least one cue except IL2 under (b). The sensory
+    classes are those of the assumed layer assignment; the threshold of 22 is the claims file's
+    reading of "nearly every".
+  deviations:
+  - Sensory classes from the assumed layer assignment (see fig5b-layer-counts).
+- claim: layers-sensory-most-dimorphic
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:layers-sensory-most-dimorphic
+  notes: Under reading (c) the share of subclass-cue-window cells that are dimorphic is 0.272 in
+    sensory, 0.198 in inter and 0.171 in motor subclasses under exclusion (a), and 0.265, 0.200 and
+    0.144 under (b). Reading (a), class-cue combinations dimorphic, does not order them (sensory
+    0.484, inter 0.372, motor 0.417); reading (b), responsive, does under exclusion (b) only (0.688,
+    0.566, 0.508). The criterion asks for one reading.
+  deviations:
+  - Layers from the assumed assignment (see fig5b-layer-counts).
+- claim: fig3a-osmotic-onset-examples
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig3a-osmotic-onset-examples
+  notes: At sorbitol onset, exclusion (a), AWA p = 4.2e-11 (normalized difference 0.66) and AWB p =
+    7.1e-07 (0.64) are dimorphic; ASER p = 0.45 and ASH p = 0.80 are not, and both respond to
+    sorbitol in each sex (control comparison p 9.2e-09 or below). The same under exclusion (b).
+- claim: fig2b-bag-high-odor-monomorphic
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig2b-bag-high-odor-monomorphic
+  notes: Under all three readings and both exclusion readings. AWA sorbitol onset p = 4.2e-11, offset
+    p = 0.00027; BAG high odor onset p = 0.78, offset p = 0.38 (normalized differences 0.01 and 0.08),
+    responsive in both sexes (control comparison p 0.00029 or below).
+- claim: fig3a-ash-stimulus-dependent
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig3a-ash-stimulus-dependent
+  notes: At onset, ASH high salt hermaphrodites 1.66 and males 0.27, p = 8e-13; sorbitol p = 0.80 and
+    CuSO4 p = 0.13, both responsive in each sex. Same under exclusion (b) (9.8e-14, 0.98, 0.18).
+- claim: fig3a-aser-salt-concentration
+  outcome: not_reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig3a-aser-salt-concentration
+  notes: At onset ASER's low-salt response is hermaphrodites -0.029 and males -0.102 (normalized
+    difference 0.31), p = 0.055 under exclusion (a) and 0.059 under (b), just above the threshold.
+    Its high-salt response does not differ between sexes (p = 0.89) but is not responsive in either
+    sex (control comparison p = 0.72 and 0.33), so it is not monomorphic in the sense of Figures 3
+    and 5 either. About 60 responses per sex enter (ASER is one neuron).
+- claim: fig2e-i2-dimorphic
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig2e-i2-dimorphic
+  notes: Exclusion (a), I2 pheromone onset p = 4.4e-10 and offset p = 0.00014; sorbitol onset p =
+    0.034; high salt onset p = 0.015; low salt p 0.47 or more. Exclusion (b) gives 0.022 for sorbitol
+    and 0.010 for high salt. Onset only, all three hold; offset only, pheromone alone; the salt that
+    holds is the high one.
+- claim: pharynx-dimorphic-food-salt-pheromone
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:pharynx-dimorphic-food-salt-pheromone
+  notes: Under both exclusion readings pharyngeal subclasses are dimorphic to food (I4, M2, M5), to
+    pheromone (I2, I3, I4, I5, M2, M4, MC, NSM), to low salt (four or five) and to high salt (six).
+  deviations:
+  - Pharyngeal classes from the assumed layer assignment; the 14 pharyngeal classes are those of the
+    dandiset's own "pharyngeal" neuron group, so the assumption does not bear on this claim.
+- claim: fig2-awa-awb-nociceptive
+  outcome: partially_reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig2-awa-awb-nociceptive
+  notes: AWB responds to sorbitol and CuSO4 in both sexes (p 0.0046 or below at onset). AWA responds
+    to sorbitol in hermaphrodites (onset p = 3.5e-11, offset p = 0.00019) but not in males, and to
+    CuSO4 in neither sex nor window (smallest p 0.077 under exclusion (a), 0.085 under (b)). Three of
+    the four class-cue pairs hold. The criterion requires all four and names no partial outcome;
+    partially reproduced follows the protocol's definition (holds only in part).
+- claim: fig2-adf-m2-switch
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig2-adf-m2-switch
+  notes: ADF meets reading (b) under both exclusion readings, food onset 3.93 in hermaphrodites
+    against 0.76 in males and pheromone onset 5.96 in males against 0.07, both dimorphic (p below
+    1e-4); reading (a) fails as males also respond to food (onset p below 1e-4 against control). M2
+    meets reading (b) under both (food onset 0.31 against 0.01, pheromone onset 0.21 in males against
+    -0.01 and -0.02, p below 1e-4), and reading (a) under exclusion (b), where its hermaphrodite
+    pheromone response has p = 0.051.
+- claim: male-specific-unresponsive
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:male-specific-unresponsive
+  notes: Of 16 tests each in males, CEMD 0 significant, CEMV 2 (3 under exclusion (b)), MCM 1. Over
+    the sex-shared subclasses 22.3% of male tests are significant, so these classes are below the
+    general rate.
+- claim: tail-unresponsive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The trace tables hold head neurons only. The NeuroPAL segmentations identify tail neurons
+    (PHA, PHB, PLM, PVQ, DVA and others), but none has a trace, and the paper says tail neurons were
+    recorded. No other public source of these traces is named in the paper.
+- claim: figs2f-left-right-similar
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs2f-left-right-similar
+  notes: With band-passed traces the mean left-right r exceeds the mean r with other classes for 77
+    of 79 bilateral subclasses in hermaphrodites and 80 of 82 in males (mean 0.44 against 0.04 and
+    0.05); with raw traces for 72 of 79 and 73 of 82. Per animal, a median 85% of bilateral subclasses
+    meet it. MC is the main exception.
+- claim: figs3e-pattern-robust
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs3e-pattern-robust
+  notes: Of the 103 subclasses dimorphic under representation 1 (exclusion (a)), 87 (84%) remain
+    under representation 2, 94 (91%) under representation 3 and 80 (78%) under all three; exclusion
+    (b) 85%, 96% and 83%. Dimorphic subclass-cue-window pairs drop from 368 to 262 and 254 (355 to
+    256 and 255). Both readings hold.
+- claim: figs2e-no-order-effect
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs2e-no-order-effect
+  notes: All stimuli combined, cycle 1 onset responses. Under exclusion (b) no reading finds a
+    dependence (regression slope p = 0.119, per-animal regression p = 0.431, ANOVA p = 0.056), which
+    gives reproduced. Under exclusion (a) the regressions find none (p = 0.063 and 0.335) and the
+    ANOVA finds one (p = 0.034), which by the criterion gives blocked. The mean response by position
+    ranges from 0.036 to 0.063 with no trend. The claims file blocks a claim when its exclusion
+    readings give different outcomes (opening comment, EXCLUSION and READINGS). Per stimulus, the
+    ANOVA has p below 0.05 for food, osmotic, low odor, low salt and buffer under both exclusions;
+    the only slope below 0.05 is high salt under exclusion (a) (p = 0.011). The question of which test
+    and which neurons Figure S2E uses is for the paper's authors (findings).
+- claim: figs3fg-state-dependence-interneurons
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs3fg-state-dependence-interneurons
+  notes: Of the 24 combinations of the open motor-state details (AVA trace, change measure, fit
+    divided or subtracted) and the two exclusion readings, the interneurons have the highest share of
+    state-dependent dimorphic cells in 22, at q < 0.05 and at p < 0.05 alike; with AVAR alone, the fit
+    divided and (max - min) / mean they do not (sensory 0.43% against inter 0.31% at q < 0.05 under
+    exclusion (a)). With the mean of AVAL and AVAR, the fit divided and (max - min) / mean, the share
+    at q < 0.05 is 0.62% in interneurons against 0% in sensory and motor (exclusion (a)), and at p <
+    0.05 11.6% against 8.6% and 9.7%. The claims file blocks the claim when the motor-state readings
+    disagree (opening comment, READINGS). All shares at q < 0.05 are under 2%. The open details are a
+    question for the paper's authors (findings).
+  deviations:
+  - The exponential baseline is fitted to the whole AVA trace (a * exp(-t / tau) + c), the 5 s window
+    is the 13 frames before the onset frame, and the subtracted variant adds back the fit's mean;
+    these are standard choices for details the Methods do not give.
+- claim: figs2c-aib-state
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs2c-aib-state
+  notes: All 24 reading combinations meet the criterion. With the mean AVA trace, fit divided, (max -
+    min) / mean, exclusion (a), AIB's high-salt onset response is dimorphic in reverse (p below 1e-4)
+    and not in forward (p = 0.12), interaction p = 0.0027; its pheromone onset response has
+    interaction p = 0.0012. Offset responses do not meet it.
+  deviations:
+  - Motor-state details as in figs3fg-state-dependence-interneurons.
+- claim: figs8-state-insensitive
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs8-state-insensitive
+  notes: All 24 reading combinations meet the criterion. With the mean AVA trace, fit divided, (max -
+    min) / mean, exclusion (a), 81.7% of 672 forward against reverse comparisons over the Figure 2B
+    to 2E classes have p > 0.05, and 37 of 48 dimorphic sensory class-cue-window responses (77%) stay
+    dimorphic within the forward or the reverse state. Over all combinations, 79.8% to 87.2% and 69%
+    to 80%.
+  deviations:
+  - Motor-state details as in figs3fg-state-dependence-interneurons.
+- claim: fig4c-functional-connectivity-similar
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4c-functional-connectivity-similar
+  measured: 0.806
+  notes: Over 5995 subclass pairs, R2 = 0.806 under CORRELATION reading (b) (slope 0.871) and 0.806
+    under reading (a); with raw traces, R2 = 0.763.
+- claim: fig4-stimuli-correlate-sensory
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4-stimuli-correlate-sensory
+  notes: Over the 880 stimulus-subclass pairs, CORRELATION reading (b), mean |r| with sensory
+    subclasses 0.037 in hermaphrodites and 0.038 in males, with interneurons 0.017 and 0.017, with
+    motor neurons 0.016 and 0.015; root mean square r 0.073 and 0.078 against 0.020 to 0.026. The same
+    under reading (a). All correlations are small.
+  deviations:
+  - Layers from the assumed assignment (see fig5b-layer-counts).
+- claim: fig4-pharynx-uncorrelated
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4-pharynx-uncorrelated
+  notes: CORRELATION reading (b), mean |r| of pharyngeal to non-pharyngeal pairs 0.034 in
+    hermaphrodites and 0.038 in males, pharyngeal pairs 0.078 and 0.091, non-pharyngeal pairs 0.110
+    and 0.115; the same order under root mean square r and under reading (a). Pharyngeal pairs are
+    less correlated than non-pharyngeal ones.
+- claim: fig4-functional-dimorphism-small
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4-functional-dimorphism-small
+  notes: 5994 of 5995 subclass pairs (99.98%) have a functional dimorphism below 0.4 under
+    CORRELATION reading (b), the largest 0.414; the same under reading (a) (largest 0.411). Both
+    readings of "almost all" (95%, 99%) hold.
+- claim: connectome-link
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:connectome-link
+  notes: Cells are matched by name. Of the 195 recorded neuron names, 179 are in the White (Cook) matrix,
+    185 in the male matrix and 155 in each Witvliet dataset. Outside the pharynx and the ventral cord,
+    83 of 86 sex-shared subclasses (96.5%) have neurons in all four; AVG, SABD and SABV are not in the
+    Witvliet datasets. All 14 pharyngeal and 10 ventral cord subclasses are missing from at least one,
+    as the paper says. The six pairs of Figure 4F are among the most synaptically dimorphic pairs the
+    match gives (fig4f-synaptic-top-not-functional), which supports the link.
+- claim: connectome-normalization-sem
+  outcome: not_reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:connectome-normalization-sem
+  measured:
+  - 1.235
+  - 1.834
+  - 1.41
+  - 1.7
+  notes: Measured is reading (a), the code's set of synapses between recorded head neurons, with Cook's
+    EM sections (2832 synapses). No reading puts all four values within tolerance. With sections over
+    every synapse of the cells the three datasets share (reading b) the mean SEM before normalization is
+    1.143 (expected 1.14) but its SD 1.68 (2.07), and after normalization the mean SEM rises to 1.32 and
+    the SD is 1.55 (expected 0.62 and 0.87). With Cook's synapse counts the values are 0.69 to 0.71 before
+    and 0.66 after. The 95% quantiles are 22 to 25 for White's sections and 11 to 13 for the Witvliet
+    counts, so scaling to White's quantile raises the Witvliet weights.
+  deviations:
+  - The paper's merged connectome table is not public; the four connectomes are read from the journals'
+    supplements, and Cook's synapse counts (SI 3) and EM sections (SI 5) are both run, as the paper does
+    not say which it used.
+  - The 95% quantile is taken over the nonzero weights of the set; over all entries it is 0 or 1 for
+    the larger set.
+- claim: fig4d-functional-synaptic-uncorrelated
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4d-functional-synaptic-uncorrelated
+  notes: Over the 3403 pairs of the 83 subclasses in all four connectomes, functional on synaptic
+    dimorphism has slope -0.0028, R2 = 0.0001, p = 0.641 with Cook's counts, and slope -0.0005, p =
+    0.905 with sections; with the functional dimorphism of CORRELATION reading (a), p = 0.815 and 0.825.
+    The code's variant (regularization 3, pairs with both sums below 3 dropped) gives p = 0.0092 with
+    counts (400 pairs, slope -0.030, R2 = 0.017) and p = 0.085 with sections; its slope is negative.
+  deviations:
+  - Connectomes rebuilt from their sources, counts and sections both run (see
+    connectome-normalization-sem). The male connectome is normalized by the same quantile rule.
+- claim: fig4f-synaptic-top-not-functional
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4f-synaptic-top-not-functional
+  notes: With counts, 35 of the top 36 pairs by synaptic dimorphism (combined SEM below 5) have no
+    functional dimorphism under reading (a) and under (b); with sections 30 and 34. The six pairs of
+    Figure 4F have synaptic dimorphism 0.75 to 0.88 (counts) and functional p 0.071 to 0.881, none
+    dimorphic. Mean |r| of the six is 0.044 in hermaphrodites and 0.090 in males, and of the top 36
+    0.145 and 0.156 (counts); reported descriptively, as the criterion says.
+  deviations:
+  - Connectomes rebuilt from their sources (see connectome-normalization-sem).
+- claim: fig4g-functional-top-not-synaptic
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:fig4g-functional-top-not-synaptic
+  notes: With Cook's counts both orders of exclusion meet the criterion, (i) 21 of 36 pairs unconnected
+    (zero in both sexes) and 13 of 15 connected ones not dimorphic, (ii) 22 of 27 with both sums below
+    3 and 4 of 5 connected not dimorphic. With Cook's sections order (i) meets it (20 of 36, 13 of 16)
+    and order (ii) does not (10 of 27 unconnected under reading a; 21 of 27 under reading b, with 3 of
+    6 connected not dimorphic). The outcome rests on which form of the Cook connectomes the paper
+    used, which neither the paper nor its code says; the question is in the findings.
+  deviations:
+  - Connectomes rebuilt from their sources (see connectome-normalization-sem).
+- claim: figs20-multihop-no-match
+  outcome: reproduced
+  notebook: reproduce_seyedolmohadesin_2026.ipynb
+  output: claim:figs20-multihop-no-match
+  notes: Shortest-path indirect strengths are at least the direct ones for all 3403 pairs in both
+    sexes (median indirect hermaphrodite strength 5.85 with counts, median direct 0), and functional
+    on indirect dimorphism has p = 0.215 with counts and p = 0.963 with sections.
+  deviations:
+  - Graph over the 83 subclasses present in all four connectomes, edges from the summed undirected
+    subclass weights; connectomes rebuilt from their sources.
+- claim: figs1-behavior
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The drop-test avoidance indices are not in the dandiset, which holds imaging only, and the
+    paper names no other public source for them (its Data S1 to S4 are the spreadsheets behind
+    Figures 2 to 5; its code's FigS2.ipynb reads files not in the repository).
+findings:
+- kind: metadata_error
+  statement: Files sub-20220403-h3 (hermaphrodite) and sub-20220403-m3 (male) hold the same
+    382-row ActivityTraces table, with identical values and labels. It is the traces of both
+    animals, h3's (187 rows) followed by m3's (195 rows, with the male-specific CEM and MCM
+    neurons), as the responses show when read with each file's stimulus order. Nothing in the files
+    says which rows belong to which animal.
+- kind: metadata_error
+  statement: The subject sex field is "O" (other) in all 47 files; the sex is given only in the
+    subject description ("Adult hermaphrodite." or "Adult male.") and the subject id. The strain
+    field is "[]" in every file, though the paper names strain OH16230.
+- kind: metadata_error
+  statement: The StimulusInfo timestamps are labelled seconds but hold frame numbers (up to 4980 in
+    a 31-minute recording at 2.66 volumes/s).
+- kind: metadata_insufficient
+  statement: The activity traces have no unit and no description beyond "list of reading at each
+    frame". Blocks of frames are blank (the first 96 frames in 13 recordings, other ranges of 29 to
+    514 frames in seven) without a note of why; they are consistent with the per-recording time
+    ranges the paper's code ignores, whose spreadsheet is not public.
+- kind: metadata_insufficient
+  statement: The identification confidence of each neuron, which the paper's code uses to keep only
+    confident identities, is not in the dandiset.
+- kind: data_missing
+  statement: No tail neuron has a trace, though the paper says tail neurons were recorded and the
+    NeuroPAL segmentations identify them. The drop-test behaviour of Figure S1 is not in the
+    dandiset.
+- kind: other
+  statement: The stimulus annotations lie 1 to 3 frames after the fixed onset frames the paper's
+    code uses for every recording (1323 presentations 2 frames later, 82 three and 5 one). The traces
+    have 4979 frames, two fewer than the 4981 image volumes, and the stated rate is 2.66 volumes/s
+    where the Methods give 2.67.
+- kind: other
+  statement: The traces cover 189 distinct sex-shared neuron names across the 47 animals, where the
+    paper says 196 sex-shared neurons were studied.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which class is in which layer (sensory,
+    interneuron, motor, pharyngeal) for the counts of Figure 5? The code reads it from
+    neurons/neuron_classes.json, which is not in the repository. This attempt assumed IL1 and URA
+    motor and RMG, SAA, SAB, SIA and SIB interneurons, which gives the paper's totals; the per-layer
+    counts and the sensory-class claims rest on that choice.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. For the motor state from AVA (Methods, Classifying
+    motor state), which trace is used (AVAL, AVAR or their mean), how is a change of more than 20%
+    measured, and is the exponential baseline divided or subtracted? Of the 24 combinations run here,
+    22 put the interneurons highest for Figures S3F and S3G and 2 do not, which leaves that claim
+    blocked.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which form of the Cook et al. (2019) connectomes, synapse
+    counts or EM serial sections, went into the merged table of Figure 4, and over which values is
+    the 95% quantile taken? Neither reproduces the SEMs the Methods report (1.14 falling to 0.62), and
+    the Figure 4G result depends on the choice.
+- kind: other
+  statement: The connectome table the paper's code reads (prepared by S.J. Cook) is not in the
+    repository or the dandiset, nor are neurons/neuron_classes.json, the per-recording spreadsheet of
+    time ranges and ganglia to ignore, or the identification confidences.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which test and which neurons support "no dependence
+    on response amplitude as a function of stimulus order" (Figure S2E)? A regression on position
+    finds none, while a one-way ANOVA over positions finds one under the Methods' exclusion alone (p
+    = 0.034) and not with the code's filters (p = 0.056).
