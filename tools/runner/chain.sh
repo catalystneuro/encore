@@ -377,17 +377,24 @@ if [ -z "$pr" ]; then
     --body "$(python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
 fi
 log "pull request $pr"
+# The checks waited for are those of the commit just pushed, asked for by that commit. GitHub can take minutes to
+# start them when its runners are busy; until then the pull request still shows the checks of the commit before,
+# finished. On 2026-11-10 wakhloo-2026 was stopped that way, at once, on the failure its push had been made to
+# fix. The entry check (check.yml, job "check") must be among them: the dashboard's preview alone, which can
+# start first, is not the checks.
+head=$(git rev-parse HEAD)
 while true; do
   # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end.
   if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
     last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
     end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
   fi
-  s=$(gh pr checks "$pr" --json bucket 2>/dev/null) || { sleep 60; continue; }
-  echo "$s" | jq -e 'length>0 and all(.bucket!="pending")' >/dev/null && break
+  s=$(gh api "repos/{owner}/{repo}/commits/$head/check-runs?per_page=100" \
+        --jq '[.check_runs[] | {name, status, conclusion}]' 2>/dev/null) || { sleep 60; continue; }
+  echo "$s" | jq -e 'any(.name=="check") and all(.status=="completed")' >/dev/null && break
   sleep 60
 done
-if echo "$s" | jq -e 'all(.bucket=="pass" or .bucket=="skipping")' >/dev/null; then
+if echo "$s" | jq -e 'all(.conclusion=="success" or .conclusion=="skipped" or .conclusion=="neutral")' >/dev/null; then
   gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
   end "$d STOPPED: merging $pr failed"; exit 1
 fi

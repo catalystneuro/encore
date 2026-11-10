@@ -64,6 +64,13 @@ def target_papers() -> dict[str, list[str]]:
         data = yaml.safe_load(path.read_text()) or {}
         if data.get("paper"):
             papers.setdefault(path.stem, []).append(clean_doi(data["paper"]))
+    # A paper listed for datasets (papers/datasets/<key>.yaml; one that reuses a dataset, say) that none of its
+    # datasets' lists has: under its first dataset's folder, where a text supplied for it is stored.
+    for body in paper_records.listed().values():
+        doi = clean_doi(str(body.get("paper") or ""))
+        folders = [d["folder"] for d in body.get("datasets") or []]
+        if doi and folders and not any(doi in papers.get(f, []) for f in folders):
+            papers.setdefault(folders[0], []).append(doi)
     for d, fix in triage.items():
         drop = {clean_doi(x) for x in fix.get("not_papers", {})}
         papers[d] = [p for p in papers.get(d, []) if p not in drop] + [clean_doi(x) for x in fix.get("papers", {})]
