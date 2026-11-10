@@ -47,9 +47,9 @@
 #   screen at 20 to 60 Hz and continuous light. DeepLabCut tracking at 30 fps (nose, back, tail
 #   base).
 # - Fiber photometry (Fig. 3a-c, Supplementary Fig. 3a): DAT-Cre mice with retroAAV-FlpO in PnO,
-#   Flp-dependent Chrimson and DIO-GCaMP8f in VTA (opsin n = 5) and controls with a DIO-mCherry
-#   virus in place of the GCaMP-plus-opsin pair (n = 3; the control virus list is as written in
-#   the Methods); freely moving; 470-nm and 405-nm channels; Chrimson driven at 568 nm; 5, 10, 20
+#   Flp-dependent Chrimson and DIO-GCaMP8f in VTA (opsin n = 5) and opsin controls (n = 3) that,
+#   as the Methods list them, received the PnO retroAAV with Flp-dependent Chrimson and
+#   AAV-EF1a-DIO-HDM4-mCherry in VTA (the list names no GCaMP for them); freely moving; 470-nm and 405-nm channels; Chrimson driven at 568 nm; 5, 10, 20
 #   Hz trains and continuous light, 3 s.
 # - Acute silicon-probe recordings (Fig. 3d-k, Supplementary Fig. 3b-d): isoflurane-anaesthetised
 #   DAT-Cre mice (n = 7), ChR2 in DA neurons and Chrimson in VTA-PnO neurons; 64-channel optrodes,
@@ -91,9 +91,10 @@ claims:
   quote: we observed widespread axonal labeling across forebrain and brainstem regions, including
     nucleus accumbens, lateral hypothalamus and PnO
   criterion: Histology (Methods, Axonal projection quantification; ABBA registration, QuPath mean
-    mNeon intensity minus a local background ROI, averaged per animal and region). Reproduced
-    when the background-corrected mean intensity is above zero in nucleus accumbens, lateral
-    hypothalamus and PnO in every animal. The paper gives no values or animal count.
+    mNeon intensity minus a local background ROI, averaged per animal and region, summarised as
+    mean ± s.e.m. across animals). Reproduced when the mean across animals of the
+    background-corrected intensity is above zero in nucleus accumbens, lateral hypothalamus and
+    PnO. The paper gives no values, test or animal count; the threshold of zero is the reader's.
 - id: fig1-th-neg-all-project
   statement: All 32 recovered juxtacellularly labelled TH− VTA neurons sent axons outside the
     VTA.
@@ -212,8 +213,9 @@ claims:
     n: 10 TH+ and 12 PO neurons
   criterion: The paper does not define spike duration or the post hoc test. Readings for the
     measure are (a) the full action-potential width from onset to return to baseline of the
-    average juxtacellular waveform, (b) peak-to-trough width. Post hoc tests are pairwise
-    t-tests (Welch or pooled) with Benjamini-Hochberg FDR over the three pairs. Reproduced when
+    average juxtacellular waveform, (b) peak-to-trough width. The legend names only
+    FDR-corrected post hoc tests; they are read as pairwise t-tests (Welch or pooled) with
+    Benjamini-Hochberg FDR over the three pairs. Reproduced when
     under one reading both TH+ against LP and TH+ against PO give corrected p < 0.05 with TH+
     longer.
 - id: fig1e-firing-rate-no-difference
@@ -356,7 +358,8 @@ claims:
   criterion: Frame classification from the Methods (Open-Field; Open-field video) and the
     notebook Backward_Loc_min.ipynb, DLC back and tail base, likelihood ≥ 0.9, gap filled,
     6-frame moving average, movement vector of Back between consecutive frames, body axis tail
-    base to back, speed gate ≥ 0.2 px per frame, forward < 60°, backward > 120°; 200-ms bins over
+    base to back, speed gate ≥ 0.2 units per frame (the Methods do not name the unit; pixels
+    is a reading), forward < 60°, backward > 120°; 200-ms bins over
     −1 to +4 s, proportion per trial, averaged per mouse, then over mice (n = 8). Gap filling is
     not specified (linear interpolation is used, a standard choice); the notebook applies no
     likelihood filter, run as a variant. Reproduced when the mouse-averaged backward proportion
@@ -398,7 +401,8 @@ claims:
     (a) baseline −1 to 0 s (the peri-stimulus window of Methods, Open-Field) or −1.0 to −0.1 s
     (the frequency screen's baseline); (b) correction, FDR as in the legend or Holm as in the
     Methods ("Per-bin (1-s) open-field comparisons ... used Holm step-down across bins"); (c)
-    post hoc tests as paired t-tests of each bin against baseline. Reproduced when under one
+    post hoc tests as paired t-tests of each bin against baseline, with Wilcoxon signed-rank as
+    a variant (the paired tests of Methods, Open-field video). Reproduced when under one
     reading 0-1 s and 1-2 s are above baseline with corrected p < 0.05, 2-3 s is not significant,
     and 3-4 s is below baseline with p < 0.05. Partially reproduced when the 0-1 s and 1-2 s
     results hold and one of the other two does not.
@@ -413,8 +417,8 @@ claims:
   - fig2i-terminal-bins
   criterion: Classification as in fig2e-somatic-backward, n = 5 Gad2-Cre mice, 3-s 60-Hz 470-nm
     trains. Reproduced when the mouse-averaged backward proportion is above its pre-stimulus mean
-    in each 1-s bin of 0-3 s and within the pre-stimulus range (mean ± 2 s.e.m. over mice) in 3-4
-    s; the 2 s.e.m. band is the reader's choice.
+    in each 1-s bin of 0-3 s and the 3-4 s bin does not differ from baseline by the paper's test,
+    as judged in fig2i-terminal-bins.
 - id: fig2i-terminal-bins
   statement: With PnO terminal stimulation, the backward ratio is above baseline at 0-1, 1-2 and
     2-3 s and not different from baseline at 3-4 s.
@@ -687,7 +691,8 @@ claims:
     when under one reading both means are within tolerance and the Mann-Whitney test gives p <
     0.05 with DA broader.
 - id: fig3g-firing-rate-no-difference
-  statement: Tagged DA and VTA-PnO units have the same mean firing rate (about 7.1 Hz).
+  statement: Tagged DA and VTA-PnO units do not differ in mean firing rate (7.142 against 7.162
+    Hz).
   source: Figure 3g legend
   quote: 'Firing rate: DA (7.142 ± 1.02 Hz) vs. VTA PnO (7.162 ± 0.48 Hz) ( p = 0.649)'
   statistics:
@@ -933,3 +938,20 @@ claims:
     fraction of activated unit-windows is larger in reverse than forward and at least one unit
     non-modulated in reverse is activated in forward; the number of such units is reported. The
     paper gives no test.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, photometry controls. The header said the controls had a DIO-mCherry virus in place of the GCaMP-plus-opsin pair; the Methods (Stereotaxic injections) give them the PnO retroAAV with Flp-dependent Chrimson and AAV-EF1a-DIO-HDM4-mCherry in VTA. Corrected to the Methods' list.
+  - fig1a-gad2-long-range-projections. The criterion required labelling above background in every animal; the Methods summarise per region as mean ± s.e.m. across animals and give no test. Now judged on the mean across animals, with the zero threshold named as the reader's.
+  - fig1e-spike-duration. The post hoc test was stated as pairwise t-tests; the legend names only FDR-corrected post hoc tests. Now said to be a reading.
+  - fig2e-somatic-backward. The speed gate was given in pixels per frame; the Methods say units per frame. Pixels is now named as a reading.
+  - fig2f-somatic-bins. The post hoc test was given without a source; now cited to the paired tests of Methods, Open-field video, with Wilcoxon signed-rank as the variant those Methods name.
+  - fig2h-terminal-backward. Return to baseline was judged by a mean ± 2 s.e.m. band set by the reader, though the paper has a test for the 3-4 s bin (Fig. 2i, p = 0.33). Now judged on that test, as in fig2i-terminal-bins.
+  - fig3g-firing-rate-no-difference. The statement said the rates are the same; the legend reports only a non-significant Mann-Whitney test. Restated as not differing, with the two means.
+  - Open. The paper's code (github.com/CGonzC/VTAPnO_Locomotion_Analysis) was not reread in this check; the header's account of it, and the criteria details taken from it (photometry fit and denominator floor, opto-tag shuffle parameters), are as the first reader recorded them.
+  - Open. No PDF was supplied, so no figure panel was seen; claims rest on the text and legends.
+  - Open. The paper reports that VTA-PnO units have low-jitter and DA units more variable tagging latencies (Results, Acute opto-tagging); jitter is not quantified and has no claim of its own.
+  - Checked, unchanged. Every quote, p-value, CI, n and expected value against the text; the criteria's readings for the open details (time base of Fig. 2f and 2i, FDR or Holm, frequency-screen mice and windows, photometry z-score baseline, activation windows and FDR family, temporal class gaps, the contradictory Supplementary Fig. 2f legend).
