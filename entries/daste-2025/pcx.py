@@ -168,6 +168,8 @@ def load_session(asset_id: str, pre_s=PRE_S, post_s=POST_S, deconv=False) -> dic
     fs = 1.0 / np.median(np.diff(t0))
     n_pre, n_post = int(round(pre_s * fs)), int(round(post_s * fs))
     on_idx = np.searchsorted(t0, tr.stim_onset_timestamp.to_numpy() - 1e-9)
+    # trials whose window runs past either end of the recording; their edge frames are repeated
+    n_clipped = int(((on_idx - n_pre < 0) | (on_idx + n_post > len(t0))).sum())
     Xs, cells, Ds = [], [], []
     roi0 = 0
     for p in planes:
@@ -193,7 +195,9 @@ def load_session(asset_id: str, pre_s=PRE_S, post_s=POST_S, deconv=False) -> dic
     cells["projection"] = np.where(cells.red, meta["projection_area"], "untagged")
     out = dict(meta=meta, cells=cells, trials=tr, X=np.concatenate(Xs, 0),
                t=np.arange(-n_pre, n_post) / fs, fs=fs, n_pre=n_pre,
-               n_frames_session=len(t0), n_cells_all=int(iscell.sum()))
+               n_frames_session=len(t0), n_cells_all=int(iscell.sum()), on_idx=on_idx,
+               n_clipped=n_clipped, onset_error_s=float(np.abs(t0[np.minimum(on_idx, len(t0) - 1)]
+                                                               - tr.stim_onset_timestamp.to_numpy()).max()))
     if deconv:
         out["D"] = np.concatenate(Ds, 0)
     return out

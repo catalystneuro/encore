@@ -15,14 +15,14 @@ reasoning and the differences from the paper's method.
 | Go/NoGo neuron counts per session | Partially reproduced |
 | Labeling similar in OB-p and mPFC-p mice | Reproduced |
 | Transformer and MLP classifiers (four claims) | Blocked: Tables 5, 6 and 8 missing from the text |
-| Single-cell properties of Figure 2 (sparseness, mutual information, reliability) | Not reproduced (four claims); proportion responding reproduced |
+| Single-cell properties of Figure 2 (sparseness, mutual information, reliability) | Not reproduced (four claims, two resting on an assumption); proportion responding reproduced |
 | 30 Hz latencies and early peaks | Reproduced |
 | Identity decoding (Figure 2H to 2K) | Three reproduced, one blocked (the two windows disagree) |
-| Concentration tuning, decoding and sparseness (Figures 3, S5) | Two reproduced, one partially, one not |
+| Concentration tuning, decoding and sparseness (Figures 3, S5) | Two reproduced, two not |
 | Behavior (learning, anticipatory licking) | Learning not reproduced, licking reproduced |
-| Go/NoGo decoding (Figures 4D to 4J, S8) | Identity and any-p valence reproduced; three valence-timing claims not |
+| Go/NoGo decoding (Figures 4D to 4J, S8) | Identity, any-p valence and correct-trial valence reproduced (the last resting on an assumption); two valence claims not |
 | Differences growing over learning (Discussion) | Reproduced, resting on an assumption |
-| Tracked neurons (Figures 5, S10) | Four reproduced (one resting on an assumption), one partially |
+| Tracked neurons (Figures 5, S10) | Four reproduced (one resting on an assumption), one not |
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/daste-2025-01.yaml`](../../attempts/daste-2025-01.yaml).
