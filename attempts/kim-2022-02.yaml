@@ -444,6 +444,22 @@ findings:
     charging amplitude found (23% against 31%) may depend on the regions; leaving out membrane that
     faces a neighbouring cell in the groups of touching cells does not change it. Were the poles of
     a group taken on the group's outline or on each cell?
+- kind: format_error
+  statement: Each of the 18 files of 000489 stores its stitched two-channel image as one ImageSeries
+    with data of shape (22323, 22323, 2), a starting_time rate of 2.0 Hz and unit n.a. An ImageSeries
+    takes the first axis as time, so each file reads as 22323 frames of 22323 x 2 pixels; two
+    GrayscaleImage objects in an Images container, or a series of shape (1, 22323, 22323) per
+    channel, would describe the data. The three 25% files share the acquisition name Fig2_25.
+  found: on_prompt
+- kind: selection_undocumented
+  statement: The dish numbers in the subject ids of the 000489 Fig. 2 files run up to 18 (Fig2_50_18),
+    while 17 dishes are deposited (3 per amplitude, 5 at 50%), and neither the dandiset description
+    nor the files say which dishes were exposed, which were left out, or why. All unipolar dishes
+    have the session date 2021-07-29 and all 75% and 100% dishes 2021-08-24, a date with no unipolar
+    dish. Measured along bb', the 100% dishes take up more YP than the unipolar ones (largest mean
+    750.5 against 650.8 a.u.; higher at 9 of 11 ROI within 2 mm of the centre), where Fig. 2C shows
+    every second phase inhibiting uptake.
+  found: on_prompt
 verifications:
 - date: '2026-11-10'
   kind: agent
@@ -845,3 +861,109 @@ verifications:
     outcome: blocked
     reason: No thermometry photographs in either dataset.
     response: No change.
+reconciliation:
+  earlier: kim-2022-01
+  date: '2026-11-10'
+  blind: true
+  findings:
+  - finding: 1
+    status: still_present
+    now: 1
+    note: Both report that 000489 version 0.230518.1811 holds only the Fig. 2 dishes and the Fig1F
+      sample, that the dishes of Figs. 3 to 6 and the Fig. 1E thermometry are not in it, and that it
+      does not point to 000548, 000549 and 000550. The Fig. 7 data were used this time because the
+      registry now lists 000448 among the paper's datasets, not because 000489 changed.
+  - finding: 2
+    status: still_present
+    now: 3
+    note: Both find the YO-PRO-1 channel of sub-Fig2-0-03 and sub-Fig2-25-04 to be the same image while
+      their MemBrite channels differ, on the same version, leaving 2 unipolar dishes.
+  - finding: 3
+    status: still_present
+    now: 4
+    note: Both find the two channels of sub-Fig1F to be the same image.
+  - finding: 4
+    status: still_present
+    now: 12
+    note: In earlier_findings.ipynb all 18 files hold one ImageSeries of shape (22323, 22323, 2) with a
+      starting_time rate of 2.0 Hz and unit n.a., and the three 25% files share the acquisition name
+      Fig2_25. Only the shared name was reported in finding 6.
+  - finding: 5
+    status: still_present
+    now: 5
+    note: Both report that the images give no pixel size, electrode positions, ROI or field per ROI,
+      and both rely on 0.65 um per pixel, supported by the electrode spacing.
+  - finding: 6
+    status: still_present
+    now: 6
+    note: Both report the series description of 144 images (12 x 12) of a well of a six-well plate,
+      against the 216 images of 35 mm dishes in Methods 2.5.
+  - finding: 7
+    status: still_present
+    now: 13
+    note: In earlier_findings.ipynb the dish numbers run up to 18 with 17 dishes deposited, the dandiset
+      description says nothing of how dishes were chosen, unipolar dishes are all from 2021-07-29 and
+      75% and 100% dishes from 2021-08-24. The 100% dishes show more uptake than the unipolar ones
+      (largest mean 750.5 against 650.8 a.u. with this entry's ROI; 761.0 against 571.1 in the earlier
+      entry).
+  - finding: 8
+    status: still_present
+    now: 10
+    note: Finding 10 asks again how the ROI were placed along bb' and whether the t-test was paired,
+      questions (1) and (4) of the earlier five. The questions on the footprint areas, the Fig. 2B fit
+      method and the ROI fields are not asked again, though the blind attempt records its choices
+      for them as deviations; nothing in the dataset or the paper answers any of them.
+  outcomes:
+  - claim: fig2a-uptake-rises-with-field
+    earlier: partially_reproduced
+    note: A change in the claims file. The earlier file required the paired and unpaired tests to
+      agree and the earlier attempt found 3 of 5 amplitudes under both; the current file judges the
+      unpaired test, which passes for 5 of 5 here. Differences in method also move the unipolar and
+      25% unpaired tests below 0.05 (earlier p 0.11 and 0.15); YP0 and MB0 come from 0.2 mm discs
+      here against 0.5 mm discs, the 25% group has 2 dishes against 3, and the field is scaled to
+      15.1 kV/cm at the centre. The paired test passes for 3 of 5 in both.
+  - claim: fig2b-exponential-same-slope
+    earlier: not_reproduced
+    note: A change in the claims file. The earlier file ran 12 readings and the earlier attempt found
+      none meeting both parts; the current file fixes one reading (8 kV/cm, nonlinear least squares,
+      per-dish slopes), under which no slope differs and the exponential is better for 3 of 5. The
+      two attempts also map this case differently, the earlier to not reproduced and the blind one to
+      partially reproduced, as one part holds. The ROI method differences of fig2a-uptake-rises-with-field
+      apply too.
+  - claim: fig2c-inhibition-flat-above-8-7
+    earlier: not_reproduced
+    note: A difference in method. The earlier attempt found 50% and 75% differing under both tests (unpaired
+      p 0.0016 and 0.018), so the claims file's move to the unpaired test does not explain it. The high
+      field ROI is the centre ROI here and the ROI 0.2 mm out (15.24 kV/cm) there, and the smaller
+      footprint discs for YP0 and MB0 raise the unipolar mean at the low end of the range (87.9 a.u.
+      at 1.8 mm in earlier_findings.ipynb, against 47.7 a.u. at 8.94 kV/cm), which lowers the bipolar
+      percentages there.
+  - claim: fig2c-weaker-at-6-7
+    earlier: blocked
+    note: A difference in method. The earlier attempt blocked the claim because the unipolar mean at
+      6.75 kV/cm was -8.6 a.u., at background by its rule of twice the s.e.m.; with 0.2 mm footprint
+      discs the unipolar mean at 2.4 mm is 19 a.u. here, and the blind attempt applies no background
+      rule. The earlier attempt's variants with smaller background (left footprint, bottom side) also
+      gave a testable claim.
+  - claim: fig7-charging-time-constant
+    earlier: blocked
+    note: A change in the protocol. Under pilot-12 the earlier attempt tested 000489 alone and blocked
+      the Fig. 7 claims as resting on 000448; under pilot-14 the paper's datasets include 000448, which
+      the blind attempt used.
+  - claim: fig7-bipolar-overshoot
+    earlier: blocked
+    note: A change in the protocol, as for fig7-charging-time-constant; the data are in 000448, which the
+      earlier attempt did not use.
+  - claim: fig7-summation-without-buildup
+    earlier: blocked
+    note: A change in the protocol, as for fig7-charging-time-constant; the data are in 000448, which the
+      earlier attempt did not use.
+  protocol: Pilot-13 raised the limit on a notebook's run time from 30 to 60 minutes; neither attempt came
+    near it (the blind attempt's notebook ran in 514 s), so it changed nothing here. Pilot-14 filed records
+    by paper, with one claims file for the paper and one attempt that uses every dataset the paper rests
+    on. The claims file was written again for the paper, with three more Fig. 7 claims (25 against 22),
+    each claim naming its dataset, and single main readings (the unpaired test, one Fig. 2B cutoff and
+    fit) where the earlier file required readings to agree. The blind attempt therefore used 000448 and
+    tested the six Fig. 7 claims, three of which the earlier attempt blocked as outside 000489, and it
+    blocks the Figs. 3 to 6 claims as dataset_missing, listing 000548, 000549 and 000550 under
+    missing_datasets, where the earlier attempt blocked them as other.
