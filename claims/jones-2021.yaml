@@ -1,0 +1,1213 @@
+# Claims for Aery Jones, Rao, Zilberter, ..., Huang & Frank (2021), Cell Reports 37, 110159,
+# tested on dandiset 000165.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC9069800, NIHMS1795940), full
+# text with STAR Methods and figure legends, and its main supplement PDF
+# (NIHMS1795940-supplement-Main_supplement.pdf: Figures S1 to S7 and Tables S1 to S6), as
+# stored under paper/. The version of record was not read. Supplementary Table S7 (an xlsx file,
+# effects stratified by sex) is not under paper/ and was not read; only the claim
+# sex-stratified-effects needs it.
+#
+# Code read: github.com/emilyasterjones/interneurons_modulate_drive, tag v1.0.0, commit 63b1acb
+# (archived as Zenodo doi:10.5281/zenodo.5618979), MATLAB. It holds preprocessing (ripple,
+# dentate spike and MUA extraction, position and velocity), rest analyses (ripple rates and
+# descriptors, SWR-triggered MUA, spectrograms, coherence, CSD, SW amplitude, instantaneous
+# frequency, dentate spikes), run analyses (continuous spectrograms, coherence, comodulation,
+# instantaneous frequency, MUA, velocity) and the statistics (calcLMM.m, calcjointLMM.m,
+# calcInteraction.m, calcunpairedLMM.m, HBcorrect.m, runcalcLMM_figs.m). It reads FilterFramework
+# data structures, not the NWB files.
+#
+# Data the paper used (STAR Methods, Method details; Figure legends). PV-Cre, SST-Cre and
+# PV-Cre/SST-Cre mice injected in the DG hilus with AAV5-hSyn-DIO-hM4D(Gi)-mCherry, or with an
+# empty mCherry vector, implanted in right dorsal hippocampus with a 32-site probe. Each mouse
+# had 6 daily sessions alternating vehicle and CNO (2 mg/kg i.p., 1 hour before recording).
+# Cohort 1 (5 PV-Cre, 4 SST-Cre; single-shank 32-site probe with 50 um spacing): home cage, used
+# only for CSD (Figure 2). Cohort 2 (9 PV-Cre, 10 SST-Cre, 6 PV-Cre/SST-Cre; 4-shank probe):
+# home cage (Figure 3). Cohort 3 (8 PV-Cre, 7 SST-Cre, 7 PV-Cre/SST-Cre, 8 empty vector): 30 min
+# linear track sessions (Figures 5, 6), then home cage sessions (Figure 3); 1 PV-Cre and 1
+# SST-Cre died before the home cage sessions. Rest analyses thus use 16 PV-Cre, 16 SST-Cre, 13
+# PV-Cre/SST-Cre and 8 empty vector mice; run analyses 8, 7, 7 and 8. The Methods (Surgery)
+# give the single-shank probe to cohort 3, while the Results and Figure 2A give it to the first,
+# CSD, cohort; the author identifies the probe from the data. Home cage sessions 60 min at 30
+# kHz; linear track sessions 30 min at 20 kHz; video at 30 frames/s. The deposit holds 0-300 Hz
+# LFP, MUA spike times, position, and electrode, mouse and session metadata (Data and Code
+# Availability). Measured variables are LFP and MUA per site in CA1 (pyr, sr, slm), CA3 (pyr,
+# sr) and DG (hilus, granule cell layer), and the mouse's velocity.
+#
+# Method M, shared by the LMM claims (every claim that says "Method M"). Each part is cited.
+#  - Periods. Rest is extended immobility, after the Gaussian-smoothed velocity has been below
+#    1 cm/s for 30 s or more (Methods, Analysis of neural data, paragraph 2; code
+#    runcalcriprates.m, get2dstate immobilecutoff 1 and immobilitytime > 30). Run is velocity
+#    above 1 cm/s (Methods, paragraph 7; code runcomod.m, $vel > 1).
+#  - Sites. SWRs detected on the CA1 site closest to the centre of the pyramidal layer; MUA on
+#    the site of the layer with the highest MUA (Methods, paragraphs 2 and 5). Rest SG power in
+#    CA1-sr, CA3 (pyr and sr) and DG (hilus and granule cell layer) (paragraph 3). Run features
+#    in CA1-pyr for the figures (Results, SG during movement, paragraph 1), CA3 (pyr and sr) and
+#    DG (hilus and granule cell layer) (Methods, paragraph 7); a region's value per time bin is
+#    the mean over its sites (code run_continuous_specgram.m, avgSGpwr).
+#  - Events and features as the Methods define them (Analysis of neural data, paragraphs 2 to
+#    7): ripple band 125-200 Hz, Hilbert envelope smoothed with a 4 ms Gaussian, above 3 SD for
+#    at least 15 ms; theta 5-11 Hz, SG 20-50 Hz, FG 50-110 Hz during run; multitaper
+#    spectrograms with a 1 s window during run (code continuous_specgram.m, tapers [3 5]);
+#    instantaneous frequency from interpeak times. The code also drops events within 0.4 s of
+#    the epoch edges and events also crossing 5 SD on 16 or more channels (getvalidrips.m),
+#    followed here as the Methods are silent. The code counts SWRs for rate, length and chains
+#    at 5 SD (runcalcriprates.m binrange [5 50]; runripdescript.m minstd 5) and for MUA at 3 SD
+#    (runRTMUA.m); the Methods say 3 SD, which is the main reading, and the code's 5 SD for
+#    rate, length and chains is a variant.
+#  - Data points of the model are events for SWR features, time bins for continuous measures
+#    (1 min for SWR rate, 100 ms for MUA, 1 s for all others) and peaks for continuous
+#    frequency (Quantification and statistical analysis, paragraph 2).
+#  - Treatment effect, per genotype. A linear mixed model fitted by maximum likelihood,
+#    feature ~ treatment + (treatment|animal), with an F test of the treatment fixed effect
+#    against the intercept-only model (paragraph 2; code calcLMM.m, fitlme and coefTest). The
+#    direction is the sign of the treatment coefficient (CNO minus vehicle).
+#  - Genotype difference ("PV vs SST"). Data of the two genotypes pooled; a likelihood ratio
+#    (chi-square) test of feature ~ treatment + (treatment|animal) against the model with
+#    genotype and treatment (paragraph 2; code calcjointLMM.m fits
+#    Measure~Genotype*Treatment+((Genotype*Treatment)|Animal), calcInteraction.m compare()).
+#  - Log transform, open. The Methods log-transform a feature when its errors are not Gaussian
+#    (they were right skewed); the code's figure script sets logtransform = 1 for every
+#    feature, shifting the data to a minimum of 0.001 when they reach 0 or below
+#    (runcalcLMM_figs.m, calcLMM.m). Readings (a) log for features whose residuals are right
+#    skewed, the rest untransformed (Methods, main); (b) log for all features (code). Both are
+#    run.
+#  - Significance. Holm-Bonferroni at alpha 0.05 across an experiment, defined as the 24 rest
+#    comparisons (Figures 2-4, S2-S3) or the 36 run comparisons (Figures 5, 6, S4-S5), within one
+#    genotype or within the between-genotype tests (Quantification, paragraph 3; code
+#    HBcorrect.m). When the full family is not computed, p < 0.05/24 (rest) or 0.05/36 (run)
+#    suffices for significance and p >= 0.05 for its absence, as both hold under Holm whatever
+#    the other p-values are. For Figures S6 and S7 the family is the same set of comparisons for
+#    the double-suppression and empty vector groups (code runcalcLMM_figs.m, Figures 6, S5
+#    section).
+#  - A claimed effect is reproduced when its direction matches and it is significant; a claimed
+#    absence ("no change", "not CA1") is reproduced when the same test is not significant,
+#    with its p-value and coefficient reported either way.
+schema_version: 2
+paper: doi:10.1016/j.celrep.2021.110159
+claims:
+- id: fig1-tables1-expression
+  statement: hM4D expression is highly co-localized with PV and SST and extends throughout DG and
+    CA3, with no expression in CA1 or CA2.
+  source: Results, Recording in vivo hippocampal LFP, paragraph 1; Figure 1D, Figure S1A-C, Table S1
+  quote: HM4D expression was highly co-localized with PV and SST expression (Figure S1A–C and Table
+    S1) and extended throughout DG and CA3 from dorsal to ventral hippocampus, with no expression in
+    CA1 or CA2
+  criterion: Histological cell counts (Table S1) are not among the deposited data the paper lists
+    (Data and Code Availability). Where per-animal counts are available, reproduced when the
+    proportions in Table S1 are matched within 10% for each animal.
+- id: figs1ef-exvivo-cno
+  statement: In ex vivo slices CNO hyperpolarizes hM4D-expressing PV+ and SST+ interneurons by 8.6
+    +/- 1.3 mV and changes their input resistance by 31.3 +/- 9.9 MOhm.
+  source: Results, Recording in vivo hippocampal LFP, paragraph 1; Figure S1E-F
+  quote: hyperpolarized resting membrane potentials by 8.6 ± 1.3mV (Figure S1E), and decreased input
+    resistance by 31.3 ± 9.9 MΩ (Figure S1F)
+  statistics:
+  - about: membrane potential change
+    test: 1-sample t test
+    statistic: t(9)=6.57
+    p: 0.0001
+    n: 4 PV-Cre, 4 SST-Cre and 2 PV-Cre/SST-Cre slices
+  - about: input resistance change
+    test: 1-sample Wilcoxon test
+    statistic: W = -55
+    p: 0.002
+    n: 4 PV-Cre, 4 SST-Cre and 2 PV-Cre/SST-Cre slices
+  expected:
+  - quantity: hyperpolarization of resting membrane potential with CNO
+    value: 8.6
+    tolerance: 1.3
+    unit: mV
+  - quantity: magnitude of input resistance change with CNO
+    value: 31.3
+    tolerance: 9.9
+    unit: MOhm
+  criterion: Whole-cell patch-clamp recordings in slices, not among the deposited data. The sign of
+    the resistance change is open in the paper, where the Results say it decreased and the Figure
+    S1F legend says CNO "increases input resistance"; either sign matches. Tolerances are the
+    stated spread (mean +/- SEM).
+- id: fig2ef-csd-sr
+  statement: During SWRs, current source density sources and sinks in CA1 stratum radiatum increase
+    when either PV+ or SST+ interneurons are suppressed, with no difference between genotypes.
+  source: Figure 2E-F; Results, SWR signatures, paragraph 2
+  quote: During SWRs, CSD sources and sinks in stratum radiatum – the layer of CA3 input – increased
+    when either PV+ or SST+ interneurons were suppressed (Figure 2C–F)
+  statistics:
+  - about: peak source, PV-Cre treatment
+    test: F test of the LMM
+    p: 0.00062
+    n: 5 PV-Cre mice
+  - about: peak source, SST-Cre treatment
+    test: F test of the LMM
+    p: 4.64e-5
+    n: 4 SST-Cre mice
+  - about: peak source, PV vs SST
+    test: likelihood ratio test
+    p: 1
+  - about: peak sink, PV-Cre treatment
+    test: F test of the LMM
+    p: 0.00013
+    n: 5 PV-Cre mice
+  - about: peak sink, SST-Cre treatment
+    test: F test of the LMM
+    p: 1.24e-14
+    n: 4 SST-Cre mice
+  - about: peak sink, PV vs SST
+    test: likelihood ratio test
+    p: 1
+  criterion: Cohort 1 only. CSD as the second spatial derivative of the LFP after smoothing with a
+    triangular kernel; per SWR, the peak source and the peak sink in CA1-sr within the 100 ms after
+    SWR onset (Methods, Analysis of neural data, paragraph 4). The Methods do not give the kernel;
+    the code's RTCSD.m smooths each site with its neighbours as (a + 2b + c)/4, followed here.
+    Method M. Reproduced when source
+    magnitude and sink magnitude each increase significantly with CNO in both genotypes and the
+    genotype test is not significant; partially reproduced when three of the four treatment
+    effects hold.
+- id: fig3b-mua-during-swr
+  statement: Suppressing either interneuron class increases the recruitment of DG and CA3 MUA to CA1
+    SWRs, but not of CA1 MUA.
+  source: Figure 3B; Results, SWR signatures, paragraph 2
+  quote: suppressing either class increased the extent to which DG and CA3, but not CA1, MUA
+    increased during SWRs (Figure 3B)
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.13
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.46
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.00075
+  - about: CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.00076
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 5.5e-6
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 3.4e-5
+  criterion: 16 PV-Cre and 16 SST-Cre mice. Per SWR, the MUA rate between SWR start and end minus
+    the mean MUA rate over all immobility, divided by the SD of the immobility rate in 100 ms bins
+    (code RTMUA.m, normrate; the Methods do not define the normalization). Method M. Reproduced
+    when CA3 and DG increase significantly in both genotypes and CA1 does not change
+    significantly in either; partially reproduced when the CA3 and DG increases hold in one
+    genotype only.
+- id: fig3c-swr-rate-bidirectional
+  statement: Suppressing PV+ interneurons increases CA1 SWR rate while suppressing SST+ interneurons
+    decreases it, and the two effects differ significantly.
+  source: Figure 3C; Results, SWR signatures, paragraph 3
+  quote: Suppressing PV+ interneurons increased SWR rate while suppressing SST+ interneurons
+    decreased SWR rate, and these effects were significantly different between genotypes (Figure
+    3C)
+  statistics:
+  - about: PV-Cre treatment
+    test: F test of the LMM
+    p: 1.9e-6
+    n: 16 PV-Cre mice
+  - about: SST-Cre treatment
+    test: F test of the LMM
+    p: 4.6e-5
+    n: 16 SST-Cre mice
+  - about: PV vs SST
+    test: likelihood ratio test
+    p: 0.00098
+  criterion: SWR counts per 1 min bin of immobility (code calcriprates2.m, timecounts). Method M.
+    Reproduced when the PV-Cre effect is a significant increase, the SST-Cre effect a significant
+    decrease and the genotype test significant; partially reproduced when the two significant
+    effects have opposite signs but one of the three tests fails.
+- id: fig3d-swr-chains
+  statement: Suppressing either interneuron class decreases the proportion of SWRs that occur in
+    chains (within 200 ms of another SWR).
+  source: Figure 3D; Results, SWR signatures, paragraph 3
+  quote: There was also a decrease in the proportion of SWRs that participated in chains (Figure 3D)
+    in both genotypes
+  statistics:
+  - about: PV-Cre treatment
+    test: F test of the LMM
+    p: 0.001
+  - about: SST-Cre treatment
+    test: F test of the LMM
+    p: 2.5e-5
+  - about: PV vs SST
+    test: likelihood ratio test
+    p: 0.99
+  criterion: A SWR is in a chain when another SWR starts within 200 ms of its end (Methods,
+    paragraph 2; code ripdescript.m), intervals that run into an excluded period not counted.
+    Model data are SWR events with a 0 or 1 chain indicator (Quantification, events for SWRs).
+    Method M. Reproduced when both genotypes show a significant decrease.
+- id: fig3e-swr-length-sst
+  statement: Suppressing SST+ interneurons lengthens CA1 SWRs, an effect not seen with PV+
+    suppression, and the genotypes differ.
+  source: Figure 3E; Results, SWR signatures, paragraph 4
+  quote: SST+ interneuron suppression increased SWR length, an effect not seen following PV+
+    interneuron suppression (Figure 3E)
+  statistics:
+  - about: PV-Cre treatment
+    test: F test of the LMM
+    p: 0.033
+  - about: SST-Cre treatment
+    test: F test of the LMM
+    p: 0.0023
+  - about: PV vs SST
+    test: likelihood ratio test
+    p: 0.00034
+  criterion: SWR length from detection start to end, per event (code ripdescript.m). Method M.
+    Reproduced when the SST-Cre effect is a significant increase, the PV-Cre effect not
+    significant after correction, and the genotype test significant. Partially reproduced when
+    the SST-Cre increase holds but one of the other two does not.
+- id: swr-longer-100ms-sst
+  statement: With SST+ suppression the percentage of SWRs longer than 100 ms rises from 38.5% under
+    vehicle to 49.6% under CNO.
+  source: Results, SWR signatures, paragraph 4
+  quote: 'found an increase when SST+ interneurons were suppressed (% of SWRs > 100 ms: vehicle 38.5%
+    vs CNO 49.6%, paired t test, t(15) = 3.67, p = 0.002)'
+  statistics:
+  - test: paired t test
+    statistic: t(15) = 3.67
+    p: 0.002
+    n: 16 SST-Cre mice
+  expected:
+  - quantity: SWRs longer than 100 ms, vehicle, SST-Cre
+    value: 38.5
+    tolerance: 3.85
+    unit: '%'
+  - quantity: SWRs longer than 100 ms, CNO, SST-Cre
+    value: 49.6
+    tolerance: 4.96
+    unit: '%'
+  criterion: Per mouse and treatment, the percentage of CA1 SWRs of 100 ms or longer, pooled over
+    that treatment's sessions; the group values are means over the 16 SST-Cre mice; a paired t
+    test across mice. The code computes the fraction per session with length >= 100 ms
+    (ripdescript.m, riplong), its denominator being all detected events of the session. Readings
+    of the denominator (a) the valid SWRs of Method M; (b) all detected events, as the code. And
+    of pooling (c) pooled over sessions; (d) mean of session fractions. Reproduced when under one
+    reading both values are within tolerance and the paired t test gives p < 0.05 with CNO higher.
+- id: fig3f-swr-frequency-pv
+  statement: PV+, but not SST+, interneuron suppression increases the instantaneous frequency of CA1
+    SWRs.
+  source: Figure 3F; Results, SWR signatures, paragraph 5
+  quote: PV+, but not SST+, interneuron suppression increased the instantaneous frequency of SWRs
+    (Figure 3F)
+  statistics:
+  - about: PV-Cre treatment
+    test: F test of the LMM
+    p: 0.0012
+  - about: SST-Cre treatment
+    test: F test of the LMM
+    p: 0.033
+  - about: PV vs SST
+    test: likelihood ratio test
+    p: 0.018
+  criterion: Instantaneous frequency from the intervals between peaks of the ripple-filtered trace
+    within each SWR, averaged per SWR (code calcSWRinstfreq.m, avginstfreqs; Methods, paragraph
+    2). Readings of the model data (a) one mean per SWR (Quantification, events for SWRs); (b)
+    every interpeak value (code instfreqs). Method M. Reproduced when the PV-Cre effect is a
+    significant increase and the SST-Cre effect not significant after correction.
+- id: fig3g-sw-amplitude-pv
+  statement: PV+, but not SST+, suppression increases sharp-wave amplitude in CA1, and the genotypes
+    differ.
+  source: Figure 3G; Results, SWR signatures, paragraph 5
+  quote: PV+, but not SST+, interneuron suppression increased the instantaneous frequency of SWRs
+    (Figure 3F) and sharp-wave (SW) amplitude in CA1 (Figure 3G)
+  statistics:
+  - about: PV-Cre treatment
+    test: F test of the LMM
+    p: 6.4e-27
+  - about: SST-Cre treatment
+    test: F test of the LMM
+    p: 0.25
+  - about: PV vs SST
+    test: likelihood ratio test
+    p: 0.005
+  criterion: SW amplitude is the maximum absolute value of the Hilbert envelope of the 0-30 Hz
+    filtered trace during each SWR (Methods, paragraph 2), on the CA1-sr site (code
+    runcalcSWamp.m chooses the site; the Methods do not name the layer). The data-point count
+    for this feature in Table S3 (df 381794 against 112503 for SWR events) suggests one value per
+    SWR and site; readings (a) one value per SWR at one CA1-sr site; (b) one value per SWR per
+    CA1-sr site. Method M. Reproduced when the PV-Cre increase is significant, the SST-Cre effect
+    is not, and the genotype test is significant.
+- id: figs2a-swr-size-pv
+  statement: SWR size is smaller when PV+ interneurons are suppressed, despite no change in CA1 MUA
+    recruitment.
+  source: Figure S2A; Results, SWR signatures, paragraph 5
+  quote: SWR size was smaller when PV+ interneurons were suppressed (Figure S2A) despite no change in
+    CA1 MUA recruitment
+  statistics:
+  - about: PV-Cre treatment
+    test: F test of the LMM
+    p: 0.00048
+  - about: SST-Cre treatment
+    test: F test of the LMM
+    p: 0.07
+  - about: PV vs SST
+    test: likelihood ratio test
+    p: 0.011
+  criterion: SWR size is the peak of the ripple envelope in SD above baseline per SWR (code
+    ripdescript.m, ripstds = maxthresh; Table S3 "SWR Size (SD)"). Method M. Reproduced when the
+    PV-Cre effect is a significant decrease.
+- id: tables2-fast-ripples-pv
+  statement: Suppressing PV+ interneurons modestly increases the incidence of rare fast ripples in
+    CA1 (0.0004 to 0.0035 Hz), with no change in SST-Cre mice.
+  source: Results, SWR signatures, paragraph 3; Table S2, Fast Ripple Rate
+  quote: we did detect a modest increase in the incidence of rare fast ripples when PV+
+    interneurons were suppressed (Table S2)
+  statistics:
+  - about: PV-Cre, vehicle against CNO
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = 2.93
+    p: 0.003
+    n: 16 PV-Cre mice
+  - about: SST-Cre, vehicle against CNO
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = 1.17
+    p: 0.2
+    n: 16 SST-Cre mice
+  expected:
+  - quantity: fast ripple rate, PV-Cre vehicle
+    value: 0.0004
+    tolerance: 0.00004
+    unit: Hz
+  - quantity: fast ripple rate, PV-Cre CNO
+    value: 0.0035
+    tolerance: 0.00035
+    unit: Hz
+  criterion: Fast ripples per the Methods (paragraph 5) data downsampled to 5 kHz, filtered 125-600
+    Hz, events where the smoothed envelope exceeds 3 SD for at least 3 oscillations, classed as
+    fast when their mean frequency is above 250 Hz; rate per mouse over immobility, per treatment
+    averaged over sessions; Wilcoxon matched pairs test across mice (Table S2 note). The paper's
+    test needs signal above 300 Hz. Reproduced when the PV-Cre rates are within tolerance and the
+    PV-Cre test gives p < 0.05 with CNO higher; partially reproduced when the test holds but the
+    rates are outside tolerance.
+- id: tables2-detection-unchanged
+  statement: The SWR rate changes are not due to differences in SWR detection (ripple band mean and
+    SD) or in baseline MUA, which do not change with treatment in either genotype.
+  source: Results, SWR signatures, paragraph 3; Table S2
+  quote: This effect was not due to differences in SWR detection or baseline MUA (Table S2)
+  statistics:
+  - about: ripple band mean, PV-Cre
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = 1.6
+    p: 0.1
+  - about: ripple band mean, SST-Cre
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = 1.24
+    p: 0.2
+  - about: ripple band SD, PV-Cre
+    test: paired t test
+    statistic: t = 0.32, df 15
+    p: 0.8
+  - about: ripple band SD, SST-Cre
+    test: paired t test
+    statistic: t = 0.66, df 15
+    p: 0.5
+  - about: rest MUA, CA1-pyr, PV-Cre
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = -0.41
+    p: 0.68
+  - about: rest MUA, CA1-pyr, SST-Cre
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = -0.16
+    p: 0.88
+  criterion: A claim of absence. Per mouse and treatment, the mean and SD of the CA1-pyr ripple-band
+    (125-200 Hz) envelope over immobility, and the MUA rate over immobility at CA1-pyr, CA3-pyr and
+    DG-gc, each averaged over the mouse's sessions of that treatment. The paper's test per Table
+    S2 is a paired t test when the data are normal by Shapiro-Wilk with similar variances by F
+    test, otherwise a Wilcoxon matched pairs signed rank test (Quantification, paragraph 2, given
+    there for Table S1), at p < 0.05. Reproduced when none of the ripple-band mean, ripple-band SD
+    and the three rest MUA tests is significant in either genotype; not reproduced when any is.
+- id: tables2-rest-sg-pv
+  statement: Suppressing PV+ interneurons raises SG power in CA1 across all rest and raises its
+    variance in CA1, CA3 and DG; suppressing SST+ interneurons does not change baseline SG power.
+  source: Results, SWR-coincident SG, paragraph 2; Table S2, Rest SG Freq. Mean and SD
+  quote: Following suppression of PV+ interneurons, SG power in CA1 was higher across all rest during
+    CNO epochs (Figure 4A) – consistent with increased CA3 drive (Kemere et al., 2013) – and had
+    higher variance in all 3 subregions (Table S3)
+  statistics:
+  - about: SG mean, CA1-sr, PV-Cre
+    test: paired t test
+    statistic: t = 4.03, df 15
+    p: 0.001
+  - about: SG SD, CA1-sr, PV-Cre
+    test: Wilcoxon matched pairs signed rank test
+    statistic: Z = 3.52
+    p: 0.0004
+  - about: SG SD, CA3, PV-Cre
+    test: paired t test
+    statistic: t = 3.94, df 15
+    p: 0.001
+  - about: SG SD, DG, PV-Cre
+    test: paired t test
+    statistic: t = 3.47, df 15
+    p: 0.003
+  - about: SG mean, CA1-sr, SST-Cre
+    test: paired t test
+    statistic: t = 1.8, df 15
+    p: 0.09
+  expected:
+  - quantity: CA1-sr rest SG mean, PV-Cre vehicle
+    value: 109.51
+    tolerance: 10.95
+    unit: uV2
+  - quantity: CA1-sr rest SG mean, PV-Cre CNO
+    value: 127.6
+    tolerance: 12.76
+    unit: uV2
+  criterion: The text cites Table S3 for the variance, but the numbers are in Table S2. Per mouse
+    and treatment, the mean and SD over immobility of SG-band (30-50 Hz) power in CA1-sr, CA3 and
+    DG, averaged over the mouse's sessions; paired t test or Wilcoxon test as in Table S2's note,
+    at p < 0.05. Which power the table means (the squared envelope of the 30-50 Hz filtered
+    signal, or multitaper band power) is open; readings (a) squared Hilbert envelope of the
+    SG-filtered trace (Methods, paragraph 3, z-scoring uses the "SG filtered signal"); (b)
+    multitaper band power. Reproduced when the PV-Cre CA1 mean rises and the SD rises in all
+    three regions, each at p < 0.05, and the SST-Cre CA1 mean does not change; the expected values
+    apply only to the reading whose units match.
+- id: fig4d-swr-sg-power-pv
+  statement: Suppressing PV+ interneurons increases SWR-coincident SG power in CA1, CA3 and DG,
+    while suppressing SST+ interneurons does not change it; the genotypes differ in CA1.
+  source: Figure 4D, Figure S2B; Results, SWR-coincident SG, paragraph 2
+  quote: Suppressing PV+ interneurons led to greater SWR-coincident SG power in CA1, CA3, and DG ...
+    as suppressing SST+ interneurons did not change SG power either at baseline (Table S2) or
+    during SWRs
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 1.7e-23
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.14
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 0.00099
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 2.0e-5
+  - about: CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.068
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 2.2e-5
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 0.0058
+  criterion: Per SWR and site, SWR-triggered multitaper spectrogram with a 100 ms window; SG power
+    is the mean z-scored power over 30-50 Hz in 0-100 ms after detection; for CNO epochs the
+    z-scoring uses the mean and SD of the SG-filtered signal from the vehicle epoch of the day
+    before (Methods, paragraph 3; Results, paragraph 2). For vehicle epochs the Methods do not
+    say; they are z-scored by their own mean and SD over valid immobility, as the code does. The
+    code (RTspecgram3.m) z-scores every session, CNO included, by its own spectrogram mean and
+    SD, and uses SWRs of 5 SD; this is a variant, the Methods' z-scoring the main reading.
+    Regions CA1-sr, CA3, DG. Method M. Reproduced when the PV-Cre increase is significant in all three regions, no
+    SST-Cre effect is significant, and the CA1 genotype test is significant; partially
+    reproduced when the CA1 parts hold.
+- id: fig4e-swr-sg-coherence-pv
+  statement: Only PV+ suppression enhances the increase in SG coherence between CA1 and CA3 and
+    between CA1 and DG during SWRs.
+  source: Figure 4E; Results, SWR-coincident SG, paragraph 2
+  quote: Similarly, only PV+ suppression enhanced the increase in SG coherence between CA1 and CA3 or
+    DG during SWRs, (Figure 4E)
+  statistics:
+  - about: CA1-CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.0011
+  - about: CA1-CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.17
+  - about: CA1-CA3, PV vs SST
+    test: likelihood ratio test
+    p: 9.4e-6
+  - about: CA1-DG, PV-Cre
+    test: F test of the LMM
+    p: 0.00097
+  - about: CA1-DG, SST-Cre
+    test: F test of the LMM
+    p: 0.43
+  - about: CA1-DG, PV vs SST
+    test: likelihood ratio test
+    p: 0.0036
+  criterion: Per SWR and site pair, multitaper SG-band coherence in the 100 ms window after SWR onset
+    minus that in the 100 ms window starting 400 ms before onset, SWRs preceded by a SWR within
+    that window excluded (Methods, paragraph 3). Method M. Reproduced when both PV-Cre increases
+    are significant, neither SST-Cre effect is, and both genotype tests are significant;
+    partially reproduced when the PV-Cre increases hold.
+- id: figs2cd-sg-predicts-sw-frequency
+  statement: Across PV-Cre mice, the CNO-induced change in CA1 SWR-coincident SG power predicts the
+    change in SW amplitude and the change in SWR frequency.
+  source: Figure S2C-D; Results, SWR-coincident SG, paragraph 2
+  quote: the extent of CA1 SWR-coincident SG power increase correlated across animals with the
+    extent of SW amplitude increase and the extent of SWR frequency increase (Figure S3C–D)
+  statistics:
+  - about: SG power change against SW amplitude change
+    test: Pearson correlation
+    statistic: F(1,14) = 17.29
+    p: 0.001
+    n: 16 PV-Cre mice
+  - about: SG power change against SWR frequency change
+    test: Pearson correlation
+    statistic: F(1,14) = 10.97
+    p: 0.0051
+    n: 16 PV-Cre mice
+  criterion: The text cites Figure S3C-D, but the panels are Figure S2C-D. Per PV-Cre mouse, the
+    change CNO minus vehicle of each feature; Pearson correlation across the 16 mice. What a
+    mouse's change is, is open; readings (a) difference of the mouse's means over SWRs; (b)
+    difference of the LMM fitted conditional responses (code calcLMM.m, cnocoeff - vehcoeff, as
+    plotted in Figures S6-S7). Reproduced when under one reading both correlations are positive
+    with p < 0.05.
+- id: ca3-swr-overlap
+  statement: Only a subset of CA3 SWRs, 37.18% averaged over vehicle sessions of PV-Cre and SST-Cre
+    mice, overlap in time with CA1 SWRs.
+  source: Results, local CA3 SWRs and DG spikes, paragraph 1
+  quote: only a subset of CA3 SWRs overlapped in time with CA1 SWRs (37.18%, averaged over all PV-Cre
+    and SST-Cre vehicle sessions)
+  expected:
+    quantity: CA3 SWRs overlapping a CA1 SWR
+    value: 37.18
+    tolerance: 3.72
+    unit: '%'
+  criterion: CA3 SWRs detected on the CA3 site closest to the centre of the pyramidal layer as for
+    CA1 (Methods, paragraph 2); a CA3 SWR overlaps when a valid CA1 SWR midpoint falls within its
+    start and end (code ripdescript.m, probecrit branch). Readings of the average (a) mean over
+    sessions; (b) pooled over all events. Reproduced when one is within tolerance.
+- id: figs3-ca3-swr-pv
+  statement: Suppressing either class increases CA3 MUA recruitment to CA3 SWRs and lengthens CA3
+    SWRs; PV+ suppression decreases CA3 SWR rate and CA3 SWR instantaneous frequency.
+  source: Figure S3B-E; Results, local CA3 SWRs and DG spikes, paragraphs 1-2
+  quote: Suppressing PV+ interneurons decreased CA3 SWR rate, while suppressing SST+ interneurons
+    increased CA3 SWR rate (Figure S3C) ... Suppression of either interneuron type increased CA3
+    SWR length (Figure S3D). Finally, PV+ interneuron suppression decreased CA3 SWR instantaneous
+    frequency (Figure S3E)
+  statistics:
+  - about: CA3 MUA to CA3 SWRs, PV-Cre
+    test: F test of the LMM
+    p: 0.00044
+  - about: CA3 MUA to CA3 SWRs, SST-Cre
+    test: F test of the LMM
+    p: 0.0062
+  - about: CA3 SWR rate, PV-Cre
+    test: F test of the LMM
+    p: 0.00072
+  - about: CA3 SWR length, PV-Cre
+    test: F test of the LMM
+    p: 7.14e-6
+  - about: CA3 SWR length, SST-Cre
+    test: F test of the LMM
+    p: 0.0055
+  - about: CA3 SWR instantaneous frequency, PV-Cre
+    test: F test of the LMM
+    p: 0.00057
+  criterion: CA3 SWRs detected on the CA3 pyramidal-layer site, features as for CA1 SWRs (Methods,
+    paragraph 2); Method M. Reproduced when the five stated effects (MUA up in both, length up in
+    both, PV-Cre rate down, PV-Cre frequency down; six tests) all hold; partially reproduced when
+    at least four of the six do. The SST-Cre increase in CA3 SWR rate is a separate claim.
+- id: figs3c-ca3-swr-rate-sst
+  statement: Suppressing SST+ interneurons increases CA3 SWR rate.
+  source: Results, local CA3 SWRs and DG spikes, paragraph 2; Figure S3C
+  quote: while suppressing SST+ interneurons increased CA3 SWR rate (Figure S3C)
+  statistics:
+  - about: CA3 SWR rate, SST-Cre
+    test: F test of the LMM
+    p: 0.77
+  - about: CA3 SWR rate, PV vs SST
+    test: likelihood ratio test
+    p: 0.28
+  criterion: The text states an increase, but the legend gives p = 0.77 for the SST-Cre effect,
+    which is not significant. Judged as the text states it. CA3 SWR rate per 1 min bin of
+    immobility; Method M. Reproduced when the SST-Cre effect is a significant increase; the
+    coefficient and p-value are reported either way.
+- id: figs3-dentate-spikes
+  statement: DG MUA during dentate spikes does not change; suppressing either class decreases
+    dentate spike rate; PV+ suppression increases dentate spike length and decreases their
+    amplitude, while SST+ suppression has no detectable effect on these.
+  source: Figure S3F-I; Results, local CA3 SWRs and DG spikes, paragraph 3
+  quote: Instead, DS MUA did not change (Figure S3F) ... Suppression of either PV+ or SST+
+    interneurons decreased DS rate (Figure S3G) ... Suppressing PV+ interneurons also increased DS
+    length while decreasing DS amplitude, while suppressing SST+ interneurons had no detectable
+    effect on these features
+  statistics:
+  - about: DS MUA, PV-Cre
+    test: F test of the LMM
+    p: 0.47
+  - about: DS MUA, SST-Cre
+    test: F test of the LMM
+    p: 0.26
+  - about: DS rate, PV-Cre
+    test: F test of the LMM
+    p: 3.0e-19
+  - about: DS rate, SST-Cre
+    test: F test of the LMM
+    p: 0.0027
+  - about: DS length, PV-Cre
+    test: F test of the LMM
+    p: 2.6e-11
+  - about: DS length, SST-Cre
+    test: F test of the LMM
+    p: 0.26
+  - about: DS amplitude, PV-Cre
+    test: F test of the LMM
+    p: 1.6e-7
+  - about: DS amplitude, SST-Cre
+    test: F test of the LMM
+    p: 0.044
+  criterion: Dentate spikes at the DG site with the highest MUA, during immobility; LFP filtered
+    5-100 Hz and z-scored, peaks detected; amplitude from peak to nearest minimum, length between
+    the minima around the peak; log amplitudes z-scored; kept when amplitude > 0.75 and duration
+    5-25 ms (Methods, paragraph 6). Rate per 1 min bin. Method M. Reproduced when all ten parts
+    (two absences of MUA change, two rate decreases, PV-Cre length up and amplitude down, SST-Cre
+    length and amplitude unchanged) hold; partially reproduced when the rate decreases and the
+    PV-Cre length and amplitude effects hold.
+- id: fig5b-mua-run
+  statement: During movement, suppressing either class increases MUA in DG and CA3 but not in CA1.
+  source: Figure 5B; Results, SG during movement, paragraph 2
+  quote: suppressing either class increased MUA during movement in DG and CA3, but not CA1 (Figure
+    5B)
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.72
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.9
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.00051
+  - about: CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.005
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.00022
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 0.0063
+  criterion: Cohort 3 linear track sessions, 8 PV-Cre and 7 SST-Cre. MUA rate in 100 ms bins during
+    run at the highest-MUA site of each region (code contMUA.m; Methods, paragraph 5). Method M
+    (run family). Reproduced when CA3 and DG increase significantly in both genotypes and CA1 does
+    not change in either; partially reproduced when the increases hold in one genotype.
+- id: fig5d-sg-power-run
+  statement: During movement, suppressing PV+ interneurons amplifies SG power in CA1 with no effect
+    in DG and CA3, while suppressing SST+ interneurons dampens SG power in DG and CA3 with no effect
+    in CA1; all these effects differ between genotypes.
+  source: Figure 5D, Figure S4A; Results, SG during movement, paragraph 3
+  quote: Suppressing PV+ interneurons in DG and CA3 amplified SG power in CA1, but there was no
+    detectable effect following suppression of SST+ interneurons. By contrast, suppressing PV+
+    interneurons had no detectable effect on SG power in DG and CA3, while suppressing SST+
+    interneurons dampened SG power locally in DG and CA3
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 2.6e-6
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.13
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 4.7e-6
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.15
+  - about: CA3, SST-Cre
+    test: F test of the LMM
+    p: 5.2e-5
+  - about: CA3, PV vs SST
+    test: likelihood ratio test
+    p: 0.00088
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.5
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 1.3e-7
+  - about: DG, PV vs SST
+    test: likelihood ratio test
+    p: 0.00042
+  criterion: SG power (20-50 Hz) per 1 s bin of run from the multitaper spectrogram (1 s window,
+    tapers [3 5], code continuous_specgram.m), mean over the band and over the region's sites.
+    Method M (run family). Reproduced when all nine tests come out as stated (three significant
+    changes in the stated directions, three absences, three significant genotype tests);
+    partially reproduced when the CA1 PV-Cre increase and the DG and CA3 SST-Cre decreases hold.
+- id: fig5e-sg-coherence-run
+  statement: During movement, suppressing PV+ interneurons enhances SG coherence between CA1 and CA3.
+  source: Figure 5E; Results, SG during movement, paragraph 3
+  quote: Relatedly, suppressing PV+ interneurons enhanced SG coherence between CA1 and CA3 (Figure
+    5E)
+  statistics:
+  - about: CA1-CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.00028
+  - about: CA1-CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.6
+  - about: CA1-CA3, PV vs SST
+    test: likelihood ratio test
+    p: 0.56
+  criterion: Multitaper SG-band coherence between CA1-pyr and CA3 sites during run (Methods,
+    paragraph 7, "over all run periods"); model data in 1 s bins (Quantification, paragraph 2).
+    The two passages differ on the bins; readings (a) coherence per 1 s bin; (b) per site pair and
+    session over all run periods (code calccoherence.m decides). Method M (run family). Reproduced
+    when the PV-Cre CA1-CA3 increase is significant.
+- id: fig5f-sg-frequency-pv
+  statement: Suppressing PV+, but not SST+, interneurons reduces SG frequency during movement in
+    CA1, CA3 and DG, and the genotypes differ.
+  source: Figure 5F, Figure S4B; Results, SG during movement, paragraph 3
+  quote: suppressing PV+ interneurons, but not SST+ interneurons, reduced SG frequency throughout the
+    hippocampus (Figure 5F and S4B)
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 2.5e-6
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.56
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 0.0061
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.00023
+  - about: CA3, PV vs SST
+    test: likelihood ratio test
+    p: 0.0025
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.0005
+  - about: DG, PV vs SST
+    test: likelihood ratio test
+    p: 0.00015
+  criterion: Instantaneous frequency from interpeak times of the 20-50 Hz filtered trace during run,
+    one data point per peak (Methods, paragraph 7; Quantification). Method M (run family).
+    Reproduced when the PV-Cre decrease is significant in all three regions and no SST-Cre effect
+    is; partially reproduced when it holds in CA1 only.
+- id: fig5g-sg-theta-modulation
+  statement: Suppressing PV+ interneurons increases theta modulation of SG locally in DG and CA3 but
+    not in CA1, while suppressing SST+ interneurons reduces theta modulation of SG in CA1.
+  source: Figure 5G, Figure S4C; Results, SG during movement, paragraph 3
+  quote: suppressing PV+ interneurons increased theta modulation of SG only locally in DG and CA3,
+    while suppressing SST+ interneurons reduced theta modulation of SG in CA1, and these effects
+    were again detectably different between genotypes
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.12
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.00082
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 0.95
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.0011
+  - about: CA3, PV vs SST
+    test: likelihood ratio test
+    p: 0.0049
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.0003
+  - about: DG, PV vs SST
+    test: likelihood ratio test
+    p: 0.0054
+  criterion: Theta modulation of SG is the modulation index of the code's comod.m (normalized entropy
+    of mean SG amplitude over theta phase bins, 2 x 18 - 1 = 35 bins), computed per 1 s bin of run,
+    phase band 5-11 Hz and amplitude band 20-50 Hz (the code's single-band setting in runcomod.m;
+    Methods band definitions). Method M (run family). Reproduced when the PV-Cre increases in CA3
+    and DG and the SST-Cre decrease in CA1 are significant and the PV-Cre CA1 effect is not;
+    partially reproduced when two of the three significant effects hold. The genotype tests are
+    reported; the legend's CA1 value (p = 0.95) does not support a difference there.
+- id: fig6b-fg-power-sst
+  statement: Suppressing SST+ interneurons amplifies FG power in CA1 and DG during movement, an
+    effect specific to this class.
+  source: Figure 6B, Figure S4D; Results, FG during movement, paragraph 2
+  quote: Suppressing SST+ interneurons amplified FG power in CA1 and DG, an effect specific to this
+    interneuron class (Figure 6A–B and S5D)
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.27
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 3.3e-5
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 0.00054
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.81
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 1.9e-5
+  - about: DG, PV vs SST
+    test: likelihood ratio test
+    p: 0.0025
+  criterion: The text cites Figure S5D; the DG panel is Figure S4D. FG power (50-110 Hz) per 1 s
+    bin of run as for SG (fig5d-sg-power-run). Method M (run family). Reproduced when the SST-Cre
+    increase is significant in CA1 and DG, the PV-Cre effect is not, and both genotype tests are
+    significant; partially reproduced when the CA1 parts hold.
+- id: figs4e-sg-fg-inverse
+  statement: In DG and CA3 of SST-Cre mice, the CNO-induced change in SG power predicts the change in
+    FG power, animals with the greatest SG suppression showing the greatest FG enhancement.
+  source: Figure S4E; Results, FG during movement, paragraph 2
+  quote: locally in DG and CA3, SG and FG showed an inverse relationship, where animals with the
+    greatest SG suppression showed the greatest FG enhancement and vice versa (Figure S4E)
+  statistics:
+  - about: CA3
+    test: Pearson correlation
+    statistic: F(1,5) = 20.7
+    p: 0.0061
+    n: 7 SST-Cre mice
+  - about: DG
+    test: Pearson correlation
+    statistic: F(1,5) = 26
+    p: 0.0038
+    n: 7 SST-Cre mice
+  criterion: Per SST-Cre mouse (7, linear track), the change CNO minus vehicle of SG power and of FG
+    power in CA3 and in DG; Pearson correlation across mice. Readings of a mouse's change as in
+    figs2cd-sg-predicts-sw-frequency (a) difference of means; (b) difference of the LMM fitted
+    conditional responses. Reproduced when under one reading both correlations are negative with
+    p < 0.05.
+- id: fig6e-sg-fg-ratio
+  statement: SST+ suppression decreases the SG/FG power ratio in CA1, PV+ suppression increases it
+    throughout the hippocampus, and these effects differ between genotypes across the hippocampus.
+  source: Figure 6E, Figure S4F; Results, FG during movement, paragraph 2
+  quote: these bidirectional changes in SG and FG power led to decreased SG/FG power ratios in CA1
+    following SST+ suppression and increased SG/FG power ratios throughout the hippocampus following
+    PV+ suppression. These SG/FG ratio effects were significantly different between genotypes
+    across the hippocampus
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 9.7e-25
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 0.00013
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 7.4e-6
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.00036
+  - about: CA3, PV vs SST
+    test: likelihood ratio test
+    p: 0.002
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.00031
+  - about: DG, PV vs SST
+    test: likelihood ratio test
+    p: 0.00064
+  criterion: Per 1 s bin of run, SG power over FG power, from the band powers of fig5d-sg-power-run
+    (code run_continuous_specgram.m, allSGFGratio, per site; Figure 6C-D averaged over CA1-pyr
+    sites). Method M (run family). Reproduced when the SST-Cre CA1 decrease, the PV-Cre increases
+    in CA1, CA3 and DG, and the three genotype tests are all significant; partially reproduced
+    when the CA1 parts hold.
+- id: fig6f-fg-coherence-unchanged
+  statement: FG coherence between CA1 and CA3 and between CA1 and DG does not change with either
+    suppression.
+  source: Figure 6F; Results, FG during movement, paragraph 2
+  quote: FG coherence, however, did not change (Figure 6F)
+  statistics:
+  - about: CA1-CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.83
+  - about: CA1-CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.2
+  - about: CA1-DG, PV-Cre
+    test: F test of the LMM
+    p: 0.27
+  - about: CA1-DG, SST-Cre
+    test: F test of the LMM
+    p: 0.076
+  criterion: A claim of absence. FG-band coherence as for SG (fig5e-sg-coherence-run, same two
+    readings of the bins). Method M (run family) with its Holm-Bonferroni threshold. Reproduced
+    when none of the four treatment effects is significant; not reproduced when any is.
+- id: fig6g-fg-frequency-sst
+  statement: Suppressing SST+ interneurons increases FG frequency throughout the hippocampus.
+  source: Figure 6G, Figure S4G; Results, FG during movement, paragraph 2
+  quote: suppressing SST+ interneurons increased FG frequency throughout the hippocampus (Figure 6G
+    and S4G)
+  statistics:
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 4.3e-17
+  - about: CA3, SST-Cre
+    test: F test of the LMM
+    p: 2.6e-9
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 4.1e-11
+  criterion: Instantaneous frequency of the 50-110 Hz filtered trace from interpeak times, one point
+    per peak (Methods, paragraph 7). Method M (run family). Reproduced when the SST-Cre increase is
+    significant in CA1, CA3 and DG; partially reproduced in one or two regions.
+- id: fig6h-fg-theta-modulation-sst
+  statement: Suppressing SST+ interneurons increases theta modulation of FG in CA1, an effect
+    specific to SST+ interneurons.
+  source: Figure 6H-J; Results, FG during movement, paragraph 2
+  quote: suppressing SST+ interneurons increased theta modulation of FG in CA1 (Figure 6H–J and
+    S4H), an effect specific to SST+ interneurons
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.0098
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 8.0e-20
+  - about: CA1, PV vs SST
+    test: likelihood ratio test
+    p: 0.0001
+  criterion: Modulation index as in fig5g-sg-theta-modulation, amplitude band 50-110 Hz (the Methods'
+    FG band; the code's single-band setting in runcomod.m shows the SG band only). Method M (run
+    family). Reproduced when the SST-Cre CA1 increase and the genotype test are significant. The
+    PV-Cre effect (p = 0.0098 in the legend; the Discussion says FG had "reduced modulation by
+    theta" with PV+ suppression) is reported with its sign.
+- id: figs5-theta-power-ca1
+  statement: Suppressing either PV+ or SST+ interneurons increases theta power in CA1 but not in CA3
+    or DG during movement.
+  source: Figure S5B; Results, theta during movement, paragraph 1
+  quote: Contrary to our hypothesis, suppressing either PV+ or SST+ interneurons increased theta
+    power in CA1 but not elsewhere (Figure S5A–B)
+  statistics:
+  - about: CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.00032
+  - about: CA1, SST-Cre
+    test: F test of the LMM
+    p: 4.2e-5
+  - about: CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.81
+  - about: CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.13
+  - about: DG, PV-Cre
+    test: F test of the LMM
+    p: 0.12
+  - about: DG, SST-Cre
+    test: F test of the LMM
+    p: 0.0097
+  criterion: Theta (5-11 Hz) power per 1 s bin of run, as for SG power. Method M (run family).
+    Reproduced when both CA1 increases are significant and none of the four CA3 and DG effects is
+    significant after correction; partially reproduced when the CA1 increases hold.
+- id: figs5-theta-coherence-frequency
+  statement: Neither interneuron type modifies theta coherence or theta frequency, except for an
+    increase in theta frequency in DG of PV-Cre mice.
+  source: Figure S5C-D; Results, theta during movement, paragraph 1
+  quote: Neither interneuron type modified theta coherence (Figure S5C) or theta frequency (Figure
+    S5D) save for an increase in theta frequency in PV-Cre mice in DG
+  statistics:
+  - about: theta frequency, DG, PV-Cre
+    test: F test of the LMM
+    p: 0.00061
+  - about: theta frequency, CA1, PV-Cre
+    test: F test of the LMM
+    p: 0.0082
+  - about: theta frequency, CA3, PV-Cre
+    test: F test of the LMM
+    p: 0.0077
+  - about: theta coherence, CA1-CA3, SST-Cre
+    test: F test of the LMM
+    p: 0.047
+  - about: theta coherence, CA1-DG, PV-Cre
+    test: F test of the LMM
+    p: 0.024
+  criterion: Theta coherence and instantaneous frequency as for SG (fig5e, fig5f). Method M (run
+    family). Reproduced when the PV-Cre DG theta frequency increase is significant and none of
+    the other ten tests (two coherences and three frequencies in each genotype, less the one) is;
+    not reproduced when any other is significant. The effect sizes are reported.
+- id: figs6-double-like-pv
+  statement: Suppressing both PV+ and SST+ interneurons cannot be told apart from suppressing PV+
+    interneurons only, except for theta modulation of SG in DG and CA3, which double suppression
+    decreases.
+  source: Figures S6 and S7, Table S5; Results, suppressing both, paragraph 1
+  quote: we were unable to detect a difference between suppressing both interneuron types and
+    suppressing PV+ interneurons only except in the case of comodulation of SG by theta in DG and
+    CA3. In this instance, suppressing both interneuron types decreased theta modulation of SG, an
+    effect not observed when suppressing either type alone
+  statistics:
+  - about: theta modulation of SG, CA3, PV vs P/S
+    test: likelihood ratio test
+    p: 7.3e-5
+  - about: theta modulation of SG, DG, PV vs P/S
+    test: likelihood ratio test
+    p: 0.00018
+  criterion: 13 PV-Cre/SST-Cre mice at rest and 7 on the track, against the PV-Cre mice. For every
+    feature of Figures S6 and S7, the genotype test (PV vs P/S) of Method M, Holm-Bonferroni over
+    the experiment's comparisons. Reproduced when the CA3 and DG theta-SG modulation tests are
+    significant with P/S decreasing, and no other PV vs P/S test is significant; partially
+    reproduced when the exceptions hold and at most two other features differ. Each feature's
+    result is listed.
+- id: figs6-double-unlike-sst
+  statement: Suppressing both interneuron types has largely distinct effects from suppressing SST+
+    interneurons only; the exceptions are FG frequency and CA1 FG power, which follow the direction
+    of SST+ suppression.
+  source: Figures S6 and S7, Table S5; Results, suppressing both, paragraph 1
+  quote: In contrast, suppressing both interneuron types had largely distinct effects from
+    suppressing SST+ interneurons only. The exceptions were FG frequency and CA1 FG power, in which
+    case suppressing both interneuron types followed the direction of suppressing SST+ interneurons
+    alone
+  statistics:
+  - about: SWR rate, SST vs P/S
+    test: likelihood ratio test
+    p: 0.021
+  - about: SWR instantaneous frequency, SST vs P/S
+    test: likelihood ratio test
+    p: 0.0017
+  - about: SW amplitude, SST vs P/S
+    test: likelihood ratio test
+    p: 0.00055
+  - about: CA1 SG power during SWRs, SST vs P/S
+    test: likelihood ratio test
+    p: 0.00089
+  - about: CA1 FG power, P/S treatment
+    test: F test of the LMM
+    p: 1.6e-6
+  - about: CA1 FG power, SST vs P/S
+    test: likelihood ratio test
+    p: 1
+  - about: CA1 FG frequency, P/S treatment
+    test: F test of the LMM
+    p: 0.00012
+  criterion: '"Largely distinct" is not given a count. For every feature of Figures S6 and S7, the
+    SST vs P/S genotype test of Method M. Reproduced when the CA1 FG power and FG frequency effects
+    of double suppression are significant increases (the direction of SST+ suppression) and at
+    least half of the features where SST-Cre and P/S treatment effects differ in sign or
+    significance show a significant SST vs P/S test; partially reproduced when the FG exceptions
+    hold but fewer features differ.'
+- id: figs6-empty-vector-control
+  statement: In mice injected with an empty vector, CNO and vehicle epochs do not differ.
+  source: Figures S6 and S7, Table S5; Results, consistency, paragraph 2
+  quote: we treated mice injected with an empty vector as a control and observed no differences
+    between vehicle and CNO treated epochs (Figure S5 and S6 and Table S5)
+  criterion: A claim of absence. 8 empty vector mice, rest and track. For every feature of Figures
+    S6 and S7 (legend p-values for EV range from 0.062 to 1), the treatment test of Method M with
+    Holm-Bonferroni over the experiment's comparisons. Reproduced when no feature is significant;
+    not reproduced when any is, with the features and effect sizes listed.
+- id: running-speed-unchanged
+  statement: Running speed does not differ between vehicle and CNO sessions (4.8 against 5.1 cm/s).
+  source: Results, consistency, paragraph 2
+  quote: differences in LFP during movement were not due to differences in running speed (vehicle
+    4.8 cm/s vs CNO 5.1 cm/s, paired t test, t(29) = 1.31, p = 0.2)
+  statistics:
+  - test: paired t test
+    statistic: t(29) = 1.31
+    p: 0.2
+    n: 30 mice on the linear track
+  expected:
+  - quantity: running speed, vehicle
+    value: 4.8
+    tolerance: 0.48
+    unit: cm/s
+  - quantity: running speed, CNO
+    value: 5.1
+    tolerance: 0.51
+    unit: cm/s
+  criterion: A claim of absence, judged on a paired t test across the 30 track mice (8 PV-Cre, 7
+    SST-Cre, 7 PV-Cre/SST-Cre, 8 empty vector) of each mouse's mean speed per treatment, at p <
+    0.05. Which samples form the mean is open; readings (a) Gaussian-smoothed velocity over run
+    periods (above 1 cm/s); (b) over the whole session. Reproduced when the test is not
+    significant; the values are compared with tolerance under each reading.
+- id: tables4-genotype-baseline
+  statement: During vehicle treatment, PV-Cre mice differ from SST-Cre mice in DG and CA3 SG
+    frequency (lower) and SG/FG ratios (higher).
+  source: Results, consistency, paragraph 2; Table S4
+  quote: We did note, however, that PV-Cre had different DG and CA3 SG frequencies and SG/FG ratios
+    from SST-Cre mice during vehicle treatment (Table S4)
+  statistics:
+  - about: CA3 SG frequency
+    test: F test of the LMM for genotype effects
+    p: 0.00042
+  - about: DG SG frequency
+    test: F test of the LMM for genotype effects
+    p: 0.00025
+  - about: CA3 SG/FG ratio
+    test: F test of the LMM for genotype effects
+    p: 0.00078
+  - about: DG SG/FG ratio
+    test: F test of the LMM for genotype effects
+    p: 0.00071
+  expected:
+  - quantity: CA3 SG frequency, PV-Cre vehicle
+    value: 40.54
+    tolerance: 4.05
+    unit: Hz
+  - quantity: CA3 SG frequency, SST-Cre vehicle
+    value: 41.9
+    tolerance: 4.19
+    unit: Hz
+  - quantity: DG SG frequency, PV-Cre vehicle
+    value: 41.06
+    tolerance: 4.11
+    unit: Hz
+  - quantity: DG SG frequency, SST-Cre vehicle
+    value: 42.4
+    tolerance: 4.24
+    unit: Hz
+  - quantity: CA3 SG/FG ratio, PV-Cre vehicle
+    value: 6.2
+    tolerance: 0.62
+  - quantity: CA3 SG/FG ratio, SST-Cre vehicle
+    value: 3.99
+    tolerance: 0.4
+  - quantity: DG SG/FG ratio, PV-Cre vehicle
+    value: 5.16
+    tolerance: 0.52
+  - quantity: DG SG/FG ratio, SST-Cre vehicle
+    value: 3.4
+    tolerance: 0.34
+  criterion: Vehicle sessions of 8 PV-Cre and 7 SST-Cre track mice; features as in fig5f and fig6e;
+    the group mean is the mean over mice of each mouse's mean (code runcalcLMM_figs.m, Table S3
+    section). The genotype test is an LMM feature ~ group + (group|animal) with an F test
+    (Quantification, paragraph 2; code calcunpairedLMM.m), Holm-Bonferroni over the run features.
+    Reproduced when the four tests are significant in the stated directions; the mean values are
+    compared with tolerance (the 10% tolerance on frequency is wide against a 1.4 Hz difference,
+    so the direction and test decide).
+- id: tables6-sex-swr-size
+  statement: During vehicle treatment, females have slightly larger SWR sizes than males, with no
+    other sex differences.
+  source: Results, consistency, paragraph 1; Table S6
+  quote: Females had slightly larger SWR sizes than males during vehicle treatment epochs (Table S6),
+    but there were otherwise no sex differences
+  statistics:
+  - about: SWR size, females against males
+    test: F test of the LMM for sex effects
+    p: 0.0046
+    n: 26 females and 27 males
+  expected:
+  - quantity: SWR size, females, vehicle
+    value: 6.36
+    tolerance: 0.64
+    unit: SD
+  - quantity: SWR size, males, vehicle
+    value: 5.92
+    tolerance: 0.59
+    unit: SD
+  criterion: All mice of cohorts 2 and 3 (vehicle epochs; cohort 1 left out, Methods, Method
+    details), sex from the subject metadata. For every feature of Table S6, an LMM feature ~ sex +
+    (sex|animal) with an F test (Quantification, paragraph 2; code calcunpairedLMM.m),
+    Holm-Bonferroni over the experiment's features. Reproduced when SWR size is significantly
+    larger in females and no other feature differs significantly by sex; partially reproduced
+    when SWR size holds and one or two other features differ.
+- id: sex-stratified-effects
+  statement: Interneuron suppression has effects of the same direction and magnitude in both sexes
+    on most features; the exceptions are SW amplitude with SST+ suppression (down in females, up in
+    males), FG power with SST+ suppression (larger rise in females), and DG and CA3 MUA during
+    movement (larger rise in females with suppression of either or both classes).
+  source: Results, consistency, paragraph 1; Table S7
+  quote: The effect of suppressing interneurons was in the same direction and magnitude in both sexes
+    on most features (Table S7) with a few exceptions. Suppressing SST+ interneurons decreased SW
+    amplitude in females but had the opposite effect in males, leading to no effect overall, and
+    enhanced FG power to a greater degree in females than in males. Interestingly, suppressing
+    either or both interneuron classes led to a greater increase in DG and CA3 MUA during movement
+    in females
+  criterion: Table S7 (xlsx) was not available to the reader; its p-values and the features it
+    covers are not recorded here. Per genotype, the likelihood ratio test of feature ~ treatment +
+    (treatment|animal) against feature ~ treatment:sex + (treatment:sex|animal) (Quantification,
+    paragraph 2; code runcalcLMM_figs.m Table S6 section, calcInteraction.m on males and
+    females), Holm-Bonferroni per genotype over the features. Reproduced when the named exceptions
+    have a significant sex interaction with the stated signs (females larger, or opposite signs
+    for SST-Cre SW amplitude) and at most a few other features do; the count of other significant
+    interactions is reported. "FG power" is read as CA1 FG power, the paper's main FG power
+    feature; CA3 and DG are shown as variants.
