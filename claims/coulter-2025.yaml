@@ -1,0 +1,955 @@
+# Claims for Coulter, Gillespie, Chu, ..., Eden, Kemere & Frank (2025), Neuron 113:949-961,
+# "Closed-loop modulation of remote hippocampal representations with neurofeedback", on dandiset
+# 001280 (version 0.241218.2300, the version the paper cites).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dandiset's data or
+# files; only its title and description on the archive were read.
+#
+# Text read: the version of record (open access, CC BY), from a PDF supplied by a person, with its
+# supplement (Figures S1 to S7 and their legends, and Table S1, "Number of samples and statistical
+# tests for main figures"), as the extracted text paper/10.1016-j.neuron.2024.12.023.txt. The text
+# is complete (Results, legends, STAR Methods, supplement). Its minus signs in exponents are garbled
+# ("p = 3.9e?11"); they were read as minus signs. No figure image was needed.
+#
+# Code read. The paper links (1) the analysis code and figure notebook, Zenodo
+# doi:10.5281/zenodo.14522610, which is LorenFrankLab/hippocampus_content_neurofeedback tag v0.0.4,
+# commit b27655c66cba8dbbcf2c23ada594f9d8852f8844; (2) the real-time decoder (Zenodo
+# doi:10.5281/zenodo.14399029, the version used), not read, as no criterion rests on it. The
+# repository holds DataJoint/Spyglass table classes that compute per-session quantities from the
+# real-time decoder files and the Spyglass database (mcoulter_realtime_posterior_sum.py for target
+# representation, mcoulter_realtime_lfp_posterior_sum.py for brain state, mcoulter_*assemblies.py
+# for cell assemblies, mcoulter_theta_phase_shuffles.py for theta phase), and one notebook,
+# single_cell_summary_plots-share-v3.ipynb, that loads per-session and per-assembly summaries from
+# pickles ("all files with path beginning with '/stelmo/mcoulter/coulter_all_figures' are in the
+# Dryad repository"), makes the figures and runs the tests, with its printed outputs. The code that
+# classifies detected events (Figure 3) and computes the Figure 6 summaries from assembly activity
+# is not in the repository. What the code settles is cited in each criterion.
+# From the code: rat 1 = pippin, rat 2 = tonks, rat 3 = ginny, rat 4 = ron, rat 5 = molly, rat 6 =
+# arthur (notebook cell 2); the target arm of each recording day, for head direction and
+# neurofeedback days, is listed in mcoulter_arm_end_assemblies.py (dictionaries ron_all_dict and so
+# on, keyed by NWB file name). The decoder's linearized position has 41 bins of 5 cm, x00 to x40:
+# box x00-x08, arm 1 x13-x24, arm 2 x29-x40; arm ends (25 cm) x20-x24 and x36-x40; arm bases
+# (25 cm) x13-x17 and x29-x33 (mcoulter_realtime_posterior_sum.py). Distance to the center port
+# is the distance of the smoothed head position (smooth_x, smooth_y) from the center well position
+# in pixels times 0.222 cm per pixel.
+#
+# Data the paper used. Six adult male Long Evans rats (6 to 9 months), each with a 64-tetrode
+# microdrive in dorsal CA1 (both hemispheres); SpikeGadgets/Trodes recording at 30 kHz; position
+# from red and green headstage LEDs, 30 Hz camera, which also give head direction. Three sessions a
+# day of 40 to 45 min in a Y-shaped track (center box with a central reward port, two arms with
+# ports at their ends). Each session has an exploration phase (10 to 15 min; lit ports guide 12
+# visits to each arm end, randomly ordered, with returns to the center) and a feedback phase (30 min
+# or 75 rewards, whichever comes first) in which reward is only at the center port, after a tone,
+# for a nosepoke within 3 s. Days 1 to 4 are head direction feedback (tone for a head turn of 30
+# degrees to the left, arm 1, or right, arm 2; target switched after 2 days); then remote
+# representation neurofeedback, target the distal 25 cm of arm 1 or arm 2, switched every 3 days,
+# for 6 days (rat 1) or 18 days (rats 2 to 6). The tone was triggered by the real-time clusterless
+# decoder (6 ms bins) when, over a 30 ms running average, more than 40% of the posterior was in the
+# target arm end, less than 20% in the opposite arm and less than 20% in the box, at least 2
+# tetrodes (1 for rat 1) had spatially specific spikes, and the rat was less than 17 cm from the
+# center port. Sessions with high-quality decoding were included (Figure S1D, n = 19, 62, 53, 55,
+# 62, 63 sessions for rats 1 to 6). Measured variables the analyses use: the decoder's posterior
+# over linearized position for every 6 ms bin, actual position, task phase and detection (reward)
+# events; spike-sorted single units (MountainSort4); LFP (SWR detection, theta phase from a tetrode
+# in stratum oriens); head speed.
+#
+# Where the data are. The paper deposits the raw recordings on DANDI (doi:10.48324/dandi.001280/
+# 0.241218.2300; the archive's title is the paper's and its description says CA1 extracellular
+# recordings from male Long Evans rats during a neurofeedback task) and the real-time decoder
+# output, and the summarized results the notebook loads, on Dryad (doi:10.5061/dryad.dz08kps72,
+# version 7 of 2025-01-17). The decoded posteriors on which Figures 1, 3, 4, 5, S1 to S5 rest are
+# the real-time decoder's own output, so those claims are data elsewhere, on Dryad, and are to be
+# tested on its decoder files (rec_4 decoder, rec_7 occupancy, rec_11 and rec_12 stimulation
+# messages in each session's HDF5 file, as the code reads them), not on the summary pickles,
+# which can serve as a check. Figures 6, 7, S6 and S7 combine the decoder output with spikes, LFP
+# and position from the raw recordings, so they are with_inputs. Rewards (Figures 2 and S2D) are
+# events of the raw recordings.
+#
+# Statistics as the code runs them, for every claim that cites them: Mann-Whitney U is
+# scipy.stats.mannwhitneyu with its default two-sided alternative (the printed p of rat 1 in
+# Figure 4C, U = 0 for 12 against 3 sessions, p = 0.0044, is the exact two-sided value); the LME
+# is statsmodels smf.mixedlm("arm_representation ~ content_sessions", groups = rat), REML, fit with
+# lbfgs, on the raw (not normalized) per-session values, with a random intercept per rat (the code
+# codes head direction sessions 1 and neurofeedback 0, which flips the sign of the coefficient but
+# not p); grouped regressions z-score each rat's values (scipy.stats.zscore) and run
+# scipy.stats.linregress on the pooled values against session.
+schema_version: 2
+paper: doi:10.1016/j.neuron.2024.12.023
+claims:
+- id: fig2-max-rewards-neurofeedback
+  statement: Every rat reached the maximum of 75 rewards in at least one remote representation
+    neurofeedback session, with substantial variability across sessions and rats.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 4; Figure 2
+  quote: Further, all six rats also reached the maximal number of rewards per session during remote
+    representation neurofeedback, although there was substantial variability across sessions and
+    rats.
+  criterion: A reward is a reward delivery at the center port during the feedback phase of a
+    neurofeedback session, counted from the recordings' behavioral events (the Methods say reward
+    port nosepokes were saved in the NWB file). Reproduced when each of the six rats has at least
+    one neurofeedback session with 75 rewards (the per-session maximum, Figure 2 legend). The
+    per-session counts are also compared with those the notebook lists for Figure 2 (cell 11,
+    "checked with daily data records"); the code's lists for rats 3 and 4 are identical, which
+    looks like a copying error, so rat 3's list is not used for the comparison.
+- id: figs2d-head-direction-rewards
+  statement: All six rats rapidly and consistently reached the maximum number of rewards per session
+    with head direction feedback.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 4; Figure S2D
+  quote: Behavioral results showed that all six rats were able to rapidly and consistently maximize
+    the number of rewards per session with behavioral feedback based on head direction (Figure
+    S2D).
+  criterion: Rewards per head direction feedback session (12 per rat) counted as in
+    fig2-max-rewards-neurofeedback. The paper gives no threshold for "rapidly and consistently";
+    the notebook's counts (cell 28) have 75 rewards in at least 10 of 12 sessions in every rat. The
+    reading used is that each rat reaches 75 rewards in more than half of its head direction
+    sessions and in at least one of the three sessions of its first day. Reproduced when this
+    holds in all six rats.
+- id: session-inclusion-decoding-quality
+  statement: A small number of sessions with low-quality decoding were excluded; the included
+    sessions number 19, 62, 53, 55, 62 and 63 for rats 1 to 6.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 5; STAR Methods, Data inclusion;
+    Figure S1D and S2B legends
+  quote: A small number of lower-quality decoding sessions were excluded from further analyses.
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  expected:
+  - quantity: Included sessions, rat 1
+    value: 19
+    tolerance: 1.9
+  - quantity: Included sessions, rat 2
+    value: 62
+    tolerance: 6.2
+  - quantity: Included sessions, rat 3
+    value: 53
+    tolerance: 5.3
+  - quantity: Included sessions, rat 4
+    value: 55
+    tolerance: 5.5
+  - quantity: Included sessions, rat 5
+    value: 62
+    tolerance: 6.2
+  - quantity: Included sessions, rat 6
+    value: 63
+    tolerance: 6.3
+  criterion: The Methods define a high-quality session as one in which, during the exploration phase,
+    when the rat was running outward from the box and in the end of the target arm, the posterior
+    maximum of the decoded position was in the target arm in at least 65% of 6 ms time bins. Two
+    details are open. "Running outward" needs a speed threshold and a direction; the readings are
+    (a) head speed above 4 cm/s (the movement threshold of Figures S2C and 7) with linear position
+    increasing, (b) any bin with linear position increasing. "The target arm" can be (a) the
+    session's target arm, or (b) each arm in turn, the session passing when both do. The counts in
+    Figure S1D are compared with the sessions each reading includes; the notebook's counts of good
+    and bad sessions (cell 13, 19/11, 62/1, 53/13, 55/11, 62/4, 62/4) are shown beside them.
+    Reproduced when, under one reading, every rat's count is within tolerance.
+- id: decoded-spike-fraction
+  statement: With a decoding latency of 30 ms, the real-time decoder decoded 90 to 99% of incoming
+    spikes, about one million spikes per session.
+  source: STAR Methods, Real-time spatial decoding; Figure S1D and S1E
+  quote: With a decoding latency of 30 msec, 90-99% of incoming spikes were decoded.
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  expected:
+  - quantity: Fraction of spikes decoded per session, range across sessions
+    value: 0.945
+    tolerance: 0.135
+  criterion: Per included session, the fraction of spikes not dropped (Figure S1E, dropped means
+    latency above 30 ms) out of all spikes the decoder received (Figure S1D). The range 90 to 99%
+    widened by 10% of each bound is 81% to 100%. Reproduced when at least 90% of included sessions
+    lie in 81% to 100% and the median session lies in 90% to 99%.
+- id: fig1b-s3c-detection-content
+  statement: The representations that triggered reward during neurofeedback were specific to the
+    target arm end, while at head direction detections the decoder mostly represented the rat's
+    current location in the box.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 5; Figure 1B right; Figure S3C
+  quote: As expected, the spatial content was specific to the chosen remote target, while during head
+    direction feedback sessions, the rat's current location was typically represented
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  criterion: As in Figure S3C, the posterior averaged over the 30 ms (5 bins of 6 ms) that triggered
+    each detection, then averaged over detections, separately for arm 1 neurofeedback, arm 2
+    neurofeedback and head direction feedback sessions. Reproduced when, for both neurofeedback
+    groups, the summed average posterior in the target arm end exceeds that in the box and in the
+    opposite arm, and, for head direction detections, the summed average posterior in the box
+    (x00-x08) exceeds that in either arm end.
+- id: fig3b-jump-fraction
+  statement: Across rats, 65 to 75% of detected representations included only the target location
+    or jumped from the current location to the target.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 6; Figure 3A and 3B
+  quote: Across all rats, 65%–75% of detected representations included only the target location or
+    jumped from the current location to the target
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  expected:
+    quantity: Fraction of detected events classed as jump, per rat
+    value: 0.705
+    tolerance: 0.12
+  criterion: Events are the reward-triggering detections of the included neurofeedback sessions,
+    each with the 90 ms before detection (Figure 3B legend). The categories are from the Figure 3A
+    legend, jump (posterior mass above 0.4 in the 25 cm at the end of the arm) and jump and arm base
+    (posterior mass above 0.2 in the 15 cm at the base of the arm). The notebook (cell 23) takes the
+    jump fraction as (all events minus arm-base events) over all events. Open, as the classifying
+    code is not in the repository, is whether arm-base mass counts in (a) any 6 ms bin of the 90 ms
+    window, or (b) the posterior summed over the window; and whether the 15 cm are (a) the first
+    three bins of the arm (x13-x15, x29-x31) or (b) three bins of the 25 cm arm base. The range 65 to
+    75% widened by 10% of each bound is 58.5% to 82.5%. Reproduced when, under one reading, every
+    rat's jump fraction lies in it.
+- id: fig3b-trajectory-fraction
+  statement: Only 1 to 4% of detected representations were sequential trajectories down the length
+    of the arm.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 6; Figure 3A and 3B
+  quote: Across all rats, 65%–75% of detected representations ... were sequential trajectories down
+    the length of the arm
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig3b-jump-fraction
+  expected:
+    quantity: Fraction of detected events classed as trajectories, per rat
+    value: 0.0265
+    tolerance: 0.0175
+  criterion: Events as in fig3b-jump-fraction. The Figure 3A legend defines a medium trajectory as a
+    representation with a significant linear regression covering at least 35 cm in the target arm,
+    and a long trajectory as one covering at least 45 cm. Open are (1) which category the 1 to 4%
+    counts, (a) long trajectories, (b) medium and long together; (2) the regression, read as a
+    linear regression of the posterior-maximum position on time over the bins of the 90 ms window
+    whose maximum lies in the target arm, significant at p < 0.05, with covered distance the span of
+    fitted positions, and as variant the regression weighted by the posterior over all target-arm
+    bins. The range widened by 10% of each bound is 0.9% to 4.4%. Reproduced when, under one
+    reading, every rat's fraction lies in it.
+- id: figs4a-jump-distance
+  statement: Most detected representations (60 to 78% across rats) jumped at least 50 cm from the
+    rat's current location.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 6; Figure S4A
+  quote: Most representations (60%–78%) jumped at least 50 cm from the rat's current location (Figure
+    S4A).
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  expected:
+    quantity: Fraction of detected events with jump distance of 50 cm or more, per rat
+    value: 0.699
+    tolerance: 0.159
+  criterion: For each detected event, the distance between the rat's position and the nearest
+    high-confidence representation in the target arm (posterior mass above 0.4), including the 90
+    ms before detection (Figure S4A legend); the notebook (cells 57 and 58) takes the fraction of
+    events with distance of 50 cm or more from a 5 cm histogram. Open is what "high-confidence
+    representation" is; the readings are (a) the nearest position bin of the target arm in which a
+    6 ms bin's posterior summed over the 25 cm target arm end exceeds 0.4, measured as the linear
+    distance from the rat's linearized position to that bin, (b) the same with the nearest single
+    position bin holding posterior above 0.4 anywhere in the target arm. The range widened by 10% of
+    each bound is 54% to 85.8%. Reproduced when, under one reading, every rat's fraction lies in it.
+- id: fig3c-arm-base-visible
+  statement: The visible beginning of the target arm (its first 5 cm) was represented in only 7 to 19%
+    of detected events across rats, so visible cues contributed to few events.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 7; Figure 3C
+  quote: these representations were present in 7%–19% of events across rats (Figure 3C)
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig3b-jump-fraction
+  expected:
+    quantity: Fraction of detected events representing the first 5 cm of the target arm, per rat
+    value: 0.136
+    tolerance: 0.073
+  criterion: Events as in fig3b-jump-fraction; the first 5 cm of the target arm is bin x13 (arm 1) or
+    x29 (arm 2). The paper does not say how much posterior counts as representing it; the readings
+    are (a) posterior above 0.2 in that bin in any 6 ms bin of the 90 ms window (the arm-base
+    threshold of Figure 3A), (b) above 0.4, (c) that bin being the posterior maximum in any 6 ms bin.
+    The range widened by 10% of each bound is 6.3% to 20.9%. Reproduced when, under one reading,
+    every rat's fraction lies in it.
+- id: fig3d-reward-port
+  statement: Detected remote representations only occasionally included the reward port location (the
+    last 5 cm of the arm), in 13 to 22% of events across rats.
+  source: Results, Closed-loop hippocampal neurofeedback, paragraph 7; Figure 3D
+  quote: detected remote representations only occasionally included a representation of the reward
+    port location ... showing that generation of remote representations was not primarily driven by
+    the target being a reward location
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig3b-jump-fraction
+  expected:
+    quantity: Fraction of detected events representing the last 5 cm of the target arm, per rat
+    value: 0.1795
+    tolerance: 0.0625
+  criterion: Events as in fig3b-jump-fraction; the last 5 cm is bin x24 (arm 1) or x40 (arm 2). The
+    readings of "a representation of" are those of fig3c-arm-base-visible, (a) posterior above 0.2,
+    (b) above 0.4, (c) posterior maximum, in any 6 ms bin of the 90 ms window. The range 13 to 22%
+    widened by 10% of each bound is 11.7% to 24.2%. Reproduced when, under one reading, every rat's
+    fraction lies in it.
+- id: figs4b-target-arm-majority
+  statement: At target representation times (more than 40% of the posterior in the target arm end,
+    rat at the center port), the majority of the posterior was almost always in the target arm, with
+    much less in the opposite arm or the box.
+  source: Results, Increased representation of the target location, paragraph 1; Figure S4B
+  quote: During these periods, the majority of the representation was almost always within the
+    target arm
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  criterion: Target representation times are 6 ms bins of the feedback phase (taskState 2) with the
+    rat within 17 cm of the center port and the posterior summed over the target arm end above 0.4
+    (mcoulter_realtime_posterior_sum.py; Figure 4B legend), over neurofeedback sessions. For each
+    bin, the posterior summed over the whole target arm (x13-x24 or x29-x40), the opposite arm and
+    the box (x00-x08). The Figure S4B legend says "nearly all times of target representation had at
+    least 50% representation in the target arm"; "nearly all" is read as at least 90% of bins.
+    Reproduced when, in every rat, at least 90% of target representation bins have at least 0.5 of
+    the posterior in the target arm and the median posterior in the opposite arm and in the box are
+    each below that in the target arm.
+- id: fig4c-target-increase
+  statement: Representations of the target arm end were about 2-fold more prevalent during
+    neurofeedback sessions than during head direction feedback sessions with similar reward, in 5 of
+    6 rats individually and in a grouped mixed-effects analysis.
+  source: Results, Increased representation of the target location, paragraph 2; Figure 4C and 4E;
+    Table S1, Figure 4c
+  quote: Representations of the target region were approximately 2-fold more prevalent during
+    neurofeedback sessions compared with head direction feedback sessions (Figures 4C and 4E,
+    individually significant in 5 of 6 rats
+  statistics:
+  - about: grouped analysis, all data
+    test: linear mixed effects model, session type as test variable
+    p: 3.9e-11
+    n: 148 sessions of 6 rats
+  - about: rat 1
+    test: Mann-Whitney
+    p: 0.0044
+    n: 12 head direction and 3 neurofeedback sessions
+  - about: rat 2
+    test: Mann-Whitney
+    p: 0.0049
+    n: 12 head direction and 33 neurofeedback sessions
+  - about: rat 3
+    test: Mann-Whitney
+    p: 0.0014
+    n: 10 head direction and 16 neurofeedback sessions
+  - about: rat 4
+    test: Mann-Whitney
+    p: 5.5e-5
+    n: 10 head direction and 16 neurofeedback sessions
+  - about: rat 5
+    test: Mann-Whitney
+    p: 0.015
+    n: 11 head direction and 11 neurofeedback sessions
+  - about: rat 6
+    test: Mann-Whitney
+    p: 0.52
+    n: 9 head direction and 5 neurofeedback sessions
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - session-inclusion-decoding-quality
+  expected:
+  - quantity: Neurofeedback target representation relative to head direction feedback
+    value: 2.0
+    tolerance: 0.2
+  - quantity: Sessions in the comparison, all rats and both session types (Table S1)
+    value: 148
+    tolerance: 14.8
+  criterion: Sessions are the included sessions with more than 90% of the possible 75 rewards (68 or
+    more, Figure 4B legend), head direction and neurofeedback. The per-session measure is from
+    mcoulter_realtime_posterior_sum.py, the fraction of 6 ms decoder bins in the feedback phase
+    (taskState 2) with the rat less than 17 cm from the center port in which the posterior summed
+    over the session's target arm end (x20-x24 for arm 1, x36-x40 for arm 2) exceeds 0.4; the target
+    arm of head direction sessions is the arm of the rewarded head direction, from the code's
+    per-day dictionaries. Per rat, a two-sided Mann-Whitney U test of head direction against
+    neurofeedback sessions; grouped, the LME described in the opening comment. The fold change is
+    the notebook's (cell 52), each session's value divided by the mean of its rat's head direction
+    sessions, then the mean over all neurofeedback sessions pooled. Reproduced when neurofeedback is
+    higher in at least 5 rats with p < 0.05 in 5 rats, the LME p < 0.05 with neurofeedback higher,
+    and the fold change is within tolerance; partially reproduced when the LME holds but fewer rats
+    are individually significant or the fold change is out of tolerance. The session counts per rat
+    are compared with Table S1 (12/3, 12/33, 10/16, 10/16, 11/11, 9/5).
+- id: figs5a-target-increase-no-trigger
+  statement: The increase in target representation during neurofeedback holds when the
+    tone-triggering representations are removed.
+  source: Results, Increased representation of the target location, paragraph 2; Figure S5A
+  quote: Representations of the target region were approximately 2-fold more prevalent ...
+    tone-triggering representation removed
+  statistics:
+  - about: grouped analysis, tone-triggering representation removed
+    test: linear mixed effects model, session type as test variable
+    p: 3.6e-11
+    n: 148 sessions of 6 rats
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig4c-target-increase
+  criterion: As fig4c-target-increase, with the measure computed without the bins of the
+    tone-triggering representation. The code (mcoulter_realtime_posterior_sum.py, no_reward_time)
+    removes, for each reward message more than 1 s (30000 samples) after the previous one, the 5
+    decoder bins (30 ms) ending at it, then takes the fraction over the remaining center-port bins.
+    Reproduced when the LME p < 0.05 with neurofeedback higher. The notebook's fold change for this
+    measure (cell 72, 1.90) is reported beside the result.
+- id: fig4d-arm-base-no-increase
+  statement: Representation of a closer, non-rewarded control location, the base of the target arm,
+    was not more prevalent during neurofeedback than during head direction feedback, in any rat or
+    grouped.
+  source: Results, Increased representation of the target location, paragraph 2; Figure 4D and 4E;
+    Table S1, Figure 4d
+  quote: representations of a physically closer location (the base of the target arm) were not more
+    prevalent in neurofeedback sessions compared with head direction feedback sessions (Figures 4D
+    and 4E, non-significant in each rat
+  statistics:
+  - about: grouped analysis
+    test: linear mixed effects model, session type as test variable
+    p: 0.54
+    n: 148 sessions of 6 rats
+  - about: rat 1
+    test: Mann-Whitney
+    p: 0.23
+  - about: rat 2
+    test: Mann-Whitney
+    p: 0.43
+  - about: rat 3
+    test: Mann-Whitney
+    p: 0.77
+  - about: rat 4
+    test: Mann-Whitney
+    p: 0.30
+  - about: rat 5
+    test: Mann-Whitney
+    p: 0.32
+  - about: rat 6
+    test: Mann-Whitney
+    p: 0.80
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig4c-target-increase
+  criterion: A claim of absence, judged on the paper's tests. Sessions and measure as in
+    fig4c-target-increase with the posterior summed over the 25 cm base of the target arm (x13-x17
+    or x29-x33). Reproduced when the two-sided Mann-Whitney test has p >= 0.05 in every rat and the
+    LME has p >= 0.05; not reproduced when the LME or any rat shows a significant increase. The
+    fold change (notebook cell 53, 1.05) and each p are reported.
+- id: figs5c-opposite-arm-no-increase
+  statement: Representation of the end of the opposite, non-target arm was not enriched during
+    neurofeedback compared with head direction feedback.
+  source: Results, Increased representation of the target location, paragraph 2; Figure S5C
+  quote: Likewise, representation of the end of the opposite (nontarget) arm was not enriched (Figure
+    S5C
+  statistics:
+  - about: grouped analysis
+    test: linear mixed effects model, session type as test variable
+    p: 0.067
+    n: 148 sessions of 6 rats
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig4c-target-increase
+  criterion: A claim of absence, judged on the paper's test, the grouped LME. Sessions and measure as
+    in fig4c-target-increase with the posterior summed over the end of the arm opposite the target
+    (x36-x40 when the target is arm 1, x20-x24 when it is arm 2). Reproduced when the LME has p >=
+    0.05; not reproduced when it finds a significant increase. The per-rat Mann-Whitney tests and
+    the fold change (notebook cell 80, 1.50) are reported as variants.
+- id: reward-target-correlation
+  statement: Task performance (rewards per session) and the amount of target representation were
+    significantly positively correlated in five of six rats (rats 1, 2, 3, 5 and 6) and weakly
+    negatively correlated in rat 4.
+  source: Results, Increased representation of the target location, paragraph 2
+  quote: We also examined the relationship between task performance (number of rewards received) and
+    the amount of target representation and found that these measures were significantly positively
+    correlated in five of the six animals
+  statistics:
+  - about: rats 1, 2, 3, 5 and 6, positive correlation
+    test: correlation
+    p: 0.01
+    p_relation: <
+  - about: rat 4, negative correlation
+    test: correlation
+    p: 0.022
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig4c-target-increase
+  criterion: Per session, rewards (reward messages, as the code counts them) and the target
+    representation fraction of fig4c-target-increase. The paper names neither the correlation nor
+    the sessions, and the code does not hold this analysis. The readings are the correlation
+    (a) Pearson, (b) Spearman, over the sessions (a) all included neurofeedback sessions (the
+    Figure 5 set, n 7, 50, 42, 44, 50, 51), (b) all included sessions, head direction and
+    neurofeedback. Reproduced when, under one reading, rats 1, 2, 3, 5 and 6 have a positive
+    correlation with p < 0.01 and rat 4 a negative correlation with p < 0.05; partially reproduced
+    when at least four of rats 1, 2, 3, 5 and 6 do.
+- id: fig5b-target-increase-over-time
+  statement: Across all included neurofeedback sessions, target representation increased over time,
+    although the target switched every 3 days, individually in 4 of 6 rats and in a grouped
+    regression of z-scored values.
+  source: Results, Increased representation of the target location, paragraph 3; Figure 5B and 5C;
+    Table S1, Figures 5b and 5c
+  quote: the overall prevalence of the target representation increased over time (Figure 5,
+    individually significant in 4 of 6 animals
+  statistics:
+  - about: grouped analysis, all data
+    test: linear regression of Z scored values
+    p: 0.0001
+    n: 7, 50, 42, 44, 50 and 51 sessions for rats 1 to 6
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig4c-target-increase
+  criterion: Sessions are all included neurofeedback sessions (no reward selection; n from Table
+    S1). The measure is that of fig4c-target-increase for the session's target arm. Per rat,
+    scipy.stats.linregress of the measure on session; grouped, each rat's values z-scored and
+    pooled, then linregress on session (notebook cells 64 and 65). Open is the session variable;
+    the readings are (a) the session's position in the rat's neurofeedback series, counting
+    excluded sessions (1 to 18 or 1 to 54), (b) the index among the included sessions. Reproduced
+    when, under one reading, at least 4 rats have a positive slope with p < 0.05 and the grouped
+    slope is positive with p < 0.05; partially reproduced when the grouped slope holds and 2 or 3
+    rats do.
+- id: figs5b-over-time-no-trigger
+  statement: The increase of target representation over time holds with the tone-triggering
+    representations removed.
+  source: Results, Increased representation of the target location, paragraph 3; Figure S5B
+  quote: the overall prevalence of the target representation increased over time ...
+    tone-triggering representation removed
+  statistics:
+  - about: grouped analysis, tone-triggering representation removed
+    test: linear regression of Z scored values
+    p: 0.0002
+    n: 7, 50, 42, 44, 50 and 51 sessions for rats 1 to 6
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig5b-target-increase-over-time
+  - figs5a-target-increase-no-trigger
+  criterion: As fig5b-target-increase-over-time with the measure of
+    figs5a-target-increase-no-trigger, under the same session-variable readings. Reproduced when,
+    under one reading, the grouped slope is positive with p < 0.05.
+- id: fig5-arm-base-no-change-over-time
+  statement: Representation of the base of the target arm showed no consistent change over time,
+    with a significant increase in only one rat and no grouped trend.
+  source: Results, Increased representation of the target location, paragraph 3; Figure 5B and 5C
+  quote: By contrast, there was no consistent change in the representation of the base of the target
+    arm (Figure 5, significant increase in only one animal
+  statistics:
+  - about: grouped analysis
+    test: linear regression of Z scored values
+    p: 0.7
+    n: 7, 50, 42, 44, 50 and 51 sessions for rats 1 to 6
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig5b-target-increase-over-time
+  criterion: A claim of absence, judged on the paper's grouped test. As
+    fig5b-target-increase-over-time with the arm-base measure of fig4d-arm-base-no-increase.
+    Reproduced when the grouped regression of z-scored values has p >= 0.05 and at most one rat
+    has a significant positive slope; not reproduced when the grouped slope is significant. The
+    per-rat slopes and p, including significant decreases, are reported.
+- id: figs5d-opposite-arm-increase-over-time
+  statement: Representation of the opposite arm end also increased over time.
+  source: Results, Increased representation of the target location, paragraph 3; Figure S5D
+  quote: Finally, we noted that representation of the opposite arm end also increased over time
+    (Figure S5D
+  statistics:
+  - test: linear regression of Z scored values
+    p: 0.004
+    n: 7, 50, 42, 44, 50 and 51 sessions for rats 1 to 6
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.dz08kps72 (version 7), real-time decoder output files
+  depends_on:
+  - fig5b-target-increase-over-time
+  criterion: As fig5b-target-increase-over-time with the opposite-arm measure of
+    figs5c-opposite-arm-no-increase. Reproduced when, under one reading of the session variable,
+    the grouped slope is positive with p < 0.05.
+- id: fig6e-target-assemblies-at-detection
+  statement: At reward-triggering detections, target-representing cell assemblies were about 89 times
+    more active than at random times and about 26 times more active than non-target assemblies, in
+    every rat.
+  source: Results, Remote representations engage hippocampal cell assemblies, paragraphs 3 and 4;
+    Figure 6E; Table S1, Figure 6e
+  quote: these assemblies were about 89 times more active at detection times compared with random
+    times (Figures 6D and 6E, each rat p < 0.001, Mann-Whitney test) and were about 26 times more
+    active than non-target assemblies
+  statistics:
+  - about: target assemblies at detection against random times, each rat
+    test: Mann-Whitney
+    p: 0.001
+    p_relation: <
+    n: 8, 126, 81, 57, 85 and 53 target assemblies for rats 1 to 6
+  - about: target against non-target assemblies at detection, each rat
+    test: Mann-Whitney
+    p: 0.001
+    p_relation: <
+    n: 8, 126, 81, 57, 85 and 53 target and 72, 694, 527, 568, 578 and 769 non-target assemblies
+  data: with_inputs
+  depends_on:
+  - session-inclusion-decoding-quality
+  expected:
+  - quantity: Target assembly activity at detection relative to random times
+    value: 89
+    tolerance: 8.9
+  - quantity: Target assembly activity at detection relative to non-target assemblies
+    value: 26
+    tolerance: 2.6
+  criterion: Assemblies per neurofeedback session from the isolated single units (MountainSort4,
+    noise and multiunit clusters removed), by combined PCA and ICA (Lopes-dos-Santos et al. 2013),
+    with spike counts in 30 ms bins (STAR Methods, Cell assembly analysis). The code
+    (mcoulter_reward_assemblies.py, mcoulter_arm_end_assemblies.py) z-scores each unit, takes the
+    number of assemblies from a circular-shift null (100 shuffles, 99.5th percentile of the largest
+    eigenvalue) and FastICA patterns, and activation strength as in Lopes-dos-Santos (zero
+    diagonal); it sums 5 indicator bins and prints this as 10 ms, against 30 ms in the Methods, so
+    30 ms is the main reading and 10 ms a variant. Assemblies with maximum strength above 100 are
+    kept (Figure 6E legend). Open is how an assembly is classed as target; the readings are (a) its
+    activation strength during the exploration phase, binned by linearized position, peaks in the
+    target arm end, (b) its mean activation during exploration is higher in the target arm end than
+    in any other 25 cm segment, (c) as the code's mcoulter_arm_end_assemblies.py, assemblies built
+    from cells with more than 30 spikes in the target arm end. Activity at detection is the
+    strength in the bin containing each detection, averaged per assembly over detections; random
+    times are center-port feedback times drawn uniformly, as many as the detections. Per rat,
+    two-sided Mann-Whitney tests over assemblies. The fold change is open, (a) ratio of means over
+    assemblies pooled across rats, (b) ratio of medians, (c) mean of the per-rat ratios of means.
+    Reproduced when both comparisons have p < 0.001 in every rat with target higher and, under one
+    reading, both fold changes are within tolerance; partially reproduced when the tests hold but
+    no reading gives both fold changes.
+- id: fig6g-target-assemblies-outside-detection-random
+  statement: Outside rewarded detections, at times of target representation, target assemblies were
+    about 3.9 times more active than at random times, significantly in 5 of 6 rats and grouped.
+  source: Results, Remote representations engage hippocampal cell assemblies, paragraph 4; Figure
+    6G; Table S1, Figure 6g
+  quote: During these periods, target assemblies were about 3.9 times more active than at random
+    times
+  statistics:
+  - about: 5 of 6 rats
+    test: Mann-Whitney
+    p: 0.001
+    p_relation: <
+  - about: rat 1
+    test: Mann-Whitney
+    p: 0.16
+    n: 8 target assemblies
+  - about: grouped analysis of all rats
+    test: linear mixed effects model
+    p: 3.2e-27
+  data: with_inputs
+  depends_on:
+  - fig6e-target-assemblies-at-detection
+  expected:
+    quantity: Target assembly activity at target representation times relative to random times
+    value: 3.9
+    tolerance: 0.39
+  criterion: Assemblies, target class and random times as in fig6e-target-assemblies-at-detection.
+    Target representation times are center-port feedback bins with more than 40% of the posterior
+    in the target arm end (Figure 6G legend) outside detection events; the readings of "outside"
+    are (a) excluding the 30 ms that triggered each detection, (b) also excluding the 10 s after
+    each reward (the post-reward window of mcoulter_realtime_posterior_sum.py). Per rat, two-sided
+    Mann-Whitney over assemblies; grouped, the LME of the opening comment with condition (target
+    times against random times) as test variable and rat as group (notebook cell 103). Reproduced
+    when at least 5 rats have p < 0.001 with target times higher, the LME has p < 0.05, and under
+    one reading the fold change (readings of fig6e) is within tolerance.
+- id: fig6g-target-vs-nontarget-outside-detection
+  statement: At target representation times outside rewarded detections, target assemblies were
+    about 1.7 times more active than non-target assemblies, significantly in 4 of 6 rats (3 at p <
+    0.001, 1 at p = 0.005) and grouped.
+  source: Results, Remote representations engage hippocampal cell assemblies, paragraph 4; Figure
+    6G; Table S1, Figure 6g
+  quote: and were about 1.7 times more active than non-target assemblies at these same times
+  statistics:
+  - about: 3 of 6 rats
+    test: Mann-Whitney
+    p: 0.001
+    p_relation: <
+  - about: 1 rat
+    test: Mann-Whitney
+    p: 0.005
+  - about: 2 rats
+    test: Mann-Whitney
+    p: 0.4
+  - about: 2 rats, second
+    test: Mann-Whitney
+    p: 0.45
+  - about: grouped analysis
+    test: linear mixed effects model
+    p: 9.5e-18
+  data: with_inputs
+  depends_on:
+  - fig6g-target-assemblies-outside-detection-random
+  expected:
+    quantity: Target relative to non-target assembly activity at target representation times
+    value: 1.7
+    tolerance: 0.17
+  criterion: As fig6g-target-assemblies-outside-detection-random, comparing target with non-target
+    assemblies at the same times. Reproduced when at least 4 rats have p < 0.01 with target higher,
+    the LME has p < 0.05, and under one reading the fold change is within tolerance; partially
+    reproduced when the LME holds but fewer rats do.
+- id: figs6bc-active-cells
+  statement: Detection events engaged several neurons, an average of 1.8 to 8.1 highly weighted
+    target-assembly cells active just before each detection across rats, 10 to 14% of the
+    high-weight cells.
+  source: Results, Remote representations engage hippocampal cell assemblies, paragraph 5; Figure S6B
+    and S6C
+  quote: Across all sessions, rats had an average of 1.8–8.1 cells active immediately preceding each
+    detection event, ... which corresponded to 10%–14% of high-weight cells
+  data: with_inputs
+  depends_on:
+  - fig6e-target-assemblies-at-detection
+  expected:
+  - quantity: Mean active high-weight cells per detection, per rat
+    value: 5.265
+    tolerance: 3.645
+  - quantity: Fraction of high-weight cells active per detection, per rat
+    value: 0.122
+    tolerance: 0.032
+  criterion: High-weight cells are cells whose weight in a target assembly is more than 5 s.d. above
+    the mean weight (Figure S6B legend); a cell is active if it spikes within 100 ms before the
+    detection. Detections are the reward times (n 322, 2999, 1970, 1737, 2037 and 1176). Open is
+    whether the mean and s.d. are over (a) the weights of that assembly, (b) all weights of the
+    session's assemblies; and whether a cell in several target assemblies counts once (main) or per
+    assembly. The ranges widened by 10% of each bound are 1.62 to 8.91 cells and 9% to 15.4%.
+    Reproduced when, under one reading, every rat's mean and fraction lie in them.
+- id: figs6ef-similarity-to-exploration
+  statement: Spiking patterns at remote representation times were more similar to patterns during
+    exploration than patterns at random times, by cosine distance and by PCA explained variance, in
+    each rat.
+  source: Results, Remote representations engage hippocampal cell assemblies, paragraph 5; Figure S6E
+    and S6F
+  quote: two additional analyses examining cosine distances and explained variances indicated that
+    spiking patterns during remote representation times were more similar to patterns seen during
+    actual exploration than to patterns seen at random times
+  statistics:
+  - about: cosine distance, remote representation against random times, each rat
+    test: Mann-Whitney
+    p: 0.0001
+    p_relation: <
+  - about: explained variance, remote representation against random times, each rat
+    test: Mann-Whitney
+    p: 0.0001
+    p_relation: <
+  data: with_inputs
+  depends_on:
+  - session-inclusion-decoding-quality
+  criterion: From the Figure S6E and S6F legends. Cells with more than 50 spikes and mean rate below
+    7 Hz; population vectors of spike counts in 50 ms windows. (E) cosine distance between each
+    exploration visit to the target location and remote representations, and between exploration
+    visits and random times. (F) a PCA fit to the 12 exploration visits to the target location,
+    and the variance it explains in the 50 ms vectors of reward-triggering representations and of
+    random feedback times. Open are the window of an exploration visit (read as the time the rat
+    spends in the 25 cm target arm end on each visit) and where the 50 ms is placed (read as ending
+    at the detection). Reproduced when in every rat the cosine distance is smaller and the explained
+    variance higher for remote representations than for random times, each with two-sided
+    Mann-Whitney p < 0.0001.
+- id: figs6d-no-consistent-remapping
+  statement: There was no consistent remapping of activity from the target location to the center
+    port after high-reward sessions; one rat (rat 4) showed a significantly larger increase for the
+    center port.
+  source: Results, Remote representations engage hippocampal cell assemblies, paragraph 6; Figure S6D
+  quote: This was not consistently true across animals, but there was some evidence for remapping in
+    one of the six animals
+  statistics:
+  - about: rat 4, center port against target region change
+    test: Mann-Whitney
+    p: 0.003
+  data: with_inputs
+  depends_on:
+  - fig4c-target-increase
+  criterion: From the Figure S6D legend, after each high-reward session (more than 90% of possible
+    rewards), the change in representation of the center reward port and of the target region in
+    the next session. The measure is open; the readings are (a) the change in the decoder's
+    exploration-phase encoding, read as the fraction of single units with place-field peaks at the
+    center port and in the target arm end, (b) the change in the per-session fraction of
+    center-port time with posterior above 0.4 at the center port and in the target arm end, as in
+    fig4c-target-increase. Reproduced when, under one reading, the direction of the difference
+    (center port against target) is not the same in all six rats and at most one rat has a
+    two-sided Mann-Whitney p < 0.05.
+- id: fig7b-swr-fraction
+  statement: Remote representations occurred mainly during stillness (head speed below 4 cm/s) but
+    outside SWRs; only 6 to 11% of remote representations were associated with SWRs.
+  source: Results, Brain state during remote representation events, paragraph 2; Figure 7A and 7B
+  quote: Strikingly, remote representations were primarily expressed during stillness (head speed < 4
+    cm/s) but outside of clearly identifiable SWR events ... only 6%–11% of remote representations
+    were associated with SWRs
+  data: with_inputs
+  depends_on:
+  - figs4b-target-arm-majority
+  expected:
+    quantity: Fraction of remote representations associated with SWRs, per rat
+    value: 0.0875
+    tolerance: 0.0335
+  criterion: Remote representations are the target representation bins of
+    figs4b-target-arm-majority in neurofeedback sessions (Figure 7B legend). Brain state per 6 ms
+    bin, as mcoulter_realtime_lfp_posterior_sum.py does it, SWR when the bin overlaps an SWR
+    interval, otherwise movement when the head speed (Gaussian-smoothed, sigma 2 samples) exceeds 4
+    cm/s and stillness below it. SWRs are detected by "previously described methods" (ref. 25,
+    Gillespie et al. 2021); the code uses Spyglass RippleTimesV1 with the Kay consensus detector,
+    whose stored parameters are not in the repository, so the parameters of ref. 25 are used. Open
+    is the session set; readings (a) the neurofeedback sessions with Figure 7 data (Table S1, Figure
+    7c), (b) these pooled with head direction sessions. "Primarily" is read as (a) stillness outside
+    SWRs above 50% of remote representations, (b) the largest of the three states. The range 6 to
+    11% widened by 10% of each bound is 5.4% to 12.1%. Reproduced when, under one reading, every
+    rat's SWR fraction lies in it and stillness outside SWRs is primary.
+- id: fig7b-neurofeedback-vs-head-direction-state
+  statement: Compared with head direction feedback, remote representations during neurofeedback
+    occurred more often during movement and less often during SWRs, in each rat.
+  source: Results, Brain state during remote representation events, paragraph 3; Figure 7B
+  quote: During neurofeedback, remote representations were more likely to occur during movement and
+    less likely to occur during SWRs as compared with head direction feedback
+  statistics:
+  - about: movement fraction and SWR fraction, each rat
+    test: chi-squared test and post hoc Z test of proportions
+    p: 0.001
+    p_relation: <
+  data: with_inputs
+  depends_on:
+  - fig7b-swr-fraction
+  criterion: Brain states as in fig7b-swr-fraction, for remote representation bins during head
+    direction and neurofeedback sessions. Per rat, a chi-squared test of the 2 by 3 table (session
+    type by movement, stillness, SWR) of bin counts, then two-proportion z tests of the movement
+    fraction and of the SWR fraction; the code for these tests is not in the repository. Open is
+    the counting unit; readings (a) 6 ms bins, (b) events, runs of consecutive bins. Reproduced
+    when, under one reading, in every rat the chi-squared test and both z tests have p < 0.001 with
+    neurofeedback higher for movement and lower for SWR.
+- id: fig7b-swr-vs-random
+  statement: Within neurofeedback sessions, SWRs were more frequent at remote representation times
+    than at random center-port times in 5 of 6 rats.
+  source: Results, Brain state during remote representation events, paragraph 4; Figure 7B
+  quote: SWRs were more frequent during times of remote representation compared with random times in
+    5 of 6 rats
+  statistics:
+  - about: SWR fraction, each of 5 rats
+    test: chi-squared test and post hoc Z test of proportions
+    p: 0.001
+    p_relation: <
+  data: with_inputs
+  depends_on:
+  - fig7b-swr-fraction
+  criterion: Brain states as in fig7b-swr-fraction; random times are center-port feedback bins drawn
+    at random, as many as the remote representation bins (np.random.choice in
+    mcoulter_realtime_lfp_posterior_sum.py). Tests and counting-unit readings as in
+    fig7b-neurofeedback-vs-head-direction-state. Reproduced when, under one reading, at least 5 rats
+    have a higher SWR fraction at remote representation times with p < 0.001.
+- id: fig7c-non-swr-target-increase
+  statement: Target representations outside SWRs consistently increased with neurofeedback compared
+    with head direction feedback, in 5 of 6 rats and grouped.
+  source: Results, Brain state during remote representation events, paragraph 2; Figure 7C; Table S1,
+    Figure 7c
+  quote: Furthermore, target representations outside SWRs consistently increased in prevalence with
+    neurofeedback
+  statistics:
+  - about: grouped analysis
+    test: linear mixed effects model
+    p: 1.3e-11
+    n: 141 sessions of 6 rats
+  - about: rat 1
+    test: Mann-Whitney
+    p: 0.012
+    n: 8 head direction and 3 neurofeedback sessions
+  - about: rat 2
+    test: Mann-Whitney
+    p: 0.0079
+    n: 12 head direction and 33 neurofeedback sessions
+  - about: rat 3
+    test: Mann-Whitney
+    p: 0.00079
+    n: 10 head direction and 15 neurofeedback sessions
+  - about: rat 4
+    test: Mann-Whitney
+    p: 5.5e-5
+    n: 10 head direction and 16 neurofeedback sessions
+  - about: rat 5
+    test: Mann-Whitney
+    p: 0.023
+    n: 11 head direction and 9 neurofeedback sessions
+  - about: rat 6
+    test: Mann-Whitney
+    p: 0.36
+    n: 9 head direction and 5 neurofeedback sessions
+  data: with_inputs
+  depends_on:
+  - fig4c-target-increase
+  - fig7b-swr-fraction
+  criterion: Sessions as in fig4c-target-increase less those missing for Figure 7 (STAR Methods, Data
+    inclusion; Table S1 n). The measure is that of fig4c-target-increase restricted to bins not
+    associated with SWRs (SWR assignment of fig7b-swr-fraction); the readings of its denominator are
+    (a) all center-port feedback bins, (b) the center-port bins outside SWRs. Per rat, two-sided
+    Mann-Whitney; grouped, the LME of the opening comment (notebook cell 138). Reproduced when,
+    under one reading, at least 5 rats have neurofeedback higher with p < 0.05 and the LME has p <
+    0.05 with neurofeedback higher.
+- id: fig7c-swr-target-no-consistent-increase
+  statement: Target representations during SWRs did not consistently increase with neurofeedback,
+    significant in only 1 of 6 rats and not grouped.
+  source: Results, Brain state during remote representation events, paragraph 2; Figure 7C; Table S1,
+    Figure 7c
+  quote: while representations associated with SWRs did not consistently increase across animals
+  statistics:
+  - about: grouped analysis
+    test: linear mixed effects model
+    p: 0.056
+    n: 141 sessions of 6 rats
+  - about: rat 2, the one significant rat
+    test: Mann-Whitney
+    p: 0.0011
+  data: with_inputs
+  depends_on:
+  - fig7c-non-swr-target-increase
+  criterion: A claim of absence, judged on the paper's grouped test. As
+    fig7c-non-swr-target-increase with the bins associated with SWRs (denominator readings (a) all
+    center-port bins, (b) center-port SWR bins). Reproduced when the LME has p >= 0.05 and at most
+    one rat has p < 0.05 with neurofeedback higher; not reproduced when the LME finds a significant
+    increase. Each rat's p and the effect are reported.
+- id: figs7a-theta-phase
+  statement: Remote representations during movement were locked to theta phase in every rat, and in 5
+    of 6 rats they were more prevalent in late theta phases.
+  source: Results, Brain state during remote representation events, paragraph 2; Figure S7A
+  quote: These representations were associated with specific theta phases in all rats ... and in 5 of
+    6 rats, remote representations were more prevalent in late theta phases.
+  statistics:
+  - about: each rat
+    test: Rayleigh test
+    p: 0.0001
+    p_relation: <
+    n: 13822, 42027, 21747, 76860, 37556 and 71226 representation times for rats 1 to 6
+  data: with_inputs
+  depends_on:
+  - fig7b-swr-fraction
+  criterion: Remote representation bins during movement (speed above 4 cm/s), theta phase from one
+    tetrode in stratum oriens (STAR Methods, LFP analysis), band 5 to 11 Hz and Hilbert phase as in
+    the code (Spyglass LFPBandV1 "Theta 5-11 Hz", compute_signal_phase). Rayleigh test per rat.
+    Figure S7A bins phase into 10 equal bins and builds a null from random movement bins of the
+    same number, 1000 times, 95% interval (mcoulter_theta_phase_shuffles.py). Open is what "late"
+    phases are, as the paper gives no phase reference; the readings are (a) the bins exceeding the
+    null's 95% interval lie in the half cycle after the theta trough, (b) the circular mean phase
+    lies in that half cycle, with the trough located from the LFP itself (minimum of the band-passed
+    signal). Reproduced when every rat has Rayleigh p < 0.0001 and, under one reading, at least 5
+    rats have late-phase preference.
+- id: figs7b-no-lfp-signature
+  statement: No specific LFP signature was found for remote representations during stillness outside
+    SWRs, although some rats had increased power above 100 Hz.
+  source: Results, Brain state during remote representation events, paragraph 5; Figure S7B
+  quote: We were not able to identify such a signature, although some rats had increased power >100
+    Hz, potentially reflecting high gamma activity or spiking (Figure S7B).
+  data: with_inputs
+  depends_on:
+  - fig7b-swr-fraction
+  criterion: Spectrograms of 1 s around remote representation times during stillness outside SWRs,
+    in 1 s non-overlapping bins (Figure S7B legend, n 1071, 16032, 13605, 17164, 15025, 14241), from
+    a tetrode in the cell layer (referenced) and one above it (unreferenced), as change from random
+    center-port times. The paper gives no test; the reading is a z-scored power change outside the
+    95% interval of random times. Reproduced when no frequency band below 100 Hz shows a power
+    change in the same direction in all six rats, and at least one rat shows increased power above
+    100 Hz.
+- id: figs7c-multiunit-peak
+  statement: Multiunit spiking peaked at the time of remote representations.
+  source: Results, Brain state during remote representation events, paragraph 5; Figure S7C
+  quote: Indeed, and as expected, multiunit spiking activity peaked at the time of remote
+    representations (Figure S7C).
+  data: with_inputs
+  depends_on:
+  - fig7b-swr-fraction
+  criterion: Mean multiunit spike rate (all spikes above threshold on the CA1 tetrodes) in 1 s around
+    remote representation times in 1 s non-overlapping bins (Figure S7C legend, n 1840, 18211,
+    22150, 21021, 23581, 23092), against random times, with 95% confidence intervals of the mean.
+    The rate bin is not given; 10 ms is used as a standard choice. Reproduced when, in every rat,
+    the rate peaks within 30 ms of the representation time and the peak lies above the random
+    times' 95% interval.
+- id: figs7d-jump-trajectory-state
+  statement: Jump and trajectory representations both occurred during movement, stillness and SWRs,
+    with no consistent difference in brain state between them across rats.
+  source: Results, Brain state during remote representation events, paragraph 5; Figure S7D
+  quote: We found both jump and trajectory representations across moving, still, and SWR periods with
+    no consistent effects of prevalence across animals (Figure S7D).
+  data: with_inputs
+  depends_on:
+  - fig3b-trajectory-fraction
+  - fig7b-swr-fraction
+  criterion: Events classed as jump (confined to the target location, with or without the center port)
+    or trajectory (significant linear regression covering at least 35 cm in the target arm) as in
+    fig3b-jump-fraction and fig3b-trajectory-fraction (Figure S7D legend), each assigned a brain
+    state as in fig7b-swr-fraction at its detection time. The paper gives no test; per rat, a
+    chi-squared test of class by state. Reproduced when each class occurs in each state, and no
+    state is more frequent for one class than the other with p < 0.05 in the same direction in all
+    six rats.
