@@ -380,14 +380,16 @@ def glm_session(counts, z, loc, area, centres):
 
 
 def glm_summary(res, n_units, rng, n_subsets=500, frac_val=0.9, cv=GLM_CV):
-    """As rat_utils.format_glm_results: each unit's best mean fold D2; the population D2 is their
-    mean (with the unit's own score; nan when a unit has none, as the code's mean) and, as a
-    second reading, with scores of units replaced by the null model set to 0. Units whose best score is <= 0, nan, or with fewer than 90% valid
-    folds are replaced by the null model (a constant), and the task-relevant dimension is the
-    mean participation ratio of the z-scored predictions over random sets of n_units units."""
+    """As rat_utils.format_glm_results: each unit's best mean fold D2, chosen with np.argmax over
+    the alphas as the code does, so a unit with a nan mean score at any alpha gets a nan best
+    score. The population D2 is the mean over units (nan when a unit's best score is nan, as the
+    code's mean); further readings are the nan-mean over units, and the mean with the scores of
+    units replaced by the null model set to 0. Units whose best score is <= 0, nan, or with fewer
+    than 90% valid folds are replaced by the null model (a constant), and the task-relevant
+    dimension is the mean participation ratio of the z-scored predictions over random sets of
+    n_units units."""
     sc = res["scores"]
-    with np.errstate(invalid="ignore"):
-        bi = np.argmax(np.where(np.isfinite(sc), sc, -np.inf), axis=1)
+    bi = np.argmax(sc, axis=1)   # as the code: np.argmax picks a nan entry when a unit has one
     best = sc[np.arange(len(sc)), bi]
     nv = res["nvalid"][np.arange(len(sc)), bi]
     zero = (best <= 0) | (nv < frac_val * cv) | np.isnan(best)
