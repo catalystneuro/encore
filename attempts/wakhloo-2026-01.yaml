@@ -115,7 +115,9 @@ outcomes:
     0.832 in CA1 (P below 1e-24), so readings (a) and (b) both hold in both areas. With the
     empirical Hebbian error (variant) it is 0.943 and 0.946. SVC errors run from 0.197 to 0.362
     (PFC) and 0.200 to 0.360 (CA1). The rest of the statement (MLPs, macaque, pose network) is not
-    tested.
+    tested. The SVC is trained and tested on bins drawn at random from 500 ms bins that are
+    correlated in time, as in the paper's code, so its errors are likely optimistic in absolute
+    value; the criterion is a correlation over sessions.
   deviations:
   - >-
     The SVC is fitted on 4 of the 500 subsets per session (every 125th), as one per task on all
@@ -140,7 +142,10 @@ outcomes:
     Theoretical error (main reading), mean over rats, PFC 0.3626, 0.3167 and 0.3320 at sessions 1,
     4 and 8 (drop 0.0459, change after session 4 0.0153); CA1 0.3523, 0.3121 and 0.3241 (0.0401,
     0.0119). The criterion holds in both areas under both readings (empirical Hebbian error, PFC
-    drop 0.0733 and change 0.0313) and with 19 CA1 units. Both areas rise again at session 8.
+    drop 0.0733 and change 0.0313) and with 19 CA1 units. Both areas rise again at session 8. The empirical Hebbian error is trained
+    and tested on bins drawn at random from 500 ms bins that are correlated in time, as in the
+    paper's code (utils.emp_error), so it is likely optimistic in absolute value; the criterion
+    compares sessions, not absolute values.
   deviations:
   - The random subsets use this attempt's seeds; the per-session means agree with the paper's file
     to a median relative difference of 0.14% (PFC theory).
@@ -167,15 +172,20 @@ outcomes:
     units r = 0.960. The paper's results file gives 0.982 and 0.960 (19 units). Reported and not
     judged, the theory lies above the empirical error by a mean of 0.0341 (PFC) and 0.0311 (CA1),
     by 0.048 and 0.044 in the lowest-error quarter and 0.015 and 0.016 in the highest, the bias at
-    low error the legend describes; the mean absolute difference is 11.55% and 10.69% of the mean
-    empirical error (8.91% with 19 CA1 units), against 11.55% and 9.04% in the paper's file. What
+    low error the legend describes; the mean absolute difference is 11.55% (PFC) and 10.69% (CA1, 24 units) of the mean empirical
+    error. Like for like with the paper's file, which uses 19 CA1 units, it is 11.55% against 11.55%
+    in PFC and 8.91% against 9.04% in CA1. What
     the answer changed. This attempt asked whether the criterion's bound of a mean absolute
     difference below 10% of the mean empirical error misread the legend, since the paper's own
     results fail it in PFC. The reader agreed and amended the criterion to a positive Pearson
     correlation with p < 0.05 and r of at least 0.9 in each area, with the differences reported
     and not judged (questions/wakhloo-2026.yaml, answered 2026-11-10). Under the earlier criterion
     the outcome was not_reproduced (PFC 11.55% and CA1 10.69% above the bound); under the amended
-    one, re-run here on the same numbers, both areas hold and the claim is reproduced.
+    one, re-run here on the same numbers, both areas hold and the claim is reproduced. The 300
+    training and 200 test bins are drawn at random from 500 ms bins that are correlated in time,
+    and the units are normalised over all bins, as in the paper's code (utils.emp_error), so the
+    empirical errors here and in the paper are likely optimistic. This bears on the size of the gap
+    between theory and empirical error, which is reported and not judged, not on the correlation.
 - claim: fig7g-total-dimension-drops-early
   outcome: reproduced
   notebook: reproduce_wakhloo_2026.ipynb
@@ -264,8 +274,11 @@ outcomes:
     the task-relevant dimension falls (-0.126; slope -0.015, P = 0.82), so the criterion fails in
     CA1 under both readings and with 19 CA1 units. The task dimension is on 19-unit subsets, as the
     claims file's pipeline takes it. With the task dimension on 24-unit CA1 subsets it falls under
-    reading (a) (-0.0259) and has a slope of +0.0130 (P = 0.86) under reading (b), which meets
-    reading (b) in sign only; the outcome is judged on the claims file's 19 units. The behavioural
+    reading (a) (-0.0259) and has a slope of +0.0130 (P = 0.86) under reading (b). Reading (b)
+    tests the sign only, so it holds there, although the slope is close to flat: with 24-unit task
+    dimension sets the claim would hold in CA1 under reading (b) and be reproduced. The outcome is judged on the claims file's 19 units. Whether the
+    claims file should take the task dimension on 24 CA1 units, as the Methods give for the
+    geometric terms, is asked of a reader (questions/wakhloo-2026.yaml). The behavioural
     plateau it depends on (fig7d-behavioral-error-learning) is reproduced.
 - claim: glm-cross-validated-d2
   outcome: partially_reproduced
@@ -288,7 +301,8 @@ outcomes:
     the grid for 1202 of 2327 PFC and 1750 of 3357 CA1 units. Three of the four values match, so
     the claim holds in part. The paper's own GLM fits (results/glm_results), matched to this
     attempt's rats by their unit counts, which agree in all 64 sessions of both areas, give the
-    same session D2 (largest difference 1.8e-09) and the same spread over rats, 0.0599 and 0.0640
+    same session D2 (largest difference 2.7e-10 in PFC and 1.8e-09 in CA1 in the final run, 9.3e-11
+    and 2.3e-09 in the run the verifier read) and the same spread over rats, 0.0599 and 0.0640
     in PFC and 0.1005 and 0.1075 in CA1, so the PFC gap to 0.022 is not a difference of fitting.
     The s.e.m. over rats, not a reading of the criterion, is 0.0226 in PFC (near 0.022) and 0.0380
     in CA1 (against 0.1), so no single reading gives all four reported values. The task-relevant
@@ -310,7 +324,7 @@ findings:
 - kind: other
   statement: >-
     Position is sampled at 27.0 frames per second (ER1) and 32.3 to 33.1 in the other files, where
-    the paper states 30 fps; sessions last 13.0 to 20.0 minutes (most 15 to 16), where the paper
+    the paper states 30 fps; sessions last 13.0 to 20.0 minutes (median 15.85; 36 of the 64 between 15.0 and 16.0), where the paper
     states about 20. JS15's timestamps run from 3605 to 90718 s, about 24 hours, in a dataset
     described as one day.
 - kind: code_mismatch
@@ -345,8 +359,9 @@ verifications:
     removed, the helper module wtrack.py and the claims file, with the paper. The verifier checked
     the code against the paper's code at commit 9674a6c and its results files, tested helpers on
     synthetic data and queried the archive at version 0.240511.0307 (9 assets, 8 rats). It gave its
-    own outcome for each of the 27 claims; all agree with the record as it then stood, two blocked
-    pairs with a different blocked_by. It reported no place where the claims file misreads the
+    own outcome for each of the 27 claims; all agree with the record as it then stood, five blocked
+    claims (the two fig4 claims and the three fig5 claims) with a different blocked_by (corrected in
+    round 2 from "two blocked pairs"). It reported no place where the claims file misreads the
     paper, so no question was added for a reader. Report in
     transcripts/wakhloo-2026/verifier-1-report.md.
   results:
@@ -581,8 +596,210 @@ verifications:
     response: >-
       Outcome kept. A new cell streams the paper's own GLM fits (results/glm_results, Git LFS) and
       matches its rats to this notebook's by unit counts (equal in all 64 sessions of both areas).
-      Session D2 equals the paper's (largest difference 1.8e-09) and so does the spread over rats
+      Session D2 equals the paper's (largest difference below 3e-09, which varies a little between
+      runs; corrected in round 2 from "1.8e-09") and so does the spread over rats
       (PFC 0.0599 and 0.0640, CA1 0.1005 and 0.1075), so the PFC gap is a reading difference, not a
       fitting one; the finding now says so. The s.e.m. is printed for every reading (PFC 0.0226,
       CA1 0.0380). glm_summary now uses np.argmax as the code does, with a corrected docstring; one
       PFC unit has a nan score, so the numbers do not change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the round-1 revision (cells 15 to 61 and the summary,
+    cell 62), the helper module wtrack.py, the README, the attempt record and the claims file, with
+    the paper. The verifier gave its own outcome for each of the 27 claims; all agree with the
+    record. It reported one possible misreading of the paper by the claims file (the unit count of
+    the CA1 task-relevant dimension), added as a question for a reader in
+    questions/wakhloo-2026.yaml. Report in transcripts/wakhloo-2026/verifier-2-report.md. Points
+    not tied to a claim, corrected in reply. The README gave a run time of about 33 minutes where
+    the notebook the verifier read printed 17.0 min; it now gives 17 to 33 minutes (the final run
+    printed 32.4 min). The finding on session lengths said most last 15 to 16 minutes; it now says
+    36 of the 64 last 15.0 to 16.0 minutes, counted from the table of cell 4. The round-1 summary
+    said two blocked pairs had a different blocked_by; it was five claims.
+  results:
+  - claim: eq1-generalization-error-formula
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: eq1-sample-dependence
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: fig3bc-mlp-theory-tracks-error
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: fig3dg-mlp-geometry-tradeoff
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: fig4bf-pose-network-geometry
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Blocked (not_runnable). In round 1 the verifier gave data_missing; the author answered that
+      the claims file marks these data elsewhere, so data_missing does not apply. The verifier
+      accepts that; it does not change the outcome.
+    response: Outcome and blocked_by kept. The round-1 summary under reviewed now says five claims had a different blocked_by, not two pairs.
+  - claim: fig4g-pose-theory-r2
+    agrees: true
+    outcome: blocked
+    reason: Blocked (not_runnable). As for fig4bf; the verifier accepts that data_missing does not apply.
+    response: Outcome and blocked_by kept.
+  - claim: fig5d-macaque-theory-and-ventral-stream
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Blocked (other). In round 1 the verifier gave data_missing; it accepts the author's answer
+      that the claims file marks these data elsewhere, which does not change the outcome.
+    response: Outcome and blocked_by kept.
+  - claim: fig5e-macaque-dimension-correlation
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). As for fig5d.
+    response: Outcome and blocked_by kept.
+  - claim: fig5h-macaque-snf-it
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). As for fig5d.
+    response: Outcome and blocked_by kept.
+  - claim: optimal-code-disentangled
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: eq2-optimal-spectrum-flattens
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: fig6ce-optimal-early-low-dim-high-corr
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). One of the theory and simulation claims, blocked as other.
+    response: Outcome kept.
+  - claim: svc-hebbian-correlation
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Every number in the notes matches cells 15 to 61. Round-1 point 1 is stated in the record and
+      not conclusion-bearing; the SVC still runs on 4 subsets per session, and on those same subsets
+      the theoretical error gives r2 = 0.931 and 0.829. Round-1 point 8 (random train and test bins
+      drawn from autocorrelated 500 ms bins, which makes the empirical errors optimistic, a feature
+      the paper's method shares) appears nowhere in the record.
+    response: >-
+      Outcome kept. Point 8 is now stated in the notes of this claim, of
+      fig7e-readout-error-learning and of fig7f-theory-vs-empirical, and in the fig7f result cell.
+  - claim: fig7d-behavioral-error-learning
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: fig7e-readout-error-learning
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Every number in the notes matches cells 15 to 61. Point 8 (autocorrelated train and test
+      bins) bears on how to read the empirical errors.
+    response: Outcome kept. The notes now state point 8.
+  - claim: figs12c-behavior-readout-r2
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: fig7f-theory-vs-empirical
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Every number in the notes matches cells 15 to 61. Cell 25 says the mean absolute difference of
+      11.55% (PFC) and 10.69% (CA1) is close to the 11.6% and 9.0% of the paper's own results file,
+      but the paper's 9.0% is for 19 CA1 units while 10.69% is for 24; the like-for-like figures are
+      8.91% here and 9.04% in the paper's file (cell 24). The outcome is unaffected, since this
+      measure is not judged. Point 8 bears on how to read the fig7f empirical errors.
+    response: >-
+      Outcome kept. Cell 25 and the notes now compare like for like (PFC 11.55% against 11.55%; CA1
+      with 19 units 8.91% against 9.04%) and state point 8.
+  - claim: fig7g-total-dimension-drops-early
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: fig7h-task-dimension-increases
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a). Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: fig7hk-measures-increase-early
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: fig7-late-reversal
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: mixed-quadratic-dim-corr-snf
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Every number in the notes matches cells 15 to 61. Round-1 point 6 is resolved;
+      rat_stats.csv is now printed beside the notebook's table (cell 39), with gamma signs agreeing
+      in 14 of 14 models.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: mixed-quadratic-ssf-not-nonmonotonic
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: mixed-quadratic-task-dim
+    agrees: true
+    outcome: reproduced
+    reason: Every number in the notes matches cells 15 to 61.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: mixed-linear-ssf-task-dim
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      CA1 SSF has P = 0.00106 raw and 0.00134 adjusted (cell 50). Round-1 point 2 (24 against 19
+      CA1 units) is not resolved, by nature; it remains the cause of the partial outcome and is
+      recorded as a code_mismatch finding.
+    response: Outcome kept; the re-run gives the same numbers.
+  - claim: late-trends-match-optimal
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Agrees under the claims file as written, with one caveat. The claims file takes the
+      task-relevant dimension on 19-unit sets because the code does (format_glm_results). The
+      Methods use 19 PFC units and 24 CA1 units for the geometric terms, then compute the GLM
+      dimensionality "Just as with previous analyses", which points to 24 CA1 units here too. The
+      verifier reports this as a possible misreading of the paper and does not correct it. With
+      24-unit sets reading (b) holds in CA1 (task-dimension slope +0.0130, P = 0.86, cell 53), and
+      the claim would be reproduced; the record and cell 54 state this, and note that the slope is
+      essentially flat. It corrects its round-1 point 5, which it had called not conclusion-bearing;
+      that holds only for reading (a).
+    response: >-
+      Outcome kept, as the claims file decides what is tested and the verifier agrees with it there.
+      The possible misreading is added to questions/wakhloo-2026.yaml for a reader, with the
+      numbers under both unit counts (the paper's own 24-unit fits give 10.289 at sessions 4 and 8).
+      No proposed change is written, since under the claims file as it stands the outcome is the
+      one the verifier agreed with; if a reader amends the claim, a later attempt takes it up. The
+      notes now say plainly that reading (b) tests the sign only and so holds with 24 units.
+  - claim: glm-cross-validated-d2
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The PFC s.d. is 0.057 to 0.066 under every reading, against 0.022 +- 0.0022 (cell 56). The
+      paper's own GLM fits give the same 0.0599 and 0.0640 (cell 57), so the gap is in the paper's
+      0.022, not in the fitting; round-1 points 3 and 4 are resolved. The notes and response say
+      "same session D2 (largest difference 1.8e-09)", which is not printed anywhere; cell 57 gives
+      9.3e-11 (PFC) and 2.3e-09 (CA1).
+    response: >-
+      Outcome kept. The largest difference varies a little between runs: the final run prints
+      2.7e-10 (PFC) and 1.8e-09 (CA1), the run the verifier read 9.3e-11 and 2.3e-09. The notes now
+      give both, and the round-1 response says below 3e-09.

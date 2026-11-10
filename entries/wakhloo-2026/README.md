@@ -34,8 +34,9 @@ paper's own results files to within a fraction of a percent. The attempt record,
 and the differences from the paper's method, is
 [`attempts/wakhloo-2026-01.yaml`](../../attempts/wakhloo-2026-01.yaml).
 
-- `reproduce_wakhloo_2026.ipynb`: the analysis. It takes about 33 minutes on 4 cores, most of it the
-  5684 per-unit GLM fits.
+- `reproduce_wakhloo_2026.ipynb`: the analysis. It takes 17 to 33 minutes on 4 cores, depending on the
+  machine (the notebook's last cell prints 17.0 min in the run the verifier read and 32.4 min in the
+  final run), most of it the 5684 per-unit GLM fits.
 - `wtrack.py`: streaming and binning the files, the readout measures (Eqs. 3 and 5 to 9), the GLMs
   and the mixed models, each with the source of its parameters. Other notebooks on this dandiset can
   import it.
