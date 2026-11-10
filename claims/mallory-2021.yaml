@@ -59,8 +59,10 @@
 # head-fixed) of the session's distribution. Variables as cardinal spline regressors
 # (spline_1d.m), head direction circular (spline_1d_circ.m), position 2D in the open field
 # (spline_2d.m); control points, open field position (arena side in cm) x 15/100 per axis, 10
-# head direction bins, speed bins 5 cm/s wide, 8 bins for pitch, roll and the three head
-# velocities; VR 20 position bins, speed bins 5 cm/s, 5 bins for each eye variable. Tension
+# head direction bins, speed bins 5 cm/s wide, 8 bins for pitch, roll and azimuthal head
+# velocity; the Methods give no bin count for pitch and roll velocity, and 8, as for the other
+# head variables, is a standard choice; VR 20 position bins, speed bins 5 cm/s, 5 bins for
+# each eye variable. Tension
 # s = 0.5 (the code's value; the Methods give 0.5 to 0.7 and call results insensitive; 0.7 is a
 # variant). Poisson log-likelihood with L2 penalty beta = 1, fitted with fminunc. Performance
 # is the log-likelihood increase over a mean rate model on held-out data, 10-fold
@@ -210,7 +212,8 @@ claims:
     tolerance: 0.5
   criterion: Same LN pipeline as fig1c-head-direction-cells. A 10% tolerance on counts this small
     is below one cell, so the claim is judged on "few", reproduced when each count is at most
-    10 of 179 (twice the reported count), with the exact counts reported.
+    twice its reported count (8 of 179 for pitch velocity, 10 of 179 for roll velocity), with
+    the exact counts reported.
 - id: fig1c-azimuthal-velocity-cells
   statement: A small population of Cohort 1 cells (12 of 179, 7%) encodes azimuthal head
     velocity, and this is verified in Cohort 2, where 55 of 1021 cells (5%) do.
@@ -285,7 +288,7 @@ claims:
   criterion: Classification as in the opening comment (Methods, Quantifying tuning curve
     shape), on the cells of fig1c-pitch-roll-cells, with open detail (4) run under both
     readings. Reproduced when, under one reading, linear plus quadratic is the majority of
-    pitch cells, quadratic is the largest class of roll cells, and at least four of the six
+    pitch cells, quadratic cells are more than half of roll cells, and at least four of the six
     counts are within tolerance; partially reproduced when the two majority statements hold
     alone.
 - id: fig2a-pitch-up-down-similar
@@ -441,7 +444,9 @@ claims:
   criterion: Classes under open detail (6), run under both readings. Reproduced when, under one
     reading, the asymmetric and symmetric counts are within tolerance and the binomial test of
     positive against negative symmetric cells gives P < 0.05 with more positive cells;
-    partially reproduced when the binomial result holds alone.
+    partially reproduced when the binomial result holds alone. The paper names no test for this
+    Z and P; it is read as the binomial test against one half that the same paragraph uses for
+    pitch and roll preference.
 - id: fig2c-asymmetric-direction-similar
   statement: Similar proportions of asymmetric azimuthal head velocity cells prefer ipsiversive
     and contraversive head rotation (23 of 38 contraversive).
@@ -458,7 +463,9 @@ claims:
   - fig2c-symmetric-asymmetric-classes
   criterion: A claim of absence. The 38 cells are the linear and nonlinear asymmetric cells
     (10 + 28); direction is relative to the recorded hemisphere, preference under open detail
-    (5). Reproduced when the binomial test against one half gives P >= 0.05.
+    (5). Reproduced when the binomial test against one half gives P >= 0.05. The paper names
+    no test for this Z and P; it is read as the binomial test of the paragraph's other
+    preference results.
 - id: fig2c-velocity-stability
   statement: Tuning to azimuthal head velocity is highly stable across session halves (median
     0.91), comparable to tuning to body speed (0.86).
@@ -587,7 +594,9 @@ claims:
     standard choice. Reproduced when no combination and k gives P < 0.005.
 - id: fig4f-eye-movement-distributions
   statement: Head-fixed mice in VR move their eyes considerably; the inner 98% of horizontal eye
-    position spans about -3.5 to 5.3% of eye width and of vertical position -2.7 to 1.6%.
+    position spans about -3.5 to 5.3% of eye width and of vertical position -2.7 to 1.6%; that
+    of horizontal eye velocity -6.2 to 6.9% of eye width per s and of vertical eye velocity -2.8
+    to 3.2% per s.
   source: Results, Entorhinal neurons encode eye movements, paragraph 2; Figure 4c to i legend
   quote: On the virtual track with landmarks, head-fixed mice moved their eyes considerably, as
     reported previously
@@ -616,9 +625,17 @@ claims:
     value: 6.87
     tolerance: 0.66
     unit: percent of eye width per s
+  - quantity: vertical eye velocity 1st percentile
+    value: -2.83
+    tolerance: 0.55
+    unit: percent of eye width per s
+  - quantity: vertical eye velocity 99th percentile
+    value: 3.15
+    tolerance: 0.68
+    unit: percent of eye width per s
   criterion: Percentiles per session, about the mean position, averaged per mouse, mean over 8
-    mice, with the legend's sem across mice as tolerance. Reproduced when at least five of six
-    are within tolerance; partially for three or four.
+    mice, with the legend's sem across mice as tolerance. Reproduced when at least seven of
+    eight are within tolerance; partially for four to six.
 - id: fig4j-eye-encoding-cells
   statement: Of 2861 MEC cells in head-fixed mice, 711 (25%) carry eye movement signals; 343
     (12%) encode horizontal eye position, 234 (9%) vertical eye position, 244 (9%) horizontal
@@ -970,6 +987,9 @@ claims:
   - quantity: median stability, Eh dot linear-asymmetric
     value: 0.96
     tolerance: 0.096
+  - quantity: median stability, Eh dot nonlinear-asymmetric
+    value: 0.94
+    tolerance: 0.094
   - quantity: median stability, Eh dot nonlinear-symmetric
     value: 0.86
     tolerance: 0.086
@@ -982,6 +1002,7 @@ claims:
   criterion: Reproduced when, under one reading of open detail (6), both Kruskal-Wallis tests
     give P < 0.05 and the three named pairwise comparisons are significant at alpha 0.0167 in the
     stated direction; partially reproduced when the horizontal or the vertical part holds alone.
+    The medians are compared with their tolerances and reported either way.
 - id: fig7ab-eye-contributions
   statement: Body position and speed influence MEC spiking more than eye movement signals, and eye
     position contributes more than eye velocity.
@@ -1110,9 +1131,12 @@ claims:
   - fig8c-eye-tuning-without-landmarks
   criterion: The paper shows examples and no test. For cells encoding both B and Eh on the landmark
     track, the cross-track correlation of Eh tuning curves is compared with that of their B
-    tuning curves by a two-sided Wilcoxon signed-rank test, a test chosen here (the paper names
-    none, and this is an assumption). Reproduced when the median Eh correlation exceeds the
-    median B correlation with P < 0.05 under one reading of open detail (7).
+    tuning curves by the test the Figure 8c legend uses for the same comparison over all cells,
+    a two-sided Wilcoxon rank-sum test at alpha 0.0033. Applying it to this subset is a reading
+    (the paper gives no test for Fig. 8e) and an outcome on it rests on that assumption; a
+    paired two-sided Wilcoxon signed-rank test is a variant. Reproduced when the median Eh
+    correlation exceeds the median B correlation with P < 0.0033 under one reading of open
+    detail (7).
 - id: methods-hemispheres-similar
   statement: The proportion of MEC neurons tuned to eye movement variables does not differ between
     left (mean 0.23) and right (0.43) hemisphere recordings.
@@ -1153,8 +1177,10 @@ claims:
     tolerance: 0.8
   criterion: As in the Methods (Identifying rate of falsely detected encoded variables), one
     variable at a time is shuffled across time bins in Cohort 1 and in the head-fixed data and the
-    whole LN pipeline is rerun. One shuffle per variable, as the counts imply. Reproduced when for
-    every variable the falsely detected count is at most 10% of the normally detected count
+    whole LN pipeline is rerun. One shuffle per variable, as the counts imply. The variables are
+    the six the legend reports for each dataset (Cohort 1 B, Bs, Ha, Hp, Hr and azimuthal head
+    velocity; head-fixed B, Bs, Eh, Ev, Eh dot and Ev dot); pitch and roll velocity are not
+    among them. Reproduced when for each of these variables the falsely detected count is at most 10% of the normally detected count
     (the largest the paper reports is 13 of 135), with the counts reported; the expected values
     are given for reference, a shuffle being random.
 - id: supp4-ln-conservative
@@ -1235,6 +1261,8 @@ claims:
     test: two-sided Wilcoxon signed rank test
     statistic: Z = 3.34
     p: 8.0e-4
+  - about: entropy of peak or valley locations against a uniform distribution, each variable
+    p: 1.0e-4
   depends_on:
   - fig6-eye-velocity-nonlinear-temporal
   expected:
@@ -1248,9 +1276,9 @@ claims:
     maximum or minimum velocity of the range. Reproduced when both binomial tests give P < 0.05
     with a majority within half range and both counts are within tolerance.
 - id: supp9-correlation-contributions
-  statement: Measured by correlation coefficients, contributions follow the same order; in freely
-    moving mice body position contributes most (median 0.42) and azimuthal head velocity least
-    (0.02), and in head-fixed mice body position and speed exceed the eye variables.
+  statement: Measured by correlation coefficients, body position contributes most in freely
+    moving mice (median 0.42) and azimuthal head velocity least (0.02), and in head-fixed mice
+    body position and speed exceed the eye variables.
   source: Supplementary Figure 9
   quote: We report the contribution of each variable to the correlation coefficient between a
     cell’s smoothed spiketrain and the model-predicted firing rate
@@ -1300,3 +1328,24 @@ claims:
     sessions and, for each eye variable, the cells detected in the simulated data are at most 10%
     of those in the original (a reading of "not falsely detected"; the Supplementary Fig. 3c
     false positive rates reach this level).
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, LN pipeline. Said 8 bins for pitch, roll and the three head velocities; the Methods give 8 bins for pitch, roll and azimuthal head velocity only. The pitch and roll velocity bin count is now named as not given, with 8 as a standard choice.
+  - fig1c-pitch-roll-velocity-rare. The criterion allowed 10 of 179 for each count, called twice the reported count; twice 4 is 8. The limits are now 8 for pitch velocity and 10 for roll velocity.
+  - fig2-pitch-roll-shapes. The criterion asked only that quadratic be the largest roll class; the paper says the majority of roll cells are quadratic (28 of 53). It now asks for more than half.
+  - fig2c-symmetric-asymmetric-classes, fig2c-asymmetric-direction-similar. The paper names no test for these Z and P values; the criteria now say the binomial test is read from the paragraph's other preference tests.
+  - fig4f-eye-movement-distributions. The vertical eye velocity 1st and 99th percentiles (-2.83 +- 0.55, 3.15 +- 0.68, Figure 4i legend) were left out without reason. Added them and the velocity ranges to the statement; the rule is now seven of eight (partially four to six), as in fig1b.
+  - fig6v-asymmetric-more-stable. Added the Eh dot nonlinear-asymmetric median (0.94, Figure 6a v legend), part of the statement, and said the medians are reported against their tolerances, since the criterion did not use them.
+  - fig8e-joint-cells-preserve-eye-tuning. The criterion used a signed-rank test chosen by the writer. It now uses the paper's own test for this comparison (Figure 8c legend, two-sided rank-sum at alpha 0.0033) on the joint cells, marked as a reading and an assumption, with the signed-rank test as a variant.
+  - supp3-low-false-positives. "Every variable" was unclear; the legend reports six variables per dataset and not pitch or roll velocity. The criterion now lists them.
+  - supp7e-eye-velocity-extrema-near-zero. Added the legend's entropy test (both P = 1.0e-4), as fig2c-velocity-extrema-near-zero records its entropy test.
+  - supp9-correlation-contributions. The statement said contributions "follow the same order"; the paper does not say so (the medians happen to rank alike, with Bs and pitch tied at 0.07), and the criterion does not test it. Removed it.
+  - Checker. Flagged P = 2.0e-7 (fig2c-velocity-extrema-near-zero) and 8.0e-4 (supp7e-eye-velocity-extrema-near-zero) as not found; both are printed in the Supplementary Figure 7d and 7e legend. No change.
+  - Open. Fold construction, range restriction, the normalization of the contribution, "explored", preference, the symmetric rule, the Fig. 8 tuning curves and pooled P values (header details 1 to 8) stay open with their readings; the paper and the linked code do not settle them.
+  - Open. The Methods give eye units as fraction of eye width while the Results and Figure 4 legend use 1/100 of the eye width; the header's choice of percent for the preset bounds is a reading.
+  - Open. Whether the 6 sessions of Figure 8 are among the 11 landmark sessions is not stated.
+  - Open. Several criteria use thresholds of this file where the paper gives words only ("few" in fig1c-pitch-roll-velocity-rare, "nearly all" as 90% in supp4-ln-conservative, "not falsely detected" as at most 10% in supp12-no-false-eye-detection); each says so.
