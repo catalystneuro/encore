@@ -76,6 +76,15 @@ def assets() -> pd.DataFrame:
     return df
 
 
+def zenodo_files(record_id: int) -> pd.DataFrame:
+    """Name and size of every file of a Zenodo record, from the Zenodo API (metadata only)."""
+    import json
+    import urllib.request
+    with urllib.request.urlopen(f"https://zenodo.org/api/records/{record_id}", timeout=60) as r:
+        rec = json.load(r)
+    return pd.DataFrame([{"record": record_id, "file": f["key"], "size_mb": f["size"] / 1e6} for f in rec["files"]])
+
+
 # ---------------------------------------------------------------- electrophysiology files
 
 def ecephys_contents(url: str) -> dict:

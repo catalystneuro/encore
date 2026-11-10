@@ -221,16 +221,20 @@ outcomes:
   assumed: true
   notebook: reproduce_gonzalez_cabrera_2026.ipynb
   output: claim:fig3b-photometry-continuous-only
-  notes: Over 5 opsin mice, 4 conditions, 23 trials per file (13 for photometry-exp-5). With the ordinary
+  notes: Over 5 opsin mice, 4 conditions, 23 trials per file (13 in the photometry-exp-5 files, 15 at
+    5 Hz, where all intervals are used). With the ordinary
     two-way ANOVA epoch by frequency and the post hoc comparisons on its residual mean square, as Prism
     computes them, continuous light raises the z-scored signal with BH-corrected p from 3.8e-06 to 3.8e-05
     in all 32 readings, below the criterion's 0.0001 in each, and 5, 10 and 20 Hz are not significant
     in any (20 Hz p at least 0.44). Under the main reading (Methods baseline, mean and SD z, epoch means,
     100 Hz) Stim minus Pre is 7.10 z for continuous light (SE 1.209, df 32, BH p 6.3e-06; 1.92 to 15.00
-    per mouse, positive in 5 of 5) and 0.18, 0.55 and 1.40 z at 5, 10 and 20 Hz. The Pre values have zero
-    variance under the Methods baseline with mean and SD z, which lowers this error, but the readings
-    with the code's -3.0 s baseline, where Pre varies, give p 9.9e-06 to 3.8e-05. The other forms give
-    other outcomes. With the repeated-measures ANOVA and Prism's error with sphericity assumed (epoch
+    per mouse, positive in 5 of 5) and 0.18, 0.55 and 1.40 z at 5, 10 and 20 Hz. Under the Methods baseline
+    with mean and SD z the Pre values are fixed at 0; there the ordinary form's SE equals the paired pooled-difference
+    form's (both 1.209), and its smaller p comes only from df 32 against 16, the extra df from the Pre
+    cells. The readings with the code's -3.0 s baseline, where Pre varies, give p 9.9e-06 to 3.8e-05
+    under the ordinary form. Among the paired forms, the pooled-difference form (Stim - Pre variance averaged
+    over the four frequencies, df 16, not one of Prism's forms) holds in 20 of 32 readings, the main reading
+    among them (BH p 9.4e-05), so a paired reading also gives reproduced. With the repeated-measures ANOVA and Prism's error with sphericity assumed (epoch
     x frequency x subject mean square, df 12), continuous light gives BH p 2.0e-04 to 5.3e-04 in all 32
     readings with the trains not significant, which the criterion counts as partially reproduced. With
     a separate paired t-test per frequency (Prism without sphericity), continuous light gives BH p 0.072
@@ -248,8 +252,8 @@ outcomes:
     (Quantification and statistical analysis) name GraphPad Prism v10; neither says whether the ANOVA
     had repeated measures or how the comparisons were computed. The ordinary two-way ANOVA (a reading
     the claims file names) is assumed, since this legend does not name repeated measures where the Figure
-    2f and 2i legends do ("one-way ANOVA with repeated measures"), and it is the only one of Prism's forms
-    that gives the legend's p < 0.0001. Its post hoc comparisons use the model's residual mean square,
+    2f and 2i legends do ("one-way ANOVA with repeated measures"); this support is weak, and nothing else
+    in the paper decides between the designs. Its post hoc comparisons use the model's residual mean square,
     as Prism computes them after an ordinary two-way ANOVA (GraphPad, "How Prism 8.0 computes multiple
     comparisons tests following ANOVA" (cdn.graphpad.com/faq/1688/file/MulitpleComparisonAlgorithmsPrism8.pdf)).
     This comparison is not paired, as the criterion's "post hoc paired" asks; a reader is asked. The repeated-measures
@@ -313,8 +317,8 @@ outcomes:
     The raw data and the light timing are there, so the claim could in principle be tested from a new
     spike sort, but the paper''s units come from Kilosort, version not given, followed by manual curation
     in Phy 2 with no stated criteria (Methods, Electrophysiology acquisition and spike sorting), which
-    no rerun can repeat. Reading the 191 GB of raw data alone would take about 1.5 h at the measured rate
-    of about 35 MB/s, before any sorting. The metadata are also insufficient: a scan of every ADC channel
+    no rerun can repeat. Reading the 191 GB of raw data alone would take about 1.1 h at the measured rate
+    of about 47 MB/s, before any sorting. The metadata are also insufficient: a scan of every ADC channel
     finds 133 tagging trains of 210 1-ms pulses, on ADC1 (69), ADC2 (45) or ADC3 (19), all of the same
     amplitude, mostly on two channels per file in a fixed order, but nothing says which is the 470-nm
     (DA) and which the 635-nm (VTA-PnO) light.'
@@ -345,8 +349,8 @@ outcomes:
     The raw data and the light timing are there, so the claim could in principle be tested from a new
     spike sort, but the paper''s units come from Kilosort, version not given, followed by manual curation
     in Phy 2 with no stated criteria (Methods, Electrophysiology acquisition and spike sorting), which
-    no rerun can repeat. Reading the 191 GB of raw data alone would take about 1.5 h at the measured rate
-    of about 35 MB/s, before any sorting. The metadata are also insufficient: a scan of every ADC channel
+    no rerun can repeat. Reading the 191 GB of raw data alone would take about 1.1 h at the measured rate
+    of about 47 MB/s, before any sorting. The metadata are also insufficient: a scan of every ADC channel
     finds 133 tagging trains of 210 1-ms pulses, on ADC1 (69), ADC2 (45) or ADC3 (19), all of the same
     amplitude, mostly on two channels per file in a fixed order, but nothing says which is the 470-nm
     (DA) and which the 635-nm (VTA-PnO) light.'
@@ -462,14 +466,6 @@ findings:
   statement: In many photometry files the isosbestic fit explains little of the GCaMP signal (R squared
     under 0.30, the level at which the paper's own code warns, in 12 of 32 files, from -0.01 to 0.99 over
     files, computed over whole recordings), which the code reports but does not act on.
-- kind: methods_unavailable
-  statement: Question for the paper's authors. Figure 3b,c report "two-way ANOVA with FDR-corrected post
-    hoc comparisons". Were the post hoc comparisons computed on the ANOVA's pooled error (GraphPad Prism's
-    default), or as separate paired (Figure 3b) and unpaired (Figure 3c) t-tests, and which FDR procedure
-    was used? On these data the pooled form gives continuous p 3.8e-06 to 2.9e-04 (Figure 3b) and 0.00074
-    to 0.0028 (Figure 3c), as the paper reports, while separate t-tests give BH p 0.048 to 0.11 and 0.098
-    to 0.19. Which recordings and downsampling rate were used for the z-scores (the Methods baseline of
-    -1.0 to -0.1 s or the code's -3.0 to -0.1 s) is also open.
 - kind: methods_unavailable
   statement: 'For Figure 3b,c the paper gives "two-way ANOVA with FDR-corrected post hoc comparisons"
     in GraphPad Prism v10, without saying whether the ANOVA had repeated measures, whether sphericity
@@ -871,3 +867,374 @@ verifications:
       and the dependent claims take its reason; the metadata gaps are in the notes. The new ADC scan finds
       the 2-s rotarod bouts on ADC1 in 16 chronic recordings of 7 files (7 to 22 bouts, median intervals
       5.3 to 14.5 s), so rotation onsets are in the files, but nothing marks a block as reverse or forward.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised run with its conclusions and summary, the helper
+    module vtapno.py, the attempt record, the README, the claims file and the paper. The verifier fetched and
+    decoded GraphPad's document on Prism's multiple comparisons and recomputed the pooled-difference SE from
+    the per-mouse values.
+  results:
+  - claim: fig1a-gad2-long-range-projections
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig1-th-neg-all-project
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig1-lp-majority
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig1-pno-subset
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp1d-cv2-lp-po
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp1d-cv2-rate-correlation
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig1e-spike-duration
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig1e-firing-rate-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp1e-pinch-response-profiles
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp1e-pinch-rate-th-pos-lower
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp1f-pinch-burst-th-pos-lower
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2a-local-oipsc
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2c-gabaa-monosynaptic
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2c-latency-cocktail
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2b-intrinsic-separation
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp2c-oipsc-depression
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2e-somatic-backward
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2f-somatic-bins
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2h-terminal-backward
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig2i-terminal-bins
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp2e-latency-to-peak-backward-similar
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp2f-latency-to-peak-speed
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp2d-frequency-trend
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: supp2d-continuous-vs-60hz
+    agrees: true
+    outcome: blocked
+    reason: Yes, blocked as data_missing. The record notes and cell 30 describe the Zenodo contents (doi 10.5281/zenodo.21390830
+      and 10.5281/zenodo.18661700), but no notebook output shows them, so I could not check them. No outcome
+      depends on them.
+    response: A sanity cell now lists every file of both Zenodo records from the Zenodo API (source tables,
+      the 0.77-GB zip of Figure 1a images, eight open-field videos and a short clip in the first; figure PDFs
+      and the key resources table in the second), and the notes' description matches it. Outcome unchanged.
+  - claim: fig3b-photometry-continuous-only
+    agrees: true
+    outcome: reproduced
+    reason: 'Yes, reproduced, but the assumption is weaker than the record makes it look. The outcome rests
+      on the ordinary two-way ANOVA with post hoc tests on its residual mean square; the GraphPad document
+      supports the description of Prism. One argument is circular: being the only one of Prism''s forms that
+      gives the legend''s p < 0.0001 picks the method by its result. The other is real but weak: the Figure
+      3b legend omits repeated measures where the Figure 2f,i legends include it. The ordinary form''s comparison
+      is unpaired, and the criterion asks for post hoc paired. Of the paired forms, Prism''s repeated-measures
+      error gives BH p 2.0e-4 to 5.3e-4 (partially reproduced), separate paired t-tests 0.072 to 0.11 (not
+      reproduced), and the pooled-difference form holds in 20 of 32 readings, including the main reading (9.4e-5),
+      which keeps reproduced defensible under the criterion''s own wording; the record sets it aside. Under
+      the Methods baseline the ordinary form''s SE equals the pooled-difference SE (both 1.209); the only difference
+      is df 32 against 16, the extra df coming from Pre cells fixed at 0, so ''which lowers this residual mean
+      square'' does not show the effect. The code-baseline readings (p 9.9e-6 to 3.8e-5) carry the result without
+      this artefact. The choice between reproduced and partially reproduced is open until the reader or the
+      authors answer. The criterion''s ''post hoc paired'' is not in the paper, which says only FDR-corrected
+      post hoc comparisons, while the criterion also allows an ANOVA without repeated measures, whose standard
+      post hoc test is not paired. Text: the record''s trial count (23 per file, 13 for photometry-exp-5) is
+      wrong for photometry-exp-5 at 5 Hz (15), and the first methods_unavailable finding is stale.'
+    response: 'Outcome kept. The circular argument was removed from the assumption (cell 24, the record''s
+      deviation), which now says the legend''s wording is weak support and nothing else in the paper decides
+      between the designs. Cell 24 and the notes now say that under the Methods baseline the SE equals the
+      pooled-difference SE (1.209) and the gain comes from df 32 against 16, and that the pooled-difference
+      paired form holds in 20 of 32 readings including the main reading (BH p 9.4e-05), so a paired reading
+      also gives reproduced. The question to a reader on ''paired'' was already in questions/gonzalez-cabrera-2026.yaml;
+      its reason now adds the pooled-difference result. The trial count in the notes was corrected, the stale
+      methods_unavailable finding was removed, and the README and summary now say only fig3b rests on the ordinary
+      ANOVA. No change of outcome is proposed: the verifier agrees with reproduced, and the open choice waits
+      on the reader.'
+  - claim: fig3c-photometry-opsin-vs-control
+    agrees: true
+    outcome: reproduced
+    reason: Yes. The assumption is stated and reasonable. The outcome rests on Prism's within-cell error with
+      df 24, which is the same under the ordinary and the mixed design and matches the GraphPad formula (SS(Subjects)
+      + SS(Residuals)) / (DF(Subjects) + DF(Residuals)). It holds in 64 of 64 rows of that form; with separate
+      unpaired tests it fails (p 0.13 to 0.19), which the record states. The README and cell 31 say both photometry
+      outcomes rest on the ordinary two-way ANOVA, but Figure 3c holds equally under the mixed design.
+    response: The README and the summary (cell 33) now say that fig3c rests on Prism's within-cell error, the
+      same under the ordinary and the mixed design, and only fig3b on the ordinary ANOVA. Outcome unchanged.
+  - claim: fig3-optotag-counts
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: The notes said about 1.5 h at about 35 MB/s where cell 10 printed 41 MB/s and 1.3 h; they now
+      give this run's measurement, about 47 MB/s and 1.1 h. Outcome unchanged.
+  - claim: fig3e-onset-latency
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig3f-spike-width
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig3g-firing-rate-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig3i-recruitment-beyond-tagged
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: The notes said about 1.5 h at about 35 MB/s where cell 10 printed 41 MB/s and 1.3 h; they now
+      give this run's measurement, about 47 MB/s and 1.1 h. Outcome unchanged.
+  - claim: fig3i-da-responsive-subset
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig3j-vta-pno-light-locked
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig3j-da-onset-transient
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig3k-da-early-timing
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: chronic-optotag-count
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig4c-activated-fraction
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig4c-temporal-classes
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig4d-reverse-activated-direction-selective
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig4e-reverse-greater-magnitude
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
+  - claim: fig4f-paired-unit-profiles
+    agrees: true
+    outcome: blocked
+    reason: Yes. Cells 4 and 8 show no units, unlabelled tagging channels (ADC1 69, ADC2 45, ADC3 19) and rotarod
+      bouts with no direction. I agreed they are blocked and in round 1 disagreed only with the reason, which
+      is now methods_underspecified.
+    response: No change.
