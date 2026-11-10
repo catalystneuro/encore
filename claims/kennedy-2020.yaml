@@ -1,0 +1,852 @@
+# Claims for Kennedy, Kunwar, Li et al. (2020), Nature 586, 730-734, on DANDI:001182.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol as stated in docs/protocol.md (version pilot-14). No data of the dataset were seen.
+#
+# Text read: the accepted author manuscript in Europe PMC (PMC7606611, NIHMS1606924), full text,
+# with its Methods, figure legends and Extended Data legends 1 to 10, and Supplementary Table 1
+# (41586_2020_2728_MOESM1_ESM.pdf, the table of statistical tests). The version of record was not
+# read. No main-text PDF was supplied, so no figure was looked at; claims rest on the text, the
+# legends and Supplementary Table 1.
+#
+# Code read: https://github.com/DJALab/VMHdm_persistence at commit 7e5911b28deb10c0327d6b51330534dbafa04469
+# (2021-11-15). It holds MATLAB scripts for the fiber photometry (data_analysis/fiberphotometry), the
+# Fig 3m decoder (Fig3m_naiveBayes_multiclass.m), the population decay fits of Fig 2d and 3b
+# (downsampled_MEI_traces.m), the cross-day correlation of ED Fig 7c
+# (ED7c_representation_separation_spearman.m), and the six network models of Fig 4
+# (network_models). It does not hold the cell extraction, the responsive-cell selection, the peak and
+# half-peak times, the preference index, the PCA, the time-resolved decoders, the autocorrelation of
+# the imaging data, or the two data similarity scores; computeMetricDiagonal and applyMetricToRaster,
+# which the model scripts call, are missing. The scripts read a MATLAB struct `expt` (mice indexed
+# 1, 3, 4, 5 and 7; days session1 to session3; stimuli named rat, male, toy, USS and tone) that is not
+# in the repository.
+#
+# Data the paper describes. Male SF1-Cre mice, 8 to 20 weeks. The dataset (DANDI:001182, GCaMP traces
+# with behaviour annotation, sessions such as sub-M5-session3) is meant to hold the microendoscopic
+# imaging experiment only: 5 mice expressing GCaMP6s in VMHdm/c SF1 neurons, imaged through a GRIN
+# lens with an nVista microscope at 11 Hz (one mouse at 20 Hz), head-fixed on a running wheel, on three
+# consecutive days. Each day each of five stimuli was presented twice for 10 s in pseudorandom order
+# with at least five minutes (ED Fig 7 says ten minutes) between presentations: an awake rat in a wire
+# mesh cage, a male BALB mouse in the cage, a toy rat in the cage, an ultrasonic sweep (USS, 100 ms
+# sweeps of 17 to 20 kHz at 85 dB) and a 2 kHz tone. Traces come from CNMF-E after manual screening;
+# 187.3 cells were imaged per day and cells were registered across the three days (roughly half).
+# Responses are in units of the standard deviation of a 30 s pre-stimulus baseline (Methods, Units of
+# neuronal activation). The fiber photometry (Fig 1, ED 1 and 3), the open field and home cage
+# behaviour with optogenetic silencing or activation (Fig 1i to n, ED 2 and 3), the tetanus toxin
+# photometry (Fig 1o to r), the slice electrophysiology and imaging (ED 4) and the silicon probe
+# recordings (ED 6) are not described as part of the dataset; the paper says its data are available
+# from the corresponding author on request. Their claims are kept, as data the paper recorded.
+#
+# Numbering in the Methods differs from the legends. The Methods place the decoder bar plot in
+# "Fig 3n" and its confusion matrix in "ED 7a"; the legends place them in Fig 3m and ED Fig 9a. The
+# time-resolved decoders are "Fig 3o, ED 8b-c" in the Methods and ED Fig 9b-c in the legends. The
+# preference index is cited for "Fig 2g and Fig 3i, k"; the histograms are Fig 2i, 3h and 3j. The
+# legends are followed here.
+#
+# Methods fixed from the paper for the imaging claims (cited in each criterion). Responsive cell
+# (Methods, Identifying stimulus-responsive cells): baseline the 10 s before stimulus onset; a cell
+# responds when the mean of any 1 s window in the first 30 s after onset exceeds the baseline mean by
+# more than four baseline standard deviations, on both trials of that day. Peak time: the first time
+# the trace passes 95% of its maximum; half-peak time: the last time it is above 50% of its maximum
+# relative to the pre-stimulus baseline; per cell and day, averaged over the two trials. Preference:
+# |sa - sb| / (|sa| + |sb|) on the mean response over 45 s from onset, averaged over two trials,
+# per cell and day, for cells responsive to either stimulus.
+#
+# Details left open by the paper and its code, named in the criteria with their readings: whether the
+# 1 s windows of the responsive-cell rule slide or are contiguous bins, and whether the baseline
+# standard deviation is that of frames or of 1 s means; how the 20 Hz mouse is put on the 11 Hz time
+# base; whether cell counts pool cell-days or count tracked cells; the inhibition criterion; the
+# window searched for peaks; the sign convention of the preference histograms; the decoder's response
+# window (code against Methods); which five of six trials the PCA plots; the cells used for the
+# autocorrelation; the frame range of the specificity score; what "satisfied both conditions" means
+# for the model scores; and the model parameters where the code and the Methods disagree.
+schema_version: 2
+paper: doi:10.1038/s41586-020-2728-4
+claims:
+- id: fig1de-rat-persistent
+  statement: In freely moving mice, fiber photometry shows VMHdm SF1 activity rising at the onset of a
+    10 s presentation of an anesthetized rat and persisting for over a minute after its removal, with
+    a decay time constant of 26.7 +/- 2.2 s.
+  source: Main text, paragraph 1; Figure 1d and 1e; Extended Data Fig 1d
+  quote: Remarkably, this activity persisted for over a minute following rat removal (time constant
+    τ decay = 26.7±2.2 seconds
+  expected:
+  - quantity: decay time constant of the rat-evoked photometry response, home cage
+    value: 26.7
+    tolerance: 2.2
+    unit: s
+  criterion: Tolerance is the paper's stated spread (mean +/- SEM, the convention of the legends).
+    The fit is the Methods' difference of exponentials K(t) = A (tau_decay - tau_rise)^-1
+    (exp(-t/tau_rise) - exp(-t/tau_decay)), fit per trial to minimise the mean squared error over the
+    30 s from stimulus onset (Methods, Fitting decay constants). Reproduced when the mean over the 4
+    mice is within tolerance. Fiber photometry, not described as part of the dataset.
+- id: fig1de-toy-weaker
+  statement: A toy rat evokes a weaker and shorter photometry response than the rat in freely moving
+    mice.
+  source: Main text, paragraph 1; Figure 1d and 1e; Supplementary Table 1, Fig 1e
+  quote: In contrast, a toy rat evoked a weaker and shorter response
+  statistics:
+  - about: peak response, rat against toy, home cage
+    test: paired t-test
+    statistic: t = 5.456, DF 7
+    p: 0.0010
+    ci:
+      low: -26.96
+      high: -10.65
+    n: 4 mice
+- id: fig1fgh-headfixed-rat-strongest
+  statement: In head-fixed mice the photometry peak response depends on the caged stimulus, rat above
+    mouse above toy rat, and the rat response decays more slowly than the mouse response.
+  source: Main text, paragraph 1; Figure 1f to 1h; Supplementary Table 1, Fig 1g and 1h
+  quote: VMHdm SF1 peak responses varied by stimuli, with rat responses being strongest and
+    longest-lasting
+  statistics:
+  - about: peak, rat against mouse, head-fixed
+    test: paired t-test
+    statistic: t = 4.344, DF 14
+    p: 0.0007
+    ci:
+      low: -20.15
+      high: -6.829
+    n: 8 mice in Supplementary Table 1 (the Fig 1g legend gives n = 6)
+  - about: peak, rat against toy, head-fixed
+    test: paired t-test
+    statistic: t = 5.443, DF 14
+    p: 0.0001
+    ci:
+      low: -27.16
+      high: -12.11
+    n: 8 mice in Supplementary Table 1
+  - about: peak, mouse against toy, head-fixed
+    test: paired t-test
+    statistic: t = 4.157, DF 15
+    p: 0.0008
+    ci:
+      low: -10.32
+      high: -3.325
+    n: 8 mice in Supplementary Table 1
+  - about: decay constant, rat against mouse, head-fixed
+    test: paired t-test
+    statistic: t = 2.903, DF 13
+    p: 0.0123
+    ci:
+      low: -22.05
+      high: -3.234
+    n: 8 mice in Supplementary Table 1 (the Fig 1h legend gives n = 6)
+- id: ed1-urine-looming
+  statement: VMHdm SF1 neurons respond moderately to rat urine (more than to water, with a shorter
+    decay than to the rat) and weakly to an overhead looming disk.
+  source: Main text, paragraph 1; Extended Data Fig 1f to 1k; Supplementary Table 1, ED 1
+  quote: VMHdm SF1 neurons responded moderately to rat urine, and weakly to an overhead looming disk
+  statistics:
+  - about: peak, rat urine against water
+    test: paired t-test
+    statistic: t = 10.08, DF 11
+    p: 0.0001
+    ci:
+      low: -14.37
+      high: -9.219
+    n: 6 mice, 2 trials per mouse
+  - about: decay constant, rat against rat urine
+    test: t-test
+    statistic: t = 2.39, DF 24
+    p: 0.0250
+    ci:
+      low: -17.94
+      high: -1.315
+    n: 8 mice (rat), 6 mice (urine)
+  - about: peak, rat against toy, home cage
+    test: paired t-test
+    statistic: t = 3.469, DF 3
+    p: 0.0400
+    ci:
+      low: 1.729
+      high: 40.09
+    n: 4 mice, 1 trial per mouse
+  - about: peak, rat against looming disk, home cage
+    test: paired t-test
+    statistic: t = 4.037, DF 3
+    p: 0.0273
+    ci:
+      low: -38.29
+      high: -4.534
+    n: 4 mice, 1 trial per mouse
+- id: fig1km-thigmotaxis
+  statement: After a 15 s exposure to a caged rat in an open field, control mice spend more time in
+    the edge zone (thigmotaxis), and the increase lasts minutes.
+  source: Main text, paragraph 2; Figure 1k to 1m (blue); Extended Data Fig 3a; Supplementary Table 1,
+    Fig 1m and ED 3a
+  quote: Following rat exposure, mice exhibited thigmotaxis, an index of increased anxiety ... lasting
+    minutes
+  statistics:
+  - about: edge-zone time, control, before rat (-1 to 0 min) against after rat (0 to 1 min after removal)
+    test: paired t-test
+    statistic: t = 4.417, DF 11
+    p: 0.0006
+    ci:
+      low: 0.1657
+      high: 0.4948
+    n: 12 control mice
+  - about: edge-zone time, control, before rat against after PS off (3 to 4 min after removal)
+    test: paired t-test
+    statistic: t = 2.812, DF 11
+    p: 0.0074
+    ci:
+      low: 0.05562
+      high: 0.4562
+    n: 12 control mice
+  - about: distance to arena centre, control, before against after rat (ED Fig 3a); printed 1.80E-05
+    test: paired t-test
+    statistic: t = 5.559, DF 11
+    p: 1.8e-05
+    ci:
+      low: 4.675
+      high: 10.8
+    n: 12 control mice
+  criterion: Windows from the Methods (Open field rat exposure assay); edge zone within 4 cm of the
+    walls, time in 30 s chunks. Behaviour, not described as part of the dataset.
+- id: ed2abc-no-lingering-odor
+  statement: Mice introduced into the arena right after the rat was presented there do not show
+    thigmotaxis, so lingering rat odours do not cause it.
+  source: Main text, paragraph 2; Extended Data Fig 2a to 2c
+  quote: Thigmotaxis was not observed if the mouse was introduced after rat presentation, arguing that
+    lingering rat-derived odors are not causative
+  criterion: A claim of absence, for which neither the text nor Supplementary Table 1 names a test.
+    The paper's comparisons of two independent groups use a two-sided t-test (Supplementary Table 1),
+    so the claim is reproduced when that test at p < 0.05 finds no difference between the rat and toy
+    groups (n = 6 each) in fraction of time in the centre zone or distance to centre, and not
+    reproduced when it does; the effect size is given either way. Behaviour, not described as part
+    of the dataset.
+- id: ed2e-chr2-thigmotaxis
+  statement: A 10 s optogenetic activation of VMHdm SF1 neurons evokes persistent thigmotaxis in the
+    open field.
+  source: Main text, paragraph 2; Extended Data Fig 2d and 2e; Supplementary Table 1, ED 2e
+  quote: persistent thigmotaxis could be evoked following optogenetic stimulation of VMHdm SF1 neurons
+  statistics:
+  - about: edge-zone time, 473 nm against mock stimulation
+    test: repeated measures ANOVA
+    statistic: F = 17.15, DFn 1, DFd 14
+    p: 0.0012
+    ci:
+      low: -59.08
+      high: -18.57
+    n: 4 mice, 2 trials per condition
+- id: ed3c-openfield-photometry
+  statement: Fiber photometry shows VMHdm SF1 neurons persistently activated after rat presentation in
+    the open field arena.
+  source: Main text, paragraph 2; Extended Data Fig 3c
+  quote: Fiber photometry confirmed that VMHdm SF1 neurons were persistently activated following rat
+    presentation
+  criterion: Reproduced when the mean trace over the 9 mice stays above its pre-stimulus baseline
+    after the 15 s presentation and the decay constant fitted as in the Methods (Fitting decay
+    constants) exceeds the 15 s presentation; the paper gives no number, so this threshold is set
+    here. Fiber photometry, not described as part of the dataset.
+- id: ed3de-openfield-vs-headfixed
+  statement: Peak and decay constant of the rat-evoked photometry response do not differ between the
+    open field and the head-fixed preparation.
+  source: Extended Data Fig 3d and 3e; Supplementary Table 1, ED 3d and 3e
+  inferred: No sentence states the comparison; read from the ED Fig 3d and 3e legends and the
+    non-significant tests in Supplementary Table 1.
+  statistics:
+  - about: peak, open field against head-fixed
+    test: t-test
+    statistic: t = 0.5964, DF 23
+    p: 0.4681
+    ci:
+      low: -15.82
+      high: 28.64
+    n: 9 mice open field, 8 mice head-fixed
+  - about: decay constant, open field against head-fixed
+    test: t-test
+    statistic: t = 0.9276, DF 23
+    p: 0.3633
+    ci:
+      low: -31.18
+      high: 11.87
+    n: 9 mice open field, 8 mice head-fixed
+  criterion: A claim of absence, judged on the paper's two-sided t-test at p < 0.05.
+- id: ed3fi-kinetics-track-thigmotaxis
+  statement: The decay of VMHdm SF1 activity after rat removal follows the time course of thigmotaxis;
+    within mice activity and distance to centre are correlated, and their times to 50% of peak do not
+    differ.
+  source: Main text, paragraph 2; Extended Data Fig 3f to 3i; Supplementary Table 1, ED 3g
+  quote: with kinetics correlated with thigmotaxis
+  statistics:
+  - about: example mouse 1, dF/F against distance to centre
+    test: linear regression
+    statistic: r = 0.958
+    p: 0.0001
+    p_relation: "<"
+  - about: example mouse 2, dF/F against distance to centre
+    test: linear regression
+    statistic: r = 0.808
+    p: 0.0001
+    p_relation: "<"
+  - about: time to 50% of peak, distance against dF/F
+    test: paired t-test
+    statistic: t = 0.7985, DF 8
+    p: 0.4476
+    ci:
+      low: -29.79
+      high: 14.46
+    n: 9 mice
+  criterion: Distance to centre as a 30 s moving average (ED Fig 3f legend); decay time as the time
+    to 50% of peak for linearly fitted data (ED Fig 3g legend). The paper does not say whether the
+    correlation is with the distance or its negative; the sign is reported. Photometry and behaviour,
+    not described as part of the dataset.
+- id: fig1j-silencing-reduces-avoidance
+  statement: iC++ silencing of VMHdm SF1 neurons reduces avoidance of a rat in the home cage, raising
+    time spent in the zone near the rat.
+  source: Main text, paragraph 3; Figure 1i and 1j; Supplementary Table 1, Fig 1j
+  quote: First, we confirmed that iC++ -mediated silencing decreased avoidance of a rat in the home cage
+  statistics:
+  - about: percent time in zone 1, control against iC++
+    test: paired t-test
+    statistic: t = 2.703, DF 12
+    p: 0.0192
+    ci:
+      low: 3.599
+      high: 33.50
+    n: 7 iC++ mice and 7 control littermates
+- id: fig1lmn-silencing-before
+  statement: Silencing VMHdm SF1 neurons for three minutes from five seconds before rat exposure
+    prevents the increase in thigmotaxis and in anxiety behaviours.
+  source: Main text, paragraph 3; Figure 1l to 1n (red); Extended Data Fig 3a; Supplementary Table 1
+  quote: Silencing initiated prior to rat exposure prevented the increase in thigmotaxis
+  statistics:
+  - about: edge-zone time course, PS during and after rat against control (Fig 1l)
+    test: repeated measures ANOVA, group against time
+    statistic: F = 9.227, DFn 1, DFd 16
+    p: 0.0078
+    ci:
+      low: 0.06152
+      high: 0.3457
+    n: 12 control mice, 6 mice during+after
+  - about: edge-zone time after rat, control against PS during and after (Fig 1m)
+    test: t-test
+    statistic: t = 3.307, DF 16
+    p: 0.0023
+    ci:
+      low: -0.4967
+      high: -0.1083
+    n: 12 control mice, 6 mice during+after
+  - about: edge-zone time after PS off, control against PS during and after (Fig 1m)
+    test: t-test
+    statistic: t = 2.452, DF 16
+    p: 0.0223
+    ci:
+      low: -0.5823
+      high: -0.4226
+    n: 12 control mice, 6 mice during+after
+  - about: anxiety behaviours, control against PS during and after (Fig 1n)
+    test: repeated measures ANOVA
+    statistic: F = 20.62, DFn 1, DFd 16
+    p: 0.0003
+    ci:
+      low: -0.3065
+      high: -0.1147
+    n: 12 control mice, 6 mice during+after
+  - about: distance to centre after rat, control against PS during and after (ED Fig 3a); printed 5.20E-05
+    test: t-test
+    statistic: t = 5.028, DF 16
+    p: 5.2e-05
+    ci:
+      low: -10.53
+      high: -4.285
+    n: 12 control mice, 6 mice during+after
+  - about: distance to centre after PS off, control against PS during and after (ED Fig 3a)
+    test: t-test
+    statistic: t = 2.5, DF 16
+    p: 0.0240
+    ci:
+      low: -9.611
+      high: -0.7788
+    n: 12 control mice, 6 mice during+after
+- id: fig1lmn-silencing-after
+  statement: Silencing begun right after rat removal leaves an initial increase in thigmotaxis, which
+    returns to baseline faster than in controls.
+  source: Main text, paragraph 3; Figure 1l to 1n (green); Extended Data Fig 3a; Supplementary Table 1
+  quote: When silencing was initiated after rat removal, mice exhibited an initial increase in
+    thigmotaxis, but it returned to baseline faster than in controls
+  statistics:
+  - about: edge-zone time course, PS after rat only against control (Fig 1l)
+    test: repeated measures ANOVA, group against time
+    statistic: F = 6.74, DFn 1, DFd 16
+    p: 0.0321
+    ci:
+      low: 0.04131
+      high: 0.3997
+    n: 12 control mice, 6 mice after-only
+  - about: edge-zone time after PS off, control against PS after only (Fig 1m)
+    test: t-test
+    statistic: t = 3.123, DF 16
+    p: 0.0062
+    ci:
+      low: -0.6622
+      high: -0.1267
+    n: 12 control mice, 6 mice after-only
+  - about: anxiety behaviours, control against PS after only (Fig 1n)
+    test: repeated measures ANOVA
+    statistic: F = 10.94, DFn 1, DFd 16
+    p: 0.0044
+    ci:
+      low: -0.3797
+      high: -0.2018
+    n: 12 control mice, 6 mice after-only
+  - about: distance to centre after rat, control against PS after only (ED Fig 3a)
+    test: t-test
+    statistic: t = 2.731, DF 16
+    p: 0.0250
+    ci:
+      low: -8.007
+      high: -1.009
+    n: 12 control mice, 6 mice after-only
+  - about: distance to centre after PS off, control against PS after only (ED Fig 3a)
+    test: t-test
+    statistic: t = 2.369, DF 16
+    p: 0.0460
+    ci:
+      low: -11.66
+      high: -0.6467
+    n: 12 control mice, 6 mice after-only
+  criterion: The initial increase has no test of its own in Supplementary Table 1; it is shown in the
+    Fig 1l time course. Behaviour, not described as part of the dataset.
+- id: ed3b-velocity-unchanged
+  statement: Photostimulation does not change mean velocity in iC++ or control mice.
+  source: Extended Data Fig 3b; Supplementary Table 1, ED 3b
+  quote: Mean velocity was not altered by photostimulation of iC++ and control
+  statistics:
+  - about: iC++, light off against light on
+    test: paired t-test
+    statistic: t = 1.005, DF 6
+    p: 0.7059
+    ci:
+      low: -0.5391
+      high: 1.291
+    n: 7 mice
+  - about: control, light off against light on
+    test: paired t-test
+    statistic: t = 0.3959, DF 6
+    p: 0.3537
+    ci:
+      low: -0.991
+      high: 1.385
+    n: 7 mice
+  criterion: A claim of absence, judged on the paper's paired t-test at p < 0.05 for each group;
+    velocity averaged over three minutes in the home cage (ED Fig 3b legend).
+- id: ed3j-eyfp-control
+  statement: Against an EYFP-injected SF1-Cre control, iC++ silencing during and after the rat still
+    reduces edge-zone time.
+  source: Extended Data Fig 3j; Supplementary Table 1, ED 3j
+  quote: Additional control for optogenetic loss-of-function experiment
+  statistics:
+  - about: EYFP against iC++
+    test: repeated measures ANOVA
+    statistic: F = 5.525, DFn 1, DFd 9
+    p: 0.0433
+    ci:
+      low: 0.7323
+      high: 38.18
+    n: 5 EYFP mice, 6 iC++ mice
+- id: fig1r-tettox-faster-decay
+  statement: Blocking neurotransmitter release from VMHdm SF1 neurons with tetanus toxin light chain
+    makes the rat-evoked bulk calcium response decay faster.
+  source: Main text, paragraph 4; Figure 1o, 1p and 1r; Supplementary Table 1, Fig 1r
+  quote: TetTox-GFP mice showed significantly faster bulk calcium decay kinetics than control
+    (jRGECO1a/EYFP-injected) mice, following rat exposure
+  statistics:
+  - about: decay time from peak to 50% peak, control against TetTox
+    test: t-test
+    statistic: t = 4.808, DF 18
+    p: 0.0004
+    ci:
+      low: 5.996
+      high: 15.83
+    n: 5 mice per group
+- id: fig1q-tettox-peak-unchanged
+  statement: The peak rat-evoked response is not affected by tetanus toxin light chain.
+  source: Main text, paragraph 4; Figure 1q; Supplementary Table 1, Fig 1q
+  quote: while the peak response was not affected
+  statistics:
+  - about: peak, control against TetTox
+    test: t-test
+    statistic: t = 0.2694, DF 18
+    p: 0.7907
+    ci:
+      low: -4.363
+      high: 3.371
+    n: 5 mice per group
+  criterion: A claim of absence, judged on the paper's two-sided t-test at p < 0.05.
+- id: ed4d-glutamatergic-connectivity
+  statement: Photostimulating a minority of VMHdm SF1 neurons evokes excitatory postsynaptic currents
+    in most recorded SF1 neurons (6 of 7), abolished by glutamate receptor blockade.
+  source: Main text, paragraph 4; Extended Data Fig 4a to 4d; Supplementary Table 1, ED 4d
+  quote: Ex vivo physiology indicated mono- and di-synaptic glutamatergic excitatory connectivity
+    among VMHdm SF1 neurons
+  statistics:
+  - about: evoked EPSC, control against glutamate receptor blockade
+    test: two-tailed paired t-test
+    statistic: t = 4.501, DF 6
+    p: 0.0041
+    ci:
+      low: 8.619
+      high: 29.15
+    n: 7 cells from 5 mice
+  expected:
+  - quantity: connected cells
+    value: 6
+    tolerance: 0
+    unit: of 7 cells
+  - quantity: median evoked EPSC, control
+    value: -20.10
+    tolerance: 2.01
+    unit: pA
+- id: ed4g-follower-cells
+  statement: Electrically stimulating a single VMHdm SF1 neuron in a slice activates several follower
+    cells, a median of 4 per slice.
+  source: Main text, paragraph 4; Extended Data Fig 4e to 4g
+  quote: while electrical stimulation of single VMHdm SF1 neurons activated multiple follower cells
+  expected:
+    quantity: median follower cells per slice (cross-correlation above 0.6)
+    value: 4
+    tolerance: 0.4
+    unit: cells
+- id: ed6-ephys-heterogeneous
+  statement: Silicon probe recordings in VMHdm confirm the heterogeneous rat-evoked dynamics, with
+    peaks and half-peak decays spread over tens of seconds among 370 rat-responsive units; 90% of
+    units fire spontaneously at 13 Hz or less.
+  source: Main text, paragraph 5; Extended Data Fig 6
+  quote: These heterogeneous dynamics were confirmed by in vivo electrophysiological recordings from
+    VMHdm neurons
+  expected:
+  - quantity: rat-responsive units
+    value: 370
+    tolerance: 37
+    unit: units from 5 mice
+  - quantity: spontaneous rate below which 90% of units fall
+    value: 13
+    tolerance: 1.3
+    unit: Hz
+  criterion: Responsive units as the Methods define them (any 1 s window in the first 30 s after
+    onset above the 10 s baseline mean by more than three standard deviations); firing rates in 1 s
+    bins (ED Fig 6d legend). Silicon probe data, not described as part of the dataset.
+- id: imaging-cell-counts
+  statement: Microendoscopic imaging of 5 mice yields 187.3 +/- 8.1 cells per day, and 78 cells are
+    tracked across the three days.
+  source: Main text, paragraph 5; Methods, Microendoscopic imaging data acquisition and processing
+  quote: n=5 mice, 187.3±8.1 cells imaged per day, 78 cells tracked across days
+  expected:
+  - quantity: cells imaged per day
+    value: 187.3
+    tolerance: 8.1
+    unit: cells per mouse per day
+  - quantity: cells tracked across days
+    value: 78
+    tolerance: 7.8
+    unit: cells
+  criterion: Tolerance on the cells per day is the paper's stated spread; 10% for the tracked cells.
+    The cells are those of the dataset's traces (CNMF-E after manual screening). The paper allows
+    two readings of 78, (a) the mean per mouse of cells registered on all three days, which fits
+    "roughly half of all cells could be registered" (Methods), and (b) the total over the five mice.
+    Reproduced when the cells per day and one reading of the tracked count are within tolerance.
+- id: fig2cd-population-persistent
+  statement: The VMHdm SF1 population response measured by imaging persists after rat presentation,
+    and its fitted decay constant differs between rat and mouse.
+  source: Main text, paragraph 5; Figure 2c and 2d; Supplementary Table 1, Fig 2d
+  quote: Although downsampled VMHdm SF1 population responses persisted following rat presentation
+  statistics:
+  - about: fitted decay constant, rat against mouse
+    test: paired t-test
+    statistic: t = 3.3452, DF 4
+    p: 0.0287
+    ci:
+      low: 3.136
+      high: 33.757
+    n: 5 mice
+  expected:
+    quantity: difference in decay constant, rat against mouse (midpoint of the paper's interval)
+    value: 18.45
+    tolerance: 15.31
+    unit: s
+  criterion: The tolerance is half the width of the paper's confidence interval, so the claim holds
+    when the mean difference lies in 3.136 to 33.757 s. Per mouse, the population response is the
+    mean over all cells (downsampled_MEI_traces.m, which averages the cells of each trial; the paper
+    does not otherwise say what "downsampled" means), on day 1, with the mean before -1 s subtracted.
+    The fit is the Methods' difference of exponentials, over the 30 s from onset (Methods, Fitting
+    decay constants). Trials are open, (a) the first day-1 trial only, as the code does, (b) the mean
+    of the two day-1 trials, (c) each trial fitted and the two constants averaged, as the Methods'
+    "fit for each trial" says. The code's fit window of -200 to 550 frames (-18 to 50 s) with a
+    time-offset parameter is a variant. Reproduced when, under one reading, a two-sided paired
+    t-test of the rat and mouse constants over the 5 mice gives p < 0.05 and the mean difference is
+    within tolerance. The text does not state which is longer; the direction is reported.
+- id: fig3ab-uss-persistent
+  statement: The ultrasonic sweep strongly and persistently activates VMHdm SF1 neurons, more than a
+    2 kHz tone.
+  source: Main text, paragraph 6; Figure 3a and 3b
+  quote: The USS strongly and persistently activated VMHdm SF1 neurons
+  criterion: The paper gives no number or test. Population response and fit as in
+    fig2cd-population-persistent, under the same trial readings. Reproduced when the mean over the 5
+    mice of the USS population peak exceeds that of the tone and the fitted USS decay constant
+    exceeds the 10 s stimulus; these thresholds are set here. The USS and rat constants are reported
+    side by side, as Fig 3b shows them.
+- id: fig2jo-diverse-peak-times
+  statement: Individual neurons show diverse but reproducible dynamics; many responsive cells peak at
+    stimulus onset while others reach their peak only after stimulus removal (202 rat-responsive,
+    160 mouse-responsive and 133 USS-responsive cells).
+  source: Main text, paragraph 5; Figure 2e to 2g and 2j to 2o; Figure 3c to 3f
+  quote: While many cells were activated at stimulus onset, others reached their peak only after
+    stimulus removal
+  expected:
+  - quantity: rat-responsive cells
+    value: 202
+    tolerance: 20.2
+    unit: cells from 5 mice across 3 days
+  - quantity: mouse-responsive cells
+    value: 160
+    tolerance: 16
+    unit: cells from 5 mice across 3 days
+  - quantity: USS-responsive cells
+    value: 133
+    tolerance: 13.3
+    unit: cells from 5 mice across 3 days
+  criterion: Responsive cells, peak and half-peak times as the Methods define them (see the opening
+    comment). Open details, each run, (i) the counts as cell-days summed over mice and days, or as
+    distinct tracked cells responsive on at least one day; (ii) the 1 s windows of the responsive
+    rule as sliding windows or contiguous 1 s bins; (iii) the baseline standard deviation of the
+    frames or of the 1 s means; (iv) the peak searched within 0 to 30 s or 0 to 45 s after onset.
+    The 20 Hz mouse is put on the 11 Hz time base by averaging in time, a standard choice. Counts
+    match when within tolerance under one reading. The paper gives no fraction for "many" and
+    "others"; reproduced when, for the rat, cells peaking within the 10 s presentation and cells
+    peaking after it each make up at least 10% of rat-responsive cells (threshold set here), under
+    the reading that matches the counts or, if none does, under all readings; the same is reported
+    for mouse and USS.
+- id: fig2hi-rat-mouse-overlap
+  statement: Rat and mouse responses are partially overlapping but distinct; among 219 cells
+    responsive to either, some respond to both and others exclusively to one.
+  source: Main text, paragraph 5; Figure 2h and 2i
+  quote: Interestingly, rat and mouse responses were partially overlapping but distinct
+  expected:
+    quantity: cells responsive to rat or mouse
+    value: 219
+    tolerance: 21.9
+    unit: cells from 5 mice across 3 days
+  criterion: Responsive cells as in fig2jo-diverse-peak-times, under the same readings. The Methods'
+    preference |sa - sb| / (|sa| + |sb|) runs from 0 to 1, while the Fig 2i histogram runs from -1
+    to +1; the histogram is drawn with the signed form (sa - sb) / (|sa| + |sb|), sa the rat, on the
+    mean over 45 s from onset averaged over the two trials (Methods, Strength of cell preference).
+    The paper gives no threshold; reproduced when cells responsive to both stimuli and cells
+    responsive to only one each make up at least 10% of the 219 (threshold set here).
+- id: fig3gj-uss-intermingled
+  statement: USS-responsive neurons are spatially intermingled with rat-responsive cells, and some
+    cells respond to both (216 cells responsive to rat or USS, 219 to mouse or USS).
+  source: Main text, paragraph 6; Figure 3g to 3j
+  quote: USS-responsive neurons were spatially intermingled with rat-responsive cells, with some
+    responding to both stimuli
+  expected:
+  - quantity: cells responsive to rat or USS
+    value: 216
+    tolerance: 21.6
+    unit: cells from 5 mice
+  - quantity: cells responsive to mouse or USS
+    value: 219
+    tolerance: 21.9
+    unit: cells from 5 mice
+  criterion: Responsive cells and preference as in fig2hi-rat-mouse-overlap. Reproduced when some
+    cells respond to both rat and USS and the spatial footprints of rat-only and USS-only cells are
+    not segregated; the paper gives no test of mixing, so segregation is judged by whether, in each
+    mouse, the mean distance between rat-only and USS-only centroids is no larger than the mean
+    distance within each group (set here). If the dataset holds no footprints, only the overlap is
+    tested.
+- id: fig3k-few-stimuli-per-cell
+  statement: 74.4% of neurons respond significantly to at least one of the five stimuli; of these
+    43.6% respond to only one, and over 70% respond to two or fewer.
+  source: Main text, paragraph 6; Figure 3k
+  quote: Among neurons responding significantly to at least one stimulus (74.4%), 43.6% responded to
+    only one, and over 70% responded to ≤ 2 of the five tested stimuli
+  expected:
+  - quantity: cells responding to at least one stimulus
+    value: 74.4
+    tolerance: 7.44
+    unit: percent
+  - quantity: of these, responding to only one
+    value: 43.6
+    tolerance: 4.36
+    unit: percent
+  - quantity: responding to two or fewer (a lower bound, holds above 63%)
+    value: 70
+    tolerance: 7
+    unit: percent
+  criterion: Responsive cells as in fig2jo-diverse-peak-times, under the same readings. Further
+    readings, (a) "responding" means excited only (the Methods' criterion) or excited or inhibited
+    (Fig 3d and 3l show inhibited cells; inhibition as in fig3l-mostly-excited); (b) the denominator
+    of "over 70%" is the responsive cells, or all cells, as the Fig 3k histogram (zero to five) is
+    of all cells; (c) cells pooled over mice and days, or the mean over mice. Reproduced when all
+    three numbers match under one reading.
+- id: fig3l-mostly-excited
+  statement: Most stimulus-responsive VMHdm SF1 neurons are excited, and a few are inhibited.
+  source: Main text, paragraph 6; Figure 3d and 3l; Extended Data Fig 6c
+  quote: Most stimulus-responsive VMHdm SF1 neurons were excited, although a few were inhibited
+  criterion: The Methods define only excitation. Inhibition is open, (a) the mirror rule, the mean of
+    any 1 s window in the first 30 s more than four baseline standard deviations below the baseline
+    mean on both trials, or (b) the mean over the first 30 s below that level. Reproduced when, for
+    every stimulus, excited cells outnumber inhibited cells and at least one stimulus has inhibited
+    cells, under both readings; per-stimulus percentages are reported.
+- id: fig3n-pca
+  statement: The first principal component of time-averaged population activity separates the
+    physical stimuli (rat, mouse, toy) from the auditory ones, and the second declines from initial
+    to later trials.
+  source: Main text, paragraph 6; Figure 3n; Extended Data Fig 7
+  quote: The first principal component (PC) of population activity reflected stimulus class (rat,
+    mouse, or toy vs. auditory stimuli), while the second PC declined from initial to later trials
+  criterion: From the Fig 3n legend, PCA of time-averaged population responses pooled across mice,
+    5 trials per stimulus from 3 days. Pooling is read as concatenating each mouse's tracked cells
+    into one population, trials matched by stimulus and order. Time averaging as in
+    fig3m-decoder (both of its readings). Which 5 of the 6 trials is open, (a) the first five, (b)
+    all six. The paper gives no measure; reproduced when the area under the ROC curve of PC1 scores,
+    physical against auditory trials, is at least 0.9, and the Spearman correlation of PC2 score with
+    presentation order (1 to 6 within stimulus) has magnitude at least 0.5 with p < 0.05 (thresholds
+    and tests set here; the sign of a PC is arbitrary, so PC2 is oriented so that the first trial is
+    positive). Partially reproduced when one of the two holds.
+- id: fig3m-decoder
+  statement: A five-way Naive Bayes decoder predicts stimulus identity from population activity above
+    chance (1/5) in held-out trials across three days of imaging.
+  source: Main text, paragraph 6; Figure 3m; Extended Data Fig 9a; Methods, Decoder analysis
+  quote: A 5-way Naïve Bayes decoder was able to predict stimulus identity with above-chance accuracy
+    in held-out trials, across three days of imaging
+  criterion: Per mouse, the cells tracked across the three days (Methods); 30 trials (5 stimuli, 2 per
+    day, 3 days); fitcnb with leave-one-out cross-validation, as Fig3m_naiveBayes_multiclass.m does.
+    The response is open between the code and the Methods, (a) the code, the mean after onset minus
+    the mean of the 200 frames before it (the window of the struct's rast field is not in the code;
+    downsampled_MEI_traces.m uses -200 to 550 frames, so 0 to 50 s); (b) the Methods, the mean from
+    30 s before to about 60 s after onset. Accuracy per stimulus and mouse as in the code. The paper
+    gives no test; reproduced when the mean over the 5 mice of the overall accuracy exceeds 0.2 under
+    both readings, and as a check the per-stimulus mean accuracies exceed 0.2 for at least four of
+    the five stimuli; a one-sided t-test of the five mice against 0.2 is reported as a variant.
+- id: ed9-persistent-decoding
+  statement: Stimulus identity remains decodable for tens of seconds after stimulus onset.
+  source: Main text, paragraph 6; Extended Data Fig 8 and 9b, 9c; Methods, Decoder analysis
+  quote: Importantly, stimulus identity also remained decodable for tens of seconds after stimulus
+    onset
+  criterion: A separate cross-validated decoder for each 1 s window from 10 s before to 30 s after
+    onset, on the time-averaged activity in that window (Methods), five-way and for each stimulus
+    pair, with the tracked cells and leave-one-out validation of fig3m-decoder. The code for this
+    decoder is not in the repository, so baseline subtraction is open, (a) subtract the mean of the
+    10 s before onset per trial, (b) none. Chance is 1/5 and 1/2. The paper gives no number;
+    reproduced when the five-way accuracy, mean over the 5 mice, exceeds 1/5 in at least 15 of the
+    20 windows from 10 to 30 s (threshold set here), under one reading, the other reported.
+- id: ed7cd-identity-across-days
+  statement: Stimulus identity is maintained by the population across days; a stimulus's population
+    response on one day correlates more with its own response on another day than with the responses
+    to other stimuli.
+  source: Extended Data Fig 7c and 7d
+  quote: stimulus identity is maintained by the population across days ... higher Pearson's correlation
+    of a stimulus with itself than with other stimuli
+  criterion: As ED7c_representation_separation_spearman.m computes it, per mouse, each tracked cell's
+    response averaged over time, the Pearson correlation across cells between day 3 and day 2, the
+    same stimulus averaged over the two trial pairs (trial 1 with 1, 2 with 2) and different stimuli
+    over four combinations; days 1 against 2 and 1 against 3 as ED Fig 7d. The paper gives no test;
+    reproduced when, in the mean over mice for days 2 against 3, each stimulus's same-stimulus
+    correlation exceeds the mean of its correlations with the other four; partially reproduced for
+    three or four stimuli. Whether it exceeds every other stimulus is reported.
+- id: ed7e-strong-cells-stable
+  statement: Cells with strong responses keep their stimulus tuning across days, while weakly
+    responding cells vary more from day to day.
+  source: Main text, paragraph 5; Extended Data Fig 7e
+  quote: The stimulus selectivity of strongly responsive cells remained stable across days
+  criterion: Per tracked cell and day pair (1 and 2, 2 and 3, 1 and 3), the Pearson correlation of
+    its five time-averaged stimulus responses on the two days, against its response to its most
+    preferred stimulus (ED Fig 7e legend), time averaging as in ed7cd-identity-across-days. The paper
+    gives no test; reproduced when the Spearman correlation between the two over all cells and day
+    pairs is positive with p < 0.05 (test set here).
+- id: ed7b-habituation
+  statement: The population response decreases across trials and days, suggesting habituation.
+  source: Main text, paragraphs 1 and 5; Extended Data Fig 7a and 7b
+  quote: Population mean response to different stimuli on each trial across three days of imaging,
+    showing a decrease in the population response across trials and days
+  criterion: Per mouse and trial, the population mean response; its measure is not given, so (a) the
+    mean over 0 to 45 s after onset (the preference window of the Methods) and (b) the peak are run,
+    baseline the 10 s before onset. The paper gives no test; reproduced when, in the mean over mice,
+    the Spearman correlation of response with presentation order (1 to 6) is negative for at least
+    four of the five stimuli under one reading (set here).
+- id: fig4cd-autocorrelation
+  statement: USS-evoked population activity evolves in time; its mean autocorrelation falls with the
+    lag between timepoints over the 45 s after onset.
+  source: Main text, paragraph 7; Figure 4b to 4d; Methods, Stimulus-evoked autocorrelation
+  quote: We then quantified time-evolving dynamics by taking the mean autocorrelation as a function of
+    the lag between timepoints
+  criterion: From the Methods, C is the correlation between all time columns of a cells by time
+    matrix, frames 0 to 45 s from onset at 11 Hz, averaged over the six USS trials of the three days,
+    then over the 5 mice; the mean for lag dt averages C(x, x + dt) for x from 0 to 45 - dt s. Cells
+    are open, (a) all cells imaged that day, (b) the tracked cells. The code's data path
+    (simStatsAndPlots.m, with simulated = 0) smooths with a 1 s box and samples at 1 Hz; that is a
+    variant. The paper gives no number; reproduced when, in each mouse, the mean autocorrelation at
+    lags of 30 to 45 s is below its mean at lags of 0 to 5 s (set here). The curve is kept for
+    fig4e-models-dynamics.
+- id: fig4g-rat-uss-specificity
+  statement: Rat- and USS-evoked population activity are partially correlated during the response and
+    its persistence, so the representations overlap but stay distinct.
+  source: Main text, paragraph 7; Figure 4f and 4g; Extended Data Fig 10d; Methods, Rat/USS
+    Pearson's correlation
+  quote: This specificity was quantified as the time-evolving Pearson's correlation between rat- vs.
+    USS-evoked activity
+  criterion: From the Methods, per mouse, the trial-averaged response of all cells on day 1; at each
+    frame from 10 s before to 30 s after onset at 11 Hz, the Pearson correlation between the rat and
+    USS population vectors. The paper gives no number; ED Fig 10d calls it partial overlap.
+    Reproduced when the mean over the 5 mice from 10 to 30 s after onset lies between 0 and 1 with
+    its mean +/- SEM excluding both 0 and 1 (set here). The curve is kept for fig4h-models-specificity.
+- id: fig4e-models-dynamics
+  statement: Models with slow neuromodulation alone or with NMDA-mediated recurrent excitation alone
+    cannot match the observed autocorrelation dynamics, while slow recurrent network (sRNN) models,
+    except the high-gain one, can.
+  source: Main text, paragraph 7; Figure 4a and 4e; Figure 4i; Methods, model sections and Data
+    similarity score, time-evolving dynamics
+  quote: models that used slow neuromodulatory transmission alone ... could not match the response
+    dynamics we observed in VMHdm SF1 neurons
+  data: with_inputs
+  depends_on:
+  - fig4cd-autocorrelation
+  criterion: Outside input, the model code at https://github.com/DJALab/VMHdm_persistence commit
+    7e5911b. Six models with the Methods' parameters (peptide, tau_p 25 s, 10% of 1000 cells driven;
+    RNN with NMDA, g 1, g_inh 3.8; sRNN low gain g 1, g_inh 8.8, tau_S 6 s; high gain g 6, g_inh 7.8;
+    high tau_S g 2.5, g_inh 4.25, tau_S 20 s; local connectivity sigma 0.7 N), 10 repeat simulations
+    each, spikes convolved with 0.5 s and 1.5 s exponentials and sampled at the 11 Hz frames. Where
+    the code's scripts set other values (the low-gain script uses g 2, g_inh 2.4, tau_m 0.1 s, dt
+    5 ms and drives a quarter of cells), the Methods are followed and the code is a variant. Score as
+    the Methods' Similarity Score dynamics against each mouse's USS curve, averaged over mice. The
+    paper sets no cut-off for "match"; two readings, (a) a model matches when its score is within the
+    range of the scores of each mouse against the mean of the other four, (b) the peptide and NMDA
+    models score below the low-gain, high tau_S and local sRNNs. Reproduced when the statement holds
+    under one reading.
+- id: fig4h-models-specificity
+  statement: Raising excitatory gain in the sRNN keeps rat and USS representations specific but breaks
+    the autocorrelation match; a 20 s slow time constant, or distance-dependent connectivity with
+    spatially biased inputs, matches both the dynamics and the specificity.
+  source: Main text, paragraph 7; Figure 4a3, 4a4, 4e and 4h; Extended Data Fig 10
+  quote: Maintaining stimulus specific representations during persistence could be achieved in the
+    sRNN by increasing the gain (strength) of excitatory synapses ... but such models failed to match
+    the autocorrelation dynamics of observed activity ... both temporal dynamics and stimulus
+    specificity could be matched by one of two models
+  data: with_inputs
+  depends_on:
+  - fig4g-rat-uss-specificity
+  - fig4e-models-dynamics
+  criterion: Simulations as in fig4e-models-dynamics; model rat and USS inputs as the Methods give
+    them, with the local model's middle 50% of cells driven by both and the outer 25% by one each.
+    Model correlation over cells firing 10 or more spikes across the two stimuli. Score as the
+    Methods' Similarity Score specificity. Its frames are open, (a) 0 to 45 s after onset as the
+    score's definition says, extending the data correlation past the 30 s of its own definition,
+    (b) 0 to 30 s, where the data correlation is defined. Matching read as in fig4e-models-dynamics,
+    both readings. Reproduced when the high-gain model matches specificity but not dynamics and the
+    high tau_S and local models match both, under one pair of readings.
+- id: fig4ijk-two-models
+  statement: Of the six models, only two (sRNN with a 20 s slow time constant, and sRNN with local
+    connectivity) satisfy both data similarity scores.
+  source: Main text, paragraph 7; Figure 4i to 4k
+  quote: only two models satisfied both conditions
+  data: with_inputs
+  depends_on:
+  - fig4e-models-dynamics
+  - fig4h-models-specificity
+  criterion: Both scores as in fig4e-models-dynamics and fig4h-models-specificity. "Satisfied" is not
+    defined; readings (a) within the range of the mice's leave-one-out scores on both, (b) the two
+    named models are the two with the highest minimum of the two scores. Reproduced when exactly the
+    two named models satisfy both under one reading.
