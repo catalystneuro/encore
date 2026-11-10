@@ -62,6 +62,30 @@ def candidates(classifications: list[dict], dandisets: set[str], primary: set[st
     return out
 
 
+def describe_outside_datasets() -> list[str]:
+    """Write targets/reuse_datasets.json: the dandisets that papers are listed for (papers/datasets/) and no
+    archive's list has, each described as a target is (tools/build_targets.py), from the DANDI Archive. A paper
+    that reuses a dandiset can name one whose own metadata names no paper, which the target list leaves out; the
+    site shows it as a dataset all the same (tools/build_site.py, collect)."""
+    import build_targets
+    import datasets
+    import paper_records
+    have = {t["key"] for t in datasets.targets()}
+    wanted = sorted({d["id"] for body in paper_records.listed().values() for d in body.get("datasets") or []
+                     if d["archive"] == "dandi" and d["key"] not in have})
+    path = ROOT / "targets" / "reuse_datasets.json"
+    known = {t["dandiset"]: t for t in json.loads(path.read_text())["targets"]} if path.is_file() else {}
+    out = []
+    for id_ in wanted:
+        if id_ not in known:
+            summary = build_targets.get(f"{build_targets.API}/dandisets/{id_}/")
+            known[id_] = {**build_targets.target(summary), "papers": [], "reuse_only": True}
+        out.append(known[id_])
+    path.write_text(json.dumps({"schema_version": 1, "source": "tools/build_reuse_targets.py, from the DANDI Archive",
+                                "targets": out}, indent=1, ensure_ascii=False) + "\n")
+    return wanted
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("classifications", type=Path)
@@ -104,6 +128,8 @@ def main() -> int:
     reuse_path.write_text(HEADER + yaml.safe_dump({"schema_version": 1, "papers": listed}, sort_keys=False,
                                                   width=110, allow_unicode=True))
     print(f"{len(picked)} papers; targets/reuse.yaml lists {len(listed)}", file=sys.stderr)
+    outside = describe_outside_datasets()
+    print(f"targets/reuse_datasets.json describes {len(outside)} dandisets outside the target list", file=sys.stderr)
     return 0
 
 

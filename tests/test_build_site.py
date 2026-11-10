@@ -651,3 +651,19 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
     nav = (site / "index.html").read_text()
     assert 'class="menu"' in nav and 'href="papers/"' in nav and 'href="datasets/"' in nav
+
+
+def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
+    """DANDI:000978 names no paper, so no archive list has it; wakhloo-2026 reuses it (targets/reuse.yaml)."""
+    data = site.collect()
+    archive = {t["key"] for t in site.all_targets()}
+    outside = [t for t in data["targets"] if t["key"] not in archive]
+    assert outside and all(t.get("reuse_only") and t["match"] == "matched" for t in outside)
+    listed = {d["key"]: key for key, body in site.paper_records.listed().items() for d in body["datasets"]}
+    for t in outside:
+        assert t["paper"] == site.paper_records.doi_of(listed[t["key"]]) and t["name"] != t["label"]
+        assert isinstance(t["size_gb"], float) and isinstance(t["files"], int)
+    # Each has its row in the pipeline and in the datasets list, as the tests of both expect of an attempted dataset.
+    assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
+    assert data["queue_counts"]["with_a_paper"] == len(data["targets"])
+
