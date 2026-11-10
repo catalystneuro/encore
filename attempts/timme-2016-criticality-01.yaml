@@ -27,6 +27,14 @@ inputs:
     branching model). It is code, not data; the claims file names the same file.
   source: http://www.nicholastimme.com/software.html, zip with sha256
     b7c912f8154f70fc82b13ab1725ed191935ed2877256cadd7e39f66737be294b
+- what: Avalanche size and duration exponents of hippocampal and leech networks (Results, burst
+    statistics, Figure 9), reference values for fig8-exponents-match-literature.
+  source: Mazzoni et al. (2007), PLoS ONE 2:e439, doi:10.1371/journal.pone.0000439 (full text read
+    at Europe PMC, PMC1857824)
+- what: Critical exponents tau, alpha and 1/sigma nu z of the critical data sets (main text after Eqs.
+    1 to 3, and the Figure 2 legend), reference values for fig8-exponents-match-literature.
+  source: Friedman et al. (2012), Phys. Rev. Lett. 108:208102, doi:10.1103/PhysRevLett.108.208102
+    (accepted manuscript at link.aps.org/accepted/10.1103/PhysRevLett.108.208102)
 outcomes:
 - claim: culture-counts
   outcome: reproduced
@@ -86,11 +94,32 @@ outcomes:
 - claim: fig8-exponents-match-literature
   outcome: blocked
   blocked_by: other
+  notebook: culture_criticality.ipynb
+  output: claim:fig8-exponents-match-literature
   notes: The test needs the exponents reported by Mazzoni et al. (2007), Pasquale et al. (2008) and
-    Friedman et al. (2012). They were not retrieved in this run; a title search of arXiv for Friedman
-    et al. (2012) found no record, and there was no time to obtain the other two. The means it would
-    compare are printed under fig8-subsampling-exponents (full system tau 2.491, alpha 2.928;
-    sub-sampled tau 2.106, alpha 2.730).
+    Friedman et al. (2012). They were not retrieved before round 2, which verified the outcome as
+    blocked. In the round-2 revision two of the three were read (inputs). For tau the sub-sampled
+    mean 2.106 is closer than the full-system mean 2.491 to Mazzoni et al. (1.55, hippocampal
+    networks, definition 1) and to Friedman et al. (1.6); for alpha 2.730 is closer than 2.928 to 2.1
+    and 1.7. Every variant of the reference values (Mazzoni et al.'s other definitions and the leech
+    networks, Friedman et al.'s Figure 2 sample) and the full system's bin for the sub-samples give
+    the same. 1/sigma nu z from size given duration is 1.411 (full) and 1.360 (sub-sampled) against
+    1.3 in Friedman et al. Both means remain 0.51 to 1.03 above the cited values. No open full text of
+    Pasquale et al. (2008) was found (Europe PMC, Unpaywall, ScienceDirect, the University of Genoa
+    repository), and its abstract gives no exponents.
+  deviations:
+  - Pasquale et al. (2008) is left out; with two of the three papers, most of the cited papers means
+    both, and the third could not reverse a two-of-two result.
+  - Which value of each paper is meant is not stated; the main reading takes Mazzoni et al.'s
+    hippocampal networks with definition 1, which that paper "used for later analysis", and Friedman
+    et al.'s main-text values; the others are variants.
+  proposed:
+    outcome: reproduced
+    reason: The reference values of two of the three cited papers were read after round 2. For both
+      exponents and both papers, under every variant of the values and of the rebinning, the
+      sub-sampled mean is closer to the cited value than the full-system mean, so the sub-sampled
+      exponents agree better with the literature for most of the cited papers, as the criterion
+      asks (culture_criticality.ipynb, fig8-exponents-match-literature).
 - claim: fig8-sigmanuz-methods-agree
   outcome: reproduced
   notebook: culture_criticality.ipynb
@@ -131,58 +160,65 @@ outcomes:
   notebook: culture_criticality.ipynb
   output: claim:fig10b-susceptibility-randomization
   notes: Under reading (b) of the susceptibility (N var(A/N)) with Benjamini-Hochberg, all five
-    randomizations that change A(t) lower the median (relative changes -9.2% to -71.9%) with
-    corrected p from 0.0231 (1-bin jitter) to 3e-138, and Poisson and wrap give the largest
+    randomizations that change A(t) lower the median (relative changes -9.0% to -71.9%) with
+    corrected p from 0.0227 (1-bin jitter) to 3e-138, and Poisson and wrap give the largest
     decreases. Under Eq. 14 as printed (reading a), 1-bin jitter is not significant (corrected p
-    0.0908 BH, 0.235 BY), and under Benjamini-Yekutieli with reading (b) its corrected p is 0.0598.
-    Swap and shuffling leave the susceptibility unchanged, as the legend says.
+    0.091 BH, 0.236 BY), and under Benjamini-Yekutieli with reading (b) its corrected p is 0.0588.
+    Swap and shuffling leave the susceptibility unchanged, as the legend says. The jitter moves
+    one spike at a time, as randomizeasdf2.m does (round-2 revision); 0.449, 0.135 and 0.054 of the
+    spikes stay in place under 1-, 10- and 100-bin jitter.
 - claim: fig10c-curvature-randomization
   outcome: partially_reproduced
   notebook: culture_criticality.ipynb
   output: claim:fig10c-curvature-randomization
-  notes: The median absolute curvature of the real data is 2.29; it falls to 0.813 (10-bin jitter),
-    0.048 (100-bin jitter), 0.266 (wrap) and 0.0746 (Poisson), each with corrected p below 1e-37
-    under both corrections, and rises to 2.43 under 1-bin jitter (corrected p 0.391). The criterion
-    needs all five, so the claim holds for four. The toolbox's signed curvature is negative (arched)
-    in 0.94 of real recordings.
+  notes: The median absolute curvature of the real data is 2.29; it falls to 0.855 (10-bin jitter),
+    0.0527 (100-bin jitter), 0.266 (wrap) and 0.0746 (Poisson), each with corrected p below 1e-36
+    under both corrections, and rises to 2.45 under 1-bin jitter (corrected p 0.313). The criterion
+    needs all five, so the claim holds for four. The criterion defines no partial outcome; partially
+    reproduced follows the rule of fig11bd-exponents-randomization, and a question asks a reader
+    about it. The toolbox's signed curvature is negative (arched) in 0.94 of real recordings.
 - claim: fig11ac-fit-range-randomization
   outcome: reproduced
   notebook: culture_criticality.ipynb
   output: claim:fig11ac-fit-range-randomization
   notes: Poisson randomization shortens the median size fit range from 0.694 to 0.248 decades and
     the duration range from 0.663 to 0.211 (corrected p about 4e-141). 10-bin jitter lengthens them
-    to 0.740 and 0.732 (corrected p 0.000135 and 5e-06, significant). 100-bin jitter and wrap
-    shorten both significantly, and 1-bin jitter changes neither (corrected p 0.455 and 0.398), so
+    to 0.750 and 0.732 (corrected p 3.13e-05 and 2.24e-06, significant). 100-bin jitter and wrap
+    shorten both significantly, and 1-bin jitter changes neither (corrected p 0.318 and 0.502), so
     the legend's wider statement holds for three of the four other randomizations.
 - claim: fig11bd-exponents-randomization
   outcome: partially_reproduced
   notebook: culture_criticality.ipynb
   output: claim:fig11bd-exponents-randomization
   notes: Tau rises significantly under 10-bin jitter, 100-bin jitter, wrap and Poisson (median 2.50
-    to 4.53 under Poisson) and falls under 1-bin jitter (2.39, corrected p 0.0108). Alpha rises
+    to 4.53 under Poisson) and falls under 1-bin jitter (2.37, corrected p 0.00648). Alpha rises
     significantly under 100-bin jitter, wrap and Poisson; 1-bin and 10-bin jitter do not change it
-    significantly (corrected p 0.107 and 0.401). Under Poisson the median largest fitted size falls
+    significantly (corrected p 0.143 and 0.526). Under Poisson the median largest fitted size falls
     from 44 to 21, consistent with the paper's explanation.
 - claim: fig10a-complexity-randomization
   outcome: not_reproduced
   notebook: complexity_culture.ipynb
   output: claim:fig10a-complexity-randomization
   notes: Over 40 recordings with 100 subsets per size, the toolbox's complexity (correction and cut)
-    has median 0.00223 bits/neuron in the real data. 10-bin and 100-bin jitter, wrap and Poisson
-    lower it with Benjamini-Hochberg corrected p from 0.0372 to 1.16e-06, and Poisson and 100-bin
-    jitter give the two largest decreases. 1-bin jitter lowers the median to 0.00164 without
-    significance (corrected p 0.836), and shuffling raises it to 0.176 (corrected p 2.85e-13),
-    against the claim; under Benjamini-Yekutieli three of the six are significant. The cut keeps a
-    median of 10 of 90 subset sizes for the real data and 74 for shuffled data. Without the cut
-    shuffling lowers complexity too, but 1-bin and 10-bin jitter are not significant (corrected p
-    0.43 and 0.303); without the correction shuffling raises it. The first version, with 10 subsets
-    on 180 recordings, gave the same pattern (five of six lower, shuffling raises it 74-fold) and
-    was recorded as partially reproduced; a 78-fold rise under shuffling contradicts the claim, so
-    the outcome is now not reproduced, as the verifier gave it.
+    has median 0.00223 bits/neuron in the real data. 100-bin jitter, wrap and Poisson lower it with
+    Benjamini-Hochberg corrected p from 0.000473 to 1.16e-06, and Poisson and wrap give the two
+    largest decreases. 1-bin and 10-bin jitter lower the median to 0.00149 and 0.000886 without
+    significance (corrected p 0.539 and 0.0955), and shuffling raises it to 0.176 (corrected p
+    2.85e-13, a relative change of 77.7, or 78.7 times the real median), against the claim;
+    Benjamini-Yekutieli gives the same three. The cut keeps a median of 10 of 90 subset sizes for
+    the real data and 74 for shuffled data. Without the cut shuffling lowers complexity too, but
+    1-bin and 10-bin jitter are not significant (corrected p 0.442 and 0.293); without the
+    correction shuffling raises it. With the jitter moving one spike at a time, as randomizeasdf2.m
+    does (round-2 revision), 10-bin jitter is no longer significant (it was, at corrected p 0.0372,
+    when all moves were proposed at once). The first version, with 10 subsets on 180 recordings,
+    gave five of six lower and shuffling 74-fold higher, and was recorded as partially reproduced;
+    the rise under shuffling contradicts the claim, so the outcome is not reproduced, as the
+    verifier gave it.
   deviations:
   - 40 of the 435 recordings, drawn with a fixed seed. With the 100 subsets per size of Methods 2.9
-    the 40 recordings took 34.2 min with 4 processes, so all 435 would exceed the 60 min limit of a
-    notebook. The first version used 10 subsets on 180 recordings.
+    the 40 recordings took 28.1 min with 4 processes (complexity_culture.ipynb, first code cell), so
+    all 435 would exceed the 60 min limit of a notebook. The first version used 10 subsets on 180
+    recordings.
 - claim: figs8-complexity-susceptibility-correlation
   outcome: not_reproduced
   notebook: complexity_culture.ipynb
@@ -219,9 +255,15 @@ outcomes:
     found a 65% decrease (corrected p 3.2e-08) and r 0.502; with 100 subsets the cut complexity of
     one recording still has a median coefficient of variation of 0.78 over repeated draws, so r
     passes the 0.7 reading by a small margin, and the rank sum test on 40 recordings has less power
-    than on 180.
+    than on 180. On 200 recordings (complexity_swap.ipynb, the real and swapped data alone, the 40
+    included with the same values) the rank sum test still finds no change (medians 0.00184 and
+    0.00188, uncorrected p 0.933, so the corrected p is at least that), which keeps the claim
+    reproduced under the criterion's rule; Pearson r falls to 0.658, below the 0.7 reading of
+    strong correlation (Spearman 0.539, 0.598 on the 160 recordings not in the 40), so the
+    statement's strong correlation does not hold on the larger set. Without the cut r is 0.971 and
+    without the correction 0.997.
   deviations:
-  - As for fig10a-complexity-randomization, 40 recordings.
+  - As for fig10a-complexity-randomization, 40 recordings; 200 in complexity_swap.ipynb.
 - claim: fig12b-shuffle-lowers-complexity
   outcome: not_reproduced
   notebook: complexity_culture.ipynb
@@ -304,7 +346,7 @@ outcomes:
     1.53) and has no interior maximum; its largest value is at 0.3, the end of the range. The whole
     100-neuron system has no interior maximum either. The criterion needs both halves, so the claim
     fails whatever the complexity shows. The complexity half was not computed; with 100 subsets per
-    size one whole-system complexity of a model at p_trans 0.3 took 134 s in development, and the
+    size one whole-system complexity of a model at p_trans 0.3 took 134 s in development (a timing not printed in a notebook), and the
     claim needs 9,900 sub-sample computations on the 0.01 grid and 18,900 on the 0.005 grid.
   deviations:
   - Only the p_trans grid of 0.01 (reading b) was run; the susceptibility rises at every step of it,
@@ -315,14 +357,14 @@ outcomes:
   blocked_by: too_large
   notes: Needs the extrapolated complexity of the sub-sampled cortical branching models of
     fig7ab-cb-complexity-susceptibility-peak, which was not computed (9,900 sub-sample computations
-    on the 0.01 grid, at up to 134 s each with 100 subsets per size).
+    on the 0.01 grid, at up to 134 s each with 100 subsets per size, a development timing not printed in a notebook).
 - claim: figs2-recording-length
   outcome: blocked
   blocked_by: too_large
   notes: Needs the complexity of 30 models per p_trans at three recording lengths, on all time bins.
     With extrapolation (reading a) it is three times the computation of fig7ab. Without it (reading
     b), it is 990 whole-system computations on the 0.01 grid; at 100 subsets per size one
-    computation on a model of 3 x 10^5 steps at p_trans 0.3 took 134 s in development, so the
+    computation on a model of 3 x 10^5 steps at p_trans 0.3 took 134 s in development (a timing not printed in a notebook), so the
     longest recordings alone come to several hours on 4 processes, beyond the 60 min limit of a
     notebook and the time left in the run.
 - claim: fig7d-cb-branching-ratio-near-1
@@ -585,3 +627,217 @@ verifications:
       meets the criterion (99.4%, p 1e-25, r 0.856); not reproduced (unreliable).
     response: 'Redone with 100 subsets per size on 40 recordings: real exceeds shuffled in none of 40
       and r is 0.431; without the cut in all 40 (r 0.902). Outcome unchanged.'
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The three full executed notebooks with the conclusions and summaries, the attempt
+    record, the README, the helper modules and the claims file, with the paper's full text. The verifier
+    agreed with all 28 outcomes as the criteria are written, with caveats on four; it reported places
+    where the claims file misreads the paper or sets an unworkable test (fig5f, figs8, figs9,
+    eq4-relation-randomized, fig10c), sentences the outputs do not support, and four remaining points
+    (recordings in the complexity notebook, port fidelity, the jitter implementation, and the
+    literature values of fig8-exponents-match-literature).
+  results:
+  - claim: culture-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: fig2d-network-isi
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: fig2e-avalanche-count
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The fig2e question of round 1 is answered by the log10 histogram,
+      43 of 435 recordings within half a decade of 10,000, median 10^4.92.
+    response: No change.
+  - claim: fig8-subsampling-exponents
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. culture_criticality.ipynb cell 14 says layout reading b is run
+      on four recordings below; cell 16 runs it on one.
+    response: Corrected the sentence to one recording. Outcome unchanged; the re-run gives the same
+      numbers.
+  - claim: fig8-exponents-match-literature
+    agrees: true
+    outcome: blocked
+    reason: It is blocked because the reference values were not retrieved in time, not because they
+      are unobtainable; they are in the three cited papers.
+    response: Read the values of Mazzoni et al. (2007) and Friedman et al. (2012), added as inputs;
+      no open full text of Pasquale et al. (2008) was found. The notebook now tests the claim on the
+      two; the sub-sampled means are closer for tau and alpha with both papers and every variant. The
+      outcome stays blocked, as verified, and reproduced is proposed.
+  - claim: fig8-sigmanuz-methods-agree
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: eq4-exponent-relation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: eq4-relation-randomized
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The criterion cites "fig10-randomization-markers", which is not
+      a claim in the file.
+    response: Added as a question for a reader (questions/timme-2016-criticality.yaml). With the
+      jitter ported one spike at a time the relation still holds for all five methods, and wrap and
+      Poisson are unchanged. Outcome unchanged.
+  - claim: fig9-branching-ratio
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: fig10b-susceptibility-randomization
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The README's "behave as the paper reports, with some exceptions
+      under the weakest randomization" leaves out that fig10b passes only under susceptibility reading
+      (b) with Benjamini-Hochberg. The unlisted jitter deviation touches fig10b reading (a).
+    response: The README now says the susceptibility behaves as reported under one of its two readings
+      with one of the two corrections. The jitter now moves one spike at a time, as randomizeasdf2.m,
+      and the sanity cell prints the fraction of spikes held in place (0.449, 0.135, 0.054 for 1-, 10-
+      and 100-bin jitter). Re-run, reading (b) with Benjamini-Hochberg still passes (1-bin jitter
+      corrected p 0.0227) and reading (a) still fails (0.091). Outcome unchanged.
+  - claim: fig10c-curvature-randomization
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The criterion defines no partial outcome; the record's partially
+      reproduced follows fig11bd's rule, which the verifier finds reasonable. The jitter deviation
+      touches this comparison, which fails under 1-bin jitter.
+    response: Added the missing partial rule as a question for a reader. With the jitter ported one
+      spike at a time, 1-bin jitter still raises the curvature (2.45, corrected p 0.313) and the other
+      four lower it. Outcome unchanged.
+  - claim: fig11ac-fit-range-randomization
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: Re-run with the jitter ported one spike at a time; the numbers in the notes are updated
+      and the outcome is unchanged.
+  - claim: fig11bd-exponents-randomization
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. The jitter deviation touches this comparison, which fails under
+      1-bin jitter.
+    response: With the jitter ported one spike at a time, tau still falls under 1-bin jitter (corrected
+      p 0.00648) and alpha is still not significant under 1-bin and 10-bin jitter. Outcome unchanged.
+  - claim: fig10a-complexity-randomization
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The Summary and the record say the run "took 34.2 min for 40
+      recordings" while cell 1 prints 42.4 min; "78-fold" should be a 78.7-fold rise for a relative
+      change of 77.7. The jitter deviation touches this comparison.
+    response: The timing now quotes the printed value of the re-run (28.1 min) and the fold change is
+      given as a relative change of 77.7 (78.7 times). With the jitter ported, 10-bin jitter is no
+      longer significant (corrected p 0.0955), so three of six randomizations lower the complexity
+      significantly and shuffling still raises it. Outcome unchanged.
+  - claim: figs8-complexity-susceptibility-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. A tolerance of 10% of r is narrower than the sampling error of r
+      even across all 435 recordings (SE about 0.045).
+    response: Added as a question for a reader. r is 0.902 and 0.905, so the outcome would hold under
+      a tolerance set by the sampling error. Outcome unchanged.
+  - claim: figs9-complexity-fit-range-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: With n = 40 the standard error of r is about 0.15. The size-range value, 0.060 against
+      0.296, is only about 1.6 SE away; the result says little beyond "not clearly 0.3". A tolerance of
+      10% of r is narrower than the sampling error.
+    response: Added as a question for a reader. Not re-run on more recordings, since the complexity
+      of all conditions on 40 recordings already takes half the notebook limit; the swap notebook does
+      not compute the fit ranges. Outcome unchanged, with the weakness recorded here.
+  - claim: fig12a-swap-preserves-complexity
+    agrees: true
+    outcome: reproduced
+    reason: The change follows the criterion, but the result is fragile; a claim of absence decided on
+      only 40 recordings, each estimate noisy (median coefficient of variation 0.78), r clears 0.7
+      only because of a few large values (Spearman 0.533), and the 180-recording run of round 1 found
+      a significant 65% decrease. The outcome could flip with more recordings; running only the real
+      and swapped conditions on more recordings would settle it.
+    response: Added complexity_swap.ipynb, which runs the real and swapped data on 200 recordings (the
+      40 give the same values). The rank sum test still finds no change (uncorrected p 0.933), the
+      criterion's rule, so the outcome stays reproduced; Pearson r falls to 0.658, below the 0.7
+      reading, so the statement's strong correlation does not hold on the larger set, as the notes
+      say. All 435 would take about 85 min, over the notebook limit.
+  - claim: fig12b-shuffle-lowers-complexity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: Re-run with the jitter ported; shuffling does not use it and the numbers are unchanged.
+      Outcome unchanged.
+  - claim: fig3-chain-model-complexity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: fig5d-bethe-small-avalanches
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: fig5e-shuffle-removes-complexity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the criterion is written.
+    response: No change.
+  - claim: fig5f-network-state-poisson-keeps-complexity
+    agrees: true
+    outcome: not_reproduced
+    reason: The miss comes from the estimator, not the data; identical network states give draws up
+      to 0.675 away from their own mean, so no data could meet a 5% bound. The criterion calls 5% the
+      residue of the random subset draws, but with the toolbox's cut the residue is far larger, so the
+      test cannot tell a change from no change.
+    response: Added as a question for a reader. Outcome unchanged.
+  - claim: fig6-cb-distribution-curvature
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Port fidelity is unchecked; neither the complexity.m cut nor
+      cbmodel.m has been compared with the MATLAB toolbox, which bears on fig6, fig7ab, fig7c and
+      fig7d.
+    response: cbmodel.m of the toolbox was run in GNU Octave outside the notebooks (not run here) at
+      p_trans 0.25 and 0.28 next to the port; the one-step ratio, mean avalanche size, B_new and active
+      fraction agreed within the spread between runs, and the toolbox's model, like the port, has no
+      refractory period, so a one-step ratio below 1 where 4 p_trans is 1 belongs to the model.
+      complexity.m without the correction, run in Octave on the same 10 neurons of one recording with
+      every subset enumerated, gave the port's integration curve to 1e-12. The cut could not be run in
+      Octave (its findpeaks needs packages that would not install); the port's find_peaks with a
+      minimum distance follows MATLAB's documented rule. Outcome unchanged.
+  - claim: fig7c-cb-curvature-no-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Port fidelity of cbmodel.m is unchecked.
+    response: As for fig6-cb-distribution-curvature. Outcome unchanged.
+  - claim: fig7ab-cb-complexity-susceptibility-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The port's susceptibility has no peak and its B_new is closest to
+      1 at 0.28, which bear on port fidelity. The development timing of 134 s per complexity call is
+      not printed and so cannot be checked.
+    response: As for fig6-cb-distribution-curvature. The record now says the 134 s is a development
+      timing not printed in a notebook; it is used only for the size of the untested half. Outcome
+      unchanged.
+  - claim: fig7a-complexity-boundary-rise
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The development timing of 134 s per complexity call is not
+      printed and so cannot be checked.
+    response: The record now says the timing is from development and not printed. Outcome unchanged.
+  - claim: figs2-recording-length
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The development timing of 134 s per complexity call is not
+      printed and so cannot be checked.
+    response: The record now says the timing is from development and not printed. Outcome unchanged.
+  - claim: fig7d-cb-branching-ratio-near-1
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; this is the judgment asked for in round 1. Port fidelity of
+      cbmodel.m is unchecked (one-step ratio 0.937 where 4 p_trans = 1).
+    response: As for fig6-cb-distribution-curvature; the toolbox's own model gives the same B_new near
+      1 at 0.28. Outcome unchanged.

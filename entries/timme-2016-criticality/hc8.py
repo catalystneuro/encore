@@ -27,7 +27,8 @@ read). Each function names the toolbox function it ports. Where the parameters c
   Methods 2.9, `complexity.m`. The number of random subsets per subset size is a parameter;
   Methods 2.9 give 100.
 - Randomizations jitter (SD in rebinned bins), wrap, Poisson, swap and shuffling: Methods 2.5,
-  `randomizeasdf2.m` (shuffling is its `swap2`, which is what Methods 2.5 describe).
+  `randomizeasdf2.m` (shuffling is its `swap2`, which is what Methods 2.5 describe). Jitter moves
+  one spike at a time, as `randomizeasdf2.m` does.
 - Branching ratio B_new with delays 1 to 8 and 0 <= A(t) <= 10: Methods 2.11, `brestimate.m`.
 - Susceptibility: Eq. 14 and the claims file's common detail 5.
 - Sub-sampling: 30 random sub-samples from 40% to 100% of the neurons, weighted least squares on
@@ -470,31 +471,41 @@ def raster_matrix(raster: list[np.ndarray], bins: np.ndarray) -> sparse.csr_matr
 # ----------------------------------------------------------------------------------------------
 # Randomizations (randomizeasdf2.m), on rebinned rasters with bins 1..nbins
 
-def rand_jitter(raster, nbins, sd_bins, rng):
-    """Jitter: each spike moved by round(sd * N(0,1)) bins, kept in place when it would leave the
-    recording or land on another spike of the same neuron. randomizeasdf2.m moves spikes one at a
-    time in random order; here all moves are proposed at once and a move is accepted when its
-    target is free in the original train and not taken by an earlier proposal (in a random
-    order), which keeps the spike count, as Methods 2.5 require."""
+def rand_jitter(raster, nbins, sd_bins, rng, counts=None):
+    """Jitter as randomizeasdf2.m 'jitter': the spikes of a neuron are moved one at a time, in a
+    random order, each by round(sd * N(0,1)) bins from its original time, and a move is undone
+    when it would leave the recording (before bin 1 or after nbins) or land on a bin the neuron's
+    train occupies at that moment (spikes already moved included, bins they left free). This
+    keeps the spike count, as Methods 2.5 require. counts, if a list, receives (spikes, spikes
+    drawn a move of 0 bins, moves undone)."""
     out = []
+    n_all = n_zero = n_undone = 0
     for s in raster:
         n = s.size
         if n == 0:
             out.append(s)
             continue
-        new = s + np.round(sd_bins * rng.standard_normal(n)).astype(np.int64)
-        ok = (new >= 1) & (new <= nbins) & ~np.isin(new, s)
         order = rng.permutation(n)
-        cand = new[order]
-        okc = ok[order]
-        # first proposal for each target wins
-        _, first = np.unique(np.where(okc, cand, -1 - np.arange(n)), return_index=True)
-        win = np.zeros(n, dtype=bool)
-        win[first] = True
-        okc &= win
-        res = s.copy()
-        res[order[okc]] = cand[okc]
-        out.append(np.sort(res))
+        step = np.round(sd_bins * rng.standard_normal(n)).astype(np.int64)
+        res = s.tolist()
+        new_all = (s + step).tolist()
+        occ = set(res)
+        for k in order.tolist():
+            new = new_all[k]
+            old = res[k]
+            if new == old:
+                continue
+            if new < 1 or new > nbins or new in occ:
+                n_undone += 1
+                continue
+            occ.discard(old)
+            occ.add(new)
+            res[k] = new
+        n_all += n
+        n_zero += int(np.sum(step == 0))
+        out.append(np.sort(np.array(res, dtype=np.int64)))
+    if counts is not None:
+        counts.append((n_all, n_zero, n_undone))
     return out
 
 
@@ -684,9 +695,9 @@ def prepare(d: dict) -> dict:
                 act=act)
 
 
-def randomize(kind: str, raster, nbins, rng):
+def randomize(kind: str, raster, nbins, rng, counts=None):
     if kind in JITTER_SD:
-        return rand_jitter(raster, nbins, JITTER_SD[kind], rng)
+        return rand_jitter(raster, nbins, JITTER_SD[kind], rng, counts)
     return {"wrap": rand_wrap, "poisson": rand_poisson, "swap": rand_swap,
             "shuffle": rand_shuffle}[kind](raster, nbins, rng)
 
@@ -822,7 +833,10 @@ def culture_record(args) -> dict:
         for k, v in ss.items():
             out[f"ss_{tag}_{k}"] = v
     for j, kind in enumerate(RANDOMIZATIONS):
-        rr = randomize(kind, p["raster"], p["nbins"], np.random.default_rng([seed, i, 10 + j]))
+        jc = []
+        rr = randomize(kind, p["raster"], p["nbins"], np.random.default_rng([seed, i, 10 + j]), jc)
+        if jc:
+            out[f"{kind}_spikes"], out[f"{kind}_zero_moves"], out[f"{kind}_undone"] = jc[0]
         rng = np.random.default_rng([seed, i, 20 + j])
         a2 = activity(rr, p["nbins"])
         if kind in ("swap", "shuffle"):
@@ -874,6 +888,39 @@ def complexity_record(args) -> dict:
         out[f"kkept_{kind}"] = cv["k_kept"]
         out[f"N_{kind}"] = cv["N"]
         out[f"nbins_{kind}"] = int(bins.size)
+    return out
+
+
+def complexity_swap_record(args) -> dict:
+    """complexity_swap.ipynb, one recording: complexity_record restricted to the real data and spike
+    swapping, with the same generators, so a recording in both notebooks gets the same values.
+    Also the counts of the exclusion rule (reading a). args = (index, name, seed, n_subsets)."""
+    i, name, seed, n_subsets = args
+    p = prepare(load(name, _worker_zip()))
+    N = len(p["raster"])
+    act = p["act"]
+    size, dur, starts = avalanches(act)
+    out = dict(name=name, culture=culture_div(name)[0], div=culture_div(name)[1], n_neurons=N,
+               n_size_cut_values=int(np.unique(apply_cuts(size)).size),
+               n_dur_cut_values=int(np.unique(apply_cuts(dur)).size),
+               n_profiles=len(mean_profiles(act, size, dur, starts)))
+    j_swap = 1 + RANDOMIZATIONS.index("swap")
+    for j, kind in ((0, "real"), (j_swap, "swap")):
+        rng = np.random.default_rng([seed, i, 100 + j])
+        rr = p["raster"] if kind == "real" else randomize(
+            kind, p["raster"], p["nbins"], np.random.default_rng([seed, i, 10 + j - 1]))
+        a2 = act if kind == "real" else activity(rr, p["nbins"])
+        if kind == "swap":
+            out["swap_act_identical"] = bool(np.array_equal(a2, act))
+        X = raster_matrix(rr, np.flatnonzero(a2) + 1)
+        keep = np.asarray(X.sum(axis=0)).ravel() > 0
+        X = X[:, keep] if not keep.all() else X
+        cv = complexity(X, n_subsets, rng, return_variants=True)
+        out[f"C_{kind}"] = cv["cut"]
+        out[f"Cuncut_{kind}"] = cv["uncut"]
+        out[f"Craw_{kind}"] = cv["raw"]
+        out[f"kkept_{kind}"] = cv["k_kept"]
+        out[f"N_{kind}"] = cv["N"]
     return out
 
 

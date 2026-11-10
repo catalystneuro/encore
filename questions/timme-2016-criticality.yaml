@@ -1,0 +1,74 @@
+questions:
+- claim: fig5f-network-state-poisson-keeps-complexity
+  asked: 2026-11-10
+  question: >-
+    The criterion counts the complexity as preserved when it differs from the original by less
+    than 5%, which it calls the residue of the random subset draws. With complexity.m as the paper
+    uses it (correction and cut), the draws themselves differ by far more: on the same network
+    states, repeated draws differ from their own mean by up to 0.675 (models.ipynb). Should the
+    bound be set from the estimator's own spread, or the test made on the complexity without the
+    cut?
+  passage: >-
+    "Note that the complexity was largely unaffected by Poisson randomization of the network
+    states" (Results 3.1, paragraph 1, Figure 5F); Methods 2.9 describe the correction and the cut.
+  why: >-
+    The verifier of round 2 found that no data could meet a 5% bound with this estimator, so the
+    test cannot tell a change from no change. The cut complexity changes by 0.151 (0.105 between
+    the means of five draws) and the claim is not reproduced; without the cut the change is 0.013
+    and without the correction 0.001, both within 5%.
+- claim: figs8-complexity-susceptibility-correlation
+  asked: 2026-11-10
+  question: >-
+    The tolerance is 10% of the paper's correlation (0.23 +/- 0.023). The sampling error of a
+    correlation of 0.23 is about 0.045 even over all 435 recordings, and about 0.15 over the 40
+    recordings run here. Should the criterion use a tolerance that covers the sampling error of r,
+    or judge only the sign and rough size?
+  passage: >-
+    "We also found a correlation of 0.23 between the complexity and the susceptibility of the
+    recordings (see Figure S8)" (Results 3.3, paragraph 4).
+  why: >-
+    The verifier of round 2 noted that a tolerance narrower than the sampling error makes the
+    test fail by chance even when the data agree with the paper. Here Pearson r is 0.902 (Eq. 14)
+    and 0.905 (N var(A/N)), outside any reasonable tolerance, so the outcome would not change on
+    these numbers, but the criterion would decide other attempts by chance.
+- claim: figs9-complexity-fit-range-correlation
+  asked: 2026-11-10
+  question: >-
+    The tolerances are 10% of the paper's correlations (0.296 +/- 0.0296 and 0.197 +/- 0.0197),
+    narrower than the sampling error of r even over all 435 recordings (about 0.045). Should the
+    criterion use a tolerance that covers the sampling error of r?
+  passage: >-
+    "We found a correlation of 0.296 between the complexity and the size fit ranges of the
+    recordings and a correlation of 0.197 between the complexity and the duration fit ranges of
+    the recordings (see Figure S9)" (Results 3.3, paragraph 5).
+  why: >-
+    Over the 40 recordings run here the standard error of r is about 0.15; the size range value,
+    0.060 against 0.296, is about 1.6 standard errors away, and the duration value, -0.107 against
+    0.197, about 2. With a tolerance set by the sampling error the size half could pass and the
+    claim could be partially reproduced.
+- claim: eq4-relation-randomized
+  asked: 2026-11-10
+  question: >-
+    The criterion says "fig10-randomization-markers lists the methods", but there is no claim
+    with that id in the claims file. Which claim was meant, and which randomization methods should
+    the test cover?
+  passage: >-
+    "However, we also found that randomized data satisfied the critical exponent relationship,
+    though with different exponent values (data not shown)" (Results 3.3, paragraph 2).
+  why: >-
+    The attempt tests every randomization that changes the avalanches (the jitters, wrap and
+    Poisson); the relation holds for all five, and for wrap and Poisson the exponents differ by
+    more than one SD. If the intended list were narrower and left out wrap and Poisson, the
+    outcome could change.
+- claim: fig10c-curvature-randomization
+  asked: 2026-11-10
+  question: >-
+    The criterion defines reproduced (each of the five randomizations lowers the curvature
+    significantly) but no partial outcome. Here four of five do and 1-bin jitter does not. Should
+    the criterion say how a partial result is judged, as fig11bd-exponents-randomization does?
+  passage: >-
+    "The shape collapse curvature decreased under randomization indicating that avalanches shape
+    collapses became flatter (Figure 10C)" (Results 3.3, paragraph 4).
+  why: >-
+    The attempt records partially reproduced, following the rule of
+    fig11bd-exponents-randomization; read strictly, the criterion gives not reproduced.
