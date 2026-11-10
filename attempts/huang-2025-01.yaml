@@ -1,0 +1,1001 @@
+schema_version: 3
+id: huang-2025-01
+datasets:
+- archive: dandi
+  id: 001349
+  version: 0.250604.1510
+  doi: 10.48324/dandi.001349/0.250604.1510
+  relation: primary
+paper: doi:10.1016/j.isci.2025.112104
+date: 2026-11-10
+entry: huang-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42748936595
+inputs:
+- what: Quiescent window of each imaging field (Time_start, Time_end), used to cut every series, with
+    the per-dataset values of the paper's measures, used only to check the link (Kmean_CovM_SummaryDevAll_CorrDistanceArea.xlsx,
+    Kmean_CovM_SummaryDlxGsDREADD_CorrDistanceArea.xlsx, Kmean_CovM_MI_Corr.xlsx, Kmean_CovM_SummaryDlxGsDREADD_MICorr.xlsx,
+    under Statistical_Script_Data).
+  source: https://github.com/EdnaHuang/SubnetworkAssembley2024 at commit 28e1b6d79c830b77831ceb97738ab423f9fc333f
+- what: Figure S9 histology counts, P15_VGAT_SYT2_20230318.xlsx under Statistical_Script_Data/Analysis_VGAT-Syt2/data
+    (neuropil puncta densities per image and perisomatic puncta and soma volume per soma), for the two
+    Figure S9 claims.
+  source: https://github.com/EdnaHuang/SubnetworkAssembley2024 at commit 28e1b6d79c830b77831ceb97738ab423f9fc333f
+outcomes:
+- claim: quiescent-window-link
+  outcome: partially_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:quiescent-window-link
+  notes: 399 of 455 developmental rows (87.7%) and 56 of 96 DREADD rows (58.3%) match a file; the unmatched
+    rows are mostly those of three subjects with no file (C57-C4-3-ALBR, -AR, -BL; 40 developmental and
+    28 DREADD rows) and the P13 and P15 rows of C57-C6-2-AL, which has only P11 files; one file (C57-C2-1-ALAR
+    session 12, P15 before CNO) matches no DREADD row. On matched records the age agrees in 397 of 399
+    (the P190D file is matched to a P11 row) and the sex in 387 (the others are the 12 files with sex
+    U). The Pearson correlation recomputed equals the table's (r = 1.000, 99.7% within 0.001); event frequency
+    r = 0.93, tCC 0.95, silhouette 0.93. With the window shifted by 30 s the event frequency agreement
+    falls to r = 0.82 and 0.79 and the share within 5% from 0.71 to 0.15 and 0.12. The partial link means
+    the dependent claims are tested on 387 of the paper's 453 developmental datasets (30 of 35 subjects)
+    and 56 of 96 DREADD datasets (7 of 10 mice).
+  deviations:
+  - Rows with no file are left out; ties of two candidate files are broken by age (2 cases).
+- claim: fig1d-event-frequency-decline
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig1d-event-frequency-decline
+  notes: P11 minus P21 is 0.617 events/s (95% interval 0.418 to 0.813, p < 0.0001) under O6 a and 0.621
+    under O6 b; the selected model has main effects only, so the contrast is the same in all four sex
+    and layer groups. The repository printed 0.605.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: fig1f-synchrony-decline
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig1f-synchrony-decline
+  notes: P11 minus P21 is 0.435 synchrony events/s (0.340 to 0.538, p < 0.0001) with the Methods' threshold
+    and 0.389 (0.232 to 0.538, p < 0.0001) with Step7's, the same in every group.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs2f-pearson-decline-females
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs2f-pearson-decline-females
+  notes: Females P11 minus P21 0.155 (p = 0.0002) in L2/3 and 0.096 (p = 0.010) in L4; males 0.068 (p
+    = 0.158) and -0.015 (p = 0.464). The selected model has the three-way interaction.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs2f-pearson-l23-above-l4-p11
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs2f-pearson-l23-above-l4-p11
+  notes: L4 minus L2/3 at P11 is -0.033 in females (p = 0.048, close to the threshold) and -0.052 in males
+    (p < 0.0001).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs2g-mi-decline
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs2g-mi-decline
+  notes: Run under the claims file's MI (calculate_mi_matrix_trace.m, 256 bins, Z-scored traces); P11
+    minus P21 is -0.160 (p = 0.22), the same in all groups (linear model). The paper's MI cannot be recomputed.
+    The repository's calculate_mi_matrix_trace.m (256 bins) applied to the dataset's Z-scored traces in
+    the paper's windows gives values about ten times the MI in Kmean_CovM_MI_Corr.xlsx (ZF_R_allpair_mean;
+    median ratio 10.2, range 3.9 to 23.4), uncorrelated with them over 387 datasets (r = 0.09) and strongly
+    dependent on the window length (r = -0.84, against -0.17 for the table's MI). The Methods (Data analysis
+    for calcium imaging) say only that MI was computed on Z-score normalized traces during quiescence.
+    The question for the authors is which traces, bins and normalization produced the table's MI.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs2g-mi-male-above-female-p21
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs2g-mi-male-above-female-p21
+  notes: Under the MI here, male minus female at P21 is -0.071 (p = 0.33) in both layers. The MI does
+    not reproduce the paper's per-dataset MI (see figs2g-mi-decline).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs2g-mi-l4-below-l23
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs2g-mi-l4-below-l23
+  notes: Under the MI here, L4 minus L2/3 is 0.085 (p = 0.096) at every age and sex. The MI does not reproduce
+    the paper's per-dataset MI (see figs2g-mi-decline).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: fig2e-subnetworks-present-same-number
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig2e-subnetworks-present-same-number
+  notes: All 86 P11 datasets have at least one subnetwork under all four readings. With the code's participation
+    test P11 minus P21 has p >= 0.05 in every group (10 runs -0.075, p = 0.88; 100 runs 0.41 and 0.35,
+    p = 0.45 and 0.64). With the Methods' 95th percentile, P21 has more subnetworks in some groups (100
+    runs 2 of 4 groups with p < 0.05, e.g. F L2/3 -2.79, p = 0.040; 10 runs 3 of 4), which would not reproduce.
+    Mean subnetworks at P11 and P21 3.86 and 4.12 (10 runs, code test).
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig2d-silhouette-increase
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig2d-silhouette-increase
+  notes: P21 minus P11 is 0.206 (0.165 to 0.258) with 100 k-means runs and 0.185 (0.149 to 0.230) with
+    10, p < 0.0001, the same in all four groups. Two datasets have no valid 100-run silhouette value.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs3c-tcc-inside-above-outside
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs3c-tcc-inside-above-outside
+  notes: Under all four readings mean inside tCC exceeds outside tCC in all eight age, sex and layer groups,
+    in 99.2 to 100% of datasets with at least two subnetworks (130 to 135 datasets); Wilcoxon p < 1e-12
+    at P11 (n = 85) and at P21 (n = 45 to 50).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+  - The Wilcoxon test is the claims file's standard choice; the paper names none.
+- claim: fig2f-tcc-increase-l23
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig2f-tcc-increase-l23
+  notes: With 10 runs and the code's test, P21 minus P11 of within-subnetwork tCC is 0.056 (-0.015 to
+    0.117, p = 0.106) in every group (main-effects model). With 100 runs and the code's test it is 0.080
+    (p = 0.007) in both layers (partially reproduced under that reading); with the Methods' test -0.009
+    and -0.013 (p = 0.82 and 0.68).
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs3d-neuron-number-not-related
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs3d-neuron-number-not-related
+  measured: -0.119
+  notes: Over 137 P11 and P21 datasets, Spearman rho of subnetwork number with ROI count is -0.119 (p
+    = 0.17) with 10 runs and the code's test, -0.090 with 100 runs; with the Methods' test -0.313 and
+    -0.253, outside the tolerance. The table's own subnetwork numbers give -0.045 on these datasets. The
+    paper's n is 162.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs3e-time-interval-not-related
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs3e-time-interval-not-related
+  measured: 0.237
+  notes: Rho with the window length is 0.237 (p = 0.005) with 10 runs and the code's test, 0.234 with
+    100 runs and the code's test, 0.177 with 100 runs and the Methods' test (all within 0.08 of 0.233),
+    and 0.094 with 10 runs and the Methods' test. The table's own numbers give 0.220.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig3a-single-cluster-decline
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig3a-single-cluster-decline
+  notes: P11 minus P21 of single-cluster neurons is positive with p < 0.05 in all four groups under all
+    eight readings; with 10 runs, the code's test and O5 a it is 37.5 (F L2/3), 24.1 (F L4), 13.2 (M L2/3,
+    p = 0.035) and 31.9 (M L4) percentage points.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig3b-non-cluster-increase
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig3b-non-cluster-increase
+  notes: With the code's test P21 exceeds P11 by 19.5 points (10 runs, O5 a, p < 0.0001) and by 17.3 to
+    21.1 under the other code readings, in every group. With the Methods' test the rise is 5.3 (10 runs,
+    O5 a, p = 0.024), and not significant under O5 b (3.3, p = 0.137 with 10 runs; 4.9, p = 0.053 with
+    100 runs).
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig3c-multiple-cluster-unchanged
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig3c-multiple-cluster-unchanged
+  notes: With 10 runs and the code's test P11 minus P21 of multiple-cluster neurons is -7.7 points (p
+    = 0.149) in every group; 100 runs -3.0 (p = 0.61). With 10 runs and the Methods' test -14.6 (p = 0.046)
+    and -15.6 (O5 b, p = 0.028), which would not reproduce.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig3ef-subnetwork-size-unchanged
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig3ef-subnetwork-size-unchanged
+  notes: With 10 runs and the code's test P11 minus P21 is -2.7 pixels (p = 0.62) for neuron to neuron
+    and 2.9 (p = 0.49) for neuron to centroid distances, the same in every group; 100 runs -0.8 (p = 0.85)
+    and 2.4 (p = 0.54). With the Methods' test the neuron to neuron distance is larger at P21 (-12.4 with
+    10 runs, p = 0.007; -15.0 with 100, p = 0.004).
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+  - Distances are between ROI centres taken as the rounded median pixel of each pixel mask (Suite2p's
+    stat.med in Calcuate_Subnetwork_Distances.m), and the per-dataset value is the mean over all pairs
+    pooled over subnetworks.
+- claim: fig3g-centroid-distances-decrease
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig3g-centroid-distances-decrease
+  notes: P11 minus P21 of centroid to centroid distances is positive with p < 0.0001 in all four groups
+    under all four readings; 57.2 pixels with 10 runs and the code's test, 54.0 to 80.3 under the others.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig4a-event-frequency-trajectory
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4a-event-frequency-trajectory
+  notes: The largest of the ten age contrasts is P11 minus P21 (0.617 events/s under O6 a, 0.621 under
+    O6 b), not P11 minus P18 (0.579 and 0.585); both p < 0.0001. The repository printed 0.635 for P11
+    minus P18 and 0.605 for P11 minus P21; the two are close in both.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: fig4b-synchrony-gradual-decline
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4b-synchrony-gradual-decline
+  notes: The marginal means fall at every step under both readings (Methods steps 0.065, 0.114, 0.187,
+    0.069; Step7 0.015, 0.031, 0.254, 0.088), none rises, and P11 minus P21 is 0.435 and 0.389 (p < 0.0001).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - The rule for gradual is the claims file's reading.
+- claim: figs4a-pearson-trajectory
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs4a-pearson-trajectory
+  notes: Female L2/3 P11 minus P21 0.155 (p = 0.0002); female L4 largest contrast from P11 at P18 (0.102,
+    p < 0.0001; P13 0.089, P15 0.063, P21 0.096); male P11 minus P15 0.072 and 0.070 (p = 0.0008 and 0.008);
+    male P15 minus P18 -0.047 and -0.088 (p = 0.024 and < 0.0001).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs4b-mi-trajectory
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs4b-mi-trajectory
+  notes: Under the MI here, female P11 minus P21 is -0.160 (p = 0.22), male P11 minus P15 -0.477 (p <
+    0.0001), and L2/3 minus L4 -0.085 (p = 0.096) at every age. The MI does not reproduce the paper's
+    per-dataset MI (see figs2g-mi-decline).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: figs4b-mi-sex-p21
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs4b-mi-sex-p21
+  notes: Under the MI here, female minus male at P21 is 0.071 (p = 0.33) in both layers. The MI does not
+    reproduce the paper's per-dataset MI (see figs2g-mi-decline). The claims file notes that this sentence
+    contradicts the Figure S2G sentence.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+- claim: fig4c-subnetwork-number-transient-p15
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4c-subnetwork-number-transient-p15
+  notes: With 10 runs and the code's test, P15 minus P11 is 0.98 (p = 0.020) and P15 minus P21 0.90 (p
+    = 0.002) in all four groups; P13 minus P11 is also 0.98 (p = 0.001). Under the other readings the
+    criterion holds in 0 (10 runs, Methods' test), 1 (100 runs, Methods' test) and 2 (100 runs, code test)
+    of 4 groups.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig4d-silhouette-gradual-increase
+  outcome: partially_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4d-silhouette-gradual-increase
+  notes: The increase holds under both readings; P21 minus P11 0.206 (100 runs) and 0.185 (10 runs), p
+    < 0.0001, every consecutive step rising (p from < 0.0001 to 0.029). The sex part does not; male minus
+    female at P15 is 0.006 (p = 0.81) and 0.005 (p = 0.83), the same at every age (main-effects model).
+    The repository printed 0.070 (p = 0.011).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig4e-tcc-maximum-earlier-l23
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4e-tcc-maximum-earlier-l23
+  notes: Under no reading is the largest increase of within-subnetwork tCC from P11 at P15 in L2/3; with
+    10 runs and the code's test it is at P18 (0.071, p = 0.001; P15 0.061) in both layers and sexes, so
+    the L4 part holds and the L2/3 part does not; with 100 runs and the code's test it is at P21 (0.080);
+    with the Methods' test at P13 (0.030 and 0.037, p = 0.16 and 0.067). The selected models have no age
+    by layer term.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig4e-tcc-l4-below-l23-p15
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4e-tcc-l4-below-l23-p15
+  notes: With 10 runs and the code's test, L4 minus L2/3 at P15 is -0.026 (-0.054 to -0.002, p = 0.028)
+    in both sexes; with the Methods' test -0.041 and -0.048 (p = 0.003 and 0.002); with 100 runs and the
+    code's test -0.016 (p = 0.17), which would not reproduce.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig4fgh-configuration-trajectory
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig4fgh-configuration-trajectory
+  notes: With 10 runs, the code's test and O5 a, only the non-cluster part holds; the largest single-cluster
+    contrast from P11 is not to P18 in every group, and 12 of the 40 age contrasts of multiple-cluster
+    neurons have p < 0.05. With 10 runs, the Methods' test and O5 a two parts hold (partially reproduced);
+    under the other six readings one part holds. The repository's own output has a multiple-cluster contrast
+    with p = 0.029, as the claims file notes.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs4-distance-trajectory
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs4-distance-trajectory
+  notes: With 10 runs and the code's test the largest size contrasts are P13 minus P18 (neuron to neuron,
+    -16.5 pixels, p = 0.004) and P11 minus P13 (neuron to centroid, 10.9), and the largest centroid reduction
+    is P11 minus P21 (57.2) in L4 as in L2/3. With the Methods' test both size measures peak at P13 against
+    P21 (partially reproduced); the centroid part fails under every reading.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig5cd-cno-reduces-events-synchrony
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig5cd-cno-reduces-events-synchrony
+  notes: Before minus after CNO, event frequency falls by 0.337 events/s (0.111 to 0.549, p = 0.002) and
+    synchrony by 0.214 (Methods, p = 0.025) or 0.365 (Step7, p = 0.0007), in every group (main-effects
+    models).
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+- claim: figs6ab-cno-correlation-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs6ab-cno-correlation-unchanged
+  notes: The Pearson correlation is higher after CNO by 0.045 (before minus after -0.074 to -0.015, p
+    = 0.004), as the repository's own output found (0.030, p = 0.040). MI here also changes (0.314, p
+    < 0.0001), but that MI does not reproduce the paper's (figs2g-mi-decline); the Pearson part alone
+    decides the outcome.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+- claim: fig5e-cno-silhouette-increase
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig5e-cno-silhouette-increase
+  notes: The silhouette value is higher after CNO by 0.092 (100 runs, p = 0.0007) and 0.077 (10 runs,
+    p = 0.004), in every group.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs6c-cno-subnetwork-number-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs6c-cno-subnetwork-number-unchanged
+  notes: In males the number of subnetworks is higher after CNO under every reading (before minus after
+    -1.9 to -3.0, p < 0.0001); in females it does not change significantly (0.13 to 1.17, p from 0.11
+    to 0.83) except with 10 runs and the Methods' test (1.14, p = 0.028). The selected models have a CNO
+    by sex term, and the male estimate rests on 2 subjects.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs6d-cno-tcc-females
+  outcome: reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs6d-cno-tcc-females
+  notes: Within-subnetwork tCC is higher after CNO by 0.116 to 0.137 (p <= 0.0007) under every reading,
+    in females of both layers. The selected models have no CNO by sex term, so the male contrasts are
+    the same; the repository printed 0.117 in females and 0.005 in males.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: fig5fgh-cno-configuration
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:fig5fgh-cno-configuration
+  notes: With 10 runs, the code's test and O5 a, single-cluster neurons do not fall (before minus after
+    3.1 points, p = 0.54), multiple-cluster neurons rise (-15.5, p = 0.003) and non-cluster neurons fall
+    (12.3, p = 0.014), so one part of three holds. With 100 runs and the Methods' test single (11.7, p
+    < 0.0001) and multiple (-19.4, p < 0.0001) hold and non-cluster changes (7.8, p < 0.0001); partially
+    reproduced under that reading.
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs6efg-cno-topography-unchanged
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs6efg-cno-topography-unchanged
+  notes: With 10 runs and the code's test the centroid to centroid distance changes in males (66.2 pixels,
+    p < 0.0001); with 100 runs and the code's test no distance changes (p from 0.54 to 0.76), which would
+    reproduce; with the Methods' test the neuron to neuron distance changes (10.5 and 11.8 pixels, p <=
+    0.004).
+  assumed: true
+  deviations:
+  - Assumed that the paper's results used the code's readings of the open details (O2 Step7 synchrony
+    threshold, O3 10 k-means runs per cluster number as Modol_script.m calls kmeansopt, O4 the 1 - 0.05/NCl
+    participation quantile, O5 a all ROIs as denominator, O6 a cells with events), where the claims file
+    names the Methods' as main; the paper's own per-dataset tables agree with the code's readings (non-cluster
+    ROIs 25.7% with the code's test, 9.1% with the Methods', 25.0% in the table; synchrony 1.60 with Step7
+    and 0.91 with the Methods' threshold, 1.45 in the table), and the readings give different outcomes
+    for this claim. Every reading is shown in the notebook.
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - Test T1 or T2 re-implemented in Python; likelihood-ratio tests replace the Kenward-Roger comparisons
+    of model_select, and bootstrap replicates refit the fixed effects by generalized least squares with
+    the variance components of the original fit, where the R code refits lmer. On the paper's own table
+    the implementation gives the repository's printed contrasts to within a few hundredths (data check).
+  - 56 DREADD datasets of 7 subjects (2 male) against the table's 96 of 10 mice; about 10% of bootstrap
+    replicates drew no male and were dropped.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs7a-events-clustered
+  outcome: not_reproduced
+  notebook: reproduce_huang_2025.ipynb
+  output: claim:figs7a-events-clustered
+  measured:
+  - 13.61
+  - 0.31
+  - 21.64
+  notes: Mean over 387 developmental datasets, frames in any event cluster 13.6% (10 runs, code test;
+    13.3 to 13.9% under the other readings), in multiple clusters 0.31%, and at P11 21.6%, against 25%,
+    1% and 30%. The repository table gives 13.46%, 0.35% and 21.62% on the same datasets, so the measure
+    agrees with the paper's table and not with the numbers in its Discussion and Figure S7 legend.
+  deviations:
+  - The quiescent windows are the repository tables' Time_start and Time_end (O1 reading a); the dandiset
+    holds no behavioural video, so reading b could not be run.
+  - 387 developmental datasets of 30 subjects (the tables have 453 after dropping Location 4), after leaving
+    out 12 files of two subjects with sex U; three subjects of litter C57-C4-3 and some fields are not
+    in the dandiset.
+  - k-means is scikit-learn's (k-means++, one start per run) on the coordinates Q times lambda of the
+    covariance matrix's eigendecomposition, which keep the distances between its rows; participation thresholds
+    are exact hypergeometric quantiles in place of 5,000 shuffles; the cluster significance test of Modol_script.m,
+    which the later steps do not use, is not run.
+- claim: figs7-method-comparison
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within this run's five hours. The k-means on the cosine and Jaccard matrices would each
+    add about the time of the covariance k-means (35 minutes for 10 and 100 runs on four processes), and
+    the Louvain consensus clustering (500 and 100 iterations with 10 consensus iterations) and DBSCAN
+    of the repository were not re-implemented; the data and windows they need are those of the tested
+    claims.
+- claim: figs7-silhouette-increase-all-methods
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within this run's five hours. The k-means on the cosine and Jaccard matrices would each
+    add about the time of the covariance k-means (35 minutes for 10 and 100 runs on four processes), and
+    the Louvain consensus clustering (500 and 100 iterations with 10 consensus iterations) and DBSCAN
+    of the repository were not re-implemented; the data and windows they need are those of the tested
+    claims. It depends on figs7-method-comparison.
+- claim: figs7-subnetwork-number-stable
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within this run's five hours. The k-means on the cosine and Jaccard matrices would each
+    add about the time of the covariance k-means (35 minutes for 10 and 100 runs on four processes), and
+    the Louvain consensus clustering (500 and 100 iterations with 10 consensus iterations) and DBSCAN
+    of the repository were not re-implemented; the data and windows they need are those of the tested
+    claims. It depends on figs7-method-comparison.
+- claim: figs8-configuration-all-methods
+  outcome: blocked
+  blocked_by: other
+  notes: Not run within this run's five hours. The k-means on the cosine and Jaccard matrices would each
+    add about the time of the covariance k-means (35 minutes for 10 and 100 runs on four processes), and
+    the Louvain consensus clustering (500 and 100 iterations with 10 consensus iterations) and DBSCAN
+    of the repository were not re-implemented; the data and windows they need are those of the tested
+    claims. It depends on figs7-method-comparison.
+- claim: figs5e-mostly-glutamatergic
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file names the paper's Mendeley deposit (data.mendeley.com/preview/nztp6242zk). On
+    2026-11-10 the preview link redirected to a login page (HTTP 401) and the public API answered 404
+    for the dataset, so it is not public; the code repository holds no Figure S5 counts. The data claim
+    says elsewhere, but no public source of these counts was found.
+- claim: figs5f-hm3dq-mostly-gabaergic
+  outcome: blocked
+  blocked_by: other
+  notes: The claims file names the paper's Mendeley deposit (data.mendeley.com/preview/nztp6242zk). On
+    2026-11-10 the preview link redirected to a login page (HTTP 401) and the public API answered 404
+    for the dataset, so it is not public; the code repository holds no Figure S5 counts. The data claim
+    says elsewhere, but no public source of these counts was found.
+- claim: figs9-no-sex-difference-gabaergic-input
+  outcome: reproduced
+  notebook: histology_figs9.ipynb
+  output: claim:figs9-no-sex-difference-gabaergic-input
+  notes: None of the 12 sex contrasts has p < 0.05. Male minus female averaged over layers is 0.85 puncta
+    per 100 um3 (p = 0.33) for VGAT, 0.53 (p = 0.34) for Syt2 and 0.63 (p = 0.33) for VGAT/Syt2 density
+    in the neuropil (80 images of 10 animals, 5 per sex), and -0.57 (p = 0.16) for the perisomatic VGAT/Syt2
+    density (136 somata); within each layer p is 0.26 to 0.54. The repository printed p from 0.103 to
+    0.28.
+  deviations:
+  - The data are the repository's P15_VGAT_SYT2_20230318.xlsx (sheets Sorted-ForMultilevel and Somatic_input_ForMultilevel,
+    those VGAT_Syt2_20230321.R and the somatic script read), not the dandiset, which holds no histology.
+  - The model of VGAT_Syt2_Function_20230319.R (layer by sex, random intercepts for animal and animal
+    by image, case bootstrap over animals, 10,000 replicates) is re-implemented; each replicate refits
+    the fixed effects by generalized least squares with the variance components of the original fit, where
+    the R code refits lmer. Contrasts are averaged over the other factor as emmeans does, and also given
+    within each level.
+- claim: figs9-layer-differences
+  outcome: partially_reproduced
+  notebook: histology_figs9.ipynb
+  output: claim:figs9-layer-differences
+  notes: L4 minus L2/3, averaged over sex, is 5.42 Syt2 puncta per 100 um3 (5.04 to 5.78, p < 0.0001),
+    -494 um3 of soma volume (p < 0.0001) and -51.4 VGAT puncta on the soma (p < 0.0001), each in both
+    sexes; the normalized perisomatic VGAT/Syt2 density is also lower (-1.89, p < 0.0001). The VGAT density
+    is higher in L4 by 0.96 (0.55 to 1.39, p < 0.0001), so the VGAT part, a claim of absence, does not
+    hold, as the claims file notes for the repository's output (0.95, p < 0.001).
+  deviations:
+  - The data are the repository's P15_VGAT_SYT2_20230318.xlsx (sheets Sorted-ForMultilevel and Somatic_input_ForMultilevel,
+    those VGAT_Syt2_20230321.R and the somatic script read), not the dandiset, which holds no histology.
+  - The model of VGAT_Syt2_Function_20230319.R (layer by sex, random intercepts for animal and animal
+    by image, case bootstrap over animals, 10,000 replicates) is re-implemented; each replicate refits
+    the fixed effects by generalized least squares with the variance components of the original fit, where
+    the R code refits lmer. Contrasts are averaged over the other factor as emmeans does, and also given
+    within each level.
+  - Fewer perisomatic GABAergic inputs is read as fewer VGAT puncta on the soma (the sheet's raw count);
+    the normalized VGAT/Syt2 column gives the same direction.
+findings:
+- kind: data_missing
+  statement: The dandiset holds no behavioural video, limb or face tracking, or the quiescent windows
+    the paper selected from them, although its keywords list behavior and pose estimation and its description
+    mentions synchronized behavioral video. Every imaging measure of the paper is computed in those windows;
+    here they are taken from the code repository's tables.
+- kind: data_missing
+  statement: Three mice of the paper's tables (C57-C4-3-ALBR, C57-C4-3-AR, C57-C4-3-BL; 40 of 455 developmental
+    and 28 of 96 DREADD rows) and the P13 and P15 fields of C57-C6-2-AL (12 developmental and 12 DREADD
+    rows) have no file. The dandiset has 32 subjects; the paper reports 34 mice at P11 and 10 DREADD mice.
+- kind: metadata_error
+  statement: sub-C57-C2-1-AL_ses-0 gives the age as P190D, with session date 2022-03-12 and birth date
+    2021-09-03; the subject's other sessions are at P11 to P21 in September 2021, and the file matches
+    the paper's P11 row P11_C2-1_AL_L1_140.
+- kind: metadata_error
+  statement: The 12 files of C57-C6-2-AL and C57-C6-2-AR give sex as U; the paper's tables give M. The
+    subject description gives the line as Cre Chrm3q for every subject, including the C57BL/6J, FGF9 and
+    hM4Di animals, and the genotype field is empty.
+- kind: metadata_insufficient
+  statement: The ca_events series is described only as Ca_Events with unit a.u. Its non-zero frames are
+    the events of the paper's Step2 detection (99.8% of frames agree with Step2 run on the file's own
+    Z score), but its values (of order 0.001) are not the Z-score amplitudes Step2 stores and are not
+    explained. The CNO condition is coded only in the session description (CNOInjection and P15CNO), and
+    the imaging plane's indicator is unknown, not jRGECO1a.
+- kind: methods_unavailable
+  statement: The paper's MI cannot be recomputed. The repository's calculate_mi_matrix_trace.m (256 bins)
+    applied to the dataset's Z-scored traces in the paper's windows gives values about ten times the MI
+    in Kmean_CovM_MI_Corr.xlsx (ZF_R_allpair_mean; median ratio 10.2, range 3.9 to 23.4), uncorrelated
+    with them over 387 datasets (r = 0.09) and strongly dependent on the window length (r = -0.84, against
+    -0.17 for the table's MI). The Methods (Data analysis for calcium imaging) say only that MI was computed
+    on Z-score normalized traces during quiescence. The question for the authors is which traces, bins
+    and normalization produced the table's MI.
+- kind: methods_unavailable
+  statement: The Methods and the code disagree on three details that change outcomes here, and the paper's
+    tables show that the code's were used. The Methods describe a synchrony threshold from the peaks of
+    100 rate-preserving shuffles, 100 k-means runs per cluster number and a 95th-percentile participation
+    test; Step7 uses pooled circular shifts, Modol_script.m calls kmeansopt with 10 runs and tests participation
+    at the 1 - 0.05/NCl quantile. With the Methods' readings the per-dataset values differ from the paper's
+    tables (median non-cluster ROIs 9.1% against 25.0%; synchrony 0.91 against 1.45 events/s) and 13 of
+    the tested claims change outcome. The authors could confirm which were used.
+- kind: paper_inconsistency
+  statement: The Discussion says k-means grouped about 25% of events, 1% in multiple clusters and about
+    30% at P11 (Figure S7 legend); the repository's own table (No_assemblies, M_assemblies) gives 13.5%,
+    0.35% and 21.6% over the datasets in the dandiset, which this attempt reproduces (13.6%, 0.31% and
+    21.6%).
