@@ -1,0 +1,1349 @@
+# Claims for Vittani, Herlo, Wang et al. (2025), "Cerebral blood flow is modulated by astrocytic
+# cAMP elevation independently of IP3R2-mediated Ca2+ signaling in mice", PNAS 122, e2422069122,
+# on DANDI:001414.
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-10, protocol as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record as served by Europe PMC (PMC12260423,
+# paper/10.1073-pnas.2422069122.txt), main text, figure legends, Materials and Methods, and the
+# SI Appendix (Supplementary Materials and Methods, legends of Figures S1 to S6, Tables S1 to
+# S4), extracted from the supplement PDF. No figure was read from a PDF page; the main-text PDF
+# is not under paper/. The dataset was known only from its title and description on the
+# archive ("Dataset accompanying the paper ... by Vittani et al., 2024"; 121 subjects, 500 NWB
+# files, one-photon microscopy, OnePhotonSeries and PlaneSegmentation). Its data were not seen.
+#
+# Code read: none. The paper links no code. Methods say images were preprocessed in ImageJ,
+# analysed with "custom MatLab scripts", and all statistics done in GraphPad Prism 10. No
+# method detail below is settled by code.
+#
+# Data the paper used (Results; Methods; SI Materials and Methods; figure legends).
+# - Mice. C57BL/6J, 6 to 7 weeks, both sexes (Figures 1 to 3, 5, 6). IP3R2-/- and IP3R2+/+
+#   littermates, 10 to 18 weeks, both sexes (Figure 4, Figure 5H to J, Figure S4R to Z).
+#   Mlc1-PinkFlamindo transgenic mice for two-photon imaging (Figure S1I to K).
+# - Viral vectors (retro-orbital). bPAC, PHP.eB/mGFAP(ABC1D)-2pabPAC(F198Y); cAMP sensor,
+#   PHP.eB/mGFAP(ABC1D)-Lck-PinkFlamindo; Ca2+ sensor, PHP.eB/hGFAP(ABC1D)-RCaMP3 (one-photon)
+#   or PHP.eB/hGFAP-GCaMP6f (two-photon); blood plasma, AAV8/P3-Alb-mScarlet. Controls lack
+#   bPAC (sensor or Alb-mScarlet only).
+# - One-photon macroscope imaging through a thinned skull over the right somatosensory cortex,
+#   about 3 weeks after injection, anesthetized (ketamine 70 mg/kg, xylazine 10 mg/kg) or awake
+#   and habituated. Per mouse, four time-lapse recordings of about 5 min at 5 Hz (1500 frames),
+#   each 65 s baseline, LED stimulation (470 nm, continuous pulse), 4 min after. LED frames
+#   removed in analysis. cAMP and Ca2+ imaging at zoom 2.5X (5.3 x 5.3 mm, 512 x 512 pixels);
+#   vessel imaging at zoom 16X (834 x 834 um, 512 x 512 pixels).
+# - Stimulation protocols. Figures 1, 2 and 5B to D (anesthetized), 5 mW LED in the four
+#   recordings of 1 s, 0.2 s, 3 s and 1 s. Figures 3, 4, 5E to J (awake), 1 s at 5 mW in all
+#   four. Figure 6 (anesthetized), 25 ms at 1 mW in all recordings. Sensory stimuli (Figure
+#   S1L to Q, S4Z), tail shock (1.5 to 2 mA, 100 ms, after 30 s baseline) and air puff to the
+#   left whiskers (100 ms pulses, 5 Hz, 20 psi, 0.5, 1 or 2 min, after 65 s baseline, about
+#   10 min after).
+# - Groups and sizes, as the legends give them.
+#   Figure 1, cAMP, anesthetized WT, 4 bPAC mice (3 for recording 4); 5 control mice (S1B to E).
+#   Figure 2, arterioles, anesthetized WT cohort 1, 3 arterioles from 2 bPAC mice and 3 from 2
+#   control mice (S2A to C); cohort 2 with 1 s only, 27 arterioles from 5 bPAC mice and 24 from
+#   5 control mice (S2E to K).
+#   Figure S1M and N, startle cAMP, 3 anesthetized and 12 awake mice; S1O and P, whisker cAMP,
+#   3 to 4 mice; S1Q, whisker arteriole, 18 arterioles from 5 mice.
+#   Figure S1I to K, two-photon cAMP in a Mlc1-PinkFlamindo mouse (cranial window).
+#   Figure 3, awake WT, cAMP 5 bPAC and 5 control mice; arterioles 33 from 5 bPAC mice and 31
+#   from 5 control mice.
+#   Figure 4, awake IP3R2, cAMP 6 IP3R2-/- and 6 IP3R2+/+ mice; arterioles 41 from 6 IP3R2-/-
+#   and 34 from 5 IP3R2+/+ mice (the t tests report df = 34).
+#   Figure 5, RCaMP3, anesthetized WT 5 bPAC and 5 control mice; awake WT 5 and 5; awake
+#   IP3R2 4 IP3R2-/- and 3 IP3R2+/+ mice; S4Z startle Ca2+ in 4 IP3R2-/- and 3 IP3R2+/+ mice.
+#   Figure S5E to I, two-photon GCaMP6f and Pink Flamindo, awake, 22 astrocytes from 3 mice.
+#   Figure 6, mild stimulation, cAMP 4 mice; Ca2+ 4 mice (S6E to H says 5 bPAC and 5 control);
+#   arterioles 13 from 6 bPAC and 14 from 4 control mice (I, J), 12 from 5 and 10 from 4 (K, L).
+# - Measured variables. Pink Flamindo fluorescence (cAMP), RCaMP3 or GCaMP6f fluorescence
+#   (Ca2+), Alb-mScarlet fluorescence of plasma, from which arteriole diameter is measured on
+#   kymographs.
+#
+# Analysis methods the paper gives (SI Materials and Methods, Image Data Analysis), used in the
+# criteria below and cited there as "SI Image Data Analysis".
+# - cAMP, one-photon. TurboReg motion correction when needed; LED frames removed; one ROI over
+#   the thinned skull area with good signal; mean ROI intensity per frame. Background, the mean
+#   of a small ROI over the darkest vessel in the first frame (Blood Offset), subtracted from the
+#   mean of the first 10 frames (Adjusted Offset). Photobleaching, a two-term exponential (exp2)
+#   fitted to the baseline and the last 2 min, subtracted, accounting for the Adjusted Offset;
+#   then dF/F0. Across recordings, an exponential decay fitted to recordings 1 and 4 and
+#   subtracted (Corrected dF/F0). Parameters, peak, rise time, 80% decay time, response
+#   duration (rise time plus decay time). Differentials after a median filter (n = 20,
+#   anesthetized; n = 50 on traces and 20 on differentials, awake).
+# - Ca2+, one-photon. As cAMP, without photobleaching correction.
+# - Arterioles. TurboReg; LED frames removed; recording divided by a Gaussian-blurred (3D, SD 50
+#   pixels) copy; rotated to align the arteriole; 3 to 5 rectangular ROIs along the arteriole
+#   give kymographs; borders by full width at half maximum; diameter as their distance;
+#   relative change normalized to baseline (dF/F0), mean filter (n = 20 at 5 mW, 5 at 1 mW),
+#   averaged across kymographs; median filter (n = 100) then differential. Within the first
+#   38.6 s (5 mW) or 14 s (1 mW) after the LED, area under the curve of the relative diameter
+#   change, dilation duration of the first dilation event, and maximum dilation rate (peak of
+#   the differential). For Figures 4 and 6, data with large vasomotion within 30 s before the
+#   LED were excluded.
+# - Timing. Mean cAMP (or RCaMP3) and arteriole traces normalized to their maximum as 1;
+#   arteriole time-to-peak read on the traces, delay on the normalized differentials.
+# - Statistics (Methods). Mean +/- SEM; t tests for two groups; paired t tests with
+#   Benjamini-Hochberg FDR (alpha 0.05); one-way ANOVA with Tukey; two-way ANOVA; mixed-effects
+#   (REML). The fractional degrees of freedom of the repeated-measures tests imply a
+#   Geisser-Greenhouse correction, as Prism applies by default.
+#
+# Details the paper leaves open, named once here and in each criterion that uses them.
+# - Time origin of rise time and time-to-peak. (a) the first frame after the LED (LED frames
+#   removed); (b) LED onset. Table S1 gives a 0.45 s rise time for the 3 s LED, which fits (a).
+# - "80% decay time". (a) time from the peak until the signal falls to 80% of the peak value;
+#   (b) time until it falls by 80%, to 20% of the peak.
+# - Baseline F0. (a) mean of the whole 65 s pre-LED baseline; (b) mean of the 30 s before the
+#   LED (the window the vasomotion exclusion uses).
+# - Whether peaks are read on the median-filtered or the unfiltered trace. Both are read.
+# - Units of area under the curve and of maximum dilation rate ("a.u."). Readings, (a) sum
+#   over frames (5 Hz) of the percent change, rate in percent per frame; (b) integral in
+#   percent times seconds, rate in percent per second; (c) as (a) or (b) on the fractional
+#   change. The reported magnitudes decide among them; each is shown.
+# - The arteriole unit. (a) each arteriole averaged over the recordings it is in; (b) each
+#   arteriole in each recording counted once.
+# - Large vasomotion before the LED (Figures 4 and 6). No threshold is given. Readings, (a) no
+#   exclusion; (b) exclusion of arterioles whose relative diameter in the 30 s before the LED
+#   exceeds the post-LED peak of the group mean, a standard choice named as such.
+# - Delay between cAMP and arteriole. (a) between the peaks of the two normalized
+#   differentials; (b) between their onsets (first rise above zero after the LED); (c) from the
+#   peak of the cAMP differential to the onset of the arteriole differential.
+#
+# Tolerances. A value printed with its SEM takes that SEM. A value without spread takes 10%.
+# A time takes at least 0.2 s, one frame at 5 Hz, since no time is measured finer than a
+# frame. A reported range is widened by 10% of each bound.
+#
+# Every claim's data are the paper's own one-photon or two-photon recordings or histology
+# (data: dataset, the default). Whether DANDI:001414 holds the two-photon recordings, the
+# sensory-stimulation recordings and the histology is for the author to find.
+schema_version: 2
+paper: doi:10.1073/pnas.2422069122
+claims:
+- id: fig1k-astrocyte-expression
+  statement: After systemic injection, bPAC and Pink Flamindo are expressed selectively in
+    astrocytes throughout the brain, including the cerebral cortex.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 1; Figure 1K; Figure S1A
+  quote: Three weeks postinjection, in vivo imaging ( SI Appendix , Fig. S1 A ) and histology (
+    Fig. 1 K ) confirmed selective expression of bPAC and Pink Flamindo in astrocytes throughout
+    the brain
+  criterion: Judged on the histology images of cortical slices, if the dataset holds them. The
+    paper gives no counts or test. Reproduced when both bPAC and Pink Flamindo fluorescence are
+    seen in cells with astrocyte morphology in the cortex. Morphology is judged by eye, as the
+    paper does; this is the only reading the paper allows.
+- id: fig1b-camp-dose-dependent
+  statement: In anesthetized mice, blue LED stimulation of bPAC raises astrocytic Pink Flamindo
+    fluorescence (cAMP) in a dose-dependent way across 0.2, 1 and 3 s stimulation.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 2; Figure 1B and C; Figure S1B to E
+  quote: We observed a dose-dependent increase in fluorescence, reflecting cAMP elevation, in
+    response to bPAC stimulation
+  criterion: Pink Flamindo traces processed as in SI Image Data Analysis (Corrected dF/F0), per
+    mouse, n = 4 bPAC mice. Reproduced when the mean peak after the LED is above zero for every
+    stimulation length and increases from 0.2 s to 1 s (mean of recordings 1 and 4, as Table S1
+    does) to 3 s, and the bPAC mean peak for 1 s exceeds the control mice's (Figure S1B, 5
+    control mice). Baseline F0 readings (a) and (b) of the header are both run.
+- id: fig1g-j-camp-kinetics-anesthetized
+  statement: Longer LED stimulation gives higher cAMP peaks, faster rise times, slower decay and
+    longer responses, with the values of Table S1 (0.2 s, 1 s, 3 s at 5 mW in anesthetized WT
+    mice).
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 2; Figure 1G to J; Table S1
+  quote: Longer LED stimulation produced higher peak amplitudes and faster rise times, with slower
+    decay to 80% of the peak value ( Fig. 1 G − I and SI Appendix , Table S1 ). The duration of
+    Pink Flamindo responses also varied with stimulation length
+  statistics:
+  - test: two-sample paired t tests, Benjamini-Hochberg FDR (alpha 0.05)
+    p: 0.05
+    p_relation: <
+    corrected: Benjamini-Hochberg FDR
+    n: 4 mice for recordings 1 to 3, 3 mice for recording 4
+  expected:
+  - quantity: cAMP peak, 0.2 s
+    value: 67.2
+    tolerance: 12.8
+    unit: '%'
+  - quantity: cAMP peak, 1 s (mean of recordings 1 and 4)
+    value: 94.4
+    tolerance: 4.4
+    unit: '%'
+  - quantity: cAMP peak, 3 s
+    value: 106.6
+    tolerance: 17.6
+    unit: '%'
+  - quantity: cAMP rise time, 0.2 s
+    value: 7.9
+    tolerance: 0.9
+    unit: s
+  - quantity: cAMP rise time, 1 s
+    value: 6.3
+    tolerance: 0.2
+    unit: s
+  - quantity: cAMP rise time, 3 s
+    value: 0.45
+    tolerance: 0.2
+    unit: s
+  - quantity: cAMP 80% decay time, 0.2 s
+    value: 30.7
+    tolerance: 2.5
+    unit: s
+  - quantity: cAMP 80% decay time, 1 s
+    value: 62.2
+    tolerance: 4.4
+    unit: s
+  - quantity: cAMP 80% decay time, 3 s
+    value: 95.4
+    tolerance: 7.1
+    unit: s
+  - quantity: cAMP response duration, 0.2 s
+    value: 38.6
+    tolerance: 3.1
+    unit: s
+  - quantity: cAMP response duration, 1 s
+    value: 68.5
+    tolerance: 4.2
+    unit: s
+  - quantity: cAMP response duration, 3 s
+    value: 95.8
+    tolerance: 7.1
+    unit: s
+  criterion: Parameters as Figure 1E and SI Image Data Analysis define them (peak, the maximal
+    amplitude; rise time, the interval to the peak; 80% decay time; duration as their sum), per
+    mouse, then mean over mice. Open details, each run, are the time origin, the meaning of "80%
+    decay time", the baseline F0 and filtered or unfiltered peak (header). Reproduced when, under
+    one combination of readings, the ordering holds for all four parameters (peak and duration
+    rising, rise time falling, decay time rising with stimulation length) and at least 9 of the
+    12 values are within tolerance. Partially reproduced when the ordering holds but fewer values
+    match. Which pairs reached significance is shown only by asterisks in Figure 1G to J; the
+    paired t tests with Benjamini-Hochberg correction over the pairs of recordings are run and
+    reported, the family being (a) the six pairs within a parameter or (b) all pairs of all four
+    parameters.
+- id: fig1f-camp-reproducible
+  statement: The 1 s stimulation gave similar cAMP kinetic profiles at the first and the last
+    recording, showing the stimulation is reproducible.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 2; Figure 1F; Figure S1F
+  quote: Of note, 1-s-long stimulation showed similar kinetic profiles at the first and last
+    recordings, demonstrating a strong reproducibility of the stimulation paradigm
+  criterion: A claim of absence, judged on the paper's test, two-sample paired t tests with
+    Benjamini-Hochberg correction (alpha 0.05), recording 1 against recording 4, for peak, rise
+    time, decay time and response duration (Figure 1G to J legend), on the 3 mice with both
+    recordings. Reproduced when none of the four differs; not reproduced when any does. The
+    correction family is open; (a) the six pairs of recordings within a parameter, (b) all pairs
+    of all parameters. Differences of means are reported either way.
+- id: figs1n-startle-camp-awake-higher
+  statement: Tail-shock startle raises astrocytic cAMP more in awake than in anesthetized mice,
+    with peaks of about 4% and 12%.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 3; Figure S1M and N; Discussion, paragraph 7
+  quote: Startle-induced cAMP response peaked at ~4% and 12% in anesthetized and awake mice,
+    respectively
+  statistics:
+  - test: unpaired t test
+    statistic: t = 2.376, df = 13
+    p: 0.05
+    p_relation: <
+    n: 3 anesthetized and 12 awake mice
+  expected:
+  - quantity: startle cAMP peak, anesthetized
+    value: 4
+    tolerance: 0.4
+    unit: '%'
+  - quantity: startle cAMP peak, awake
+    value: 12
+    tolerance: 1.2
+    unit: '%'
+  criterion: Pink Flamindo dF/F0 per mouse as in SI Image Data Analysis, baseline the 30 s before
+    the shock (SI In Vivo One-Photon Macroscopic Imaging). Reproduced when the awake peak exceeds
+    the anesthetized peak by an unpaired t test at p < 0.05 and both means are within
+    tolerance; partially reproduced when the test holds and one mean is outside. Whether a
+    photobleaching correction is applied to these recordings is not stated; with and without are
+    both run.
+- id: figs1p-whisker-camp-length
+  statement: During air-puff whisker stimulation of anesthetized mice the cAMP response lasts
+    through the stimulation, and its peak grows with stimulation length, to about 5% at 2 min
+    (3 to 6% over the lengths used).
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 3; Figure S1O and P; Discussion, paragraph 7
+  quote: Following whisker stimulation, cAMP response persisted throughout the stimulation period
+    and its peak amplitude increased proportionally to whisker stimulation length, with 2-min
+    stimulation inducing ~5% increase
+  statistics:
+  - test: one-way ANOVA, Tukey post hoc
+    statistic: F = 10.78
+    p: 0.0054
+    n: 3 to 4 mice per stimulation length
+  expected:
+  - quantity: cAMP peak after 2 min whisker stimulation
+    value: 5
+    tolerance: 0.5
+    unit: '%'
+  - quantity: lowest mean peak over the three lengths (range 3 to 6%)
+    value: 3
+    tolerance: 0.3
+    unit: '%'
+  - quantity: highest mean peak over the three lengths (range 3 to 6%)
+    value: 6
+    tolerance: 0.6
+    unit: '%'
+  criterion: Pink Flamindo dF/F0 per mouse, baseline the 65 s before the puffs. Reproduced when
+    the mean peak rises from 0.5 to 1 to 2 min, a one-way ANOVA across lengths gives p < 0.05,
+    and the 2 min mean is within tolerance; the 3 to 6% range is reported against the three
+    means.
+- id: figs1k-twophoton-camp
+  statement: In Mlc1-PinkFlamindo mice injected with the bPAC vector, two-photon imaging through a
+    cranial window shows Pink Flamindo fluorescence rising after bPAC activation.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 3; Figure S1I to K
+  quote: Two-photon microscopy through a cranial window over the somatosensory cortex revealed an
+    increase in Pink Flamindo fluorescence after bPAC activation
+  criterion: Per astrocyte ROI, the mean baseline intensity (1 min before the LED) is compared
+    with the peak after the LED, as SI Image Data Analysis describes. The paper reports no test.
+    Reproduced when the peak exceeds the baseline in most ROIs and in their mean. A paired t test
+    is reported as a variant.
+- id: fig2b-arteriole-biphasic
+  statement: In anesthetized mice, bPAC stimulation produces a dose-dependent biphasic change in
+    arteriole diameter, a dilation followed by a constriction and a return to baseline.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 4; Figure 2B; Figure S2A to C
+  quote: A dose-dependent biphasic change in arteriole diameter change was observed, starting with
+    an initial dilation followed by a constriction and eventual return to baseline
+  criterion: Relative arteriole diameter as in SI Image Data Analysis, cohort 1 (3 arterioles from
+    2 bPAC mice). Reproduced when, for each stimulation length, the mean trace after the LED
+    first rises above baseline, then falls below it, then returns toward it before the recording
+    ends, and the peak dilation increases from 0.2 s to 3 s. No threshold for "below baseline"
+    is given; a minimum below zero is taken, a standard choice. Control arterioles (S2A to C)
+    are shown for comparison.
+- id: fig2d-auc-anesthetized
+  statement: The area under the curve of the arteriole diameter change in the first 38.6 s after
+    the LED rises with 1 s and 3 s stimulation and is negative with 0.2 s, whose short dilation
+    is followed by constriction inside the window.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 4; Figure 2D; Table S2
+  quote: The vasodilator response, measured as the area under the curve in the first 38.6 s
+    post-LED stimulation, corresponding to half of the average Pink Flamindo response duration,
+    increased with 1-s-long and 3-s-long LED stimulation
+  statistics:
+  - test: one-way ANOVA, Tukey's multiple comparisons
+    statistic: F = 0.0041 (as printed; the F value appears to be a typing error)
+    p: 0.0041
+    n: 3 arterioles from 2 mice
+  expected:
+  - quantity: AUC, 0.2 s
+    value: -207.4
+    tolerance: 115.8
+    unit: a.u.
+  - quantity: AUC, 1 s (recording 1)
+    value: 332.6
+    tolerance: 49.7
+    unit: a.u.
+  - quantity: AUC, 3 s
+    value: 633.4
+    tolerance: 137.3
+    unit: a.u.
+  criterion: AUC of the relative diameter change over the first 38.6 s after the LED (SI Image
+    Data Analysis), per arteriole of cohort 1. The unit readings (a) to (c) and baseline readings
+    (a) and (b) of the header are each run. Reproduced when, under one reading, the order 0.2 s
+    below 1 s below 3 s holds, the 0.2 s mean is negative, the one-way ANOVA (with recording as
+    a factor, as the legend has it) gives p < 0.05, and all three means are within tolerance.
+    Partially reproduced when the ordering and the ANOVA hold but values differ. Only 3
+    arterioles enter, so a repeated-measures ANOVA is shown as a variant.
+- id: fig2gh-dilation-duration-rate-anesthetized
+  statement: Longer stimulation gives a faster and longer first dilation; dilation duration and
+    maximum dilation rate rise from 0.2 s to 1 s to 3 s stimulation.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 4; Figure 2E to H; Table S2
+  quote: Longer stimulations resulted in a faster and more prolonged dilation event
+  statistics:
+  - about: dilation duration across stimulation lengths
+    test: one-way ANOVA, Tukey's multiple comparisons
+    statistic: F = 9.904
+    p: 0.0126
+    n: 3 arterioles from 2 mice
+  - about: maximum dilation rate across stimulation lengths
+    test: one-way ANOVA, Tukey's multiple comparisons
+    statistic: F = 41.91
+    p: 0.0003
+    n: 3 arterioles from 2 mice
+  expected:
+  - quantity: dilation duration, 0.2 s
+    value: 5.4
+    tolerance: 2.8
+    unit: s
+  - quantity: dilation duration, 1 s
+    value: 19.9
+    tolerance: 2.8
+    unit: s
+  - quantity: dilation duration, 3 s
+    value: 21.7
+    tolerance: 2.9
+    unit: s
+  - quantity: maximum dilation rate, 0.2 s
+    value: 0.008
+    tolerance: 0.006
+    unit: a.u.
+  - quantity: maximum dilation rate, 1 s
+    value: 0.030
+    tolerance: 0.005
+    unit: a.u.
+  - quantity: maximum dilation rate, 3 s
+    value: 0.076
+    tolerance: 0.005
+    unit: a.u.
+  criterion: On the differential of the relative diameter (median filter n = 100), within the
+    first 38.6 s after the LED (SI Image Data Analysis; Figure 2E), dilation duration is the
+    length of the first interval of positive differential, maximum dilation rate the peak of the
+    differential. Unit readings (a) to (c) of the header are run for the rate. Reproduced when
+    both measures rise with stimulation length, both one-way ANOVAs give p < 0.05, and at least
+    5 of the 6 means are within tolerance under one reading; partially reproduced when the
+    ordering and tests hold with fewer values matching.
+- id: figs2-cohort2-1s-dilation
+  statement: In a second anesthetized cohort, 1 s stimulation dilated arterioles in bPAC mice and
+    not in control mice, with larger area under the curve, longer dilation and higher maximum
+    dilation rate.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 4; Figure S2E to I; Table S2
+  quote: In a larger cohort, 1-s stimulation again produced robust arteriole dilatation in
+    bPAC-expressing mice but not in control mice
+  statistics:
+  - about: area under the curve, bPAC against control
+    test: unpaired t test
+    statistic: t = 6.752, df = 49
+    p: 0.0001
+    p_relation: <
+    n: 27 arterioles from 5 bPAC mice and 24 arterioles from 5 control mice
+  - about: dilation duration, bPAC against control
+    test: unpaired t test
+    statistic: t = 3.027, df = 49
+    p: 0.01
+    p_relation: <
+    n: 27 arterioles from 5 bPAC mice and 24 arterioles from 5 control mice
+  - about: maximum dilation rate, bPAC against control
+    test: unpaired t test
+    statistic: t = 6.4867, df = 49
+    p: 0.0001
+    p_relation: <
+    n: 27 arterioles from 5 bPAC mice and 24 arterioles from 5 control mice
+  expected:
+  - quantity: AUC, bPAC, cohort 2
+    value: 568.0
+    tolerance: 77.7
+    unit: a.u.
+  - quantity: dilation duration, bPAC, cohort 2
+    value: 20.4
+    tolerance: 2.0
+    unit: s
+  - quantity: maximum dilation rate, bPAC, cohort 2
+    value: 0.053
+    tolerance: 0.007
+    unit: a.u.
+  criterion: Measures as in fig2gh-dilation-duration-rate-anesthetized and fig2d-auc-anesthetized,
+    38.6 s window, per arteriole. The arteriole-unit readings (a) and (b) and the unit readings
+    of the header are run. Reproduced when all three unpaired t tests give bPAC above control at
+    p < 0.05 and the three bPAC means are within tolerance under one reading; partially
+    reproduced when the tests hold with fewer means matching.
+- id: figs1q-whisker-arteriole
+  statement: Two-minute air-puff whisker stimulation dilated arterioles by 2.8% in the same
+    anesthetized mice, comparable to the 3 to 3.6% dilation from 1 s LED stimulation.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 4; Figure S1Q; Figure S2A and E
+  quote: observed a 2.8% increase in relative arteriole diameter change, comparable to the 3 to
+    3.6% increase induced by 1-s LED stimulation
+  expected:
+  - quantity: peak relative arteriole diameter change, 2 min whisker stimulation
+    value: 2.8
+    tolerance: 0.28
+    unit: '%'
+  - quantity: peak relative diameter change, 1 s LED, lower bound of range
+    value: 3.0
+    tolerance: 0.3
+    unit: '%'
+  - quantity: peak relative diameter change, 1 s LED, upper bound of range
+    value: 3.6
+    tolerance: 0.36
+    unit: '%'
+  criterion: Peak of the mean relative diameter trace (18 arterioles from 5 mice for whisker;
+    cohort 1 recording 1 and cohort 2 for the LED, Figure S2A and E). Reproduced when the
+    whisker peak is within tolerance and each LED cohort's peak lies in 2.7 to 3.96% (the range
+    widened by 10% of each bound). Whether the peak is taken on the mean trace or as the mean of
+    per-arteriole peaks is open; both are run.
+- id: fig2i-camp-predicts-dilation
+  statement: Across stimulation lengths, longer cAMP responses go with longer arteriole dilation
+    and higher cAMP peaks with faster dilation.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 5; Figure 2I; Figure S2J
+  quote: We found that longer Pink Flamindo responses correspond to more prolonged arteriole
+    dilation ( Fig. 2 I and SI Appendix , Fig. S2 J ). Additionally, higher astrocytic cAMP levels
+    lead to faster arteriole dilation
+  depends_on:
+  - fig1g-j-camp-kinetics-anesthetized
+  - fig2gh-dilation-duration-rate-anesthetized
+  criterion: cAMP and arterioles were recorded in different mice, so Figure 2I plots group means
+    against group means. Reproduced when, over the three stimulation lengths, the rank order of
+    mean dilation duration matches that of mean cAMP response duration and the rank order of
+    mean maximum dilation rate matches that of mean cAMP peak. The paper reports no test or fit.
+- id: fig2j-timing-anesthetized
+  statement: In anesthetized mice maximal arteriole dilation follows the cAMP peak, with
+    times-to-peak of 12.2 s (0.2 s), 16.6 s (1 s, cohort 1), 13.8 s (1 s, cohort 2) and 15.4 s
+    (3 s), and delays from cAMP of 1.8, 7.4, 3.8 and 8.6 s.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Anesthetized Mice,
+    paragraph 5; Figure 2J; Figure S2D and K; Table S3
+  quote: maximal arteriole dilation occurs after the peak in cAMP increase, with times-to-peak of
+    12.2 s for 0.2 s stimulation, 16.6 s for 1 s in the first cohort, 13.8 s for 1 s in the
+    second cohort and 15.4 s for 3 s stimulation
+  expected:
+  - quantity: arteriole time-to-peak, 0.2 s
+    value: 12.2
+    tolerance: 1.22
+    unit: s
+  - quantity: arteriole time-to-peak, 1 s, cohort 1
+    value: 16.6
+    tolerance: 1.66
+    unit: s
+  - quantity: arteriole time-to-peak, 1 s, cohort 2
+    value: 13.8
+    tolerance: 1.38
+    unit: s
+  - quantity: arteriole time-to-peak, 3 s
+    value: 15.4
+    tolerance: 1.54
+    unit: s
+  - quantity: delay cAMP to arteriole, 0.2 s
+    value: 1.8
+    tolerance: 0.2
+    unit: s
+  - quantity: delay cAMP to arteriole, 1 s, cohort 1
+    value: 7.4
+    tolerance: 0.74
+    unit: s
+  - quantity: delay cAMP to arteriole, 1 s, cohort 2
+    value: 3.8
+    tolerance: 0.38
+    unit: s
+  - quantity: delay cAMP to arteriole, 3 s
+    value: 8.6
+    tolerance: 0.86
+    unit: s
+  criterion: On mean traces normalized to their maximum as 1 (SI Image Data Analysis), the
+    arteriole time-to-peak is the time of the normalized arteriole maximum and the delay is read
+    on the normalized differentials. The cAMP trace for cohort 2 comes from the Figure 1 mice,
+    as the paper pairs them. Open, each run, are the time origin (a, b) and the delay readings
+    (a) to (c) of the header. Reproduced when the arteriole peak follows the cAMP peak in all
+    four cases and at least 6 of the 8 values are within tolerance under one combination of
+    readings; partially reproduced when the order holds with fewer matching.
+- id: fig3b-camp-awake
+  statement: In awake mice, 1 s LED stimulation raises Pink Flamindo fluorescence in bPAC mice
+    and not in control mice, peaking at about 92.7% after about 3 s and decaying over about 78 s,
+    a response of about 81 s.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 1; Figure 3B to D; Figure S3A to F; Table S1
+  quote: with Pink Flamindo signal peaking at ~3 s, reaching maximal amplitude of ~92.7% and
+    decaying over ~78 s leading to a response duration of ~81 s
+  expected:
+  - quantity: cAMP peak, awake WT (mean of recordings 1 to 4)
+    value: 92.7
+    tolerance: 1.6
+    unit: '%'
+  - quantity: cAMP rise time, awake WT
+    value: 3.3
+    tolerance: 0.3
+    unit: s
+  - quantity: cAMP 80% decay time, awake WT
+    value: 78.0
+    tolerance: 1.8
+    unit: s
+  - quantity: cAMP response duration, awake WT
+    value: 81.4
+    tolerance: 1.6
+    unit: s
+  criterion: Pink Flamindo as in SI Image Data Analysis with the awake filters (median n = 50 on
+    traces), 5 bPAC and 5 control mice, four 1 s recordings each. The text calls the bPAC
+    increase significant but no test is printed; an unpaired t test of per-mouse peaks, bPAC
+    against control, is run as the test. Reproduced when that test gives p < 0.05 and at least 3
+    of the 4 means are within tolerance under one combination of the open readings of the header
+    (time origin, 80% decay, baseline, filtered peak); partially reproduced when the test holds
+    with fewer matching.
+- id: fig3cd-camp-awake-stable
+  statement: In awake WT mice the cAMP peak, rise time, decay time and response duration do not
+    differ across the four 1 s recordings.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 1; Figure 3C and D; Figure S3E to G
+  quote: The kinetic profile of cAMP increase was consistent across recordings
+  statistics:
+  - about: peak across recordings
+    test: mixed-effects analysis (REML)
+    statistic: F(1.823, 6.685) = 0.7991
+    p: 0.4775
+    n: 5 mice
+  - about: response duration across recordings
+    test: mixed-effects analysis (REML)
+    statistic: F(0.6271, 2.299) = 3.251
+    p: 0.1797
+    n: 5 mice
+  - about: rise time across recordings
+    test: mixed-effects analysis (REML)
+    statistic: F(1.012, 3.712) = 0.9961
+    p: 0.3802
+    n: 5 mice
+  - about: decay time across recordings
+    test: mixed-effects analysis (REML)
+    statistic: F(0.8315, 3.049) = 3.440
+    p: 0.1562
+    n: 5 mice
+  criterion: A claim of absence, judged on the paper's test, a mixed-effects model (REML) with
+    recording as a repeated factor and mouse as random, Geisser-Greenhouse corrected, for each of
+    the four parameters (Figure 3 and S3 legends). With no missing values this equals a
+    repeated-measures one-way ANOVA with Geisser-Greenhouse correction, which may be used.
+    Reproduced when no parameter differs at p < 0.05; not reproduced when any does. F, p and the
+    range of recording means are reported either way.
+- id: fig3f-auc-awake
+  statement: In awake mice the area under the curve of arteriole dilation in the first 38.6 s
+    after 1 s stimulation is larger in bPAC than in control mice.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 2; Figure 3E and F; Table S2
+  quote: In the first 38.6 s post-LED stimulation, the area under the curve was significantly
+    larger in bPAC mice compared to control
+  statistics:
+  - test: unpaired t test
+    statistic: t = 3.445, df = 62
+    p: 0.01
+    p_relation: <
+    n: 33 arterioles from 5 bPAC mice and 31 arterioles from 5 control mice
+  expected:
+    quantity: AUC, awake WT bPAC
+    value: 401.7
+    tolerance: 125.6
+    unit: a.u.
+  criterion: AUC as in fig2d-auc-anesthetized, per arteriole; the df of 62 fits one value per
+    arteriole (33 + 31 - 2), which is arteriole reading (a). Reproduced when the unpaired t test
+    gives bPAC above control at p < 0.05 and the bPAC mean is within tolerance under one unit
+    reading; partially reproduced when only the test holds.
+- id: fig3h-duration-awake-ns
+  statement: In awake mice the duration of the first dilation is slightly longer in bPAC mice
+    than in controls, but not significantly.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 2; Figure 3H; Table S2
+  quote: Although the duration of the vasodilatory event was slightly longer in bPAC mice, it was
+    not statistically significant
+  statistics:
+  - test: unpaired t test
+    statistic: t = 1.171, df = 62
+    p: 0.2462
+    n: 33 arterioles from 5 bPAC mice and 31 arterioles from 5 control mice
+  expected:
+    quantity: dilation duration, awake WT bPAC
+    value: 18.1
+    tolerance: 1.8
+    unit: s
+  criterion: A claim of absence, judged on the paper's test, an unpaired t test of dilation
+    duration per arteriole, bPAC against control, at p < 0.05. Reproduced when it is not
+    significant; not reproduced when it is. The difference of means and the bPAC mean against
+    its expected value are reported either way.
+- id: fig3i-rate-awake
+  statement: In awake mice the maximum arteriole dilation rate after 1 s stimulation is higher in
+    bPAC than in control mice.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 2; Figure 3I; Table S2
+  quote: However, the maximum dilation rate was significantly higher in bPAC compared to control
+  statistics:
+  - test: unpaired t test
+    statistic: t = 2.754, df = 62
+    p: 0.01
+    p_relation: <
+    n: 33 arterioles from 5 bPAC mice and 31 arterioles from 5 control mice
+  expected:
+    quantity: maximum dilation rate, awake WT bPAC
+    value: 0.05
+    tolerance: 0.01
+    unit: a.u.
+  criterion: Rate as in fig2gh-dilation-duration-rate-anesthetized, per arteriole. Reproduced
+    when the unpaired t test gives bPAC above control at p < 0.05 and the bPAC mean is within
+    tolerance under one unit reading; partially reproduced when only the test holds.
+- id: figs3h-control-brief-dilation
+  statement: Awake control mice without bPAC show only a brief, minor arteriole dilation after
+    the LED, likely from the blue light, while anesthetized controls show none.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 2; Figure S3H; Discussion, paragraph 3; Figure S2A to C and E
+  quote: In bPAC mice, LED stimulation induced a significant arteriole dilation, while control
+    mice showed only a brief and minor dilation
+  criterion: The paper gives no measure or test for the control response. Reproduced when the
+    mean relative diameter of awake controls (31 arterioles) rises after the LED with a peak
+    smaller than the awake bPAC peak and a return to baseline sooner than the bPAC trace, and the
+    anesthetized control mean (cohort 2, 24 arterioles) shows no rise of comparable size. "Rise"
+    and "comparable" are read as a peak above, or below, the largest excursion of the same mean
+    trace in the 65 s baseline, a standard choice named as such.
+- id: awake-vs-anesthetized-camp-kinetics
+  statement: For 1 s stimulation, cAMP rises faster and decays more slowly in awake than in
+    anesthetized WT mice, with similar peaks.
+  source: Discussion, paragraph 2; Figures 1G to J and 3C and D; Figure S3E and F; Table S1
+  quote: although 1-s bPAC stimulation induced similar cAMP increases in anesthetized and awake
+    mice, a faster rise time and a slower decay were observed in awake mice
+  depends_on:
+  - fig1g-j-camp-kinetics-anesthetized
+  - fig3b-camp-awake
+  criterion: Table S1 gives rise 6.3 s anesthetized against 3.3 s awake, decay 62.2 against 78.0
+    s, peak 94.4 against 92.7%. The paper reports no test. Reproduced when the awake mean rise
+    time is shorter and the awake mean decay time longer than the anesthetized ones (1 s
+    recordings, the same readings for both groups), and the two mean peaks differ by less than
+    10% of the anesthetized peak.
+- id: fig3k-timing-awake
+  statement: In awake mice astrocytic cAMP elevation leads to arteriole dilation after a delay of
+    1.8 s, as the cAMP increase starts to decelerate, with dilation peaking at 9 s.
+  source: Results, Astrocytic cAMP Increase Leads to Arteriole Dilation in Awake Mice,
+    paragraph 3; Figure 3K; Table S3
+  quote: In awake mice, astrocytic cAMP elevation induced arteriole dilation with a delay of 1.8
+    s, with the dilation occurring as the cAMP increase began to decelerate and peaking at 9 s
+  expected:
+  - quantity: delay cAMP to arteriole, awake WT
+    value: 1.8
+    tolerance: 0.2
+    unit: s
+  - quantity: arteriole time-to-peak, awake WT
+    value: 9
+    tolerance: 0.9
+    unit: s
+  criterion: As fig2j-timing-anesthetized, on the awake WT cAMP (5 bPAC mice) and arteriole (33
+    arterioles) means. Reproduced when both values are within tolerance under one combination of
+    the time-origin and delay readings; partially reproduced when one is.
+- id: fig4a-e-camp-ip3r2-no-difference
+  statement: In awake IP3R2-/- and IP3R2+/+ littermates, 1 s stimulation raises astrocytic cAMP
+    with no difference between genotypes in peak, rise time, decay time or response duration.
+  source: Results, cAMP-Induced Arteriole Dilation Is Independent from Large Astrocytic Ca2+
+    Signals, paragraph 1; Figure 4A to E; Figure S3I to N
+  quote: There was no statistically significant difference between the two groups
+  statistics:
+  - about: peak, genotype
+    test: two-way ANOVA
+    statistic: F(1, 10) = 0.5064
+    p: 0.4930
+    n: 6 mice per group
+  - about: rise time, genotype
+    test: two-way ANOVA
+    statistic: F(1, 10) = 0.6943
+    p: 0.4242
+    n: 6 mice per group
+  - about: decay time, genotype
+    test: two-way ANOVA
+    statistic: F(1, 10) = 0.9511
+    p: 0.3524
+    n: 6 mice per group
+  - about: response duration, genotype
+    test: two-way ANOVA
+    statistic: F(1, 10) = 1.139
+    p: 0.3109
+    n: 6 mice per group
+  criterion: A claim of absence, judged on the paper's test, a two-way ANOVA of each parameter
+    with genotype between mice and recording (1 to 4) within mice, Geisser-Greenhouse corrected
+    as the fractional df show. Reproduced when the genotype effect is not significant (p < 0.05)
+    for any of the four parameters; not reproduced when it is for any. Genotype means, F and p
+    are reported either way, under the readings used in fig4-camp-ip3r2-values.
+- id: fig4-camp-ip3r2-values
+  statement: Pink Flamindo peaked at 7.2 s at 62.2% and lasted 69.5 s in IP3R2-/- mice, and
+    peaked at 8.4 s at 54.4% and lasted 85.1 s in IP3R2+/+ mice.
+  source: Results, cAMP-Induced Arteriole Dilation Is Independent from Large Astrocytic Ca2+
+    Signals, paragraph 1; Figure 4B to E; Table S1
+  quote: In IP 3 R2 −/− mice, Pink Flamindo signal peaked at 7.2 s, reaching a maximum of 62.2%,
+    and decayed over 62.3 s, with a total response duration of 69.5 s
+  expected:
+  - quantity: cAMP peak, IP3R2-/-
+    value: 62.2
+    tolerance: 1.3
+    unit: '%'
+  - quantity: cAMP rise time, IP3R2-/-
+    value: 7.2
+    tolerance: 1.1
+    unit: s
+  - quantity: cAMP 80% decay time, IP3R2-/-
+    value: 62.3
+    tolerance: 12.0
+    unit: s
+  - quantity: cAMP response duration, IP3R2-/-
+    value: 69.5
+    tolerance: 11.1
+    unit: s
+  - quantity: cAMP peak, IP3R2+/+
+    value: 54.4
+    tolerance: 1.5
+    unit: '%'
+  - quantity: cAMP rise time, IP3R2+/+
+    value: 8.4
+    tolerance: 0.7
+    unit: s
+  - quantity: cAMP 80% decay time, IP3R2+/+
+    value: 76.7
+    tolerance: 11.1
+    unit: s
+  - quantity: cAMP response duration, IP3R2+/+
+    value: 85.1
+    tolerance: 11.3
+    unit: s
+  criterion: Means over mice of each mouse's mean over recordings 1 to 4 (Table S1), awake
+    filters. Reproduced when at least 6 of the 8 values are within tolerance under one
+    combination of the open readings of the header; partially reproduced for 3 to 5.
+- id: fig4g-i-arteriole-ip3r2-no-difference
+  statement: In awake mice, 1 s stimulation dilates arterioles equally in IP3R2-/- and IP3R2+/+
+    mice; area under the curve, dilation duration and maximum dilation rate do not differ.
+  source: Results, cAMP-Induced Arteriole Dilation Is Independent from Large Astrocytic Ca2+
+    Signals, paragraph 2; Figure 4F to I; Figure S3O; Table S2
+  quote: The area under the curve in the first 38.6 s post-LED stimulation was not significantly
+    different between the two groups
+  statistics:
+  - about: area under the curve
+    test: unpaired t test
+    statistic: t = 0.0048, df = 34
+    p: 0.9962
+    n: 41 arterioles from 6 IP3R2-/- mice, 34 arterioles from 5 IP3R2+/+ mice (df = 34 as printed)
+  - about: dilation duration
+    test: unpaired t test
+    statistic: t = 0.7425, df = 34
+    p: 0.4629
+    n: 41 arterioles from 6 IP3R2-/- mice, 34 arterioles from 5 IP3R2+/+ mice (df = 34 as printed)
+  - about: maximum dilation rate
+    test: unpaired t test
+    statistic: t = 0.5705, df = 34
+    p: 0.5721
+    n: 41 arterioles from 6 IP3R2-/- mice, 34 arterioles from 5 IP3R2+/+ mice (df = 34 as printed)
+  expected:
+  - quantity: AUC, IP3R2-/-
+    value: 333.2
+    tolerance: 105.0
+    unit: a.u.
+  - quantity: AUC, IP3R2+/+
+    value: 333.9
+    tolerance: 68.4
+    unit: a.u.
+  - quantity: dilation duration, IP3R2-/-
+    value: 16.4
+    tolerance: 2.6
+    unit: s
+  - quantity: dilation duration, IP3R2+/+
+    value: 18.9
+    tolerance: 2.1
+    unit: s
+  - quantity: maximum dilation rate, IP3R2-/-
+    value: 0.05
+    tolerance: 0.01
+    unit: a.u.
+  - quantity: maximum dilation rate, IP3R2+/+
+    value: 0.040
+    tolerance: 0.006
+    unit: a.u.
+  criterion: A claim of absence, judged on the paper's test, unpaired t tests of each measure,
+    IP3R2-/- against IP3R2+/+, at p < 0.05. The legend's 75 arterioles and the printed df of 34
+    (36 values) disagree; the paper also excluded, for Figure 4, data with large vasomotion
+    within 30 s before the LED without a threshold. Readings, (a) all arterioles; (b) after the
+    vasomotion exclusion of the header; (c) arteriole-recording units (arteriole reading b).
+    Being a claim of absence, the outcome is that of the paper's test under the reading closest
+    to the printed df; the others are shown. Reproduced when none of the three tests is
+    significant; not reproduced when any is. Means against expected values are reported either
+    way.
+- id: fig4k-timing-ip3r2
+  statement: Astrocytic cAMP elevation leads to arteriole dilation with a delay of 2.8 s in
+    IP3R2-/- and 9.4 s in IP3R2+/+ mice, the dilation peaking at 22.4 s and 23.6 s.
+  source: Results, cAMP-Induced Arteriole Dilation Is Independent from Large Astrocytic Ca2+
+    Signals, paragraph 2; Figure 4K; Table S3
+  quote: Astrocytic cAMP elevations induced arteriole dilation with a delay of 2.8 s in IP 3 R2 −/−
+    mice and 9.4 s in IP 3 R2 +/+ mice, with arteriole dilation peaking at 22.4 s and 23.6 s,
+    respectively
+  expected:
+  - quantity: delay cAMP to arteriole, IP3R2-/-
+    value: 2.8
+    tolerance: 0.28
+    unit: s
+  - quantity: delay cAMP to arteriole, IP3R2+/+
+    value: 9.4
+    tolerance: 0.94
+    unit: s
+  - quantity: arteriole time-to-peak, IP3R2-/-
+    value: 22.4
+    tolerance: 2.24
+    unit: s
+  - quantity: arteriole time-to-peak, IP3R2+/+
+    value: 23.6
+    tolerance: 2.36
+    unit: s
+  criterion: As fig2j-timing-anesthetized, on each genotype's cAMP (6 mice) and arteriole means.
+    Reproduced when at least 3 of the 4 values are within tolerance under one combination of the
+    time-origin, delay and vasomotion-exclusion readings; partially reproduced for 2.
+- id: fig4j-ip3r2-lower-than-wt
+  statement: cAMP peaks and maximum dilation rates are slightly lower in IP3R2-/- and IP3R2+/+
+    mice than in awake WT mice.
+  source: Results, cAMP-Induced Arteriole Dilation Is Independent from Large Astrocytic Ca2+
+    Signals, paragraph 2; Figure 4J
+  quote: Both cAMP peaks and maximum dilation rate were slightly lower in IP 3 R2 −/− and IP 3 R2 +/+
+    mice compared to WT
+  depends_on:
+  - fig3b-camp-awake
+  - fig3i-rate-awake
+  - fig4-camp-ip3r2-values
+  - fig4g-i-arteriole-ip3r2-no-difference
+  criterion: Group means compared, as Figure 4J plots them; the paper gives no test. Table S1 and
+    S2 give cAMP peaks 62.2 and 54.4% against 92.7%, and rates 0.05 and 0.040 against 0.05 a.u.
+    Reproduced when both IP3R2 groups have a lower mean cAMP peak than awake WT and at least one
+    has a lower mean maximum dilation rate; partially reproduced when only the cAMP part holds.
+- id: fig5b-d-ca-anesthetized
+  statement: In anesthetized WT mice bPAC stimulation raises astrocytic RCaMP3 (Ca2+) signals,
+    and peak amplitude and response duration change across the successive recordings, the peaks
+    falling, likely from depletion of intracellular Ca2+ stores.
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 2; Figure
+    5B to D; Figure S4A to D; Table S4
+  quote: Peak amplitudes decreased with subsequent recordings ( Fig. 5 C and SI Appendix , Table
+    S4 ), likely reflecting depletion of intracellular Ca 2+ stores
+  statistics:
+  - about: peak across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.464, 5.857) = 7.181
+    p: 0.0311
+    n: 5 mice
+  - about: response duration across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.327, 5.307) = 13.51
+    p: 0.0108
+    n: 5 mice
+  expected:
+  - quantity: Ca2+ peak, 0.2 s (recording 2)
+    value: 235.4
+    tolerance: 18.4
+    unit: '%'
+  - quantity: Ca2+ peak, 3 s (recording 3)
+    value: 192.3
+    tolerance: 12.5
+    unit: '%'
+  - quantity: Ca2+ peak, 1 s (mean of recordings 1 and 4)
+    value: 199.3
+    tolerance: 45.8
+    unit: '%'
+  - quantity: Ca2+ response duration, 0.2 s
+    value: 26.7
+    tolerance: 3.4
+    unit: s
+  - quantity: Ca2+ response duration, 3 s
+    value: 51.8
+    tolerance: 7.8
+    unit: s
+  - quantity: Ca2+ response duration, 1 s
+    value: 35.6
+    tolerance: 8.2
+    unit: s
+  criterion: RCaMP3 as SI Image Data Analysis says (cAMP pipeline without photobleaching
+    correction), 5 bPAC mice. Reproduced when the bPAC peak exceeds the control mice's (Figure
+    S4A to D) in every recording, the repeated-measures ANOVA (Geisser-Greenhouse) across the
+    four recordings gives p < 0.05 for peak and for duration, the peak of recording 4 is below
+    that of recording 1, and at least 4 of the 6 means are within tolerance under one
+    combination of the open readings; partially reproduced when the tests hold with fewer
+    matching.
+- id: figs4f-g-ca-rise-decay-anesthetized
+  statement: In anesthetized mice RCaMP3 rise time and decay time differ with stimulation
+    length; the text says shorter LED stimulation gives faster rise times, while Table S4 gives
+    4.1 s for 0.2 s, 3.0 s for 1 s and 2.4 s for 3 s.
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 2; Figure
+    S4F and G; Table S4
+  quote: Shorter LED stimulation resulted in faster rise times
+  statistics:
+  - about: rise time across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.244, 4.978) = 51.83
+    p: 0.0007
+    n: 5 mice
+  - about: decay time across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.331, 5.326) = 15.34
+    p: 0.0081
+    n: 5 mice
+  expected:
+  - quantity: Ca2+ rise time, 0.2 s
+    value: 4.1
+    tolerance: 0.3
+    unit: s
+  - quantity: Ca2+ rise time, 3 s
+    value: 2.4
+    tolerance: 0.2
+    unit: s
+  - quantity: Ca2+ rise time, 1 s
+    value: 3.0
+    tolerance: 0.2
+    unit: s
+  - quantity: Ca2+ decay time, 0.2 s
+    value: 22.6
+    tolerance: 2.6
+    unit: s
+  - quantity: Ca2+ decay time, 3 s
+    value: 49.4
+    tolerance: 7.9
+    unit: s
+  - quantity: Ca2+ decay time, 1 s
+    value: 32.6
+    tolerance: 8.1
+    unit: s
+  criterion: The sentence and Table S4 disagree on direction; the claim is judged on the table
+    and the tests. Reproduced when both repeated-measures ANOVAs give p < 0.05 and at least 4 of
+    the 6 means are within tolerance under one combination of the time-origin and 80% decay
+    readings. The direction of rise time with stimulation length is reported against both the
+    sentence and the table.
+- id: fig5e-g-ca-awake
+  statement: In awake WT mice, 1 s stimulation raises RCaMP3 signals in bPAC mice, peaking at
+    about 2 s and decaying over about 38 s, a response of about 40 s; peaks decline across
+    recordings while response duration does not change.
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 3; Figure
+    5E to G; Figure S4K to Q; Table S4
+  quote: While peak amplitudes declined across recordings, the kinetic profiles remained
+    consistent, with RCaMP3 signal peaking at ~ 2 s and decaying over ~38 s leading to a response
+    duration of ~40 s
+  statistics:
+  - about: peak across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.843, 7.373) = 5.083
+    p: 0.0428
+    n: 5 mice
+  - about: response duration across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.702, 6.810) = 2.069
+    p: 0.1989
+    n: 5 mice
+  - about: rise time across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.658, 6.633) = 0.7059
+    p: 0.5018
+    n: 5 mice
+  - about: decay time across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.702, 6.809) = 2.056
+    p: 0.2004
+    n: 5 mice
+  expected:
+  - quantity: Ca2+ peak, awake WT
+    value: 184.8
+    tolerance: 16.4
+    unit: '%'
+  - quantity: Ca2+ rise time, awake WT
+    value: 1.78
+    tolerance: 0.2
+    unit: s
+  - quantity: Ca2+ decay time, awake WT
+    value: 37.9
+    tolerance: 1.4
+    unit: s
+  - quantity: Ca2+ response duration, awake WT
+    value: 39.71
+    tolerance: 1.4
+    unit: s
+  criterion: RCaMP3, awake filters, 5 bPAC and 5 control mice. Reproduced when the peak ANOVA
+    across recordings gives p < 0.05 with recording 4 below recording 1, the ANOVAs for duration,
+    rise and decay give p of 0.05 or more (the paper's tests, judged as absence), and at least 3
+    of the 4 means are within tolerance under one combination of the open readings. Partially
+    reproduced when the tests hold with fewer means matching.
+- id: fig5h-j-ca-ip3r2-reduced
+  statement: The bPAC-induced astrocytic Ca2+ elevation is much smaller and shorter in IP3R2-/-
+    than in IP3R2+/+ mice (peak 28.7 against 115.2%, response 7.8 against 22.2 s).
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 4; Figure
+    5H to J; Figure S4R to Y; Table S4
+  quote: These results show that IP 3 R2 −/− exhibited significantly smaller and slightly delayed
+    Ca 2+ elevations following bPAC stimulation compared to IP 3 R2 +/+ mice
+  statistics:
+  - about: response duration, genotype
+    test: two-way ANOVA
+    statistic: F(1, 5) = 324.4
+    p: 0.0001
+    p_relation: <
+    n: 4 IP3R2-/- and 3 IP3R2+/+ mice
+  - about: peak, genotype
+    test: mixed-effects analysis (REML)
+    statistic: F(1, 3) = 4.477
+    p: 0.1247
+    n: 4 IP3R2-/- and 3 IP3R2+/+ mice
+  - about: rise time, genotype
+    test: two-way ANOVA
+    statistic: F(1, 5) = 8.29
+    p: 0.0346
+    n: 4 IP3R2-/- and 3 IP3R2+/+ mice
+  - about: decay time, genotype
+    test: two-way ANOVA
+    statistic: F(1, 5) = 312.5
+    p: 0.0001
+    p_relation: <
+    n: 4 IP3R2-/- and 3 IP3R2+/+ mice
+  expected:
+  - quantity: Ca2+ peak, IP3R2-/-
+    value: 28.7
+    tolerance: 4.6
+    unit: '%'
+  - quantity: Ca2+ peak, IP3R2+/+
+    value: 115.2
+    tolerance: 12.2
+    unit: '%'
+  - quantity: Ca2+ rise time, IP3R2-/-
+    value: 2.4
+    tolerance: 0.3
+    unit: s
+  - quantity: Ca2+ rise time, IP3R2+/+
+    value: 1.8
+    tolerance: 0.2
+    unit: s
+  - quantity: Ca2+ response duration, IP3R2-/-
+    value: 7.8
+    tolerance: 0.2
+    unit: s
+  - quantity: Ca2+ response duration, IP3R2+/+
+    value: 22.2
+    tolerance: 4.0
+    unit: s
+  criterion: The paper's genotype test on peak is not significant (p = 0.1247) though the text
+    calls the Ca2+ elevation significantly smaller; the claim is judged on the response
+    duration, rise and decay tests and the means. Reproduced when the genotype effect on
+    response duration and on decay time is significant (two-way ANOVA, genotype between mice,
+    recording within, Geisser-Greenhouse corrected) with IP3R2-/- shorter, the IP3R2-/- mean peak
+    is below the IP3R2+/+ mean peak, and at least 4 of the 6 means are within tolerance under one
+    combination of the open readings. Partially reproduced when the tests and the direction hold
+    with fewer matching. The genotype test on peak is run and reported.
+- id: figs4z-startle-ca-ip3r2
+  statement: Tail-shock startle Ca2+ responses are reduced in IP3R2-/- mice compared with
+    IP3R2+/+ mice, as the bPAC-induced responses are.
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 4; Figure
+    S4Z; Discussion, paragraph 5
+  quote: The bPAC-induced Ca 2+ elevation was markedly reduced in IP 3 R2 −/− compared to IP 3 R2
+    +/+ mice ( Fig. 5 H and SI Appendix , Fig. S4 R − T ), mirroring the reduction seen in
+    startle-evoked responses
+  criterion: RCaMP3 dF/F0 after tail shock in anesthetized mice, 4 IP3R2-/- and 3 IP3R2+/+ (Figure
+    S4Z), baseline the 30 s before the shock. The paper reports no test. Reproduced when the
+    IP3R2-/- mean peak is below the IP3R2+/+ mean peak and above zero (the Discussion says the
+    response is reduced, not absent). An unpaired t test of per-mouse peaks is reported.
+- id: figs5a-d-ca-transient-camp-sustained
+  statement: After 5 mW stimulation, the astrocytic Ca2+ increase begins with the cAMP rise but
+    declines before arteriole dilation starts and keeps falling during dilation, while cAMP stays
+    elevated through the dilation, in anesthetized and awake WT and in IP3R2 mice.
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 5; Figure
+    S5A to D; Figure S4H to J; Discussion, paragraph 5
+  quote: whereas Ca 2+ returned to baseline relatively quickly, cAMP remained elevated throughout
+    the entire dilation period, correlating well with the vascular dynamics
+  depends_on:
+  - fig2j-timing-anesthetized
+  - fig3k-timing-awake
+  - fig4k-timing-ip3r2
+  criterion: On mean traces normalized to their maximum as 1 (SI Image Data Analysis), for 1 s
+    stimulation in anesthetized WT (cohort 1), awake WT, awake IP3R2+/+ and awake IP3R2-/-
+    (Figure S5A to D). The paper gives no measure; the sentence is read as follows, a reading
+    named as such. Reproduced when, in at least 3 of the 4 groups, the normalized Ca2+ peak comes
+    before the arteriole time-to-peak, and at the arteriole time-to-peak the normalized Ca2+
+    signal is below the normalized cAMP signal. Partially reproduced for 2 groups.
+- id: figs5i-twophoton-ca-camp-correlation
+  statement: In single astrocytes imaged with two photons in awake mice, bPAC activation causes a
+    transient Ca2+ rise and a sustained cAMP rise, and cAMP peaks correlate positively with
+    GCaMP6f peaks (y = 3.2x - 2.3, R2 = 0.387).
+  source: Results, bPAC Opto-Stimulation Induces Astrocytic Ca2+ Increase, paragraph 5; Figure
+    S5E to I
+  quote: Of note, the magnitude of the Ca 2+ transient was positively correlated with the peak cAMP
+    level, suggesting a graded Ca 2+ response by cAMP magnitude
+  statistics:
+  - test: linear regression, F test
+    statistic: F(1, 19) = 12.02, R2 = 0.387
+    p: 0.0026
+    n: 22 astrocytes from 3 mice (df 19 implies 21 points)
+  expected:
+  - quantity: regression slope, Pink Flamindo peak on GCaMP6f peak
+    value: 3.2
+    tolerance: 0.32
+  - quantity: R2
+    value: 0.387
+    tolerance: 0.0387
+  criterion: Per astrocyte ROI, traces averaged over its 2 to 5 recordings, median filter n = 100,
+    peaks measured; astrocytes with no response excluded (SI Image Data Analysis). The rule for
+    "no activity" is not given; readings, (a) the astrocytes whose peak exceeds the baseline mean
+    by 3 baseline SD, a standard choice, (b) all astrocytes. Reproduced when a linear fit of cAMP
+    peak on GCaMP6f peak has a positive slope with p < 0.05 and slope and R2 within tolerance
+    under one reading; partially reproduced when only the positive significant fit holds. The
+    transient Ca2+ and sustained cAMP are checked on the mean traces (Ca2+ back below half its
+    peak while cAMP is above half its peak at some time after the LED).
+- id: fig6c-e-camp-mild
+  statement: Mild bPAC stimulation (25 ms, 1 mW) in anesthetized mice raises astrocytic cAMP by
+    about 8%, peaking at about 6 s and lasting about 28 s, similar to sensory-evoked cAMP.
+  source: Results, Mild bPAC Activation Increases Astrocytic cAMP and Ca2+ to Promote Arteriole
+    Dilation, paragraph 2; Figure 6C to E; Figure S6A and B; Table S1
+  quote: The Pink Flamindo signal peaked at ~6 s, reaching maximal amplitude of ~8% and decaying
+    over ~22 s leading to a response duration of ~28 s
+  statistics:
+  - about: peak across recordings
+    test: paired t test
+    statistic: t = 1.141, df = 3
+    p: 0.3368
+    n: 4 mice
+  - about: response duration across recordings
+    test: paired t test
+    statistic: t = 1.214, df = 3
+    p: 0.3117
+    n: 4 mice
+  expected:
+  - quantity: cAMP peak, 25 ms
+    value: 7.8
+    tolerance: 0.6
+    unit: '%'
+  - quantity: cAMP rise time, 25 ms
+    value: 5.73
+    tolerance: 0.2
+    unit: s
+  - quantity: cAMP 80% decay time, 25 ms
+    value: 22.4
+    tolerance: 3.4
+    unit: s
+  - quantity: cAMP response duration, 25 ms
+    value: 28.2
+    tolerance: 3.4
+    unit: s
+  criterion: Pink Flamindo as in SI Image Data Analysis, 4 mice. Table S1 says the values are the
+    average of recordings "#1 and 6", though four recordings were made; readings, (a) recordings
+    1 and 4, (b) all four. The paired t tests (df 3) compare two recordings, read as 1 against
+    4. Reproduced when at least 3 of the 4 means are within tolerance under one combination of
+    readings and the paired tests give p of 0.05 or more (as the paper's tests, judged as
+    absence); partially reproduced when 2 means match.
+- id: fig6f-h-ca-mild
+  statement: Mild bPAC stimulation raises astrocytic RCaMP3 signals in bPAC mice and not in
+    controls, peaking at about 8.5 s at about 73% and lasting about 17 s, with peak and duration
+    changing across recordings.
+  source: Results, Mild bPAC Activation Increases Astrocytic cAMP and Ca2+ to Promote Arteriole
+    Dilation, paragraph 3; Figure 6F to H; Figure S6C to H; Table S4
+  quote: RCaMP3 signal peaked at ~8.5 s, reaching maximal amplitude of ~73% and decaying over ~8.5
+    s leading to a response duration of ~17 s
+  statistics:
+  - about: peak across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.188, 3.563) = 29.66
+    p: 0.0072
+    n: 4 mice
+  - about: response duration across recordings
+    test: repeated measures one-way ANOVA
+    statistic: F(1.193, 3.580) = 41.22
+    p: 0.0041
+    n: 4 mice
+  expected:
+  - quantity: Ca2+ peak, 25 ms
+    value: 72.5
+    tolerance: 13.5
+    unit: '%'
+  - quantity: Ca2+ rise time, 25 ms
+    value: 8.5
+    tolerance: 0.5
+    unit: s
+  - quantity: Ca2+ decay time, 25 ms
+    value: 8.7
+    tolerance: 0.2
+    unit: s
+  - quantity: Ca2+ response duration, 25 ms
+    value: 17.2
+    tolerance: 0.6
+    unit: s
+  criterion: RCaMP3, mean of recordings 1 to 4 (Table S4), bPAC mice (4 in Figure 6, 5 in Figure
+    S6E to H; both counts run if the dataset distinguishes them) against 5 controls. Reproduced
+    when the bPAC peak exceeds the control peak, both repeated-measures ANOVAs give p < 0.05, and
+    at least 3 of the 4 means are within tolerance under one combination of the open readings;
+    partially reproduced when the bPAC response and the tests hold with fewer matching.
+- id: fig6j-auc-mild
+  statement: After mild stimulation the area under the curve of arteriole dilation in the first
+    14 s is larger in bPAC than in control mice.
+  source: Results, Mild bPAC Activation Increases Astrocytic cAMP and Ca2+ to Promote Arteriole
+    Dilation, paragraph 4; Figure 6I and J; Table S2
+  quote: The area under the curve during the first 14 s after LED stimulation, corresponding to
+    half of the average Pink Flamindo response duration, was significantly increased in bPAC
+    compared to control mice
+  statistics:
+  - test: unpaired t test
+    statistic: t = 2.925, df = 25
+    p: 0.01
+    p_relation: <
+    n: 13 arterioles from 6 bPAC mice and 14 arterioles from 4 control mice
+  expected:
+    quantity: AUC, 25 ms, bPAC (mean of recordings 1 to 4)
+    value: 42.5
+    tolerance: 12.3
+    unit: a.u.
+  criterion: AUC over the first 14 s after the LED, mean filter n = 5 (SI Image Data Analysis),
+    per arteriole averaged over recordings 1 to 4 (Table S2). The vasomotion exclusion applies
+    to Figure 6; readings (a) and (b) of the header are run, and the unit readings. Reproduced
+    when the unpaired t test gives bPAC above control at p < 0.05 and the bPAC mean is within
+    tolerance under one reading; partially reproduced when only the test holds.
+- id: fig6kl-duration-rate-mild-ns
+  statement: After mild stimulation, dilation duration and maximum dilation rate are slightly
+    higher in bPAC mice than in controls, but not significantly.
+  source: Results, Mild bPAC Activation Increases Astrocytic cAMP and Ca2+ to Promote Arteriole
+    Dilation, paragraph 4; Figure 6K and L; Table S2
+  quote: Although dilation duration and maximum dilation rate were slightly higher in bPAC mice, it
+    was not statistically significant
+  statistics:
+  - about: dilation duration
+    test: unpaired t test
+    statistic: t = 1.389, df = 20
+    p: 0.1802
+    n: 12 arterioles from 5 bPAC mice and 10 arterioles from 4 control mice
+  - about: maximum dilation rate
+    test: unpaired t test
+    statistic: t = 2.045, df = 20
+    p: 0.0543
+    n: 12 arterioles from 5 bPAC mice and 10 arterioles from 4 control mice
+  expected:
+  - quantity: dilation duration, 25 ms, bPAC
+    value: 9.5
+    tolerance: 1.4
+    unit: s
+  - quantity: maximum dilation rate, 25 ms, bPAC
+    value: 0.015
+    tolerance: 0.003
+    unit: a.u.
+  criterion: A claim of absence, judged on the paper's tests, unpaired t tests per arteriole of
+    dilation duration and maximum dilation rate in the first 14 s, bPAC against control, at p <
+    0.05. Reproduced when neither is significant; not reproduced when either is. Differences of
+    means and the bPAC means against expected values are reported either way. The paper's rate
+    test is near threshold (p = 0.0543).
+- id: fig6b-timing-mild
+  statement: With mild stimulation arteriole dilation comes first (1.2 s after the LED), with the
+    onset of cAMP elevation; cAMP peaks at 6.2 s and astrocytic Ca2+ peaks later, at 7.6 s.
+  source: Results, Mild bPAC Activation Increases Astrocytic cAMP and Ca2+ to Promote Arteriole
+    Dilation, paragraph 4; Figure 6B; Discussion, paragraph 4
+  quote: Arteriole dilation occurred 1.2 s after LED stimulation, coinciding with the onset of
+    cAMP elevation, which peaked 6.2 s after stimulation ( Fig. 6 B ). Astrocytic Ca 2+ increased
+    only after cAMP elevation, peaking 7.6 s after stimulation
+  depends_on:
+  - fig6c-e-camp-mild
+  - fig6f-h-ca-mild
+  expected:
+  - quantity: arteriole time-to-peak (t1), 25 ms
+    value: 1.2
+    tolerance: 0.2
+    unit: s
+  - quantity: cAMP time-to-peak (t2), 25 ms
+    value: 6.2
+    tolerance: 0.62
+    unit: s
+  - quantity: Ca2+ time-to-peak (t3), 25 ms
+    value: 7.6
+    tolerance: 0.76
+    unit: s
+  criterion: On mean traces normalized to their maximum as 1, times from stimulation onset (Figure
+    6B legend). The Figure 6B legend and the Discussion call 1.2 s the time-to-peak of dilation,
+    the Results its occurrence; readings, (a) time of the arteriole maximum, (b) onset of the
+    arteriole rise; both run. Reproduced when the order arteriole, then cAMP peak, then Ca2+
+    peak holds and at least 2 of the 3 values are within tolerance under one reading; partially
+    reproduced when the order holds only. The times differ from Table S1 and S4 rise times (5.73
+    and 8.5 s), which are reported alongside.
+- id: mild-dilation-size
+  statement: Mild bPAC stimulation dilates arterioles by about 2.2%, against 3 to 5% for the
+    stronger 5 mW stimulations, comparable to 2 min whisker stimulation (2.8%).
+  source: Discussion, paragraphs 4 and 7; Figures 2B and 6I; Figure S2E; Figure S1Q
+  quote: the maximal relative diameter change was 2.2% with mild bPAC activation versus 3 to 5%
+    with stronger stimulation
+  depends_on:
+  - figs1q-whisker-arteriole
+  expected:
+  - quantity: peak relative diameter change, 25 ms
+    value: 2.2
+    tolerance: 0.22
+    unit: '%'
+  - quantity: smallest peak relative diameter change among 5 mW groups (range 3 to 5%)
+    value: 3
+    tolerance: 0.3
+    unit: '%'
+  - quantity: largest peak relative diameter change among 5 mW groups (range 3 to 5%)
+    value: 5
+    tolerance: 0.5
+    unit: '%'
+  criterion: Peak of the mean relative diameter trace after the LED, 25 ms group (Figure 6I) and
+    the anesthetized 5 mW groups of Figure 2B (0.2, 1, 3 s) and Figure S2E. Which groups the 3 to
+    5% spans is open; readings, (a) the 1 s and 3 s groups of Figure 2B and the Figure S2E
+    cohort, (b) all four of those groups. Reproduced when the 25 ms peak is within tolerance and,
+    under one reading, every 5 mW peak lies in 2.7 to 5.5% (the range widened by 10% of each
+    bound).
