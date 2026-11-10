@@ -5,13 +5,13 @@
   "label": "DANDI:000458"
  },
  "page": "datasets/dandi/000458/",
- "generated": "2026-11-10T14:18:42+00:00",
+ "generated": "2026-11-10T18:17:16+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
-  "reproduced": 12,
-  "partially_reproduced": 13,
+  "reproduced": 14,
+  "partially_reproduced": 16,
   "not_reproduced": 7,
-  "blocked": 5
+  "blocked": 29
  },
  "outcome_counts_with_outside_data": {
   "reproduced": 0,
@@ -20,13 +20,13 @@
   "blocked": 0
  },
  "outcome_counts_elsewhere": {
-  "reproduced": 0,
-  "partially_reproduced": 0,
+  "reproduced": 2,
+  "partially_reproduced": 2,
   "not_reproduced": 0,
-  "blocked": 0
+  "blocked": 1
  },
  "outcome_counts_links": {
-  "reproduced": 0,
+  "reproduced": 1,
   "partially_reproduced": 0,
   "not_reproduced": 0,
   "blocked": 0
@@ -1154,9 +1154,1016 @@
      "disagreements": []
     }
    ]
+  },
+  {
+   "id": "burman-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000458",
+    "version": "0.230317.0039",
+    "doi": "10.48324/dandi.000458/0.230317.0039",
+    "relation": "reuses"
+   },
+   "datasets": [
+    "dandi:000458"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000458",
+   "label": "DANDI:000458",
+   "dataset_version": "0.230317.0039",
+   "paper": "10.1016/j.neuron.2023.08.005",
+   "paper_title": null,
+   "date": "2026-11-10",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-14"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42760152737"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "burman-2023",
+   "entry_title": "Shunting inhibition, synchrony and entropy in Neuropixels recordings and a network model (Burman et al. 2023)",
+   "summary": "The paper's central patch-clamp findings, that synaptic GABAA receptor reversal is more depolarized and inhibition shunting in awake cortex and that blocking local network activity undoes this, could not be tested, as those recordings are not deposited. Its Neuropixels finding that neurons are less synchronous and more variable in spike timing awake than under isoflurane held up in direction and test, with means slightly off. Exact numbers come out only with the firing rate the paper's code computes, not the Methods' rate (144 units excluded against 203). The network model's shunting inhibition gave lower synchrony, higher entropy and better decoding in every run, two means just outside tight tolerances. Higher awake firing and the rate-regressed control also held.",
+   "description": "Tests the findings of Burman, Brodersen, Raimondo, Sen and Akerman (2023) that can be tested on dandiset 000458, the Allen Institute Neuropixels recordings with cortical electrical stimulation awake and under isoflurane that the paper reuses (Figure 4A to 4D, Figure S6), and runs the paper's network model (Figure 4E to 4H, Figure S7). The paper's gramicidin patch-clamp recordings (Figures 1 to 3) are not in the dandiset nor deposited elsewhere.",
+   "notebooks": [
+    {
+     "path": "reproduce_burman_2023.ipynb",
+     "title": "Neuropixels claims of Burman et al. (2023) on dandiset 000458",
+     "executed": "notebooks/burman-2023/reproduce_burman_2023.html"
+    },
+    {
+     "path": "network_model.ipynb",
+     "title": "The network model of Burman et al. (2023), 20 runs",
+     "executed": "notebooks/burman-2023/network_model.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "dataset-sessions-link",
+     "statement": "The 17 sessions the paper's analysis code reads are in DANDI:000458 and carry the fields the code uses.",
+     "source": "Key resources table, Deposited data; the analysis gist a77bcf5e at revision 43a13d89",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_burman_2023.ipynb",
+     "notes": "All 17 files the gist lists are in version 0.230317.0039, each with spike_times, location and waveform_duration in its units table, stimulus_type, behavioral_epoch, is_valid, estim_target_region and stop_time in its trials table, and awake and isoflurane electrical trials. They hold 16 subjects (sub-569073 twice, one MOs and one SSp session). Unit ids equal row numbers in every file, so the gist's keying of units by row and lookup by id select the same units. The version holds seven more files, six with EEG only and sub-599017 with units and SSp stimulation, which the gist does not read. The clock check covers all 17 files. In 33 of 34 file and condition pairs, spikes 2 to 12 ms after the pulse exceed those of the same window 1.5 s before and after it (1.5 to 39 times, Wilcoxon p below 0.001); the exception is the awake trials of sub-569069_ses-20210312 (1.55 against 1.45 spikes per trial, p = 0.59), whose isoflurane trials, on the same file clock, pass (2.2 times, p = 2e-12).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-sample",
+     "statement": "After excluding 203 neurons with evoked rates below 0.1 Hz or above 200 Hz, 662 regular spiking neurons remain, from 17 recordings in 16 mice, a median of 34 per recording (1 to 93).",
+     "source": "Methods, Pre-processing of Neuropixels dataset; Figure 4C legend",
+     "quote": "Neurons with an average evoked firing rate below 0.1 Hz or above 200 Hz in either condition (awake/anesthesia) were excluded from further analysis (203 neurons). The 662 remaining neurons derived from 17 recordings in 16 mice, each contributing a median of 34 neurons (minimum: 1, maximum: 93)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_burman_2023.ipynb",
+     "notes": "Under A1F1, 865 regular spiking units of the stimulated areas are selected (the paper's 662 + 203), 721 kept and 144 excluded (143 below 0.1 Hz, 1 above 200 Hz), from 17 recordings in 16 mice, a median of 37 per recording (7 to 95). Kept is within 662 +- 66.2 and excluded is outside 203 +- 20.3, so by the criterion the claim is partially reproduced (the total is the paper's). Under the gist's rate (A1F2 and A2F2) every number is the paper's exactly, 662 kept, 203 excluded (143 below 0.1 Hz, 61 above 200 Hz), median 34, range 1 to 93. The gist's rate is the summed spike latency over trials times 10 ms, a median 4.50 times the count rate, so its 200 Hz bound drops units whose spike-count rate exceeds about 45 Hz (kept units reach 54.2 Hz). The gist itself, run unmodified on the loaded data, gives the same values as npx for all 865 units and, with the Methods' exclusion applied to its rate column, 662 kept and 203 excluded. Whether the claim should be judged under the gist's rate is asked of a reader (questions/burman-2023.yaml).",
+     "deviations": [
+      "Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim holds fully only under that variant.",
+      "Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time, as the claims file (N3) gives from the gist; the Methods say only \"following an electrical stimulus\". Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734 units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their direction.",
+      "The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions hold only SSp-ll and SSp-tr units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-synchrony-lower-awake",
+     "statement": "Neurons show lower stimulus-evoked synchrony with the population awake than under isoflurane (0.325 against 0.393).",
+     "source": "Figure 4C and 4D (top); Results, Shunting inhibition promotes local network desynchronization and response flexibility, paragraph 1",
+     "quote": "Neurons in the awake condition exhibited lower synchrony (top; Aw.: 0.325 \u00b1 0.005 vs. An.: 0.393 \u00b1 0.007, p < 0.001, paired t test)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "662 neurons from 17 probe recordings in 16 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_burman_2023.ipynb",
+     "notes": "Under A1F1 (721 units) synchrony is 0.3188 +- 0.0046 awake against 0.3862 +- 0.0067 under isoflurane, paired t = -12.49, p = 1.45e-32. Direction and test hold; the awake mean is just below 0.325 +- 0.005 and the isoflurane mean is inside its tolerance. Awake is lower in 489 of 721 units and in 15 of 17 recordings. Under the gist's rate (A1F2, A2F2, 662 units) the means are 0.3253 and 0.3928, the paper's (p = 3.12e-29). With the population restricted to kept units, A1F1 gives 0.3225 against 0.3876 and A1F2 gives 0.3686 against 0.4333, further from the paper, which supports the gist's population of all selected units (N6). Timed from start_time, 0.3073 against 0.3720. The gist itself, run unmodified, gives 0.3253 and 0.3928 for its 662 kept units. Whether the claim should be judged under the gist's rate is asked of a reader (questions/burman-2023.yaml). The criterion's partial case (only the total within 10%) does not literally cover this result, where the kept count is within tolerance too and the excluded count is not; partial is the reading closest to it, and the gap is asked of a reader.",
+     "deviations": [
+      "Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim holds fully only under that variant.",
+      "Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time, as the claims file (N3) gives from the gist; the Methods say only \"following an electrical stimulus\". Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734 units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their direction.",
+      "The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions hold only SSp-ll and SSp-tr units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-entropy-higher-awake",
+     "statement": "Peri-stimulus histogram entropy is higher awake than under isoflurane (1.347 against 1.111 nats), so responses are more variable in time.",
+     "source": "Figure 4C and 4D (bottom); Results, Shunting inhibition promotes local network desynchronization and response flexibility, paragraph 1",
+     "quote": "Neurons in the awake condition exhibited lower synchrony ... and higher entropy (bottom; Aw.: 1.347 \u00b1 0.018 nats vs. An.: 1.111 \u00b1 0.020 nats, p < 0.001, paired t test)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "662 neurons from 17 probe recordings in 16 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_burman_2023.ipynb",
+     "notes": "Under A1F1 entropy is 1.3887 +- 0.0182 awake against 1.1502 +- 0.0205 nats under isoflurane over 656 units with a value in both conditions (65 left out with fewer than two spikes in a condition), paired t = 12.02, p = 3.28e-30. Direction and test hold; both means are outside tolerance. Awake is higher in 15 of 17 recordings. Under the gist's rate (A1F2, A2F2) the means are 1.3474 and 1.1106 over 597 units, the paper's values; taking each condition's mean over its own defined units gives 1.324 and 1.104 there, so the paper's means are over units defined in both conditions, though it gives n = 662. The gist itself, run unmodified, gives 1.3474 and 1.1106 over the 597 such units. Whether the claim should be judged under the gist's rate is asked of a reader (questions/burman-2023.yaml).",
+     "deviations": [
+      "Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim holds fully only under that variant.",
+      "Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time, as the claims file (N3) gives from the gist; the Methods say only \"following an electrical stimulus\". Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734 units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their direction.",
+      "The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions hold only SSp-ll and SSp-tr units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-rate-higher-awake",
+     "statement": "The same electrical stimuli evoke more spiking awake than under isoflurane; the mean evoked firing rate is higher in the awake state.",
+     "source": "Results, Shunting inhibition promotes local network desynchronization and response flexibility, paragraph 1; Figure 4B",
+     "quote": "In contrast, in the anesthetized state, the same stimuli evoked less overall activity ... As the mean firing rate was greater in the awake state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_burman_2023.ipynb",
+     "notes": "Under A1F1 the evoked spike-count rate is 14.00 +- 0.66 Hz awake against 7.59 +- 0.47 Hz under isoflurane over 721 units, paired t = 12.36, p = 5.75e-32; higher awake in 539 of 721 units and 15 of 17 recordings. Every reading gives the same direction (gist rate 45.05 against 24.29). The paper reports no value or test for this in the text read; the test is the claims file's.",
+     "deviations": [
+      "Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time, as the claims file (N3) gives from the gist; the Methods say only \"following an electrical stimulus\". Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734 units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their direction.",
+      "The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions hold only SSp-ll and SSp-tr units."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6-rate-regressed",
+     "statement": "The awake decrease in synchrony and increase in entropy remain after the effect of firing rate is regressed out.",
+     "source": "Results, Shunting inhibition promotes local network desynchronization and response flexibility, paragraph 1; Figure S6 (not read)",
+     "quote": "we also established that the differences in synchrony and entropy were still evident after regressing out the effect of firing rate",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_burman_2023.ipynb",
+     "notes": "Under A1F1, with the evoked rate regressed out, the awake difference keeps its sign with p below 1e-10 in all six tests. Synchrony R1 -0.0593 (p = 3.3e-26), R2 -0.0619 (p = 1.5e-13), R3 -0.0625 (p = 2.8e-24); entropy R1 0.171 (p = 7.1e-17), R2 0.179 (p = 4.2e-11), R3 0.210 (p = 1.1e-20). Every other reading gives the same. By recording (R2), the coefficient has the expected sign in 15 of 17 for each measure. The regression of Figure S6 is in a legend not read; as all three readings the criterion names agree, the outcome does not depend on which it is.",
+     "deviations": [
+      "Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time, as the claims file (N3) gives from the gist; the Methods say only \"following an electrical stimulus\". Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734 units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their direction.",
+      "The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions hold only SSp-ll and SSp-tr units.",
+      "The regression method is open (Figure S6 legend not in the text read); the three readings of the criterion were all run and agree."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-model-hyperpolarizing-less-activity",
+     "statement": "In the network model, shunting E_GABAAR gives more variable input-evoked spike times, while hyperpolarizing E_GABAAR gives less activity and spiking more closely aligned across neurons.",
+     "source": "Figure 4E and 4F; Results, Shunting inhibition promotes local network desynchronization and response flexibility, paragraph 2",
+     "quote": "We observed that networks utilizing shunting E GABAAR exhibited more variable input-evoked spike times, whereas networks with hyperpolarizing E GABAAR exhibited less activity and the input-evoked spiking was more closely aligned to the spiking of other neurons in the network",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "network_model.ipynb",
+     "notes": "Over the 16,000 excitatory neurons of 20 runs, the peri-stimulus rate is 8.785 +- 0.020 Hz with hyperpolarizing E_GABA against 19.468 +- 0.026 Hz with shunting E_GABA, paired t = 446.42 (p underflows to 0); lower in all 20 runs. No neuron is without a spike. The spike-time parts of the statement are judged in fig4h-model-synchrony and fig4h-model-entropy, where the direction holds.",
+     "deviations": [
+      "Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the paper's model; this cannot change the model, only the sample.",
+      "The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661",
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-model-synchrony",
+     "statement": "Model pyramidal neurons are less synchronous with shunting than with hyperpolarizing E_GABAAR (0.784 against 0.881).",
+     "source": "Figure 4G and 4H (top)",
+     "quote": "Neurons in the shunting E GABAAR condition exhibited lower synchrony (Shunt: 0.784 \u00b1 0.001 vs. Hyperpol: 0.881 \u00b1 0.001, p < 0.001, paired t test)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "16,000 pyramidal neurons from the model"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "network_model.ipynb",
+     "notes": "Synchrony 0.7833 +- 0.0005 shunting against 0.8789 +- 0.0006 hyperpolarizing over 16,000 neurons, paired t = -134.60 (p underflows to 0, below 0.001), lower with shunting in all 20 runs. The shunting mean is within 0.784 +- 0.001; the hyperpolarizing mean is 0.0011 below 0.880, so the criterion gives partially reproduced. Per-run hyperpolarizing means span 0.8661 to 0.8909, so the tolerance (the paper's SEM over pooled neurons) is narrower than the spread between seeds, and the paper's seeds are not known. The standard error of a 20-run mean from that spread is 0.0013 hyperpolarizing (0.0006 shunting), and the hyperpolarizing mean is 1.6 of these from 0.881 (the shunting mean 1.3 from 0.784). Whether the tolerance should allow for the spread between seeds is asked of a reader (questions/burman-2023.yaml).",
+     "deviations": [
+      "Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the paper's model; this cannot change the model, only the sample.",
+      "The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661",
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-model-entropy",
+     "statement": "Model pyramidal neurons have higher peri-stimulus entropy with shunting than with hyperpolarizing E_GABAAR (0.451 against 0.197 nats).",
+     "source": "Figure 4G and 4H (bottom)",
+     "quote": "Neurons in the shunting E GABAAR condition exhibited lower synchrony ... and higher entropy (Shunt: 0.451 \u00b1 0.002 nats vs. Hyperpol: 0.197 \u00b1 0.002 nats, p < 0.001, paired t test) (n = 16,000 pyramidal neurons from the model)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "16,000 pyramidal neurons from the model"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "network_model.ipynb",
+     "notes": "Entropy 0.4516 +- 0.0020 shunting against 0.2014 +- 0.0019 nats hyperpolarizing over 16,000 neurons, paired t = 93.09 (p underflows to 0, below 0.001), higher with shunting in all 20 runs. The shunting mean is within 0.451 +- 0.002; the hyperpolarizing mean is 0.0024 above 0.199, so the criterion gives partially reproduced. Per-run hyperpolarizing means span 0.1798 to 0.2217, wider than the tolerance. The standard error of a 20-run mean from that spread is 0.0023 hyperpolarizing (0.0014 shunting), and the hyperpolarizing mean is 1.9 of these from 0.197 (the shunting mean 0.4 from 0.451). Whether the tolerance should allow for the spread between seeds is asked of a reader (questions/burman-2023.yaml).",
+     "deviations": [
+      "Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the paper's model; this cannot change the model, only the sample.",
+      "The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661",
+     "proposed": null
+    },
+    {
+     "claim": "figs7-model-decoding",
+     "statement": "Responses of networks with shunting E_GABAAR to 100 different input patterns are decoded more accurately by a downstream classifier.",
+     "source": "Results, Shunting inhibition promotes local network desynchronization and response flexibility, paragraph 2; Figure S7 (not read); Methods, Characterization of stimulus-evoked spiking responses, paragraph 2",
+     "quote": "when we assessed a network\u2019s ability to encode different patterned inputs, we observed that networks with shunting E GABAAR could be more accurately decoded by a downstream classifier",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "network_model.ipynb",
+     "notes": "Mean decoding accuracy 0.9848 shunting against 0.9315 hyperpolarizing (chance 0.01). D1, paired t test of the 20 per-run accuracies, t = 16.42, p = 1.11e-12 in this execution; D2, shunting higher in 20 of 20 runs. The spike counts the classifier uses are small integers, and in 0.80 to 0.81 of the test trials under shunting and 0.90 to 0.92 under hyperpolarizing the fifth-nearest training trial is at the same distance as the sixth, so the accuracy depends on how ties are broken, which differs between runners. Executions on different runners, with the same per-run rate, entropy and synchrony, printed t = 16.92, p = 6.52e-13 (the first execution and the one verifier round 2 read) and t = 16.42, p = 1.11e-12 (the round-1 revision and this one). With tied neighbours chosen by five other random orders of the training trials, a run's accuracy moves by at most 0.0020 (shunting) and 0.0045 (hyperpolarizing), D1 gives t = 16.35 to 17.22 (p at most 1.20e-12) and D2 holds in 20 of 20 runs each time, so the outcome does not depend on the tie-breaking.",
+     "deviations": [
+      "Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the paper's model; this cannot change the model, only the sample.",
+      "The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check).",
+      "The cross-validation shuffle is seeded with the run's seed (the gist sets none). The seeds fix the spikes and the folds but not the accuracy exactly, as the classifier's ties between equally distant trials are broken differently on different runners; the notebook shows D1 and D2 under five other tie-breaking orders, and all give the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661",
+     "proposed": null
+    },
+    {
+     "claim": "figs4-intrinsic-properties",
+     "statement": "In a multi-compartment model, the differences in membrane properties between states do not explain the differences in measured synaptic E_GABAAR.",
+     "source": "Results, Awake cortex exhibits more depolarized synaptic EGABAAR and shunting fast synaptic inhibition, paragraph 3; Results, Network activity in awake cortex raises synaptic EGABAAR, paragraph 2; Figure S4 (not read); Methods, Simulating measurements of synaptic EGABAAR",
+     "quote": "modeling of synaptic GABA A R responses in biologically realistic neurons confirmed that differences in synaptic E GABAAR could not be explained by the intrinsic membrane properties in anesthetized and awake cortices",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The claim rests on the paper's NEURON model of an L2/3 pyramidal neuron and a Matlab analysis of its simulated ramps (github.com/richardjburman/burman-et-al-2022---Awake-EGABAAR at commit a404c3e, hoc files and NEURON_Egaba_Analysis.m). The model is public and the Methods (\"Simulating measurements of synaptic EGABAAR\", Table 2) give its membrane properties per state, the synapses, the E_GABA values (-85 to -35 mV in 5 mV steps) and the ramp protocol, so the ramp estimates could be simulated under the anesthetized and awake properties. What is open is what they would be compared with. The measure Figure S4 shows and the comparison behind \"could not be explained\" are in the Figure S4 legend, which was not in the text read, and the claims file gives no criterion; a choice such as the estimation error under each state's properties against the measured difference of Figure 2H would be arbitrary. So the claim is blocked as methods_underspecified and was not simulated (a further obstacle, the analysis is Matlab, and NEURON is not in the entry's environment). The question is for the paper's authors (findings, methods_unavailable). Neither part uses the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Not deposited; generated by the paper's NEURON model and Matlab analysis, github.com/richardjburman/burman-et-al-2022---Awake-EGABAAR at commit a404c3e",
+     "proposed": null
+    },
+    {
+     "claim": "fig1b-perforation-rs",
+     "statement": "Gramicidin perforation lowers the series resistance about 20-fold in the 10 min after gigaseal formation, from 1,126.9 to 50.2 MOhm.",
+     "source": "Results, Measuring the equilibrium potential and driving force for synaptic GABAARs in vivo, paragraph 1; Figure 1B",
+     "quote": "During the 10 min following gigaseal formation we observed a 20-fold decrease in R s (mean R s-0 min : 1,126.9 \u00b1 35.8 M\u03a9 vs. R s-10 min : 50.2 \u00b1 3.8 M\u03a9)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1h-vu-egaba",
+     "statement": "Blocking KCC2 with VU0463271 shifts synaptic E_GABAAR in the depolarizing direction in anesthetized V1, from -80.9 to -70.9 mV.",
+     "source": "Figure 1H; Results, Measuring the equilibrium potential and driving force for synaptic GABAARs in vivo, paragraph 3",
+     "quote": "Population data (n = 6 neurons from 6 mice) showed a depolarizing shift in synaptic E GABAAR after VU (\u2212VU: \u221280.9 \u00b1 1.6 mV vs. +VU: \u221270.9 \u00b1 2.6 mV; p = 0.002, paired t test)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.002,
+       "n": "6 neurons from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1i-vu-rmp",
+     "statement": "VU0463271 does not change the resting membrane potential (-68.5 against -69.1 mV).",
+     "source": "Figure 1I",
+     "quote": "VU did not affect RMP (\u2212VU: \u221268.5 \u00b1 3.5 mV vs. +VU: \u221269.1 \u00b1 2.5 mV; p = 0.73, paired t test)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.73,
+       "n": "6 neurons from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1j-vu-df",
+     "statement": "VU0463271 shifts the GABAAR driving force (RMP minus E_GABAAR) in the depolarizing direction, from 12.4 to 1.4 mV.",
+     "source": "Figure 1J",
+     "quote": "VU caused a depolarizing shift in GABA A R driving force (DF GABAAR = RMP \u2212 E GABAAR , \u2212VU: 12.4 \u00b1 2.9 mV vs. +VU: 1.4 \u00b1 3.0 mV; p = 0.006, paired t test)",
+     "statistics": [
+      {
+       "test": "paired t test",
+       "p": 0.006,
+       "n": "6 neurons from 6 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2-ramp-equals-step",
+     "statement": "Synaptic E_GABAAR estimated from voltage ramps is equivalent to that from voltage step protocols in the same neurons.",
+     "source": "Results, Measuring the equilibrium potential and driving force for synaptic GABAARs in vivo, paragraph 2; Figure S2E (not read)",
+     "quote": "The estimates of synaptic E GABAAR from ramp protocols were equivalent to those made using step protocols",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-egaba-unrelated-amplitude-rs",
+     "statement": "Ramp estimates of E_GABAAR are not related to the amplitude of the synaptic GABAAR response or to the series resistance.",
+     "source": "Results, Measuring the equilibrium potential and driving force for synaptic GABAARs in vivo, paragraph 2; Figure S3 (not read)",
+     "quote": "measurements from the ramp protocols were not related to the amplitude of the synaptic GABA A R response or the neuron\u2019s R s",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rm-awake-lower",
+     "statement": "Membrane resistance is lower in awake than in anesthetized cortex (50.6 against 87.2 MOhm).",
+     "source": "Results, Awake cortex exhibits more depolarized synaptic EGABAAR and shunting fast synaptic inhibition, paragraph 1",
+     "quote": "The R m was also lower in the awake recordings (An.: 87.2 \u00b1 6.1 M\u03a9, n = 14 neurons, 8 mice vs. Aw.: 50.6 \u00b1 6.4 M\u03a9, n = 13 neurons, 10 mice, p < 0.0001, unpaired t test)",
+     "statistics": [
+      {
+       "test": "unpaired t test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "14 neurons from 8 anesthetized mice and 13 neurons from 10 awake mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-vm-depolarized",
+     "statement": "Mean membrane potential is more depolarized in awake than in anesthetized cortex (-60.3 against -69.1 mV).",
+     "source": "Figure 2B and 2C; Results, Awake cortex exhibits more depolarized synaptic EGABAAR and shunting fast synaptic inhibition, paragraph 1",
+     "quote": "Mean V m was more depolarized in awake cortex (An.: \u221269.1 \u00b1 1.4 mV vs. Aw.: \u221260.3 \u00b1 1.1 mV; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "13 cells from 7 anesthetized mice and 12 cells from 10 awake mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-subthreshold-fluctuation",
+     "statement": "Subthreshold membrane potential fluctuations (mean absolute dVm/dt) are larger in awake than in anesthetized cortex (6.6 against 4.9 mV/ms).",
+     "source": "Figure 2D",
+     "quote": "Mean change in subthreshold V m was greater in awake cortex (An.: 4.9 \u00b1 0.2 mV/ms vs. Aw.: 6.6 \u00b1 0.3 mV/ms; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-response-polarity",
+     "statement": "Light-evoked GABAAR responses in current clamp are never depolarizing in anesthetized cortex (0 of 18) but are depolarizing in 6 of 14 awake neurons, staying close to the RMP.",
+     "source": "Figure 2F; Results, Awake cortex exhibits more depolarized synaptic EGABAAR and shunting fast synaptic inhibition, paragraph 3",
+     "quote": "Responses in awake cortex produced V m deflections that remained close to the RMP and could be depolarizing or hyperpolarizing (An.: Depol. 0/18 vs. Aw.: Depol. 6/14; p = 0.003, Fisher-Exact test)",
+     "statistics": [
+      {
+       "test": "Fisher-Exact test",
+       "p": 0.003,
+       "n": "18 cells from 10 anesthetized mice and 14 cells from 11 awake mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2h-egaba-depolarized",
+     "statement": "Synaptic E_GABAAR is more depolarized in awake than in anesthetized cortex (-63.3 against -81.1 mV).",
+     "source": "Figure 2G and 2H",
+     "quote": "Synaptic E GABAAR is more depolarized in awake cortex (An.: \u221281.1 \u00b1 1.7 mV vs. Aw.: \u221263.3 \u00b1 1.4 mV; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "10 cells from 6 anesthetized mice and 10 cells from 9 awake mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2i-rmp-depolarized",
+     "statement": "In voltage clamp the RMP is more depolarized in awake than in anesthetized cortex (-64.2 against -70.7 mV).",
+     "source": "Figure 2I",
+     "quote": "Voltage-clamp recordings confirmed a more depolarized RMP in awake cortex (An.: \u221270.7 \u00b1 1.9 mV vs. Aw.: \u221264.2 \u00b1 1.1 mV; p = 0.02, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.02,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2j-df-depolarized",
+     "statement": "The GABAAR driving force is shifted in the depolarizing direction in awake cortex (-0.9 against 10.4 mV in anesthetized cortex).",
+     "source": "Figure 2J",
+     "quote": "GABA A R driving force (DF GABAAR = RMP \u2212 E GABAAR ) was more depolarized in awake cortex (An.: 10.4 \u00b1 2.0 mV vs. Aw.: \u22120.9 \u00b1 1.7 mV; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2j-awake-df-zero",
+     "statement": "The awake GABAAR driving force does not differ from zero, consistent with predominantly shunting inhibition, while the anesthetized driving force does.",
+     "source": "Figure 2J legend; Results, Awake cortex exhibits more depolarized synaptic EGABAAR and shunting fast synaptic inhibition, paragraph 3",
+     "quote": "Awake DF GABAAR was not different to zero, consistent with synaptic GABA A Rs exerting a predominantly shunting effect (An.: p = 0.0006, one-sample t test; Aw.; p = 0.61, one-sample t test)",
+     "statistics": [
+      {
+       "about": "anesthetized DF_GABAAR against zero",
+       "test": "one-sample t test",
+       "p": 0.0006
+      },
+      {
+       "about": "awake DF_GABAAR against zero",
+       "test": "one-sample t test",
+       "p": 0.61
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2k-conductance-same",
+     "statement": "Light-evoked synaptic GABA conductances do not differ between anesthetized and awake cortex (11.04 against 11.4 nS).",
+     "source": "Figure 2K",
+     "quote": "Light-evoked synaptic GABA conductances did not differ between the anesthetized and awake cortex (An. 11.04 \u00b1 1.8 nS: vs. Aw.: 11.4 \u00b1 1.5 nS, p = 0.92, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.92,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5-within-anesthetized",
+     "statement": "Within anesthetized recordings, more synaptic activity and more depolarized Vm go with modestly more depolarized synaptic E_GABAAR.",
+     "source": "Results, Awake cortex exhibits more depolarized synaptic EGABAAR and shunting fast synaptic inhibition, paragraph 3; Figure S5 (not read)",
+     "quote": "more detailed analysis revealed modest synaptic E GABAAR changes within anesthetized recordings, which were consistent with the general principle ... that increased synaptic activity and depolarized V m result in more depolarized synaptic E GABAAR because of an increased Cl \u2212 load",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rm-nbqx-higher",
+     "statement": "Local NBQX in awake cortex raises the membrane resistance (136.2 against 50.6 MOhm).",
+     "source": "Results, Network activity in awake cortex raises synaptic EGABAAR and promotes shunting fast synaptic inhibition, paragraph 1",
+     "quote": "The reduction in local network activity was also reflected in the neuron\u2019s R m , which was higher in NBQX, again consistent with decreased synaptic activity (Aw.: 50.6 \u00b1 6.4 M\u03a9, n = 13 neurons, 10 mice vs. +NBQX: 136.2 \u00b1 11.9 M\u03a9, n = 10 neurons, 7 mice, p < 0.0001, unpaired t test)",
+     "statistics": [
+      {
+       "test": "unpaired t test",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "13 awake neurons from 10 mice and 10 NBQX neurons from 7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-nbqx-vm",
+     "statement": "Reducing local network activity with NBQX hyperpolarizes the mean Vm in awake cortex (-72.6 against -60.3 mV).",
+     "source": "Figure 3B and 3C",
+     "quote": "Reducing local network activity caused a hyperpolarizing shift in mean V m (Aw.: \u221260.3 \u00b1 1.1 mV vs. +NBQX: \u221272.6 \u00b1 1.0 mV; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "12 awake neurons from 10 mice and 10 NBQX neurons from 7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-nbqx-fluctuation",
+     "statement": "NBQX greatly reduces subthreshold Vm fluctuations in awake cortex (0.7 against 6.6 mV/ms).",
+     "source": "Figure 3D",
+     "quote": "Reducing local network activity caused a decrease in the mean change in subthreshold V m (Aw: 6.6 \u00b1 0.3 mV/ms vs. +NBQX: 0.7 \u00b1 0.1 mV/ms; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-nbqx-polarity",
+     "statement": "With NBQX, light-evoked GABAAR responses in awake cortex are all hyperpolarizing (0 of 10 depolarizing, against 6 of 14 without).",
+     "source": "Figure 3E; Results, Network activity in awake cortex raises synaptic EGABAAR and promotes shunting fast synaptic inhibition, paragraph 2",
+     "quote": "Reducing local network activity caused a hyperpolarizing shift in the polarity of light-evoked GABA currents (bottom; Aw.: Depol. 6/14 vs. +NBQX: Depol. 0/10; p = 0.03, Fisher-Exact test)",
+     "statistics": [
+      {
+       "test": "Fisher-Exact test",
+       "p": 0.03,
+       "n": "14 awake neurons from 11 mice and 10 NBQX neurons from 7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-nbqx-egaba",
+     "statement": "NBQX shifts synaptic E_GABAAR in awake cortex in the hyperpolarizing direction (-78.1 against -63.3 mV).",
+     "source": "Figure 3F and 3G",
+     "quote": "Reducing local network activity led to more hyperpolarized synaptic E GABAAR (Aw: \u221263.3 \u00b1 1.4 mV vs. +NBQX: \u221278.1 \u00b1 1.3 mV; p < 0.001, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "10 awake neurons from 9 mice and 11 NBQX neurons from 7 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-nbqx-rmp",
+     "statement": "NBQX hyperpolarizes the voltage-clamp RMP in awake cortex (-71.4 against -64.2 mV).",
+     "source": "Figure 3H",
+     "quote": "Reducing local network activity caused a hyperpolarizing shift in RMP (Aw.: \u221264.2 \u00b1 1.1 mV vs. +NBQX: \u221271.4 \u00b1 1.4 mV; p = 0.009, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.009,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3i-nbqx-df",
+     "statement": "NBQX shifts the GABAAR driving force in the hyperpolarizing direction (6.7 against -0.9 mV), so that it now differs from zero.",
+     "source": "Figure 3I",
+     "quote": "Reducing local network activity caused a hyperpolarizing shift in DF GABAAR (Aw.: \u22120.9 \u00b1 1.7 mV vs. +NBQX: 6.7 \u00b1 1.5 mV; p = 0.03, one-way ANOVA with Bonferroni correction). DF GABAAR became different from zero (Aw.: p = 0.61, one-sample t test; +NBQX: p = 0.001, one-sample t test)",
+     "statistics": [
+      {
+       "about": "awake against awake with NBQX",
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.03,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "awake with NBQX DF_GABAAR against zero",
+       "test": "one-sample t test",
+       "p": 0.001
+      },
+      {
+       "about": "awake DF_GABAAR against zero",
+       "test": "one-sample t test",
+       "p": 0.61
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3j-nbqx-conductance-same",
+     "statement": "NBQX does not change the light-evoked synaptic GABA conductance (10.4 against 11.4 nS).",
+     "source": "Figure 3J",
+     "quote": "Reducing local network activity did not affect light-evoked synaptic GABA conductances (Aw.: 11.4 \u00b1 1.5 nS vs. +NBQX: 10.4 \u00b1 0.7 nS; p = 0.78, one-way ANOVA with Bonferroni correction)",
+     "statistics": [
+      {
+       "test": "one-way ANOVA with Bonferroni correction",
+       "p": 0.78,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits the patch data nowhere (\"available on request to the lead contact\"). A search of the DANDI archive for gramicidin, Akerman, Burman and EGABA found no dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's analysis code computes the evoked firing rate used for the exclusion (below 0.1 Hz or above 200 Hz) as the sum of the spikes' latencies in ms (np.sum of spike_times) over trials times 10 ms, where the Methods describe an average evoked firing rate. With this rate the dataset gives the paper's sample exactly (662 kept, 203 excluded, median 34 per recording, 1 to 93) and its Figure 4D means (synchrony 0.325 and 0.393, entropy 1.347 and 1.111); with the spike-count rate it gives 721 kept and 144 excluded. The 200 Hz bound thus acted on spike-count rates near 45 Hz.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "Version 0.230317.0039 holds 18 files with units and electrical stimulation awake and under isoflurane; the paper uses 17. sub-599017_ses-20220210 (943 units, SSp stimulation, 718 awake and 720 isoflurane valid trials) is not in the paper's code list, and the paper does not say why. Six further files hold EEG only, with no units.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The paper's gramicidin perforated patch recordings (Figures 1 to 3, S1 to S5), which carry most of its findings, are not in DANDI:000458 nor in any other dandiset found; the paper offers them on request. 24 of its claims cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods select regular spiking units with a waveform duration of 0.4 ms or more, the code more than 0.4 ms, and the Methods name the areas SSp-ll, SSp-tr and MOs where the code takes every unit whose location begins with the stimulated region. Neither difference changes the units selected in this dataset.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "For the multi-compartment model of Figure S4 (figs4-intrinsic-properties), which measure of the simulated ramp estimates of synaptic E_GABAAR, under the anesthetized and awake membrane properties of Table 2, is compared with what, and what result shows that the membrane properties \"could not explain\" the measured difference? The Methods give the model and protocol; the comparison is only in the Figure S4 legend, not in the text this attempt read.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "The first executed notebooks (reproduce_burman_2023.ipynb and network_model.ipynb) with the conclusion cells and the summaries removed, the helper modules npx.py and network.py and the claims file, with the paper's full text (PMC11913778). The verifier queried the archive through the DANDI API and tested npx.measures, npx.histogram and read_session on a synthetic two-unit, three-trial session. It had no attempt record and could not see the two gists.",
+     "agreed": 35,
+     "of": 35,
+     "disagreements": []
+    },
+    {
+     "date": "2026-11-10",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 2, the full executed notebooks after the round-1 revision (reproduce_burman_2023.ipynb and network_model.ipynb, with conclusions and summaries), the helper modules npx.py and network.py, the claims file, the attempt record and the README, with the paper's full text. It could not see questions/burman-2023.yaml.",
+     "agreed": 35,
+     "of": 35,
+     "disagreements": []
+    }
+   ]
   }
  ],
  "entries": [
+  {
+   "name": "burman-2023",
+   "type": "reproduction",
+   "title": "Shunting inhibition, synchrony and entropy in Neuropixels recordings and a network model (Burman et al. 2023)",
+   "description": "Tests the findings of Burman, Brodersen, Raimondo, Sen and Akerman (2023) that can be tested on dandiset 000458, the Allen Institute Neuropixels recordings with cortical electrical stimulation awake and under isoflurane that the paper reuses (Figure 4A to 4D, Figure S6), and runs the paper's network model (Figure 4E to 4H, Figure S7). The paper's gramicidin patch-clamp recordings (Figures 1 to 3) are not in the dandiset nor deposited elsewhere.",
+   "datasets": [
+    "dandi:000458"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2023.08.005"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_burman_2023.ipynb",
+     "title": "Neuropixels claims of Burman et al. (2023) on dandiset 000458",
+     "executed": "notebooks/burman-2023/reproduce_burman_2023.html"
+    },
+    {
+     "path": "network_model.ipynb",
+     "title": "The network model of Burman et al. (2023), 20 runs",
+     "executed": "notebooks/burman-2023/network_model.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 38,
+   "hashed": true
+  },
   {
    "name": "claar-2023",
    "type": "reproduction",
