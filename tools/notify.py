@@ -40,7 +40,10 @@ def gh(*args: str) -> str:
 
 
 def shown(name: str) -> str:
-    """How the chain's name is shown: a dataset's label (DANDI:000147) before its paper match, else the paper's key."""
+    """How the chain's name is shown: a dataset's label (DANDI:000147) before its paper match, else the paper's key.
+    A paper is one papers/datasets/ lists: the dataset parser would take "holdgraf-2016" for archive "holdgraf"."""
+    if (ROOT / "papers" / "datasets" / f"{name}.yaml").is_file():
+        return name
     try:
         return datasets.label(datasets.key_of_folder(name))
     except (ValueError, KeyError):
