@@ -1,0 +1,379 @@
+schema_version: 3
+id: kim-2022-02
+datasets:
+- archive: dandi
+  id: "000489"
+  version: 0.230518.1811
+  doi: 10.48324/dandi.000489/0.230518.1811
+  relation: primary
+- archive: dandi
+  id: "000448"
+  version: 0.230421.1844
+  doi: 10.48324/dandi.000448/0.230421.1844
+  relation: primary
+missing_datasets:
+- archive: dandi
+  id: "000548"
+  name: Effect of the number of pulses on electroporation by unipolar and 50 % bipolar pulses
+  why: Names this paper (relatedResource) and its title is that of Fig. 3, but it is not among the
+    paper's datasets in papers/datasets/kim-2022.yaml and the claims file lists the Fig. 3 claims
+    under 000489; this attempt tested the datasets the claims name. Found by a search of the archive.
+- archive: dandi
+  id: "000549"
+  name: Effect of the pulse duration on electroporation by unipolar and 50% bipolar pulses
+  why: Names this paper and holds the pulse durations of Figs. 4 and 5, but is not among the paper's
+    datasets in papers/datasets/kim-2022.yaml; not used, as for 000548.
+- archive: dandi
+  id: "000550"
+  name: Pulse repetition rate
+  why: Names this paper and holds the repetition rates of Fig. 6, but is not among the paper's
+    datasets in papers/datasets/kim-2022.yaml; not used, as for 000548.
+paper: doi:10.1016/j.bioelechem.2022.108319
+date: 2026-11-10
+entry: kim-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42748694997
+outcomes:
+- claim: fig2a-uptake-rises-with-field
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2a-uptake-rises-with-field
+  notes: With the two dishes that share one YP image left out (unipolar and 25% with 2 dishes, 50%
+    with 5, 75% and 100% with 3), YP at the centre ROI (15.1 kV/cm) is higher than at the ROI 3 mm
+    out (5.0 kV/cm) for all five amplitudes, unpaired p = 0.0001 to 0.044; Spearman rho of mean YP
+    with field 0.96 to 0.99. The paired test passes for 3 of 5 (unipolar p = 0.12 and 25% p = 0.13,
+    2 dishes each). The weakest ROI at 2.4 mm and one-sided ROI give the same counts. Assigning the
+    shared image to the unipolar or the 25% group gives 4 of 5 by the unpaired test.
+  deviations:
+  - Fields from an exact two-dimensional two-cylinder solution for the geometry of Methods 2.3 (15.38
+    kV/cm at the centre for 5.75 kV), scaled to the paper's 15.1 kV/cm there; the paper's finite
+    element output is not deposited.
+  - ROI are contiguous 200 um squares tiled from the midpoint along bb' to 3 mm on both sides, the
+    claims file's reading (a), with the two ROI at the same distance averaged per dish; one side is
+    shown as reading (b). The outer limit of 3 mm (5.0 kV/cm) is this attempt's choice, as the
+    figure's field range is in the PDF only; 2.4 mm is shown as a variant.
+  - YP0 and MB0 are means over a 0.2 mm disc at the centre of each footprint (Methods 2.5 says only
+    within the electrodes' footprints); 0.1 and 0.3 mm discs are computed in the helper.
+  - Pixel size 0.65 um, from the camera and objective named in Methods 2.5 (6.5 um pixels, 10x); the
+    files give none. The measured electrode spacing (4.44 to 4.66 mm, Methods 4.5 mm) supports it.
+  - Assumption. Methods 2.5 names a two-sided Student's t-test without saying whether it is paired.
+    The unpaired test, the two-sample test the name denotes, is adopted; the paired result is shown.
+    The readings differ here (5 against 3 of 5).
+  - The dishes sub-Fig2-0-03 and sub-Fig2-25-04 share one YP image and are left out of the main
+    analysis; both assignments are shown.
+- claim: fig2a-vertical-scales
+  outcome: not_reproduced
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2a-vertical-scales
+  notes: The largest unipolar mean is 651 a.u. (mean plus s.e.m. 754, within 1200, and above 250).
+    For 75% bipolar pulses the largest mean plus s.e.m. is 339 a.u. (311 to 372 over the readings),
+    above the 250 a.u. axis. The ratio of the largest unipolar and 75% means is 2.3 to 2.5, against
+    4.8 for the paper's axes. The image values are taken as the paper's units (16-bit counts,
+    conversion 1.0); the data are consistent with that but do not show it.
+  deviations:
+  - The same ROI, field model and duplicate handling as fig2a-uptake-rises-with-field.
+- claim: fig2b-exponential-same-slope
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2b-exponential-same-slope
+  notes: At the 8 kV/cm cutoff an exponential fits the means with a lower residual sum of squares
+    than a line for 3 of 5 amplitudes (the criterion needs 4); at 7 kV/cm for 4 and at 6 kV/cm for
+    5. No bipolar slope from per-dish nonlinear fits differs from the unipolar slopes at 8 kV/cm (p =
+    0.12 to 0.80) or at any cutoff and assignment of the shared image (p = 0.08 to 1.0). Slopes of
+    the fits to the means are 0.19 to 0.28 per kV/cm, 0.72 to 1.07 times the unipolar 0.26. The
+    slope part holds; the exponential part holds only at the variant cutoffs. With the log-linear
+    variant the bipolar slopes differ from the unipolar ones at 7 and 6 kV/cm (4 of 4, p = 0.004 to
+    0.042) when the shared image is left out, and none differs when it is assigned to the unipolar
+    group.
+  deviations:
+  - Fits by nonlinear least squares in scipy, not Grapher 16.
+  - The criterion does not say which outcome applies when the slopes agree but the exponential holds
+    for fewer than four amplitudes; partially reproduced is used, as one of the two parts holds.
+- claim: fig2c-max-inhibition-50-75
+  outcome: partially_reproduced
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2c-max-inhibition-50-75
+  measured: 49.3
+  notes: The ROI from 8.78 to 15.1 kV/cm (centre to 1.8 mm) are used. At all 10 the lower of the 50%
+    and 75% values is below the 25% and 100% values. The best amplitude is 50%, at 49.3% of unipolar
+    on average (reading a, recorded as measured) and 35.1% at its lowest (reading b), both outside 20
+    +- 2%. Test (ii), the better of 50 or 75% against both 25 and 100%, gives p < 0.01 at 7 of 10
+    fields; test (i), against unipolar with 2 unipolar dishes, at 3 of 10. The test is counted as
+    holding under (ii). Assigning the shared image to the 25% group gives (ii) at 0 of 10 fields;
+    to the unipolar group, percentages of 67.5 and 50.0%. The 25% and 100% pulses give 64 to 168% of
+    the unipolar value, so in these dishes they do not inhibit.
+  deviations:
+  - The criterion does not say at how many fields the p < 0.01 test must hold; it is counted as
+    holding when it holds at most fields under one of the two comparisons.
+- claim: fig2c-inhibition-flat-above-8-7
+  outcome: reproduced
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2c-inhibition-flat-above-8-7
+  notes: Percent of the unipolar mean at 8.78 against 15.1 kV/cm, unpaired; 25% 103.8 against 97.7
+    (p = 0.83), 50% 67.8 against 35.1 (p = 0.072), 75% 91.5 against 40.0 (p = 0.15), 100% 121.3
+    against 114.6 (p = 0.78). The 50% and 75% differences are large, with 5 and 3 dishes. Paired p =
+    0.11 to 0.89. Over every pair of ROI in the range 19 of 180 comparisons differ at p < 0.05;
+    with one-sided ROI one amplitude differs on either side.
+- claim: fig2c-weaker-at-6-7
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig2c-weaker-at-6-7
+  notes: At the ROI closest to 6.7 kV/cm (2.4 mm, 6.63 kV/cm) 50% pulses give 198% of the unipolar
+    mean, against 35 to 68% at 8.78 to 15.1 kV/cm, and 100% pulses 283% against 93 to 139%. Unpaired,
+    50% differs from the pooled higher fields with p = 1.5e-09 (against each field p up to 0.082),
+    and 100% from each higher field with p <= 0.022 (pooled p = 2.6e-09). Paired, 100% passes (p <=
+    0.035 against each) and 50% does not (pooled p = 0.070), which would make it partially
+    reproduced. The unipolar mean at 2.4 mm is 19 a.u., near background, so the percentages there
+    are large and unstable. Pooling treats the ROI of a dish as independent, which inflates its
+    count.
+  deviations:
+  - Assumption. The unpaired test is adopted, as for fig2a-uptake-rises-with-field; the paired
+    result is shown.
+- claim: fig7-unipolar-pole-polarization
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-unipolar-pole-polarization
+  notes: Over 5 unipolar cells, at 600 ns the cathode-facing pole is +22.1% (p = 0.0012) and the
+    anode-facing pole -20.7% (p = 0.0026), ratio of magnitudes 0.94; the 500 to 600 ns mean gives
+    +22.1 and -21.4%. Four variants of the pole regions give ratios 0.90 to 1.05, all p <= 0.013. In
+    all 9 cells the upper pole of the image rises and the lower falls during the first pulse.
+  deviations:
+  - 5 of the paper's 18 unipolar cells are in the dandiset.
+  - Assumption. The paper does not say how the pole regions were drawn. They are the membrane
+    pixels (frame-averaged image above its 85th percentile, largest connected group) where the
+    outward normal of the smoothed cell outline is within 45 degrees of the image's vertical axis,
+    the axis of the response in every file; 80th and 90th percentiles and 30 and 60 degrees are
+    variants. Images are binned 2 x 2 on loading.
+  - Assumption. The files do not say where the electrodes were. The pole that brightens is taken as
+    the cathode-facing one, as FluoVolt emission rises with depolarization and the cathode-facing
+    pole depolarizes (Results 3.5). This makes the sign of the cathodic change a premise; the test
+    is that the opposite pole changes the other way by a similar amount.
+  - The pulse onset is not in the files; it is the first forward-trial frame where the mean unipolar
+    upper-minus-lower signal exceeds its baseline by 5 SD (frame 43). The baseline is the 40 frames
+    before it (Methods 2.6). Dark frames (failed flashes) are left out. Reverse trials are reversed
+    and aligned to the forward trial by correlation (a lag of 74 frames in every cell) before the two
+    are averaged (Methods 2.6).
+- claim: fig7-charging-time-constant
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-charging-time-constant
+  measured:
+  - 191
+  - 23.2
+  - 613
+  - 22.7
+  notes: Over 5 unipolar cells, pooled points (120 per fit), the charging fit gives tau = 191 ns
+    (within 200 +- 20) and A = 23.2% (expected 31 +- 3.1); the discharge fit tau = 613 ns (expected
+    520 +- 52) from 22.7% (expected 31.5 +- 3.15). r = 0.84 and 0.64, p < 1e-14; the mean trace gives
+    the same parameters with r = 0.998 and 0.997. Discharge over charge is 3.2, against 2.5. Moving
+    the onset by one frame gives charging tau 149 to 250 ns and discharge tau 615 to 627 ns. Per
+    cell, A ranges from 14.5 to 31.3% and discharge tau from 351 to 833 ns, so the subset of 5 cells
+    of 18, and the assumed pole regions, may explain the difference.
+  deviations:
+  - 5 of 18 cells, so 120 points per fit where the paper has 425.
+  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).
+  - Fits by nonlinear least squares in scipy, not Grapher 16; r is the correlation of the points
+    with the fit.
+- claim: fig7-later-pulses-same-tau-difference
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-later-pulses-same-tau-difference
+  notes: With the free-start charging fit, discharge over charge is 2.97, 3.72, 2.91 and 2.89 for
+    pulses 2 to 5, so the discharge constant is the larger for all four. None is within 2.25 to
+    2.75; within 10% of the first pulse's 3.21 (2.89 to 3.53) are pulses 2 and 4, with pulse 5 just
+    below (2.887). With the plain A(1 - exp(-t/tau)) form the ratios are 8.1 to 10.8.
+  deviations:
+  - Pulses 2 to 5 start from a charged membrane, so their charging fit lets the starting value free,
+    V0 + (A - V0)(1 - exp(-t/tau)); the plain form is shown too. Results 3.5 says charging by later
+    pulses "started with the partially charged membrane".
+  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).
+- claim: fig7-bipolar-overshoot
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-bipolar-overshoot
+  notes: (i) At 600 ns the cathodic pole is 21.5% for 4 bipolar and 22.1% for 5 unipolar cells,
+    unpaired p = 0.855; the error-bar gap rule finds no difference. (ii) After the first phase the
+    bipolar mean falls to half in 150 ns (unipolar 475 ns) and to zero in 325 ns (unipolar not
+    within 600 ns). (iii) The bipolar mean reaches -8.1% at 1175 ns; cell values -6.7 to -9.9%,
+    p = 0.0012.
+  deviations:
+  - 4 of the paper's 17 bipolar cells and 5 of its 18 unipolar cells.
+  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).
+- claim: fig7-bipolar-alternation
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-bipolar-alternation
+  notes: For each of the five pulses, over 4 bipolar cells, the cathodic pole is positive at the end
+    of the first phase (19.3 to 21.5%, p <= 0.0001) and negative at the second-phase minimum of the
+    mean (-8.1 to -9.1%, at 1150 to 1175 ns, p <= 0.0013).
+  deviations:
+  - 4 of 17 cells; pole regions, cathode side and onset as in fig7-unipolar-pole-polarization
+    (assumptions).
+- claim: fig7-summation-without-buildup
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_kim_2022.ipynb
+  output: claim:fig7-summation-without-buildup
+  notes: Over 5 unipolar cells, the peaks at the end of pulses 2 to 5 (23.4 to 24.3%) do not differ
+    from the first (22.1%) by the unpaired test (p = 0.61 to 0.75), and the trace before each of
+    pulses 2 to 5 stays above rest (8.8 to 9.9%, p = 0.009 to 0.017). The paired variant finds the
+    later peaks 1.4 to 2.2 points higher, with p = 0.014 to 0.040 for pulses 2 to 4 (0.089 for 5).
+    The maximum within each pulse gives the same picture (unpaired p = 0.72 to 0.78).
+  deviations:
+  - 5 of 18 cells; pole regions, cathode side and onset as in fig7-unipolar-pole-polarization
+    (assumptions).
+- claim: fig3-uptake-linear-in-pulse-number
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 5, 10 or 15 pulses (Fig. 3) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000548,
+    which names this paper and whose title and description match dishes given 5, 10 or 15 pulses (Fig. 3), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig3d-cancellation-independent-of-number
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 5, 10 or 15 pulses (Fig. 3) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000548,
+    which names this paper and whose title and description match dishes given 5, 10 or 15 pulses (Fig. 3), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4ac-ns-bipolar-20-25pct
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4d-1200ns-tenfold
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4eg-us-bipolar-30-50pct
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig4h-us-stronger-at-low-field
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig5-ns-symmetric-along-aa
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The Fig. 4 dishes that Fig. 5 re-analyses along aa' are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match Fig. 4 dishes that Fig. 5 re-analyses along aa', likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig5-us-anode-stronger
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The Fig. 4 dishes that Fig. 5 re-analyses along aa' are not in 000489 or 000448, the datasets the claims file names. Dandiset 000549,
+    which names this paper and whose title and description match Fig. 4 dishes that Fig. 5 re-analyses along aa', likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6ad-unipolar-833khz-enhanced
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6be-bipolar-khz-less-than-1hz
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6cf-833khz-thirtyfold
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig6cf-cancellation-stronger-at-high-field
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in 000489 or 000448, the datasets the claims file names. Dandiset 000550,
+    which names this paper and whose title and description match dishes given trains at 10 to 833 kHz (Fig. 6), likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+- claim: fig1e-heating
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The thermochromic sheet photographs are not in either dandiset. 000489's Fig1F file is a
+    sample of the cell staining (Fig. 1F), not thermometry. The titles and descriptions of the
+    other dandisets that name this paper (000548, 000549, 000550) do not mention thermometry; their
+    files were not opened.
+findings:
+- kind: data_missing
+  statement: 000489 holds only the 17 dishes of Fig. 2 and one sample image (Fig. 1F); 000448 holds
+    the strobe images of Fig. 7. The dishes of Figs. 3 to 6 and the thermometry of Fig. 1E are in
+    neither. Three more dandisets of the same lab name the paper in their metadata and match Figs.
+    3, 4 and 6 by title (000548, 000549, 000550); the registry's list of the paper's datasets and
+    the 000489 title, which the claims file follows, do not point to them, so their 12 claims are
+    blocked here and the thermometry claim is blocked as missing.
+- kind: data_missing
+  statement: 000448 holds 5 unipolar and 4 bipolar cells, where the paper reports 18 and 17. The
+    dandiset does not say how the 9 were chosen.
+- kind: metadata_error
+  statement: The YO-PRO-1 channel (index 1) of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25%
+    bipolar) is the same image, value for value, while their MemBrite channels differ. One recording
+    was deposited under two dishes of different conditions, and nothing says which dish it belongs
+    to; with it left out the unipolar and 25% groups have 2 dishes each.
+- kind: metadata_insufficient
+  statement: The 000489 images give no pixel size (resolution -1), no electrode positions or
+    polarity, and no ROI positions or values; the analysis has to locate the footprints and assume
+    0.65 um per pixel, which the electrode spacing supports. The field of each ROI, from the paper's
+    finite element model, is not deposited.
+- kind: metadata_error
+  statement: The 000489 image description names "Channel1" for both filter sets and for MemBrite;
+    the data show index 0 is MemBrite and index 1 YO-PRO-1. It also describes 144 images (12 x 12)
+    of a well of a six-well plate, where Methods 2.5 describes 216 images of 35 mm dishes. Three
+    files name their series "Fig2_25" without the dish number.
+- kind: metadata_insufficient
+  statement: The 000448 files give no pole regions, no field direction relative to the image, and no
+    delay of each frame or frame of the pulse onset. Reverse-trial files store frames in acquisition
+    order (descending delay), and their response is offset by 74 frames (1.85 us) from the forward
+    trial of the same cell; neither is documented.
+- kind: metadata_error
+  statement: 000448 counts 18 subjects, but each cell is two files (forward and reverse trial) with
+    different subject ids (for example 001_F and 001_R for cell09), so it holds 9 cells.
+- kind: other
+  statement: The first frame of most 000448 files is dark (about 180 counts against 300 to 500), and
+    a few files have a dark frame elsewhere, consistent with failed laser flashes.
+- kind: methods_unavailable
+  statement: Question for the authors. How were the ROI placed along bb' (number, spacing, and
+    whether both sides of the centre were used), and was the t-test paired when ROI of the same
+    dishes were compared? This attempt tiled contiguous 200 um ROI from the centre to 3 mm on both
+    sides and used the unpaired test; the paired test changes fig2a-uptake-rises-with-field from 5 to
+    3 of 5 amplitudes and the 50% part of fig2c-weaker-at-6-7.
+- kind: methods_unavailable
+  statement: Question for the authors. How were the cathode- and anode-facing pole regions drawn in
+    the strobe images, and where was the cathode relative to the image? This attempt took the
+    membrane within 45 degrees of the vertical axis and the brightening pole as cathodic. The
+    charging amplitude found (23% against 31%) may depend on the regions.
