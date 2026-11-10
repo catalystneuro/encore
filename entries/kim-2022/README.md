@@ -11,17 +11,17 @@ Figs. 3, 4 and 6 by title, but are not among the paper's datasets this attempt t
 | Claim | Outcome |
 |---|---|
 | YP uptake rises with field for every second phase amplitude (Fig. 2A) | Reproduced (assumed) |
-| Vertical scales of Fig. 2A, 1200 to 250 a.u. | Not reproduced |
-| Exponential rise with the same slope for every amplitude (Fig. 2B) | Partially reproduced |
-| Strongest inhibition, to about 20%, at 50 to 75% (Fig. 2C) | Partially reproduced |
-| Inhibition flat between 8.7 and 15.1 kV/cm | Reproduced |
-| Weaker inhibition at 6.7 kV/cm | Reproduced (assumed) |
+| Vertical scales of Fig. 2A, 1200 to 250 a.u. | Not reproduced (assumed) |
+| Exponential rise with the same slope for every amplitude (Fig. 2B) | Partially reproduced (assumed) |
+| Strongest inhibition, to about 20%, at 50 to 75% (Fig. 2C) | Not reproduced (assumed) |
+| Inhibition flat between 8.7 and 15.1 kV/cm | Reproduced (assumed) |
+| Weaker inhibition at 6.7 kV/cm | Partially reproduced (assumed) |
 | Unipolar pulses polarize the two poles in mirror image (Fig. 7) | Reproduced (assumed) |
-| Charging 200 ns and discharging 520 ns time constants | Not reproduced |
-| Later pulses show the same difference of time constants | Partially reproduced |
-| Bipolar pulses: same first-phase polarization, faster discharge, overshoot | Reproduced |
-| Bipolar trains alternate the membrane potential | Reproduced |
-| Unipolar trains: same peak each pulse, continuous polarization | Reproduced |
+| Charging 200 ns and discharging 520 ns time constants | Not reproduced (assumed) |
+| Later pulses show the same difference of time constants | Partially reproduced (assumed) |
+| Bipolar pulses: same first-phase polarization, faster discharge, overshoot | Reproduced (assumed) |
+| Bipolar trains alternate the membrane potential | Reproduced (assumed) |
+| Unipolar trains: same peak each pulse, continuous polarization | Reproduced (assumed) |
 | Figs. 3 to 6 (12 claims) | Blocked: dataset missing (likely in 000548, 000549, 000550) |
 | Heating (Fig. 1E) | Blocked: data missing |
 
