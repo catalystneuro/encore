@@ -659,9 +659,11 @@ def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
     archive = {t["key"] for t in site.all_targets()}
     outside = [t for t in data["targets"] if t["key"] not in archive]
     assert outside and all(t.get("reuse_only") and t["match"] == "matched" for t in outside)
-    listed = {d["key"]: key for key, body in site.paper_records.listed().items() for d in body["datasets"]}
     for t in outside:
-        assert t["paper"] == site.paper_records.doi_of(listed[t["key"]]) and t["name"] != t["label"]
+        # Its paper is one of those listed for it (several papers can reuse one dataset).
+        papers = {site.paper_records.doi_of(key) for key, body in site.paper_records.listed().items()
+                  if t["key"] in {d["key"] for d in body["datasets"]}}
+        assert t["paper"] in papers and t["name"] != t["label"]
         assert isinstance(t["size_gb"], float) and isinstance(t["files"], int)
     # Each has its row in the pipeline and in the datasets list, as the tests of both expect of an attempted dataset.
     assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
