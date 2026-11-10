@@ -197,7 +197,7 @@ outcomes:
   output: claim:edf6-nmf-confirms-remapping
   notes: The step share of the NMF factors is 0.763 for rare and 1.072 for frequent morph mice (difference
     -0.309, inside the permutation percentiles -0.627 to 0.627, and of the opposite sign). F5 raises the
-    frequent mean (3.399, from one session at 12.262); the other mice lie between 0.463 and 1.181. Two
+    frequent mean (3.4, from one session at about 12.26); the other mice lie between 0.463 and 1.181. Two
     sessions have no factor whose largest block is an extreme. Seven sessions have a share above 1, as
     the share has no upper bound when a row is not monotone. Clipped at 1, rare 0.682 and frequent 0.657
     (difference 0.025, percentiles -0.157 to 0.157); with per-mouse medians, difference 0.056 (percentiles
@@ -210,14 +210,17 @@ outcomes:
   outcome: reproduced
   notebook: 01_sessions_place_cells.ipynb
   output: claim:edf5-umap-rare-frequent-separable
-  notes: The distance test keeps 18,742 cells (paper 18,230) and DBSCAN leaves 274 between two manifolds
-    (paper 150). Rare against frequent classification beats all shuffles in 17 of 20 clusters against
-    100 shuffles and in 16 of 20 against 1,000, so both readings of "separable" hold for both shuffle
-    counts. Accuracies 0.519 to 0.708; rare cells are 69% to 87% of a cluster. The criterion's cross-validation
-    splits cells, not mice. Holding out each mouse's cells in turn (added after the first verification
-    round) gives a balanced accuracy of 0.380 to 0.711 (median 0.560), above 0.5 in 15 of 20 clusters
-    and above the 95th percentile of 100 mouse relabelings in 5 of 20, so the separation within a cluster
-    may in part reflect mouse identity. This check does not decide the outcome.
+  notes: The distance test keeps 18,742 cells (paper 18,230) and DBSCAN leaves 292 between two manifolds
+    (paper 150). Rare against frequent classification beats all shuffles in 16 of 20 clusters against
+    100 shuffles and in 13 of 20 against 1,000, so both readings of "separable" hold for both shuffle
+    counts. Accuracies 0.538 to 0.714; rare cells are 69% to 89% of a cluster. The UMAP layout, and so
+    these counts, differ between runs although every seed is fixed (the kept cells do not); the run after
+    the first verification round gave 17 and 16 of 20, the copy the second verifier read 16 of 20 against
+    100 shuffles, and both readings held in each run seen. The criterion's cross-validation splits cells,
+    not mice. Holding out each mouse's cells in turn (added after the first verification round) gives
+    a balanced accuracy of 0.372 to 0.688 (median 0.546), above 0.5 in 14 of 20 clusters and above the
+    95th percentile of 100 mouse relabelings in 5 of 20, so the separation within a cluster may in part
+    reflect mouse identity. This check does not decide the outcome.
   deviations:
   - A cell is kept when its distance exceeds the 99.9th percentile of its 1,000 shuffles (a standard reading
     of "exceeded 99.9% of permutations"); the ten S bins are equal over -0.1 to 1.1 as the criterion says.
@@ -419,6 +422,12 @@ outcomes:
     says.
 - claim: fig7g-model-prior-reconstruction
   outcome: partially_reproduced
+  proposed:
+    outcome: reproduced
+    reason: The criterion names no partial outcome, and its test passes as written (both signs as expected,
+      magnitudes 0.098 and 0.626 below the neural 0.223 and 1.125), so the rule this attempt applies to
+      session-and-trial-counts, fig2eh, edf7 and edf9l gives reproduced, as the second verification round
+      found. The wrong sign of the rare neural yardstick stays in the notes as a caveat.
   notebook: 02_population_inference.ipynb
   output: claim:fig7g-model-prior-reconstruction
   measured:
@@ -433,8 +442,9 @@ outcomes:
     than for the neural data" is not shown for the rare condition. With the code's computation of R, a
     variant, the rare-trained models give -0.349 against a neural rare mean of -0.288 (a larger magnitude)
     and the frequent-trained 0.378 against 0.638. The signs hold under both computations and the comparison
-    holds for the frequent condition only, so the outcome is partially reproduced; it was reproduced before
-    the first verification round. The earlier priors give -0.188 and 0.264. A question asks a reader whether
+    holds for the frequent condition only, so the outcome was given as partially reproduced after the first
+    verification round; it was reproduced before it, and reproduced is proposed after the second (see
+    proposed). The earlier priors give -0.188 and 0.264. A question asks a reader whether
     the reconstruction should follow the code (fig6d-prior-reconstruction).
 - claim: edf3-simulated-posterior-population
   outcome: not_reproduced
@@ -467,8 +477,8 @@ findings:
     morph mice.
 - kind: other
   statement: The deposit's session database flags 26 VR sessions of the rare and frequent morph mice as
-    imaged that have no file in the dandiset (12 of them R6's, on dates before its session 8), without
-    a note on why they were left out.
+    imaged that have no file in the dandiset (12 of them R6's, on seven dates, five before its session
+    8 and two after it), without a note on why they were left out.
 - kind: data_missing
   statement: Mouse R6 has no session before 8 in the dandiset, R4 and R5 lack session 1, and FD3 has no
     session after 7, so the decision-mouse trial counts cannot match the paper's.
@@ -731,4 +741,216 @@ verifications:
     agrees: true
     outcome: blocked
     reason: It is a simulation that uses no data from this paper; correctly blocked.
+    response: No change of outcome.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the author-revise-1 run (commit 4c4990ab25), with the conclusions
+    and summary, the helper module, the claims file and the attempt record; the verifier also read the paper
+    under paper/. Other text it found unsupported (nb1 cell 9 on the clocks, the questions file named two ways,
+    approximate README timings) is corrected in the notebooks and README.
+  results:
+  - claim: cells-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: session-and-trial-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: vr-deposit-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The record's finding (kind other) says 12 of the 26 unmatched imaging-flag
+      files are R6's on dates before its session 8, but nb2 cell 5 lists R6 dates 10_02_2020 and 11_02_2020,
+      after its session 8 (09_02_2020).
+    response: No change of outcome. The finding now says R6's 12 files lie on seven dates, five before its
+      session 8 and two after it.
+  - claim: training-intermediate-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. nb2 cell 13 cites 3.5% intermediate "(part 1)"; the figure is computed
+      in part 2, cell 9.
+    response: No change of outcome. The reference now points to the training-intermediate-fraction section
+      of part 2.
+  - claim: place-cell-fractions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The place-cell excess (about 60% above the paper) is still unexplained;
+      it sets the magnitudes in place-cell-fractions, edf4a-overlap and the edf4bc counts, and the outcomes
+      are stated correctly.
+    response: No change of outcome. The excess stays unexplained; the variants already shown (the 95th-percentile
+      signal, the plain shuffle, the 2026 code's stored masks) do not account for it.
+  - claim: edf4a-fewer-place-cells-frequent
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: edf4a-overlap-above-chance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome; its magnitudes are set by the unexplained place-cell excess, and the outcome
+      is stated correctly.
+    response: No change of outcome.
+  - claim: edf4bc-overlap-cells-at-ends-and-reward
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome; its counts are set by the unexplained place-cell excess, and the outcome
+      is stated correctly.
+    response: No change of outcome.
+  - claim: fig2eh-place-cell-similarity-differs
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: edf6-nmf-confirms-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. nb1 cell 34 and the record notes say "F5 (3.399, from a session at 12.262
+      ...)"; cell 33 prints F5 3.4 and 12.266.
+    response: 'No change of outcome. The text now gives 3.4 and about 12.26: the session''s value moves in
+      the third decimal between runs (12.262, 12.266, and 12.264 in this run).'
+  - claim: edf5-umap-rare-frequent-separable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The conclusion says 17 of 20 clusters beat 100 shuffles where cell 36
+      prints 16 of 20, and its accuracies (0.519 to 0.708) and leave-one-mouse-out figures (0.380 to 0.711,
+      median 0.560, 15 of 20) do not match the printed 0.524 to 0.701 and 0.381 to 0.714, median 0.557, 14
+      of 20; the record notes repeat them. The outcome is unaffected, since 16 of 20 is still "most". Leave-one-mouse-out
+      beats the mouse relabelings in only 5 of 20 clusters, so the separation may partly reflect which mouse
+      a cell came from; that should stay in the notes.
+    response: No change of outcome. The conclusion and the notes now give this run's numbers (16 of 20 against
+      100 shuffles, 13 of 20 against 1,000, accuracies 0.538 to 0.714, leave-one-mouse-out 0.372 to 0.688,
+      median 0.546, above 0.5 in 14 of 20, above the relabelings in 5 of 20). The cause of the stale text is
+      that the UMAP layout differs between runs although every seed is fixed; the conclusion now says so and
+      lists the counts of each run seen, all of which meet both readings. The mouse-identity caveat stays in
+      the notes.
+  - claim: edf1-licking-before-reward
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig3ab-block-versus-gradual-similarity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: edf7-checkerboard-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. The assumption that file day equals the paper's session number is now
+      argued from the deposit (nb2 cell 6) and is reasonable. The single failing session (R5 session 8) is
+      one of the R5 files replaced in this version, with no release notes; whether the replacement changed
+      its content cannot be settled from these materials.
+    response: No change of outcome. Nothing in the dandiset or the deposit says what the replacement of R5's
+      files changed; the record's finding on the version history states it.
+  - claim: fig3f-zscored-difference-at-025
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig4-sf-stable-along-track
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig6a-dkl-sign
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig6bc-pooled-dkl
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig6d-prior-reconstruction
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows the criterion. The ideal-observer check shows the criterion's formula cannot give the rare
+      sign on this design, so the failure says nothing either way about the paper. The claims file follows
+      the Methods text and does not misread the paper, but it says R is computed "as the code computes it (SFReg,
+      prior_post_reconstruction)"; if the attempt's code_mismatch finding is right, that attribution is wrong.
+      Whether the claim should follow the code is still an open question to a reader.
+    response: No change of outcome. The question to a reader in questions/plitt-2021.yaml (fig6d-prior-reconstruction,
+      asked 2026-11-10) already quotes the criterion's attribution to the code and the code's line that computes
+      it differently, and asks whether this claim, edf10 and fig7g should follow the code; the notebooks now
+      cite that file by one name.
+  - claim: map-estimate-values
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: edf9-early-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. The assumption that file day equals the paper's session number is argued
+      from the deposit (nb2 cell 6) and is reasonable.
+    response: No change of outcome.
+  - claim: edf9k-null-models-rare
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: edf9l-null-models-frequent
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: edf10-decision-mice-like-frequent
+    agrees: true
+    outcome: reproduced
+    reason: Follows the criterion. Reading (b) also holds under the code's computation (0.433 to 0.627 against
+      the ideal observers' 0.047 rare and 0.502 frequent), so the outcome is safe.
+    response: No change of outcome.
+  - claim: edf2-fh-best-predictor
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig7-model-reproduces-remapping
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: fig7g-model-prior-reconstruction
+    agrees: false
+    outcome: reproduced
+    reason: 'The criterion names no partial outcome; as written it passes (-0.098 and 0.626 bits, both of the
+      expected sign, magnitudes below the neural 0.223 and 1.125, nb2 cell 51). The attempt applies the rule
+      that a criterion naming no partial outcome cannot give one to four other claims; applied consistently,
+      fig7g is reproduced. The verifier withdraws its own round-1 judgement. The caveat belongs in the notes:
+      the rare neural yardstick (+0.223) has the wrong sign, so "less closely matched than neural" means little
+      for the rare condition.'
+    response: The verified outcome (partially reproduced) stays, as round 2 may not change it; reproduced is
+      written under proposed, with the reason, for a third round. The analysis is the test already printed
+      in nb2 cell 51, and the fig7 and fig7g conclusion now states the proposal. The caveat stays in the notes.
+  - claim: edf3-simulated-posterior-population
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
+    response: No change of outcome.
+  - claim: supp-earlier-morph-studies
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome ("I agree with 28 of the 29 outcomes"); the conclusion checks out against
+      the printed numbers.
     response: No change of outcome.
