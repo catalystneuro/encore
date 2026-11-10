@@ -230,7 +230,7 @@ def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets
     chart = site.pipeline_chart(counts, 4)
     assert chart.count('class="frow"') == len(site.CHART_STEPS)
     assert 'class="seg st-done" style="width:75.00%"' in chart and 'class="seg st-waiting" style="width:25.00%"' in chart
-    assert 'aria-label="Paper: 3 of 4 done, 1 waiting on a person"' in chart
+    assert 'aria-label="Text: 3 of 4 done, 1 waiting on a person"' in chart
 
 
 def test_the_chart_counts_a_step_not_reached_as_to_do_and_old_claims_as_made_before_checks():
