@@ -1,0 +1,351 @@
+# Claims for Nishimoto, Vu, Naselaris, Benjamini, Yu & Gallant (2011), Current Biology 21,
+# 1641-1646, tested on CRCNS vim-2.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (main text, figure legends, Experimental Procedures) and
+# its Supplemental Information (Figures S1 and S2 with legends, Supplemental Experimental
+# Procedures). The PDF pages could not be rendered in this run, so no value was read off a
+# figure; every number below is printed in the text.
+#
+# Code read: none. The paper links no code, and none is named in the Experimental
+# Procedures or the supplement.
+#
+# Data the paper used (Results paragraph 4; Experimental Procedures; Supplemental Data
+# Preprocessing, Model Fitting, Voxel Selection): three subjects, S1, S2 and S3 (authors,
+# ages 30, 34 and 23), 4 T Varian scanner, TR 1 s, 2.0 x 2.0 x 2.5 mm voxels, 18 coronal
+# slices over posterior occipital cortex, collected over several sessions per subject.
+# Stimuli are color natural movies shown at 20 x 20 degrees and 15 Hz with a fixation spot.
+# Training set, 12 blocks of 10 min (7,200 s), each movie shown once; after discarding the
+# first 6 s of each block, 7,128 samples. Test set, 9 min of different movies repeated ten
+# times, cut in 1 min chunks; after discarding the first 6 s of each chunk, 486 samples.
+# About 15,000 occipital voxels, of which about 4,500 lie in the stimulated portions of V1,
+# V2, V3, V3A and V3B, assigned from retinotopic mapping done in separate sessions.
+# Measured variable: the BOLD signal per voxel, detrended per run with a third-degree
+# polynomial and z-scored. The data set's description (CRCNS vim-2) says it holds, per
+# subject, training responses (7,200 timepoints) and validation responses (540 timepoints,
+# averaged and per repeat) for the 64 x 64 x 18 volume, ROI masks, and the training and
+# validation stimuli at 128 x 128 pixels, RGB, 15 Hz. It holds neither the sampled natural
+# movie prior (about 18,000,000 s of YouTube clips), nor the 1,000,000-clip identification
+# set, nor the multifocal retinotopic mapping data; the paper gives no location for any of
+# them, so the claims that need them use outside data (data with_inputs) that may not exist
+# in public.
+#
+# Common methods, from the Supplemental Experimental Procedures unless stated; the criteria
+# refer to them by name.
+# - Motion-energy features (Motion-Energy Encoding Model; Gabor Wavelet Basis Set): frames
+#   downsampled to 96 x 96 pixels, converted to CIE L*A*B*, luminance kept; 6,555
+#   spatiotemporal Gabor filters at spatial frequencies 0, 2, 4, 8, 16 and 32 cycles/image,
+#   temporal frequencies 0, 2 and 4 Hz, eight directions (four orientations at 0 Hz, one
+#   filter at 0 cycles/image), on square grids with neighbours 3.5 s.d. of the spatial
+#   envelope apart, in quadrature pairs squared and summed; log-compressed; downsampled from
+#   15 Hz to 1 Hz; z-scored over time and clipped at 3 s.d. Open, and able to change the
+#   outcome: the size of the spatial and temporal Gaussian envelopes and the filter's
+#   temporal length. Reading: spatial s.d. proportional to the wavelength (a constant
+#   bandwidth in octaves) and a temporal window of about 10 frames, a standard choice;
+#   envelopes half and double that size are shown as variants. The paper's total of 6,555
+#   filters, with the grid spacing of 3.5 s.d. of the spatial envelope, constrains the
+#   spatial envelope; a bank that does not give 6,555 filters departs from the paper, and
+#   the reading chosen should reproduce that count. Open, and unlikely to
+#   change the outcome: the offset of the log (log(x) or log(1 + x)), how the 15 frames of a
+#   second are reduced to one sample (mean, or one frame), and whether the z-score uses the
+#   training and test features together or separately. Standard choices are log(1 + x),
+#   the mean, and training statistics applied to the test set.
+# - Static and nondirectional models (Gabor Wavelet Basis Set): the nondirectional model sums
+#   the outputs of opposite-direction filters at each position, orientation and temporal
+#   frequency; the static model keeps only the 0 Hz filters.
+# - Encoding model fit (Model Fitting): per voxel, the features at delays of 3, 4, 5 and
+#   6 s (4 samples), L1-regularized least squares (refs. 15 and 16, coordinate descent).
+#   Open, and able to change the outcome: how the L1 penalty, or the stopping point of the
+#   coordinate descent, is chosen. Readings: (a) chosen per voxel by prediction of a held-out
+#   10% of the training data in 50 s blocks, the split the paper uses for voxel selection;
+#   (b) chosen by cross-validation over the training data with several such splits.
+# - Prediction accuracy (Results paragraph 4): the correlation between predicted and
+#   observed BOLD signals on the test data. Open: whether the observed signal is the mean
+#   of the ten repeats or each repeat. Readings: (a) the repeat-averaged signal; (b) the mean
+#   over repeats of the single-repeat correlation.
+# - Voxel selection (Voxel Selection): for identification and reconstruction, per subject
+#   the 2,000 voxels of V1, V2, V3, V3A and V3B whose model, fit on 90% of the training data,
+#   best predicted the held-out 10% (50 s blocks chosen at random until 10% are held out).
+# - Likelihood (Likelihood Estimation): multivariate Gaussian on the selected voxels, with
+#   the noise covariance of the training residuals and its inverse estimated by Tikhonov
+#   regularization. Open: the size of the Tikhonov penalty. Reading: chosen by
+#   identification accuracy on the held-out 10% of the training data, with the result shown
+#   for a range of penalties. For reconstruction the model is refit with the single delay of
+#   4 s (Motion-Energy Encoding Model, last paragraph).
+schema_version: 2
+paper: doi:10.1016/j.cub.2011.08.031
+claims:
+- id: fig2de-prediction-accuracy
+  statement: Averaged over subjects and voxels in V1, V2, V3, V3A and V3B, the prediction
+    accuracy on the test data is 0.24 for the static model, 0.39 for the nondirectional
+    motion-energy model and 0.40 for the directional motion-energy model, and the
+    differences are significant (Wilcoxon signed-rank test, p < 0.0001).
+  source: Results, paragraph 6; Figures 2D and 2E with legend
+  quote: The averaged accuracy across subjects and voxels in early visual areas (V1, V2, V3,
+    V3A, and V3B) was 0.24, 0.39, and 0.40 for the static, nondirectional, and directional
+    encoding models, respectively ... difference in prediction accuracy was significant
+    (p < 0.0001, Wilcoxon signed-rank test)
+  statistics:
+  - about: directional against nondirectional and static models, voxel-wise
+    test: Wilcoxon signed-rank test
+    p: 0.0001
+    p_relation: "<"
+    n: voxels of V1, V2, V3, V3A and V3B in three subjects
+  expected:
+  - quantity: mean prediction accuracy, static model
+    value: 0.24
+    tolerance: 0.024
+  - quantity: mean prediction accuracy, nondirectional motion model
+    value: 0.39
+    tolerance: 0.039
+  - quantity: mean prediction accuracy, directional motion model
+    value: 0.40
+    tolerance: 0.04
+  criterion: The three models are built and fit as in Common methods (Motion-energy
+    features, Static and nondirectional models, Encoding model fit) and scored as in
+    Prediction accuracy. Voxels are those of the stimulated portions of V1, V2, V3, V3A and
+    V3B (about 4,500, Voxel Selection paragraph 1), taken as the voxels of the data set's
+    masks for these areas; the 2,000-voxel selection is not used, as the paper applies it to
+    reconstruction and identification only. Open, and able to change the outcome, how
+    subjects are combined, (i) all voxels pooled, (ii)
+    the mean of the three subject means. The Wilcoxon signed-rank test is paired over
+    voxels; the paper does not say which pairs "this difference" covers, so the two
+    comparisons the Figure 2 legend names (directional against static, directional against
+    nondirectional) are both run. Reproduced when, under one reading, the three means are
+    within tolerance, their order is static < nondirectional < directional, and both tests
+    give p < 0.0001. Partially reproduced when the order and tests hold but a mean falls
+    outside its tolerance.
+- id: fig2e-directional-gain-small
+  statement: The directional model predicts better than the nondirectional model, but the
+    difference is small, which suggests that BOLD signals carry spatially localized but
+    mostly nondirectional motion information.
+  source: Results, paragraph 6; Figure 2E with legend; Figure S1A
+  quote: Note that the difference in prediction accuracy between the directional and
+    nondirectional motion models, though significant, was small
+  depends_on:
+  - fig2de-prediction-accuracy
+  criterion: From the fits of fig2de-prediction-accuracy, under the same readings.
+    Reproduced when the directional model's mean accuracy exceeds the nondirectional
+    model's, the paired Wilcoxon signed-rank test gives p < 0.0001, and the difference is
+    less than a tenth of the gain of the nondirectional model over the static model (the
+    paper's values give 0.01 against 0.15; the bound of a tenth is set here, as the paper
+    gives no number for small).
+- id: figs1a-motion-better-every-area
+  statement: In each of the five visual areas and each of the three subjects, both motion
+    models predict better than the static model, and the best predictions are in V1 for all
+    three subjects (Wilcoxon rank-sum test, p < 0.0001).
+  source: Figure S1A legend
+  quote: The directional and non-directional motion models perform better than the static
+    model in every case. The best overall predictions for all three subjects (p < 0.0001,
+    Wilcoxon rank-sum test) are obtained in area V1.
+  statistics:
+  - about: V1 against the other areas
+    test: Wilcoxon rank-sum test
+    p: 0.0001
+    p_relation: "<"
+    n: voxels per area, each of three subjects
+  depends_on:
+  - fig2de-prediction-accuracy
+  criterion: From the fits of fig2de-prediction-accuracy, mean accuracy per model, area and
+    subject (15 area and subject cells). Open, what V1 is compared with in the rank-sum
+    test. Readings, (a) V1 voxels against the voxels of each other area in turn; (b) V1
+    voxels against the voxels of the other four areas pooled. Also open, which model's
+    accuracy "best overall predictions" refers to. Readings, (i) the directional model, the
+    model the main text calls best; (ii) each of the three models. Reproduced when both motion
+    models beat the static model in all 15 cells and, under one reading, V1 has the highest
+    mean with p < 0.0001 in all three subjects. Partially reproduced when the motion models
+    beat the static model in at least 12 of 15 cells or V1 is best in two subjects.
+- id: fig2fgh-retinotopic-receptive-fields
+  statement: Voxel receptive fields estimated from the motion-energy model are spatially
+    localized and retinotopically organized; their angle maps are similar to those from
+    conventional multifocal mapping, and their eccentricity maps are similar except in the
+    far periphery, where the multifocal mapping stimulus was coarse.
+  source: Results, paragraph 7; Figures 2F to 2I with legends
+  quote: The spatial receptive fields of individual voxels were spatially localized (Figures
+    2F and 2G, left) and were organized retinotopically (Figures 2H and 2I)
+  data: with_inputs
+  depends_on:
+  - fig2de-prediction-accuracy
+  criterion: Receptive fields from the directional model as in Selectivity Estimation
+    (Supplemental Experimental Procedures) - dynamic Gaussian white noise in each cell of a
+    17 x 17 grid, predicted response minus the response to uniform gray, and a 2D Gaussian
+    fit whose center gives angle and eccentricity; voxels with prediction accuracy p > 0.01
+    left out. The paper compares the maps with multifocal mapping data that the data set does
+    not hold and the paper does not deposit. Open, the p-value of prediction accuracy.
+    Readings, (a) the test of a correlation on the 486 test samples; (b) the same on the
+    held-out 10% of the training data. Without the mapping data the claim is judged on the
+    retinotopy the dataset's ROI masks imply. Reproduced when, in each subject, more than
+    half of the retained voxels have a Gaussian fit inside the 20 degree display, the
+    centers of left-hemisphere V1 voxels lie mostly (over 75%) in the right visual field
+    and the reverse for the right hemisphere, and eccentricity rises along V1 from the
+    occipital pole forward (positive correlation, p < 0.05). The thresholds are set here,
+    since the paper reports the maps visually. With the multifocal maps, a circular
+    correlation of angle and a correlation of eccentricity are reported as well.
+- id: fig2j-speed-eccentricity
+  statement: Optimal speed (peak temporal frequency over peak spatial frequency) correlates
+    positively with eccentricity, so peripheral voxels prefer higher speeds, in V1, V2 and V3
+    of all three subjects (t test for correlation coefficient, p < 0.0001).
+  source: Results, paragraph 8; Figure 2J; Figure S1B legend
+  quote: Projecting the optimal speed of the voxels onto a flattened map of the cortical
+    surface (Figure 2J) revealed a significant positive correlation between eccentricity and
+    optimal speed ... This pattern was observed in areas V1, V2, and V3 and for all three
+    subjects (p < 0.0001, t test for correlation coefficient
+  statistics:
+  - test: t test for correlation coefficient
+    p: 0.0001
+    p_relation: "<"
+    n: voxels of each of V1, V2 and V3 in each of three subjects
+  depends_on:
+  - fig2fgh-retinotopic-receptive-fields
+  criterion: Eccentricity from the receptive field fit of fig2fgh-retinotopic-receptive-fields.
+    Spatial and temporal frequency tuning from the directional model's predicted responses
+    to full-field drifting gratings at the basis set's directions, spatial and temporal
+    frequencies, averaged over directions, minus the response to uniform gray (Selectivity
+    Estimation). Spatial frequency in cycles per degree (cycles per image over 20 degrees).
+    Voxels with prediction accuracy p > 0.01, or with optimal spatial frequency 0, left out
+    (Figure S1B legend); the p-value readings are those of fig2fgh-retinotopic-receptive-fields.
+    Open, how the peaks are taken. Readings, (a) the spatial and temporal frequency of the
+    maximum of the joint tuning map; (b) the maximum of each marginal tuning curve. The
+    Pearson correlation of eccentricity with optimal speed is taken over voxels per area and
+    subject (the 2 degree bins of Figure S1B are for display). Reproduced when, under one
+    reading, all nine area and subject correlations are positive with p < 0.0001. Partially
+    reproduced when all nine are positive and at least six reach p < 0.0001.
+- id: fig3ab-identification-s1
+  statement: For subject S1 the motion-energy model identifies the test second that evoked an
+    observed BOLD pattern within one volume (1 s) 95% of the time (464 of 486 volumes), far
+    above chance (under 1%, 3 of 486).
+  source: Results, paragraph 9; Figures 3A and 3B with legends
+  quote: Our motion-energy encoding model could identify the specific movie stimulus that
+    evoked an observed BOLD signal 95% of the time (464 of 486 volumes) within 6 one volume
+    (1 s; subject S1; Figures 3A and 3B)
+  expected:
+  - quantity: S1 test volumes identified within one volume
+    value: 464
+    tolerance: 46.4
+    unit: volumes of 486
+  criterion: Voxel selection and the Likelihood of Common methods; for each observed test
+    volume, the log-likelihood under the predicted signal of each of the 486 test seconds,
+    and the second of maximum likelihood is chosen (Figure 3A legend); correct when it lies
+    within one volume of the true second. Open, which encoding model gives the predictions.
+    Readings, (a) the directional model with four delays; (b) the single 4 s delay refit
+    used for reconstruction. Also open, which 486 samples are used, as the paper discards the
+    first 6 s of each 1 min test chunk; the author takes the dataset's test samples that
+    match this. Also open, and able to change the outcome, whether the observed test signal
+    is the mean of the ten repeats or each repeat. Readings, (i) the repeat-averaged signal;
+    (ii) each repeat identified separately, the count scaled to 486. Reproduced when, under one reading, S1's count is within tolerance (at least
+    418 of 486); the chance level of 3 of 486 is reported.
+- id: fig3c-identification-large-set
+  statement: Identification accuracy within one volume stays above 75% for all three
+    subjects even when the candidate set holds 1,000,000 clips drawn at random from the
+    internet.
+  source: Results, paragraph 9; Figure 3C with legend
+  quote: Identification accuracy (within 6 one volume) was >75% for all three subjects even
+    when the set of possible natural movie clips included 1,000,000 separate clips chosen at
+    random from the internet
+  data: with_inputs
+  depends_on:
+  - fig3ab-identification-s1
+  criterion: As fig3ab-identification-s1, for each subject, with the candidate set enlarged
+    by 1 s clips from a natural movie database not used in the experiment. The paper gives
+    neither the database nor where it is; the author decides whether any public collection
+    of natural movies can stand in, as an assumption. Reproduced when, at a set of 1,000,000
+    clips, each subject is above 75% correct within one volume.
+- id: fig4-reconstructions
+  statement: Bayesian decoding with a sampled prior of about 18,000,000 s of internet movies
+    reconstructs the viewed movies; the maximum a posteriori (MAP) clip is good when the prior
+    holds similar clips and poor otherwise, and the average of the 100 highest posterior
+    clips (AHP) captures the spatiotemporal structure even of unique clips.
+  source: Results, paragraphs 10 and 11; Figure 4A to 4C with legend; Figure S2
+  quote: When the sampled natural movie prior contained clips similar to the viewed clip, the
+    MAP reconstructions were good ... However, when the prior contained no clips similar to
+    the viewed clip, the reconstructions are poor ... The AHP reconstruction captures the
+    spatiotemporal structure within a viewed clip even when it is completely unique
+  data: with_inputs
+  depends_on:
+  - fig3ab-identification-s1
+  criterion: The paper shows this with example frames only, and judges it by the measure of
+    fig4d-reconstruction-accuracy, on which this claim is judged. It needs the sampled prior,
+    which the data set does not hold and the paper does not deposit.
+- id: fig4d-reconstruction-accuracy
+  statement: For all three subjects both MAP and AHP reconstructions correlate with the viewed
+    movies in motion-energy space above chance (Wilcoxon rank-sum test, p < 0.0001), and AHP
+    reconstructions are better than MAP (Wilcoxon signed-rank test, p < 0.0001), though
+    still crude (motion-energy correlation about 0.3).
+  source: Results, paragraph 12; Figure 4D with legend; Supplemental Experimental Procedures,
+    Evaluating the Accuracy of Reconstructions
+  quote: In both cases, reconstruction accuracy was significantly higher than chance (p <
+    0.0001, Wilcoxon rank-sum test; see Supplemental Experimental Procedures). Furthermore,
+    AHP reconstructions were significantly better than MAP reconstructions (p < 0.0001,
+    Wilcoxon signed-rank test).
+  statistics:
+  - about: MAP and AHP reconstructions against random prior clips
+    test: Wilcoxon rank-sum test
+    p: 0.0001
+    p_relation: "<"
+    n: 1 s test clips, each of three subjects
+  - about: AHP against MAP reconstructions
+    test: Wilcoxon signed-rank test
+    p: 0.0001
+    p_relation: "<"
+    n: 1 s test clips, each of three subjects
+  expected:
+  - quantity: motion-energy correlation of the reconstructions
+    value: 0.3
+    tolerance: 0.03
+  data: with_inputs
+  depends_on:
+  - fig3ab-identification-s1
+  criterion: Posterior over the sampled prior from the Likelihood of Common methods with the
+    single 4 s delay model, using BOLD 4 s after each 1 s clip; the MAP is the clip of
+    highest posterior; the AHP is the average of the 100 highest, each clip's pixels scaled
+    to unit s.d. before averaging and the average rescaled so that its mean and s.d. equal
+    those of the average of the top 100 clips (Figure S2D legend), with the five seconds after a chosen clip of the same movie
+    excluded from selection (Additional Notes on Reconstruction). Accuracy per 1 s clip is
+    the correlation of motion-energy vectors (filter bank up to downsampling, no
+    hemodynamics) of the viewed and reconstructed clip. Chance is the correlation with clips
+    drawn at random from the prior; the dashed line is its 99th percentile. Open, and able
+    to change the rank-sum p-value, how many random clips form the null distribution;
+    reading, one per test clip, with ten per test clip as a variant. Open, which value
+    "about 0.3" describes. Readings, (a) the AHP mean in each subject; (b) the AHP mean over
+    the three subjects. Reproduced when, in each subject, both tests give
+    p < 0.0001 with AHP above MAP, and under one reading the values are within tolerance.
+    The prior is not in the data set and has no given location; the author decides whether
+    a stand-in prior is defensible, as an assumption, or blocks the claim.
+- id: discussion-color-no-gain
+  statement: In preliminary work, encoding models with explicit color information did not
+    predict or identify better than models using luminance alone.
+  source: Discussion, paragraph 4
+  quote: However, we found that color information did not improve the accuracy of predictions
+    or identification beyond what could be achieved with models that include only luminance
+    information.
+  depends_on:
+  - fig2de-prediction-accuracy
+  - fig3ab-identification-s1
+  criterion: The paper shows no data and does not describe its color models. Reading, the
+    directional model of fig2de-prediction-accuracy with the same filter bank applied as
+    well to the A* and B* channels of CIE L*A*B*, fit and scored the same way. A claim of
+    absence, for which the paper names no test; the test is set here, the paired Wilcoxon
+    signed-rank test over voxels of fig2de-prediction-accuracy at p < 0.0001. Reproduced
+    when the color model's mean accuracy is not higher by that test; the difference is
+    reported either way, and the outcome rests on the reading of the color model. The claim
+    covers identification as well; the color model's identification count, run as in
+    fig3ab-identification-s1, is reported beside the luminance model's, but the paper gives
+    no test for it, so it does not decide the outcome.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2de-prediction-accuracy. Removed the reading that averages only the 2,000 selected voxels; Voxel Selection applies that selection to reconstruction and identification only, and Figure 2 uses every voxel of the stimulated portions of V1 to V3B. The reading over subjects stays open.
+  - fig2e-directional-gain-small. The statement said BOLD signals carry mostly nondirectional information; the paper says the result suggests it (Results, paragraph 6), so the statement now says suggests.
+  - figs1a-motion-better-every-area. The criterion fixed the directional model for the V1 test as if the paper said so; the Figure S1A legend does not say which model, so this is now named as open with two readings.
+  - fig2fgh-retinotopic-receptive-fields. The statement put the far-periphery exception on both maps; Figure 2H and 2I legends give it for the eccentricity map only, with its reason. Statement corrected.
+  - fig3ab-identification-s1. Added as open whether the observed test signal is the repeat average or each repeat, which the paper does not say and which can change the count.
+  - fig4d-reconstruction-accuracy. Reading (b), the larger of the MAP and AHP means, equals reading (a) whenever AHP exceeds MAP, which the criterion requires; replaced by the AHP mean over subjects. Named as open the number of random prior clips in the null distribution, which sets the rank-sum p-value. The AHP post-normalization now follows the Figure S2D legend word for word in sense (mean and s.d. of the average of the top 100 clips).
+  - discussion-color-no-gain. The paper's sentence covers identification as well as prediction; the criterion now reports identification too, without a test, since the paper gives none, and depends on fig3ab-identification-s1.
+  - Header, Motion-energy features. Added that the paper's total of 6,555 filters and the 3.5 s.d. grid spacing constrain the spatial envelope left open.
+  - Open, not settled. fig2fgh-retinotopic-receptive-fields is judged without the multifocal maps on a proxy test set in this file (contralateral field, eccentricity gradient, fits inside the display); the paper compares maps visually, so the outcome rests on that proxy.
+  - Open, not settled. The bound for small in fig2e-directional-gain-small (a tenth of the motion gain) and the partial thresholds in figs1a-motion-better-every-area and fig2j-speed-eccentricity are set in this file; the paper gives no number.
+  - Open, not settled. fig3c-identification-large-set, fig4-reconstructions and fig4d-reconstruction-accuracy need the 1,000,000-clip set and the 18,000,000 s prior, which the paper does not deposit or locate.

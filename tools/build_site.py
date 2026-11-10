@@ -333,7 +333,7 @@ def collect(executed: Path | None = None) -> dict:
                   else "no_match" if match == "no_match" else "open")
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
-            "files": t["asset_count"], "status": status,
+            "files": t["asset_count"], "status": status, "match": match,
             "paper": first["doi"], "paper_title": first["title"] or t["name"],
             "papers": [p["doi"] for p in t["papers"]],
             "n_papers": len(t["papers"]),
@@ -342,6 +342,31 @@ def collect(executed: Path | None = None) -> dict:
             "species": sorted({short_species(s) for s in t["species"] if s}),
             "catalystneuro": t.get("catalystneuro") or [],
         })
+    # A dataset that only a paper reusing it names, outside every archive's list (its own metadata names no paper):
+    # a target of the site all the same, so that an attempt on it has its rows and pages. Described in
+    # targets/reuse_datasets.json (tools/build_reuse_targets.py). The runner's queue does not take it as a target:
+    # it is reached through its paper (targets/reuse.yaml).
+    outside_path = ROOT / "targets" / "reuse_datasets.json"
+    outside = ({key_of("dandi", t["dandiset"]): t for t in json.loads(outside_path.read_text())["targets"]}
+               if outside_path.is_file() else {})
+    have = {t["key"] for t in targets}
+    for paper_key, body in sorted(paper_records.listed().items()):
+        for d in body.get("datasets") or []:
+            if d["key"] in have:
+                continue
+            have.add(d["key"])
+            t, doi = outside.get(d["key"], {}), paper_records.doi_of(paper_key)
+            targets.append({
+                "key": d["key"], "label": dataset_label(d["key"]), "name": t.get("name") or dataset_label(d["key"]),
+                "size_gb": t.get("size_gb") or 0.0, "files": t.get("asset_count") or 0,
+                "status": "attempted" if d["key"] in attempted else "open", "match": "matched", "reuse_only": True,
+                "paper": doi, "paper_title": body.get("title") or t.get("name") or dataset_label(d["key"]),
+                "papers": [doi], "n_papers": 1,
+                "technique": sorted({part.replace(" approach", "").strip()
+                                     for a in t.get("approaches") or [] if a for part in a.split(";") if part.strip()}),
+                "species": sorted({short_species(x) for x in t.get("species") or [] if x}),
+                "catalystneuro": [],
+            })
     entry_list = []
     for entry in entries.values():
         related = entry.get("related", [])
@@ -389,20 +414,30 @@ def pipeline_inputs() -> dict:
     (papers/manifest.yaml), each claims file's last check, and each attempt's open questions."""
     manifest = ROOT / "papers" / "manifest.yaml"
     papers = (load_yaml(manifest) or {}).get("targets", {}) if manifest.is_file() else {}
-    checks, questions, items = {}, {}, {}
+    checks, questions, items, paper_checks, paper_questions = {}, {}, {}, {}, {}
+    # A record is a paper's: <kind>/<paper>.yaml, or from before the cutover <kind>/<paper>/<folder>.yaml.
+    paper_key = lambda path: path.stem if path.parent.name in ("claims", "questions") else path.parent.name
     for path, keys in record_files("claims"):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
+        found = {"ready": None if last is None else bool(last.get("ready")),
+                 "date": None if last is None else str(last.get("date"))}
         for key in keys:
-            checks[key] = {"ready": None if last is None else bool(last.get("ready")),
-                           "date": None if last is None else str(last.get("date"))}
+            checks[key] = found
+        # Several files of one paper (one per dataset, before the cutover): ready when all are.
+        had = paper_checks.get(paper_key(path))
+        paper_checks[paper_key(path)] = found if had is None else {
+            "ready": False if False in (had["ready"], found["ready"]) else None if None in (had["ready"], found["ready"])
+            else True, "date": max(had["date"] or "", found["date"] or "") or None}
     for path, keys in record_files("questions"):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
+        n_open = sum(1 for x in q if not x.get("answered"))
         for key in keys:
-            questions[key] = sum(1 for x in q if not x.get("answered"))
+            questions[key] = n_open
             items[key] = json.loads(json.dumps(q, default=str))   # YAML dates as text, for the JSON
+        paper_questions[paper_key(path)] = paper_questions.get(paper_key(path), 0) + n_open
     return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions,
-            "question_items": items}
+            "question_items": items, "paper_checks": paper_checks, "paper_questions": paper_questions}
 
 
 def finish(data: dict) -> dict:
@@ -585,8 +620,9 @@ PIPELINE_STEPS = [("paper", "Paper"), ("claims", "Claims"), ("check", "Claims ch
                   ("attempt", "Attempt"), ("questions", "Questions"), ("verified", "Verified")]
 
 
-def queue_estimates(q: dict) -> dict[str, dict]:
+def queue_estimates(q: dict, name=None) -> dict[str, dict]:
     """Each queued dataset's place in its runner's queue, and how many hours from now it should be done.
+    `name` turns a queue's entry into the key of the result (a dataset's key from its folder, unless given).
 
     The lanes take the datasets in order, each taking the median time of a recent chain (the runs' times,
     `tools/runner/describe.py queue`). A lane is free when the chain it has going now should be done
@@ -604,7 +640,7 @@ def queue_estimates(q: dict) -> dict[str, dict]:
         for place, folder in enumerate(q.get(kind, []), 1):
             lane = free.index(min(free))
             free[lane] += hours or 0.0
-            out[key_of_dir(folder)] = {"kind": kind, "place": place, "hours": free[lane] if hours else None}
+            out[(name or key_of_dir)(folder)] = {"kind": kind, "place": place, "hours": free[lane] if hours else None}
     return out
 
 
@@ -646,8 +682,8 @@ def pipeline_rows(data: dict) -> list[dict]:
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
             else ("waiting", f"{len(missing)} not in store") if papers
-            # The manifest is written by hand from the private store (tools/papers_manifest.py), so a target
-            # added since its last run names papers the manifest has not checked yet.
+            # The manifest is rewritten from the private store every hour (manifest.yml,
+            # tools/papers_manifest.py), so a target added since its last run names papers it has not checked yet.
             else ("waiting", "not checked") if t.get("papers") else ("waiting", "no paper named"),
             "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
             if check != "absent" else ("todo", ""),
@@ -666,6 +702,141 @@ def pipeline_rows(data: dict) -> list[dict]:
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
                     "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None,
                     "queue": queued.get(d), "branch": d in branches, "running": going.get(d)})
+    return out
+
+
+# The Pipeline page goes by paper (docs/paper-first.md): the paper match comes first, and lists a dataset for
+# its paper.
+PAPER_STEPS = [("match", "Paper match")] + PIPELINE_STEPS
+
+
+def paper_pipeline_rows(data: dict) -> list[dict]:
+    """One row per paper, for the Pipeline page: each paper listed for datasets (papers/datasets/), with the state
+    of each step read from the paper's own records, then the targets no paper is listed for yet, by the paper their
+    archive names (several datasets naming one paper share a row). States are as in pipeline_rows."""
+    inputs = data.get("pipeline") or {}
+    manifest, checks, open_qs = inputs.get("papers", {}), inputs.get("paper_checks", {}), inputs.get("paper_questions", {})
+    current, claim_files = current_attempts(data), data.get("claim_files", {})
+    listed = paper_records.listed()
+    q = data.get("queue") or {}
+    # The queue names papers, and datasets not matched yet by their folders (describe.py queue, "papers"); one
+    # written before that names datasets only, and a paper is then found by its datasets.
+    by_paper = q.get("papers")
+    names = by_paper or q
+    est = queue_estimates({**q, "full": names.get("full", []), "claims": names.get("claims", []),
+                           **({"running": names["running"]} if "running" in names else {})}, name=str)
+    going, branches = names.get("running") or {}, set(names.get("branches") or [])
+    issues, issues_by_name = data.get("issues", {}), data.get("issues_by_name", {})
+
+    def queued(ids: list[str]) -> dict:
+        places = [est[i] for i in ids if i in est]
+        return {"running": next((going[i] for i in ids if i in going), None), "branch": any(i in branches for i in ids),
+                "queue": min(places, key=lambda x: (x["kind"] != "full", x["place"])) if places else None}
+
+    def dataset_cell(k: str) -> dict:
+        return {"key": k, "label": dataset_label(k), "page": page_of(k) if current.get(k) or k in claim_files else None}
+
+    fixes = paper_match.triage()
+
+    def text_state(doi: str | None, keys: list[str]) -> tuple[str, str]:
+        if not doi:
+            return ("waiting", "no paper named")
+        doi = paper_match.clean_doi(doi)   # an eLife version (.1) names the article, as in the manifest
+        found = [r["status"] for k in keys for r in manifest.get(k, []) if paper_match.clean_doi(r["doi"]) == doi]
+        if not found:
+            # A paper listed under a DOI the triage has since replaced (a preprint by its publication, a data
+            # DOI by the paper): its text is the replacement's, which the triage names for the dataset.
+            for k in keys:
+                fix = fixes.get(dir_of(k), {})
+                if doi in {paper_match.clean_doi(x) for x in fix.get("not_papers", {})}:
+                    named = {paper_match.clean_doi(x) for x in fix.get("papers", {})}
+                    found += [r["status"] for r in manifest.get(k, []) if paper_match.clean_doi(r["doi"]) in named]
+        return (("done", "stored") if "stored" in found else ("none", "unavailable") if "unavailable" in found
+                else ("waiting", "not in store") if found else ("waiting", "not checked"))
+
+    def finish_row(row: dict) -> dict:
+        state = row["state"]
+        row["next"] = next((label for key, label in PAPER_STEPS if state[key][0] in ("todo", "waiting", "deprecated")), "")
+        row["waiting"] = [label for key, label in PAPER_STEPS if state[key][0] == "waiting"]
+        row["missing"] = [row["doi"]] if state["paper"] == ("waiting", "not in store") else []
+        return row
+
+    out, primary, by_doi = [], set(), {}
+    for p in papers_of(data):
+        key, doi = p["key"], p["doi"]
+        body = listed.get(key) or {}
+        primary |= {d["key"] for d in body.get("datasets") or [] if d.get("relation", "primary") == "primary"}
+        need = [d["key"] for d in body.get("datasets") or [] if d.get("available", True)] or p["datasets"]
+        atts, live, chk = p["attempts"], p["live"], checks.get(key)
+        check = "absent" if chk is None else chk["ready"]
+        # As for a dataset: a deprecated attempt's claims are to be read again, unless checked since.
+        deprecated_on = max((a.get("deprecated_on") or "" for a in atts if a.get("deprecated")), default="")
+        reread = bool(deprecated_on) and chk is not None and (chk["date"] or "") >= deprecated_on
+        rerun = bool(deprecated_on) and not reread
+        covered = {k for k in need for a in current.get(k, [])
+                   if a["paper"].lower() == doi and not a.get("deprecated")}
+        open_q = open_qs.get(key, 0)
+        state = {
+            "match": ("done", ""),
+            "paper": text_state(doi, p["datasets"]),
+            "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
+            if check != "absent" else ("todo", ""),
+            "check": ("todo", "") if rerun else ("done", "ready") if check is True
+            else ("waiting", "not ready") if check is False
+            else ("none", "before checks") if check is None else ("todo", ""),
+            # A dataset added to a paper opens it again: its attempt is done when every dataset has been used.
+            "attempt": ("deprecated", "rerun due") if deprecated_on
+            else ("done", p["date"]) if need and covered == set(need)
+            else ("todo", f"{len(covered)} of {len(need)} datasets") if covered else ("todo", ""),
+            "questions": ("todo", f"{open_q} open") if open_q else ("none", ""),
+            "verified": ("done", "") if live and all(a["tier"] != "runs" for a in live)
+            else ("todo", "") if live else ("none", ""),
+        }
+        folders = [dir_of(k) for k in p["datasets"]]
+        row = finish_row({
+            "paper": key, "byline": p["byline"], "title": p["title"], "doi": doi, "relation": p["relation"],
+            "datasets": [dataset_cell(k) for k in p["datasets"]], "state": state,
+            "issue": issues_by_name.get(key) or next((issues[dataset_label(k)] for k in p["datasets"]
+                                                      if dataset_label(k) in issues), None),
+            "page": f"papers/{key}/" if atts or p["status"] == "claims" else None,
+            **queued([key] + ([] if by_paper else folders))})
+        by_doi[doi] = row
+        out.append(row)
+
+    groups: dict[str, list[dict]] = {}
+    for t in data["targets"]:
+        # A dataset its own paper is listed for, or one that only a paper reusing it names: in that paper's row.
+        if t["key"] in primary or t.get("reuse_only"):
+            continue
+        doi = paper_match.clean_doi(t["paper"]) if t.get("paper") else None
+        match = t.get("match", "unchecked")
+        if doi in by_doi and match != "no_match":
+            # Another dataset of a paper that has its row: it joins the paper once its match is made.
+            row = by_doi[doi]
+            row["datasets"].append(dataset_cell(t["key"]))
+            if row["state"]["match"][0] == "done" or match == "held":
+                row["state"]["match"] = (("waiting", "verdicts to confirm") if match == "held"
+                                         else ("todo", "a dataset to match"))
+            finish_row(row)
+            continue
+        groups.setdefault(f"{doi}|{'no_match' if match == 'no_match' else ''}" if doi else t["key"], []).append(t)
+    for ts in groups.values():
+        doi = paper_match.clean_doi(ts[0]["paper"]) if ts[0].get("paper") else None
+        matches = {t.get("match", "unchecked") for t in ts}
+        keys = [t["key"] for t in ts]
+        if matches == {"no_match"}:
+            state = {key: ("none", "") for key, _ in PAPER_STEPS}
+            state["match"] = ("none", "no paper matches")
+        else:
+            state = {"match": ("waiting", "verdicts to confirm") if "held" in matches
+                     else ("todo", "to list") if matches == {"matched"} else ("todo", ""),
+                     "paper": text_state(doi, keys), "claims": ("todo", ""), "check": ("todo", ""),
+                     "attempt": ("todo", ""), "questions": ("none", ""), "verified": ("none", "")}
+        out.append(finish_row({
+            "paper": None, "byline": "", "title": ts[0].get("paper_title") or ts[0]["name"], "doi": doi,
+            "relation": ["primary"], "datasets": [dataset_cell(k) for k in keys], "state": state,
+            "issue": next((issues[t["label"]] for t in ts if t["label"] in issues), None), "page": None,
+            **queued([dir_of(k) for k in keys])}))
     return out
 
 
@@ -1430,7 +1601,7 @@ ABOUT_STEPS = [
 PIPELINE_STATES = [("done", "Done"), ("older", "Made before the step existed"), ("waiting", "Waiting on a person"),
                    ("deprecated", "To redo"), ("todo", "To do")]
 # Questions arise only during an attempt, so they are in the table, not the chart.
-CHART_STEPS = [(k, label) for k, label in PIPELINE_STEPS if k != "questions"]
+CHART_STEPS = [(k, label) for k, label in PAPER_STEPS if k != "questions"]
 
 
 def chart_state(key: str, state: str, note: str) -> str:
@@ -1441,7 +1612,7 @@ def chart_state(key: str, state: str, note: str) -> str:
 
 
 def pipeline_chart(counts: dict, total: int) -> str:
-    """One bar per step, out of every target: done, made before the step, waiting on a person, to redo, to do."""
+    """One bar per step, out of every paper: done, made before the step, waiting on a person, to redo, to do."""
     rows = ""
     for key, label in CHART_STEPS:
         c = counts[key]
@@ -1454,7 +1625,7 @@ def pipeline_chart(counts: dict, total: int) -> str:
                  f'{", " + parts if parts else ""}">{segs}</span>'
                  f'<span class="fcount"><strong>{done:,}</strong> of {total:,}</span></div>')
     legend = "".join(f'<span><i class="seg st-{st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
-    return (f'<div class="panel"><h2>Targets at each step</h2><div class="funnel">{rows}</div>'
+    return (f'<div class="panel"><h2>Papers at each step</h2><div class="funnel">{rows}</div>'
             f'<p class="flegend small">{legend}</p></div>')
 
 
@@ -1477,7 +1648,7 @@ function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
   return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
 function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
 function shown(tr){
-  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent).toLowerCase().indexOf(state.q)<0)return false;
+  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent+' '+tr.cells[2].textContent).toLowerCase().indexOf(state.q)<0)return false;
   var keys=state.step?[state.step]:steps;
   if(state.st)return keys.some(function(k){return tr.dataset[k]===state.st;});
   return true;}
@@ -1490,8 +1661,8 @@ function draw(){
   page.forEach(function(tr){tr.hidden=false;tbody.appendChild(tr);});
   ths.forEach(function(th,i){if(i===state.col)th.setAttribute('aria-sort',state.dir>0?'ascending':'descending');
     else th.removeAttribute('aria-sort');});
-  $('pcount').textContent=list.length===rows.length?rows.length.toLocaleString()+' targets'
-    :list.length.toLocaleString()+' of '+rows.length.toLocaleString()+' targets';
+  $('pcount').textContent=list.length===rows.length?rows.length.toLocaleString()+' papers'
+    :list.length.toLocaleString()+' of '+rows.length.toLocaleString()+' papers';
   var el=$('ppager');if(!list.length){el.innerHTML='';return;}
   var nums=[1,pages,state.page-1,state.page,state.page+1].filter(function(p,i,a){return p>=1&&p<=pages&&a.indexOf(p)===i;})
     .sort(function(a,b){return a-b;}),last=0,buttons='';
@@ -1522,25 +1693,31 @@ def sort_button(label: str) -> str:
 
 
 def page_pipeline(data: dict) -> str:
-    """Where every target stands in the pipeline, and what is waiting on a person."""
+    """Where every paper stands in the pipeline, and what is waiting on a person."""
     root = "../"
-    rows = pipeline_rows(data)
-    counts = {key: {} for key, _ in PIPELINE_STEPS}
+    rows = paper_pipeline_rows(data)
+    counts = {key: {} for key, _ in PAPER_STEPS}
     for r in rows:
-        for key, _ in PIPELINE_STEPS:
+        for key, _ in PAPER_STEPS:
             st = r["state"][key][0]
             counts[key][st] = counts[key].get(st, 0) + 1
     # Claims files made before the check existed count as checked, as in the chart.
-    older = {key: sum(1 for r in rows if chart_state(key, *r["state"][key]) == "older") for key, _ in PIPELINE_STEPS}
+    older = {key: sum(1 for r in rows if chart_state(key, *r["state"][key]) == "older") for key, _ in PAPER_STEPS}
     head = "".join(f'<th>{sort_button(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
                    + (f', {counts[key]["waiting"]:,} waiting' if counts[key].get("waiting") else "")
-                   + "</div></th>" for key, label in PIPELINE_STEPS)
+                   + "</div></th>" for key, label in PAPER_STEPS)
     body = ""
     for r in rows:
-        name = (f'<a href="{root}{e(r["page"])}">{e(r["dataset"])}</a>' if r["page"] else e(r["dataset"]))
+        label = r["byline"] or r["paper"] or "Not matched yet"
+        name = (f'<a href="{root}{e(r["page"])}">{e(label)}</a>' if r["page"]
+                else e(label) if r["paper"] else f'<span class="muted">{e(label)}</span>')
+        sets = ", ".join(f'<a href="{root}{e(d["page"])}">{e(d["label"])}</a>' if d["page"] else e(d["label"])
+                         for d in r["datasets"])
+        if r["relation"] == ["reuses"]:
+            sets += ' <span class="muted">(reused)</span>'
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
-                        f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
-        states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
+                        f'{e(r["state"][key][1])}</td>' for key, _ in PAPER_STEPS)
+        states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PAPER_STEPS)
         q = r["queue"]
         if r["running"]:
             place, sort = "running now", -1
@@ -1554,61 +1731,67 @@ def page_pipeline(data: dict) -> str:
         else:
             place, sort, when, hours = "", 999999, "", None
         body += (f'<tr {states}><td>{name}</td>'
-                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}'
+                 f'<td class="pname">{e(r["title"])}</td><td class="small psets">{sets}</td>{cells}<td class="small">{e(r["next"])}'
                  + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td>'
                  f'<td class="small" data-sort="{sort}">{e(place)}</td>'
                  f'<td class="small" data-sort="{999999 if hours is None else round(hours * 10)}">{e(when)}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
-    charted = {key: {} for key, _ in PIPELINE_STEPS}
-    for r in rows:
-        for key, _ in PIPELINE_STEPS:
+    charted = {key: {} for key, _ in PAPER_STEPS}
+    # A dataset no paper matches (confirmed) stays in the table and out of the chart: it has no step to do.
+    in_chart = [r for r in rows if r["state"]["match"][0] != "none"]
+    for r in in_chart:
+        for key, _ in PAPER_STEPS:
             st = chart_state(key, *r["state"][key])
             charted[key][st] = charted[key].get(st, 0) + 1
-    chart = pipeline_chart(charted, len(rows))
-    step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
+    chart = pipeline_chart(charted, max(len(in_chart), 1))
+    step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PAPER_STEPS)
     state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
     updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
     q = data.get("queue") or {}
     queue_note = ""
     if q.get("full") is not None:
         hours, lanes = q.get("hours") or {}, q.get("lanes") or {}
+        named = q.get("papers") or q   # the queue by paper, when it is given so
         def part(kind: str, what: str) -> str:
-            n, h, k = len(q.get(kind, [])), hours.get(kind), lanes.get(kind, 1)
+            n, h, k = len(named.get(kind, [])), hours.get(kind), lanes.get(kind, 1)
             each = (f", at about {h:.1f} hours each" if h and h >= 1 else f", at about {round(h * 60)} minutes each" if h
                     else "")
-            return (f'{n:,} dataset{" waits" if n == 1 else "s wait"} for {what} on {k} lane{"s" if k != 1 else ""}{each}'
+            return (f'{n:,} paper{" waits" if n == 1 else "s wait"} for {what} on {k} lane{"s" if k != 1 else ""}{each}'
                     + (f', about {in_hours(n * h / k).removeprefix("about ")} in all' if h and n else ""))
-        n_going = len(q.get("running") or {})
+        n_going = len(named.get("running") or {})
         going_note = (f' {n_going:,} chain{" is" if n_going == 1 else "s are"} running now, and the Done in column '
                       'estimates when each will finish from how long the rest of a chain usually takes after the '
                       'role it is on. A branch with nothing running is waiting, on a person or a merge, and has no '
                       'estimate.' if "running" in q else "")
         queue_note = (f' {part("full", "an attempt")}, and {part("claims", "their claims to be read")}. '
-                      'The Queue and Done in columns give each dataset’s place and a rough estimate of when it '
+                      'The Queue and Done in columns give each paper’s place and a rough estimate of when it '
                       f'will be done, counted from the last update.{going_note}')
-    n_issues = len(data.get("issues", {}))
+    n_issues = len(data.get("issues_by_name") or data.get("issues", {}))
     issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
-                   f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
+                   f'{n_issues:,} paper{"s" if n_issues != 1 else ""}</a> that need{"s" if n_issues == 1 else ""} a '
+                   'person.' if n_issues else "")
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
-  <p class="lede">Every target, and where it stands in the
-  <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
-  check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
-  with {papers_missing:,} papers to supply; the list of missing papers is in
+  <p class="lede">Every paper, and where it stands in the
+  <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: the match to its datasets, its text, the claims
+  read from it and their check, the attempt, the questions it raised, and verification. A dataset whose paper
+  match is still to make is listed under the paper its archive names. {len(waiting):,}
+  paper{"s are" if len(waiting) != 1 else " is"} waiting on a person, {papers_missing:,} of them for a text to
+  supply; the list of missing texts is in
   <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}{queue_note}</p>
   <p class="small muted">Last updated <time id="updated" datetime="{e(data["generated"])}">{e(updated)}</time>.
   The page is rebuilt whenever main changes.</p>
 </header>
 <main>{chart}
 <div class="listbar pipeline-tools" style="margin-top:16px" hidden>
-  <input id="pq" type="search" placeholder="Search datasets and names" aria-label="Search datasets and names">
+  <input id="pq" type="search" placeholder="Search papers and datasets" aria-label="Search papers and datasets">
   <select class="ghost" id="pstep" aria-label="Step"><option value="">Any step</option>{step_opts}</select>
   <select class="ghost" id="pstate" aria-label="State"><option value="">Any state</option>{state_opts}</select>
   <strong id="pcount" aria-live="polite"></strong>
 </div>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th><th>{sort_button("Queue")}</th><th>{sort_button("Done in")}</th></tr></thead>
+<thead><tr><th>{sort_button("Paper")}</th><th>{sort_button("Title")}</th><th>{sort_button("Datasets")}</th>{head}<th>{sort_button("Next")}</th><th>{sort_button("Queue")}</th><th>{sort_button("Done in")}</th></tr></thead>
 <tbody>{body}</tbody></table></div>
 <nav class="pager" id="ppager" aria-label="Pages"></nav></main>
 <script>
@@ -1619,7 +1802,7 @@ t.textContent+=" ("+ago+")";}})();
 </script>
 <script>{PIPELINE_TABLE_JS}</script>'''
     return shell(data, "Pipeline", root, "pipeline", html_, path="pipeline/",
-                 description="Where every target of the reproduction registry stands in its pipeline.")
+                 description="Where every paper of the reproduction registry stands in its pipeline.")
 
 
 def page_about(data: dict) -> str:
@@ -2471,11 +2654,12 @@ def main() -> int:
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
         # An issue's title is "<dataset label or paper key>: waiting on you" (tools/notify.py); a paper's is shown
         # on each of its datasets.
-        data["issues"] = {}
+        data["issues"], data["issues_by_name"] = {}, {}
         for i in json.loads(args.issues.read_text()):
             if not i["title"].endswith(": waiting on you"):
                 continue
             name = i["title"].rsplit(": waiting on you", 1)[0]
+            data["issues_by_name"][name] = i["url"]   # the Pipeline page goes by paper
             for label in [dataset_label(d["key"]) for d in paper_records.datasets_of(name)] or [name]:
                 data["issues"][label] = i["url"]
     build(data, args.output)
