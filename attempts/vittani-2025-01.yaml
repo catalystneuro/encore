@@ -1,0 +1,420 @@
+schema_version: 3
+id: vittani-2025-01
+datasets:
+- archive: dandi
+  id: "001414"
+  version: 0.250603.1324
+  doi: 10.48324/dandi.001414/0.250603.1324
+  relation: primary
+paper: doi:10.1073/pnas.2422069122
+date: 2026-11-10
+entry: vittani-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42859995122
+outcomes:
+- claim: fig1k-astrocyte-expression
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset holds one slice image for this panel (sub-PF519-IP3R2-WT, session
+    fig1k-PinkFlamindo-bPAC-brain-slices), two 8-bit frames of 1600 x 1200 pixels in one series with
+    no channel names, no scale and no description of which frame is bPAC and which Pink Flamindo.
+    Viewed while preparing (not shown in the notebook), both frames show cell-sized fluorescent
+    patches, but neither the channel of each frame nor astrocyte morphology can be established from
+    the file, so the criterion cannot be applied.
+- claim: fig1b-camp-dose-dependent
+  outcome: reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig1b-camp-dose-dependent
+  notes: Under all four baseline and peak readings the bPAC mean peak is above zero at every length
+    and rises from 0.2 s to 1 s to 3 s (79.6, 104.7 and 113.1% with baseline (a) and filtered peaks;
+    4 mice, 1 s the mean of recordings 1 and 4 per mouse). At 1 s the bPAC mice (104.7%) are far
+    above the 5 controls (2.5%, t = 11.44). One mouse (PF1) has a lower 3 s than 1 s peak (87.9
+    against 93.8%).
+  deviations:
+  - The thinned-skull ROI and the dark-vessel ROI are not in the files. ASSUMPTION, a central disc of
+    radius 160 pixels for the signal and the darkest 0.5% of its pixels in the first frame for the
+    Blood Offset (SI Image Data Analysis describes both ROIs as drawn by hand).
+  - No motion correction (SI Image Data Analysis applies TurboReg "when needed").
+  - The across-recording "Corrected dF/F0" (an exponential fitted to recordings 1 and 4) is not
+    applied; the passage does not say what is fitted against what.
+  - LED frames are found from the step the light leaves in the red channel (frames 325 or 326,
+    lengths matching 0.2, 1 and 3 s), and removed, as SI Image Data Analysis says.
+- claim: fig1g-j-camp-kinetics-anesthetized
+  outcome: reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig1g-j-camp-kinetics-anesthetized
+  measured: [79.59, 104.71, 113.11, 6.35, 4.35, 0.25, 29.25, 62.13, 91.65, 35.6, 66.47, 91.9]
+  notes: Under F0a-peakf-decayb-t0a (baseline the whole 65 s, peak on the median-filtered trace, decay
+    to 20% of the peak, time from the first frame after the LED) the ordering holds for all four
+    parameters and 9 of 12 values are within tolerance; the 1 s peak (104.7 against 94.4%) and the
+    0.2 s and 1 s rise times (6.35 and 4.35 s against 7.9 and 6.3) are outside. Baseline (b) gives 9
+    of 12 too; with decay read as the fall to 80% of the peak, at most 3 match, so Table S1's decay
+    values fit reading (b) of "80% decay time". Paired t tests with Benjamini-Hochberg correction find
+    every pair of different lengths to differ in decay and duration (q at most 0.0067) and 0.2 s to
+    differ from 1 s and 3 s in peak (q 0.0052). The values measured are those of
+    F0a-peakf-decayb-t0a.
+  deviations:
+  - ROI, Blood Offset, motion correction, Corrected dF/F0 and LED frames as in fig1b-camp-dose-dependent.
+- claim: fig1f-camp-reproducible
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig1f-camp-reproducible
+  notes: Under the adopted reading F0a-peakf-decayb-t0a no parameter differs between recording 1 and
+    recording 4 in the 3 mice with both (smallest q 0.20 for family (a), 0.21 for family (b)); the peak
+    is 13.4% lower in recording 4, decay and duration 1.9 and 1.5 s shorter. Under 4 of the 16
+    readings (decay to 80% of the peak, filtered peak) decay and duration differ at q 0.03 to 0.05 in
+    family (a), so the outcome depends on the reading of "80% decay time". Question for the paper's
+    authors, does "80% decay time" mean the time for the signal to fall by 80% (to 20% of the peak)?
+  deviations:
+  - ASSUMPTION, the open details of the claims header (baseline, filtered or unfiltered peak, meaning of
+    80% decay, time origin) are taken as F0a-peakf-decayb-t0a, the reading under which the
+    anesthetized cAMP values best match Table S1 (9 of 12, fig1g-j-camp-kinetics-anesthetized). Every
+    reading is shown.
+- claim: figs1n-startle-camp-awake-higher
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 12 awake startle recordings (Mlc1-PinkFlamindo mice, 7440 frames, about 25 min each) and
+    the 3 anesthetized ones (Lck-PinkFlamindo, 1860 frames) carry no stimulus times (no stimulus or
+    intervals groups). The SI gives one tail shock after a 30 s baseline, which does not fit the
+    25-minute awake recordings, and in a survey of the mean traces made while preparing (not run in the
+    notebook) no step or response was evident at 30 s. Without shock times the peak cannot be
+    measured without choosing it from the response itself.
+- claim: figs1p-whisker-camp-length
+  outcome: not_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:figs1p-whisker-camp-length
+  measured: [6.7, 4.74, 6.7]
+  notes: With onset at 65 s and the photobleaching correction, the mean peaks for 0.5, 1 and 2 min are
+    5.74, 4.74 and 6.70% (3, 4 and 4 mice; F0a-peakf), not rising with length (ANOVA p = 0.55); the 2
+    min mean is above 5 +/- 0.5%. The 0.5 min mean rests on 3 mice, one at 10.45%. The response
+    persists through the puffs (mean trace above zero from the first peak to the end of the puffs,
+    minimum 1.66 to 2.53%). Without the photobleaching correction the peaks rise with length (ANOVA
+    p 0.0003 to 0.0017) but the 0.5 min peaks are negative, as the bleaching drift exceeds the
+    response.
+  deviations:
+  - The files carry no puff times; the onset is taken at 65 s as the SI states. The baseline of the
+    claim is the 65 s before the puffs (reading a).
+  - ROI and Blood Offset as in fig1b-camp-dose-dependent.
+- claim: figs1k-twophoton-camp
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset holds, for this panel, one file (sub-Mlc1-PF1, figS1jk-2P-Mlc1-PF) with a baseline
+    image and a post-LED image, each stored as 2 frames of which the second is blank, and no astrocyte
+    ROIs and no time series. The per-astrocyte comparison of the criterion cannot be made.
+- claim: fig2b-arteriole-biphasic
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time. The arteriole data are 177 files (114.9 GB). The kymograph rectangles
+    (image_mask) were drawn on the "rotated" copies of each movie, and those copies hold only the
+    values 0 and 1 (0 to 2 in some files), so the rectangles must be placed on the raw movies by
+    recovering each rotation, for which no angle is stored. The attempt got as far as surveying the
+    files and checking the rotated copies; streaming the movies (about 20 minutes at the 100 MB/s
+    reached here) and building and checking the rotation recovery did not fit the run after the
+    astrocyte notebook (32 minutes per run).
+- claim: fig2d-auc-anesthetized
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: fig2gh-dilation-duration-rate-anesthetized
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: figs2-cohort2-1s-dilation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: figs1q-whisker-arteriole
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic. The whisker arteriole files (14, 9.5 GB) have
+    the same rotated copies.
+- claim: fig2i-camp-predicts-dilation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig2gh-dilation-duration-rate-anesthetized, blocked for time.
+- claim: fig2j-timing-anesthetized
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the arteriole traces, not tested for time (fig2b-arteriole-biphasic).
+- claim: fig3b-camp-awake
+  outcome: partially_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig3b-camp-awake
+  measured: [90.26, 5.72, 75.7, 81.43]
+  notes: The bPAC peak is far above the control peak under every reading (90.3 against 7.3%, t = 14.34,
+    p < 0.001, 5 and 5 mice). At most one of the four values is within tolerance under any reading;
+    under F0a-peakf-decayb-t0a the duration (81.4 s) matches, the decay (75.7 s) and peak (90.3%) are
+    just outside, and the rise time (5.7 against 3.3 s) is outside. Six of the 39 files duplicate
+    others and are left out (see the findings).
+  deviations:
+  - Six duplicate files are left out (the second of each pair in path order), so PF3, PF4, PF6 and PF9
+    lose recordings.
+  - ROI, Blood Offset and the Corrected dF/F0 as in fig1b-camp-dose-dependent.
+- claim: fig3cd-camp-awake-stable
+  outcome: not_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig3cd-camp-awake-stable
+  notes: The paper's test, a mixed-effects model across recordings (REML, mouse random), finds the
+    recordings to differ under 10 of the 16 readings. Under F0a-peakf-decayb-t0a the peak (recording
+    means 91.9, 93.2, 86.0 and 84.2%), the rise time and the decay time differ (p 0.0031, 0.0025 and
+    0.018), and the duration does not (p 0.17). After removing the duplicate files only one mouse has
+    all four recordings, so the repeated-measures ANOVA cannot be run. With every file kept, the
+    repeated-measures ANOVA on 4 mice finds no difference (p 0.096 to 0.35) and the mixed model finds
+    only the rise time to differ (p 0.0008; recording 4 at 11.6 s against 2.9 to 4.4 s). The result
+    may reflect the duplicated deposits.
+  deviations:
+  - The mixed model is statsmodels MixedLM with recording as a fixed factor and a random intercept per
+    mouse, tested by a Wald test of the recording terms; Prism's mixed model and its
+    Geisser-Greenhouse correction are not reproduced exactly. Several fits did not converge cleanly.
+  - Duplicate files left out, as in fig3b-camp-awake.
+- claim: fig3f-auc-awake
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: fig3h-duration-awake-ns
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: fig3i-rate-awake
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: figs3h-control-brief-dilation
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: awake-vs-anesthetized-camp-kinetics
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:awake-vs-anesthetized-camp-kinetics
+  notes: Under the adopted reading F0a-peakf-decayb-t0a the awake decay is longer (75.7 against 62.1 s),
+    but the rise is slower in awake mice (5.7 against 4.35 s) and the peaks differ by 13.8% of the
+    anesthetized peak (90.3 against 104.7%). All three parts hold under the 4 readings that take the
+    peak on the unfiltered trace with decay (b) (rise 4.5 against 5.7 s, decay 73.4 against 60.4 s,
+    peaks 103.0 and 106.4%, 3.2% apart). The outcome depends on whether peaks are read on the filtered
+    trace, with its 10 s median filter for awake data.
+  deviations:
+  - ASSUMPTION, the reading F0a-peakf-decayb-t0a, as in fig1f-camp-reproducible.
+- claim: fig3k-timing-awake
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the arteriole traces, not tested for time (fig2b-arteriole-biphasic).
+- claim: fig4a-e-camp-ip3r2-no-difference
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig4a-e-camp-ip3r2-no-difference
+  notes: Under F0a-peakf-decayb-t0a the two-way ANOVA (genotype between, recording within, 11 mice with
+    all four recordings after the duplicate is left out) finds no genotype effect on any parameter (p
+    0.44 to 0.96, df 1, 9), and t tests on the per-mouse means of all 12 mice agree (p 0.59 to 0.98).
+    With decay read as the fall to 80% of the peak and the unfiltered peak (4 of 16 readings), the
+    duration differs between genotypes (p 0.022 to 0.027).
+  deviations:
+  - ASSUMPTION, the reading F0a-peakf-decayb-t0a, as in fig1f-camp-reproducible.
+  - The two-way ANOVA is pingouin's mixed ANOVA, without a Geisser-Greenhouse correction of the
+    between-mice term (it does not apply to it).
+  - The movie of PF584 recording 2 is stored with time as the last axis and is read with its axes moved.
+- claim: fig4-camp-ip3r2-values
+  outcome: not_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig4-camp-ip3r2-values
+  measured: [57.44, 7.68, 41.53, 49.22, 63.21, 8.03, 41.62, 49.65]
+  notes: At most 2 of the 8 values are within tolerance under any reading. Under F0a-peakf-decayb-t0a
+    the IP3R2-/- and IP3R2+/+ peaks are 57.4 and 63.2% (expected 62.2 and 54.4, so the genotypes are in
+    the reverse order), rise times 7.7 and 8.0 s (both within tolerance), decay 41.5 and 41.6 s and
+    duration 49.2 and 49.7 s, below the 62 to 85 s of Table S1. One pair of files is identical across
+    an IP3R2-/- and an IP3R2+/+ mouse.
+  deviations:
+  - ROI, Blood Offset and the Corrected dF/F0 as in fig1b-camp-dose-dependent.
+- claim: fig4g-i-arteriole-ip3r2-no-difference
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: fig4k-timing-ip3r2
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the arteriole traces, not tested for time (fig2b-arteriole-biphasic).
+- claim: fig4j-ip3r2-lower-than-wt
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig3i-rate-awake and fig4g-i-arteriole-ip3r2-no-difference, blocked for time. On the
+    cAMP part alone, the notebook's values do not support it under the adopted reading (awake WT
+    90.3%, IP3R2-/- 57.4%, IP3R2+/+ 63.2%, from fig3b-camp-awake and fig4-camp-ip3r2-values); this is
+    reported, not judged.
+- claim: fig5b-d-ca-anesthetized
+  outcome: partially_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig5b-d-ca-anesthetized
+  measured: [225.13, 153.54, 181.29, 17.56, 25.8, 16.12]
+  notes: The bPAC RCaMP3 peak exceeds the control peak in every recording (controls -14 to 3%), and
+    recording 4 is below recording 1. The repeated-measures ANOVA finds the peak to change across
+    recordings under every reading (p 0.017 to 0.028); the duration changes under 8 of the 16
+    readings, including the four with the unfiltered peak and decay (b) (p 0.0016 to 0.040), not
+    under F0a-peakf-decayb-t0a (p 0.085). At most 2 of 6 values are within tolerance under any
+    reading (the 0.2 s peak, 225.1%, and the 1 s peak, 181.3%); the 3 s peak (153.5%) and the
+    durations (16 to 26 s against 27 to 52 s) are lower. The tests hold under one reading
+    (F0a-peaku-decayb-t0a) with fewer values matching, which the criterion calls partial.
+  deviations:
+  - ROI and Blood Offset as in fig1b-camp-dose-dependent; no photobleaching correction, as the SI says
+    for Ca2+. dF/F0 is divided by the Adjusted Offset (first 10 frames minus the Blood Offset).
+  - In most 1 s Ca2+ recordings the LED step merges with the rising response, so the LED end is not
+    found; the nominal 5 frames from frame 325 are removed.
+- claim: figs4f-g-ca-rise-decay-anesthetized
+  outcome: not_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:figs4f-g-ca-rise-decay-anesthetized
+  measured: [1.88, 0.0, 1.08, 15.68, 25.8, 15.04]
+  notes: At most 1 of the 6 values is within tolerance under any reading; the 3 s decay time is at most
+    30.3 s under any reading, against 49.4 s. Both repeated-measures ANOVAs give p < 0.05 under 4 of
+    16 readings. Under the reading that matches one value, rise time grows with stimulation length
+    (2.68, 2.82 and 3.12 s for 0.2, 1 and 3 s), the direction of the sentence, not of Table S4.
+  deviations:
+  - As in fig5b-d-ca-anesthetized.
+- claim: fig5e-g-ca-awake
+  outcome: not_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig5e-g-ca-awake
+  measured: [70.07, 0.7, 24.92, 25.62]
+  notes: The bPAC response is present (filtered peak 70.1% against 15.4% in controls; 210.5% on the
+    unfiltered trace) but the peak does not change significantly across recordings under any reading
+    (p 0.054 to 0.145), though recording 4 is below recording 1, and at most one of the four values is
+    within tolerance (rise time 1.70 s under time origin b). Decay and duration (24.9 and 26.6 s) are
+    shorter than Table S4's 37.9 and 39.7 s. The 50-frame median filter of the awake pipeline lowers
+    the peak of a Ca2+ transient lasting about 20 s, which may explain part of the gap.
+  deviations:
+  - As in fig5b-d-ca-anesthetized.
+- claim: fig5h-j-ca-ip3r2-reduced
+  outcome: partially_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig5h-j-ca-ip3r2-reduced
+  measured: [7.34, 38.3, 0.66, 2.38, 5.99, 19.48]
+  notes: Under F0b-peakf-decayb-t0b the genotype effects on decay and duration are significant with
+    IP3R2-/- shorter (p 0.0003 and 0.0006; durations 7.8 and 22.3 s, both within tolerance) and the
+    IP3R2-/- peak is below the IP3R2+/+ peak (11.0 against 41.9%); 2 of 6 values match under that
+    reading, so partially reproduced. The peaks are far below Table S4 (28.7 and 115.2%). The genotype
+    effect on peak is significant here (p 0.022), where the paper's is not. The rise time is shorter in
+    IP3R2-/- mice (1.66 against 3.38 s, p 0.022), the reverse of "slightly delayed". The recording
+    effect on peak is significant (p 0.0039), recording 4 below recording 1 in both genotypes. The
+    values measured are those of F0a-peakf-decayb-t0a.
+  deviations:
+  - As in fig5b-d-ca-anesthetized. The two-way ANOVA is pingouin's mixed ANOVA; the paper used a
+    mixed-effects model for peak.
+- claim: figs4z-startle-ca-ip3r2
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 7 startle Ca2+ recordings (1860 frames) carry no shock times; see
+    figs1n-startle-camp-awake-higher.
+- claim: figs5a-d-ca-transient-camp-sustained
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on fig2j-timing-anesthetized, fig3k-timing-awake and fig4k-timing-ip3r2, blocked for
+    time.
+- claim: figs5i-twophoton-ca-camp-correlation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 12 two-photon files hold two stacks per region, ChanA and ChanB, with astrocyte ROIs
+    (pixel_mask; 9 or 12 per mouse), but nothing says which channel is GCaMP6f and which Pink Flamindo
+    (one optical channel, indicator "astrocytic_cAMP_and_calcium_indicators"). The regression of cAMP
+    peak on GCaMP6f peak depends on that assignment. The files also carry no LED times. Region 1 of
+    PF-GCaMP2 holds no stacks.
+- claim: fig6c-e-camp-mild
+  outcome: partially_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig6c-e-camp-mild
+  measured: [7.98, 27.25, 16.8, 44.05]
+  notes: The dandiset holds recordings 1 and 6 (the pair Table S1 names, "#1 and 6"), not four
+    recordings, so readings (a) and (b) of the criterion cannot be formed; recordings 1 and 6 are
+    used. Four mice have both. Under F0a-peakf-decaya-t0a the peak (7.98%) and the duration (31.2 s)
+    are within tolerance, 2 of the 4 values; no reading matches more. The rise time is 27 s under every
+    reading, against 5.7 s. None of the four paired t tests finds recording 1 and 6 to differ (p 0.31
+    to 0.50 under F0a-peakf-decayb-t0a). The 8% peak is close to the whisker peaks (4.7 to 6.7%).
+    Measured values are those of F0a-peakf-decayb-t0a.
+  deviations:
+  - Recordings 1 and 6 in place of the criterion's readings (recordings 1 and 4, or all four), as the
+    dandiset holds no others. The fifth mouse (PF5) has only recording 1, its recording 6 movie being
+    2 frames.
+  - The LED step of the 25 ms, 1 mW pulse is not visible in 8 of 9 files; frame 325 is taken.
+- claim: fig6f-h-ca-mild
+  outcome: partially_reproduced
+  notebook: reproduce_vittani_2025.ipynb
+  output: claim:fig6f-h-ca-mild
+  measured: [99.73, 6.83, 7.75, 14.58]
+  notes: The 4 bPAC mice respond (peak 99.7%) and the 5 controls do not (-7.6%), and peak and duration
+    change across recordings (repeated-measures ANOVA p 0.014 and 0.0004). None of the four values is
+    within tolerance under any reading; the peak (99.7 to 111.5%) is higher and the rise (6.8 to 7.7
+    s) and duration (10.2 to 15.0 s) shorter than Table S4 gives. The dandiset holds 4 bPAC mice, the
+    count of Figure 6; the 5 of Figure S6 cannot be formed.
+  deviations:
+  - As in fig5b-d-ca-anesthetized; LED onset taken at frame 325, as no step is visible.
+- claim: fig6j-auc-mild
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: fig6kl-duration-rate-mild-ns
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+- claim: fig6b-timing-mild
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the arteriole time-to-peak, not tested for time (fig2b-arteriole-biphasic).
+- claim: mild-dilation-size
+  outcome: blocked
+  blocked_by: too_large
+  notes: Not tested for time; see fig2b-arteriole-biphasic.
+findings:
+- kind: format_error
+  statement: The "rotated" arteriole movies, the copies on which the kymograph rectangles (image_mask)
+    were drawn, hold only the values 0 and 1 (0 to 2 in some files), in each of the four arteriole
+    files the notebook checks (one per experiment) and in those surveyed while preparing; the
+    background-corrected ratio images appear to have been cast to integers. No rotation angle is stored, so the rectangles cannot be placed on
+    the raw movies without recovering each rotation.
+- kind: other
+  statement: Eight pairs of files hold identical movies. In the awake cAMP data (Figure 3), PF2 recording
+    4 equals PF3 recording 1, PF4 recordings 1, 2 and 3 are one movie, PF5 recordings 3 and 4 equal PF6
+    recording 1 (a control and a bPAC mouse), and PF10 recording 1 equals PF9 recording 4; in Figure 4,
+    PF507 (IP3R2-/-) recording 4 equals PF594 (IP3R2+/+) recording 1; in Figure 1, the control PF5's 1 s
+    and 0.2 s files are one movie. The files the movies truly belong to cannot be told.
+- kind: data_missing
+  statement: The movie of recording 6 of mouse 25ms-PF5 (Figure 6) is stored inside its recording 1 file
+    with only 2 frames, and its own file holds no movie.
+- kind: format_error
+  statement: The movie of PF584-IP3R2-WT recording 2 is stored as 512 x 512 x 1600 (time last), in a
+    series named only "OnePhotonSeries", unlike every other movie (frames first).
+- kind: metadata_insufficient
+  statement: The files hold raw movies only. There are no stimulus times (LED onsets, whisker puffs, tail
+    shocks), no ROIs for the astrocyte signals or the Blood Offset, and no traces or results. The LED
+    onsets can be recovered from the light's step in most recordings, but not for the 25 ms pulses, the
+    startle shocks or the whisker puffs.
+- kind: metadata_insufficient
+  statement: The two-photon stacks (Figure S5) have channels ChanA and ChanB without saying which holds
+    GCaMP6f and which Pink Flamindo, and the slice and two-photon images (Figures 1K and S1J) store two
+    frames without saying what each is; in the Figure S1J images the second frame is blank.
+- kind: metadata_error
+  statement: In a survey of the files' metadata made while preparing, the subject age of
+    sub-Ca581-IP3R2-WT recording 4 is P14.3W, where its other recordings give P20.3W.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Does "80% decay time" (SI Image Data Analysis) mean the
+    time from the peak until the signal has fallen by 80%, to 20% of the peak? Under that reading the
+    anesthetized cAMP values match Table S1 (9 of 12); read as the fall to 80% of the peak, 3 of 12
+    match. The outcomes of fig1f-camp-reproducible and fig4a-e-camp-ip3r2-no-difference depend on it.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Are peaks and rise times read on the median-filtered trace
+    (20 frames anesthetized, 50 awake) or on the unfiltered one? With the 50-frame filter of the awake
+    data the peaks are lower; the comparison of awake and anesthetized kinetics holds only with
+    unfiltered peaks.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Where were the signal ROI and the dark-vessel ROI drawn,
+    and how was the across-recording "Corrected dF/F0" fitted? The dandiset holds neither ROI, and the
+    Ca2+ values of Table S4 (decay and duration) are not reached with the central-disc ROI used here.
