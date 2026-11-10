@@ -1349,6 +1349,9 @@ def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
                                          a["key"]))[:n]
 
 
+# The archives with a colour of their own in the progress charts; the rest share one (progress_data).
+OWN_COLOUR = ("dandi", "crcns")
+
 PROGRESS_METRICS = {
     "datasets": "Datasets attempted",
     "papers": "Papers",
@@ -1376,10 +1379,16 @@ def progress_data(data: dict) -> dict:
         m = re.fullmatch(r"([a-z]+)-(\d+)", v)
         return (0, m[1], int(m[2])) if m else (1, v, 0)
     protocols = sorted({protocol(a) for a in data["attempts"]}, key=version_order)
-    # Datasets are also counted by their archive, in the registry's order of archives, so that each keeps its colour
-    # (its slot in that order) whichever archives have attempts.
+    # Datasets are also counted by their archive. DANDI and CRCNS have a colour each (slots 1 and 2); every other
+    # archive, with a few datasets each, is counted in one "other archives" series (slot 3), so that the chart
+    # needs three colours, none of them an outcome's. The slot follows the archive, not its rank.
     order = list(ARCHIVES)
-    archives = sorted({split_key(a["key"])[0] for a in data["attempts"]}, key=lambda k: (order.index(k) if k in order else 99, k))
+    present = sorted({split_key(a["key"])[0] for a in data["attempts"]}, key=lambda k: (order.index(k) if k in order else 99, k))
+    archives = [k for k in OWN_COLOUR if k in present]
+    others = [k for k in present if k not in OWN_COLOUR]
+    if others:
+        archives.append("other")
+    group = lambda k: k if k in OWN_COLOUR else "other"
     start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
@@ -1398,7 +1407,7 @@ def progress_data(data: dict) -> dict:
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
         for key, day in first_dandiset.items():
             new[day]["datasets"] += 1
-            new[day][f"archive:{split_key(key)[0]}"] += 1
+            new[day][f"archive:{group(split_key(key)[0])}"] += 1
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
@@ -1413,8 +1422,11 @@ def progress_data(data: dict) -> dict:
     return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
             "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()},
             "protocols": protocols,
-            "archives": [{"key": k, "label": ARCHIVES[k]["name"].removeprefix("the ") if k in ARCHIVES else k,
-                          "slot": (order.index(k) if k in order else len(order)) % 8 + 1} for k in archives]}
+            "archives": [{"key": k, "slot": OWN_COLOUR.index(k) + 1 if k in OWN_COLOUR else len(OWN_COLOUR) + 1,
+                          "label": (ARCHIVES[k]["name"].removeprefix("the ") if k != "other" else
+                                    "Other archives (" + ", ".join(ARCHIVES[o]["name"].removeprefix("the ")
+                                                                   if o in ARCHIVES else o for o in others) + ")")}
+                         for k in archives]}
 
 
 def progress_panel(data: dict) -> str:
@@ -1731,7 +1743,7 @@ def page_pipeline(data: dict) -> str:
         else:
             place, sort, when, hours = "", 999999, "", None
         body += (f'<tr {states}><td>{name}</td>'
-                 f'<td class="pname">{e(r["title"])}</td><td class="small">{sets}</td>{cells}<td class="small">{e(r["next"])}'
+                 f'<td class="pname">{e(r["title"])}</td><td class="small psets">{sets}</td>{cells}<td class="small">{e(r["next"])}'
                  + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td>'
                  f'<td class="small" data-sort="{sort}">{e(place)}</td>'
                  f'<td class="small" data-sort="{999999 if hours is None else round(hours * 10)}">{e(when)}</td></tr>')
