@@ -150,10 +150,10 @@ outcomes:
     with s.d. 0.122 (tanh of the mean and s.d. of the session z means, ddof 0). Missing gaze is 6.63%
     (s.d. 8.40%) over the 27 sessions, reading (a), within tolerance; over all 29, reading (b), 11.59%
     (s.d. 20.01%), outside. Per participant the correlation is 0.751, s.d. 0.099. Lagging gaze by 5 s
-    lowers the correlation of the first six sessions from 0.737 to 0.834 to 0.290 to 0.317. Sigma is the
-    mean pixels per degree over all 29 sessions (32.90), as gen_figure3_eyetracking.py takes it (line
-    120) before removing the excluded sessions (line 130); with sigma from the 27 kept sessions (33.35)
-    r is 0.754, s.d. 0.123.
+    lowers the correlation of the first six sessions from between 0.737 and 0.834 to between 0.290 and
+    0.317. Sigma is the mean pixels per degree over all 29 sessions (32.90), as code/ephys_qc/gen_figure3_eyetracking.py
+    takes it (line 120) before removing the excluded sessions (line 130), lines quoted in the notebook;
+    with sigma from the 27 kept sessions (33.35) r is 0.754, s.d. 0.123.
   deviations:
   - The claims file names two readings of the sessions over which missing gaze is averaged (open detail
     3); the result matches under reading (a) only.
@@ -213,9 +213,10 @@ outcomes:
   - 186
   - 14
   - 150
-  notes: Amygdala 32/436 (permutation p = 0.0065), ACC 22/186 (p = 0.0005) and vmPFC 14/150 (p = 0.0140),
-    each below 0.05, with the paper's counts and denominators. 99 of 1266 cells are selective, 35 with
-    novel above familiar.
+  notes: Amygdala 32/436 (permutation p = 0.0095), ACC 22/186 (p = 0.0005) and vmPFC 14/150 (p = 0.022,
+    against a null 95th percentile of 12), each below 0.05, with the paper's counts and denominators.
+    99 of 1266 cells are selective, 35 with novel above familiar. The null on the code's rates gives
+    higher p than the null on exact counts (0.0065, 0.0005, 0.014), with no decision changed.
   deviations:
   - The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says
     ("Seed 0 is used as a standard choice"), and within each shuffle one set of bootstrap resamples is
@@ -223,8 +224,9 @@ outcomes:
     per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The
     permutation of trials is per cell, as in the code.
   - The observed test of each cell uses the code's spike rates (count divided by 1.5 s) and its resamples,
-    and gives the same p as a literal port of ms_test for all 1266 cells; the permutation null runs on
-    spike counts, which have the sign of the rates and exact ties.
+    and gives the same p as a literal port of ms_test for all 1266 cells. The permutation null also runs
+    on the rates; where resampled mean counts tie exactly, the difference is recomputed on the rates in
+    the code's floating point (perm_null_counts).
 - claim: memory-cells-not-significant
   outcome: reproduced
   notebook: reproduce_keles_2024.ipynb
@@ -234,8 +236,8 @@ outcomes:
   - 238
   - 17
   - 256
-  notes: Hippocampus 14/238 (p = 0.227) and preSMA 17/256 (p = 0.135), neither below 0.05, with the paper
-    counts; Monte Carlo s.e. 0.009 and 0.008.
+  notes: Hippocampus 14/238 (p = 0.282) and preSMA 17/256 (p = 0.182), neither below 0.05, with the paper
+    counts; Monte Carlo s.e. 0.010 and 0.009. The null on exact counts gives 0.227 and 0.135.
   deviations:
   - The permutation test is seeded with seed 0 in every test, as open detail 8 of the claims file says
     ("Seed 0 is used as a standard choice"), and within each shuffle one set of bootstrap resamples is
@@ -243,8 +245,9 @@ outcomes:
     per cell, unseeded; each cell's null decision has the code's distribution (bmovie.py docstring). The
     permutation of trials is per cell, as in the code.
   - The observed test of each cell uses the code's spike rates (count divided by 1.5 s) and its resamples,
-    and gives the same p as a literal port of ms_test for all 1266 cells; the permutation null runs on
-    spike counts, which have the sign of the rates and exact ties.
+    and gives the same p as a literal port of ms_test for all 1266 cells. The permutation null also runs
+    on the rates; where resampled mean counts tie exactly, the difference is recomputed on the rates in
+    the code's floating point (perm_null_counts).
 - claim: memory-lfp
   outcome: reproduced
   notebook: hfb_keles_2024.ipynb
@@ -298,8 +301,8 @@ outcomes:
   outcome: reproduced
   notebook: hfb_keles_2024.ipynb
   output: claim:memory-modalities-differ
-  notes: ACC is below 0.05 in cells (0.0005), LFP (0.0315) and iEEG (0.0005); hippocampus in none (0.227,
-    0.896, 0.0935); amygdala in cells (0.0065) and LFP (0.0015) but not iEEG (0.468).
+  notes: ACC is below 0.05 in cells (0.0005), LFP (0.0315) and iEEG (0.0005); hippocampus in none (0.282,
+    0.896, 0.0935); amygdala in cells (0.0095) and LFP (0.0015) but not iEEG (0.468).
   deviations:
   - HFB follows prep_filterLFP.py (notch, 0.1 Hz high-pass, common average, Morlet 70 to 170 Hz, z-score,
     mean over frequencies, 500 Hz) but is reduced at once to the window means used, without the code's
@@ -437,7 +440,10 @@ outcomes:
     macro channels respond to recognition images, without it 18 and 20. Offsets of 9.9 to 10.25 s keep
     the count high (590 to 695 micro, 617 to 724 macro), and with the 10-s offset the HFB response reaches
     half its peak 200 ms (macro) and 350 ms (micro) after the image, against 300 ms for the spikes, which
-    are on the trials' clock, with at most 9% of the peak before onset.
+    are on the trials' clock. The largest value before onset is 9% of the peak (micro), 7% (macro) and
+    10% (units). The counts keep rising to 10.25 s, and shifting the onsets also moves the window against
+    the response, so the sweep bounds the offset only to roughly 9.9 to 10.25 s; the claim needs only
+    10 s against 0 s.
   deviations:
   - The 10-s offset of the LFP is applied as the Usage Notes say and the code does (prep_filterLFP.py,
     LFP_PAD_us).
@@ -720,6 +726,230 @@ verifications:
       elsewhere, and the protocol (Author, step 1.4) blocks such a claim for the reason that applies,
       never data_missing: the raw BIDS data are public on OpenNeuro, and what stops the test is that fMRIPrep
       23.1.3 cannot be run here.'
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks (reproduce and hfb, with the conclusions and summaries),
+    the helper module bmovie.py, the attempt record and README, and the claims file, with the paper. The verifier
+    tested the rate and count paths of the permutation null on synthetic Poisson cells. Report in transcripts/keles-2024/verifier-2-report.md.
+    It agrees with every outcome, with a reservation on the memory-cell null (point 3a), and quotes sentences
+    the numbers do not support.
+  results:
+  - claim: cohort-emu-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: table1-demographics
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: neurons-total-and-areas
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: units-per-wire
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: firing-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: isi-violations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+      The Summary's "the quality metrics, behaviour and selectivity counts match to the reported precision"
+      holds only under the chosen readings; reading (a) of isi-violations falls outside tolerance.
+    response: The Summary of reproduce_keles_2024.ipynb now says the match holds under the readings chosen
+      and names the readings that fall outside (ISI reading (a), missing gaze reading (b), AUC s.d. reading
+      (b)). Outcome unchanged.
+  - claim: waveform-snr
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: projection-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: isolation-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: gaze-missing-p53cs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: gaze-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+      The Summary's match to the reported precision holds only under the chosen readings; reading (b) of missing
+      gaze falls outside tolerance. The sentence "lowers its correlation from 0.737 to 0.834 to 0.290 to 0.317"
+      is garbled; it means from 0.737-0.834 to 0.290-0.317. The verifier cannot check the
+      cited lines 120 and 130 of gen_figure3_eyetracking.py, because the code is not available to it.
+    response: Reworded the sentence in the notebook and the notes (from between 0.737 and 0.834 to between
+      0.290 and 0.317). Quoted lines 120, 125 and 130 of code/ephys_qc/gen_figure3_eyetracking.py at commit
+      8c35290 in the notebook, so that the citation can be checked there. Summary qualified as for isi-violations.
+      Outcome unchanged.
+  - claim: recognition-auc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: The Summary now names reading (b), per participant, as falling outside tolerance for the s.d.
+      Outcome unchanged.
+  - claim: auc-run1-vs-run2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+      The claims file's statement says "significantly higher", while the paper's Fig. 3c legend says "significantly
+      different" (round-1 B7). It is unchanged and referred to a reader. It does not change the outcome, as
+      high is above low in 18 of 22 sessions.
+    response: No change; the question stays with a reader in questions/keles-2024.yaml.
+  - claim: memory-sessions-included
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: memory-cells-significant
+    agrees: true
+    outcome: reproduced
+    reason: ACC is now 22/186, the paper's count (21 in round 1). Agrees, with one reservation (point 3a).
+      The observed test uses rates (count/1.5 s), so ties between resampled means become floating-point near-ties,
+      as in the code, but perm_null_counts still runs on integer counts, where those ties are exact; in the
+      code both steps use rates. On synthetic Poisson cells the rate path marks 4 to 7% more null cells as
+      selective than the count path, which is anti-conservative and fits every memory-cell p being below the
+      paper's (0.0065 vs 0.015, 0.0005 vs 0.002, 0.014 vs 0.016, 0.227 vs 0.30, 0.135 vs 0.17). The decisions
+      likely hold, but this has not been shown for vmPFC (14 observed against a null 95th percentile of 12).
+      Running the null on rates would settle it.
+    response: 'Ran the null on the code''s rates (point 3a): perm_null_counts now recomputes every exact tie
+      of the resampled mean counts on the rates in the code''s floating point (np.mean over the draws in order),
+      and matches a literal per-cell port of ms_test with the same draws on synthetic cells (1200 of 1200
+      null decisions). The null means rise by 0.4 to 1.1 cells per area, and the p-values are now amygdala
+      0.0095, hippocampus 0.282, ACC 0.0005, preSMA 0.182 and vmPFC 0.022 (vmPFC 14 against a null 95th percentile
+      of 12), closer to the paper''s; the null on exact counts is printed next to it. No decision changes.
+      Notes, deviations and the bmovie.py docstrings updated. Outcome unchanged.'
+  - claim: memory-cells-not-significant
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with one reservation (point 3a). The observed test uses rates (count/1.5 s), so ties between
+      resampled means become floating-point near-ties, as in the code, but perm_null_counts still runs on
+      integer counts, where those ties are exact; in the code both steps use rates. On synthetic Poisson cells
+      the rate path marks 4 to 7% more null cells as selective than the count path, which is anti-conservative
+      and fits every memory-cell p being below the paper's (0.0065 vs 0.015, 0.0005 vs 0.002, 0.014 vs 0.016,
+      0.227 vs 0.30, 0.135 vs 0.17). The decisions likely hold, but this has not been shown for vmPFC (14
+      observed against a null 95th percentile of 12). Running the null on rates would settle it.
+    response: 'Ran the null on the code''s rates (point 3a): perm_null_counts now recomputes every exact tie
+      of the resampled mean counts on the rates in the code''s floating point (np.mean over the draws in order),
+      and matches a literal per-cell port of ms_test with the same draws on synthetic cells (1200 of 1200
+      null decisions). The null means rise by 0.4 to 1.1 cells per area, and the p-values are now amygdala
+      0.0095, hippocampus 0.282, ACC 0.0005, preSMA 0.182 and vmPFC 0.022 (vmPFC 14 against a null 95th percentile
+      of 12), closer to the paper''s; the null on exact counts is printed next to it. No decision changes.
+      Notes, deviations and the bmovie.py docstrings updated. Outcome unchanged.'
+  - claim: memory-lfp
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: memory-ieeg
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: memory-modalities-differ
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the decision for the cell column, with the reservation of point 3a (the memory-cell
+      null runs on counts where the code uses rates; running it on rates would settle it).
+    response: 'The cell column is now from the null on rates (point 3a): amygdala 0.0095, hippocampus 0.282,
+      ACC 0.0005; the pattern is the same. Outcome unchanged.'
+  - claim: fig6-examples
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: scenecut-labels
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: event-cells
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: event-lfp
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: event-ieeg
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: fig7-examples
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Every measured value and every tolerance check matches the printed outputs.
+    response: No change.
+  - claim: nwb-contents
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; none of the points below affects the claim, which needs only 10 s against 0 s. "with
+      nothing before onset" (hfb [10]) is not supported: the largest pre-onset value is 9% of the peak (micro),
+      7% (macro) and 10% (units). "so the offset is right to about a bin or two of 50 ms" (hfb [10]) and "correct
+      to about 100 ms" (hfb Summary) are not supported: the sweep does not peak at 10.0 s, the counts keep
+      rising to 10.25 s (micro 650, 693, 695; macro 683, 715, 724), and shifting the onsets also moves the
+      analysis window, so the sweep bounds the offset only to roughly 9.9 to 10.25 s. The macro HFB 100 ms
+      ahead of the spikes is consistent with a residual offset of about 100 ms but does not show one under
+      100 ms. The notes'' "with at most 9% of the peak before onset" is true for the HFB but not for the spikes
+      (10%).'
+    response: Replaced the sentences in hfb [10] and the Summary with the printed pre-onset values (9%, 7%,
+      10%), the counts up to 10.25 s and the bound of roughly 9.9 to 10.25 s, and said the latency comparison
+      does not show an offset below 100 ms. Corrected the notes the same way. Outcome unchanged.
+  - claim: scanner-questions
+    agrees: true
+    outcome: reproduced
+    reason: Now agrees. The claims file's where field names exactly the code repository's scanner_questionnaire.csv,
+      and the notebook, README, Summary and notes now say the result comes from that file, not the dandiset,
+      and is counted apart. The verifier could not read protocol step 1.4, which the author cites.
+    response: No change.
+  - claim: fmri-motion
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked_by not_runnable. The raw BIDS data are public on OpenNeuro; what stops the
+      test is that the fMRIPrep derivatives are missing and fMRIPrep cannot be run here, which fits not_runnable
+      better than the round-1 data_missing.
+    response: No change.
+  - claim: fmri-tsnr
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked_by not_runnable. The raw BIDS data are public on OpenNeuro; what stops the
+      test is that the fMRIPrep derivatives are missing and fMRIPrep cannot be run here, which fits not_runnable
+      better than the round-1 data_missing.
+    response: No change.
+  - claim: fmri-isc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked_by not_runnable. The raw BIDS data are public on OpenNeuro; what stops the
+      test is that the fMRIPrep derivatives are missing and fMRIPrep cannot be run here, which fits not_runnable
+      better than the round-1 data_missing.
+    response: No change.
 findings:
 - kind: metadata_insufficient
   statement: The files hold the movie frame times but no scene cuts or cut types; the 93 cuts (80 continuity

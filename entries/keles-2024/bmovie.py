@@ -24,7 +24,10 @@ Two implementation choices are this entry's own and are stated as such:
 - The permutation null (`perm_null_counts`) draws, in each shuffle, one set of bootstrap resamples
   per session and applies it to every cell of that session, where the code draws one per cell.
   Each cell's null decision has the code's distribution; only the bootstrap noise is shared
-  between cells of a session within one shuffle. This makes 2,000 shuffles of 5,000 resamples
+  between cells of a session within one shuffle. For the memory test, where the code works on
+  spike rates (count / 1.5 s), the null does too: exact ties between resampled mean counts are
+  recomputed on the rates in the code's floating point, where they become near-ties of either
+  sign, as in the code (see perm_null_counts). This makes 2,000 shuffles of 5,000 resamples
   affordable. The permutation of trials is drawn per cell, as in the code.
 - The permutation test is unseeded in the code; it is seeded here with seed 0 in every test
   (open detail 8 of the claims file: "Seed 0 is used as a standard choice").
@@ -359,7 +362,8 @@ def observed_selection(values, mask_a, mask_b, balanced, rate_window=None):
     return diff, p
 
 
-def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alpha=0.05):
+def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alpha=0.05,
+                     rate_window=None):
     """Permutation test P: for each cell and shuffle, whether the cell is selective in the null.
 
     blocks: list of (values (cells, trials), mask_a, mask_b), one per session. For each shuffle
@@ -369,8 +373,13 @@ def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alp
     permutation), and tested by bootstrap B with
     N_BOOT_NULL resamples; with `positive_only` a cell counts only when its pseudo-difference
     A - B is positive (examine_*_scenecuts.py). Sessions with the same design are pooled, and
-    share the bootstrap resamples within a shuffle (see the module docstring). Returns a boolean
-    array (cells in the order of `blocks`, n_null)."""
+    share the bootstrap resamples within a shuffle (see the module docstring). rate_window: for
+    spike counts, the window length in s, as in observed_selection. The resampled differences are
+    computed exactly on the counts; where two resampled means tie exactly, the difference is
+    recomputed on the code's rates (count / rate_window) in the code's floating point (np.mean
+    over the draws, in their order), so that it falls as a near-tie of either sign or zero, as in
+    the code. Elsewhere counts and rates have the same sign. Returns a boolean array (cells in the
+    order of `blocks`, n_null)."""
     rng = np.random.default_rng(seed)
     groups = {}
     for i, (values, mask_a, mask_b) in enumerate(blocks):
@@ -379,6 +388,8 @@ def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alp
     res_by_block = [None] * len(blocks)
     for key, idx in groups.items():
         values = np.vstack([blocks[i][0] for i in idx]).astype(np.float32)
+        if rate_window is not None:
+            values64 = np.vstack([blocks[i][0] for i in idx]).astype(float) / rate_window
         mask_a, mask_b = blocks[idx[0]][1], blocks[idx[0]][2]
         ncell, ntr = values.shape
         na, nb = int(mask_a.sum()), int(mask_b.sum())
@@ -400,6 +411,16 @@ def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alp
             Ca = _counts_matrix(ia, na).astype(np.float32)
             Cb = _counts_matrix(ib, nb).astype(np.float32)
             D = kb * (Av @ Ca.T) - ka * (Bv @ Cb.T)
+            if rate_window is not None:
+                ti, tb = np.nonzero(D == 0)
+                if len(ti):
+                    R = values64[rows, perm]
+                    Ra, Rb = R[:, nb:], R[:, :nb]
+                    # C order, so that np.mean adds the draws one after another, as on the
+                    # code's (draws, resamples) array
+                    ma = np.mean(np.ascontiguousarray(Ra[ti[None, :], ia[:, tb]]), 0)
+                    mb = np.mean(np.ascontiguousarray(Rb[ti[None, :], ib[:, tb]]), 0)
+                    D[ti, tb] = np.sign(ma - mb)
             sig = _p_from_diffs(D) < alpha
             if positive_only:
                 sig &= (Av.mean(1) - Bv.mean(1)) > 0
@@ -559,11 +580,12 @@ def cell_blocks(S, task, cuts=None, sessions=None):
 
 
 def selection_and_null(blocks, table, balanced, positive_only, seed, area_list=AREAS,
-                       n_null=N_NULL, rate_window=None):
+                       n_null=N_NULL, rate_window=None, null_rate_window="same"):
     """Observed selection (bootstrap B, seed 13) and permutation p per area (test P).
 
-    rate_window is passed to observed_selection (spike counts to rates); the permutation null
-    runs on the values as given, where for spike counts ties are exact."""
+    rate_window is passed to observed_selection and perm_null_counts (spike counts to the code's
+    rates, with their floating-point near-ties); null_rate_window, if given, replaces it for the
+    null alone (None: the null on exact counts, for comparison)."""
     d, p = [], []
     for V, a, b in blocks:
         di, pi = observed_selection(V, a, b, balanced, rate_window)
@@ -575,7 +597,8 @@ def selection_and_null(blocks, table, balanced, positive_only, seed, area_list=A
     t["selective"] = (t.p < 0.05) & ((t["diff"] > 0) if positive_only else True)
     t["selective_any_direction"] = t.p < 0.05
     obs = {a: int(t.selective[t.area == a].sum()) for a in area_list}
-    null = perm_null_counts(blocks, balanced, positive_only, n_null=n_null, seed=seed)
+    nrw = rate_window if null_rate_window == "same" else null_rate_window
+    null = perm_null_counts(blocks, balanced, positive_only, n_null=n_null, seed=seed, rate_window=nrw)
     pv, null_counts = area_pvalues(null, t.area.to_numpy(), obs, area_list)
     summary = pd.DataFrame({"area": area_list, "n": [int((t.area == a).sum()) for a in area_list],
                             "selective": [obs[a] for a in area_list], "p_perm": pv,

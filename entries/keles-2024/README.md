@@ -30,8 +30,9 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/keles-2024-01.yaml`](../../attempts/keles-2024-01.yaml).
 
 - `reproduce_keles_2024.ipynb`: cohort, unit quality metrics, gaze, behaviour and single-neuron
-  selectivity. About 4 minutes.
+  selectivity. About 9 minutes.
 - `hfb_keles_2024.ipynb`: high-frequency broadband power of every LFP and iEEG channel, and the
-  claims that use it. About 45 minutes, most of it streaming and filtering the LFP.
+  claims that use it. About 30 to 55 minutes (34 in the latest run, 54 in an earlier one), most
+  of it streaming and filtering the LFP.
 - `bmovie.py`: loading, the paper's measures and tests, and the HFB pipeline, ported from the
   paper's code. Other notebooks on this dandiset can import it.
