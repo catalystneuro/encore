@@ -262,18 +262,22 @@ def load_all_posub(n_threads: int = 8) -> list[dict]:
 
 
 def peth_events(spikes: nap.TsGroup, events: np.ndarray, rate_ep: nap.IntervalSet,
-                window: float = 0.255) -> pd.DataFrame:
+                window: float = 0.255, count_ep: nap.IntervalSet | None = None) -> pd.DataFrame:
     """PETH of spikes restricted to `rate_ep` around `events` (not restricted), divided by each
     unit's rate in `rate_ep` and smoothed as `du_peth`; as the UD and DOWN-duration PETHs of
     Figure1G.py and Figure1H.py (crossCorr of spikes restricted to the UP states, divided by the
-    rate in the UP states)."""
+    rate in the UP states). With `count_ep`, the spikes counted are those in `count_ep` while the
+    rate is still taken in `rate_ep` (for halves of a session: spikes of all UP states, so that the
+    UP state before each DOWN start is kept, divided by the rate in the half's UP states)."""
     g = spikes.restrict(rate_ep)
+    rates = pd.Series({k: len(g[k]) / rate_ep.tot_length() for k in g.keys()})
+    if count_ep is not None:
+        g = spikes.restrict(count_ep)
     ev = nap.Ts(t=np.sort(events))
     cc = nap.compute_eventcorrelogram(g, ev, binsize=PETH_BIN, windowsize=window,
                                       ep=nap.IntervalSet(start=min(ev.t[0], g.time_support.start[0]) - 10,
                                                          end=max(ev.t[-1], g.time_support.end[-1]) + 10),
                                       norm=False)
-    rates = pd.Series({k: len(g[k]) / rate_ep.tot_length() for k in g.keys()})
     cc = pd.DataFrame(cc) / rates
     return cc.rolling(window=PETH_SMOOTH_WINDOW, win_type="gaussian", center=True,
                       min_periods=1).mean(std=PETH_SMOOTH_SD)
@@ -530,14 +534,22 @@ def fcx_checksums() -> dict:
 
 
 def load_fcx_session(session: str) -> dict:
+    """Spike times, EX units and the UP, DOWN, ON and OFF intervals of one fcx-1 session, read from
+    the archive's stream up to the last member needed; also how long that took and whether the
+    wide-band .eeg came before the members (so that the whole archive had to be read)."""
     import io
     import tarfile
+    import time
     import fsspec
     import scipy.io as sio
+    t0 = time.time()
     f = fsspec.open(f"{CRCNS}/data/{session}.tar.gz", block_size=2 ** 22).open()
     tf = tarfile.open(fileobj=f, mode="r|gz")
     got = {}
+    eeg_before = False
     for mem in tf:
+        if mem.name.endswith(".eeg") and len(got) < len(FCX_MEMBERS):
+            eeg_before = True
         for k in FCX_MEMBERS:
             if mem.name.endswith(f"_{k}.mat"):
                 got[k] = sio.loadmat(io.BytesIO(tf.extractfile(mem).read()), squeeze_me=True, struct_as_record=False)
@@ -554,7 +566,15 @@ def load_fcx_session(session: str) -> dict:
         a = np.atleast_2d(ud[f"{key}TimePairFormat"]).astype(float)
         return nap.IntervalSet(start=a[:, 0], end=a[:, 1]) if a.size else nap.IntervalSet(start=[], end=[])
     return dict(session=session, spikes=spikes, ex=eall, edef=np.atleast_1d(ids.EDefinite).astype(int) - 1,
-                up=iset("UPInts"), down=iset("DNInts"), on=iset("ONInts"), off=iset("OFFInts"))
+                up=iset("UPInts"), down=iset("DNInts"), on=iset("ONInts"), off=iset("OFFInts"),
+                seconds=time.time() - t0, eeg_before=eeg_before)
+
+
+def load_all_fcx(n_threads: int = 8) -> list[dict]:
+    """All fcx-1 sessions, streamed in parallel (one stream reaches about 30 MB/s, eight about 230 MB/s
+    together; reading every archive whole would take about 7 min)."""
+    with ThreadPoolExecutor(n_threads) as ex:
+        return list(ex.map(load_fcx_session, fcx_sessions()))
 
 
 def time_fcx_fetch(session: str = "Dino_072414_mPFC", nbytes: int = 300 * 2 ** 20) -> dict:
@@ -582,3 +602,113 @@ def crcns_sizes() -> dict:
     import re
     txt = requests.get(f"{CRCNS[:-len('/fcx-1/live')]}/?list-type=2&prefix=fcx-1/live/data/", timeout=60).text
     return {k.split("/")[-1]: int(v) for k, v in re.findall(r"<Key>(.*?\.tar\.gz)</Key>.*?<Size>(\d+)</Size>", txt)}
+
+
+# ---------------------------------------------------------------------------------------------
+# Isomap ring of HD cell activity (Figures 1I to 1K), following makeRing.py at CODE_COMMIT and the
+# STAR Methods (Isomap Projection and Decoding).
+#
+# HD cells are the file's `is_head_direction` units (makeRing.py takes the hd and gd flags; the files
+# hold no gd flag). Wake: spikes in 0.2 s bins over the wake epochs (`wake_*`), bins with a mean speed
+# above 2 cm/s, rate as sqrt(count / bin), smoothed over consecutive kept bins by a Gaussian of 3 bins
+# s.d. (window 50 bins), as makeRing.py. NREM: 10 ms steps with a 50 ms Gaussian window (makeRing.py:
+# sleep_dt = 0.01, sleep_binwidth = 0.05, window 5 bins of s.d. 3), around UP states longer than
+# 0.5 s. The fit stacks a random half of the wake bins with 1% of the NREM bins within 0.25 s of DU;
+# Isomap with 2 components and 200 neighbours. The ring's centre is the projection of a bin with no
+# spike, as makeRing.py takes it (`truex`, `truey`). The radius threshold is one third of the mean
+# wake radius (Methods). Two departures for run time, standard choices that do not change the
+# procedure: the wake half is capped at RING_MAX_WAKE bins, and at most RING_MAX_UP long UP states
+# per session are projected, both drawn at random with the session's generator.
+
+RING_WAKE_BIN = 0.2
+RING_SPEED_MIN = 2.0      # cm/s
+RING_SLEEP_DT = 0.01
+RING_SLEEP_WIN = 5        # bins (50 ms)
+RING_SLEEP_SD = 3         # bins
+RING_NEIGHBOURS = 200
+RING_MAX_WAKE = 2500
+RING_MAX_UP = 600
+RING_PRE, RING_POST = 0.45, 0.30   # s around DU projected
+
+
+def _sqrt_rate_smooth(counts: np.ndarray, dt: float, window: int, sd: float) -> np.ndarray:
+    """sqrt(count / dt) smoothed along axis 0 by a Gaussian window (pandas rolling, min_periods=1)."""
+    r = pd.DataFrame(np.sqrt(counts / dt))
+    return r.rolling(window=window, win_type="gaussian", center=True, min_periods=1).mean(std=sd).values
+
+
+def ring_session(asset: dict, spikes: nap.TsGroup, hd_units, wake_ep: nap.IntervalSet,
+                 up: nap.IntervalSet, down: nap.IntervalSet, rng: np.random.Generator) -> dict:
+    """Isomap ring of one session. Returns the wake radius and angle check, and for each projected
+    long UP state its DU time, DOWN duration, and the radius and angle of each 10 ms step from
+    -RING_PRE to +RING_POST s around DU."""
+    h = open_asset(asset)
+    t = h["processing/behavior/Position/position/timestamps"][:]
+    xy = h["processing/behavior/Position/position/data"][:]
+    hd_t = h["processing/behavior/CompassDirection/head-direction/timestamps"][:]
+    hd = h["processing/behavior/CompassDirection/head-direction/data"][:]
+    sts = [spikes[u].t for u in hd_units]
+    # wake bins
+    rows_c, rows_v, rows_a = [], [], []
+    for s0, s1 in zip(wake_ep["start"], wake_ep["end"]):
+        edges = np.arange(s0, s1, RING_WAKE_BIN)
+        if len(edges) < 2:
+            continue
+        c = np.stack([np.histogram(st, edges)[0] for st in sts], 1)
+        k = (t >= s0) & (t <= s1)
+        tt, pp = t[k], xy[k]
+        sp = np.r_[np.nan, np.hypot(np.diff(pp[:, 0]), np.diff(pp[:, 1])) / np.diff(tt)]
+        idx = np.digitize(tt, edges) - 1
+        ok = (idx >= 0) & (idx < len(edges) - 1) & np.isfinite(sp)
+        v = np.bincount(idx[ok], sp[ok], len(edges) - 1) / np.maximum(np.bincount(idx[ok], minlength=len(edges) - 1), 1)
+        kh = (hd_t >= s0) & (hd_t <= s1) & np.isfinite(hd)
+        ih = np.digitize(hd_t[kh], edges) - 1
+        okh = (ih >= 0) & (ih < len(edges) - 1)
+        z = np.bincount(ih[okh], np.cos(hd[kh][okh]), len(edges) - 1) + 1j * np.bincount(ih[okh], np.sin(hd[kh][okh]), len(edges) - 1)
+        rows_c.append(c); rows_v.append(v); rows_a.append(np.angle(z))
+    c, v, a = np.concatenate(rows_c), np.concatenate(rows_v), np.concatenate(rows_a)
+    keep = v > RING_SPEED_MIN
+    wake_rate = _sqrt_rate_smooth(c[keep], RING_WAKE_BIN, 50, 3)
+    wake_ang = a[keep]
+    half = rng.choice(len(wake_rate), size=min(len(wake_rate) // 2, RING_MAX_WAKE), replace=False)
+    # NREM steps around long UP states
+    long_ = np.where(up["end"] - up["start"] > 0.5)[0]
+    pick = np.sort(rng.choice(long_, size=min(len(long_), RING_MAX_UP), replace=False))
+    du = up["start"][pick]
+    m3 = RING_SLEEP_WIN  # margin of steps, dropped after smoothing
+    offs = np.round(np.arange(-RING_PRE - m3 * RING_SLEEP_DT, RING_POST + (m3 + 1) * RING_SLEEP_DT, RING_SLEEP_DT), 6)
+    nb = len(offs) - 1
+    counts = np.zeros((len(du), nb, len(sts)))
+    for j, st in enumerate(sts):
+        e = du[:, None] + offs[None, :]
+        cs = np.searchsorted(st, e)
+        counts[:, :, j] = np.diff(cs, axis=1)
+    rates = np.stack([_sqrt_rate_smooth(counts[i], RING_SLEEP_DT, RING_SLEEP_WIN, RING_SLEEP_SD) for i in range(len(du))])
+    lags = (offs[:-1] + offs[1:]) / 2
+    inner = (lags > -RING_PRE) & (lags < RING_POST)
+    rates, lags = rates[:, inner], lags[inner]
+    near = np.abs(lags) <= 0.25
+    pool = rates[:, near].reshape(-1, len(sts))
+    fit_sleep = pool[rng.choice(len(pool), size=max(1, len(pool) // 100), replace=False)]
+    from sklearn.manifold import Isomap
+    X = np.vstack([wake_rate[half], fit_sleep])
+    iso = Isomap(n_components=2, n_neighbors=RING_NEIGHBOURS).fit(X)
+    centre = iso.transform(np.zeros((1, len(sts))))[0]
+    pw = iso.embedding_[:len(half)] - centre
+    flat = rates.reshape(-1, len(sts))
+    ps = np.concatenate([iso.transform(flat[i:i + 5000]) for i in range(0, len(flat), 5000)])
+    ps = ps.reshape(len(du), len(lags), 2) - centre
+    wake_r = np.hypot(pw[:, 0], pw[:, 1])
+    wa = np.arctan2(pw[:, 1], pw[:, 0])
+    hd_bin = wake_ang[half]
+    # how well the wake ring angle follows the head direction, up to rotation and reflection
+    fit_q = max(np.abs(np.mean(np.exp(1j * (wa - hd_bin)))), np.abs(np.mean(np.exp(1j * (wa + hd_bin)))))
+    # DOWN duration before each projected UP state (the DOWN state ending at its start)
+    di = np.searchsorted(down["end"], du - 0.011)
+    di = np.clip(di, 0, len(down) - 1)
+    ok_d = np.abs(down["end"][di] - du) < 0.011
+    down_dur = np.where(ok_d, down["end"][di] - down["start"][di], np.nan)
+    return dict(n_hd=len(sts), n_wake_bins=int(keep.sum()), n_fit=len(X), n_long_up=len(long_), du=du, down_dur=down_dur,
+                lags=lags, radius=np.hypot(ps[..., 0], ps[..., 1]), angle=np.arctan2(ps[..., 1], ps[..., 0]),
+                wake_mean_radius=float(wake_r.mean()), wake_angle_vs_hd=float(fit_q),
+                sleep_radius_quantiles=np.quantile(np.hypot(ps[..., 0], ps[..., 1]), [0.1, 0.5, 0.9]))

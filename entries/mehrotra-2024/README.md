@@ -4,7 +4,8 @@ Tests the findings of [Mehrotra, Levenstein et al. (2024)](https://doi.org/10.10
 "Hyperpolarization-activated currents drive neuronal activation sequences in sleep", on
 [DANDI:000987](https://dandiarchive.org/dandiset/000987/0.261003.2342), which holds the paper's
 retrosplenial cortex (RSC) recordings, and, counted apart, on the paper's postsubiculum (PoSub)
-recordings in [DANDI:000939](https://dandiarchive.org/dandiset/000939/0.261016.2310).
+recordings in [DANDI:000939](https://dandiarchive.org/dandiset/000939/0.261016.2310) and the rat frontal
+cortex recordings of CRCNS fcx-1.
 
 | Claim | Data | Outcome |
 |---|---|---|
@@ -22,9 +23,10 @@ recordings in [DANDI:000939](https://dandiarchive.org/dandiset/000939/0.261016.2
 | High gamma travels at UP onset, synchronous at UD | 000939 | Not reproduced |
 | Unit and LFP delay-depth correlations agree | 000939 | Blocked: methods underspecified |
 | Spike and LFP traveling speeds are similar | 000939 | Not reproduced, resting on an assumption |
-| The DOWN state resets HD; HD is stable at UP onset | 000939 | Blocked: not attempted in the run's time |
+| The DOWN state resets the HD signal | 000939 | Not reproduced (one histogram bin outside the shuffle range) |
+| HD changes less during the UP onset sequence | 000939 | Not reproduced, resting on an assumption |
 | ADN activates more synchronously than PoSub | ADN data | Blocked: metadata insufficient |
-| The same PMR relation in rat frontal cortex | CRCNS fcx-1 | Blocked: not runnable |
+| The same PMR relation in rat frontal cortex (tau = -0.22) | CRCNS fcx-1 | Reproduced, resting on an assumption |
 | Model results (Figure 3) | model code | Blocked: not runnable (MATLAB) |
 | Ex vivo sag gradient and no other gradients (Figure 4, S4) | ex vivo | Blocked: data missing |
 
@@ -35,13 +37,16 @@ The RSC dandiset holds 638 units where the paper and the dandiset description sa
 570 is the number that enters the Figure 5F test. Its files hold no LFP, waveforms or unit positions,
 though the description lists LFP. In the PoSub dandiset, the DOWN and UP event file the paper's code
 holds for one session does not fit that session's spikes, and the sleep scoring runs outside the
-sleep epochs. The attempt record, with the reasons and the differences from the paper's method, is
+sleep epochs; the LFP of three sessions is not shown to share the clock of the spikes. In the frontal cortex
+data, the paper's code reads files the data set does not hold. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/mehrotra-2024-01.yaml`](../../attempts/mehrotra-2024-01.yaml).
 
-- `reproduce_mehrotra_2024.ipynb`: the two claims on dandiset 000987, and the checks behind two blocked
-  claims on outside data. About two minutes.
-- `posub_000939.ipynb`: the PoSub spike claims on dandiset 000939. About six minutes.
-- `posub_lfp_000939.ipynb`: the PoSub LFP claims, streaming the LFP of the NREM epochs. About 14 minutes.
+- `reproduce_mehrotra_2024.ipynb`: the two claims on dandiset 000987, the frontal cortex claim on CRCNS fcx-1
+  (27 archives, 88.9 GB, streamed eight at a time), and the check behind the blocked ADN claim. About 14 minutes.
+- `posub_000939.ipynb`: the PoSub spike claims on dandiset 000939. About eight minutes.
+- `posub_lfp_000939.ipynb`: the PoSub LFP claims, streaming the LFP of the NREM epochs. About 19 minutes.
+- `posub_ring_000939.ipynb`: the Isomap ring claims (Figures 1J and 1K) on dandiset 000939. About 12 minutes.
 - `mehrotra.py`: loading of both dandisets and of the paper's event files, UP and DOWN detection, the
-  PETH, PMR and onset delay of the paper's code, HD tuning measures, decoding and LFP high gamma. Other
+  PETH, PMR and onset delay of the paper's code, HD tuning measures, decoding, LFP high gamma, the Isomap
+  ring of makeRing.py, and the streaming of CRCNS fcx-1. Other
   notebooks on these dandisets can import it.
