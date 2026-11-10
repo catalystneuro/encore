@@ -36,26 +36,30 @@ outcomes:
     optogenetics or genotype field and no opsin or virus word. Of the criterion's conditions,
     slices, patients, ages and sexes hold (checked against Table 1 in the notebook) and the opsins
     cannot be resolved, which is read here as partial.
+  assumed: true
   deviations:
+  - Assumed reading of the criterion's partial clause. "Present and identifiable" is read as present
+    and identifiable by name, the slice names of the files matching those of Table 1 and Table 2, as
+    no file or metadata field names a slice's opsin. Under a reading that requires each HcKCR1 slice
+    to be identified as HcKCR1 from the dandiset itself, neither clause of the criterion holds.
   - Slices and patients are taken from the file and subject names (`3C-7` is recording 7 of slice
     3C of patient C); `subject_id` itself names the recording, not the patient or slice.
 - claim: units-per-recording
   outcome: blocked
   blocked_by: data_missing
   notes: No file holds a units table, sorted spikes or a processing module; the files hold raw
-    voltage only. The curated units are not public elsewhere (the paper's repository at commit
-    6865bf6 holds per-unit summaries and waveform templates, not the sorting). The claims file's
-    variant, a re-sort with Kilosort2 and the automatic curation, needs MATLAB and a CUDA GPU, which
-    the locked environment does not have (not_runnable), and the manual curation cannot be repeated.
+    voltage only, and the paper does not say the curated units are deposited elsewhere. The claims
+    file makes a re-sort with Kilosort2 a variant that decides nothing, and the manual curation
+    cannot be repeated; no re-sort was run.
 - claim: transduction-range
   outcome: blocked
   blocked_by: data_missing
   notes: Histology (NeuN and eYFP immunohistochemistry) is not in the dandiset, which holds only
-    HD-MEA voltage, nor in the paper's repository at commit 6865bf6.
+    HD-MEA voltage, and the paper does not say it is deposited elsewhere.
 - claim: reporter-gcl-pyramidal
   outcome: blocked
   blocked_by: data_missing
-  notes: Histology is not in the dandiset nor in the paper's repository (see transduction-range).
+  notes: Histology is not in the dandiset (see transduction-range).
 - claim: patch-hckcr1-hyperpolarizing
   outcome: blocked
   blocked_by: data_missing
@@ -66,25 +70,60 @@ outcomes:
   blocked_by: not_runnable
   notes: The model needs NEST 3.4 with a neuron compiled by NESTML 5 (Simulation/environment.yml at
     commit 6865bf6, printed in the notebook). PyPI has no NEST 3.4 (its releases are
-    3.9.0.post0.dev14 and 3.10.0; 3.4 is distributed through conda-forge, which the locked pip
-    environment cannot use). The notebook installs NEST 3.10.0 with NESTML 5.3.0, the newest 5.x, in
-    a throwaway environment and runs the script's first step, generate_nest_target on the published
-    model, which fails (module 'nest.ll_api' has no attribute 'sli_func'), so the model is never
-    built. While preparing, not run in the notebook, NESTML 9 required porting the model (the
-    `neuron` keyword, unit-free spike ports, divisions by units), and the port's build failed at
-    cmake because the wheel's nest-config points at the paths of the machine that built the wheel.
-    A port to later versions would change the model the claim is about. Not run; no result.
+    3.9.0.post0.dev14 and 3.10.0), and with NEST 3.10.0 and NESTML 5.3.0, the newest 5.x, the
+    script's first step, generate_nest_target on the published model, fails (module 'nest.ll_api'
+    has no attribute 'sli_func'). This was the verified outcome. In the final revision, as the
+    round-2 verifier asked, NEST 3.4 is taken from conda-forge in a throwaway environment made with
+    micromamba 2.10.0, with NESTML 5.3.0 and the other packages of the environment file. The model
+    then fails to build twice, first because odetoolbox, unpinned in the environment file, resolves
+    to a release NESTML 5.3.0 cannot call (analysis() got an unexpected keyword argument
+    'simplify_expression'), and with odetoolbox 2.5 at cmake, because the conda-forge nest-config
+    prints an empty compiler. With nest-config made to print the environment's compiler the model
+    builds, and Simulation/simulation.py runs unchanged, printing mean rates of
+    80.65, 60.06, 52.49 and 49.65 Hz at opsin fractions 0, 0.10, 0.25 and 0.50 (closed-loop light 0,
+    16, 11 and 9 times). Events are runs of 1 ms bins with more than 100 spikes over the 1012 cells,
+    the script's opto_threshold. At the script's seed, 20, (a) the total event duration is 278, 124,
+    37 and 4 ms, (b) the number of events 10, 10, 10 and 4, and (c) the spikes in events 52,366,
+    17,594, 4,086 and 441. Readings (a) and (c) meet the criterion and (b) does not. With seeds 21,
+    23 and 24 (a check, the script has one seed), (a) and (c) are at most 0.70 of their value at 0
+    at every fraction; with seed 22 the network spends 1 ms above threshold at fraction 0, so there
+    is nothing to dampen. The outcome stays blocked as verified, and reproduced is proposed.
+  deviations:
+  - The model is run in an environment built from conda-forge with micromamba, outside the entry's
+    locked pip environment, in a throwaway directory. Besides the environment file's packages it
+    holds cmake 3, a C++ compiler and make from conda-forge, which NESTML 5 needs to build the
+    module, and braingeneers is pinned to 0.3.1.16 (unpinned in the environment file).
+  - odetoolbox, which the environment file leaves unpinned, is set to 2.5 (October 2022, the release
+    current when NESTML 5.2.0, the version the README cites, came out); the newest release fails
+    with NESTML 5.3.0 in the notebook.
+  - The conda-forge nest-config of NEST 3.4 prints an empty --compiler, which leaves the generated
+    CMakeLists without a C++ compiler; it is changed to print the environment's compiler. The model
+    and the script are not changed.
+  - The script is run once as published (seed 20), and its sim() again with seeds 21 to 24, a check
+    the paper does not make.
+  proposed:
+    outcome: reproduced
+    reason: With NEST 3.4 from conda-forge and NESTML 5.3.0, the published model builds once
+      odetoolbox is set to 2.5 and nest-config is given the compiler, and Simulation/simulation.py
+      runs unchanged. At its seed, the total duration of seizure-like events (runs of 1 ms bins above
+      the script's threshold of 100 spikes) is 278 ms at opsin fraction 0 and 124, 37 and 4 ms at
+      0.10, 0.25 and 0.50, and the spikes in them 52,366 against 17,594, 4,086 and 441, so readings
+      (a) and (c) of the criterion are lower at 0.25 or less and at 0.50 than at 0; the number of
+      events, reading (b), is lower only at 0.50. The criterion needs one reading. Seeds 21, 23 and 24
+      agree on (a) and (c), and seed 22 has no events to dampen.
 - claim: fig3a-spontaneous-reduction
   outcome: blocked
   blocked_by: data_missing
   notes: Needs the curated units of 3C, which are not in the dandiset. The light events, also not
     stored (no GPIO bit or stimulation log), can be recovered for 3C from a step the LED leaves in
-    the voltage of every channel; 3C-6 has 5 trials with a full pre window and 3C-7 has 6. A variant
+    the voltage of every channel; 3C-6 has 5 trials whose three windows lie in the file and 3C-7
+    has 6. The onsets of 3C-6 are 18 to 21 s apart, so some of its pre and OFF windows hold part of
+    a neighbouring light period (printed in the notebook). A variant
     on multi-unit threshold crossings of 64 channels (decides nothing) finds crossings 86 to 90%
     lower during light in the single-trial files 3C-1 to 3C-5, and no change in 3C-6 (-16%,
     adjusted p 0.82) or 3C-7 (+6%, p 0.87). Light onset drives 81 to 94% of channels to the ends of
-    the ADC range in the first 0.5 s, and seconds with over 1,000 crossings occur next to the light
-    steps. With the first second of each window left out, 26 to 52% of channels are still at the
+    the ADC range in the first 0.5 s. In 3C-7, seconds with over 1,000 crossings are 22 of the 54
+    seconds wholly inside light, 6 of the 12 that hold an onset or offset and 8 of the other 124. With the first second of each window left out, 26 to 52% of channels are still at the
     ends of the range in the next 0.5 s, crossings fall by 89 to 93% in 3C-1 to 3C-5 and by 18% in
     3C-6 (adjusted p 0.77), and rise by 17% in 3C-7 (adjusted p 0.06). The crossings are confounded
     by saturation and transients either way.
@@ -92,8 +131,9 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs curated units, which are not in the dandiset. Reading every channel group, light
-    steps are found in four 7D files (7D-0, 7D-2, 7D-5, 7D-7) and in no 5C or 8D file, and no file
-    says which recordings are in bicuculline.
+    steps are found in four 7D files (7D-0, 7D-2, 7D-5, 7D-7). No 5C or 8D file shows a 10 s light
+    step (5C-5 has one pair of steps 0.76 s apart in two groups), and no file says which recordings
+    are in bicuculline.
 - claim: physio-bic-amplitude-unchanged
   outcome: blocked
   blocked_by: data_missing
@@ -103,8 +143,8 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs per-unit firing rates of curated units, which are not in the dandiset; of the four
-    physiologic and bicuculline slices, light events are recoverable for 3C and 7D only, none in
-    any channel group of 5C or 8D.
+    physiologic and bicuculline slices, light events are recoverable for 3C and 7D only; no channel
+    group of 5C or 8D shows a 10 s light step.
 - claim: table2-fr-decrease-0mg
   outcome: blocked
   blocked_by: data_missing
@@ -157,16 +197,16 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs curated units; the closed-loop light events are not stored, and reading every channel
-    group, no light step is found in any 5C or 8D file. The steps in 7D-0, 7D-2, 7D-5 and 7D-7 are
-    10 s periods at regular intervals (30 s in 7D-2), which the files do not label as closed loop or
-    open loop. The baseline and bicuculline recordings are not identified.
+    group, no 10 s light step is found in any 5C or 8D file. The steps in 7D-0, 7D-2 and 7D-5 are
+    10 s periods at regular intervals (30 s in 7D-0 and 7D-2, 40 s in 7D-5), and 7D-7 has a single
+    period; the files do not label them as closed loop or open loop. The baseline and bicuculline recordings are not identified.
 - claim: intensity-threshold
   outcome: blocked
   blocked_by: data_missing
   notes: Needs curated units and the intensity of each light step from the stimulation log, which is
     not in the dandiset. The 3C files 3C-1 to 3C-5 each hold one 10 s light period whose voltage step
     differs in size (90 to 153 counts), which fits an intensity sweep, but the intensities are not
-    recorded; no light step is found in any channel group of 5C or 10F.
+    recorded; no 10 s light step is found in any channel group of 5C or 10F.
 - claim: chr2-increase
   outcome: blocked
   blocked_by: data_missing
@@ -186,8 +226,7 @@ outcomes:
 - claim: waveform-clusters
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs the mean waveforms of curated units, which are not in the dandiset. The 69 files are
-    not the code's 66 recordings under their names, and no mapping is given.
+  notes: Needs the mean waveforms of curated units, which are not in the dandiset.
 - claim: waveform-gcl-association
   outcome: blocked
   blocked_by: data_missing
@@ -217,7 +256,7 @@ findings:
     bit and in a stimulation log, are not in the files, nor are the light intensities. They can be
     recovered from a step the LED leaves in the voltage in the eight 3C recordings (on every channel)
     and in 4C-1, 4C-3, 7D-0, 7D-2, 7D-5 and 7D-7 (on part of the array, steps of 40 to 88 counts).
-    No channel group of any 5C, 8D, 10F or 11G recording shows one, including 10F, which the paper
+    No channel group of any 5C, 8D, 10F or 11G recording shows a 10 s light step, including 10F, which the paper
     illuminated for 10 trials, and 9E and 12G show none in the first channel group.
 - kind: metadata_insufficient
   statement: No file says which medium, drug or light protocol it was recorded under (physiologic,
@@ -247,9 +286,8 @@ findings:
   statement: The conversion to volts is 6.29 uV per count for slices 1A to 8D and 1.57 uV per count
     for 9E to 12G, a gain difference that the dandiset does not describe.
 inputs:
-- what: The environment file and the neuron model of the paper's network simulation
-    (Simulation/environment.yml and Simulation/models/izh_cond_exp2syn.nestml), read only by the
-    simulation-dampening section to show why the model cannot be built.
+- what: The paper's network simulation (Simulation/environment.yml, Simulation/simulation.py and
+    Simulation/models/izh_cond_exp2syn.nestml), built and run by the simulation-dampening section.
   source: https://github.com/braingeneers/AndrewsGengVoitiukEtAl_SourceCode at commit 6865bf68cc3c8ea36a9b4f853b9248288fa1e52b
 verifications:
 - date: '2026-11-10'
@@ -470,3 +508,259 @@ verifications:
     outcome: blocked
     reason: Depends on opto-response-clusters.
     response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the first revision, the helper module, the claims file
+    and the attempt record with the author''s conclusions, with the paper''s full text under paper/;
+    the verifier checked each number of the conclusions and the record against its cell.'
+  results:
+  - claim: table1-cohort
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 20 checks 12 slices and 7 patients, 5 F and 2 M aged 20 to 52, each patient''s age and
+      sex, and all 8 HcKCR1 slices of Table 2 by name against Table 1 in code, and all match; cells
+      6 and 20 show no field under general/ or in the dandiset metadata names an opsin, virus or
+      genotype. The partial verdict reads "identifiable" in the criterion as "identifiable by name";
+      the reading is reasonable but not marked assumed, and should be flagged as an assumption.'
+    response: 'The outcome is now marked assumed, with a deviation that states the reading of "present and
+      identifiable" as identifiable by name and what the other reading would give. Outcome
+      unchanged.'
+  - claim: units-per-recording
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. The notes'' "needs MATLAB and a CUDA GPU, which the locked environment does not have" and
+      "the paper''s repository at commit 6865bf6 holds per-unit summaries and waveform templates"
+      have no output behind them, nor the same MATLAB and GPU sentence in cell 22.'
+    response: 'Both sentences are removed from the notes and the MATLAB and GPU sentence from the notebook;
+      the notes now say the claims file makes a re-sort a variant that decides nothing, and that
+      none was run. Outcome unchanged.'
+  - claim: transduction-range
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. The notes'' "nor in the paper''s repository at commit 6865bf6" has no output behind it.'
+    response: 'The phrase is removed from the notes here and in reporter-gcl-pyramidal. Outcome unchanged.'
+  - claim: reporter-gcl-pyramidal
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'The unsupported phrase about the paper''s repository is removed (see transduction-range).
+      Outcome unchanged.'
+  - claim: patch-hckcr1-hyperpolarizing
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: simulation-dampening
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 27 shows the published environment file (NEST 3.4 from conda-forge, NESTML 5), that PyPI
+      has no NEST 3.4, and that NEST 3.10.0 with NESTML 5.3.0 fails at generate_nest_target
+      (nest.ll_api has no attribute sli_func). The block rests on two untested steps, that
+      conda-forge''s NEST 3.4 cannot be installed ("the locked pip environment cannot use"
+      conda-forge, with no attempt shown, though the notebook builds a throwaway environment with
+      uv) and that no NESTML between 5.3 and 9 builds the published model unchanged against an
+      installable NEST (NESTML 6 to 8 and NEST 3.9.0.post0.dev14 untried). An attempt with
+      micromamba (nest-simulator=3.4, nestml==5.*) in a throwaway environment would settle it; until
+      then the block is plausible, not shown, and should be marked assumed. Cell 28''s "Later NESTML
+      versions change the modelling language" and the notes on the NESTML 9 port have no output
+      behind them. If docs/protocol.md lists not_runnable, the round-1 objection to the code is
+      withdrawn.'
+    response: 'The notebook now makes the attempt asked for. Three new cells build a throwaway environment
+      with micromamba 2.10.0 from conda-forge (NEST 3.4, Python 3.10, NESTML 5.3.0 and the
+      environment file''s other packages, with cmake 3, a compiler and make). The model build fails
+      with odetoolbox as resolved today (''simplify_expression'') and, with odetoolbox 2.5, at
+      cmake, because the conda-forge nest-config prints no compiler; with nest-config made to print
+      the environment''s compiler it builds, and Simulation/simulation.py runs unchanged. At its
+      seed, total event duration falls from 278 ms at fraction 0 to 124, 37 and 4 ms at 0.10, 0.25
+      and 0.50 and spikes in events from 52,366 to 17,594, 4,086 and 441, so readings (a) and (c)
+      meet the criterion; seeds 21, 23 and 24 agree. As no outcome may change in this round, the
+      verified outcome is kept and reproduced is proposed, with the environment changes as
+      deviations. NESTML 6 to 8 were not tried, since the pinned versions now run. The unsupported
+      sentences on later NESTML versions, the NESTML 9 port and conda-forge are removed from cell 28
+      and the notes. docs/protocol.md lists not_runnable (Author, step 1.5).'
+  - claim: fig3a-spontaneous-reduction
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. The notes'' "seconds with over 1,000 crossings occur next to the light steps" does not
+      match cell 24, where 22 of the 54 such seconds lie wholly inside light and 8 in pre/off; cell
+      25 states the counts correctly. "3C-6 has 5 trials with a full pre window" holds within the
+      file, but window_rates does not check overlap with neighbouring trials, and 3C-6''s onsets are
+      18 to 21 s apart; the pre window of the trial at 19.1 s holds 1.9 s of the previous light
+      period (0.9 s with skip_s 1), and the OFF windows of the trials at 19.1 s and 80.35 s hold the
+      next onset, so cell 25''s "whose pre windows follow earlier light periods" understates this.
+      No outcome depends on it.'
+    response: 'The notes now give the counts of cell 24. The variant cell now prints, for each trial of 3C-6
+      and 3C-7, the seconds of other light periods each window holds; the notes, cells 15 and 25 and
+      the window_rates docstring say that some pre and OFF windows of 3C-6 hold part of a
+      neighbouring light period. The variant itself is unchanged. Outcome unchanged.'
+  - claim: physio-bic-reduction-all-slices
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. "No light step is found in any channel group of 5C" should say no 10 s light step, as cell
+      17 finds a paired step at 40 counts and lag 2 in 5C-5 (groups 10 and 14, 0.76 s long), which
+      cell 18 dismisses.'
+    response: 'The notes now say no 10 s light step, and name the 0.76 s pair in 5C-5. Outcome unchanged.'
+  - claim: physio-bic-amplitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: table2-fr-decrease-physio-bic
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. "No light step" in 5C should say no 10 s light step (see
+      physio-bic-reduction-all-slices).'
+    response: 'The notes now say no 10 s light step. Outcome unchanged.'
+  - claim: table2-fr-decrease-0mg
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. 9E and 12G were read on the first channel group only, which is disclosed.'
+    response: 'No change.'
+  - claim: zero-mg-reduction
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: zero-mg-isolated-bursts
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: ka-rhythmic-bursts
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: ka-light-reduction
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: ka-bursts-during-light
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: ka-theta-coherence
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: fig4-firing-propagation
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: fig4-theta-propagation
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: closed-loop-bicuculline
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. The notes'' "The steps in 7D-0, 7D-2, 7D-5 and 7D-7 are 10 s periods at regular intervals"
+      is wrong for 7D-7, which has a single period (cell 17).'
+    response: 'The notes now give the intervals of 7D-0, 7D-2 and 7D-5 and say 7D-7 has a single period.
+      Outcome unchanged.'
+  - claim: intensity-threshold
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. "No light step" in 5C should say no 10 s light step (see
+      physio-bic-reduction-all-slices).'
+    response: 'The notes now say no 10 s light step. Outcome unchanged.'
+  - claim: chr2-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: transduction-not-explaining-response
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: s3-reduction-by-condition
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: waveform-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it. The notes'' "The 69 files are not the code''s 66 recordings" has no output behind it.'
+    response: 'The sentence is removed. Outcome unchanged.'
+  - claim: waveform-gcl-association
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: opto-response-clusters
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: opto-waveform-association
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'
+  - claim: opto-cluster3-profile
+    agrees: true
+    outcome: blocked
+    reason: 'Supported by cell 5 (no units, intervals, processing modules or stimulus series in any file),
+      cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
+      it.'
+    response: 'No change.'

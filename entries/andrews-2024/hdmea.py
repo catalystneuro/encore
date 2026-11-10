@@ -253,9 +253,11 @@ def light_steps(dc: np.ndarray, step_min: float = STEP_MIN, lag: int = 1) -> dic
 def window_rates(counts: np.ndarray, on: np.ndarray, dur: float = 10.0, skip: float = 0.0) -> dict:
     """Per channel, crossing rate (per s) in pre (10 s before onset), ON (10 s from onset) and OFF
     (onset + 10 to onset + 20 s), averaged over trials whose three windows lie in the recording
-    (the windows of the claims file's opening comment). With skip > 0 the first `skip` seconds of
-    each window are left out, which removes the light onset and offset transients from all three
-    windows when light periods are 10 s long and 20 s apart (a choice for the variant only)."""
+    (the windows of the claims file's opening comment). Windows are not checked against
+    neighbouring light periods: with onsets less than 20 s apart (3C-6), a pre or OFF window can
+    hold part of another light period. With skip > 0 the first `skip` seconds of each window are
+    left out, which removes the light onset and offset transients from all three windows when
+    light periods are 10 s long and at least 20 s apart (a choice for the variant only)."""
     nb, ns = int(round(dur * 10)), int(round(skip * 10))
     pre, onr, offr = [], [], []
     for t in on:
