@@ -1,0 +1,217 @@
+schema_version: 3
+id: zhong-2026-01
+datasets:
+- archive: dandi
+  id: "000207"
+  version: 0.220216.0323
+  doi: 10.48324/dandi.000207/0.220216.0323
+  relation: reuses
+paper: doi:10.7554/elife.109538
+date: 2026-11-10
+entry: zhong-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42750590389
+inputs:
+- what: The Methods of Zheng et al. 2022 (ref. [41]), sections "Boundary cell", "Event cell",
+    "Chance level for cell response analyses" and the Statistics paragraph, and the legend of its
+    Extended Data Fig. 5 (clip onset cells), for reading (1b) of the selection of boundary, event and
+    onset neurons. Read in the PubMed Central author manuscript.
+  source: Zheng et al. 2022, Nat Neurosci 25 358, doi:10.1038/s41593-022-01020-w, PMC8966433
+- what: Supplementary Table 2 of Zheng et al. 2022 (per-subject patient ID, subject ID, age, sex and
+    counts of all, boundary, event and clip-onset cells), transcribed by hand into the helper
+    (ZHENG_S2), as the table is an image. Used as reference values for the link claim and for
+    reading (a) of the subject exclusion.
+  source: doi:10.1038/s41593-022-01020-w, Supplementary Information PDF 41593_2022_1020_MOESM1_ESM.pdf,
+    page 16
+- what: The dataset's example code, for the meaning of boundary1_time to boundary3_time per clip
+    category (B01_raster_psth_encoding_BAligned_BSep_NWB.m).
+  source: https://github.com/rutishauserlab/cogboundary-zheng at commit 60f7ece3c51fb424aaca57b9daa41d19a9ef768c
+outcomes:
+- claim: link-zheng-table-s2
+  outcome: reproduced
+  notebook: reproduce_zhong_2026.ipynb
+  output: claim:link-zheng-table-s2
+  notes: All 19 subjects with neurons in Supplementary Table 2 of [41] are in the dataset under the
+    same patient ID (the NWB identifier before "_CBID") and CBID, and agree on age and sex; every file
+    holds no more units than the table's count of all cells. The files hold 565 units, all in the
+    amygdala, hippocampus and parahippocampal gyrus; [41] reports 580 MTL neurons, so the per-subject
+    MTL counts cannot be compared, the table giving only all cells. The table's boundary, event and
+    onset columns sum to 42, 36 and 76 as its header says, its all-cells column to 943 against 985 in
+    its header. TWH138 (sub-19) matches the table but its spike times are not on its trial clock.
+  deviations:
+  - The table is an image in the supplementary PDF and is transcribed by hand into the helper; a
+    transcription error would show in the column sums, which match the header except for all cells.
+- claim: methods-subjects-included
+  outcome: partially_reproduced
+  notebook: reproduce_zhong_2026.ipynb
+  output: claim:methods-subjects-included
+  measured:
+  - 19
+  - 14
+  notes: Under reading (a), the classification of [41] through the counts of its Supplementary Table
+    2, the rule of Methods E excludes exactly four subjects, TWH103, TWH109, TWH111 and TWH125, the
+    four with no clip-onset cell (every subject has at least one boundary or event cell in the MTL).
+    This keeps 14 of the 18 subjects whose spike times are on the trial clock, and 15 of all 19. P64CS
+    and TWH120 are kept. The dataset holds 19 subjects with encoding sessions, as does [41] ("the
+    neural results were analyzed across 19 subjects"); the paper's eighteen matches only once TWH138
+    is set aside, whose spike times (about -7.0e12 s) cannot be aligned with its trial table, which
+    would explain the paper's count but is not stated in it. So the kept count and the reason for the
+    four exclusions reproduce, and the count of 18 subjects does not. Under reading (b), the
+    re-selection by the Methods of [41], 5 to 9 of 18 subjects are kept, P64CS never among them, and
+    the excluded sets differ from the paper's.
+  deviations:
+  - Reading (a) uses the per-subject counts of [41]'s Supplementary Table 2 as the classification;
+    the dataset classifies no unit, so the claim is tested with outside labels (data with_labels)
+    and depends on the added link claim.
+  - TWH138 is left out of every analysis, its spike times not sharing the clock of its trial tables.
+- claim: fig3a-dip-after-boundary
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_zhong_2026.ipynb
+  output: claim:fig3a-dip-after-boundary
+  notes: The paper takes its boundary neurons from [41] (Methods E). Reading (1a), the classification
+    of [41], cannot be run on units; the dataset has no unit classification and [41] publishes only
+    per-subject counts. Reading (1b) re-selects by the Methods of [41], run with a paired and an
+    unpaired post-against-baseline test and with SB and HB compared with NB each or pooled. It finds
+    1 to 3 boundary and 7 event cells (8 to 10 in all) in the 18 usable subjects, where [41]'s table
+    counts 42 and 34 for them (76), with a per-subject correlation of 0.27 to 0.57. With the boundary
+    labels shuffled (20 shuffles) the selection's chance rate is 0.02% for boundary and 0.25% for event
+    cells, against 2.11% and 2.26% in [41]. Following the protocol on chance levels, this selection is
+    not the paper's, and the claim is blocked even though the analysis ran. Under it, over the 5 to 9
+    included subjects, a dip and a ramp are present in all 64 readings (selection 4, cuts 2, bins 2,
+    smoothing 2, z-score reference 2), with the boundary peak at 155 to 338 ms and lags of 75 to 490 ms,
+    within 130 plus or minus 13 ms (or one bin) in 5 readings; at NB virtual boundaries, with the same
+    groups, none of 32 readings shows both. Over the 3 or 4 included subjects whose encoding clock is
+    shown, dip and ramp appear in 50 of 64 readings with lags of 220 to 490 ms. A variant that is not a
+    reading of the paper, giving each of the 14 subjects of reading (a) as many boundary neurons as
+    [41]'s table counts, ranked by their response to cuts, shows dip and ramp in 16 of 16 readings with
+    lags of 190 to 430 ms, but also in 4 of 8 readings at NB virtual boundaries, so the dip and ramp
+    tests of the criterion do not separate a cut from no cut there. Question for the paper's authors
+    (see findings) on which units were the boundary and onset neurons.
+  deviations:
+  - Which cuts form the trials is open (every SB and HB cut, as [41] aligns to boundaries, or the first
+    cut of each SB and HB clip); both are run.
+  - The permutation t-test of [41] is not said to be paired or unpaired for post against baseline, nor
+    whether SB and HB are each compared with NB; all four combinations are run, 1000 permutations each
+    ([41], Statistics paragraph).
+  - The clip onset cells of [41] are taken as a one-tailed increase from the 1 s before to the 1 s
+    after clip onset ([41], Extended Data Fig. 5 legend, "one-tailed permutation t-test").
+  - The encoding clock could be shown in only 7 of 18 sessions; results are also given over those
+    sessions.
+- claim: fig3b-individual-subjects
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_zhong_2026.ipynb
+  output: claim:fig3b-individual-subjects
+  notes: Depends on fig3a-dip-after-boundary, which is blocked. For reference, under the re-selection
+    at most 9 subjects are included and up to 9 show both a dip and a ramp, but P64CS is never included
+    and TWH120 shows a dip in every reading. Under the rank-matched variant 9 to 13 of 14 subjects show
+    both, and P64CS has a ramp and TWH120 a dip in every reading, so neither named exception appears.
+- claim: fig3c-onset-control
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_zhong_2026.ipynb
+  output: claim:fig3c-onset-control
+  notes: Depends on fig3a-dip-after-boundary, which is blocked. The onset re-selection finds 100 to 101
+    onset cells against 70 in [41]'s table for these subjects (per-subject correlation 0.15 to 0.17);
+    TWH125, with no onset cell in [41], has 12 to 13 here. For reference, over the included subjects
+    the non-onset trace passes the criterion's dip-and-ramp test in 6 of 8 readings for each
+    re-selection and in 4 of 8 for the rank-matched variant; over the subjects whose encoding clock is
+    shown, in 6 of 8 (paired) or 0 of 8 (unpaired), and 0 of 8 for the variant. The onset trace peaks
+    635 to 1995 ms after clip onset, so the dip window from the peak often runs past the 1 s end of the
+    ramp fit.
+- claim: fig1d-basic-capacity-four
+  outcome: blocked
+  blocked_by: other
+  notes: A simulation of the paper's rate model, not a finding on recorded data; the dataset holds
+    nothing it needs. The simulation code is not public (Data availability, "will be made available in
+    a Github repository at a later stage"), and Table I and Eqs. 2 to 8 did not survive in the text
+    read.
+- claim: fig1d-chunking-retrieves-six
+  outcome: blocked
+  blocked_by: other
+  notes: A simulation, as fig1d-basic-capacity-four; the dataset cannot test it.
+- claim: eq1-new-magic-number
+  outcome: blocked
+  blocked_by: other
+  notes: A mathematical derivation (Methods B), not a finding on data; the dataset cannot test it.
+- claim: fig2b-hierarchical-retrieval
+  outcome: blocked
+  blocked_by: other
+  notes: A simulation, as fig1d-basic-capacity-four; the dataset cannot test it.
+- claim: figs2-delayed-hebbian-binding
+  outcome: blocked
+  blocked_by: other
+  notes: A simulation, as fig1d-basic-capacity-four, with Eq. 15 also lost in the text read; the
+    dataset cannot test it.
+- claim: fig4a-universal-slope
+  outcome: blocked
+  blocked_by: other
+  notes: The data are the recall table printed in Miller and Selfridge 1950 (doi:10.2307/1418920), a
+    journal article behind a paywall, not a deposit in any data archive; it could not be read here and
+    is not in DANDI:000207.
+- claim: fig4b-plateau-near-eight
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4a-universal-slope; the same printed table, not readable here.
+- claim: fig4b-three-languages
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on fig4b-plateau-near-eight; the Danish replication (doi:10.1111/j.1467-9450.1988.tb00791.x)
+    is a paywalled article and the Hindi one (Sharma and Sen 1977) has no DOI or volume in the paper.
+findings:
+- kind: metadata_insufficient
+  statement: The units table holds only spike times and electrodes. It does not say which units are
+    boundary, event or clip-onset cells, although Zheng et al. 2022 classified them and the paper
+    analysed by that classification; the supplement of Zheng et al. gives only counts per subject.
+- kind: format_error
+  statement: The spike times of TWH138 (sub-19) run from about -7020208942450 s to 2967 s after that,
+    while its trial tables run from 1 to 2892 s, so its spikes cannot be aligned with its trials. Some
+    of its acquisition event timestamps are also near -7.02e12 s. The same holds in version
+    0.230530.1822.
+- kind: other
+  statement: In only 7 of the other 18 sessions (P61CS, TWH117, TWH120, TWH125, TWH126, TWH127,
+    TWH129) does the summed population count rise after clip onset (paired t at least 3; at most 2.5
+    with onsets shifted by 30 s, and at most 3.8 over shifts of -12 to 12 s in the others). Three
+    sessions (TWH101, TWH110, TWH113) respond at recognition image onsets but not at clip onsets, and
+    Zheng et al. list 3 to 7 onset cells in sessions with no population response here, while TWH125,
+    with no onset cell in their table, has one of the strongest responses. Whether the encoding table
+    and the spikes share a clock in those 11 sessions could not be shown.
+- kind: selection_undocumented
+  statement: The dandiset holds 565 units, all in the medial temporal lobe; Zheng et al. report 985
+    neurons, 580 of them in the MTL. The dandiset does not say that units outside the MTL were left out,
+    nor which 15 MTL units are missing.
+- kind: other
+  statement: Version 0.230530.1822 renames the files and changes the spike times of TWH120 (sub-14),
+    whose spike count rises from 323033 to 328693, with 28 of 30 units changed and first spikes moved
+    by 0.26 to 9.76 ms, and codes missing boundaries as NaN; the version has no release notes.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. Which units of DANDI:000207 were the boundary
+    (soft and hard) and onset neurons of Figure 3, and were they taken from the classification of Zheng
+    et al. or re-selected? Re-selecting them by the Methods of Zheng et al. finds 8 to 10 boundary and
+    event cells where they count 76, so the selection could not be repeated. The bin width, smoothing,
+    plotted window, z-score reference and which cuts (all SB and HB cuts, or one per clip) are also not
+    given; the results under each reading are in the notebook.
+- kind: methods_unavailable
+  statement: The cell selection of Zheng et al. 2022, applied as its Methods describe to these files,
+    gives 1 to 3 boundary and 7 event cells and a chance rate near 0.02% and 0.25% where they report
+    42 and 36 cells and 2.11% and 2.26%; the dataset's example code has no selection code, and the
+    Methods do not say whether the post-against-baseline test is paired.
+- kind: paper_inconsistency
+  statement: Methods E says four of "eighteen" subjects in Zheng et al. were excluded; Zheng et al.
+    analyse neurons from 19 subjects, and the dataset holds 19. The four excluded subjects are the four
+    with no clip-onset cell in their table, so the count of 18 likely leaves out TWH138, whose spike
+    times cannot be aligned, without saying so.
+- kind: methods_unavailable
+  statement: The simulation code is not public ("will be made available in a Github repository at a
+    later stage"), so the simulation claims cannot be rerun, and the parameters of Table I are not in
+    the text.
