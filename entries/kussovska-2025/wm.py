@@ -212,14 +212,21 @@ def glm_fit(counts_by_neuron, x_by_neuron, perms_by_neuron):
     return real, null
 
 
-def glm_groups(real, null, groups, alpha=0.05):
+def glm_groups(real, null, groups, alpha=0.05, ties="raw"):
     """A neuron is significant when |b1| is at or above the 95th percentile ('higher' quantile) of
     its |null|; a group's p is the fraction of null counts of significant neurons at or above the
-    observed count (main_1e,f.py:172-205; no + 1, as in the code). groups: {name: index array}."""
+    observed count (main_1e,f.py:172-205; no + 1, as in the code). groups: {name: index array}.
+    The slope depends on the data only through sum(x * y), so a permutation often gives exactly the
+    real slope, and a neuron can sit on its own threshold; floating-point rounding (which differs
+    between machines) then decides the comparison. ties 'in' counts values within a relative 1e-9
+    of the threshold as at it, the code's '>=' in exact arithmetic, so the result does not depend on
+    rounding; 'out' counts them as below it (a stability check); 'raw' compares the floats as they
+    are, as the code does."""
     absn = np.abs(null)
     thr = np.quantile(absn, 1 - alpha, axis=1, method="higher")
-    sig = np.abs(real) >= thr
-    sig_null = absn >= thr[:, None]
+    eps = {"in": -1e-9, "out": 1e-9, "raw": 0.0}[ties]
+    sig = np.abs(real) >= thr * (1 + eps)
+    sig_null = absn >= (thr * (1 + eps))[:, None]
     out = []
     for g, idx in groups.items():
         idx = np.asarray(idx)
@@ -361,17 +368,18 @@ def _acg_model(p, x):
     return np.maximum(c * (np.exp(-(x - f) / a) - d * np.exp(-(x - f) / b)) + h * np.exp(-(x - f) / g) + e, 0)
 
 
-def fit_acg(acg_narrow):
+def fit_acg(acg_narrow, start_scale=1.0, data_scale=1.0):
     """fit_ACG.m of CellExplorer: bins -0.5 to +0.5 ms set to zero, the triple exponential fitted at
     lags 0.5 to 50 ms from the start point a0 within bounds lb, ub, by bounded nonlinear least
     squares (scipy's trust-region reflective, as MATLAB's fit uses). Returns tau_decay, tau_rise,
-    R2 and the parameters."""
+    R2 and the parameters. start_scale multiplies the start point and data_scale the ACG (by
+    1 +/- 1e-9 and 1 + 1e-12 in the notebook's check of how far the fit depends on rounding)."""
     from scipy.optimize import least_squares
     y_all = np.array(acg_narrow, float)
     y_all[99:102] = 0
     x = np.arange(1, 101) / 2
-    y = y_all[(x * 2).astype(int) + 100]
-    a0 = np.array([20, 1, 30, 2, 0.5, 5, 1.5, 2], float)
+    y = y_all[(x * 2).astype(int) + 100] * data_scale
+    a0 = np.array([20, 1, 30, 2, 0.5, 5, 1.5, 2], float) * start_scale
     lb = np.array([1, 0.1, 0, 0, -30, 0, 0.1, 0], float)
     ub = np.array([500, 50, 500, 15, 50, 20, 5, 100], float)
     if not np.all(np.isfinite(y)):
@@ -404,6 +412,13 @@ def acg_features(spikes):
             "acg_norm": np.nanmean(wn), "burst_royer": np.mean(wide[502:505]) / np.mean(wide[699:800]),
             "firing_rate": len(s) / (s[-1] - s[0]) if len(s) > 1 else np.nan,
             "cv_isi": np.std(isi) / np.mean(isi) if len(isi) > 1 else np.nan, "cv2_holt": cv2}
+
+
+def refit_acg(spikes, start_scale=1.0, data_scale=1.0):
+    """tau_decay, tau_rise and R2 of the ACG fit of one neuron with the start point or the ACG
+    scaled (fit_acg), for the check of how far the fit depends on rounding."""
+    r = fit_acg(acg(np.asarray(spikes, float), 0.0005, 201), start_scale, data_scale)
+    return r["tau_decay"], r["tau_rise"], r["r2"]
 
 
 def cv2_holt(isi):
@@ -527,6 +542,14 @@ def group_bursts(neuron_trials, win, rng, rule="prominence", distance=2, thr_mod
     return len(pk), float(np.mean(sur)), pk, len(sm)
 
 
+def group_bursts_seeded(neuron_trials, win, seed, rule="prominence", distance=2, thr_mode="real", durs=None):
+    """group_bursts with its own generator from a seed, for running groups in parallel processes.
+    Returns (real count, mean surrogate count)."""
+    rc, sc, _, _ = group_bursts(neuron_trials, win, np.random.default_rng(seed), rule, distance, thr_mode,
+                                durs=durs)
+    return rc, sc
+
+
 def burst_groups(NT, feats, concept, types, rule="code"):
     """Neuron groups per participant for the burst analyses. NT: neuron table; feats: ACG features
     (index aligned with NT); concept: boolean array; types: array of 'PY', 'IN' or None.
@@ -572,14 +595,18 @@ def burst_groups(NT, feats, concept, types, rule="code"):
     return out
 
 
-def epoch_burst_counts(neuron_trials_by_epoch, rule="prominence", distance=2, mreading="methods"):
+def epoch_burst_counts(neuron_trials_by_epoch, rule="prominence", distance=2, mreading="methods",
+                       mdurs=None):
     """Real burst counts of one group in encoding, M1 to M3 and probe (Methods, Burst detection,
     last paragraph; 04_bursting/main_4f-k,6c,d.py). neuron_trials_by_epoch: {'enc': [...],
     'maint': [...], 'probe': [...]}, each a per-neuron list of per-trial relative spike times;
     encoding and probe use 1 s windows, maintenance 3 s (the code's durations, lines 19-25).
     mreading 'methods': peaks of the maintenance train counted by their time within the trial,
     [0, 1), [1, 2) and [2, 3) s from maintenance onset; 'code': peaks assigned to thirds of the
-    bins of the whole concatenated train (lines 216-219)."""
+    bins of the whole concatenated train (lines 216-219); 'trial': peaks counted by their time
+    within the trial in the first, second and final thirds of that trial's own maintenance
+    (mdurs, each trial's maintenance duration, at most 3 s), the Fig. 6c legend's "first, second,
+    and final thirds of the maintenance epoch"."""
     out = {}
     for ep, win in [("enc", 1.0), ("probe", 1.0)]:
         nt = neuron_trials_by_epoch[ep]
@@ -595,6 +622,13 @@ def epoch_burst_counts(neuron_trials_by_epoch, rule="prominence", distance=2, mr
         t_in = (pk * BURST_BIN) % win
         for i in range(3):
             out[f"M{i + 1}"] = int(np.sum((t_in >= i) & (t_in < i + 1)))
+    elif mreading == "trial":
+        t_all = pk * BURST_BIN
+        d = np.minimum(np.asarray(mdurs, float), win)[np.minimum((t_all // win).astype(int), len(mdurs) - 1)]
+        t_in = t_all % win
+        third = np.floor(3 * t_in / np.where(d > 0, d, np.inf)).astype(int)
+        for i in range(3):
+            out[f"M{i + 1}"] = int(np.sum((third == i) & (t_in < d)))
     else:
         thirds = np.array_split(np.arange(len(sm)), 3)
         for i, part in enumerate(thirds):
