@@ -30,6 +30,11 @@ code (https://github.com/GiocomoLab/PlittGiocomo_2021, commit dca5a57):
   of the 2026 code (mouse_metadata.py at 9230b0a). The deposit's trials are found as the code finds
   them (preprocessing._get_frame, utilities.by_trial_info). Likelihood
   of variance 8.23 f_h^2 (M8, Methods; the code widths 0.3 and 0.4 units are variants).
+- Variants added after the first verification round: place cells from each cell's activity divided
+  by its 95th percentile (the 2020 code's signal for place cells, scale_p95), a plain numpy version
+  of the shuffle to check the numba one (shuffle_counts_reference), the code's computation of the
+  reconstructed prior (reconstruct_prior, code=True) and an ideal observer to check it
+  (ideal_observer_q, 20 samples per trial, a standard choice).
 - SF (M9), Q with a kernel exp(-d^2/0.1^2) on both axes and the affine map to 10.86 and 37.715 f_h
   (M10), Delta D_KL over rows 0.1 to 1.1 units in bits (M11), mouse permutation test (M12).
 """
@@ -72,19 +77,22 @@ def asset_table() -> pd.DataFrame:
     """Every NWB file at the pinned version, with mouse, group, session kind, day and part."""
     from dandi.dandiapi import DandiAPIClient
 
-    rows = []
+    rows, unmatched = [], []
     with DandiAPIClient() as client:
         ds = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
         for a in ds.get_assets():
             m = re.match(r"sub-(\w+?)/sub-\w+?_ses-(training|testing)-day(\d+)(?:-(\d+))?_", a.path)
             if not m:
+                unmatched.append(a.path)
                 continue
             mouse = m.group(1)
             rows.append(dict(path=a.path, mouse=mouse, group=GROUP_OF[re.sub(r"\d", "", mouse)],
                              kind=m.group(2), day=int(m.group(3)), part=int(m.group(4) or 1),
                              size=a.size,
                              url=a.get_content_url(follow_redirects=1, strip_query=True)))
-    return pd.DataFrame(rows).sort_values(["group", "mouse", "day", "part"]).reset_index(drop=True)
+    df = pd.DataFrame(rows).sort_values(["group", "mouse", "day", "part"]).reset_index(drop=True)
+    df.attrs["unmatched"] = unmatched      # paths the pattern does not read; printed by the notebooks
+    return df
 
 
 def _text(x):
@@ -290,13 +298,34 @@ def mean_dkl(q: np.ndarray, post: np.ndarray) -> float:
     return float(np.mean(d))
 
 
-def reconstruct_prior(qu: np.ndarray, lik: str = "methods var 8.23") -> np.ndarray:
-    """fig6d criterion: R(f) = sum_fhat Q(f|fhat) / sum_fhat L(fhat|f)/Z(fhat), normalised."""
+def reconstruct_prior(qu: np.ndarray, lik: str = "methods var 8.23", code: bool = False) -> np.ndarray:
+    """fig6d criterion: R(f) = sum_fhat Q(f|fhat) / sum_fhat L(fhat|f)/Z(fhat), normalised.
+
+    code=True is the code's computation, a variant (SFReg.plot_sfreg at dca5a57 and
+    similarity_fraction.single_sess_reconstruction at 9230b0a, both
+    `H.sum(axis=0) / (u.gaussian(x, sigma, x[:, None]) / Z[:, None]).sum(axis=1)`): the
+    denominator at f is sum_j L(f, x_j) / Z(f), so Z is taken at the grid point f itself and not
+    inside the sum over fhat."""
     z = qu.sum(1)
     q = qu / z[:, None]
     lik_m = likelihood_matrix(lik)
-    r = q.sum(0) / (lik_m / z[:, None]).sum(0)
+    if code:
+        r = q.sum(0) / (lik_m.sum(1) / z)
+    else:
+        r = q.sum(0) / (lik_m / z[:, None]).sum(0)
     return r / r.sum()
+
+
+def ideal_observer_q(fhat_units: np.ndarray, post: np.ndarray, seed: int, n_rep: int = 20) -> np.ndarray:
+    """Verifier's check of reconstruct_prior: an unnormalised Q (M10 kernel) from an ideal
+    observer whose estimate on each trial is a sample from the posterior row at the trial's
+    fhat, n_rep samples per trial (the trial design of a real session)."""
+    rng = np.random.default_rng(seed)
+    rows = np.abs(GRID[None, :] - np.asarray(fhat_units)[:, None]).argmin(1)
+    cdf = np.cumsum(post[rows], axis=1)
+    u = rng.random((n_rep, len(rows)))
+    est = GRID[np.minimum((cdf[None, :, :] < u[:, :, None]).sum(2), len(GRID) - 1)]
+    return q_unnorm(est.ravel(), np.tile(np.asarray(fhat_units), n_rep)) / n_rep
 
 
 def dkl(p: np.ndarray, q: np.ndarray) -> float:
@@ -458,10 +487,13 @@ def vr_deposit(mice=tuple(ALIAS), track=VR_TRACK, workers=16):
     ses = db[db["MouseName"].isin(inv) & (db["Track"] == track)].copy()
     ses["mouse"] = ses["MouseName"].map(inv)
     ses["db_rows"] = ses["member"].map(ses["member"].value_counts())
+    agg = dict(mouse="first", MouseName="first", date="first", DateFolder="first",
+               SessionNumber="first", RewardCount="max", Imaging="max", in_zip="all",
+               Track="first", db_rows="first")
+    if "ImagingRegion" in ses:
+        agg["ImagingRegion"] = "first"      # the 2020 code's session filter (SFReg, CA1 or empty)
     ses = (ses.groupby("member", as_index=False)
-              .agg(dict(mouse="first", MouseName="first", date="first", DateFolder="first",
-                        SessionNumber="first", RewardCount="max", Imaging="max", in_zip="all",
-                        Track="first", db_rows="first"))
+              .agg(agg)
               .sort_values(["mouse", "date", "SessionNumber"]).reset_index(drop=True))
     # members are fetched in threads and parsed one at a time here (parsing in the threads is
     # many times slower)
@@ -702,11 +734,13 @@ def _runs(bins, keep_a, offsets):
             np.concatenate(rk).astype(np.bool_))
 
 
-def place_cells(act, frame_idx, bins, keep_a, offsets, morph, seed, n_shuffles=N_SHUFFLES):
+def place_cells(act, frame_idx, bins, keep_a, offsets, morph, seed, n_shuffles=N_SHUFFLES, stop=None,
+                return_shifts=False):
     """Place cells per S-tilde for reading (a) speed below 2 cm/s excluded and (b) no exclusion.
 
     Returns per reading: SI (5 x cells), the exceedance count, the shuffles run, the mask, the
-    trial-averaged maps (5 x bins x cells) and the occupancy fractions, plus the global minima."""
+    trial-averaged maps (5 x bins x cells) and the occupancy fractions, plus the global minima.
+    `stop` (default 5% of the shuffles) is where a cell stops early; n_shuffles stops none."""
     n_tr = len(offsets) - 1
     morph_idx = np.array([int(np.where(np.isclose(MORPHS, m))[0][0]) if np.any(np.isclose(MORPHS, m))
                           else -1 for m in morph], np.int64)
@@ -738,13 +772,82 @@ def place_cells(act, frame_idx, bins, keep_a, offsets, morph, seed, n_shuffles=N
                                 np.nan_to_num(real["a"]["si"].T, nan=np.inf),
                                 np.nan_to_num(real["b"]["si"].T, nan=np.inf),
                                 real["a"]["gmin"], real["b"]["gmin"], shifts, len(MORPHS), N_BINS,
-                                int(np.floor(P_THR * n_shuffles)))
+                                int(np.floor(P_THR * n_shuffles)) if stop is None else int(stop))
     for gi, g in enumerate(("a", "b")):
         c = cnt[gi].T
         out[g] = dict(si=real[g]["si"], count=c, mask=(c <= np.floor(P_THR * n_shuffles)) & np.isfinite(real[g]["si"]),
                       maps=real[g]["maps"], occf=real[g]["occf"], gmin=real[g]["gmin"])
     out["shuffles_run"] = done
+    out["shifts"] = shifts if return_shifts else None
     return out
+
+
+def scale_p95(act: np.ndarray) -> np.ndarray:
+    """Signal variant of the 2020 code for place cells (PlotAllPlaceCells, S/np.percentile(S, 95,
+    axis=0)): each cell divided by its 95th percentile over the session's frames. A cell whose
+    95th percentile is 0 would give infinite values in the code; it is set to 0 here (counted)."""
+    p95 = np.percentile(act, 95, axis=0)
+    return np.where(p95 > 0, act / np.where(p95 > 0, p95, 1), 0.0).astype(np.float32), int((p95 == 0).sum())
+
+
+def shuffle_counts_reference(act, frame_idx, bins, keep_a, offsets, morph, shifts, gmin):
+    """A plain numpy version of _shuffle_counts, without stopping early: for each shuffle, each
+    trial's activity is shifted circularly by the shuffle's amount (frame j takes frame j + k),
+    the trial matrix and the per-S-tilde maps are rebuilt with trial_matrix, and SI is computed
+    with the real map's minimum gmin[reading][morph]. Returns counts (2 x cells x 5)."""
+    n_tr = len(offsets) - 1
+    morph_idx = np.array([int(np.where(np.isclose(MORPHS, m))[0][0]) if np.any(np.isclose(MORPHS, m))
+                          else -1 for m in morph])
+    a = act[frame_idx].astype(np.float64)
+    keeps = (keep_a, np.ones_like(keep_a))
+    real = []
+    for g in range(2):
+        tm, occ = trial_matrix(a, np.arange(len(a)), bins, keeps[g], offsets)
+        real.append((tm, occ))
+
+    def si_of(tm, occ, g):
+        out = np.full((len(MORPHS), tm.shape[2]), np.nan)
+        for i in range(len(MORPHS)):
+            sel = morph_idx == i
+            if not sel.any():
+                continue
+            mp = np.nanmean(tm[sel], axis=0)
+            o = occ[sel].sum(0)
+            ok = np.isfinite(mp).all(1) & (o > 0)
+            p = mp[ok] - gmin[g][i] + 0.001
+            p = p / p.mean(0)
+            of = o[ok] / o[ok].sum()
+            out[i] = ((p * of[:, None]) * np.log2(p)).sum(0)
+        return out
+
+    si_real = [si_of(*real[g], g) for g in range(2)]
+    cnt = np.zeros((2, act.shape[1], len(MORPHS)), np.int64)
+    for s in range(shifts.shape[0]):
+        sh = np.empty_like(a)
+        for r in range(n_tr):
+            o, e = offsets[r], offsets[r + 1]
+            sh[o:e] = np.roll(a[o:e], -(shifts[s, r] % (e - o)), axis=0)
+        for g in range(2):
+            tm, occ = trial_matrix(sh, np.arange(len(sh)), bins, keeps[g], offsets)
+            cnt[g] += (si_of(tm, occ, g) >= si_real[g]).T
+    return cnt, si_real
+
+
+def shuffle_check(url, n_cells=50, n_shuffles=N_SHUFFLES, seed=0):
+    """Verifier's check: the numba shuffle counts against the plain numpy version for the first
+    n_cells cells of one file, with the same shifts and no early stopping."""
+    raw = read_file(url)
+    trials = trial_table(raw)
+    act = np.ascontiguousarray(raw["act"][:, :n_cells])
+    idx, bins, keep_a, offs = frame_layout(raw, trials)
+    morph = trials["morph"].to_numpy()
+    pc = place_cells(act, idx, bins, keep_a, offs, morph, seed, n_shuffles=n_shuffles, stop=n_shuffles,
+                     return_shifts=True)
+    gmin = [pc["a"]["gmin"], pc["b"]["gmin"]]
+    ref, si_ref = shuffle_counts_reference(act, idx, bins, keep_a, offs, morph, pc["shifts"], gmin)
+    fast = np.stack([pc["a"]["count"].T, pc["b"]["count"].T])
+    return dict(fast=fast, ref=ref, si_fast=[pc["a"]["si"], pc["b"]["si"]], si_ref=si_ref,
+                trials=len(trials), cells=n_cells, shuffles=n_shuffles)
 
 
 # ----------------------------------------------------------------------------- per-session measures
@@ -959,6 +1062,12 @@ def process_session(row, mode: str) -> dict:
     if mode == "place":
         pc = place_cells(act, idx, bins, keep_a, offs, morph, seed=session_seed(row.mouse, row.day, row.part, 1))
         out["pc"] = pc
+        # variant (verifier's request): place cells of the 2020 code's signal, activity divided by
+        # each cell's 95th percentile; same shuffles. Only the masks are kept.
+        act95, out["p95_zero"] = scale_p95(act)
+        pc95 = place_cells(act95, idx, bins, keep_a, offs, morph, seed=session_seed(row.mouse, row.day, row.part, 1))
+        out["pc95"] = {g: dict(mask=pc95[g]["mask"]) for g in "ab"}
+        del act95, pc95
         sig, maps10 = umap_filter(tm, trials, seed=session_seed(row.mouse, row.day, row.part, 2))
         out["umap_sig"], out["umap_maps"] = sig, maps10
         out["lag_rel"] = lag_reliability(act, idx, bins, offs, n_frames=raw["shape"][0])

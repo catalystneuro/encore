@@ -8,19 +8,19 @@ morph and four decision mice) running morphed linear tracks.
 | Claim | Outcome |
 |---|---|
 | Cells per session (161 to 3,657) | Reproduced |
-| Session and trial counts | Partially reproduced |
+| Session and trial counts | Not reproduced |
 | Link of the authors' VR deposit to the dandiset (link claim) | Reproduced |
 | Intermediate trials before session 8 (deposit data) | Reproduced |
 | Place-cell counts and fractions | Not reproduced |
 | Fewer place cells in frequent morph mice | Reproduced |
 | Overlap of S-tilde 0 and 1 place cells above chance | Partially reproduced |
 | Overlap cells at the track ends and reward zone | Not reproduced |
-| Place-cell similarity matrices differ between groups | Partially reproduced |
+| Place-cell similarity matrices differ between groups | Not reproduced |
 | NMF confirms discrete against gradual remapping | Not reproduced |
 | UMAP separates rare and frequent morph cells | Reproduced |
 | Licking rises before the reward | Reproduced |
 | Block against gradual population similarity | Not reproduced |
-| Checkerboard bands in six named sessions | Partially reproduced |
+| Checkerboard bands in six named sessions | Not reproduced |
 | Z-scored similarity differs at S-tilde 0.25 | Reproduced |
 | Position-wise SF stable along the track | Reproduced |
 | Delta D_KL sign and group means | Partially reproduced |
@@ -29,9 +29,10 @@ morph and four decision mice) running morphed linear tracks.
 | MAP estimates | Reproduced |
 | Patterns from session 3 on | Reproduced |
 | Null models, rare morph sessions | Reproduced |
-| Null models, frequent morph sessions | Partially reproduced |
+| Null models, frequent morph sessions | Not reproduced |
 | Decision mice like frequent morph mice | Reproduced |
-| Hebbian model and its prior reconstruction (two claims) | Reproduced |
+| Hebbian model | Reproduced |
+| Prior reconstruction from the Hebbian model | Partially reproduced |
 | Simulated posterior population | Not reproduced |
 | Image statistics of the VR scenes | Blocked: data missing |
 | Earlier morph studies (simulation only) | Blocked: other |
@@ -48,11 +49,11 @@ attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/plitt-2021-01.yaml`](../../attempts/plitt-2021-01.yaml).
 
 - `01_sessions_place_cells.ipynb`: the data check of every file, sessions, licking, place cells,
-  their similarity matrices, NMF and UMAP. About 23 minutes, most of it streaming the files and the
+  their similarity matrices, NMF and UMAP. About 30 minutes, most of it streaming the files and the
   place-cell shuffles.
 - `02_population_inference.ipynb`: the link to the figshare VR deposit and the training trials,
   population similarity, SF, Q estimates, prior reconstruction, the decision mice, the Hebbian
-  model and the simulated posterior population, and the summary. About 20 minutes.
+  model and the simulated posterior population, and the summary. About 18 minutes.
 - `morph.py`: streaming and reducing the files, place cells, the stimulus axis, priors, posteriors,
   Q estimates, Delta D_KL, the mouse permutation test, and reading and linking the figshare VR deposit. Other notebooks on this dandiset can
   import it.

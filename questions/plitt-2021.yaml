@@ -119,3 +119,83 @@ questions:
     prior to averaging (diagonal elements excluded)", Extended Data Fig. 3j legend). Both are now in
     the criterion.
   answered: 2026-10-22
+- claim: fig6d-prior-reconstruction
+  asked: 2026-11-10
+  question: >-
+    The criterion computes R as the Methods write it, R(f_h) = sum over fhat of Q(f_h | fhat)
+    divided by sum over fhat of P(fhat | f_h) / Z(fhat), and says this is "as the code computes it
+    (SFReg, prior_post_reconstruction)". The code computes the denominator differently:
+    "(u.gaussian(x,sigma_likelihood,_x[:,np.newaxis])/Z[:,np.newaxis]).sum(axis=1)" (SFReg.plot_sfreg
+    at dca5a57; the same line in similarity_fraction.single_sess_reconstruction at 9230b0a), which is
+    sum_j L(f_h, x_j) / Z(f_h), with Z taken at the grid point f_h and not inside the sum over fhat.
+    That cell printed -0.476 +- 0.132 (rare) and 0.453 +- 0.074 (frequent), the paper's values.
+    Should the claim, and edf10-decision-mice-like-frequent and fig7g-model-prior-reconstruction,
+    which use the same reconstruction, follow the code's computation, and with which of the code's
+    other settings (likelihood width 0.3 units, the last mouse's prior as the group prior)?
+  passage: >-
+    "Summing this value over the range of f h for each value of f ^ h gave a value proportional to
+    the approximate normalizing constant. For the likelihood function, we used the same Gaussian
+    that we used for calculating the ideal posterior distributions. Using those values in the
+    equation above gave us our unsupervised reconstruction of the prior." (Methods, Reconstructing
+    prior distributions).
+  why: >-
+    On this task's trial design the Methods formula gives a positive Delta D_KL even for an ideal
+    observer that samples the rare posterior (+0.547 on average over the mice's own trials), so the
+    claim cannot be reproduced for the rare condition whatever the data. With the code's computation
+    the rare ideal observer gives +0.047 and the data give rare -0.288 +- 0.127 and frequent 0.638
+    +- 0.078; with the 2020 code's likelihood width and last-mouse prior as well, rare -0.421 +-
+    0.123 and frequent 0.500 +- 0.077, both within tolerance, which would change the outcome from
+    not reproduced to reproduced, and could change fig7g (rare-trained models -0.349 against the
+    neural -0.288).
+- claim: place-cell-fractions
+  asked: 2026-11-10
+  question: >-
+    Header M2 says the 2026 normalisation is shown for the population analyses because "a per-cell
+    scale changes population cosine similarity, not spatial information". The spatial information
+    the criterion follows (PlaceCellAnalysis.spatial_info) adds 0.001 to the map before the log, so
+    it does depend on a cell's scale, and the 2020 code computes place cells from spks divided by
+    each cell's 95th percentile (PlotAllPlaceCells). Should M2 name that signal as a reading for
+    the place-cell claims, and not only as the code's choice?
+  passage: >-
+    "We then calculated the spatial information" (Methods, Place cell identification); code
+    PlotAllPlaceCells at dca5a57, "S = S/np.percentile(S,95,axis=0)" before place_cells_calc; header
+    M2 of the claims file.
+  why: >-
+    With the +0.001 the decision can change with scale in principle. Here it does not: with the
+    95th-percentile signal, 99.91% of cell and S-tilde decisions are unchanged and the fractions
+    agree within 0.001, so the outcome of place-cell-fractions and of the claims built on its place
+    cells would stay as tested; the question is about the claims file's wording.
+- claim: fig7-model-reproduces-remapping
+  asked: 2026-11-10
+  question: >-
+    The criterion says the test stimuli are "the f_h of 1,000 evenly spaced S from -0.3 to 1.3
+    (code ut.wallmorphx(np.linspace(-.3, 1.3)), all between 5.5 and 38.5 f_h)". Computed as it
+    prescribes, they span 0.04 to 38.45 f_h, because wallmorphx folds for S below -0.1 (f_h falls
+    again to 0.04 near S = -0.2), and about a quarter of them lie outside S -0.1 to 1.1. Is the
+    parenthesis to be dropped, or did the code mean another range?
+  passage: >-
+    Code notebooks/KWTA_EmpiricalPrior.ipynb at dca5a57, the test stimuli
+    ut.wallmorphx(np.linspace(-.3,1.3,num=1000)); UnityTransforms.py, wallmorphx; the Methods do
+    not give the test range.
+  why: >-
+    The test stimuli below S = -0.1 add test points at low f_h that the anchor medians and the
+    centroids do not use; another range could change the Q estimates and the model's Delta D_KL,
+    though here all 50 rare-trained models are below 0 and the frequent median is positive under
+    every likelihood.
+- claim: session-and-trial-counts
+  asked: 2026-11-10
+  question: >-
+    For the decision mice the criterion reads the sessions as (a) every imaged session or (b)
+    sessions 8 and later. The 2020 code builds Extended Data Fig. 10 from each decision mouse's
+    imaging sessions from the third on ("fd_sfreg = {mouse:single_mouse_sf_regression(mouse,dff,
+    first_ind=2) ...}" in SFReg at dca5a57), and that cell printed "trial N 2460", the legend's
+    count. Should the code's selection, which is sessions 5 and later in the dandiset, be a reading
+    of this claim and of edf10-decision-mice-like-frequent?
+  passage: >-
+    "N = 2,460 trials" (Extended Data Fig. 10g legend); the paper does not say which sessions of the
+    decision mice are used.
+  why: >-
+    The dandiset gives 3,217 trials under reading (a) and 2,022 under (b), both outside 2,460 +-
+    246, and 2,662 under the code's selection, within tolerance. With it as a reading every count
+    would be within tolerance and the claim would be reproduced; edf10 would stay reproduced (pooled
+    Delta D_KL 0.005, every decision mouse's reconstruction positive).
