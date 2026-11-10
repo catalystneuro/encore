@@ -46,10 +46,12 @@
 # Common method, used by every criterion unless it says otherwise (Methods, Criteria for including
 # behavioral data and Statistical analyses, and the code).
 # - Sessions. Stage 8 sessions that pass the inclusion criterion (regression of catch-trial wait
-#   time on offered reward, after removing wait times above mean + 2 SD in that session, with a
-#   positive slope on a session followed by another positive session; utils/screen_perf.m also
-#   requires a 7-session moving mean of the slope at or above 0, more than 100 trials and at least
-#   5 catch trials). If the dandiset holds only included sessions, they are used as given.
+#   time on offered reward, after removing wait times above mean + 2 SD in that session; the
+#   Methods include sessions with a significantly positive slope that immediately precede another
+#   session with a positive slope. utils/screen_perf.m, a variant, asks only for a positive slope,
+#   a 7-session moving mean of the slope at or above 0, more than 100 trials and more than 5 catch
+#   trials, and keeps a session when the session before it also passed). If the dandiset holds
+#   only included sessions, they are used as given.
 # - Wait times. Opt-out wait times on catch trials; wait times more than 1 SD above the mean
 #   catch-trial wait time pooled over the rat's sessions are removed (Methods, Statistical
 #   analyses; parse_data_from_mysql.m:204). Timed-out catch trials (no opt-out within 100 s) are not
@@ -170,8 +172,9 @@ claims:
     Statistical analyses, paragraph 3). Reproduced when the post-unrewarded test has p < 0.001 with
     shorter times in high blocks and the post-rewarded test does not reach p < 0.05 in that
     direction. Open detail - the legend says two-tailed, FigureS2.m runs one-tailed tests
-    (tail 'right', low longer than high); both are run. The legend prints "Post-rewarded" twice; the
-    third value is read as all trials.
+    (tail 'right', low longer than high); both are run. The printed all-trials p (9.17e-50) is
+    about half the two-tailed p of Fig. 1i (1.82e-49), which fits the code's one-tailed test. The
+    legend prints "Post-rewarded" twice; the third value is read as all trials.
 
 - id: suppfig3-wait-time-not-affected-by-previous-outcome
   statement: Wait times show no major differences after rewarded and after unrewarded trials.
@@ -181,7 +184,7 @@ claims:
     (Supplementary Fig. 3 ).
   criterion: Per rat, wait time ratio (20 uL high over low) computed separately for catch trials
     after rewarded and after unrewarded trials (Supplementary Fig. 3b). The paper reports no test.
-    Reproduced when the population mean ratio is below 1 in both subsets. The size of the
+    Reproduced when the population mean ratio is below 1 in both subsets (a reading). The size of the
     difference between subsets (and a signed-rank test of it, a variant) is reported.
 
 - id: fig2a-wait-time-converges-in-mixed-blocks
@@ -245,7 +248,8 @@ claims:
     (nback = 10) uses 10; both are run. Reproduced when, in the mean over rats, the current offer
     coefficient for wait time is positive with a 95% interval across rats excluding 0 and larger in
     size than every previous trial coefficient, and the initiation time coefficients for 1, 2 and 3
-    trials back are negative and decrease in size with lag.
+    trials back are negative and decrease in size with lag. This rule is a reading; the paper gives
+    no test.
 
 - id: fig2e-tau-differ
   statement: The time constants of exponential fits to the previous trial coefficients differ
@@ -270,7 +274,11 @@ claims:
     10, D in [-10, 0], tau in [0, 10] for initiation time); tau is 0 when all previous coefficients
     are 0. Reproduced when the signed-rank test of the two taus across rats has p < 0.01 and the
     mean initiation time tau exceeds the mean wait time tau. The random starts are a standard
-    choice (the seed cannot change the outcome beyond fit noise).
+    choice (the seed cannot change the outcome beyond fit noise). Code variant, run beside the
+    Methods - the Methods fit the 9 previous trial coefficients only, while regress_wt_vs_rew.m
+    fits coefficients 1 to 10, the current offer and 9 previous, and starts the search for the first
+    non-significant coefficient at the current offer; regress_latency_vs_rew.m sets tau to 0 when
+    the coefficients 2 to 10 trials back are all 0.
 
 - id: fig2f-tau-uncorrelated
   statement: Across rats, the time constants for wait times and trial initiation times are not
@@ -318,7 +326,7 @@ claims:
   depends_on:
   - fig2e-tau-differ
   criterion: Groups from the initiation time taus of fig2e-tau-differ, below the 20th and above
-    the 80th percentile (Figure2.m, N = 80). Test as myTauShuffleTest.m - the group labels are
+    the 80th percentile (Figure2.m, where N = 80 is the percentile). Test as myTauShuffleTest.m - the group labels are
     shuffled 500 times, the mean coefficients of each shuffled half are refitted with an
     exponential (coefficients times 10, D in [-3, 1], tau in [0, 50]), and p is the share of
     shuffles whose absolute tau difference exceeds the observed one, divided by 2 (the observed
@@ -502,6 +510,25 @@ claims:
     fig3j-inferential-beats-retrospective-for-wait-times, with the same open details. A claim of
     absence - reproduced when none of the three signed-rank tests reaches p < 0.05.
 
+- id: fig3f-inferential-model-not-sensitive-to-previous-offer
+  statement: Wait times predicted by the inferential model fitted to each rat are, like the rats'
+    wait times, not sensitive to the previous offer for 20 uL in mixed blocks.
+  source: Figure 3f; Results, Computational modeling reveals distinct value computations,
+    paragraph 2
+  quote: Across rats, the model also captured that wait times for 20μL in mixed blocks were not
+    sensitive to previous rewards (Fig 2j ; Fig. 3f ).
+  depends_on:
+  - fig3j-inferential-beats-retrospective-for-wait-times
+  - fig2j-wait-time-not-sensitive-to-previous-offer
+  criterion: The inferential model fitted per rat as in
+    fig3j-inferential-beats-retrospective-for-wait-times, with the same open details; its predicted
+    wait times put in place of the rats' and passed through waittime_20ul_by_previous_vol.m
+    (Figure3.m sets A.wait_time to the model's WTMdl, N = 291 fits). The paper gives no test for
+    this panel. A claim of absence, judged on the population test of
+    fig2j-wait-time-not-sensitive-to-previous-offer (two-tailed rank-sum on the per-rat means for
+    previous offer below and above 20 uL, Fig. 2j legend), applied as a reading - reproduced when
+    p >= 0.05; the mean model sensitivity (below minus above) is reported beside the rats'.
+
 - id: suppfig9-wait-times-reflect-misinferences
   statement: Within mixed blocks, wait times for 20 uL differ between trials the inferential model
     labels as high and as low blocks, so wait times reflect mistaken inferences.
@@ -557,12 +584,14 @@ claims:
     to 20 kept) averaged per group; the 4-parameter logistic of Equation 11 fitted to each group
     mean (my_fit_sigmoid.m, 10 starts); 500 label shuffles; p is the share of shuffles whose
     absolute parameter difference exceeds the observed one, divided by 2 (myLambdaShuffleTest.m).
-    Reproduced when the wait time test has p < 0.05 for the slope C at mixed to low and for at
-    least one parameter at mixed to high (the right asymptote D per the legend, C per the Results),
-    and the initiation time tests do not reach p < 0.05 for those same parameters (absence, judged
-    on this test). Open detail - the groups are below the 20th and above the 80th percentile of
-    lambda in the Methods and the Results (N = 116 in the legend fits this), while Figure3.m splits
-    at the 40th and 60th (N = 60); both are run, the Methods' split first.
+    Reproduced when the wait time test has p < 0.05 for the slope C at mixed to low and, at mixed
+    to high, for the right asymptote D (the legend) or for C (the Results), two readings, and the
+    initiation time tests do not reach p < 0.05 for those same parameters (absence, judged on this
+    test). Open detail - the groups are below the 20th and above the 80th percentile of lambda in
+    the Methods and the Results, while Figure3.m splits at the 40th and 60th (its N = 60 is the
+    percentile); both are run, the Methods' split first. The legend's N = 116 fits both (about 58
+    rats per group, 116 in all, for the 20/80 split; about 116 per group for the 40/60 split); the
+    Results' N = 180 fits neither.
 
 - id: fig3i-retrospective-model-captures-initiation
   statement: A retrospective model with a learning rate scaled by changes in the inferred block
@@ -577,14 +606,22 @@ claims:
     transitions (Supplementary Fig. 7 ).
   criterion: Simulated initiation times TI = D/kappa (Equation 2) on the rats' reward sequences, with
     kappa from Equation 9 under three gains - G from Equation 10, G = 1, and G = |delta| (Methods,
-    Retrospective model; GenerateLatencyData_AlphaPHModel.m, _VanillaAlpha.m, _RPEAlpha.m), alpha_0
-    below 0.1 (Results, paragraph 4), log-normal noise of variance 4, 50 simulations (Supplementary
-    Fig. 7 legend), curves as in fig2a-wait-time-converges-in-mixed-blocks. Reproduced when the
+    Retrospective model; GenerateLatencyData_AlphaPHModel.m, _VanillaAlpha.m, _RPEAlpha.m),
+    log-normal noise of variance 4 (Methods; Figure3.m passes 8 and 1.5, a variant), 50 simulations
+    (Supplementary Fig. 7 legend), curves as in fig2a-wait-time-converges-in-mixed-blocks. For the
+    Equation 10 model alpha_0 is below 0.1 (Results, paragraph 4; Figure3.m uses 0.1042 and D
+    0.2527, smoothing 15); the alternatives are run at alpha_0 = 0.05, 0.4 and 0.8 with smoothing
+    over 20 trials (Supplementary Fig. 7 panels and legend; FigureS7.m). Reproduced when the
     Equation 10 model shows both an overshoot after the high-to-mixed transition (maximum within
     20 trials above the value at trial 20) and a persistent post-high above post-low gap in the
-    mixed block, while each alternative lacks one of the two. The paper fits no initiation time
-    model; the parameter values beyond alpha_0 below 0.1 are open and the ones set in the code's
-    scripts are used.
+    mixed block, while each alternative lacks one of the two at every alpha_0 run. For the
+    dependence on previous rewards (Fig. 3i), the Equation 10 model's simulated initiation times go
+    through latency_post20ul_by_previous_vol.m per rat (Figure3.m); reproduced when the mean over
+    rats is higher after offers below 20 uL than after offers above 20 uL (a reading; no test is
+    given). Figure3.m simulates Fig. 3i with each rat's retrospective parameters fitted to wait
+    times, which are in the deposited fits (outside data) or come from the refit of
+    fig3j-inferential-beats-retrospective-for-wait-times. The paper fits no initiation time model;
+    the parameter values beyond these are open and the ones set in the code's scripts are used.
 
 - id: bayes-observer-offer-reduces-uncertainty
   statement: In simulations of a Bayes optimal observer, hearing the reward offer reduces the
@@ -738,3 +775,40 @@ claims:
     with a rank-sum test (FigureS12.m). A claim of absence - reproduced when both p >= 0.05. Sex is
     taken from the subject metadata; the group sizes are reported against 184 and 107 (the Methods
     also print 160 and 114). The transition dynamics by sex are shown, not judged (no test).
+
+- id: suppfig14-contextual-effects-without-threshold
+  statement: Without removing wait times more than 1 SD above the pooled mean, the contextual
+    effects on wait times are qualitatively similar, with longer average wait times, mainly in low
+    blocks.
+  source: Supplementary Fig. 14; Methods, Statistical analyses, paragraph 1
+  quote: Wait time curves without threshold (right) have qualitatively similar context effects, but
+    longer average wait times.
+  depends_on:
+  - fig1f-wait-time-block-effect
+  criterion: Per rat, mean wait time on opt-out catch trials by offer and block, with the
+    unthresholded wait times (FigureS14.m, wait_time_unthresholded from parse_data_from_mysql.m)
+    and with the thresholded ones, then the mean over rats. The paper gives no test. Reproduced
+    when, unthresholded, the mean 20 uL wait time is shorter in high than in low blocks across
+    rats (the signed-rank test of fig1f-wait-time-block-effect at p < 0.001, a reading of
+    "qualitatively similar"), and the population mean wait time is longer unthresholded than
+    thresholded at every offer in every block. That the low block curve is flatter is shown, not
+    judged.
+
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, Sessions. The inclusion rule said a positive slope; the Methods (Criteria for including behavioral data) ask for a significantly positive slope. Now the Methods' rule, with screen_perf.m (positive slope only, more than 5 catch trials, kept when the session before also passed) as a variant; the file had said at least 5 catch trials, the code tests sum > 5.
+  - suppfig2-initiation-block-effect-after-unrewarded. Added that the printed all-trials p is about half the two-tailed Fig. 1i p, which fits the code's one-tailed tests; both readings stay.
+  - suppfig3-wait-time-not-affected-by-previous-outcome, fig2c-d-regression-on-previous-rewards. Marked the decision rules as readings; the paper gives no test.
+  - fig2e-tau-differ. Added the code variant (read at b7b68ca8c107) - regress_wt_vs_rew.m fits the exponential to the current offer and 9 previous coefficients and starts the zeroing at the current one, while the Methods fit the 9 previous only; regress_latency_vs_rew.m sets tau to 0 from coefficients 2 to 10.
+  - fig2g-h-fast-slow-tau-groups. Said that Figure2.m's N = 80 is the percentile, not a rat count.
+  - fig3l-lambda-groups-wait-time-dynamics. The file called Figure3.m's split N = 60 as if a count and said the legend's N = 116 fits only the 20/80 split; N = 60 is the percentile, and 116 fits both splits (58 per group for 20/80, about 116 per group for 40/60). Also replaced "at least one parameter" at mixed to high with the two readings D (legend) and C (Results).
+  - fig3i-retrospective-model-captures-initiation. The criterion ran the alternatives at alpha_0 below 0.1 only; Supplementary Fig. 7 shows them at alpha_0 0.05, 0.4 and 0.8 with 20-trial smoothing (FigureS7.m), now used. Named the code's noise (8 and 1.5 in Figure3.m) as a variant of the Methods' 4. The statement's dependence on previous rewards (Fig. 3i) had no test; added one, with the source of the per-rat parameters.
+  - Added claim fig3f-inferential-model-not-sensitive-to-previous-offer (Fig. 3f; Results, Computational modeling, paragraph 2), a model finding with no claim.
+  - Added claim suppfig14-contextual-effects-without-threshold (Supplementary Fig. 14; Methods, Statistical analyses), a robustness finding with no claim, parallel to suppfig6-results-without-detrending.
+  - Open. The fitting code for the wait time models is not in the repository, so the free parameters, bounds and folds of fig3j, suppfig8, suppfig9, fig3l and fig3f are not fixed; the deposited Zenodo fits are outside data.
+  - Open. The Methods give two sex splits (184/107 and 160/114); the Results of Fig. 3l print N = 180, which fits neither lambda split.
+  - Open. Fig. 3d,e show the inferential model on hand-chosen parameters and one example rat (Figure3.m); they illustrate the model and get no claim of their own.
