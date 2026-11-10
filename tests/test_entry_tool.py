@@ -164,6 +164,15 @@ def test_every_claim_needs_one_outcome(repo):
     assert any("claim 'fig1' has more than one outcome" in e for e in found)
 
 
+def test_claims_read_again_after_an_attempt_are_the_next_attempts_to_test(repo):
+    """A dataset added to a paper has its claims read again, and they reach main ahead of the repeat attempt."""
+    check = {"date": "2099-01-01", "kind": "agent", "ready": True}
+    claims = {**CLAIMS, "claims": CLAIMS["claims"] + [{"id": "fig2", "statement": "S.", "source": "Figure 2"}],
+              "checks": (CLAIMS.get("checks") or []) + [check]}
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert not any("claim 'fig2' has no outcome" in e for e in errors(repo))
+
+
 def test_the_dandiset_version_must_be_pinned(repo):
     entry = {**ENTRY, "related": [{"id": "dandi:000001", "relation": "uses_data"}, ENTRY["related"][1]]}
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump(entry))

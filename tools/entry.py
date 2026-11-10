@@ -242,11 +242,13 @@ def check(entry_dir: Path) -> Report:
             _derivation_checks(report, rel / name, (entry_dir / name).read_text())
 
     # Claims and attempts that go with this entry.
-    claims_by_target, labels_used, kinds_by_target = {}, {}, {}
+    claims_by_target, labels_used, kinds_by_target, claims_checked = {}, {}, {}, {}
     for path in claims_paths():
         data = validate(report, path, "claims") or {}
         ids = {c["id"] for c in data.get("claims", [])}
         claims_by_target[claims_target(data)] = ids
+        claims_checked[claims_target(data)] = max((str(c.get("date") or "") for c in data.get("checks") or []),
+                                                  default="")
         kinds_by_target[claims_target(data)] = {
             c["id"]: c.get("data", "dataset") for c in data.get("claims", [])}
         labels_used[claims_target(data)] = any(
@@ -303,8 +305,14 @@ def check(entry_dir: Path) -> Report:
             report.error(where, "no claims file for this paper")
             continue
         recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
+        # Claims read again since the attempt (a dataset added to its paper opens it again, and the checked claims
+        # reach main ahead of the repeat attempt: the checkpoint in docs/pipeline.md) are the next attempt's to test.
+        # Without this, main fails its own check from the checkpoint until that attempt merges, as it did for
+        # kim-2022 on 2026-11-10, and every other attempt's pull request fails with it.
+        reread = str(attempt.get("date") or "") < (lookup(claims_checked, attempt) or "")
         for claim in sorted(known - set(recorded)):
-            report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
+            if not reread:
+                report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
