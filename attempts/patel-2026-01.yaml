@@ -167,7 +167,11 @@ outcomes:
     Females fire significantly fewer spikes at the top currents (480 to 500 pA at 0 mV, 400 to 500 pA
     at -20 mV), so the higher excitability holds at low and middle currents. With the 5 mV re-arm variant
     females fire more at 12 of 26 steps with -20 mV, not most steps; without a re-arm, 17 and 16. With
-    all 37 males, 19 and 14 of 26.
+    all 37 males, 19 and 14 of 26. The curves cross, as in fig2c, but the criterion asks for more firing
+    at most steps and one significant Sidak step, and both hold; fig2c fails on its Sidak part, and its
+    crossing is a further point against "across current injections". The -20 mV count still misses some
+    female spikes (one mouse 2.08 spikes per step at -20 mV against 5.46 at 0 mV; 77 sweeps count fewer
+    at -20 mV than at 0 mV), a bias against the claim.
   deviations:
   - 2 of the paper's 18 group-housed female neurons are in files without a recording; 16 are used.
   - Group-housed males are the 2022 cohort, as for fig2c (assumption; all 37 shown).
@@ -202,7 +206,10 @@ outcomes:
   deviations:
   - Spikes are upward crossings of 0 mV or -20 mV (M6) with a 1 mV re-arm and a 1 ms dead time against
     noise at the threshold (standard choices; 1 mV is about 8 times the median sample-to-sample noise
-    s.d.); variants without a re-arm and with a 5 mV re-arm are shown. The paper used Clampfit.
+    s.d.); variants without a re-arm and with a 5 mV re-arm are shown. The paper used Clampfit. The
+    outcome depends on this rule, as the criterion needs both spike readings and without a re-arm the
+    -20 mV interaction has p = 0.07 (the literal rule counts 417 spikes on the synthetic plateau).
+  assumed: true
 - claim: ed2bcd-nonspecific-bla-no-rank
   outcome: reproduced
   notebook: ephys_patel_2026.ipynb
@@ -312,7 +319,9 @@ outcomes:
     rise through the cue. With all mice the nonspecific trace is negative after the cue (-0.520 and -0.412),
     from the six cohort-9 mice (-0.87 to -0.29). With z against the session s.d. the BLA-mPFC trace falls
     back (-3% of its peak at 3 s) but the nonspecific trace does not (87%). No reading gives a transient
-    increase in both populations.'
+    increase in both populations. Under the first version''s reading of "falls back" (the trace at 3 s
+    below its peak) the adopted z would pass both populations (0.026 < 0.031 and 0.103 < 0.106); the
+    stricter reading is kept as both peaks fall at 2.7 to 2.9 s, at the end of the cue.'
   deviations:
   - The files do not say which BLA cohort expressed GCaMP in all BLA neurons and which only in BLA-mPFC
     projectors (the virus field is empty). Cohorts 9 and 10 (10 mice) are taken as nonspecific BLA and
@@ -340,7 +349,10 @@ outcomes:
   notes: Under the adopted reading (cohort 9 left out, 675 ROIs) Ward clustering cut at the highest linkage
     giving a nonresponsive cluster yields 2 clusters under both spans, and population by cluster is not
     significant (chi-square(1) = 0.02, p = 0.88, for -3 to 5 s; 1.26, p = 0.26, for 0 to 3 s; enrichments
-    within 5%). With z against the session s.d. (1460 ROIs) p = 0.083 and 0.15. Only the same z on all
+    at most 5.3% in size). Both clusters of that cut are nonresponsive (mean traces after onset -0.54
+    to -0.18 and 0.14 to 1.42; -0.71 to -0.27 and 0.16 to 0.76), so the rule stops at the first cut and
+    the test compares two nonresponsive clusters; it follows the Methods and the criterion but says little
+    about the paper's functional clusters. With z against the session s.d. (1460 ROIs) p = 0.083 and 0.15. Only the same z on all
     mice (the first version) gives p = 1.9e-05 and 0.00082, and there 63 of the 66 nonspecific ROIs of
     the responsive cluster (41 of 43) are from cohort 9, whose z the floor biases. Under every reading
     the cut gives 2 clusters, not several.
@@ -371,7 +383,7 @@ outcomes:
   notes: Threshold reading, cohort 9 left out. Nonspecific BLA (cohort 10), 4 alcohol-excited and 2 water-excited
     ROIs, none in both (reading b 0 of 2); BLA-mPFC, 5 and 6 with 1 in both, 0.20 (reading b 0.00). Wilcoxon
     reading 0.17 and 0.26. With all mice, nonspecific 9 of 52 (0.17; reading b 0.12). The excited sets
-    are very small (2 to 8 ROIs); with z against the session s.d. at most 2 ROIs pass 1.98 and the overlap
+    are very small (2 to 6 ROIs under the adopted reading, up to 8 with all mice); with z against the session s.d. at most 2 ROIs pass 1.98 and the overlap
     is undefined (Wilcoxon 0.12 and 0.29).
   deviations:
   - The files do not say which BLA cohort expressed GCaMP in all BLA neurons and which only in BLA-mPFC
@@ -980,7 +992,7 @@ verifications:
     agrees: true
     outcome: blocked
     reason: 11 of 14 isolated-female files show flat traces, leaving 3 neurons from 1 mouse. Not shown
-      to be missing data and not a loader problem (problem 2).
+      to be missing data instead of a loader problem (problem 2).
     response: 'The data check now lists every series of the 13 files without a recording: each holds one
       voltage and one stimulus series, both of the amplifier''s secondary channel (VmSec, never seen in
       a recorded file) and both flat, and the file sizes come from histology images. The recordings are
@@ -1300,4 +1312,392 @@ verifications:
     outcome: blocked
     reason: The 24 resident-intruder files (6 mice x 4 sessions) hold OnePhotonSeries, PlaneSegmentation
       and a video each, but no interaction annotations or pose data. Testing needs new pose tracking.
+    response: No change needed.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks with the conclusions and the summaries, the helper module, the
+    claims file, the README and the attempt record, with the paper. The verifier agreed with all 61 outcomes and
+    with the stated assumptions, and asked that ed2e be marked as resting on the spike rule, that ed5d name its
+    reading of "falls back toward 0", and that fig2e say why crossing curves do not count against it. It quoted
+    six sentences the outputs did not support (the ephys Summary's "7 mice" and "15 nonspecific neurons", the channels
+    of recorded files in ephys cell 7, "within 5%" for fig3f, the 13 constant-trace ROIs in imaging cell 11, and
+    the README's "not defined"), all corrected. Imaging cell 10 now prints the cohort-13b sessions that lose pairs
+    to the s.d. floor (none has a constant-trace ROI) and, for its point B11, the isolated bouts with a single lick
+    in the 3-s baseline (101 of 1338, 7.5%; M2 isolates bouts from bouts, so the analyses are unchanged). Its point
+    B9 (ROIs as independent units in the fig3f chi-square) follows the criterion and stays. No outcome changed and
+    none is proposed.
+  results:
+  - claim: fig1c-isolation-alcohol-sex-opposite
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig1-threeway-sex-liquid-housing
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig1d-male-escalation-time-course
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig1e-water-sex-not-housing
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1c-rank-alcohol-males
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1d-rank-water-none
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1e-rank-alcohol-isolation
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1g-subordinate-licks-per-bout
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1i-dominant-bout-number
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1l-rank-alcohol-females
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1n-sex-alcohol-water
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed1r-licks-blood-alcohol
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig2c-male-blampfc-excitability-up
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. This is my round-1 outcome. No Sidak step is significant with the 2022
+      cohort (ephys cell 10). B6: fig2c and supt1-male flip with the choice of group-housed neurons. This is stated
+      and cannot be settled from the files.'
+    response: No change needed; the 2022 cohort stays an assumption, with all 37 neurons shown.
+  - claim: fig2d-female-blampfc-excitability-down
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 61 outcomes. B2 resolved: only VmSec series, and the file sizes come from histology
+      images, so data_missing is established. The Summary says 7 mice where cell 4 shows 5 isolated mice and 1 group-housed
+      mouse (M2.2), so 6.'
+    response: The ephys Summary now says 6 mice. My round-1 record of the verifier's fig2d reason is corrected to
+      its wording.
+  - claim: fig2-threeway-sex-current-housing
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 61 outcomes. B2 resolved: only VmSec series, and the file sizes come from histology
+      images, so data_missing is established.'
+    response: The ephys Summary now says 6 mice.
+  - claim: supt1-female-input-resistance-threshold
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 61 outcomes. B2 resolved: only VmSec series, and the file sizes come from histology
+      images, so data_missing is established.'
+    response: The ephys Summary now says 6 mice.
+  - claim: fig2e-female-higher-baseline-excitability
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced. With the 1 mV re-arm, females fire more at 16 and 14 of 26 steps, and Sidak tests are
+      significant at 80-200 and 80-180 pA (cell 13). That meets the criterion. The -20 mV count still undercounts
+      some female sweeps (one mouse 2.08 spikes per step at -20 mV against 5.46 at 0 mV; 77 sweeps count fewer at
+      -20 mV than at 0 mV); this bias works against the claim, so the outcome stands. The curves cross, and females
+      fire significantly less at 400-500 pA. The fig2c notes give crossing curves as a reason against fig2c, so
+      the record should say why crossing does not count against fig2e.
+    response: The Result cell and the notes now say why the crossing does not decide fig2e (the criterion asks for
+      most steps and one Sidak step, both of which hold, while fig2c fails on its Sidak part), and state the -20
+      mV undercount and that it works against the claim.
+  - claim: supt1-male-input-resistance-up
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B6: fig2c and supt1-male flip with the choice of group-housed neurons.
+      This is stated and cannot be settled from the files.'
+    response: No change needed.
+  - claim: ed2e-nonspecific-bla-excitability
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 61 outcomes. ed2e is not marked assumed, but its outcome depends on the re-arm rule.
+      Without a re-arm, the -20 mV interaction has p = 0.07 (cell 19), and the criterion requires both spike readings.
+      The re-arm is justified, because the literal rule counts plateau noise as 417 spikes in the synthetic check
+      (cell 5). fig2e is marked for the same rule, so ed2e should be too.
+    response: Marked assumed, with a deviation saying the outcome depends on the spike rule; the Result heading
+      and the Summary row name the 1 mV re-arm.
+  - claim: ed2bcd-nonspecific-bla-no-rank
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 61 outcomes. The ephys Summary says "15 nonspecific neurons (2021 mice) carry no rank";
+      cell 6 gives 15 group-housed plus 14 isolated, so 29, as the record's finding says.
+    response: The ephys Summary now says 29 nonspecific neurons (15 group-housed and 14 isolated, from the four
+      2021 mice).
+  - claim: ed3c-male-rank-blampfc-excitability
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 61 outcomes. B4 resolved: a pooled-error Tukey test was added; the smallest p is 0.065,
+      so the outcome stays partial.'
+    response: No change needed.
+  - claim: ed3d-female-rank-blampfc-none
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed4ef-chrimson-decreases-social
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed4gm-locomotion-unchanged
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed4kl-nphr-social
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig4e-chr2-increases-alcohol
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig4cd-chr2-no-sucrose-water-effect
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig4hi-chr2-longer-bouts
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig4g-chr2-bout-number-unchanged
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig6q-nphr-decreases-alcohol-bouts
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed5c-grin-no-effect-licks
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed5d-cue-response-modest
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 61 outcomes. The outcome depends on reading "falls back toward 0" as "at most half
+      the peak". Under the first version's reading ("below the peak"), reading A would pass both populations (0.026
+      < 0.031 and 0.103 < 0.106, cell 13). The deviation is listed, and I agree with the stricter reading, since
+      the peaks fall at 2.7-2.9 s. But cell 14's heading names only the cohort assignment as the assumption.
+    response: The Result heading and the Summary row now name the reading of "falls back toward 0" as an assumption,
+      and the Result cell and the notes give the numbers under the looser reading and why the stricter one is kept.
+  - claim: fig3f-blampfc-distinct-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Now not_reproduced. p = 0.88 and 0.26 under reading A, and 0.083 and 0.15 under reading C (cell 17).
+      Under reading A the k = 2 cut leaves both clusters within +-1.98 (cluster 2 ranges 0.14 to 1.42, and 0.16
+      to 0.76), so the cut rule stops at the first cut it tries and the chi-square compares two clusters that are
+      both nonresponsive. The Methods and the claims file are followed. The outcome is right by the criterion, but
+      the test says little about the paper''s functional clusters. Low confidence. Cell 18 and the notes say "the
+      enrichments are within 5%"; cell 17 prints 5.0% and -5.3%. B9: the chi-square treats ROIs from 19 mice as
+      independent units.'
+    response: Cell 18 and the notes now say the enrichments are at most 5.3% in size, and that under reading A both
+      clusters of the cut are nonresponsive, so the test says little about the paper's functional clusters. Treating
+      ROIs as independent units stays, as the criterion gives, and is listed under deviations.
+  - claim: ed5ef-alcohol-water-nonoverlapping
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 61 outcomes. Reproduced by the criterion, but under reading A the excited sets hold
+      only 2-6 ROIs (cell 20).
+    response: The Result cell and the notes now say the excited sets hold 2 to 6 ROIs under reading A.
+  - claim: fig3h-nonspecific-decoding-85
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: fig3h-blampfc-decodes-better
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: ed6b-decoding-above-chance
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: fig3k-blampfc-response-predicts-bouts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: fig3ijl-no-other-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: ed6ij-cue-responses-no-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: ed6k-bout-duration-not-number
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: ed6cd-rank-stratified-correlation
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig5b-isolation-increases-mpfc-alcohol
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. fig5b, fig6lm and ed8n: random matching of bouts (reading a) is stated
+      and reasonable.'
+    response: No change needed.
+  - claim: fig5c-isolation-no-water-change
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: fig5d-isolation-decreases-mpfc-sucrose
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated.'
+    response: No change needed.
+  - claim: ed7-mpfc-responses-stable
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: fig6c-stim-increases-mpfc-alcohol-gh
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: fig6de-stim-fewer-alcohol-inhibited
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: fig6f-stim-decreases-mpfc-alcohol-si
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: fig6gj-stim-no-water-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: fig6k-stim-decreases-mpfc-sucrose-gh
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: fig6lm-stim-fewer-sucrose-excited
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. fig5b, fig6lm and ed8n: random matching of bouts (reading a) is stated
+      and reasonable. B5 resolved: type-3 trials only, now applied to every stimulation claim. B8 resolved: the
+      swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: fig6n-isolation-occludes-sucrose-effect
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: ed8n-stim-fewer-sucrose-inhibited-si
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. fig5b, fig6lm and ed8n: random matching of bouts (reading a) is stated
+      and reasonable. B5 resolved: type-3 trials only, now applied to every stimulation claim. B8 resolved: the
+      swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: ed8op-stim-no-alcohol-proportions-si
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 61 outcomes. B7: the cohort-to-population assignment and the use of uncurated ROIs
+      underlie every imaging outcome. Stated. B5 resolved: type-3 trials only, now applied to every stimulation
+      claim. B8 resolved: the swap is documented and the matched subset dropped.'
+    response: No change needed.
+  - claim: ed9c-coregistered-fraction
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes. Footprints equal the trace ROIs in all 24 files (cell 77), so the claims
+      file's "cannot be tested" condition does not apply. CellReg is not available here, so not_runnable is the
+      right label.
+    response: No change needed.
+  - claim: ed9e-isolation-decreases-social-response
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed9fg-stim-social-response
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed9hi-stim-inverts-social-response
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed9k-o-social-decoding
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
+    response: No change needed.
+  - claim: ed9q-stim-recruits-isolation-ensemble
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 61 outcomes.
     response: No change needed.

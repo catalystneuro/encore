@@ -29,6 +29,8 @@ The imaging files hold every CNMF-E ROI, not the paper's curated neurons, and do
 is projection-specific (cohorts are assigned by their mouse counts). Three pairs of imaging files hold
 identical traces, the cue schedule is the same in every session, and in many sessions the forced trial
 types 1 and 2 are swapped against the licks. Cohort 9 traces are nonnegative and smooth between
-transients, so the paper's z-score against a 3-s baseline is not defined on them; cohort 9 is left out of
+transients, so the paper's z-score against a 3-s baseline is undefined for 62% of their bout-neuron
+pairs with a floor on the baseline s.d. (3.4% without it, where it is unbounded) and biased downward where
+it is defined; cohort 9 is left out of
 the BLA z-scores, with the other readings shown. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/patel-2026-01.yaml`](../../attempts/patel-2026-01.yaml).
