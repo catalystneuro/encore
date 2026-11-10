@@ -1,0 +1,1216 @@
+# Claims for van Dijk & Fenton (2018), "On How the Dentate Gyrus Contributes to Memory
+# Discrimination", Neuron 98, 832-845, on CRCNS hc-17.
+#
+# Provenance: written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub
+# Actions"), 2026-11-10, protocol pilot-14 as stated in docs/protocol.md (Reader, steps 1 to 4).
+#
+# Text read: the version of record (paper/10.1016-j.neuron.2018.04.018.txt, supplied by a
+# person, extracted from the PDF), the main text, figure legends, STAR Methods (e1 to e5) and
+# the Supplemental Information (Figures S1 and S2 with legends, Tables S1 and S2). No figure
+# was read from a PDF page. The CRCNS data descriptor (hc-17.data-description.txt) was read
+# only to know which experiments the dataset holds; no claim comes from it.
+#
+# Code read: the Data and Software Availability section links
+# https://github.com/FentonLab/Mcode_DG-MemoryDiscrimination-NeuronMS. At commit
+# 3542a85bb44a1739425e63eb4d16f9dc30ce7f54 (2018-04-01, the only commit) it holds a one-line
+# README and a file "vanDijkFenton2018Neuron-AnalysisCode" that is a macOS alias (a pointer to
+# a folder on the authors' computer), not code. No analysis code could be read, so no method
+# detail below is settled by code. Statistics were run in JMP 12 (STAR Methods).
+#
+# Data the paper used (Results; STAR Methods, Experimental model, Recording set up, Behavioral
+# Procedures).
+# - Environment manipulation experiment (Figure 1, Table S1). Results say 5 mice for DG (45
+#   place cells of 133 cells) and 3 mice for CA (20 place cells, 7 CA3 and 13 CA1, of 42 cells);
+#   Behavioral Procedures say seven implanted mice. Three versions of an environment: standard
+#   (transparent 40-cm circular enclosure with three cards, inside a 50 x 50 cm box with one
+#   card), rotated (cards on the enclosure rotated 90 degrees; called "relocated" in Figure 1),
+#   removed (the square box alone). Comparisons: replication (standard-standard,
+#   rotated-rotated, removed-removed), rotation or relocation (standard-rotated), removal
+#   (standard-removed, rotated-removed).
+# - Active place avoidance with recording (Figures 3 to 6, Table S2, Figure S2). Six wild-type
+#   mice, 42 DG place cells of 113 cells and 21 putative DG interneurons; one mouse lost 6
+#   place cells after training 2, so the conflict data are 36 place cells from 5 mice. One day,
+#   90-min rests: two 20-min pretraining sessions (rotating arena, no shock); a 20-min training
+#   session with shock, then a 20-min shock-off recording and a 5-min shock reminder; a 10-min
+#   training 2 with shock, then a 20-min shock-off recording; a 20-min conflict session with
+#   the 60-degree shock zone relocated 180 degrees, then a 20-min shock-off recording. Units
+#   were recorded only in shock-off sessions. The shock zone is fixed in the room frame; the
+#   arena rotates; spike positions exist in both room and arena frames.
+# - Optogenetic behavior (Figure 2). POMC-Halorhodopsin Cre+ and Cre- littermates (14 Cre+ and
+#   15 Cre- in all; cohort 1, 7 Cre+ and 8 Cre-, behavioral validation protocol; cohort 2, 7
+#   Cre+ and 7 Cre-, recording protocol), with cFos counts. The data descriptor describes
+#   wild-type recordings only; whether the dataset holds these data is the author's to find.
+# - Measured variables: spike times of sorted single units by tetrode, position at 30 Hz from
+#   two LEDs, at 1.5 cm per pixel for spatial analyses, cell class (place cell, non-spatial
+#   principal cell, putative interneuron), session identity, shock zone location.
+#
+# Shared method, cited once here and named in the criteria by its label.
+# M1 Cell classes. Units were classed as place cells, non-spatial principal cells or
+#   inhibitory interneurons from waveform width, firing rate, rate map information content,
+#   coherence and % active pixels (STAR Methods, Recording set up). No cut-offs are given, so
+#   the classification cannot be rebuilt from the paper. The author uses the paper's own
+#   class lists if the dataset holds them; claims that need classes and have no such list are
+#   methods_underspecified. The k-means subclasses (granule, mossy, immature) are not used,
+#   as the paper combined them (same section).
+# M2 Rate maps. Spikes per pixel divided by time in the pixel, at 1.5 cm per pixel (STAR
+#   Methods, Recording set up). Open, as no smoothing or minimum occupancy is given. Readings
+#   (a) unsmoothed, every visited pixel; (b) unsmoothed, pixels with less than 0.67 s of
+#   occupancy left out (the sampling threshold the Overdispersion section uses). For the
+#   rotating arena, maps are made in the room frame and the arena frame (Firing rate
+#   stability).
+# M3 Stability. Fisher z of the Pearson correlation between corresponding pixels of two
+#   maps, taking the maximum over shifts of one map by up to 2 pixels in x and y; on the
+#   rotating arena the higher of the room-frame and arena-frame values; when a cell has
+#   several pairs for one manipulation, their average (STAR Methods, Firing rate stability).
+# M4 Rate remapping. The difference of a cell's mean rates in two sessions divided by the
+#   larger of the two (Firing rate stability; Figure 6 inset axis "Δ(A,B)/max(A,B)"). Field
+#   rate remapping uses the same ratio on the mean rate inside a field mask, the pixels of the
+#   largest place field in the first session of the day. "Magnitude" (Figures 1C, 3D) is read
+#   as the absolute value; the signed ratio is shown as a variant.
+# M5 Place fields. The paper does not define a place field (no rate threshold, minimum size or
+#   contiguity rule). Open; readings (a) a region of at least 9 edge-contiguous pixels whose
+#   rate exceeds 20% of the map's peak; (b) the same with a fixed threshold of 1 AP/s. These
+#   are standard choices, not the paper's; outcomes that rest on field counts or field masks
+#   rest on an assumption.
+# M6 Positional information. Ipos = |p(n|x) log2(p(n|x)/p(n))| per cell in 133-ms steps, with
+#   p(n|x) the probability of n spikes in 133 ms at location x and p(n) the same regardless
+#   of location, computed separately in room and arena frames; ensemble ΔIpos is the sum over
+#   the ensemble's place cells of room Ipos minus the sum of arena Ipos at each step (STAR
+#   Methods, Positional information). Open, the size of location x. Readings (a) the 1.5-cm
+#   pixel (the stated spatial resolution of location-specific analyses); (b) 2 x 2 pixel
+#   blocks (3 cm). The probabilities are taken over the session analysed.
+# M7 Shock zone vicinity. Ipos (Figure 4D) uses times within 3 pixels (4.5 cm) of a shock zone
+#   or in it (Positional information). Kendall correlations near zones (Figure 5E; Figure 6
+#   uses the 4-s windows of M8 instead) use
+#   times within 3 pixels (4.5 cm) of the zone but not in it (Cell pair spike train discharge
+#   correlations). Network consistency near zones uses passes through firing fields in the
+#   zone and its surrounding 6 cm, longer than 3 s (Network Consistency). The "training zone"
+#   is the 60-degree room-frame sector shocked in training; the "conflict zone" is the sector
+#   180 degrees away, shocked in conflict. Both vicinities are computed in every session,
+#   pretraining included (Positional information).
+# M8 Approach events. Local minima of the distance to the nearest edge of the shock zone. For
+#   Ipos (Figure 4C) a minimum counts when it is closer than 50% of the animal's average
+#   distance, and the Ipos values of the ~1 s before it are averaged per mouse (Positional
+#   information). For correlations (Figure 6) a minimum counts when closer than 75% of the
+#   average distance, and the 4 s before it are used; minima inside the zone are errors, the
+#   others avoidances (Cell pair spike train discharge correlations; Figure 6A legend). Open,
+#   how local minima are found. Readings (a) on the raw 30-Hz distance series; (b) after a
+#   1-s moving average.
+# M9 Kendall correlation. Kendall's tau between the spike counts of two cells in 133-ms bins
+#   (20 and 250 ms for Figure S2) over a session, for every place cell pair and every place
+#   cell-interneuron pair of an ensemble (Cell pair spike train discharge correlations). The
+#   change across two sessions is the later minus the earlier tau, divided by the SD of six
+#   tau values from the earlier session cut into six equal periods (same section; Figure 5A
+#   legend). Open, the tau variant and empty bins; the standard choice is tau-b over all bins.
+# M10 Standardized rates. For each 5-s episode in which the expected count (the sum over the
+#   pass of the session rate map times time in each pixel) exceeds the cell's average rate,
+#   z = (observed - expected)/sqrt(expected), using only pixels sampled more than 0.67 s;
+#   overdispersion is the variance of z (STAR Methods, Overdispersion). Network consistency
+#   for a pair on a pass through overlapping fields is NC = z1 z2 tau12 (Network Consistency).
+#   Open, whether the 5-s episodes tile the session or are centered on field passes;
+#   readings (a) consecutive non-overlapping 5-s windows; (b) 5-s windows centred on each
+#   entry into a firing field.
+# M11 Manipulations in the place avoidance task (Results, DG-dependent memory discrimination;
+#   Figure 3C legend). Replication is pretraining 1 against pretraining 2 and training 1
+#   against training 2; shock addition is pretraining against training; shock relocation is
+#   training against conflict. The text says that shock addition and replication used both
+#   training 1 and training 2. Open, which pairs form shock addition and shock relocation.
+#   Readings (a) pretraining 2 against training 1, and training 2 against conflict (the
+#   sessions next to each other in time); (b) every pretraining and training pair for
+#   addition, and both training sessions against conflict for relocation, averaged per cell
+#   as in M3. The paper's conclusions held with training 1 alone (same paragraph).
+# M12 Statistics. One-, two- and three-way (repeated-measures) ANOVA; for non-normal data or
+#   unequal variances, two-way ANOVA on ranks, Kruskal-Wallis or Welch's ANOVA; Fisher's LSD
+#   post hoc; alpha 0.05, two-tailed; JMP 12 (STAR Methods, Quantification and Statistical
+#   Analysis). Many reported F tests have fractional denominator df (for example F1,64.2),
+#   which implies a mixed model fit by REML with a random subject term. Open, the random term.
+#   Readings (a) mouse as a random effect; (b) cell, or cell pair, as a random effect nested
+#   in mouse; (c) an ordinary ANOVA with observations as independent (which gives integer df).
+#   The claim's df, where printed, show which design the paper used; the author takes the
+#   reading whose df match and shows the others.
+#
+# Tolerances. A mean printed with its SEM takes 1.96 times that SEM. Other numbers take 10%
+# of the value, or for percentages 10% of the percentage.
+#
+# Discrepancies inside the paper, noted in the claims they touch. Field counts in Results
+# (DG 1.48 ± 0.19, CA 1.19 ± 0.28) and Table S1 (1.48 ± 0.10, 1.19 ± 0.07) give different
+# SEMs. Results give 5 DG mice and 3 CA mice for Figure 1, the Methods seven mice. The Figure
+# 1B legend prints the interaction without its F value. The overdispersion F tests give
+# df 4189 and 1791 for training and conflict against 3169 for pretraining.
+schema_version: 2
+paper: doi:10.1016/j.neuron.2018.04.018
+claims:
+- id: fig1-single-field-proportion
+  statement: Most place cells had a single place field in the first standard session (64% of
+    DG and 75% of CA place cells), with no significant difference between the regions.
+  source: Results, DG Place Field Remapping across a Modified Environment, paragraph 2
+  quote: The majority of DG (64%) and CA (75%) place cells had a single place field during the
+    initial recording in the standard environment (test of proportions, z = 1.6, p = 0.1)
+  statistics:
+  - test: test of proportions
+    statistic: z = 1.6
+    p: 0.1
+    n: 45 DG and 20 CA place cells
+  expected:
+  - quantity: DG place cells with one field, first standard session
+    value: 64
+    tolerance: 6.4
+    unit: percent
+  - quantity: CA place cells with one field, first standard session
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  criterion: Fields counted on the room rate map (M2) of the first standard session under each
+    place field reading of M5. The absence of a regional difference is judged on a two-sided
+    two-sample z test of proportions at alpha 0.05. Reproduced when, under one M5 reading,
+    both percentages are within tolerance and the test gives p >= 0.05; the result rests on
+    the M5 assumption.
+- id: fig1-field-number-scaling
+  statement: The number of place fields rose from the circular environments to the twice
+    larger box after wall removal, more in DG (1.48 to 2.70) than in CA (1.19 to 2.0), with a
+    condition effect, a region effect at p = 0.05 and no interaction; post hoc, removed DG
+    exceeded circular DG and CA, and CA did not change.
+  source: Results, DG Place Field Remapping across a Modified Environment, paragraph 2
+  quote: The number of place fields scaled with the 2-fold increase in area from the circular
+    (standard and cue-relocated environments) to the wall removal conditions, with the DG cells
+    scaling more (DG circular, 1.48 ± 0.19 fields; removed, 2.70 ± 0.20 fields; CA circular,
+    1.19 ± 0.28 fields; removed, 2.0 ± 0.30 fields
+  statistics:
+  - about: region
+    test: two-way ANOVA (region by condition)
+    statistic: F(1, 64.2) = 4.12
+    p: 0.05
+  - about: condition (circular against removed)
+    test: two-way ANOVA (region by condition)
+    statistic: F(1, 64.2) = 17.1
+    p: 0.0001
+  - about: region by condition interaction
+    test: two-way ANOVA (region by condition)
+    statistic: F(1, 64.2) = 0.67
+    p: 0.42
+  expected:
+  - quantity: DG fields per place cell, circular environments
+    value: 1.48
+    tolerance: 0.37
+  - quantity: DG fields per place cell, wall removed
+    value: 2.7
+    tolerance: 0.39
+  - quantity: CA fields per place cell, circular environments
+    value: 1.19
+    tolerance: 0.55
+  - quantity: CA fields per place cell, wall removed
+    value: 2.0
+    tolerance: 0.59
+  criterion: Fields per cell by M5, averaged per cell over the circular sessions (standard and
+    rotated) and over the removed sessions. A two-way region by condition mixed ANOVA under
+    the M12 readings (the fractional df imply cell as a repeated measure). Reproduced when,
+    under one M5 reading, the four means are within tolerance, the condition effect has
+    p < 0.05 with more fields after removal, and the post hoc test (Fisher's LSD) puts removed
+    DG above circular DG and circular CA and finds no difference between circular and removed
+    CA (Results, same sentence). The SEMs differ in Table S1 (DG 0.10, CA 0.07); the Results values
+    are used. The result rests on the M5 assumption.
+- id: fig1b-stability-dg-below-ca-removal
+  statement: Rate map stability was lower in DG than in CA place cells, and lower for wall
+    removal than for replication and cue relocation, with no region by manipulation
+    interaction.
+  source: Figure 1B; Results, DG Place Field Remapping across a Modified Environment, paragraph 2
+  quote: Stability of place cells in Ammon's horn (CA) is higher than those in DG. Stability is
+    lower for the removal manipulation than for replication and relocation manipulations
+  statistics:
+  - about: region
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(1, 172) = 15.1
+    p: 0.0001
+  - about: manipulation
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(2, 172) = 12.4
+    p: 0.0001
+    p_relation: "<"
+  - about: region by manipulation interaction
+    test: two-way ANOVA (region by manipulation)
+    p: 0.77
+  criterion: Stability per cell and manipulation by M3 on M2 maps, for the 65 place cells. A
+    two-way ANOVA of region by manipulation (the integer df 172 fit reading (c) of M12, one
+    value per cell and manipulation). Reproduced when the region effect has p < 0.05 with CA
+    higher, the manipulation effect has p < 0.05 and Fisher's LSD puts removal below both
+    replication and relocation, under one M2 reading.
+- id: fig1-rate-remapping-no-difference
+  statement: Rate remapping did not differ between DG and CA place cells or across the three
+    environment manipulations.
+  source: Results, DG Place Field Remapping across a Modified Environment, paragraph 2
+  quote: Rate remapping in DG and CA place cells did not differ across the environment
+    manipulations (region, F1,172 = 0.16, p = 0.68; manipulation, F2,172 = 2.8, p = 0.064
+  statistics:
+  - about: region
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(1, 172) = 0.16
+    p: 0.68
+  - about: manipulation
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(2, 172) = 2.8
+    p: 0.064
+  - about: region by manipulation interaction
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(2, 172) = 0.2
+    p: 0.81
+  criterion: A claim of absence. Whole-cell rate remapping by M4 per cell and manipulation; the
+    paper's two-way region by manipulation ANOVA at alpha 0.05. Reproduced when neither main
+    effect nor the interaction has p < 0.05; not reproduced when any does. Effect sizes are
+    given either way, with the signed M4 ratio as a variant.
+- id: fig1c-field-rate-change-no-difference
+  statement: The magnitude of firing rate change in the primary place field did not differ
+    between manipulations or regions.
+  source: Figure 1C
+  quote: The magnitude of field rate changes did not differ between manipulations or regions
+    (region, F1,164 = 3.75, p = 0.06; manipulation, F2,164 = 0.37, p = 0.69; interaction, F2,164
+    = 0.8, p = 0.45)
+  statistics:
+  - about: region
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(1, 164) = 3.75
+    p: 0.06
+  - about: manipulation
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(2, 164) = 0.37
+    p: 0.69
+  - about: region by manipulation interaction
+    test: two-way ANOVA (region by manipulation)
+    statistic: F(2, 164) = 0.8
+    p: 0.45
+  criterion: A claim of absence. Field rate remapping by M4, magnitude as absolute value, with
+    the field mask from M5; the paper's two-way ANOVA at alpha 0.05. Reproduced when no
+    effect has p < 0.05 under the M5 reading used; not reproduced when any does. The legend
+    plots log field rates; the paper does not say whether the ANOVA was on raw or log rates.
+    Open; the ANOVA on the untransformed magnitude is used as a standard choice and the log
+    version shown as a variant. Rests on the M5 assumption.
+- id: tables1-dg-ca-similar
+  statement: The discharge properties of DG and CA place cells in the circular environment
+    (waveform width, firing rate, short ISIs, coherence, information content, mean ISI, field
+    number, theta phase) did not differ.
+  source: Table S1; Results, DG Place Field Remapping across a Modified Environment, paragraph 2
+  quote: There are no differences in these characteristics between the regions
+  expected:
+  - quantity: DG place cell firing rate, circular sessions
+    value: 0.96
+    tolerance: 0.31
+    unit: AP/s
+  - quantity: CA place cell firing rate, circular sessions
+    value: 0.86
+    tolerance: 0.25
+    unit: AP/s
+  - quantity: DG information content
+    value: 1.31
+    tolerance: 0.22
+    unit: bits/s
+  - quantity: CA information content
+    value: 1.30
+    tolerance: 0.31
+    unit: bits/s
+  - quantity: DG map coherence
+    value: 0.46
+    tolerance: 0.06
+    unit: z
+  - quantity: CA map coherence
+    value: 0.51
+    tolerance: 0.08
+    unit: z
+  criterion: A claim of absence. One value per cell, the average over its circular sessions
+    (STAR Methods, Recording set up). The paper names no test for Table S1; under M12 the
+    test is a one-way ANOVA (Welch's when variances differ, Kruskal-Wallis when not normal)
+    of region, at alpha 0.05, for each property computable from the dataset (firing rate,
+    information content, coherence, mean ISI, % ISI under 10 ms). Reproduced when no property
+    differs and the listed means are within tolerance; not reproduced when any property
+    differs. Waveform width and theta phase need waveforms and LFP; they are reported only
+    if the dataset holds them.
+- id: fig2c-cfos-reduced
+  statement: Cre+ POMC-Halorhodopsin mice had fewer cFos+ granule cells after the conflict
+    trial than Cre- controls.
+  source: Figure 2C
+  quote: Cre+ POMC-Halorhodopsin mice show fewer cFos+ granule cells labeled during the
+    conflict trial (t = 2.7, p = 0.04)
+  statistics:
+  - test: t-test
+    statistic: t = 2.7
+    p: 0.04
+  criterion: cFos+ counts over six slices per animal (Histology). Open, which animals were
+    counted; the Behavioral Procedures say the validation cohort was perfused after the
+    conflict trial, and t = 2.7 with p = 0.04 fits about 5 df, far fewer than 29 mice.
+    Readings (a) the validation cohort; (b) every Cre+ and Cre- mouse with counts. Reproduced
+    when a two-tailed t-test of Cre+ against Cre- counts gives p < 0.05 with Cre+ lower.
+- id: fig2d-conflict-deficit
+  statement: Mice with optogenetically silenced granule cells learned the initial avoidance
+    normally but made more errors than controls on the conflict trial after the shock zone
+    was relocated, and the two protocols did not differ.
+  source: Figure 2D; Results, Optogenetic Verification of a DG-Dependent Memory Discrimination
+    Task, paragraph 3
+  quote: Importantly, the Cre+ mice were worse on the conflict session, but not during the other
+    sessions
+  statistics:
+  - about: protocol
+    test: three-way genotype by protocol by session ANOVA
+    statistic: F(1, 25) = 1.93
+    p: 0.18
+  - about: genotype
+    test: three-way genotype by protocol by session ANOVA
+    statistic: F(1, 25) = 3.22
+    p: 0.08
+  - about: session
+    test: three-way genotype by protocol by session ANOVA
+    statistic: F(2, 24) = 28.98
+    p: 0.0000001
+  - about: genotype by session interaction
+    test: three-way genotype by protocol by session ANOVA
+    statistic: F(2, 24) = 4.03
+    p: 0.03
+  criterion: Errors per meter walked per mouse and session, with the validation protocol's
+    trials cut to the first portion matching the recording protocol's trial length (Behavioral
+    Procedures). Open, which sessions enter the ANOVA (three levels); readings (a) training 1,
+    training 2, conflict; (b) pretraining, training (mean of the two), conflict. A three-way
+    repeated-measures ANOVA (M12). Reproduced when, under one reading, the genotype by session
+    interaction has p < 0.05 and Fisher's LSD finds Cre+ worse than Cre- on conflict only.
+- id: fig2-quadrant-preference
+  statement: On the conflict trial Cre+ mice spent more time than Cre- mice in the quadrant
+    counter-clockwise to the conflict shock zone.
+  source: Results, Optogenetic Verification of a DG-Dependent Memory Discrimination Task,
+    paragraph 4
+  quote: the Cre+ mice spent significantly more time in the quadrant of the arena that was
+    counter-clockwise to the conflict shock zone (t27 = 2.33, p < 0.03)
+  statistics:
+  - test: t-test
+    statistic: t(27) = 2.33
+    p: 0.03
+    p_relation: "<"
+    n: 29 mice
+  criterion: Time in the room-frame quadrant counter-clockwise of the conflict zone during the
+    conflict trial, per mouse, both protocols combined (df 27 fits 29 mice). Reproduced when a
+    two-tailed t-test gives p < 0.05 with Cre+ higher.
+- id: fig2e-shock-off-deficit
+  statement: In the recording protocol, Cre+ mice kept making more errors than controls during
+    the shock-off session after the conflict trial.
+  source: Figure 2E
+  quote: In the recording protocol, during the shock-off session of the conflict trial mice with
+    light-silenced cells continue to make more errors than controls
+  statistics:
+  - about: genotype
+    test: two-way genotype by time point ANOVA
+    statistic: F(1, 12) = 4.82
+    p: 0.05
+    p_relation: "<"
+  - about: time point (0 to 10 and 10 to 20 min)
+    test: two-way genotype by time point ANOVA
+    statistic: F(1, 12) = 3.55
+    p: 0.08
+  - about: genotype by time point
+    test: two-way genotype by time point ANOVA
+    statistic: F(1, 12) = 0.97
+    p: 0.34
+  criterion: Errors per meter in the 0 to 10 and 10 to 20 min halves of the conflict shock-off
+    session, cohort 2 (14 mice). A repeated-measures genotype by time point ANOVA. Reproduced
+    when the genotype effect has p < 0.05 with Cre+ higher.
+- id: fig3b-avoidance-learning
+  statement: The recorded mice learned to avoid the shock zone in training 1 and kept the
+    avoidance in training 2, while errors rose in the conflict trial and then fell.
+  source: Figure 3B, top
+  quote: mice learned to avoid in the first training trial and maintained avoidance memory
+    during the second training trial. Errors in the conflict trial initially increased then
+    quickly decreased
+  statistics:
+  - test: one-way repeated-measures ANOVA (condition)
+    statistic: F(2, 4) = 18.2
+    p: 0.01
+  criterion: Errors (shock zone entries) per shock-on session per mouse for training 1,
+    training 2 and conflict. A repeated-measures ANOVA on condition. Reproduced when p < 0.05
+    and Fisher's LSD puts training 2 below training 1 and conflict. Open, the design behind
+    the df (2, 4). Readings (a) all six mice in a multivariate repeated-measures F test (JMP's
+    default for within-subject factors, df k-1 and n-k+1, which is 2 and 4 for six mice and
+    three levels); (b) a univariate repeated-measures ANOVA, whose df (2, 4) would mean three
+    mice, a subset the paper does not name. Reading (a) is the one the df support. Needs the shock-on
+    sessions, in which no units were recorded.
+- id: fig3b-shock-off-avoidance
+  statement: The mice expressed the conditioned avoidance during the shock-off recording
+    sessions, and performance in shock-on and shock-off sessions did not differ.
+  source: Figure 3B, bottom
+  quote: the mice expressed the conditioned avoidance during the shock-off recording sessions
+    that followed the shock-on trials, and performance during the shock-on and shock-off trials
+    was statistically indistinguishable
+  statistics:
+  - about: shock status
+    test: two-way shock status by condition ANOVA
+    statistic: F(1, 9.1) = 3.29
+    p: 0.1
+  - about: condition
+    test: two-way shock status by condition ANOVA
+    statistic: F(2, 18.2) = 5.22
+    p: 0.02
+  - about: interaction
+    test: two-way shock status by condition ANOVA
+    statistic: F(2, 18.2) = 0.15
+    p: 0.86
+  - about: shock status, errors per meter
+    test: two-way shock status by condition ANOVA
+    statistic: F(1, 9) = 4.40
+    p: 0.07
+  - about: condition, errors per meter
+    test: two-way shock status by condition ANOVA
+    statistic: F(2, 18) = 5.59
+    p: 0.01
+  - about: interaction, errors per meter
+    test: two-way shock status by condition ANOVA
+    statistic: F(2, 18) = 1.45
+    p: 0.26
+  criterion: A claim of absence for shock status. Errors per session (and errors per meter as
+    the paper's second analysis) for training 1, training 2 and conflict, shock on and off,
+    per mouse; a mixed two-way ANOVA (M12, mouse random). Reproduced when the shock status
+    effect and the interaction have p >= 0.05; not reproduced when either is below 0.05.
+- id: speed-no-difference
+  statement: Running speed did not differ between the training and conflict conditions.
+  source: Results, DG-Dependent Memory Discrimination Is Not Selectively Accompanied by Dentate
+    Firing Field Remapping, paragraph 2
+  quote: No differences in running speed were observed between the training and conflict
+    conditions (F2,13 = 1.93, p = 0.18; data not shown)
+  statistics:
+  - test: one-way ANOVA
+    statistic: F(2, 13) = 1.93
+    p: 0.18
+  criterion: A claim of absence. Mean speed per mouse and session. A one-way ANOVA at alpha
+    0.05. Open, which sessions; the text names "training and conflict conditions" with
+    three levels (df 2). Readings (a) training 1, training 2 and conflict; (b) pretraining,
+    training and conflict; each with (i) the shock-on sessions, (ii) the shock-off recording
+    sessions. The paper does not say; as a claim of absence it is reproduced when the test
+    gives p >= 0.05 under the reading the author adopts, with all readings shown.
+- id: tables2-firing-quality-similar
+  statement: Measures of spatial firing quality of DG place cells did not differ across
+    pretraining, training and conflict.
+  source: Results, DG-Dependent Memory Discrimination Is Not Selectively Accompanied by Dentate
+    Firing Field Remapping, paragraph 2; Table S2
+  quote: The measures of spatial firing quality did not differ across the pretraining, initial
+    training, and conflict training trials (Table S2)
+  expected:
+  - quantity: firing rate, pretraining
+    value: 0.99
+    tolerance: 0.33
+    unit: AP/s
+  - quantity: firing rate, training
+    value: 0.87
+    tolerance: 0.25
+    unit: AP/s
+  - quantity: firing rate, conflict
+    value: 0.82
+    tolerance: 0.31
+    unit: AP/s
+  - quantity: room information content, pretraining
+    value: 1.6
+    tolerance: 0.24
+    unit: bits/s
+  - quantity: room information content, conflict
+    value: 1.75
+    tolerance: 0.35
+    unit: bits/s
+  criterion: A claim of absence. Per cell and condition (pretraining and training sessions
+    averaged per cell; Table S2 gives 42 cells for each, so one value per cell, but how the two
+    sessions are combined is not stated and averaging is a standard choice), firing rate, % ISI under 10 ms, mean ISI, room and arena coherence and
+    information content. No test is named; under M12 a one-way ANOVA (Welch's or
+    Kruskal-Wallis as the data require) per property at alpha 0.05. Reproduced when no
+    property differs and the listed means are within tolerance. Field counts rest on M5.
+- id: fig3c-stability-no-difference
+  statement: DG rate map stability did not differ across the replication, shock addition and
+    shock relocation manipulations.
+  source: Figure 3C
+  quote: Firing rate map stability did not differ between the replication (pretraining-pretraining
+    [illustrated], training 1-training 2), shock addition (pretraining-training [illustrated]),
+    and shock relocation (training-conflict [illustrated]) manipulations (H2,117 = 1.02, p = 0.60)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: H(2, 117) = 1.02
+    p: 0.6
+  criterion: A claim of absence. Stability by M3 (higher of room and arena frame) per DG place
+    cell and manipulation under each M11 reading; Kruskal-Wallis at alpha 0.05. Reproduced
+    when p >= 0.05 under the M11 reading used; all readings are shown.
+- id: fig3c-replication-vs-relocation
+  statement: DG rate map stability was the same for the replication and the shock relocation
+    comparisons.
+  source: Figure 3C legend; Results, DG-Dependent Memory Discrimination Is Not Selectively
+    Accompanied by Dentate Firing Field Remapping, paragraph 3
+  quote: Firing rate map stability was indistinguishable in the replication and relocation
+    comparisons (Wilcoxon rank-sum = 1,756, z = 0.96, p = 0.34)
+  statistics:
+  - test: Wilcoxon rank-sum
+    statistic: W = 1756, z = 0.96
+    p: 0.34
+  depends_on:
+  - fig3c-stability-no-difference
+  criterion: A claim of absence. The values of fig3c-stability-no-difference; a two-sided
+    Wilcoxon rank-sum test of replication against relocation at alpha 0.05. Reproduced when
+    p >= 0.05.
+- id: fig3c-stability-vs-environment
+  statement: DG stability in the place avoidance task was similar to DG stability in the
+    replication condition of the environment experiment but weaker than CA stability there.
+  source: Results, DG-Dependent Memory Discrimination Is Not Selectively Accompanied by Dentate
+    Firing Field Remapping, paragraph 3
+  quote: These estimates of stability were similar to the estimates across the replication control
+    manipulation of the environment (Figure 1B) for DG place cells (Wilcoxon rank-sum = 1,958,
+    z = 0.19, p > 0.85) but were weaker compared to CA place cells (Wilcoxon rank-sum = 700, z =
+    2.43, p < 0.02)
+  statistics:
+  - about: task replication and relocation against environment DG replication
+    test: Wilcoxon rank-sum
+    statistic: W = 1958, z = 0.19
+    p: 0.85
+    p_relation: ">"
+  - about: task replication and relocation against environment CA replication
+    test: Wilcoxon rank-sum
+    statistic: W = 700, z = 2.43
+    p: 0.02
+    p_relation: "<"
+  depends_on:
+  - fig3c-stability-no-difference
+  - fig1b-stability-dg-below-ca-removal
+  criterion: Task values are the replication and relocation stabilities pooled ("These
+    estimates" refer to both); environment values the Figure 1B replication stabilities.
+    Two-sided Wilcoxon rank-sum tests. Reproduced when the DG comparison gives p >= 0.05 and
+    the CA comparison p < 0.05 with CA higher. The DG part is a claim of absence judged on
+    that test.
+- id: fig3d-rate-remapping-task
+  statement: DG place cell rate changes, overall and in the primary field, were larger for
+    shock addition and shock relocation than for replication.
+  source: Figure 3D; Results, DG-Dependent Memory Discrimination Is Not Selectively Accompanied by
+    Dentate Firing Field Remapping, paragraph 3
+  quote: The magnitude of DG place cell firing rate changes (H2,117 = 14.4, p < 0.001) and place
+    field-specific rate changes were greater in response to the shock-added and shock-relocated
+    manipulations than across the replication manipulations
+  statistics:
+  - about: whole-cell rate change
+    test: Kruskal-Wallis
+    statistic: H(2, 117) = 14.4
+    p: 0.001
+    p_relation: "<"
+  - about: field rate change
+    test: Kruskal-Wallis
+    statistic: H(2, 117) = 9.32
+    p: 0.01
+  criterion: Absolute M4 ratios per DG place cell and manipulation under each M11 reading,
+    whole-cell and field mask (M5). Kruskal-Wallis on each. Reproduced when both have
+    p < 0.05 and pairwise tests (Fisher's LSD on ranks, M12) put addition and relocation above
+    replication with no difference between them, under one M11 reading. The field part rests
+    on M5.
+- id: interneuron-rate-remapping
+  statement: Putative interneurons showed the same pattern of rate change, replication less
+    than shock addition equal to shock relocation.
+  source: Results, DG-Dependent Memory Discrimination Is Not Selectively Accompanied by Dentate
+    Firing Field Remapping, paragraph 3
+  quote: This pattern of replication < shock addition = shock relocated was also observed in the
+    putative inhibitory neurons (H2,57 = 8.97, p = 0.01)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: H(2, 57) = 8.97
+    p: 0.01
+  criterion: As fig3d-rate-remapping-task, whole-cell ratios for the 21 interneurons (M1).
+    Reproduced when p < 0.05 with replication below both shock manipulations and the two shock
+    manipulations not different.
+- id: ipos-speed-correlation
+  statement: Ensemble ΔIpos was only weakly related to running speed, explaining 0.69% of the
+    variance.
+  source: Results, Dentate Place Cell Ensembles Transiently and Purposefully Discriminate Places
+    in Distinct Spatial Frames, paragraph 1
+  quote: the correlation between DIpos and running speed explains little of the variance (r2 =
+    0.69%, p < 0.001)
+  statistics:
+  - test: correlation (type not named)
+    statistic: r2 = 0.0069
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: variance in ΔIpos explained by speed
+    value: 0.69
+    tolerance: 0.069
+    unit: percent
+  criterion: ΔIpos by M6 in 133-ms steps and speed in the same steps, pooled over ensembles and
+    sessions. Open, speed's window; readings (a) displacement over the 133-ms step, (b) the
+    1-s rolling window the Methods use for the Kendall correlation check. The type of
+    correlation is not named; Pearson is used as the standard choice. Reproduced when r2 is
+    within tolerance and p < 0.001 under one reading.
+- id: fig4b-room-preference-pretraining
+  statement: Room-frame information dominated arena-frame information more often during
+    pretraining, and this preference disappeared when shock was added or relocated.
+  source: Figure 4B; Results, Dentate Place Cell Ensembles Transiently and Purposefully
+    Discriminate Places in Distinct Spatial Frames, paragraph 1
+  quote: Room information dominates arena information more often in pretraining trials, but the
+    room frame preference disappears when shock is added or relocated
+  statistics:
+  - about: spatial frame
+    test: two-way frame by condition ANOVA
+    statistic: F(1, 10.6) = 2.0
+    p: 0.18
+  - about: condition
+    test: two-way frame by condition ANOVA
+    statistic: F(2, 19.8) = 0.3
+    p: 0.78
+  - about: frame by condition interaction
+    test: two-way frame by condition ANOVA
+    statistic: F(2, 19.8) = 4.9
+    p: 0.018
+  criterion: Per mouse and session, the time with ΔIpos > 0 (room) and < 0 (arena) as a
+    fraction of the session (M6). A mixed frame by condition ANOVA (M12, mouse random; the df
+    fit about six mice). Reproduced when the interaction has p < 0.05, room exceeds arena in
+    pretraining, and room and arena do not differ (Fisher's LSD) in training and conflict.
+- id: fig4c-ipos-before-avoidance
+  statement: In the ~1 s before approaches to a shock zone, ΔIpos was positive (room-preferring)
+    and larger near the currently shocked zone than near the opposite zone, following the zone
+    to its new location in conflict.
+  source: Figure 4C; Results, Dentate Place Cell Ensembles Transiently and Purposefully
+    Discriminate Places in Distinct Spatial Frames, paragraph 1
+  quote: after training or conflict trials, DIpos is positive (room-dominating) and larger during
+    ... before active avoidance (defined as a local minimum in the distance to a shock zone time
+    series) compared to when mice are in the safe zone
+  statistics:
+  - about: condition
+    test: two-way condition by shock zone ANOVA
+    statistic: F(2, 18.5) = 0.8
+    p: 0.47
+  - about: shock zone
+    test: two-way condition by shock zone ANOVA
+    statistic: F(1, 9.9) = 3.3
+    p: 0.1
+  - about: condition by shock zone interaction
+    test: two-way condition by shock zone ANOVA
+    statistic: F(2, 18.5) = 11.4
+    p: 0.0006
+  criterion: Approach events by M8 (50% rule, ~1 s window, both minima readings) toward each
+    zone in each session; per mouse the mean ΔIpos (M6) before events, by zone (training,
+    conflict) and condition. A mixed condition by zone ANOVA (M12). Reproduced when the
+    interaction has p < 0.05, ΔIpos near the training zone exceeds that near the conflict zone
+    in training, the order reverses in conflict, and the active zone's mean is above zero in
+    both. The text is ambiguous whether ~1 s is 1 s or about 1 s; 1 s is used and 0.8 to
+    1.2 s shown as variants.
+- id: fig4d-room-maps-uncorrelated
+  statement: Maps of the proportion of time in the room-dominant state in training and in
+    conflict were not correlated.
+  source: Figure 4D
+  quote: These training and conflict maps are not correlated ... p = 0.67)
+  statistics:
+  - test: correlation (type not named)
+    statistic: r = -0.02
+    p: 0.67
+  criterion: A claim of absence. Per pixel (1.5 cm, room frame) the fraction of time with
+    ΔIpos > 0, per mouse, averaged over mice (Positional information), for training and for
+    conflict. The correlation type and the pixels entered are not stated; Pearson across
+    pixels visited in both is used as the standard choice. Reproduced when p >= 0.05.
+- id: fig4d-room-ipos-near-active-zone
+  statement: Room-frame positional information near the shock zone, normalized by overall
+    Ipos, was higher near the training zone in training and near the relocated zone in
+    conflict than in the other conditions.
+  source: Figure 4D legend
+  quote: During training trials, room-frame positional information is significantly higher near
+    the training shock zone than during pretraining or conflict trials (F2,8.9 = 8.7, p = 0.008).
+    During conflict trials, room positional information is significantly higher near the
+    relocated shock zone than during pretraining and training trials (F2,9.8 = 9.0, p = 0.006)
+  statistics:
+  - about: near training zone, across conditions
+    test: one-way mixed ANOVA (condition)
+    statistic: F(2, 8.9) = 8.7
+    p: 0.008
+  - about: near conflict zone, across conditions
+    test: one-way mixed ANOVA (condition)
+    statistic: F(2, 9.8) = 9.0
+    p: 0.006
+  criterion: Per mouse and session, the mean room Ipos (sum over the ensemble, M6) at times
+    within 4.5 cm of or in each zone (M7) divided by the mean overall room Ipos of the session.
+    Open, the normalizer; readings (a) mean room Ipos over the session, (b) mean room plus
+    arena Ipos over the session. A mixed one-way ANOVA per zone (M12). Reproduced when, under
+    one reading, both tests have p < 0.05 and Fisher's LSD puts training highest for the
+    training zone and conflict highest for the conflict zone.
+- id: figs2a-pc-pairs-no-change
+  statement: Place cell pair spike train correlations at 133 ms did not differ across the
+    three trial types, and their changes did not differ across manipulations.
+  source: Figure S2A; Results, Sub-second Coordination within the Network of DG Cells Mirrors
+    Likelihood of DG-Dependent Memory Discrimination, paragraph 1
+  quote: The distributions of spike train correlations (t) between pairs of DG place cells
+    measured at the 133-ms timescale of the Ipos estimates do not differ in the three trial
+    types (H2,381 = 1.57, p = 0.46; Figure S2)
+  statistics:
+  - about: tau across trial types
+    test: Kruskal-Wallis
+    statistic: H(2, 381) = 1.57
+    p: 0.46
+  - about: tau change across manipulations
+    test: Kruskal-Wallis
+    statistic: H(2, 381) = 0.87
+    p: 0.65
+  criterion: A claim of absence. Tau per place cell pair per session (M9), pretraining and
+    training sessions each pooled per pair; normalized changes per manipulation (M9, M11).
+    Kruskal-Wallis at alpha 0.05 on each. Reproduced when both give p >= 0.05.
+- id: standardized-rates-no-difference
+  statement: The distributions of standardized firing rates during field passes did not
+    differ across pretraining, training and conflict.
+  source: Results, Sub-second Coordination within the Network of DG Cells Mirrors Likelihood of
+    DG-Dependent Memory Discrimination, paragraph 1
+  quote: The distributions of standardized rates did not differ across the pretraining, training,
+    and conflict sessions (F2,9149 = 0.31, p = 0.73)
+  statistics:
+  - test: one-way ANOVA
+    statistic: F(2, 9149) = 0.31
+    p: 0.73
+    n: 9152 passes
+  criterion: A claim of absence. z per pass by M10 (both episode readings), pooled over cells by
+    condition; a one-way ANOVA at alpha 0.05. Reproduced when p >= 0.05.
+- id: overdispersion-similar
+  statement: Overdispersion of standardized rates in pretraining (variance 5.2) was similar to
+    that in training (5.74) and conflict (5.63), also with single cells as the unit.
+  source: Results, Sub-second Coordination within the Network of DG Cells Mirrors Likelihood of
+    DG-Dependent Memory Discrimination, paragraphs 1 and 2
+  quote: Overdispersion during pretraining was also indistinguishable from that during training
+    (var = 5.74, F4189,3169 = 1.10, p = 0.17) and conflict (var = 5.63, F1791,3169 = 1.08, p =
+    0.63) sessions
+  statistics:
+  - about: training against pretraining variance
+    test: F test of variances
+    statistic: F(4189, 3169) = 1.10
+    p: 0.17
+  - about: conflict against pretraining variance
+    test: F test of variances
+    statistic: F(1791, 3169) = 1.08
+    p: 0.63
+  - about: per cell, cells with at least 15 passes
+    test: one-way ANOVA
+    statistic: F(2, 178) = 0.44
+    p: 0.64
+  expected:
+  - quantity: variance of z, pretraining
+    value: 5.2
+    tolerance: 0.52
+  - quantity: variance of z, training
+    value: 5.74
+    tolerance: 0.57
+  - quantity: variance of z, conflict
+    value: 5.63
+    tolerance: 0.56
+  criterion: Variance of z per condition from M10. Two-sided F tests of each condition's
+    variance against pretraining, and a one-way ANOVA of per-cell variance for cells with at
+    least 15 passes. Reproduced when, under one M10 reading, the three variances are within
+    tolerance and no test gives p < 0.05. The absence part is judged on the paper's F tests.
+    The F p-values printed (0.17 and 0.63) do not fit the df under a two-sided test; they are
+    recorded as printed.
+- id: network-consistency-overall
+  statement: Overall network consistency of place cell pairs was positive and similar across
+    pretraining, training and conflict.
+  source: Results, Sub-second Coordination within the Network of DG Cells Mirrors Likelihood of
+    DG-Dependent Memory Discrimination, paragraph 3
+  quote: Although overall network consistency was positive and similar across the pretraining,
+    training, and conflict sessions (F2,2523 = 1.3, p = 0.27)
+  statistics:
+  - test: one-way ANOVA
+    statistic: F(2, 2523) = 1.3
+    p: 0.27
+    n: 2526 pass values
+  criterion: NC per pass through overlapping fields for each place cell pair (M10), tau over the
+    session (M9). Open, what "overlapping" means; readings (a) a pass in which both cells'
+    expected counts exceed their average rates (both pass rules of M10 met), (b) fields (M5)
+    sharing at least one pixel. A one-way ANOVA at alpha 0.05. Reproduced when the mean NC is
+    above zero in every condition and p >= 0.05, under one reading.
+- id: fig5b-network-consistency-zones
+  statement: Network consistency rose opposite the shock zone after training and fell in that
+    location when the shock was relocated there, giving a zone by manipulation interaction.
+  source: Figure 5B, bottom; Results, Sub-second Coordination within the Network of DG Cells
+    Mirrors Likelihood of DG-Dependent Memory Discrimination, paragraph 3
+  quote: network consistency increases opposite the shock zone after training and decreases when
+    the shock is relocated
+  statistics:
+  - about: shock zone
+    test: two-way shock zone by condition ANOVA
+    statistic: F(1, 1038) = 1.2
+    p: 0.28
+  - about: condition
+    test: two-way shock zone by condition ANOVA
+    statistic: F(2, 1038) = 1.5
+    p: 0.22
+  - about: shock zone by manipulation interaction
+    test: two-way shock zone by condition ANOVA
+    statistic: F(2, 1038) = 3.2
+    p: 0.04
+  depends_on:
+  - network-consistency-overall
+  criterion: NC per pass restricted to passes in each zone vicinity (M7, 6 cm, longer than 3 s),
+    by condition (pretraining, training, conflict). A two-way zone by condition ANOVA on pass
+    values (integer df, reading (c) of M12). Reproduced when the interaction has p < 0.05, NC
+    near the conflict zone (opposite the training zone) is higher in training than pretraining
+    and lower in conflict than training, and NC near the training zone does not differ across
+    conditions.
+- id: fig5d1-pc-int-tau-no-difference
+  statement: The distributions of place cell-interneuron correlations did not differ across
+    trial types.
+  source: Figure 5D1
+  quote: No differences in correlations across conditions for place cell-interneuron pairs
+    (H2,435 = 1.92, p = 0.38)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: H(2, 435) = 1.92
+    p: 0.38
+  criterion: A claim of absence. Tau per place cell-interneuron pair per condition at 133 ms
+    (M9); Kruskal-Wallis at alpha 0.05. Reproduced when p >= 0.05.
+- id: fig5d2-pc-int-change-relocation
+  statement: Place cell-interneuron pairs became more positively correlated across shock
+    relocation than across replication or shock addition.
+  source: Figure 5D2; Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of
+    Memory Discrimination, paragraph 1
+  quote: During shock relocation, place cell-interneuron pairs become more positively correlated
+    compared to the replication and shock addition manipulations
+  statistics:
+  - test: one-way ANOVA (F test, not named)
+    statistic: F(2, 435) = 7.1
+    p: 0.0001
+  criterion: Normalized tau change per pair (M9) per manipulation (M11 readings). The paper
+    gives an F test with integer df without naming it; Welch's ANOVA would give a fractional
+    denominator df, so the test is read as an ordinary one-way ANOVA (M12). Reproduced when p < 0.05 and Fisher's LSD puts relocation above both other
+    manipulations, under one M11 reading. The p printed as "10-4" is recorded as 0.0001.
+- id: pc-int-fraction-increased
+  statement: Most place cells increased co-firing with at least one interneuron, 75% for
+    replication, 83% for shock addition and 92% for shock relocation, the last significantly
+    above replication.
+  source: Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of Memory
+    Discrimination, paragraph 1
+  quote: most place cells increased co-firing with at least one interneuron (83% of place cells
+    for the shock-addition [z = 1.15, p = 0.2] and 92% for the shock-change [z = 2.3, p = 0.03]
+    comparisons relative to 75% of place cells for the replication comparison)
+  statistics:
+  - about: shock addition against replication
+    test: test of proportions
+    statistic: z = 1.15
+    p: 0.2
+  - about: shock relocation against replication
+    test: test of proportions
+    statistic: z = 2.3
+    p: 0.03
+  expected:
+  - quantity: place cells with a positive tau change to at least one interneuron, replication
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  - quantity: same, shock addition
+    value: 83
+    tolerance: 8.3
+    unit: percent
+  - quantity: same, shock relocation
+    value: 92
+    tolerance: 9.2
+    unit: percent
+  depends_on:
+  - fig5d2-pc-int-change-relocation
+  criterion: A place cell counts when its normalized tau change (M9) with at least one
+    interneuron is above zero. Open, whether "increased" needs a threshold; readings (a)
+    change above zero, (b) change above 1 SD. Two-sample z tests of proportions against
+    replication. Reproduced when, under one reading, the three percentages are within
+    tolerance and the relocation test has p < 0.05.
+- id: figs2bc-other-timescales
+  statement: The place cell-interneuron results held at 20 and 250 ms; correlations did not
+    differ across trial types while their changes were larger for shock relocation.
+  source: Figure S2B and S2C; Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites
+    of Memory Discrimination, paragraph 1
+  quote: These findings also hold for 20 and 250 ms timescales (Figures S2B and S2C)
+  statistics:
+  - about: 20 ms, tau across trial types
+    test: Kruskal-Wallis
+    statistic: H(2, 435) = 0.29
+    p: 0.86
+  - about: 20 ms, tau change across manipulations
+    test: Kruskal-Wallis
+    statistic: H(2, 435) = 6.17
+    p: 0.046
+  - about: 250 ms, tau across trial types
+    test: Kruskal-Wallis
+    statistic: H(2, 435) = 1.59
+    p: 0.45
+  - about: 250 ms, tau change across manipulations
+    test: Kruskal-Wallis
+    statistic: H(2, 435) = 17.18
+    p: 0.0001
+  depends_on:
+  - fig5d2-pc-int-change-relocation
+  criterion: As fig5d1 and fig5d2 with 20-ms and 250-ms bins. Reproduced when at both timescales
+    the trial type test gives p >= 0.05 and the change test p < 0.05 with relocation highest.
+- id: pc-int-pair-classes
+  statement: In pretraining, 53% of place cell-interneuron pairs were significantly positively
+    correlated (81 pairs), 10% negatively (15) and 37% independent (56).
+  source: Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of Memory
+    Discrimination, paragraph 2
+  quote: During pretraining, cell pairs were significantly positively correlated (81 pairs, 53%),
+    significantly negatively correlated (15 pairs, 10%), or independent (56 pairs, 37%)
+  expected:
+  - quantity: positively correlated pairs
+    value: 81
+    tolerance: 8.1
+  - quantity: negatively correlated pairs
+    value: 15
+    tolerance: 1.5
+  - quantity: independent pairs
+    value: 56
+    tolerance: 5.6
+  criterion: The "statistical criteria" are not given. Readings (a) the two-sided significance
+    of Kendall's tau at p < 0.05 on 133-ms counts (M9); (b) tau outside the 95% range of tau
+    for spike trains shifted circularly in time. Open as well, which pretraining; readings (i)
+    pretraining 1, (ii) pretraining 2, (iii) both sessions concatenated. Reproduced when the
+    three counts are within tolerance under one reading pair.
+- id: fig5d3-independent-pairs-increase
+  statement: After shock relocation, the initially independent place cell-interneuron pairs
+    became more positively correlated.
+  source: Figure 5D3; Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of
+    Memory Discrimination, paragraph 2
+  quote: After shock relocation, the correlations among the initially independent place
+    cell-interneuron pairs increased (Figure 5D3)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: H(2, 236) = 8.1
+    p: 0.017
+    p_relation: "<"
+  depends_on:
+  - pc-int-pair-classes
+  criterion: Normalized tau changes (M9) of the independent pairs by manipulation (M11);
+    Kruskal-Wallis. Reproduced when p < 0.05 with relocation highest.
+- id: fig5d4-positive-pairs-decrease
+  statement: Initially positively correlated pairs did not change with shock relocation but
+    their correlations decreased across replication and shock addition.
+  source: Figure 5D4 legend
+  quote: The initially positive cell pairs decrease correlations during the replication and shock
+    addition manipulations
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: H(2, 280) = 24.3
+    p: 0.000001
+  depends_on:
+  - pc-int-pair-classes
+  criterion: Normalized tau changes of the positive pairs by manipulation; Kruskal-Wallis.
+    Reproduced when p < 0.05, the median change is below zero for replication and addition,
+    and relocation is not different from zero (two-sided Wilcoxon signed-rank, alpha 0.05).
+    The test against zero is not in the paper; it is the reading of "do not change".
+- id: negative-pairs-no-change
+  statement: Initially negatively correlated pairs did not change across manipulations.
+  source: Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of Memory
+    Discrimination, paragraph 2
+  quote: Changes were not observed among the initially negatively correlated pairs (H2,73 = 4.28,
+    p = 0.12)
+  statistics:
+  - test: Kruskal-Wallis
+    statistic: H(2, 73) = 4.28
+    p: 0.12
+  depends_on:
+  - pc-int-pair-classes
+  criterion: A claim of absence. Kruskal-Wallis of normalized tau changes of the negative pairs
+    across manipulations at alpha 0.05. Reproduced when p >= 0.05.
+- id: fig5e1-correlation-near-zone
+  statement: During the conflict trial, place cell-interneuron correlations were higher near
+    the current shock zone than near its prior location, with no such difference in
+    pretraining or training.
+  source: Figure 5E1; Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of
+    Memory Discrimination, paragraph 2
+  quote: Correlations are increased only when the animal is close to the relocated shock zone
+    during the conflict trial
+  statistics:
+  - about: shock zone
+    test: two-way zone by condition ANOVA
+    statistic: F(1, 806) = 1.9
+    p: 0.15
+  - about: condition
+    test: two-way zone by condition ANOVA
+    statistic: F(2, 806) = 2.6
+    p: 0.11
+  - about: zone by condition interaction
+    test: two-way zone by condition ANOVA
+    statistic: F(2, 806) = 6.7
+    p: 0.0013
+  criterion: Tau per place cell-interneuron pair from the 133-ms bins in each zone vicinity (M7,
+    within 4.5 cm, outside the zone), per condition. A two-way ANOVA (integer df, M12 reading
+    (c)). Reproduced when the interaction has p < 0.05 and Fisher's LSD puts conflict near the
+    conflict zone above every other cell of the design.
+- id: fig5e2-e4-change-near-zone
+  statement: The correlation increases with shock relocation occurred only near the relocated
+    shock zone, for all pairs, independent pairs and positive pairs.
+  source: Figure 5E2 to 5E4; Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites
+    of Memory Discrimination, paragraph 2
+  quote: The correlation increases demonstrated above in (D2)-(D4) only occur when the animal is
+    close to the relocated shock zone, when DG-dependent memory discrimination is most likely
+  statistics:
+  - about: all pairs, zone by manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 746) = 5.5
+    p: 0.0044
+  - about: independent pairs, zone by manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 593) = 6.9
+    p: 0.0011
+  - about: positive pairs, zone by manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 245) = 11.5
+    p: 0.00001
+  depends_on:
+  - pc-int-pair-classes
+  - fig5e1-correlation-near-zone
+  criterion: Normalized tau changes (M9) computed from zone-vicinity bins (M7) per manipulation
+    (M11). Two-way zone by manipulation ANOVAs for all, independent and positive pairs.
+    Reproduced when each interaction has p < 0.05 and Fisher's LSD puts relocation near the
+    conflict zone above the other manipulations and above relocation near the training zone;
+    partially reproduced when this holds for all pairs but not for one subclass. The SD for
+    the zone-vicinity change is open; readings (a) the SD of M9 from the whole earlier
+    session, (b) six periods of the zone-vicinity bins.
+- id: correlation-not-speed
+  statement: Zone-vicinity correlations were not related to running speed or acceleration but
+    were weakly related to place cell and interneuron firing rates, which did not differ
+    across conditions.
+  source: Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites of Memory
+    Discrimination, paragraph 2
+  quote: These correlations were not related to running speed (r2 = 0.004, p > 0.11) or
+    acceleration
+  statistics:
+  - about: tau against speed
+    test: correlation
+    statistic: r2 = 0.004
+    p: 0.11
+    p_relation: ">"
+  - about: tau against acceleration
+    test: correlation
+    p: 0.84
+    p_relation: ">"
+  - about: tau against place cell rate
+    test: correlation
+    statistic: r2 = 0.02
+    p: 0.0001
+    p_relation: "<"
+  - about: tau against interneuron rate
+    test: correlation
+    statistic: r2 = 0.02
+    p: 0.001
+    p_relation: "<"
+  - about: firing rates, zone vicinity
+    test: two-way zone by condition ANOVA
+    statistic: F(1, 293) = 3.01
+    p: 0.08
+  - about: firing rates, condition
+    test: two-way zone by condition ANOVA
+    statistic: F(2, 293) = 0.64
+    p: 0.53
+  - about: firing rates, interaction
+    test: two-way zone by condition ANOVA
+    statistic: F(2, 293) = 0.26
+    p: 0.77
+  criterion: Speed and acceleration from a ~1 s rolling window; tau per animal and trial in ~6 s
+    bins; the mean speed and acceleration of each bin correlated with its tau (Cell pair spike
+    train discharge correlations). Open, which pairs and how bins are pooled; reading, all
+    place cell-interneuron pairs and bins pooled. Reproduced when speed and acceleration give
+    p >= 0.05, the rate correlations p < 0.05, and the rate ANOVA finds no zone or condition
+    effect at alpha 0.05.
+- id: fig5e1-inset-rate-change-near-zone
+  statement: Rate remapping in the shock zone vicinities rose similarly with shock addition and
+    relocation and did not follow the pattern of the correlations.
+  source: Figure 5E1 inset; Results, Increased Place Cell-Inhibitory Neuron Coactivity at Sites
+    of Memory Discrimination, paragraph 3
+  quote: rate remapping in the vicinity of the shock zones increases similarly with shock
+    addition and relocation and does not mirror Kendall correlations or correlation changes
+  statistics:
+  - about: shock vicinity
+    test: two-way zone by manipulation ANOVA
+    statistic: F(1, 245) = 6.93
+    p: 0.009
+  - about: manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 245) = 8.96
+    p: 0.0001
+  - about: shock vicinity by manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 245) = 0.68
+    p: 0.51
+  criterion: Absolute M4 ratio of place cell rates in each zone vicinity (M7, 4.5 cm) per
+    manipulation (M11). A two-way ANOVA. Reproduced when the manipulation effect has p < 0.05
+    with addition and relocation above replication and not different from each other, and the
+    interaction has p >= 0.05.
+- id: fig6b-correlation-before-avoidance
+  statement: Place cell-interneuron correlations increased in the 4 s before successful
+    avoidances of the relocated shock zone in the conflict trial.
+  source: Figure 6B; Results, Increased Place Cell-Inhibitory Neuron Coactivity before Successful,
+    but Not Failed, Place Avoidance
+  quote: the increased place cell-interneuron spike train correlations were only observed during
+    the conflict trial before the mice successfully avoided the shock zone (Figure 6B)
+  statistics:
+  - about: shock zone
+    test: two-way zone by condition ANOVA
+    statistic: F(1, 297) = 2.5
+    p: 0.11
+  - about: condition
+    test: two-way zone by condition ANOVA
+    statistic: F(2, 546.8) = 0.61
+    p: 0.54
+  - about: zone by condition
+    test: two-way zone by condition ANOVA
+    statistic: F(2, 546.8) = 3.8
+    p: 0.02
+  criterion: Avoidance events by M8 (75% rule, 4 s, both minima readings) toward each zone in
+    each condition; tau per pair over the pooled 4-s windows (133-ms bins). A mixed zone by
+    condition ANOVA (M12; the fractional df imply pair as a repeated measure). Reproduced when
+    the interaction has p < 0.05 and conflict near the conflict zone is the highest cell.
+- id: fig6c-no-increase-before-errors
+  statement: No place cell-interneuron correlation increase was present before failed
+    avoidances (shock zone entries).
+  source: Figure 6C legend
+  quote: No PC-INT correlation increases are present during failed avoidance
+  criterion: A claim of absence. As fig6b with error events (minima inside the zone). The paper
+    reports no F values for the correlations here; the test is the same two-way ANOVA at
+    alpha 0.05. Reproduced when the zone by condition interaction has p >= 0.05; not
+    reproduced when it is below 0.05 with conflict near the conflict zone highest.
+- id: fig6-inset-rate-changes
+  statement: Rate changes before avoidances and errors differed across manipulations but did
+    not follow the pattern of the correlation increases.
+  source: Figure 6B and 6C insets
+  quote: unlike the correlation increases, rate changes do not differ between shock zone
+    vicinities but do differ across manipulations
+  statistics:
+  - about: avoidances, shock zone vicinity
+    test: two-way zone by manipulation ANOVA
+    statistic: F(1, 235) = 0.64
+    p: 0.42
+  - about: avoidances, manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 235) = 4.46
+    p: 0.01
+  - about: avoidances, interaction
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 235) = 0.41
+    p: 0.66
+  - about: errors, shock zone vicinity
+    test: two-way zone by manipulation ANOVA
+    statistic: F(1, 245) = 3.94
+    p: 0.048
+  - about: errors, manipulation
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 245) = 14.81
+    p: 0.0001
+    p_relation: "<"
+  - about: errors, interaction
+    test: two-way zone by manipulation ANOVA
+    statistic: F(2, 245) = 1.13
+    p: 0.33
+  depends_on:
+  - fig6b-correlation-before-avoidance
+  criterion: Field rate instability Δ(A,B)/max(A,B) (M4, absolute) of place cells in the 4-s
+    windows before avoidances and errors, by zone and manipulation (M11). Two-way ANOVAs.
+    Reproduced when, for avoidances, the manipulation effect has p < 0.05 and the zone effect
+    and interaction do not, and for errors the zone and manipulation effects have p < 0.05
+    (the Figure 6C legend says rate changes differ between zone vicinities and manipulations).
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1-field-number-scaling, statement said the region effect was significant; the paper prints p = 0.05, so it now says so, and the paper's post hoc result (removed DG above circular DG and CA, CA unchanged) is added to statement and criterion.
+  - fig1c-field-rate-change-no-difference, the criterion made the untransformed ANOVA the paper's test; the paper does not say whether raw or log rates were tested, now named as open with the raw version as a standard choice.
+  - fig2c-cfos-reduced, added that the counted animals are not stated, with readings; t = 2.7 with p = 0.04 fits about 5 df, not 29 mice.
+  - fig3b-avoidance-learning, the criterion said df (2, 4) imply fewer than six mice; a multivariate repeated-measures F test (JMP) on six mice and three levels gives exactly df 2 and 4, now the reading the df support.
+  - fig3b-shock-off-avoidance, added the errors per meter condition and interaction tests from the Figure 3B legend, which the criterion uses.
+  - speed-no-difference, the criterion fixed the three levels as pretraining, training and conflict and the sessions as shock-off; the text names training and conflict conditions only, so both level readings and both session readings are now listed as open.
+  - tables2-firing-quality-similar, averaging pretraining and training sessions per cell is not stated in the paper; now named as a standard choice.
+  - ipos-speed-correlation, the test was called Pearson though the paper says only correlation; renamed, and the partial-reproduction rule (r2 below 2%) removed as it is not from the paper.
+  - fig4d-room-maps-uncorrelated, the test was called Pearson though the paper gives only r; renamed, Pearson now a stated standard choice.
+  - fig5d2-pc-int-change-relocation, the test was recorded as Welch's ANOVA, which the paper does not name and whose df would be fractional; the integer df 435 fit an ordinary one-way ANOVA, now recorded so.
+  - correlation-not-speed, added the firing rate interaction test (F2,293 = 0.26, p = 0.77) printed in the same sentence.
+  - fig6-inset-rate-changes, added the errors interaction (F2,245 = 1.13, p = 0.33) and the zone effect for errors to the criterion, from the Figure 6C legend.
+  - header M7, Figure 6 correlations use the 4-s windows before minima (M8), not the 4.5-cm vicinity; corrected.
+  - checker flags (fig2d 1e-07, fig5d4 1e-06, fig5e2-e4 1e-05) confirmed by reading; the paper prints them as powers of ten.
+  - open, pc-int-pair-classes and fig5d3, fig5d4, negative-pairs-no-change, the Kruskal-Wallis df (236, 280, 73) imply 239, 283 and 76 values, more than three manipulations times 56, 81 and 15 pairs; how pairs were classed per manipulation cannot be settled from the paper.
+  - open, overdispersion-similar, the printed p-values of the variance F tests do not fit their df under a two-sided F test; recorded as printed, so a reproduction of the variances can fail the paper's test as written.
