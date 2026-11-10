@@ -163,8 +163,10 @@ outcomes:
   output: claim:fig2d-cross-temporal-localized
   notes: 290 significant train-test pairs; 17 training bins in encoding or early maintenance have off-diagonal
     pairs kept by either cluster rule and either sidedness; no maintenance training bin generalizes to
-    more than 0.18 of the maintenance test bins. The 1,000 shuffled maps had no supra-threshold cluster,
-    so the Methods' rule removes nothing.
+    more than 0.18 of the maintenance test bins. Only 3 of the 1,000 shuffled maps have a significant
+    pair after BH (one each), so their 95th-percentile extent is 0 and the Methods' rule removes nothing;
+    the largest real cluster spans 26 bins. One- and two-sided tests keep the same pairs because only
+    accuracies above 20% are kept.
   deviations:
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
@@ -192,7 +194,9 @@ outcomes:
   - 35.63
   - 33.61
   notes: 'Load 1, at least three cells: AMY 35.63% (7 participants), MTL 33.61% (8), p = 0.001 for both
-    (BH 0.0015); more than three cells: AMY 34.33%, MTL 32.89% (5 each), p = 0.001. Null means near 18%.'
+    (BH 0.0015); more than three cells: AMY 34.33%, MTL 32.89% (5 each), p = 0.001. Null means near 18%.
+    Against the paper''s 20% chance (one-sided binomial on correct counts pooled over participants) p
+    is 3.8e-10 to 2.3e-06.'
   deviations:
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
@@ -223,7 +227,9 @@ outcomes:
   notes: Load 1, code's table (reading a) 30.00, 60.00, 66.67, 76.67% and reading (b) 50.00, 66.67, 73.33,
     76.67%, all above chance (BH p at most 0.009) and rising from 250 to 1000 ms. Under (a) the 250 ms
     value is below its tolerance (36 to 44%); under (b) 250 and 500 ms are above theirs. Twenty random
-    draws of six trials per image give 56.7 to 86.7% at 1000 ms.
+    draws of six trials per image give 56.7 to 86.7% at 1000 ms. The label-shuffled nulls average 9 to
+    14%, below the paper's 20%; against 20% (one-sided binomial) reading (a) at 250 ms has p = 0.13, every
+    other value p below 0.001. The spread over trial draws is wider than the tolerances.
   deviations:
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
@@ -256,43 +262,73 @@ outcomes:
   - The identity-matched trials are the code's data/new_trial_final.xlsx (an outside input the criterion
     names); the Methods do not say how they were chosen.
 - claim: fig3abc-trajectory-complexity
-  outcome: blocked
-  blocked_by: too_large
-  notebook: reproduce_kussovska_2025.ipynb
-  output: claim:fig3d-encoding-vs-maintenance-separability
-  notes: Uses the dPCA fits of fig3d, which are too large to run (see fig3d-encoding-vs-maintenance-separability).
+  outcome: reproduced
+  notebook: dpca_kussovska_2025.ipynb
+  output: claim:fig3abc-trajectory-complexity
+  notes: On the held-out trajectories of the 100 fig3d splits (first three stimulus dPCs, 500 stimulus
+    trajectories per epoch), maintenance has the higher median under both readings and both trial readings,
+    tortuosity 4.93 (trials a) and 5.22 (trials b) against 2.16 for encoding, reversals 23 against 8.
+    Over the first 499 maintenance bins (the length of encoding) the medians are 2.46 and 2.57 against
+    2.16, and 9 against 8, so part of the difference comes from the longer maintenance window. Earlier
+    blocked as too large; the fits now run in parallel with one thread each.
+  deviations:
+  - The 100 splits are drawn first from default_rng(1) and each split's dPCA is seeded with np.random.seed(1000
+    + split), a standard choice; the code draws its splits from one np.random.seed(1) sequence that dPCA's
+    own draws also consume, which cannot be repeated outside its run.
+  - The complexity measures (tortuosity, reversals of direction) are the claims file's readings; the paper's
+    claim is a visual reading of Fig. 3a-c.
 - claim: fig3d-encoding-vs-maintenance-separability
-  outcome: blocked
-  blocked_by: too_large
-  notebook: reproduce_kussovska_2025.ipynb
+  outcome: reproduced
+  notebook: dpca_kussovska_2025.ipynb
   output: claim:fig3d-encoding-vs-maintenance-separability
-  notes: One split of the claim's design on the data (58 concept cells, 2 ms bins, regularization by dPCA's
-    cross-validation per fit as the code does) took 15.4 s for encoding and 29.9 s for maintenance in
-    development and 17.4 and 32.0 s in the entry's run, so 100 splits take about 75 to 82 min, over the
-    60-minute notebook limit. Not run.
+  measured: 457.62
+  notes: 'Trials as the code selects them (reading b), five groups: H = 457.62 (tolerance 411.5 to 502.9);
+    encoding test separation (median 7.27) above maintenance test (2.75; Dunn BH p 1.1e-38, paper 2.38e-38)
+    and above maintenance projected into the encoding space (3.02; p 2.39e-29, paper 1.25e-29) in all
+    100 splits, and the two maintenance conditions do not differ (p 0.077). The same 30 trials in both
+    epochs (reading a): H = 457.80, encoding above both (p 5.96e-40 and 1.24e-27), but the maintenance
+    conditions differ (p 0.019). Three groups give H 207.95 to 213.90, below the maximum of 265.8 that
+    three groups of 100 allow.'
+  deviations:
+  - The 100 splits are drawn first from default_rng(1) and each split's dPCA is seeded with np.random.seed(1000
+    + split), a standard choice; the code draws its splits from one np.random.seed(1) sequence that dPCA's
+    own draws also consume, which cannot be repeated outside its run.
+  - The 30 trials are the code's draw (08_dpca_matrices.py:14-33, subject 14's load-1 rows of data/new_trial_info.xlsx,
+    sample(random_state=42)); the fixation s.d. is np.std with ddof 0 as in lines 53-59.
 - claim: fig3h-early-vs-late-maintenance
-  outcome: blocked
-  blocked_by: too_large
-  notebook: reproduce_kussovska_2025.ipynb
-  output: claim:fig3d-encoding-vs-maintenance-separability
-  notes: Adds two half-maintenance dPCA fits to each of the 100 splits, about 50 min more than fig3d;
-    too large to run.
+  outcome: reproduced
+  notebook: dpca_kussovska_2025.ipynb
+  output: claim:fig3h-early-vs-late-maintenance
+  measured: 410.0
+  notes: 'With protect [] in both halves H = 410 (trials a) and 413 (trials b), within 375.8 to 459.3;
+    early test separation (3.99, 3.53) above late (3.18, 2.63; Dunn BH p 4.2e-08 and 7.2e-10) and above
+    late projected into early (3.05, 2.61; p 8.4e-11 and 1.2e-10). Early unprotected and late protected
+    give H 456 and 454 with early above both (p at most 2.3e-05). The code''s own setting (early protect
+    [''t''], late []) reverses the result: early test separation 0.97 and 0.58 is below late in all 100
+    splits (H 394 and 380), and 2 or 10 early fits have no stimulus separation in training.'
+  deviations:
+  - The 100 splits are drawn first from default_rng(1) and each split's dPCA is seeded with np.random.seed(1000
+    + split), a standard choice; the code draws its splits from one np.random.seed(1) sequence that dPCA's
+    own draws also consume, which cannot be repeated outside its run.
 - claim: fig4c-encoding-bursts-vs-poisson
   outcome: reproduced
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig4c-encoding-bursts-vs-poisson
   assumed: true
-  notes: Under the Methods' groups with the height rule and the real threshold, all neurons (W = 14, BH
-    p 0.0054) and low ACG (W = 7, 0.0483) differ from the Poisson null and the other four groups do not
-    (BH p 0.67 to 0.89). Under the code's groups with the prominence rule all neurons and low ACG differ
-    but concept cells do too (BH p 0.045); with the Methods' groups and prominence every group but concept
-    cells differs; with the code's groups and the height rule low ACG does not differ. The outcome rests
-    on one named reading.
+  notes: Under the Methods' groups with the height rule, the real threshold and a spacing of 1 bin, all
+    neurons (W = 14, BH p 0.0054) and low ACG (W = 7, 0.0483) differ from the Poisson null and the other
+    four groups do not (BH p 0.36 to 0.89); with a spacing of 2 bins low ACG has BH p 0.060. Under the
+    code's groups with the prominence rule all neurons and low ACG differ but concept cells do too (BH
+    p 0.045); with the Methods' groups and prominence every group but concept cells differs; with the
+    code's groups and the height rule low ACG does not differ. The outcome rests on one named reading,
+    the height rule, under which low ACG neurons burst less than high ACG neurons (fig4-acg-group-differences),
+    so no single peak rule supports Fig. 4 as a whole.
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - Wilcoxon tests against the Poisson null use the code's settings (zero_method pratt, asymptotic; main_4c,d,6a,b.py:440);
@@ -303,15 +339,25 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig4d-maintenance-bursts-vs-poisson
   assumed: true
-  notes: 'Under the real-threshold readings the five named groups exceed the null in most participants
-    (code''s groups, prominence: all 20 of 20, BH p 0.0007; low ACG 11 of 12; high, short, long BH p 0.0035
-    to 0.0042) and concept cells do not (BH p 0.11). Each surrogate''s own threshold breaks the pattern.
-    With each trial''s own maintenance length, short tau decay is not significant (BH p 0.11).'
+  notes: 'Each trial''s own maintenance (at most 2.8 s): with the Methods'' groups and the prominence
+    rule (real threshold with spacing 2 or 1 bin, and each surrogate''s own threshold) the five named
+    groups exceed the null in most participants with BH p below 0.05 and concept cells do not (BH p 0.09
+    to 0.35); the code''s groups and the height rule fail (high ACG or short tau decay not significant).
+    The 2.8 s window of the code gives the pattern under every real-threshold reading, but the control
+    shows it is an artefact of the window: Poisson trains confined to each trial''s maintenance exceed
+    the 2.8 s null for all neurons in 17 to 20 of 20 participants (BH p 0.0005 to 0.0025), and for all
+    five named groups with the Methods'' groups and the height rule (BH p at most 0.037), while over each
+    trial''s own maintenance no group of the control exceeds the null.'
   deviations:
+  - Maintenance bursts are compared with the Poisson null over each trial's own maintenance (at most 2.8
+    s), the criterion's second window reading, real and surrogate spikes both confined to it, assumed
+    because with the code's 2.8 s window the surrogates fill the silent tail after the probe and burst-free
+    Poisson trains then exceed the null (the notebook's control); the 2.8 s results are shown for comparison.
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - Wilcoxon tests against the Poisson null use the code's settings (zero_method pratt, asymptotic; main_4c,d,6a,b.py:440);
@@ -323,13 +369,14 @@ outcomes:
   assumed: true
   notes: 'Prominence rule: low ACG bursts more than high ACG in encoding and maintenance in 12 of 12 participants
     (p = 0.0005, BH over 28 pairs at most 0.0017), and short and long tau decay do not differ in maintenance
-    (p 0.81 to 0.87); short tau decay does not exceed long tau decay in encoding (p 0.14 code groups,
+    (p 0.62 to 0.85); short tau decay does not exceed long tau decay in encoding (p 0.20 code groups,
     0.086 Methods groups). Height rule: low ACG bursts less than high ACG.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
 - claim: fig4f-all-cells-epochs
   outcome: partially_reproduced
   notebook: reproduce_kussovska_2025.ipynb
@@ -337,12 +384,16 @@ outcomes:
   assumed: true
   notes: 'All 902 neurons, prominence rule: encoding median 6 bursts against 14 to 17 in M1 to M3, BH
     p 0.0003 to 0.035 under both window readings; probe 5.5, BH p 0.61 to 0.71, no increase under any
-    reading. The well-fit population gives the same for M1 and M2. Three of the four comparisons hold.'
+    reading. The well-fit population gives the same for M1 and M2. Three of the four comparisons hold.
+    Under the Methods'' windows M3 lasts 0.67 s on average; per second its median is 16.6 (prominence)
+    and 43.2 (height) against 17 and 46.5 bursts in M1, so the M3 decreases of the height rule there come
+    from the shorter window; the outcome is decided on the code''s thirds.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - The code's M1 to M3 (reading b) are thirds of the whole concatenated train, which are thirds of the
     trials, not of the maintenance period (main_4f-k,6c,d.py:216-219).
 - claim: fig4hj-group-epochs
@@ -350,15 +401,16 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig4hj-group-epochs
   assumed: true
-  notes: 'Prominence rule with the code''s thirds: long tau decay up from encoding at M1, M2 and M3 (BH
-    p 0.002 to 0.019) and no significant pair for low ACG, short tau decay and concept cells; high ACG
-    up at M1 and M2 (BH p 0.002 to 0.010) but not at the probe (0.24 to 0.38). The increases hold for
-    one of the two groups.'
+  notes: 'Prominence rule, the code''s thirds and the code''s groups: long tau decay up from encoding
+    at M1, M2 and M3 (BH p 0.010 to 0.019) and no significant pair for low ACG, short tau decay and concept
+    cells; high ACG up at M1 and M2 (BH p 0.002 and 0.010) but not at the probe (0.38). With the Methods''
+    groups short tau decay has 4 significant pairs. The increases hold for one of the two groups.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
 - claim: ext2-bursts-loads23
@@ -366,24 +418,28 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:ext2-bursts-loads23
   assumed: true
-  notes: With the Methods' groups, prominence rule and the code's thirds, all cells, high ACG and long
-    tau decay have more bursts in each maintenance window than in encoding (median over participants)
-    at loads 2 and 3. With the code's groups long tau decay does not at loads 2 and 3; with the height
+  notes: With the Methods' groups and the prominence rule, under either window reading, all cells, high
+    ACG and long tau decay have more bursts in each maintenance window than in encoding (median over participants)
+    at loads 1, 2 and 3. With the code's groups long tau decay does not at loads 2 and 3; with the height
     rule the pattern does not hold.
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
 - claim: acg-fit-yield
   outcome: reproduced
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:acg-fit-yield
-  measured: 317
-  notes: 317 neurons with R2 > 0.3 when all spikes are used (reading a) and 298 with spikes within trials
+  measured: 316
+  notes: 316 neurons with R2 > 0.3 when all spikes are used (reading a) and 298 with spikes within trials
     (reading b); R2 >= 0.3 gives the same. The firing rate and ISI CV equal the code's shipped table,
     and normalised mean ACG and burst index agree within 1% for 99% of neurons; the fitted R2 agrees within
-    1% for 48% of neurons and the threshold classification for 97.5%.
+    1% for 48% of neurons, tau_rise for 6% and tau_decay for 11%, and the threshold classification for
+    97.6%. The round-1 run of the same code gave 317, so one neuron lies at the threshold and the reading
+    (a) types of a few neurons change between runs. The scipy fit is a limitation of this attempt; tau_rise
+    is a clustering feature, so the cell types differ from the paper's.
   deviations:
   - The CellExplorer fit is run with scipy's trust-region reflective least squares in place of MATLAB's
     fit, from the same start point and bounds; local optima differ for part of the neurons.
@@ -395,7 +451,7 @@ outcomes:
   - 100
   - 198
   notes: 'Reading (b): PY 100, IN 198, both within tolerance. Reading (a): PY 102 (just above 101.2),
-    IN 215. The same clustering on the code''s shipped features gives exactly 92 and 202.'
+    IN 214. The same clustering on the code''s shipped features gives exactly 92 and 202.'
   deviations:
   - The cluster with the higher median firing rate is labelled IN (Results); the code fixes label 1 as
     PY, which gives the same 92 on its shipped features.
@@ -404,7 +460,7 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig5dfh-cluster-features
   notes: IN higher on firing rate, normalised mean ACG and tau_rise under both readings, BY-corrected
-    p at most 8e-05 (reading a U = 20822, 21885 and 14159).
+    p at most 1.6e-04 (reading a U = 20731, 21776 and 13982).
 - claim: fig5gh-burst-index-cv2
   outcome: reproduced
   notebook: reproduce_kussovska_2025.ipynb
@@ -417,7 +473,7 @@ outcomes:
   notes: 'Types and burst index of reading (b), CV of each unit''s session ISIs (the code''s Fig. 5h column):
     medians burst index PY 0.947 and IN 0.622, CV PY 1.593 and IN 1.322, all within tolerance, PY higher
     on both (p = 0.005 and 1.1e-04). The paper''s values match medians; the PY mean burst index is 5.6.
-    Under reading (a) the PY burst-index median is 0.802, outside tolerance, with BY-corrected p 0.11.
+    Under reading (a) the PY burst-index median is 0.840, outside tolerance, with BY-corrected p 0.065.
     Holt''s CV2 gives PY 1.18 and IN 0.93.'
 - claim: supp4-rodent-validation
   outcome: reproduced
@@ -438,7 +494,8 @@ outcomes:
   - 11
   - 14
   notes: 'Reading (b) types: 11 PY and 14 IN concept cells; median Royer burst index PY 0.949 against
-    IN 0.390, Holt CV2 1.217 against 0.991. Reading (a): 11 and 16, same ordering.'
+    IN 0.390, Holt CV2 1.217 against 0.991. Reading (a): 12 and 15, also within tolerance (in the round-1
+    run 11 and 16), same ordering.'
   deviations:
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
@@ -447,81 +504,99 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6ab-celltype-bursts-vs-null
   assumed: true
-  notes: 'Poisson null, prominence rule: PY above the null in encoding (BH p 0.0089) and maintenance (0.0035),
-    IN in maintenance (0.0012), but IN also in encoding (0.020), where the paper finds no difference;
-    with the height rule PY do not differ in encoding (BH p 0.09 to 0.11). Label-shuffled null: PY above
-    it in both epochs (BH p 0.0029, 0.0057), IN below it in encoding (0.0016) and not different in maintenance
-    (0.063). No reading gives the paper''s full pattern; elevated PY bursting in both epochs and IN bursting
-    in maintenance hold.'
+  notes: 'No reading gives the full pattern, with either cell types. Poisson null, prominence rule: PY
+    above the null in encoding (BH p 0.0059 to 0.0115) and maintenance, IN in maintenance, but IN also
+    in encoding (BH p 0.011 to 0.045), where the paper finds no difference; with the height rule PY do
+    not differ in encoding (BH p 0.07 to 0.67). Over each trial''s own maintenance PY still exceed the
+    null and IN do under some readings (BH p 0.009 to 0.14). Label-shuffled null: PY above it in both
+    epochs (BH p 0.0029 to 0.0057), IN below it in encoding (0.0016, 0.0020) and not above it in maintenance
+    (types a 0.063; types b below it, 0.015). Elevated PY bursting in both epochs holds; IN maintenance
+    bursting holds against the Poisson null only.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Wilcoxon tests against the Poisson null use the code's settings (zero_method pratt, asymptotic; main_4c,d,6a,b.py:440);
     epoch comparisons the code's defaults (zero_method wilcox).
   - The label-shuffled null pools each participant's classified neurons (PY and IN) and keeps group sizes;
     the paper does not describe its shuffle.
+  - Maintenance bursts are compared with the Poisson null over each trial's own maintenance (at most 2.8
+    s), the criterion's second window reading, real and surrogate spikes both confined to it, assumed
+    because with the code's 2.8 s window the surrogates fill the silent tail after the probe and burst-free
+    Poisson trains then exceed the null (the notebook's control); the 2.8 s results are shown for comparison.
 - claim: fig6cd-celltype-epochs
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6cd-celltype-epochs
   assumed: true
   notes: 'Prominence rule with the code''s thirds: PY have no pair with BH p < 0.05 at loads 1, 2 and
     3; IN burst more in M1, M2 and M3 than in encoding at load 1 (BH p 0.0047 to 0.014; medians 11 against
-    15) but not at the probe (0.80). With the Methods'' windows PY differ at every load.'
+    15) but not at the probe (0.80), and no reading gives an IN probe difference (BH p 0.13 to 1.0 over
+    both cell types). With the Methods'' windows PY differ at every load. The criterion''s partial outcome
+    needs the full pattern at load 1, which fails at the probe. Types of reading (b): the same (IN BH
+    p 0.0058 to 0.0074 at M1 to M3, 1.0 at the probe; PY no pair at any load).'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
 - claim: ext5bd-in-load-dependence
   outcome: reproduced
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:ext5bd-in-load-dependence
   assumed: true
-  notes: With the prominence rule and the code's thirds the IN measure is 3.67, 5.00 and 6.33 at loads
-    1 to 3, rising; under the height rule or the Methods' windows it does not rise.
+  notes: 'With the prominence rule the IN measure rises from load 1 to 3 under both window readings (code''s
+    thirds 3.67, 5.00, 7.00; Methods'' windows 6.67, 5.67, 7.00); under the height rule it does not. Types
+    of reading (b): 4.33, 4.67, 6.83 (thirds), rising under the prominence rule only.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
 - claim: fig6e-load-modulation-in
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6e-load-modulation-in
   measured:
-  - 13.95
-  - 18.75
+  - 14.02
+  - 20.0
   - 5.88
   - 0.0
   assumed: true
-  notes: 'Matched trials, shared permutation: IN 13.95% (30 of 215, p = 0.001), within tolerance; IN concept
-    18.75% (3 of 16, p = 0.042), below the tolerance of 19.3 to 23.6% (the paper''s 21.42% is 3 of 14);
-    PY 5.88% (p = 0.43) and PY concept 0% (p = 1.0) not significant. With reading (b) types, IN 14.65%
-    (p = 0.001) and IN concept 14.29% (p = 0.15).'
+  notes: 'Types of reading (a), matched trials, shared permutation: IN 14.02% (30 of 214, p = 0.001) and
+    IN concept 20.00% (3 of 15, p = 0.038), both within tolerance; PY 5.88% (p = 0.43) and PY concept
+    0% (p = 1.0) not significant. The outcome rests on the types: the round-1 run, whose ACG fit kept
+    one more neuron, had 16 IN concept cells and 18.75% (outside tolerance). Types of reading (b): IN
+    concept 14.29% (p = 0.15) with matched trials; with all trials 21.43% (p = 0.033) but IN 17.68% and
+    PY 10.00% with p = 0.041.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
 - claim: fig6f-rt-modulation-in-concept
   outcome: not_reproduced
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6f-rt-modulation-in-concept
-  measured: 12.5
+  measured: 13.33
   assumed: true
-  notes: 'Own RT: IN concept 12.50% (p = 0.19) and PY significant (p 0.005 to 0.024). The code''s predictor
-    (subject 1''s RT vector) gives IN concept 31.25% (p = 0.001), just below the tolerance, with IN (p
-    = 0.086) and PY (0.40) not significant.'
+  notes: 'Own RT: IN concept 13.33% (types a, p 0.17 to 0.18) and 14.29% (types b, p 0.15 to 0.16), and
+    PY significant (p 0.007 to 0.046). The code''s predictor (subject 1''s RT vector, outside the criterion)
+    gives IN concept 33.33% (types a, p = 0.001) with IN, PY and PY concept not significant, and 35.71%
+    (types b) with all IN significant.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
 - claim: fig6gh-in-concept-cv2
@@ -529,14 +604,17 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6gh-in-concept-cv2
   assumed: true
-  notes: IN concept cells, preferred trials, CV2 median 0.964 in encoding and 0.969 in maintenance at
-    load 1 (W = 64, p = 0.86), and 0.969 against 1.005 over all loads (W = 38, p = 0.13). IN nonpreferred
-    and every PY comparison have p > 0.05.
+  notes: IN concept cells, preferred trials, CV2 median 0.943 in encoding and 0.956 in maintenance at
+    load 1 (W = 54, p = 0.76), and 0.964 against 1.003 over all loads (W = 33, p = 0.14); types of reading
+    (b) p 0.67 and 0.24. IN nonpreferred and every PY comparison have p > 0.05. Counting only intervals
+    within trials (a variant outside the criterion) gives IN preferred p = 0.055 (load 1) and 0.0034 (all
+    loads), with PY preferred encoding against maintenance p = 0.032 over all loads.
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - Trials are concatenated with a stride of the window (1 s encoding, 2.5 s maintenance), so interspike
@@ -546,15 +624,16 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:ext5gh-py-decay-preferred
   assumed: true
-  notes: 'PY concept cells, tau_decay preferred against nonpreferred: load 1 encoding 13.38 against 12.25
-    ms (p = 0.73), maintenance 17.20 against 10.30 (p = 0.32); all loads p = 0.43 and 0.13 (paired t p
-    = 0.050 in maintenance). IN p 0.058 to 0.67. Preferred-trial spikes per PY cell have a median of 25
-    to 34 at load 1.'
+  notes: 'PY concept cells, tau_decay preferred against nonpreferred: Wilcoxon p 0.17 to 0.58 over both
+    epochs and load sets (paired t p = 0.048 in maintenance over all loads); one IN comparison has p =
+    0.048. Types of reading (b): PY p 0.28 to 0.43. Preferred-trial spikes per PY cell have a median of
+    25 to 50 at load 1.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - The decay time constant is the ACG tau_decay fitted to the spikes of each trial type and epoch, the
@@ -564,18 +643,20 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6i-py-bin-width-decoding
   measured:
-  - 33.33
+  - 30.0
   - 23.33
   - 36.67
   - 43.33
   assumed: true
-  notes: '11 PY concept cells, code''s table: 33.33, 23.33, 36.67 and 43.33%, BH p 0.072, 0.39, 0.072
-    and 0.060, so 750 and 1000 ms are not significant; reading (b): 33.33, 33.33, 23.33, 23.33%.'
+  notes: '12 PY concept cells, code''s table: 30.00, 23.33, 36.67 and 43.33%, BH p 0.128, 0.44, 0.096
+    and 0.060, so 750 and 1000 ms are not significant; reading (b): 30.00, 26.67, 26.67, 30.00%. Types
+    of reading (b), 11 cells: 30.00, 23.33, 36.67, 40.00%, BH p 0.096 to 0.48.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - The identity-matched trials are the code's data/new_trial_final.xlsx (an outside input the criterion
@@ -585,18 +666,21 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6j-in-bin-width-decoding
   measured:
-  - 46.67
-  - 53.33
-  - 53.33
   - 50.0
+  - 56.67
+  - 53.33
+  - 53.33
   assumed: true
-  notes: 16 IN concept cells, code's table 46.67, 53.33, 53.33, 50.00% and reading (b) 50.00, 63.33, 56.67,
-    53.33%, all with BH p 0.002; two of four values are outside tolerance under each reading.
+  notes: '15 IN concept cells, code''s table 50.00, 56.67, 53.33, 53.33% and reading (b) 50.00, 56.67,
+    60.00, 56.67%, all with BH p at most 0.0024; two of four values are outside tolerance under each reading.
+    Types of reading (b), 14 cells: 56.67, 60.00, 66.67, 63.33% (code''s table), all significant, again
+    with values outside tolerance.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - The identity-matched trials are the code's data/new_trial_final.xlsx (an outside input the criterion
@@ -606,13 +690,16 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:fig6kl-cross-temporal-by-type
   assumed: true
-  notes: PY concept map, no significant pair under any reading; IN concept map, 240 significant pairs
-    and 162 to 230 off-diagonal pairs kept, 18 training bins in encoding or early maintenance.
+  notes: 'PY concept map (12 cells), 4 significant pairs, none kept off the diagonal by the code''s cluster
+    rule (2 by the Methods'' rule); IN concept map, 261 significant pairs and 168 to 254 off-diagonal
+    pairs kept. Types of reading (b), 200 shuffles: PY 3 significant pairs, none kept off the diagonal
+    by the code''s rule; IN 149 to 243 kept.'
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - The identity-matched trials are the code's data/new_trial_final.xlsx (an outside input the criterion
@@ -622,13 +709,15 @@ outcomes:
   notebook: reproduce_kussovska_2025.ipynb
   output: claim:ext5ij-load2-decoding-by-type
   assumed: true
-  notes: Load 2, IN concept cells above chance at all four widths under both readings (BH p at most 0.013);
-    PY concept cells at none (BH p at least 0.49).
+  notes: Load 2, IN concept cells above chance at all four widths under both readings (BH p at most 0.006);
+    PY concept cells at none (BH p at least 0.60). The same with the types of reading (b) (IN at most
+    0.006, PY at least 0.48).
   deviations:
   - Cell types and ACG groups downstream use reading (a) of acg-fit-yield (every spike of the unit), assumed
     because the code's shipped Cell_metrics.xlsx equals it in firing rate and ISI CV and agrees within
     1% in normalised mean ACG and burst index for 99% of neurons; the ACG fit is a scipy port of the MATLAB
-    fit, so the types (102 PY, 215 IN) differ from the paper's 92 and 202.
+    fit, so the types (102 PY, 214 IN) differ from the paper's 92 and 202. Each claim on cell types is
+    also run with the types of reading (b) (100 PY, 198 IN, within tolerance).
   - Concept cells are the code's bootstrap (reading b of concept-cells-count) with seed 0, a standard
     choice since the code sets no seed; 57 of its 58 cells are in the code's shipped list.
   - The identity-matched trials are the code's data/new_trial_final.xlsx (an outside input the criterion
@@ -689,4 +778,379 @@ findings:
   statement: The ACG features of the code's shipped Cell_metrics.xlsx (firing rate, normalised mean ACG,
     burst index, ISI CV) are recomputed from the dandiset's spike times to within 1% for 99% of units,
     using every spike of the unit; the fitted R2 and time constants come from MATLAB's optimizer and differ
-    for part of the units in a scipy port, which gives 317 well-fit units in place of 294.
+    for part of the units in a scipy port, which gives 316 well-fit units in place of 294 (317 in an earlier
+    run of the same code, so one unit lies at the threshold).
+- kind: code_mismatch
+  statement: The code's maintenance burst test (04_bursting/main_4c,d,6a,b.py, TRIAL_WIN = 2.8 at line
+    13, surrogate times uniform on [0, TRIAL_WIN] at lines 288-289) concatenates maintenance trials with
+    a 2.8 s stride, while the maintenance in the data lasts 2.53 to 2.84 s and the real spikes stop at
+    the probe. The surrogates fill the silent tail, and homogeneous Poisson trains confined to each trial's
+    maintenance then exceed the null for all neurons in 17 to 20 of 20 participants (BH p 0.0005 to 0.0025).
+    The maintenance results of Fig. 4d and Fig. 6a,b against the Poisson null can arise from the window
+    alone.
+- kind: code_mismatch
+  statement: 08_dpca_matrices.py builds the encoding tensor from the trials whose new_trial_id is among
+    the drawn ids (line 105) but the maintenance tensor from the trials whose trial_id is among them (line
+    192). In 4 of the 14 sessions with concept cells (subjects 7, 8, 9 and 16) these are other trials,
+    only 9 to 11 of 30 shared and 13 of 30 at load 1. The paper's Fig. 3d statistics are matched most
+    closely with the code as written.
+- kind: code_mismatch
+  statement: 03_dpca/main_3h,supp_2c,d,l.py fits the early half of maintenance with protect ['t'] and
+    the late half with protect [] (lines 115 and 124). With these settings the early half separates the
+    stimuli less than the late half in all 100 splits, the reverse of Fig. 3g,h; the paper's result is
+    obtained with protect [] for the early half.
+- kind: methods_unavailable
+  statement: 'Question for the authors: over which window are the Poisson surrogates of the maintenance
+    burst test drawn? The code draws them on [0, 2.8 s] for every trial (main_4c,d,6a,b.py:13 and 288-289)
+    while each trial''s maintenance ends at the probe, 2.53 to 2.84 s after onset, and burst-free trains
+    then exceed the null. Here Fig. 4d is reproduced over each trial''s own maintenance with the Methods''
+    groups and the prominence rule, and not with the code''s groups.'
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the executed notebook reproduce_kussovska_2025.ipynb with the conclusion cells and
+    the summary removed, the helper module wm.py and the claims file, with the paper''s full text. The
+    verifier queried the archive and tested group_bursts on synthetic Poisson data; it had no attempt
+    record. It could not check the code repository.'
+  results:
+  - claim: units-by-region
+    agrees: true
+    outcome: reproduced
+    reason: 902 units from 21 patients; AMY 259, HPC 190, dACC 171, preSMA 250, vmPFC 32, all exact (cell
+      16).
+    response: No change.
+  - claim: behavior-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 88.73% ± 1.25 (s.e.m.), exact (cell 18).
+    response: No change.
+  - claim: fig1c-accuracy-load1-vs-load3
+    agrees: true
+    outcome: reproduced
+    reason: Load 1 median 94.4% against 86.7% at load 3. Rank-sum raw p = 0.009, Bonferroni p = 0.027,
+      which equals the paper (cell 20).
+    response: No change.
+  - claim: behavior-rt
+    agrees: true
+    outcome: reproduced
+    reason: (a) 1.120 s (s.d. 0.252); (c) 1.097 s. Both are inside 0.78–1.34 (cell 22).
+    response: No change.
+  - claim: rt-in-vs-out-memory
+    agrees: true
+    outcome: reproduced
+    reason: In-memory probes faster; p = 0.001–0.002 under all four readings (cell 24).
+    response: No change.
+  - claim: rt-correct-vs-incorrect
+    agrees: true
+    outcome: reproduced
+    reason: Correct trials faster in 20 of 21 participants; p = 0.001 under both readings (cell 26).
+    response: No change.
+  - claim: fig1e-load-modulated-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 'Matched trials, shared permutation: preSMA 20.4%, vmPFC 18.75%, dACC 10.53%. All within tolerance,
+      p = 0.000 / 0.009 / 0.025 (cell 28).'
+    response: No change.
+  - claim: fig1f-rt-modulation-not-significant
+    agrees: true
+    outcome: not_reproduced
+    reason: With each trial's own RT (the main reading), preSMA, AMY and dACC have BH p < 0.05 under every
+      trial reading (cell 30). The paper's numbers (AMY 5.79%, preSMA 8.00%, vmPFC 6.25%, none significant)
+      come out exactly only under the code's bug, which uses subject 1's RT vector for every neuron.
+    response: No change.
+  - claim: concept-cells-count
+    agrees: true
+    outcome: reproduced
+    reason: 'Code reading gives 57–60 cells over seeds, with AMY 70.7% and HPC 19.0%. The Methods reading
+      gives 49–54. Per participant 4.14 ± 3.66 (cell 32). Problem 8: the downstream concept set is a single
+      draw (code reading, seed 0); counts range 57–60 over seeds, and the Methods reading is not carried
+      downstream.'
+    response: 'No change to the analysis: the set used downstream is the reading that matches the paper
+      for every seed, and a seed is a standard choice; its notes already give the range over seeds and
+      the Methods'' reading.'
+  - claim: fig2ab-single-cells-not-persistent
+    agrees: true
+    outcome: reproduced
+    reason: 50 of 58 cells are not persistent under (a), 48 of 58 under (b) (cell 34).
+    response: No change.
+  - claim: fig2c-population-persistence
+    agrees: true
+    outcome: reproduced
+    reason: 'Load 1: preferred trace above nonpreferred in 100% of bins, all bins significant (cell 36).'
+    response: No change.
+  - claim: ext1bc-persistence-by-load
+    agrees: true
+    outcome: reproduced
+    reason: 'Significant bins: 1.00 at load 1, 1.00 at load 2, 0.60 at load 3 (cell 38).'
+    response: No change.
+  - claim: fig2d-cross-temporal-localized
+    agrees: true
+    outcome: reproduced
+    reason: '17 encoding or early-maintenance training bins generalize; the largest fraction of maintenance
+      test bins reached from a maintenance training bin is 0.14–0.18 (cell 40). Problem 6: the Methods
+      cluster rule is degenerate; no shuffled map had any BH-significant pair (null95_extent = 0), so
+      every real cluster is kept, and the one-sided and two-sided tests are identical because of the acc
+      > 0.2 filter.'
+    response: The table now prints the largest real cluster extent (26 bins) and, per rule, how many shuffled
+      maps have a significant pair (3 of 1,000, one pair each) and the most pairs in one; the notes and
+      conclusion say the rule cannot remove a cluster here and why the two tests agree. Outcome unchanged.
+  - claim: ext1de-cross-temporal-load23
+    agrees: true
+    outcome: reproduced
+    reason: 'Off-diagonal kept pairs: load 1 217/280, load 2 6–10, load 3 0, under every rule and label
+      (cell 42).'
+    response: The same cluster outputs as for fig2d are printed. Outcome unchanged.
+  - claim: fig2e-maintenance-decoding-amy-mtl
+    agrees: true
+    outcome: reproduced
+    reason: 'Methods reading: AMY 35.63%, MTL 33.61%. Code reading: 34.33% and 32.89%. All p = 0.001 (cell
+      44). Problem 7: the LOOCV label-shuffled nulls average about 18% within participant, and the p values
+      are never compared with the paper''s 20% chance.'
+    response: Added a one-sided binomial test against 20% on the correct counts pooled over participants
+      (p_binom20, 3.8e-10 to 2.3e-06), and the conclusion notes that the shuffled nulls lie below 20%.
+      Outcome unchanged.
+  - claim: ext1f-maintenance-decoding-load2
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Both groups are significant and MTL is in tolerance (26.67 / 29.56%). AMY is above tolerance
+      under both readings: 26.43 / 27.89% against 21.2–25.9 (cell 46).'
+    response: The binomial p against 20% is added (0.011 or less). Outcome unchanged.
+  - claim: fig2f-bin-width-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'All widths are significant and accuracy rises with width. But no reading has all four accuracies
+      in tolerance: code 250 ms gives 30.0% (36–44); rank reading 250 ms gives 50.0% and 500 ms gives
+      66.67% (cell 48). Problem 7: nulls average 9–17%, below 20%. Problem 9: at 1000 ms, random six-per-image
+      trial draws range 56.7–86.7%, wider than the ±10% tolerances, so in-tolerance or out-of-tolerance
+      results carry little weight.'
+    response: 'Added the binomial p against 20%: the code reading at 250 ms (30.0%) has p = 0.13, so it
+      is not above the paper''s chance level; the conclusion and notes say so and that the trial-draw
+      spread is wider than the tolerances. Outcome unchanged.'
+  - claim: fig2f-bin-width-pairwise
+    agrees: true
+    outcome: not_reproduced
+    reason: 1000 vs 500 ms is not significant under any reading (BH 0.08–0.48). Under the code trial reading,
+      500 vs 250 ms is significant (cell 51). The criterion's partial condition is not met either.
+    response: No change.
+  - claim: ext1g-bin-width-load2
+    agrees: true
+    outcome: reproduced
+    reason: Load 2 range is 16 points (code) or 4 points (rank), both below 20, and load 2 is below load
+      1 at every width (cell 53).
+    response: No change.
+  - claim: fig3abc-trajectory-complexity
+    agrees: false
+    outcome: blocked
+    reason: 'Nothing was computed. The data are present; the block rests on run time only (problem 1:
+      the estimate is 127 min of serial dPCA fits; the splits are independent and wm.pmap with 4 workers
+      would bring this to about 35 min; fig3abc needs only a handful of fits).'
+    response: 'Tested. Each dPCA fit now runs on one linear-algebra thread (the earlier 15 to 30 s per
+      fit was thread contention; one thread takes about 6.6 s for maintenance) and the 100 splits run
+      on 4 processes, in a second notebook (dpca_kussovska_2025.ipynb, 22 min). The outcome changes from
+      blocked to reproduced: maintenance trajectories have the higher median tortuosity and number of
+      reversals under both trial readings, also over a length-matched window.'
+  - claim: fig3d-encoding-vs-maintenance-separability
+    agrees: false
+    outcome: blocked
+    reason: 'Same as fig3abc: nothing was computed; the data are present and the block rests on run time
+      only (problem 1).'
+    response: 'Tested as for fig3abc, with the code''s trial draw from new_trial_info.xlsx and both trial
+      readings. The outcome changes from blocked to reproduced: with the code''s trials H = 457.62 and
+      Dunn p 1.1e-38 and 2.39e-29 against the paper''s 457.217, 2.38e-38 and 1.25e-29, and the maintenance
+      conditions do not differ (p 0.077).'
+  - claim: fig3h-early-vs-late-maintenance
+    agrees: false
+    outcome: blocked
+    reason: 'Same as fig3abc: nothing was computed; the data are present and the block rests on run time
+      only (problem 1).'
+    response: Tested as for fig3abc, with all four protect settings of the two halves. The outcome changes
+      from blocked to reproduced under protect [] for the early half (H 410 to 456); the code's own setting
+      (early protected, late not) reverses the result, which is recorded as a finding.
+  - claim: fig4c-encoding-bursts-vs-poisson
+    agrees: true
+    outcome: reproduced
+    reason: 'Only under methods groups / height rule / real threshold (d1 and d2). There, All902 has BH
+      p = 0.0054 and LowACG 0.038 / 0.048, and the other four groups are not significant (cells 67–68).
+      The LowACG result is marginal. Problem 11: fig4c passes only with the height rule, under which low
+      ACG has fewer bursts than high ACG (contradicting fig4-acg-group-differences); no single burst reading
+      supports Fig. 4 as a whole.'
+    response: Problem 11 is now stated in the conclusion and notes. With this run's ACG fit (316 well-fit
+      units) the pattern holds with a spacing of 1 bin (low ACG BH p 0.048) and not with 2 bins (0.060);
+      the notes give both. Outcome unchanged, still marked as resting on one reading.
+  - claim: fig4d-maintenance-bursts-vs-poisson
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced (weak). Under the 2.8 s window, the five named groups exceed the null and concept
+      cells do not, in 8 of 12 readings (cell 70). With each trial''s own maintenance length (cell 71),
+      ShortDecay fails (BH p = 0.114). Problem 3: with the 2.8 s window real spikes stop at the probe,
+      so each trial has a silent tail that the surrogates fill; on synthetic homogeneous Poisson data
+      the real count is 54 against a null of about 41, so "maintenance exceeds the Poisson null" can arise
+      from the windowing alone. The own-duration reading was run only for code/prominence/real.'
+    response: 'Problem 3 is confirmed and the assumption revised: the notebook now runs a control on burst-free
+      Poisson trains confined to each trial''s maintenance (they exceed the 2.8 s null for all neurons
+      in 17 to 20 of 20 participants), and runs the criterion''s own-maintenance reading under every reading.
+      The outcome now rests on that reading (assumed, recorded as a deviation and a finding): the Methods''
+      groups with the prominence rule give the paper''s pattern (three settings), the code''s groups and
+      the height rule do not. Outcome kept as reproduced.'
+  - claim: fig4-acg-group-differences
+    agrees: true
+    outcome: partially_reproduced
+    reason: With the prominence rule, low ACG exceeds high ACG in both epochs (p = 0.0005). Short τdecay
+      never exceeds long in encoding (p = 0.086–0.20). With the height rule the low/high direction reverses
+      (cell 73).
+    response: Notes updated to this run's values (p 0.20 and 0.086). Outcome unchanged.
+  - claim: fig4f-all-cells-epochs
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Encoding to M1, M2 and M3 rises with q < 0.05 under the prominence rule. Encoding to probe
+      is not significant under any reading (q = 0.61–0.71; medians 6.0 vs 5.5) (cell 75). Problem 4: with
+      the Methods M-reading M3 counts include the 0.2–0.5 s empty tail, so M3 bursts are deflated; the
+      rate per second was printed only for All902.'
+    response: The epoch tables now give the median M3 rate per second for every group and load under the
+      Methods' windows, and the conclusion says the height-rule M3 decreases come from the shorter window.
+      Outcome unchanged.
+  - claim: fig4hj-group-epochs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under */prominence/M-code, long τdecay rises at M1, M2 and M3, and low ACG, short τdecay and
+      concept cells have 0 significant pairs. High ACG never rises to the probe (cell 78).
+    response: M3 rates per second added (problem 4). With this run's ACG fit the Methods' groups give
+      short tau decay 4 significant pairs, so the result holds with the code's groups; notes updated.
+      Outcome unchanged.
+  - claim: ext2-bursts-loads23
+    agrees: true
+    outcome: reproduced
+    reason: methods/prominence/M-code holds for all three groups at loads 1, 2 and 3 (cell 80).
+    response: Notes updated (the pattern now also holds with the Methods' windows). Outcome unchanged.
+  - claim: acg-fit-yield
+    agrees: true
+    outcome: reproduced
+    reason: '317 (all spikes) and 298 (trial spikes); tolerance 264.6–323.4 (cell 57). Problem 5: the
+      scipy fit agrees with the shipped MATLAB values for only 48% of R2, 7% of τrise and 11% of τdecay
+      (within 1%); the yield is 317 against 294, and τrise is a clustering feature, so the cell types
+      differ; this is not stated as a limitation.'
+    response: The conclusion and notes now state the fit as a limitation and its consequences for the
+      cell types and decay groups. This run gives 316 (the round-1 run 317, same code), which is reported.
+      Outcome unchanged.
+  - claim: fig5c-cell-type-clusters
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) gives PY 100 and IN 198, both in tolerance. Reading (a) has PY 102, outside 82.8–101.2
+      (cell 59).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). Outcome unchanged.'
+  - claim: fig5dfh-cluster-features
+    agrees: true
+    outcome: reproduced
+    reason: IN is higher on all three features, BY p ≤ 8e-5 under both readings (cell 61).
+    response: Values of this run in the notes (BY p at most 1.6e-04). Outcome unchanged.
+  - claim: fig5gh-burst-index-cv2
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (b) types with the plain ISI CV of session spikes, medians: burst index 0.947 / 0.622
+      and CV 1.593 / 1.322, all in tolerance; p = 5e-3 and 1e-4 (cell 63). Holt''s CV2 (1.18 / 0.93) never
+      matches; the paper''s "CV2" is a plain CV.'
+    response: No change.
+  - claim: supp4-rodent-validation
+    agrees: true
+    outcome: reproduced
+    reason: 'On the code''s shipped features (data elsewhere): 333 of 343 correct, 1 PY and 9 IN misassigned
+      (cell 65).'
+    response: No change.
+  - claim: fig5kl-concept-cell-types
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (b): PY 11, IN 14. Burst index 0.949 > 0.390 and Holt CV2 1.217 > 0.991. Reading
+      (a) gives 16 IN concept cells, out of tolerance (cell 82).'
+    response: With this run's fit reading (a) gives 12 and 15, also within tolerance; notes updated. Outcome
+      unchanged.
+  - claim: fig6ab-celltype-bursts-vs-null
+    agrees: true
+    outcome: partially_reproduced
+    reason: No reading meets all four parts. With the Poisson null and prominence rule, IN encoding is
+      also elevated (q = 0.02–0.03). With the height rule, PY encoding fails (q = 0.06–0.11). With the
+      label-shuffle null, IN maintenance fails (q = 0.063) (cell 84). Problem 3 applies to the maintenance
+      part against the Poisson null.
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). The maintenance comparison is also run over each trial''s own maintenance (problem
+      3). No reading meets every part with either cell types. Outcome unchanged.'
+  - claim: fig6cd-celltype-epochs
+    agrees: false
+    outcome: not_reproduced
+    reason: IN encoding to probe has q = 0.73–0.80 under every reading. PY is stable at all loads only
+      under M-code. The criterion's partial condition (load 1 only) does not apply (cells 86–87).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b), with the same result. The outcome changes to not reproduced, as the verifier gives:
+      the criterion defines the partial outcome as the full pattern at load 1 only, and at load 1 IN do
+      not differ between encoding and the probe under any reading (BH p 0.13 to 1.0), so neither condition
+      is met.'
+  - claim: ext5bd-in-load-dependence
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (weak). The measure rises from load 1 to 3 (3.67 → 6.33) only under prominence/M-code,
+      2 of 8 readings (cell 89).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). With this run''s fit it rises under the prominence rule with both window readings
+      (4 of 8 readings) and with the types of reading (b). Outcome unchanged.'
+  - claim: fig6e-load-modulation-in
+    agrees: true
+    outcome: partially_reproduced
+    reason: IN 13.95% with p = 0.001 in tolerance; PY groups p ≥ 0.157. IN concept is 18.75% or 25.0%
+      (tolerance 19.3–23.6). Under the (b) types it is 14.29% with p = 0.15 (cell 91).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). The outcome changes to reproduced: in this run the ACG fit keeps 316 units, the
+      types of reading (a) have 15 IN concept cells, and IN concept cells give 20.00% (3 of 15, p = 0.038),
+      within tolerance, with IN 14.02% (p = 0.001) and PY not significant. The notes say it rests on the
+      cell types and that the types of reading (b) do not give it.'
+  - claim: fig6f-rt-modulation-in-concept
+    agrees: true
+    outcome: not_reproduced
+    reason: With own RT, IN concept is 12.5% (p = 0.19), while all IN and PY are significant (cell 93).
+      Only the code's subject-1 RT variant gives IN concept 31.25% with p = 0.001.
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). The result is the same with both types. Outcome unchanged.'
+  - claim: fig6gh-in-concept-cv2
+    agrees: true
+    outcome: not_reproduced
+    reason: 'IN preferred, maintenance vs encoding: p = 0.86 (load 1) and 0.13 (all loads) (cell 95).
+      Problem 12: cv2_cell builds ISIs from trial-concatenated spikes, which adds artificial cross-trial
+      intervals.'
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). A variant with intervals within trials only is added; it is outside the criterion''s
+      method, which takes spikes concatenated over trials, and does not decide the outcome. Outcome unchanged.'
+  - claim: ext5gh-py-decay-preferred
+    agrees: true
+    outcome: not_reproduced
+    reason: 'PY preferred vs nonpreferred: p = 0.13–0.73 in every epoch and load set (cell 97). Problem
+      12: the tau_decay fits are made on ACGs of 25–34 spikes per cell, so that reading (taken from the
+      claims file) is close to uninformative.'
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). The notes and conclusion state the spike counts and that the measure is weak. Outcome
+      unchanged.'
+  - claim: fig6i-py-bin-width-decoding
+    agrees: true
+    outcome: not_reproduced
+    reason: 750 and 1000 ms have BH p = 0.072 and 0.060; 250 ms gives 33.3%, outside 24.0–29.3 (cell 99).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). Same with both types. Outcome unchanged.'
+  - claim: fig6j-in-bin-width-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Every width is significant (BH p = 0.002). Two of four accuracies are out of tolerance under
+      each reading (code: 46.67 and 53.33 at 750 ms) (cell 101).'
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). Same with both types. Outcome unchanged.'
+  - claim: fig6kl-cross-temporal-by-type
+    agrees: true
+    outcome: reproduced
+    reason: PY has 0 significant pairs; IN has 162–230 kept off-diagonal pairs (cell 103).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). In this run the PY map has 4 significant pairs, none kept off the diagonal by the
+      code''s cluster rule. Outcome unchanged.'
+  - claim: ext5ij-load2-decoding-by-type
+    agrees: true
+    outcome: reproduced
+    reason: IN has BH p ≤ 0.013 at all widths; PY has none below 0.49 (cell 105).
+    response: 'Problem 2 (types of reading a used downstream): the claim is now also run with the types
+      of reading (b). Same with both types. Outcome unchanged.'

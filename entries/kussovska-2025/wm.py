@@ -487,23 +487,32 @@ def epoch_spikes(spikes, starts, ends, win):
 
 
 def group_bursts(neuron_trials, win, rng, rule="prominence", distance=2, thr_mode="real",
-                 n_sur=100):
+                 n_sur=100, durs=None):
     """Population bursts of one group of one participant. neuron_trials: per neuron, the list of
     its per-trial relative spike times (same trials for all neurons). The group's spikes are pooled,
     trials concatenated with stride win, binned at 70 ms, smoothed (Gaussian, sigma 40 ms), and
     peaks found against the 90th percentile of the smoothed train. Surrogates: per neuron and trial a
     Poisson count with the trial's count as its mean, spike times uniform in the window (code lines
     272-306; Methods). thr_mode 'real' uses the real train's threshold for the surrogates (code),
-    'own' each surrogate's own. Returns (real count, mean surrogate count, peak bins, n bins)."""
+    'own' each surrogate's own. durs: each trial's own duration (the criterion's own-maintenance
+    reading of fig4d), used as the stride of the concatenation and as the interval of the surrogate
+    spike times, so that neither real nor surrogate trains have a silent tail after the probe.
+    Returns (real count, mean surrogate count, peak bins, n bins)."""
     n_tr = len(neuron_trials[0])
-    pooled = np.concatenate([concat_trials(nt, win) for nt in neuron_trials]) if neuron_trials else np.array([])
-    total = n_tr * win
+    if durs is None:
+        offs = np.arange(n_tr) * win
+        lens = np.full(n_tr, float(win))
+    else:
+        lens = np.minimum(np.asarray(durs, float), win)
+        offs = np.r_[0.0, np.cumsum(lens)[:-1]]
+    parts = [np.asarray(s) + o for nt in neuron_trials for s, o in zip(nt, offs) if len(s)]
+    pooled = np.concatenate(parts) if parts else np.array([])
+    total = n_tr * win if durs is None else lens.sum()
     sm = smooth_counts(pooled, total)
     thr = np.percentile(sm, BURST_PCT)
     pk = burst_peaks(sm, thr, rule, distance)
     counts = np.array([[len(s) for s in nt] for nt in neuron_trials])  # neurons x trials
     sur = []
-    offs = np.arange(n_tr) * win
     for _ in range(n_sur):
         n = rng.poisson(counts)
         tot = n.sum()
@@ -511,7 +520,7 @@ def group_bursts(neuron_trials, win, rng, rule="prominence", distance=2, thr_mod
             sur.append(0)
             continue
         tr_idx = np.repeat(np.tile(np.arange(n_tr), counts.shape[0]), n.ravel())
-        st = rng.uniform(0, win, tot) + offs[tr_idx]
+        st = (rng.uniform(0, win, tot) if durs is None else rng.uniform(0, 1, tot) * lens[tr_idx]) + offs[tr_idx]
         s2 = smooth_counts(st, total)
         th = thr if thr_mode == "real" else np.percentile(s2, BURST_PCT)
         sur.append(len(burst_peaks(s2, th, rule, distance)))
@@ -706,3 +715,154 @@ def type_shuffle_null(py_trials, in_trials, win, rng, n_shuffle=100, rule="promi
             sm = smooth_counts(pooled, n_tr * win)
             out.append(len(burst_peaks(sm, np.percentile(sm, BURST_PCT), rule, distance)))
     return float(np.mean(outp)), float(np.mean(outi))
+
+
+# ---------------------------------------------------------------------------------------------
+# dPCA state-space analysis (Methods, State-space analysis; 08_dpca_matrices.py and
+# 03_dpca/main_3d,supp_2a,b,i.py, main_3h,supp_2c,d,l.py, main_3a-c.py)
+# ---------------------------------------------------------------------------------------------
+DPCA_BIN = 0.002      # s, 08_dpca_matrices.py:136 and 158 (np.arange(0, 1, 0.002), np.arange(0, 2.5, 0.002))
+DPCA_SIGMA = 60       # bins, 08_dpca_matrices.py:137 (Methods "alpha = 60")
+DPCA_SPLIT = 624      # bin of the early/late split, main_3h,supp_2c,d,l.py:22
+
+
+def dpca_trial_ids(info, n_per_stim=6, seed=42):
+    """The 30 load-1 trials of 08_dpca_matrices.py:14-33: subject 14's load-1 rows of the code's
+    new_trial_info.xlsx, 6 per stimulus_index drawn with pandas' sample(random_state=42), in the
+    code's order. Returns a list of (stimulus_index, [new_trial_id, ...]) in the order the code
+    meets the stimuli."""
+    y = info[(info.subject_id == 14) & (info.num_images_presented == 1)][
+        ["new_trial_id", "num_images_presented", "stimulus_index"]]
+    out = []
+    for s in y.stimulus_index.unique():
+        out.append((s, y[y.stimulus_index == s].sample(n=n_per_stim, random_state=seed).new_trial_id.values))
+    return out
+
+
+def dpca_tensors(cells, NT, T, SPK, info, reading="a"):
+    """trialE (6, cells, 5, 499) and trialD (6, cells, 5, 1249) of 08_dpca_matrices.py: rates in
+    2 ms bins from the first encoding onset (0 to 1 s) and from maintenance onset (0 to 2.5 s),
+    z-scored with the mean and s.d. (np.std, ddof 0, lines 53-59) of the fixation rate, zero when
+    that s.d. is 0 (lines 72-75), each trial smoothed with a Gaussian of 60 bins. For each stimulus
+    the neuron's trials are those whose new_trial_id is among subject 14's drawn ids (encoding,
+    line 105), in trial order. reading 'a': the same trials in maintenance; 'b': the code as
+    written, maintenance trials whose trial_id (the row of the session's trials table) is among
+    those ids (line 192), whatever their load, zeros where the session has no such trial."""
+    from scipy.ndimage import gaussian_filter1d
+    ids = dpca_trial_ids(info)
+    eE = np.arange(0, 1, DPCA_BIN)
+    eD = np.arange(0, 2.5, DPCA_BIN)
+    tE = np.zeros((6, len(cells), len(ids), len(eE) - 1))
+    tD = np.zeros((6, len(cells), len(ids), len(eD) - 1))
+    for j, n in enumerate(cells):
+        sub = NT["sub"].iat[n]
+        t = T[sub]
+        s = SPK[n]
+        fr = count_in(s, t.fix_start.values, t.enc1.values) / (t.enc1 - t.fix_start).values
+        mu, sd = fr.mean(), fr.std()
+        inf = info[info.subject_id == sub]
+        for si, (_, nid) in enumerate(ids):
+            enc_rows = inf[inf.new_trial_id.isin(nid)].sort_values("new_trial_id").trial_id.values
+            if reading == "a":
+                d_rows = enc_rows
+            else:
+                d_rows = np.sort([i for i in nid if i <= len(t)])
+            for target, rows, col, edges in [(tE, enc_rows, "enc1", eE), (tD, d_rows, "maint", eD)]:
+                ti = t.set_index("trial")
+                for k, r in enumerate(rows[:6]):
+                    on = ti.at[r, col]
+                    stop = ti.at[r, "probe"] if col == "maint" else np.inf
+                    sp = s[(s >= on) & (s < stop)] - on
+                    c, _ = np.histogram(sp, bins=edges)
+                    z = (c / DPCA_BIN - mu) / sd if sd > 0 else np.zeros(len(c))
+                    target[k, j, si] = gaussian_filter1d(z, DPCA_SIGMA)
+    return tE, tD
+
+
+def _dpca_fit(RD, trialX, protect):
+    import contextlib
+    import io
+    from dPCA.dPCA import dPCA
+    with contextlib.redirect_stdout(io.StringIO()):
+        d = dPCA(labels="st", regularizer="auto")
+        d.opt_regularizer_flag = True
+        d.protect = protect
+        Z = d.fit_transform(RD, trialX)
+    return d, Z
+
+
+def _center(x):
+    m = np.mean(x.reshape(x.shape[0], -1), axis=1, keepdims=True)
+    return x - m[:, None]
+
+
+def _stim_dist(Zs, dpcs=(0, 1, 2, 3, 4)):
+    from scipy.spatial.distance import pdist
+    return pdist(np.stack([Zs[list(dpcs), s, :].mean(1) for s in range(Zs.shape[1])]), metric="euclidean").mean()
+
+
+def dpca_split(trialE, trialDs, split, seed, halves=True):
+    """One resampling split of main_3d,supp_2a,b,i.py:72-147 (and main_3h,supp_2c,d,l.py for the
+    halves). split: per stimulus a permutation of the 6 repetitions, the first 3 for training.
+    trialDs: {reading: trialD}. Each fit is dPCA(labels='st', regularizer='auto') with
+    opt_regularizer_flag and protect [] (the code), and for the halves protect ['t'] and [] for
+    each half. Returns the mean pairwise distance of the stimulus means on the first five stimulus
+    dPCs for every condition, and the held-out trajectories on the first three (fig3abc)."""
+    from threadpoolctl import threadpool_limits
+    np.random.seed(seed)  # dPCA draws its cross-validation folds and SVD seeds from np.random
+    with threadpool_limits(1):
+        tr = np.array([p[:3] for p in split])
+        te = np.array([p[3:] for p in split])
+
+        def gather(X, idx):
+            return np.stack([X[idx[s], :, s, :] for s in range(X.shape[2])], axis=2)
+
+        out = {}
+        eTr, eTe = gather(trialE, tr), gather(trialE, te)
+        RDe_tr, RDe_te = _center(eTr.mean(0)), _center(eTe.mean(0))
+        de, Ze = _dpca_fit(RDe_tr, eTr, [])
+        Ze_te = de.transform(RDe_te)["s"]
+        out["Enc_train"] = _stim_dist(Ze["s"])
+        out["Enc_test"] = _stim_dist(Ze_te)
+        out["traj_enc"] = Ze_te[:3]
+        for rd, trialD in trialDs.items():
+            dTr, dTe = gather(trialD, tr), gather(trialD, te)
+            RDd_tr, RDd_te = _center(dTr.mean(0)), _center(dTe.mean(0))
+            dm, Zm = _dpca_fit(RDd_tr, dTr, [])
+            Zm_te = dm.transform(RDd_te)["s"]
+            out[(rd, "Maint_train")] = _stim_dist(Zm["s"])
+            out[(rd, "Maint_test")] = _stim_dist(Zm_te)
+            out[(rd, "Maint onto Enc")] = _stim_dist(de.transform(RDd_te)["s"])
+            out[(rd, "traj_maint")] = Zm_te[:3]
+            if not halves:
+                continue
+            k = DPCA_SPLIT
+            for half, sl in [("Early", slice(0, k)), ("Late", slice(k, None))]:
+                hTr, hTe = dTr[..., sl], dTe[..., sl]
+                RDh_tr, RDh_te = _center(hTr.mean(0)), _center(hTe.mean(0))
+                for prot in ["t", "none"]:
+                    dh, Zh = _dpca_fit(RDh_tr, hTr, ["t"] if prot == "t" else [])
+                    out[(rd, prot, f"{half}_train")] = _stim_dist(Zh["s"])
+                    out[(rd, prot, f"{half}_test")] = _stim_dist(dh.transform(RDh_te)["s"])
+                    if half == "Early":
+                        lateTe = _center(dTe[..., k:].mean(0))
+                        out[(rd, prot, "Late onto Early")] = _stim_dist(dh.transform(lateTe)["s"])
+    return out
+
+
+def tortuosity(traj):
+    """Path length of a trajectory (dims x time) over the largest distance from its start point."""
+    step = np.sqrt((np.diff(traj, axis=1) ** 2).sum(0)).sum()
+    reach = np.sqrt(((traj - traj[:, :1]) ** 2).sum(0)).max()
+    return step / reach if reach > 0 else np.nan
+
+
+def reversals(traj):
+    """Sign changes of the time derivative (zero steps skipped), summed over the dimensions of a
+    trajectory."""
+    total = 0
+    for x in np.asarray(traj):
+        d = np.sign(np.diff(x))
+        d = d[d != 0]
+        total += int(np.sum(d[1:] != d[:-1]))
+    return total
