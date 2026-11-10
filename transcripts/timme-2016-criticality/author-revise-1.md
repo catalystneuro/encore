@@ -1,43 +1,35 @@
-# crcns-hc-8 · author-revise-1 · run 42621754996
+# timme-2016-criticality · author-revise-1 · run 42716863239
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cat transcripts/crcns-hc-8/verifier-1-report.md; ls entries/crcns-hc-8-timme-2016 entries/crcns-hc-8-timme-2016/*
+date -u; ls entries/timme-2016-criticality transcripts/timme-2016-criticality; cat transcripts/timme-2016-criticality/verifier-1-report.md
 ```
 
 ```
-Mon Nov  9 13:07:10 UTC 2026
-**Verifier report, round 1: Timme et al. (2016), CRCNS hc-8**
+Mon Nov  9 23:08:28 UTC 2026
+entries/timme-2016-criticality:
+README.md
+complexity_culture.ipynb
+culture_criticality.ipynb
+entry.yaml
+hc8.py
+models.ipynb
+models.py
+requirements.in
+requirements.lock.txt
 
-The claims file has 28 claims. The notebooks test 22, mark 5 as blocked (fig7ab, fig7a, figs2, fig7d, fig8-exponents-match-literature), and on review I judge one of those blocked claims, fig7ab, to be testable.
-
-### A. Outcomes
-
-| claim id | outcome | reason |
-|---|---|---|
-| fig3-chain-model-complexity | reproduced | Complexity is 0 at c = 0 and c = 1 and 0.431 bits at c = 0.8. Integration is 0, 5.84 and 11 bits for c = 0, 0.8, 1 (models.ipynb cell 4). |
-| fig5d-bethe-small-avalanches | reproduced (fragile) | The size fit is accepted (p 0.338), but only over sizes 4 to 12. Corrected complexity is 0.00637 > 0. The same network states gave 0.00001 in cell 10, so "above zero" is within the estimator's noise (B1). |
-| fig5e-shuffle-removes-complexity | reproduced (unreliable) | Size distribution identical; shuffled/original complexity ratio is 0.003 (cell 8). The original value is itself at noise level (B1). With the no-cut variant the complexity is also removed (−0.050 vs 0.271). |
-| fig5f-network-state-poisson-keeps-complexity | not_reproduced (unreliable) | Relative change in complexity is 0.998 against a criterion of < 0.05; the size distribution did change (cell 10). The network states are the same before and after, so the miss comes from the estimator's noise (B1). The no-cut (0.049) and raw (0.020) variants pass. |
-| fig6-cb-distribution-curvature | partially_reproduced | Durations pass all three parts (−1.23 at 0.2, +1.39 at 0.3, smallest at 0.25). Sizes fail: +0.087 ± 0.51 at 0.2, and the smallest magnitude is at 0.2/0.21 (cell 12). |
-| fig7ab-cb-complexity-susceptibility-peak | not_reproduced (notebook: blocked, too_large) | The susceptibility half was computed by the criterion's method. It rises monotonically to the edge of the range (0.3) under both readings and has no interior peak (cell 16), so the claim fails whatever the complexity shows. The complexity half is u
+transcripts/timme-2016-criticality:
+answer-report.md
+answer.md
+author-answers-report.md
+author-answers.md
+author-report.md
+author-revise-1.md
+author.md
 [... 74 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "" docs/protocol.md | sed -n '1,400p' | grep -n -i -E "^[0-9]+:[0-9]+:#|step 6|Hand over|verifications|proposed" | head -60
-```
-
-```
-176:176:not say what the paper says (author, step 1.6, and "Hand over for
-191:191:(step 6).
-278:278:     (step 6; see also chance levels, under "Record the attempt").
-325:325:     claims file (reader, step 6), and a later run, `author-answers`,
 ```
 
 **Agent calls Bash**
@@ -47,281 +39,199 @@ wc -l docs/protocol.md; grep -n "^#" docs/protocol.md
 ```
 
 ```
-625 docs/protocol.md
+647 docs/protocol.md
 1:# Protocol for an attempt
-40:## Reader
-42:### 1. Get the paper
-56:### 2. Read the paper's code
-66:### 3. Write the claims file
-151:### 4. Data from outside the paper's own recordings
-159:### 5. Check
-172:### 6. Answer questions
-185:## Author
-201:### 1. Establish what can be tested
-328:### 2. Check the data against its description
-343:### 3. Write the entry
-411:### 4. Lock, check and run
-422:### 5. Record the attempt
-473:### 6. Hand over for verification
-511:## Repeat attempts
-553:## Local and remote datasets
-576:## Verifier
-580:### Round 1: without the author's conclusions
+43:## Reader
+45:### 1. Get the paper
+59:### 2. Read the paper's code
+69:### 3. Write the claims file
+159:### 4. Data from outside the paper's own recordings
+167:### 5. Check
+180:### 6. Answer questions
+193:## Author
+209:### 1. Establish what can be tested
+339:### 2. Check the data against its description
+354:### 3. Write the entry
+422:### 4. Lock, check and run
+433:### 5. Record the attempt
+495:### 6. Hand over for verification
+533:## Repeat attempts
+575:## Local and remote datasets
+598:## Verifier
+602:### Round 1: without the author's conclusions
 [... 2 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 185,200p docs/protocol.md; sed -n 343,625p docs/protocol.md
+sed -n 1,42p docs/protocol.md; sed -n 193,340p docs/protocol.md
 ```
 
 ```
-## Author
+# Protocol for an attempt
 
-The workflow puts the paper under `paper/`, as for the reader. Read it to
-understand the claims, their data and their figures. The claims file still
-decides what is tested: do not change a claim's statement, expected values or
-criterion. A method detail the claims file lacks is taken from the paper
-(step 6).
+Version: `pilot-14`. Record this version in the attempt's provenance.
 
-**Time.** An author run is stopped five hours after it starts, and whatever
-is not recorded by then is lost. The prompt says when the run started and the
-time by which to finish. Check the clock (`date -u`) between steps. When that
-time comes, stop analysing and finish: record each claim not yet tested as
-blocked, `too_large` where the computation is what stopped it, saying how far
-it got, then write the attempt record and run the entry's checks. A record
-with some claims blocked for time is worth more than a run that is cut off.
+This is what agents, or people, do to attempt a target and deposit the
+result. A target is a dataset in a public archive and a paper it names. How
+each archive's datasets are named, versioned and read is in
+[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
+([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+
+An attempt has three roles, each a separate run with a separate context:
+
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dataset's data.
+- The **author** tests the claims on the dataset. It reads the paper to
+  understand the claims, but the claims file binds it: it cannot change a
+  claim's statement, expected values or criterion. A method detail the file
+  lacks it takes from the paper, citing the passage, and it asks a reader
+  only when it believes the file misreads the paper.
+[... 169 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 340,647p docs/protocol.md
+```
+
+```
+Descriptive metadata is often wrong. For every quantity the analysis uses,
+check the description against the values: units and ranges, sampling rates,
+counts of subjects, sessions, trials and cells, the size of an arena, which
+conditions exist. Show that every data stream shares the clock of the trial
+tables, using a contrast between conditions where an overall check cannot
+tell a response from an offset (with spikes and a trial table only, decoding
+a task variable in windows around the trial start does this; for continuous
+sessions, decoding the annotations with the labels shifted in time), and name any
+session where this could not be established. A description that a check
+supports but does not prove is reported as consistent with the data, not as
+shown. Where they disagree, trust the data, say so in the notebook,
+and record it as a finding.
 
 ### 3. Write the entry
 
-An entry is a directory `entries/<folder>-<first author>-<year>/` holding
+An entry is a directory `entries/<paper>/` holding
 `entry.yaml`, `requirements.in`, one or more notebooks, and usually a helper
-[... 279 more lines not kept]
+module.
+
+- **Stream the data** from the archive, at a pinned version of the dataset
+[... 287 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-ls attempts | grep hc-8; cat attempts/crcns-hc-8-timme-2016-01.yaml | head -150; wc -l attempts/crcns-hc-8-timme-2016-01.yaml; cat entries/crcns-hc-8-timme-2016/entry.yaml; git status --short; git diff --stat
+ls attempts | grep timme; cat entries/timme-2016-criticality/entry.yaml; cat entries/timme-2016-criticality/README.md; wc -l entries/timme-2016-criticality/*.py; ls executed/timme-2016-criticality 2>/dev/null; tail -50 transcripts/timme-2016-criticality/author-report.md
 ```
 
 ```
-crcns-hc-8-timme-2016-01.yaml
-schema_version: 2
-id: crcns-hc-8-timme-2016-01
-dataset:
-  archive: crcns
-  id: hc-8
-  version: unversioned
-  doi: 10.6080/K0PC308P
-paper: doi:10.3389/fphys.2016.00425
-date: 2026-11-09
-entry: crcns-hc-8-timme-2016
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code
-    model: claude-opus-5-5
-    protocol: pilot-13
-  runner:
-[... 175 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 150,340p attempts/crcns-hc-8-timme-2016-01.yaml
-```
-
-```
-the duration range from 0.663 to 0.211 (corrected p about 4e-141). 10-bin jitter lengthens them
-    to 0.740 and 0.732 (corrected p 0.000135 and 5e-06, significant). 100-bin jitter and wrap
-    shorten both significantly, and 1-bin jitter changes neither (corrected p 0.455 and 0.398), so
-    the legend's wider statement holds for three of the four other randomizations.
-- claim: fig11bd-exponents-randomization
-  outcome: partially_reproduced
-  notebook: culture_criticality.ipynb
-  output: claim:fig11bd-exponents-randomization
-  notes: Tau rises significantly under 10-bin jitter, 100-bin jitter, wrap and Poisson (median 2.50
-    to 4.53 under Poisson) and falls under 1-bin jitter (2.39, corrected p 0.0108). Alpha rises
-    significantly under 100-bin jitter, wrap and Poisson; 1-bin and 10-bin jitter do not change it
-    significantly (corrected p 0.107 and 0.401). Under Poisson the median largest fitted size falls
-    from 44 to 21, consistent with the paper's explanation.
-- claim: fig10a-complexity-randomization
-  outcome: partially_reproduced
-  notebook: complexity_culture.ipynb
-  output: claim:fig10a-complexity-randomization
-  notes: Over 180 recordings, the toolbox's complexity (correction and cut) has median 0.00192
-    bits/neuron in the real data; 1-bin, 10-bin and 100-bin jitter, wrap and Poisson lower it to
-    medians of 0.00022 to 0.00131 with corrected p from 0.00925 to 5e-31, and Poisson is among the
-[... 171 more lines not kept]
+timme-2016-criticality-01.yaml
+schema_version: 1
+name: timme-2016-criticality
+type: reproduction
+title: Criticality and complexity in rat hippocampal cultures (Timme et al. 2016)
+description: Tests the findings of Timme, Marshall, Bennett, Ripp, Lautzenhiser and Beggs (2016) on
+  CRCNS data set hc-8, the spike-sorted spontaneous activity of 435 recordings from 28 dissociated
+  hippocampal cultures. It recomputes the avalanche statistics, critical exponents with and without
+  sub-sampling, branching ratios, susceptibility, shape collapse curvature and neural complexity, and
+  their changes under five kinds of randomization, with a Python port of the NCC toolbox the paper
+  used. A third notebook runs the paper's chain, Bethe lattice and cortical branching models.
+license: Apache-2.0
+notebooks:
+- path: culture_criticality.ipynb
+  title: Avalanches, exponents, branching ratio and randomizations in the culture recordings
+  runtime_minutes: 46
+- path: complexity_culture.ipynb
+  title: Complexity of the culture recordings and of their randomizations
+  runtime_minutes: 32
+- path: models.ipynb
+[... 93 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/crcns-hc-8-timme-2016; wc -l hc8.py models.py; grep -n "^def \|N_SUBSETS\|n_subsets" hc8.py models.py
+cd entries/timme-2016-criticality; grep -n "^def \|^N_\|^[A-Z_]* =" hc8.py models.py; grep -n "def complexity" -A120 hc8.py | head -200
 ```
 
 ```
-875 hc8.py
-  213 models.py
- 1088 total
+hc8.py:51:BUCKET = "https://crcnsarchive.s3-us-west-2.amazonaws.com/hc-8/live"
+hc8.py:52:ZIP_URL = f"{BUCKET}/Data.zip"
+hc8.py:53:DATASET_ID = "hc-8"
+hc8.py:54:DATASET_VERSION = "unversioned"  # CRCNS data sets carry no versions (docs/archives.md); the MD5 pins the zip
+hc8.py:56:BIN_MS = 0.05            # data description: spike times in 0.05 ms bins
+hc8.py:57:ANALYSIS_MIN = 59.0      # Methods 2.2: first 59 min of each recording
+hc8.py:58:ANALYSIS_BINS = int(round(ANALYSIS_MIN * 60e3 / BIN_MS))
+hc8.py:60:MIN_VALUE = 4            # Methods 2.7: sizes or durations less than 4 removed
+hc8.py:61:MIN_COUNT = 20           # Methods 2.7: values seen fewer than 20 times removed
+hc8.py:62:N_SURROGATES = 500       # Methods 2.7
+hc8.py:63:P_CRIT = 0.2             # Methods 2.7
+hc8.py:64:BR_DELAYS = np.arange(1, 9)      # Methods 2.11: 1 <= k <= 8
+hc8.py:65:BR_ACT_MAX_CULTURE = 10          # Methods 2.11: 0 <= A(t) <= 10 for the culture data
+hc8.py:66:BR_ACT_MAX_MODEL = 5             # Methods 2.11: 0 <= A(t) <= 5 for the cortical branching model
 hc8.py:73:def _zip():
 hc8.py:78:def recording_names() -> list[str]:
 hc8.py:84:def culture_div(name: str) -> tuple[int, int]:
 hc8.py:89:def load(name: str, zf: zipfile.ZipFile | None = None) -> dict:
 hc8.py:101:def open_zip() -> zipfile.ZipFile:
 hc8.py:109:def first_window(spikes: list[np.ndarray], nbins: int = ANALYSIS_BINS) -> list[np.ndarray]:
-hc8.py:114:def network_isi_bins(spikes: list[np.ndarray]) -> float:
-hc8.py:122:def rebin(spikes: list[np.ndarray], factor: int, nbins: int = ANALYSIS_BINS):
-hc8.py:128:def activity(raster: list[np.ndarray], nbins: int) -> np.ndarray:
-hc8.py:136:def avalanches(act: np.ndarray):
-hc8.py:153:def apply_cuts(x: np.ndarray) -> np.ndarray:
-hc8.py:229:def pvcalc(pl: _PLData, xmin: int, xmax: int, tau: float, rng: np.random.Generator,
-hc8.py:242:def support_order(x: np.ndarray) -> np.ndarray:
-hc8.py:254:def plparams(x: np.ndarray, rng: np.random.Generator, screen: float = 1.2, chunk: int = 2000):
-hc8.py:289:def plmle_full(x: np.ndarray) -> float:
-hc8.py:298:def sizegivdur(size: np.ndarray, dur: np.ndarray, durmin, durmax) -> float:
-hc8.py:318:def mean_profiles(act: np.ndarray, size, dur, starts, min_dur: int = 4, min_count: int = 20):
-[... 46 more lines not kept]
+[... 231 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/crcns-hc-8-timme-2016; sed -n 1,72p hc8.py; sed -n 355,470p hc8.py; sed -n 830,875p hc8.py
+cd entries/timme-2016-criticality; sed -n 355,421p hc8.py
 ```
 
 ```
-"""Loading and measures for CRCNS hc-8, the culture recordings of Timme et al. (2016).
+S = np.exp((1 - best) * logT)[:, None] * interp
+    coeffs = np.polyfit(grid, S.mean(axis=0), 2)
+    return float(best), float(2 * coeffs[0])
 
-Timme, Marshall, Bennett, Ripp, Lautzenhiser & Beggs (2016), "Criticality Maximizes Complexity in
-Neural Tissue", Front. Physiol. 7:425, doi:10.3389/fphys.2016.00425. Data set doi:10.6080/K0PC308P.
 
-The data set is one zip, hc-8/live/Data.zip, of 435 MATLAB files CultureXDIVY.mat, each with a
-struct `data` whose `spikes` is a cell array of spike times per neuron in 0.05 ms bins. The zip is
-read in place from the public S3 bucket over range requests; nothing is written to disk.
+# ----------------------------------------------------------------------------------------------
+# Complexity (complexity.m)
 
-The measures port the NCC MATLAB toolbox that the paper cites (Marshall et al., 2016; "NCC Toolbox
-Version 1", June 14th, 2016, from the Software page of nicholastimme.com, zip sha256
-b7c912f8154f70fc82b13ab1725ed191935ed2877256cadd7e39f66737be294b, the version the claims file
-read). Each function names the toolbox function it ports. Where the parameters come from:
-
-- First 59 min of each recording, rebinning to the mean network-wide ISI, avalanches as runs of
-  active bins: Methods 2.2 and 2.3 (claims file, common method). The ISI is rounded to a whole
-  number of 0.05 ms bins, as `rebin.m` requires (claims file, common detail 1, a standard choice).
-- Cuts before power-law fits (values >= 4 seen at least 20 times), MLE on tau in [1, 5] to 0.001,
-  500 surrogates and p >= 0.2, the support search largest range first: Methods 2.7, `plparams.m`,
-  `plmle.m`, `pvcalc.m`.
-[... 214 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,60p entries/crcns-hc-8-timme-2016/requirements.in; ls executed/ 2>/dev/null | head; ls executed/crcns-hc-8-timme-2016 2>/dev/null; which python; python -c "import numpy, scipy, pandas, fsspec; print('ok')"; nproc; free -g
-```
-
-```
-aiohttp
-fsspec
-matplotlib
-numpy
-pandas
-requests
-scipy
-/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import numpy, scipy, pandas, fsspec; print('ok')
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'numpy'
-4
-               total        used        free      shared  buff/cache   available
-Mem:              15           1          12           0           2          14
-Swap:              2           0           2
+def _states(raster_bins: list[np.ndarray], bins: np.ndarray):
+    """Unique network states over the given bins: a sparse (n_unique x n_neurons) matrix and the
+    count of each state."""
+    n = len(raster_bins)
+    pos = {}
+    index = np.full(bins.max() + 2 if bins.size else 1, -1, dtype=np.int64)
+    index[bins] = np.arange(bins.size)
+    rows, cols = [], []
+    for j, s in enumerate(raster_bins):
+        r = index[s[s < index.size]]
+        r = r[r >= 0]
+        rows.append(r)
+[... 45 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "venv\|def cmd_\|executed" tools/entry.py | head -40; ls ~/.cache 2>/dev/null; ls -d .venv* 2>/dev/null
-```
-
-```
-Exit code 2
-8:    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-27:directory. The executed copies
-28:go to --output-dir (default: executed/<name>/, which git ignores). A notebook
-32:(docs/protocol.md): the executed notebooks with the conclusions removed (every
-35:executed/<name>/handover/. Run the entry first.
-345:    venv = (output_dir / ".venv").resolve()
-346:    python = venv / "bin" / "python"
-350:    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
-353:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
-367:            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
-405:        executed = output_dir / notebook["path"]
-406:        if not executed.is_file():
-407:            print(f"error: no executed copy of {notebook['path']} in {output_dir}; run the entry first",
-410:        nb = strip_conclusions(nbformat.read(executed, as_version=4))
-431:    parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
-456:    output_dir = args.output_dir or ROOT / "executed" / entry_dir.name
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 335,375p tools/entry.py; uv venv --quiet --python 3.12 $TMPDIR/dev 2>&1 | tail -2; uv pip install --quiet --python $TMPDIR/dev/bin/python -r entries/crcns-hc-8-timme-2016/requirements.lock.txt nbconvert ipykernel 2>&1 | tail -3; $TMPDIR/dev/bin/python -c "import numpy; print(numpy.__version__)"
-```
-
-```
-r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
-                        "requirements.in", "-o", "requirements.lock.txt"], cwd=entry_dir)
-    if r.returncode == 0:
-        print(f"wrote {(entry_dir / 'requirements.lock.txt').relative_to(ROOT)}")
-    return r.returncode
-
-
-def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
-    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
-    output_dir.mkdir(parents=True, exist_ok=True)
-    venv = (output_dir / ".venv").resolve()
-    python = venv / "bin" / "python"
-    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
-    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
-    kernel = f"registry-{entry_dir.name}"
-    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
-                ["uv", "pip", "install", "--quiet", "--python", str(python),
-                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
-                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
-        if subprocess.run(cmd).returncode != 0:
-[... 22 more lines not kept]
-```
-
-**Agent**
-
-The dev environment is ready. Next I profile the complexity estimator on one recording to see what 100 subsets per size would cost.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
+cd entries/timme-2016-criticality; python - <<'EOF'
 import json
 for nb in ["complexity_culture.ipynb","models.ipynb"]:
     d=json.load(open(nb))
-    print("=====",nb, len(d["cells"]))
+    print("=====",nb)
     for i,c in enumerate(d["cells"]):
-        print(f"--- cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
-        print("".join(c["source"])[:2500])
+        print(f"--- cell {i} [{c['cell_type']}] tags={c['metadata'].get('tags')}")
+        print("".join(c["source"])[:3000])
 EOF
 ```
 
 ```
-===== complexity_culture.ipynb 19
+<persisted-output>
+Output too large (33.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/f9353a9b-0706-49f2-a067-8a2e9e56a7e8/tool-results/b1oy8dwhp.txt
+
+Preview (first 2KB):
+===== complexity_culture.ipynb
 --- cell 0 [markdown] tags=None
 # Timme et al. (2016) on CRCNS hc-8: complexity of the culture recordings
 
@@ -333,1075 +243,21 @@ data sets carry no versions and this is the only published copy (see `culture_cr
 
 Complexity (Methods 2.9, `complexity.m` of the NCC toolbox): on the avalanche bins of the rebinned
 first 59 min, with the sub-sampling correction (the integration curve of data whose neurons are
-each permuted in time is subtracted, and the curve is cut at the first peak of I(k)/(k-1)). The
-paper uses up to 100 random subsets per subset size; this notebook uses 10, to fit the time limit
-of 8 conditions), and runs on 180 of the 435 recordings drawn with a fixed seed. Two variants are shown: the corrected curve without the cut, and
-no correction. The randomized data are the same as in `culture_criticality.ipynb` (same
-generators).
-
-| claim | here |
-|---|---|
-[... 396 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; cat > $TMPDIR/prof.py <<'EOF'
-import time, numpy as np, hc8
-names = hc8.recording_names()
-t=time.time(); d = hc8.load(names[5]); p = hc8.prepare(d); print("load", time.time()-t)
-act=p["act"]; bins=np.flatnonzero(act)+1
-X=hc8.raster_matrix(p["raster"], bins)
-X=X[:, np.asarray(X.sum(0)).ravel()>0]
-U,cnt=hc8._unique_rows(X, np.random.default_rng(0))
-print("N",X.shape, "unique", U.shape)
-import pickle; pickle.dump((X,), open(__import__('os').environ['TMPDIR']+"/X.pkl","wb"))
-for ns in (10,):
-    t=time.time(); c=hc8._integration_curve(U,cnt,X.shape[0],ns,np.random.default_rng(1)); print(ns, time.time()-t)
-EOF
-$TMPDIR/dev/bin/python $TMPDIR/prof.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/prof.py", line 1, in <module>
-    import time, numpy as np, hc8
-ModuleNotFoundError: No module named 'hc8'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof.py
-```
-
-```
-load 0.7226243019104004
-N (304194, 90) unique (32189, 90)
-10 0.5383524894714355
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; cat > $TMPDIR/prof2.py <<'EOF'
-import time, os, pickle, numpy as np, hc8, cProfile, pstats
-(X,)=pickle.load(open(os.environ['TMPDIR']+"/X.pkl","rb"))
-t=time.time()
-cProfile.run("hc8.complexity(X, 10, np.random.default_rng(1), return_variants=True)", os.environ['TMPDIR']+"/p.out")
-print(time.time()-t)
-pstats.Stats(os.environ['TMPDIR']+"/p.out").sort_stats("tottime").print_stats(12)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof2.py 2>&1 | head -45
-```
-
-```
-1.7562406063079834
-Mon Nov  9 13:08:22 2026    /tmp/claude-1001/p.out
-
-         215044 function calls (214882 primitive calls) in 1.755 seconds
-
-   Ordered by: internal time
-   List reduced from 224 to 12 due to restriction <12>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-     1762    0.670    0.000    0.712    0.000 /tmp/claude-1001/dev/lib/python3.12/site-packages/pandas/core/algorithms.py:727(factorize_array)
-        1    0.337    0.337    1.754    1.754 entries/crcns-hc-8-timme-2016/hc8.py:420(complexity)
-     1762    0.287    0.000    0.287    0.000 {built-in method scipy.sparse._sparsetools.csc_matvec}
-        2    0.271    0.136    1.344    0.672 entries/crcns-hc-8-timme-2016/hc8.py:390(_integration_curve)
-        3    0.038    0.013    0.038    0.013 {method 'argsort' of 'numpy.ndarray' objects}
-     3534    0.012    0.000    0.012    0.000 {built-in method numpy.zeros}
-     3738    0.010    0.000    0.010    0.000 {method 'reduce' of 'numpy.ufunc' objects}
-    35587    0.010    0.000    0.021    0.000 {built-in method builtins.isinstance}
-        2    0.006    0.003    0.006    0.003 {built-in method scipy.sparse._sparsetools.csr_matvec}
-        1    0.006    0.006    0.006    0.006 {built-in method scipy.sparse._sparsetools.coo_tocsr}
-     1764    0.005    0.000    0.314    0.000 /tmp/claude-1001/dev/lib/python3.12/site-packages/scipy/sparse/_compressed.py:387(_matmul_vector)
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls paper/; grep -il "permutations" paper/* | head; grep -o -i ".\{600\}100 randomly chosen.\{600\}" paper/*.md paper/*.txt 2>/dev/null | head -3
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -i "permutation" paper/10.3389-fphys.2016.00425.txt | head;
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/crcns-hc-8-timme-2016/hc8.py",
- "old_string": "    curve = np.zeros(N)\n    w_all = rng.integers(1, 2**62, size=N, dtype=np.int64)\n    Ud = U.tocsc()\n    from math import comb\n    for k in range(2, N + 1):\n        if comb(N, k) <= n_subsets:\n            from itertools import combinations\n            subsets = [np.array(c) for c in combinations(range(N), k)]\n        else:\n            subsets = [rng.permutation(N)[:k] for _ in range(n_subsets)]\n        vals = np.empty(len(subsets))\n        for i, sub in enumerate(subsets):\n            w = np.zeros(N, dtype=np.int64)\n            w[sub] = w_all[sub]\n            inv, _ = pd.factorize(Ud @ w)\n            p = np.bincount(inv, weights=cnt) / nT\n            vals[i] = ent[sub].sum() + np.sum(p * np.log2(p))\n        curve[k - 1] = vals.mean()\n    return curve",
- "new_string": "    curve = np.zeros(N)\n    w_all = rng.integers(1, 2**62, size=N, dtype=np.int64)\n    Ur = U.tocsr()\n    from math import comb\n    for k in range(2, N + 1):\n        if comb(N, k) <= n_subsets:\n            from itertools import combinations\n            subsets = [np.array(c) for c in combinations(range(N), k)]\n        else:\n            subsets = [rng.permutation(N)[:k] for _ in range(n_subsets)]\n        W = np.zeros((N, len(subsets)), dtype=np.int64)\n        for i, sub in enumerate(subsets):\n            W[sub, i] = w_all[sub]\n        H = Ur @ W                      # hash of each unique state restricted to each subset\n        vals = np.empty(len(subsets))\n        for i, sub in enumerate(subsets):\n            # states silent on the subset form one group (hash 0); only the others are factorized\n            h = H[:, i]\n            nz = h != 0\n            inv, _ = pd.factorize(h[nz])\n            p = np.bincount(inv, weights=cnt[nz]) / nT\n            p0 = (nT - cnt[nz].sum()) / nT\n            vals[i] = ent[sub].sum() + np.sum(p * np.log2(p)) + (p0 * np.log2(p0) if p0 > 0 else 0.0)\n        curve[k - 1] = vals.mean()\n    return curve"
-}
-```
-
-```
-The file entries/crcns-hc-8-timme-2016/hc8.py has been updated successfully.
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; git stash -q -- hc8.py 2>/dev/null; cp hc8.py $TMPDIR/hc8_old.py; git stash pop -q; cat > $TMPDIR/prof3.py <<'EOF'
-import time, os, pickle, sys, numpy as np, importlib.util
-sys.path.insert(0, os.environ['TMPDIR']); import hc8_old
-import hc8
-(X,)=pickle.load(open(os.environ['TMPDIR']+"/X.pkl","rb"))
-for mod in (hc8_old, hc8):
-    t=time.time(); r=mod.complexity(X, 10, np.random.default_rng(1), return_variants=True); print(mod.__name__, round(time.time()-t,2), r)
-t=time.time(); r=hc8.complexity(X, 100, np.random.default_rng(1), return_variants=True); print("100:", round(time.time()-t,2), r)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof3.py
-```
-
-```
-hc8_old 1.69 {'cut': 0.0007048529509128792, 'uncut': 0.09620270155294376, 'raw': 0.24964441891930583, 'k_kept': 10, 'N': 90}
-hc8 2.04 {'cut': 0.0007048529509128757, 'uncut': 0.0962027015529441, 'raw': 0.24964441891930586, 'k_kept': 10, 'N': 90}
-100: 16.9 {'cut': 0.0005516041029213777, 'uncut': 0.09353170690490463, 'raw': 0.2472150470110065, 'k_kept': 12, 'N': 90}
-```
-
-**Agent**
-
-Values match the old code exactly. A first finding: on this recording, 100 subsets still keep only 12 of 90 sizes after the cut, so more subsets may not move the cut much. Now I'll profile the speed.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; cat > $TMPDIR/prof4.py <<'EOF'
-import time, os, pickle, numpy as np, hc8, cProfile, pstats
-(X,)=pickle.load(open(os.environ['TMPDIR']+"/X.pkl","rb"))
-cProfile.run("hc8.complexity(X, 30, np.random.default_rng(1), return_variants=True)", os.environ['TMPDIR']+"/p.out")
-pstats.Stats(os.environ['TMPDIR']+"/p.out").sort_stats("tottime").print_stats(10)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof4.py 2>&1 | grep -A14 ncalls
-```
-
-```
-ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        2    2.432    1.216    5.056    2.528 entries/crcns-hc-8-timme-2016/hc8.py:390(_integration_curve)
-     5282    1.813    0.000    1.938    0.000 /tmp/claude-1001/dev/lib/python3.12/site-packages/pandas/core/algorithms.py:727(factorize_array)
-      176    0.478    0.003    0.478    0.003 {built-in method scipy.sparse._sparsetools.csr_matvecs}
-        1    0.330    0.330    5.455    5.455 entries/crcns-hc-8-timme-2016/hc8.py:426(complexity)
-      366    0.058    0.000    0.058    0.000 {built-in method numpy.zeros}
-    16060    0.054    0.000    0.054    0.000 {method 'reduce' of 'numpy.ufunc' objects}
-        3    0.037    0.012    0.037    0.012 {method 'argsort' of 'numpy.ndarray' objects}
-    90663    0.025    0.000    0.056    0.000 {built-in method builtins.isinstance}
-     5282    0.014    0.000    1.990    0.000 /tmp/claude-1001/dev/lib/python3.12/site-packages/pandas/core/algorithms.py:837(factorize)
-    47538    0.013    0.000    0.031    0.000 /tmp/claude-1001/dev/lib/python3.12/site-packages/pandas/core/dtypes/generic.py:45(_instancecheck)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; python3 - <<'EOF'
-s=open("hc8.py").read()
-s=s.replace("""        H = Ur @ W                      # hash of each unique state restricted to each subset
-        vals = np.empty(len(subsets))
-        for i, sub in enumerate(subsets):
-            # states silent on the subset form one group (hash 0); only the others are factorized
-            h = H[:, i]
-""","""        H = np.ascontiguousarray((Ur @ W).T)   # hash of each unique state restricted to each subset
-        vals = np.empty(len(subsets))
-        for i, sub in enumerate(subsets):
-            # states silent on the subset form one group (hash 0); only the others are factorized
-            h = H[i]
-""")
-open("hc8.py","w").write(s)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof4.py 2>&1 | grep -A6 ncalls
-```
-
-```
-ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        2    2.064    1.032    4.952    2.476 entries/crcns-hc-8-timme-2016/hc8.py:390(_integration_curve)
-     5282    1.829    0.000    1.951    0.000 /tmp/claude-1001/dev/lib/python3.12/site-packages/pandas/core/algorithms.py:727(factorize_array)
-      176    0.427    0.002    0.427    0.002 {built-in method scipy.sparse._sparsetools.csr_matvecs}
-        1    0.332    0.332    5.354    5.354 entries/crcns-hc-8-timme-2016/hc8.py:426(complexity)
-      178    0.309    0.002    0.309    0.002 {built-in method numpy.ascontiguousarray}
-    16060    0.053    0.000    0.053    0.000 {method 'reduce' of 'numpy.ufunc' objects}
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; python3 - <<'EOF'
-s=open("hc8.py").read()
-old=s[s.index("        H = np.ascontiguousarray"):s.index("        curve[k - 1] = vals.mean()")]
-new='''        H = np.ascontiguousarray((Ur @ W).T)   # hash of each unique state restricted to each subset
-        vals = np.empty(len(subsets))
-        for i, sub in enumerate(subsets):
-            inv, _ = pd.factorize(H[i])
-            p = np.bincount(inv, weights=cnt) / nT
-            vals[i] = ent[sub].sum() + np.sum(p * np.log2(p))
-'''
-s=s.replace(old,new); open("hc8.py","w").write(s)
-EOF
-sed -n 388,420p hc8.py; cat > $TMPDIR/prof5.py <<'EOF'
-import time, sys, resource, numpy as np, hc8
-names=hc8.recording_names()
-for i in (int(sys.argv[1]),):
-    t=time.time(); r=hc8.complexity_record((i, names[i], 20161, 100)); 
-    print(i, r["n_neurons"], round(time.time()-t,1), {k: (round(r[f"C_{k}"],5), r[f"kkept_{k}"], round(r[f"Cuncut_{k}"],4)) for k in ["real"]+hc8.RANDOMIZATIONS}, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
-EOF
-time PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof5.py 5
-```
-
-```
-def _integration_curve(U: sparse.csr_matrix, cnt: np.ndarray, nT: int, n_subsets: int,
-                       rng: np.random.Generator) -> np.ndarray:
-    """Mean integration of random k-subsets for k = 1..N (k = 1 is 0), as complexity.m."""
-    N = U.shape[1]
-    nsp = np.asarray(U.multiply(cnt[:, None]).sum(axis=0)).ravel().astype(float)
-    p1 = nsp / nT
-    with np.errstate(divide="ignore", invalid="ignore"):
-        ent = -(p1 * np.log2(p1)) - ((1 - p1) * np.log2(1 - p1))
-    ent = np.nan_to_num(ent)
-    curve = np.zeros(N)
-    w_all = rng.integers(1, 2**62, size=N, dtype=np.int64)
-    Ur = U.tocsr()
-    from math import comb
-    for k in range(2, N + 1):
-        if comb(N, k) <= n_subsets:
-            from itertools import combinations
-            subsets = [np.array(c) for c in combinations(range(N), k)]
-        else:
-            subsets = [rng.permutation(N)[:k] for _ in range(n_subsets)]
-        W = np.zeros((N, len(subsets)), dtype=np.int64)
-[... 16 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; cat > $TMPDIR/bethe.py <<'EOF'
-import time, numpy as np, hc8, models
-SEED=20162
-rng5 = np.random.default_rng([SEED, 5])
-fs_full, fd_full, fprof = models.bethe_full_sizes(10**4, rng5)
-fit_full = hc8.plparams(hc8.apply_cuts(fs_full), rng5)
-raster5, nb5, sizes5 = models.bethe_small_raster(10**4, rng5)
-act5 = hc8.activity(raster5, nb5)
-bins5 = np.flatnonzero(act5) + 1
-X5 = hc8.raster_matrix(raster5, bins5)
-keep5 = np.asarray(X5.sum(axis=0)).ravel() > 0
-print(X5.shape, keep5.sum())
-for ns in (10, 100):
-  for s in (51, 1, 2):
-    t=time.time(); cx5 = hc8.complexity(X5[:, keep5], ns, np.random.default_rng([SEED, s]), return_variants=True); print(ns, s, round(time.time()-t,1), cx5)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/bethe.py
-```
-
-```
-(20035, 255) 245
-10 51 0.4 {'cut': 0.006371779768596379, 'uncut': 0.2710356067799899, 'raw': 0.373981984991991, 'k_kept': 20, 'N': 245}
-10 1 0.4 {'cut': 0.013662649187279859, 'uncut': 0.2707904718581722, 'raw': 0.37537485520169733, 'k_kept': 30, 'N': 245}
-10 2 0.4 {'cut': 0.014350438345305588, 'uncut': 0.27348975050732593, 'raw': 0.37755902779234934, 'k_kept': 24, 'N': 245}
-100 51 3.2 {'cut': 0.002998192595699139, 'uncut': 0.26451192765728737, 'raw': 0.37415983170050027, 'k_kept': 24, 'N': 245}
-100 1 3.0 {'cut': 0.0021873524707698073, 'uncut': 0.26509328041226926, 'raw': 0.3717838528094878, 'k_kept': 21, 'N': 245}
-100 2 3.0 {'cut': 0.0016467523399054768, 'uncut': 0.26872254334487966, 'raw': 0.37417739940819555, 'k_kept': 14, 'N': 245}
-```
-
-**Agent**
-
-The Bethe raster is cheap: 3 s per call at 100 subsets. Across seeds the cut complexity is 0.0016 to 0.0030 and keeps 14 to 24 of 245 sizes. Next I read the claims for the affected items.
-
-**Agent calls Bash**
-
-```bash
-cd  ls claims/crcns-hc-8/ questions/ | grep -i hc-8; python3 - <<'EOF'
-import yaml
-d=yaml.safe_load(open("claims/crcns-hc-8/10.3389-fphys.2016.00425.yaml"))
-print(d.keys())
-for c in d["claims"]:
-    if c["id"] in ("fig5d-bethe-small-avalanches","fig5e-shuffle-removes-complexity","fig5f-network-state-poisson-keeps-complexity","fig7ab-cb-complexity-susceptibility-peak","fig7d-cb-branching-ratio-near-1","figs2-recording-length","fig7a-complexity-boundary-rise","fig2e-avalanche-count"):
-        print(yaml.safe_dump(c, width=120))
-EOF
-```
-
-```
-claims/crcns-hc-8/:
-dict_keys(['schema_version', 'dataset', 'paper', 'claims', 'checks'])
-criterion: A simulation, not a test on recorded data. Bethe lattice of Methods 2.4 (two outgoing connections per neuron, p_trans
-  = 0.5, activity stopped at layer 10^4, one neuron active in the first layer per run), as in the toolbox's bethelattice.m.
-  The number of runs is not stated; a standard choice of 10^4 runs is used and cannot change the direction of the result.
-  Small avalanches are those that stop on or before layer 8; each run is one time series of network states over the neurons
-  of layers 1 to 8. Reproduced when the size distribution of the small avalanches is accepted as a truncated power law by
-  plparams (p at least 0.2) and their complexity (toolbox complexity, sub-sampling correction on) is above zero.
-id: fig5d-bethe-small-avalanches
-quote: In the original small avalanches, the sizes of the avalanches were power-law distributed and a non-zero complexity
-  was observed
-source: Results 3.1, paragraph 1; Figure 5B to 5D
-statement: In the critical Bethe lattice model (p_trans = 0.5), avalanche sizes are power-law distributed and show shape collapse,
-  and the small avalanches (stopped by the 8th layer) are power-law distributed in size and have non-zero complexity.
-
-criterion: A simulation, not a test on recorded data. Neuron shuffling as in Methods 2.5 (at each time bin the active count
-  kept and the identities drawn uniformly over all neurons). Reproduced when the shuffled size distribution equals the original
-  and the complexity falls to below 10% of the original value ("removed" read as near zero; 10% is a choice the paper does
-  not make).
-depends_on:
-[... 100 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; sed -n 120,213p models.py; sed -n 572,612p hc8.py
-```
-
-```
-# ----------------------------------------------------------------------------------------------
-# Cortical branching model
-
-def cb_simulate(p_trans: float, n_models: int, rng, t_steps: int = 3 * 10 ** 5,
-                side: int = 10, p_spont: float = 1e-4):
-    """n_models independent cortical branching models run together; returns packed states
-    (t_steps x n_models x ceil(side^2 / 8) uint8). The first step is silent, as cbmodel.m."""
-    n = side * side
-    probconv = np.zeros(5)
-    probconv[0] = p_spont
-    for j in range(4):
-        probconv[j + 1] = probconv[j] + p_trans - probconv[j] * p_trans
-    packed = np.zeros((t_steps, n_models, (n + 7) // 8), dtype=np.uint8)
-    state = np.zeros((n_models, side, side), dtype=bool)
-    for it in range(1, t_steps):
-        s = state.view(np.int8)
-        cnt = (np.roll(s, 1, 1) + np.roll(s, -1, 1) + np.roll(s, 1, 2) + np.roll(s, -1, 2))
-        state = rng.random((n_models, side, side)) < probconv[cnt]
-        packed[it] = np.packbits(state.reshape(n_models, n), axis=1)
-    return packed
-[... 112 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -i "refractor" paper/10.3389-fphys.2016.00425.txt | head -5; cd entries/crcns-hc-8-timme-2016; cat > $TMPDIR/cbt.py <<'EOF'
-import time, numpy as np, hc8, models
-from scipy import sparse
-for p in (0.25, 0.3):
-    pk = models.cb_simulate(p, 1, np.random.default_rng(1))
-    R = models.cb_raster(pk, 0)
-    X = sparse.csr_matrix(R.astype(np.int64))
-    X = X[:, np.asarray(X.sum(0)).ravel() > 0]
-    t=time.time(); r = hc8.complexity(X, 100, np.random.default_rng(2), return_variants=True); print(p, X.shape, round(time.time()-t,1), r)
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/cbt.py
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; date -u; sed -i 's/(i, names\[i\], 20161, 100)/(i, names[i], 20161, int(sys.argv[2]))/' $TMPDIR/prof5.py; PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/prof5.py 5 10; PYTHONPATH=. $TMPDIR/dev/bin/python -c "
-import hc8,numpy as np
-names=hc8.recording_names(); idx=sorted(np.random.default_rng([20161,0]).choice(len(names),size=180,replace=False).tolist()); print(idx[:12])"
-```
-
-```
-Mon Nov  9 13:15:59 UTC 2026
-5 90 16.3 {'real': (8e-05, 5, 0.0907), 'jitter1': (0.00026, 6, 0.0865), 'jitter10': (0.00022, 6, 0.0843), 'jitter100': (0.00039, 8, 0.0704), 'wrap': (5e-05, 3, 0.0645), 'poisson': (0.00044, 11, 0.0652), 'swap': (0.0, 3, 0.0843), 'shuffle': (0.00248, 33, 0.0433)} 0.323868
-[1, 3, 4, 9, 10, 16, 25, 30, 33, 34, 35, 36]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; cat > $TMPDIR/cal.py <<'EOF'
-import time, multiprocessing as mp, numpy as np, hc8
-if __name__ == "__main__":
-    names=hc8.recording_names(); idx=sorted(np.random.default_rng([20161,0]).choice(len(names),size=40,replace=False).tolist())
-    print(idx)
-    t=time.time()
-    with mp.get_context("spawn").Pool(4) as pool:
-        recs=list(pool.imap(hc8.complexity_record,[(i,names[i],20161,100) for i in idx[:4]]))
-    print("wall", time.time()-t)
-    for r in recs: print(r["n_neurons"], r["nbins_real"], {k:(round(r[f"C_{k}"],5), r[f"kkept_{k}"]) for k in ["real","swap","shuffle","poisson"]})
-EOF
-PYTHONPATH=. $TMPDIR/dev/bin/python $TMPDIR/cal.py
-```
-
-```
-[2, 50, 53, 54, 59, 67, 73, 89, 99, 102, 107, 122, 142, 159, 163, 173, 180, 190, 196, 219, 220, 222, 254, 267, 269, 270, 282, 288, 295, 297, 308, 319, 330, 332, 344, 373, 374, 381, 392, 402]
-wall 201.72725677490234
-87 416416 {'real': (0.00085, 10), 'swap': (0.0031, 21), 'shuffle': (0.16893, 87), 'poisson': (0.00051, 12)}
-66 93104 {'real': (0.04178, 16), 'swap': (0.0223, 12), 'shuffle': (0.23181, 48), 'poisson': (0.0006, 10)}
-66 241770 {'real': (0.00115, 5), 'swap': (0.00142, 8), 'shuffle': (0.23897, 66), 'poisson': (0.00419, 25)}
-65 170744 {'real': (0.00034, 5), 'swap': (0.02311, 29), 'shuffle': (0.17269, 65), 'poisson': (0.00187, 16)}
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/crcns-hc-8-timme-2016/hc8.py",
- "old_string": "        out[f\"nbins_{kind}\"] = int(bins.size)\n    return out",
- "new_string": "        out[f\"nbins_{kind}\"] = int(bins.size)\n    return out\n\n\ndef complexity_seeds(args) -> list[dict]:\n    \"\"\"Notebook 2, one recording: the complexity of the real data repeated with several generators\n    for the random subsets and the time permutation of the correction, at each number of subsets\n    per size, to show the estimator's spread. args = (index, name, seed, n_subsets_list, n_seeds).\"\"\"\n    i, name, seed, n_subsets_list, n_seeds = args\n    p = prepare(load(name, _worker_zip()))\n    X = raster_matrix(p[\"raster\"], np.flatnonzero(p[\"act\"]) + 1)\n    out = []\n    for ns in n_subsets_list:\n        for s in range(n_seeds):\n            cv = complexity(X, ns, np.random.default_rng([seed, i, 500, ns, s]), return_variants=True)\n            out.append(dict(name=name, n_subsets=ns, rep=s, C=cv[\"cut\"], Cuncut=cv[\"uncut\"],\n                            Craw=cv[\"raw\"], k_kept=cv[\"k_kept\"], N=cv[\"N\"]))\n    return out"
-}
-```
-
-```
-The file entries/crcns-hc-8-timme-2016/hc8.py has been updated successfully. (note: the file had been modified on disk since you last read it — the edit applied cleanly, but the file contains other changes not in your context. Read it before edits that depend on surrounding content.)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json
-d=json.load(open("culture_criticality.ipynb"))
-print(len(d["cells"]))
-for i,c in enumerate(d["cells"]):
-    src="".join(c["source"])
-    if i in (0,1,4,9,10,11) or c["cell_type"]=="markdown" and src.startswith("## Summary"):
-        print(f"--- cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}"); print(src[:3000])
-EOF
-```
-
-```
-49
---- cell 0 [markdown] tags=None
-# Timme et al. (2016) on CRCNS hc-8: avalanches, exponents, branching ratio and randomizations
-
-Paper: Timme, Marshall, Bennett, Ripp, Lautzenhiser & Beggs (2016), "Criticality Maximizes
-Complexity in Neural Tissue", Front. Physiol. 7:425, doi:10.3389/fphys.2016.00425. The claims file
-`claims/crcns-hc-8/10.3389-fphys.2016.00425.yaml` was written from the version of record
-(PMC5037237) with its supplement, and checked by a second reader.
-
-Dataset: CRCNS hc-8, doi:10.6080/K0PC308P, read from the public bucket
-`crcnsarchive/hc-8/live/Data.zip` (435 files `Data/CultureXDIVY.mat`). Version: CRCNS data sets
-are not versioned, so the version is `unversioned` (docs/archives.md). The zip read is the one
-whose MD5 the data set's `checksums.md5` gives as `bd4e2a8685df3e55e1a3c04fbe09d9ce`; the data
-description is version 0.9 (Sept. 28, 2016). This is the only published copy (the bucket's
-`hc-8/orig/` holds a draft description, no data), and the paper names no version, so it is the
-one pinned.
-
-This notebook covers the culture claims that do not need the complexity. The complexity claims are
-in `complexity_culture.ipynb` and the model claims in `models.ipynb`. The measures port the NCC
-MATLAB toolbox the paper cites (see `hc8.py`).
-[... 97 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json
-d=json.load(open("culture_criticality.ipynb"))
-for i in (12,13,14):
-    c=d["cells"][i]; print(f"--- cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}"); print("".join(c["source"]))
-EOF
-```
-
-```
---- cell 12 [code] tags=['claim:fig2e-avalanche-count']
-nav = meas["real"].n_av.values
-mode_nav, k_nav = hc8.terrell_scott_mode(nav)
-print(f"avalanches per recording (first 59 min, rebinned to the network ISI): (a) median {np.median(nav):.0f}; "
-      f"(b) Terrell-Scott mode {mode_nav:.0f} ({k_nav} bins); expected 10000 +/- 1000")
-print(f"range {nav.min()} to {nav.max()}; 5th to 95th percentile {np.percentile(nav, 5):.0f} to {np.percentile(nav, 95):.0f}")
-print("recordings with 9000 to 11000 avalanches:", int(np.sum((nav >= 9000) & (nav <= 11000))))
-print("by culture (median):", meas["real"].groupby(base.culture).n_av.median().astype(int).to_dict())
-plt.figure(figsize=(4, 3)); plt.hist(nav, bins=k_nav); plt.xlabel("avalanches per recording"); plt.show()
---- cell 13 [markdown] tags=None
-**Result: not reproduced.** After rebinning the first 59 min to the network ISI, the median number of avalanches per recording is 83289 and the histogram mode 81707, about eight times the stated 10,000; only 2 of 435 recordings have 9000 to 11000 avalanches.
---- cell 14 [markdown] tags=None
-## fig8-subsampling-exponents
-
-> In the culture recordings, sub-sampling extrapolation gives lower values of tau and alpha with
-> lower errors than the search algorithm on the full system, while 1/sigma nu z changes little
-> between the two.
-
-Full system: tau and alpha by the range search of `plparams.m` after the cuts, 1/sigma nu z from
-size given duration over the fitted duration range and from the shape collapse. Sub-sampling
-[... 6 more lines not kept]
-```
-
-**Agent**
-
-I'm adding the log10 avalanche-count histogram the verifier asked for (fig2e), then the models changes.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json
-d=json.load(open("culture_criticality.ipynb"))
-c=d["cells"][12]
-src="".join(c["source"])
-src=src.replace('plt.figure(figsize=(4, 3)); plt.hist(nav, bins=k_nav); plt.xlabel("avalanches per recording"); plt.show()',
-'''lnav = np.log10(nav)
-counts, edges = np.histogram(lnav, bins=np.arange(3.0, 6.01, 0.25))
-print("log10 avalanches per recording, histogram (bins of 0.25 decades):")
-print(pd.Series(counts, index=[f"{a:.2f}-{b:.2f}" for a, b in zip(edges[:-1], edges[1:])]).to_string())
-print(f"recordings with 10^3.5 to 10^4.5 avalanches (within half a decade of 10,000): {int(np.sum((lnav >= 3.5) & (lnav <= 4.5)))}; "
-      f"median log10 {np.median(lnav):.2f}")
-fig, ax = plt.subplots(1, 2, figsize=(8, 3))
-ax[0].hist(nav, bins=k_nav); ax[0].set_xlabel("avalanches per recording")
-ax[1].hist(lnav, bins=edges); ax[1].set_xlabel("log10 avalanches per recording"); ax[1].axvline(4, color="k", ls="--", lw=.8)
-plt.tight_layout(); plt.show()''')
-c["source"]=src.splitlines(keepends=True)
-json.dump(d, open("culture_criticality.ipynb","w"), indent=1, ensure_ascii=False); open("culture_criticality.ipynb","a").write("\n")
-EOF
-git diff --stat
-```
-
-```
-.../culture_criticality.ipynb                      | 11 ++++++++-
- entries/crcns-hc-8-timme-2016/hc8.py               | 26 ++++++++++++++++++----
- tools/build_site.py                                |  8 +++++--
- 3 files changed, 38 insertions(+), 7 deletions(-)
-```
-
-**Agent**
-
-Now the complexity notebook: 100 subsets, 40 recordings, and a seed-stability cell.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json, copy
-f="complexity_culture.ipynb"
-d=json.load(open(f))
-C=d["cells"]
-def setsrc(c, s): c["source"]=s.splitlines(keepends=True)
-s="".join(C[0]["source"])
-s=s.replace("""The
-paper uses up to 100 random subsets per subset size; this notebook uses 10, to fit the time limit
-of 8 conditions), and runs on 180 of the 435 recordings drawn with a fixed seed.""","""It uses
+each permuted in time is subtracted, and the curve is cut at the first peak of I(k)/(k-1)). It uses
 100 random subsets per subset size, as Methods 2.9 give, and runs on 40 of the 435 recordings drawn
 with a fixed seed, to fit the time limit of a notebook. A first version used 10 subsets on 180
 recordings; the verifier found the cut unstable at 10 subsets, and the spread of the estimate over
-repeated draws is shown below at 10 and 100 subsets.""")
-setsrc(C[0], s)
-s="".join(C[1]["source"])
-s=s.replace('N_SUBSETS = 10        # Methods 2.9 give up to 100; 10 to fit the time limit (a deviation)',
-            'N_SUBSETS = 100       # Methods 2.9: "the lesser of either all possible permutations of neurons or 100"')
-s=s.replace("""# 180 of the 435 recordings, drawn with a fixed seed: all 435 would take about 68 min with 4
-# processes (37 s per recording in development), over the 60 min limit of a notebook
-N_RECORDINGS = 180""","""# 40 of the 435 recordings, drawn with a fixed seed: with 100 subsets per size one recording (8
-# conditions) took 50 s of wall time with 4 processes in development, so all 435 would take about
-# 6 h, over the 60 min limit of a notebook
-N_RECORDINGS = 40""")
-setsrc(C[1], s)
-md=copy.deepcopy(C[3]); setsrc(md, """## Spread of the estimate over repeated draws
-
-The verifier of the first version asked how much the toolbox's complexity (correction and cut)
-varies with the random draws (the subsets and the time permutation of the correction). The real
-data of 10 of the recordings above are run three times with different generators, at 10 and at 100
-subsets per size. No claim is decided here.""")
-md["metadata"]={}
-code=copy.deepcopy(C[2]); code["metadata"]={}; code["outputs"]=[]; code["execution_count"]=None
-setsrc(code, """t1 = time.time()
-with mp.get_context("spawn").Pool(4) as pool:
-    parts = pool.map(hc8.complexity_seeds, [(i, names[i], SEED, (10, N_SUBSETS), 3) for i in idx[:10]], chunksize=1)
-sd = pd.DataFrame([r for part in parts for r in part])
-print(f"{sd.name.nunique()} recordings x 3 draws x 2 subset numbers in {(time.time() - t1) / 60:.1f} min")
-for ns, g in sd.groupby("n_subsets"):
-    per = g.groupby("name").agg(C_min=("C", "min"), C_max=("C", "max"), C_mean=("C", "mean"),
-                                k_min=("k_kept", "min"), k_max=("k_kept", "max"), N=("N", "first"),
-                                Cuncut_min=("Cuncut", "min"), Cuncut_max=("Cuncut", "max"))
-    per["C_cv"] = g.groupby("name").C.std() / per.C_mean
-    print(f"\\n{ns} subsets per size, per recording (complexity in bits/neuron):")
-    print(per.to_string(float_format=lambda v: f"{v:.5f}"))
-    print(f"median over recordings of the coefficient of variation of the cut complexity: {per.C_cv.median():.2f}; "
-          f"of max/min: {(per.C_max / per.C_min).median():.2f}")
-    print(f"subset sizes kept by the cut, all runs: median {g.k_kept.median():.0f}, range {g.k_kept.min()} to {g.k_kept.max()} "
-          f"(of N {g.N.min()} to {g.N.max()}); kept/N median {(g.k_kept / g.N).median():.2f}")
-""")
-C[3:3]=[md, code]
-json.dump(d, open(f,"w"), indent=1, ensure_ascii=False); open(f,"a").write("\n")
-EOF
-git diff --stat complexity_culture.ipynb
-```
-
-```
-.../crcns-hc-8-timme-2016/complexity_culture.ipynb | 55 +++++++++++++++++++---
- 1 file changed, 48 insertions(+), 7 deletions(-)
-```
-
-**Agent calls Edit**
-
-```json
-{
- "replace_all": false,
- "file_path": "entries/crcns-hc-8-timme-2016/hc8.py",
- "old_string": "    X = raster_matrix(p[\"raster\"], np.flatnonzero(p[\"act\"]) + 1)\n    out = []",
- "new_string": "    X = raster_matrix(p[\"raster\"], np.flatnonzero(p[\"act\"]) + 1)\n    X = X[:, np.asarray(X.sum(axis=0)).ravel() > 0]\n    out = []"
-}
-```
-
-```
-The file entries/crcns-hc-8-timme-2016/hc8.py has been updated successfully.
+[... 25 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/crcns-hc-8-timme-2016; python3 - <<'EOF'
-s=open("models.py").read()
-s=s.replace("""    (both readings) extrapolated the same way, and B_new (delays 1 to 8, A(t) <= 5, no
-    sub-sampling, Methods 2.11). args = (p_trans, n_models, t_steps, seed).""","""    (both readings) extrapolated the same way, and B_new (delays 1 to 8, A(t) <= 5, no
-    sub-sampling, Methods 2.11). For comparison with 4 p_trans, the mean avalanche size, B_basic
-    (Eq. 11) and the one-step ratio sum A(t+1) / sum A(t) over bins with A(t) > 0.
-    args = (p_trans, n_models, t_steps, seed).""")
-s=s.replace("""                   quad_size=_quad_coef(s), quad_dur=_quad_coef(d))
-""","""                   quad_size=_quad_coef(s), quad_dur=_quad_coef(d), mean_size=float(s.mean()),
-                   br_basic=hc8.branching_basic(A))
-        on = A[:-1] > 0
-        rec["one_step"] = float(A[1:][on].sum() / A[:-1][on].sum())
-""")
-open("models.py","w").write(s)
-EOF
-git diff models.py | head -30
+cd  git log --oneline -8 -- entries/timme-2016-criticality attempts/timme-2016-criticality-01.yaml transcripts/timme-2016-criticality; git status --short entries attempts questions; tail -40 transcripts/timme-2016-criticality/author-revise-1.md; ls -la transcripts/timme-2016-criticality
 ```
 
-```
-diff --git a/entries/crcns-hc-8-timme-2016/models.py b/entries/crcns-hc-8-timme-2016/models.py
-index 955253b3b8..948b228517 100644
---- a/entries/crcns-hc-8-timme-2016/models.py
-+++ b/entries/crcns-hc-8-timme-2016/models.py
-@@ -165,7 +165,9 @@ def cb_point(args) -> list[dict]:
-     distributions, the shape collapse curvature of the full model and extrapolated by sub-sampling
-     (30 sub-samples from 40 to 100 neurons, sizes evenly spaced, Methods 2.10), the susceptibility
-     (both readings) extrapolated the same way, and B_new (delays 1 to 8, A(t) <= 5, no
--    sub-sampling, Methods 2.11). args = (p_trans, n_models, t_steps, seed)."""
-+    sub-sampling, Methods 2.11). For comparison with 4 p_trans, the mean avalanche size, B_basic
-+    (Eq. 11) and the one-step ratio sum A(t+1) / sum A(t) over bins with A(t) > 0.
-+    args = (p_trans, n_models, t_steps, seed)."""
-     import hc8
-     p_trans, n_models, t_steps, seed = args
-     rng = np.random.default_rng(seed)
-@@ -177,7 +179,10 @@ def cb_point(args) -> list[dict]:
-         A = R.sum(axis=1).astype(np.int32)
-         s, d, st = hc8.avalanches(A)
-         rec = dict(p_trans=p_trans, model=m, n_av=int(s.size), active_frac=float((A > 0).mean()),
--                   quad_size=_quad_coef(s), quad_dur=_quad_coef(d))
-[... 7 more lines not kept]
-```
-
-**Agent**
-
-Now the notebook cells.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json, copy
-f="models.ipynb"
-d=json.load(open(f)); C=d["cells"]
-src=lambda i: "".join(C[i]["source"])
-def setsrc(c, s): c["source"]=s.splitlines(keepends=True)
-# cell 0 table
-s=src(0)
-old=s[s.index("| fig7c-cb-curvature-no-peak"):]
-setsrc(C[0], s.replace(old, """| fig7c-cb-curvature-no-peak | tested on both p_trans grids |
-| fig7ab-cb-complexity-susceptibility-peak | tested on its susceptibility half, both grids; the complexity of 30 sub-samples per model was not computed (too large) |
-| fig7a-complexity-boundary-rise | blocked, too_large (needs the complexity of fig7ab) |
-| figs2-recording-length | blocked, too_large |
-| fig7d-cb-branching-ratio-near-1 | tested against the peaks found in fig7ab |
-"""))
-# cell 1 setup
-s=src(1)
-s=s.replace('N_SUBSETS = 10      # random subsets per size for complexity (Methods 2.9 give up to 100)',
- 'N_SUBSETS = 100     # random subsets per size for complexity (Methods 2.9)\nN_DRAWS = 5         # repeated draws of the complexity estimate for the Bethe claims (spread only)')
-s=s.replace('GRID = np.round(np.arange(0.20, 0.30 + 1e-9, 0.01), 2)  # claims file, p_trans grid reading (b)',
- 'GRID = np.round(np.arange(0.20, 0.30 + 1e-9, 0.005), 3)  # claims file, p_trans grid reading (a); reading (b) is every other value')
-s=s.replace('[(float(p), CB_MODELS, CB_STEPS, [SEED, j]) for j, p in enumerate(GRID)]',
- '[(float(p), CB_MODELS, CB_STEPS, [SEED, int(round(p * 1000))]) for p in GRID]')
-s=s.replace('cb = pd.DataFrame([r for part in cb_parts for r in part])',
- 'cb = pd.DataFrame([r for part in cb_parts for r in part])\ncb["grid_b"] = np.isclose(np.round(cb.p_trans * 100), cb.p_trans * 100)   # on the 0.01 grid')
-s+='''
-
-def draws(X, key):
-    """The complexity estimate repeated N_DRAWS times with other generators (subsets and correction)."""
-    return pd.DataFrame([hc8.complexity(X, N_SUBSETS, np.random.default_rng([SEED, key, r]), return_variants=True)
-                         for r in range(N_DRAWS)])
-
-
-def interior_maxima(m):
-    """Grid values whose mean is above both neighbours."""
-    v = m.values
-    return [float(m.index[i]) for i in range(1, len(v) - 1) if v[i] > v[i - 1] and v[i] > v[i + 1]]
-
-
-GRIDS = {"(a) 0.005": slice(None), "(b) 0.01": "grid_b"}
-on_grid = lambda df, g: df if GRIDS[g] == slice(None) else df[df[GRIDS[g]]]'''
-setsrc(C[1], s)
-# fig5d cell 7
-s=src(7)
-s+='''
-d5 = draws(X5[:, keep5], 51)
-print(f"repeated draws ({N_DRAWS}): cut complexity {d5['cut'].min():.5f} to {d5['cut'].max():.5f} (mean {d5['cut'].mean():.5f}), "
-      f"sizes kept {d5.k_kept.min()} to {d5.k_kept.max()} of {cx5['N']}; no cut {d5.uncut.min():.4f} to {d5.uncut.max():.4f}; "
-      f"above zero in {int((d5['cut'] > 0).sum())} of {N_DRAWS}")'''
-setsrc(C[7], s)
-# fig5e cell 10
-s=src(10)
-s+='''
-ds = draws(Xs[:, ks], 53)
-print(f"repeated draws: shuffled cut complexity {ds['cut'].min():.5f} to {ds['cut'].max():.5f} (sizes kept {ds.k_kept.min()} to {ds.k_kept.max()}); "
-      f"ratio of the means {ds['cut'].mean() / d5['cut'].mean():.3f}; largest shuffled / smallest original {ds['cut'].max() / d5['cut'].min():.3f}")'''
-setsrc(C[10], s)
-# fig5f cell 13
-s=src(13)
-s+='''
-dp = draws(Xp[:, kp], 55)
-rel = lambda a, b: abs(a - b) / b
-print(f"repeated draws: permuted cut complexity {dp['cut'].min():.5f} to {dp['cut'].max():.5f} (sizes kept {dp.k_kept.min()} to {dp.k_kept.max()}); "
-      f"relative difference of the means {rel(dp['cut'].mean(), d5['cut'].mean()):.3f}; no cut {rel(dp.uncut.mean(), d5.uncut.mean()):.3f}; "
-      f"no correction {rel(dp.raw.mean(), d5.raw.mean()):.3f}")
-print(f"spread of the original's own draws: largest relative difference from their mean {(d5['cut'] - d5['cut'].mean()).abs().max() / d5['cut'].mean():.3f}")'''
-setsrc(C[13], s)
-# fig6 cell 16
-setsrc(C[16], '''q = cb.groupby("p_trans")[["quad_size", "quad_dur"]].agg(["mean", "std", "count"])
-print(q.round(4).to_string())
-for g in GRIDS:
-    for col in ("quad_size", "quad_dur"):
-        m = on_grid(cb, g).groupby("p_trans")[col].mean()
-        print(f"grid {g}, {col}: p 0.2 {m[0.2]:.4f} (negative: {m[0.2] < 0}), p 0.3 {m[0.3]:.4f} (positive: {m[0.3] > 0}), "
-              f"p 0.25 {m[0.25]:.4f}; smallest magnitude among 0.2, 0.25, 0.3 at {m.loc[[0.2, 0.25, 0.3]].abs().idxmin()}; "
-              f"over the grid at {m.abs().idxmin()}")''')
-# fig7c cell 19
-setsrc(C[19], '''cv = cb.groupby("p_trans")[["curv_ss", "curv_full"]].agg(["mean", "std"])
-print(cv.round(3).to_string())
-for g in GRIDS:
-    m = on_grid(cb, g).groupby("p_trans").curv_ss.mean()
-    peaks = interior_maxima(m)
-    near = [p for p in peaks if abs(p - 0.25) <= 0.02 or abs(p - 0.265) <= 0.02]
-    mf = on_grid(cb, g).groupby("p_trans").curv_full.mean()
-    print(f"grid {g}: extrapolated |curvature| p 0.2 {m[0.2]:.3f} vs p 0.3 {m[0.3]:.3f} (0.2 larger: {m[0.2] > m[0.3]}); "
-          f"interior maxima at {peaks}; within 0.02 of 0.25 or 0.265: {near}; largest at {m.idxmax()}; "
-          f"full 100-neuron system largest at {mf.idxmax()}, interior maxima {interior_maxima(mf)}")
-print("models with a failed shape collapse (NaN):", int(cb.curv_ss.isna().sum()))''')
-# replace cells 21, 22 by fig7ab and fig7d sections
-h7ab=copy.deepcopy(C[18]); setsrc(h7ab, """## fig7ab-cb-complexity-susceptibility-peak
-
-> Across cortical branching models, the complexity and the susceptibility (both extrapolated to
-> infinite size by sub-sampling) peak near p_trans 0.265, close to the infinite system critical
-> point of 0.25.
-
-The criterion needs both peaks within 0.0265 of 0.265. The susceptibility, extrapolated by
-sub-sampling (layout reading a), is computed for both readings of Eq. 14 and both grids. The
-complexity of 30 sub-samples of each model was not computed: with 100 subsets per size, one
-whole-system complexity of a model at p_trans 0.3 took 134 s in development, and the claim needs
-about 18,900 sub-sample computations on reading (a) of the grid.""")
-c7ab=copy.deepcopy(C[19]); c7ab["metadata"]={"tags":["claim:fig7ab-cb-complexity-susceptibility-peak"]}; c7ab["outputs"]=[]; c7ab["execution_count"]=None
-setsrc(c7ab, '''print(cb.groupby("p_trans")[["chi_a_ss", "chi_b_ss", "chi_a_full", "chi_b_full"]].mean().to_string(float_format=lambda v: f"{v:.5g}"))
-chi_peaks = {}
-for g in GRIDS:
-    for col, lab in (("chi_a_ss", "reading (a) var(A/N)"), ("chi_b_ss", "reading (b) N var(A/N)")):
-        m = on_grid(cb, g).groupby("p_trans")[col].mean()
-        peaks = interior_maxima(m)
-        chi_peaks[(g, col)] = peaks
-        inc = bool(np.all(np.diff(m.values) > 0))
-        print(f"grid {g}, extrapolated susceptibility {lab}: largest at p_trans {m.idxmax()}; interior maxima {peaks}; "
-              f"within 0.0265 of 0.265: {[p for p in peaks if abs(p - 0.265) <= 0.0265]}; rises at every step: {inc}")
-    mf = on_grid(cb, g).groupby("p_trans").chi_b_full.mean()
-    print(f"grid {g}, whole 100-neuron system N var(A/N): largest at {mf.idxmax()}, interior maxima {interior_maxima(mf)}")''')
-r7ab=copy.deepcopy(C[20]); setsrc(r7ab, "**Result: ...** (written after the run)")
-h7d=copy.deepcopy(C[18]); setsrc(h7d, """## fig7d-cb-branching-ratio-near-1
-
-> The cortical branching model's branching ratio is closest to 1 near the same transmission
-> probability at which complexity and susceptibility peak.
-
-B_new from the whole system (delays 1 to 8, A(t) <= 5), compared with the peaks found under
-fig7ab-cb-complexity-susceptibility-peak. For comparison with the model's design (four neighbours,
-critical at p_trans 0.25), the mean avalanche size, B_basic (Eq. 11) and the one-step ratio
-sum A(t+1) / sum A(t) are printed against 4 p_trans.""")
-c7d=copy.deepcopy(c7ab); c7d["metadata"]={"tags":["claim:fig7d-cb-branching-ratio-near-1"]}
-setsrc(c7d, '''ref = cb.groupby("p_trans")[["B_new", "br_basic", "one_step", "mean_size", "n_av"]].mean()
-ref["4 p_trans"] = 4 * ref.index.values
-print(ref.to_string(float_format=lambda v: f"{v:.4f}"))
-for g in GRIDS:
-    b = on_grid(cb, g).groupby("p_trans").B_new.mean()
-    pb = float((b - 1).abs().idxmin())
-    pk = sorted({p for (gg, _), ps in chi_peaks.items() if gg == g for p in ps})
-    print(f"grid {g}: mean B_new closest to 1 at p_trans {pb} ({b[pb]:.4f}); susceptibility interior maxima {pk}; "
-          f"within 0.0265 of one of them: {[p for p in pk if abs(p - pb) <= 0.0265]}; within 0.0265 of the paper's 0.265: {abs(pb - 0.265) <= 0.0265}")
-print(f"run time of this notebook so far: {(time.time() - t0) / 60:.1f} min; peak memory {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.2f} GB")''')
-r7d=copy.deepcopy(r7ab)
-C[21:23]=[h7ab, c7ab, r7ab, h7d, c7d, r7d]
-json.dump(d, open(f,"w"), indent=1, ensure_ascii=False); open(f,"a").write("\n")
-for i,c in enumerate(d["cells"]): print(i, c["cell_type"], c.get("metadata",{}).get("tags"), "".join(c["source"])[:60].replace("\n"," "))
-EOF
-```
-
-```
-0 markdown None # Timme et al. (2016): the model claims (chain model, Bethe 
-1 code None import os for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS
-2 code ['sanity'] print("chain model: 12 neurons, c in {0, 0.8, 1}, exact join
-3 markdown None ## fig3-chain-model-complexity  > In the 12-neuron chain mod
-4 code ['claim:fig3-chain-model-complexity'] for c in (0.0, 0.8, 1.0):     curve = models.chain_integrati
-5 markdown None **Result: reproduced.** The whole-system integration is 0 bi
-6 markdown None ## fig5d-bethe-small-avalanches  > In the critical Bethe lat
-7 code ['claim:fig5d-bethe-small-avalanches'] rng5 = np.random.default_rng([SEED, 5]) fs_full, fd_full, fp
-8 markdown None **Result: reproduced.** 7018 of 10000 runs end by layer 8. T
-9 markdown None ## fig5e-shuffle-removes-complexity  > In the Bethe lattice 
-10 code ['claim:fig5e-shuffle-removes-complexity'] rsh = hc8.rand_shuffle(raster5, nb5, np.random.default_rng([
-11 markdown None **Result: reproduced.** Shuffling leaves A(t), and so the si
-12 markdown None ## fig5f-network-state-poisson-keeps-complexity  > In the Be
-13 code ['claim:fig5f-network-state-poisson-keeps-complexity'] perm = np.random.default_rng([SEED, 54]).permutation(nb5)   
-14 markdown None **Result: not reproduced.** Permuting the network states cha
-15 markdown None ## fig6-cb-distribution-curvature  > In the cortical branchi
-16 code ['claim:fig6-cb-distribution-curvature'] q = cb.groupby("p_trans")[["quad_size", "quad_dur"]].agg(["m
-17 markdown None **Result: partially reproduced.** For durations the mean qua
-18 markdown None ## fig7c-cb-curvature-no-peak  > The shape collapse curvatur
-19 code ['claim:fig7c-cb-curvature-no-peak'] cv = cb.groupby("p_trans")[["curv_ss", "curv_full"]].agg(["m
-[... 8 more lines not kept]
-```
-
-**Agent**
-
-Quick test of both changed notebooks on small subsets.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; date -u; export PATH=$TMPDIR/dev/bin:$PATH; time MODELS_QUICK=1 jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/q models.ipynb 2>&1 | tail -3
-```
-
-```
-Mon Nov  9 13:21:50 UTC 2026
-
-[31mValueError[39m: Encountered all NA values
-
-
-real	1m43.767s
-user	2m22.315s
-sys	0m1.892s
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; export PATH=$TMPDIR/dev/bin:$PATH; MODELS_QUICK=1 jupyter nbconvert --to notebook --execute --allow-errors --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/q models.ipynb 2>&1 | tail -1; python - <<'EOF'
-import json,os
-d=json.load(open(os.environ["TMPDIR"]+"/q/models.ipynb"))
-for i,c in enumerate(d["cells"]):
-    if c["cell_type"]=="code":
-        for o in c["outputs"]:
-            t=o.get("text") or "".join(o.get("traceback",[]))[-1500:] if o.get("output_type")!="display_data" else ""
-            print(i, "".join(t)[-1800:] if isinstance(t,list) else t[-1800:])
-EOF
-```
-
-```
-[NbConvertApp] Writing 51612 bytes to /tmp/claude-1001/q/models.ipynb
-1 cortical branching models: 42 (2 per p_trans, 21 values, 30000 steps) in 0.3 min
-
-2 chain model: 12 neurons, c in {0, 0.8, 1}, exact joint distribution
-Bethe lattice: 10000 runs, p_trans 0.5, stop layer 10^4; small avalanches end by layer 8 (255 neurons)
-cortical branching model: 100 neurons (10 x 10 torus), p_spont 1e-4, 30000 steps, 2 models per p_trans
-p_trans                     0.200    0.205    0.210    0.215    0.220    0.225    0.230    0.235   0.240    0.245   0.250    0.255    0.260    0.265    0.270   0.275   0.280    0.285    0.290    0.295    0.300
-avalanches (median)       278.500  308.000  286.000  266.500  275.500  302.000  297.500  314.500  272.00  275.500  283.50  274.000  264.500  265.000  273.000  268.50  255.00  224.500  224.000  180.500  129.000
-active fraction (median)    0.031    0.034    0.034    0.031    0.034    0.042    0.042    0.049    0.05    0.052    0.06    0.067    0.073    0.072    0.109    0.12    0.17    0.221    0.264    0.376    0.556
-
-4 c = 0.0: whole-system integration 0.000000 bits; integration at k = 2, 6, 12: [0. 0. 0.]; complexity 0.00000000 bits
-
-4 c = 0.8: whole-system integration 5.841048 bits; integration at k = 2, 6, 12: [0.1966 1.9476 5.841 ]; complexity 0.43126968 bits
-
-4 c = 1.0: whole-system integration 11.000000 bits; integration at k = 2, 6, 12: [ 1.  5. 11.]; complexity 0.00000000 bits
-
-7 full model: 10000 runs, largest size 49506953, longest 10000 layers; size fit after cuts: tau 1.402, range 4 to 43, p 0.368
-full model shape collapse (durations >= 4 seen >= 20 times): 1/sigma nu z 1.598, curvature -3.056
-
-7 small avalanches: 7018 of 10000 runs; sizes 1 to 32; avalanches in the raster 7018 (sizes match the runs: True)
-[... 141 more lines not kept]
-```
-
-**Agent**
-
-Quick mode runs through except for NaN guards that the short simulations need (all-NaN columns in fig6/fig7c). I'll add those guards.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json
-f="models.ipynb"; d=json.load(open(f)); C=d["cells"]
-def edit(i, a, b, count=1):
-    s="".join(C[i]["source"]); assert s.count(a)>=1, (i,a); s=s.replace(a,b); C[i]["source"]=s.splitlines(keepends=True)
-edit(1, 'on_grid = lambda df, g:', 'arg_min = lambda s: s.dropna().idxmin() if s.notna().any() else None\narg_max = lambda s: s.dropna().idxmax() if s.notna().any() else None\non_grid = lambda df, g:')
-edit(16, 'm.loc[[0.2, 0.25, 0.3]].abs().idxmin()', 'arg_min(m.loc[[0.2, 0.25, 0.3]].abs())')
-edit(16, 'm.abs().idxmin()', 'arg_min(m.abs())')
-edit(19, 'm.idxmax()', 'arg_max(m)'); edit(19, 'mf.idxmax()', 'arg_max(mf)')
-edit(22, 'm.idxmax()', 'arg_max(m)'); edit(22, 'mf.idxmax()', 'arg_max(mf)')
-json.dump(d, open(f,"w"), indent=1, ensure_ascii=False); open(f,"a").write("\n")
-EOF
-export PATH=$TMPDIR/dev/bin:$PATH; MODELS_QUICK=1 jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/q models.ipynb 2>&1 | tail -1
-```
-
-```
-[NbConvertApp] Writing 40908 bytes to /tmp/claude-1001/q/models.ipynb
-```
-
-**Agent**
-
-Models notebook passes in quick mode. Now a quick run of the complexity notebook on 2 recordings.
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; export PATH=$TMPDIR/dev/bin:$PATH; date -u; HC8_SUBSET=2 jupyter nbconvert --to notebook --execute --allow-errors --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/q complexity_culture.ipynb 2>&1 | tail -1; python - <<'EOF'
-import json,os
-d=json.load(open(os.environ["TMPDIR"]+"/q/complexity_culture.ipynb"))
-for i,c in enumerate(d["cells"][:6]):
-    if c["cell_type"]=="code":
-        for o in c["outputs"]:
-            if o.get("output_type")=="stream": print(i, "".join(o["text"])[-2500:])
-            if o.get("output_type")=="error": print(i, "ERROR", o["ename"], o["evalue"])
-EOF
-date -u
-```
-
-```
-Mon Nov  9 13:27:18 UTC 2026
-[NbConvertApp] Writing 95652 bytes to /tmp/claude-1001/q/complexity_culture.ipynb
-1 2 recordings in 2.7 min; peak memory of this process 0.20 GB
-
-2 recordings: 2 | cultures: 2 | neurons analysed: 153
-avalanche bins per recording (real): 93104 to 416416
-real       complexity (bits/neuron) median 0.02131, range 0.00085 to 0.04178; subset sizes kept by the cut: median 13 of 76; NaN 0
-jitter1    complexity (bits/neuron) median 0.01566, range 0.00116 to 0.03016; subset sizes kept by the cut: median 12 of 76; NaN 0
-jitter10   complexity (bits/neuron) median 0.00077, range 0.00067 to 0.00087; subset sizes kept by the cut: median 7 of 76; NaN 0
-jitter100  complexity (bits/neuron) median 0.00216, range 0.00145 to 0.00287; subset sizes kept by the cut: median 15 of 76; NaN 0
-wrap       complexity (bits/neuron) median 0.00145, range 0.00041 to 0.00250; subset sizes kept by the cut: median 16 of 76; NaN 0
-poisson    complexity (bits/neuron) median 0.00056, range 0.00051 to 0.00060; subset sizes kept by the cut: median 11 of 76; NaN 0
-swap       complexity (bits/neuron) median 0.01270, range 0.00310 to 0.02230; subset sizes kept by the cut: median 16 of 76; NaN 0
-shuffle    complexity (bits/neuron) median 0.20037, range 0.16893 to 0.23181; subset sizes kept by the cut: median 68 of 76; NaN 0
-neurons left without a spike by shuffling (dropped): 0 recordings
-recordings kept under exclusion reading (a): 2 of 2
-
-4 2 recordings x 3 draws x 2 subset numbers in 1.2 min
-
-10 subsets per size, per recording (complexity in bits/neuron):
-[... 16 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,40p tools/entry.py; sed -n 425,500p tools/entry.py
-```
-
-```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py check entries/*/       # the same for every entry, in one process
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
-[... 69 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
-import json
-f="models.ipynb"; d=json.load(open(f)); C=d["cells"]
-def edit(i, a, b):
-    s="".join(C[i]["source"]); assert a in s, (i,a); s=s.replace(a,b); C[i]["source"]=s.splitlines(keepends=True)
-def setsrc(i, s): C[i]["source"]=s.splitlines(keepends=True)
-edit(0, "| fig7c-cb-curvature-no-peak | tested on both p_trans grids |", "| fig7c-cb-curvature-no-peak | tested on the 0.01 grid (reading b) |")
-edit(0, "tested on its susceptibility half, both grids;", "tested on its susceptibility half, 0.01 grid (reading b);")
-edit(1, 'GRID = np.round(np.arange(0.20, 0.30 + 1e-9, 0.005), 3)  # claims file, p_trans grid reading (a); reading (b) is every other value',
-        'GRID = np.round(np.arange(0.20, 0.30 + 1e-9, 0.01), 2)  # claims file, p_trans grid reading (b)')
-edit(1, '[(float(p), CB_MODELS, CB_STEPS, [SEED, int(round(p * 1000))]) for p in GRID]', '[(float(p), CB_MODELS, CB_STEPS, [SEED, j]) for j, p in enumerate(GRID)]')
-edit(1, '\ncb["grid_b"] = np.isclose(np.round(cb.p_trans * 100), cb.p_trans * 100)   # on the 0.01 grid', '')
-edit(1, '''arg_max = lambda s: s.dropna().idxmax() if s.notna().any() else None
-on_grid = lambda df, g: df if GRIDS[g] == slice(None) else df[df[GRIDS[g]]]''', 'arg_max = lambda s: s.dropna().idxmax() if s.notna().any() else None')
-edit(1, '''
-
-GRIDS = {"(a) 0.005": slice(None), "(b) 0.01": "grid_b"}''', '')
-setsrc(16, '''q = cb.groupby("p_trans")[["quad_size", "quad_dur"]].agg(["mean", "std", "count"])
-print(q.round(4).to_string())
-for col in ("quad_size", "quad_dur"):
-    m = cb.groupby("p_trans")[col].mean()
-    print(f"{col}: p 0.2 {m[0.2]:.4f} (negative: {m[0.2] < 0}), p 0.3 {m[0.3]:.4f} (positive: {m[0.3] > 0}), "
-          f"p 0.25 {m[0.25]:.4f}; smallest magnitude among 0.2, 0.25, 0.3 at {arg_min(m.loc[[0.2, 0.25, 0.3]].abs())}; "
-          f"over the grid at {arg_min(m.abs())}")''')
-setsrc(19, '''cv = cb.groupby("p_trans")[["curv_ss", "curv_full"]].agg(["mean", "std"])
-print(cv.round(3).to_string())
-m = cb.groupby("p_trans").curv_ss.mean()
-peaks = interior_maxima(m)
-near = [p for p in peaks if abs(p - 0.25) <= 0.02 or abs(p - 0.265) <= 0.02]
-print(f"extrapolated |curvature|: p 0.2 {m[0.2]:.3f} vs p 0.3 {m[0.3]:.3f} (0.2 larger: {m[0.2] > m[0.3]}); interior maxima at {peaks}; "
-      f"within 0.02 of 0.25 or 0.265: {near}")
-mf = cb.groupby("p_trans").curv_full.mean()
-print(f"full 100-neuron system: p 0.2 {mf[0.2]:.3f} vs 0.3 {mf[0.3]:.3f}; largest at {arg_max(mf)}, interior maxima {interior_maxima(mf)}")
-print("models with a failed shape collapse (NaN):", int(cb.curv_ss.isna().sum()))''')
-setsrc(22, '''print(cb.groupby("p_trans")[["chi_a_ss", "chi_b_ss", "chi_a_full", "chi_b_full"]].mean().to_string(float_format=lambda v: f"{v:.5g}"))
-chi_peaks = []
-for col, lab in (("chi_a_ss", "reading (a) var(A/N)"), ("chi_b_ss", "reading (b) N var(A/N)")):
-    m = cb.groupby("p_trans")[col].mean()
-    peaks = interior_maxima(m)
-    chi_peaks += peaks
-    print(f"extrapolated susceptibility {lab}: largest at p_trans {arg_max(m)}; interior maxima {peaks}; "
-          f"within 0.0265 of 0.265: {[p for p in peaks if abs(p - 0.265) <= 0.0265]}; rises at every step: {bool(np.all(np.diff(m.values) > 0))}")
-mf = cb.groupby("p_trans").chi_b_full.mean()
-print(f"whole 100-neuron system N var(A/N): largest at {arg_max(mf)}, interior maxima {interior_maxima(mf)}")''')
-setsrc(25, '''ref = cb.groupby("p_trans")[["B_new", "br_basic", "one_step", "mean_size", "n_av"]].mean()
-ref["4 p_trans"] = 4 * ref.index.values
-print(ref.to_string(float_format=lambda v: f"{v:.4f}"))
-pb = float((ref.B_new - 1).abs().idxmin())
-pk = sorted(set(chi_peaks))
-print(f"mean B_new closest to 1 at p_trans {pb} ({ref.B_new[pb]:.4f}); susceptibility interior maxima {pk}; "
-      f"within 0.0265 of one of them: {[p for p in pk if abs(p - pb) <= 0.0265]}; within 0.0265 of the paper's 0.265: {abs(pb - 0.265) <= 0.0265}")
-print(f"run time of this notebook so far: {(time.time() - t0) / 60:.1f} min; peak memory {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.2f} GB")''')
-edit(21, "computed for both readings of Eq. 14 and both grids.", "computed for both readings of Eq. 14 on the 0.01 grid (reading b).")
-edit(21, "about 18,900 sub-sample computations on reading (a) of the grid.", "9,900 sub-sample computations on this grid and 18,900 on the 0.005 grid.")
-json.dump(d, open(f,"w"), indent=1, ensure_ascii=False); open(f,"a").write("\n")
-EOF
-grep -n "GRIDS\|on_grid\|grid_b" models.ipynb; export PATH=$TMPDIR/dev/bin:$PATH; MODELS_QUICK=1 jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output-dir $TMPDIR/q models.ipynb 2>&1 | tail -1
-```
-
-```
-[NbConvertApp] Writing 36074 bytes to /tmp/claude-1001/q/models.ipynb
-```
-
-**Agent**
-
-Quick test passes. Running the entry check, then the full run.
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py check entries/crcns-hc-8-timme-2016 2>&1 | tail -5; date -u
-```
-
+````
+d49c320d0f Paper-first names (the cutover, docs/paper-first.md)
 ```
 /opt/hostedtoolcache/Python/3.13.18/x64/lib/python3.13/site-packages/nbformat/validator.py:434: DuplicateCellId: Non-unique cell id 'cebc6b1c' detected. Corrected to 'b01e93d0'.
   _validate(nbdict, ref, version, version_minor, relax_add_props)
@@ -1421,24 +277,1053 @@ Duplicate cell ids from copying cells; I'll give the new cells fresh ids, then s
 cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
 import json, uuid
 for f in ("models.ipynb","complexity_culture.ipynb","culture_criticality.ipynb"):
-    d=json.load(open(f)); seen=set(); n=0
-    for c in d["cells"]:
-        if c.get("id") in seen: c["id"]=uuid.uuid4().hex[:8]; n+=1
-        seen.add(c.get("id"))
-    json.dump(d, open(f,"w"), indent=1, ensure_ascii=False); open(f,"a").write("\n"); print(f, n)
-EOF
-cd ../..; python tools/entry.py check entries/crcns-hc-8-timme-2016 2>&1 | tail -2
+[... 37 more lines not kept]
+````
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -A6 "^\*\*Agent\*\*" transcripts/timme-2016-criticality/author-revise-1.md | grep -v "^--$" | cut -c1-600 | head -300
+```
+
+````
+305:**Agent**
+306-
+307-The dev environment is ready. Next I profile the complexity estimator on one recording to see what 100 subsets per size would cost.
+308-
+309-**Agent calls Bash**
+310-
+311-```bash
+476:**Agent**
+477-
+478-Values match the old code exactly. A first finding: on this recording, 100 subsets still keep only 12 of 90 sizes after the cut, so more subsets may not move the cut much. Now I'll profile the speed.
+479-
+480-**Agent calls Bash**
+481-
+482-```bash
+618:**Agent**
+619-
+620-The Bethe raster is cheap: 3 s per call at 100 subsets. Across seeds the cut complexity is 0.0016 to 0.0030 and keeps 14 to 24 of 245 sizes. Next I read the claims for the affected items.
+621-
+622-**Agent calls Bash**
+623-
+[... 57 more lines not kept]
+````
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "transcripts/timme-2016-criticality/author-revise-1.md",
+ "offset": 300,
+ "limit": 580
+}
+```
+
+````
+300	                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+301	        if subprocess.run(cmd).returncode != 0:
+302	[... 22 more lines not kept]
+303	```
+304	
+305	**Agent**
+306	
+307	The dev environment is ready. Next I profile the complexity estimator on one recording to see what 100 subsets per size would cost.
+308	
+309	**Agent calls Bash**
+310	
+311	```bash
+312	cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
+313	import json
+314	for nb in ["complexity_culture.ipynb","models.ipynb"]:
+315	    d=json.load(open(nb))
+316	    print("=====",nb, len(d["cells"]))
+317	    for i,c in enumerate(d["cells"]):
+318	        print(f"--- cell {i} [{c['cell_type']}] tags={c.get('metadata',{}).get('tags')}")
+319	        print("".join(c["source"])[:2500])
+[... 560 more lines not kept]
+````
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "transcripts/timme-2016-criticality/author-revise-1.md",
+ "offset": 878,
+ "limit": 560
+}
 ```
 
 ```
-models.ipynb 6
-complexity_culture.ipynb 2
-culture_criticality.ipynb 0
+878	cd entries/crcns-hc-8-timme-2016; $TMPDIR/dev/bin/python - <<'EOF'
+879	import json, copy
+880	f="complexity_culture.ipynb"
+881	d=json.load(open(f))
+882	C=d["cells"]
+883	def setsrc(c, s): c["source"]=s.splitlines(keepends=True)
+884	s="".join(C[0]["source"])
+885	s=s.replace("""The
+886	paper uses up to 100 random subsets per subset size; this notebook uses 10, to fit the time limit
+887	of 8 conditions), and runs on 180 of the 435 recordings drawn with a fixed seed.""","""It uses
+888	100 random subsets per subset size, as Methods 2.9 give, and runs on 40 of the 435 recordings drawn
+889	with a fixed seed, to fit the time limit of a notebook. A first version used 10 subsets on 180
+890	recordings; the verifier found the cut unstable at 10 subsets, and the spread of the estimate over
+891	repeated draws is shown below at 10 and 100 subsets.""")
+892	setsrc(C[0], s)
+893	s="".join(C[1]["source"])
+894	s=s.replace('N_SUBSETS = 10        # Methods 2.9 give up to 100; 10 to fit the time limit (a deviation)',
+895	            'N_SUBSETS = 100       # Methods 2.9: "the lesser of either all possible permutations of neurons or 100"')
+896	s=s.replace("""# 180 of the 435 recordings, drawn with a fixed seed: all 435 would take about 68 min with 4
+897	# processes (37 s per recording in development), over the 60 min limit of a notebook
+[... 540 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  git diff HEAD --stat -- entries attempts questions; wc -l attempts/timme-2016-criticality-01.yaml; grep -n "verifications\|^  - id:\|outcome:\|^[a-z_]*:" attempts/timme-2016-criticality-01.yaml | head -80; ls questions | grep timme; grep -n "N_SUBSETS\|N_RECORDINGS\|N_DRAWS\|GRID" entries/timme-2016-criticality/*.ipynb | head
+```
+
+```
+341 attempts/timme-2016-criticality-01.yaml
+1:schema_version: 3
+2:id: timme-2016-criticality-01
+3:datasets:
+9:paper: doi:10.3389/fphys.2016.00425
+10:date: 2026-11-09
+11:entry: timme-2016-criticality
+12:provenance:
+23:inputs:
+30:outcomes:
+32:  outcome: reproduced
+46:  outcome: reproduced
+57:  outcome: not_reproduced
+66:  outcome: reproduced
+85:  outcome: blocked
+93:  outcome: reproduced
+102:  outcome: reproduced
+111:  outcome: reproduced
+119:  outcome: reproduced
+128:  outcome: reproduced
+[... 29 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "argv\|argparse\|add_argument\|def cmd_run\|def run\b\|parallel\|Pool\|executed/" tools/entry.py | head -30; nproc; free -g | head -2
+```
+
+```
+28:go to --output-dir (default: executed/<name>/, which git ignores). A notebook
+35:executed/<name>/handover/. Run the entry first.
+43:import argparse
+463:def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+549:    parser = argparse.ArgumentParser(description=__doc__,
+550:                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+551:    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover", "upgrade-python"])
+552:    parser.add_argument("entry", type=Path, nargs="+",
+554:    parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
+555:    parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
+556:    parser.add_argument("--max-minutes", type=float, default=60,
+558:    parser.add_argument("--python", help="lock: the Python version to lock for (default: the entry's); "
+560:    parser.add_argument("--before", type=Path, help="upgrade-python: the executed notebooks to compare with "
+561:                                                    "(default: executed/<entry>)")
+4
+               total        used        free      shared  buff/cache   available
+Mem:              15           1          12           0           2          14
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 463,548p tools/entry.py
+```
+
+```
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    output_dir.mkdir(parents=True, exist_ok=True)
+    venv = (output_dir / ".venv").resolve()
+    python = venv / "bin" / "python"
+    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
+    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
+    kernel = f"registry-{entry_dir.name}"
+    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", python_of(entry_dir), str(venv)],
+                ["uv", "pip", "install", "--quiet", "--python", str(python),
+                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
+                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+        if subprocess.run(cmd).returncode != 0:
+            print(f"error: could not build the environment ({' '.join(cmd[:3])})", file=sys.stderr)
+            return 1
+
+    results, failed = [], False
+    for notebook in entry["notebooks"]:
+        name = notebook["path"]
+        started = time.time()
+[... 66 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -c "import pandas as pd" entries/timme-2016-criticality/culture_criticality.ipynb; python tools/entry.py check entries/timme-2016-criticality 2>&1 | tail -3; date -u
+```
+
+```
+1
+0 error(s)
+Mon Nov  9 23:09:45 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  date -u; python tools/entry.py all entries/timme-2016-criticality 2>&1 | tail -15; date -u
+```
+
+```
+Mon Nov  9 23:09:50 UTC 2026
+Installed kernelspec registry-timme-2016-criticality in executed/timme-2016-criticality/.venv/share/jupyter/kernels/registry-timme-2016-criticality
+0 error(s)
+pass  culture_criticality.ipynb  (2512 s)
+pass  complexity_culture.ipynb  (2258 s)
+pass  models.ipynb  (682 s)
+Tue Nov 10 00:40:52 UTC 2026
+```
+
+**Agent**
+
+All three notebooks passed (42, 38 and 11 min). Now reading the new outputs.
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+for nb in ["complexity_culture.ipynb","models.ipynb"]:
+    d=json.load(open(f"executed/timme-2016-criticality/{nb}"))
+    print("=====",nb)
+    for i,c in enumerate(d["cells"]):
+        if c["cell_type"]=="markdown":
+            print(f"--- md {i}:", "".join(c["source"])[:200].replace("\n"," ")); continue
+        print(f"--- code {i} tags={c['metadata'].get('tags')}")
+        for o in c["outputs"]:
+            if o.get("output_type")=="stream": print("".join(o["text"])[-6000:])
+            elif o.get("output_type")=="error": print("ERR", o["evalue"])
+EOF
+```
+
+```
+===== complexity_culture.ipynb
+--- md 0: # Timme et al. (2016) on CRCNS hc-8: complexity of the culture recordings  Paper: Timme et al. (2016), Front. Physiol. 7:425, doi:10.3389/fphys.2016.00425; claims file `claims/crcns-hc-8/10.3389-fphys
+--- code 1 tags=None
+40 recordings in 34.2 min; peak memory of this process 0.21 GB
+
+--- code 2 tags=['sanity']
+recordings: 40 | cultures: 21 | neurons analysed: 3610
+avalanche bins per recording (real): 43097 to 812127
+real       complexity (bits/neuron) median 0.00223, range 0.00011 to 0.07550; subset sizes kept by the cut: median 10 of 90; NaN 0
+jitter1    complexity (bits/neuron) median 0.00164, range 0.00006 to 0.06823; subset sizes kept by the cut: median 10 of 90; NaN 0
+jitter10   complexity (bits/neuron) median 0.00084, range 0.00002 to 0.07706; subset sizes kept by the cut: median 10 of 90; NaN 0
+jitter100  complexity (bits/neuron) median 0.00036, range 0.00000 to 0.10385; subset sizes kept by the cut: median 10 of 90; NaN 0
+wrap       complexity (bits/neuron) median 0.00037, range 0.00002 to 0.00250; subset sizes kept by the cut: median 10 of 90; NaN 0
+poisson    complexity (bits/neuron) median 0.00031, range 0.00002 to 0.00419; subset sizes kept by the cut: median 10 of 90; NaN 0
+swap       complexity (bits/neuron) median 0.00265, range 0.00001 to 0.16197; subset sizes kept by the cut: median 13 of 90; NaN 0
+shuffle    complexity (bits/neuron) median 0.17576, range 0.00540 to 0.30930; subset sizes kept by the cut: median 74 of 90; NaN 0
+neurons left without a spike by shuffling (dropped): 0 recordings
+recordings kept under exclusion reading (a): 40 of 40
+
+--- md 3: ## Spread of the estimate over repeated draws  The verifier of the first version asked how much the toolbox's complexity (correction and cut) varies with the random draws (the subsets and the time per
+[... 281 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls claims | grep -i timme; f=$(ls claims/timme-2016*.yaml 2>/dev/null || ls claims/*/*fphys*); echo $f; python - "$f" <<'EOF'
+import yaml,sys
+d=yaml.safe_load(open(sys.argv[1]))
+for c in d["claims"]:
+    if c["id"] in ("fig10a-complexity-randomization","figs8-complexity-susceptibility-correlation","figs9-complexity-fit-range-correlation","fig12a-swap-preserves-complexity","fig12b-shuffle-lowers-complexity","fig5f-network-state-poisson-keeps-complexity","fig7ab-cb-complexity-susceptibility-peak","fig7d-cb-branching-ratio-near-1","fig2e-avalanche-count"):
+        print(c["id"], "| depends:", c.get("depends_on"), "| expected:", c.get("expected"))
+        print("  CRIT:", c["criterion"]); print()
+EOF
+```
+
+```
+Exit code 1
+timme-2016-criticality.yaml
+timme-2016.yaml
+claims/timme-2016-criticality.yaml claims/timme-2016.yaml
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: 'claims/timme-2016-criticality.yaml\nclaims/timme-2016.yaml'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  head -5 claims/timme-2016.yaml; python - claims/timme-2016-criticality.yaml <<'EOF'
+import yaml,sys
+d=yaml.safe_load(open(sys.argv[1]))
+for c in d["claims"]:
+    if c["id"] in ("fig10a-complexity-randomization","figs8-complexity-susceptibility-correlation","figs9-complexity-fit-range-correlation","fig12a-swap-preserves-complexity","fig12b-shuffle-lowers-complexity","fig5f-network-state-poisson-keeps-complexity","fig7ab-cb-complexity-susceptibility-peak","fig7d-cb-branching-ratio-near-1","fig2e-avalanche-count","fig5d-bethe-small-avalanches","fig5e-shuffle-removes-complexity"):
+        print(c["id"], "| depends:", c.get("depends_on"), "| expected:", c.get("expected"))
+        print("  CRIT:", c["criterion"]); print()
+EOF
+```
+
+```
+# Claims for Timme, Ito, Myroshnychenko, Nigam, Shimono, Yeh, Hottowy, Litke & Beggs (2016),
+# "High-Degree Neurons Feed Cortical Computations", PLoS Comput Biol 12(5), e1004858, on CRCNS ssc-3.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-06,
+# protocol as stated in docs/protocol.md (version pilot-13), Reader steps 1 to 4.
+#
+fig5d-bethe-small-avalanches | depends: None | expected: None
+  CRIT: A simulation, not a test on recorded data. Bethe lattice of Methods 2.4 (two outgoing connections per neuron, p_trans = 0.5, activity stopped at layer 10^4, one neuron active in the first layer per run), as in the toolbox's bethelattice.m. The number of runs is not stated; a standard choice of 10^4 runs is used and cannot change the direction of the result. Small avalanches are those that stop on or before layer 8; each run is one time series of network states over the neurons of layers 1 to 8. Reproduced when the size distribution of the small avalanches is accepted as a truncated power law by plparams (p at least 0.2) and their complexity (toolbox complexity, sub-sampling correction on) is above zero.
+
+fig5e-shuffle-removes-complexity | depends: ['fig5d-bethe-small-avalanches'] | expected: None
+  CRIT: A simulation, not a test on recorded data. Neuron shuffling as in Methods 2.5 (at each time bin the active count kept and the identities drawn uniformly over all neurons). Reproduced when the shuffled size distribution equals the original and the complexity falls to below 10% of the original value ("removed" read as near zero; 10% is a choice the paper does not make).
+
+fig5f-network-state-poisson-keeps-complexity | depends: ['fig5d-bethe-small-avalanches'] | expected: None
+  CRIT: A simulation, not a test on recorded data. Whole network states (one per time bin) placed at random times, as Methods 2.5, paragraph 4, last sentence. Complexity depends only on the distribution of states (Methods 2.9), so it is preserved exactly whe
+[... 24 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import json
+d=json.load(open("executed/timme-2016-criticality/culture_criticality.ipynb"))
+for i,c in enumerate(d["cells"]):
+    if "claim:fig2e-avalanche-count" in (c["metadata"].get("tags") or []):
+        for o in c["outputs"]:
+            if o.get("output_type")=="stream": print("".join(o["text"]))
+for nb in ["complexity_culture.ipynb","models.ipynb","culture_criticality.ipynb"]:
+    d=json.load(open(f"entries/timme-2016-criticality/{nb}"))
+    for i,c in enumerate(d["cells"]):
+        s="".join(c["source"])
+        if c["cell_type"]=="markdown" and (s.startswith("**Result") or s.startswith("## Summary")) and (nb!="culture_criticality.ipynb" or "fig2e" in s or "Summary" in s or "avalanches per recording" in s):
+            print(f"==== {nb} cell {i}\n{s}\n")
+EOF
+```
+
+```
+avalanches per recording (first 59 min, rebinned to the network ISI): (a) median 83289; (b) Terrell-Scott mode 81707 (10 bins); expected 10000 +/- 1000
+range 2250 to 531966; 5th to 95th percentile 22187 to 192127
+recordings with 9000 to 11000 avalanches: 2
+by culture (median): {1: 53259, 2: 168892, 3: 76779, 4: 81115, 5: 59985, 6: 50268, 7: 87077, 8: 58274, 9: 63236, 10: 121442, 11: 66787, 12: 74549, 13: 64995, 14: 59490, 15: 90804, 16: 98738, 17: 94171, 18: 78209, 19: 102420, 20: 94425, 21: 194086, 22: 93222, 23: 52133, 24: 81925, 25: 61474, 26: 66837, 27: 104243, 28: 56187}
+log10 avalanches per recording, histogram (bins of 0.25 decades):
+3.00-3.25      0
+3.25-3.50      1
+3.50-3.75      2
+3.75-4.00      2
+4.00-4.25      9
+4.25-4.50     30
+4.50-4.75     79
+4.75-5.00    148
+5.00-5.25    135
+5.25-5.50     26
+5.50-5.75      3
+5.75-6.00      0
+recordings with 10^3.5 to 10^4.5 avalanches (within half a decade of 10,000): 43; median log10 4.92
+
+==== complexity_culture.ipynb cell 7
+[... 112 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - claims/timme-2016-criticality.yaml <<'EOF'
+import yaml,sys
+d=yaml.safe_load(open(sys.argv[1]))
+for c in d["claims"]:
+    if c["id"] in ("figs2-recording-length","fig7a-complexity-boundary-rise"):
+        print(c["id"], c.get("depends_on"), c.get("expected")); print("  CRIT:", c["criterion"]); print()
+EOF
+sed -n 1,60p attempts/timme-2016-criticality-01.yaml
+```
+
+```
+fig7a-complexity-boundary-rise ['fig7ab-cb-complexity-susceptibility-peak'] None
+  CRIT: A simulation, not a test on recorded data. With the analysis of fig7ab-cb-complexity-susceptibility-peak, reproduced when the mean complexity at the largest p_trans tested is above that at the next lower p_trans and above the minimum between the main peak and 0.3.
+
+figs2-recording-length None [{'quantity': 'p_trans at the primary complexity peak, all time bins', 'value': 0.28, 'tolerance': 0.028}]
+  CRIT: A simulation, not a test on recorded data. 30 models per p_trans run for 3 x 10^4, 10^5 and 3 x 10^5 steps; complexity on all time bins (Figure S2 legend). The p_trans grid as the readings of fig7ab-cb-complexity-susceptibility-peak. Open whether the sub-sampling extrapolation was applied (the supplement says the analysis was identical to the main text apart from the time bins); readings (a) extrapolated, (b) whole 100-neuron system. Reproduced when the mean complexity at the primary peak increases with recording length, the primary peak lies within tolerance of 0.28, and the ratio of the value at p_trans 0.3 to the primary peak value decreases with recording length.
+
+schema_version: 3
+id: timme-2016-criticality-01
+datasets:
+- archive: crcns
+  id: hc-8
+  version: unversioned
+  doi: 10.6080/K0PC308P
+  relation: primary
+paper: doi:10.3389/fphys.2016.00425
+date: 2026-11-09
+entry: timme-2016-criticality
+provenance:
+  kind: agent
+  accountable:
+[... 46 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 60,341p attempts/timme-2016-criticality-01.yaml
+```
+
+```
+measured: 83289
+  notes: After rebinning the first 59 min to the mean network ISI, the median number of avalanches
+    per recording is 83289 (reading a) and the histogram mode 81707 (reading b), against 10000 +/-
+    1000; the range is 2250 to 531966 and only 2 of 435 recordings have 9000 to 11000. How the paper
+    counted avalanches for Figure 2E is asked of the authors (findings).
+- claim: fig8-subsampling-exponents
+  outcome: reproduced
+  notebook: culture_criticality.ipynb
+  output: claim:fig8-subsampling-exponents
+  notes: Over 435 recordings, the full-system search gives tau 2.491 +/- 0.623 and alpha 2.928 +/-
+    0.648; sub-sampling with each sub-sample rebinned to its own ISI gives tau 2.106 +/- 0.407 and
+    alpha 2.730 +/- 0.579, lower means and lower SDs. 1/sigma nu z changes by 3.6% (size given
+    duration, 1.411 to 1.360) and 1.6% (shape collapse, 1.467 to 1.490). Keeping the full system's
+    bin for the sub-samples gives tau 1.745 +/- 0.465, alpha 2.356 +/- 0.504 and changes of 1.9% and
+    3.4%, the same conclusion. On one recording run with layout (b), the extrapolated values differ
+    from layout (a) by at most 0.044. One recording has no accepted duration fit.
+  deviations:
+  - Methods 2.10 do not say whether a sub-sample is rebinned to its own network ISI; the main
+    reading rebins it ("These analyses were identical to those performed in the whole recorded
+    system", Methods 2.10), and keeping the full system's bin is shown. Both give the same outcome.
+[... 262 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls schemas 2>/dev/null; grep -l "verifications:" attempts/*.yaml | head -3; f=$(grep -l "verifications:" attempts/*.yaml | head -1); sed -n "$(grep -n '^verifications:' $f | cut -d: -f1),+45p" $f
+```
+
+```
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+paper-match.schema.json
+attempts/amjad-2025-01.yaml
+attempts/armstrong-2026-01.yaml
+attempts/ashworth-2025-01.yaml
+verifications:
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text (PMC12183687). The verifier read the
+    archive's file list and metadata through the DANDI API and tested the helpers on synthetic inputs
+    (beta_power, burst_onsets, window_mean, codes_per_trial, rereference, fscv_window_mean, best_lag,
+    reward_blocks). It had no attempt record and took the claims from the claims file.
+  results:
+  - claim: insertion-yield
+    agrees: true
+    outcome: blocked
+[... 33 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'))
+import pprint
+def find(o,k):
+    if isinstance(o,dict):
+        for kk,v in o.items():
+            if kk==k: pprint.pprint(v, width=150); return True
+            if find(v,k): return True
+    if isinstance(o,list):
+        for v in o:
+            if find(v,k): return True
+find(s,'verifications')
+" | head -60
+```
+
+```
+{'items': {'additionalProperties': False,
+           'properties': {'by': {'type': 'string'},
+                          'date': {'format': 'date', 'type': 'string'},
+                          'kind': {'enum': ['agent', 'person', 'paper_author']},
+                          'results': {'items': {'additionalProperties': False,
+                                                'properties': {'agrees': {'type': 'boolean'},
+                                                               'claim': {'type': 'string'},
+                                                               'outcome': {'description': 'The outcome the verifier would give.',
+                                                                           'enum': ['reproduced',
+                                                                                    'partially_reproduced',
+                                                                                    'not_reproduced',
+                                                                                    'blocked']},
+                                                               'reason': {'description': "The verifier's reason, in its own words.",
+                                                                          'type': 'string'},
+                                                               'response': {'description': 'What the author changed or replied, kept apart from the '
+                                                                                           "verifier's reason.",
+                                                                            'type': 'string'}},
+                                                'required': ['claim', 'agrees'],
+                                                'type': 'object'},
+                                      'type': 'array'},
+[... 4 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/concl.py <<'EOF'
+import json
+E = "entries/timme-2016-criticality/"
+X = "executed/timme-2016-criticality/"
+cells = {
+"complexity_culture.ipynb": {
+7: "**Result: not reproduced.** Over 40 recordings with 100 subsets per size, the toolbox's complexity (correction and cut) has median 0.00223 bits/neuron in the real data. 10-bin and 100-bin jitter, wrap and Poisson lower it with Benjamini-Hochberg corrected p from 0.0372 to 1.16e-06, and Poisson and 100-bin jitter give the two largest decreases. 1-bin jitter lowers the median to 0.00164 without significance (corrected p 0.836), and shuffling raises it to 0.176 (corrected p 2.85e-13), against the claim; under Benjamini-Yekutieli three of the six are significant. The cut keeps a median of 10 of 90 subset sizes for the real data and 74 for shuffled data. Without the cut shuffling lowers complexity too, but 1-bin and 10-bin jitter are not significant (corrected p 0.43 and 0.303); without the correction shuffling raises it.",
+10: "**Result: not reproduced.** Over 40 recordings, the Pearson correlation of the toolbox's complexity with the susceptibility is 0.902 with Eq. 14 and 0.905 with N var(A/N) (Spearman 0.724 and 0.745): positive, as stated, but far outside 0.23 +/- 0.023. Without the cut it is -0.605 and -0.592, and without the correction 0.267 and 0.446.",
+13: "**Result: not reproduced.** Over 40 recordings, the Pearson correlations of the toolbox's complexity with the size and duration fit ranges are 0.060 (p 0.72) and -0.107 (p 0.51), against 0.296 and 0.197. Without the cut they are 0.052 and 0.276, and without the correction 0.369 and 0.038; no variant matches both.",
+16: "**Result: reproduced.** By the paper's rank sum test, spike swapping does not change the toolbox's complexity significantly (median 0.00223 against 0.00265, corrected p 0.836), and real and swapped complexity correlate with Pearson r 0.775, above the 0.7 reading of strong (Spearman 0.533, below it). The median per-recording relative change is -0.089. Both variants agree: without the cut p 0.927 and r 0.989, without the correction p 0.958 and r 0.998. The test uses 40 recordings, and the cut complexity of one recording has a median coefficient of variation of 0.78 over repeated draws at 100 subsets (spread section above), so r passes the 0.7 reading by 0.075.",
+19: "**Result: not reproduced.** With the toolbox's complexity, real complexity exceeds shuffled complexity in none of the 40 recordings (median change +0.174, corrected p 2.85e-13) and Pearson r is 0.431. Without the cut the claim holds: real exceeds shuffled in all 40 recordings, corrected p 2.97e-07, r 0.902. Without the correction real is never greater.",
+20: """## Summary
+
+| claim | outcome |
+|---|---|
+| fig10a-complexity-randomization | not reproduced |
+| figs8-complexity-susceptibility-correlation | not reproduced |
+| figs9-complexity-fit-range-correlation | not reproduced |
+| fig12a-swap-preserves-complexity | reproduced |
+| fig12b-shuffle-lowers-complexity | not reproduced |
+
+Differences from the paper's method: 40 of the 435 recordings, drawn with a fixed seed. The 100
+subsets per size of Methods 2.9 took 34.2 min for 40 recordings with 4 processes, so all 435 would
+exceed the 60 min limit of a notebook. The first version used 10 subsets on 180 recordings.
+
+With 100 subsets the toolbox's cut at the first peak of I(k)/(k-1) still falls early: it keeps a
+median of 10 of 90 subset sizes in the real data and 74 in shuffled data. Over three draws on 10
+recordings the cut complexity has a median coefficient of variation of 0.78 at 100 subsets and 0.86
+at 10, and the cut keeps a median of 8 and 7 sizes. Shuffling then raises complexity, against
+Figures 10A and 12B, and without the cut it lowers it in every recording. Spike swapping leaves
+complexity unchanged under every variant, as the paper says.
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences from the paper's method.""",
+},
+"models.ipynb": {
+8: "**Result: reproduced.** 7018 of 10000 runs end by layer 8. Their sizes after the cuts are accepted as a truncated power law (tau 1.593, sizes 4 to 12, p 0.338). Their complexity with 100 subsets per size is 0.00300 bits/neuron (24 of 245 sizes kept by the cut); 5 repeated draws give 0.00073 to 0.00335, above zero in all 5 and above the 0.00000 of the shuffled data (fig5e). The full model's sizes are also accepted (tau 1.402, p 0.368).",
+11: "**Result: reproduced.** Shuffling leaves A(t), and so the size distribution, unchanged, and lowers the complexity from 0.00300 to 0.00000, a ratio of 0.000; over repeated draws the largest shuffled value is 0.003 of the smallest original one. Without the cut the complexity falls from 0.26451 to -0.05185; without the correction it rises from 0.37416 to 0.41433.",
+14: "**Result: not reproduced.** Permuting the network states changes the size distribution (tau 2.222 against 1.593 +/- 0.058), but the toolbox's complexity changes from 0.00300 to 0.00345, a relative difference of 0.151, and 0.105 between the means of 5 repeated draws, against the criterion of 5%. The original's own draws differ from their mean by up to 0.675, so with the cut the estimator's spread is larger than the 5% the criterion allows for it. Without the cut the difference is 0.013 (0.004 between the means) and without the correction 0.001, both within 5%.",
+23: "**Result: not reproduced.** The extrapolated susceptibility, averaged over 30 models per p_trans on the 0.01 grid, rises at every step from 0.2 to 0.3 under both readings of Eq. 14 and has no interior maximum, so it does not peak within 0.0265 of 0.265; the whole 100-neuron system has no interior maximum either. The complexity half was not computed (too large, see above) and cannot change the outcome.",
+26: "**Result: not reproduced.** The mean B_new is closest to 1 at p_trans 0.28 (1.0052), but the susceptibility of fig7ab has no interior maximum to compare it with, so the criterion fails. 0.28 is within 0.0265 of the paper's 0.265. For reference, the one-step ratio is 0.9373 at p_trans 0.25, where 4 p_trans is 1, and the mean avalanche size rises from 16.1 at 0.25 to 110.9 at 0.28 and 2276.6 at 0.30.",
+27: """## Summary
+
+| claim | outcome |
+|---|---|
+| fig3-chain-model-complexity | reproduced |
+| fig5d-bethe-small-avalanches | reproduced |
+| fig5e-shuffle-removes-complexity | reproduced |
+| fig5f-network-state-poisson-keeps-complexity | not reproduced |
+| fig6-cb-distribution-curvature | partially reproduced |
+| fig7c-cb-curvature-no-peak | not reproduced |
+| fig7ab-cb-complexity-susceptibility-peak | not reproduced (susceptibility half) |
+| fig7a-complexity-boundary-rise | blocked, too_large |
+| figs2-recording-length | blocked, too_large |
+| fig7d-cb-branching-ratio-near-1 | not reproduced |
+
+Differences from the paper's method: the p_trans grid of 0.01 only (reading b), as 0.005 would
+double the simulation time; curvature of the distributions as a quadratic term, a measure the paper
+does not define; the complexity of the sub-sampled cortical branching models not computed. In this
+port of the cortical branching model the mean B_new is closest to 1 at p_trans 0.28, the one-step
+ratio is 0.9373 at 0.25, and the susceptibility rises to the end of the grid. These are simulations,
+so they say nothing about the dataset.
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences from the paper's method.""",
+},
+"culture_criticality.ipynb": {
+13: "**Result: not reproduced.** After rebinning the first 59 min to the network ISI, the median number of avalanches per recording is 83289 and the histogram mode 81707, about eight times the stated 10,000; only 2 of 435 recordings have 9000 to 11000 avalanches. On a log scale the median is 10^4.92, and 43 of 435 recordings lie within half a decade of 10^4, so the count does not hold as an order of magnitude either.",
+},
+}
+for nb, edits in cells.items():
+    for base in (E, X):
+        d = json.load(open(base + nb))
+        for i, text in edits.items():
+            c = d["cells"][i]
+            old = "".join(c["source"])
+            assert c["cell_type"] == "markdown" and (old.startswith("**Result") or old.startswith("## Summary")), (nb, i, old[:50])
+            c["source"] = text.splitlines(keepends=True)
+        json.dump(d, open(base + nb, "w"), indent=1, ensure_ascii=False)
+        open(base + nb, "a").write("\n")
+print("ok")
+EOF
+python $TMPDIR/concl.py; git diff --stat entries/
+```
+
+```
+ok
+ .../complexity_culture.ipynb                       | 29 +++++++++++++---------
+ .../culture_criticality.ipynb                      |  2 +-
+ entries/timme-2016-criticality/models.ipynb        | 26 ++++++++++---------
+ 3 files changed, 32 insertions(+), 25 deletions(-)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/timme-2016-criticality; python - <<'EOF'
+s=open("entry.yaml").read()
+s=s.replace("runtime_minutes: 46","runtime_minutes: 42").replace("runtime_minutes: 32","runtime_minutes: 38").replace("runtime_minutes: 12","runtime_minutes: 11")
+open("entry.yaml","w").write(s)
+r=open("README.md").read()
+r=r.replace("(all 435 recordings, about 46 min with 4 processes)","(all 435 recordings, about 42 min with 4 processes)")
+r=r.replace("neural complexity of the real and randomized data (180 recordings,\n  about 32 min)","neural complexity of the real and randomized data (40 recordings,\n  100 subsets per size, about 38 min)")
+r=r.replace("the cortical branching model (about 12 min)","the cortical branching model (about 11 min)")
+old=r[r.index("The counts of recordings"):r.index("A failure to reproduce")]
+new="""The counts of recordings and neurons match the paper exactly, and the exponents, branching ratios,
+susceptibility, curvature and fit ranges behave as the paper reports, with some exceptions under
+the weakest randomization. The number of avalanches per recording is about eight times the stated
+10,000. The complexity results depend on the toolbox's cut of the integration curve, which keeps
+about a tenth of the subset sizes in the real data even with the paper's 100 subsets per size:
+with it, shuffling raises complexity, against the paper, while spike swapping leaves it unchanged,
+as the paper says. In the cortical branching model the susceptibility rises to the end of the
+p_trans range with no peak. Two model claims are blocked for time.
+
+"""
+r=r.replace(old,new)
+open("README.md","w").write(r)
+EOF
+grep -n "40 recordings\|42 min\|11 min\|Two model" README.md; grep runtime entry.yaml
+```
+
+```
+12:  they change under randomization (all 435 recordings, about 42 min with 4 processes).
+13:- `complexity_culture.ipynb`: neural complexity of the real and randomized data (40 recordings,
+15:- `models.ipynb`: the chain model, the Bethe lattice and the cortical branching model (about 11 min).
+27:p_trans range with no peak. Two model claims are blocked for time.
+  runtime_minutes: 42
+  runtime_minutes: 38
+  runtime_minutes: 11
+```
+
+**Agent calls Bash**
+
+```bash
+date -u
+```
+
+```
+Tue Nov 10 00:43:30 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/rec.py <<'PYEOF'
+p = "attempts/timme-2016-criticality-01.yaml"
+s = open(p).read()
+
+def swap(start, end, new):
+    global s
+    i = s.index(start); j = s.index(end, i)
+    s = s[:i] + new + s[j:]
+
+swap("- claim: fig10a-complexity-randomization", "- claim: fig3-chain-model-complexity", """- claim: fig10a-complexity-randomization
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:fig10a-complexity-randomization
+  notes: Over 40 recordings with 100 subsets per size, the toolbox's complexity (correction and cut)
+    has median 0.00223 bits/neuron in the real data. 10-bin and 100-bin jitter, wrap and Poisson
+    lower it with Benjamini-Hochberg corrected p from 0.0372 to 1.16e-06, and Poisson and 100-bin
+    jitter give the two largest decreases. 1-bin jitter lowers the median to 0.00164 without
+    significance (corrected p 0.836), and shuffling raises it to 0.176 (corrected p 2.85e-13),
+    against the claim; under Benjamini-Yekutieli three of the six are significant. The cut keeps a
+    median of 10 of 90 subset sizes for the real data and 74 for shuffled data. Without the cut
+    shuffling lowers complexity too, but 1-bin and 10-bin jitter are not significant (corrected p
+    0.43 and 0.303); without the correction shuffling raises it. The first version, with 10 subsets
+    on 180 recordings, gave the same pattern (five of six lower, shuffling raises it 74-fold) and
+    was recorded as partially reproduced; a 78-fold rise under shuffling contradicts the claim, so
+    the outcome is now not reproduced, as the verifier gave it.
+  deviations:
+  - 40 of the 435 recordings, drawn with a fixed seed. With the 100 subsets per size of Methods 2.9
+    the 40 recordings took 34.2 min with 4 processes, so all 435 would exceed the 60 min limit of a
+    notebook. The first version used 10 subsets on 180 recordings.
+- claim: figs8-complexity-susceptibility-correlation
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:figs8-complexity-susceptibility-correlation
+  measured: 0.902
+  notes: Pearson r between the toolbox's complexity and the susceptibility over 40 recordings is
+    0.902 with Eq. 14 as printed and 0.905 with N var(A/N) (Spearman 0.724 and 0.745), against 0.23
+    +/- 0.023; the correlation is positive, as stated, but much larger. Without the cut it is -0.605
+    and -0.592, without the correction 0.267 and 0.446.
+  deviations:
+  - As for fig10a-complexity-randomization, 40 recordings.
+- claim: figs9-complexity-fit-range-correlation
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:figs9-complexity-fit-range-correlation
+  measured:
+  - 0.06
+  - -0.107
+  notes: Over 40 recordings, Pearson r of the toolbox's complexity with the size fit range is 0.060
+    (p 0.72) and with the duration fit range -0.107 (p 0.51), against 0.296 and 0.197. Without the
+    cut they are 0.052 and 0.276, without the correction 0.369 and 0.038; no variant matches both.
+  deviations:
+  - As for fig10a-complexity-randomization, 40 recordings.
+- claim: fig12a-swap-preserves-complexity
+  outcome: reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:fig12a-swap-preserves-complexity
+  notes: By the paper's rank sum test, spike swapping does not change the toolbox's complexity
+    significantly over 40 recordings (median 0.00223 against 0.00265, relative +0.189; corrected p
+    0.836 BH, 1 BY), and real and swapped complexity correlate with Pearson r 0.775, above the 0.7
+    reading of strong (Spearman 0.533, below it). The median per-recording relative change is
+    -0.089 and the signed-rank p 0.858. Both variants agree; without the cut p 0.927 and r 0.989,
+    without the correction p 0.958 and r 0.998. With 10 subsets on 180 recordings the first version
+    found a 65% decrease (corrected p 3.2e-08) and r 0.502; with 100 subsets the cut complexity of
+    one recording still has a median coefficient of variation of 0.78 over repeated draws, so r
+    passes the 0.7 reading by a small margin, and the rank sum test on 40 recordings has less power
+    than on 180.
+  deviations:
+  - As for fig10a-complexity-randomization, 40 recordings.
+- claim: fig12b-shuffle-lowers-complexity
+  outcome: not_reproduced
+  notebook: complexity_culture.ipynb
+  output: claim:fig12b-shuffle-lowers-complexity
+  notes: With the toolbox's complexity, real complexity exceeds shuffled complexity in none of 40
+    recordings, the median rises by 0.174 (corrected p 2.85e-13) and Pearson r is 0.431. Without the
+    cut the claim holds (real greater in all 40 recordings, corrected p 2.97e-07, r 0.902); without
+    the correction real is never greater. Shuffling as Methods 2.5 describe is the toolbox's swap2,
+    so the claims file's variant is the same procedure.
+  deviations:
+  - As for fig10a-complexity-randomization, 40 recordings.
+""")
+
+swap("- claim: fig5d-bethe-small-avalanches", "- claim: fig6-cb-distribution-curvature", """- claim: fig5d-bethe-small-avalanches
+  outcome: reproduced
+  notebook: models.ipynb
+  output: claim:fig5d-bethe-small-avalanches
+  notes: Of 10000 runs, 7018 end by layer 8. Their sizes after the cuts of Methods 2.7 are accepted
+    as a truncated power law (tau 1.593, sizes 4 to 12, p 0.338) and their complexity, with the
+    correction and 100 subsets per size, is 0.00300 bits/neuron with 24 of 245 subset sizes kept by
+    the cut (no cut 0.265, no correction 0.374). Five repeated draws give 0.00073 to 0.00335, above
+    zero in all five and above the shuffled data's 0.00000 (fig5e). The full model's sizes are
+    accepted too (tau 1.402, 4 to 43, p 0.368) and its shape collapse gives 1/sigma nu z 1.598.
+  deviations:
+  - The number of runs (10^4) is the claims file's standard choice; small avalanches are those whose
+    last active layer is 8 or less ("stopped on or before the 8th layer", Results 3.1).
+- claim: fig5e-shuffle-removes-complexity
+  outcome: reproduced
+  notebook: models.ipynb
+  output: claim:fig5e-shuffle-removes-complexity
+  notes: Shuffling leaves A(t) and the size distribution unchanged and lowers the complexity from
+    0.00300 to 0.00000 bits/neuron (ratio 0.000); over five repeated draws the largest shuffled value
+    is 0.003 of the smallest original one. Without the cut it falls from 0.265 to -0.052; without
+    the correction it rises from 0.374 to 0.414.
+- claim: fig5f-network-state-poisson-keeps-complexity
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig5f-network-state-poisson-keeps-complexity
+  notes: Permuting the order of all time bins changes the size distribution (tau 2.222 against the
+    original 1.593 +/- 0.058, sizes of 1 from 0.361 to 0.209 of avalanches), but the toolbox's
+    complexity changes from 0.00300 to 0.00345, a relative difference of 0.151, and 0.105 between
+    the means of five repeated draws, against the criterion of 5%. The same states are kept, so the
+    difference is the estimator's own spread; the original's draws differ from their mean by up to
+    0.675, more than the 5% the criterion allows for the random subset draws. Without the cut the
+    relative difference is 0.013 (0.004 between the means) and without the correction 0.001, both
+    within 5%.
+""")
+
+swap("- claim: fig7ab-cb-complexity-susceptibility-peak", "findings:", """- claim: fig7ab-cb-complexity-susceptibility-peak
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig7ab-cb-complexity-susceptibility-peak
+  measured:
+  - null
+  - 0.3
+  notes: The extrapolated susceptibility, averaged over 30 models per p_trans on the 0.01 grid,
+    rises at every step from 0.2 to 0.3 under both readings of Eq. 14 (N var(A/N) from 0.00105 to
+    1.53) and has no interior maximum; its largest value is at 0.3, the end of the range. The whole
+    100-neuron system has no interior maximum either. The criterion needs both halves, so the claim
+    fails whatever the complexity shows. The complexity half was not computed; with 100 subsets per
+    size one whole-system complexity of a model at p_trans 0.3 took 134 s in development, and the
+    claim needs 9,900 sub-sample computations on the 0.01 grid and 18,900 on the 0.005 grid.
+  deviations:
+  - Only the p_trans grid of 0.01 (reading b) was run; the susceptibility rises at every step of it,
+    so a grid of 0.005 cannot add an interior maximum unless the curve turns between two of its
+    points.
+- claim: fig7a-complexity-boundary-rise
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the extrapolated complexity of the sub-sampled cortical branching models of
+    fig7ab-cb-complexity-susceptibility-peak, which was not computed (9,900 sub-sample computations
+    on the 0.01 grid, at up to 134 s each with 100 subsets per size).
+- claim: figs2-recording-length
+  outcome: blocked
+  blocked_by: too_large
+  notes: Needs the complexity of 30 models per p_trans at three recording lengths, on all time bins.
+    With extrapolation (reading a) it is three times the computation of fig7ab. Without it (reading
+    b), it is 990 whole-system computations on the 0.01 grid; at 100 subsets per size one
+    computation on a model of 3 x 10^5 steps at p_trans 0.3 took 134 s in development, so the
+    longest recordings alone come to several hours on 4 processes, beyond the 60 min limit of a
+    notebook and the time left in the run.
+- claim: fig7d-cb-branching-ratio-near-1
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig7d-cb-branching-ratio-near-1
+  notes: The mean B_new over 30 models is closest to 1 at p_trans 0.28 (1.0052). Its criterion
+    compares that value with the peaks found in fig7ab-cb-complexity-susceptibility-peak, and the
+    susceptibility has none, so the claim fails. 0.28 is within 0.0265 of the paper's 0.265. For
+    reference, the one-step ratio sum A(t+1) / sum A(t) is 0.9373 at p_trans 0.25, where 4 p_trans
+    is 1, B_basic is 0.9676 there, and the mean avalanche size rises from 16.1 at 0.25 to 110.9 at
+    0.28 and 2276.6 at 0.30.
+""")
+
+s = s.replace("""    1000; the range is 2250 to 531966 and only 2 of 435 recordings have 9000 to 11000. How the paper
+    counted avalanches for Figure 2E is asked of the authors (findings).""", """    1000; the range is 2250 to 531966 and only 2 of 435 recordings have 9000 to 11000. On a log scale
+    the median is 10^4.92 and 43 of 435 recordings lie within half a decade of 10^4, so the count
+    does not hold as an order of magnitude either. How the paper counted avalanches for Figure 2E is
+    asked of the authors (findings).""")
+
+s = s.replace("""  - Only the p_trans grid of 0.01 (reading b) was run; the 0.005 grid (reading a) would double the
+    simulation time.""", """  - Only the p_trans grid of 0.01 (reading b) was run; the 0.005 grid (reading a) would double the
+    simulation time. The interior maximum at 0.25 has lower values on both sides (4.619 at 0.24 and
+    4.440 at 0.26), points the 0.005 grid also holds.""")
+
+old = s[s.index("  statement: Question for the authors. With the complexity function"):s.index("- kind: methods_unavailable\n  statement: Question for the authors. Methods 2.4")]
+s = s.replace(old, """  statement: Question for the authors. With the complexity function of the NCC toolbox (sub-sampling
+    correction and cut at the first peak of I(k)/(k-1)) and 100 subsets per size, as Methods 2.9
+    give, the cut keeps a median of 10 of 90 subset sizes in the real culture data and 74 in
+    shuffled data, the cut complexity of one recording varies with a median coefficient of variation
+    of 0.78 over repeated draws, and shuffling raises complexity, unlike Figures 10A and 12B. Without
+    the cut the results agree with the paper. How often did the cut apply in the paper's culture
+    analysis, and was it applied to the randomized data in the same way?
+""")
+open(p, "w").write(s)
+PYEOF
+python $TMPDIR/rec.py && cd  && python tools/entry.py check entries/timme-2016-criticality 2>&1 | tail -3
+```
+
+```
+error: attempts/timme-2016-criticality-01.yaml: outcomes/24/measured: [None, 0.3] is not valid under any of the given schemas
+1 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+p="attempts/timme-2016-criticality-01.yaml"; s=open(p).read()
+s=s.replace("""  output: claim:fig7ab-cb-complexity-susceptibility-peak
+  measured:
+  - null
+  - 0.3
+""","""  output: claim:fig7ab-cb-complexity-susceptibility-peak
+""")
+open(p,"w").write(s)
+EOF
+python tools/entry.py check entries/timme-2016-criticality 2>&1 | tail -2
+```
+
+```
 0 error(s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  date -u; python tools/entry.py all entries/crcns-hc-8-timme-2016 2>&1 | tail -15; date -u
+cd  cat > $TMPDIR/ver.py <<'PYEOF'
+import yaml
+C40 = "the complexity is now computed with 100 subsets per size, as Methods 2.9 give, on 40 recordings (all 435 would exceed the notebook limit)"
+R = []
+def r(claim, agrees, outcome, reason, response):
+    R.append(dict(claim=claim, agrees=agrees, outcome=outcome, reason=reason, response=response))
+
+r("fig3-chain-model-complexity", True, "reproduced",
+  "Complexity is 0 at c = 0 and c = 1 and 0.431 bits at c = 0.8. Integration is 0, 5.84 and 11 bits for c = 0, 0.8, 1.",
+  "No change.")
+r("fig5d-bethe-small-avalanches", True, "reproduced",
+  "The size fit is accepted (p 0.338), but only over sizes 4 to 12. Corrected complexity is 0.00637 > 0. The same network states gave 0.00001 in another cell, so above zero is within the estimator's noise (B1); reproduced (fragile).",
+  "The complexity now uses 100 subsets per size (B1) and five repeated draws are shown. It is 0.00300 bits/neuron, 0.00073 to 0.00335 over the draws, above zero in all five and above the shuffled data's 0.00000. Outcome unchanged.")
+r("fig5e-shuffle-removes-complexity", True, "reproduced",
+  "Size distribution identical; shuffled/original complexity ratio is 0.003. The original value is itself at noise level (B1). With the no-cut variant the complexity is also removed (-0.050 vs 0.271); reproduced (unreliable).",
+  "Redone with 100 subsets per size and repeated draws. The ratio is 0.000, and the largest shuffled value over the draws is 0.003 of the smallest original one. Outcome unchanged.")
+r("fig5f-network-state-poisson-keeps-complexity", True, "not_reproduced",
+  "Relative change in complexity is 0.998 against a criterion of < 0.05; the size distribution did change. The network states are the same before and after, so the miss comes from the estimator's noise (B1). The no-cut (0.049) and raw (0.020) variants pass; not reproduced (unreliable).",
+  "Redone with 100 subsets per size and five repeated draws. The relative difference is 0.151 (0.105 between the means of the draws), still above 5%; the original's own draws differ from their mean by up to 0.675, so the cut complexity's spread exceeds the criterion's 5% at the paper's number of subsets. No cut 0.013, no correction 0.001. Outcome unchanged, with this stated in the notes.")
+r("fig6-cb-distribution-curvature", True, "partially_reproduced",
+  "Durations pass all three parts (-1.23 at 0.2, +1.39 at 0.3, smallest at 0.25). Sizes fail, +0.087 +/- 0.51 at 0.2, and the smallest magnitude is at 0.2/0.21.",
+  "No change. On B4, the failure is at grid points (0.2, 0.21) that the 0.005 grid also holds, as the verifier says; the 0.005 grid was not run.")
+r("fig7ab-cb-complexity-susceptibility-peak", False, "not_reproduced",
+  "The susceptibility half was computed by the criterion's method. It rises monotonically to the edge of the range (0.3) under both readings and has no interior peak, so the claim fails whatever the complexity shows. The complexity half is untested (B2).",
+  "Agreed; changed from blocked (too_large) to not reproduced. The notebook now has a fig7ab section that prints the extrapolated susceptibility under both readings (rises at every step, no interior maximum) and says the complexity half was not computed.")
+r("fig7a-complexity-boundary-rise", True, "blocked",
+  "Needs the sub-sampled complexity of the cortical branching model, which was not computed.",
+  "No change.")
+r("figs2-recording-length", True, "blocked",
+  "Not run. Reading (b) (whole 100-neuron system, no extrapolation) needs only about 1,000 complexity calls and could have been run.",
+  "Not run. With the paper's 100 subsets per size, which B1 asked for, one whole-system computation on a model of 3 x 10^5 steps at p_trans 0.3 took 134 s in development, so the 990 calls of reading (b) come to several hours on 4 processes, over the 60 min notebook limit and the time left. The estimate is in the notes; outcome unchanged.")
+r("fig7c-cb-curvature-no-peak", True, "not_reproduced",
+  "The extrapolated absolute curvature has its only interior maximum at 0.25 (4.667); the full-system curvature also peaks at 0.25. The 0.2 > 0.3 part holds.",
+  "No change. The deviation now notes that the values on both sides of the maximum (0.24 and 0.26) are points the 0.005 grid also holds (B4).")
+r("fig7d-cb-branching-ratio-near-1", True, "blocked",
+  "It depends on fig7ab's peak, and there is none for susceptibility; blocked, other. For reference, B_new is closest to 1 at 0.28, which is within 0.0265 of the paper's 0.265.",
+  "Changed from blocked to not reproduced, judged against fig7ab as B2 asks: the susceptibility has no interior maximum, so B_new's closest approach to 1 (0.28) cannot lie within 0.0265 of it. As asked under C, the notebook now prints the mean avalanche size, B_basic and the one-step ratio against 4 p_trans; the one-step ratio is 0.9373 at 0.25, where 4 p_trans is 1.")
+r("culture-counts", True, "reproduced",
+  "435 recordings and 39,529 neurons, both exact. Median 91 and mode 93.3 neurons per recording, within 90 to 110. Firing-rate 5th/95th percentiles are 0.04548 and 7.70 Hz, inside 0.045 to 22 Hz; the lower one only just passes.",
+  "No change.")
+r("fig2d-network-isi", True, "reproduced",
+  "Median mean network ISI is 6.67 ms, within 7 +/- 0.7.", "No change.")
+r("fig2e-avalanche-count", True, "not_reproduced",
+  "Median 83,289 avalanches and mode 81,707, against 10,000 +/- 1,000. Only 2 recordings fall in 9k to 11k. No error found in the rebinning or avalanche code. Whether the axis of Figure 2E is logarithmic could not be told; a histogram of log10 avalanche count would show whether around 10,000 is meant as an order of magnitude.",
+  "Added the histogram of log10 avalanche count. The median is 10^4.92 and 43 of 435 recordings lie within half a decade of 10^4, so the count does not hold as an order of magnitude either. Outcome unchanged.")
+r("fig8-subsampling-exponents", True, "reproduced",
+  "Sub-sampled tau (2.106 +/- 0.407) and alpha (2.730 +/- 0.579) are lower and less spread than full-system tau (2.491 +/- 0.623) and alpha (2.928 +/- 0.648). 1/sigma nu z changes 3.6% and 1.6%. Both rebinning readings pass.",
+  "No change. On B5, layout (b) stays on one recording, where it agrees with layout (a) to within 0.044, as the deviation says. On B6, the MLE over the full range after the cuts follows plmle.m as the claims file reads it; it raises tau on synthetic data (1.692 against 1.621), which the verifier found does not change the direction, and no change was made. On B7, the exclusion question is already a finding for the authors.")
+r("fig8-exponents-match-literature", True, "blocked",
+  "REFS is empty. The reference values come from the three cited papers, and the archive does not hold them.",
+  "No change.")
+r("fig8-sigmanuz-methods-agree", True, "reproduced",
+  "Differences of 0.056 / 0.130 / 0.133 are each below the larger SD (0.204 / 0.337 / 0.297).", "No change.")
+r("eq4-exponent-relation", True, "reproduced",
+  "1.293 +/- 0.694 and 1.565 +/- 0.778 each lie within one SD of both 1/sigma nu z estimates. The test is lax; per recording only 21% agree within 0.1.",
+  "No change; the per-recording agreement was already in the notes.")
+r("eq4-relation-randomized", True, "reproduced",
+  "For wrap and Poisson the relation holds, and tau and alpha both differ from the real data by more than one SD.", "No change.")
+r("fig9-branching-ratio", True, "reproduced",
+  "Band 0.05, 73.6% of recordings have B_new in [0.95, 1), and 94.7% have B_basic below 0.95. SD of B_basic is 0.088 against 0.064 for B_new.", "No change.")
+r("fig10a-complexity-randomization", False, "not_reproduced",
+  "Five of six non-swap randomizations lower complexity, but shuffling raises it 74-fold (0.0019 to 0.145). This pattern is what the 10-subset estimator produces (B1). The no-cut variant passes all six with Poisson among the two largest drops; not reproduced (unreliable).",
+  "Redone with 100 subsets per size on 40 recordings (B1, B3). Shuffling still raises complexity, 78-fold (corrected p 2.85e-13), the cut keeps a median of 10 of 90 sizes in real data and 74 in shuffled data, and 1-bin jitter is not significant; without the cut 1-bin and 10-bin jitter are not significant on 40 recordings. Changed from partially reproduced to not reproduced, as the verifier gave it, since a 78-fold rise contradicts the claim.")
+r("fig10b-susceptibility-randomization", True, "reproduced",
+  "Reading (b) N var(A/N) with BH, all five randomizations lower with p_BH < 0.05, Poisson the largest drop. It fails under reading (a) or BY, where jitter1 is not significant.",
+  "No change; the readings that fail were already in the notes.")
+r("fig10c-curvature-randomization", True, "partially_reproduced",
+  "jitter10, jitter100, wrap and Poisson lower with p < 1e-37. jitter1 is +0.139 with p_BH 0.39.", "No change.")
+r("figs8-complexity-susceptibility-correlation", True, "not_reproduced",
+  "Pearson r is 0.542 (a) or 0.625 (b), against 0.23 +/- 0.023. Only the no-correction variant with reading (a) lands inside (0.221); not reproduced (unreliable).",
+  "Redone with 100 subsets per size on 40 recordings: r is 0.902 (a) and 0.905 (b); no variant lands inside (no correction 0.267 and 0.446, no cut -0.605 and -0.592). Outcome unchanged.")
+r("fig11ac-fit-range-randomization", True, "reproduced",
+  "Poisson lowers the size and duration ranges (p_BH ~1e-141). jitter10 raises them (+0.047 / +0.070 decades, significant). jitter100 and wrap lower them; jitter1 is not significant.",
+  "No change.")
+r("figs9-complexity-fit-range-correlation", True, "not_reproduced",
+  "r = 0.143 for the size range (expected 0.296) and -0.049 for the duration range (expected 0.197); not reproduced (unreliable).",
+  "Redone with 100 subsets per size on 40 recordings: r is 0.060 and -0.107; no variant matches both. Outcome unchanged.")
+r("fig11bd-exponents-randomization", True, "partially_reproduced",
+  "tau rises significantly for 4 of 5 randomizations; jitter1 lowers it significantly (p_BH 0.011). alpha rises for 3 of 5; jitter1 and jitter10 are not significant.",
+  "No change.")
+r("fig12a-swap-preserves-complexity", True, "not_reproduced",
+  "Swapping lowers complexity by 65% (rank-sum p_BH 3e-8) and Pearson r is 0.502. The no-cut (p 0.42, r 0.968) and raw (p 0.81, r 0.996) variants both meet the criterion; not reproduced (unreliable).",
+  "Redone with 100 subsets per size on 40 recordings, as B1 asks. The rank sum test now gives corrected p 0.836 (median 0.00223 against 0.00265) and Pearson r 0.775, which meets the criterion, so the outcome is changed to reproduced. The notes say that r passes the 0.7 reading by a small margin, that the cut complexity varies across draws (median coefficient of variation 0.78), and that 40 recordings give the test less power than 180.")
+r("fig12b-shuffle-lowers-complexity", True, "not_reproduced",
+  "Real complexity exceeds shuffled in only 10% of recordings, and r is 0.234. The no-cut variant meets the criterion (99.4%, p 1e-25, r 0.856); not reproduced (unreliable).",
+  "Redone with 100 subsets per size on 40 recordings: real exceeds shuffled in none of 40 and r is 0.431; without the cut in all 40 (r 0.902). Outcome unchanged.")
+
+v = [dict(date="2026-11-09", kind="agent",
+          by="Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+          reviewed=("Round 1. The three executed notebooks with the conclusion cells and the summaries removed, the helper "
+                    "modules hc8.py and models.py and the claims file, with the paper's full text. The verifier tested the "
+                    "helpers on synthetic inputs (complexity with 10 and 100 subsets, fdr, branching_new, wls_intercept, "
+                    "shape_collapse, plmle_full) and checked the archive's file list and the Data.zip MD5. It could not reach "
+                    "the toolbox's site. It reported seven problems; B1 (10 subsets per size make the cut complexity noisy) "
+                    "and B2 (fig7ab blocked although its susceptibility half fails) affect conclusions."),
+          results=R)]
+txt = yaml.safe_dump({"verifications": v}, sort_keys=False, width=100, allow_unicode=True)
+p = "attempts/timme-2016-criticality-01.yaml"
+s = open(p).read()
+assert "verifications:" not in s
+open(p, "a").write(txt)
+PYEOF
+python $TMPDIR/ver.py && python tools/entry.py check entries/timme-2016-criticality 2>&1 | tail -2; grep -n "—\|rather" attempts/timme-2016-criticality-01.yaml entries/timme-2016-criticality/README.md | head
 ```
+
+```
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -nE "^\s+[^:]*: .*: " attempts/timme-2016-criticality-01.yaml | head; grep -nE "^\s{4,}[^-][^:]*: " attempts/timme-2016-criticality-01.yaml | grep -v "^\S*\s*[a-z_]*: " | head
+```
+
+```
+457:    response: 'Changed from blocked to not reproduced, judged against fig7ab as B2 asks: the susceptibility
+550:    response: 'Redone with 100 subsets per size on 40 recordings: r is 0.902 (a) and 0.905 (b); no variant
+563:    response: 'Redone with 100 subsets per size on 40 recordings: r is 0.060 and -0.107; no variant matches
+586:    response: 'Redone with 100 subsets per size on 40 recordings: real exceeds shuffled in none of 40
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "180 rec\|0\.00637\|10 subsets per size\|N_SUBSETS = 10 \|blocked, too_large (depends" entries/timme-2016-criticality/*.ipynb entries/timme-2016-criticality/README.md attempts/timme-2016-criticality-01.yaml | cut -c1-220
+```
+
+```
+entries/timme-2016-criticality/complexity_culture.ipynb:389:    "exceed the 60 min limit of a notebook. The first version used 10 subsets on 180 recordings.\n",
+attempts/timme-2016-criticality-01.yaml:179:    on 180 recordings, gave the same pattern (five of six lower, shuffling raises it 74-fold) and
+attempts/timme-2016-criticality-01.yaml:185:    notebook. The first version used 10 subsets on 180 recordings.
+attempts/timme-2016-criticality-01.yaml:218:    without the correction p 0.958 and r 0.998. With 10 subsets on 180 recordings the first version
+attempts/timme-2016-criticality-01.yaml:379:    reach the toolbox's site. It reported seven problems; B1 (10 subsets per size make the cut complexity
+attempts/timme-2016-criticality-01.yaml:391:    reason: The size fit is accepted (p 0.338), but only over sizes 4 to 12. Corrected complexity is 0.00637
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py check entries/timme-2016-criticality 2>&1 | tail -1; git status --short | grep -v "^ M tools\|^?? tools"; date -u
+```
+
+```
+0 error(s)
+ M attempts/timme-2016-criticality-01.yaml
+ M entries/timme-2016-criticality/README.md
+ M entries/timme-2016-criticality/complexity_culture.ipynb
+ M entries/timme-2016-criticality/culture_criticality.ipynb
+ M entries/timme-2016-criticality/entry.yaml
+ M entries/timme-2016-criticality/models.ipynb
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+?? .mcp.json
+?? .profile
+?? .ripgreprc
+?? .vscode
+?? .zprofile
+?? .zshrc
+?? scripts
+Tue Nov 10 00:45:28 UTC 2026
+```
+
+**Agent**
+
+I ran the whole entry again with `python tools/entry.py all`. All three notebooks pass: 42 min for the culture notebook, 38 min for complexity and 11 min for the models. `entry.py check` reports 0 errors. The code changes from the earlier revision run, which was cut off before its full run finished, were already in the source; this run executed them, wrote the conclusions and updated the record. Nothing is committed.
+
+**Changes in outcome**
+- **fig7ab** (complexity and susceptibility peak in the model): blocked → not reproduced, as the verifier said (B2). The susceptibility rises at every step up to p_trans 0.3, under both readings, and never peaks. The complexity half was not computed.
+- **fig7d** (branching ratio near 1): blocked → not reproduced. There is no susceptibility peak to compare against. B_new is closest to 1 at p_trans 0.28, which is within 0.0265 of the paper's 0.265.
+- **fig10a** (complexity falls under randomization): partially reproduced → not reproduced, as the verifier gave it. Even with 100 subsets, shuffling raises complexity 78-fold, and the 1-bin jitter is not significant.
+- **fig12a** (swapping preserves complexity): not reproduced → reproduced. With 100 subsets, swapping makes no significant difference (corrected p 0.836) and Pearson r is 0.775, which passes the 0.7 threshold. The record notes that it passes only narrowly and that the estimate is noisy (median coefficient of variation 0.78 across repeated draws).
+- Every other outcome stays the same. The complexity claims fig5d, fig5e, fig5f, figs8, figs9 and fig12b were redone with the new settings. figs8 is now r 0.90 against the expected 0.23, and fig5f's relative difference is 0.151 against the 5% criterion. fig5f fails because the estimate's own spread across draws (up to 0.675) is larger than 5%.
+
+**What I added or corrected**
+- Complexity now uses 100 subsets per size, as Methods 2.9 give (B1). Even at 100, the toolbox's cut keeps a median of 10 of 90 subset sizes in the real data and 74 in shuffled data, so the instability the verifier found is not only due to 10 subsets.
+- Outputs the verifier asked for:
+  - repeated draws at 10 and 100 subsets on 10 recordings, with the number of subset sizes the cut keeps;
+  - five draws on the Bethe raster;
+  - for the model, mean avalanche size, B_basic and the one-step ratio against 4·p_trans (the one-step ratio is 0.937 at p_trans 0.25);
+  - a log10 histogram of avalanche counts for fig2e. Its median is 10^4.92, so "around 10,000" fails as an order of magnitude too.
+- I rewrote the conclusion cells, the summaries, the README, the notebook runtimes in `entry.yaml`, and the record's notes and deviations. I also updated the finding that asks the authors about the cut. Round 1 is recorded under `verifications`, with the verifier's reasons and my responses.
+
+**What I did not do**
+- **Fewer recordings for complexity.** It now runs on 40 of 435 recordings, down from 180. At 100 subsets, 40 recordings took 34 min, so more would break the 60-minute limit per notebook. This is recorded as a deviation.
+- **figs2 reading (b)** is still blocked as too large. At 100 subsets, the 990 calls come to several hours of computing.
+- **p_trans grid.** The 0.005 grid was not run. The fig6 and fig7c results sit at points the 0.005 grid also contains.
+- **Smaller verifier points.** B5 (layout b on one recording), B6 (how the power-law fit handles gaps after the cuts) and B7 (exclusion) are answered in the record with no code change.
+- **Reader questions.** The verifier reported no misreading of the claims file, so I added none.
+
+## End of run
+
+35 turns, 97 minutes, $3.15 at API prices, result: success.

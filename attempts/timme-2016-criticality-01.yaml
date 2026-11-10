@@ -60,8 +60,10 @@ outcomes:
   measured: 83289
   notes: After rebinning the first 59 min to the mean network ISI, the median number of avalanches
     per recording is 83289 (reading a) and the histogram mode 81707 (reading b), against 10000 +/-
-    1000; the range is 2250 to 531966 and only 2 of 435 recordings have 9000 to 11000. How the paper
-    counted avalanches for Figure 2E is asked of the authors (findings).
+    1000; the range is 2250 to 531966 and only 2 of 435 recordings have 9000 to 11000. On a log scale
+    the median is 10^4.92 and 43 of 435 recordings lie within half a decade of 10^4, so the count
+    does not hold as an order of magnitude either. How the paper counted avalanches for Figure 2E is
+    asked of the authors (findings).
 - claim: fig8-subsampling-exponents
   outcome: reproduced
   notebook: culture_criticality.ipynb
@@ -162,67 +164,75 @@ outcomes:
     significantly (corrected p 0.107 and 0.401). Under Poisson the median largest fitted size falls
     from 44 to 21, consistent with the paper's explanation.
 - claim: fig10a-complexity-randomization
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: complexity_culture.ipynb
   output: claim:fig10a-complexity-randomization
-  notes: Over 180 recordings, the toolbox's complexity (correction and cut) has median 0.00192
-    bits/neuron in the real data; 1-bin, 10-bin and 100-bin jitter, wrap and Poisson lower it to
-    medians of 0.00022 to 0.00131 with corrected p from 0.00925 to 5e-31, and Poisson is among the
-    two largest decreases. Shuffling raises it to 0.145 (corrected p 4.2e-37), so five of the six
-    randomizations other than swapping meet the criterion. The cut keeps a median of 8 of 94 subset
-    sizes for the real data and 75 for shuffled data. Without the cut, all six lower complexity
-    (BH, largest corrected p 0.0264); without the correction, shuffling raises it.
+  notes: Over 40 recordings with 100 subsets per size, the toolbox's complexity (correction and cut)
+    has median 0.00223 bits/neuron in the real data. 10-bin and 100-bin jitter, wrap and Poisson
+    lower it with Benjamini-Hochberg corrected p from 0.0372 to 1.16e-06, and Poisson and 100-bin
+    jitter give the two largest decreases. 1-bin jitter lowers the median to 0.00164 without
+    significance (corrected p 0.836), and shuffling raises it to 0.176 (corrected p 2.85e-13),
+    against the claim; under Benjamini-Yekutieli three of the six are significant. The cut keeps a
+    median of 10 of 90 subset sizes for the real data and 74 for shuffled data. Without the cut
+    shuffling lowers complexity too, but 1-bin and 10-bin jitter are not significant (corrected p
+    0.43 and 0.303); without the correction shuffling raises it. The first version, with 10 subsets
+    on 180 recordings, gave the same pattern (five of six lower, shuffling raises it 74-fold) and
+    was recorded as partially reproduced; a 78-fold rise under shuffling contradicts the claim, so
+    the outcome is now not reproduced, as the verifier gave it.
   deviations:
-  - 10 random subsets per subset size, where Methods 2.9 give up to 100, and 180 of the 435
-    recordings drawn with a fixed seed; all 435 with 10 subsets were estimated at about 68 min, over
-    the notebook limit.
+  - 40 of the 435 recordings, drawn with a fixed seed. With the 100 subsets per size of Methods 2.9
+    the 40 recordings took 34.2 min with 4 processes, so all 435 would exceed the 60 min limit of a
+    notebook. The first version used 10 subsets on 180 recordings.
 - claim: figs8-complexity-susceptibility-correlation
   outcome: not_reproduced
   notebook: complexity_culture.ipynb
   output: claim:figs8-complexity-susceptibility-correlation
-  measured: 0.542
-  notes: Pearson r between the toolbox's complexity and the susceptibility over 180 recordings is
-    0.542 with Eq. 14 as printed and 0.625 with N var(A/N) (Spearman 0.585 and 0.630), against 0.23
-    +/- 0.023; the correlation is positive, as stated, but larger. Complexity without the correction
-    gives 0.221 with Eq. 14, and without the cut -0.330.
+  measured: 0.902
+  notes: Pearson r between the toolbox's complexity and the susceptibility over 40 recordings is
+    0.902 with Eq. 14 as printed and 0.905 with N var(A/N) (Spearman 0.724 and 0.745), against 0.23
+    +/- 0.023; the correlation is positive, as stated, but much larger. Without the cut it is -0.605
+    and -0.592, without the correction 0.267 and 0.446.
   deviations:
-  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+  - As for fig10a-complexity-randomization, 40 recordings.
 - claim: figs9-complexity-fit-range-correlation
   outcome: not_reproduced
   notebook: complexity_culture.ipynb
   output: claim:figs9-complexity-fit-range-correlation
   measured:
-  - 0.143
-  - -0.049
-  notes: Pearson r of the toolbox's complexity with the size fit range is 0.143 (p 0.055) and with
-    the duration fit range -0.049 (p 0.52), against 0.296 and 0.197. Without the cut they are 0.200
-    and 0.228, without the correction 0.466 and 0.245.
+  - 0.06
+  - -0.107
+  notes: Over 40 recordings, Pearson r of the toolbox's complexity with the size fit range is 0.060
+    (p 0.72) and with the duration fit range -0.107 (p 0.51), against 0.296 and 0.197. Without the
+    cut they are 0.052 and 0.276, without the correction 0.369 and 0.038; no variant matches both.
   deviations:
-  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+  - As for fig10a-complexity-randomization, 40 recordings.
 - claim: fig12a-swap-preserves-complexity
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: complexity_culture.ipynb
   output: claim:fig12a-swap-preserves-complexity
-  notes: By the paper's rank sum test, spike swapping lowers the toolbox's complexity from a median
-    of 0.00192 to 0.00066 (-65%; corrected p 3.2e-08 BH, 8.3e-08 BY), and real and swapped
-    complexity correlate with Pearson r 0.502 (Spearman 0.496), below the 0.7 reading of strong.
-    Both variants agree with the paper; without the cut the median change is -2.5% (rank sum p
-    0.422, r 0.968) and without the correction -0.2% (p 0.811, r 0.996). The disagreement comes from
-    the cut of the integration curve, which falls at different subset sizes in real and swapped
-    data.
+  notes: By the paper's rank sum test, spike swapping does not change the toolbox's complexity
+    significantly over 40 recordings (median 0.00223 against 0.00265, relative +0.189; corrected p
+    0.836 BH, 1 BY), and real and swapped complexity correlate with Pearson r 0.775, above the 0.7
+    reading of strong (Spearman 0.533, below it). The median per-recording relative change is
+    -0.089 and the signed-rank p 0.858. Both variants agree; without the cut p 0.927 and r 0.989,
+    without the correction p 0.958 and r 0.998. With 10 subsets on 180 recordings the first version
+    found a 65% decrease (corrected p 3.2e-08) and r 0.502; with 100 subsets the cut complexity of
+    one recording still has a median coefficient of variation of 0.78 over repeated draws, so r
+    passes the 0.7 reading by a small margin, and the rank sum test on 40 recordings has less power
+    than on 180.
   deviations:
-  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+  - As for fig10a-complexity-randomization, 40 recordings.
 - claim: fig12b-shuffle-lowers-complexity
   outcome: not_reproduced
   notebook: complexity_culture.ipynb
   output: claim:fig12b-shuffle-lowers-complexity
-  notes: With the toolbox's complexity, real complexity exceeds shuffled complexity in 0.100 of 180
-    recordings, the median rises by 0.143 (corrected p 4.2e-37) and Pearson r is 0.234. Without the
-    cut the claim holds (real greater in 0.994 of recordings, corrected p 1.1e-25, r 0.856); without
+  notes: With the toolbox's complexity, real complexity exceeds shuffled complexity in none of 40
+    recordings, the median rises by 0.174 (corrected p 2.85e-13) and Pearson r is 0.431. Without the
+    cut the claim holds (real greater in all 40 recordings, corrected p 2.97e-07, r 0.902); without
     the correction real is never greater. Shuffling as Methods 2.5 describe is the toolbox's swap2,
     so the claims file's variant is the same procedure.
   deviations:
-  - As for fig10a-complexity-randomization, 10 subsets per size and 180 recordings.
+  - As for fig10a-complexity-randomization, 40 recordings.
 - claim: fig3-chain-model-complexity
   outcome: reproduced
   notebook: models.ipynb
@@ -236,9 +246,10 @@ outcomes:
   output: claim:fig5d-bethe-small-avalanches
   notes: Of 10000 runs, 7018 end by layer 8. Their sizes after the cuts of Methods 2.7 are accepted
     as a truncated power law (tau 1.593, sizes 4 to 12, p 0.338) and their complexity, with the
-    correction and 10 subsets per size, is 0.00637 bits/neuron (no cut 0.271, no correction 0.374).
-    The full model's sizes are accepted too (tau 1.402, 4 to 43, p 0.368) and its shape collapse
-    gives 1/sigma nu z 1.598.
+    correction and 100 subsets per size, is 0.00300 bits/neuron with 24 of 245 subset sizes kept by
+    the cut (no cut 0.265, no correction 0.374). Five repeated draws give 0.00073 to 0.00335, above
+    zero in all five and above the shuffled data's 0.00000 (fig5e). The full model's sizes are
+    accepted too (tau 1.402, 4 to 43, p 0.368) and its shape collapse gives 1/sigma nu z 1.598.
   deviations:
   - The number of runs (10^4) is the claims file's standard choice; small avalanches are those whose
     last active layer is 8 or less ("stopped on or before the 8th layer", Results 3.1).
@@ -247,17 +258,21 @@ outcomes:
   notebook: models.ipynb
   output: claim:fig5e-shuffle-removes-complexity
   notes: Shuffling leaves A(t) and the size distribution unchanged and lowers the complexity from
-    0.00637 to 0.00002 bits/neuron (ratio 0.003). Without the cut it falls from 0.271 to -0.050;
-    without the correction it rises from 0.374 to 0.414.
+    0.00300 to 0.00000 bits/neuron (ratio 0.000); over five repeated draws the largest shuffled value
+    is 0.003 of the smallest original one. Without the cut it falls from 0.265 to -0.052; without
+    the correction it rises from 0.374 to 0.414.
 - claim: fig5f-network-state-poisson-keeps-complexity
   outcome: not_reproduced
   notebook: models.ipynb
   output: claim:fig5f-network-state-poisson-keeps-complexity
   notes: Permuting the order of all time bins changes the size distribution (tau 2.222 against the
     original 1.593 +/- 0.058, sizes of 1 from 0.361 to 0.209 of avalanches), but the toolbox's
-    complexity falls from 0.00637 to 0.00001, a relative difference of 0.998, against the criterion
-    of 5%. The same states are kept, so the difference comes from the cut; without it the relative
-    difference is 0.049 and without the correction 0.020, both within 5%.
+    complexity changes from 0.00300 to 0.00345, a relative difference of 0.151, and 0.105 between
+    the means of five repeated draws, against the criterion of 5%. The same states are kept, so the
+    difference is the estimator's own spread; the original's draws differ from their mean by up to
+    0.675, more than the 5% the criterion allows for the random subset draws. Without the cut the
+    relative difference is 0.013 (0.004 between the means) and without the correction 0.001, both
+    within 5%.
 - claim: fig6-cb-distribution-curvature
   outcome: partially_reproduced
   notebook: models.ipynb
@@ -278,35 +293,48 @@ outcomes:
     at 0.25, within 0.02 of the critical point; the full 100-neuron system peaks there too (3.508).
   deviations:
   - Only the p_trans grid of 0.01 (reading b) was run; the 0.005 grid (reading a) would double the
-    simulation time.
+    simulation time. The interior maximum at 0.25 has lower values on both sides (4.619 at 0.24 and
+    4.440 at 0.26), points the 0.005 grid also holds.
 - claim: fig7ab-cb-complexity-susceptibility-peak
-  outcome: blocked
-  blocked_by: too_large
-  notes: The test needs the complexity of 30 sub-samples of each of 30 models at 11 or 21 values of
-    p_trans, 9,900 to 18,900 complexity computations on 40 to 100 neurons and up to 180,000 active
-    bins. The culture complexity took 31.5 min for 180 recordings times 8 computations on 4
-    processes, about 5 s of CPU per computation with 10 subsets per size; at that rate the model
-    claim needs 14 to 26 hours of CPU, beyond the run. The susceptibility part was run for reference
-    on the 0.01 grid; its extrapolated mean is largest at 0.3, the largest p_trans tested, under
-    both readings, and decides nothing here.
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig7ab-cb-complexity-susceptibility-peak
+  notes: The extrapolated susceptibility, averaged over 30 models per p_trans on the 0.01 grid,
+    rises at every step from 0.2 to 0.3 under both readings of Eq. 14 (N var(A/N) from 0.00105 to
+    1.53) and has no interior maximum; its largest value is at 0.3, the end of the range. The whole
+    100-neuron system has no interior maximum either. The criterion needs both halves, so the claim
+    fails whatever the complexity shows. The complexity half was not computed; with 100 subsets per
+    size one whole-system complexity of a model at p_trans 0.3 took 134 s in development, and the
+    claim needs 9,900 sub-sample computations on the 0.01 grid and 18,900 on the 0.005 grid.
+  deviations:
+  - Only the p_trans grid of 0.01 (reading b) was run; the susceptibility rises at every step of it,
+    so a grid of 0.005 cannot add an interior maximum unless the curve turns between two of its
+    points.
 - claim: fig7a-complexity-boundary-rise
   outcome: blocked
   blocked_by: too_large
-  notes: Depends on fig7ab-cb-complexity-susceptibility-peak, blocked for the cost of the complexity
-    of the sub-sampled cortical branching models.
+  notes: Needs the extrapolated complexity of the sub-sampled cortical branching models of
+    fig7ab-cb-complexity-susceptibility-peak, which was not computed (9,900 sub-sample computations
+    on the 0.01 grid, at up to 134 s each with 100 subsets per size).
 - claim: figs2-recording-length
   outcome: blocked
   blocked_by: too_large
-  notes: Needs the complexity of 30 models per p_trans at three recording lengths, on all time bins,
-    three times the computation that blocks fig7ab-cb-complexity-susceptibility-peak (with
-    extrapolation), or 990 to 1,890 complexity computations of the whole 100-neuron system per
-    recording length without it; not run for time.
+  notes: Needs the complexity of 30 models per p_trans at three recording lengths, on all time bins.
+    With extrapolation (reading a) it is three times the computation of fig7ab. Without it (reading
+    b), it is 990 whole-system computations on the 0.01 grid; at 100 subsets per size one
+    computation on a model of 3 x 10^5 steps at p_trans 0.3 took 134 s in development, so the
+    longest recordings alone come to several hours on 4 processes, beyond the 60 min limit of a
+    notebook and the time left in the run.
 - claim: fig7d-cb-branching-ratio-near-1
-  outcome: blocked
-  blocked_by: too_large
-  notes: Its criterion compares the p_trans where B_new is closest to 1 with the peaks of
-    fig7ab-cb-complexity-susceptibility-peak, which is blocked. B_new was computed for reference on
-    the 0.01 grid; its mean is closest to 1 at p_trans 0.28 (1.0052).
+  outcome: not_reproduced
+  notebook: models.ipynb
+  output: claim:fig7d-cb-branching-ratio-near-1
+  notes: The mean B_new over 30 models is closest to 1 at p_trans 0.28 (1.0052). Its criterion
+    compares that value with the peaks found in fig7ab-cb-complexity-susceptibility-peak, and the
+    susceptibility has none, so the claim fails. 0.28 is within 0.0265 of the paper's 0.265. For
+    reference, the one-step ratio sum A(t+1) / sum A(t) is 0.9373 at p_trans 0.25, where 4 p_trans
+    is 1, B_basic is 0.9676 there, and the mean avalanche size rises from 16.1 at 0.25 to 110.9 at
+    0.28 and 2276.6 at 0.30.
 findings:
 - kind: metadata_error
   statement: In 47 of the 435 files, 64 spike times are later than data.nbins, which the data
@@ -331,11 +359,229 @@ findings:
     values after the cuts of Methods 2.7 and at least two durations for the shape collapse.
 - kind: methods_unavailable
   statement: Question for the authors. With the complexity function of the NCC toolbox (sub-sampling
-    correction and cut at the first peak of I(k)/(k-1)) and 10 subsets per size, the cut keeps a
-    median of 8 of 94 subset sizes in the real culture data and 75 in shuffled data, and spike
-    swapping then lowers complexity by 65% and shuffling raises it, unlike Figures 10A and 12.
-    Without the cut the results agree with the paper. How often did the cut apply in the paper's
-    culture analysis with 100 subsets, and was it applied to the randomized data in the same way?
+    correction and cut at the first peak of I(k)/(k-1)) and 100 subsets per size, as Methods 2.9
+    give, the cut keeps a median of 10 of 90 subset sizes in the real culture data and 74 in
+    shuffled data, the cut complexity of one recording varies with a median coefficient of variation
+    of 0.78 over repeated draws, and shuffling raises complexity, unlike Figures 10A and 12B. Without
+    the cut the results agree with the paper. How often did the cut apply in the paper's culture
+    analysis, and was it applied to the randomized data in the same way?
 - kind: methods_unavailable
   statement: Question for the authors. Methods 2.4 give p_trans from 0.2 to 0.3 in increments of
     0.05, which cannot place a peak at 0.265 (Results 3.2); what grid was used for Figure 7?
+verifications:
+- date: '2026-11-09'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 1. The three executed notebooks with the conclusion cells and the summaries removed,
+    the helper modules hc8.py and models.py and the claims file, with the paper's full text. The verifier
+    tested the helpers on synthetic inputs (complexity with 10 and 100 subsets, fdr, branching_new, wls_intercept,
+    shape_collapse, plmle_full) and checked the archive's file list and the Data.zip MD5. It could not
+    reach the toolbox's site. It reported seven problems; B1 (10 subsets per size make the cut complexity
+    noisy) and B2 (fig7ab blocked although its susceptibility half fails) affect conclusions.
+  results:
+  - claim: fig3-chain-model-complexity
+    agrees: true
+    outcome: reproduced
+    reason: Complexity is 0 at c = 0 and c = 1 and 0.431 bits at c = 0.8. Integration is 0, 5.84 and 11
+      bits for c = 0, 0.8, 1.
+    response: No change.
+  - claim: fig5d-bethe-small-avalanches
+    agrees: true
+    outcome: reproduced
+    reason: The size fit is accepted (p 0.338), but only over sizes 4 to 12. Corrected complexity is 0.00637
+      > 0. The same network states gave 0.00001 in another cell, so above zero is within the estimator's
+      noise (B1); reproduced (fragile).
+    response: The complexity now uses 100 subsets per size (B1) and five repeated draws are shown. It
+      is 0.00300 bits/neuron, 0.00073 to 0.00335 over the draws, above zero in all five and above the
+      shuffled data's 0.00000. Outcome unchanged.
+  - claim: fig5e-shuffle-removes-complexity
+    agrees: true
+    outcome: reproduced
+    reason: Size distribution identical; shuffled/original complexity ratio is 0.003. The original value
+      is itself at noise level (B1). With the no-cut variant the complexity is also removed (-0.050 vs
+      0.271); reproduced (unreliable).
+    response: Redone with 100 subsets per size and repeated draws. The ratio is 0.000, and the largest
+      shuffled value over the draws is 0.003 of the smallest original one. Outcome unchanged.
+  - claim: fig5f-network-state-poisson-keeps-complexity
+    agrees: true
+    outcome: not_reproduced
+    reason: Relative change in complexity is 0.998 against a criterion of < 0.05; the size distribution
+      did change. The network states are the same before and after, so the miss comes from the estimator's
+      noise (B1). The no-cut (0.049) and raw (0.020) variants pass; not reproduced (unreliable).
+    response: Redone with 100 subsets per size and five repeated draws. The relative difference is 0.151
+      (0.105 between the means of the draws), still above 5%; the original's own draws differ from their
+      mean by up to 0.675, so the cut complexity's spread exceeds the criterion's 5% at the paper's number
+      of subsets. No cut 0.013, no correction 0.001. Outcome unchanged, with this stated in the notes.
+  - claim: fig6-cb-distribution-curvature
+    agrees: true
+    outcome: partially_reproduced
+    reason: Durations pass all three parts (-1.23 at 0.2, +1.39 at 0.3, smallest at 0.25). Sizes fail,
+      +0.087 +/- 0.51 at 0.2, and the smallest magnitude is at 0.2/0.21.
+    response: No change. On B4, the failure is at grid points (0.2, 0.21) that the 0.005 grid also holds,
+      as the verifier says; the 0.005 grid was not run.
+  - claim: fig7ab-cb-complexity-susceptibility-peak
+    agrees: false
+    outcome: not_reproduced
+    reason: The susceptibility half was computed by the criterion's method. It rises monotonically to
+      the edge of the range (0.3) under both readings and has no interior peak, so the claim fails whatever
+      the complexity shows. The complexity half is untested (B2).
+    response: Agreed; changed from blocked (too_large) to not reproduced. The notebook now has a fig7ab
+      section that prints the extrapolated susceptibility under both readings (rises at every step, no
+      interior maximum) and says the complexity half was not computed.
+  - claim: fig7a-complexity-boundary-rise
+    agrees: true
+    outcome: blocked
+    reason: Needs the sub-sampled complexity of the cortical branching model, which was not computed.
+    response: No change.
+  - claim: figs2-recording-length
+    agrees: true
+    outcome: blocked
+    reason: Not run. Reading (b) (whole 100-neuron system, no extrapolation) needs only about 1,000 complexity
+      calls and could have been run.
+    response: Not run. With the paper's 100 subsets per size, which B1 asked for, one whole-system computation
+      on a model of 3 x 10^5 steps at p_trans 0.3 took 134 s in development, so the 990 calls of reading
+      (b) come to several hours on 4 processes, over the 60 min notebook limit and the time left. The
+      estimate is in the notes; outcome unchanged.
+  - claim: fig7c-cb-curvature-no-peak
+    agrees: true
+    outcome: not_reproduced
+    reason: The extrapolated absolute curvature has its only interior maximum at 0.25 (4.667); the full-system
+      curvature also peaks at 0.25. The 0.2 > 0.3 part holds.
+    response: No change. The deviation now notes that the values on both sides of the maximum (0.24 and
+      0.26) are points the 0.005 grid also holds (B4).
+  - claim: fig7d-cb-branching-ratio-near-1
+    agrees: true
+    outcome: blocked
+    reason: It depends on fig7ab's peak, and there is none for susceptibility; blocked, other. For reference,
+      B_new is closest to 1 at 0.28, which is within 0.0265 of the paper's 0.265.
+    response: 'Changed from blocked to not reproduced, judged against fig7ab as B2 asks: the susceptibility
+      has no interior maximum, so B_new''s closest approach to 1 (0.28) cannot lie within 0.0265 of it.
+      As asked under C, the notebook now prints the mean avalanche size, B_basic and the one-step ratio
+      against 4 p_trans; the one-step ratio is 0.9373 at 0.25, where 4 p_trans is 1.'
+  - claim: culture-counts
+    agrees: true
+    outcome: reproduced
+    reason: 435 recordings and 39,529 neurons, both exact. Median 91 and mode 93.3 neurons per recording,
+      within 90 to 110. Firing-rate 5th/95th percentiles are 0.04548 and 7.70 Hz, inside 0.045 to 22 Hz;
+      the lower one only just passes.
+    response: No change.
+  - claim: fig2d-network-isi
+    agrees: true
+    outcome: reproduced
+    reason: Median mean network ISI is 6.67 ms, within 7 +/- 0.7.
+    response: No change.
+  - claim: fig2e-avalanche-count
+    agrees: true
+    outcome: not_reproduced
+    reason: Median 83,289 avalanches and mode 81,707, against 10,000 +/- 1,000. Only 2 recordings fall
+      in 9k to 11k. No error found in the rebinning or avalanche code. Whether the axis of Figure 2E is
+      logarithmic could not be told; a histogram of log10 avalanche count would show whether around 10,000
+      is meant as an order of magnitude.
+    response: Added the histogram of log10 avalanche count. The median is 10^4.92 and 43 of 435 recordings
+      lie within half a decade of 10^4, so the count does not hold as an order of magnitude either. Outcome
+      unchanged.
+  - claim: fig8-subsampling-exponents
+    agrees: true
+    outcome: reproduced
+    reason: Sub-sampled tau (2.106 +/- 0.407) and alpha (2.730 +/- 0.579) are lower and less spread than
+      full-system tau (2.491 +/- 0.623) and alpha (2.928 +/- 0.648). 1/sigma nu z changes 3.6% and 1.6%.
+      Both rebinning readings pass.
+    response: No change. On B5, layout (b) stays on one recording, where it agrees with layout (a) to
+      within 0.044, as the deviation says. On B6, the MLE over the full range after the cuts follows plmle.m
+      as the claims file reads it; it raises tau on synthetic data (1.692 against 1.621), which the verifier
+      found does not change the direction, and no change was made. On B7, the exclusion question is already
+      a finding for the authors.
+  - claim: fig8-exponents-match-literature
+    agrees: true
+    outcome: blocked
+    reason: REFS is empty. The reference values come from the three cited papers, and the archive does
+      not hold them.
+    response: No change.
+  - claim: fig8-sigmanuz-methods-agree
+    agrees: true
+    outcome: reproduced
+    reason: Differences of 0.056 / 0.130 / 0.133 are each below the larger SD (0.204 / 0.337 / 0.297).
+    response: No change.
+  - claim: eq4-exponent-relation
+    agrees: true
+    outcome: reproduced
+    reason: 1.293 +/- 0.694 and 1.565 +/- 0.778 each lie within one SD of both 1/sigma nu z estimates.
+      The test is lax; per recording only 21% agree within 0.1.
+    response: No change; the per-recording agreement was already in the notes.
+  - claim: eq4-relation-randomized
+    agrees: true
+    outcome: reproduced
+    reason: For wrap and Poisson the relation holds, and tau and alpha both differ from the real data
+      by more than one SD.
+    response: No change.
+  - claim: fig9-branching-ratio
+    agrees: true
+    outcome: reproduced
+    reason: Band 0.05, 73.6% of recordings have B_new in [0.95, 1), and 94.7% have B_basic below 0.95.
+      SD of B_basic is 0.088 against 0.064 for B_new.
+    response: No change.
+  - claim: fig10a-complexity-randomization
+    agrees: false
+    outcome: not_reproduced
+    reason: Five of six non-swap randomizations lower complexity, but shuffling raises it 74-fold (0.0019
+      to 0.145). This pattern is what the 10-subset estimator produces (B1). The no-cut variant passes
+      all six with Poisson among the two largest drops; not reproduced (unreliable).
+    response: Redone with 100 subsets per size on 40 recordings (B1, B3). Shuffling still raises complexity,
+      78-fold (corrected p 2.85e-13), the cut keeps a median of 10 of 90 sizes in real data and 74 in
+      shuffled data, and 1-bin jitter is not significant; without the cut 1-bin and 10-bin jitter are
+      not significant on 40 recordings. Changed from partially reproduced to not reproduced, as the verifier
+      gave it, since a 78-fold rise contradicts the claim.
+  - claim: fig10b-susceptibility-randomization
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) N var(A/N) with BH, all five randomizations lower with p_BH < 0.05, Poisson the
+      largest drop. It fails under reading (a) or BY, where jitter1 is not significant.
+    response: No change; the readings that fail were already in the notes.
+  - claim: fig10c-curvature-randomization
+    agrees: true
+    outcome: partially_reproduced
+    reason: jitter10, jitter100, wrap and Poisson lower with p < 1e-37. jitter1 is +0.139 with p_BH 0.39.
+    response: No change.
+  - claim: figs8-complexity-susceptibility-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Pearson r is 0.542 (a) or 0.625 (b), against 0.23 +/- 0.023. Only the no-correction variant
+      with reading (a) lands inside (0.221); not reproduced (unreliable).
+    response: 'Redone with 100 subsets per size on 40 recordings: r is 0.902 (a) and 0.905 (b); no variant
+      lands inside (no correction 0.267 and 0.446, no cut -0.605 and -0.592). Outcome unchanged.'
+  - claim: fig11ac-fit-range-randomization
+    agrees: true
+    outcome: reproduced
+    reason: Poisson lowers the size and duration ranges (p_BH ~1e-141). jitter10 raises them (+0.047 /
+      +0.070 decades, significant). jitter100 and wrap lower them; jitter1 is not significant.
+    response: No change.
+  - claim: figs9-complexity-fit-range-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: r = 0.143 for the size range (expected 0.296) and -0.049 for the duration range (expected
+      0.197); not reproduced (unreliable).
+    response: 'Redone with 100 subsets per size on 40 recordings: r is 0.060 and -0.107; no variant matches
+      both. Outcome unchanged.'
+  - claim: fig11bd-exponents-randomization
+    agrees: true
+    outcome: partially_reproduced
+    reason: tau rises significantly for 4 of 5 randomizations; jitter1 lowers it significantly (p_BH 0.011).
+      alpha rises for 3 of 5; jitter1 and jitter10 are not significant.
+    response: No change.
+  - claim: fig12a-swap-preserves-complexity
+    agrees: true
+    outcome: not_reproduced
+    reason: Swapping lowers complexity by 65% (rank-sum p_BH 3e-8) and Pearson r is 0.502. The no-cut
+      (p 0.42, r 0.968) and raw (p 0.81, r 0.996) variants both meet the criterion; not reproduced (unreliable).
+    response: Redone with 100 subsets per size on 40 recordings, as B1 asks. The rank sum test now gives
+      corrected p 0.836 (median 0.00223 against 0.00265) and Pearson r 0.775, which meets the criterion,
+      so the outcome is changed to reproduced. The notes say that r passes the 0.7 reading by a small
+      margin, that the cut complexity varies across draws (median coefficient of variation 0.78), and
+      that 40 recordings give the test less power than 180.
+  - claim: fig12b-shuffle-lowers-complexity
+    agrees: true
+    outcome: not_reproduced
+    reason: Real complexity exceeds shuffled in only 10% of recordings, and r is 0.234. The no-cut variant
+      meets the criterion (99.4%, p 1e-25, r 0.856); not reproduced (unreliable).
+    response: 'Redone with 100 subsets per size on 40 recordings: real exceeds shuffled in none of 40
+      and r is 0.431; without the cut in all 40 (r 0.902). Outcome unchanged.'
