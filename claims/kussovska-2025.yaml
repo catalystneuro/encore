@@ -707,12 +707,16 @@ claims:
     two-sided Wilcoxon signed-rank test over participants, BH-FDR over the groups. Open details,
     with readings run. Peak rule; (a) the smoothed value exceeds the 90th percentile of the
     epoch's bins (Methods), (b) prominence at or above that percentile (Results, "a
-    90th-percentile prominence threshold", and the code, lines 251-255). Surrogate threshold;
+    90th-percentile prominence threshold", and the code, lines 251-255). Peak spacing; 2 bins
+    (140 ms) in the Methods and the code (line 17) is the main reading; the Results say
+    candidates "within 70 ms of a previous event were suppressed", run as a variant with a
+    spacing of 1 bin. Surrogate threshold;
     the real data's (code) or each surrogate's own. Groups; (a) median split within participant
     on mean ACG amplitude and on tau decay, participants with fewer than 5 neurons in a group
     left out (Methods), (b) the code's 6 lowest and 6 highest of participants with at least 10
     neurons (lines 52, 95-120, 164-172); groups use neurons with R2 > 0.3 (acg-fit-yield);
-    "all neurons" is all 902 (code, line 183) or the 294 fitted neurons; concept cells need at
+    "all neurons" is all 902 (code, line 183; participants with at least 10 neurons, line 185)
+    or the 294 fitted neurons; concept cells need at
     least 3 per participant (code) or 5 (Methods). Reproduced when, under one reading, all
     neurons and low ACG differ from the null with corrected p < 0.05 and the other four groups
     do not; partially reproduced when the two named groups differ and one other does too.
@@ -837,7 +841,9 @@ claims:
     population; all 902 neurons (as in fig4c) or the 294 fitted neurons (the code here, line 47).
     Paired two-sided Wilcoxon signed-rank tests over participants with BH-FDR over the 10 pairs
     of periods (line 289). Reproduced when, under one reading, each of the four comparisons
-    shows more bursts after encoding with corrected p < 0.05.
+    shows more bursts after encoding with corrected p < 0.05. The Results also say the rate
+    rose "across successive maintenance windows" but report no test of M1 against M2 or M3;
+    those pairs are reported without deciding.
 - id: fig4hj-group-epochs
   statement: The increase of bursting from encoding into maintenance was driven by neurons with
     high mean ACG amplitude (also increasing to the probe) and neurons with a long tau decay,
@@ -1086,8 +1092,9 @@ claims:
     one reading, PY exceeds the null in both epochs and IN in maintenance with corrected
     p < 0.05, and IN in encoding does not (the paper's test, judged as written).
 - id: fig6cd-celltype-epochs
-  statement: Pyramidal burst rates stayed stable across task epochs, whereas interneuron burst
-    rates changed from encoding to each maintenance window and to the probe.
+  statement: Pyramidal burst rates stayed stable across task epochs at every load, whereas
+    interneuron burst rates changed from encoding to each maintenance window and to the probe
+    in load 1 trials.
   source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
     and pyramidal neurons, paragraph 3; Figure 6c,d
   quote: >-
@@ -1123,8 +1130,9 @@ claims:
     (participants with at least 3 neurons in the group), paired two-sided Wilcoxon signed-rank,
     BH-FDR within group and load over the 10 period pairs. Reproduced when, under one reading,
     IN differs from encoding at M1, M2, M3 and probe with corrected p < 0.05 and PY has no pair
-    with corrected p < 0.05 at load 1 (the paper's test for the absence). Loads 2 and 3 for PY
-    are reported. The direction of the IN change is reported; the paper does not state it.
+    with corrected p < 0.05 at load 1, 2 or 3 (the paper's test for the absence; "all P > 0.05"
+    covers Fig. 6c and Extended Data Fig. 5a,c). Partially reproduced when this holds at load 1
+    only. The direction of the IN change is reported; the paper does not state it.
 - id: ext5bd-in-load-dependence
   statement: Interneuron burst-rate differences across maintenance epochs increased with load.
   source: Results, Distinct temporal activity patterns during memory maintenance in interneurons
@@ -1249,9 +1257,13 @@ claims:
     over preferred (or nonpreferred) trials, in encoding (first image, 1 s) and maintenance
     (2.5 s); encoding against maintenance by a two-sided Wilcoxon signed-rank test over cells.
     Open, the trials; the Results say load 1 trials, the code uses all loads (no load filter);
-    both are run. Reproduced when, under one reading, IN preferred has maintenance above
-    encoding with p < 0.05, IN nonpreferred does not, and PY has no comparison with p < 0.05
-    (the paper's tests, judged as written).
+    both are run. Open, which PY comparisons the Results mean by "stable CV2 across preferred
+    and nonpreferred trials during both encoding and maintenance"; readings are (a) encoding
+    against maintenance within preferred and within nonpreferred trials (the code, lines
+    138-139, run once per trial type), (b) preferred against nonpreferred within encoding and
+    within maintenance (paired over cells). Reproduced when, under one reading, IN preferred
+    has maintenance above encoding with p < 0.05, IN nonpreferred does not, and PY has no
+    comparison with p < 0.05 (the paper's tests, judged as written).
 - id: ext5gh-py-decay-preferred
   statement: Pyramidal concept cells showed increased decay time constants on preferred trials
     during encoding and maintenance, an effect absent in interneurons.
@@ -1273,9 +1285,10 @@ claims:
   criterion: No code computes the decay constants per trial type; 06_cell_specific/supp_5g,h.py
     reads them from the shipped decay_constant_change.xlsx and tests them with a paired t-test,
     while the paper names a Wilcoxon signed-rank test (the paper's test is used, the t-test is
-    a variant). The decay constant is taken as tau_decay of the ACG fit of acg-fit-yield on the
-    spikes of preferred (or nonpreferred) trials of each epoch; open, the trials (load 1 or all
-    loads), both run. Reproduced when, under one reading, PY tau_decay is larger on preferred
+    a variant). The paper does not define the "decay time constants" of this test; the reading
+    taken is tau_decay of the ACG fit of acg-fit-yield (the only decay constant the Methods
+    define) on the spikes of preferred (or nonpreferred) trials of each epoch, and the outcome
+    rests on it. Open, the trials (load 1 or all loads), both run. Reproduced when, under one reading, PY tau_decay is larger on preferred
     than nonpreferred trials in both epochs with p < 0.05 and IN has no comparison with
     p < 0.05.
 - id: fig6i-py-bin-width-decoding
@@ -1395,3 +1408,36 @@ claims:
   criterion: As fig6i-py-bin-width-decoding and fig6j-in-bin-width-decoding on load 2 trials with
     the second image as label. Reproduced when, under one reading, IN has corrected p < 0.05 at
     all four widths and PY at none.
+checks:
+- date: '2026-11-10'
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4c-encoding-bursts-vs-poisson, criterion. Added the peak spacing, 2 bins (140 ms) from the
+    Methods and the code (line 17) as the main reading and the Results' "within 70 ms of a
+    previous event" as a variant; the criterion used 140 ms without naming the conflict.
+  - fig4c-encoding-bursts-vs-poisson, criterion. Added that the code's "all neurons" group keeps
+    participants with at least 10 neurons (main_4c,d,6a,b.py:183-185).
+  - fig4f-all-cells-epochs, criterion. The Results also say the rate rose across successive
+    maintenance windows, with no test reported; those pairs are now reported without deciding.
+  - fig6cd-celltype-epochs, statement and criterion. The paper says pyramidal burst rates were
+    stable "across task epochs and load" (all P > 0.05, Fig. 6c and Extended Data Fig. 5a,c);
+    the claim covered load 1 only. Loads 2 and 3 now enter the absence test, with partial
+    reproduction when only load 1 holds.
+  - fig6gh-in-concept-cv2, criterion. Which pyramidal comparisons "stable CV2 across preferred
+    and nonpreferred trials during both encoding and maintenance" means was left unstated; both
+    readings (epoch within trial type, as the code runs, and trial type within epoch) are named.
+  - ext5gh-py-decay-preferred, criterion. The paper does not define the decay constants of this
+    test; the criterion took ACG tau_decay as given. It is now named as the reading taken, with
+    the outcome resting on it.
+  - Not settled. The checker reports fig3h-early-vs-late-maintenance p 9.7e-12 as not found; the
+    paper prints "9.70 × 10−12" (Results, Encoding and maintenance occupy distinct neural
+    subspaces, paragraph 3), which the checker does not match for the trailing zero. The value is
+    right.
+  - Not settled. ext2-bursts-loads23 cites Extended Data Fig. 2b-m as the paper does, though the
+    dPCA paragraph also assigns Extended Data Fig. 2 to dPCA details; the Extended Data are not in
+    the text read, so the panel cannot be confirmed.
+  - Not settled. The Extended Data figures and legends are not in the text read; the claims on
+    them (ext1bc, ext1de, ext1f, ext1g, ext2, ext5bd, ext5gh, ext5ij, supp4) rest on the main-text
+    sentences and name their measures as open.
