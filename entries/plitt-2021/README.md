@@ -32,13 +32,16 @@ morph and four decision mice) running morphed linear tracks.
 | Null models, frequent morph sessions | Not reproduced |
 | Decision mice like frequent morph mice | Reproduced |
 | Hebbian model | Reproduced |
-| Prior reconstruction from the Hebbian model | Partially reproduced (reproduced proposed for a third verification round) |
+| Prior reconstruction from the Hebbian model | Reproduced |
 | Simulated posterior population | Not reproduced |
 | Image statistics of the VR scenes | Blocked: data missing |
 | Earlier morph studies (simulation only) | Blocked: other |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
+
+The prior reconstruction from the Hebbian model passes its criterion as written, but its rare half
+carries little evidence: the neural rare mean it is compared with has the wrong sign.
 
 The files hold only the imaged trials. Following a reader's answer, the priors behind every
 posterior, and the training statistics, come from the authors' later deposit of all VR sessions on
