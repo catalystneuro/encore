@@ -32,18 +32,21 @@ outcomes:
   - 4
   - 9
   - 2626
-  notes: Mice (10), fields (49) and movies per field (4 in every field) match. Each of the 188
-    complete stimulus files holds 89 deflections; eight stimuli are presented 10 times and the
-    smallest position stimulus 9 times, so the presentation count fails its zero tolerance for that
-    stimulus (measured gives the 9). Six movies have no stimulus file. The ROI detector finds 2626
-    ROIs (2624 after dropping two whose F0 reaches zero), against 1054 with a tolerance of 105; the
-    count rests on the detector, an assumption, as the paper's Caltracer detection with manual
-    supervision cannot be repeated and its cell selection is not described.
+  notes: Mice (10), fields (49) and movies per field (4 in every field) match. Each of the 188 complete
+    stimulus files holds 89 deflections; eight stimuli are presented 10 times and the smallest position
+    stimulus 9 times, so the presentation count fails its zero tolerance for that stimulus (measured gives
+    the 9). The 89 onsets run from 1.96 to 90.01 s in 95 s files, and the command shows no excursion from
+    rest over 9.8 mV outside the deflections found (the smallest peaks at 724 mV), so the 90th presentation
+    was not given and was not missed by the parser. Six movies have no stimulus file. The ROI detector
+    finds 2626 ROIs (2624 after dropping two whose F0 reaches zero), against 1054 with a tolerance of
+    105; the count rests on the detector, an assumption, as the paper's Caltracer detection with manual
+    supervision cannot be repeated and its cell selection is not described. A strict set of the 1054 strongest
+    ROIs is run as a sensitivity check; its count is set from the paper's and is not a test of this claim.
   deviations:
-  - Neurons are ROIs found again on the mean image of each field by a Laplacian-of-Gaussian blob
-    detector with soma-sized area limits (ssc6.detect_rois), in place of Caltracer with manual
-    supervision (Methods, 2-Photon Image Analysis). The parameters were fixed before any tuning or
-    correlation was computed and were not tuned to the paper's count.
+  - Neurons are ROIs found again on the mean image of each field by a Laplacian-of-Gaussian blob detector
+    with soma-sized area limits (ssc6.detect_rois), in place of Caltracer with manual supervision (Methods,
+    2-Photon Image Analysis). The parameters were fixed before any tuning or correlation was computed
+    and were not tuned to the paper's count.
 - claim: stimulus-set
   outcome: partially_reproduced
   notebook: reproduce_martini_2017.ipynb
@@ -54,71 +57,78 @@ outcomes:
   - 5.0
   - 3.0
   - 1.0001
-  notes: The command signal holds three shapes (one positive lobe, a positive then negative lobe,
-    and a large negative lobe between two positive ones) at three amplitudes each, about 0.73, 2.20
-    and 3.66 V, ratios to the smallest 4.99 to 5.00 and 2.996 to 2.999. Onsets are 1 s apart (median
-    1.0001 s). The order is mixed within a recording (2 of 88 neighbours share a class), but 188 of
-    190 stimulus files hold the same order and the other two are incomplete (52 and 87
-    deflections), so the order does not differ between recordings, as the criterion requires.
+  notes: The command signal holds three shapes (one positive lobe, a positive then negative lobe, and
+    a large negative lobe between two positive ones) at three amplitudes each, about 0.73, 2.20 and 3.66
+    V, ratios to the smallest 4.99 to 5.00 and 2.996 to 2.999. Onsets are 1 s apart (median 1.0001 s).
+    The order is mixed within a recording (2 of 88 neighbours share a class), but 188 of 190 stimulus
+    files hold the same order and the other two are incomplete (52 and 87 deflections), so the order does
+    not differ between recordings, as the criterion requires.
   deviations:
-  - Shapes are classed from the lobes of the command signal and amplitudes from its largest
-    excursion (ssc6.parse_stim); the classes match Figure 1B.
+  - Shapes are classed from the lobes of the command signal and amplitudes from its largest excursion
+    (ssc6.parse_stim); the classes match Figure 1B.
 - claim: fig2ab-example-neuron
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The paper does not identify the mouse, field or ROI of the example neuron (claims file,
-    open detail 11), and the data set holds no ROI masks. Figure 2C shows a crop of about ten cell
-    masks with a 25 um scale bar; with ROIs found again, a match by mask is not possible, and a
-    match by eye of the crop against the 49 fields was not attempted. Asked of the paper's authors
-    (methods_unavailable finding).
+  notes: The paper does not identify the mouse, field or ROI of the example neuron (claims file, open
+    detail 11), and the data set holds no ROI masks. Figure 2C shows about ten cell masks as circles on
+    a uniform grey background, with no image of the field, so only the arrangement of about ten centres
+    could be matched, against 2624 ROIs found again that are not the paper's; this point-pattern match
+    was not attempted, as it could not identify the field. Asked of the paper's authors (methods_unavailable
+    finding).
 - claim: responsive-fraction
   outcome: not_reproduced
   assumed: true
   notebook: reproduce_martini_2017.ipynb
   output: claim:responsive-fraction
   measured: 44.7
-  notes: Reading (a), mean response over all presentations above zero (one-sided signed-rank p <
-    0.05), gives 44.7% of 2624 neurons; reading (b), any of the nine stimuli above zero with the BY
-    correction over the field, gives 17.5% (33.9% with BH). Both are below 45.2 to 55.2%; (a) misses
-    by 0.5 points. Mice range from 15.5% to 88.5% under (a). The paper
-    does not define a responding neuron; the outcome rests on the criterion's readings and on the
-    re-detected ROIs, which include many more cells than the paper's.
+  notes: Reading (a), mean response over all presentations above zero (one-sided signed-rank p < 0.05),
+    gives 44.7% of 2624 neurons; reading (b), any of the nine stimuli above zero with the BY correction
+    over the field, gives 17.5% (33.9% with BH). Both are below 45.2 to 55.2%; (a) misses by 0.5 points.
+    Mice range from 15.5% to 88.5% under (a). Section Sensitivity repeats the main reading with the literal
+    halo formula, with the 1054 ROIs of highest detection strength (a threshold set from the paper's count),
+    with both, and without the five fields that fail the clock check. Reading (a) gives 41.3%, 42.6% and
+    39.5% under the first three and 45.5%, just inside the tolerance, without the five fields, so the
+    outcome is fragile to the field and ROI sets. The paper does not define a responding neuron; the outcome
+    rests on the criterion's readings and on the re-detected ROIs.
   deviations:
-  - The definition of a responding neuron is not in the paper; the two readings of the criterion
-    were run, and the BH variant of (b) is shown.
+  - The definition of a responding neuron is not in the paper; the two readings of the criterion were
+    run, and the BH variant of (b) is shown.
 - claim: fig2de-tuned-fraction
   outcome: reproduced
   assumed: true
   notebook: reproduce_martini_2017.ipynb
   output: claim:fig2de-tuned-fraction
   measured: 78.4
-  notes: Under the main reading (separate regressions, BH, family of all 3 x N p-values of a field,
-    either sign) 78.4% of 2624 neurons are non-tuned, pooled and as the mean over fields, within
-    64.6 to 79.0%. Ten of the 16 readings fall within the tolerance; the others give 64.5% (joint
-    regression, BH, per feature, either sign) or 79.1 to 87.3% (the four BY readings with separate
-    regressions, and BH over the field with positive slopes only). Non-tuned neurons are the
-    majority under every reading. Mice range from 39.3% to 99.5% non-tuned, and 8 of 49 fields have
-    no tuned neuron.
+  notes: Under the main reading (separate regressions, BH, family of all 3 x N p-values of a field, either
+    sign) 78.4% of 2624 neurons are non-tuned, pooled and as the mean over fields, within 64.6 to 79.0%.
+    Ten of the 16 readings fall within the tolerance; the others give 64.5% (joint regression, BH, per
+    feature, either sign) or 79.1 to 87.3% (the four BY readings with separate regressions, and BH over
+    the field with positive slopes only). Non-tuned neurons are the majority under every reading. The
+    pooled value mixes very different mice, from 39.3% to 99.5% non-tuned, and 8 of 49 fields have no
+    tuned neuron. For the three mice whose counts the paper gives the match does not hold mouse by mouse;
+    22 of 349, 25 of 219 and 16 of 238 are tuned (6.3 to 11.4%) against 59 of 167, 39 of 102 and 47 of
+    117 (35 to 40%), and the most permissive reading gives at most 54, 28 and 43. The literal halo formula
+    gives 78.7%, the 1054 strongest ROIs 74.0%, and the 44 fields that pass the clock check 76.8%.
   deviations:
-  - The main reading for the analyses that use tuning is separate regressions (Figure 2B plots one
-    line per waveform type), fdr_bh's default 'pdep' (the Methods name fdr_bh), the family of all
-    p-values of a field (Methods, "for all neurons in a field of view ... in the simultaneously
-    recorded population") and the two-sided slope test. Adopted as the best-supported choice; all
-    16 readings are shown.
-  - Amplitudes enter the regression as 1, 3 and 5 (Figure 2B legend, "normalized to the smallest
-    value") and responses as dF/F0 fractions; significance does not depend on these units.
+  - The main reading for the analyses that use tuning is separate regressions (Figure 2B plots one line
+    per waveform type), fdr_bh's default 'pdep' (the Methods name fdr_bh), the family of all p-values
+    of a field (Methods, "for all neurons in a field of view ... in the simultaneously recorded population")
+    and the two-sided slope test. Adopted as the best-supported choice; all 16 readings are shown.
+  - Amplitudes enter the regression as 1, 3 and 5 (Figure 2B legend, "normalized to the smallest value")
+    and responses as dF/F0 fractions; significance does not depend on these units.
   - Responses use the recordings that have a stimulus file (three in six fields).
 - claim: fig2e-all-categories
   outcome: reproduced
   assumed: true
   notebook: reproduce_martini_2017.ipynb
   output: claim:fig2e-all-categories
-  notes: Under the main reading, which reproduces fig2de-tuned-fraction, 36 neurons are tuned to
-    position only, 183 to velocity only, 76 to acceleration only and 273 are mixed; all four classes
-    are present under all 16 readings.
+  notes: Under the main reading, which reproduces fig2de-tuned-fraction, 36 neurons are tuned to position
+    only, 183 to velocity only, 76 to acceleration only and 273 are mixed; all four classes are present
+    under all 16 readings. All four classes are present under every sensitivity variant (22, 76, 33 and
+    143 with the 1054 strongest ROIs).
   deviations:
-  - Rests on the ROIs found again (dataset-size) and on the main tuning reading of
-    fig2de-tuned-fraction, as the criterion asks for the reading that reproduces that claim.
+  - Rests on the ROIs found again (dataset-size) and on the main tuning reading of fig2de-tuned-fraction,
+    as the criterion asks for the reading that reproduces that claim.
 - claim: tuning-consistency
   outcome: reproduced
   assumed: true
@@ -127,12 +137,14 @@ outcomes:
   measured:
   - 99.5
   - 86.5
-  notes: With all neurons as the denominator (the criterion's first reading), 99.5% have identical
-    tuning to at least one feature and 86.5% to all three in recordings 1-2 and 3-4, both within
-    tolerance. Over neurons tuned in the full data the shares are 97.7% and 43.8%, and over neurons
-    tuned in at least one half 96.7% and 11.3%, so the second value matches only with all neurons as
-    the denominator, which the paper does not state. With the joint regression, 99.0% and 77.3%.
-    Mice range from 60.7% to 99.5% for all three features.
+  notes: With all neurons as the denominator (the criterion's first reading), 99.5% have identical tuning
+    to at least one feature and 86.5% to all three in recordings 1-2 and 3-4, both within tolerance. Over
+    neurons tuned in the full data the shares are 97.7% and 43.8%, and over neurons tuned in at least
+    one half 96.7% and 11.3%, so the second value matches only with all neurons as the denominator, which
+    the paper does not state; under it most of the agreement comes from neurons non-tuned in both halves,
+    each half having half the presentations. With the joint regression, 99.0% and 77.3%. Mice range from
+    60.7% to 99.5% for all three features. The literal halo formula gives 99.6% and 86.7%, the 1054 strongest
+    ROIs 99.3% and 82.2%.
   deviations:
   - In the six fields whose first movie has no stimulus file the first half is recording 2 alone.
 - claim: shuffle-significance
@@ -140,21 +152,23 @@ outcomes:
   assumed: true
   notebook: reproduce_martini_2017.ipynb
   output: claim:shuffle-significance
-  notes: With tuning scored by 1000 shuffles of responses across amplitudes, non-tuned neurons
-    remain the majority (77.4% with BH over the field, 57.0% without a correction), all four classes
-    are present (38, 193, 81 and 282 with the correction; 163, 284, 190 and 492 without), and the SI
-    test finds no difference from shuffled (p = 0.521 over 40 fields and 0.629 over 49). With the
-    correction 97.1% of neurons have the same tuning as under the regression test. The barrel-map
-    tests (fig4c, fig4d) could not be run, as they are blocked; this part of the claim is untested.
+  notes: With tuning scored by 1000 shuffles of responses across amplitudes, non-tuned neurons remain
+    the majority (77.4% with BH over the field, 57.0% without a correction), all four classes are present
+    (38, 193, 81 and 282 with the correction; 163, 284, 190 and 492 without), and the SI test finds no
+    difference from shuffled (p = 0.521 over 40 fields and 0.629 over 49). With the correction 97.1% of
+    neurons have the same tuning as under the regression test. The barrel-map tests (fig4c, fig4d) could
+    not be run, as they are blocked; this part of the claim is untested.
   deviations:
-  - The shuffled p-value is two-sided, the fraction of shuffled slopes at least as large in
-    magnitude as the observed one, as the criterion says.
+  - The shuffled p-value is two-sided, the fraction of shuffled slopes at least as large in magnitude
+    as the observed one, as the criterion says.
 - claim: fig3b-example-correlation
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The example field of Figure 3A and 3B is not identified by mouse or field (claims file,
-    open detail 11). Figure 3A is a 90 s raster, which cannot be matched to fields whose ROIs are
-    found again. Asked of the paper's authors (methods_unavailable finding).
+  notes: The example field of Figure 3A and 3B is not identified by mouse or field (claims file, open
+    detail 11). Figure 3A is a 90 s raster of 31 neurons and the Figure 3F inset a crop of about ten masks
+    drawn on a uniform grey background; neither holds an image of the field. With 34 to 70 ROIs found
+    per field, neither the count of 31 nor ten circle centres identifies a field, and a match was not
+    attempted. Asked of the paper's authors (methods_unavailable finding).
 - claim: fig3c-correlation-above-shuffle
   outcome: partially_reproduced
   assumed: true
@@ -163,30 +177,37 @@ outcomes:
   measured:
   - 0.2328
   - 0.1195
-  notes: True correlations exceed shuffled ones in all 49 fields under every reading (Wilcoxon p =
-    3.6e-15). On corrected fluorescence with shuffles within recordings (the first reading, given
-    as measured) the means are 0.2328 and 0.1195; with shuffles over the whole series 0.2328 and
-    0.0351. On dF/F0 the means are 0.1097 (just above 0.0924 to 0.1084) and 0.0133 (within 0.0086 to
-    0.0134). One permutation gives the same shuffled means to three decimals. No reading puts both
-    means within tolerance. Mice range from 0.081 to 0.397 (corrected).
+  notes: True correlations exceed shuffled ones in all 49 fields under every reading (Wilcoxon p = 3.6e-15).
+    On corrected fluorescence with shuffles within recordings (the first reading, given as measured) the
+    means are 0.2328 and 0.1195; with shuffles over the whole series 0.2328 and 0.0351. With the literal
+    halo formula, (F - bg) - 0.7 H, they are 0.2193 and 0.1099. On dF/F0 the means are 0.1097 (0.1105
+    with the literal halo), just above 0.0924 to 0.1084, and 0.0133 (within 0.0086 to 0.0134). One permutation
+    gives the same shuffled means to three decimals. No reading puts both means within tolerance; the
+    1054 strongest ROIs give 0.2603 and 0.1398. Mice range from 0.081 to 0.397 (corrected).
   deviations:
-  - Recordings without a stimulus file are left out of the concatenated series, as their
-    presentations cannot be shuffled.
-  - The segments are those of the criterion, from an onset's first frame to the next onset's; frames
-    before the first onset and after the last of a recording stay in place.
+  - Recordings without a stimulus file are left out of the concatenated series, as their presentations
+    cannot be shuffled.
+  - The segments are those of the criterion, from an onset's first frame to the next onset's; frames before
+    the first onset and after the last of a recording stay in place.
+  - The halo correction is run under both readings of the Methods (halo fluorescence was scaled (optimal
+    factor = 0.7) and subtracted from the background-subtracted mean fluorescence); (F - bg) - 0.7 (H
+    - bg), the main reading, and the literal (F - bg) - 0.7 H. They differ by 0.7 bg(t), common to all
+    ROIs.
 - claim: neuropil-correlation
   outcome: partially_reproduced
   assumed: true
   notebook: reproduce_martini_2017.ipynb
   output: claim:neuropil-correlation
   measured: 0.6123
-  notes: In both placements of ten neuropil disks per field (490 ROIs) the neuropil ROIs are more
-    correlated with each other than neurons (0.6123 and 0.6012 against 0.2328; higher in 49 of 49
-    fields; Wilcoxon p = 3.6e-15), but the neuropil means are far above 0.1792 (tolerance 0.1695 to
-    0.1889).
+  notes: In both placements of ten neuropil disks per field (490 ROIs) the neuropil ROIs are more correlated
+    with each other than neurons, on corrected fluorescence (0.6123 and 0.6012 against 0.2328, or 0.2193
+    with the literal halo) and on dF/F0 (0.5509 and 0.5416 against 0.1097 and 0.1105); higher in 49 of
+    49 fields, Wilcoxon p = 3.6e-15 in every comparison. The neuropil means are far above 0.1792 (tolerance
+    0.1695 to 0.1889) under every reading.
   deviations:
-  - Neuropil traces are the raw mean minus the vessel background, without a halo; the paper does
-    not say how they were corrected.
+  - Neuropil traces are the raw mean minus the vessel background, without a halo; the paper does not say
+    how they were corrected. Both signals of fig3c-correlation-above-shuffle are run (corrected fluorescence
+    and dF/F0, F0 as for neurons).
 - claim: fig3d-example-correlation-distance
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -199,14 +220,20 @@ outcomes:
   measured:
   - -0.287
   - -0.094
-  notes: Slopes of correlation on distance are below shuffled under every reading (true below
-    shuffled in 42 to 48 of 49 fields, Wilcoxon p from 1.1e-14 to 8.1e-09). The true median is
-    within tolerance (-0.287 per mm on corrected fluorescence, -0.237 on dF/F0; pairs up to 300 um
-    give -0.288 and -0.243), but the shuffled median is outside it under every reading (-0.094,
-    -0.024 and -0.021 per mm against -0.0202 to 0.0078). Only 0.9% of pairs are over 300 um apart.
+  notes: Slopes of correlation on distance are below shuffled under every reading (true below shuffled
+    in 42 to 48 of 49 fields, Wilcoxon p from 1.1e-14 to 8.1e-09). The true median is within tolerance
+    in four of the five readings (-0.287 per mm on corrected fluorescence, -0.328 with the literal halo,
+    -0.237 on dF/F0) and just outside in the fifth (-0.225, dF/F0 with the literal halo); pairs up to
+    300 um give the same. The shuffled median is outside the tolerance under every reading (-0.094 for
+    both halo readings, -0.024 over the whole series, -0.021 on dF/F0, against -0.0202 to 0.0078), and
+    with the 1054 strongest ROIs (-0.093). Only 0.9% of pairs are over 300 um apart.
   deviations:
-  - Distances are between ROI centroids in the imaging plane (claims file, open detail 8), on the
-    ROIs found again; the shuffled slope of a field is the mean over its 100 permutations.
+  - Distances are between ROI centroids in the imaging plane (claims file, open detail 8), on the ROIs
+    found again; the shuffled slope of a field is the mean over its 100 permutations.
+  - The halo correction is run under both readings of the Methods (halo fluorescence was scaled (optimal
+    factor = 0.7) and subtracted from the background-subtracted mean fluorescence); (F - bg) - 0.7 (H
+    - bg), the main reading, and the literal (F - bg) - 0.7 H. They differ by 0.7 bg(t), common to all
+    ROIs.
 - claim: correlation-gradient-beyond-200um
   outcome: reproduced
   assumed: true
@@ -216,16 +243,21 @@ outcomes:
   - -0.027
   - -0.021
   - 49
-  notes: Under the main reading (corrected fluorescence, shuffles within recordings, slopes over the
-    pairs more than 200 um apart) the slopes do not differ from shuffled (median -0.027 against
-    -0.021 per mm, p = 0.459, median difference -0.025); shuffles over the whole series give p =
-    0.76 and dF/F0 p = 0.412. All 49 fields have more than 4 pairs over 200 um apart (25 to 437),
-    where the paper has 30, so the field count is outside its tolerance, and the shuffled median is
-    just outside its tolerance (-0.194 to -0.024). Fitted over all pairs of those fields (the
-    variant), slopes differ from shuffled (p <= 3.1e-13).
+  notes: Under the main reading (corrected fluorescence, shuffles within recordings, slopes over the pairs
+    more than 200 um apart) the slopes do not differ from shuffled (median -0.027 against -0.021 per mm,
+    p = 0.459, median difference -0.025); shuffles over the whole series give p = 0.76, dF/F0 p = 0.412,
+    and the literal halo formula p = 0.343 and 0.239. All 49 fields have more than 4 pairs over 200 um
+    apart (25 to 437), where the paper has 30, so the field count is outside its tolerance, and the shuffled
+    median is just outside its tolerance (-0.194 to -0.024). With the 1054 strongest ROIs 43 fields qualify
+    and p = 0.706. Fitted over all pairs of those fields (the variant), slopes differ from shuffled (p
+    <= 3.1e-13).
   deviations:
-  - The shuffled slope over the far pairs is the mean over the field's 100 permutations of
-    fig3c-correlation-above-shuffle; distances rest on the ROIs found again.
+  - The shuffled slope over the far pairs is the mean over the field's 100 permutations of fig3c-correlation-above-shuffle;
+    distances rest on the ROIs found again.
+  - The halo correction is run under both readings of the Methods (halo fluorescence was scaled (optimal
+    factor = 0.7) and subtracted from the background-subtracted mean fluorescence); (F - bg) - 0.7 (H
+    - bg), the main reading, and the literal (F - bg) - 0.7 H. They differ by 0.7 bg(t), common to all
+    ROIs.
 - claim: fig3f-example-si-distance
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -239,69 +271,236 @@ outcomes:
   - 0.0
   - 2.7e-07
   - 35
-  notes: Under the main reading (all pairs of the 35 fields with at least two tuned neurons, raw SI)
-    the slopes of SI on distance do not differ from shuffled (p = 0.614; true below shuffled in 17 of
-    35). Pairs of tuned neurons only (31 fields, p = 0.595), fields with two neurons tuned to a common
-    feature (32 fields, p = 0.625) and unit-length vectors (p = 0.231 to 0.735) agree. The field
-    count, 35, is outside 23 to 29. On the raw scale the medians are near zero (0 and 2.7e-07 per
-    mm); on the percent scale (SI x 1e4) the medians are 0 and 0.0027 per mm for all pairs and 0.97
-    and -0.15 for tuned pairs; none is near the paper's -0.467.
+  notes: Under the main reading (all pairs of the 35 fields with at least two tuned neurons, raw SI) the
+    slopes of SI on distance do not differ from shuffled (p = 0.614; true below shuffled in 17 of 35).
+    In 3 of the 35 fields the tuned neurons share no feature, so SI is zero for every pair and both slopes
+    are zero; the signed-rank test drops them (effective n 32), and counting them (zsplit or pratt) gives
+    p = 0.623. Pairs of tuned neurons only (31 fields, p = 0.595), fields with two neurons tuned to a
+    common feature (32 fields, p = 0.625), unit-length vectors (p = 0.231 to 0.735), the literal halo
+    formula (36 fields, p = 0.427) and the 1054 strongest ROIs (33 fields, p = 0.453) agree. The field
+    count, 35, is outside 23 to 29. On the raw scale the medians are near zero (0 and 2.7e-07 per mm);
+    on the percent scale (SI x 1e4) the medians are 0 and 0.0027 per mm for all pairs and 0.97 and -0.15
+    for tuned pairs; none is near the paper's -0.467.
   deviations:
-  - The paper does not say which 26 fields enter; fields with at least two tuned neurons (main) and
-    the variants of the criterion were run.
+  - The paper does not say which 26 fields enter; fields with at least two tuned neurons (main) and the
+    variants of the criterion were run.
 - claim: fig4c-barrel-septum-tuned
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The histology files of experiments 8 to 10 are single-page Illustrator figures (17 to 27
-    embedded images, no text but five barrel labels in experiment 8) showing the cytochrome-oxidase
-    sections, the barrel outlines, the in vivo surface and one dashed square for the imaged area.
-    They give neither the position of each 2-photon field within that square nor a scale, and the
-    image of the cortical surface the Methods used to align the somata ("a single image of the
-    cortical surface taken before starting the 2-photon acquisition") is not deposited. The neurons
-    cannot be placed on the barrel map.
+  notes: The histology files of experiments 8 to 10 are single-page Illustrator figures, rendered at full
+    resolution in the data check. Only exp8 places its fields; five of its six fields (2, 4, 5, 6 and
+    7) are drawn on the in vivo surface image with their neurons as coloured dots, and a second copy of
+    the surface carries the barrel outlines. exp9 shows coloured dots of neurons within two dashed squares
+    without field labels, and exp10 one dashed square only. The image of the cortical surface the Methods
+    used to align the somata (a single image of the cortical surface taken before starting the 2-photon
+    acquisition) is not deposited. The criterion pools the three mice, and the neurons of exp9 and exp10
+    cannot be placed on the barrel map. The per-mouse counts the claim also quotes fail without the map;
+    349, 219 and 238 ROIs (134, 82 and 101 in the strict set) against 167, 102 and 117, and 22, 25 and
+    16 tuned (17, 11 and 6) against 59, 39 and 47.
 - claim: fig4d-border-distance-by-feature
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: Depends on fig4c-barrel-septum-tuned; the neurons cannot be placed on the barrel map.
+  notes: Depends on fig4c-barrel-septum-tuned; the neurons of exp9 and exp10 cannot be placed on the barrel
+    map.
 findings:
 - kind: data_missing
-  statement: The data set holds raw movies and stimulus files only. No ROIs, traces, neuron
-    positions or tuning labels are deposited, so every result must be rebuilt from the movies and
-    the paper's 1054 neurons cannot be identified; an automatic detector finds 2626 ROIs.
+  statement: The data set holds raw movies and stimulus files only. No ROIs, traces, neuron positions
+    or tuning labels are deposited, so every result must be rebuilt from the movies and the paper's 1054
+    neurons cannot be identified; an automatic detector finds 2626 ROIs.
 - kind: selection_undocumented
-  statement: The paper does not say how its 1054 neurons (about 21 per field) were chosen from the
-    somata visible in the mean images (34 to 70 per field were found here), nor how fields with
-    excessive motion were judged. Fractions and correlations depend on that selection.
+  statement: The paper does not say how its 1054 neurons (about 21 per field) were chosen from the somata
+    visible in the mean images (34 to 70 per field were found here), nor how fields with excessive motion
+    were judged. Fractions and correlations depend on that selection.
 - kind: data_missing
-  statement: Six movies have no stimulus file, the first recording of a field in six mice
-    (exp2/exp1_0001, exp3/exp1_0001, exp4/exp1_0001, exp6/exp2_0001, exp7/exp2_0001,
-    exp8/exp2_0001), so their responses cannot be aligned to the stimulus.
+  statement: Six movies have no stimulus file, the first recording of a field in six mice (exp2/exp1_0001,
+    exp3/exp1_0001, exp4/exp1_0001, exp6/exp2_0001, exp7/exp2_0001, exp8/exp2_0001), so their responses
+    cannot be aligned to the stimulus.
 - kind: paper_inconsistency
-  statement: Each complete stimulus file holds 89 deflections, with the smallest position stimulus
-    presented 9 times, where the paper states each stimulus was presented 10 times per recording;
-    and 188 of 190 files hold one and the same order, where the paper states that waveforms and
-    amplitudes were randomly interleaved (the order is mixed within a recording but repeated across
-    recordings and mice).
+  statement: Each complete stimulus file holds 89 deflections, with the smallest position stimulus presented
+    9 times, where the paper states each stimulus was presented 10 times per recording; and 188 of 190
+    files hold one and the same order, where the paper states that waveforms and amplitudes were randomly
+    interleaved (the order is mixed within a recording but repeated across recordings and mice).
 - kind: other
-  statement: Two stimulus files are incomplete (exp10/exp3_0004 holds 52 deflections with a 40 s
-    gap, exp6/exp2_0003 holds 87), and nine start just after a frame pulse, holding 831 pulses
-    where the others hold 832; in those nine the deflections fall one frame earlier relative to the
-    first pulse, consistent with one frame before the file's start. The movies have 833 frames, one
-    more than the pulses in a 95 s file.
+  statement: Two stimulus files are incomplete (exp10/exp3_0004 holds 52 deflections with a 40 s gap,
+    exp6/exp2_0003 holds 87), and nine start just after a frame pulse, holding 831 pulses where the others
+    hold 832; in those nine the deflections fall one frame earlier relative to the first pulse, consistent
+    with one frame before the file's start. The movies have 833 frames, one more than the pulses in a
+    95 s file. In exp10/exp3_0004 the command lies 13 mV from rest for the first 39 s, which the parser
+    counts as a deflection; it has no response window and enters no analysis.
 - kind: metadata_insufficient
-  statement: The histology figures of experiments 8 to 10 do not locate each field or its neurons
-    on the barrel map, and the surface image the paper used for the alignment is not deposited, so
-    the barrel and septum analyses (Figure 4) cannot be repeated.
+  statement: Of the histology figures of experiments 8 to 10 only exp8's places its fields and their neurons
+    on the surface image; exp9 shows neurons without field labels and exp10 a dashed square only, and
+    the surface image the paper used for the alignment is not deposited, so the barrel and septum analyses
+    (Figure 4) cannot be repeated.
 - kind: metadata_error
-  statement: The data description says 3 to 6 fields were acquired per mouse; the data hold 3 to 8
-    (8 in exp3). The description's header and the tar's README.txt name the data set "ssc-5".
+  statement: The data description says 3 to 6 fields were acquired per mouse; the data hold 3 to 8 (8
+    in exp3). The description's header and the tar's README.txt name the data set "ssc-5".
 - kind: methods_unavailable
-  statement: 'Questions for the paper''s authors. (1) How were the 1054 neurons selected, and which
-    ROIs are they? (2) What defines a neuron that "responded to whisker stimulation" (50.2%)? (3)
-    Was fdr_bh run with ''pdep'' or ''dep'', over all 3 x N p-values of a field or per feature, and
-    did negative slopes count as tuning? (4) Was SI computed on raw coefficients, coefficients in
-    percent dF/F0 or unit vectors, and which 26 fields entered Figure 3G? (5) Which mouse and field
-    hold the example neuron of Figure 2A-C and the example field of Figure 3? (6) Where is each
-    field on the barrel maps of experiments 8 to 10? The choices made here are stated in the
-    attempt''s deviations; most tuning readings give the paper''s non-tuned fraction, and the
-    response fraction falls just short under the closest reading.'
+  statement: Questions for the paper's authors. (1) How were the 1054 neurons selected, and which ROIs
+    are they? (2) What defines a neuron that "responded to whisker stimulation" (50.2%)? (3) Was fdr_bh
+    run with 'pdep' or 'dep', over all 3 x N p-values of a field or per feature, and did negative slopes
+    count as tuning? (4) Was SI computed on raw coefficients, coefficients in percent dF/F0 or unit vectors,
+    and which 26 fields entered Figure 3G? (5) Which mouse and field hold the example neuron of Figure
+    2A-C and the example field of Figure 3? (6) Where is each field on the barrel maps of experiments
+    8 to 10? The choices made here are stated in the attempt's deviations; most tuning readings give the
+    paper's non-tuned fraction, and the response fraction falls just short under the closest reading.
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text. The verifier tested the helpers fdr, regress_joint,
+    regress_separate, responses, shuffled_series, spearman_upper and parse_stim on synthetic inputs and
+    checked the archive's file list. It had no attempt record and took the claims from the claims file.
+  results:
+  - claim: dataset-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Mice 10, fields 49 and movies per field 4 all match (cell 8). Neurons are 2624 against 1054
+      +- 105, and P1 is presented 9 times, not 10, in all 188 complete stimulus files, which fails the
+      zero tolerance. Problem 1, the ROI detector finds 2624 ROIs, a median of 54 per field, with several
+      centroids in dim neuropil, and no sensitivity run with a stricter detector was done. Problem 8,
+      nothing shows whether a 90th deflection is outside the file or missed by the parser, and one file's
+      first deflection falls at frame phase 0, unexplained.
+    response: Added ROI overlays for all 49 fields, a strict ROI set (the 1054 strongest by detection
+      strength) and a section that reruns the main reading of every tested claim on it. Printed the onset
+      range (1.96 to 90.01 s in 95 s files), the largest command excursion outside the deflections (9.8
+      mV) and the first and last 3 s of one file; the 90th presentation was not given. The phase-0 file
+      (exp10/exp3_0004) starts with the command 13 mV from rest for 39 s, counted as a deflection with
+      no response window. Outcome unchanged.
+  - claim: stimulus-set
+    agrees: true
+    outcome: partially_reproduced
+    reason: There are 3 shapes x 3 levels with ratios 4.99-5.00 and 2.996-2.999, and onsets 1.000 s apart
+      (cell 10). The criterion also requires the order to differ between recordings, but 188 of 190 files
+      share one order and the other two are truncated (problem 7).
+    response: No change.
+  - claim: fig2ab-example-neuron
+    agrees: true
+    outcome: blocked
+    reason: The neuron is not identified in the paper or the data. The criterion asks for a match of the
+      Figure 2C mask against the field mean images, and cell 11 says this was not attempted (problem 6);
+      the blocked outcome rests on a step that was skipped, not one that failed.
+    response: Added overlays of all 49 fields with their ROIs. Figure 2C shows masks as circles on a uniform
+      grey background with no image of the field, so only about ten centres could be matched against ROIs
+      that are not the paper's; the match was not attempted, and the notes now say why. Outcome unchanged.
+  - claim: responsive-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Reading (a) gives 44.7%, (b) BY gives 17.5% and the BH variant gives 33.9%. All are outside
+      45.2-55.2 (cell 13). (a) misses by 0.5 points, so the result is fragile to the ROI set (problem
+      1).
+    response: Reran both readings with the literal halo formula, the strict ROI set, both, and without
+      the five fields that fail the clock check; reading (a) gives 41.3, 42.6, 39.5 and 45.5%, the last
+      just inside the tolerance. The main analysis keeps all 49 fields, so the outcome is unchanged, and
+      the notes record its fragility.
+  - claim: fig2de-tuned-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Main reading 78.4% non-tuned pooled and as the mean over fields, inside 64.6-79.0. Problem
+      2, for experiments 8 to 10, the only mice with per-mouse counts in the paper (59/167, 39/102 and
+      47/117 tuned), the notebook has about 6.3%, 11.4% and 6.7% tuned, so the pooled match is not supported
+      mouse by mouse; it comes from a mix of very different mice. The verifier keeps the outcome as reproduced
+      because the criterion is pooled, but it is weak.
+    response: The notebook now prints the tuned counts of exp8 to exp10 next to the paper's, under the
+      main reading and over all 16 readings (at most 54, 28 and 43), and the conclusion and notes state
+      that the match does not hold mouse by mouse. The strict ROI set gives 74.0% and the literal halo
+      78.7%. Outcome unchanged.
+  - claim: fig2e-all-categories
+    agrees: true
+    outcome: reproduced
+    reason: All four classes are non-empty in all 16 readings (cell 17).
+    response: No change; all four classes are also present under every sensitivity variant.
+  - claim: tuning-consistency
+    agrees: true
+    outcome: reproduced
+    reason: With all neurons as the denominator 99.5% and 86.5%, inside 85.5-104.5 and 72.9-89.1 (cell
+      19). With tuned neurons as the denominator the all-three value is 43.8% or 11.3%. Problem 11, under
+      the all-neurons denominator the consistency mostly counts neurons non-tuned in both halves, which
+      have half the trials and less power; the criterion allows this reading.
+    response: Stated the point of problem 11 in the conclusion and notes; added the strict ROI set (99.3%
+      and 82.2%) and literal halo (99.6% and 86.7%). Outcome unchanged.
+  - claim: shuffle-significance
+    agrees: true
+    outcome: reproduced
+    reason: With FDR 77.4% non-tuned, all classes present, SI p = 0.521. Without FDR 57.0%, all classes,
+      SI p = 0.629 (cells 21 and 34). The Figure 4 parts are untestable.
+    response: No change.
+  - claim: fig3b-example-correlation
+    agrees: true
+    outcome: blocked
+    reason: The field is not identified. The Figure 3F inset or the n = 31 count was not tried as a match;
+      the verifier agrees a match is unlikely with re-detected ROIs.
+    response: The notes and notebook now say why neither the count of 31 nor the inset's ten circles on
+      a grey background identifies a field with 34 to 70 re-detected ROIs per field; the match was not
+      attempted. Outcome unchanged.
+  - claim: fig3c-correlation-above-shuffle
+    agrees: true
+    outcome: partially_reproduced
+    reason: Wilcoxon p = 3.6e-15 with true above shuffled in 49/49 fields. Main reading true 0.233 and
+      shuffled 0.120, both out of tolerance; the dF/F variant gives 0.1097 and 0.0133; no reading has
+      both values inside. Problem 3, the corrected signal (F-bg) - 0.7(H-bg) leaves an extra 0.7 bg(t)
+      term against the Methods' F - bg - 0.7 H, which was not stated as an assumption nor run.
+    response: 'Added the literal halo reading (F - bg) - 0.7 H as a reading of this claim (ssc6.corrected)
+      on corrected fluorescence and dF/F0: 0.2193 and 0.1099, and 0.1105 and 0.0133. No reading puts both
+      means in tolerance. Outcome unchanged.'
+  - claim: neuropil-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Neuropil is higher than neurons in 49/49 fields (p = 3.6e-15), but the mean is 0.61 against
+      0.179 +- 0.0097. Problem 4, the dF/F reading of fig3c was not run for neuropil, so the claim was
+      not tested under every reading its criterion inherits.
+    response: Added neuropil dF/F0 (0.5509 and 0.5416, against neurons 0.1097 and 0.1105) and neurons
+      under the literal halo; neuropil is higher in 49/49 fields in every comparison and above the tolerance
+      in every reading. Outcome unchanged.
+  - claim: fig3d-example-correlation-distance
+    agrees: true
+    outcome: blocked
+    reason: It depends on fig3b.
+    response: No change.
+  - claim: fig3e-correlation-falls-with-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Test holds in every reading. The true median of -0.287 (main) is inside tolerance; the shuffled
+      median (-0.094, -0.024, -0.021) is outside -0.0202 to 0.0078 in every reading (cell 28).
+    response: Added the literal halo readings (true -0.328 and -0.225, shuffled -0.094 and -0.021); the
+      shuffled median stays outside. Outcome unchanged.
+  - claim: correlation-gradient-beyond-200um
+    agrees: true
+    outcome: reproduced
+    reason: An absence claim judged on the test; p = 0.459 (main), 0.76 and 0.41, all >= 0.05 (cell 30).
+      49 fields qualify, against 30 +- 3.
+    response: Added the literal halo readings (p = 0.343 and 0.239) and the strict ROI set (43 fields,
+      p = 0.706). Outcome unchanged.
+  - claim: fig3f-example-si-distance
+    agrees: true
+    outcome: blocked
+    reason: It depends on fig3b.
+    response: No change.
+  - claim: fig3g-si-no-spatial-organization
+    agrees: true
+    outcome: reproduced
+    reason: An absence claim; p = 0.614 (main) and >= 0.23 in all 9 readings (cell 32). Neither the field
+      count (35 against 23-29) nor the median slope (0 against -0.467) matches, under any SI scale. Problem
+      10, the median SI slope of exactly 0 implies fields with SI identically zero; wilcoxon drops zero
+      differences, so the effective n is below the 35 printed; all p values are far above 0.05, so the
+      outcome stands.
+    response: The notebook prints the fields with SI zero for every pair (3 of 35), the effective n (32),
+      and p with zsplit and pratt (0.623). Outcome unchanged.
+  - claim: fig4c-barrel-septum-tuned
+    agrees: true
+    outcome: blocked
+    reason: The Fisher test needs neurons registered to the map, which was not done. Problem 5, the exp8
+      PDF text gives exp8's field ids and the rendered figure shows several field overlays and barrel
+      outlines, which suggests per-field positions are marked at least for exp8 and was not examined at
+      usable resolution. The per-mouse neuron and tuned counts (167/102/117, 59/39/47) can be read without
+      registration, and they fail.
+    response: Rendered the three PDFs at full resolution around the imaged area. exp8 places five fields
+      with their neurons as coloured dots and has barrel outlines; exp9 shows neurons without field labels;
+      exp10 a dashed square only. The criterion pools the three mice, so the claim stays blocked; the
+      notes and the fig4c section now describe this and give the per-mouse counts, which fail.
+  - claim: fig4d-border-distance-by-feature
+    agrees: true
+    outcome: blocked
+    reason: It depends on fig4c's registration.
+    response: No change; the notes name the reason as for fig4c.

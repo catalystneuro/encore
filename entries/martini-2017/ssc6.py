@@ -144,16 +144,31 @@ def read_movie(buf):
 
 
 def describe_pdf(buf):
-    """What a histology PDF holds: pages, images, text, and a small rendering."""
+    """What a histology PDF holds: pages, images, text with positions, the
+    number of vector drawings, a small rendering, and the file itself (for
+    renderings of a region at full resolution, :func:`render_clip`)."""
     import pymupdf
     d = pymupdf.open(stream=buf, filetype="pdf")
     pages = []
     for p in d:
-        pix = p.get_pixmap(dpi=60)
-        img = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, pix.n)
+        def render(dpi):
+            pix = p.get_pixmap(dpi=dpi)
+            img = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, pix.n)
+            return img[..., :3].copy()
         pages.append({"size_pt": (p.rect.width, p.rect.height), "n_images": len(p.get_images()),
-                      "text": p.get_text(), "render": img[..., :3].copy()})
-    return {"n_pages": d.page_count, "creator": d.metadata.get("creator"), "pages": pages}
+                      "text": p.get_text(), "words": p.get_text("words"),
+                      "image_rects": [list(p.get_image_rects(x[0])) for x in p.get_images()],
+                      "n_drawings": len(p.get_drawings()),
+                      "render": render(60)})
+    return {"n_pages": d.page_count, "creator": d.metadata.get("creator"), "pages": pages, "pdf": buf}
+
+
+def render_clip(pdf, rect_pt, dpi):
+    """A region of the first page of a PDF (bytes), rendered at ``dpi``."""
+    import pymupdf
+    p = pymupdf.open(stream=pdf, filetype="pdf")[0]
+    pix = p.get_pixmap(dpi=dpi, clip=pymupdf.Rect(*rect_pt))
+    return np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, pix.n)[..., :3].copy()
 
 
 # ---------------------------------------------------------------- stimulus
@@ -195,7 +210,15 @@ def parse_stim(a):
             shape.append("A"); amp.append(mn)
         else:
             shape.append("V"); amp.append(max(mx, mn))
-    return {"frames": frames, "onsets": t[starts], "durations": (ends - starts) / 1e4,
+    # the command in the first and last 3 s, at 1 kHz, and its largest
+    # excursion from rest outside the deflections found (to show none is missed)
+    outside = np.ones(len(cmd), bool)
+    for s0, e0 in zip(starts, ends):
+        outside[s0:e0 + 1] = False
+    return {"cmd_head": cmd[:30000:10] - base, "cmd_tail": cmd[-30000::10] - base,
+            "max_dev_outside": float(np.abs(cmd[outside] - base).max()),
+            "first_sample_dev": float(cmd[0] - base),
+            "frames": frames, "onsets": t[starts], "durations": (ends - starts) / 1e4,
             "shape": np.array(shape), "amp_v": np.array(amp), "baseline_v": base,
             "duration_s": t[-1] - t[0] + 1e-4, "n_samples": len(t),
             "missed_first_pulse": missed_first, "n_pulses": len(rises) + int(hi[0])}
@@ -266,7 +289,8 @@ def detect_rois(mean_img):
         a = m.sum() / px_area
         if MIN_AREA_UM2 <= a <= MAX_AREA_UM2:
             ys, xs = np.nonzero(m)
-            rois.append({"pix": (ys, xs), "centroid_px": (ys.mean(), xs.mean()), "area_um2": a})
+            rois.append({"pix": (ys, xs), "centroid_px": (ys.mean(), xs.mean()), "area_um2": a,
+                         "strength": float(log[peaks[i - 1][0], peaks[i - 1][1]])})
     return rois
 
 
@@ -474,9 +498,22 @@ def shuffle_segments(trace, bounds, rng):
 
 # ---------------------------------------------------------------- per field
 
-def field_data(data, key, reps=None):
+def corrected(tr, halo="bg"):
+    """Corrected fluorescence of one recording's ROIs. The Methods: "halo
+    fluorescence was scaled (optimal factor = 0.7) and subtracted from the
+    background-subtracted mean fluorescence". Two readings: ``"bg"``, the halo
+    also background-subtracted, (F - bg) - 0.7 (H - bg); ``"literal"``, the raw
+    halo, (F - bg) - 0.7 H. They differ by 0.7 bg(t), common to all ROIs."""
+    if halo == "bg":
+        return tr["corrected"]
+    return (tr["F"] - tr["bg"]) - HALO_FACTOR * tr["halo"]
+
+
+def field_data(data, key, reps=None, halo="bg", subset=None):
     """Responses and traces of one field over the recordings ``reps`` that
-    have a stimulus file (all such recordings when None)."""
+    have a stimulus file (all such recordings when None); ``halo`` the reading
+    of the halo correction (:func:`corrected`) and ``subset`` a boolean mask
+    of the field's ROIs to keep (all when None)."""
     f = data["fields"][key]
     use = [r for r in f["reps"] if (key[0], key[1], r) in data["stims"]]
     if reps is not None:
@@ -485,13 +522,13 @@ def field_data(data, key, reps=None):
     offset = 0
     # ROIs whose F0 reaches zero or below in any recording (corrected
     # fluorescence at or under the halo's) have no defined dF/F0; dropped
-    keep = np.ones(len(f["rois"]), bool)
+    keep = np.ones(len(f["rois"]), bool) if subset is None else np.asarray(subset, bool).copy()
     for r in f["reps"]:
-        keep &= dff(f["traces"][r]["corrected"])[1].min(1) > 0
+        keep &= dff(corrected(f["traces"][r], halo))[1].min(1) > 0
     for r in use:
         st = data["stims"][(key[0], key[1], r)]
         l, nm = amplitude_levels(st)
-        c = f["traces"][r]["corrected"][keep]
+        c = corrected(f["traces"][r], halo)[keep]
         d, _ = dff(c)
         Rs.append(responses(d, st["frames"], st["onsets"]))
         shape.append(st["shape"]); lev.append(l); norm.append(np.array([1, 3, 5])[l - 1])
@@ -505,8 +542,12 @@ def field_data(data, key, reps=None):
             "bounds": bounds, "corrected": np.concatenate(corr, 1), "dff": np.concatenate(dffs, 1),
             "neuropil": [np.concatenate([f["traces"][r]["neuropil_corrected"][pl] for r in use], 1)
                          for pl in range(2)],
+            "neuropil_dff": [np.concatenate([dff(f["traces"][r]["neuropil_corrected"][pl])[0] for r in use], 1)
+                             for pl in range(2)],
+            "keep": keep,
             "centroids": np.array([r_["centroid_px"] for r_ in f["rois"]]).reshape(-1, 2)[keep],
-            "n_rois": len(f["rois"]), "n_dropped": int((~keep).sum()),
+            "n_rois": len(f["rois"]) if subset is None else int(np.sum(subset)),
+            "n_dropped": len(f["rois"]) - int(keep.sum()) if subset is None else int(np.sum(subset)) - int(keep.sum()),
             "neuropil_centroids": f["neuropil_centroids"]}
 
 
