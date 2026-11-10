@@ -23,7 +23,7 @@ cortex recordings of CRCNS fcx-1.
 | High gamma travels at UP onset, synchronous at UD | 000939 | Not reproduced |
 | Unit and LFP delay-depth correlations agree | 000939 | Blocked: methods underspecified |
 | Spike and LFP traveling speeds are similar | 000939 | Not reproduced, resting on an assumption |
-| The DOWN state resets the HD signal | 000939 | Not reproduced (one histogram bin outside the shuffle range) |
+| The DOWN state resets the HD signal | 000939 | Not reproduced (one histogram bin outside the shuffle range; none in one of three draws) |
 | HD changes less during the UP onset sequence | 000939 | Not reproduced, resting on an assumption |
 | ADN activates more synchronously than PoSub | ADN data | Blocked: metadata insufficient |
 | The same PMR relation in rat frontal cortex (tau = -0.22) | CRCNS fcx-1 | Reproduced, resting on an assumption |
@@ -42,10 +42,10 @@ data, the paper's code reads files the data set does not hold. The attempt recor
 [`attempts/mehrotra-2024-01.yaml`](../../attempts/mehrotra-2024-01.yaml).
 
 - `reproduce_mehrotra_2024.ipynb`: the two claims on dandiset 000987, the frontal cortex claim on CRCNS fcx-1
-  (27 archives, 88.9 GB, streamed eight at a time), and the check behind the blocked ADN claim. About 14 minutes.
+  (27 archives, 88.9 GB, streamed eight at a time), and the check behind the blocked ADN claim. About 20 minutes.
 - `posub_000939.ipynb`: the PoSub spike claims on dandiset 000939. About eight minutes.
 - `posub_lfp_000939.ipynb`: the PoSub LFP claims, streaming the LFP of the NREM epochs. About 19 minutes.
-- `posub_ring_000939.ipynb`: the Isomap ring claims (Figures 1J and 1K) on dandiset 000939. About 12 minutes.
+- `posub_ring_000939.ipynb`: the Isomap ring claims (Figures 1J and 1K) on dandiset 000939, with the rings fitted on three random draws. About 40 minutes.
 - `mehrotra.py`: loading of both dandisets and of the paper's event files, UP and DOWN detection, the
   PETH, PMR and onset delay of the paper's code, HD tuning measures, decoding, LFP high gamma, the Isomap
   ring of makeRing.py, and the streaming of CRCNS fcx-1. Other

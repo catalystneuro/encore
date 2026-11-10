@@ -619,6 +619,13 @@ def crcns_sizes() -> dict:
 # wake radius (Methods). Two departures for run time, standard choices that do not change the
 # procedure: the wake half is capped at RING_MAX_WAKE bins, and at most RING_MAX_UP long UP states
 # per session are projected, both drawn at random with the session's generator.
+#
+# Two standard choices that make the ring the same from run to run. Isomap's default eigen solver
+# (ARPACK) starts from an unseeded random vector, and as the top two eigenvalues of a ring are nearly
+# equal the ring can come out rotated, or reflected, differently in each run; the dense solver
+# is used instead. A reflection of the ring negates every angle difference, which moves the pooled
+# histogram of Figure 1J, and the eigen solver's sign is arbitrary; so each ring is oriented so that
+# its angle increases with head direction in wake (`mirrored` says whether it was reflected).
 
 RING_WAKE_BIN = 0.2
 RING_SPEED_MIN = 2.0      # cm/s
@@ -692,7 +699,7 @@ def ring_session(asset: dict, spikes: nap.TsGroup, hd_units, wake_ep: nap.Interv
     fit_sleep = pool[rng.choice(len(pool), size=max(1, len(pool) // 100), replace=False)]
     from sklearn.manifold import Isomap
     X = np.vstack([wake_rate[half], fit_sleep])
-    iso = Isomap(n_components=2, n_neighbors=RING_NEIGHBOURS).fit(X)
+    iso = Isomap(n_components=2, n_neighbors=RING_NEIGHBOURS, eigen_solver="dense").fit(X)
     centre = iso.transform(np.zeros((1, len(sts))))[0]
     pw = iso.embedding_[:len(half)] - centre
     flat = rates.reshape(-1, len(sts))
@@ -702,7 +709,11 @@ def ring_session(asset: dict, spikes: nap.TsGroup, hd_units, wake_ep: nap.Interv
     wa = np.arctan2(pw[:, 1], pw[:, 0])
     hd_bin = wake_ang[half]
     # how well the wake ring angle follows the head direction, up to rotation and reflection
-    fit_q = max(np.abs(np.mean(np.exp(1j * (wa - hd_bin)))), np.abs(np.mean(np.exp(1j * (wa + hd_bin)))))
+    q_same, q_mirror = np.abs(np.mean(np.exp(1j * (wa - hd_bin)))), np.abs(np.mean(np.exp(1j * (wa + hd_bin))))
+    fit_q = max(q_same, q_mirror)
+    mirrored = bool(q_mirror > q_same)
+    if mirrored:   # orient the ring so that its angle increases with head direction
+        ps = ps * np.array([1.0, -1.0])
     # DOWN duration before each projected UP state (the DOWN state ending at its start)
     di = np.searchsorted(down["end"], du - 0.011)
     di = np.clip(di, 0, len(down) - 1)
@@ -710,5 +721,5 @@ def ring_session(asset: dict, spikes: nap.TsGroup, hd_units, wake_ep: nap.Interv
     down_dur = np.where(ok_d, down["end"][di] - down["start"][di], np.nan)
     return dict(n_hd=len(sts), n_wake_bins=int(keep.sum()), n_fit=len(X), n_long_up=len(long_), du=du, down_dur=down_dur,
                 lags=lags, radius=np.hypot(ps[..., 0], ps[..., 1]), angle=np.arctan2(ps[..., 1], ps[..., 0]),
-                wake_mean_radius=float(wake_r.mean()), wake_angle_vs_hd=float(fit_q),
+                wake_mean_radius=float(wake_r.mean()), wake_angle_vs_hd=float(fit_q), mirrored=mirrored,
                 sleep_radius_quantiles=np.quantile(np.hypot(ps[..., 0], ps[..., 1]), [0.1, 0.5, 0.9]))
