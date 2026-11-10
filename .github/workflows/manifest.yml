@@ -1,0 +1,89 @@
+name: Paper manifest
+run-name: "Paper manifest"
+
+# Keeps papers/manifest.yaml in step with the private paper store (catalystneuro/registry-papers). The manifest
+# says, for each target's papers, whether the store has the full text; the pipeline page counts a target whose
+# papers it does not list as waiting on a person, and the claims-only queue (tools/runner/describe.py
+# next-claims) skips it. It used to be written by hand, and by 2026-11-10 was nine days behind: 91 targets
+# showed as waiting for papers the store held.
+#
+# Every hour, and when the targets or the triage change on main, this reads the store and rewrites the manifest
+# (tools/papers_manifest.py). When it changed, the new manifest is committed to main and the site is rebuilt.
+# The job runs in the `papers` environment for the store's deploy key, as papers.yml does, and runs only the
+# repository's own script: no agent, and nothing of the papers' text leaves the store (the manifest holds only
+# where each text came from and what is missing).
+
+on:
+  schedule:
+    - cron: "23 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - "targets/**"
+      - "papers/triage.yaml"
+      - "tools/papers_manifest.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: manifest
+  cancel-in-progress: false
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    environment: papers
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - run: pip install --no-cache-dir pyyaml
+
+      - name: Read the paper store
+        env:
+          PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
+        run: |
+          key="$RUNNER_TEMP/key"
+          printf '%s\n' "$PAPERS_DEPLOY_KEY" > "$key"; chmod 600 "$key"
+          # The texts and the names of the files beside them are enough: the PDFs stay as LFS pointers.
+          GIT_LFS_SKIP_SMUDGE=1 GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
+            git clone -q --depth 1 git@github.com:catalystneuro/registry-papers.git "$RUNNER_TEMP/store"
+          rm -f "$key"
+          git -C "$RUNNER_TEMP/store" log -1 --format='the store at %h, %cI'
+
+      - name: Rewrite the manifest
+        run: |
+          python tools/papers_manifest.py "$RUNNER_TEMP/store"
+          rm -rf "$RUNNER_TEMP/store"
+          git diff --stat -- papers/manifest.yaml
+
+      - name: Commit it to main when it changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- papers/manifest.yaml; then echo "The manifest is up to date."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cp papers/manifest.yaml "$RUNNER_TEMP/manifest.yaml"
+          git commit -q -m "Manifest: the paper store as it is now" -- papers/manifest.yaml
+          # Main moves often (paper matches, claims): put the commit on its tip, a few tries. Only this
+          # workflow writes the manifest, so the file itself never conflicts.
+          for try in 1 2 3 4 5; do
+            git push -q origin HEAD:main && pushed=1 && break
+            git fetch -q origin main && git reset -q --hard origin/main
+            cp "$RUNNER_TEMP/manifest.yaml" papers/manifest.yaml
+            git commit -q -m "Manifest: the paper store as it is now" -- papers/manifest.yaml || { echo "Main has it already."; exit 0; }
+            sleep $((try * 5))
+          done
+          [ -n "${pushed:-}" ] || { echo "::error::Could not push the manifest to main"; exit 1; }
+          # A push with the workflow's token starts no other workflow, so the site is asked for.
+          gh workflow run site.yml --ref main

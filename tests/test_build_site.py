@@ -226,7 +226,7 @@ def test_findings_are_reached_from_the_dandisets_list(built):
 
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
     counts = {key: {"done": 3, "waiting": 1} if key == "paper" else {"todo": 2, "none": 2}
-              for key, _ in site.PIPELINE_STEPS}
+              for key, _ in site.PAPER_STEPS}
     chart = site.pipeline_chart(counts, 4)
     assert chart.count('class="frow"') == len(site.CHART_STEPS)
     assert 'class="seg st-done" style="width:75.00%"' in chart and 'class="seg st-waiting" style="width:25.00%"' in chart
@@ -576,7 +576,7 @@ def test_a_dataset_waiting_on_a_person_links_its_issue():
     assert row["issue"] == data["issues"][label]
     page = site.page_pipeline(data)
     assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
-    assert "has stopped on" in page and "1 dataset</a>" in page
+    assert "has stopped on" in page and "1 paper</a>" in page
 
 
 def test_the_queue_estimates_fill_the_lanes_in_order():
@@ -611,7 +611,55 @@ def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
     assert ">1 for an attempt</td>" in page and ">about 4 hours</td>" in page and ">branch open</td>" in page
     assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
     assert "2 chains are running now" in page
-    assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+    assert "1 paper waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+
+
+def test_the_pipeline_page_goes_by_paper(built):
+    data, out = built
+    rows = site.paper_pipeline_rows(data)
+    steps = [key for key, _ in site.PAPER_STEPS]
+    assert steps[0] == "match"
+    states = {"done", "waiting", "todo", "deprecated", "none"}
+    assert all(set(r["state"]) == set(steps) and {v[0] for v in r["state"].values()} <= states for r in rows)
+    # Each listed paper once, whatever the number of its datasets, and every target under some paper.
+    listed = [r["paper"] for r in rows if r["paper"]]
+    assert sorted(listed) == sorted(site.paper_records.listed())
+    shown = {d["key"] for r in rows for d in r["datasets"]}
+    assert {t["key"] for t in data["targets"]} <= shown
+    several = next(r for r in rows if r["paper"] and len(site.paper_records.listed()[r["paper"]]["datasets"]) > 1)
+    assert len([r for r in rows if r["paper"] == several["paper"]]) == 1
+    # A listed paper's match is made; a target no paper is listed for has it still to do (or has none).
+    assert all(r["state"]["match"][0] in ("done", "todo", "waiting") for r in rows if r["paper"])
+    assert all(r["state"]["match"][0] != "done" for r in rows if not r["paper"])
+    page = (out / "pipeline" / "index.html").read_text()
+    assert "Papers at each step" in page and ">Paper match</button>" in page and ">Datasets</button>" in page
+    assert page.count("<tr data-match=") == len(rows)
+
+
+def test_a_paper_is_attempted_when_each_of_its_datasets_has_been_used():
+    data = site.collect()
+    rows = {r["paper"]: r for r in site.paper_pipeline_rows(data) if r["paper"]}
+    current = site.current_attempts(data)
+    for key, body in site.paper_records.listed().items():
+        doi = site.paper_records.doi_of(key)
+        need = [d["key"] for d in body["datasets"] if d.get("available", True)]
+        used = {k for k in need for a in current.get(k, []) if a["paper"].lower() == doi and not a.get("deprecated")}
+        state = rows[key]["state"]["attempt"]
+        if state[0] == "done":
+            assert used == set(need)
+        elif state[0] == "todo" and used:
+            assert state[1] == f"{len(used)} of {len(need)} datasets"
+
+
+def test_the_queue_by_paper_places_a_paper_once():
+    data = site.collect()
+    paper = next(r for r in site.paper_pipeline_rows(data) if r["paper"] and len(r["datasets"]) > 1)
+    data["queue"] = {"full": [site.dir_of(d["key"]) for d in paper["datasets"]], "claims": [], "branches": [],
+                     "lanes": {"full": 1, "claims": 1}, "hours": {"full": 4.0, "claims": 0.25},
+                     "papers": {"full": [paper["paper"]], "claims": [], "branches": [], "running": {}}}
+    row = next(r for r in site.paper_pipeline_rows(data) if r["paper"] == paper["paper"])
+    assert row["queue"]["place"] == 1
+    assert "1 paper waits for an attempt on 1 lane" in site.page_pipeline(data)
 
 
 def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
