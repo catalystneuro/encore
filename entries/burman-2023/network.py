@@ -25,6 +25,9 @@ Differences from the gist, none of which changes the model:
   arrays, the same columns as the first 200 excitatory neurons.
 - The analysis returns the values the gist writes to its CSV (spike count, firing rate,
   entropy, synchrony per excitatory neuron, and the decoding accuracy) as arrays.
+- In addition to the gist's accuracy, decoding_ties() reports how often the classifier's five
+  nearest neighbours are tied with the sixth, and the accuracy when tied neighbours are chosen
+  by other training orders (the spike counts are small integers, so most distances tie).
 """
 import time
 
@@ -33,7 +36,7 @@ import numpy as np
 from scipy.sparse import coo_matrix
 from scipy.stats import entropy as get_entropy
 from sklearn.model_selection import StratifiedKFold, cross_val_score
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier, NearestNeighbors
 
 EGABA = (-60, -80)  # mV, shunting then hyperpolarizing (Methods; gist)
 
@@ -51,6 +54,24 @@ def histogram_entropy(spike_times, interval, bin_width):
     """Entropy in nats of the normalized peri-stimulus histogram (scipy.stats.entropy)."""
     h = peristimulus_histogram(spike_times, interval, bin_width)
     return get_entropy(h / h.sum())
+
+
+def decoding_ties(X, y, seed, orders=5):
+    """The gist's decoder (5 nearest neighbours, 5-fold shuffled stratified cross-validation
+    with the same folds as simulate) examined for ties. Returns the share of test trials whose
+    fifth-nearest training trial is at the same distance as the sixth, so that the five
+    neighbours are chosen by how ties are broken, and the mean accuracy for each of `orders`
+    random orders of the training trials, which break those ties differently."""
+    rng = np.random.default_rng(seed)
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
+    tied, acc = 0, np.zeros(orders)
+    for train, test in cv.split(X, y):
+        d, _ = NearestNeighbors(n_neighbors=6).fit(X[train]).kneighbors(X[test])
+        tied += int(np.sum(d[:, 4] == d[:, 5]))
+        for k in range(orders):
+            p = rng.permutation(train)
+            acc[k] += KNeighborsClassifier().fit(X[p], y[p]).score(X[test], y[test]) / 5
+    return tied / len(y), acc
 
 
 def simulate(seed, stimuli=100, repeats=100, verbose=False, periodic=True, spikes=False):
@@ -202,6 +223,7 @@ def simulate(seed, stimuli=100, repeats=100, verbose=False, periodic=True, spike
                            (total_balancing_epochs + (ctr + 1) * total_condition_epochs)]
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=seed)
         accuracy = np.mean(cross_val_score(KNeighborsClassifier(), X[:, :50], y, cv=cv))
+        tied_share, accuracy_orders = decoding_ties(X[:, :50], y, seed)
 
         is_valid = (spike_times >= 0) & (spike_times < stimulus_set_duration)
         spike_indices = spike_indices[is_valid]
@@ -235,6 +257,7 @@ def simulate(seed, stimuli=100, repeats=100, verbose=False, periodic=True, spike
 
         out[E_GABA] = dict(spike_count=spike_counts, firing_rate=firing_rates,
                            entropy=entropy, synchrony=synchrony, accuracy=accuracy,
+                           tied_share=tied_share, accuracy_orders=accuracy_orders,
                            total_spikes=int(valid.sum()))
     if spikes:
         out["spikes"] = (all_t, all_i)

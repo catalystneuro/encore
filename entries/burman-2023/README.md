@@ -28,13 +28,14 @@ reasoning and the differences from the paper's method.
 The three partial outcomes on the dandiset come from the evoked rate used to exclude neurons. The
 claims are judged under the Methods' rate, a spike count; under the rate the paper's own code
 computes, which sums spike latencies, the dandiset gives the paper's numbers exactly. The two
-partial model outcomes are hyperpolarizing means 0.001 to 0.002 outside tolerances narrower than
+partial model outcomes are hyperpolarizing means 0.0011 and 0.0024 outside tolerances narrower than
 the spread between runs. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/burman-2023-01.yaml`](../../attempts/burman-2023-01.yaml).
 
-- `reproduce_burman_2023.ipynb`: the Neuropixels claims. About two minutes, most of it streaming the
-  units and trials of 24 files.
-- `network_model.ipynb`: 20 runs of the paper's network model on four processes, about 20 minutes.
+- `reproduce_burman_2023.ipynb`: the Neuropixels claims. About 2.5 to 3.5 minutes (2.5 on the last
+  run, 3.5 on a slower runner), most of it streaming the units and trials of 24 files.
+- `network_model.ipynb`: 20 runs of the paper's network model on four processes, about 17 minutes on the last
+  run and 43 minutes on a slower runner.
 - `npx.py`: loading the dandiset and the per-unit measures (rate, entropy, synchrony) of the paper's
   code. Other notebooks on this dandiset can import it.
 - `network.py`: the paper's Brian 2 network, transcribed from its simulation code.

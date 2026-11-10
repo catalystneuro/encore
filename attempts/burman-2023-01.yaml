@@ -75,7 +75,9 @@ outcomes:
     holds fully only under that variant.
   - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
     as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
-    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
   - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
     has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
     hold only SSp-ll and SSp-tr units.
@@ -94,14 +96,18 @@ outcomes:
     A1F2 gives 0.3686 against 0.4333, further from the paper, which supports the gist's population of
     all selected units (N6). Timed from start_time, 0.3073 against 0.3720. The gist itself, run unmodified,
     gives 0.3253 and 0.3928 for its 662 kept units. Whether the claim should be judged under the gist's
-    rate is asked of a reader (questions/burman-2023.yaml).
+    rate is asked of a reader (questions/burman-2023.yaml). The criterion's partial case (only the total
+    within 10%) does not literally cover this result, where the kept count is within tolerance too and
+    the excluded count is not; partial is the reading closest to it, and the gap is asked of a reader.
   deviations:
   - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
     under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
     holds fully only under that variant.
   - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
     as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
-    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
   - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
     has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
     hold only SSp-ll and SSp-tr units.
@@ -126,7 +132,9 @@ outcomes:
     holds fully only under that variant.
   - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
     as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
-    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
   - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
     has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
     hold only SSp-ll and SSp-tr units.
@@ -141,7 +149,9 @@ outcomes:
   deviations:
   - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
     as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
-    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
   - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
     has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
     hold only SSp-ll and SSp-tr units.
@@ -158,7 +168,9 @@ outcomes:
   deviations:
   - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
     as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
-    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
   - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
     has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
     hold only SSp-ll and SSp-tr units.
@@ -214,15 +226,26 @@ outcomes:
   notebook: network_model.ipynb
   output: claim:figs7-model-decoding
   notes: Mean decoding accuracy 0.9848 shunting against 0.9315 hyperpolarizing (chance 0.01). D1, paired
-    t test of the 20 per-run accuracies, t = 16.42, p = 1.11e-12; D2, shunting higher in 20 of 20 runs.
+    t test of the 20 per-run accuracies, t = 16.42, p = 1.11e-12 in this execution; D2, shunting higher
+    in 20 of 20 runs. The spike counts the classifier uses are small integers, and in 0.80 to 0.81 of
+    the test trials under shunting and 0.90 to 0.92 under hyperpolarizing the fifth-nearest training
+    trial is at the same distance as the sixth, so the accuracy depends on how ties are broken, which
+    differs between runners. Executions on different runners, with the same per-run rate, entropy and
+    synchrony, printed t = 16.92, p = 6.52e-13 (the first execution and the one verifier round 2 read)
+    and t = 16.42, p = 1.11e-12 (the round-1 revision and this one). With tied neighbours chosen by five
+    other random orders of the training trials, a run's accuracy moves by at most 0.0020 (shunting) and
+    0.0045 (hyperpolarizing), D1 gives t = 16.35 to 17.22 (p at most 1.20e-12) and D2 holds in 20 of 20
+    runs each time, so the outcome does not depend on the tie-breaking.
   deviations:
   - Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the
     paper's model; this cannot change the model, only the sample.
   - The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit
     in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on
     that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check).
-  - The cross-validation shuffle is seeded with the run's seed (the gist sets none), a standard choice
-    that cannot change the outcome.
+  - The cross-validation shuffle is seeded with the run's seed (the gist sets none). The seeds fix the
+    spikes and the folds but not the accuracy exactly, as the classifier's ties between equally distant
+    trials are broken differently on different runners; the notebook shows D1 and D2 under five other
+    tie-breaking orders, and all give the same outcome.
 - claim: figs4-intrinsic-properties
   outcome: blocked
   blocked_by: methods_underspecified
@@ -715,4 +738,238 @@ verifications:
     reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
       and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
       returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2, the full executed notebooks after the round-1 revision (reproduce_burman_2023.ipynb
+    and network_model.ipynb, with conclusions and summaries), the helper modules npx.py and network.py,
+    the claims file, the attempt record and the README, with the paper's full text. It could not see
+    questions/burman-2023.yaml.
+  results:
+  - claim: dataset-sessions-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced. The Summary of the main notebook (cell 37) overstates the clocks: "their labels and
+      clocks pass the checks above" is too strong, as main cell 8 passes 33 of 34 pairs and sub-569069 awake
+      fails (ratio 1.07, p = 0.591); main cell 9 and the attempt notes state this correctly. The README''s
+      "About two minutes" for the main notebook does not match: cell 4 took 196 s to load, and cell 35 prints
+      3.5 min.'
+    response: The Summary now says the clocks pass in 33 of 34 file and condition pairs and names sub-569069
+      awake, with its ratio and p. The README now gives 2.5 to 3.5 minutes (2.5 in this execution, 3.5 in
+      the one reviewed). Outcome unchanged.
+  - claim: fig4c-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced under A1F1, with the A1F2 exact match recorded as a deviation. A small gap
+      in the claims file: A1F1 keeps 721, inside 662 +- 66.2, and excludes 144, outside 203 +- 20.3; the criterion''s
+      partial case, "only the total (865) is within 10%", does not literally cover this, as the kept count
+      is within tolerance too, but partial is still the sensible reading. The deviation says timing from start_time
+      "is shown as a variant and keeps the direction", but the start_time variant is run only for synchrony
+      and entropy, and no kept or excluded counts are printed for it. The Summary''s "with means a little
+      off under the Methods'' rate" also covers this claim, which is about counts, not means: 144 excluded
+      against 203. Whether the claim should be judged under the gist''s rate is pending with a reader; until
+      it is answered the partial outcome stands.'
+    response: A start_time section in the main notebook now prints the sample under A1F1 with times from start_time
+      (734 kept, 131 excluded, median 37, 8 to 96), and the deviation says what it shows. The Summary now
+      names the excluded count (144 against 203) as well as the means. The gap in the criterion is noted in
+      the outcome's notes and added to questions/burman-2023.yaml for a reader; the claim is unchanged. Outcome
+      unchanged.
+  - claim: fig4d-synchrony-lower-awake
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced under A1F1, with the A1F2 exact match recorded as a deviation. Whether the
+      claim should be judged under the gist's rate is pending with a reader; until it is answered the partial
+      outcome stands.
+    response: The start_time deviation now says what the variant run shows under A1F1 (kept and excluded counts,
+      and that every measure keeps its direction). Outcome unchanged.
+  - claim: fig4d-entropy-higher-awake
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced under A1F1, with the A1F2 exact match recorded as a deviation. Whether the
+      claim should be judged under the gist's rate is pending with a reader; until it is answered the partial
+      outcome stands.
+    response: The start_time deviation now says what the variant run shows under A1F1 (kept and excluded counts,
+      and that every measure keeps its direction). Outcome unchanged.
+  - claim: fig4-rate-higher-awake
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. The deviation says timing from start_time "is shown as a variant and keeps the direction",
+      but the start_time variant is run only for synchrony and entropy; no rate test is printed for it.
+    response: The start_time section now prints the paired rate test under A1F1 with times from start_time
+      (14.9 against 8.14 Hz, p = 9.58e-35), and the deviation says what it shows. Outcome unchanged.
+  - claim: figs6-rate-regressed
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. The deviation says timing from start_time "is shown as a variant and keeps the direction",
+      but no regression is printed for start_time. The Figure S6 legend is still unavailable; the outcome
+      does not depend on it, since every reading agrees.
+    response: The start_time section now prints R1, R2 and R3 under A1F1 with times from start_time; synchrony
+      stays lower and entropy higher awake, all p below 1e-11. Outcome unchanged.
+  - claim: fig4f-model-hyperpolarizing-less-activity
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced. The README''s "about 20 minutes" for the model notebook does not match: model cell
+      6 prints "20 runs in 40.6 min", and cell 19 prints a total run time of 43.0 min.'
+    response: The README now gives about 17 minutes (17.0 in this execution) and 43 minutes on a slower runner,
+      and entry.yaml gives 17. Outcome unchanged.
+  - claim: fig4h-model-synchrony
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. The README's "hyperpolarizing means 0.001 to 0.002 outside tolerances" does
+      not match model cells 11 and 14, which give misses of 0.0011 and 0.0024. Whether the fig4h tolerances
+      should allow for differences between seeds is pending with a reader; until it is answered the two partial
+      model outcomes stand.
+    response: The README now gives the misses as 0.0011 and 0.0024. Outcome unchanged.
+  - claim: fig4h-model-entropy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. The README's "hyperpolarizing means 0.001 to 0.002 outside tolerances" does
+      not match model cells 11 and 14, which give misses of 0.0011 and 0.0024. Whether the fig4h tolerances
+      should allow for differences between seeds is pending with a reader; until it is answered the two partial
+      model outcomes stand.
+    response: The README now gives the misses as 0.0011 and 0.0024. Outcome unchanged.
+  - claim: figs7-model-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, and this holds even with the corrected statistic. Model cell 20 and the attempt notes
+      say "D1 paired t = 16.42, p = 1.11e-12", but model cell 19 prints t = 16.92, p = 6.52e-13, which the
+      printed per-run accuracies give; 16.42 matches the earlier run, not this one. So the accuracies differ
+      between executions, though the cross-validation is seeded and the other model numbers repeat exactly,
+      which does not fit the deviation's implication that the seeding makes the run deterministic. The reason
+      should be explained, or the deviation's wording changed.
+    response: The cause is ties. The classifier's inputs are small integer spike counts, and in 0.80 to 0.92
+      of the test trials the fifth-nearest training trial is as near as the sixth, so the five neighbours
+      depend on how ties are broken, which differs between runners (a full run of seed 1 on this runner gives
+      0.9840 and 0.9424 from the same spikes that gave 0.9820 and 0.9437 in the execution reviewed). Executions
+      on different runners printed t = 16.92 and t = 16.42; this one printed t = 16.42, p = 1.11e-12, which
+      cell 20 and the notes now give, with the other value named. network.decoding_ties now gives the share
+      of tied trials and the accuracy under five other training orders; D1 gives t = 16.35 to 17.22 and D2
+      holds in 20 of 20 runs each time. The deviation now says that the seeds fix the spikes and folds but
+      not the tie-breaking. Outcome unchanged.
+  - claim: figs4-intrinsic-properties
+    agrees: true
+    outcome: blocked
+    reason: Blocked, methods_underspecified. The legends of Figures S4, S6 and S7 are still unavailable; the
+      block on figs4 depends on them.
+    response: No change.
+  - claim: fig1b-perforation-rs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig1h-vu-egaba
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig1i-vu-rmp
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig1j-vu-df
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: figs2-ramp-equals-step
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: figs3-egaba-unrelated-amplitude-rs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: rm-awake-lower
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2c-vm-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2d-subthreshold-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2f-response-polarity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2h-egaba-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2i-rmp-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2j-df-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2j-awake-df-zero
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2k-conductance-same
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: figs5-within-anesthetized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: rm-nbqx-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3c-nbqx-vm
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3d-nbqx-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3e-nbqx-polarity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3g-nbqx-egaba
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3h-nbqx-rmp
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3i-nbqx-df
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3j-nbqx-conductance-same
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
     response: No change.
