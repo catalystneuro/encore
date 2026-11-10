@@ -21,13 +21,13 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/41755395441
 inputs:
-- what: 'The paper''s analyzed datasets (Day 1.zip and Day 2.zip, 14 GB): per imaged session the Minian
-    traces (ta_dff), BehaviorDEPOT output (Behavior.mat), trial results with hand-scored outcomes (pma_results.mat)
-    and the camera and miniscope timestamps. Streamed by HTTP range requests on the zip members.'
+- what: 'The paper''s analyzed datasets (Day 1.zip and Day 2.zip, 14 GB): per imaged session the Minian traces (ta_dff),
+    BehaviorDEPOT output (Behavior.mat), trial results with hand-scored outcomes (pma_results.mat) and the camera
+    and miniscope timestamps. Streamed by HTTP range requests on the zip members.'
   source: doi:10.5281/zenodo.13381210
 - what: 'The paper''s analysis code (MATLAB and Python), read for method details: batch_PMA_postanalysis_script_BDv15.m,
-    calcAvgPerGroup.m, genFeatCellResponses.m, compile_pooled_avg_heatmaps.m, trialAvg.m, calcCueFramesCG.m,
-    a_SVM_permousev3ASF.m, calculatePerformance.m and the RW model script. Not run.'
+    calcAvgPerGroup.m, genFeatCellResponses.m, compile_pooled_avg_heatmaps.m, trialAvg.m, calcCueFramesCG.m, a_SVM_permousev3ASF.m,
+    calculatePerformance.m and the RW model script. Not run.'
   source: doi:10.5281/zenodo.13351302
 outcomes:
 - claim: data-neurons
@@ -41,173 +41,177 @@ outcomes:
   - 7
   - 1031
   - 967
-  notes: Counts of rows of `ta_dff` (the traces genFeatCellResponses.m reads) in the Zenodo minian files.
-    Day 1, 1394 cells from 9 shocked mice and 847 from 7 non-shocked mice; day 2, 1031 and 967. All match
-    the paper exactly. The dandiset holds no cells.
+  notes: Counts of rows of `ta_dff` (the traces genFeatCellResponses.m reads) in the Zenodo minian files. Day 1,
+    1394 cells from 9 shocked mice and 847 from 7 non-shocked mice; day 2, 1031 and 967. All match the paper exactly.
+    The dandiset holds no cells.
 - claim: data-registered-cells
   outcome: blocked
-  blocked_by: data_missing
+  blocked_by: not_runnable
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:data-registered-cells
-  notes: No cell registration across days is in the Zenodo record (its file names list no CellReg or registration
-    output) or in the dandiset (no ophys data at all), so the registered cells cannot be counted. Redoing
-    the registration needs CellReg, a MATLAB package, and the Minian footprints; the criterion says the
-    claim cannot be tested without redoing it.
+  notes: 'No cell registration across days is in the Zenodo record (its file names list no CellReg or registration
+    output) or in the dandiset (no ophys data at all), so the registered cells cannot be counted. The footprints
+    a registration starts from are deposited: every minian file holds ta_rois, one 500 by 300 pixel footprint per
+    ta_dff cell in all 30 sessions (data check). Redoing the registration needs CellReg, a MATLAB package that cannot
+    be installed in the entry''s locked Python environment, and the criterion''s zero tolerance on the counts needs
+    the paper''s method; another registration method would not test it.'
 - claim: fig1e-platform-time
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1e-platform-time
-  notes: Clock reading. Day 1 shocked block means 0.379, 0.463, 0.630, 0.777; block 1 against 4 Sidak
-    p = 0.0047 (6 pairs) and 0.0024 (against block 1). Shocked against non-shocked, day 1 block 4 p =
-    0.048 and day 2 blocks 2 to 4 p = 0.0046 to 0.017 (Sidak over 4). Mixed ANOVA day 1 block F = 12.48
-    (GG p = 1.3e-05). With the paper's tone bouts the day 1 rise is 0.377 to 0.743 (p = 0.0079 and 0.004)
-    and day 2 blocks 2 to 4 differ (p = 0.0023 to 0.026). Both Sidak families and both tone readings meet
-    the criterion.
+  notes: Clock reading. Day 1 shocked block means 0.379, 0.463, 0.630, 0.777; block 1 against 4 Sidak p = 0.0047
+    (6 pairs) and 0.0024 (against block 1). Shocked against non-shocked, day 1 block 4 p = 0.048 and day 2 blocks
+    2 to 4 p = 0.0046 to 0.017 (Sidak over 4). Mixed ANOVA day 1 block F = 12.48 (GG p = 1.3e-05). With the paper's
+    tone bouts the day 1 rise is 0.377 to 0.743 (p = 0.0079 and 0.004) and day 2 blocks 2 to 4 differ (p = 0.0023
+    to 0.026). Both Sidak families and both tone readings meet the criterion.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure
-    1 legend gives 11 and 9 on day 1 and 8 and 8 on day 2.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
-  - Sidak comparisons are paired t-tests within the shocked group and unpaired t-tests between groups
-    per block, corrected for the family; Prism's Sidak test uses the ANOVA's pooled error. A standard
-    approximation.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure 1 legend
+    gives 11 and 9 on day 1 and 8 and 8 on day 2.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - Sidak comparisons are paired t-tests within the shocked group and unpaired t-tests between groups per block,
+    corrected for the family; Prism's Sidak test uses the ANOVA's pooled error. A standard approximation.
+  - F3 day 2 has 10 tones (BehaviorDEPOT gives tones 2 and 3 as NaN), so its block 1 value is one trial.
 - claim: fig1f-successful-trials
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1f-successful-trials
-  notes: Day 1 shocked block means 0.370, 0.556, 0.741, 0.889; block 1 against 4 Sidak p = 0.0012 (6 pairs)
-    and 0.0006 (against block 1). Shocked above non-shocked at day 2 blocks 2 to 4 (p = 0.0014 to 0.032)
-    and day 1 blocks 1 and 4 (p = 0.042 and 0.021). Success is the hand-scored outcome (pma_results `avoids`)
-    in the 21 sessions that have one, else the code's rule; the rule disagrees with the hand scoring on
-    26 of 358 trials with the clock windows and 38 with the paper's bouts. Both readings meet the criterion.
+  notes: Day 1 shocked block means 0.370, 0.556, 0.741, 0.889; block 1 against 4 Sidak p = 0.0012 (6 pairs) and
+    0.0006 (against block 1). Shocked above non-shocked at day 2 blocks 2 to 4 (p = 0.0014 to 0.032) and day 1 blocks
+    1 and 4 (p = 0.042 and 0.021). Success is the hand-scored outcome (pma_results `avoids`) in the 21 sessions
+    that have one, else the code's rule; the rule disagrees with the hand scoring on 26 of 358 trials with the clock
+    windows and 38 with the paper's bouts. Both readings meet the criterion.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure
-    1 legend gives 11 and 9 on day 1 and 8 and 8 on day 2.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure 1 legend
+    gives 11 and 9 on day 1 and 8 and 8 on day 2.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - F3 day 2 has 10 tones (BehaviorDEPOT gives tones 2 and 3 as NaN), so its block 1 value is one trial.
 - claim: fig1g-freezing
-  outcome: reproduced
+  outcome: blocked
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1g-freezing
-  notes: Clock reading. Day 1 shocked block means 0.223, 0.289, 0.378, 0.420; against block 1 the block
-    4 difference is Sidak p = 0.047, over all 6 pairs the smallest is 0.092. Shocked above non-shocked
-    at day 2 block 2 (p = 0.026) and block 4 (p = 0.0012). With the paper's bouts both families pass (block
-    1 against 4, p = 0.0031 and 0.0015). The criterion names both families as readings; the claim holds
-    under the block 1 family with either tone reading.
+  notes: Clock reading. Day 1 shocked block means 0.223, 0.289, 0.378, 0.420; against block 1 the block 4 difference
+    is Sidak p = 0.047, over all 6 pairs the smallest is 0.092. Shocked above non-shocked at day 2 block 2 (p =
+    0.026) and block 4 (p = 0.0012). With the paper's bouts both families pass (block 1 against 4, p = 0.0031 and
+    0.0015). The paper does not state the Sidak family, and on the clock windows, which the data check supports,
+    the two families the criterion names give different outcomes, so no choice between them has a basis in the paper.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure
-    1 legend gives 11 and 9 on day 1 and 8 and 8 on day 2.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure 1 legend
+    gives 11 and 9 on day 1 and 8 and 8 on day 2.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - Which comparisons form the Sidak family is not stated (Methods, Quantification); all pairs and each block against
+    block 1 are both run, and they disagree on the clock windows. Asked of the authors (findings).
+  - F3 day 2 has 10 tones (BehaviorDEPOT gives tones 2 and 3 as NaN), so its block 1 value is one trial.
+  blocked_by: methods_underspecified
 - claim: fig1h-latency
-  outcome: reproduced
+  outcome: blocked
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1h-latency
-  assumed: true
-  notes: Clock reading. Day 1 shocked latency 10.8, 15.8, 10.6, 8.1 s; the only Sidak-significant block
-    difference is block 2 against 4 (p = 0.032, 6 pairs; against block 1 the smallest is 0.14). Groups
-    differ at day 2 block 4 (p = 0.043). With the paper's tone bouts no within-group difference reaches
-    p < 0.05 (smallest 0.33 against block 1, 0.51 over all pairs), although groups differ at day 2 blocks
-    2 and 4 (p = 0.047 and 0.037), so the claim fails under that reading.
+  notes: Clock reading. Day 1 shocked latency 10.8, 15.8, 10.6, 8.1 s; the only Sidak-significant block difference
+    is block 2 against 4 (p = 0.032, 6 pairs); against block 1 the smallest is 0.14. Groups differ at day 2 block
+    4 (p = 0.043). With the paper's tone bouts no within-group difference reaches p < 0.05 (smallest 0.33 against
+    block 1, 0.51 over all pairs). The criterion holds only on the clock windows with all pairs; the Sidak family
+    is not stated and the two families disagree, so the claim is blocked.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure
-    1 legend gives 11 and 9 on day 1 and 8 and 8 on day 2.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
-  - Assumed that the tones lie where the clock reading puts them. The data support it (the code's success
-    rule agrees with the hand-scored outcomes in 56 of 60 fast-camera trials with the clock windows and
-    45 with the paper's bouts), but the paper's own latencies used the bouts, so the outcome rests on
-    this choice.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2; the Figure 1 legend
+    gives 11 and 9 on day 1 and 8 and 8 on day 2.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - Which comparisons form the Sidak family is not stated (Methods, Quantification); all pairs and each block against
+    block 1 are both run, and they disagree on the clock windows. Asked of the authors (findings).
+  - F3 day 2 has 10 tones (BehaviorDEPOT gives tones 2 and 3 as NaN), so its block 1 value is one trial.
+  blocked_by: methods_underspecified
 - claim: fig1kl-overall-encoding-similar
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1kl-overall-encoding-similar
-  notes: The responsive fraction rises from BL to D2 in both groups under all four period and frame readings
-    (P1-F1, shocked 0.465 to 0.515, non-shocked 0.468 to 0.551). Similarity (chi-square with Yates, p
-    >= 0.05 in all periods) holds only under P2-F2 (smallest p = 0.14); under P1-F1, P1-F2 and P2-F1 the
-    D1 fractions differ, non-shocked higher by 5.0 to 7.0 points (p = 0.0015 to 0.025). The claims file
-    makes a claim whose period and frame readings give different outcomes methods_underspecified. With
-    the paper's tone bouts D1 differs under every reading (p = 0.0003 to 0.047).
+  notes: The responsive fraction rises from BL to D2 in both groups under every period, frame and tone reading (clock
+    P1-F1, shocked 0.465 to 0.515, non-shocked 0.468 to 0.551). Similarity (chi-square with Yates, p >= 0.05 in
+    all periods) holds only under clock P2-F2 (smallest p = 0.14); under clock P1-F1, P1-F2 and P2-F1 the D1 fractions
+    differ, non-shocked higher by 5.0 to 7.0 points (p = 0.0015 to 0.025), and with the paper's tone bouts D1 differs
+    under every reading (p = 0.0003 to 0.047). The claims file makes a claim whose period and frame readings give
+    different outcomes methods_underspecified.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
 - claim: fig1kl-day1-categories-similar
   outcome: not_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1kl-day1-categories-similar
-  notes: 'Under every period and frame reading at least one category differs between groups among responsive
-    cells (chi-square with Yates): 2 of 8 comparisons under P1-F1 (BL platform-only 24.7% against 33.3%,
-    p = 0.0032; D1 mixed 24.2% against 29.8%, p = 0.043), 1 under P2-F1, 5 under P1-F2 and 6 under P2-F2
-    (D1 platform-only 20.2% against 33.8%, p < 0.0001).'
+  notes: 'Under every period, frame and tone reading at least one category differs between groups among responsive
+    cells (chi-square with Yates): 2 of 8 comparisons under clock P1-F1 (BL platform-only 24.7% against 33.3%, p
+    = 0.0032; D1 mixed 24.2% against 29.8%, p = 0.043), 1 under clock P2-F1, 5 under clock P1-F2 and 6 under clock
+    P2-F2 (D1 platform-only 20.2% against 33.8%, p < 0.0001); 3 to 6 of 8 with the paper''s tone bouts.'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
 - claim: disc-tone-cells-baseline
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:disc-tone-cells-baseline
-  notes: 'Activity part holds: tone-onset excited and suppressed cells do not differ between groups on
-    either day (33 and 13, 37 and 20 cells on day 1; Welch p = 0.18 to 0.58). Proportion part: under G1
-    (any tone call) BL is not the greatest in both groups under any period reading (for example non-shocked
-    P1-F1, BL 16.2% against D2 18.0%); under G2 (tone-only) it is under P1-F1 (shocked 10.7%, 8.8%, 8.9%;
-    non-shocked 9.5%, 7.9%, 9.4%) and not under the other three. The criterion makes disagreeing readings
-    methods_underspecified.'
+  notes: 'Activity part holds: tone-onset excited and suppressed cells do not differ between groups on either day
+    (33 and 13, 37 and 20 cells on day 1 on the clock windows; Welch p = 0.18 to 0.58; with the paper''s bouts p
+    = 0.20 to 1.0; smallest p over four shuffle seeds 0.083). Proportion part: under G1 (any tone call) BL is not
+    the greatest in both groups under any period or tone reading (for example non-shocked clock P1-F1, BL 16.2%
+    against D2 18.0%); under G2 (tone-only) it is under P1-F1 with either tone reading (clock: shocked 10.7%, 8.8%,
+    8.9%; non-shocked 9.5%, 7.9%, 9.4%) and not under the other three. The criterion makes disagreeing readings
+    methods_underspecified. The day 1 tone-onset cells (33 and 37 shocked, 43 and 38 with the paper''s bouts) stay
+    below the paper''s 61 and 52 under every event window tried (-1 to 4 s, 2 to 7 s) and every seed (32 to 50 excited).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
-  - The tone-onset cells number 33 and 37 shocked, 13 and 20 non-shocked on day 1 against the paper's
-    61, 52, 24 and 25.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The tone-onset cells number 33 and 37 shocked, 13 and 20 non-shocked on day 1 against the paper's 61, 52, 24
+    and 25.
 - claim: fig1k-mixed-day2
   outcome: not_reproduced
   notebook: reproduce_gabriel_2025.ipynb
@@ -215,33 +219,34 @@ outcomes:
   measured:
   - 24.48
   - 32.08
-  notes: 'On day 2 shocked mice have fewer mixed cells than non-shocked mice under every reading. R1 (responsive
-    cells): P1-F1 24.5% (130 of 531) against 32.1% (171 of 533), chi-square 7.20, p = 0.007; the other
-    readings 25.0% to 31.3% against 31.2% to 33.7%. R2 (all cells): 12.0% to 16.7% against 15.8% to 18.2%.
-    The paper reports 51% against 25% (chi-square 43.13). With the paper''s tone bouts, 25.9% to 32.2%
-    against 28.2% to 33.2% among responsive cells.'
+  notes: 'On day 2 shocked mice have fewer mixed cells than non-shocked mice under every reading but one. R1 (responsive
+    cells): clock P1-F1 24.5% (130 of 531) against 32.1% (171 of 533), chi-square 7.20, p = 0.007; the other clock
+    readings 25.0% to 31.3% against 31.2% to 33.7%; with the paper''s tone bouts 25.9% to 32.2% against 28.2% to
+    33.1%, where P2-F2 gives 28.6% against 28.2% (p = 0.94). R2 (all cells): 12.0% to 16.7% against 14.5% to 18.3%.
+    The paper reports 51% against 25% (chi-square 43.13).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
 - claim: fig1o-tone-to-mixed
   outcome: blocked
-  blocked_by: data_missing
-  notes: 'Depends on data-registered-cells, which is blocked: no cell registration across days is public.'
+  blocked_by: not_runnable
+  notes: 'Depends on data-registered-cells, which is blocked: no registration across days is deposited, and redoing
+    it needs CellReg (MATLAB) on the deposited footprints.'
 - claim: fig1o-nonmod-to-mixed
   outcome: blocked
-  blocked_by: data_missing
-  notes: 'Depends on data-registered-cells, which is blocked: no cell registration across days is public.'
+  blocked_by: not_runnable
+  notes: 'Depends on data-registered-cells, which is blocked: no registration across days is deposited, and redoing
+    it needs CellReg (MATLAB) on the deposited footprints.'
 - claim: fig1p-platform-exit-excited-day2
   outcome: partially_reproduced
   notebook: reproduce_gabriel_2025.ipynb
@@ -249,513 +254,976 @@ outcomes:
   measured:
   - 77
   - 84
-  notes: 'Day 2 platform-exit excited cells (whole-session ROC) of shocked mice have a larger post-exit
-    area than those of non-shocked mice (12.09 against 6.43, Welch t = 2.03, p = 0.044), but they number
-    77 and 84, outside the expected 104 (10.4) and 100 (10). The result is fragile: the same analysis
-    with the shuffles of the paper-bout run (platform exits do not depend on the tone windows) selects
-    84 and 82 cells and gives p = 0.117.'
+  notes: 'Day 2 platform-exit excited cells (whole-session ROC) of shocked mice have a larger post-exit area than
+    those of non-shocked mice (12.09 against 6.43, Welch t = 2.03, p = 0.044), but they number 77 and 84, outside
+    the expected 104 (10.4) and 100 (10), and stay outside under every event window, cleaning of the platform bouts
+    and seed tried (80 to 93 shocked cells). The effect sits at the threshold: across four shuffle seeds p = 0.044,
+    0.043, 0.050 and 0.025 (difference 5.3 to 6.5), and with the shuffles of the paper-bout run p = 0.117. Calcium
+    follows the freezing labels by 0.9 to 3.8 s in every session (data check), so no clock offset explains the low
+    counts.'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig1q-platform-exit-inhibited-day2
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1q-platform-exit-inhibited-day2
-  notes: Day 2 platform-exit suppressed cells (40 shocked, 65 non-shocked, against the paper's 74 and
-    82) do not differ in post-exit area (-5.83 against -3.64, difference -2.19, Welch p = 0.56).
+  notes: Day 2 platform-exit suppressed cells (40 shocked, 65 non-shocked, against the paper's 74 and 82) do not
+    differ in post-exit area (-5.83 against -3.64, difference -2.19, Welch p = 0.56); with the paper's bouts p =
+    0.46 and with three other shuffle seeds p = 0.54 to 0.68.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig1pq-freezing-day2
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1pq-freezing-day2
-  notes: Day 2 freezing cells (172 and 150 excited, 280 and 198 suppressed, against the paper's 171, 150,
-    283 and 198). Excited after onset 7.36 against 10.58 (p = 0.035) and after offset -7.38 against -3.91
-    (p = 0.015); suppressed after onset p = 0.28; suppressed after offset 3.57 against 0.39 (p = 0.0023).
-    Three of four tests give p < 0.05.
+  notes: Day 2 freezing cells (172 and 150 excited, 280 and 198 suppressed, against the paper's 171, 150, 283 and
+    198). Excited after onset 7.36 against 10.58 (p = 0.035) and after offset -7.38 against -3.91 (p = 0.015); suppressed
+    after onset p = 0.28; suppressed after offset 3.57 against 0.39 (p = 0.0023). Three of four tests give p < 0.05
+    on the clock run, two of four with the paper's bouts (p = 0.021 and 0.0061), and two or three with each of three
+    other shuffle seeds.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig1r-mixed-exit-day1
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig1r-mixed-exit-day1
   assumed: true
-  notes: 'M2 (mixed cells with any excited call, the code''s split): day 1, 250 and 181 cells, area -1.21
-    against -4.77, Welch p = 0.049; day 2, 212 and 170 cells, p = 0.85. M1 (mixed cells with an excited
-    exit call): day 1, 71 and 42 cells, p = 0.49; day 2 p = 0.27. The claim holds under M2 only, and the
-    day 1 effect is at the threshold.'
+  notes: 'M2 (mixed cells with any excited call, the code''s split): on day 1 shocked cells are more active after
+    exits in every run (difference 2.6 to 3.6), but p < 0.05 only in the main run (250 and 181 cells, -1.21 against
+    -4.77, Welch p = 0.049); p = 0.106 with the paper''s tone bouts and 0.10, 0.12 and 0.15 with three other shuffle
+    seeds. Day 2 does not differ (p = 0.44 to 0.98). M1 (mixed cells with an excited exit call): day 1 p = 0.18
+    to 0.73, day 2 p = 0.24 to 0.67, in no run significant. The day 1 effect is present in direction under the assumed
+    reading and significant in one of five runs, so it is weaker than the paper''s.'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
-  - Assumed reading M2, which the claims file ties to the code's split of mixed cells into excited and
-    suppressed; under M1 the claim fails. Mixed cells are taken from the whole-session calls, as the mean-activity
-    claims use the session-wide vectors.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - Assumed reading M2, which the claims file ties to the code's split of mixed cells into excited and suppressed;
+    under M1 the claim fails. Mixed cells are taken from the whole-session calls, as the mean-activity claims use
+    the session-wide vectors.
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: figs1h-exit-not-shock
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:figs1h-exit-not-shock
-  notes: With exits followed by a shock within 2 s left out (0 to 2 per session) the day 2 platform-exit
-    excited cells remain higher in shocked mice (11.83 against 6.29, Welch p = 0.046). It shares the fragility
-    of fig1p-platform-exit-excited-day2.
+  notes: With exits followed by a shock within 2 s left out (0 to 2 per session) the day 2 platform-exit excited
+    cells remain higher in shocked mice (11.83 against 6.29, Welch p = 0.046); p = 0.043, 0.045 and 0.024 with three
+    other shuffle seeds and 0.143 with the shuffles of the paper-bout run. It shares the fragility of fig1p-platform-exit-excited-day2.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: figs2-innate-behaviors
   outcome: blocked
   blocked_by: not_runnable
-  notes: 'Neither the Zenodo record nor the dandiset holds jumping or rearing labels: the BehaviorDEPOT
-    output (Behavior.mat) holds freezing, platform, platform entry and exit, tone and inter-platform-interval
-    fields only. Making them would mean running BehaviorDEPOT''s jumping and rearing classifiers on the
-    deposited DeepLabCut tracking; BehaviorDEPOT is MATLAB and cannot be installed in the entry''s locked
-    Python environment. Escape could be derived from the platform labels, but the claim needs all three
-    behaviours.'
+  notes: 'Neither the Zenodo record nor the dandiset holds jumping, rearing or escape labels: the data check lists
+    every field of Behavior.mat in all 30 sessions (platform, freezing, tone, platform entry and exit, tone onset
+    and offset, inter-platform interval) and none names jumping, rearing or escape; Params.mat holds the freezing
+    classifier''s parameters only. Making the labels would mean running BehaviorDEPOT''s default jumping and rearing
+    classifiers (the paper''s method, STAR Methods, Definitions of examined behaviors) on the deposited DeepLabCut
+    tracking; BehaviorDEPOT is MATLAB and cannot be installed in the entry''s locked Python environment, and the
+    paper gives no thresholds to rebuild them. Escape could be derived from the platform labels, but the criterion
+    needs the jumping part too, and the escape part was not run here.'
 - claim: fig2-day1-tone-stronger
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig2-day1-tone-stronger
-  notes: 'Day 1, folded auROC of cells called for entries or exits during the tone against during the
-    ITI. H1 (cells pooled): shocked entries 0.706 against 0.640, non-shocked 0.760 against 0.637, shocked
-    exits 0.736 against 0.634, non-shocked 0.740 against 0.635, Fisher''s LSD p < 1e-30 each. H2 (per-mouse
-    scores): p = 2.2e-06 to 0.0017. Both readings hold.'
+  notes: 'Day 1, folded auROC of cells called for entries or exits during the tone against during the ITI. H1 (cells
+    pooled): shocked entries 0.706 against 0.640, non-shocked 0.760 against 0.637, shocked exits 0.736 against 0.634,
+    non-shocked 0.740 against 0.635, Fisher''s LSD p < 1e-30 each. H2 (per-mouse scores): p = 2.2e-06 to 0.0017.
+    Both readings hold on both tone readings and with all four shuffle seeds (largest p = 0.0049).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
-  - Fisher's LSD uses the residual mean square of an ordinary two-way ANOVA (group by tone or ITI) fitted
-    with statsmodels, as in Prism.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - Fisher's LSD uses the residual mean square of an ordinary two-way ANOVA (group by tone or ITI) fitted with statsmodels,
+    as in Prism.
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig2-day2-tone-further
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig2-day2-tone-further
   assumed: true
-  notes: 'H1: day 2 shocked tone values exceed non-shocked ones for entries (0.744 against 0.728, LSD
-    p = 0.034) and exits (0.783 against 0.718, p = 5.4e-13), and exceed shocked day 1 tone values (0.706
-    and 0.736). H2: exits hold (0.807 against 0.705, p = 0.0059), entries do not (0.755 against 0.710,
-    p = 0.086).'
+  notes: 'H1 (assumed): exits hold in every run, day 2 shocked tone values above non-shocked ones (0.783 against
+    0.718, LSD p = 5.4e-13; p < 1e-4 with three other shuffle seeds and 2.6e-07 with the paper''s bouts) and above
+    shocked day 1 values (0.736). Entries hold only in the main run (0.744 against 0.728, p = 0.034); p = 0.58,
+    0.11 and 0.38 with three other seeds and 0.14 with the paper''s bouts. H2: exits hold (0.807 against 0.705,
+    p = 0.0059), entries do not in any run (p = 0.086 to 0.21). One of the two parts holds robustly.'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
-  - Assumed reading H1 (cells pooled), as the paper tests the cumulative frequency histograms of Figure
-    2C and 2D, which pool the cells, by the two-way ANOVA (STAR Methods, Quantification); under H2 the
-    entries part fails.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - Assumed reading H1 (cells pooled), as the paper tests the cumulative frequency histograms of Figure 2C and 2D,
+    which pool the cells, by the two-way ANOVA (STAR Methods, Quantification); under H2 the entries part fails.
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig2e-modulation-entries
   outcome: not_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig2e-modulation-entries
-  notes: Day 2 entry modulation score (mean folded auROC, the exact cumulative distribution reading) during
-    the tone, shocked 0.755 against non-shocked 0.710, Fisher's LSD t = 1.80, p = 0.086. 6 shocked and
-    5 non-shocked mice have at least 3 tone-entry cells, where the paper had 7 and 7.
+  notes: Day 2 entry modulation score (mean folded auROC, the exact cumulative distribution reading) during the
+    tone, shocked 0.755 against non-shocked 0.710, Fisher's LSD t = 1.80, p = 0.086. 6 shocked and 5 non-shocked
+    mice have at least 3 tone-entry cells, where the paper had 7 and 7. p = 0.21, 0.19 and 0.13 with three other
+    shuffle seeds and 0.175 with the paper's bouts.
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig2f-modulation-exits
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig2f-modulation-exits
-  notes: Day 2 exit modulation score during the tone, shocked 0.807 against non-shocked 0.705, Fisher's
-    LSD t = 3.14, p = 0.0059. 4 and 4 mice have at least 3 tone-exit cells, where the paper had 6 and
-    7.
+  notes: Day 2 exit modulation score during the tone, shocked 0.807 against non-shocked 0.705, Fisher's LSD t =
+    3.14, p = 0.0059. 4 and 4 mice have at least 3 tone-exit cells, where the paper had 6 and 7. p = 0.0031 to 0.0059
+    with three other shuffle seeds and 0.018 with the paper's bouts (5 and 5 mice).
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular
-    shuffles and the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows
-    follow the same passage (first and last 5 s of the tone, 1 s before to 4 s after platform entries
-    and exits).
-  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods,
-    Miniscope data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's
-    alignment code is not public. This is a standard choice, stated as such.
-  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion,
-    placed on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6
-    on both days) the camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift
-    from the tones (data check). The paper's bouts are run as a variant.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The ROC routine (run_caAnalyze, caAnalyze repository) is not public; the auROC, the 1000 circular shuffles and
+    the 2.5% and 97.5% bounds follow the STAR Methods (ROC analysis), and the event windows follow the same passage
+    (first and last 5 s of the tone, 1 s before to 4 s after platform entries and exits).
+  - Calcium frames are placed by every second miniscope timestamp (2x temporal downsampling, STAR Methods, Miniscope
+    data processing) and behaviour labels carried to them by nearest camera timestamp; the paper's alignment code
+    is not public. This is a standard choice, stated as such.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  - The shuffle seed of the ROC is a standard choice, but it moves cells near the 2.5% and 97.5% bounds; the whole-session
+    ROC is run with three more seeds and the mean-activity and Figure 2 tests repeated on each.
 - claim: fig3a-decoding-shock-gt-ns
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig3a-decoding-shock-gt-ns
   assumed: true
-  notes: 'All cells, C1 N1: shocked against non-shocked, pre-shock 0.489 against 0.108 (Sidak p = 0.036),
-    shock 0.658 against 0.099 (p = 0.012); also with the code''s 22 to 27 s epoch (p = 0.043). Group effect
-    F = 10.25, p = 0.0064. Under C1 N2, C2 N1 and C2 N2 the pre-shock difference is not significant (p
-    = 0.39 to 1) nor the shock difference (p = 0.062 to 0.19).'
+  notes: 'All cells, C1 N1, clock: shocked against non-shocked, pre-shock 0.489 against 0.108 (Sidak p = 0.036),
+    shock 0.658 against 0.099 (p = 0.012); also with the code''s 22 to 27 s epoch. It holds in all three cohorts
+    (without F1 and F2: p = 9.9e-05 and 1.0e-06; two-class: p = 0.0012 and 2.2e-05). Under C1 N2, C2 N1 and C2 N2
+    the pre-shock difference is not significant in any cohort (p = 0.39 to 1). On the paper''s tone bouts C1 N1
+    holds without F1 and F2 (p = 0.012 and 0.0032) and fails with all mice (p = 0.15 and 0.064) and in the two-class
+    cohort (p = 0.17 and 0.057).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code
-    reads it from a Cues file that is not public.
-  - 9 shocked and 7 non-shocked mice are decoded, where the Figure 3 legend has 7 and 7; all imaged mice
-    of day 1 are used, as the paper does not say which were left out. F2 has no failure among trials 4
-    to 12 and F7 and M6 one success each.
-  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses
-    C rand(), seeded per bin, a standard choice.
-  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs;
-    the mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
-  - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1
-    (STAR Methods, Decoding analysis), and the Methods come before the code (protocol, reader step 2).
-    The code counts failure as positive (C2) and calls Zscore_Sz (N2); under those readings the result
-    differs.'
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code reads
+    it from a Cues file that is not public.
+  - '9 shocked and 7 non-shocked mice are imaged on day 1, where the Figure 3 legend has 7 and 7; the paper does
+    not say which were left out. Three cohorts are run: all mice; without F1 and F2 (the shocked mice with no day
+    2, leaving 7 and 7); and without the mice whose leave-one-out training folds hold one class (F1, F2, F7 and
+    M6, fewer than two trials of an outcome). The outcome is the one all three give.'
+  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses C rand(),
+    seeded per bin, a standard choice.
+  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs; the
+    mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
+  - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1 (STAR Methods,
+    Decoding analysis), and the Methods come before the code (protocol, reader step 2). The code counts failure
+    as positive (C2) and calls Zscore_Sz (N2); under those readings the result differs.'
+  - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
+    as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
+    where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
+  - Assumed the clock tone windows (data check); on the paper's bouts all cells are decoded as a variant, the modulated
+    and non-modulated sets are not, to stay within time.
 - claim: fig3a-decoding-before-tone
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig3a-decoding-before-tone
   assumed: true
-  notes: 'C1 N1: from 5 s before the tone to its onset shocked mice decode better than non-shocked mice
-    (0.481 against 0.134; Sidak p = 0.15, which the criterion does not use). Under the other readings
-    shocked mice are not higher (C1 N2 -0.114 against -0.057, C2 N1 0.085 against 0.110, C2 N2 -0.214
-    against 0.100).'
+  notes: 'C1 N1, clock: from 5 s before the tone to its onset shocked mice decode better than non-shocked mice in
+    every cohort (all mice 0.481 against 0.134, Sidak p = 0.15, which the criterion does not use; without F1 and
+    F2 0.619 against 0.134; two-class 0.619 against 0.188); also on the paper''s bouts (0.377 against 0.129). Under
+    C1 N2 and C2 N2 shocked mice are not higher in any cohort (for example C1 N2 -0.114 against -0.057).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code
-    reads it from a Cues file that is not public.
-  - 9 shocked and 7 non-shocked mice are decoded, where the Figure 3 legend has 7 and 7; all imaged mice
-    of day 1 are used, as the paper does not say which were left out. F2 has no failure among trials 4
-    to 12 and F7 and M6 one success each.
-  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses
-    C rand(), seeded per bin, a standard choice.
-  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs;
-    the mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
-  - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1
-    (STAR Methods, Decoding analysis), and the Methods come before the code (protocol, reader step 2).
-    The code counts failure as positive (C2) and calls Zscore_Sz (N2); under those readings the result
-    differs.'
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code reads
+    it from a Cues file that is not public.
+  - '9 shocked and 7 non-shocked mice are imaged on day 1, where the Figure 3 legend has 7 and 7; the paper does
+    not say which were left out. Three cohorts are run: all mice; without F1 and F2 (the shocked mice with no day
+    2, leaving 7 and 7); and without the mice whose leave-one-out training folds hold one class (F1, F2, F7 and
+    M6, fewer than two trials of an outcome). The outcome is the one all three give.'
+  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses C rand(),
+    seeded per bin, a standard choice.
+  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs; the
+    mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
+  - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1 (STAR Methods,
+    Decoding analysis), and the Methods come before the code (protocol, reader step 2). The code counts failure
+    as positive (C2) and calls Zscore_Sz (N2); under those readings the result differs.'
   - The pre-cue epoch (-5 to 0 s) is the code's, as the criterion says.
+  - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
+    as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
+    where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
+  - Assumed the clock tone windows (data check); on the paper's bouts all cells are decoded as a variant, the modulated
+    and non-modulated sets are not, to stay within time.
 - claim: fig3a-decoding-peak-preshock
   outcome: not_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig3a-decoding-peak-preshock
-  notes: 'In shocked mice the peak is in the shock epoch under every reading: the highest bin of the across-mouse
-    mean trace from 0 to 38 s is at 32.6 s after tone onset (P2 fails), and the shock epoch has the highest
-    epoch mean (C1 N1, cue-onset 0.492, pre-shock 0.489, shock 0.658, post-shock 0.633; P1 fails).'
+  notes: 'In shocked mice the peak is in the shock epoch under every coding, cohort and tone reading: the highest
+    bin of the across-mouse mean trace from 0 to 38 s is at 32.4 to 32.6 s after tone onset (P2 fails), and the
+    shock epoch has the highest epoch mean (clock C1 N1, cue-onset 0.492, pre-shock 0.489, shock 0.658, post-shock
+    0.633; P1 fails).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code
-    reads it from a Cues file that is not public.
-  - 9 shocked and 7 non-shocked mice are decoded, where the Figure 3 legend has 7 and 7; all imaged mice
-    of day 1 are used, as the paper does not say which were left out. F2 has no failure among trials 4
-    to 12 and F7 and M6 one success each.
-  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses
-    C rand(), seeded per bin, a standard choice.
-  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs;
-    the mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code reads
+    it from a Cues file that is not public.
+  - '9 shocked and 7 non-shocked mice are imaged on day 1, where the Figure 3 legend has 7 and 7; the paper does
+    not say which were left out. Three cohorts are run: all mice; without F1 and F2 (the shocked mice with no day
+    2, leaving 7 and 7); and without the mice whose leave-one-out training folds hold one class (F1, F2, F7 and
+    M6, fewer than two trials of an outcome). The outcome is the one all three give.'
+  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses C rand(),
+    seeded per bin, a standard choice.
+  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs; the
+    mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
+  - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
+    as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
+    where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
 - claim: fig3b-feature-cells-enhance
   outcome: not_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig3b-feature-cells-enhance
   assumed: true
-  notes: 'C1 N1: modulated cells lower the shocked mice''s pre-shock and shock values (K1 0.383 and 0.626,
-    K2 0.442 and 0.582, against 0.489 and 0.658 with all cells; E1 fails) and leave no epoch with shocked
-    mice significantly higher (0 against 3 with all cells; E2 fails). Under the six other readings (C2
-    or N2) E2 holds in all six and E1 in two (K2 with C2).'
+  notes: 'C1 N1, clock: modulated cells lower the shocked mice''s pre-shock and shock values (K1 0.383 and 0.626,
+    K2 0.442 and 0.582, against 0.489 and 0.658 with all cells; E1 fails) and leave fewer epochs with shocked mice
+    significantly higher (0 against 3 with all cells; E2 fails), for K1 and K2 in all three cohorts (without F1
+    and F2, 1 against 4). Under the six other combinations of coding and cell set E2 holds in most and E1 in two
+    (K2 with C2).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code
-    reads it from a Cues file that is not public.
-  - 9 shocked and 7 non-shocked mice are decoded, where the Figure 3 legend has 7 and 7; all imaged mice
-    of day 1 are used, as the paper does not say which were left out. F2 has no failure among trials 4
-    to 12 and F7 and M6 one success each.
-  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses
-    C rand(), seeded per bin, a standard choice.
-  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs;
-    the mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
-  - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1
-    (STAR Methods, Decoding analysis), and the Methods come before the code (protocol, reader step 2).
-    The code counts failure as positive (C2) and calls Zscore_Sz (N2); under those readings the result
-    differs.'
-  - Modulated cells are those with any tone, platform or freezing call in BL (F1 frames) or D1 (P1-F1)
-    for K1, and in D1 only for K2; the ROC_IDs file the code reads is not public, and one period reading
-    is used to keep the run within time.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code reads
+    it from a Cues file that is not public.
+  - '9 shocked and 7 non-shocked mice are imaged on day 1, where the Figure 3 legend has 7 and 7; the paper does
+    not say which were left out. Three cohorts are run: all mice; without F1 and F2 (the shocked mice with no day
+    2, leaving 7 and 7); and without the mice whose leave-one-out training folds hold one class (F1, F2, F7 and
+    M6, fewer than two trials of an outcome). The outcome is the one all three give.'
+  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses C rand(),
+    seeded per bin, a standard choice.
+  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs; the
+    mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
+  - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1 (STAR Methods,
+    Decoding analysis), and the Methods come before the code (protocol, reader step 2). The code counts failure
+    as positive (C2) and calls Zscore_Sz (N2); under those readings the result differs.'
+  - Modulated cells are those with any tone, platform or freezing call in BL (F1 frames) or D1 (P1-F1) for K1, and
+    in D1 only for K2; the ROC_IDs file the code reads is not public, and one period reading is used to keep the
+    run within time.
+  - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
+    as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
+    where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
+  - Assumed the clock tone windows (data check); on the paper's bouts all cells are decoded as a variant, the modulated
+    and non-modulated sets are not, to stay within time.
 - claim: fig3c-nonmod-cells-worsen
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig3c-nonmod-cells-worsen
-  notes: 'C1 N1: non-modulated cells give fewer significant epochs than all cells (0 against 3; E2 holds)
-    but a higher shocked pre-shock value (0.499 against 0.489; E1 fails). The criterion makes a disagreement
-    between E1 and E2 methods_underspecified. Under the other three readings neither holds.'
+  notes: 'C1 N1, clock: non-modulated cells give fewer significant epochs than all cells (0 against 3; E2 holds)
+    but a higher shocked pre-shock value (0.499 against 0.489; E1 fails), in all three cohorts. The criterion makes
+    a disagreement between E1 and E2 methods_underspecified.'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code
-    reads it from a Cues file that is not public.
-  - 9 shocked and 7 non-shocked mice are decoded, where the Figure 3 legend has 7 and 7; all imaged mice
-    of day 1 are used, as the paper does not say which were left out. F2 has no failure among trials 4
-    to 12 and F7 and M6 one success each.
-  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses
-    C rand(), seeded per bin, a standard choice.
-  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs;
-    the mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The tone onset in calcium frames is the clock onset mapped to the nearest calcium timestamp; the code reads
+    it from a Cues file that is not public.
+  - '9 shocked and 7 non-shocked mice are imaged on day 1, where the Figure 3 legend has 7 and 7; the paper does
+    not say which were left out. Three cohorts are run: all mice; without F1 and F2 (the shocked mice with no day
+    2, leaving 7 and 7); and without the mice whose leave-one-out training folds hold one class (F1, F2, F7 and
+    M6, fewer than two trials of an outcome). The outcome is the one all three give.'
+  - LIBSVM (libsvm-official 3.37) as in the code; the fold shuffling of its 5-fold cross-validation uses C rand(),
+    seeded per bin, a standard choice.
+  - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs; the
+    mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
   - Non-modulated cells have no call in BL (F1) or D1 (P1-F1); 5 to 102 per mouse.
+  - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
+    as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
+    where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
 - claim: fig4b-hybrid-model-best
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig4b-hybrid-model-best
-  notes: Under T1 and T2, S1 and S2, the hybrid model has the lowest mean squared residual over blocks
-    of three trials (0.0048 to 0.0076, against 0.0243 to 0.0364 shock-only and 0.0167 to 0.0221 avoid-only);
-    repeated measures ANOVA p = 0.0052 to 0.021 (Geisser-Greenhouse p = 0.012 to 0.050). The fit stays
-    at the starting bound alpha = 1 in every mouse (code start [1, 1]); q ranges 0.46 to 1.00.
+  notes: 'Clock windows, update U1 (the claims file''s): under T1 and T2, S1 and S2, the hybrid model has the lowest
+    mean squared residual over blocks of three trials (0.0048 to 0.0076, against 0.0243 to 0.0364 shock-only and
+    0.0167 to 0.0221 avoid-only); repeated measures ANOVA p = 0.0052 to 0.021 (Geisser-Greenhouse p = 0.012 to 0.050).
+    The fit stays at alpha = 1 in every mouse from the code''s start [1, 1] and from four other starts; q ranges
+    0.46 to 1.00. With the Methods'' update U2 (R_t) alpha is interior and the hybrid model is still lowest (0.0185
+    to 0.0231, avoid-only 0.0197 to 0.0263, shock-only 0.13 to 0.18; GG p = 0.0037 to 0.0070), only just below avoid-only.
+    On the paper''s tone bouts U1 holds for T2 (GG p = 0.020) and fails for T1 (GG p = 0.097 and 0.11); U2 holds
+    for all four. Whether the model uses R(t+1) or R_t is asked of a reader (questions/gabriel-2025.yaml).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - 9 shocked mice, as the Figure 4B legend; F1 and F2 enter with day 1 only, as the Zenodo record holds
-    no day 2 for them.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - 9 shocked mice, as the Figure 4B legend; F1 and F2 enter with day 1 only, as the Zenodo record holds no day
+    2 for them.
   - Per-trial platform fraction and success from the clock tone windows; success hand-scored where available.
+  - The STAR Methods write the update with R_t, the outcome of the trial itself, where the claims file gives R(t+1)
+    from the deposited script; the claim is tested as the claims file has it and the Methods formula is run as a
+    variant (U2).
+  - Assumed the clock tone windows (data check); under the paper's bouts the T1 readings fail.
+  assumed: true
 - claim: fig4e-day1-onset-distance
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4f-day1-preshock-distance-none
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4g-day2-onset-distance
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4h-day2-preshock-distance-none
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4i-day1-onset-trajectory-none
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4j-day1-preshock-first-avoid
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4k-day2-onset-first-shock
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: fig4l-day2-preshock-trajectory-none
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: figs3ab-day1-post-onset-distance
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: figs3cd-day1-distance-groups-similar
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: figs3ef-first-success-trajectory
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: figs3gh-behavior-similar
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:figs3gh-behavior-similar
-  notes: 'Day 1, time on the platform and freezing in the tone-onset (0 to 5 s) and pre-shock (23 to 28
-    s) epochs, shocked (9) against non-shocked (7), Welch''s t-test: no comparison gives p < 0.05 under
-    B1 (trials 4 to 12), A2 (the first avoidance trial) or A1 (the trial after it), 12 tests, smallest
-    p = 0.13 (platform at onset over trials 4 to 12, 0.63 against 0.42, p = 0.14).'
+  notes: 'Day 1, time on the platform and freezing in the tone-onset (0 to 5 s) and pre-shock (23 to 28 s) epochs,
+    shocked (9) against non-shocked (7), Welch''s t-test: no comparison gives p < 0.05 under B1 (trials 4 to 12),
+    A2 (the first avoidance trial) or A1 (the trial after it), on either tone reading, 24 tests, smallest p = 0.11
+    (platform at onset over trials 4 to 12, 0.63 against 0.42, p = 0.14).'
   deviations:
-  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887
-    holds no calcium imaging and behaviour labels for 2 of 30 sessions.
-  - The first avoidance trial is the first success among day 1 trials 4 to 12; the code's rule (the first
-    avoidance after the first shock, excluding the first and last trial of the set) is not used.
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - The first avoidance trial is the first success among day 1 trials 4 to 12; the code's rule (the first avoidance
+    after the first shock, excluding the first and last trial of the set) is not used.
 - claim: figs4ab-iti-midtone-none
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: figs4cd-iti-before-first-avoid
   outcome: blocked
   blocked_by: not_runnable
-  notes: The paper's latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods
-    and the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB
-    cannot be installed in the entry's locked Python environment, and no Python implementation of CILDS
-    was found. The traces it needs (ta_sigfn) are in the Zenodo record.
+  notes: 'The paper''s latent trajectories come from CILDS (github.com/kohth/cilds, named in the STAR Methods and
+    the key resources table), which is MATLAB only (GitHub lists the repository as 100% MATLAB). MATLAB cannot be
+    installed in the entry''s locked Python environment, and no Python implementation was found (none on PyPI: pip
+    finds no distribution named cilds). The inputs are deposited (ta_sigfn in every minian file, the trial outcomes
+    and the learning rates of fig4b), so the block is the software, not the data. Writing CILDS anew (an EM fit
+    of a latent linear dynamical system with a per-neuron calcium decay) would be a substituted model, and was not
+    attempted.'
 - claim: zenodo-dandiset-link
   outcome: partially_reproduced
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:zenodo-dandiset-link
-  notes: All 30 Zenodo sessions have a dandiset NWB file with the same mouse and day. 25 have a trial
-    table that gives the Zenodo tone onsets (bout frame divided by 25) up to one offset per session (offsets
-    -3.56 to 4.02 s, spread under 0.1 s). The five that do not are F1 and F2 day 1 (no trial table; BehaviorDEPOT
-    arrays equal to the Zenodo ones), F6 day 1 (video only), F3 day 2 (9 trials, the first at 0 s, against
-    10 BehaviorDEPOT tones) and F7 day 2 (converted from M7's day 2 timestamp file, with M7's trial table
-    and 12 shock trials). No dandiset file lacks a Zenodo session.
+  notes: All 30 Zenodo sessions have a dandiset NWB file with the same mouse and day. 25 have a trial table that
+    gives the Zenodo tone onsets (bout frame divided by 25) up to one offset per session (offsets -3.56 to 4.02
+    s, spread under 0.1 s). The five that do not are F1 and F2 day 1 (no trial table; BehaviorDEPOT arrays equal
+    to the Zenodo ones), F6 day 1 (video only), F3 day 2 (9 trials, the first at 0 s, against 10 BehaviorDEPOT tones)
+    and F7 day 2 (converted from M7's day 2 timestamp file, with M7's trial table and 12 shock trials). No dandiset
+    file lacks a Zenodo session.
 findings:
 - kind: data_missing
-  statement: 'Dandiset 001887 holds no calcium imaging: none of its 30 NWB files holds traces, footprints
-    or an imaging series, although its description says it holds the data collected for and analyzed in
-    the paper. The traces are in the paper''s Zenodo record (doi:10.5281/zenodo.13381210).'
+  statement: 'Dandiset 001887 holds no calcium imaging: none of its 30 NWB files holds traces, footprints or an
+    imaging series, although its description says it holds the data collected for and analyzed in the paper. The
+    traces are in the paper''s Zenodo record (doi:10.5281/zenodo.13381210).'
 - kind: data_missing
-  statement: Only 2 of the 30 NWB files (F1 and F2, day 1) hold the BehaviorDEPOT labels (platform, freezing,
-    entries, exits); the other 28 hold a trial table, a video or both, so the behaviour results cannot
-    be computed from the dandiset without re-tracking the videos.
+  statement: Only 2 of the 30 NWB files (F1 and F2, day 1) hold the BehaviorDEPOT labels (platform, freezing, entries,
+    exits); the other 28 hold a trial table, a video or both, so the behaviour results cannot be computed from the
+    dandiset without re-tracking the videos.
 - kind: metadata_error
   statement: 'sub-F7_ses-TD2NoShock.nwb was converted from M7''s day 2 timestamp file (v4M7_T2_2022-05-13_14-01-48.mat):
-    its trial table equals that of sub-M7_ses-TD2Shock.nwb, with 12 shock trials for a non-shocked mouse,
-    and its session start time is M7''s.'
+    its trial table equals that of sub-M7_ses-TD2Shock.nwb, with 12 shock trials for a non-shocked mouse, and its
+    session start time is M7''s.'
 - kind: metadata_error
   statement: sub-F3_ses-TD1NoShock.nwb (non-shocked mouse) lists 9 shock trials and shock intervals; sub-F3_ses-TD2NoShock.nwb
     lists 9 trials, the first at 0 s, where the Zenodo record has 10 tones.
 - kind: metadata_error
-  statement: sub-F1_ses-TD1Shock.nwb and sub-F2_ses-TD1Shock.nwb give 2026-08-25 as the session start
-    time, which is the conversion date, and hold no trial table; sub-F6_ses-TD1NoShock.nwb holds only
-    the video.
+  statement: sub-F1_ses-TD1Shock.nwb and sub-F2_ses-TD1Shock.nwb give 2026-08-25 as the session start time, which
+    is the conversion date, and hold no trial table; sub-F6_ses-TD1NoShock.nwb holds only the video.
 - kind: code_mismatch
-  statement: The paper's behaviour code and its BehaviorDEPOT cue frames assume 25 frames/s (fps = 25
-    in batch_PMA_postanalysis_script_BDv15.m, vid_fps 25 in On Plat.mat, 751-frame tone bouts), while
-    in six sessions (F5, M5 and F6 on both days) the camera timestamps give 28.2 to 29.8 frames/s. In
-    those sessions the tone and shock windows drift from the real tones, and the code's success rule disagrees
-    with the hand-scored outcomes on 15 of 60 trials, against 4 with windows placed by the timestamps.
+  statement: The paper's behaviour code and its BehaviorDEPOT cue frames assume 25 frames/s (fps = 25 in batch_PMA_postanalysis_script_BDv15.m,
+    vid_fps 25 in On Plat.mat, 751-frame tone bouts), while in six sessions (F5, M5 and F6 on both days) the camera
+    timestamps give 28.2 to 29.8 frames/s. In those sessions the tone and shock windows drift from the real tones,
+    and the code's success rule disagrees with the hand-scored outcomes on 15 of 60 trials, against 4 with windows
+    placed by the timestamps.
 - kind: selection_undocumented
-  statement: The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2 (all
-    imaged); the Figure 1 behaviour legend gives 11 and 9, and 8 and 8. The behaviour-only mice are in
-    neither archive. The Figure 3 legend gives 7 shocked mice for decoding where 9 are imaged on day 1,
-    and which two were left out is not said.
+  statement: The Zenodo record holds 9 shocked and 7 non-shocked mice on day 1 and 7 and 7 on day 2 (all imaged);
+    the Figure 1 behaviour legend gives 11 and 9, and 8 and 8. The behaviour-only mice are in neither archive. The
+    Figure 3 legend gives 7 shocked mice for decoding where 9 are imaged on day 1, and which two were left out is
+    not said.
 - kind: data_missing
-  statement: No cell registration across days (the CellReg output behind the 463 and 322 registered cells
-    of Figure 1N and 1O) is in the Zenodo record or the dandiset. Jumping and rearing labels (Figure S2)
-    are not in either.
+  statement: 'No cell registration across days (the CellReg output behind the 463 and 322 registered cells of Figure
+    1N and 1O) is in the Zenodo record or the dandiset, though the footprints (ta_rois) are. Jumping, rearing and
+    escape labels (Figure S2) are in neither: Behavior.mat holds no such field and Params.mat holds the freezing
+    classifier''s parameters only.'
 - kind: methods_unavailable
-  statement: 'Question for the authors: the ROC routine (run_caAnalyze from the caAnalyze repository),
-    the alignment of calcium and behaviour frames, and the frames that make up the BL, D1 and D2 periods
-    are not public. Which frames form a period (from the first tone of the period to the next tone, or
-    from the end of the previous tone to the end of the last), and are D1 and D2 tones 9 to 12 (Results)
-    or the last 3 tones (Methods)? The overall-encoding and tone-proportion claims change outcome between
-    these readings.'
+  statement: 'Question for the authors: the ROC routine (run_caAnalyze from the caAnalyze repository), the alignment
+    of calcium and behaviour frames, and the frames that make up the BL, D1 and D2 periods are not public. Which
+    frames form a period (from the first tone of the period to the next tone, or from the end of the previous tone
+    to the end of the last), and are D1 and D2 tones 9 to 12 (Results) or the last 3 tones (Methods)? The overall-encoding
+    and tone-proportion claims change outcome between these readings.'
 - kind: methods_unavailable
-  statement: 'Question for the authors: how is a mixed cell counted for Figure 1K to 1M? With the code''s
-    category rule (genFeatCellResponses.m) on the Zenodo traces, 24% to 31% of responsive day 2 cells
-    of shocked mice are mixed, against 31% to 34% in non-shocked mice, not 51% against 25%. Did the pie
-    charts use further feature vectors (for example platform stays or the tone and ITI splits) or a different
-    denominator?'
+  statement: 'Question for the authors: how is a mixed cell counted for Figure 1K to 1M? With the code''s category
+    rule (genFeatCellResponses.m) on the Zenodo traces, 24% to 31% of responsive day 2 cells of shocked mice are
+    mixed, against 31% to 34% in non-shocked mice, not 51% against 25%. Did the pie charts use further feature vectors
+    (for example platform stays or the tone and ITI splits) or a different denominator?'
 - kind: methods_unavailable
-  statement: 'Question for the authors: for decoding, which class is positive in the F1 score (the Methods
-    code success as 1, calculatePerformance.m counts failure as positive), and is F1 min-max normalized
-    (Methods) or z-scored (Zscore_Sz in the code)? Shocked mice decode better than non-shocked mice in
-    the pre-shock and shock epochs only with success positive and min-max normalization. The ROC_IDs file
-    that defines the modulated and non-modulated cell sets is not public either.'
+  statement: 'Question for the authors: for decoding, which class is positive in the F1 score (the Methods code
+    success as 1, calculatePerformance.m counts failure as positive), and is F1 min-max normalized (Methods) or
+    z-scored (Zscore_Sz in the code)? Shocked mice decode better than non-shocked mice in the pre-shock and shock
+    epochs only with success positive and min-max normalization. The ROC_IDs file that defines the modulated and
+    non-modulated cell sets is not public either.'
+- kind: methods_unavailable
+  statement: 'Question for the authors: which Sidak family were the Figure 1E to 1H block comparisons corrected
+    over, all pairs of blocks or each block against block 1? On the camera-clock tone windows the freezing rise
+    passes only against block 1 (p = 0.047, smallest over all pairs 0.092) and the latency fall only over all pairs
+    (block 2 against 4, p = 0.032).'
+- kind: other
+  statement: 'The event-call counts of the STAR Methods (Cells Analyzed for Figure 1) are not met for tone onsets
+    and platform events with the Methods'' windows on the deposited traces: day 1 tone-onset 33 and 37 shocked cells
+    against 61 and 52, day 2 platform-exit 77 and 40 against 104 and 74, while the freezing counts match within
+    3%. Other windows, cleaned platform bouts and other shuffle seeds do not close the gap. The routine (run_caAnalyze)
+    is not public.'
+verifications:
+- date: '2026-11-04'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1: the first executed notebook with the conclusion cells and the summary removed, the helper
+    module pma.py and the claims file, with the paper''s full text. The verifier read the dandiset''s asset list
+    through the DANDI API and tested roc_calls and the Rescorla-Wagner update on synthetic data. It had no attempt
+    record.'
+  results:
+  - claim: data-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Cell 15 gives 1394 cells from 9 shocked mice and 847 from 7 NS mice on day 1, and 1031 and 967 cells
+      on day 2. All are exact.
+    response: No change.
+  - claim: data-registered-cells
+    agrees: true
+    outcome: blocked
+    reason: The Zenodo file list (cell 16) and the dandiset have no registration. The notebook never checked whether
+      minian_processed.mat holds footprints, so whether registration could be redone is unknown.
+    response: 'The data check now lists every variable of the minian files: all 30 hold the footprints ta_rois,
+      one per ta_dff cell. The registration itself is not deposited and redoing it needs CellReg (MATLAB), so the
+      block reason is changed from data_missing to not_runnable, with fig1o-tone-to-mixed and fig1o-nonmod-to-mixed.
+      Outcome blocked, unchanged.'
+  - claim: fig1e-platform-time
+    agrees: true
+    outcome: reproduced
+    reason: Under both tone readings and both Sidak families, shocked mice rise from block 1 to block 4 on day 1
+      (pair 1-4 p=0.0047), and shocked against NS differs on day 2 (p<=0.017). This uses 16 of the paper's 20 mice.
+    response: No change; the Sidak approximation (problem 7) is already a deviation.
+  - claim: fig1f-successful-trials
+    agrees: true
+    outcome: reproduced
+    reason: The criterion holds under all four combinations of tone reading and Sidak family.
+    response: 'No change. The data check now prints the hand-scored avoids beside the rule: 228 of 252 trials agree,
+      and trials scored 1 spent 0.92 of the first shock second on the platform, against 0.13 for trials scored 0,
+      so 1 is a success.'
+  - claim: fig1g-freezing
+    agrees: false
+    outcome: blocked
+    reason: On the clock windows the all-pairs family fails (minimum p=0.092) and the block-1 family passes (p=0.047).
+      Both families pass on the paper windows. The two Sidak readings the criterion names disagree.
+    response: 'Agreed: the paper does not state the family and nothing favours one, so the outcome is changed from
+      reproduced to blocked (methods_underspecified), and a methods_unavailable finding asks the authors.'
+  - claim: fig1h-latency
+    agrees: false
+    outcome: blocked
+    reason: The within-group test passes only on clock windows with all pairs, through pair 2-4 (block 2 is the
+      highest block). It fails under the other three combinations.
+    response: 'Agreed: changed from reproduced (assumed) to blocked (methods_underspecified), for the same reason
+      as fig1g-freezing.'
+  - claim: fig1kl-overall-encoding-similar
+    agrees: true
+    outcome: blocked
+    reason: Only P2-F2 meets the criterion; D1 has p<0.05 under the other three readings. With the paper's tone
+      windows, P2-F2 D1 also fails (p=0.047, cell 55). The claims file names methods_underspecified for this case.
+    response: No change.
+  - claim: fig1kl-day1-categories-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Every period and frame reading has at least one category with p<0.05 (1 to 6 of 8 comparisons).
+    response: The paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and
+      for figs3gh (problem 3). With them 3 to 6 of 8 comparisons have p < 0.05. Outcome unchanged.
+  - claim: disc-tone-cells-baseline
+    agrees: true
+    outcome: blocked
+    reason: '"BL greatest" holds only under G2 with P1-F1 and fails under the other 7 combinations. Tone-onset activity
+      is similar (all p>=0.18). Tone-onset cell counts are 33/37 against the paper''s 61/52.'
+    response: The paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and
+      for figs3gh (problem 3). The result is the same on the paper's bouts. A new cell compares the event-call counts
+      under other event windows, cleaned platform bouts and four seeds; none reaches the paper's tone-onset counts
+      (problem 2), and this is recorded as a finding. Outcome unchanged.
+  - claim: fig1k-mixed-day2
+    agrees: true
+    outcome: not_reproduced
+    reason: Under every reading shocked mice have fewer mixed cells (24 to 31%) than NS mice (31 to 34%). The paper
+      reports 51% against 25%.
+    response: No change; the notes now give the paper-bout readings, where one (P2-F2) gives 28.6% against 28.2%.
+  - claim: fig1o-tone-to-mixed
+    agrees: true
+    outcome: blocked
+    reason: Depends on a registration that is not public.
+    response: Block reason changed to not_runnable with data-registered-cells.
+  - claim: fig1o-nonmod-to-mixed
+    agrees: true
+    outcome: blocked
+    reason: Same as above.
+    response: Block reason changed to not_runnable with data-registered-cells.
+  - claim: fig1p-platform-exit-excited-day2
+    agrees: true
+    outcome: partially_reproduced
+    reason: Shocked mice are higher (Welch p=0.044). The cell counts (77 shocked, 84 NS) fall outside the tolerance
+      of 104+-10.4 and 100+-10. With the paper's tone windows, p=0.117.
+    response: 'The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. p
+      = 0.044, 0.043, 0.050 and 0.025 over four seeds. The event-call check (problem 2) tries other exit windows
+      (0 to 4 s, 1 to 6 s), platform bouts cleaned of flickers under 1 s and four seeds: 80 to 93 shocked cells,
+      never the paper''s 104. A label-lag check shows calcium following the freezing labels by 0.9 to 3.8 s in every
+      session, so no clock offset explains it. Outcome unchanged.'
+  - claim: fig1q-platform-exit-inhibited-day2
+    agrees: true
+    outcome: reproduced
+    reason: p=0.558. The cells selected (40 shocked, 65 NS) are far from the paper's 74 and 82.
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). p = 0.46 to 0.68 in every run. Outcome unchanged.
+  - claim: fig1pq-freezing-day2
+    agrees: true
+    outcome: reproduced
+    reason: 3 of 4 tests have p<0.05. Cell counts are within 2% of the paper's.
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). Two or three of four tests have p < 0.05 in every run. Outcome unchanged.
+  - claim: fig1r-mixed-exit-day1
+    agrees: false
+    outcome: blocked
+    reason: Reading M1 fails (day 1 p=0.49) and M2 passes narrowly (day 1 p=0.049, day 2 p=0.85).
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). M2 is kept as the assumed reading, as the claims file ties it to the code's split, which the
+      protocol follows where the Methods are silent. Under M2 the day 1 difference is positive in every run but
+      p < 0.05 only in the main run (0.10 to 0.15 with other seeds, 0.106 with the paper's bouts), so the outcome
+      is changed from reproduced to partially_reproduced; the verifier's blocked is recorded as a disagreement.
+  - claim: figs1h-exit-not-shock
+    agrees: true
+    outcome: reproduced
+    reason: p=0.046, shocked higher. Only 0 to 2 exits per session were removed, so this inherits the fragility
+      of fig1p.
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. p =
+      0.046, 0.043, 0.045 and 0.024; 0.143 with the shuffles of the paper-bout run. Outcome unchanged, the fragility
+      stated.
+  - claim: figs2-innate-behaviors
+    agrees: false
+    outcome: blocked
+    reason: The escape part can be computed from the platform labels and tone windows. Jumping and rearing could
+      come from the DeepLabCut CSVs on Zenodo or the dandiset videos. The notebook never shows that Behavior.mat
+      lacks these labels.
+    response: 'The data check now prints every Behavior.mat field in all 30 sessions: none names jumping, rearing
+      or escape, and Params.mat holds the freezing classifier''s parameters only. Jumping and rearing would need
+      BehaviorDEPOT''s classifiers (MATLAB) on the tracking, and the paper gives no thresholds to rebuild them,
+      so the claim stays blocked as not_runnable; the escape part alone was not run, as it cannot decide the claim
+      if it holds. Disagreement on the block reason recorded.'
+  - claim: fig2-day1-tone-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Tone exceeds ITI under H1 and H2, for both groups, for entries and exits (all p<=0.0017).
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). It holds in every run (largest p = 0.0049). Outcome unchanged.
+  - claim: fig2-day2-tone-further
+    agrees: false
+    outcome: blocked
+    reason: H1 holds. Under H2 the entries comparison has p=0.086.
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). H1 is kept as the assumed reading (the paper tests the pooled-cell histograms of Figure 2C and
+      2D by this ANOVA). Under H1 the entries part holds only in the main run (p = 0.11 to 0.58 with other seeds,
+      0.14 with the paper's bouts) while exits hold in every run, so the outcome is changed from reproduced to partially_reproduced;
+      the verifier's blocked is recorded as a disagreement.
+  - claim: fig2e-modulation-entries
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.755 against 0.710, p=0.086. Only 6 shocked and 5 NS mice qualify, against the paper's 7 and 7.
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). p = 0.086 to 0.21 in every run. Outcome unchanged.
+  - claim: fig2f-modulation-exits
+    agrees: true
+    outcome: reproduced
+    reason: p=0.006. Only 4 and 4 mice qualify, against the paper's 6 and 7.
+    response: The whole-session ROC is now run with three more shuffle seeds and this test repeated on each. The
+      paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and for figs3gh
+      (problem 3). p = 0.0031 to 0.018 in every run, with 4 to 5 mice per group. Outcome unchanged.
+  - claim: fig3a-decoding-shock-gt-ns
+    agrees: false
+    outcome: blocked
+    reason: Holds only under C1/N1, the Methods' coding (pre-shock p=0.036, shock p=0.012). It fails under the other
+      three. It also uses 9 shocked mice where the legend gives 7 (problem 1).
+    response: 'C1 N1 is kept: the Methods and the code disagree, and the protocol (reader, step 2) follows the Methods.
+      The notebook now runs three cohorts (all 9 mice; without F1 and F2; without the mice with single-class training
+      folds) and the paper''s tone bouts: on the clock windows C1 N1 holds in all three cohorts; on the paper''s
+      bouts it holds only without F1 and F2. Outcome reproduced (assumed) kept, with the clock windows now named
+      in the assumption; the disagreement is recorded.'
+  - claim: fig3a-decoding-before-tone
+    agrees: false
+    outcome: blocked
+    reason: Shocked mice are higher only under C1/N1.
+    response: 'As fig3a-decoding-shock-gt-ns: C1 N1 kept by the protocol''s order of sources. Under it shocked mice
+      are higher in all three cohorts and on the paper''s bouts. Outcome unchanged; disagreement recorded.'
+  - claim: fig3a-decoding-peak-preshock
+    agrees: true
+    outcome: not_reproduced
+    reason: Under all four readings the peak bin is at 32.6 s and the highest epoch is shock, not pre-shock.
+    response: No change; it holds in every cohort and on the paper's bouts (peak 32.4 to 32.6 s).
+  - claim: fig3b-feature-cells-enhance
+    agrees: false
+    outcome: blocked
+    reason: E1 and E2 disagree in most combinations. Under C1/N1, the only reading where the all-cell decoder separates
+      the groups, both E1 and E2 fail for K1 and K2.
+    response: Under C1 N1, the reading the protocol's order of sources gives, E1 and E2 agree (both fail) for K1
+      and K2 in all three cohorts, so the outcome not_reproduced (assumed) is kept; the disagreement is recorded.
+      The cell sets use one period reading (problem 8), as the deviation says; the modulated sets were not decoded
+      on the paper's bouts, for time.
+  - claim: fig3c-nonmod-cells-worsen
+    agrees: true
+    outcome: blocked
+    reason: E1 is false and E2 true under C1/N1; E1 and E2 are false elsewhere.
+    response: No change; the same in all three cohorts.
+  - claim: fig4b-hybrid-model-best
+    agrees: true
+    outcome: reproduced
+    reason: The hybrid model is lowest under T1/T2 and S1/S2, with Greenhouse-Geisser p from 0.012 to 0.0497. Every
+      fitted alpha is 1.0. The model updates with R(t+1), but the Methods give delta v_t = alpha(R_t - v_t); the
+      hybrid model's win may be an artifact of this target leakage.
+    response: 'The Methods'' update (R_t) is run as a variant U2, and the fit from four other start points: under
+      U2 alpha is interior and the hybrid model is still lowest (GG p = 0.0037 to 0.0070), only just below avoid-only.
+      The R(t+1) reading is added to questions/gabriel-2025.yaml for a reader. On the paper''s tone bouts the U1
+      T1 readings fail (GG p = 0.097 and 0.11), so the outcome is now marked as resting on the clock windows. Outcome
+      unchanged.'
+  - claim: figs3gh-behavior-similar
+    agrees: true
+    outcome: reproduced
+    reason: 0 of 12 comparisons have p<0.05 under B1, A1 and A2.
+    response: The paper's tone bouts are now run for every ROC, Figure 2, Figure 3 (all cells) and RW claim and
+      for figs3gh (problem 3). 0 of 24 have p < 0.05. Outcome unchanged.
+  - claim: fig4e-day1-onset-distance
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4f-day1-preshock-distance-none
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4g-day2-onset-distance
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4h-day2-preshock-distance-none
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4i-day1-onset-trajectory-none
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4j-day1-preshock-first-avoid
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4k-day2-onset-first-shock
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: fig4l-day2-preshock-trajectory-none
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: figs3ab-day1-post-onset-distance
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: figs3cd-day1-distance-groups-similar
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: figs3ef-first-success-trajectory
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: figs4ab-iti-midtone-none
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: figs4cd-iti-before-first-avoid
+    agrees: false
+    outcome: blocked
+    reason: The stated reason, "CILDS is MATLAB", is not a data limit. The traces, trial outcomes and learning rates
+      are all in hand, and CILDS is a published method. Thirteen CILDS claims are blocked for software-language
+      reasons; nothing shown blocks them on data. figs3cd and figs3ef do not even need the learning rate.
+    response: 'Kept blocked as not_runnable, the protocol''s reason for a method whose software cannot be installed
+      in the locked environment: no Python CILDS exists (none on PyPI), and writing one anew would substitute a
+      different implementation of the model. The notes now say the inputs are deposited, so the block is the software,
+      not the data. Disagreement recorded.'
+  - claim: zenodo-dandiset-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 25 of 30 sessions match (spread under 0.04 s). F1, F2 and F6 day 1 have no trial table, F3 day 2 has
+      9 trials against 10 tones, and F7 day 2 was converted from M7's file. The F1 and F2 BehaviorDEPOT arrays equal
+      Zenodo's.
+    response: No change.

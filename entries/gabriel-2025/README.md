@@ -11,30 +11,32 @@ timestamps of all 30 imaged sessions, so every claim is tested there and counted
 |---|---|
 | The Zenodo sessions are the dandiset's sessions (link) | Partially reproduced (25 of 30) |
 | Cell counts (1394, 847, 1031, 967) | Reproduced |
-| Behaviour across learning (Figure 1E to 1H) | Reproduced (latency resting on corrected tone times) |
+| Platform time and successful trials (Figure 1E, 1F) | Reproduced |
+| Freezing and latency (Figure 1G, 1H) | Blocked: methods underspecified (Sidak family) |
 | Day 1 encoding categories similar between groups | Not reproduced |
 | More mixed-selective cells in shocked mice on day 2 (51% against 25%) | Not reproduced |
 | Overall encoding similar; tone cells greatest at baseline | Blocked: methods underspecified |
-| Platform-exit and freezing activity on day 2 (Figure 1P, 1Q, S1H) | Reproduced, except 1P partially |
-| Excited mixed cells at platform exits on day 1 (Figure 1R) | Reproduced (assumed reading) |
-| Tone strengthens entry and exit encoding (Figure 2) | Reproduced, except the day 2 entry score |
-| Decoding better in shocked mice (Figure 3A) | Reproduced (assumed reading); peak before the shock not reproduced |
+| Platform-exit and freezing activity on day 2 (Figure 1P, 1Q, S1H) | Reproduced, except 1P partially; 1P and S1H sit near p = 0.05 |
+| Excited mixed cells at platform exits on day 1 (Figure 1R) | Partially reproduced (assumed reading) |
+| Tone strengthens entry and exit encoding (Figure 2) | Day 1 and exits reproduced; day 2 entries partially or not reproduced |
+| Decoding better in shocked mice (Figure 3A) | Reproduced (assumed readings); peak before the shock not reproduced |
 | Feature-encoding cells enhance decoding (Figure 3B) | Not reproduced; 3C blocked |
-| Hybrid Rescorla-Wagner model fits best (Figure 4B) | Reproduced |
-| Cell registration (Figure 1N, 1O) | Blocked: data missing |
+| Hybrid Rescorla-Wagner model fits best (Figure 4B) | Reproduced (assumed tone windows) |
+| Cell registration (Figure 1N, 1O) | Blocked: not runnable (no registration deposited; CellReg is MATLAB) |
 | CILDS latent trajectories (Figure 4E to 4L, S3, S4; 13 claims) | Blocked: not runnable (MATLAB) |
-| Innate behaviours (Figure S2) | Blocked: not runnable |
+| Innate behaviours (Figure S2) | Blocked: not runnable (no jumping, rearing or escape labels) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 In six sessions the camera ran near 30 frames/s while the paper's code placed the tones at 25 frames/s,
 so its tone windows drift from the real tones; the notebook places them by the camera timestamps and
-shows the paper's windows as a variant. The attempt record, with the reasons and the differences from
+shows every result on the paper's windows too, and the mean-activity and Figure 2 results with four
+shuffle seeds of the ROC. The attempt record, with the reasons and the differences from
 the paper's method, is [`attempts/gabriel-2025-01.yaml`](../../attempts/gabriel-2025-01.yaml).
 
-- `reproduce_gabriel_2025.ipynb`: the analysis. It takes about 30 minutes: 5 to stream about 10 GB
-  from Zenodo, 6 for the ROC calls and 15 for the 64 decoders of Figure 3.
+- `reproduce_gabriel_2025.ipynb`: the analysis. It takes about 35 minutes: 10 to stream about 10 GB
+  from Zenodo, 5 for the ROC calls and 20 for the 80 decoders of Figure 3.
 - `pma.py`: streaming the dandiset and the Zenodo zip members, the tone windows on both readings, trial
   measures, ROC calls, event-aligned activity, the decoder and the Rescorla-Wagner model. Other notebooks
   on this dataset can import it.

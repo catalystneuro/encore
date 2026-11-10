@@ -30,8 +30,13 @@ Where each parameter comes from:
   Feature list and category rule: genFeatCellResponses.m (claims file, opening comment).
 - Mean activity around events: compile_pooled_avg_heatmaps.m and trialAvg.m, as the claim
   fig1p-platform-exit-excited-day2 gives them.
-- Rescorla-Wagner model: "RW_q-weighted model_Feb 2024.py" (claims file, opening comment).
-- Random seeds: a standard choice that cannot change a result beyond shuffle noise.
+- Rescorla-Wagner model: "RW_q-weighted model_Feb 2024.py" (claims file, opening comment),
+  update U1; the STAR Methods' formula (R_t, the outcome of the same trial) is the variant U2.
+- Decoding bins: 3 calcium frames, with bin times at the code's 15 frames/s; the frames run
+  at 14.9 frames/s, so a bin's time is off by about 0.2 s at 28 s and 0.4 s at 50 s, a
+  standard choice that moves epoch edges by one or two bins.
+- Random seeds: a standard choice. The seed of the ROC shuffles moves cells near the 2.5% and
+  97.5% bounds; the notebook shows its effect where a result is near p = 0.05.
 """
 
 import io
@@ -228,17 +233,32 @@ def load_behaviour(day, folder):
             "freezing": np.asarray(B.Freezing.Vector, bool),
             "tone_bouts": np.atleast_2d(np.asarray(tone.Bouts, float)),
             "cam_t": ts[:, 1] / 1000.0,
-            "pma": {k: np.atleast_1d(v) for k, v in pm.items() if not k.startswith("__")}}
+            "pma": {k: np.atleast_1d(v) for k, v in pm.items() if not k.startswith("__")},
+            "fields": struct_fields(B)}
+
+
+def struct_fields(x, prefix="", depth=3):
+    """The field names of a MATLAB struct and of its sub-structs, as dotted paths."""
+    out = []
+    for k in getattr(x, "_fieldnames", []) or []:
+        v = getattr(x, k)
+        out.append(prefix + k)
+        if depth > 1 and hasattr(v, "_fieldnames"):
+            out += struct_fields(v, prefix + k + ".", depth - 1)
+    return out
 
 
 def load_calcium(day, folder):
-    """ta_dff (the traces the paper's code uses, genFeatCellResponses.m) and frame times."""
-    m = loadmat(read_member(day, _find(day, folder, lambda s: s.endswith("minian_processed.mat"))),
-                variable_names=["ta_dff"])
+    """ta_dff (the traces the paper's code uses, genFeatCellResponses.m), frame times, and the
+    names and shapes of every variable in the minian file."""
+    raw = read_member(day, _find(day, folder, lambda s: s.endswith("minian_processed.mat")))
+    names = [(n, shape) for n, shape, _ in sio.whosmat(io.BytesIO(raw))]
+    m = loadmat(raw, variable_names=["ta_dff"])
+    del raw
     dff = np.asarray(m["ta_dff"], np.float32)
     v4 = np.loadtxt(io.BytesIO(read_member(day, _find(day, folder, _is_v4_ts))),
                     delimiter=",", skiprows=1)
-    return {"dff": np.atleast_2d(dff), "v4_t": v4[:, 1] / 1000.0}
+    return {"dff": np.atleast_2d(dff), "v4_t": v4[:, 1] / 1000.0, "variables": names}
 
 
 # ---------------------------------------------------------------- tones and trials
@@ -458,23 +478,29 @@ def _ranks(x):
     return rankdata(x, axis=-1)
 
 
-def roc_calls(dff, vec, rng, n_shuffle=1000):
+def roc_prepare(dff):
+    """The FFT along time of each cell's ranks, which roc_calls correlates with the vector."""
+    return np.fft.rfft(_ranks(dff), axis=1)
+
+
+def roc_calls(dff, vec, rng, n_shuffle=1000, ranks=None):
     """auROC of each cell's trace for a binary vector, and its call against circular shuffles.
 
     Returns (auc, call) with call +1 excited (above 97.5% of the null), -1 suppressed (below
     2.5%), 0 otherwise; NaN auc and call 0 when the vector has no positive or no negative frame.
     The auROC is the Mann-Whitney statistic; for all circular shifts at once it is computed
-    from the circular cross-correlation of the ranks with the vector (FFT).
+    from the circular cross-correlation of the ranks with the vector (FFT). `ranks`, the
+    output of roc_prepare(dff), may be passed when several vectors are tested on one trace;
+    it gives the same result.
     """
     n = dff.shape[1]
     n1 = int(vec.sum())
     n0 = n - n1
     if n1 == 0 or n0 == 0:
         return np.full(len(dff), np.nan), np.zeros(len(dff), int)
-    R = _ranks(dff)
+    fr = roc_prepare(dff) if ranks is None else ranks
     shifts = rng.integers(1, n, n_shuffle)
     # S[c, s] = sum_t R[c, t] * vec[(t - s) mod n]
-    fr = np.fft.rfft(R, axis=1)
     fv = np.fft.rfft(vec.astype(float))
     S = np.fft.irfft(fr * np.conj(fv), n=n, axis=1)  # circular cross-correlation
     # S[:, s] for s = 0 is the true statistic; numerical rounding is removed by rounding.
@@ -516,10 +542,16 @@ def event_area(dff, ca_t, times, half_s, fps=CA_FPS):
 
 # ---------------------------------------------------------------- Rescorla-Wagner
 
-def rw_predict(alpha, q, data, success, v0):
+def rw_predict(alpha, q, data, success, v0, form="U1"):
+    """Predicted platform value per trial. U1, the claims file's update (from the deposited
+    script): v(t+1) = v(t) + rate * (R(t+1) - v(t)), so the prediction for trial t+1 uses
+    that trial's own outcome. U2, the STAR Methods' formula (Rescorla-Wagner modeling,
+    "Delta v_t = alpha * (R_t - v_t)", R_t the outcome at trial t): v(t+1) = v(t) + rate *
+    (R(t) - v(t)), which predicts each trial from the earlier ones only. The rate is alpha*q
+    after a success and alpha*(1-q) after a failure in both."""
     v = np.full(len(data), v0, float)
     for t in range(len(data) - 1):
-        delta = data[t + 1] - v[t]
+        delta = (data[t + 1] if form == "U1" else data[t]) - v[t]
         if success[t] == 1:
             v[t + 1] = v[t] + alpha * q * delta
         elif success[t] == 0:
@@ -529,19 +561,25 @@ def rw_predict(alpha, q, data, success, v0):
     return v
 
 
-def rw_fit(data, success, v0, model):
+def rw_fit(data, success, v0, model, form="U1", starts=((1, 1),)):
     """Fit by mean squared error (the code's loss), bounds [0, 1], start [1, 1] (code).
-    `hybrid` frees alpha and q; `shock` fixes q = 0 and `avoid` fixes q = 1 (claims file)."""
+    `hybrid` frees alpha and q; `shock` fixes q = 0 and `avoid` fixes q = 1 (claims file).
+    With several `starts` the fit with the lowest loss is kept (a variant: the code uses one)."""
     from scipy.optimize import minimize
-    loss = lambda a, q: np.mean((rw_predict(a, q, data, success, v0) - data) ** 2)
-    if model == "hybrid":
-        r = minimize(lambda p: loss(p[0], p[1]), [1, 1], bounds=[(0, 1), (0, 1)])
-        a, q = r.x
-    else:
-        q = 0.0 if model == "shock" else 1.0
-        r = minimize(lambda p: loss(p[0], q), [1], bounds=[(0, 1)])
-        a = r.x[0]
-    return a, q, rw_predict(a, q, data, success, v0)
+    loss = lambda a, q: np.mean((rw_predict(a, q, data, success, v0, form) - data) ** 2)
+    best = None
+    for st in starts:
+        if model == "hybrid":
+            r = minimize(lambda p: loss(p[0], p[1]), list(st), bounds=[(0, 1), (0, 1)])
+            a, q = r.x
+        else:
+            q = 0.0 if model == "shock" else 1.0
+            r = minimize(lambda p: loss(p[0], q), [st[0]], bounds=[(0, 1)])
+            a = r.x[0]
+        if best is None or r.fun < best[2]:
+            best = (a, q, r.fun)
+    a, q, _ = best
+    return a, q, rw_predict(a, q, data, success, v0, form)
 
 
 # ---------------------------------------------------------------- statistics
@@ -641,3 +679,4 @@ def normalise(f1, how):
 def decode_job(args):
     X, labels, seed = args
     return decode_mouse(X, labels, seed)
+
