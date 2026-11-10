@@ -34,7 +34,8 @@ inputs:
     Supplementary_figures_codes and functions), cited by file name in the notebooks and the helper.
   source: Zenodo doi:10.5281/zenodo.17973874; the same files are on GitHub at
     LSENS-BMI-EPFL/Ghaderi_et_al_NCOMMS_2026, commit 20cf10c7b95069c12f762b7dd89817beedcc382f
-    (the notebooks print the lines they rely on from this commit)
+    (the notebooks print the lines of nwb_findQuietTrial.m, PSTHBehavior.m and Data_Clustering.ipynb
+    they rely on from this commit; the other files are cited by name)
 - what: The detected lick times and the lick mask of each session (data_helpers/Lick_times.mat), used
     by fig8b-lick-coding-direction and figs18-later-lick-coding; the file's jaw trace and video
     timestamps are checked to equal the dataset's, which are the ones used.
@@ -78,7 +79,7 @@ outcomes:
     and 140.0 ms and reading (b) 65.2, 83.3 and 153.6 ms, with only the reading (b) whisker latency
     within tolerance; it asked whether the window was the paper's, since a crossing at 231 ms cannot
     occur under a maximum over 200 ms. The reader changed the criterion's window to 1.0 to 2.0 s, the
-    1 s response window of the Methods (questions/001530.yaml). Under it reading (a) moves two of the
+    1 s response window of the Methods (questions/ghaderi-2026.yaml). Under it reading (a) moves two of the
     three movement latencies into tolerance and reading (b) the tongue latency; the outcome stays
     partially reproduced. The 1.0 to 1.2 s and 1.0 to 1.5 s windows and the code's mean absolute
     deviation for the quiet rule (reading a 50.9, 118.0 and 196.0 ms) are shown as variants.
@@ -100,8 +101,9 @@ outcomes:
     completed trials without video gives 54.22%, within tolerance, but counting them as not quiet is
     the code's rule (below), so the outcome stays partial.
   deviations:
-  - Trials without video in their window (243 in sub-PG061_ses-20220212T233813, 29 in
-    sub-PG038_ses-20210316T152753) fail the rule, as in the code. nwb_findQuietTrial.m (lines 17 to
+  - Trials without video in their window (343 in all; every session has at least one, and two have
+    many, 243 in sub-PG061_ses-20220212T233813 and 29 in sub-PG038_ses-20210316T152753) fail the rule,
+    as in the code. nwb_findQuietTrial.m (lines 17 to
     29, printed in the notebook) takes the threshold with nanmedian and mad(), which drops NaN, and
     compares the NaN pre-stimulus mean with <=, which fails. Every session has at least one trial
     with a NaN baseline, so a threshold that kept NaN would reject every trial.
@@ -167,9 +169,12 @@ outcomes:
     type) 18 of the 72 changes are significant, where reading (a) allows 7; two changes exceed 13
     points (reading b), Go-tone No-Whisker trials in the Auditory window for A1 (-19.0) and wS2
     (-15.7). Most significant changes are reductions in licking on Go-tone No-Whisker trials in the
-    Auditory window and on No-tone and Nogo-tone Whisker trials in the Whisker window (4.4 to 12.6
-    points). The effects are smaller than on Go-tone Whisker trials; the paper's "little impact" is
-    judged here by the reader's two thresholds, which the paper does not give.
+    Auditory window (8.2 to 19.0 points) and on No-tone Whisker trials in the Whisker window (5.8 to
+    12.6 points); the smallest significant changes are 1.3 to 1.5 points (Nogo-tone No-Whisker trials,
+    Delay window, wS1 and wS2). The effects are smaller than on Go-tone Whisker trials; the paper's "little impact" is
+    judged here by the reader's two thresholds, which the paper does not give; the Supplementary Fig. 3
+    legend says only that the effects on the other trial types "were less prominent". Whether the
+    criterion asks more than the paper says is asked of a reader (questions/ghaderi-2026.yaml).
   deviations:
   - Both thresholds for "little impact" are the claims file's, not the paper's (the claims file's check
     marks them as open).
@@ -240,6 +245,7 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_ghaderi_2026.ipynb
   output: claim:fig3d-wm2-infragranular-delay
+  assumed: true
   measured:
   - 0.955
   - -0.055
@@ -249,6 +255,11 @@ outcomes:
     case (wM2 holds, one other pair significant) does not fit this result; it is recorded as partial
     because the effect and the absence elsewhere hold and one value is low. With the code's mean
     absolute deviation the wM2 values are 1.128 and -0.003 Hz (p 2.04e-07), within tolerance.
+  deviations:
+  - The criterion's partial case (wM2 holds and one other layer pair is significant) does not cover a
+    wM2 value below tolerance with no other pair significant. Partial is assumed as the nearest case,
+    since the effect, its significance and its absence elsewhere hold and one of the two wM2 values
+    is low; this is the author's judgement, not the criterion's.
 - claim: cluster-label-link
   outcome: reproduced
   notebook: reproduce_ghaderi_2026.ipynb
@@ -260,7 +271,8 @@ outcomes:
   outcome: not_reproduced
   notebook: decoding_clusters_whisker.ipynb
   output: claim:fig4-29-clusters
-  measured: 44
+  assumed: true
+  measured: 40
   notes: Following the Methods (10 ms PSTHs of the five correct types, 10,292 neurons with a nonzero
     range, 17 PCs, Gaussian similarity with sigma 0.0455 for a mean similarity of 0.5, eigenvectors 2
     to 17, diagonal GMM with the code's reg_covar 0) the BIC minimum is at k = 36, 40, 42 and 42 for
@@ -272,8 +284,11 @@ outcomes:
     initialisations) gave k = 44 and 36.
   deviations:
   - 5 GMM initialisations per k and seed (4 seeds, 20 in all; code variant 2 seeds) in place of the
-    code's 1,000 (time). Row centring, unscaled left singular vectors and reg_covar 0 are the code's
-    (Data_Clustering.ipynb, A4_spectral_embedding and A6_GMM_grid_search).
+    code's 1,000 (time). This is an assumption, that the best of 20 initialisations stands for the
+    best of 1,000; more initialisations can only lower the BIC at each k, so the minimum could move.
+  - Row centring, unscaled left singular vectors, eigenvectors 2 to 17, the k grid, diagonal
+    covariance and reg_covar 0 are the code's (Data_Clustering.ipynb, A4_spectral_embedding and
+    A6_GMM_grid_search, lines printed in the notebook).
   - The shuffle rule for the number of PCs (1,000 shuffled PCAs) is not run; 17 PCs as the Methods.
   - Sessions with fewer than 3 quiet trials of a correct type would be skipped (code); none were.
 - claim: fig4b-named-clusters
@@ -332,7 +347,8 @@ outcomes:
   deviations:
   - 5 random subsets of 50 neurons per session (code's decoder; four more seed sets on the delay bins)
     and 1 subset on every 5th baseline bin (grid search), in place of 100 subsets; the run times
-    printed put 100 subsets at about 54 min for the code's decoder and 45 h for the grid search.
+    printed in this run put 100 subsets at about 53 min for the code's decoder and 44 h for the grid
+    search.
   - The grid search is not run with the code's quiet rule (time).
   - The grid for the Methods' search (C from 10^-3 to 10^3 in decades) is the claims file's; the SVM
     caps libsvm iterations at 10^5.
@@ -358,22 +374,37 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: decoding_clusters_whisker.ipynb
   output: claim:fig5c-cluster-removal
-  notes: The two SVM readings give different outcomes in the main run, which the criterion blocks, and
-    the code's reading changes with the random draws. Code's nu-SVC, seed set 0, cluster 11 lowers
+  proposed:
+    outcome: not_reproduced
+    reason: The Methods' reading is not reproduced (cluster 25 p_FDR 0.085 in wM2 and ALM, and cluster
+      11 also significant in wS1), and the code's reading is not reproduced in 4 of its 5 runs (seed sets 1
+      and 2, cluster 25 not significant; the mean of the three sets, three other pairs significant;
+      the code's quiet rule, cluster 11 also significant in wS2). Only seed set 0 gives partial, and it
+      has no claim to be the main run. The readings therefore agree on not reproduced, except in one
+      run of one reading, which is what the verifier's second round found (decoding_clusters_whisker.ipynb
+      cells 7 and 8). The claim depends on fig4b-named-clusters, which is blocked, and the protocol blocks
+      a claim whose dependency is blocked; fig4b is blocked only on what "mostly" means for cluster 1,
+      while its parts on clusters 11 and 25, the ones this claim uses, hold under both readings, so the
+      third round is asked to judge whether the dependency still applies.
+  notes: The verified outcome is blocked; a change to not reproduced is proposed (above), as the
+    verifier's second round found. Code's nu-SVC, seed set 0, cluster 11 lowers
     delay decoding in wM2 by 4.61 +/- 0.89 and ALM by 4.45 +/- 1.20 points (FDR p 0.0009 and 0.0002)
     and not significantly in A1, wS1, wS2; cluster 25 by 1.30 +/- 0.53 and 1.70 +/- 0.57 (FDR p 0.048
     both); all four within tolerance; one other pair is significant (cluster 24 in A1, 0.49 points, p
     0.029), so partially reproduced. In seed sets 1 and 2 cluster 25 is not significant (FDR p 0.075
     to 0.234), and the mean of the three sets has the four values within tolerance and significant
     but three other pairs significant (cluster 2 in wM2, cluster 13 in wM2 and ALM), so not
-    reproduced; with the code's quiet rule one other pair (cluster 26 in wM2), partial. Methods' grid search, cluster 11 lowers wM2 by
+    reproduced; with the code's quiet rule cluster 11 is also significant in wS2, which the claim excludes
+    (and cluster 26 in wM2), so not reproduced. Seed set 0 is the only run that gives partial; it was
+    the first run, not a chosen main run. Methods' grid search, cluster 11 lowers wM2 by
     4.17 and ALM by 4.72 points (significant) but also wS1 by 0.20 (FDR p 0.030), and cluster 25's
     1.31 and 1.91 points are not significant (FDR p 0.085), so not reproduced. It also depends on
     fig4b-named-clusters, blocked for the same reason; the cluster labels themselves link fully.
   deviations:
   - The decrease is with minus without the cluster (the criterion's without minus with, sign turned).
     The two decodings share their random state.
-  - The grid search was run once, for clusters 11 and 25 only (all 29 would take about 77 min per run).
+  - The grid search was run once, for clusters 11 and 25 only (all 29 would take about 74 min per run
+    by the time this run printed; 39 min in the run the verifier read).
   - The code's decoder was run in three seed sets and with the code's quiet rule.
 - claim: fig5d-null-space-decoding
   outcome: blocked
@@ -436,7 +467,8 @@ outcomes:
   notes: FDR within each area; wS1 has significant negative Hit minus CR bins at 1.015 and 1.020 s and
     wS2 at 1.010 to 1.025 s; all five areas have significant positive bins from 1.030 s on (ALM from
     1.030, wM2 1.035, wS1 and wS2 1.040, A1 1.065 s). The code's FDR over all areas and bins gives the
-    same for wS1, wS2, wM2 and ALM.
+    same bins for wS1, wM2 and ALM, and for wS2 after the stimulus; wS2's pre-stimulus negative bins
+    (0.96 and 0.965 s, FDR within the area) the one at 0.96 s drops out under it.
 - claim: fig7c-no-whisker-cd-change
   outcome: reproduced
   notebook: reproduce_ghaderi_2026.ipynb
@@ -461,9 +493,14 @@ outcomes:
     bin at 1.015 s, as the paper reports. (The first run, with 1 run, gave 1.025 and 1.035 s.) The Methods' grid search (1 run, 2 baseline bins)
     gives wM2 from 1.040 s and ALM from 1.035 s, so wM2 does not precede ALM and the claim is not
     reproduced. Neither reading shows a single significant bin at 15 ms in wS2 (wS2 has an isolated
-    bin at 1.020 s with the grid search).
+    bin at 1.020 s with the grid search). The Methods' onsets are one bin apart, on a reduced run (2 of
+    10 baseline bins, 1 run), so this reading is weak, as the verifier's second round says.
   deviations:
-  - The grid search uses 1 run and 2 of the 10 baseline bins; all 10 would take about 57 min per run.
+  - The grid search uses 1 run and 2 of the 10 baseline bins; all 10 would take about 58 min per run by
+    the time this run printed (30 min in the run the verifier read). A run with all 10 bins, in a notebook
+    of its own, was started for this revision and had not finished after 53 min, when the runner's
+    two-hour limit on one command stopped the entry's run; it was dropped, so the Methods' result still
+    rests on 2 bins and one run.
 - claim: fig8a-wm2-lick-divergence
   outcome: partially_reproduced
   notebook: reproduce_ghaderi_2026.ipynb
@@ -472,7 +509,10 @@ outcomes:
     Go-tone no-lick trials (LSD p 0.0041), but Nogo-tone lick (false alarm) trials are not above
     Nogo-tone no-lick trials (p 0.28; variants 0.08 to 0.36), so wM2 holds for one context, the
     criterion's partial case. A1, wS1 and wS2 show no significant lick against no-lick comparison (p
-    0.40 or more). ALM Kruskal-Wallis p below 0.0001, Go-tone p 0.0008, Nogo-tone p 0.028.
+    0.40 or more). ALM Kruskal-Wallis p below 0.0001, Go-tone p 0.0008, Nogo-tone p 0.028. The
+    Supplementary Fig. 17 legend gives wM2's Nogo-tone result as "Nogo-tone Lick vs No tone no lick
+    trials" (p 0.04); that pair gives p 0.22 in wM2 (variants 0.09 to 0.37), also not significant;
+    whether the criterion's pair is the paper's is asked of a reader (questions/ghaderi-2026.yaml).
   deviations:
   - As fig7c, the context direction at 5 ms is built from the 10 ms counts.
 - claim: fig8b-lick-coding-direction
@@ -488,7 +528,7 @@ outcomes:
     with ALM's Kruskal-Wallis p 0.155, not significant. A1, wS1 and wS2 no significant lick against
     no-lick comparison (p 0.30 or more). The code's quiet rule gives the same pattern (wM2 KW p 0.0011).
     The claims file marks this claim data dataset although its test needs Lick_times.mat; asked of a
-    reader (questions/001530.yaml).
+    reader (questions/ghaderi-2026.yaml).
   deviations:
   - Lick-window spike counts are left-closed, [t + 0.2, t + 0.5) and [t - 1, t - 0.5), where the code's
     histcounts closes the last bin.
@@ -502,7 +542,11 @@ outcomes:
     wS2 1.16, wS1 0.94; Kruskal-Wallis statistic wM2 49.2, wS2 27.3, ALM 24.5, wS1 15.8). The readings
     agree on the largest area, so the claim fails on its ranking. The plain difference of mean
     projections, not a criterion reading, ranks ALM 0.46, wM2 0.35, wS2 0.18, wS1 0.11, the paper's
-    order; asked of a reader (questions/001530.yaml). The code's quiet rule gives the same rankings.
+    order. The Supplementary Fig. 18 legend, which the claims file did not read, says "The projection
+    amplitude in the lick coding direction was largest for ALM, followed by wM2, wS2 and wS1 (in rank
+    order), with A1 having the smallest and not significant difference", which reads as that difference;
+    under it the claim would be reproduced. Asked of a reader (questions/ghaderi-2026.yaml); the outcome
+    is kept as tested on the claims file. The code's quiet rule gives the same rankings.
   deviations:
   - The 5 ms counts are kept up to 1.10 s, so the window is the 10 ms bins labelled 1.20 to 1.40 s
     halved ([1.19, 1.40) in place of [1.195, 1.40)).
@@ -534,9 +578,9 @@ findings:
     go_tone, nogo_tone or no_tone).
 - kind: other
   statement: Eleven trials of sub-PG028_ses-20210318T163504 have trial_type 0, outside the five types,
-    and sub-PG076_ses-20220502T140636 has no No-tone trials. In sub-PG061_ses-20220212T233813 243
-    trials and in sub-PG038_ses-20210316T152753 29 trials have no video frames, so they cannot be
-    classed as quiet. sub-PG038_ses-20210317T180556 has no unit that passes the CCF filter.
+    and sub-PG076_ses-20220502T140636 has no No-tone trials. 343 trials have no video frames in their
+    -1 to 2 s window, at least one in every session and most in sub-PG061_ses-20220212T233813 (243)
+    and sub-PG038_ses-20210316T152753 (29), so they cannot be classed as quiet. sub-PG038_ses-20210317T180556 has no unit that passes the CCF filter.
 - kind: paper_inconsistency
   statement: The Fig. 2 legend gives mean +/- SD and 1,000 bootstrap iterations; the reported spreads
     match the SEM over sessions (A1 Auditory 4.1 against SD 16.9) and the reported p-values (0.0003,
@@ -564,7 +608,8 @@ findings:
 - kind: data_missing
   statement: The detected lick times and lick mask used for the lick coding direction (Fig. 8b,
     Supplementary Fig. 18) are only in the Zenodo record (Lick_times.mat); the dandiset holds the raw
-    piezo lick trace and the jaw trace, and its BehavioralEvents hold only Valve_OpeningTime.
+    piezo lick trace and the jaw trace, and its BehavioralEvents hold only Valve_OpeningTime in all 35
+    sessions (printed in reproduce_ghaderi_2026.ipynb, fig8b-lick-coding-direction).
 verifications:
 - date: '2026-11-03'
   kind: agent
@@ -628,8 +673,8 @@ verifications:
   - claim: units-recorded
     agrees: true
     outcome: reproduced
-    reason: Exact counts, 780, 1938, 2064, 2749 and 2763, total 10,294; wS2 has CCF units in only 19 sessions
-      and 9 mice, against the paper's 24 and 11.
+    reason: Exact counts, 780, 1938, 2064, 2749 and 2763, total 10,294; probe sessions and mice match; wS2
+      has CCF units in only 19 sessions and 9 mice, against the paper's 24 and 11.
     response: No change.
   - claim: fig3a-activity-maps
     agrees: true
@@ -676,7 +721,8 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Parts (2) to (4) hold; cluster 1 is mostly A1 under reading (b), largest share 30.5%, but
-      not under (a), more than half, so the all-readings rule blocks it.
+      not under (a), more than half, so the all-readings rule blocks it; partial is the floor either
+      way.
     response: No change.
   - claim: fig5a-single-neuron-context
     agrees: true
@@ -786,3 +832,231 @@ verifications:
     reason: All 10,294 labels map to distinct units with matching area, CCF label and layer, all analysed
       units.
     response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the round-1 revision (reproduce_ghaderi_2026.ipynb,
+    decoding_delay.ipynb, decoding_clusters_whisker.ipynb) with their conclusions and summaries, the
+    helper module, the claims file, the attempt record and the README, with the paper.
+  results:
+  - claim: fig1c-lick-probabilities
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig1f-movement-latencies
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: quiet-trials-half
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Round-1 point 3 (no-video trials in the quiet rule) is resolved: the code lines are
+      printed and a per-session NaN table is shown. The Summary''s "two sessions have trials without
+      video" is not supported; cell 7 shows that all 35 sessions have at least one such trial, 343 in all,
+      and two have many (243 and 29).'
+    response: The Summary and the text under the data check now say that every session has at least one
+      trial without video, 343 in all, and two have many (243 and 29). Outcome unchanged.
+  - claim: fig2-auditory-window
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig2-delay-window
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig2-whisker-window
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig2-wm2-vs-alm-auditory
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig2-other-trial-types
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees under the criterion. The two thresholds are the reader's, and the Supp. Fig. 3 legend
+      says only that effects on the other trial types "were less prominent". The data fit those words; the
+      largest change is 19.0 points, against 33 to 52 on Go-tone Whisker trials. The outcome depends
+      entirely on thresholds the paper does not give. The notes' "(4.4 to 12.6 points)" is given for a
+      group that includes the Go-tone No-Whisker changes in the Auditory window, which run from 8.2 to 19.0
+      points (cell 37).
+    response: Asked of a reader in questions/ghaderi-2026.yaml, with the Supplementary Fig. 3 legend;
+      the claim is unchanged and the outcome stays not reproduced. The notes now give the ranges of the
+      significant changes by group as printed in cell 37.
+  - claim: units-recorded
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with). Its round-1 reason in the record
+      omitted "probe sessions and mice match".
+    response: Added to the round-1 reason. No change.
+  - claim: fig3a-activity-maps
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig3b-delay-and-response-psth
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Cell 48, "The code''s whisker-only quiet rule gives the same pattern.", is not
+      supported: cell 46 shows that under this rule (i) fails for ALM, type 1 against type 3 (p 0.0547).
+      The record states this correctly.'
+    response: Cell 48 now says that under the code's rule (ii) fails for the same wS2 comparison and (i)
+      fails for ALM by type (p 0.0547). Outcome unchanged.
+  - claim: fig3c-delay-modulation-wm2-alm
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with). Round-1 point 7 (20 or 21 delay
+      bins) is explained.
+    response: No change.
+  - claim: fig3d-wm2-infragranular-delay
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partial is the author's judgement, since the criterion has no case for this result. It is
+      stated in the notes; it is reasonable. No outcome carries assumed true; this one should be flagged.
+    response: Marked assumed, with a deviation that states the judgement. Outcome unchanged.
+  - claim: cluster-label-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig4-29-clusters
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Low confidence. The four seeds put the BIC minimum at k = 36, 40, 42 and 42 (cell 13), and one
+      seed alone would give partial. More initialisations can only lower the BIC at each k, and probably
+      most at large k, so the minimum is more likely to stay at or above 38 than to fall to 29. 20 GMM
+      initialisations stand in for 1,000; stated and acceptable, but should be flagged as an assumption.
+      The minimum still depends on initialisation, and the code-matching choices are not printed from
+      Data_Clustering.ipynb. measured: 44 is stale; cell 13 gives 40 (best of 20).'
+    response: measured corrected to 40; marked assumed, with the deviation saying what is assumed. The
+      notebook now prints the lines of Data_Clustering.ipynb it follows (row centring, the unscaled left
+      singular vectors, the kernel, eigenvectors 2 to 17, the k grid, diagonal covariance, reg_covar 0,
+      1,000 initialisations). The 1,000 initialisations were not run (time). Outcome unchanged.
+  - claim: fig4b-named-clusters
+    agrees: true
+    outcome: blocked
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with). Its round-1 reason in the record
+      omitted "partial is the floor either way".
+    response: Added to the round-1 reason. No change.
+  - claim: fig5a-single-neuron-context
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig5b-context-decoding-delay
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Round-1 points 2 and 4 are resolved for fig5b (code''s quiet rule run, spread over
+      seed sets shown). Cell 0''s "about 25 ms per bin and subset ... grid search about ten times more" is
+      not supported: cell 5 prints 99 ms against 93 ms for the warm-up, and the full runs work out to
+      about 6 ms against about 300 ms per fit. Cell 8 gives the Methods'' A1 accuracy as "53.0"; cell 6
+      prints 53.05. The record''s "about 54 min ... and 45 h" should be the printed 28 min and 23.8 h.'
+    response: Cell 0 no longer gives per-fit times and points to the run times printed; cell 8 gives 53.1;
+      the deviation gives the printed estimates. Outcome unchanged.
+  - claim: fig5b-decoding-time-course
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Round-1 point 9 (Methods reading on the cue bins) is resolved (decoding_delay cell 10).
+      The README's "About 30 minutes" for decoding_delay.ipynb does not match its cell 13, 16.8 min.
+    response: README run times now follow the new run. No change of outcome.
+  - claim: fig5c-cluster-removal
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Blocked applies only when the two SVM readings disagree. The Methods'' reading is not
+      reproduced. The code''s reading is not reproduced in 3 of 5 runs (seed sets 1 and 2, cluster 25 not
+      significant, p_FDR 0.075 to 0.234; the mean of the three sets, three other pairs significant where
+      the criterion allows two); even the code''s quiet-rule run, counted as partial, has cluster 11
+      significant in wS2. Only seed set 0 gives partial, and the record treats set 0 as the main run without
+      saying so or marking it as an assumption. The evidence supports not reproduced; at least, the choice
+      of set 0 should be marked assumed. The Methods reading is still a single run with p_FDR 0.085, and
+      the full run is printed at about 39 min, so it was feasible. The "77 min" in cell 8 and the record
+      should be the printed 39 min.'
+    response: Agreed. The outcome stays blocked, as verified in round 1, and a change to not reproduced is
+      proposed under proposed, with the reason. The notes and cell 8 now say that set 0 was the first run,
+      not a chosen main run, that the code's quiet-rule run is not reproduced (cluster 11 significant in
+      wS2), and give the printed run time (74 min per run in this run, 39 min in the one read). Further
+      seed sets of the grid search were prepared but not run, since the entry's run had to fit the runner's
+      two-hour limit on one command (below, fig7d).
+  - claim: fig5d-null-space-decoding
+    agrees: false
+    reason: Still does not agree. The inputs are in the dataset; only the subspace optimisation would need
+      re-implementing. The disagreement is recorded.
+    response: Kept blocked as not_runnable; the reimplementation of the subspaceID manifold optimisation
+      was not attempted in this revision either (the time went to the fuller Methods runs of Fig. 5c and
+      7d). The disagreement stays recorded.
+  - claim: fig6a-pca-delay-states
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig6b-context-coding-direction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig6c-temporal-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig7b-early-whisker-response
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Minor: cell 77, "the code''s FDR ... gives the same bins for ... wS2", is not quite
+      supported; the pre-stimulus negative bin at 0.96 s drops out (cell 76).'
+    response: Cell 77 and the notes now say that the code's FDR gives the same bins for wS1, wM2 and ALM
+      and for wS2 after the stimulus, and that of wS2's two pre-stimulus bins the one at 0.96 s drops out. No change.
+  - claim: fig7c-no-whisker-cd-change
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (one of the 26 of 30 outcomes the report agrees with).
+    response: No change.
+  - claim: fig7d-context-decoding-after-whisker
+    agrees: true
+    outcome: blocked
+    reason: Correct by the criterion's rule, but it rests on a reduced Methods run (1 run, 2 of 10 baseline
+      bins), and that run's wM2 and ALM onsets are one bin apart. The 1-run, 2-bin grid search is stated;
+      it is weak, given the run time printed. The full run is printed at about 30 min, so "for time" does
+      not hold. The "57 min" in cell 11 and the record should be the printed 30 min.
+    response: Kept blocked. A run of the grid search with all 10 baseline bins, in a notebook of its own, was
+      started for this revision; it had not finished after 53 min, when the two-hour limit on one
+      command stopped the entry's run, so it was dropped and the entry re-run without it. The printed
+      estimate in this run is about 58 min per run. The notes and cell 11 now say that the Methods' onsets
+      are one bin apart on a reduced run, and give the printed time.
+  - claim: fig8a-wm2-lick-divergence
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The criterion tests Nogo-tone lick against Nogo-tone no-lick trials; the Supp. Fig. 17
+      legend appears to give the wM2 Nogo-tone result as "Nogo-tone Lick vs No tone no lick trials", a pair
+      cell 82 never computes. A possible misreading for the reader to check.
+    response: Added the legend's pair (Nogo-tone lick against No-tone no lick) to cell 82; it gives p 0.22 in
+      wM2 (variants 0.09 to 0.37), not significant, so it would not change the outcome. Asked of a reader
+      in questions/ghaderi-2026.yaml. Outcome unchanged.
+  - claim: fig8b-lick-coding-direction
+    agrees: true
+    outcome: reproduced
+    reason: 'Holds under the criterion. ALM''s Go-tone comparison comes after a non-significant
+      Kruskal-Wallis test (p 0.155); the record says so. The data_missing finding and the response,
+      "BehavioralEvents hold only Valve_OpeningTime", are shown by no notebook output.'
+    response: The notebook now prints the contents of processing/behavior for every session (cell 85);
+      in all 35, BehavioralEvents holds only Valve_OpeningTime, and BehavioralTimeSeries holds
+      C2Whisker_Angle, Jaw_Coordinate, Piezo_lick_trace, Snout_Angle and Tongue_Coordinate. Outcome unchanged.
+  - claim: figs18-later-lick-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under the claims file, but the claims file misreads the paper. The Supp. Fig. 18 legend
+      defines the effect: "The projection amplitude in the lick coding direction was largest for ALM,
+      followed by wM2, wS2 and wS1 (in rank order), with A1 having the smallest and not significant
+      difference." That is the plain lick minus no-lick difference, which cell 89 shows but does not judge
+      (ALM 0.46, wM2 0.35, wS2 0.18, wS1 0.11, A1 smallest), the paper''s order. Under the paper''s own
+      measure this claim would be reproduced.'
+    response: The question already asked of a reader (questions/ghaderi-2026.yaml) now quotes the Supp.
+      Fig. 18 legend; the claim is unchanged and the outcome stays not reproduced as tested on the claims
+      file. Cell 90 and the notes quote the legend.

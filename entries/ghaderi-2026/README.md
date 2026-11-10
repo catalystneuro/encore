@@ -27,7 +27,7 @@ and the differences from the paper's method.
 | Single-neuron context modulation (Fig. 5a) | Partially reproduced |
 | Context decoding in the delay (Fig. 5b) | Partially reproduced |
 | Decoding time course and neuron counts (Fig. 5b) | Reproduced |
-| Cluster removal (Fig. 5c) | Blocked: methods underspecified |
+| Cluster removal (Fig. 5c) | Blocked: methods underspecified (change to not reproduced proposed) |
 | Null-space decoding (Fig. 5d) | Blocked: not runnable |
 | PCA delay states (Fig. 6a) | Partially reproduced |
 | Context coding direction (Fig. 6b) | Reproduced |
@@ -48,9 +48,9 @@ attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/ghaderi-2026-01.yaml`](../../attempts/ghaderi-2026-01.yaml).
 
 - `reproduce_ghaderi_2026.ipynb`: data check, behaviour, optogenetics, unit counts, single-neuron and
-  population analyses, cluster labels, lick coding direction. About 15 minutes.
-- `decoding_delay.ipynb`: context decoding during the delay (Fig. 5b). About 30 minutes.
+  population analyses, cluster labels, lick coding direction. About 8 minutes.
+- `decoding_delay.ipynb`: context decoding during the delay (Fig. 5b). About 28 minutes.
 - `decoding_clusters_whisker.ipynb`: cluster removal, decoding after the whisker stimulus and the
-  clustering of Fig. 4a. About 22 minutes.
+  clustering of Fig. 4a. About 41 minutes.
 - `ghaderi.py`: streaming, trial and quiet-trial selection, area assignment, spike counts, the
   statistics and the decoders. Other notebooks on this dandiset can import it.
