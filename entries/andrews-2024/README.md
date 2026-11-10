@@ -16,11 +16,13 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The files hold no sorted units, no light events and no labels for medium, drug, opsin or light
-protocol. Light periods can be recovered from a voltage step only in slice 3C. The attempt record,
+protocol. Light periods can be recovered from a voltage step in slices 3C, 4C and 7D, and in no
+file of 5C, 8D, 10F or 11G. The attempt record,
 with the reasons, is [`attempts/andrews-2024-01.yaml`](../../attempts/andrews-2024-01.yaml).
 
-- `reproduce_andrews_2024.ipynb`: the survey of every recording, the cohort claim and a
-  threshold-crossing variant around the 3C light trials. It takes about 20 minutes, most of it
-  streaming one 64-channel group of each file.
-- `hdmea.py`: streaming the files by HTTP range requests on their HDF5 chunks, light-step
-  detection, threshold crossings and saturation. Other notebooks on this dandiset can import it.
+- `reproduce_andrews_2024.ipynb`: the survey of every recording, the cohort claim, a
+  threshold-crossing variant around the 3C light trials, and the failed build of the paper's
+  network model. It takes about 31 minutes, most of it streaming one 64-channel group of each
+  file and every channel group of the 47 files of seven slices.
+- `hdmea.py`: streaming the files by HTTP range requests on their HDF5 chunks, the channel-mean
+  trace of every channel group, light-step detection, threshold crossings and saturation. Other notebooks on this dandiset can import it.

@@ -30,7 +30,11 @@ outcomes:
     The 8 HcKCR1 slices of Table 2 are present by name. The opsin of a slice is recorded neither in
     the files nor in the dandiset metadata, so the third expected value (8 HcKCR1 slices) cannot be
     measured from the dandiset; it follows only from reading the slice names against the paper's
-    Table 1. Of the criterion's conditions, slices, patients, ages and sexes hold and the opsins
+    Table 1. Every object under general/ of every file was read; it holds the devices, the electrode
+    table, experiment_description (the paper's title), institution, lab, source_script and the
+    subject's age, sex, species and subject_id, with no virus, pharmacology, protocol, notes,
+    optogenetics or genotype field and no opsin or virus word. Of the criterion's conditions,
+    slices, patients, ages and sexes hold (checked against Table 1 in the notebook) and the opsins
     cannot be resolved, which is read here as partial.
   deviations:
   - Slices and patients are taken from the file and subject names (`3C-7` is recording 7 of slice
@@ -61,12 +65,15 @@ outcomes:
   outcome: blocked
   blocked_by: not_runnable
   notes: The model needs NEST 3.4 with a neuron compiled by NESTML 5 (Simulation/environment.yml at
-    commit 6865bf6). NEST 3.4 is not on PyPI (it is distributed through conda); the PyPI wheel of
-    NEST 3.10 installs, but NESTML 5.x fails against it (nest.ll_api.sli_func no longer exists).
-    With NESTML 9 the model had to be ported (the `neuron` keyword, unit-free spike ports, divisions
-    by units); the code was generated, but the build failed at cmake because the wheel's nest-config
-    points at the paths of the machine that built the wheel. A port to other versions would also
-    change the model the claim is about. Not run; no result.
+    commit 6865bf6, printed in the notebook). PyPI has no NEST 3.4 (its releases are
+    3.9.0.post0.dev14 and 3.10.0; 3.4 is distributed through conda-forge, which the locked pip
+    environment cannot use). The notebook installs NEST 3.10.0 with NESTML 5.3.0, the newest 5.x, in
+    a throwaway environment and runs the script's first step, generate_nest_target on the published
+    model, which fails (module 'nest.ll_api' has no attribute 'sli_func'), so the model is never
+    built. While preparing, not run in the notebook, NESTML 9 required porting the model (the
+    `neuron` keyword, unit-free spike ports, divisions by units), and the port's build failed at
+    cmake because the wheel's nest-config points at the paths of the machine that built the wheel.
+    A port to later versions would change the model the claim is about. Not run; no result.
 - claim: fig3a-spontaneous-reduction
   outcome: blocked
   blocked_by: data_missing
@@ -75,15 +82,18 @@ outcomes:
     the voltage of every channel; 3C-6 has 5 trials with a full pre window and 3C-7 has 6. A variant
     on multi-unit threshold crossings of 64 channels (decides nothing) finds crossings 86 to 90%
     lower during light in the single-trial files 3C-1 to 3C-5, and no change in 3C-6 (-16%,
-    adjusted p 0.82) or 3C-7 (+6%, p 0.87). Light onset drives 80 to 94% of channels to the ends of
+    adjusted p 0.82) or 3C-7 (+6%, p 0.87). Light onset drives 81 to 94% of channels to the ends of
     the ADC range in the first 0.5 s, and seconds with over 1,000 crossings occur next to the light
-    steps, so the crossings are confounded by saturation.
+    steps. With the first second of each window left out, 26 to 52% of channels are still at the
+    ends of the range in the next 0.5 s, crossings fall by 89 to 93% in 3C-1 to 3C-5 and by 18% in
+    3C-6 (adjusted p 0.77), and rise by 17% in 3C-7 (adjusted p 0.06). The crossings are confounded
+    by saturation and transients either way.
 - claim: physio-bic-reduction-all-slices
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs curated units, which are not in the dandiset. Light events are recoverable only for
-    3C; no light step is found in any 5C, 7D or 8D file, and no file says which recordings are in
-    bicuculline.
+  notes: Needs curated units, which are not in the dandiset. Reading every channel group, light
+    steps are found in four 7D files (7D-0, 7D-2, 7D-5, 7D-7) and in no 5C or 8D file, and no file
+    says which recordings are in bicuculline.
 - claim: physio-bic-amplitude-unchanged
   outcome: blocked
   blocked_by: data_missing
@@ -92,13 +102,15 @@ outcomes:
 - claim: table2-fr-decrease-physio-bic
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs per-unit firing rates of curated units, which are not in the dandiset; light events
-    are recoverable only for 3C.
+  notes: Needs per-unit firing rates of curated units, which are not in the dandiset; of the four
+    physiologic and bicuculline slices, light events are recoverable for 3C and 7D only, none in
+    any channel group of 5C or 8D.
 - claim: table2-fr-decrease-0mg
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs curated units, which are not in the dandiset. No light step is found in any 9E, 10F,
-    11G or 12G file, and no file says which recordings are in 0-mg or 0-mg+KA media.
+  notes: Needs curated units, which are not in the dandiset. No light step is found in any channel
+    group of any 10F or 11G file, nor in the first channel group of any 9E or 12G file (their other
+    groups were not read), and no file says which recordings are in 0-mg or 0-mg+KA media.
 - claim: zero-mg-reduction
   outcome: blocked
   blocked_by: data_missing
@@ -118,12 +130,13 @@ outcomes:
 - claim: ka-light-reduction
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs curated units; light events cannot be recovered outside 3C and the 0-mg+KA recordings
-    are not identified.
+  notes: Needs curated units; no light step is found in 10F or 11G (every channel group) or in the
+    first group of 9E and 12G, and the 0-mg+KA recordings are not identified.
 - claim: ka-bursts-during-light
   outcome: blocked
   blocked_by: data_missing
-  notes: Depends on ka-rhythmic-bursts, blocked; light events are also missing for 10F and 11G.
+  notes: Depends on ka-rhythmic-bursts, blocked; no light step is found in any channel group of 10F
+    or 11G either.
 - claim: ka-theta-coherence
   outcome: blocked
   blocked_by: data_missing
@@ -143,20 +156,24 @@ outcomes:
 - claim: closed-loop-bicuculline
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs curated units; the closed-loop light events are not stored and no light step is found
-    in any 5C, 7D or 8D file; the baseline and bicuculline recordings are not identified.
+  notes: Needs curated units; the closed-loop light events are not stored, and reading every channel
+    group, no light step is found in any 5C or 8D file. The steps in 7D-0, 7D-2, 7D-5 and 7D-7 are
+    10 s periods at regular intervals (30 s in 7D-2), which the files do not label as closed loop or
+    open loop. The baseline and bicuculline recordings are not identified.
 - claim: intensity-threshold
   outcome: blocked
   blocked_by: data_missing
   notes: Needs curated units and the intensity of each light step from the stimulation log, which is
     not in the dandiset. The 3C files 3C-1 to 3C-5 each hold one 10 s light period whose voltage step
     differs in size (90 to 153 counts), which fits an intensity sweep, but the intensities are not
-    recorded; no light step is found in 5C or 10F.
+    recorded; no light step is found in any channel group of 5C or 10F.
 - claim: chr2-increase
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs curated units of 4C; no light step is found in any 4C file, so the 470 nm light
-    events cannot be recovered either.
+  notes: Needs curated units of 4C, which are not in the dandiset. Reading every channel group, light
+    steps of 40 to 58 counts, split across two 10 ms bins and confined to groups 5 to 11, give six
+    10 s periods 20 s apart in 4C-1 and one in 4C-3, so 470 nm light events can be recovered for
+    those two files; the first channel group alone shows none.
 - claim: transduction-not-explaining-response
   outcome: blocked
   blocked_by: data_missing
@@ -165,7 +182,7 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs curated units, the light events of all eight HcKCR1 slices and the condition of each
-    recording; only the 3C light events can be recovered.
+    recording; of the HcKCR1 slices, light events can be recovered only for 3C and 7D.
 - claim: waveform-clusters
   outcome: blocked
   blocked_by: data_missing
@@ -178,8 +195,8 @@ outcomes:
 - claim: opto-response-clusters
   outcome: blocked
   blocked_by: data_missing
-  notes: Needs curated units and the light trials of all HcKCR1 slices; only 3C light events can be
-    recovered.
+  notes: Needs curated units and the light trials of all HcKCR1 slices; of these, light events can
+    be recovered only for 3C and 7D.
 - claim: opto-waveform-association
   outcome: blocked
   blocked_by: data_missing
@@ -198,8 +215,10 @@ findings:
 - kind: data_missing
   statement: The light ON and OFF times, which the Methods say were stored in the MaxWell file's GPIO
     bit and in a stimulation log, are not in the files, nor are the light intensities. They can be
-    recovered from a step the LED leaves in the voltage only in the eight 3C recordings; no other
-    file shows a light step.
+    recovered from a step the LED leaves in the voltage in the eight 3C recordings (on every channel)
+    and in 4C-1, 4C-3, 7D-0, 7D-2, 7D-5 and 7D-7 (on part of the array, steps of 40 to 88 counts).
+    No channel group of any 5C, 8D, 10F or 11G recording shows one, including 10F, which the paper
+    illuminated for 10 trials, and 9E and 12G show none in the first channel group.
 - kind: metadata_insufficient
   statement: No file says which medium, drug or light protocol it was recorded under (physiologic,
     bicuculline, 0-mg, 0-mg plus kainic acid, closed loop, intensity sweep), which opsin its slice
@@ -210,8 +229,13 @@ findings:
   statement: Each file's subject_id is the recording (for example 3C-7), so the archive counts 69
     subjects where the paper has 7 patients and 12 slices. Every session_start_time is 2024-09-28,
     the date of the NWB conversion, not of the recording.
+- kind: metadata_insufficient
+  statement: The NWB fields for the experiment are empty or absent in every file. general/ holds no
+    virus, pharmacology, protocol, notes, optogenetics, slices or surgery field and no subject
+    genotype, strain or description; experiment_description is the paper's title in all 69 files,
+    and the ElectricalSeries' description and comments are the converter's defaults.
 - kind: other
-  statement: In the 3C recordings, light onset drives 80 to 94% of the channels in the first
+  statement: In the 3C recordings, light onset drives 81 to 94% of the channels in the first
     64-channel group to the ends of the 0 to 1023 range in the first 0.5 s, and some stay there
     through the light period. In at least one 5C recording, 34% of that channel group sits at the
     ends of the range in the median 100 ms bin.
@@ -222,3 +246,227 @@ findings:
 - kind: other
   statement: The conversion to volts is 6.29 uV per count for slices 1A to 8D and 1.57 uV per count
     for 9E to 12G, a gain difference that the dandiset does not describe.
+inputs:
+- what: The environment file and the neuron model of the paper's network simulation
+    (Simulation/environment.yml and Simulation/models/izh_cond_exp2syn.nestml), read only by the
+    simulation-dampening section to show why the model cannot be built.
+  source: https://github.com/braingeneers/AndrewsGengVoitiukEtAl_SourceCode at commit 6865bf68cc3c8ea36a9b4f853b9248288fa1e52b
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's full text under paper/. The verifier queried the
+    DANDI API for the version's assets and metadata, checked Table 1 against cell 16 by hand, and
+    tested light_steps, window_rates and reduce_chunk on synthetic inputs.
+  results:
+  - claim: table1-cohort
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cells 5 and 16 give 12 slices and 7 patients (patient read from the slice-name letter),
+      5 F and 2 M, ages 20 to 52, and every patient's age and sex match Table 1. All 8 HcKCR1 slice
+      names are present. No opsin is recorded in the asset metadata or the inspected objects, so "8
+      HcKCR1 / 2 ChR2 / 2 none" cannot be derived from the data, which meets the criterion's partial
+      clause. But the search for opsin, virus, genotype or condition fields skips every object under
+      general/, where NWB stores virus, subject/genotype, experiment_description, notes,
+      pharmacology, protocol, optogenetics and stimulus; if any held the opsin the claim would be
+      reproduced (problem 1). Cell 16 compares Table 1 ages and sexes only by printing them next to
+      markdown values, with no programmatic check (problem 8).
+    response: hdmea.metadata now reads every object under general/ of every file, and a new data-check
+      cell prints each field with its values and searches them for opsin, virus, drug, medium and
+      light words. general/ holds only the devices, the electrode table and group,
+      experiment_description (the paper's title), institution, lab, source_script and the subject's
+      age, sex, species and subject_id; no virus, pharmacology, protocol, notes, optogenetics,
+      stimulus, genotype or strain field exists and no word matches. The table1-cohort cell now
+      compares the slices, the patients and each patient's age and sex with Table 1 in code; all
+      match. Outcome unchanged; a new metadata_insufficient finding records the empty fields.
+  - claim: units-per-recording
+    agrees: true
+    outcome: blocked
+    reason: No units table in any of the 69 files (cell 5; confirmed on the archive). The claims file
+      makes a re-sort a variant that gets no verdict.
+    response: No change.
+  - claim: transduction-range
+    agrees: true
+    outcome: blocked
+    reason: Histology is not deposited; the archive holds ecephys NWB only.
+    response: No change.
+  - claim: reporter-gcl-pyramidal
+    agrees: true
+    outcome: blocked
+    reason: Histology is not deposited; the archive holds ecephys NWB only.
+    response: No change.
+  - claim: patch-hckcr1-hyperpolarizing
+    agrees: true
+    outcome: blocked
+    reason: No icephys data on the archive.
+    response: No change.
+  - claim: simulation-dampening
+    agrees: true
+    outcome: blocked
+    reason: Blocked as other. The data are elsewhere (GitHub code). The notebook says NEST 3.4 and
+      NESTML cannot be installed together but shows no attempt or error, and "not_runnable" is not an
+      allowed reason code, so it should be other. Whether the published Simulation/simulation.py can
+      run with some compatible NEST and NESTML pair was not checked (problem 2).
+    response: The notebook now shows the attempt. A new section prints the published environment file
+      (NEST 3.4 from conda-forge, NESTML 5), the NEST and NESTML releases on PyPI (no NEST 3.4), and
+      installs NEST 3.10.0 with NESTML 5.3.0 in a throwaway environment and runs the script's first
+      step, generate_nest_target on the published model, which fails with "module 'nest.ll_api' has
+      no attribute 'sli_func'". The reason is kept as not_runnable, which docs/protocol.md lists among
+      the reasons (author, step 1.5) and names for a data elsewhere claim whose software cannot be
+      installed in a locked environment; the disagreement on the code is recorded here. A port of the
+      model to NESTML 9 was tried while preparing and failed to build; it is not in the notebook, and
+      it would change the model the claim is about.
+  - claim: fig3a-spontaneous-reduction
+    agrees: true
+    outcome: blocked
+    reason: The light events can be recovered for 3C (cell 13, 3C-6 has 5 trials with a full pre
+      window), but there are no curated units, and the threshold-crossing variant decides nothing.
+      Its ON window starts at the onset transient, when about 85% of channels sit at the rail for the
+      first 0.5 s, the OFF window starts on the offset artifact, and the 5xMAD threshold is estimated
+      per chunk including those artifacts, so the -88% drops in 3C-1 to 3C-5 and the null results in
+      3C-6 and 3C-7 are artifact-contaminated in both directions (problem 5). In cell 19 the ON label
+      runs from floor(onset) to ceil(offset), so second 80 of 3C-7, which holds the offset artifact of
+      7466 crossings, is counted as ON (problem 6).
+    response: The variant now also runs with the first second of each window left out. 26 to 52% of
+      channels are still at the rails in the next 0.5 s; crossings fall by 89 to 93% in 3C-1 to 3C-5,
+      by 18% in 3C-6 (adjusted p 0.77) and rise by 17% in 3C-7 (adjusted p 0.06). The threshold is
+      still estimated per chunk, transients included, which the notebook says. The per-second table
+      of 3C-7 now counts as ON only seconds wholly inside light and labels the seconds that hold an
+      onset or offset as transition (second 80 is one). Outcome unchanged.
+  - claim: physio-bic-reduction-all-slices
+    agrees: true
+    outcome: blocked
+    reason: No units. No light steps in 5C, 7D or 8D (cell 13), but cell 8 scans only the first
+      64-channel group of each file, so a local light artifact elsewhere on the array would be missed
+      (problem 3), and a step that splits across two 10 ms bins is missed when neither half exceeds
+      STEP_MIN (problem 4).
+    response: Every channel group of every file of 3C, 4C, 5C, 7D, 8D, 10F and 11G is now read
+      (hdmea.group_means), and steps are also counted between bins 20 ms apart (lag 2). 7D-0, 7D-2,
+      7D-5 and 7D-7 show paired 10 s light steps of 40 to 88 counts on groups 5 to 14, split across
+      two bins; no 5C or 8D file shows one. The notes, the finding on light events and the notebook
+      text are corrected. Outcome unchanged, as the units are missing.
+  - claim: physio-bic-amplitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: No units, so no per-spike amplitudes.
+    response: No change.
+  - claim: table2-fr-decrease-physio-bic
+    agrees: true
+    outcome: blocked
+    reason: No units. Light events exist for 3C only.
+    response: With every channel group read, light events are also found in four 7D files (see
+      physio-bic-reduction-all-slices); the notes are corrected. Outcome unchanged.
+  - claim: table2-fr-decrease-0mg
+    agrees: true
+    outcome: blocked
+    reason: No units, no light events and no condition labels for 9E to 12G.
+    response: Every channel group of 10F and 11G is now read and none shows a light step; 9E and 12G
+      were read on the first group only, and the notes say so. general/ holds no condition label
+      (see table1-cohort). Outcome unchanged.
+  - claim: zero-mg-reduction
+    agrees: true
+    outcome: blocked
+    reason: No units, no light events and no condition labels for 9E to 12G.
+    response: No change beyond the reading of every channel group of 10F and 11G, which shows no light
+      step.
+  - claim: zero-mg-isolated-bursts
+    agrees: true
+    outcome: blocked
+    reason: The detector is defined on unit population rate. Which file is the 0-mg recording is also
+      not recorded (metadata_insufficient as well). If the general/ fields held medium or drug labels,
+      the reason "conditions not labelled" would be wrong for six claims (problem 1).
+    response: general/ of every file is now read and holds no medium, drug or protocol label, so the
+      conditions are not labelled. Outcome unchanged.
+  - claim: ka-rhythmic-bursts
+    agrees: true
+    outcome: blocked
+    reason: As zero-mg-isolated-bursts, for 0-mg against 0-mg+KA.
+    response: As zero-mg-isolated-bursts. Outcome unchanged.
+  - claim: ka-light-reduction
+    agrees: true
+    outcome: blocked
+    reason: No units, light events or condition labels.
+    response: No light step in any channel group of 10F or 11G; notes updated. Outcome unchanged.
+  - claim: ka-bursts-during-light
+    agrees: true
+    outcome: blocked
+    reason: Needs unit bursts and light trials; no light steps found in 10F or 11G.
+    response: Confirmed on every channel group of 10F and 11G. Outcome unchanged.
+  - claim: ka-theta-coherence
+    agrees: true
+    outcome: blocked
+    reason: The LFP is in the raw voltage, but the bursts depend on ka-rhythmic-bursts (units), and
+      the 0-mg+KA file of 10F cannot be identified.
+    response: No change.
+  - claim: fig4-firing-propagation
+    agrees: true
+    outcome: blocked
+    reason: No units. The recording is unidentifiable and the hilar axis needs histology.
+    response: No change.
+  - claim: fig4-theta-propagation
+    agrees: true
+    outcome: blocked
+    reason: Bursts come from units, the condition file is unidentifiable, and the axis needs
+      histology.
+    response: No change.
+  - claim: closed-loop-bicuculline
+    agrees: true
+    outcome: blocked
+    reason: No GPIO bit and no units. No light steps in 5C, 7D or 8D.
+    response: With every channel group read, 7D-0, 7D-2, 7D-5 and 7D-7 show 10 s light periods at
+      regular intervals, which the files do not label as closed or open loop; 5C and 8D show none. The
+      notes are corrected. Outcome unchanged.
+  - claim: intensity-threshold
+    agrees: true
+    outcome: blocked
+    reason: No stimulation log, so no intensities, and no units. 3C-1 to 3C-5 look like a sweep (cell
+      14), but the intensity of each step is not recorded.
+    response: No change; 5C and 10F show no light step on any channel group.
+  - claim: chr2-increase
+    agrees: true
+    outcome: blocked
+    reason: No units. No light steps in 4C (cell 13).
+    response: With every channel group read and steps counted at lag 2, 4C-1 shows six 10 s light
+      periods 20 s apart and 4C-3 one, on groups 5 to 11, with steps of 40 to 58 counts split across
+      two bins. The notes are corrected. Outcome unchanged, as the units are missing.
+  - claim: transduction-not-explaining-response
+    agrees: true
+    outcome: blocked
+    reason: In the claims file, transduction is an input from Table 2 (data with_inputs); the claim is
+      blocked only through its dependence on the Table 2 claims, not on histology as cell 0 says
+      (problem 7).
+    response: The header now gives the block as the dependence on the two Table 2 claims, with the
+      transduction values an input from Table 2. The record's notes already said so.
+  - claim: s3-reduction-by-condition
+    agrees: true
+    outcome: blocked
+    reason: No units, light events or condition labels outside 3C.
+    response: Of the HcKCR1 slices, light events are now found for 7D as well as 3C; notes updated.
+      Outcome unchanged.
+  - claim: waveform-clusters
+    agrees: true
+    outcome: blocked
+    reason: No curated units.
+    response: No change.
+  - claim: waveform-gcl-association
+    agrees: true
+    outcome: blocked
+    reason: Depends on waveform-clusters.
+    response: No change.
+  - claim: opto-response-clusters
+    agrees: true
+    outcome: blocked
+    reason: No units, and light trials only for 3C.
+    response: Light trials are now found for 7D as well among the HcKCR1 slices; notes updated.
+      Outcome unchanged.
+  - claim: opto-waveform-association
+    agrees: true
+    outcome: blocked
+    reason: Depends on the two clusterings.
+    response: No change.
+  - claim: opto-cluster3-profile
+    agrees: true
+    outcome: blocked
+    reason: Depends on opto-response-clusters.
+    response: No change.

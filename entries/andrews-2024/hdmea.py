@@ -16,7 +16,11 @@ Parameters and where they come from:
 - Light steps: the LED gives a step of the voltage on every channel at light onset and the
   opposite step at offset (seen in the data, notebook section "Light events"). A step is a
   change between consecutive 10 ms bins of more than STEP_MIN counts. STEP_MIN is a standard
-  choice set far above the bin-to-bin noise (shown in the notebook).
+  choice set far above the bin-to-bin noise (shown in the notebook). A step that falls across
+  two bins is split between two differences; light_steps(lag=2) compares bins 20 ms apart so
+  that it is found too, and the notebook reports both.
+- group_means reads every 64-channel group of a file (not only the first) for the channel-mean
+  trace, so that a light artifact confined to part of the array is not missed.
 - Multi-unit threshold crossings: band-pass 300 to 6000 Hz (the band the paper's spike sorting
   used; Methods, Spike Sorting), negative crossings of 5 times the median absolute deviation
   (/0.6745) of each channel in each chunk. The threshold is a standard choice; the crossings are
@@ -29,6 +33,7 @@ from __future__ import annotations
 
 import hashlib
 import threading
+import time
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 
@@ -68,6 +73,20 @@ def s3_url(asset_id: str) -> str:
     return next(u for u in r.json()["contentUrl"] if "s3.amazonaws.com" in u)
 
 
+def get_range(session, url: str, c, tries: int = 5) -> bytes:
+    """The bytes of one HDF5 chunk, by HTTP range request. S3 occasionally times out on one of
+    many parallel reads, so a failed read is retried; it raises after the last try."""
+    for k in range(tries):
+        try:
+            r = session.get(url, headers={"Range": f"bytes={c.byte_offset}-{c.byte_offset + c.size - 1}"}, timeout=120)
+            r.raise_for_status()
+            return r.content
+        except (requests.ConnectionError, requests.Timeout):
+            if k == tries - 1:
+                raise
+            time.sleep(2 ** k)
+
+
 def recording_name(path: str) -> str:
     """'sub-3C-7/sub-3C-7_ses-..._ecephys.nwb' -> '3C-7'."""
     return path.split("/")[0][4:]
@@ -82,6 +101,20 @@ def metadata(url: str) -> dict:
         groups = []
         f.visit(lambda n: groups.append(n) if not n.startswith("specifications") else None)
         subj = {k: f["general/subject"][k][()].decode() for k in f["general/subject"]}
+        # Every object under general/: the value of each scalar dataset and the attributes of each
+        # group (array datasets, the electrodes table columns, are read below)
+        general = {}
+
+        def note(n, o):
+            if isinstance(o, h5py.Group):
+                general[n + "/"] = str({k: v for k, v in o.attrs.items() if k not in ("namespace", "object_id")})
+            elif o.shape == ():
+                v = o[()]
+                general[n] = v.decode() if isinstance(v, bytes) else str(v)
+            else:
+                general[n] = f"array {o.shape} {o.dtype}"
+        f["general"].visititems(note)
+        series_text = {k: str(es.attrs.get(k, "")) for k in ("description", "comments")}
         plist = d.id.get_create_plist()
         return dict(
             subject_id=subj["subject_id"], age=subj["age"], sex=subj["sex"], species=subj["species"],
@@ -98,6 +131,7 @@ def metadata(url: str) -> dict:
             processing=list(f["processing"]), intervals="intervals" in f,
             stimulus=list(f["stimulus/presentation"]),
             paths=[n for n in groups if not n.startswith(("general", SERIES))],
+            general=general, series_text=series_text,
         )
 
 
@@ -123,19 +157,13 @@ class Group:
         if not hasattr(self._local, "s"):
             self._local.s = requests.Session()
         c = self.info[k]
-        r = self._local.s.get(self.url, headers={"Range": f"bytes={c.byte_offset}-{c.byte_offset + c.size - 1}"},
-                              timeout=120)
-        r.raise_for_status()
-        x = np.frombuffer(zlib.decompress(r.content), dtype="<u2").reshape(self.C, self.W)
+        x = np.frombuffer(zlib.decompress(get_range(self._local.s, self.url, c)), dtype="<u2").reshape(self.C, self.W)
         return x[: min(self.C, self.n - k * self.C), : self.width]
 
     def raw_digest(self, k: int) -> str:
         """SHA-1 of the compressed bytes of chunk k, to find recordings deposited twice."""
         c = self.info[k]
-        r = requests.get(self.url, headers={"Range": f"bytes={c.byte_offset}-{c.byte_offset + c.size - 1}"},
-                         timeout=120)
-        r.raise_for_status()
-        return hashlib.sha1(r.content).hexdigest()
+        return hashlib.sha1(get_range(requests.Session(), self.url, c)).hexdigest()
 
 
 def reduce_chunk(x: np.ndarray) -> tuple:
@@ -172,13 +200,43 @@ def scan(url: str, group: int = 0, workers: int = 8) -> dict:
                 digest_first=g.raw_digest(0), digest_last=g.raw_digest(len(g.info) - 1))
 
 
-def light_steps(dc: np.ndarray, step_min: float = STEP_MIN) -> dict:
+def group_means(url: str, workers: int = 8) -> np.ndarray:
+    """The 10 ms channel-mean voltage of every 64-channel group of a recording, (groups, bins).
+    Reads every chunk of the file, so that a light step confined to part of the array is seen."""
+    with h5py.File(remfile.File(url), "r") as f:
+        d = f[SERIES]["data"]
+        n, n_channels = d.shape
+        C, W = d.chunks
+        info = {}
+        for i in range(d.id.get_num_chunks()):
+            c = d.id.get_chunk_info(i)
+            info[(c.chunk_offset[0] // C, c.chunk_offset[1] // W)] = c
+    local = threading.local()
+    n_groups, n_time = int(np.ceil(n_channels / W)), int(np.ceil(n / C))
+
+    def mean(key):
+        if not hasattr(local, "s"):
+            local.s = requests.Session()
+        c = info[key]
+        x = np.frombuffer(zlib.decompress(get_range(local.s, url, c)), dtype="<u2").reshape(C, W)
+        return x[: min(C, n - key[0] * C), : min(W, n_channels - key[1] * W)].astype(np.float32).mean(1)
+
+    keys = [(t, g) for g in range(n_groups) for t in range(n_time)]
+    with ThreadPoolExecutor(workers) as ex:
+        parts = dict(zip(keys, ex.map(mean, keys)))
+    nb = n // BIN
+    return np.array([np.concatenate([parts[(t, g)] for t in range(n_time)])[: nb * BIN].reshape(nb, BIN).mean(1)
+                     for g in range(n_groups)])
+
+
+def light_steps(dc: np.ndarray, step_min: float = STEP_MIN, lag: int = 1) -> dict:
     """Light onsets (upward steps) and offsets (downward steps) in seconds, from the 10 ms trace.
 
-    A step is a jump between consecutive bins larger than step_min; a run of bins over the
-    threshold counts once, at its first bin. Onsets are paired with the next offset.
+    A step is a jump larger than step_min between bins `lag` apart (lag 1, consecutive bins;
+    lag 2 also finds a step split across two bins); a run of bins over the threshold counts once,
+    at its first bin. Onsets are paired with the next offset.
     """
-    dd = np.diff(dc)
+    dd = dc[lag:] - dc[:-lag]
     up = np.nonzero((dd > step_min) & np.r_[True, dd[:-1] <= step_min])[0] + 1
     dn = np.nonzero((dd < -step_min) & np.r_[True, dd[:-1] >= -step_min])[0] + 1
     trials = []
@@ -192,19 +250,21 @@ def light_steps(dc: np.ndarray, step_min: float = STEP_MIN) -> dict:
                 n_up=len(up), n_down=len(dn), noise=float(np.median(np.abs(dd)) / 0.6745))
 
 
-def window_rates(counts: np.ndarray, on: np.ndarray, dur: float = 10.0) -> dict:
+def window_rates(counts: np.ndarray, on: np.ndarray, dur: float = 10.0, skip: float = 0.0) -> dict:
     """Per channel, crossing rate (per s) in pre (10 s before onset), ON (10 s from onset) and OFF
     (onset + 10 to onset + 20 s), averaged over trials whose three windows lie in the recording
-    (the windows of the claims file's opening comment)."""
-    nb = int(round(dur * 10))
+    (the windows of the claims file's opening comment). With skip > 0 the first `skip` seconds of
+    each window are left out, which removes the light onset and offset transients from all three
+    windows when light periods are 10 s long and 20 s apart (a choice for the variant only)."""
+    nb, ns = int(round(dur * 10)), int(round(skip * 10))
     pre, onr, offr = [], [], []
     for t in on:
         b = int(round(t * 10))
         if b - nb < 0 or b + 2 * nb > len(counts):
             continue
-        pre.append(counts[b - nb:b].sum(0) / dur)
-        onr.append(counts[b:b + nb].sum(0) / dur)
-        offr.append(counts[b + nb:b + 2 * nb].sum(0) / dur)
+        pre.append(counts[b - nb + ns:b].sum(0) / (dur - skip))
+        onr.append(counts[b + ns:b + nb].sum(0) / (dur - skip))
+        offr.append(counts[b + nb + ns:b + 2 * nb].sum(0) / (dur - skip))
     if not pre:
         return dict(n_trials=0)
     return dict(n_trials=len(pre), pre=np.mean(pre, 0), on=np.mean(onr, 0), off=np.mean(offr, 0))
