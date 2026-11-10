@@ -1,4 +1,5 @@
-"""Loading, segmentation and scoring for the mouse TEM images of dandiset 001436.
+"""Loading, segmentation and scoring for the mouse TEM images of dandiset 001436, and for the
+macaque TEM and rat SEM test images published elsewhere.
 
 Zaimi, Wabartha, Herman, Antonsanti, Perone & Cohen-Adad (2018), AxonDeepSeg, Scientific
 Reports 8, 3816, doi:10.1038/s41598-018-22181-4.
@@ -39,6 +40,11 @@ the checkpoint's weights. Where each detail comes from:
 - Ground truth (paper, Methods, Ground truth labelling: background 0, myelin 127, axon 255; and
   `testing/launch_performance_metrics.py`, axon above 200, myelin from 50 to 200): here the
   axon class is the axon mask and the myelin class the myelin mask of the dandiset.
+- SEM test images (data elsewhere): `default_SEM_model_v1` at the same commit, run by the same
+  code with the SEM settings of `segment.py` (working pixel size 0.1 um for a 512 patch,
+  `generate_resolution`; no contrast inversion, which segment.py applies only to the TEM model).
+- Variants that are not the paper's code: `resize_back(..., order=0)` (nearest-neighbour resize
+  back) and `fill_delineation` (the dandiset's 2025 fibre delineation undone, approximately).
 - Scores: Dice per image over all pixels (`pw_dice`, `testing/segmentation_scoring.py`;
   Methods, Equation 1); three-class pixel-wise accuracy (Methods, Pixel-wise accuracy);
   detection sensitivity and precision by `score_analysis` (`segmentation_scoring.py`, min_area
@@ -161,14 +167,15 @@ def load_sample(row):
 
 # ------------------------------------------------------------------ model
 
-def load_tem_model():
-    """Weights of default_TEM_model_v1 at ADS_COMMIT, as a dict of numpy arrays.
+def load_tem_model(model_dir=TEM_MODEL_DIR):
+    """Weights of a released model at ADS_COMMIT (default_TEM_model_v1 unless `model_dir` says
+    otherwise), as a dict of numpy arrays, and its config_network.json.
 
     The checkpoint reader needs files, so the two checkpoint files are put in a temporary
     directory that is removed at once; this is the model, not the dataset.
     """
     import tensorflow as tf
-    base = f"https://raw.githubusercontent.com/{ADS_REPO}/{ADS_COMMIT}/{TEM_MODEL_DIR}/"
+    base = f"https://raw.githubusercontent.com/{ADS_REPO}/{ADS_COMMIT}/{model_dir}/"
     with tempfile.TemporaryDirectory() as d:
         for f in ("model.ckpt.index", "model.ckpt.data-00000-of-00001"):
             with urllib.request.urlopen(base + f) as r, open(os.path.join(d, f), "wb") as out:
@@ -291,10 +298,11 @@ def patches2im_overlap(preds, pos, overlap=OVERLAP, scw=PATCH):
     return new
 
 
-def segment(img, pixel_um, weights, config, invert=True, batch_size=4):
-    """Class map (0 bg, 1 myelin, 2 axon) at the native shape, as segment.py gives it."""
+def segment_stitched(img, pixel_um, weights, config, invert=True, batch_size=4,
+                     working_um=WORKING_PIXEL_UM):
+    """Class map (0 bg, 1 myelin, 2 axon) at the working pixel size, before the resize back."""
     x = 255 - img.astype(np.int64) if invert else img.astype(np.int64)
-    coeff = pixel_um / WORKING_PIXEL_UM
+    coeff = pixel_um / working_um
     rs = rescale(x.astype(np.uint8), coeff, order=1, mode="constant", preserve_range=True,
                  anti_aliasing=False).astype(int)
     patches, pos = im2patches_overlap(rs)
@@ -302,9 +310,24 @@ def segment(img, pixel_um, weights, config, invert=True, batch_size=4):
     for i in range(0, len(patches), batch_size):
         out = unet_forward(weights, config, patches[i:i + batch_size])
         preds += list(np.argmax(out, axis=3))
-    stitched = patches2im_overlap(preds, pos)
-    back = resize(stitched, img.shape, order=1, mode="constant", anti_aliasing=False)
-    return back.astype(np.uint8), rs.shape, len(patches)
+    return patches2im_overlap(preds, pos), rs.shape, len(patches)
+
+
+def resize_back(stitched, shape, order=1):
+    """apply_model.py: `resize(prediction_stitched, shape)` (skimage 0.13 defaults, order 1, mode
+    constant, no anti-aliasing), then `.astype(np.uint8)`, which truncates; so a pixel between
+    axon (2) and background (0) can become myelin (1). `order=0` (nearest neighbour) is the
+    variant without this effect, shown in the notebook; it is not the paper's code."""
+    back = resize(stitched, shape, order=order, mode="constant", anti_aliasing=False)
+    return back.astype(np.uint8)
+
+
+def segment(img, pixel_um, weights, config, invert=True, batch_size=4,
+            working_um=WORKING_PIXEL_UM):
+    """Class map (0 bg, 1 myelin, 2 axon) at the native shape, as segment.py gives it."""
+    stitched, rs_shape, n = segment_stitched(img, pixel_um, weights, config, invert, batch_size,
+                                             working_um)
+    return resize_back(stitched, img.shape), rs_shape, n
 
 
 # ------------------------------------------------------------------ scores
@@ -351,11 +374,11 @@ def scores(pred, gt):
             "pred_myelin_frac": pm.mean(), "gt_myelin_frac": gm.mean()}
 
 
-def original_graph_output(patches):
+def original_graph_output(patches, model_dir=TEM_MODEL_DIR):
     """Output of finalconv/Relu in the model's own saved TF 1 graph (model.ckpt.meta at
     ADS_COMMIT), run with training_phase False, to check `unet_forward` against it."""
     import tensorflow as tf
-    base = f"https://raw.githubusercontent.com/{ADS_REPO}/{ADS_COMMIT}/{TEM_MODEL_DIR}/"
+    base = f"https://raw.githubusercontent.com/{ADS_REPO}/{ADS_COMMIT}/{model_dir}/"
     with tempfile.TemporaryDirectory() as d:
         for f in ("model.ckpt.meta", "model.ckpt.index", "model.ckpt.data-00000-of-00001"):
             with urllib.request.urlopen(base + f) as r, open(os.path.join(d, f), "wb") as out:
@@ -483,6 +506,13 @@ def process_sample(row, data, weights, config):
         pred, rs_shape, n_patches = segment(img, row["pixel_um"], weights, config, invert=invert)
         for k, v in scores(pred, gt).items():
             out[f"{tag}_{k}"] = v
+        if invert:
+            # Variant: the ground truth with the 2025 delineation lines filled (fill_delineation).
+            filled = fill_delineation(gt)
+            out["fill_frac"] = float(np.mean(filled != gt))
+            out["fill_accuracy"] = pixel_accuracy(pred, filled)
+            out["fill_myelin_dice"] = pw_dice(pred == CLASS_MYELIN, filled == CLASS_MYELIN)
+            out["fill_gt_myelin_frac"] = float(np.mean(filled == CLASS_MYELIN))
     out["resampled_shape"] = rs_shape
     out["n_patches"] = n_patches
     return out
@@ -580,3 +610,130 @@ def macaque_ground_truth(myelin, axon):
     gt[myelin > 0] = CLASS_MYELIN
     gt[axon > 0] = CLASS_AXON
     return gt
+
+
+def osf_listing(path, node=MACAQUE_NODE):
+    """Names, kinds and sizes of the entries of one OSF folder (path from the storage root)."""
+    url = f"https://api.osf.io/v2/nodes/{node}/files/osfstorage/"
+    for part in [p for p in path.split("/") if p]:
+        x = next(x for x in _osf_children(url) if x["attributes"]["name"] == part)
+        url = x["relationships"]["files"]["links"]["related"]["href"]
+    return pd.DataFrame([{"name": x["attributes"]["name"], "kind": x["attributes"]["kind"],
+                          "size": x["attributes"]["size"], "id": x["id"],
+                          "modified": x["attributes"]["date_modified"]} for x in _osf_children(url)])
+
+
+def osf_text(file_id):
+    """A small text file of the OSF deposit."""
+    with urllib.request.urlopen(f"https://osf.io/download/{file_id}/", timeout=120) as r:
+        return r.read().decode()
+
+
+def osf_node_text(node=MACAQUE_NODE):
+    """The node's description and its wiki pages (name and text)."""
+    d = _get_json(f"https://api.osf.io/v2/nodes/{node}/")["data"]["attributes"]
+    pages = []
+    for w in _osf_children(f"https://api.osf.io/v2/nodes/{node}/wikis/"):
+        with urllib.request.urlopen(w["links"]["download"], timeout=120) as r:
+            pages.append((w["attributes"]["name"], r.read().decode()))
+    return d["description"], pages
+
+
+def code_lines(path, start, stop, commit=ADS_COMMIT, repo=ADS_REPO):
+    """Lines start..stop (1-based, inclusive) of a file of a GitHub repository at a commit (by
+    default AxonDeepSeg at ADS_COMMIT)."""
+    url = f"https://raw.githubusercontent.com/{repo}/{commit}/{path}"
+    with urllib.request.urlopen(url, timeout=120) as r:
+        lines = r.read().decode().splitlines()
+    return "\n".join(f"{i:4d}  {lines[i - 1]}" for i in range(start, stop + 1))
+
+
+def confusion(pred, gt, n=3):
+    """Pixel counts, rows the ground-truth class and columns the predicted class."""
+    return np.bincount(gt.astype(int).ravel() * n + pred.astype(int).ravel(),
+                       minlength=n * n).reshape(n, n)
+
+
+def fill_delineation(gt, width=2):
+    """Variant of a ground truth without the 2025 fibre delineation (dandiset CHANGES, 0.04).
+
+    The 2025 masks separate touching fibres by a 2-pixel line of background. Background pixels
+    that a binary closing of the fibre foreground (axon or myelin) with a disk of radius `width`
+    fills are set to myelin, which undoes such lines; it also fills any other background gap up
+    to about 2 * width pixels wide, so it bounds the change from above. A standard choice; the
+    masks the paper scored against are not public.
+    """
+    from skimage.morphology import closing, disk
+    fg = gt > 0
+    filled = closing(fg, disk(width)) & ~fg
+    out = gt.copy()
+    out[filled] = CLASS_MYELIN
+    return out
+
+
+# ------------------------------------------------------------------ SEM rat test images (data elsewhere)
+
+# The SEM dataset of AxonDeepSeg (https://github.com/axondeepseg/data_axondeepseg_sem, DOI
+# 10.5281/zenodo.5498378 in its dataset_description.json; authors include the paper's authors)
+# holds 10 rat spinal cord SEM images with axon, myelin and axonmyelin masks. Two of them have
+# the pixel size and field of view of the paper's SEM test images (Table 1): sub-rat6
+# sample-data15, 0.13 um and 1154 x 744 pixels (150 x 97 um, Rat 1), and sub-rat8 sample-V915,
+# 0.07 um and 1541 x 1096 pixels (108 x 77 um, Rat 2). SEM_COMMIT (2021-11-30, tag r20211130,
+# the release archived as doi:10.5281/zenodo.5498378) is the last commit before the 2025 change of the masks of 6 samples, rat 6 among them ("Update masks for 6
+# samples to separate fibers", SEM_COMMIT_2025); the masks of both images are unchanged from the
+# first commit (2020-10-08) to SEM_COMMIT.
+SEM_REPO = "axondeepseg/data_axondeepseg_sem"
+SEM_COMMIT = "d7884f9ab6cd8f06cba4885e752988a7706f0ede"
+SEM_COMMIT_2025 = "a4d02a1adec4bde04267baab3770e18f441afd73"
+SEM_MODEL_DIR = "AxonDeepSeg/models/default_SEM_model_v1"
+SEM_WORKING_PIXEL_UM = 0.1  # segment.py, generate_resolution, SEM model with 512 patches
+SEM_TEST = {"Rat 1": ("sub-rat6", "sample-data15"), "Rat 2": ("sub-rat8", "sample-V915")}
+
+
+def _github_bytes(repo, commit, path):
+    with urllib.request.urlopen(f"https://raw.githubusercontent.com/{repo}/{commit}/{path}",
+                                timeout=300) as r:
+        return r.read()
+
+
+def sem_list(commit=SEM_COMMIT):
+    """Images of the SEM dataset at a commit: subject, sample, pixel size, shape, field of view."""
+    tree = _get_json(f"https://api.github.com/repos/{SEM_REPO}/git/trees/{commit}?recursive=1")
+    paths = [t["path"] for t in tree["tree"] if t["type"] == "blob"]
+    rows = []
+    for p in sorted(paths):
+        if p.startswith("sub-") and p.endswith("_SEM.png"):
+            subject = p.split("/")[0]
+            side = [q for q in paths if q.startswith(subject + "/") and q.endswith(".json")]
+            side = [q for q in side if p[:-4] in q] or side
+            meta = json.loads(_github_bytes(SEM_REPO, commit, side[0]))
+            px = meta["PixelSize"][0]
+            im = np.array(_decode_image(io.BytesIO(_github_bytes(SEM_REPO, commit, p))))
+            rows.append({"subject": subject, "sample": p.split("_")[1], "pixel_um": px,
+                         "height_px": im.shape[0], "width_px": im.shape[1],
+                         "fov_um": f"{im.shape[1] * px:.0f} x {im.shape[0] * px:.0f}",
+                         "fixation": meta.get("SampleFixation")})
+    return pd.DataFrame(rows)
+
+
+def load_sem(subject, sample, commit=SEM_COMMIT, mask_commit=None):
+    """Grey image, ground-truth class map (0 bg, 1 myelin, 2 axon), the raw masks and the pixel
+    size. Images with an alpha channel give their grey channel."""
+    mask_commit = mask_commit or commit
+    stem = f"{subject}_{sample}_SEM"
+    raw = np.array(_decode_image(io.BytesIO(_github_bytes(SEM_REPO, commit, f"{subject}/micr/{stem}.png"))))
+    img = raw[..., 0] if raw.ndim == 3 else raw
+    side = f"{subject}/micr/{stem}.json"
+    try:
+        px = json.loads(_github_bytes(SEM_REPO, commit, side))["PixelSize"][0]
+    except urllib.error.HTTPError:
+        px = json.loads(_github_bytes(SEM_REPO, commit, f"{subject}/micr/{subject}_SEM.json"))["PixelSize"][0]
+    masks = {}
+    for k in ("axon", "myelin", "axonmyelin"):
+        m = np.array(_decode_image(io.BytesIO(_github_bytes(
+            SEM_REPO, mask_commit, f"derivatives/labels/{subject}/micr/{stem}_seg-{k}-manual.png"))))
+        masks[k] = m[..., 0] if m.ndim == 3 else m
+    gt = np.zeros(img.shape, np.uint8)
+    gt[masks["myelin"] > 127] = CLASS_MYELIN
+    gt[masks["axon"] > 127] = CLASS_AXON
+    return img, gt, masks, px, raw
