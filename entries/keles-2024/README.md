@@ -20,17 +20,18 @@ macro iEEG, eye tracking and the recognition test. The fMRI data are on OpenNeur
 | Scene-cut labels (link) and event-selective cells, LFP and iEEG channels | Reproduced |
 | Example cells and channels of Figs. 6 and 7 | Reproduced |
 | Contents of the NWB files | Reproduced |
-| In-scanner questions (code repository's copy of the answers) | Reproduced |
+| In-scanner questions (code repository's copy of the answers, not the dandiset) | Reproduced |
 | fMRI motion, tSNR and inter-subject correlation | Blocked: not runnable |
 
-The LFP series store a starting time near 0 s, although their samples begin 10 s before the
-movie; the paper's code corrects for this, and the notebook shows the correction is needed.
+The LFP series store a starting time at the movie start, and their samples begin 10 s before
+it, as the paper's Usage Notes say; the NWB format takes `starting_time` as the time of the first
+sample, so the offset must be applied by hand, and the notebook shows it is needed and correct.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/keles-2024-01.yaml`](../../attempts/keles-2024-01.yaml).
 
 - `reproduce_keles_2024.ipynb`: cohort, unit quality metrics, gaze, behaviour and single-neuron
   selectivity. About 4 minutes.
 - `hfb_keles_2024.ipynb`: high-frequency broadband power of every LFP and iEEG channel, and the
-  claims that use it. About 25 minutes, most of it streaming and filtering the LFP.
+  claims that use it. About 45 minutes, most of it streaming and filtering the LFP.
 - `bmovie.py`: loading, the paper's measures and tests, and the HFB pipeline, ported from the
   paper's code. Other notebooks on this dandiset can import it.

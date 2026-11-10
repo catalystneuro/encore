@@ -26,8 +26,8 @@ Two implementation choices are this entry's own and are stated as such:
   Each cell's null decision has the code's distribution; only the bootstrap noise is shared
   between cells of a session within one shuffle. This makes 2,000 shuffles of 5,000 resamples
   affordable. The permutation of trials is drawn per cell, as in the code.
-- The permutation test is unseeded in the code; it is seeded here (standard choice, open detail 8
-  of the claims file).
+- The permutation test is unseeded in the code; it is seeded here with seed 0 in every test
+  (open detail 8 of the claims file: "Seed 0 is used as a standard choice").
 """
 
 from __future__ import annotations
@@ -330,28 +330,33 @@ def _p_from_diffs(D):
     return boot_p_from_counts(n - n_gt, n_gt, n_lt, n - n_lt, np.sign(D.mean(1)), n)
 
 
-def observed_selection(values, mask_a, mask_b, balanced):
+def observed_selection(values, mask_a, mask_b, balanced, rate_window=None):
     """Bootstrap B with seed 13 for a block of cells sharing one trial design.
 
     values: (cells, trials) responses (spike counts or HFB means). mask_a, mask_b: group A
-    (novel, or scene change) and group B (familiar, or continuity cut). Returns the observed
-    difference of means A - B and the bootstrap p for each cell, as the code's ms_test and
-    scenechange_test with run_permutation=False (the same seed, so the same resamples)."""
+    (novel, or scene change) and group B (familiar, or continuity cut). rate_window: for spike
+    counts, the window length in s; the counts are divided by it to give the code's spike rates
+    (win_spike_rate). Returns the observed difference of means A - B and the bootstrap p for each
+    cell, computed cell by cell as the code's ms_test and scenechange_test with
+    run_permutation=False: default_rng(13) for each cell, the resampled group means and their
+    difference in floating point as the code has them, so that near-ties fall as in the code."""
+    values = np.asarray(values, float)
+    if rate_window is not None:
+        values = values / rate_window
     A, B = values[:, mask_a], values[:, mask_b]
     na, nb = A.shape[1], B.shape[1]
-    rng = np.random.default_rng(BOOT_SEED)
-    if balanced:
-        k = min(na, nb)
-        ia, ib = rng.integers(na, size=(k, N_BOOT)), rng.integers(nb, size=(k, N_BOOT))
-        ka, kb = k, k
-    else:
-        ia, ib = rng.integers(na, size=(na, N_BOOT)), rng.integers(nb, size=(nb, N_BOOT))
-        ka, kb = na, nb
-    Ca, Cb = _counts_matrix(ia, na), _counts_matrix(ib, nb)
-    # kb * sum_a - ka * sum_b has the sign of the difference of resample means, and is exact
-    # for integer data (spike counts), so that ties are ties as in the code
-    D = kb * (A @ Ca.T) - ka * (B @ Cb.T)
-    return A.mean(1) - B.mean(1), _p_from_diffs(D)
+    diff, p = A.mean(1) - B.mean(1), np.empty(len(values))
+    for c in range(len(values)):
+        rng = np.random.default_rng(BOOT_SEED)
+        if balanced:
+            k = min(na, nb)
+            ia, ib = rng.integers(na, size=(k, N_BOOT)), rng.integers(nb, size=(k, N_BOOT))
+        else:
+            ia, ib = rng.integers(na, size=(na, N_BOOT)), rng.integers(nb, size=(nb, N_BOOT))
+        x = np.mean(A[c][ia], 0) - np.mean(B[c][ib], 0)
+        n_gt, n_lt = int((x > 0).sum()), int((x < 0).sum())
+        p[c] = boot_p_from_counts(N_BOOT - n_gt, n_gt, n_lt, N_BOOT - n_lt, np.sign(x.mean()), N_BOOT)
+    return diff, p
 
 
 def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alpha=0.05):
@@ -359,7 +364,9 @@ def perm_null_counts(blocks, balanced, positive_only, n_null=N_NULL, seed=0, alp
 
     blocks: list of (values (cells, trials), mask_a, mask_b), one per session. For each shuffle
     and cell, n_a + n_b responses are drawn without replacement from all of the cell's trials
-    and split into pseudo-groups (B first, then A, as the code), and tested by bootstrap B with
+    and split into pseudo-groups (B first, then A; the code puts familiar first for recognition
+    and scene change first for cuts, which does not change the distribution of a random
+    permutation), and tested by bootstrap B with
     N_BOOT_NULL resamples; with `positive_only` a cell counts only when its pseudo-difference
     A - B is positive (examine_*_scenecuts.py). Sessions with the same design are pooled, and
     share the bootstrap resamples within a shuffle (see the module docstring). Returns a boolean
@@ -429,9 +436,18 @@ def hfb_session(url, etype, onsets_by_task, n_chunk=8):
     harmonics, high-passed at 0.1 Hz, re-referenced to the common average of the kept channels,
     and transformed to Morlet power (5 cycles, 70 to 170 Hz in 10 Hz steps), z-scored over time
     per frequency, averaged over frequencies and resampled to 500 Hz. Returns the channel names
-    and, for each onset set, the mean HFB in its window after each onset (session time). The LFP
-    time is the file's sample time minus LFP_PAD_S, as the code."""
+    and, for each onset set, the mean HFB in its window after each onset (session time). A window
+    of three values (start, stop, step) gives the mean HFB in consecutive bins of that width
+    instead, an array (channels, onsets, bins). The LFP time is the file's sample time minus
+    LFP_PAD_S, as the code (the Usage Notes: "start at 10 seconds before the starting time").
+
+    Intermediate checks are returned with each task block: `psd_<task>_before` and
+    `psd_<task>_after`, the median over channels of the Welch power spectrum (2048-sample
+    segments) before the notch filter and after notch, high-pass and re-referencing, at the
+    frequencies `psd_freqs`; and `hfbstats_<task>`, per channel the mean, s.d. and maximum of the
+    HFB trace at 500 Hz over the block."""
     import mne
+    from scipy.signal import welch
     from scipy.stats import zscore
     mne.set_log_level("ERROR")
     f, nwb = open_nwb(url)
@@ -454,11 +470,17 @@ def hfb_session(url, etype, onsets_by_task, n_chunk=8):
         sel = (lt >= b0 - EDGE_S) & (lt <= b1 + EDGE_S)
         seg_t0 = lt[sel][0]
         info = mne.create_info(list(names), sfreq=rate, ch_types="seeg")
+        f_w, p_before = welch(data[:, sel], fs=rate, nperseg=2048, axis=-1)
         raw = mne.io.RawArray(data[:, sel], info)
         raw.notch_filter(np.arange(60, info["lowpass"] + 1, 60), phase="zero-double", n_jobs=1)
         raw.filter(0.1, None, n_jobs=1)
         raw, _ = mne.set_eeg_reference(raw, "average")
         x = raw.get_data()
+        _, p_after = welch(x, fs=rate, nperseg=2048, axis=-1)
+        out["psd_freqs"] = f_w
+        out[f"psd_{task}_before"] = np.median(p_before, axis=0)
+        out[f"psd_{task}_after"] = np.median(p_after, axis=0)
+        del p_before, p_after
         hfb = np.empty_like(x)
         for c0 in range(0, x.shape[0], n_chunk):
             p = mne.time_frequency.tfr_array_morlet(x[None, c0:c0 + n_chunk], sfreq=rate,
@@ -469,14 +491,23 @@ def hfb_session(url, etype, onsets_by_task, n_chunk=8):
         raw_h.resample(500, npad="auto")
         h = raw_h.get_data()
         ht = raw_h.times + seg_t0
+        out[f"hfbstats_{task}"] = np.c_[h.mean(1), h.std(1), h.max(1)]
+        cs = np.concatenate([np.zeros((h.shape[0], 1)), np.cumsum(h, axis=1)], axis=1)
         for name, (onsets, w) in onset_sets.items():
+            if len(w) == 3:
+                edges = np.arange(w[0], w[1] + w[2] / 2, w[2])
+                ii = np.searchsorted(ht, np.asarray(onsets)[:, None] + edges[None, :])
+                n_in = np.diff(ii, axis=1)
+                with np.errstate(invalid="ignore", divide="ignore"):
+                    out[name] = (cs[:, ii[:, 1:]] - cs[:, ii[:, :-1]]) / np.where(n_in > 0, n_in, np.nan)
+                continue
             m = np.full((h.shape[0], len(onsets)), np.nan)
             for j, o in enumerate(onsets):
                 tu = (ht >= o + w[0]) & (ht <= o + w[1])
                 if tu.any():
                     m[:, j] = h[:, tu].mean(1)
             out[name] = m
-        del raw, x, hfb, raw_h, h
+        del raw, x, hfb, raw_h, h, cs
     return out
 
 
@@ -528,11 +559,14 @@ def cell_blocks(S, task, cuts=None, sessions=None):
 
 
 def selection_and_null(blocks, table, balanced, positive_only, seed, area_list=AREAS,
-                       n_null=N_NULL):
-    """Observed selection (bootstrap B, seed 13) and permutation p per area (test P)."""
+                       n_null=N_NULL, rate_window=None):
+    """Observed selection (bootstrap B, seed 13) and permutation p per area (test P).
+
+    rate_window is passed to observed_selection (spike counts to rates); the permutation null
+    runs on the values as given, where for spike counts ties are exact."""
     d, p = [], []
     for V, a, b in blocks:
-        di, pi = observed_selection(V, a, b, balanced)
+        di, pi = observed_selection(V, a, b, balanced, rate_window)
         d.append(di)
         p.append(pi)
     t = table.copy()
@@ -551,20 +585,31 @@ def selection_and_null(blocks, table, balanced, positive_only, seed, area_list=A
     return t, summary
 
 
+CLOCK_SHIFTS = [-1.0, -0.5, -0.25, -0.1, 0.1, 0.25, 0.5, 1.0]   # s, around the 10-s offset
+TC_WINDOW = (-0.5, 1.5, 0.05)   # time course after image onset, 50-ms bins
+
+
 def hfb_onsets(s, cuts):
     """The onset sets of one session for hfb_session: recognition trials (memory, 0.2 to 1.7 s,
     and a baseline 1 s before onset), scene cuts (events, 0 to 1 s), and the same read on the
-    file's own LFP clock (onsets 10 s earlier on the code's clock), a check of the alignment."""
+    clock the file gives without the Usage Notes' 10-s offset (onsets 10 s earlier on the code's
+    clock), a check of the alignment. Also the recognition windows with onsets shifted by each of
+    CLOCK_SHIFTS (an offset of 10 s plus the shift) and the HFB time course after image onset."""
     t0, t1 = movie_window(s)
     r = recog_trials(s)
     ons = cut_onsets(s, cuts)
+    ro = r.start_time.to_numpy()
+    recog = {"memory": (ro, MEMORY_WINDOW),
+             "memory_pre": (ro, (-1.0, 0.0)),
+             "memory_fileclock": (ro - LFP_PAD_S, MEMORY_WINDOW),
+             "memory_pre_fileclock": (ro - LFP_PAD_S, (-1.0, 0.0)),
+             "memory_tc": (ro, TC_WINDOW)}
+    for d in CLOCK_SHIFTS:
+        recog[f"memory_d{d:+.2f}"] = (ro + d, MEMORY_WINDOW)
+        recog[f"memory_pre_d{d:+.2f}"] = (ro + d, (-1.0, 0.0))
     return {"enc": (t0, t1, {"events": (ons, EVENT_WINDOW),
                              "events_fileclock": (ons - LFP_PAD_S, EVENT_WINDOW)}),
-            "recog": (float(r.start_time.iloc[0]), float(r.stop_time.iloc[-1]),
-                      {"memory": (r.start_time.to_numpy(), MEMORY_WINDOW),
-                       "memory_pre": (r.start_time.to_numpy(), (-1.0, 0.0)),
-                       "memory_fileclock": (r.start_time.to_numpy() - LFP_PAD_S, MEMORY_WINDOW),
-                       "memory_pre_fileclock": (r.start_time.to_numpy() - LFP_PAD_S, (-1.0, 0.0))})}
+            "recog": (float(r.start_time.iloc[0]), float(r.stop_time.iloc[-1]), recog)}
 
 
 def hfb_job(args):
