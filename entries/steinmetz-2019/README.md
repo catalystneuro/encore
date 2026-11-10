@@ -12,15 +12,18 @@ passive replay of the task stimuli.
 | Counts of sessions, mice, probes, neurons and trials; sessions of Supplementary Table 2 | Reproduced |
 | Per-region counts of Extended Data Table 1 | Reproduced |
 | 60% of neurons task-modulated, 74% increasing and 20% decreasing | Reproduced |
-| Responsive neurons have higher baseline rates, similar amplitudes | Partially reproduced |
+| Responsive neurons have higher baseline rates, similar amplitudes | Not reproduced |
 | Activity spreads from VIS and SCs on contralateral choices | Reproduced |
-| Miss trials activate a visual pathway only; Miss above passive | Partially reproduced (2 claims) |
+| Miss trials activate a visual pathway only; Miss above passive | Not reproduced (2 claims) |
 | Pre-stimulus task against passive differences and their order; Go-Miss match; detect probability (4) | Reproduced |
 | Engagement index and its controls (6) | Reproduced |
 | Detect probability around movement is widespread | Reproduced |
 | jPECC: VIS leads frontal cortex and midbrain | Reproduced |
 | jPECC: no lag between frontal cortex and midbrain | Not reproduced |
-| Kernel regression claims (11) | Blocked: too large |
+| Kernel model: variance explained is small; vision localized; contralateral preference in midbrain (3) | Reproduced |
+| Kernel model: action encoded in all regions | Partially reproduced |
+| Kernel model: choice-neuron counts, focality, shuffle false positives, opposed activity, ccCP restriction (5) | Not reproduced |
+| Decoding from kernel-model residuals (2) | Blocked: not implemented in this run |
 | Histology alignment error | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -33,4 +36,5 @@ The attempt record, with the reasons and the differences from the paper's method
   the 39 files (about 15 GB read in part).
 - `steinmetz.py`: loading the files (trials, wheel movements, passive events, spikes binned around
   events), the trial and neuron definitions of the claims file, the six responsiveness tests, the
-  combined-conditions choice probability and jPECC. Other notebooks on this dandiset can import it.
+  combined-conditions choice probability, jPECC and the kernel model (design, the basis of the code's
+  CanonCor2all.m, elastic net on the Gram matrix, cross-validated variance explained). Other notebooks on this dandiset can import it.

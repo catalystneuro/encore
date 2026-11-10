@@ -341,6 +341,15 @@ class Session:
             dur = st.max() - st.min() if len(st) else np.nan
             self.units["rate_all"] = self.units["n_spikes"] / dur
             del amps
+            # Mean waveform amplitude (claims suppfig2 criterion, "the mean spike waveform
+            # amplitude"): peak-to-trough of the unit's `waveform_mean` on the channel where it
+            # is largest. The file gives no unit for either amplitude.
+            wf = U["waveform_mean"]
+            wamp = np.full(len(si), np.nan)
+            for a in range(0, len(si), 200):
+                w = wf[a:a + 200]
+                wamp[a:a + 200] = (w.max(axis=1) - w.min(axis=1)).max(axis=1)
+            self.units["wf_amp"] = wamp
             trs = self.trials
             self.stim_counts = counts_aligned(st, si, good, trs["stim"].to_numpy(), *STIM_WIN)
             # Movement time: Left/Right onset; for NoGo trials a time drawn at random from
@@ -578,11 +587,192 @@ def zscores(counts, idx, lo):
     return z1, z2
 
 
+# ---------------------------------------------------------------------------
+# Kernel regression, full model (claims definition K; Methods, Kernel regression; code
+# kernelFitBasic.m, regFullPipeline.m). Used for fig3c-variance-explained only.
+# ---------------------------------------------------------------------------
+K_VIS_LAGS = 90        # -0.05 to 0.4 s from stimulus onset in 5 ms bins (claims K)
+K_MOVE_LAGS = 55       # -0.25 to 0.025 s from movement onset (claims K)
+K_SMOOTH = 0.025       # causal half-Gaussian s.d. (claims K)
+K_CONTRASTS = (0.25, 0.5, 1.0)
+
+
+def kernel_inputs(S, tr):
+    """Design and responses of the full kernel model for one session (claims K).
+
+    Trials T. Samples from 0.05 s before stimulus onset to the earlier of 0.4 s after
+    it and 0.025 s after movement onset (code). Predictors: six Vision kernels (left,
+    right x low, medium, high contrast; 90 lags from -0.05 s), an Action kernel and a
+    Choice kernel (+1 Left, -1 Right; code) at Left or Right movement onset (55 lags
+    from -0.25 s). Responses: spike counts in 5 ms bins smoothed with a causal
+    half-Gaussian of s.d. 25 ms, as rates, minus each unit's mean rate -0.2 to 0 s
+    before stimulus onset over trials T (code). Returns the design as a sparse matrix
+    (samples, 650), the responses (samples, units) as float32, the trial of each
+    sample and the evaluation mask: samples from stimulus onset to the earlier of
+    movement onset and 0.4 s (code)."""
+    from scipy import sparse
+    tc = tr["t_choice"].to_numpy()
+    inc = np.where(np.isin(tc, ["L", "R", "N"]))[0]
+    nb = S.stim_counts.shape[2]
+    t_bins = STIM_WIN[0] + BIN * np.arange(nb)
+    rate = causal_smooth(S.stim_counts[:, inc].astype(np.float32) / BIN, K_SMOOTH)
+    base = rate[:, :, (t_bins >= -0.2) & (t_bins < 0)].mean(axis=(1, 2))
+    rows, cols, vals, Ys, tid, ev = [], [], [], [], [], []
+    n0 = 0
+    nv = 6 * K_VIS_LAGS
+    for j, i in enumerate(inc):
+        mt = tr["first_move"].iloc[i] if tc[i] in ("L", "R") else np.nan
+        t_end = min(0.4, mt + 0.025) if np.isfinite(mt) else 0.4
+        samp = np.where((t_bins >= -0.05 - 1e-9) & (t_bins < t_end - 1e-9))[0]
+        ts = t_bins[samp]
+        lag_v = np.round((ts + 0.05) / BIN).astype(int)
+        for side, c in [(0, tr["cl"].iloc[i]), (1, tr["cr"].iloc[i])]:
+            if c > 0:
+                k = side * 3 + K_CONTRASTS.index(min(K_CONTRASTS, key=lambda x: abs(x - c)))
+                ok = (lag_v >= 0) & (lag_v < K_VIS_LAGS)
+                rows.append(n0 + np.where(ok)[0]); cols.append(k * K_VIS_LAGS + lag_v[ok]); vals.append(np.ones(ok.sum()))
+        if np.isfinite(mt):
+            lag_m = np.round((ts - mt + 0.25) / BIN).astype(int)
+            ok = (lag_m >= 0) & (lag_m < K_MOVE_LAGS)
+            r_ = n0 + np.where(ok)[0]
+            rows += [r_, r_]
+            cols += [nv + lag_m[ok], nv + K_MOVE_LAGS + lag_m[ok]]
+            vals += [np.ones(ok.sum()), np.full(ok.sum(), 1.0 if tc[i] == "L" else -1.0)]
+        Ys.append(rate[:, j, samp].T - base[None, :])
+        tid.append(np.full(len(samp), j))
+        ev.append((ts >= -1e-9) & (ts < (min(mt, 0.4) if np.isfinite(mt) else 0.4) - 1e-9))
+        n0 += len(samp)
+    X = sparse.csr_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))),
+                          shape=(n0, nv + 2 * K_MOVE_LAGS), dtype=np.float32)
+    return dict(X=X, Y=np.vstack(Ys).astype(np.float32), trial=np.concatenate(tid),
+                eval=np.concatenate(ev))
+
+
+def enet_paths(G, c, lam, alpha, kmax, tol=1e-5, max_iter=500, kmin=1):
+    """Elastic net (glmnet objective: 1/2 mean squared error + lam * (alpha |b|_1 +
+    (1 - alpha) / 2 |b|^2), on standardized predictors) by coordinate descent on the Gram
+    matrix, for the first k = 1..kmax predictors, for many responses at once.
+
+    G: (p, p) Gram matrix of the standardized training predictors over n (so diag 1);
+    c: (p, m) their products with the centred responses over n. Returns a list of
+    coefficient arrays (k, m), one per k; each k starts from the solution for k - 1."""
+    m = c.shape[1]
+    out = []
+    b = np.zeros((kmin - 1, m))
+    l1, l2 = lam * alpha, lam * (1 - alpha)
+    for k in range(kmin, kmax + 1):
+        b = np.vstack([b, np.zeros((1, m))])
+        Gk = G[:k, :k]
+        for _ in range(max_iter):
+            delta = 0.0
+            for j in range(k):
+                r = c[j] - Gk[j] @ b + Gk[j, j] * b[j]
+                new = np.sign(r) * np.maximum(np.abs(r) - l1, 0) / (Gk[j, j] + l2)
+                delta = max(delta, float(np.max(np.abs(new - b[j]))))
+                b[j] = new
+            if delta < tol:
+                break
+        out.append(b.copy())
+    return out
+
+
+def full_model_ve(Z, Y, trial, ev, rng, lam=0.5, alpha=0.5, kmax=50, kfold=5):
+    """Cross-validated variance explained of the full model (claims K): elastic net with
+    alpha 0.5 and lambda 0.5 fixed (Methods; glmnet defaults, predictors standardized on
+    the training trials), 5-fold cross-validation over trials, 1 to `kmax` reduced-rank
+    components, VE over the evaluation samples of the test trials pooled over folds,
+    the best k kept. Z: (samples, components) of one session; Y: (samples, units).
+    Returns (best VE per unit, its k)."""
+    kmax = min(kmax, Z.shape[1])
+    ut = np.unique(trial)
+    folds = np.array_split(rng.permutation(ut), kfold)
+    sse = np.zeros((kmax, Y.shape[1]))
+    for f in folds:
+        te = np.isin(trial, f)
+        trn = ~te
+        mu, sd = Z[trn].mean(axis=0), Z[trn].std(axis=0)
+        sd[sd == 0] = 1.0
+        Zs = (Z[trn] - mu) / sd
+        ym = Y[trn].mean(axis=0)
+        n = trn.sum()
+        G = Zs[:, :kmax].T @ Zs[:, :kmax] / n
+        c = Zs[:, :kmax].T @ (Y[trn] - ym) / n
+        B = enet_paths(G, c, lam, alpha, kmax)
+        m = te & ev
+        Zte = (Z[m, :kmax] - mu[:kmax]) / sd[:kmax]
+        for k in range(kmax):
+            pred = ym + Zte[:, :k + 1] @ B[k]
+            sse[k] += ((Y[m] - pred) ** 2).sum(axis=0)
+    ye = Y[ev]
+    sst = ((ye - ye.mean(axis=0)) ** 2).sum(axis=0)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ve = 1 - sse / sst
+    return ve.max(axis=0), ve.argmax(axis=0) + 1
+
+
+def pooled_basis(Xs, Ys, nkeep):
+    """Reduced-rank basis over all sessions, as code reducedRankRegression/CanonCor2all.m
+    (github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8): CXX the covariance of the designs
+    of all sessions stacked, plus 1e-7 I; CYX each session's covariance of its responses
+    with its design (each centred within session, divided by n_i - 1), sessions side by
+    side; the SVD of CYX CXX^(-1/2) = d s c' gives the basis b = CXX^(-1/2) c, of which the
+    first `nkeep` columns are returned. Xs: designs (sparse or dense), Ys: responses."""
+    N = sum(X.shape[0] for X in Xs)
+    p = Xs[0].shape[1]
+    sx = sum(np.asarray(X.sum(axis=0)).ravel() for X in Xs)
+    sxx = sum(np.asarray((X.T @ X).todense() if hasattr(X, "todense") else X.T @ X, float) for X in Xs)
+    mu = sx / N
+    CXX = (sxx - N * np.outer(mu, mu)) / (N - 1) + 1e-7 * np.eye(p)
+    w, v = np.linalg.eigh(CXX)
+    CXXMH = (v / np.sqrt(w)) @ v.T
+    blocks = []
+    for X, Y in zip(Xs, Ys):
+        n = X.shape[0]
+        Yc = np.asarray(Y, float) - np.asarray(Y, float).mean(axis=0)
+        blocks.append(np.asarray(X.T @ Yc) / (n - 1))       # X' Yc = Xc' Yc since Yc has zero mean
+    CXY = np.hstack(blocks)
+    c = np.linalg.svd(CXXMH @ CXY, full_matrices=False)[0]   # = right singular vectors of CYX CXXMH
+    return CXXMH @ c[:, :nkeep]
+
+
+def project(X, W):
+    """Components of a design: (X - its mean over samples) @ W, for sparse or dense X."""
+    mu = np.asarray(X.mean(axis=0)).ravel()
+    return np.asarray(X @ W) - mu @ W
+
+
+def enet_predict_all(Z, Y, k, lam=0.5, alpha=0.5):
+    """Elastic net with the first k components fitted on all samples (no cross-validation);
+    returns the predictions (claims K: "each neuron fit with 75 components on all its data")."""
+    k = min(k, Z.shape[1])
+    mu, sd = Z[:, :k].mean(axis=0), Z[:, :k].std(axis=0)
+    sd[sd == 0] = 1.0
+    Zs = (Z[:, :k] - mu) / sd
+    ym = Y.mean(axis=0)
+    n = len(Z)
+    B = enet_paths(Zs.T @ Zs / n, Zs.T @ (Y - ym) / n, lam, alpha, k, kmin=k)[-1]
+    return ym + Zs @ B
+
+
+def nested_eval_mask(trial, tc, mt):
+    """Evaluation samples of the nested tests (code evalWins): 0.05 to 0.4 s after stimulus
+    onset, ending at movement onset, and -0.2 to 0 s from movement onset. `trial` indexes
+    the trials T of the session; tc, mt their choice and movement time."""
+    first = np.r_[0, np.where(np.diff(trial) != 0)[0] + 1]
+    pos = np.arange(len(trial)) - np.repeat(first, np.diff(np.r_[first, len(trial)]))
+    t = -0.05 + BIN * pos
+    m = mt[trial]
+    end = np.where(np.isfinite(m), np.minimum(m, 0.4), 0.4)
+    stim_w = (t >= 0.05 - 1e-9) & (t < end - 1e-9)
+    move_w = np.isfinite(m) & (t - m >= -0.2 - 1e-9) & (t - m <= 1e-9)
+    return stim_w | move_w
+
+
 def summarize(S, seed):
     """All per-session measures used by the notebook. `seed` gives one generator
     per use, so that random draws in one claim do not change another."""
     rng = {k: np.random.default_rng([seed, i]) for i, k in
-           enumerate(["M", "Msingle", "cp", "dp_pre", "eng", "misc"])}
+           enumerate(["M", "Msingle", "cp", "dp_pre", "eng", "misc", "eq", "cp_lr"])}
     tr = S.trials.copy()
     tr["session"] = S.name
     tr["subject"] = S.subject
@@ -657,9 +847,13 @@ def summarize(S, seed):
     sGo, sNg, sPa = matched_contrast([(gS, cr[gS]), (nS, cr[nS]), (pS, pr[pS])], rng=rng["Msingle"])
     ipsiGo = np.where((tc == "L") & (cl > 0) & (cr == 0))[0]
     ipsiMiss = np.where((tc == "N") & (cl > 0) & (cr == 0))[0]
+    # Contralateral Miss trials of the matched set and ipsilateral Miss trials, matched to
+    # each other in contrast and count (fig2fg condition iii on equal footing; verifier
+    # round 1): at each level as many of each as the smaller has.
+    eqC, eqI = matched_contrast([(sNg, cr[sNg]), (ipsiMiss, cl[ipsiMiss])], rng=rng["eq"])
     out["sets"] = dict(mGo=mGo, mNg=mNg, mPa=mPa, sGo=sGo, sNg=sNg, sPa=sPa,
                        ipsiGo=ipsiGo, ipsiMiss=ipsiMiss, n_goM=len(goM), n_ngM=len(ngM),
-                       n_paM=len(paM))
+                       n_paM=len(paM), eqC=eqC, eqI=eqI)
     # --- Fig. 2 traces and z-scores ----------------------------------------
     base = window_rate(S.stim_counts[:, T_idx], -0.02, 0.0, STIM_WIN[0]).mean(axis=1)
     out["traces"] = {k: norm_trace(S, idx, base) for k, idx in
@@ -672,7 +866,8 @@ def summarize(S, seed):
     z = {}
     for k, cnt, idx in [("sGo", S.stim_counts, sGo), ("sNg", S.stim_counts, sNg),
                         ("ipsiMiss", S.stim_counts, ipsiMiss), ("mNg", S.stim_counts, mNg),
-                        ("mPa", S.pas_counts, mPa), ("sPa", S.pas_counts, sPa)]:
+                        ("mPa", S.pas_counts, mPa), ("sPa", S.pas_counts, sPa),
+                        ("eqC", S.stim_counts, eqC), ("eqI", S.stim_counts, eqI)]:
         z[k] = zscores(cnt, idx, STIM_WIN[0])
     out["z"] = z
     # --- pre-stimulus rates per trial ----------------------------------------
@@ -695,6 +890,22 @@ def summarize(S, seed):
         r = window_rate(S.stim_counts[:, T_idx], lo, hi, STIM_WIN[0]).T
         dp["pre_" + w] = combined_cp(r, lab_go, cond[T_idx], 0, rng["dp_pre"])
     out["dp"] = dp
+    # --- choice probability (ccCP, Left against Right; claims ed7c, the part that needs no
+    # kernel model) --------------------------------------------------------------
+    gi = np.where(go)[0]
+    lab_l = tc[gi] == "L"
+    cpl = {}
+    for w, (lo, hi) in {"a": (-0.1, 0.05), "b": (-0.05, 0.0)}.items():
+        r = window_rate(S.move_counts[:, gi], lo, hi, MOVE_WIN[0]).T
+        cpl[w] = combined_cp(r, lab_l, cond[gi], 2000, rng["cp_lr"])
+    out["cp_lr"] = cpl
+    # --- kernel model inputs (fig3c): responses of units with a trial rate of at least
+    # 0.1 Hz only, to keep memory down ---------------------------------------------
+    ki = kernel_inputs(S, tr)
+    keep_u = np.where(U["trial_rate"].to_numpy() >= MIN_RATE)[0]
+    ki["Y"] = ki["Y"][:, keep_u]
+    ki["unit_pos"] = keep_u
+    out["kernel"] = ki
     # --- jPECC inputs: 10 ms counts of VIS, frontal and midbrain neurons ----------
     reg = U["region"].replace(REGION_PARENT).to_numpy()
     okr = (U["trial_rate"].to_numpy() >= MIN_RATE)
