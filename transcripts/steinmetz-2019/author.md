@@ -1,79 +1,49 @@
-# 000017 · author · run 39662566798
+# steinmetz-2019 · author · run 42852600081
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls; ls entries claims attempts paper tools docs
+date -u; cd  wc -l docs/protocol.md README.md docs/design.md docs/archives.md; ls; ls entries claims attempts paper | head -50
 ```
 
 ```
-<persisted-output>
-Output too large (31.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/0a20b15f-1059-4331-b1d8-61ca3fe7ed3b/tool-results/ba2qi7x0x.txt
-
-Preview (first 2KB):
-# Protocol for an attempt
-
-Version: `pilot-10`. Record this version in the attempt's provenance.
-
-This is what agents, or people, do to attempt a target and deposit the
-result. A target is a dataset in a public archive and a paper it names. How
-each archive's datasets are named, versioned and read is in
-[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-An attempt has three roles, each a separate run with a separate context:
-
-- The **reader** reads the paper and writes the claims file: every finding,
-  and how each is to be tested, taken from the paper. A second reader checks
-  it against the paper. Readers never see the dataset's data.
-- The **author** tests the claims on the dataset. It reads the paper to
-[... 23 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat README.md docs/design.md docs/archives.md
-```
-
-```
-<persisted-output>
-Output too large (36.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/0a20b15f-1059-4331-b1d8-61ca3fe7ed3b/tool-results/bu0lbtwhm.txt
-
-Preview (first 2KB):
-# Reproduction registry (working name)
-
-Agents, and people, try to reproduce the key findings of papers from the open
-data on the [DANDI Archive](https://dandiarchive.org), and register the result
-here: the notebooks when it works, and the reason when it does not.
-
-- **For the archive:** evidence of whether each dandiset is complete and
-  accurate enough to support the findings of its paper.
-- **For analysts:** working notebooks to build new analyses on.
-
-Status: pilot. All eight pilot targets have been attempted and checked by an
-independent agent.
-
-**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-
-## Reading the outcomes
-[... 24 more lines not kept]
+Tue Nov 10 16:24:01 UTC 2026
+  647 docs/protocol.md
+  139 README.md
+  271 docs/design.md
+  290 docs/archives.md
+ 1347 total
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+node_modules
+package-lock.json
+package.json
+paper
+papers
+[... 63 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/0a20b15f-1059-4331-b1d8-61ca3fe7ed3b/tool-results/ba2qi7x0x.txt"
+ "file_path": "docs/protocol.md"
 }
 ```
 
 ```
 1	# Protocol for an attempt
 2	
-3	Version: `pilot-10`. Record this version in the attempt's provenance.
+3	Version: `pilot-14`. Record this version in the attempt's provenance.
 4	
 5	This is what agents, or people, do to attempt a target and deposit the
 6	result. A target is a dataset in a public archive and a paper it names. How
@@ -88,83 +58,107 @@ independent agent.
 15	  it against the paper. Readers never see the dataset's data.
 16	- The **author** tests the claims on the dataset. It reads the paper to
 17	  understand the claims, but the claims file binds it: it cannot change a
-18	  claim, and it asks a reader for any method detail the file lacks.
-19	- The **verifier** checks the author's work and must not be the author.
-20	
-[... 768 more lines not kept]
+18	  claim's statement, expected values or criterion. A method detail the file
+19	  lacks it takes from the paper, citing the passage, and it asks a reader
+20	  only when it believes the file misreads the paper.
+[... 628 more lines not kept]
 ```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/0a20b15f-1059-4331-b1d8-61ca3fe7ed3b/tool-results/bu0lbtwhm.txt"
-}
-```
-
-```
-1	# Reproduction registry (working name)
-2	
-3	Agents, and people, try to reproduce the key findings of papers from the open
-4	data on the [DANDI Archive](https://dandiarchive.org), and register the result
-5	here: the notebooks when it works, and the reason when it does not.
-6	
-7	- **For the archive:** evidence of whether each dandiset is complete and
-8	  accurate enough to support the findings of its paper.
-9	- **For analysts:** working notebooks to build new analyses on.
-10	
-11	Status: pilot. All eight pilot targets have been attempted and checked by an
-12	independent agent.
-13	
-14	**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-15	
-16	## Reading the outcomes
-17	
-18	An outcome says what one attempt could recover from the data in a dandiset,
-19	with the methods available to it. **A "not reproduced" or "partially
-20	reproduced" outcome is not a finding that the paper is wrong.** It can come
-[... 558 more lines not kept]
-```
-
-**Agent**
-
-Now the claims file and the example entry.
 
 **Agent calls Bash**
 
 ```bash
-ls claims/000017 questions | head -50; cat claims/000017/*.yaml
+cd  cat README.md; sed -n 1,271p docs/design.md
+```
+
+```
+# Encore Science: the registry
+
+Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>, and the `encore` command that runs the same check on your own data ([docs/encore.md](docs/encore.md)). It is developed by [CatalystNeuro](https://www.catalystneuro.com).
+
+Agents, and people, try to reproduce the key findings of papers from the open
+data in public archives, starting with the [DANDI Archive](https://dandiarchive.org), and register the result
+here: the notebooks when it works, and the reason when it does not.
+
+- **For the archive:** evidence of whether each dandiset is complete and
+  accurate enough to support the findings of its paper.
+- **For analysts:** working notebooks to build new analyses on.
+
+Status: pilot. All eight pilot targets have been attempted and checked by an
+independent agent.
+
+**Dashboard:** <https://encorescience.org/>
+
+## Reading the outcomes
+
+An outcome says what one attempt could recover from the data in a dandiset,
+[... 390 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat docs/archives.md | sed -n 1,140p; ls paper; cat claims/steinmetz-2019.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (64KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/0a20b15f-1059-4331-b1d8-61ca3fe7ed3b/tool-results/br0vrxk0e.txt
+Output too large (72.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/eb60cdf3-a566-4a9a-87c7-cc2c8877bf6a/tool-results/bvlsbhxw2.txt
 
 Preview (first 2KB):
-claims/000017:
-10.1038-s41586-019-1787-x.yaml
+# Archives
 
-questions:
-000005.yaml
-000008.yaml
-000009.yaml
-000010.yaml
-000061.yaml
-000582.yaml
-001754.yaml
-README.md
-crcns-ret-1.yaml
+The registry tests papers against data in public archives. It began with one,
+the DANDI Archive. The protocol is written for any archive. What is particular
+to an archive (how its datasets are named, versioned and read) is here, and an
+agent is pointed to its archive's section.
+
+A dataset is keyed as `<archive>:<id>` and shown as `<LABEL>:<id>`, for example
+`DANDI:000003`. Its files in this repository (`claims/`, `questions/`,
+`transcripts/`, the `attempt/` branch, the paper store) are under its folder
+name: the identifier alone for DANDI, which the registry began with, and
+`<archive>-<id>` for any other archive. Each archive is an adapter, a module in `tools/archives/` ("Adding an archive",
+below), and `tools/datasets.py` turns one form of a dataset's name into another.
+The workflows take a dataset in any of these forms.
+
+## DANDI
+[... 21 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls -la paper; cat claims/steinmetz-2019.yaml
+```
+
+```
+<persisted-output>
+Output too large (64.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/eb60cdf3-a566-4a9a-87c7-cc2c8877bf6a/tool-results/blzfni3v5.txt
+
+Preview (first 2KB):
+total 2276
+drwxr-xr-x  2 runner runner    4096 Nov 10 16:23 .
+drwxr-xr-x 21 runner runner    4096 Nov 10 16:24 ..
+-rw-r--r--  1 runner runner   14736 Nov 10 16:23 10.1038-s41586-019-1787-x.supp1.docx
+-rw-r--r--  1 runner runner 2151461 Nov 10 16:23 10.1038-s41586-019-1787-x.supp2.docx
+-rw-r--r--  1 runner runner  149362 Nov 10 16:23 10.1038-s41586-019-1787-x.txt
 # Claims for Steinmetz, Zatka-Haas, Carandini & Harris (2019), Nature 576, 266-273, "Distributed
 # coding of choice, action and engagement across the mouse brain", on dandiset 000017.
 # Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
-[... 21 more lines not kept]
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript as served by Europe PMC (PMC6913580, UKPMC Funders
+# Author Manuscripts), with the main text, Methods, Extended Data figure legends, Extended Data
+# Table 1 and the figure legends. Both supplement files from the PMC Open Access data were read:
+# supplement 1 (the Supplementary Information guide only) and supplement 2 (Supplementary
+# Discussion, Supplementary Tables 1 and 2, legends of Supplementary Figs. 1 to 4). The text file
+[... 11 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "claims/000017/10.1038-s41586-019-1787-x.yaml"
+ "file_path": "claims/steinmetz-2019.yaml"
 }
 ```
 
@@ -196,7 +190,7 @@ crcns-ret-1.yaml
 
 ```json
 {
- "file_path": "claims/000017/10.1038-s41586-019-1787-x.yaml",
+ "file_path": "claims/steinmetz-2019.yaml",
  "offset": 800
 }
 ```
@@ -228,21 +222,18 @@ crcns-ret-1.yaml
 **Agent calls Bash**
 
 ```bash
-ls -la entries/001453-fouke-2025/; cat entries/001453-fouke-2025/entry.yaml entries/001453-fouke-2025/requirements.in entries/001453-fouke-2025/README.md 2>/dev/null; head -c 6000 attempts/001453-fouke-2025-01.yaml
+cd  ls entries/fouke-2025 ; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in; cat attempts/fouke-2025-01.yaml | head -150; ls papers/datasets/ | grep stein; cat papers/datasets/steinmetz-2019.yaml; ls questions | grep stein
 ```
 
 ```
-total 124
-drwxr-xr-x  2 runner runner  4096 Oct 21 19:32 .
-drwxr-xr-x 62 runner runner  4096 Oct 21 19:32 ..
--rw-r--r--  1 runner runner  2158 Oct 21 19:32 README.md
--rw-r--r--  1 runner runner   914 Oct 21 19:32 entry.yaml
--rw-r--r--  1 runner runner 16218 Oct 21 19:32 omr.py
--rw-r--r--  1 runner runner 79403 Oct 21 19:32 reproduce_fouke_2025.ipynb
--rw-r--r--  1 runner runner    61 Oct 21 19:32 requirements.in
--rw-r--r--  1 runner runner  5989 Oct 21 19:32 requirements.lock.txt
+README.md
+entry.yaml
+omr.py
+reproduce_fouke_2025.ipynb
+requirements.in
+requirements.lock.txt
 schema_version: 1
-name: 001453-fouke-2025
+name: fouke-2025
 type: reproduction
 title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
 description: Tests the freely swimming findings of Fouke, He, Loring and Naumann (2025) on dandiset
@@ -252,517 +243,1862 @@ description: Tests the freely swimming findings of Fouke, He, Loring and Naumann
   head-fixed tail tracking of the paper's Figures 2 to 4 are not in the dandiset.
 license: Apache-2.0
 notebooks:
-[... 162 more lines not kept]
+- path: reproduce_fouke_2025.ipynb
+  title: Reproducing Fouke et al. (2025) from dandiset 001453
+  runtime_minutes: 6
+[... 173 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n '/^findings/,$p' attempts/001453-fouke-2025-01.yaml | head -80; grep -n "blocked" attempts/001453-fouke-2025-01.yaml | head; ls schemas; cat questions/README.md; head -40 questions/000009.yaml
+cd  sed -n 150,400p attempts/fouke-2025-01.yaml | grep -n -A30 "findings:" | head -60; ls schemas; python -c "
+import json,urllib.request
+d=json.load(urllib.request.urlopen('https://api.dandiarchive.org/api/dandisets/000017/'))
+print(json.dumps(d,indent=1)[:1500])
+v=json.load(urllib.request.urlopen('https://api.dandiarchive.org/api/dandisets/000017/versions/'))
+print(json.dumps(v,indent=1)[:3000])
+"
 ```
 
 ```
-findings:
-- kind: data_missing
-  statement: The dandiset holds only the freely swimming tracking of Figure 1 and Figure S1. The
-    two-photon imaging and the head-fixed tail tracking behind Figures 2 to 4 are not in it, and
-    the GitLab repository the paper names for all behavioural and imaging data holds analysis
-    notebooks only. Nine of the paper's main findings cannot be tested.
-- kind: metadata_insufficient
-  statement: The stimulus codes 0 to 20 have no names or description in the files or the
-    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
-    file of its stimulus software.
-- kind: code_mismatch
-  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
-    while its conversion of the stimulus software's names gives the reverse (it carries a remap
-    that swaps them). The data do not settle which is right; zebrafish barely turn to either, and
-    Danionella turn more to the right for code 11, which fits the stimulus software's assignment
-    only if the fish turn with lateral motion.
-- kind: metadata_error
-  statement: Subject ids 0 to 11 are each used for one zebrafish and one Danionella cerebrum, so
-    subject_id does not identify an animal. The archive's summary counts 25 subjects and lists
-    only Danio rerio; the files hold 37 fish of two species.
-[... 119 more lines not kept]
+95:findings:
+96-- kind: data_missing
+97-  statement: The dandiset holds only the freely swimming tracking of Figure 1 and Figure S1. The
+98-    two-photon imaging and the head-fixed tail tracking behind Figures 2 to 4 are not in it, and
+99-    the GitLab repository the paper names for all behavioural and imaging data holds analysis
+100-    notebooks only. Nine of the paper's main findings cannot be tested.
+101-- kind: metadata_insufficient
+102-  statement: The stimulus codes 0 to 20 have no names or description in the files or the
+103-    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
+104-    file of its stimulus software.
+105-- kind: code_mismatch
+106-  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
+107-    while its conversion of the stimulus software's names gives the reverse (it carries a remap
+108-    that swaps them). The data do not settle which is right; zebrafish barely turn to either, and
+109-    Danionella turn more to the right for code 11, which fits the stimulus software's assignment
+110-    only if the fish turn with lateral motion.
+111-- kind: metadata_error
+112-  statement: Subject ids 0 to 11 are each used for one zebrafish and one Danionella cerebrum, so
+113-    subject_id does not identify an animal. The archive's summary counts 25 subjects and lists
+114-    only Danio rerio; the files hold 37 fish of two species.
+[... 93 more lines not kept]
 ```
-
-**Agent**
-
-Now the dataset.
 
 **Agent calls Bash**
 
 ```bash
-curl -s https://api.dandiarchive.org/api/dandisets/000017/ | python -m json.tool | head -40; curl -s "https://api.dandiarchive.org/api/dandisets/000017/versions/" | python -m json.tool
+cd  python -c "
+import json,urllib.request
+u='https://api.dandiarchive.org/api/dandisets/000017/versions/0.240329.1926/assets/?page_size=100'
+d=json.load(urllib.request.urlopen(u))
+for a in d['results']: print(a['asset_id'],a['path'],a['size'])
+m=json.load(urllib.request.urlopen('https://api.dandiarchive.org/api/dandisets/000017/versions/0.240329.1926/'))
+print(json.dumps({k:m[k] for k in ['description','citation','doi','assetsSummary'] if k in m},indent=1)[:3000])
+"; python -c "import pynwb,remfile,h5py;print(pynwb.__version__)"
 ```
 
-Result: the fetched text is not kept.
+```
+Exit code 1
+2c6984f5-5fd7-4ccb-8f05-1961df65124a sub-Forssmann/sub-Forssmann_ses-20171101T120000.nwb 422784529
+92694e6e-84fd-4198-a7e3-64e764f8e086 sub-Cori/sub-Cori_ses-20161214T120000.nwb 311814662
+946f04df-7fe1-43b8-8807-1b7662e59ee6 sub-Forssmann/sub-Forssmann_ses-20171102T120000.nwb 347258464
+e99d8f00-f550-41ae-ba5d-8da445d91cd0 sub-Cori/sub-Cori_ses-20161217T120000.nwb 332879362
+85e010dc-2099-4c12-bb4c-31444620674b sub-Cori/sub-Cori_ses-20161218T120000.nwb 573267819
+47e9e6e0-26cf-42f6-a16b-df6fd8190ae4 sub-Forssmann/sub-Forssmann_ses-20171104T120000.nwb 310773089
+3bac9e69-505f-4339-b423-ec49ea92d74e sub-Forssmann/sub-Forssmann_ses-20171105T120000.nwb 280983334
+a3f99934-3efb-40be-8697-580f25748cc6 sub-Hench/sub-Hench_ses-20170615T120000.nwb 615890792
+062e3d5c-2eaa-409a-b705-7b261e63716f sub-Hench/sub-Hench_ses-20170616T120000.nwb 515855832
+8c41fed9-f86a-4ff9-843d-0caff14b4183 sub-Hench/sub-Hench_ses-20170618T120000.nwb 394403936
+166eef81-27c3-42fe-b134-dac18165fee5 sub-Lederberg/sub-Lederberg_ses-20171205T120000.nwb 372211599
+7d42dca7-d67c-49a0-98a7-a960a6eca4d8 sub-Lederberg/sub-Lederberg_ses-20171207T120000.nwb 286488802
+9cfa0e0a-bc1b-4d4c-8b31-b5b4fd07f124 sub-Lederberg/sub-Lederberg_ses-20171206T120000.nwb 619346872
+4a8dbc5b-317e-4bf5-b692-6ae0a8ecdb89 sub-Hench/sub-Hench_ses-20170617T120000.nwb 596786816
+64888d31-ab79-40df-9ba6-d59a334c2c84 sub-Lederberg/sub-Lederberg_ses-20171209T120000.nwb 267104144
+b9d054e2-a41b-43c9-8e89-ff0eeff116ef sub-Lederberg/sub-Lederberg_ses-20171208T120000.nwb 394827803
+3722e6b8-d47f-4feb-a9ae-9c368e41166b sub-Lederberg/sub-Lederberg_ses-20171210T120000.nwb 216191784
+2d3e3558-03c3-47c7-b997-fb89f2db6d4d sub-Moniz/sub-Moniz_ses-20170515T120000.nwb 416303544
+38cec270-397b-45d3-be9d-eca1b4152085 sub-Lederberg/sub-Lederberg_ses-20171211T120000.nwb 355026576
+[... 87 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-V=0.240329.1926; curl -s "https://api.dandiarchive.org/api/dandisets/000017/versions/$V/" | python -m json.tool > $TMPDIR/meta.json; python - <<EOF
-import json;m=json.load(open("$TMPDIR/meta.json"))
-for k in ['description','citation','relatedResource','assetsSummary','contributor','doi','license']: print(k, json.dumps(m.get(k),indent=0)[:2500])
-EOF
-curl -s "https://api.dandiarchive.org/api/dandisets/000017/versions/$V/assets/?page_size=100" | python -c "
-import json,sys;d=json.load(sys.stdin)
-for a in d['results']: print(a['asset_id'],a['path'],a['size'])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && uv venv -q env && . env/bin/activate && uv pip install -q pynwb remfile h5py dandi numpy pandas scipy scikit-learn statsmodels matplotlib 2>&1 | tail -3; python -c "import pynwb;print(pynwb.__version__)"; nproc; free -g
+cd  mkdir -p entries/steinmetz-2019; printf "dandi\nh5py\nmatplotlib\nnumpy\npandas\npynwb\nremfile\nscipy\nstatsmodels\nscikit-learn\n" > entries/steinmetz-2019/requirements.in; uv venv $TMPDIR/venv -q 2>&1|tail -2; VIRTUAL_ENV=$TMPDIR/venv uv pip install -q -r entries/steinmetz-2019/requirements.in ipykernel 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import pynwb;print(pynwb.__version__)"
 ```
 
 ```
 4.2.0
-4
-               total        used        free      shared  buff/cache   available
-Mem:              15           2           9           0           4          13
-Swap:              2           0           2
+```
+
+**Agent**
+
+Environment ready. Now I'll open one file and list everything it holds.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; cat > probe.py <<'EOF'
+import remfile,h5py,pynwb,time
+from dandi.dandiapi import DandiAPIClient
+t=time.time()
+c=DandiAPIClient(); ds=c.get_dandiset('000017','0.240329.1926')
+a=ds.get_asset_by_path('sub-Cori/sub-Cori_ses-20161214T120000.nwb')
+url=a.get_content_url(follow_redirects=1,strip_query=True)
+f=h5py.File(remfile.File(url),'r')
+def walk(g,p=''):
+    for k in g:
+        o=g[k]
+        if isinstance(o,h5py.Dataset): print(p+'/'+k,o.shape,o.dtype, dict((kk,str(vv)[:80]) for kk,vv in o.attrs.items() if kk in('unit','unit','description','conversion','rate','resolution')))
+        else:
+            print(p+'/'+k+'/', dict((kk,str(vv)[:100]) for kk,vv in o.attrs.items() if kk in('neurodata_type','description')))
+            walk(o,p+'/'+k)
+walk(f)
+print(time.time()-t)
+EOF
+$TMPDIR/venv/bin/python probe.py 2>&1 | grep -v Warning | head -300
+```
+
+```
+/acquisition/ {}
+/acquisition/lickPiezo/ {'description': 'Voltage values from a thin-film piezo connected to the lick spout, so that values are proportional t', 'neurodata_type': 'TimeSeries'}
+/acquisition/lickPiezo/data (1314000,) float64 {'conversion': '1.0', 'resolution': '-1.0', 'unit': 'V'}
+/acquisition/lickPiezo/starting_time () float64 {'rate': '0.002000031887945625', 'unit': 'seconds'}
+/acquisition/wheel_position/ {'description': 'The position reading of the rotary encoder attached to the rubber wheel that the mouse pushes left a', 'neurodata_type': 'TimeSeries'}
+/acquisition/wheel_position/data (6570000,) float64 {'conversion': '0.135', 'resolution': '-1.0', 'unit': 'mm'}
+/acquisition/wheel_position/starting_time () float64 {'rate': '0.00040000637758912496', 'unit': 'seconds'}
+/analysis/ {}
+/file_create_date (1,) object {}
+/general/ {}
+/general/devices/ {}
+/general/devices/0/ {'neurodata_type': 'Device'}
+/general/devices/1/ {'neurodata_type': 'Device'}
+/general/experiment_description () object {}
+/general/experimenter (1,) object {}
+/general/extracellular_ephys/ {}
+/general/extracellular_ephys/Probe1/ {'description': 'Neuropixels Phase3A opt3', 'neurodata_type': 'ElectrodeGroup'}
+/general/extracellular_ephys/Probe1/device/ {'neurodata_type': 'Device'}
+/general/extracellular_ephys/Probe2/ {'description': 'Neuropixels Phase3A opt3', 'neurodata_type': 'ElectrodeGroup'}
+/general/extracellular_ephys/Probe2/device/ {'neurodata_type': 'Device'}
+[... 140 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; cat > probe2.py <<'EOF'
+import remfile,h5py,numpy as np,collections
+from dandi.dandiapi import DandiAPIClient
+c=DandiAPIClient(); ds=c.get_dandiset('000017','0.240329.1926')
+a=ds.get_asset_by_path('sub-Cori/sub-Cori_ses-20161214T120000.nwb')
+f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1,strip_query=True)),'r')
+for p in ['intervals/trials/feedback_type','intervals/trials/included','intervals/trials/rep_num','intervals/trials/response_choice','intervals/trials/response_time','intervals/trials/go_cue','intervals/trials/visual_stimulus_left_contrast','units/phy_annotations','units/spike_amps','units/cluster_depths','units/peak_channel','units/waveform_duration','units/waveform_mean','general/extracellular_ephys/electrodes/site_id','acquisition/wheel_position','processing/behavior/BehavioralEpochs/wheel_moves','processing/behavior/BehavioralTimeSeries/face_motion_energy','processing/behavior/PupilTracking/eye_area','intervals/spontaneous','stimulus/presentation/passive_left_contrast','units/spike_depths']:
+    print('==',p, dict(f[p].attrs).get('description'))
+for p in ['general/subject/age','general/subject/description','general/subject/genotype','general/subject/sex','general/subject/subject_id','general/experiment_description','session_description','general/related_publications','session_start_time','identifier']:
+    print(p, f[p][()])
+T=f['intervals/trials']
+for k in T: 
+    v=T[k][:]
+    if v.dtype!=object: print(k, v[:8], np.nanmin(v),np.nanmax(v), np.isnan(v.astype(float)).sum())
+print(collections.Counter(T['response_choice'][:]), collections.Counter(T['included'][:]))
+print(collections.Counter(f['units/phy_annotations'][:]))
+loc=f['general/extracellular_ephys/electrodes/location'][:].astype(str); print(collections.Counter(loc))
+print(f['units/peak_channel'][:10].ravel(), f['general/extracellular_ephys/electrodes/id'][:10], f['general/extracellular_ephys/electrodes/group_name'][:3], f['units/electrode_group'][:3])
+print('wm', f['processing/behavior/BehavioralEpochs/wheel_moves/data'][:20], f['processing/behavior/BehavioralEpochs/wheel_moves/timestamps'][:20])
+w=f['acquisition/wheel_position']; print(w['starting_time'][()], dict(w['starting_time'].attrs), w['data'][:5], w['data'][-5:])
+print(f['acquisition/lickPiezo/starting_time'][()])
+print('pass', f['stimulus/presentation/passive_left_contrast/data'][:20], f['stimulus/presentation/passive_left_contrast/timestamps'][:5], f['stimulus/presentation/passive_right_contrast/timestamps'][:5])
+print(f['intervals/spontaneous/start_time'][:], f['intervals/spontaneous/stop_time'][:])
+print(f['units/sampling_rate'][:3], f['units/spike_times'][-3:])
+print('eye', f['processing/behavior/PupilTracking/eye_area/timestamps'][:3], f['processing/behavior/BehavioralTimeSeries/face_motion_energy/starting_time'][()])
+EOF
+$TMPDIR/venv/bin/python probe2.py 2>&1 | grep -v Warn
+```
+
+```
+== intervals/trials/feedback_type Enumerated type. -1 for negative feedback (white noise burst); +1 for positive feedback (water reward delivery).
+== intervals/trials/included Importantly, while this variable gives inclusion criteria according to the definition of disengagement (see manuscript Methods), it does not give inclusion criteria based on the time of response, as used for most analyses in the paper.
+== intervals/trials/rep_num Trials are repeated if they are "easy" trials (high contrast stimuli with large difference between the two sides, or the blank screen condition) and this keeps track of how many times the current trial's condition has been repeated.
+== intervals/trials/response_choice Enumerated type. The response registered at the end of the trial, which determines the feedback according to the contrast condition. Note that in a small percentage of cases (~4%, see manuscript Methods) the initial wheel turn was in the opposite direction. -1 for Right choice (i.e. correct when stimuli are on the right); +1 for left choice; 0 for Nogo choice.
+== intervals/trials/response_time Times are relative to the same time base as every other time in the dataset, not to the start of the trial.
+== intervals/trials/go_cue The 'goCue' is referred to as the 'auditory tone cue' in the manuscript.
+== intervals/trials/visual_stimulus_left_contrast Proportion contrast. A value of 0.5 means 50% contrast. 0 is a blank screen: no change to any pixel values on that side (completely undetectable).
+== units/phy_annotations 0 = noise (these are already excluded and don't appear in this dataset at all); 1 = MUA (i.e. presumed to contain spikes from multiple neurons; these are not analyzed in any analyses in the paper); 2 = Good (manually labeled); 3 = Unsorted. In this dataset 'Good' was applied in a few but not all datasets to included neurons, so in general the neurons with _phy_annotation>=2 are the ones that should be included.
+== units/spike_amps The peak-to-trough amplitude,
+[... 57 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i -E "visual angle|d\.v\.a|wheel" paper/10.1038-s41586-019-1787-x.txt | head -40
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  P=paper/10.1038-s41586-019-1787-x.txt; wc -l $P; grep -o -i -E ".{300}(visual angle|d\.v\.a).{300}" $P | head -8
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  P=paper/10.1038-s41586-019-1787-x.txt; awk '{print NR": "length($0)": "substr($0,1,100)}' $P | head -420 | awk -F': ' '$2>200'
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+t=open('paper/10.1038-s41586-019-1787-x.txt').read().split('\n')[6]
+import re
+for h in ['Training protocol','Data analysis','Kernel regression','Determining individual','Estimation of false','Focality','Population decoding','jPECC','ccCP','Engagement Index','GLM prediction','Neuronal recordings','Anatomical targeting','Spike sorting','Statistics','Data availability','Code availability']:
+    for m in re.finditer(h,t): print(h, m.start())
+EOF
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read().split('\n')[6]
+print(t[31996:46300]); print('=======');print(t[60400:69700])"
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; cat > t3.py <<'EOF'
+import remfile,h5py,numpy as np,time,resource
+from dandi.dandiapi import DandiAPIClient
+c=DandiAPIClient(); ds=c.get_dandiset('000017','0.240329.1926')
+a=ds.get_asset_by_path('sub-Cori/sub-Cori_ses-20161214T120000.nwb')
+t=time.time()
+f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1,strip_query=True)),'r')
+st=f['units/spike_times']; print(st.chunks, st.compression)
+x=st[:]; print('spikes',time.time()-t); t=time.time()
+w=f['acquisition/wheel_position/data']; print(w.chunks); y=w[:]; print('wheel',time.time()-t)
+print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+EOF
+$TMPDIR/venv/bin/python t3.py 2>&1 | grep -v Warn
+```
+
+```
+None None
+spikes 3.874769449234009
+None
+wheel 1.4394478797912598
+0.4189
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/inspect.py <<'EOF'
-import h5py, remfile, requests, sys
-aid = sys.argv[1]
-url = requests.get(f"https://api.dandiarchive.org/api/assets/{aid}/download/", allow_redirects=False).headers["Location"]
-print(url)
-f = h5py.File(remfile.File(url), "r")
-def visit(name, obj):
-    if isinstance(obj, h5py.Dataset):
-        print(f"{name} {obj.shape} {obj.dtype} {dict((k, (v if not hasattr(v,'shape') or v.size<5 else '...')) for k,v in obj.attrs.items() if k not in ('object_id','namespace'))}")
-    else:
-        a = {k: v for k, v in obj.attrs.items() if k not in ('object_id','namespace')}
-        print(f"{name}/ {a}")
-f.visititems(visit)
+cd $TMPDIR; cat > t4.py <<'EOF'
+import remfile,h5py,numpy as np,collections
+from dandi.dandiapi import DandiAPIClient
+c=DandiAPIClient(); ds=c.get_dandiset('000017','0.240329.1926')
+a=ds.get_asset_by_path('sub-Cori/sub-Cori_ses-20161214T120000.nwb')
+f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1,strip_query=True)),'r')
+U=f['units']; E=f['general/extracellular_ephys/electrodes']
+pc=U['peak_channel'][:,0]; el=U['electrodes'][:].reshape(-1,50); eg=[f[r].name for r in U['electrode_group'][:]]
+gn=E['group_name'][:].astype(str); site=E['site_id'][:]; loc=E['location'][:].astype(str)
+print(pc.min(),pc.max()); print(el[:5,:5]); print(collections.Counter(eg))
+for i in [0,1,500,1000]: print(i,pc[i],eg[i],el[i,:3], gn[el[i,0]], site[el[i,0]], loc[el[i,0]])
+print(collections.Counter(gn)); print(site[:5], site[370:380])
+wm=f['processing/behavior/BehavioralEpochs/wheel_moves']; print(dict(wm.attrs)); print({k:dict(wm[k].attrs) for k in wm})
+print(U['cluster_depths'][:5,0], E['y'][:5], E['site_position'][:5])
+# does depth match peak channel via site_position?
 EOF
-cd $TMPDIR && . env/bin/activate && time python inspect.py 92694e6e-84fd-4198-a7e3-64e764f8e086 > cori1.txt; wc -l cori1.txt; head -c 20000 cori1.txt
+$TMPDIR/venv/bin/python t4.py 2>&1 | grep -v Warn
 ```
 
 ```
+1 740
+[[247 246 244 245 248]
+ [209 211 213 207 205]
+ [202 200 204 203 199]
+ [253 255 250 254 251]
+ [295 291 293 296 298]]
+Counter({'/general/extracellular_ephys/Probe1': 551, '/general/extracellular_ephys/Probe2': 534})
+0 248 /general/extracellular_ephys/Probe1 [247 246 244] Probe1 253 ACA
+1 210 /general/extracellular_ephys/Probe1 [209 211 213] Probe1 214 ACA
+500 656 /general/extracellular_ephys/Probe2 [281 279 283] Probe1 288 MOs
+1000 220 /general/extracellular_ephys/Probe1 [219 217 221] Probe1 224 ACA
+Counter({np.str_('Probe1'): 374, np.str_('Probe2'): 374})
+[0 1 2 3 4] [380 381 382 383   0   1   2   3   4   5]
+{'comments': '0 for \'flinches\' or otherwise unclassified movements, 1 for left/clockwise turns, 2 for right/counter-clockwise turns (where again "left" means "would be the correct direction for a stimulus presented on the left). A detected movement is counted as \'left\' or \'right\' only if it was sufficient amplitude that it would have registered a correct response (and possibly did), within a minimum amount of time from the start of the movement. Movements failing those criteria are flinch/unclassified type.', 'description': 'Detected wheel movements.', 'namespace': 'core', 'neurodata_type': 'IntervalSeries', 'object_id': 'ac2f0e4d-1f97-4b95-8980-2b9ccb77585d'}
+{'data': {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'n/a'}, 'timestamps': {'interval': np.int64(1), 'unit': 'seconds'}}
+[2536.658886   2169.25975458 2072.93292007 2597.73170469 3030.30155716] [nan nan nan nan nan] [[43. 20.]
+ [11. 20.]
+ [59. 40.]
+ [27. 40.]
+ [43. 60.]]
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; git clone -q https://github.com/nsteinme/steinmetz-et-al-2019 sc 2>&1 | tail -2; cd sc && git log -1 --format=%h && ls -R | head -50
+```
+
+```
+9a0bea8
+.:
+LICENSE
+README.md
+behavior
+ccCP
+images
+jPECC
+launchNeuronRasterViewer.m
+launchPopRasterMovie.m
+launchRasterViewer.m
+plotting
+reducedRankRegression
+utils
+
+./behavior:
+findMoveTimes.m
+inclusionData
+
+./behavior/inclusionData:
+[... 32 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/sc; grep -n -i -E "signrank|ranksum|pVals|effectSize|inclT|baseline|bslWin|0\.0083|0\.05" reducedRankRegression/kernelFitBasic.m | head -60; cat behavior/findMoveTimes.m | head -80; cat utils/brainRegionGroups.m 2>/dev/null | head -40; ls utils
+```
+
+```
+4:function [km, binnedSpikes, inclU, inclTimes, trNum, cweA, cwtA, pvals, bslMeans, effectSizes] = ...
+22:winNoMove = [-0.05 0.4];
+34:inclT = cweA.inclTrials;
+36:rewNogo = cwtA.feedbackTime(inclT & choice==3 & fb==1);
+51:inclT = inclT & (hasLeftMove | hasRightMove | hasNoMoveInWin);           
+55:cweA = addvars(cweA, inclT, hasLeftMove, hasRightMove, hasNoMoveInWin, firstMoveType);
+98:trTimes = stimOn(inclT)+[0:timeBinSize:winNoMove(end)]; 
+106:bslTimes = stimOn(inclT)+[-0.2:timeBinSize:0]; 
+110:stimTimes = stimOn(inclT)+[0.05:timeBinSize:0.15]; 
+114:mvTimes = moveTimeAbs(inclT&(hasLeftMove|hasRightMove))+[-0.1:timeBinSize:0.05]; 
+117:mTr = (hasLeftMove|hasRightMove); mTr = mTr(inclT);
+118:hasR = hasRightMove(inclT); hasL = hasLeftMove(inclT); 
+120:periMvTimes = moveTimeAbs(inclT&(hasLeftMove|hasRightMove))+[-0.05:timeBinSize:0.2]; 
+129:pvals = nan(numel(inclU),6);
+130:effectSizes = nan(numel(inclU),6);
+134:        pvals(q,1) = signrank(xx); 
+135:        effectSizes(q,1) = sum(xx>0)-sum(xx<0);
+138:        pvals(q,2) = signrank(xx); 
+139:        effectSizes(q,2) = sum(xx>0)-sum(xx<0);
+142:        pvals(q,3) = signrank(xx);
+[... 131 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/sc; sed -n 18,60p reducedRankRegression/kernelFitBasic.m; sed -n 95,128p reducedRankRegression/kernelFitBasic.m; cat behavior/inclusionData/getIncludedUnits.m | head -30
+```
+
+```
+%% choose trials/events
+winCountMove = [0.125 0.4];
+winNoMove = [-0.05 0.4];
+timeBinSize = 0.005;
+
+% trying to fix edge effects by rounding each stim event to the nearest
+% time bin... :/ 
+% cwtA.stimOn = round(cwtA.stimOn/timeBinSize)*timeBinSize;
+
+stimOn = cwtA.stimOn;
+cL = cweA.contrastLeft; 
+cR = cweA.contrastRight;
+choice = cweA.choice;
+fb = cweA.feedback; 
+inclT = cweA.inclTrials;
+
+rewNogo = cwtA.feedbackTime(inclT & choice==3 & fb==1);
+
+ucl = unique(cL);
+ucr = unique(cR);
+[... 63 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read()
+i=t.find('Extended Data Table 1'); 
+import re
+for m in re.finditer('Extended Data Table 1',t): print(m.start())
+"; grep -n -i "table 1" paper/10.1038-s41586-019-1787-x.txt | cut -c1-300 | tail -5
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read()
+print(t[111500:114500])"; sed -n 225,300p paper/10.1038-s41586-019-1787-x.txt | cut -c1-400
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i -E "embed|literal|def check" tools/entry.py | head -40
+```
+
+```
+22:- no notebook or helper embeds a large literal array or an encoded image, or
+61:MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one literal is "embedded data"
+63:EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
+66:LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
+172:def check(entry_dir: Path) -> Report:
+366:    if EMBEDDED_IMAGE.search(code):
+372:    if LONG_LITERAL.search(code):
+373:        report.error(where, f"contains a literal of more than {MAX_LITERAL_NUMBERS} numbers; "
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read()
+for s in [96400, 98800]: print(t[s:s+1500]); print('-----')
+"; grep -n -E "^(MOs|VISp|Region|Acronym|Number)" paper/10.1038-s41586-019-1787-x.txt | head; sed -n 300,400p paper/10.1038-s41586-019-1787-x.txt | tr '\n' '|' | cut -c1-3000
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read()
+print(t[97900:98800])"; sed -n 205,229p paper/10.1038-s41586-019-1787-x.txt | tr '\n' '|'
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 190,206p paper/10.1038-s41586-019-1787-x.txt | tr '\n' '|'; python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read()
+print(t[97700:97950])"; date -u
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+Data layout is clear. Now writing the helper module (loading, trial classification, binning).
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; cat > t5.py <<'EOF'
+import remfile,h5py,numpy as np,collections
+from dandi.dandiapi import DandiAPIClient
+c=DandiAPIClient(); ds=c.get_dandiset('000017','0.240329.1926')
+for p in ['sub-Cori/sub-Cori_ses-20161214T120000.nwb','sub-Lederberg/sub-Lederberg_ses-20171206T120000.nwb']:
+  f=h5py.File(remfile.File(ds.get_asset_by_path(p).get_content_url(follow_redirects=1,strip_query=True)),'r')
+  U=f['units']; E=f['general/extracellular_ephys/electrodes']
+  pc=U['peak_channel'][:,0]; el=U['electrodes'][:].reshape(-1,50)
+  eg=np.array([f[r].name.split('/')[-1] for r in U['electrode_group'][:]])
+  gn=E['group_name'][:].astype(str); y=E['site_position'][:,1]; d=U['cluster_depths'][:,0]
+  print(p, len(gn), collections.Counter(gn))
+  for off in [-1,0]:
+    idx=pc+off
+    ok=(idx>=0)&(idx<len(gn))
+    print('off',off,'group match',np.mean(gn[idx[ok]]==eg[ok]),'median |depth-y|',np.median(np.abs(y[idx[ok]]-d[ok])))
+  # within probe el index
+  base=np.array([np.where(gn==g)[0][0] for g in eg])
+  print('el0 within', np.median(np.abs(y[el[:,0]+base]-d)), np.mean(gn[el[:,0]+base]==eg))
+  print(np.unique(E['location'][:].astype(str)))
+EOF
+$TMPDIR/venv/bin/python t5.py 2>&1 | grep -v Warn
+```
+
+```
+sub-Cori/sub-Cori_ses-20161214T120000.nwb 748 Counter({np.str_('Probe1'): 374, np.str_('Probe2'): 374})
+off -1 group match 1.0 median |depth-y| 8.390771106968145
+off 0 group match 1.0 median |depth-y| 14.614958721127095
+el0 within 8.390771106968145 1.0
+['ACA' 'CA3' 'DG' 'LS' 'MOs' 'SUB' 'VISp' 'root']
+sub-Lederberg/sub-Lederberg_ses-20171206T120000.nwb 1122 Counter({np.str_('Probe1'): 374, np.str_('Probe2'): 374, np.str_('Probe3'): 374})
+off -1 group match 1.0 median |depth-y| 7.213023674377723
+off 0 group match 1.0 median |depth-y| 12.406911087886556
 Traceback (most recent call last):
-  File "/tmp/claude-1001/inspect.py", line 1, in <module>
-    import h5py, remfile, requests, sys
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/h5py/__init__.py", line 33, in <module>
-    from . import version
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/h5py/version.py", line 17, in <module>
-    import numpy
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/__init__.py", line 109, in <module>
-    from numpy.__config__ import show_config
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/__config__.py", line 4, in <module>
-    from numpy._core._multiarray_umath import (
-    ...<3 lines>...
-    )
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/__init__.py", line 24, in <module>
-    from . import multiarray
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/multiarray.py", line 11, in <module>
-    from . import _multiarray_umath, overrides
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/overrides.py", line 4, in <module>
-    import inspect
-  File "/tmp/claude-1001/inspect.py", line 1, in <module>
-[... 21 more lines not kept]
+  File "/tmp/claude-1001/t5.py", line 17, in <module>
+    print('el0 within', np.median(np.abs(y[el[:,0]+base]-d)), np.mean(gn[el[:,0]+base]==eg))
+                                         ~^^^^^^^^^^^^^^
+IndexError: index 1334 is out of bounds for axis 0 with size 1122
+Shell cwd was reset to
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "entries/steinmetz-2019/steinmetz.py",
+ "content": "\"\"\"Loading and measures for Steinmetz et al. (2019), dandiset 000017.\n\nEach parameter says where it comes from:\n- \"Methods\" means the Methods of the paper (doi:10.1038/s41586-019-1787-x),\n  section named; \"claims\" means claims/steinmetz-2019.yaml, definition named\n  (T, N, M, R); \"code\" means github.com/nsteinme/steinmetz-et-al-2019 at commit\n  9a0bea8, file named; \"assumption\" is a choice this attempt made, with the\n  reason; \"standard\" is a choice that cannot change a result.\n\nThe files are streamed from the archive with remfile and h5py; nothing is\nwritten to disk.\n\"\"\"\nimport time\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\n\nDANDISET = \"000017\"\nVERSION = \"0.240329.1926\"   # the only published version (notebook header)\n\nBIN = 0.005                 # 5 ms bins (Methods, Data analysis; code kernelFitBasic.m)\nSTIM_WIN = (-0.3, 0.5)      # stimulus-aligned window kept (s); covers every window used\nMOVE_WIN = (-0.3, 0.3)      # movement-aligned window kept (s)\n# Definition T (claims; Methods, Training protocol).\nGO_WIN = (0.125, 0.4)       # onset of a choice turn\nNOMOVE_WIN = (-0.05, 0.4)   # no movement of any kind\nMIN_TRIALS_TYPE = 12        # sessions need 12 Left, 12 Right and 12 NoGo trials\n# Definition N (claims; Methods, Data analysis).\nMIN_RATE = 0.1              # trial firing rate, stimulus onset to 0.4 s, Hz\nMIN_PER_REGION = 13         # neurons of one region in one session\nNONBRAIN = {\"root\", \"void\", \"fiber tracts\"}  # labels that are not brain regions (assumption:\n# 'root' is the label for channels outside any annotated region)\n\n# Extended Data Table 1 of the paper: region -> (recordings, mice, responsive, total neurons).\n# Reference values the claims compare with (VISl and VISrl printed \"VISI\", \"VISrI\" in the text).\nED_TABLE1 = {\n    \"ACA\": (11, 8, 395, 608), \"ACB\": (3, 3, 152, 255), \"APN\": (2, 2, 177, 235),\n    \"BLA\": (2, 2, 107, 261), \"CA1\": (21, 10, 494, 1129), \"CA3\": (10, 6, 243, 438),\n    \"CP\": (5, 5, 524, 914), \"DG\": (16, 10, 336, 711), \"GPe\": (3, 3, 146, 274),\n    \"ILA\": (3, 3, 192, 338), \"LD\": (6, 5, 209, 308), \"LGd\": (10, 5, 397, 811),\n    \"LP\": (11, 8, 393, 732), \"LS\": (7, 5, 508, 844), \"MD\": (3, 3, 244, 381),\n    \"MG\": (2, 2, 180, 276), \"MOp\": (3, 3, 553, 682), \"MOs\": (19, 9, 993, 1534),\n    \"MRN\": (11, 7, 722, 857), \"OLF\": (9, 5, 210, 684), \"ORB\": (6, 5, 281, 770),\n    \"PAG\": (3, 3, 72, 130), \"PL\": (10, 7, 438, 728), \"PO\": (5, 4, 342, 620),\n    \"POL\": (3, 3, 132, 190), \"POST\": (4, 3, 163, 272), \"RSP\": (9, 5, 308, 598),\n    \"RT\": (2, 2, 111, 160), \"SCm\": (11, 6, 738, 997), \"SCs\": (10, 6, 192, 317),\n    \"SNr\": (4, 3, 201, 274), \"SSp\": (5, 4, 296, 461), \"SUB\": (9, 7, 494, 669),\n    \"VISa\": (5, 4, 207, 285), \"VISam\": (11, 8, 501, 805), \"VISl\": (3, 2, 248, 403),\n    \"VISp\": (12, 8, 649, 923), \"VISpm\": (4, 4, 230, 516), \"VISrl\": (2, 2, 85, 236),\n    \"VPL\": (4, 3, 202, 255), \"VPM\": (4, 2, 235, 357), \"ZI\": (4, 2, 167, 220),\n}\nREGIONS42 = sorted(ED_TABLE1)\n\n# Supplementary Table 1: subject -> (sex, genotype).\nSUPP_T1 = {\n    \"Cori\": (\"F\", \"tetO-G6s x CaMK-tTA\"), \"Forssmann\": (\"M\", \"C57BL/6J\"),\n    \"Hench\": (\"M\", \"tetO-G6s x CaMK-tTA\"), \"Lederberg\": (\"F\", \"Vglut1-IRES2-Cre-D\"),\n    \"Moniz\": (\"M\", \"RCL-GCaMP6f x VGlut-Cre\"), \"Muller\": (\"F\", \"RCL-GCaMP6f x VGlut-Cre\"),\n    \"Radnitz\": (\"F\", \"Snap25-GCaMP6s\"), \"Richards\": (\"M\", \"C57BL/6J\"),\n    \"Tatum\": (\"F\", \"Vglut1-IRES2-Cre-D\"), \"Theiler\": (\"F\", \"RCL-GCaMP6f x VGlut-Cre\"),\n}\n\n# Supplementary Table 2: (subject, date, age in weeks, areas recorded).\nSUPP_T2 = [\n    (\"Cori\", \"2016-12-14\", 11, \"ACA, CA3, DG, LS, MOs, SUB, VISp\"),\n    (\"Cori\", \"2016-12-17\", 12, \"CA1, POST, VISl, VISpm\"),\n    (\"Cori\", \"2016-12-18\", 12, \"CA1, DG, LP, MG, MRN, POST, VISam, VISp\"),\n    (\"Radnitz\", \"2017-01-08\", 20, \"ACA, ILA, MOs, MRN, OLF, PL, RSP, SCm, SCs, VISp\"),\n    (\"Radnitz\", \"2017-01-09\", 20, \"MOs, MRN, SCm, VISp\"),\n    (\"Radnitz\", \"2017-01-10\", 20, \"ACA, ACB, CA1, DG, LD, LP, MOs, PL, PO, VISam\"),\n    (\"Radnitz\", \"2017-01-11\", 20, \"APN, CA1, DG, LP, MRN, POL, RSP, SCm, SCs, VISpm\"),\n    (\"Radnitz\", \"2017-01-12\", 20, \"CP, MOp, SSp\"),\n    (\"Muller\", \"2017-01-07\", 17, \"ACA, ACB, MOs, MRN, OLF, PL, RSP, SCs, VISp\"),\n    (\"Muller\", \"2017-01-08\", 17, \"CA1, DG, LP, MOs, PO, VISam\"),\n    (\"Muller\", \"2017-01-09\", 17, \"CA1, MRN, RSP, SCm, SCs, VISpm, VISrl\"),\n    (\"Moniz\", \"2017-05-15\", 30, \"APN, CA1, DG, LP, POL, SUB, VISam, VISpm\"),\n    (\"Moniz\", \"2017-05-16\", 30, \"CA1, DG, LGd, LP, MG, SUB, VISa, VISp\"),\n    (\"Moniz\", \"2017-05-18\", 30, \"LD, MOp, SSp\"),\n    (\"Hench\", \"2017-06-15\", 31, \"CA1, CA3, DG, ILA, LD, LP, LS, MOs, OLF, PL, PO, SUB, VISa, VISp\"),\n    (\"Hench\", \"2017-06-16\", 32, \"CA1, CA3, LD, LS, OLF, ORB, PL, VISam, VISl, VPL\"),\n    (\"Hench\", \"2017-06-17\", 32, \"CA1, DG, GPe, MRN, POL, POST, SCm, SCs, VISl, VISp, VISrl\"),\n    (\"Hench\", \"2017-06-18\", 32, \"CP, LS, MOp\"),\n    (\"Theiler\", \"2017-10-11\", 46, \"ACA, CA1, DG, ILA, LP, MOs, PL, SUB, VISam, VISp\"),\n    (\"Richards\", \"2017-10-29\", 26, \"ACA, CA1, DG, LP, LS, MD, MOs, PO, RSP, SUB, VISa, VPM\"),\n    (\"Richards\", \"2017-10-30\", 26, \"CA3, MOs, OLF, ORB, POST, SCm, SNr\"),\n    (\"Richards\", \"2017-10-31\", 26, \"MOs, MRN, OLF, ORB, PAG, RSP, SCm, SCs\"),\n    (\"Richards\", \"2017-11-01\", 26, \"CA1, CA3, CP, LGd, SNr, VPM, ZI\"),\n    (\"Richards\", \"2017-11-02\", 26, \"LP, OLF, PO, RT\"),\n    (\"Forssmann\", \"2017-11-01\", 26, \"ACA, CA1, DG, LGd, LS, MOs, SUB, VISa, VISp, VPL\"),\n    (\"Forssmann\", \"2017-11-02\", 26, \"ACA, CA1, DG, MOs, OLF, ORB, PL, SUB, VISa\"),\n    (\"Forssmann\", \"2017-11-04\", 27, \"CA1, SSp\"),\n    (\"Forssmann\", \"2017-11-05\", 27, \"CA3, CP, LD, OLF, SSp, VPL\"),\n    (\"Lederberg\", \"2017-12-05\", 15, \"ACA, CA1, DG, LGd, MD, MOs, PL, SUB, VISam, VISp\"),\n    (\"Lederberg\", \"2017-12-06\", 15, \"ACA, CA1, DG, LGd, MOs, MRN, PL, SCm, SCs, VISam, ZI\"),\n    (\"Lederberg\", \"2017-12-07\", 15, \"CA1, MOs, MRN, ORB, PAG, RSP, SCm, SCs, VISp\"),\n    (\"Lederberg\", \"2017-12-08\", 15, \"BLA, CA3, GPe, LGd, VPM, ZI\"),\n    (\"Lederberg\", \"2017-12-09\", 15, \"CA3, LGd, SSp\"),\n    (\"Lederberg\", \"2017-12-10\", 15, \"LD, RT, VPL, VPM\"),\n    (\"Lederberg\", \"2017-12-11\", 15, \"ACB, CA3, CP, LGd, SNr, ZI\"),\n    (\"Tatum\", \"2017-12-06\", 15, \"ACA, CA1, DG, LGd, LP, LS, MD, MOs, RSP, VISam\"),\n    (\"Tatum\", \"2017-12-07\", 15, \"MOs, MRN, PL, SCm, SCs, VISam\"),\n    (\"Tatum\", \"2017-12-08\", 15, \"MOs, ORB, PAG, RSP, SCm, SCs, VISam\"),\n    (\"Tatum\", \"2017-12-09\", 15, \"BLA, CA3, GPe, LGd, SNr\"),\n]\n\n# Region groups (claims, \"Region groups\", from code utils/brainRegionGroups.m and Methods).\nVIS = [\"VISp\", \"VISpm\", \"VISl\", \"VISrl\", \"VISa\", \"VISam\"]\nFRONTAL_JPECC = [\"MOs\", \"MOp\", \"PL\"]\nMIDBRAIN_JPECC = [\"MRN\", \"SCm\", \"SNr\", \"ZI\"]\nNEOCORTEX = [\"ACA\", \"ILA\", \"MOp\", \"MOs\", \"ORB\", \"PL\", \"RSP\", \"SSp\"] + VIS\nVIS_THALAMUS = [\"LGd\", \"LP\", \"LD\"]\nED6B_MIDBRAIN = [\"MRN\", \"SCm\", \"SCs\", \"APN\", \"PAG\"]\nED6B_BASAL_GANGLIA = [\"CP\", \"GPe\", \"SNr\", \"ACB\", \"LS\"]\nED6B_HIPPOCAMPUS = [\"POST\", \"SUB\", \"DG\", \"CA1\", \"CA3\"]\nVISUAL_PATHWAY = VIS + [\"LGd\", \"LP\", \"LD\", \"SCs\", \"CP\", \"GPe\", \"SNr\", \"SCm\", \"MRN\", \"APN\", \"ZI\"]\n\n\ndef asset_paths():\n    \"\"\"The NWB files of the pinned version, sorted by path.\"\"\"\n    ds = DandiAPIClient().get_dandiset(DANDISET, VERSION)\n    return sorted((a.path, a.size) for a in ds.get_assets())\n\n\ndef open_nwb(path):\n    \"\"\"Stream one NWB file (h5py over remfile); nothing is written to disk.\"\"\"\n    ds = DandiAPIClient().get_dandiset(DANDISET, VERSION)\n    url = ds.get_asset_by_path(path).get_content_url(follow_redirects=1, strip_query=True)\n    return h5py.File(remfile.File(url), \"r\")\n\n\ndef _s(x):\n    return x.decode() if isinstance(x, bytes) else str(x)\n\n\ndef file_metadata(f):\n    \"\"\"Subject, session and probe metadata, without reading any large array.\"\"\"\n    g = f[\"general\"]\n    E = g[\"extracellular_ephys/electrodes\"]\n    return dict(\n        identifier=_s(f[\"identifier\"][()]),\n        subject=_s(g[\"subject/subject_id\"][()]), sex=_s(g[\"subject/sex\"][()]),\n        genotype=_s(g[\"subject/genotype\"][()]), age=_s(g[\"subject/age\"][()]),\n        start=_s(f[\"session_start_time\"][()]),\n        probes=len(np.unique(E[\"group_name\"][:])), n_units=f[\"units/id\"].shape[0],\n        n_trials=f[\"intervals/trials/id\"].shape[0],\n        n_spikes=f[\"units/spike_times\"].shape[0],\n        wheel_samples=f[\"acquisition/wheel_position/data\"].shape[0],\n        wheel_rate_attr=float(f[\"acquisition/wheel_position/starting_time\"].attrs[\"rate\"]),\n        wheel_conversion=float(f[\"acquisition/wheel_position/data\"].attrs[\"conversion\"]),\n    )\n\n\ndef counts_aligned(spike_times, spike_index, units, events, lo, hi, bin_size=BIN):\n    \"\"\"Spike counts per unit, event and bin: array (units, events, bins), uint8.\n\n    Bins of `bin_size` from `lo` to `hi` around each event. Events that are NaN\n    give zero counts.\n    \"\"\"\n    nb = int(round((hi - lo) / bin_size))\n    edges = events[:, None] + lo + bin_size * np.arange(nb + 1)[None, :]\n    bad = ~np.isfinite(events)\n    edges[bad] = 0.0\n    out = np.zeros((len(units), len(events), nb), dtype=np.uint8)\n    for k, u in enumerate(units):\n        a = spike_index[u - 1] if u > 0 else 0\n        b = spike_index[u]\n        st = spike_times[a:b]\n        c = np.diff(np.searchsorted(st, edges.ravel()).reshape(edges.shape), axis=1)\n        c[bad] = 0\n        out[k] = np.minimum(c, 255)\n    return out\n\n\ndef classify_trials(tr, mv_on, mv_off, mv_type):\n    \"\"\"Definition T (claims; Methods, Training protocol).\n\n    For each trial the first wheel movement whose interval overlaps the window\n    -0.05 to 0.4 s from stimulus onset. Left or Right: that movement is a turn\n    the dataset types as Left (1) or Right (2), i.e. of the amplitude that\n    registers a choice (wheel_moves comments), with onset 0.125 to 0.4 s.\n    NoGo: no movement overlaps -0.05 to 0.4 s. Otherwise excluded. Then\n    disengaged trials (the dataset's `included` column, checked against the\n    Methods rule in the notebook) are dropped.\n\n    The code rule (code findMoveTimes.m, kernelFitBasic.m: first onset after\n    stimulus minus 0.1 s and before feedback) is returned as a variant column.\n    \"\"\"\n    stim = tr[\"stim\"].to_numpy()\n    fb = tr[\"fb_time\"].to_numpy()\n    n = len(stim)\n    tchoice = np.array([\"X\"] * n, dtype=object)\n    first_on = np.full(n, np.nan)\n    first_type = np.full(n, -1)\n    any_on = np.full(n, np.nan)       # first onset of any movement after stimulus onset\n    code_choice = np.array([\"X\"] * n, dtype=object)\n    for i in range(n):\n        s = stim[i]\n        ov = np.where((mv_off >= s + NOMOVE_WIN[0]) & (mv_on <= s + NOMOVE_WIN[1]))[0]\n        if len(ov) == 0:\n            tchoice[i] = \"N\"\n        else:\n            j = ov[0]\n            first_on[i] = mv_on[j] - s\n            first_type[i] = mv_type[j]\n            if GO_WIN[0] <= mv_on[j] - s <= GO_WIN[1] and mv_type[j] in (1, 2):\n                tchoice[i] = \"L\" if mv_type[j] == 1 else \"R\"\n        k = np.searchsorted(mv_on, s)\n        if k < len(mv_on):\n            any_on[i] = mv_on[k] - s\n        # code variant\n        k = np.searchsorted(mv_on, s - 0.1, side=\"right\")\n        if k < len(mv_on) and mv_on[k] < fb[i]:\n            ft = mv_on[k] - s\n            if (ft < NOMOVE_WIN[0]) or (ft > NOMOVE_WIN[1]):\n                code_choice[i] = \"N\"\n            elif GO_WIN[0] < ft < GO_WIN[1] and mv_type[k] in (1, 2):\n                code_choice[i] = \"L\" if mv_type[k] == 1 else \"R\"\n    tr = tr.copy()\n    tr[\"first_move\"] = first_on\n    tr[\"first_type\"] = first_type\n    tr[\"any_onset\"] = any_on\n    tr[\"t_raw\"] = tchoice\n    tr[\"t_choice\"] = np.where(tr[\"included\"].to_numpy(), tchoice, \"X\")\n    tr[\"code_choice\"] = np.where(tr[\"included\"].to_numpy(), code_choice, \"X\")\n    return tr\n\n\ndef disengaged_rule(tr):\n    \"\"\"Methods rule for disengaged trials: a Miss (stimulus present, NoGo response)\n    preceded by two or more Misses, and the run of NoGo responses at the end.\"\"\"\n    resp = tr[\"choice\"].to_numpy()\n    stim_present = (tr[\"cl\"].to_numpy() > 0) | (tr[\"cr\"].to_numpy() > 0)\n    miss = stim_present & (resp == 0)\n    dis = np.zeros(len(resp), bool)\n    for i in range(2, len(resp)):\n        if miss[i] and miss[i - 1] and miss[i - 2]:\n            dis[i] = True\n    i = len(resp) - 1\n    while i >= 0 and resp[i] == 0:\n        dis[i] = True\n        i -= 1\n    return ~dis\n\n\nclass Session:\n    \"\"\"One session: trials, wheel movements, passive events and binned spikes.\"\"\"\n\n    def __init__(self, path, rng, bins=True):\n        t0 = time.time()\n        self.path = path\n        f = open_nwb(path)\n        self.meta = file_metadata(f)\n        self.name = self.meta[\"identifier\"]\n        self.subject = self.meta[\"subject\"]\n        T = f[\"intervals/trials\"]\n        tr = pd.DataFrame(dict(\n            start=T[\"start_time\"][:], stim=T[\"visual_stimulus_time\"][:],\n            gocue=T[\"go_cue\"][:], resp_time=T[\"response_time\"][:],\n            fb_time=T[\"feedback_time\"][:], fb_type=T[\"feedback_type\"][:],\n            choice=T[\"response_choice\"][:], cl=T[\"visual_stimulus_left_contrast\"][:],\n            cr=T[\"visual_stimulus_right_contrast\"][:], included=T[\"included\"][:].astype(bool),\n            rep_num=T[\"rep_num\"][:]))\n        # Wheel. The 'rate' attribute holds the sampling interval (checked in the notebook).\n        W = f[\"acquisition/wheel_position\"]\n        self.wheel = W[\"data\"][:].astype(np.float32)          # encoder units\n        self.wheel_mm = float(W[\"data\"].attrs[\"conversion\"])  # mm per unit\n        self.wheel_t0 = float(W[\"starting_time\"][()])\n        self.wheel_dt = float(W[\"starting_time\"].attrs[\"rate\"])\n        M = f[\"processing/behavior/BehavioralEpochs/wheel_moves\"]\n        ts = M[\"timestamps\"][:]\n        self.mv_on, self.mv_off = ts[0::2], ts[1::2]\n        self.mv_type = M[\"data\"][:]\n        self.trials = classify_trials(tr, self.mv_on, self.mv_off, self.mv_type)\n        self.trials[\"rule_included\"] = disengaged_rule(self.trials)\n        # Passive replay.\n        P = f[\"stimulus/presentation\"]\n        self.passive_vis = pd.DataFrame(dict(\n            t=P[\"passive_left_contrast/timestamps\"][:], pl=P[\"passive_left_contrast/data\"][:],\n            pr=P[\"passive_right_contrast/data\"][:],\n            t_right=P[\"passive_right_contrast/timestamps\"][:]))\n        ev = [(\"visual\", self.passive_vis[\"t\"].to_numpy())]\n        for k, nm in [(\"passive_beeps\", \"beep\"), (\"passive_click_times\", \"click\"),\n                      (\"passive_white_noise\", \"noise\")]:\n            ev.append((nm, P[k + \"/timestamps\"][:]))\n        self.passive_all = pd.DataFrame(\n            [(nm, t) for nm, tt in ev for t in tt], columns=[\"kind\", \"t\"]).sort_values(\"t\")\n        # Pupil and face motion energy.\n        self.eye_t = f[\"processing/behavior/PupilTracking/eye_area/timestamps\"][:]\n        self.eye = f[\"processing/behavior/PupilTracking/eye_area/data\"][:]\n        ME = f[\"processing/behavior/BehavioralTimeSeries/face_motion_energy\"]\n        self.me = ME[\"data\"][:]\n        self.me_t0 = float(ME[\"starting_time\"][()])\n        self.me_dt = float(ME[\"starting_time\"].attrs[\"rate\"])\n        # Units: region from the peak channel. peak_channel is 1-based (checked in the\n        # notebook against cluster depths and site positions).\n        U = f[\"units\"]\n        E = f[\"general/extracellular_ephys/electrodes\"]\n        loc = E[\"location\"][:].astype(str)\n        peak = U[\"peak_channel\"][:, 0].astype(int) - 1\n        self.units = pd.DataFrame(dict(\n            phy=U[\"phy_annotations\"][:], region=loc[peak],\n            depth=U[\"cluster_depths\"][:, 0],\n            probe=E[\"group_name\"][:].astype(str)[peak]))\n        self.read_s = None\n        if bins:\n            st = U[\"spike_times\"][:]\n            si = U[\"spike_times_index\"][:]\n            amps = U[\"spike_amps\"][:, 0]\n            good = np.where(self.units[\"phy\"].to_numpy() >= 2)[0]\n            self.good = good\n            self.units[\"n_spikes\"] = np.diff(np.concatenate([[0], si]))\n            self.units[\"amp\"] = [np.mean(amps[(si[u - 1] if u else 0):si[u]]) if\n                                 self.units[\"n_spikes\"][u] else np.nan\n                                 for u in range(len(si))]\n            dur = st.max() - st.min() if len(st) else np.nan\n            self.units[\"rate_all\"] = self.units[\"n_spikes\"] / dur\n            del amps\n            trs = self.trials\n            self.stim_counts = counts_aligned(st, si, good, trs[\"stim\"].to_numpy(), *STIM_WIN)\n            # Movement time: Left/Right onset; for NoGo trials a time drawn at random from\n            # the Left/Right trials' times (claims definition T; code findMoveTimes.m).\n            go = trs[\"t_choice\"].isin([\"L\", \"R\"]).to_numpy()\n            mt = np.where(go, trs[\"first_move\"].to_numpy(), np.nan)\n            nogo = (trs[\"t_choice\"] == \"N\").to_numpy()\n            if go.sum():\n                mt[nogo] = rng.choice(mt[go], nogo.sum())\n            self.trials[\"move_time\"] = mt\n            self.move_counts = counts_aligned(st, si, good, trs[\"stim\"].to_numpy() + mt, *MOVE_WIN)\n            self.rew_counts = counts_aligned(st, si, good, trs[\"fb_time\"].to_numpy(), 0.0, 0.15)\n            self.pas_counts = counts_aligned(st, si, good, self.passive_all[\"t\"].to_numpy(), *STIM_WIN)\n            del st, si\n        self.read_s = time.time() - t0\n        f.close()\n\n    # --- wheel ---------------------------------------------------------------\n    def wheel_at(self, t):\n        \"\"\"Wheel position (encoder units) at times t, nearest sample.\"\"\"\n        i = np.clip(np.round((np.asarray(t) - self.wheel_t0) / self.wheel_dt).astype(int),\n                    0, len(self.wheel) - 1)\n        return self.wheel[i]\n\n    def moving_in(self, t, lo, hi):\n        \"\"\"True where a detected movement overlaps [t+lo, t+hi] (onset or in progress).\"\"\"\n        t = np.asarray(t)\n        return np.array([np.any((self.mv_off >= x + lo) & (self.mv_on <= x + hi)) for x in t])\n\n    def pupil_mean(self, t, lo, hi):\n        \"\"\"Mean pupil area in [t+lo, t+hi] for each t.\"\"\"\n        return np.array([np.nanmean(self.eye[(self.eye_t >= x + lo) & (self.eye_t < x + hi)])\n                         if np.any((self.eye_t >= x + lo) & (self.eye_t < x + hi)) else np.nan\n                         for x in t])\n\n    def me_mean(self, t, lo, hi):\n        tt = self.me_t0 + self.me_dt * np.arange(len(self.me))\n        return np.array([np.nanmean(self.me[(tt >= x + lo) & (tt < x + hi)]) for x in t])\n\n\ndef window_rate(counts, win_lo, win_hi, lo):\n    \"\"\"Mean rate (Hz) per unit and event over bins in [win_lo, win_hi) of an array\n    whose first bin starts at `lo`.\"\"\"\n    a = int(round((win_lo - lo) / BIN))\n    b = int(round((win_hi - lo) / BIN))\n    return counts[:, :, a:b].sum(axis=2) / ((b - a) * BIN)\n\n\ndef half_gauss_kernel(sd, bin_size=BIN):\n    \"\"\"Causal half-Gaussian smoothing kernel (Methods, Data analysis).\"\"\"\n    x = np.arange(0, int(np.ceil(5 * sd / bin_size)) + 1) * bin_size\n    k = np.exp(-x ** 2 / (2 * sd ** 2))\n    return k / k.sum()\n\n\ndef causal_smooth(x, sd, axis=-1):\n    k = half_gauss_kernel(sd)\n    x = np.moveaxis(np.asarray(x, float), axis, -1)\n    out = np.zeros_like(x)\n    for j, w in enumerate(k):\n        if j == 0:\n            out += w * x\n        else:\n            out[..., j:] += w * x[..., :-j]\n    return np.moveaxis(out, -1, axis)\n\n\ndef matched_contrast(groups, levels=(0.25, 0.5, 1.0), rng=None):\n    \"\"\"Definition M (claims; Methods, Training protocol): for each contrast level,\n    draw from each group as many trials as the smallest group has.\n\n    groups: list of (indices, contrasts) pairs. Returns list of index arrays.\n    \"\"\"\n    out = [[] for _ in groups]\n    for c in levels:\n        sets = [idx[np.isclose(con, c)] for idx, con in groups]\n        n = min(len(s) for s in sets)\n        for k, s in enumerate(sets):\n            if n:\n                out[k].extend(rng.choice(s, n, replace=False))\n    return [np.array(sorted(o), int) for o in out]\n\n\ndef combined_cp(rates, labels, conds, n_shuffle, rng):\n    \"\"\"Combined-conditions choice or detect probability (Methods, ccCP; code\n    ccCP/choiceProbShuf.m) for every unit at once.\n\n    rates: (trials, units); labels: bool (trials,), True for the first group;\n    conds: condition code per trial. Only conditions with both labels\n    contribute. Returns (cp, fraction of shuffles below cp) per unit; ties count\n    one half (Mann-Whitney U through mid-ranks).\n    \"\"\"\n    from scipy.stats import rankdata\n    use = np.zeros(len(labels), bool)\n    for c in np.unique(conds):\n        m = conds == c\n        if labels[m].any() and (~labels[m]).any():\n            use |= m\n    rates, labels, conds = rates[use], labels[use], conds[use]\n    if len(labels) == 0:\n        return None\n    ranks = np.zeros_like(rates, dtype=float)\n    denom = 0.0\n    offset = 0.0\n    groups = []\n    for c in np.unique(conds):\n        m = np.where(conds == c)[0]\n        ranks[m] = rankdata(rates[m], axis=0)\n        n1 = labels[m].sum()\n        n0 = len(m) - n1\n        denom += n1 * n0\n        offset += n1 * (n1 + 1) / 2\n        groups.append(m)\n    cp = (labels.astype(float) @ ranks - offset) / denom\n    perms = np.zeros((n_shuffle, len(labels)))\n    for s in range(n_shuffle):\n        lab = labels.copy()\n        for m in groups:\n            lab[m] = rng.permutation(lab[m])\n        perms[s] = lab\n    null = (perms @ ranks - offset) / denom\n    frac_below = (null < cp[None, :]).mean(axis=0) + 0.5 * (null == cp[None, :]).mean(axis=0)\n    return cp, frac_below, int(use.sum())\n"
+}
+```
+
+```
+File created successfully at: entries/steinmetz-2019/steinmetz.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && mv inspect.py listnwb.py && . env/bin/activate && time python listnwb.py 92694e6e-84fd-4198-a7e3-64e764f8e086 > cori1.txt; wc -l cori1.txt; head -c 25000 cori1.txt
-```
-
-```
-real	0m2.470s
-user	0m0.728s
-sys	0m0.057s
-168 cori1.txt
-https://dandiarchive.s3.amazonaws.com/blobs/eed/3ed/eed3ed78-e076-468a-b48f-0d3f4ee0319c?response-content-disposition=attachment%3B%20filename%3D%22sub-Cori_ses-20161214T120000.nwb%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=[removed: an AWS key]%2F20261021%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20261021T193615Z&X-Amz-Expires=21600&X-Amz-SignedHeaders=host&X-Amz-Signature=f591d2a3e83318f20dde783b99ac2ae7bcf68fb4944f143be304629ac0c2de87
-acquisition/ {}
-acquisition/lickPiezo/ {'comments': 'no comments', 'description': 'Voltage values from a thin-film piezo connected to the lick spout, so that values are proportional to deflection of the spout and licks can be detected as peaks of the signal.', 'neurodata_type': 'TimeSeries'}
-acquisition/lickPiezo/data (1314000,) float64 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'V'}
-acquisition/lickPiezo/starting_time () float64 {'rate': np.float64(0.002000031887945625), 'unit': 'seconds'}
-acquisition/wheel_position/ {'comments': 'The wheel has radius 31 mm and 1440 ticks per revolution, so multiply by 2*pi*r/tpr=0.135 to convert to millimeters. Positive velocity (increasing numbers) correspond to clockwise turns (if looking at the wheel from behind the mouse), i.e. turns that are in the correct direction for stimuli presented to the left. Likewise negative velocity corresponds to right choices.', 'description': 'The position reading of the rotary encoder attached to the rubber wheel that the mouse pushes left and right with his forelimbs.', 'neurodata_type': 'TimeSeries'}
-acquisition/wheel_position/data (6570000,) float64 {'conversion': np.float64(0.135), 'resolution': np.float64(-1.0), 'unit': 'mm'}
-acquisition/wheel_position/starting_time () float64 {'rate': np.float64(0.00040000637758912496), 'unit': 'seconds'}
-analysis/ {}
-file_create_date (1,) object {}
-general/ {}
-general/devices/ {}
-general/devices/0/ {'neurodata_type': 'Device'}
-g
-[... 155 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > speed.py <<'EOF'
-import h5py, remfile, requests, time, numpy as np
-aid="92694e6e-84fd-4198-a7e3-64e764f8e086"
-url = requests.get(f"https://api.dandiarchive.org/api/assets/{aid}/download/", allow_redirects=False).headers["Location"]
+cd entries/steinmetz-2019; cat > $TMPDIR/t6.py <<'EOF'
+import sys,time,resource,numpy as np, collections
+sys.path.insert(0,'.')
+import steinmetz as sm
 t=time.time()
-f = h5py.File(remfile.File(url), "r")
-st=f['units/spike_times'][:]; print('spikes',st.shape,time.time()-t)
-t=time.time(); w=f['acquisition/wheel_position/data'][:]; print('wheel',time.time()-t)
-ds=f['units/spike_times']; print(ds.chunks, ds.compression)
-print(f['acquisition/wheel_position/data'].chunks, f['acquisition/wheel_position/data'].compression)
-for k in ['general/subject/age','general/subject/sex','general/subject/genotype','general/subject/subject_id','general/subject/description','session_description','general/experiment_description','identifier','session_start_time','general/related_publications','general/keywords','general/experimenter','general/institution','general/lab']:
-    print(k, f[k][()])
-import collections
-loc=f['general/extracellular_ephys/electrodes/location'][:]
-print(collections.Counter(loc))
-print(f['units/phy_annotations'][:][:20], np.bincount(f['units/phy_annotations'][:]))
-print(f['units/peak_channel'][:20].ravel())
-print(f['units/electrode_group'][:5])
-print(f['general/devices'].keys(), [dict(f['general/devices'][k].attrs) for k in f['general/devices']])
-print(f['units/sampling_rate'][:3], f['units/waveform_duration'][:5].ravel(), f['units/cluster_depths'][:5].ravel())
-print(f['units/electrodes'][:60], f['units/electrodes_index'][:3])
+S=sm.Session('sub-Cori/sub-Cori_ses-20161214T120000.nwb', np.random.default_rng(0))
+print(S.read_s, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+tr=S.trials
+print(collections.Counter(tr.t_raw), collections.Counter(tr.t_choice), collections.Counter(tr.code_choice))
+print((tr.included==tr.rule_included).mean(), tr.included.sum(), tr.rule_included.sum())
+print(pd.crosstab(tr.t_choice, tr.choice) if False else '')
+import pandas as pd
+print(pd.crosstab(tr.t_choice, tr.choice))
+# response threshold: displacement from stim to response time
+d = S.wheel_at(tr.resp_time)-S.wheel_at(tr.stim)
+print(pd.DataFrame({'c':tr.choice,'d':d}).groupby('c').d.describe())
+print(S.stim_counts.shape, S.stim_counts.nbytes/1e6, S.pas_counts.shape)
+print(S.units.region.value_counts())
+print(S.wheel_dt, len(S.wheel)*S.wheel_dt+S.wheel_t0, tr.fb_time.max())
+print(S.passive_all.kind.value_counts(), S.passive_vis.head(), (S.passive_vis.t==S.passive_vis.t_right).all())
+print(np.isnan(S.eye).mean(), S.me_dt, len(S.me)*S.me_dt+S.me_t0)
 EOF
-python speed.py
+$TMPDIR/venv/bin/python $TMPDIR/t6.py 2>&1 | grep -v Warn
 ```
 
 ```
-spikes (10017476,) 1.9884467124938965
-wheel 0.8857102394104004
-None None
-None None
-general/subject/age b'77 days'
-general/subject/sex b'F'
-general/subject/genotype b'tetO-G6s x CaMK-tTA'
-general/subject/subject_id b'Cori'
-general/subject/description b'strain: C57Bl6/J'
-session_description b'Neuropixels recording during visual discrimination in awake mice.'
-general/experiment_description b'Large-scale Neuropixels recordings across brain regions of mice during a head-fixed visual discrimination task. '
-identifier b'Cori_2016-12-14'
-session_start_time b'2016-12-14T12:00:00+00:00'
-general/related_publications [b'DOI 10.1038/s41586-019-1787-x']
-general/keywords [b'Neural coding' b'Neuropixels' b'mouse' b'brain-wide' b'vision'
- b'visual discrimination' b'electrophysiology']
-general/experimenter [b'Nick Steinmetz']
-general/institution b'University College London'
-general/lab b'The Carandini and Harris Lab'
-Counter({b'root': 148, b'LS': 120, b'VISp': 110, b'MOs': 100, b'ACA': 90, b'DG': 86, b'SUB': 60, b'CA3': 34})
-[... 12 more lines not kept]
+12.501352310180664 0.635612
+Counter({'N': 110, 'L': 44, 'X': 33, 'R': 27}) Counter({'N': 97, 'X': 46, 'L': 44, 'R': 27}) Counter({'X': 83, 'N': 60, 'L': 44, 'R': 27})
+0.9252336448598131 201 207
+
+choice    -1.0   0.0   1.0
+t_choice                  
+L            6     3    35
+N           22    58    17
+R           27     0     0
+X           14    13    19
+      count        mean         std     min    25%    50%    75%     max
+c                                                                       
+-1.0   69.0 -496.420288  451.312744 -1689.0 -899.0 -307.0 -136.0   221.0
+ 0.0   74.0   16.256756   72.879158  -116.0   -1.0    1.0    7.0   371.0
+ 1.0   71.0  541.563354  325.278809   112.0  149.0  594.0  793.5  1200.0
+(734, 214, 160) 25.13216 (734, 225, 160)
+region
+LS      233
+VISp    220
+MOs     162
+[... 19 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; cat >> steinmetz.py <<'EOF'
+
+
+# ---------------------------------------------------------------------------
+# Per-session measures. One pass over each file; the notebook aggregates them.
+# ---------------------------------------------------------------------------
+PRE_WINS = {"a": (-0.2, 0.0), "b": (-0.25, -0.05)}   # claims ed6b readings (a), (b)
+VEL_OFFSETS = np.round(np.arange(-0.1, 0.1001, 0.01), 3)  # times around movement onset (s)
+
+
+def six_tests(S, tr):
+    """The six responsiveness tests (Methods, Data analysis; code kernelFitBasic.m).
+
+    Rates are spike counts in the window divided by its length, on trials T.
+    Returns p (units, 6), signed effect (units, 6), trial rate, baseline rate.
+    Direction of effect as the code's effectSizes: positive minus negative paired
+    differences (tests 1, 2, 3, 5); rank sum minus its null (tests 4, 6; for test 4
+    positive means Right greater).
+    """
+    from scipy.stats import wilcoxon, mannwhitneyu, rankdata
+    inc = np.where(tr["t_choice"].isin(["L", "R", "N"]).to_numpy())[0]
+    go = np.where(tr["t_choice"].isin(["L", "R"]).to_numpy())[0]
+    lft = tr["t_choice"].to_numpy() == "L"
+    rgt = tr["t_choice"].to_numpy() == "R"
+    rew = np.where(((tr["t_choice"] == "N") & (tr["cl"] == 0) & (tr["cr"] == 0)
+                    & (tr["fb_type"] == 1) & (tr["choice"] == 0)).to_numpy())[0]
+    C, Mv = S.stim_counts, S.move_counts
+    lo, mlo = STIM_WIN[0], MOVE_WIN[0]
+    trial = window_rate(C[:, inc], 0.0, 0.4, lo)
+    bsl = window_rate(C[:, inc], -0.2, 0.0, lo)
+    stim = window_rate(C[:, inc], 0.05, 0.15, lo)
+    bsl_go = window_rate(C[:, go], -0.2, 0.0, lo)
+    pre = window_rate(Mv[:, go], -0.1, 0.05, mlo)
+    peri = window_rate(Mv[:, go], -0.05, 0.2, mlo)
+    rewr = S.rew_counts[:, rew].sum(axis=2) / 0.15
+    nu = C.shape[0]
+    p = np.full((nu, 6), np.nan)
+    e = np.full((nu, 6), np.nan)
+    for q in range(nu):
+        for k, (x, y) in enumerate([(trial[q], bsl[q]), (stim[q], bsl[q]), (pre[q], bsl_go[q]),
+                                    None, (peri[q], bsl_go[q])]) if False else []:
+            pass
+        for k, (x, y) in {0: (trial[q], bsl[q]), 1: (stim[q], bsl[q]), 2: (pre[q], bsl_go[q]),
+                          4: (peri[q], bsl_go[q])}.items():
+            d = x - y
+            if np.any(d != 0):
+                p[q, k] = wilcoxon(d, zero_method="wilcox").pvalue
+            e[q, k] = np.sum(d > 0) - np.sum(d < 0)
+        a, b = pre[q][rgt[go]], pre[q][lft[go]]
+        if len(a) and len(b):
+            if np.ptp(np.concatenate([a, b])) > 0:
+                p[q, 3] = mannwhitneyu(a, b, alternative="two-sided").pvalue
+            r = rankdata(np.concatenate([a, b]))[:len(a)].sum()
+            e[q, 3] = r - len(a) * (len(a) + len(b) + 1) / 2
+        if len(rew):
+            a, b = rewr[q], bsl[q]
+            if np.ptp(np.concatenate([a, b])) > 0:
+                p[q, 5] = mannwhitneyu(a, b, alternative="two-sided").pvalue
+            r = rankdata(np.concatenate([a, b]))[:len(a)].sum()
+            e[q, 5] = r - len(a) * (len(a) + len(b) + 1) / 2
+    return p, e, trial.mean(axis=1), bsl.mean(axis=1)
+
+
+def sliding_responsive(S, tr):
+    """Display selection of Methods, Data analysis (claims fig2de reading a): ranksum
+    p < 0.0001 in at least three consecutive 0.1 s windows stepped by 0.005 s,
+    between task trials with stimuli and movements and those without both. The
+    windows run from stimulus onset to 0.4 s (window starts 0 to 0.3 s; assumption,
+    the analysis window of the paper)."""
+    from scipy.stats import mannwhitneyu
+    tc = tr["t_choice"].to_numpy()
+    stim = ((tr["cl"] > 0) | (tr["cr"] > 0)).to_numpy()
+    a = np.where(stim & np.isin(tc, ["L", "R"]))[0]
+    b = np.where(~stim & (tc == "N"))[0]
+    C = S.stim_counts
+    nu = C.shape[0]
+    if len(a) < 2 or len(b) < 2:
+        return np.zeros(nu, bool)
+    starts = np.arange(0.0, 0.3001, 0.005)
+    sig = np.zeros((nu, len(starts)), bool)
+    for j, s in enumerate(starts):
+        ra = window_rate(C[:, a], s, s + 0.1, STIM_WIN[0])
+        rb = window_rate(C[:, b], s, s + 0.1, STIM_WIN[0])
+        pv = mannwhitneyu(ra, rb, axis=1, alternative="two-sided").pvalue
+        sig[:, j] = np.nan_to_num(pv, nan=1.0) < 1e-4
+    run = sig[:, 2:] & sig[:, 1:-1] & sig[:, :-2]
+    return run.any(axis=1)
+
+
+def norm_trace(S, idx, base):
+    """Normalized rate of Methods, Data analysis: 5 ms bins, causal half-Gaussian
+    0.02 s, trial mean, causal half-Gaussian 0.03 s, minus baseline, divided by
+    baseline + 0.5 sp/s. `base` is each unit's baseline (-0.02 to 0 s, all task
+    trials). Smoothing is linear, so it is applied to the trial mean."""
+    if len(idx) == 0:
+        return None
+    m = S.stim_counts[:, idx].mean(axis=1) / BIN
+    m = causal_smooth(causal_smooth(m, 0.02), 0.03)
+    return ((m - base[:, None]) / (base[:, None] + 0.5)).astype(np.float32)
+
+
+def zscores(counts, idx, lo):
+    """Definition R (claims; Methods, Data analysis): mean rate 0 to 0.25 s over the
+    trials against the trial baselines -0.1 to 0 s. Z1 uses the s.e. of the
+    baseline mean, Z2 the s.d. of the trial baselines."""
+    if len(idx) < 2:
+        return None, None
+    post = window_rate(counts[:, idx], 0.0, 0.25, lo).mean(axis=1)
+    b = window_rate(counts[:, idx], -0.1, 0.0, lo)
+    sd = b.std(axis=1, ddof=1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        z2 = (post - b.mean(axis=1)) / sd
+        z1 = z2 * np.sqrt(len(idx))
+    return z1, z2
+
+
+def summarize(S, seed):
+    """All per-session measures used by the notebook. `seed` gives one generator
+    per use, so that random draws in one claim do not change another."""
+    rng = {k: np.random.default_rng([seed, i]) for i, k in
+           enumerate(["M", "Msingle", "cp", "dp_pre", "eng", "misc"])}
+    tr = S.trials.copy()
+    tr["session"] = S.name
+    tr["subject"] = S.subject
+    tc = tr["t_choice"].to_numpy()
+    out = {"meta": dict(S.meta, name=S.name, read_s=S.read_s)}
+    # --- behaviour ---------------------------------------------------------
+    stimt = tr["stim"].to_numpy()
+    tr["disp_resp"] = S.wheel_at(tr["resp_time"]) - S.wheel_at(stimt)
+    go = np.isin(tc, ["L", "R"])
+    mabs = stimt + tr["first_move"].to_numpy()
+    for o in VEL_OFFSETS:
+        v = S.wheel_at(mabs + o) - S.wheel_at(mabs + o - 0.01)
+        tr[f"vel_{o:+.2f}"] = np.where(go, v, np.nan)
+    tr["iti"] = np.concatenate([[np.nan], stimt[1:] - tr["fb_time"].to_numpy()[:-1]])
+    tr["prev_reward"] = np.concatenate([[np.nan], (tr["fb_type"].to_numpy()[:-1] == 1).astype(float)])
+    for w, (lo, hi) in PRE_WINS.items():
+        tr[f"pupil_{w}"] = S.pupil_mean(stimt, lo, hi)
+        tr[f"me_{w}"] = S.me_mean(stimt, lo, hi)
+        tr[f"moving_{w}"] = S.moving_in(stimt, lo, hi)
+    out["trials"] = tr
+    pv = S.passive_vis.copy()
+    pv["session"] = S.name
+    pv["subject"] = S.subject
+    pv["moving_a"] = S.moving_in(pv["t"].to_numpy(), -0.05, 0.4)
+    pv["moving_b"] = S.moving_in(pv["t"].to_numpy(), 0.0, 0.4)
+    out["passive"] = pv
+    # --- units -------------------------------------------------------------
+    U = S.units.iloc[S.good].copy()
+    U["session"] = S.name
+    U["subject"] = S.subject
+    p, e, trate, brate = six_tests(S, tr)
+    for k in range(6):
+        U[f"p{k+1}"] = p[:, k]
+        U[f"e{k+1}"] = e[:, k]
+    U["trial_rate"] = trate
+    U["baseline_rate"] = brate
+    U["slide_resp"] = sliding_responsive(S, tr)
+    U = U.reset_index().rename(columns={"index": "unit"})
+    out["units"] = U
+    # --- trial sets ----------------------------------------------------------
+    cl, cr = tr["cl"].to_numpy(), tr["cr"].to_numpy()
+    pas = S.passive_all.reset_index(drop=True)
+    pvis_idx = np.where((pas["kind"] == "visual").to_numpy())[0]
+    pl = np.full(len(pas), np.nan)
+    pr = np.full(len(pas), np.nan)
+    pl[pvis_idx] = S.passive_vis["pl"].to_numpy()
+    pr[pvis_idx] = S.passive_vis["pr"].to_numpy()
+    T_idx = np.where(np.isin(tc, ["L", "R", "N"]))[0]
+    # Definition M as in the Methods: Go (Left or Right), NoGo and passive, contralateral
+    # (right) contrast > 0.
+    goM = np.where(go & (cr > 0))[0]
+    ngM = np.where((tc == "N") & (cr > 0))[0]
+    paM = pvis_idx[pr[pvis_idx] > 0]
+    mGo, mNg, mPa = matched_contrast([(goM, cr[goM]), (ngM, cr[ngM]), (paM, pr[paM])], rng=rng["M"])
+    # Same, for the single-stimulus trial types of Fig. 2d, f, h.
+    gS = np.where((tc == "R") & (cr > 0) & (cl == 0))[0]
+    nS = np.where((tc == "N") & (cr > 0) & (cl == 0))[0]
+    pS = pvis_idx[(pr[pvis_idx] > 0) & (pl[pvis_idx] == 0)]
+    sGo, sNg, sPa = matched_contrast([(gS, cr[gS]), (nS, cr[nS]), (pS, pr[pS])], rng=rng["Msingle"])
+    ipsiGo = np.where((tc == "L") & (cl > 0) & (cr == 0))[0]
+    ipsiMiss = np.where((tc == "N") & (cl > 0) & (cr == 0))[0]
+    out["sets"] = dict(mGo=mGo, mNg=mNg, mPa=mPa, sGo=sGo, sNg=sNg, sPa=sPa,
+                       ipsiGo=ipsiGo, ipsiMiss=ipsiMiss, n_goM=len(goM), n_ngM=len(ngM),
+                       n_paM=len(paM))
+    # --- Fig. 2 traces and z-scores ----------------------------------------
+    base = window_rate(S.stim_counts[:, T_idx], -0.02, 0.0, STIM_WIN[0]).mean(axis=1)
+    out["traces"] = {k: norm_trace(S, idx, base) for k, idx in
+                     [("contraGo", sGo), ("ipsiGo", ipsiGo), ("contraMiss", sNg),
+                      ("ipsiMiss", ipsiMiss), ("passive", None)] if k != "passive"}
+    if len(sPa):
+        m = S.pas_counts[:, sPa].mean(axis=1) / BIN
+        m = causal_smooth(causal_smooth(m, 0.02), 0.03)
+        out["traces"]["passive"] = ((m - base[:, None]) / (base[:, None] + 0.5)).astype(np.float32)
+    z = {}
+    for k, cnt, idx in [("sGo", S.stim_counts, sGo), ("sNg", S.stim_counts, sNg),
+                        ("ipsiMiss", S.stim_counts, ipsiMiss), ("mNg", S.stim_counts, mNg),
+                        ("mPa", S.pas_counts, mPa), ("sPa", S.pas_counts, sPa)]:
+        z[k] = zscores(cnt, idx, STIM_WIN[0])
+    out["z"] = z
+    # --- pre-stimulus rates per trial ----------------------------------------
+    pre = {}
+    for w, (lo, hi) in PRE_WINS.items():
+        pre[f"task_{w}"] = window_rate(S.stim_counts, lo, hi, STIM_WIN[0]).astype(np.float32)
+        pre[f"pas_{w}"] = window_rate(S.pas_counts, lo, hi, STIM_WIN[0]).astype(np.float32)
+        pre[f"pas_moving_{w}"] = S.moving_in(pas["t"].to_numpy(), lo, hi)
+    pre["pas_kind"] = pas["kind"].to_numpy()
+    pre["pas_pr"] = pr
+    out["pre"] = pre
+    # --- detect probability (ccCP algorithm, Go against NoGo) ----------------
+    cond = (np.round(cl * 100).astype(int) * 1000 + np.round(cr * 100).astype(int))
+    dp = {}
+    lab_go = go[T_idx]
+    for w, (lo, hi) in {"a": (-0.1, 0.05), "b": (-0.05, 0.0)}.items():
+        r = window_rate(S.move_counts[:, T_idx], lo, hi, MOVE_WIN[0]).T
+        dp[w] = combined_cp(r, lab_go, cond[T_idx], 2000, rng["cp"])
+    for w, (lo, hi) in PRE_WINS.items():
+        r = window_rate(S.stim_counts[:, T_idx], lo, hi, STIM_WIN[0]).T
+        dp["pre_" + w] = combined_cp(r, lab_go, cond[T_idx], 0, rng["dp_pre"])
+    out["dp"] = dp
+    return out
+EOF
+cat > $TMPDIR/t7.py <<'EOF'
+import sys,time,resource,numpy as np, collections
+sys.path.insert(0,'.')
+import steinmetz as sm
+t=time.time()
+S=sm.Session('sub-Cori/sub-Cori_ses-20161214T120000.nwb', np.random.default_rng(0))
+t1=time.time(); R=sm.summarize(S, 0); print('summ',time.time()-t1, resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6)
+U=R['units']; print(U.head()); print((U[[f'p{k}' for k in range(1,7)]]<0.05/6).mean())
+print({k:len(v) if hasattr(v,'__len__') else v for k,v in R['sets'].items()})
+print(R['dp']['a'][0][:5], R['dp']['a'][1][:5], R['dp']['a'][2])
+print(U.slide_resp.mean())
+EOF
+$TMPDIR/venv/bin/python $TMPDIR/t7.py 2>&1 | grep -v Warn
+```
+
+```
+i = np.clip(np.round((np.asarray(t) - self.wheel_t0) / self.wheel_dt).astype(int),
+  frac_below = (null < cp[None, :]).mean(axis=0) + 0.5 * (null == cp[None, :]).mean(axis=0)
+  ret = um.true_divide(
+summ 3.811441659927368 0.635764
+   unit  phy region  ...  trial_rate  baseline_rate  slide_resp
+0     0    3    ACA  ...    2.931548       0.654762        True
+1     1    3    ACA  ...   13.422619      10.863095       False
+2     3    3    ACA  ...    7.678571       0.416667        True
+3     4    3    MOs  ...    8.556548       4.940476        True
+4     5    3    ACA  ...    0.699405       0.000000        True
+
+[5 rows x 25 columns]
+p1    0.297003
+p2    0.070845
+p3    0.232970
+p4    0.042234
+p5    0.478202
+p6    0.287466
+dtype: float64
+{'mGo': 37, 'mNg': 37, 'mPa': 37, 'sGo': 14, 'sNg': 14, 'sPa': 14, 'ipsiGo': 24, 'ipsiMiss': 9, 'n_goM': 46, 'n_ngM': 48, 'n_paM': 120}
+[... 2 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old='''        for k, (x, y) in enumerate([(trial[q], bsl[q]), (stim[q], bsl[q]), (pre[q], bsl_go[q]),
+                                    None, (peri[q], bsl_go[q])]) if False else []:
+            pass
+'''
+assert old in s; s=s.replace(old,'')
+s=s.replace('''        i = np.clip(np.round((np.asarray(t) - self.wheel_t0) / self.wheel_dt).astype(int),
+                    0, len(self.wheel) - 1)
+        return self.wheel[i]''','''        t = np.asarray(t, float)
+        i = np.round(np.nan_to_num((t - self.wheel_t0) / self.wheel_dt)).astype(int)
+        out = self.wheel[np.clip(i, 0, len(self.wheel) - 1)].astype(float)
+        out[~np.isfinite(t)] = np.nan
+        return out''')
+open('steinmetz.py','w').write(s)
+EOF
+date -u
+```
+
+```
+Tue Nov 10 16:32:19 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old='''    tr["iti"] = np.concatenate('''
+new='''    # First movement after stimulus onset of any kind, and first typed (choice) turn:
+    # onset, type and direction (sign of the wheel displacement over the movement).
+    k = np.searchsorted(S.mv_on, stimt)
+    ok = k < len(S.mv_on)
+    kk = np.minimum(k, len(S.mv_on) - 1)
+    tr["any_type"] = np.where(ok, S.mv_type[kk], -1)
+    tr["any_dir"] = np.where(ok, np.sign(S.wheel_at(S.mv_off[kk]) - S.wheel_at(S.mv_on[kk])), 0)
+    typed = np.where(S.mv_type > 0)[0]
+    j = np.searchsorted(S.mv_on[typed], stimt)
+    okj = j < len(typed)
+    jj = typed[np.minimum(j, len(typed) - 1)]
+    tr["typed_onset"] = np.where(okj, S.mv_on[jj] - stimt, np.nan)
+    tr["typed_type"] = np.where(okj, S.mv_type[jj], -1)
+    tr["iti"] = np.concatenate('''
+assert old in s; s=s.replace(old,new,1)
+old='''    out["dp"] = dp
+    return out'''
+new='''    out["dp"] = dp
+    # --- clock check: decode the contralateral stimulus from the population in a
+    # window before and one after stimulus onset (protocol, author step 2) -------
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import cross_val_score, StratifiedKFold
+    y = (cr[T_idx] > 0).astype(int)
+    clk = {}
+    for nm, (lo, hi) in {"pre": (-0.1, 0.0), "post": (0.05, 0.15)}.items():
+        X = window_rate(S.stim_counts[:, T_idx], lo, hi, STIM_WIN[0]).T
+        cv = StratifiedKFold(5, shuffle=True, random_state=0)
+        clk[nm] = cross_val_score(LogisticRegression(C=0.1, max_iter=2000), X, y, cv=cv).mean()
+    clk["chance"] = max(y.mean(), 1 - y.mean())
+    out["clock"] = clk
+    return out'''
+assert old in s; s=s.replace(old,new,1)
+open('steinmetz.py','w').write(s)
+EOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; cat > $TMPDIR/dev_load.py <<'EOF'
+import sys,time,resource,pickle,warnings,numpy as np
+warnings.filterwarnings('ignore')
+sys.path.insert(0,'.')
+import steinmetz as sm
+n=int(sys.argv[1]); out=sys.argv[2]
+paths=[p for p,_ in sm.asset_paths()][:n]
+R=[]
+t=time.time()
+for i,p in enumerate(paths):
+    S=sm.Session(p, np.random.default_rng([1,i])); r=sm.summarize(S, i); del S
+    R.append(r); print(i,p,round(time.time()-t), resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6, r['clock'], flush=True)
+pickle.dump(R,open(out,'wb'))
+EOF
+$TMPDIR/venv/bin/python $TMPDIR/dev_load.py 2 $TMPDIR/R2.pkl
+```
+
+```
+0 sub-Cori/sub-Cori_ses-20161214T120000.nwb 14 0.635508 {'pre': np.float64(0.44652406417112295), 'post': np.float64(0.8215686274509804), 'chance': np.float64(0.5595238095238095)}
+1 sub-Cori/sub-Cori_ses-20161217T120000.nwb 28 0.755888 {'pre': np.float64(0.5166666666666667), 'post': np.float64(0.9222222222222222), 'chance': np.float64(0.5111111111111111)}
 ```
 
 **Agent**
 
-Streaming is fast (80 MB of spike times in 2 s). Now the paper text.
+Works on a subset (~14 s and 0.75 GB per session). Running the full 39-session load once for development (~10 min estimated).
 
 **Agent calls Bash**
 
 ```bash
-wc -c paper/*; grep -n -i "^#\|Methods\|^Data analysis\|Kernel regression\|Training protocol" paper/10.1038-s41586-019-1787-x.txt | head -60
+cd entries/steinmetz-2019; $TMPDIR/venv/bin/python $TMPDIR/dev_load.py 39 $TMPDIR/R39.pkl 2>&1 | awk '{print $1,$2,$3,$4}' | tail -5; ls -la $TMPDIR/R39.pkl; date -u
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+34 sub-Tatum/sub-Tatum_ses-20171206T120000.nwb 497 1.381352
+35 sub-Tatum/sub-Tatum_ses-20171207T120000.nwb 510 1.381352
+36 sub-Tatum/sub-Tatum_ses-20171208T120000.nwb 526 1.381352
+37 sub-Tatum/sub-Tatum_ses-20171209T120000.nwb 540 1.381352
+38 sub-Theiler/sub-Theiler_ses-20171011T120000.nwb 556 1.381352
+-rw-r--r-- 1 runner runner 242901848 Nov 10 16:43 /tmp/claude-1001/R39.pkl
+Tue Nov 10 16:43:13 UTC 2026
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells_a.py",
+ "content": "# %% code\nimport os, time, warnings, resource\nimport numpy as np\nimport pandas as pd\nimport scipy.stats as ss\nimport statsmodels.formula.api as smf\nimport statsmodels.api as sm_api\nimport matplotlib.pyplot as plt\nimport steinmetz as sm\nwarnings.filterwarnings(\"ignore\")\npd.set_option(\"display.width\", 200, \"display.max_columns\", 40, \"display.max_rows\", 200)\nT0 = time.time()\n\n# %% code\n# Load every session once and keep only the per-session measures (steinmetz.summarize).\n# Each session has its own generator for the random draws (seeded by its index).\npaths = [p for p, _ in sm.asset_paths()]\nprint(len(paths), \"NWB files in\", sm.DANDISET, sm.VERSION)\nR = []\nfor i, p in enumerate(paths):\n    S = sm.Session(p, np.random.default_rng([1, i]))\n    R.append(sm.summarize(S, i))\n    del S\nprint(f\"loaded in {time.time() - T0:.0f} s; peak memory \"\n      f\"{resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.2f} GB\")\n\n# %% code tags=sanity\nmeta = pd.DataFrame([r[\"meta\"] for r in R])\nmeta[\"date\"] = meta[\"start\"].str[:10]\ntrials = pd.concat([r[\"trials\"] for r in R], ignore_index=True)\nunits = pd.concat([r[\"units\"] for r in R], ignore_index=True)\npassive = pd.concat([r[\"passive\"] for r in R], ignore_index=True)\nprint(\"Sessions\", len(meta), \"| subjects\", meta.subject.nunique(), \"| probes\", meta.probes.sum())\nprint(meta[[\"identifier\", \"sex\", \"genotype\", \"age\", \"probes\", \"n_units\", \"n_trials\"]].to_string())\nprint(\"\\nSessions per subject:\", meta.subject.value_counts().to_dict())\n# Wheel: the 'rate' attribute of wheel_position holds the sampling interval, not a rate.\ndur = meta.wheel_samples * meta.wheel_rate_attr\nprint(\"\\nwheel_position 'rate' attribute:\", meta.wheel_rate_attr.unique(),\n      \"| samples x attribute = %.0f to %.0f s (session lengths)\" % (dur.min(), dur.max()),\n      \"| conversion\", meta.wheel_conversion.unique(), \"mm per unit\")\nprint(\"Units of the 'unit' column 'phy_annotations':\", units.phy.value_counts().to_dict(),\n      \"(only >= 2 kept)\")\n# Wheel displacement from stimulus onset to the registered response, by response.\nd = trials.groupby(\"choice\").disp_resp.describe(percentiles=[0.05, 0.5, 0.95])\nprint(\"\\nWheel displacement (encoder units) at response time, by response_choice \"\n      \"(+1 Left, -1 Right, 0 NoGo):\\n\", d.round(1))\nprint(\"20 mm (90 d.v.a., Methods) is %.0f encoder units\" % (20 / meta.wheel_conversion.iloc[0]))\n# Typed movements: type 1 should be Left, 2 Right (wheel_moves comments).\nty = trials[trials.t_raw.isin([\"L\", \"R\"])]\nprint(\"\\nFirst movement type of Left/Right trials (T) against response_choice:\\n\",\n      pd.crosstab(ty.t_raw, ty.choice))\nprint(\"\\nTrials by definition T (engaged only):\", trials.t_choice.value_counts().to_dict(),\n      \"| code rule variant:\", trials.code_choice.value_counts().to_dict())\nagree = (trials.included == trials.rule_included)\nprint(\"Dataset 'included' against the Methods disengagement rule: agree on %.1f%% of trials; \"\n      \"included %d, rule %d\" % (100 * agree.mean(), trials.included.sum(), trials.rule_included.sum()))\nprint(\"\\nContrasts in trials:\", sorted(trials.cl.unique()), \"| passive:\", sorted(passive.pl.unique()))\nprint(\"Passive visual presentations per session: %d to %d\" %\n      (passive.groupby(\"session\").size().min(), passive.groupby(\"session\").size().max()))\n# Units: region from peak_channel - 1 (peak_channel is 1-based: see the depth check below).\nprint(\"\\nGood units (phy >= 2):\", len(units), \"| region labels:\", units.region.nunique(),\n      \"| in the 42 regions:\", units.region.isin(sm.REGIONS42).sum(),\n      \"| 'root':\", (units.region == \"root\").sum())\nprint(\"Labels outside the 42 regions:\",\n      units.loc[~units.region.isin(sm.REGIONS42), \"region\"].value_counts().to_dict())\nprint(\"Trial firing rate (Hz) range %.2f to %.1f; mean spike amplitude range %.1f to %.1f (no unit given)\"\n      % (units.trial_rate.min(), units.trial_rate.max(), units.amp.min(), units.amp.max()))\n# Duplicates: sessions with identical trial times or identical spike counts.\nsig = meta.n_spikes.astype(str) + \"_\" + meta.n_trials.astype(str)\nprint(\"\\nSessions sharing spike and trial counts:\", int(sig.duplicated().sum()))\nfirst_stim = trials.groupby(\"session\").stim.apply(lambda x: tuple(np.round(x.to_numpy()[:5], 4)))\nprint(\"Sessions sharing their first five stimulus times:\", int(first_stim.duplicated().sum()))\n# Clock: decode the contralateral stimulus from the population before and after onset.\nclk = pd.DataFrame([dict(session=r[\"meta\"][\"name\"], **r[\"clock\"]) for r in R])\nprint(\"\\nClock check, cross-validated decoding of contralateral stimulus presence:\")\nprint(\"  window -0.1 to 0 s: median %.3f (range %.3f to %.3f)\" % (clk.pre.median(), clk.pre.min(), clk.pre.max()))\nprint(\"  window 0.05 to 0.15 s: median %.3f (range %.3f to %.3f)\" % (clk.post.median(), clk.post.min(), clk.post.max()))\nprint(\"  chance (majority class): median %.3f; sessions with post > pre + 0.05: %d of %d\"\n      % (clk.chance.median(), (clk.post > clk.pre + 0.05).sum(), len(clk)))\nprint(\"  sessions where it is not established:\", clk.loc[clk.post <= clk.pre + 0.05, \"session\"].tolist())\nprint(\"Pupil: sessions with any NaN in eye_area:\", [r[\"meta\"][\"name\"] for r in R\n      if r[\"trials\"][\"pupil_a\"].isna().any()])\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/cells_a.py (file state is current in your context — no need to Read it back)
+```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && fold -s -w 200 paper/10.1038-s41586-019-1787-x.txt > paper.txt; wc -l paper.txt; grep -n "Methods\b\|Training protocol\|Data analysis\|Kernel regression\|Population decoding\|jPECC\|Engagement Index\|ccCP" paper.txt | head -40
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old='''        peak = U["peak_channel"][:, 0].astype(int) - 1
+'''
+new='''        peak = U["peak_channel"][:, 0].astype(int) - 1
+        y = E["site_position"][:, 1]
+        dep = U["cluster_depths"][:, 0]
+        for off in (0, 1):
+            ii = np.clip(peak + off, 0, len(y) - 1)
+            self.meta[f"depth_err_{off}"] = float(np.median(np.abs(y[ii] - dep)))
+'''
+assert old in s; s=s.replace(old,new,1)
+open('steinmetz.py','w').write(s)
+EOF
+cat >> $TMPDIR/cells_a.py <<'EOF'
+if "depth_err_0" in meta:
+    print("peak_channel: median |cluster depth - site depth| using row peak_channel-1: %.1f um; "
+          "using row peak_channel: %.1f um" % (meta.depth_err_0.median(), meta.depth_err_1.median()))
+EOF
+cat > $TMPDIR/run_cells.py <<'EOF'
+import sys,re,pickle,os
+sys.path.insert(0,'entries/steinmetz-2019')
+src=''.join(open(f).read() for f in sys.argv[1].split(','))
+cells=re.split(r'^# %% ',src,flags=re.M)[1:]
+g={}
+skip_until=int(sys.argv[2]) if len(sys.argv)>2 else 0
+for i,c in enumerate(cells):
+    head,_,body=c.partition('\n')
+    if not head.startswith('code'): continue
+    if 'R = []' in body:
+        exec("import pickle\nR=pickle.load(open(os.environ.get('RPKL','/tmp/claude-1001/R39.pkl'),'rb'))", g); continue
+    exec(compile(body, f'cell{i}', 'exec'), g)
+EOF
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py 2>&1 | tail -80
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+4   Forssmann_2017-11-02   M             C57BL/6J  182 days       3     1569       254
+5   Forssmann_2017-11-04   M             C57BL/6J  189 days       3     1435       290
+6   Forssmann_2017-11-05   M             C57BL/6J  189 days       2     1029       252
+7       Hench_2017-06-15   M  tetO-G6s x CaMK-tTA  217 days       3     1707       250
+8       Hench_2017-06-16   M  tetO-G6s x CaMK-tTA  224 days       3     1364       372
+9       Hench_2017-06-17   M  tetO-G6s x CaMK-tTA  224 days       3     1591       447
+10      Hench_2017-06-18   M  tetO-G6s x CaMK-tTA  224 days       3     1409       342
+11  Lederberg_2017-12-05   F           Vglut1-Cre  105 days       3     1219       340
+12  Lederberg_2017-12-06   F           Vglut1-Cre  105 days       3     1262       300
+13  Lederberg_2017-12-07   F           Vglut1-Cre  105 days       3     1228       268
+14  Lederberg_2017-12-08   F           Vglut1-Cre  105 days       2     1134       404
+15  Lederberg_2017-12-09   F           Vglut1-Cre  105 days       2      977       280
+16  Lederberg_2017-12-10   F           Vglut1-Cre  105 days       1      727       224
+17  Lederberg_2017-12-11   F           Vglut1-Cre  105 days       2     1350       316
+18      Moniz_2017-05-15   M    Ai95 x VGlut1-Cre  210 days       2      806       247
+19      Moniz_2017-05-16   M    Ai95 x VGlut1-Cre  210 days       2     1144       235
+20      Moniz_2017-05-18   M    Ai95 x VGlut1-Cre  210 days       2      795       124
+21     Muller_2017-01-07   F    Ai95 x VGlut1-Cre  119 days       2     1109       444
+22     Muller_2017-01-08   F    Ai95 x VGlut1-Cre  119 days       2     1455       151
+23     Muller_2017-01-09   F    Ai95 x VGlut1-Cre  119 days       2     1426       187
+[... 61 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/cells_b.py",
+ "content": "# %% code\n# Shared trial classes for the behavioural claims (claims fig1c-*).\ndef cond_class(df):\n    hi, lo = np.maximum(df.cl, df.cr), np.minimum(df.cl, df.cr)\n    c = np.full(len(df), \"\", dtype=object)\n    c[(hi == 1.0) & (lo == 0)] = \"high_single\"\n    c[(hi == 0.25) & (lo == 0)] = \"low_single\"\n    c[((hi == 1.0) & (lo == 0.5)) | ((hi == 0.5) & (lo == 0.25))] = \"competing\"\n    return c\n\ntrials[\"cls\"] = cond_class(trials)\n# Correct side: the higher contrast; response_choice +1 is Left, -1 Right.\ntrials[\"correct_side\"] = np.where(trials.cl > trials.cr, 1, np.where(trials.cr > trials.cl, -1, 0))\ntrials[\"incorrect\"] = (trials.choice != 0) & (trials.choice == -trials.correct_side)\ntrials[\"miss\"] = trials.choice == 0\n\ndef perf_table(cls):\n    rows = []\n    for reading, sel in [(\"a all trials\", np.ones(len(trials), bool)),\n                         (\"b engaged trials (included)\", trials.included.to_numpy())]:\n        d = trials[sel & (trials.cls == cls).to_numpy()]\n        per = d.groupby(\"session\")[[\"incorrect\", \"miss\"]].mean() * 100\n        rows.append(dict(reading=reading, sessions=len(per), trials=len(d),\n                         incorrect_mean=per.incorrect.mean(), incorrect_sd=per.incorrect.std(),\n                         miss_mean=per.miss.mean(), miss_sd=per.miss.std()))\n    return pd.DataFrame(rows).round(2)\n\ndef judge_perf(tab, exp):\n    (vi, ti), (vm, tm) = exp\n    tab[\"incorrect_ok\"] = (tab.incorrect_mean - vi).abs() <= ti\n    tab[\"miss_ok\"] = (tab.miss_mean - vm).abs() <= tm\n    print(tab.to_string(index=False))\n    print(\"Reproduced under a reading:\", bool((tab.incorrect_ok & tab.miss_ok).any()))\n\n# %% md\n## fig1c-easy-performance\n\n> On high-contrast single-stimulus trials mice made 1.7 ± 2.5% incorrect choices and 10.1 ± 8.3% Misses (mean ± s.d. over 39 sessions of 10 mice).\n\nHigh contrast is 1.0, the largest of the dataset's contrasts (0, 0.25, 0.5, 1). An incorrect choice is a `response_choice` towards the side without the stimulus; a Miss is `response_choice` 0. Expected 1.7 ± 2.5 and 10.1 ± 8.3.\n\n# %% code tags=claim:fig1c-easy-performance\njudge_perf(perf_table(\"high_single\"), [(1.7, 2.5), (10.1, 8.3)])\nprint(\"By subject (reading b):\")\nd = trials[trials.included & (trials.cls == \"high_single\")]\nprint((d.groupby(\"subject\")[[\"incorrect\", \"miss\"]].mean() * 100).round(1).T.to_string())\n\n# %% md\n## fig1c-low-contrast-performance\n\n> With low-contrast single stimuli mice made 5.1 ± 6.4% incorrect choices and 29.8 ± 19.8% Misses.\n\nLow contrast is 0.25.\n\n# %% code tags=claim:fig1c-low-contrast-performance\njudge_perf(perf_table(\"low_single\"), [(5.1, 6.4), (29.8, 19.8)])\nd = trials[trials.included & (trials.cls == \"low_single\")]\nprint((d.groupby(\"subject\")[[\"incorrect\", \"miss\"]].mean() * 100).round(1).T.to_string())\n\n# %% md\n## fig1c-competing-performance\n\n> With competing stimuli of similar but unequal contrast (high against medium, medium against low) mice made 20.0 ± 7.9% incorrect choices and 13.9 ± 11.7% Misses.\n\nHigh against medium is 1.0 against 0.5; medium against low 0.5 against 0.25.\n\n# %% code tags=claim:fig1c-competing-performance\njudge_perf(perf_table(\"competing\"), [(20.0, 7.9), (13.9, 11.7)])\nd = trials[trials.included & (trials.cls == \"competing\")]\nprint((d.groupby(\"subject\")[[\"incorrect\", \"miss\"]].mean() * 100).round(1).T.to_string())\n\n# %% md\n## fig1d-reaction-time-difficulty\n\n> Reaction times were longer in the harder conditions (low-contrast single stimuli and competing stimuli of similar contrast) than for high-contrast single stimuli.\n\nReaction time is the detected movement onset minus stimulus onset. Trial readings: (a) all trials with a Left or Right response (`response_choice`), the reaction time being the first detected movement onset after stimulus onset; (b) the Left and Right choice trials of definition T (onset 0.125 to 0.4 s). Factor readings F1 (class and session), F2 (class and subject), F3 (contrast, competing stimulus present, session). Type II ANOVA on an ordinary least squares fit (statsmodels), a standard choice for a multi-way ANOVA.\n\n# %% code tags=claim:fig1d-reaction-time-difficulty\nrows = []\nfor tr_read in [\"a\", \"b\"]:\n    if tr_read == \"a\":\n        d = trials[(trials.choice != 0) & (trials.cls != \"\")].copy()\n        d[\"rt\"] = d.any_onset\n        d = d[d.rt.notna() & (d.rt > 0)]\n    else:\n        d = trials[trials.t_choice.isin([\"L\", \"R\"]) & (trials.cls != \"\")].copy()\n        d[\"rt\"] = d.first_move\n    d[\"contrast\"] = np.maximum(d.cl, d.cr)\n    d[\"competing\"] = (np.minimum(d.cl, d.cr) > 0).astype(int)\n    means = d.groupby(\"cls\").rt.mean()\n    for f_read, formula, terms in [(\"F1\", \"rt ~ C(cls) + C(session)\", [\"C(cls)\"]),\n                                   (\"F2\", \"rt ~ C(cls) + C(subject)\", [\"C(cls)\"]),\n                                   (\"F3\", \"rt ~ C(contrast) + C(competing) + C(session)\",\n                                    [\"C(contrast)\", \"C(competing)\"])]:\n        a = sm_api.stats.anova_lm(smf.ols(formula, d).fit(), typ=2)\n        for t in terms:\n            rows.append(dict(trials=tr_read, factors=f_read, term=t, F=a.loc[t, \"F\"],\n                             df=a.loc[t, \"df\"], p=a.loc[t, \"PR(>F)\"], n=len(d),\n                             rt_high=means[\"high_single\"], rt_low=means[\"low_single\"],\n                             rt_comp=means[\"competing\"]))\nrt = pd.DataFrame(rows)\nrt[\"high_shortest\"] = (rt.rt_high < rt.rt_low) & (rt.rt_high < rt.rt_comp)\nprint(rt.to_string(index=False, float_format=lambda x: f\"{x:.4g}\"))\nprint(\"Reproduced under a reading:\", bool(((rt.p < 1e-4) & rt.high_shortest).any()))\nd = trials[trials.t_choice.isin([\"L\", \"R\"]) & (trials.cls != \"\")]\nprint(\"\\nMedian reaction time (s) by subject and class, reading b:\")\nprint(d.groupby([\"subject\", \"cls\"]).first_move.median().unstack().round(3).to_string())\n\n# %% md\n## ed1q-wheel-choice-decoding\n\n> Choice decoded from instantaneous wheel velocity is at chance (47.7%) 50 ms before detected movement onset and near perfect (94.6%) 50 ms after it.\n\nVelocity is the wheel position at t minus at t - 10 ms, around the detected onset of Left and Right choice movements of definition T. Reading (a) the sign of the velocity (positive is Left, as the response check in the data check shows; zero counts 50%); (b) logistic regression on velocity, 10-fold cross-validation over trials per session (scikit-learn, default regularization, a standard choice). Accuracy is the mean over sessions.\n\n# %% code tags=claim:ed1q-wheel-choice-decoding\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.model_selection import cross_val_score, StratifiedKFold\ng = trials[trials.t_choice.isin([\"L\", \"R\"])]\nrows = []\nfor s, d in g.groupby(\"session\"):\n    y = (d.t_choice == \"L\").astype(int).to_numpy()\n    for o in sm.VEL_OFFSETS:\n        v = d[f\"vel_{o:+.2f}\"].to_numpy()\n        acc_a = np.mean(np.where(v == 0, 0.5, (v > 0) == y))\n        cv = StratifiedKFold(10, shuffle=True, random_state=0)\n        acc_b = cross_val_score(LogisticRegression(), v[:, None], y, cv=cv).mean()\n        rows.append(dict(session=s, offset=o, a=acc_a * 100, b=acc_b * 100))\ndec = pd.DataFrame(rows)\nsumm = dec.groupby(\"offset\")[[\"a\", \"b\"]].agg([\"mean\", \"std\"]).round(1)\nprint(summ.to_string())\nres = summ.loc[[-0.05, 0.05]]\nok = {r: bool(abs(res.loc[-0.05, (r, \"mean\")] - 47.7) <= 4.77 and\n              abs(res.loc[0.05, (r, \"mean\")] - 94.6) <= 9.46) for r in [\"a\", \"b\"]}\nprint(\"Within tolerance (47.7 ± 4.77 at -50 ms, 94.6 ± 9.46 at +50 ms):\", ok)\nprint(\"Fraction of trials with zero velocity at -50 ms: %.3f\" % (g[\"vel_-0.05\"] == 0).mean())\nfig, ax = plt.subplots(figsize=(4, 3))\nfor r in [\"a\", \"b\"]:\n    ax.plot(summ.index * 1000, summ[(r, \"mean\")], label=f\"reading {r}\")\nax.axhline(50, color=\"k\", lw=0.5); ax.set_xlabel(\"time from movement onset (ms)\")\nax.set_ylabel(\"choice decoded (%)\"); ax.legend(); plt.show()\nprint(\"Plotted range: %.1f to %.1f%%\" % (summ.xs(\"mean\", axis=1, level=1).min().min(),\n                                          summ.xs(\"mean\", axis=1, level=1).max().max()))\n\n# %% md\n## early-response-fraction\n\n> On trials that ended in a Left or Right choice, mice turned the wheel within 400 ms of stimulus onset on 64.9 ± 14.0% (s.d.) of trials, nearly always (96.6 ± 3.4%) in the direction of their final choice.\n\nTrials whose `response_choice` is Left or Right, all trials of each session. Reading (a): the first choice-amplitude turn (types 1 and 2) after stimulus onset begins within 0.4 s, its direction its type; (b): the first movement of any kind after stimulus onset begins within 0.4 s, its direction the sign of the wheel displacement over the movement.\n\n# %% code tags=claim:early-response-fraction\ng = trials[trials.choice != 0].copy()\nresp_dir = np.where(g.choice == 1, 1, -1)       # +1 Left\nrows = []\ng[\"a_early\"] = (g.typed_onset >= 0) & (g.typed_onset <= 0.4)\ng[\"a_same\"] = np.where(g.typed_type == 1, 1, -1) == resp_dir\ng[\"b_early\"] = (g.any_onset >= 0) & (g.any_onset <= 0.4)\ng[\"b_same\"] = g.any_dir.to_numpy() == resp_dir\nfor r in [\"a\", \"b\"]:\n    per = g.groupby(\"session\").apply(lambda d: pd.Series(dict(\n        early=100 * d[f\"{r}_early\"].mean(),\n        same=100 * d.loc[d[f\"{r}_early\"], f\"{r}_same\"].mean())))\n    rows.append(dict(reading=r, early_mean=per.early.mean(), early_sd=per.early.std(),\n                     same_mean=per.same.mean(), same_sd=per.same.std()))\ner = pd.DataFrame(rows).round(2)\ner[\"ok\"] = ((er.early_mean - 64.9).abs() <= 14.0) & ((er.same_mean - 96.6).abs() <= 3.4)\nprint(er.to_string(index=False))\nprint(\"Direction sign check: in reading (b), Left responses have positive displacement on %.1f%% \"\n      \"of early trials\" % (100 * (g.loc[g.b_early & (g.choice == 1), \"any_dir\"] > 0).mean()))\n\n# %% md\n## passive-no-movement\n\n> In the passive replay mice hardly ever turned the wheel; 94.1% ± 0.6% of passive trials with high-contrast stimuli had no movement.\n\nPassive visual presentations with contrast 1.0 on either side. No movement is no detected movement overlapping the window (onset or in progress). Windows (a) -0.05 to 0.4 s, (b) 0 to 0.4 s; values (i) mean over sessions, (ii) pooled.\n\n# %% code tags=claim:passive-no-movement\nh = passive[(passive.pl == 1) | (passive.pr == 1)]\nrows = []\nfor w in [\"a\", \"b\"]:\n    still = ~h[f\"moving_{w}\"]\n    per = still.groupby(h.session).mean() * 100\n    rows.append(dict(window=w, value=\"i mean over sessions\", pct=per.mean(), sd=per.std(),\n                     sem=per.sem(), n=len(per)))\n    rows.append(dict(window=w, value=\"ii pooled\", pct=still.mean() * 100, sd=np.nan,\n                     sem=np.nan, n=len(h)))\npn = pd.DataFrame(rows).round(2)\npn[\"ok\"] = (pn.pct - 94.1).abs() <= 0.6\nprint(pn.to_string(index=False))\nprint(\"Per subject, window a:\", (~h.moving_a).groupby(h.subject).mean().mul(100).round(1).to_dict())\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/cells_b.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && sed -i 's/^        exec("import pickle/        exec("import pickle,os/' run_cells.py && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py 2>&1 | sed -n '/high_single\|reading/,$p' | grep -v "^ *[0-9]* *[A-Z][a-z]*_20" | tail -120
+```
+
+```
+reading  sessions  trials  incorrect_mean  incorrect_sd  miss_mean  miss_sd  incorrect_ok  miss_ok
+               a all trials        39    1889            1.47          2.12      23.24    16.11          True    False
+b engaged trials (included)        39    1617            1.71          2.47      10.12     8.32          True     True
+Reproduced under a reading: True
+By subject (reading b):
+subject    Cori  Forssmann  Hench  Lederberg  Moniz  Muller  Radnitz  Richards  Tatum  Theiler
+incorrect   4.9        2.0    4.1        0.0    2.0     3.5      1.1       1.1    0.7      4.1
+miss       13.8       10.8   10.6        3.6   20.0    13.2     10.7      16.0    5.0      6.1
+                    reading  sessions  trials  incorrect_mean  incorrect_sd  miss_mean  miss_sd  incorrect_ok  miss_ok
+               a all trials        39     671            5.06          6.42      30.51    19.87          True     True
+b engaged trials (included)        39     664            5.07          6.43      29.84    19.81          True     True
+Reproduced under a reading: True
+subject    Cori  Forssmann  Hench  Lederberg  Moniz  Muller  Radnitz  Richards  Tatum  Theiler
+incorrect   6.1        6.2    8.1        3.1    9.1     6.5      1.9       2.9    1.6      3.8
+miss       27.3       40.6   32.3        5.5   50.0    12.9     40.4      42.0   32.8     23.1
+                    reading  sessions  trials  incorrect_mean  incorrect_sd  miss_mean  miss_sd  incorrect_ok  miss_ok
+               a all trials        39    1277           19.93          7.66      14.66    12.05          True     True
+b engaged trials (included)        39    1265           20.01          7.90      13.89    11.66          True     True
+Reproduced under a reading: True
+subject    Cori  Forssmann  Hench  Lederberg  Moniz  Muller  Radnitz  Richards  Tatum  Theiler
+[... 64 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_b.py').read()
+s=s.replace('''print("Per subject, window a:"''','''# Variant (not the criterion): only choice-amplitude turns (types 1, 2) counted as movement.
+typed = []
+for r in R:
+    pass
+print("Per subject, window a:"''')
+open('cells_b.py','w').write(s)
+EOF
+echo
+```
+
+```
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_b.py').read()
+s=s.replace('''# Variant (not the criterion): only choice-amplitude turns (types 1, 2) counted as movement.
+typed = []
+for r in R:
+    pass
+''','')
+open('cells_b.py','w').write(s)
+EOF
+date -u
+```
+
+```
+Tue Nov 10 16:45:10 UTC 2026
+Shell cwd was reset to
+```
 
 **Agent**
 
-Reading the Results and Methods.
+Behaviour claims work (fig1c values match under the engaged-trials reading; passive no-movement does not). Now the neuron-selection and counts claims.
 
-**Agent calls Read**
+**Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/paper.txt",
- "offset": 8,
- "limit": 130
+ "file_path": "/tmp/claude-1001/cells_c.py",
+ "content": "# %% md\n## Neuron sets (definition N)\n\nUnits with `phy_annotations` >= 2 (the dataset's description: \"the neurons with _phy_annotation>=2 are the ones that should be included\"), trial firing rate (stimulus onset to 0.4 s, trials T) at least 0.1 Hz, at least 13 such neurons of one region in one session, regions recorded in at least two subjects. Regions are the 42 of Extended Data Table 1, from the location of each unit's peak channel. Active during the task: any of the six tests below 0.05/6. The Figs. 3 to 5 set: any of tests 1 to 4 below 0.05.\n\n# %% code\nunits[\"rate_ok\"] = units.trial_rate >= sm.MIN_RATE\nunits[\"in42\"] = units.region.isin(sm.REGIONS42)\ncnt = units[units.rate_ok & units.in42].groupby([\"session\", \"region\"]).size()\nok_pairs = set(cnt[cnt >= sm.MIN_PER_REGION].index)\nunits[\"sess_region_ok\"] = [(s, r) in ok_pairs for s, r in zip(units.session, units.region)]\nsubj_per_region = units[units.rate_ok & units.in42 & units.sess_region_ok].groupby(\"region\").subject.nunique()\nregions_ok = set(subj_per_region[subj_per_region >= 2].index)\nunits[\"N\"] = units.rate_ok & units.in42 & units.sess_region_ok & units.region.isin(regions_ok)\nP = units[[f\"p{k}\" for k in range(1, 7)]].to_numpy()\nunits[\"active\"] = np.nanmin(P, axis=1) < 0.05 / 6\nunits[\"fig35\"] = units.N & (np.nanmin(P[:, :4], axis=1) < 0.05)\nunits[\"active_nan_variant\"] = units.active   # code variant noted in the text\nN = units[units.N]\nprint(\"Neurons N:\", len(N), \"in\", N.region.nunique(), \"regions,\", N.session.nunique(), \"sessions;\",\n      \"active:\", int(N.active.sum()), \"| Figs. 3-5 set:\", int(units.fig35.sum()))\nprint(\"Regions of the 42 not in N:\", sorted(set(sm.REGIONS42) - set(N.region)))\nnan_tests = np.isnan(P[units.N.to_numpy()]).sum(axis=0)\nprint(\"Tests returning no p-value (all values equal), among N, per test:\", nan_tests.tolist())\n\n# %% md\n## recording-counts\n\n> Across 39 sessions in 10 mice with 92 probe insertions, 29,134 neurons were recorded (747 ± 38 per session, mean ± s.e.), 22,458 of them localized to one of 42 brain regions; the behaviour comprised 9,538 trials.\n\nReadings of neurons: (a) units with `phy_annotations` >= 2; (b) those with a trial firing rate of at least 0.1 Hz. Localized: (i) in one of the 42 regions; (ii) neurons N. Trials: (a) all trials; (b) engaged trials (`included`).\n\n# %% code tags=claim:recording-counts\nrows = []\nfor nr, sel in [(\"a phy>=2\", np.ones(len(units), bool)), (\"b phy>=2, >=0.1 Hz\", units.rate_ok.to_numpy())]:\n    u = units[sel]\n    per = u.groupby(\"session\").size()\n    for lr, loc in [(\"i in 42 regions\", u.in42), (\"ii neurons N\", u.N)]:\n        rows.append(dict(neurons=nr, localized=lr, total=len(u), per_session=per.mean(),\n                         per_session_se=per.sem(), localized_n=int(loc.sum())))\nrc = pd.DataFrame(rows)\nrc[\"total_ok\"] = (rc.total - 29134).abs() <= 2913\nrc[\"per_ok\"] = (rc.per_session - 747).abs() <= 38\nrc[\"loc_ok\"] = (rc.localized_n - 22458).abs() <= 2246\nprint(rc.round(1).to_string(index=False))\nprint(\"\\nSessions %d (expected 39), mice %d (10), probe insertions %d (92)\" %\n      (len(meta), meta.subject.nunique(), meta.probes.sum()))\nprint(\"Trials: (a) all %d, (b) engaged %d; expected 9538 ± 954\" % (len(trials), trials.included.sum()))\nprint(\"Units per probe count:\", meta.groupby(\"probes\").size().to_dict())\n\n# %% md\n## edtable1-region-counts\n\n> Extended Data Table 1 gives, for each of the 42 regions, the number of recordings, mice, task-responsive neurons and neurons (for example MOs 19 recordings, 9 mice, 993 of 1,534 neurons responsive; MRN 11, 7, 722 of 857).\n\nPer region, from neurons N: sessions, mice, neurons and neurons active during the task, against the table (`sm.ED_TABLE1`). Recordings and mice must match exactly and neurons within 10%.\n\n# %% code tags=claim:edtable1-region-counts\ng = N.groupby(\"region\").agg(recordings=(\"session\", \"nunique\"), mice=(\"subject\", \"nunique\"),\n                            responsive=(\"active\", \"sum\"), neurons=(\"unit\", \"size\"))\nref = pd.DataFrame(sm.ED_TABLE1, index=[\"p_recordings\", \"p_mice\", \"p_responsive\", \"p_neurons\"]).T\net = ref.join(g, how=\"left\").fillna(0)\net[\"rec_ok\"] = et.recordings == et.p_recordings\net[\"mice_ok\"] = et.mice == et.p_mice\net[\"neur_ok\"] = (et.neurons - et.p_neurons).abs() <= 0.1 * et.p_neurons\net[\"resp_ok\"] = (et.responsive - et.p_responsive).abs() <= 0.1 * et.p_responsive\net[\"all_ok\"] = et.rec_ok & et.mice_ok & et.neur_ok\nprint(et.astype({c: int for c in [\"recordings\", \"mice\", \"responsive\", \"neurons\"]}).to_string())\nprint(\"\\nRegions with recordings, mice and neurons matching: %d of 42 (neurons within 10%%: %d; \"\n      \"responsive within 10%%: %d; recordings exact %d; mice exact %d)\" %\n      (et.all_ok.sum(), et.neur_ok.sum(), et.resp_ok.sum(), et.rec_ok.sum(), et.mice_ok.sum()))\nprint(\"Totals: neurons %d (table 22458), responsive %d (table 13467)\" % (et.neurons.sum(), et.responsive.sum()))\nprint(\"Regions that differ:\", et.index[~et.all_ok].tolist())\n\n# %% md\n## supptable2-sessions\n\n> The 39 sessions are those of Supplementary Table 2, each with its subject, date, age and recorded areas (for example Cori 2016-12-14, 11 weeks, ACA, CA3, DG, LS, MOs, SUB, VISp), from the 10 subjects of Supplementary Table 1 with their sex and genotype.\n\nSessions matched by subject and date. The areas of a session are the regions of its neurons N; the regions of all units in the 42 regions are shown as a variant. Sex and genotype from the file's subject metadata; a genotype written another way (Ai95 is the RCL-GCaMP6f reporter line; Vglut1-Cre for Vglut1-IRES2-Cre-D) is the same genotype and is listed.\n\n# %% code tags=claim:supptable2-sessions\nref2 = pd.DataFrame(sm.SUPP_T2, columns=[\"subject\", \"date\", \"age_weeks\", \"areas\"])\nref2[\"key\"] = ref2.subject + \"_\" + ref2.date\nmeta[\"key\"] = meta.subject + \"_\" + meta.date\nm2 = ref2.merge(meta[[\"key\", \"identifier\", \"sex\", \"genotype\", \"age\"]], on=\"key\", how=\"left\")\nprint(\"Sessions of the table found in the dataset: %d of %d; dataset sessions not in the table: %s\"\n      % (m2.identifier.notna().sum(), len(ref2), sorted(set(meta.key) - set(ref2.key))))\nareasN = N.groupby(\"session\").region.apply(lambda x: set(x))\nareas42 = units[units.in42].groupby(\"session\").region.apply(lambda x: set(x))\nm2[\"areas_N\"] = m2.identifier.map(areasN)\nm2[\"areas_42\"] = m2.identifier.map(areas42)\nm2[\"ref_set\"] = m2.areas.str.split(\", \").apply(set)\nm2[\"match_N\"] = m2.ref_set == m2.areas_N\nm2[\"match_42\"] = m2.ref_set == m2.areas_42\nm2[\"age_days\"] = m2.age.str.extract(r\"(\\d+)\").astype(float)[0]\nm2[\"age_weeks_data\"] = (m2.age_days / 7).round(1)\nm2[\"only_paper\"] = [sorted(a - (b or set())) for a, b in zip(m2.ref_set, m2.areas_N)]\nm2[\"only_data\"] = [sorted((b or set()) - a) for a, b in zip(m2.ref_set, m2.areas_N)]\nprint(m2[[\"key\", \"age_weeks\", \"age_weeks_data\", \"match_N\", \"match_42\", \"only_paper\", \"only_data\"]].to_string())\nprint(\"\\nArea sets matching: neurons N %d of 39, all units in the 42 regions %d of 39\"\n      % (m2.match_N.sum(), m2.match_42.sum()))\nsx = meta.groupby(\"subject\")[[\"sex\", \"genotype\"]].first()\nsx[\"paper_sex\"] = [sm.SUPP_T1[s][0] for s in sx.index]\nsx[\"paper_genotype\"] = [sm.SUPP_T1[s][1] for s in sx.index]\nprint(sx.to_string())\nprint(\"Sex matches in %d of 10 subjects\" % (sx.sex == sx.paper_sex).sum())\n"
 }
 ```
 
 ```
-8	10.1038/s41586-019-1787-x EMS84617 WTPA84617 WTMS84617 UKMS84617 1 Article Distributed coding of choice, action, and engagement across the mouse brain Steinmetz Nicholas A. 1 3 * Zatka-Haas Peter 2 
-9	Carandini Matteo 1 4 Harris Kenneth D. 2 4 1 Institute of Ophthalmology, University College London, London, UK 2 Institute of Neurology, University College London, London, UK * Correspondence and 
-10	requests for materials should be addressed to [removed: an e-mail address] 3 Present address: Department of Biological Structure, University of Washington, Seattle, WA. 4 These authors jointly supervised 
-11	this work: Matteo Carandini, Kenneth D. Harris 27 11 2019 12 2019 576 7786 347872 266 273 12 10 2019 27 05 2020 27 05 2020 17 12 2019 16 06 2024 Users may view, print, copy, and download text and 
-12	data-mine the content in such documents, for the purposes of academic research, subject always to the full Conditions of use: http://www.nature.com/authors/editorial_policies/license.html#terms 
-13	Vision, choice, action, and behavioral engagement arise from neuronal activity that may be distributed across brain regions. Here we delineate the spatial distribution of neurons underlying these 
-14	processes. We used Neuropixels probes 1 , 2 to record from ~30,000 neurons in 42 brain regions of mice performing a visual discrimination task 3 . Neurons in nearly all regions responded 
-15	non-specifically when the mouse initiated an action. By contrast, neurons encoding visual stimuli and upcoming choices occupied restricted regions in neocortex, basal ganglia, and midbrain. Choice 
-16	signals were rare and emerged with indistinguishable timing across regions. Midbrain neurons were activated before contralateral choices and suppressed before ipsilateral choices, whereas forebrain 
-17	neurons could prefer either side. Brain-wide pre-stimulus activity predicted engagement in individual trials and in the overall task, with enhanced subcortical but suppressed neocortical activity 
-18	d
-[... 119 more lines not kept]
+File created successfully at: /tmp/claude-1001/cells_c.py (file state is current in your context — no need to Read it back)
 ```
 
-**Agent calls Read**
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py 2>&1 | sed -n '/^Neurons N/,$p'
+```
+
+```
+Neurons N: 20418 in 42 regions, 39 sessions; active: 12263 | Figs. 3-5 set: 12780
+Regions of the 42 not in N: []
+Tests returning no p-value (all values equal), among N, per test: [0, 122, 225, 756, 134, 167]
+           neurons       localized  total  per_session  per_session_se  localized_n  total_ok  per_ok  loc_ok
+          a phy>=2 i in 42 regions  33997        871.7            45.5        23844     False   False    True
+          a phy>=2    ii neurons N  33997        871.7            45.5        20418     False   False    True
+b phy>=2, >=0.1 Hz i in 42 regions  29283        750.8            38.0        20544      True    True    True
+b phy>=2, >=0.1 Hz    ii neurons N  29283        750.8            38.0        20418      True    True    True
+
+Sessions 39 (expected 39), mice 10 (10), probe insertions 92 (92)
+Trials: (a) all 10050, (b) engaged 9538; expected 9538 ± 954
+Units per probe count: {1: 1, 2: 23, 3: 15}
+       p_recordings  p_mice  p_responsive  p_neurons  recordings  mice  responsive  neurons  rec_ok  mice_ok  neur_ok  resp_ok  all_ok
+ACA              11       8           395        608          10     8         437      660   False     True     True    False   False
+ACB               3       3           152        255           3     3         160      260    True     True     True     True    True
+APN               2       2           177        235           2     2         176      234    True     True     True     True    True
+BLA               2       2           107        261           2     2         113      264    True     True     True     True    True
+CA1              21      10           494       1129          20    10         530     1159   False     True     True     True   False
+CA3              10       6           243        438           8     6         239      427   False     True     True     True   False
+CP                5       5           524        914           5     5         540      915    True     True     True     Tru
+[... 96 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old='''REGIONS42 = sorted(ED_TABLE1)'''
+new='''REGIONS42 = sorted(ED_TABLE1)
+# Finer Allen CCF labels found in the files, mapped to the parent among the 42 regions
+# (assumption: a unit labelled with a subdivision lies in the parent region; Allen CCF
+# hierarchy). Labels not listed (TH, MB, CA, SSs, AUD, ...) stay outside the 42.
+REGION_PARENT = {
+    "SCig": "SCm", "SCiw": "SCm", "SCdg": "SCm", "SCdw": "SCm",
+    "SCsg": "SCs", "SCop": "SCs", "SCzo": "SCs",
+    "LSr": "LS", "LSc": "LS", "LSv": "LS",
+    "ORBm": "ORB", "ORBl": "ORB", "ORBvl": "ORB",
+    "TT": "OLF", "COA": "OLF", "PIR": "OLF", "DP": "OLF", "AON": "OLF", "NLOT": "OLF",
+    "PAA": "OLF", "TR": "OLF", "MOB": "OLF", "AOB": "OLF",
+}'''
+s=s.replace(old,new,1)
+open('steinmetz.py','w').write(s)
+EOF
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_c.py').read()
+old='''# %% code
+units["rate_ok"]'''
+new='''# %% code
+# Region labels: the files use finer labels for some units (SCig, SCsg, LSr, ...); these are
+# mapped to their parent among the 42 (sm.REGION_PARENT). The labels as given are a variant.
+units["region_raw"] = units.region
+units["region"] = units.region_raw.replace(sm.REGION_PARENT)
+print("Units relabelled to a parent region:", units.region_raw.isin(list(sm.REGION_PARENT)).sum(),
+      units.loc[units.region_raw.isin(list(sm.REGION_PARENT)), "region_raw"].value_counts().to_dict())
+
+def neuron_set(reg):
+    in42 = reg.isin(sm.REGIONS42)
+    c = units[units.rate_ok & in42].groupby(["session", reg[units.rate_ok & in42]]).size()
+    okp = set(c[c >= sm.MIN_PER_REGION].index)
+    sr = pd.Series([(s, r) in okp for s, r in zip(units.session, reg)], index=units.index)
+    spr = units[units.rate_ok & in42 & sr].groupby(reg[units.rate_ok & in42 & sr]).subject.nunique()
+    return units.rate_ok & in42 & sr & reg.isin(set(spr[spr >= 2].index))
+
+units["rate_ok"] = units.trial_rate >= sm.MIN_RATE
+units["N_raw"] = neuron_set(units.region_raw)
+print("Variant, labels as given: neurons N", int(units.N_raw.sum()))
+units["rate_ok"]'''
+assert old in s; s=s.replace(old,new,1)
+open('cells_c.py','w').write(s)
+EOF
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py 2>&1 | sed -n '/^Units relabelled/,$p' | grep -v -E "True +True +True +True +True$" | head -80
+```
+
+```
+Units relabelled to a parent region: 2262 {'SCig': 812, 'LSr': 475, 'COA': 316, 'TT': 181, 'SCsg': 178, 'ORBm': 122, 'LSc': 72, 'PIR': 67, 'DP': 39}
+Variant, labels as given: neurons N 20418
+Neurons N: 22273 in 42 regions, 39 sessions; active: 13439 | Figs. 3-5 set: 13852
+Regions of the 42 not in N: []
+Tests returning no p-value (all values equal), among N, per test: [0, 125, 249, 874, 143, 169]
+           neurons       localized  total  per_session  per_session_se  localized_n  total_ok  per_ok  loc_ok
+          a phy>=2 i in 42 regions  33997        871.7            45.5        26106     False   False   False
+          a phy>=2    ii neurons N  33997        871.7            45.5        22273     False   False    True
+b phy>=2, >=0.1 Hz i in 42 regions  29283        750.8            38.0        22434      True    True    True
+b phy>=2, >=0.1 Hz    ii neurons N  29283        750.8            38.0        22273      True    True    True
+
+Sessions 39 (expected 39), mice 10 (10), probe insertions 92 (92)
+Trials: (a) all 10050, (b) engaged 9538; expected 9538 ± 954
+Units per probe count: {1: 1, 2: 23, 3: 15}
+       p_recordings  p_mice  p_responsive  p_neurons  recordings  mice  responsive  neurons  rec_ok  mice_ok  neur_ok  resp_ok  all_ok
+ACA              11       8           395        608          10     8         437      660   False     True     True    False   False
+CA1              21      10           494       1129          20    10         530     1159   False     True     True     True   False
+CA3              10       6           243        438           8     6         239      427   False     True     True     True   False
+DG               16      10           336        711          15    10         365      704   False     True     True     True   False
+LD                6       5           209        308           5     4         178      276   False    False    False    False   False
+[... 60 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_c.py').read()
+old='''areas42 = units[units.in42].groupby("session").region.apply(lambda x: set(x))'''
+new='''areas42 = units[units.in42].groupby("session").region.apply(lambda x: set(x))
+areasNeur = units[units.in42 & units.rate_ok].groupby("session").region.apply(lambda x: set(x))'''
+s=s.replace(old,new)
+old='''m2["match_42"] = m2.ref_set == m2.areas_42'''
+new='''m2["match_42"] = m2.ref_set == m2.areas_42
+m2["match_neur"] = m2.ref_set == m2.identifier.map(areasNeur)'''
+s=s.replace(old,new)
+s=s.replace('''print(m2[["key", "age_weeks", "age_weeks_data", "match_N", "match_42", "only_paper", "only_data"]].to_string())
+print("\\nArea sets matching: neurons N %d of 39, all units in the 42 regions %d of 39"
+      % (m2.match_N.sum(), m2.match_42.sum()))''','''print(m2[["key", "age_weeks", "age_weeks_data", "match_neur", "match_N", "match_42", "only_paper",
+          "only_data"]].to_string())
+print("\\nArea sets matching: neurons (phy >= 2, >= 0.1 Hz) %d of 39; neurons N %d; all units %d"
+      % (m2.match_neur.sum(), m2.match_N.sum(), m2.match_42.sum()))
+print("Ages match in %d of 39 sessions" % (m2.age_weeks == m2.age_weeks_data.round()).sum())''')
+s=s.replace('''Sessions matched by subject and date. The areas of a session are the regions of its neurons N; the regions of all units in the 42 regions are shown as a variant.''','''Sessions matched by subject and date. The areas of a session are the regions (of the 42) of its neurons, a neuron being a unit that passes curation and the 0.1 Hz trial rate (Methods, Data analysis: "Units passing these criteria were considered to reflect the spiking activity of a neuron"). The regions of neurons N (with the 13 per region rule) and of all curated units are shown as variants.''')
+# ED table variant
+s=s.replace('''print("Regions that differ:", et.index[~et.all_ok].tolist())''','''print("Regions that differ:", et.index[~et.all_ok].tolist())
+v = units[units.in42 & units.rate_ok].groupby("region").agg(recordings=("session", "nunique"),
+        mice=("subject", "nunique"), neurons=("unit", "size"))
+v = ref.join(v)
+print("Variant, all neurons of the 42 regions without the 13-per-session rule: recordings exact %d, "
+      "mice exact %d, neurons within 10%% %d, all three %d of 42" % (
+      (v.recordings == v.p_recordings).sum(), (v.mice == v.p_mice).sum(),
+      ((v.neurons - v.p_neurons).abs() <= 0.1 * v.p_neurons).sum(),
+      ((v.recordings == v.p_recordings) & (v.mice == v.p_mice) &
+       ((v.neurons - v.p_neurons).abs() <= 0.1 * v.p_neurons)).sum()))''')
+open('cells_c.py','w').write(s)
+EOF
+cat > $TMPDIR/cells_d.py <<'EOF'
+# %% md
+## task-modulated-fraction
+
+> 60.0% of neurons (13,466) were significantly modulated during the task; of these 74.3% consistently increased and 20.2% consistently decreased their activity.
+
+Neurons N; active is any of the six tests below 0.05/6. Direction is the sign of the code's effect size for each test against baseline (1, 2, 3, 5, 6). Reading (a): all tests against baseline with p < 0.05/6 have the same sign; (b): all tests against baseline with p < 0.05 have the same sign. An active neuron with no significant test against baseline (only test 4) is neither.
+
+# %% code tags=claim:task-modulated-fraction
+def direction(df, alpha):
+    Pb = df[["p1", "p2", "p3", "p5", "p6"]].to_numpy()
+    Eb = df[["e1", "e2", "e3", "e5", "e6"]].to_numpy()
+    sig = Pb < alpha
+    pos = (sig & (Eb > 0)).sum(axis=1)
+    neg = (sig & (Eb < 0)).sum(axis=1)
+    return (pos > 0) & (neg == 0), (neg > 0) & (pos == 0)
+
+act = N[N.active]
+rows = []
+for r, alpha in [("a", 0.05 / 6), ("b", 0.05)]:
+    inc, dec = direction(act, alpha)
+    rows.append(dict(reading=r, active=len(act), frac_active=100 * len(act) / len(N),
+                     increase=100 * inc.mean(), decrease=100 * dec.mean()))
+tm = pd.DataFrame(rows)
+tm["ok"] = ((tm.active - 13466).abs() <= 1347) & ((tm.frac_active - 60.0).abs() <= 6.0) & \
+    ((tm.increase - 74.3).abs() <= 7.4) & ((tm.decrease - 20.2).abs() <= 2.0)
+print(tm.round(2).to_string(index=False))
+print("Active fraction by subject (%):", (N.groupby("subject").active.mean() * 100).round(1).to_dict())
+print("Variant, labels as given (N_raw): active %d of %d" % (units[units.N_raw].active.sum(), units.N_raw.sum()))
+print("Per test, fraction of N below 0.05/6:", (N[[f"p{k}" for k in range(1, 7)]] < 0.05 / 6).mean().round(3).to_dict())
+
+# %% md
+## suppfig2-rate-amplitude
+
+> Statistically responsive neurons have higher baseline firing rates than other neurons (d' = 0.35 ± 0.04), while their spike amplitudes differ much less (d' = 0.10 ± 0.02).
+
+Neurons N. Baseline is the mean rate -0.2 to 0 s before stimulus onset on trials T; amplitude is the mean of the file's `spike_amps` over the unit's spikes. d' = (mean of significant - mean of others) / sqrt((var1 + var2) / 2). Reading (a): significant on any of the six tests (p < 0.05/6) against the rest, ± a bootstrap s.e. over neurons (1,000 resamples); (b) the six per-test d' values (significant on test k at 0.05/6 against the rest), mean ± s.e.
+
+# %% code tags=claim:suppfig2-rate-amplitude
+rng = np.random.default_rng(20)
+def dprime(x, sig):
+    a, b = x[sig], x[~sig]
+    return (a.mean() - b.mean()) / np.sqrt((a.var(ddof=1) + b.var(ddof=1)) / 2)
+X = {"rate": N.baseline_rate.to_numpy(), "amp": N.amp.to_numpy()}
+sig_any = N.active.to_numpy()
+rows = []
+for q, x in X.items():
+    ok = np.isfinite(x)
+    d0 = dprime(x[ok], sig_any[ok])
+    boots = []
+    idx = np.where(ok)[0]
+    for _ in range(1000):
+        b = rng.choice(idx, len(idx))
+        boots.append(dprime(x[b], sig_any[b]))
+    per = [dprime(x[ok], (N[f"p{k}"].to_numpy() < 0.05 / 6)[ok]) for k in range(1, 7)]
+    rows.append(dict(quantity=q, a_dprime=d0, a_se=np.std(boots), b_mean=np.mean(per),
+                     b_se=np.std(per, ddof=1) / np.sqrt(6), per_test=np.round(per, 3).tolist()))
+sf = pd.DataFrame(rows)
+print(sf.round(3).to_string(index=False))
+okA = abs(sf.a_dprime[0] - 0.35) <= 0.04 and abs(sf.a_dprime[1] - 0.10) <= 0.02
+okB = abs(sf.b_mean[0] - 0.35) <= 0.04 and abs(sf.b_mean[1] - 0.10) <= 0.02
+print("Within tolerance: reading a", okA, "| reading b", okB)
+print("Baseline rate range %.2f to %.1f Hz; amplitude range %.1f to %.1f" % (
+      np.nanmin(X["rate"]), np.nanmax(X["rate"]), np.nanmin(X["amp"]), np.nanmax(X["amp"])))
+print("Same with log10(rate + 1):", round(dprime(np.log10(X["rate"] + 1), sig_any), 3))
+EOF
+$TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py 2>&1 | sed -n '/Area sets matching/,$p'
+```
+
+```
+Area sets matching: neurons (phy >= 2, >= 0.1 Hz) 38 of 39; neurons N 24; all units 38
+Ages match in 39 of 39 sessions
+          sex             genotype paper_sex           paper_genotype
+subject                                                              
+Cori        F  tetO-G6s x CaMK-tTA         F      tetO-G6s x CaMK-tTA
+Forssmann   M             C57BL/6J         M                 C57BL/6J
+Hench       M  tetO-G6s x CaMK-tTA         M      tetO-G6s x CaMK-tTA
+Lederberg   F           Vglut1-Cre         F       Vglut1-IRES2-Cre-D
+Moniz       M    Ai95 x VGlut1-Cre         M  RCL-GCaMP6f x VGlut-Cre
+Muller      F    Ai95 x VGlut1-Cre         F  RCL-GCaMP6f x VGlut-Cre
+Radnitz     F       Snap25-GCaMP6s         F           Snap25-GCaMP6s
+Richards    M             C57BL/6J         M                 C57BL/6J
+Tatum       F           Vglut1-Cre         F       Vglut1-IRES2-Cre-D
+Theiler     F    Ai95 x VGlut1-Cre         F  RCL-GCaMP6f x VGlut-Cre
+Sex matches in 10 of 10 subjects
+reading  active  frac_active  increase  decrease   ok
+      a   13439        60.34     74.95     20.89 True
+      b   13439        60.34     71.60     19.44 True
+Active fraction by subject (%): {'Cori': 58.1, 'Forssmann': 58.4, 'Hench': 73.2, 'Lederberg': 61.2, 'Moniz': 55.6, 'Muller': 52.5, 'Radnitz': 71.6, 'Richards': 50.3, 'Tatum': 51.3, 'Theiler': 66.3}
+Variant, labels as given (N_raw): active 12263 of 20418
+[... 8 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/cells_e.py <<'EOF'
+# %% code
+# Per-neuron arrays in the order of `units`: normalized traces (Fig. 2) and z-scores (R).
+def stack(get, width):
+    out = []
+    for r in R:
+        n = len(r["units"])
+        a = get(r)
+        out.append(np.full((n, width), np.nan, np.float32) if a is None else np.asarray(a, np.float32).reshape(n, width))
+    return np.concatenate(out)
+
+nb = int(round((sm.STIM_WIN[1] - sm.STIM_WIN[0]) / sm.BIN))
+t_axis = sm.STIM_WIN[0] + sm.BIN * (np.arange(nb) + 0.5)
+TR = {k: stack(lambda r, k=k: r["traces"].get(k), nb) for k in
+      ["contraGo", "ipsiGo", "contraMiss", "ipsiMiss", "passive"]}
+Z = {}
+for k in ["sGo", "sNg", "ipsiMiss", "mNg", "mPa", "sPa"]:
+    for j, zz in enumerate(["Z1", "Z2"]):
+        Z[(k, zz)] = stack(lambda r, k=k, j=j: r["z"][k][j], 1)[:, 0]
+nsets = pd.DataFrame([dict(session=r["meta"]["name"], **{k: (len(v) if hasattr(v, "__len__") else v)
+                      for k, v in r["sets"].items()}) for r in R])
+print(nsets.describe().round(1).to_string())
+
+# %% md
+## fig2de-activity-order
+
+> When the mouse chose a contralateral stimulus, activity arose first in visual cortex and superficial superior colliculus and then spread to most regions; when it chose an ipsilateral stimulus, VIS and SCs were among the last areas to respond.
+
+Correct contralateral trials: Right choice (T) on a right stimulus alone, matched in contrast with the contralateral Miss and passive trials of the same single-stimulus type (definition M applied to these three groups). Correct ipsilateral: Left choice on a left stimulus alone. Per region the mean normalized rate over responsive neurons; responsive readings (a) the sliding ranksum display selection, (b) active during the task, (c) the Figs. 3 to 5 set. Latency L1: first time in 0 to 0.4 s at which the trace reaches half its maximum; L2: the time of the maximum. Regions with at least 5 responsive neurons (a standard choice, as the Fig. 3d legend's threshold).
+
+# %% code tags=claim:fig2de-activity-order
+win = (t_axis >= 0) & (t_axis <= 0.4)
+def region_latency(mask, key):
+    rows = []
+    for reg in sm.REGIONS42:
+        m = mask & (units.region == reg).to_numpy()
+        tr_ = TR[key][m]
+        tr_ = tr_[np.isfinite(tr_).all(axis=1)]
+        if len(tr_) < 5:
+            continue
+        y = tr_.mean(axis=0)[win]
+        tt = t_axis[win]
+        mx = y.max()
+        l1 = tt[np.argmax(y >= mx / 2)] if mx > 0 else np.nan
+        rows.append(dict(region=reg, n=len(tr_), peak=mx, L1=l1, L2=tt[np.argmax(y)]))
+    return pd.DataFrame(rows).set_index("region")
+
+masks = {"a": (units.N & units.slide_resp).to_numpy(), "b": (units.N & units.active).to_numpy(),
+         "c": units.fig35.to_numpy()}
+res = []
+for rd, mk in masks.items():
+    for lat in ["L1", "L2"]:
+        c = region_latency(mk, "contraGo")
+        i = region_latency(mk, "ipsiGo")
+        rc_ = c[lat].rank(method="average", pct=True)
+        ri_ = i[lat].rank(method="average", pct=True)
+        vis_c = c.loc[c.index.isin(sm.VIS), lat].mean()
+        vis_rank_c = (c[lat] < vis_c).mean() + 0.5 * (c[lat] == vis_c).mean()
+        vis_i = i.loc[i.index.isin(sm.VIS), lat].mean()
+        vis_rank_i = (i[lat] < vis_i).mean()
+        row = dict(responsive=rd, latency=lat, regions_contra=len(c), regions_ipsi=len(i),
+                   VISp_contra_pct=rc_.get("VISp"), VISmean_contra_pct=vis_rank_c,
+                   SCs_contra_pct=rc_.get("SCs"), VISp_ipsi_pct=ri_.get("VISp"),
+                   VISmean_ipsi_pct=vis_rank_i, SCs_ipsi_pct=ri_.get("SCs"),
+                   VISp_contra_ms=1000 * c[lat].get("VISp", np.nan),
+                   SCs_contra_ms=1000 * c[lat].get("SCs", np.nan),
+                   median_contra_ms=1000 * c[lat].median(), median_ipsi_ms=1000 * i[lat].median())
+        row["contra_ok"] = bool(row["VISp_contra_pct"] <= 0.25 and row["VISmean_contra_pct"] <= 0.25
+                                and row["SCs_contra_pct"] <= 0.25)
+        row["ipsi_ok"] = bool(row["VISp_ipsi_pct"] > 2 / 3 and row["SCs_ipsi_pct"] > 2 / 3)
+        res.append(row)
+        if rd == "a" and lat == "L1":
+            print("Reading a, L1: earliest regions on contralateral trials:",
+                  c[lat].sort_values().head(8).mul(1000).round(0).to_dict())
+            print("Reading a, L1: latest regions on ipsilateral trials:",
+                  i[lat].sort_values().tail(8).mul(1000).round(0).to_dict())
+fo = pd.DataFrame(res)
+print(fo.round(3).to_string(index=False))
+print("Percentiles are the region's rank among regions (0 earliest, 1 latest). Reproduced under a "
+      "reading:", bool((fo.contra_ok & fo.ipsi_ok).any()))
+c = region_latency(masks["a"], "contraGo")
+print("Peak normalized rates, contralateral, reading a: %.2f to %.2f" % (c.peak.min(), c.peak.max()))
+
+# %% md
+## fig2fg-miss-restricted
+
+> On Miss trials with a contralateral stimulus, activity appeared in a visual pathway of visual areas, basal ganglia and several midbrain structures but did not spread to the whole brain; on Miss trials with an ipsilateral stimulus there was essentially no activity.
+
+Fraction of neurons N per region with z > 4 (definition R; readings Z1, Z2) on contrast-matched correct contralateral Go trials, contralateral Miss trials (both single-stimulus, as for fig2de) and on ipsilateral Miss trials. Sessions with fewer than 10 matched trials per group are left out of the matched conditions.
+
+# %% code tags=claim:fig2fg-miss-restricted
+keep_s = set(nsets.session[nsets.sGo >= 10])
+print("Sessions with at least 10 matched single-stimulus trials per group: %d of 39" % len(keep_s))
+rows = []
+for zz in ["Z1", "Z2"]:
+    d = pd.DataFrame(dict(region=units.region, session=units.session, N=units.N,
+                          go=Z[("sGo", zz)] > 4, miss=Z[("sNg", zz)] > 4,
+                          imiss=Z[("ipsiMiss", zz)] > 4,
+                          has_m=np.isfinite(Z[("sGo", zz)]), has_i=np.isfinite(Z[("ipsiMiss", zz)])))
+    d = d[d.N]
+    dm = d[d.has_m & d.session.isin(keep_s)]
+    fr = dm.groupby("region")[["go", "miss"]].mean()
+    vp = fr.index.isin(sm.VISUAL_PATHWAY)
+    di = d[d.has_i]
+    rows.append(dict(z=zz, miss_vispath=fr.miss[vp].mean(), miss_other=fr.miss[~vp].mean(),
+                     go_other=fr.go[~vp].mean(), go_vispath=fr.go[vp].mean(),
+                     contra_miss_pooled=dm.miss.mean(), ipsi_miss_pooled=di.imiss.mean(),
+                     n_neurons_matched=len(dm), n_neurons_ipsi=len(di)))
+    if zz == "Z1":
+        print((fr * 100).round(1).T.to_string())
+ff = pd.DataFrame(rows)
+ff["i"] = ff.miss_vispath > ff.miss_other
+ff["ii"] = ff.go_other >= 2 * ff.miss_other
+ff["iii"] = ff.ipsi_miss_pooled < ff.contra_miss_pooled / 2
+print(ff.round(4).to_string(index=False))
+print("Reproduced under a reading:", bool((ff.i & ff.ii & ff.iii).any()))
+
+# %% md
+## fig5b-miss-more-than-passive
+
+> More neurons were significantly activated by contralateral visual stimuli on Miss trials in the task than on passive trials with the same contrasts, and passive responses were weaker than those on Miss trials.
+
+Definition M as in the Methods: trials with contralateral contrast > 0, Go (Left or Right), NoGo and passive groups matched per contrast level. Sessions kept when (reading 1) each group has at least 10 trials, or (reading 2) the three groups together have at least 10. Fraction of neurons with z > 4 on Miss (`mNg`) and passive (`mPa`) trials; neurons (a) the Figs. 3 to 5 set, (b) neurons N.
+
+# %% code tags=claim:fig5b-miss-more-than-passive
+print("Sessions kept: reading 1 (>= 10 per group) %d; reading 2 (>= 10 over the three groups) %d"
+      % ((nsets.mGo >= 10).sum(), (3 * nsets.mGo >= 10).sum()))
+keep_m = set(nsets.session[nsets.mGo >= 10])
+rows = []
+for zz in ["Z1", "Z2"]:
+    for nr, msk in [("a Figs 3-5 set", units.fig35), ("b N", units.N)]:
+        d = pd.DataFrame(dict(region=units.region, session=units.session,
+                              miss=Z[("mNg", zz)] > 4, pas=Z[("mPa", zz)] > 4,
+                              ok=np.isfinite(Z[("mNg", zz)]) & np.isfinite(Z[("mPa", zz)])))
+        d = d[msk.to_numpy() & d.ok & d.session.isin(keep_m)]
+        fr = d.groupby("region")[["miss", "pas"]].mean()
+        ex = fr.miss - fr.pas
+        rows.append(dict(z=zz, neurons=nr, n=len(d), miss_pooled=d.miss.mean(),
+                         passive_pooled=d.pas.mean(), regions=len(fr),
+                         regions_excess_pos=(ex > 0).sum(), regions_excess_neg=(ex < 0).sum()))
+fb = pd.DataFrame(rows)
+fb["ok"] = (fb.miss_pooled > fb.passive_pooled) & (fb.regions_excess_pos > fb.regions / 2) & (len(keep_m) == 34)
+print(fb.round(4).to_string(index=False))
+print("Reproduced under a reading:", bool(fb.ok.any()))
+EOF
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py 2>&1 | sed -n '/^ *mGo\|count/,$p' | tail -60
+```
+
+```
+sex             genotype paper_sex           paper_genotype
+subject                                                              
+Cori        F  tetO-G6s x CaMK-tTA         F      tetO-G6s x CaMK-tTA
+Forssmann   M             C57BL/6J         M                 C57BL/6J
+Hench       M  tetO-G6s x CaMK-tTA         M      tetO-G6s x CaMK-tTA
+Lederberg   F           Vglut1-Cre         F       Vglut1-IRES2-Cre-D
+Moniz       M    Ai95 x VGlut1-Cre         M  RCL-GCaMP6f x VGlut-Cre
+Muller      F    Ai95 x VGlut1-Cre         F  RCL-GCaMP6f x VGlut-Cre
+Radnitz     F       Snap25-GCaMP6s         F           Snap25-GCaMP6s
+Richards    M             C57BL/6J         M                 C57BL/6J
+Tatum       F           Vglut1-Cre         F       Vglut1-IRES2-Cre-D
+Theiler     F    Ai95 x VGlut1-Cre         F  RCL-GCaMP6f x VGlut-Cre
+Sex matches in 10 of 10 subjects
+reading  active  frac_active  increase  decrease   ok
+      a   13439        60.34     74.95     20.89 True
+      b   13439        60.34     71.60     19.44 True
+Active fraction by subject (%): {'Cori': 58.1, 'Forssmann': 58.4, 'Hench': 73.2, 'Lederberg': 61.2, 'Moniz': 55.6, 'Muller': 52.5, 'Radnitz': 71.6, 'Richards': 50.3, 'Tatum': 51.3, 'Theiler': 66.3}
+Variant, labels as given (N_raw): active 12263 of 20418
+Per test, fraction of N below 0.05/6: {'p1': 0.332, 'p2': 0.128, 'p3': 0.334, 'p4': 0.063, 'p5': 0.434, 'p6': 0.332}
+quantity  a_dprime  a_se  b_mean  b_se                                    per_test
+[... 41 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > dbg.py <<'EOF'
+import pickle,numpy as np,sys
+sys.path.insert(0,'entries/steinmetz-2019')
+R=pickle.load(open('R39.pkl','rb'))
+for r in R[:6]:
+    s=r['sets']; tr=r['trials']
+    print(r['meta']['name'], len(s['sGo']), tr.iloc[s['sGo']].t_choice.value_counts().to_dict(), tr.iloc[s['sNg']].t_choice.value_counts().to_dict(), tr.iloc[s['sGo']].cr.tolist()[:5], tr.iloc[s['sNg']].cr.tolist()[:5])
+    z1g=r['z']['sGo'][0]; z1n=r['z']['sNg'][0]
+    if z1g is not None: print(' frac z>4 go %.3f miss %.3f'%(np.mean(z1g>4), np.mean(z1n>4)), np.nanmedian(z1g), np.nanmedian(z1n))
+EOF
+$TMPDIR/venv/bin/python dbg.py
+```
+
+```
+Cori_2016-12-14 14 {'R': 14} {'N': 14} [0.5, 0.5, 1.0, 0.25, 0.5] [0.5, 1.0, 1.0, 1.0, 0.25]
+ frac z>4 go 0.266 miss 0.172 0.5999999999999999 0.07298302482837275
+Cori_2016-12-17 17 {'R': 17} {'N': 17} [1.0, 1.0, 1.0, 0.5, 0.25] [1.0, 1.0, 0.5, 0.25, 1.0]
+ frac z>4 go 0.237 miss 0.190 0.6172133998483679 0.20000000000000012
+Cori_2016-12-18 18 {'R': 18} {'N': 18} [0.25, 0.5, 1.0, 0.25, 0.5] [1.0, 0.5, 0.5, 0.5, 0.5]
+ frac z>4 go 0.163 miss 0.149 0.3687817782917154 0.07656414934887795
+Forssmann_2017-11-01 16 {'R': 16} {'N': 16} [1.0, 0.5, 0.25, 1.0, 0.5] [0.5, 1.0, 0.25, 0.5, 0.25]
+ frac z>4 go 0.228 miss 0.206 0.5813183589761798 0.5855400437691199
+Forssmann_2017-11-02 13 {'R': 13} {'N': 13} [1.0, 1.0, 1.0, 0.5, 1.0] [0.25, 1.0, 1.0, 0.5, 1.0]
+ frac z>4 go 0.283 miss 0.239 1.1547005383792508 0.5908391567007969
+Forssmann_2017-11-04 13 {'R': 13} {'N': 13} [0.5, 0.5, 0.25, 0.25, 0.25] [1.0, 1.0, 0.5, 0.5, 0.25]
+ frac z>4 go 0.287 miss 0.282 1.0000000000000002 1.0
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > dbg2.py <<'EOF'
+d = pd.DataFrame(dict(region=units.region, session=units.session, N=units.N, go=Z[("sGo","Z1")], miss=Z[("sNg","Z1")]))
+d=d[d.N & d.session.isin(keep_s)]
+print(d.groupby('session').apply(lambda x: pd.Series(dict(go=(x.go>4).mean(), miss=(x.miss>4).mean(), goinf=np.isinf(x.go).mean(), missinf=np.isinf(x.miss).mean(), gonan=x.go.isna().mean()))).round(3))
+EOF
+printf "# %%%% code\n" | cat - dbg2.py > dbg2c.py; $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py,dbg2c.py 2>&1 | tail -22
+```
+
+```
+Reproduced under a reading: False
+                         go   miss  goinf  missinf  gonan
+session                                                  
+Cori_2016-12-14       0.288  0.174  0.208    0.156  0.096
+Cori_2016-12-17       0.250  0.193  0.177    0.169  0.075
+Cori_2016-12-18       0.176  0.137  0.099    0.114  0.041
+Forssmann_2017-11-01  0.249  0.228  0.216    0.219  0.118
+Forssmann_2017-11-02  0.349  0.289  0.331    0.289  0.195
+Forssmann_2017-11-04  0.222  0.278  0.222    0.194  0.083
+Forssmann_2017-11-05  0.293  0.243  0.273    0.236  0.133
+Hench_2017-06-15      0.343  0.220  0.212    0.194  0.077
+Hench_2017-06-16      0.277  0.231  0.166    0.181  0.037
+Hench_2017-06-17      0.259  0.257  0.201    0.220  0.088
+Hench_2017-06-18      0.409  0.186  0.339    0.178  0.173
+Lederberg_2017-12-08  0.194  0.140  0.154    0.126  0.101
+Muller_2017-01-07     0.335  0.195  0.222    0.154  0.064
+Muller_2017-01-09     0.270  0.232  0.264    0.226  0.188
+Radnitz_2017-01-09    0.371  0.318  0.332    0.299  0.091
+Radnitz_2017-01-10    0.257  0.216  0.207    0.188  0.113
+Richards_2017-10-30   0.296  0.196  0.260    0.187  0.163
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_e.py').read()
+s=s.replace('has_m=np.isfinite(Z[("sGo", zz)]), has_i=np.isfinite(Z[("ipsiMiss", zz)])','has_m=~np.isnan(Z[("sGo", zz)]) & ~np.isnan(Z[("sNg", zz)]),\n                          has_i=~np.isnan(Z[("ipsiMiss", zz)]), inf_go=np.isinf(Z[("sGo", zz)])')
+s=s.replace('ok=np.isfinite(Z[("mNg", zz)]) & np.isfinite(Z[("mPa", zz)])','ok=~np.isnan(Z[("mNg", zz)]) & ~np.isnan(Z[("mPa", zz)]),\n                              inf=np.isinf(Z[("mNg", zz)]) | np.isinf(Z[("mPa", zz)])')
+s=s.replace('''                     n_neurons_matched=len(dm), n_neurons_ipsi=len(di)))''','''                     n_neurons_matched=len(dm), n_neurons_ipsi=len(di),
+                     frac_go_infinite=dm.inf_go.mean()))''')
+s=s.replace('''                         regions_excess_pos=(ex > 0).sum(), regions_excess_neg=(ex < 0).sum()))''','''                         regions_excess_pos=(ex > 0).sum(), regions_excess_neg=(ex < 0).sum(),
+                         frac_infinite=d.inf.mean()))''')
+s=s.replace('''Sessions with fewer than 10 matched trials per group are left out of the matched conditions.''','''Sessions with fewer than 10 matched trials per group are left out of the matched conditions. A neuron with no spikes in any baseline window has a baseline s.d. of 0 and an infinite z; it counts as significant when its post-stimulus rate is above the baseline mean (division by zero, as the formula evaluates it; an assumption). The fraction of such neurons is printed.''')
+open('cells_e.py','w').write(s)
+EOF
+$TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py 2>&1 | sed -n '/^Sessions with at least/,$p' | grep -v "^region\|^go \|^miss "
+```
+
+```
+Sessions with at least 10 matched single-stimulus trials per group: 19 of 39
+ z  miss_vispath  miss_other  go_other  go_vispath  contra_miss_pooled  ipsi_miss_pooled  n_neurons_matched  n_neurons_ipsi  frac_go_infinite    i    ii   iii
+Z1        0.2362      0.2005    0.2692      0.2926              0.2289            0.2196               9426           18368            0.2158 True False False
+Z2        0.2027      0.1883    0.2055      0.2100              0.2058            0.2078               9426           18368            0.2158 True False False
+Reproduced under a reading: False
+Sessions kept: reading 1 (>= 10 per group) 36; reading 2 (>= 10 over the three groups) 38
+ z        neurons     n  miss_pooled  passive_pooled  regions  regions_excess_pos  regions_excess_neg  frac_infinite    ok
+Z1 a Figs 3-5 set 10924       0.1814          0.1471       42                  30                  12         0.2100 False
+Z1            b N 17339       0.1737          0.1475       42                  26                  15         0.2239 False
+Z2 a Figs 3-5 set 10924       0.1337          0.1151       42                  25                  16         0.2100 False
+Z2            b N 17339       0.1410          0.1227       42                  26                  15         0.2239 False
+Reproduced under a reading: False
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_e.py').read()
+# fig2fg
+s=s.replace('''rows = []
+for zz in ["Z1", "Z2"]:
+    d = pd.DataFrame(dict(region=units.region, session=units.session, N=units.N,
+                          go=Z[("sGo", zz)] > 4, miss=Z[("sNg", zz)] > 4,
+                          imiss=Z[("ipsiMiss", zz)] > 4,''','''def sigz(z, mode):
+    """z > 4; mode 'inf' counts an infinite z (zero baseline s.d.), 'finite' does not."""
+    return (z > 4) if mode == "inf" else (np.isfinite(z) & (z > 4))
+
+rows = []
+for zz, mode in [(a, b) for a in ["Z1", "Z2"] for b in ["inf", "finite"]]:
+    d = pd.DataFrame(dict(region=units.region, session=units.session, N=units.N,
+                          go=sigz(Z[("sGo", zz)], mode), miss=sigz(Z[("sNg", zz)], mode),
+                          imiss=sigz(Z[("ipsiMiss", zz)], mode),''')
+s=s.replace('''    rows.append(dict(z=zz, miss_vispath=''','''    rows.append(dict(z=zz, zero_sd=mode, miss_vispath=''')
+s=s.replace('''    if zz == "Z1":
+        print((fr * 100).round(1).T.to_string())''','''    if zz == "Z1" and mode == "finite":
+        print("Z1, finite z only: % of neurons with z > 4 per region")
+        print((fr * 100).round(1).T.to_string())''')
+# fig5b
+s=s.replace('''for zz in ["Z1", "Z2"]:
+    for nr, msk in [("a Figs 3-5 set", units.fig35), ("b N", units.N)]:
+        d = pd.DataFrame(dict(region=units.region, session=units.session,
+                              miss=Z[("mNg", zz)] > 4, pas=Z[("mPa", zz)] > 4,''','''for zz, mode in [(a, b) for a in ["Z1", "Z2"] for b in ["inf", "finite"]]:
+    for nr, msk in [("a Figs 3-5 set", units.fig35), ("b N", units.N)]:
+        d = pd.DataFrame(dict(region=units.region, session=units.session,
+                              miss=sigz(Z[("mNg", zz)], mode), pas=sigz(Z[("mPa", zz)], mode),''')
+s=s.replace('''        rows.append(dict(z=zz, neurons=nr, n=len(d),''','''        rows.append(dict(z=zz, zero_sd=mode, neurons=nr, n=len(d),''')
+s=s.replace('''counts as significant when its post-stimulus rate is above the baseline mean (division by zero, as the formula evaluates it; an assumption). The fraction of such neurons is printed.''','''counts as significant when its post-stimulus rate is above the baseline mean (division by zero, as the formula evaluates it) or is left out of the significant ones; the paper does not say, and both are run (`zero_sd` inf and finite). The fraction of such neurons is printed.''')
+open('cells_e.py','w').write(s)
+EOF
+$TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py 2>&1 | sed -n '/^Sessions with at least/,$p'
+```
+
+```
+Sessions with at least 10 matched single-stimulus trials per group: 19 of 39
+Z1, finite z only: % of neurons with z > 4 per region
+region  ACA  ACB  BLA  CA1  CA3    CP   DG  GPe  ILA    LD  LGd    LP   LS   MG   MOp  MOs  MRN  OLF  ORB  PAG    PL    PO  POL  POST  RSP   RT  SCm  SCs   SNr   SSp  SUB  VISa  VISam  VISl  VISp  VISpm  VISrl   VPL  VPM    ZI
+go      9.8  2.9  2.9  3.2  4.1  10.6  3.7  2.7  9.7  14.5  4.6  17.1  3.7  4.5  11.3  8.8  8.6  0.6  3.2  7.7  19.1  10.1  3.9  10.8  4.5  1.1  4.1  7.6  12.9  10.0  6.2   7.9   14.8   9.7   8.9    6.5    3.7  12.4  7.5  10.0
+miss    3.1  0.0  0.0  1.4  1.2   1.1  1.1  2.2  2.7   4.1  3.2   2.7  1.6  1.5   0.9  2.9  5.1  0.0  0.5  0.0   5.6   1.2  3.1   1.7  1.0  0.0  3.2  5.0   1.0   0.0  0.4   2.1    7.9   7.4   4.6    1.4    0.6   0.9  0.0   2.5
+ z zero_sd  miss_vispath  miss_other  go_other  go_vispath  contra_miss_pooled  ipsi_miss_pooled  n_neurons_matched  n_neurons_ipsi  frac_go_infinite     i    ii   iii
+Z1     inf        0.2362      0.2005    0.2692      0.2926              0.2289            0.2196               9426           18368            0.2158  True False False
+Z1  finite        0.0339      0.0129    0.0675      0.0901              0.0237            0.0119               9426           18368            0.2158  True  True False
+Z2     inf        0.2027      0.1883    0.2055      0.2100              0.2058            0.2078               9426           18368            0.2158  True False False
+Z2  finite        0.0005      0.0006    0.0038      0.0076              0.0005            0.0000               9426           18368            0.2158 False  True  True
+Reproduced under a reading: False
+Sessions kept: reading 1 (>= 10 per group) 36; reading 2 (>= 10 over the three groups) 38
+ z zero_sd        neurons     n  miss_pooled  passive_pooled  regions  regions_excess_pos  regions_excess_neg  frac_infinite    ok
+Z1     inf a Figs 3-5 set 10924       0.1814          0.1471       42                  30    
+[... 9 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+date -u
+```
+
+```
+Tue Nov 10 16:51:14 UTC 2026
+```
+
+**Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/paper.txt",
- "offset": 138,
- "limit": 230
+ "file_path": "/tmp/claude-1001/cells_f.py",
+ "content": "# %% md\n## fig5c-prestimulus-task-vs-passive\n\n> Before the stimulus, neocortex and sensory thalamus were less active in the task than in the passive context, while basal ganglia and other subcortical choice areas were more active; VISp was lower and CP higher on Miss trials than on passive trials.\n\nPer region of neurons N, the nested ANOVA of the Methods on each neuron's mean rate 0.25 to 0.05 s before stimulus onset, log10(x + 1), trials with a wheel movement in that window dropped. Task trials are trials T; passive readings (a) all passive replay events (visual, beeps, clicks, noise), (b) passive visual presentations. Factor readings (a) condition, session and neuron nested in session: with one observation per neuron and condition, the condition F of this model equals the square of a paired t across neurons, which is how it is computed; (b) condition, session and subject (sequential sums of squares, condition first). A region differs when p < 0.0012. VISp and CP: mean pre-stimulus rate over neurons on contrast-matched (M) Miss against passive trials, windows -0.2 to 0 s and -0.25 to -0.05 s.\n\n# %% code\nuidx = np.split(np.arange(len(units)), np.cumsum([len(r[\"units\"]) for r in R])[:-1])\nsess_names = [r[\"meta\"][\"name\"] for r in R]\ndef prestim_means(win, pas_read):\n    \"\"\"Per neuron: mean pre-stimulus rate on task trials T and on passive events, trials with\n    movement in the window dropped.\"\"\"\n    task = np.full(len(units), np.nan)\n    pas = np.full(len(units), np.nan)\n    for r, ix in zip(R, uidx):\n        tr = r[\"trials\"]\n        okt = tr.t_choice.isin([\"L\", \"R\", \"N\"]).to_numpy() & ~tr[f\"moving_{win}\"].to_numpy()\n        pre = r[\"pre\"]\n        okp = ~pre[f\"pas_moving_{win}\"]\n        if pas_read == \"b\":\n            okp &= pre[\"pas_kind\"] == \"visual\"\n        task[ix] = pre[f\"task_{win}\"][:, okt].mean(axis=1)\n        pas[ix] = pre[f\"pas_{win}\"][:, okp].mean(axis=1)\n    return task, pas\n\nanova_rows = []\nfor pas_read in [\"a\", \"b\"]:\n    task, pas = prestim_means(\"b\", pas_read)\n    lt, lp = np.log10(task + 1), np.log10(pas + 1)\n    for reg in sm.REGIONS42:\n        m = (units.N & (units.region == reg)).to_numpy()\n        d = lt[m] - lp[m]\n        n = m.sum()\n        t = d.mean() / (d.std(ddof=1) / np.sqrt(n))\n        pa = ss.f.sf(t ** 2, 1, n - 1)\n        long = pd.DataFrame(dict(y=np.concatenate([lt[m], lp[m]]), cond=np.repeat([1, 0], n),\n                                 session=np.tile(units.session[m].to_numpy(), 2),\n                                 subject=np.tile(units.subject[m].to_numpy(), 2)))\n        fit = smf.ols(\"y ~ C(cond) + C(session) + C(subject)\", long).fit()\n        pb = sm_api.stats.anova_lm(fit, typ=1).loc[\"C(cond)\", \"PR(>F)\"]\n        anova_rows.append(dict(passive=pas_read, region=reg, n=n, diff_log=d.mean(),\n                               task_hz=task[m].mean(), passive_hz=pas[m].mean(), p_a=pa, p_b=pb))\nan = pd.DataFrame(anova_rows)\nan[\"neocortex\"] = an.region.isin(sm.NEOCORTEX)\nan[\"vis_thal\"] = an.region.isin(sm.VIS_THALAMUS)\nprint(an[an.passive == \"a\"].round(4).to_string(index=False))\n\n# %% code tags=claim:fig5c-prestimulus-task-vs-passive\n# VISp and CP on matched Miss against passive trials.\ndef matched_means(win, key):\n    out = np.full(len(units), np.nan)\n    for r, ix, s in zip(R, uidx, sess_names):\n        if s not in keep_m:\n            continue\n        idx = r[\"sets\"][key]\n        arr = r[\"pre\"][f\"pas_{win}\"] if key == \"mPa\" else r[\"pre\"][f\"task_{win}\"]\n        out[ix] = arr[:, idx].mean(axis=1)\n    return out\nvc = []\nfor win in [\"a\", \"b\"]:\n    mi, pa_ = matched_means(win, \"mNg\"), matched_means(win, \"mPa\")\n    for reg in [\"VISp\", \"CP\"]:\n        m = (units.N & (units.region == reg)).to_numpy() & np.isfinite(mi)\n        dd = mi[m] - pa_[m]\n        vc.append(dict(window=win, region=reg, n=m.sum(), miss_hz=mi[m].mean(), passive_hz=pa_[m].mean(),\n                       diff=dd.mean(), paired_t_p=ss.ttest_rel(mi[m], pa_[m]).pvalue))\nvc = pd.DataFrame(vc)\nprint(vc.round(4).to_string(index=False))\nrows = []\nfor pas_read in [\"a\", \"b\"]:\n    for fac in [\"a\", \"b\"]:\n        d = an[an.passive == pas_read]\n        dif = d[d[f\"p_{fac}\"] < 0.0012]\n        neo = dif[dif.neocortex]\n        non = dif[~dif.neocortex & ~dif.vis_thal]\n        for win in [\"a\", \"b\"]:\n            v = vc[vc.window == win].set_index(\"region\")\n            rows.append(dict(passive=pas_read, factors=fac, window=win, differing=len(dif),\n                             neo_differing=len(neo), neo_lower=(neo.diff_log < 0).sum(),\n                             non_differing=len(non), non_higher=(non.diff_log > 0).sum(),\n                             VISp_lower=v.loc[\"VISp\", \"diff\"] < 0, CP_higher=v.loc[\"CP\", \"diff\"] > 0))\nfc = pd.DataFrame(rows)\nfc[\"ok\"] = (fc.neo_lower == fc.neo_differing) & (fc.non_higher == fc.non_differing) & fc.VISp_lower & fc.CP_higher\nprint(fc.to_string(index=False))\nfor pas_read in [\"a\", \"b\"]:\n    d = an[(an.passive == pas_read) & (an.p_a < 0.0012)]\n    print(f\"Passive reading {pas_read}, factors a: lower in task:\", d[d.diff_log < 0].region.tolist(),\n          \"| higher:\", d[d.diff_log > 0].region.tolist())\nprint(\"Reproduced under a reading:\", bool(fc.ok.any()))\n\n# %% md\n## ed6b-prestimulus-order\n\n> Pre-stimulus firing in midbrain, basal ganglia and hippocampal regions is ordered Passive < Miss < Go, while in neocortical areas it is higher in Passive than in Miss and Go.\n\nPer region, the mean over neurons of the Figs. 3 to 5 set of the mean pre-stimulus rate on contrast-matched (M) Go, Miss and passive trials, sessions kept for M; windows (a) -0.2 to 0 s, (b) -0.25 to -0.05 s.\n\n# %% code tags=claim:ed6b-prestimulus-order\nrows = []\norder_tabs = {}\nfor win in [\"a\", \"b\"]:\n    go_, mi, pa_ = matched_means(win, \"mGo\"), matched_means(win, \"mNg\"), matched_means(win, \"mPa\")\n    d = pd.DataFrame(dict(region=units.region, go=go_, miss=mi, pas=pa_))[units.fig35.to_numpy() & np.isfinite(go_)]\n    g = d.groupby(\"region\")[[\"pas\", \"miss\", \"go\"]].mean()\n    g[\"ordered\"] = (g.pas < g.miss) & (g.miss < g.go)\n    g[\"pas_top\"] = (g.pas > g.miss) & (g.pas > g.go)\n    order_tabs[win] = g\n    grp = {\"midbrain\": sm.ED6B_MIDBRAIN, \"basal ganglia\": sm.ED6B_BASAL_GANGLIA,\n           \"hippocampus\": sm.ED6B_HIPPOCAMPUS}\n    sub = g[g.index.isin(sum(grp.values(), []))]\n    neo = g[g.index.isin(sm.NEOCORTEX)]\n    rows.append(dict(window=win, sub_regions=len(sub), sub_ordered=int(sub.ordered.sum()),\n                     neo_regions=len(neo), neo_passive_top=int(neo.pas_top.sum())))\neo = pd.DataFrame(rows)\neo[\"ok\"] = (eo.sub_ordered > eo.sub_regions / 2) & (eo.neo_passive_top > eo.neo_regions / 2)\nprint(order_tabs[\"a\"].round(2).to_string())\nprint(eo.to_string(index=False))\nprint(\"Reproduced under a reading:\", bool(eo.ok.any()))\n\n# %% md\n## fig5d-go-miss-matches-task-passive\n\n> Regions whose pre-stimulus rate differed between task and passive contexts showed similar differences between Go and Miss trials.\n\nPer region (Figs. 3 to 5 set, as ed6b), task minus passive (matched Go and Miss trials together, against matched passive trials) and Go minus Miss; Pearson correlation across regions.\n\n# %% code tags=claim:fig5d-go-miss-matches-task-passive\nrows = []\nfor win in [\"a\", \"b\"]:\n    g = order_tabs[win]\n    tp = (g.go + g.miss) / 2 - g.pas\n    gm = g.go - g.miss\n    r_, p_ = ss.pearsonr(tp, gm)\n    rows.append(dict(window=win, regions=len(g), r=r_, p=p_, spearman=ss.spearmanr(tp, gm)[0]))\nf5d = pd.DataFrame(rows)\nf5d[\"ok\"] = (f5d.r > 0) & (f5d.p < 0.05)\nprint(f5d.round(5).to_string(index=False))\nprint(\"Reproduced under a reading:\", bool(f5d.ok.any()))\n\n# %% md\n## ed7f-detect-probability-engagement\n\n> The pre-stimulus detect probability of each area correlated with its task minus passive difference (r = 0.48, p = 0.001), as the Go minus Miss difference does.\n\nPer neuron (Figs. 3 to 5 set) the pre-stimulus detect probability (ccCP algorithm, Go against NoGo trials T within stimulus conditions) minus 0.5; per area the mean; Pearson r with the area's task minus passive difference of fig5d. Windows (a), (b).\n\n# %% code tags=claim:ed7f-detect-probability-engagement\nrows = []\nfor win in [\"a\", \"b\"]:\n    dp = stack(lambda r, w=win: None if r[\"dp\"][\"pre_\" + w] is None else r[\"dp\"][\"pre_\" + w][0], 1)[:, 0]\n    d = pd.DataFrame(dict(region=units.region, dp=dp - 0.5))[units.fig35.to_numpy()]\n    a = d.groupby(\"region\").dp.mean()\n    g = order_tabs[win]\n    tp = ((g.go + g.miss) / 2 - g.pas).reindex(a.index)\n    ok = tp.notna() & a.notna()\n    r_, p_ = ss.pearsonr(a[ok], tp[ok])\n    rows.append(dict(window=win, areas=int(ok.sum()), r=r_, p=p_, mean_dp=a.mean(),\n                     dp_range=f\"{a.min():.3f} to {a.max():.3f}\"))\ne7f = pd.DataFrame(rows)\ne7f[\"ok\"] = ((e7f.r - 0.48).abs() <= 0.048) & (e7f.p < 0.05)\nprint(e7f.round(4).to_string(index=False))\nprint(\"Reproduced under a reading:\", bool(e7f.ok.any()))\n"
 }
 ```
 
 ```
-138	tm95.1(CAG-GCaMP6f)Hze /MwarJ crossed with B6;129S-Slc17a7 tm1.1(cre)Hze /J), TetO-G6s;Camk2a-tTa (B6;DBA-Tg(tetO-GCaMP6s)2Niell/J crossed with B6.Cg-Tg(Camk2a-tTA)1Mmay/DboJ), Snap25-G6s 
-139	(B6.Cg-Snap25 tm3.1Hze /J), Vglut1-Cre, and wild-type (C57Bl6/J). None of these lines are known to exhibit aberrant epileptiform activity 44 . Of 13 subjects initially trained for inclusion in this 
-140	study, three developed health complications before training completed and were not recorded. The other 10 successfully learned the task (see criteria below) and were included. The sample sizes (n = 
-141	10 mice; n = 39 recording sessions; n = 29,134 neurons) were not determined with a power analysis. Surgery A brief (~1 h) initial surgery was performed under isoflurane (1-3% in O 2 ) anesthesia to 
-142	implant a steel headplate (~15 x 3 x 0.5mm, ~1 g) and, in most cases, a 3D-printed recording chamber. The chamber was a semi-conical, opaque piece of polylactic acid (PLA) with 12 mm diameter upper 
-143	surface, and lower surface designed to fit to the shape of an average mouse skull, exposing approximately the area from 3.5 anterior to 5.5 posterior to bregma, and 4.5 left to 4.5 right, and 
-144	narrowing near the eyes. The implantation method largely followed the method of Guo et al 45 with some modifications and was described previously 44 . In brief, the dorsal surface of the skull was 
-145	cleared of skin and periosteum and prepared with a brief application of green activator (Super-Bond C&B, Sun Medical Co.). The chamber was attached to the skull with cyanoacrylate (VetBond; World 
-146	Precision Instruments) and the gaps between the cone and the skull were filled with L-type radiopaque polymer (Super-Bond C&B). A thin layer of cyanoacrylate was applied to the skull inside the cone 
-147	and allowed to dry. Thin layers of UV-curing optical glue (Norland Optical Adhesives #81, Norland Products) were applied inside the cone and cured until the exposed skull was covered. The
-[... 220 more lines not kept]
+File created successfully at: /tmp/claude-1001/cells_f.py (file state is current in your context — no need to Read it back)
 ```
 
-**Agent calls Read**
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && time $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py,cells_f.py 2>&1 | sed -n '/^passive region/,$p'
+```
+
+```
+passive region    n  diff_log  task_hz  passive_hz    p_a    p_b  neocortex  vis_thal
+      a    ACA  660   -0.0817   1.5970      2.2149 0.0000 0.0000       True     False
+      a    ACB  260    0.1863   2.2673      1.2403 0.0000 0.0000      False     False
+      a    APN  234    0.0341  10.8062      9.4816 0.0531 0.4855      False     False
+      a    BLA  264    0.0559   1.8400      1.4405 0.0027 0.0198      False     False
+      a    CA1 1159    0.0429   2.4905      2.1584 0.0000 0.0006      False     False
+      a    CA3  427    0.1566   3.5304      2.2274 0.0000 0.0000      False     False
+      a     CP  915    0.0884   3.1618      2.5508 0.0000 0.0000      False     False
+      a     DG  704    0.0896   4.1066      3.1421 0.0000 0.0000      False     False
+      a    GPe  283    0.0800   8.5077      7.7727 0.0001 0.0324      False     False
+      a    ILA  353    0.0422   2.4645      2.5857 0.0037 0.0431       True     False
+      a     LD  276   -0.1018   6.5123      8.0947 0.0000 0.0024      False      True
+      a    LGd  789   -0.0831   3.5322      4.9346 0.0000 0.0000      False      True
+      a     LP  681   -0.1030   3.0676      4.1668 0.0000 0.0000      False      True
+      a     LS  851    0.0603   3.0685      2.6658 0.0000 0.0001      False     False
+      a     MD  388   -0.0038   5.1335      4.3527 0.8073 0.8833      False     False
+      a     MG  285   -0.0063   6.0179      5.5648 0.7553 0.8165      False     False
+      a    MOp  673   -0.1061   2.6734      3.4066 0.0000 0.0000       True     False
+      a    MOs 1348    0.0020   1.4368      1.5123 0.8246 0.8420       True     False
+      a    MRN  879    0.0788   8.2517      7.3803 0.0000 0.0001      False     False
+[... 101 more lines not kept]
+```
+
+**Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/paper.txt",
- "offset": 368,
- "limit": 135
+ "file_path": "/tmp/claude-1001/cells_g.py",
+ "content": "# %% md\n## fig5f-engagement-index\n\n> An engagement index, the projection of pre-stimulus population activity onto the task minus passive difference vector, was higher on Go than on Miss trials consistently across recordings (mean difference 8.42 a.u., paired t-test p < 1e-4).\n\nNeurons N of the regions that differ in fig5c-prestimulus-task-vs-passive under the Methods' reading (all passive events, factors condition, session and neuron); the other readings' region sets are shown as variants. x_n is the neuron's mean rate -0.2 to 0 s before stimulus onset on task trials minus that on all passive trials, normalized to unit L2 norm per session; the index of a trial is x times its pre-stimulus rate vector. Go and Miss trials: Left or Right, and NoGo, of definition T, the NoGo trials having a contralateral stimulus when the contralateral contrast is above zero. Per contralateral contrast level, N trials of each, N the smaller of the Go and NoGo counts (Methods). Readings of the task trials for x: (a) trials T, (b) all task trials; of the contrast levels: (a) contralateral contrast > 0, (b) all four levels. Sessions are those kept for definition M (at least 10 matched trials per group).\n\n# %% code\ndef eng_regions(pas_read=\"a\", fac=\"a\"):\n    d = an[an.passive == pas_read]\n    return set(d.region[d[f\"p_{fac}\"] < 0.0012])\n\ndef engagement(si, neuron_mask, task_read, con_read, rng):\n    \"\"\"Engagement index per task trial of session si, and the matched Go and Miss trials.\"\"\"\n    r = R[si]\n    ix = uidx[si]\n    m = neuron_mask[ix]\n    if m.sum() == 0:\n        return None\n    tr = r[\"trials\"]\n    pre_t = r[\"pre\"][\"task_a\"][m]\n    pre_p = r[\"pre\"][\"pas_a\"][m]\n    tsel = tr.t_choice.isin([\"L\", \"R\", \"N\"]).to_numpy() if task_read == \"a\" else np.ones(len(tr), bool)\n    x = pre_t[:, tsel].mean(axis=1) - pre_p.mean(axis=1)\n    x = x / np.linalg.norm(x)\n    ei = x @ pre_t\n    tc = tr.t_choice.to_numpy()\n    cr = tr.cr.to_numpy()\n    levels = [0.25, 0.5, 1.0] if con_read == \"a\" else [0.0, 0.25, 0.5, 1.0]\n    go_i, ms_i = [], []\n    for c in levels:\n        g = np.where(np.isin(tc, [\"L\", \"R\"]) & np.isclose(cr, c))[0]\n        n_ = np.where((tc == \"N\") & np.isclose(cr, c))[0]\n        k = min(len(g), len(n_))\n        if k:\n            go_i.extend(rng.choice(g, k, replace=False))\n            ms_i.extend(rng.choice(n_, k, replace=False))\n    return dict(ei=ei, go=np.array(go_i, int), miss=np.array(ms_i, int), n_neurons=int(m.sum()), x=x)\n\ndef eng_table(neuron_mask, task_read=\"a\", con_read=\"a\", seed=50):\n    rows = []\n    for si, s in enumerate(sess_names):\n        if s not in keep_m:\n            continue\n        e = engagement(si, neuron_mask, task_read, con_read, np.random.default_rng([seed, si]))\n        if e is None or len(e[\"go\"]) < 2:\n            continue\n        rows.append(dict(session=s, subject=R[si][\"meta\"][\"subject\"], n_neurons=e[\"n_neurons\"],\n                         n_trials=len(e[\"go\"]), go=e[\"ei\"][e[\"go\"]].mean(), miss=e[\"ei\"][e[\"miss\"]].mean()))\n    t = pd.DataFrame(rows)\n    t[\"diff\"] = t.go - t.miss\n    return t\n\nregs_main = eng_regions(\"a\", \"a\")\nmask_main = (units.N & units.region.isin(regs_main)).to_numpy()\nprint(\"Regions in the index:\", sorted(regs_main))\n\n# %% code tags=claim:fig5f-engagement-index\nrows = []\nfor task_read in [\"a\", \"b\"]:\n    for con_read in [\"a\", \"b\"]:\n        t = eng_table(mask_main, task_read, con_read)\n        tt = ss.ttest_rel(t.go, t.miss)\n        rows.append(dict(task=task_read, contrasts=con_read, sessions=len(t), mean_diff=t[\"diff\"].mean(),\n                         sem=t[\"diff\"].sem(), t=tt.statistic, p=tt.pvalue, sessions_go_higher=(t[\"diff\"] > 0).sum(),\n                         neurons_per_session=t.n_neurons.mean(), neurons_se=t.n_neurons.sem()))\n        if task_read == \"a\" and con_read == \"a\":\n            main_t = t\nfor pas_read, fac in [(\"a\", \"b\"), (\"b\", \"a\"), (\"b\", \"b\")]:\n    mk = (units.N & units.region.isin(eng_regions(pas_read, fac))).to_numpy()\n    t = eng_table(mk)\n    tt = ss.ttest_rel(t.go, t.miss)\n    rows.append(dict(task=\"a\", contrasts=\"a\", regions_from=f\"fig5c passive {pas_read}, factors {fac}\",\n                     sessions=len(t), mean_diff=t[\"diff\"].mean(), sem=t[\"diff\"].sem(), t=tt.statistic,\n                     p=tt.pvalue, sessions_go_higher=(t[\"diff\"] > 0).sum(),\n                     neurons_per_session=t.n_neurons.mean(), neurons_se=t.n_neurons.sem()))\nf5f = pd.DataFrame(rows)\nf5f[\"test_ok\"] = (f5f.p < 1e-4) & (f5f.mean_diff > 0)\nf5f[\"mean_ok\"] = (f5f.mean_diff - 8.42).abs() <= 0.84\nf5f[\"neur_ok\"] = (f5f.neurons_per_session - 319).abs() <= 32.5\nprint(f5f.round(5).to_string(index=False))\nprint(\"\\nPer session (readings a, a):\")\nprint(main_t.round(2).to_string(index=False))\nprint(\"Go minus Miss by subject (mean over sessions):\", main_t.groupby(\"subject\")[\"diff\"].mean().round(2).to_dict())\n\n# %% md\n## fig5e-engagement-predicts-go\n\n> The probability of a Go response rises with the engagement index on single trials.\n\nThe index of fig5f (readings a, a), z-scored (a) within session or (b) over all trials; matched Go and Miss trials pooled over sessions; logistic regression of Go on the index (statsmodels Logit).\n\n# %% code tags=claim:fig5e-engagement-predicts-go\npool = []\nfor si, s in enumerate(sess_names):\n    if s not in keep_m:\n        continue\n    e = engagement(si, mask_main, \"a\", \"a\", np.random.default_rng([50, si]))\n    if e is None or len(e[\"go\"]) < 2:\n        continue\n    for lab, idx in [(1, e[\"go\"]), (0, e[\"miss\"])]:\n        for i in idx:\n            pool.append(dict(session=s, go=lab, ei=e[\"ei\"][i]))\npool = pd.DataFrame(pool)\npool[\"z_a\"] = pool.groupby(\"session\").ei.transform(lambda x: (x - x.mean()) / x.std())\npool[\"z_b\"] = (pool.ei - pool.ei.mean()) / pool.ei.std()\nrows = []\nfor zr in [\"z_a\", \"z_b\"]:\n    fit = smf.logit(f\"go ~ {zr}\", pool).fit(disp=0)\n    lo, hi = fit.conf_int().loc[zr]\n    rows.append(dict(zscore=zr, n_trials=len(pool), slope=fit.params[zr], ci_lo=lo, ci_hi=hi, p=fit.pvalues[zr]))\nf5e = pd.DataFrame(rows)\nprint(f5e.to_string(index=False))\nq = pd.qcut(pool.z_a, 5, labels=False)\nprint(\"P(Go) by quintile of the index (z within session):\", pool.groupby(q).go.mean().round(3).tolist())\nprint(\"Reproduced under a reading:\", bool(((f5e.slope > 0) & (f5e.ci_lo > 0)).any()))\n\n# %% md\n## ed9i-engagement-beyond-arousal\n\n> The engagement index improves the prediction of Go responses beyond inter-trial interval, previous reward, pupil area and motion energy (deviance test, p = 1.5e-8).\n\nBinomial GLM of Go against Miss on matched trials (fig5f readings a, a): inter-trial interval (stimulus onset minus the previous trial's feedback time, a standard choice), previous reward (0 or 1), pupil area and face motion energy in the pre-stimulus window, z-scored within session, and their squares; against the same model plus the engagement index (z-scored within session). Deviance test: the drop in deviance against chi-squared. Windows (a) -0.2 to 0 s, (b) -0.25 to -0.05 s; pooling (a) one GLM over sessions, (b) one per session with deviances and degrees of freedom summed. Trials with a missing pupil value are dropped; sessions where the pupil is missing for all trials leave the analysis. The dataset does not say which 5 sessions the Methods excluded for unusable pupil video.\n\n# %% code tags=claim:ed9i-engagement-beyond-arousal\nglm_rows = []\nfor si, s in enumerate(sess_names):\n    if s not in keep_m:\n        continue\n    e = engagement(si, mask_main, \"a\", \"a\", np.random.default_rng([50, si]))\n    if e is None or len(e[\"go\"]) < 2:\n        continue\n    tr = R[si][\"trials\"]\n    for lab, idx in [(1, e[\"go\"]), (0, e[\"miss\"])]:\n        for i in idx:\n            glm_rows.append(dict(session=s, go=lab, ei=e[\"ei\"][i], iti=tr.iti.iloc[i],\n                                 prev=tr.prev_reward.iloc[i], pupil_a=tr.pupil_a.iloc[i],\n                                 pupil_b=tr.pupil_b.iloc[i], me_a=tr.me_a.iloc[i], me_b=tr.me_b.iloc[i]))\nG = pd.DataFrame(glm_rows)\nzs = lambda x: (x - x.mean()) / x.std()\nfor c in [\"ei\", \"pupil_a\", \"pupil_b\", \"me_a\", \"me_b\"]:\n    G[c] = G.groupby(\"session\")[c].transform(zs)\nG = G.dropna(subset=[\"iti\", \"prev\"])\nrows = []\nfor win in [\"a\", \"b\"]:\n    base = f\"go ~ iti + prev + pupil_{win} + I(pupil_{win}**2) + me_{win} + I(me_{win}**2)\"\n    d = G.dropna(subset=[f\"pupil_{win}\", f\"me_{win}\"])\n    f0 = smf.glm(base, d, family=sm_api.families.Binomial()).fit()\n    f1 = smf.glm(base + \" + ei\", d, family=sm_api.families.Binomial()).fit()\n    dev = f0.deviance - f1.deviance\n    rows.append(dict(window=win, pooling=\"a one GLM\", sessions=d.session.nunique(), trials=len(d),\n                     dev_drop=dev, df=1, p=ss.chi2.sf(dev, 1), ei_coef=f1.params[\"ei\"]))\n    dsum, dfs, ns = 0.0, 0, 0\n    for s, ds in d.groupby(\"session\"):\n        try:\n            g0 = smf.glm(base, ds, family=sm_api.families.Binomial()).fit()\n            g1 = smf.glm(base + \" + ei\", ds, family=sm_api.families.Binomial()).fit()\n            dsum += g0.deviance - g1.deviance\n            dfs += 1\n            ns += 1\n        except Exception:\n            pass\n    rows.append(dict(window=win, pooling=\"b per session, summed\", sessions=ns, trials=len(d),\n                     dev_drop=dsum, df=dfs, p=ss.chi2.sf(dsum, dfs), ei_coef=np.nan))\ne9i = pd.DataFrame(rows)\nprint(e9i.to_string(index=False))\nprint(\"Pupil missing on %.1f%% of matched trials\" % (100 * G.pupil_a.isna().mean()))\nprint(\"Reproduced under a reading:\", bool((e9i.p < 0.05).any()))\n\n# %% md\n## ed9cf-engagement-controls\n\n> The Go against Miss difference in engagement index persists on trials after rewards, after regressing out previous reward, and on trials after short and after long inter-trial intervals.\n\nThe index of fig5f (readings a, a) on matched Go and Miss trials: (1) trials after a rewarded trial; (2) all trials, with each previous-reward group's mean subtracted within session; (3) trials whose inter-trial interval is below the median, (4) above it; median readings (a) per session, (b) over all trials; tests (a) paired t-test across sessions, (b) two-sample t-test over pooled trials.\n\n# %% code tags=claim:ed9cf-engagement-controls\nP9 = G.copy()\nP9[\"ei_raw\"] = pool.set_index(pool.index).ei if len(pool) == len(G) else np.nan\nP9[\"ei_res\"] = P9.ei - P9.groupby([\"session\", \"prev\"]).ei.transform(\"mean\")\nrows = []\nfor med in [\"a\", \"b\"]:\n    if med == \"a\":\n        short = P9.iti < P9.groupby(\"session\").iti.transform(\"median\")\n    else:\n        short = P9.iti < P9.iti.median()\n    sets = {\"1 after reward\": (P9.prev == 1, \"ei\"), \"2 previous reward removed\": (P9.prev.notna(), \"ei_res\"),\n            \"3 short ITI\": (short, \"ei\"), \"4 long ITI\": (~short, \"ei\")}\n    for nm, (sel, col) in sets.items():\n        d = P9[sel]\n        per = d.groupby([\"session\", \"go\"])[col].mean().unstack().dropna()\n        tp = ss.ttest_rel(per[1], per[0])\n        t2 = ss.ttest_ind(d.loc[d.go == 1, col], d.loc[d.go == 0, col])\n        rows.append(dict(median=med, set=nm, sessions=len(per), trials=len(d),\n                         go_minus_miss=(per[1] - per[0]).mean(), paired_p=tp.pvalue, pooled_p=t2.pvalue,\n                         go_higher=(per[1] - per[0]).mean() > 0))\ne9c = pd.DataFrame(rows)\nprint(e9c.round(6).to_string(index=False))\nprint(\"The index is z-scored within session here (as for the GLM).\")\nokc = {(m, t): bool(((e9c[e9c[\"median\"] == m][f\"{t}_p\"] < 0.05) & e9c[e9c[\"median\"] == m].go_higher).all())\n       for m in [\"a\", \"b\"] for t in [\"paired\", \"pooled\"]}\nprint(\"All four sets Go higher with p < 0.05, by (median, test):\", okc)\n\n# %% md\n## ed9k-engagement-vector-specific\n\n> The engagement vector correlates better with the Go minus Miss vector than with the vectors of other behavioural variables, though not significantly for previous reward (p = 0.096).\n\nPer recording, the Pearson correlation over neurons (those of the index) between the engagement vector x and the Go minus Miss vector (mean pre-stimulus rate on matched Go minus Miss trials), and between x and each variable's vector over task trials T: (a) the difference of mean pre-stimulus rates between trials above and below the variable's median (previous reward, rewarded minus not); (b) each neuron's regression slope on the variable. Tests across recordings (a) paired t-test, (b) Wilcoxon signed-rank.\n\n# %% code tags=claim:ed9k-engagement-vector-specific\nrows = []\nfor si, s in enumerate(sess_names):\n    if s not in keep_m:\n        continue\n    e = engagement(si, mask_main, \"a\", \"a\", np.random.default_rng([50, si]))\n    if e is None or len(e[\"go\"]) < 2 or e[\"n_neurons\"] < 3:\n        continue\n    r = R[si]\n    m = mask_main[uidx[si]]\n    pre_t = r[\"pre\"][\"task_a\"][m]\n    tr = r[\"trials\"]\n    gm = pre_t[:, e[\"go\"]].mean(axis=1) - pre_t[:, e[\"miss\"]].mean(axis=1)\n    row = dict(session=s, r_gomiss=ss.pearsonr(e[\"x\"], gm)[0])\n    T_ = tr.t_choice.isin([\"L\", \"R\", \"N\"]).to_numpy()\n    for v, col in [(\"pupil\", \"pupil_a\"), (\"me\", \"me_a\"), (\"iti\", \"iti\"), (\"prev\", \"prev_reward\")]:\n        val = tr[col].to_numpy()\n        ok = T_ & np.isfinite(val)\n        if ok.sum() < 10 or np.nanstd(val[ok]) == 0:\n            row[f\"{v}_a\"] = row[f\"{v}_b\"] = np.nan\n            continue\n        hi = val[ok] > (np.median(val[ok]) if v != \"prev\" else 0.5)\n        va = pre_t[:, ok][:, hi].mean(axis=1) - pre_t[:, ok][:, ~hi].mean(axis=1)\n        xv = val[ok] - val[ok].mean()\n        vb = (pre_t[:, ok] - pre_t[:, ok].mean(axis=1, keepdims=True)) @ xv / (xv @ xv)\n        row[f\"{v}_a\"] = ss.pearsonr(e[\"x\"], va)[0] if np.std(va) > 0 else np.nan\n        row[f\"{v}_b\"] = ss.pearsonr(e[\"x\"], vb)[0] if np.std(vb) > 0 else np.nan\n    rows.append(row)\nK = pd.DataFrame(rows)\nout = []\nfor rd in [\"a\", \"b\"]:\n    for v in [\"pupil\", \"me\", \"iti\", \"prev\"]:\n        d = K[[\"r_gomiss\", f\"{v}_{rd}\"]].dropna()\n        out.append(dict(vector=rd, variable=v, recordings=len(d), r_gomiss=d.r_gomiss.mean(),\n                        r_var=d[f\"{v}_{rd}\"].mean(), ttest_p=ss.ttest_rel(d.r_gomiss, d[f\"{v}_{rd}\"]).pvalue,\n                        wilcoxon_p=ss.wilcoxon(d.r_gomiss, d[f\"{v}_{rd}\"]).pvalue))\ne9k = pd.DataFrame(out)\nprint(e9k.round(5).to_string(index=False))\nfor rd in [\"a\", \"b\"]:\n    for test in [\"ttest_p\", \"wilcoxon_p\"]:\n        d = e9k[e9k.vector == rd]\n        ok = bool((d.r_gomiss > d.r_var).all() and (d[d.variable != \"prev\"][test] < 0.05).all())\n        print(f\"vector {rd}, {test}: Go-Miss larger for all four and p < 0.05 for pupil, motion energy, ITI:\", ok)\n\n# %% md\n## suppfig3-nonresponsive-neurons\n\n> The engagement index differs between Go and Miss trials even when computed from neurons that are otherwise not responsive in the task.\n\nAs fig5f (readings a, a), from all neurons of the index regions, from those of the Figs. 3 to 5 set, and from the others.\n\n# %% code tags=claim:suppfig3-nonresponsive-neurons\nrows = []\nfor nm, mk in [(\"all\", mask_main), (\"responsive (Figs. 3-5 set)\", mask_main & units.fig35.to_numpy()),\n               (\"others\", mask_main & ~units.fig35.to_numpy())]:\n    t = eng_table(mk)\n    tt = ss.ttest_rel(t.go, t.miss)\n    rows.append(dict(neurons=nm, sessions=len(t), neurons_per_session=t.n_neurons.mean(),\n                     mean_diff=t[\"diff\"].mean(), t=tt.statistic, p=tt.pvalue))\ns3 = pd.DataFrame(rows)\ns3[\"ok\"] = (s3.p < 0.05) & (s3.mean_diff > 0)\nprint(s3.to_string(index=False))\nprint(\"Reproduced:\", bool(s3.ok.all()))\n"
 }
 ```
 
 ```
-368	Recording sites were localized to brain regions by manual inspection of histologically identified recording tracks, in combination with alignment to the Allen Institute Common Coordinate Framework, 
-369	as follows. Mice were perfused with 4% PFA, the brain was extracted and fixed for 24 hours at 4 C in PFA, then transferred to 30% sucrose in PBS at 4 C. The brain was mounted on a microtome in dry 
-370	ice and sectioned at 60 μm slice thickness. Sections were washed in PBS, mounted on glass adhesion slides, and stained with DAPI (Vector Laboratories, H-1500). Images were taken at 4x magnification 
-371	for each section using a Zeiss AxioScan, in three colors: blue for DAPI, green for GCaMP (when present), and red for DiI. An individual DiI track was typically visible across multiple slices, and 
-372	recording locations along the track were manually identified by comparing structural aspects of the histological slice with features in the atlas. In most cases, this identification was aided by 
-373	reconstruction of the track in Allen CCF coordinates. To achieve this, we used the following procedure. 1) We manually identified the 3D locations within the Allen Common Coordinate Framework of each 
-374	observed DiI spot on each slice (15.1 ± 6.9 such spots per probe, Extended Data Fig. 2a ). Code for doing this is provided open-source ( https://github.com/cortex-lab/allenCCF , in particular 
-375	‘Sharp-track’ 55 ). There was no ambiguity about which dye stain corresponded to which penetration, as penetrations were not repeated within a subject. 2) After identifying 3D points along a probe 
-376	penetration, we fit a line to those points, which represents an estimate of the probe trajectory based on all DiI spots ( Extended Data Fig. 2b ). We quantified the lateral localization error by the 
-377	median distance of the DiI spots from this common trajectory (39.3 μm) as a quantitative estimate of the error of step #1. Though this error is already small, the fitting of a lin
-[... 125 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/paper.txt",
- "offset": 502,
- "limit": 15
-}
-```
-
-```
-502	MG Medial geniculate complex of the thalamus 2 2 180 276 65.2 MOp Primary motor area 3 3 553 682 81.1 MOs Secondary motor area 19 9 993 1534 64.7 MRN Midbrain reticular nucleus 11 7 722 857 84.2 OLF 
-503	Olfactory areas 9 5 210 684 30.7 ORB Orbital area 6 5 281 770 36.5 PAG Periaqueductal gray 3 3 72 130 55.4 PL Prelimbic area 10 7 438 728 60.2 PO Posterior complex of the thalamus 5 4 342 620 55.2 
-504	POL Posterior limiting nucleus of the thalamus 3 3 132 190 69.5 POST Postsubiculum 4 3 163 272 59.9 RSP Retrosplenial area 9 5 308 598 51.5 RT Reticular nucleus of the thalamus 2 2 111 160 69.4 SCm 
-505	Superior colliculus motor related 11 6 738 997 74.0 SCs Superior colliculus sensory related 10 6 192 317 60.6 SNr Substantia nigra reticular part 4 3 201 274 73.4 SSp Primary somatosensory area 5 4 
-506	296 461 64.2 SUB Subiculum 9 7 494 669 73.8 VISa Anterior visual area 5 4 207 285 72.6 VISam Anteromedial visual area 11 8 501 805 62.2 VISI Lateral visual area 3 2 248 403 61.5 VISp Primary visual 
-507	area 12 8 649 923 70.3 VISpm Posteromedial visual area 4 4 230 516 44.6 VISrI Rostrolateral visual area 2 2 85 236 36.0 VPL Ventral posterolateral nucleus of the thalamus 4 3 202 255 79.2 VPM Ventral 
-508	posteromedial nucleus of the thalamus 4 2 235 357 65.8 ZI Zona incerta 4 2 167 220 75.9 Supplementary Material Supplementary Information is linked to the online version of the paper at 
-509	www.nature.com/nature . Extended Data Fig 6 Extended Data Fig 9 Extended Data Fig 7 Extended Data Fig 4 Extended Data Fig 1 2 Extended Data Table 1 Extended Data Fig 8 1 Extended Data Fig 2 Extended 
-510	Data Fig 5 Extended Data Fig 3 Acknowledgements We thank A.J. Peters, M. Pachitariu, and P. Shamash for software tools; H. Forrest for help with data preprocessing; C. Reddy, M. Wells, L. Funnell for 
-511	help with mouse husbandry, training, and histology; R. Raghupathy for help with histology; C.P. Burgess for help with experimental apparatus. We thank T. Harris and B. Karsh for
-[... 5 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/paper.txt",
- "offset": 560,
- "limit": 80
-}
-```
-
-```
-560	multivariate linear model J Multivar Anal 1975 5 248 264 51 Quian J Hastie T Friedman J Tibshirani R Simon N Glmnet for Matlab 2013 52 Mathis A DeepLabCut: markerless pose estimation of user-defined 
-561	body parts with deep learning Nat Neurosci 2018 21 1281 1289 30127430 10.1038/s41593-018-0209-y 53 McGinley MJ David SV McCormick DA Cortical Membrane Potential Signature of Optimal States for 
-562	Sensory Signal Detection Neuron 2015 1 14 10.1016/j.neuron.2015.05.038 PMC4631312 26074005 54 Treves A Rolls ET What determines the capacity of autoassociative memories in the brain? Netw Comput 
-563	Neural Syst 1991 2 371 397 55 Shamash P Carandini M Harris KD Steinmetz NA A tool for analyzing electrode tracks from slice histology bioRxiv 2018 447995 Figure 1 Brain-wide recordings during a task 
-564	that distinguishes vision, choice, and action. a, Mice earned water rewards by turning a wheel to indicate which of two visual gratings had higher contrast, or by not turning if no stimulus was 
-565	presented. When stimuli had equal contrast, a Left or Right choice was rewarded with 50% probability. Grey rectangles indicate the three computer screens surrounding the mouse. Arrows (not visible to 
-566	the mouse) indicate the rewarded wheel turn direction and the coupled movement of the visual stimulus (black X indicates reward for no turn), and the colored dashed circle (not visible to the mouse) 
-567	indicates the stimulus location at which a reward was delivered. b, Timeline of the task. Subjects were free to move as soon as the stimulus appeared, but the stimulus was fixed in place and rewards 
-568	were unavailable until after an auditory tone cue. If no movement was made for 1.5 s after the tone cue, a NoGo was registered. The grey region is the analysis window, from 0 to 0.4 s after stimulus 
-569	onset. c, Average task performance across subjects, n=10 subjects, 39 sessions, 9,538 trials. Colormaps depict the probability of each choice given the combination of contras
-[... 70 more lines not kept]
+File created successfully at: /tmp/claude-1001/cells_g.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 760,1082p $TMPDIR/paper.txt | head -320
+cd $TMPDIR && sed -i '/P9\["ei_raw"\]/d' cells_g.py && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py,cells_f.py,cells_g.py 2>&1 | sed -n '/^Regions in the index/,$p'
 ```
 
 ```
-*To whom correspondence should be addressed. [removed: an e-mail address]
+Regions in the index: ['ACA', 'ACB', 'CA1', 'CA3', 'CP', 'DG', 'GPe', 'LD', 'LGd', 'LP', 'LS', 'MOp', 'MRN', 'ORB', 'SNr', 'SSp', 'VISa', 'VISam', 'VISl', 'VISp', 'VISrl', 'VPM', 'ZI']
+task contrasts  sessions  mean_diff     sem       t       p  sessions_go_higher  neurons_per_session  neurons_se               regions_from  test_ok  mean_ok  neur_ok
+   a         a        36    7.85214 1.54370 5.08656 0.00001                  29            344.30556    33.96017                        NaN     True     True     True
+   a         b        36    4.68662 1.13566 4.12680 0.00022                  27            344.30556    33.96017                        NaN    False    False     True
+   b         a        36    8.06339 1.59012 5.07093 0.00001                  29            344.30556    33.96017                        NaN     True     True     True
+   b         b        36    4.74501 1.15219 4.11826 0.00022                  27            344.30556    33.96017                        NaN    False    False     True
+   a         a        34    6.68680 1.46577 4.56198 0.00007                  27            260.29412    35.08641 fig5c passive a, factors b     True    False    False
+   a         a        36    7.91956 1.53202 5.16934 0.00001                  29            330.36111    35.75523 fig5c passive b, factors a     True     True     True
+   a         a        34    6.68680 1.46577 4.56198 0.00007                  27            260.29412    35.08641 fig5c passive b, factors b     True    False    False
 
-
-Supplementary Information Guide
-
-	•	Supplementary Discussion: Additional interpretation of the data presentation in the main text. 
-	•	Supplementary Table 1: Subjects included in the study
-	•	Supplementary Table 2: Recording sessions
-	•	Supplementary Table 3: Simultaneously recorded areas. 
-	•	Supplementary Figure 1: Statistical tests to measure responsiveness in different task windows. 
-	•	Supplementary Figure 2: Statistically responsive neurons by firing rate and waveform amplitude. 
-	•	Supplementary Figure 3: Engagement Index differs between Go and Miss trials even for otherwise non-responsive neurons.  
-	•	Supplementary Figure 4: Hypothetical circuit organization and dynamics. 
-
-
-##### Supplement: EMS84617-supplement-2.docx
-Supplementary discussion 
-Our study identified substantially rarer neuronal correlates of choice than previous studies. What differences might account for this discrepancy in observations? For previous studies that used 
-go/nogo tasks, our results suggest an explanation: many neurons have non-specific action correlates, which in go/nogo tasks may be misidentified as being choice selective. Previous studies that used 
-two-alternative tasks generally detected fewer choice-selective neurons than in go/nogo tasks, but still in some cases more than we found, e.g. (Celebrini and Newsome, 1994; Nienborg and Cumming, 
-[... 308 more lines not kept]
-```
-
-**Agent**
-
-Now the paper's code, which the claims file cites for several methods.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && git clone -q https://github.com/nsteinme/steinmetz-et-al-2019 code 2>&1 | tail -2; cd code && git checkout -q 9a0bea8 && git log -1 --format='%H %ad' && find . -name "*.m" | head -80
-```
-
-```
-9a0bea8f33e4f43b4881c5e5756aad21cdbb9920 Mon Aug 9 16:38:34 2021 -0700
-./utils/roc.m
-./utils/loadSession.m
-./utils/iff.m
-./utils/brainRegionGroups.m
-./utils/binAndNorm.m
-./utils/avgAndNorm.m
-./utils/areaOrdering.m
-./reducedRankRegression/regFullPipeline.m
-./reducedRankRegression/predictResidualsWith.m
-./reducedRankRegression/makeCosReg.m
-./reducedRankRegression/kmDummy.m
-./reducedRankRegression/kernelRegPredict.m
-./reducedRankRegression/kernelRegFitOne.m
-./reducedRankRegression/kernelRegFit.m
-./reducedRankRegression/kernelRegEval.m
-./reducedRankRegression/kernelFitBasic.m
-./reducedRankRegression/determineResidualsWithout.m
-./reducedRankRegression/computeRegTraces.m
-./reducedRankRegression/KernelModelToeplitz.m
-[... 22 more lines not kept]
+Per session (readings a, a):
+             session   subject  n_neurons  n_trials         go       miss      diff
+     Cori_2016-12-14      Cori        480        37  76.760002  67.330002  9.430000
+     Cori_2016-12-17      Cori        396        39  15.190000   6.600000  8.590000
+     Cori_2016-12-18      Cori        290        30  41.849998  17.309999 24.540001
+Forssmann_2017-11-01 Forssmann       1070        52  67.300003  44.169998 23.129999
+Forssmann_2017-11-02 Forssman
+[... 74 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/code && cat reducedRankRegression/CanonCor2all.m reducedRankRegression/kernelFitBasic.m
+date -u; cat > $TMPDIR/cells_h.py <<'EOF'
+# %% md
+## ed7b-detect-probability-widespread
+
+> Neurons with significant detect probability (Go against NoGo for the same stimulus) around movement onset are found widely across regions, replicating the global action signal.
+
+ccCP algorithm (Methods; code ccCP/choiceProbShuf.m) on neurons N: Go (Left or Right) against NoGo trials T within each of the 16 stimulus conditions, 2,000 within-condition label shuffles; significant when the observed value lies below 2.5% or above 97.5% of the shuffles. NoGo trials take a movement time drawn from the session's Go trials. Windows (a) -0.1 to 0.05 s and (b) -0.05 to 0 s from movement onset. Sessions with fewer than 10 includable trials (in conditions with both Go and NoGo) are left out. A region is marked when the Clopper-Pearson 95% interval of its fraction lies above 5%.
+
+# %% code tags=claim:ed7b-detect-probability-widespread
+from statsmodels.stats.proportion import proportion_confint
+rows = []
+for w in ["a", "b"]:
+    frac = stack(lambda r, w=w: None if r["dp"][w] is None else r["dp"][w][1], 1)[:, 0]
+    ninc = pd.Series({r["meta"]["name"]: (0 if r["dp"][w] is None else r["dp"][w][2]) for r in R})
+    keep = set(ninc.index[ninc >= 10])
+    d = pd.DataFrame(dict(region=units.region, session=units.session, f=frac))
+    d = d[units.N.to_numpy() & d.session.isin(keep) & np.isfinite(d.f)]
+    d["sig"] = (d.f < 0.025) | (d.f > 0.975)
+    g = d.groupby("region").sig.agg(["sum", "size"])
+    lo, hi = proportion_confint(g["sum"], g["size"], alpha=0.05, method="beta")
+    g["pct"] = 100 * g["sum"] / g["size"]
+    g["ci_lo"] = 100 * lo
+    g["marked"] = lo > 0.05
+    rows.append(dict(window=w, sessions_kept=len(keep), sessions_left_out=39 - len(keep),
+                     neurons=len(d), pct_sig=100 * d.sig.mean(), regions=len(g),
+                     regions_marked=int(g.marked.sum())))
+    if w == "a":
+        print(g.round(1).T.to_string())
+        print("Regions not marked:", g.index[~g.marked].tolist())
+e7b = pd.DataFrame(rows)
+e7b["ok"] = e7b.regions_marked >= 0.75 * e7b.regions
+print(e7b.round(2).to_string(index=False))
+print("Reproduced under a reading:", bool(e7b.ok.any()))
+EOF
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py,cells_f.py,cells_g.py,cells_h.py 2>&1 | sed -n '/^region   ACA/,$p'
 ```
 
 ```
-function [a, b, R2] = CanonCor2all(Y, X)
-% [a, b, R2] = CanonCor2all(Y, X)
-%
-% Version of CanonCor2 (see original doc below) that accepts cell arrays of
-% Y and X which represent different instances of the mapping from the same
-% X variables to different Y's. 
-%
-% The intended application is for doing a reduced-rank regression between
-% behavioral predictors and neural activity, for many non-simultaneously
-% recorded neurons at once. 
-%
-% - Y and X must have the same number of cells
-% - Each entry i in Y is size [t_i, n_i] and X is [t_i, p] where p (the 
-% predictors) are the same across all X. t_i and n_i are specific to each
-% instance (e.g., time during that recording, and number of neurons in that
-% recording). 
-%
-% -- CanonCor2 doc -- 
-% does a sort of canonical correlation analysis on two sets of data X and Y
-% except that now it finds the linear combinations of X that predict
-[... 350 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/code && cat reducedRankRegression/regFullPipeline.m reducedRankRegression/determineResidualsWithout.m reducedRankRegression/predictResidualsWith.m behavior/findMoveTimes.m
-```
-
-```
-% FULL PIPELINE for reduced rank regression, start to finish
-
-% *******
-% IMPORTANT. Should import code from canonCorAll_LR and crossValExcludingK
-% -- while so doing, need to fix the evaluation of cross validated
-% performance to include only up to time of movement onset though kernel
-% will go on longer than that (to resolve stupid misalignment bug). 
-% -- so, time to re-run. consider doing long process of finding right dims
-% to use for each neuron. 
-% -- also good single example neuron plotting code in there canonCorAll_LR
-
-%% load basic
-addpath(genpath('F:\Dropbox\ucl\code\analysisScripts\CoriMullerRadnitz\'))
-
-av = readNPY('J:/allen/annotation_volume_10um_by_index.npy');
-st = loadStructureTree();
-r = loadInclRecs(av, st, 'noSpDetail');
-
-%% load part 2
-
-[... 666 more lines not kept]
+Tue Nov 10 16:54:26 UTC 2026
+region   ACA   ACB   APN   BLA   CA1   CA3    CP    DG   GPe   ILA    LD   LGd    LP    LS    MD    MG   MOp   MOs   MRN   OLF   ORB   PAG    PL    PO   POL  POST   RSP    RT   SCm   SCs   SNr   SSp   SUB  VISa VISam  VISl  VISp VISpm VISrl   VPL   VPM    ZI
+sum      216    60   114    66   271   123   249   158    76   113   101   146   131   186    66    57   307   396   367    80   138    47   180   237    61   126   130    48   371    63   127   156   301    95   210    86   152   116    24   133   116    76
+size     660   260   234   264  1159   427   915   704   283   353   276   789   681   851   388   285   673  1348   879   711   783   126   737   642   189   273   587   151  1001   280   274   444   658   289   802   386   914   490   226   294   326   261
+pct     32.7  23.1  48.7  25.0  23.4  28.8  27.2  22.4  26.9  32.0  36.6  18.5  19.2  21.9  17.0  20.0  45.6  29.4  41.8  11.3  17.6  37.3  24.4  36.9  32.3  46.2  22.1  31.8  37.1  22.5  46.4  35.1  45.7  32.9  26.2  22.3  16.6  23.7  10.6  45.2  35.6  29.1
+ci_lo   29.2  18.1  42.2  19.9  21.0  24.6  24.4  19.4  21.8  27.2  30.9  15.9  16.3  19.1  13.4  15.5  41.8  27.0  38.5   9.0  15.0  28.9  21.4  33.2  25.7  40.1  18.8  24.5  34.1  17.7  40.3  30.7  41.9  27.5  23.2  18.2  14.3  20.0   6.9  39.5  30.4  23.7
+marked  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True  True
+Regions not marked: []
+window  sessions_kept  sessions_left_out  neurons  pct_sig  regions  regions_marked   ok
+     a             39                  0    22273    28.18       42              42 True
+     b             39                  0    22273    17.38       42              40 True
+Reproduced under a reading: True
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/code && ls -la behavior/inclusionData/ behavior/inclusionData/* | head -30; cat behavior/inclusionData/*.m; cat README* | head -50; cat utils/brainRegionGroups.m
+cd $TMPDIR/sc; cat jPECC/jPECC.m | head -120; ls jPECC
 ```
 
 ```
--rw-r--r-- 1 runner runner 372 Oct 21 19:37 behavior/inclusionData/getIncludedTrials.m
--rw-r--r-- 1 runner runner 222 Oct 21 19:37 behavior/inclusionData/getIncludedUnits.m
-
-behavior/inclusionData/:
-total 8
-drwxr-xr-x 4 runner runner  120 Oct 21 19:37 .
-drwxr-xr-x 3 runner runner   80 Oct 21 19:37 ..
--rw-r--r-- 1 runner runner  372 Oct 21 19:37 getIncludedTrials.m
--rw-r--r-- 1 runner runner  222 Oct 21 19:37 getIncludedUnits.m
-drwxr-xr-x 2 runner runner  820 Oct 21 19:37 neurons
-drwxr-xr-x 2 runner runner 2380 Oct 21 19:37 trials
-
-behavior/inclusionData/neurons:
-total 156
-drwxr-xr-x 2 runner runner  820 Oct 21 19:37 .
-drwxr-xr-x 4 runner runner  120 Oct 21 19:37 ..
--rw-r--r-- 1 runner runner 1165 Oct 21 19:37 Cori_2016-12-14_inclNeurons.npy
--rw-r--r-- 1 runner runner 1226 Oct 21 19:37 Cori_2016-12-17_inclNeurons.npy
--rw-r--r-- 1 runner runner 1169 Oct 21 19:37 Cori_2016-12-18_inclNeurons.npy
--rw-r--r-- 1 runner runner 2153 Oct 21 19:37 Forssmann_2017-11-01_inclNeurons.npy
-[... 324 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/code && cat jPECC/jPECC.m ccCP/choiceProbShuf.m ccCP/mannWhitneyUshuf.m; python3 -c "
-import numpy as np,glob
-for f in sorted(glob.glob('behavior/inclusionData/trials/Cori_2016-12-14*'))+sorted(glob.glob('behavior/inclusionData/neurons/Cori_2016-12-14*')):
-    a=np.load(f); print(f,a.shape,a.dtype,a.sum())
-"
-```
-
-```
-Exit code 1
-
-
 function [jPECC_val, jPECC_p] = jPECC(sp1, sp2, kfold, lambda, maxNpc)
 % function [jPECC_val, jPECC_p] = jPECC(sp1, sp2, kfold, lambda)
 %
@@ -780,4015 +2116,916 @@ function [jPECC_val, jPECC_p] = jPECC(sp1, sp2, kfold, lambda, maxNpc)
 % Outputs: 
 % - jPECC_val is size [timebins, timebins] containing the first canonical
 % correlation value
-[... 165 more lines not kept]
+% - jPECC_p is the p-value of each correlation 
+
+doPCA = true; % if false, just use what you're given
+[... 83 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/code && . ../env/bin/activate && python -c "
-import numpy as np,glob
-tot=[0,0,0,0]; nn=[0,0]
-for f in sorted(glob.glob('behavior/inclusionData/trials/*_hasLeft.npy')):
-    s=f.split('/')[-1].replace('_hasLeft.npy','')
-    L=np.load(f);R=np.load(f.replace('hasLeft','hasRight'));N=np.load(f.replace('hasLeft','hasNone'))
-    tot[0]+=L.sum();tot[1]+=R.sum();tot[2]+=N.sum();tot[3]+=len(L)
-    U=np.load('behavior/inclusionData/neurons/'+s+'_inclNeurons.npy'); nn[0]+=U.sum(); nn[1]+=len(U)
-    print(s,len(L),L.sum(),R.sum(),N.sum(),(L&R).sum(),len(U),U.sum(),U.dtype)
-print(tot,nn)
-"
-```
-
-```
-Cori_2016-12-14 214 44 27 66 0 1085 419 bool
-Cori_2016-12-17 251 44 32 84 0 1146 584 bool
-Cori_2016-12-18 228 32 38 87 0 1089 346 bool
-Forssmann_2017-11-01 249 22 39 90 0 2073 921 bool
-Forssmann_2017-11-02 254 29 56 76 0 1569 618 bool
-Forssmann_2017-11-04 290 49 59 103 0 1435 604 bool
-Forssmann_2017-11-05 252 33 60 109 0 1029 325 bool
-Hench_2017-06-15 250 54 33 80 0 1707 761 bool
-Hench_2017-06-16 372 108 53 94 0 1364 501 bool
-Hench_2017-06-17 447 99 48 184 0 1591 647 bool
-Hench_2017-06-18 342 68 67 104 0 1409 555 bool
-Lederberg_2017-12-05 340 85 69 40 0 1219 410 bool
-Lederberg_2017-12-06 300 91 72 46 0 1262 596 bool
-Lederberg_2017-12-07 268 55 69 39 0 1228 382 bool
-Lederberg_2017-12-08 404 91 72 90 0 1134 460 bool
-Lederberg_2017-12-09 280 64 55 59 0 977 279 bool
-Lederberg_2017-12-10 224 55 57 45 0 727 270 bool
-Lederberg_2017-12-11 316 75 82 59 0 1350 591 bool
-Moniz_2017-05-15 247 34 25 102 0 806 380 bool
-Moniz_2017-05-16 235 12 35 128 0 1144 453 bool
-[... 21 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > inv.py <<'EOF'
-import h5py, remfile, requests, numpy as np, json, hashlib, collections
-from concurrent.futures import ThreadPoolExecutor
-V="0.240329.1926"
-assets=requests.get(f"https://api.dandiarchive.org/api/dandisets/000017/versions/{V}/assets/?page_size=100").json()['results']
-def one(a):
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    f=h5py.File(remfile.File(url),'r')
-    r={'path':a['path']}
-    s=f['general/subject']
-    for k in ['subject_id','sex','genotype','age','description','species']:
-        r[k]=s[k][()].decode() if k in s else None
-    r['id']=f['identifier'][()].decode(); r['start']=f['session_start_time'][()].decode()
-    tr=f['intervals/trials']; r['ntrials']=len(tr['id']); r['nincl']=int(tr['included'][:].sum())
-    r['cL']=sorted(set(np.round(tr['visual_stimulus_left_contrast'][:],3))); r['cR']=sorted(set(np.round(tr['visual_stimulus_right_contrast'][:],3)))
-    r['choice']=collections.Counter(tr['response_choice'][:].tolist())
-    phy=f['units/phy_annotations'][:]; r['units']=len(phy); r['phy']=np.bincount(phy,minlength=4).tolist()
-    pk=f['units/peak_channel'][:].ravel(); eidx=f['units/electrodes'][:]; ei=f['units/electrodes_index'][:]
-    first=eidx[np.r_[0,ei[:-1]]]
-    loc=f['general/extracellular_ephys/electrodes/location'][:].astype(str)
-    gname=f['general/extracellular_ephys/electrodes/group_name'][:].astype(str)
-    r['nelec']=len(loc); r['groups']=sorted(set(gname)); 
-    r['pk_minus_first']=collections.Counter((pk-first).tolist()).most_common(3)
-    r['pk_range']=[int(pk.min()),int(pk.max())]
-    good=phy>=2
-    r['reg_by_first']=dict(collections.Counter(loc[first[good]]))
-    pr={k:len(f['stimulus/presentation/'+k+'/timestamps']) for k in f['stimulus/presentation']}
-    r['passive']=pr
-    r['pl_contrasts']=sorted(set(np.round(f['stimulus/presentation/passive_left_contrast/data'][:],3)))
-    r['wheel_moves']=len(f['processing/behavior/BehavioralEpochs/wheel_moves/data'])
-    r['eye']=len(f['processing/behavior/PupilTracking/eye_area/data']); r['face']=len(f['processing/behavior/BehavioralTimeSeries/face_motion_energy/data'])
-    st=f['units/spike_times']; r['nspikes']=st.shape[0]
-    r['hash']=hashlib.md5(st[:100000].tobytes()).hexdigest()
-    r['wheel_n']=f['acquisition/wheel_position/data'].shape[0]
-    r['wheel_rate']=float(f['acquisition/wheel_position/starting_time'].attrs['rate'])
-    r['t_first_trial']=float(tr['start_time'][0]); r['t_last_fb']=float(tr['feedback_time'][-1])
-    r['passive_t']=[float(f['stimulus/presentation/passive_left_contrast/timestamps'][0]), float(f['stimulus/presentation/passive_left_contrast/timestamps'][-1])]
-    r['spont']=len(f['intervals/spontaneous/id'])
-    return r
-with ThreadPoolExecutor(8) as ex: res=list(ex.map(one,assets))
-json.dump(res,open('inv.json','w'),default=str,indent=0)
-EOF
-time python inv.py && python -c "
-import json;res=json.load(open('$TMPDIR/inv.json'))
-for r in sorted(res,key=lambda r:r['path']): print({k:v for k,v in r.items() if k not in ('reg_by_first',)})
-"
-```
-
-```
-<persisted-output>
-Output too large (41.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/0a20b15f-1059-4331-b1d8-61ca3fe7ed3b/tool-results/bh5wosxu0.txt
-
-Preview (first 2KB):
-real	1m55.875s
-user	0m4.415s
-sys	0m0.751s
-{'path': 'sub-Cori/sub-Cori_ses-20161214T120000.nwb', 'subject_id': 'Cori', 'sex': 'F', 'genotype': 'tetO-G6s x CaMK-tTA', 'age': '77 days', 'description': 'strain: C57Bl6/J', 'species': 'Mus musculus', 'id': 'Cori_2016-12-14', 'start': '2016-12-14T12:00:00+00:00', 'ntrials': 214, 'nincl': 201, 'cL': [0.0, 0.25, 0.5, 1.0], 'cR': [0.0, 0.25, 0.5, 1.0], 'choice': {'1.0': 71, '-1.0': 69, '0.0': 74}, 'units': 1085, 'phy': [0, 351, 5, 729], 'nelec': 748, 'groups': ['Probe1', 'Probe2'], 'pk_minus_first': [[1, 551], [375, 534]], 'pk_range': [1, 740], 'passive': {'passive_beeps': 25, 'passive_click_times': 25, 'passive_left_contrast': 150, 'passive_right_contrast': 150, 'passive_white_noise': 25, 'receptive_field_mapping_sparse_noise': 7962}, 'pl_contrasts': [0.0, 0.25, 0.5, 1.0], 'wheel_moves': 507, 'eye': 267759, 'face': 106067, 'nspikes': 10017476, 'hash': '7e1e5764455c19558741c77e3ed6b29a', 'wheel_n': 6570000, 'wheel_rate': 0.00040000637758912496, 't_first_trial': 62.90028371085413, 't_last_fb': 1129.0171682907967, 'passive_t': [1835.2508182617182, 2620.495100884], 'spont': 4}
-...
-</persisted-output>
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python -c "
-import json,collections;res=sorted(json.load(open('inv.json')),key=lambda r:r['path'])
-tot=collections.Counter()
-for r in res:
-    print(r['id'],r['sex'],r['genotype'][:22],r['age'],r['ntrials'],r['nincl'],r['choice'],r['units'],r['phy'],r['groups'],r['pk_minus_first'],r['pk_range'],r['nelec'],r['passive']['passive_left_contrast'],r['passive']['passive_beeps'],r['wheel_moves'],r['eye'],r['face'],r['spont'],r['hash'][:6], r['cL'], r['pl_contrasts'])
-    for k in ['ntrials','nincl','units']: tot[k]+=r[k]
-    tot['good']+=r['phy'][2]+r['phy'][3]; tot['probes']+=len(r['groups'])
-print(tot)
-print(len(set(r['hash'] for r in res)))
-"
-```
-
-```
-Cori_2016-12-14 F tetO-G6s x CaMK-tTA 77 days 214 201 {'1.0': 71, '-1.0': 69, '0.0': 74} 1085 [0, 351, 5, 729] ['Probe1', 'Probe2'] [[1, 551], [375, 534]] [1, 740] 748 150 25 507 267759 106067 4 7e1e57 [0.0, 0.25, 0.5, 1.0] [0.0, 0.25, 0.5, 1.0]
-Cori_2016-12-17 F tetO-G6s x CaMK-tTA 84 days 251 229 {'-1.0': 75, '1.0': 82, '0.0': 94} 1146 [0, 76, 1069, 1] ['Probe1', 'Probe2'] [[1, 611], [375, 535]] [2, 747] 748 150 25 801 309311 122538 4 2b6fea [0.0, 0.25, 0.5, 1.0] [0.0, 0.25, 0.5, 1.0]
-Cori_2016-12-18 F tetO-G6s x CaMK-tTA 84 days 228 216 {'1.0': 57, '-1.0': 94, '0.0': 77} 1089 [0, 470, 64, 555] ['Probe1', 'Probe2'] [[1, 586], [375, 503]] [7, 724] 748 150 25 616 381301 151080 4 803108 [0.0, 0.25, 0.5, 1.0] [0.0, 0.25, 0.5, 1.0]
-Forssmann_2017-11-01 M C57BL/6J 182 days 249 241 {'-1.0': 72, '1.0': 51, '0.0': 126} 2073 [0, 304, 1323, 446] ['Probe1', 'Probe2', 'Probe3'] [[375, 1455], [1, 618]] [1, 1102] 1122 110 20 579 312702 123874 4 aba1a1 [0.0, 0.25, 0.5, 1.0] [0.0, 1.0]
-Forssmann_2017-11-02 M C57BL/6J 182 days 254 246 {'-1.0': 97, '0.0': 104, '1.0': 53} 1569 [0, 492, 585, 492] ['Probe1', 'Probe2', 'Probe3'] [[375, 1208], [1, 361]] [1, 1122] 1122 110 20 633 305599 121048 4 df0228 [0.0, 0.25, 0.5, 1.0] [0.0, 1.0]
-Forssmann_2017-11-04 M C57BL/6J 189 days 290 288 {'1.0': 85, '0.0': 92, '-1.0': 113} 1435 [0, 266, 836, 333] ['Probe1', 'Probe2', 'Probe3'] [[375, 821], [1, 614]] [11, 947] 1122 110 20 980 349964 138675 4 3ec7a8 [0.0, 0.25, 0.5, 1.0] [0.0, 1.0]
-Forssmann_2017-11-05 M C57BL/6J 189 days 252 244 {'1.0': 74, '0.0': 62, '-1.0': 116} 1029 [0, 445, 0, 584] ['Probe1', 'Probe2'] [[1, 583], [375, 446]] [1, 748] 748 110 20 498 314336 124561 4 d0158c [0.0, 0.25, 0.5, 1.0] [0.0, 1.0]
-Hench_2017-06-15 M tetO-G6s x CaMK-tTA 217 days 250 223 {'-1.0': 58, '0.0': 93, '1.0': 99} 1707 [0, 550, 3, 1154] ['Probe1', 'Probe2', 'Probe3'] [[375, 1109], [1, 598]] [1, 1120] 1122 110 25 893 327250 129589 4 52d47e [0.0, 0.25, 0.5, 1.0] [0.0, 1.0]
-Hench_2017-06-16 M tetO-G6s x CaMK-tTA 22
-[... 33 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > chk.py <<'EOF'
-import h5py, remfile, numpy as np, collections, sys
-aid=sys.argv[1]
-f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{aid}/download/"),'r')
-pk=f['units/peak_channel'][:].ravel(); eidx=f['units/electrodes'][:]; ei=f['units/electrodes_index'][:]
-first=eidx[np.r_[0,ei[:-1]]]
-eg=f['units/electrode_group'][:]
-egn=np.array([f[r].name.split('/')[-1] for r in eg])
-gname=f['general/extracellular_ephys/electrodes/group_name'][:].astype(str)
-sp=f['general/extracellular_ephys/electrodes/site_position'][:]
-loc=f['general/extracellular_ephys/electrodes/location'][:].astype(str)
-cd=f['units/cluster_depths'][:].ravel()
-sid=f['general/extracellular_ephys/electrodes/site_id'][:]
-print(collections.Counter(zip(egn,gname[first],(pk-first).tolist())))
-for g in sorted(set(egn)):
-    m=egn==g
-    # candidate: peak index into electrode table = pk-1
-    for name,idx in [('first',first[m]),('pk-1',pk[m]-1),('pk',np.clip(pk[m],0,len(gname)-1))]:
-        print(g,name,'group match',np.mean(gname[idx]==g),'depth err median',np.median(np.abs(sp[idx,1]-cd[m])))
-print(sp[:5], sid[:5], sid[370:380], gname[370:380])
-# all electrodes of a unit in same group?
-print(len(eidx)//len(pk))
-EOF
-python chk.py 2c6984f5-5fd7-4ccb-8f05-1961df65124a; python chk.py 3722e6b8-d47f-4feb-a9ae-9c368e41166b
-```
-
-```
-Counter({(np.str_('Probe3'), np.str_('Probe2'), 375): 860, (np.str_('Probe1'), np.str_('Probe1'), 1): 618, (np.str_('Probe2'), np.str_('Probe1'), 375): 595})
-Probe1 first group match 1.0 depth err median 7.20462340734997
-Probe1 pk-1 group match 1.0 depth err median 7.20462340734997
-Probe1 pk group match 0.9983818770226537 depth err median 14.346865367363762
-Probe2 first group match 0.0 depth err median 7.635211929599791
-Probe2 pk-1 group match 1.0 depth err median 7.635211929599791
-Probe2 pk group match 0.9983193277310924 depth err median 12.553618626639263
-Probe3 first group match 0.0 depth err median 7.507769261874444
-Probe3 pk-1 group match 1.0 depth err median 7.507769261874444
-Probe3 pk group match 1.0 depth err median 12.35956353115148
-[[43. 20.]
- [11. 20.]
- [59. 40.]
- [27. 40.]
- [43. 60.]] [0 1 2 3 4] [380 381 382 383   0   1   2   3   4   5] ['Probe1' 'Probe1' 'Probe1' 'Probe1' 'Probe2' 'Probe2' 'Probe2' 'Probe2'
- 'Probe2' 'Probe2']
-50
-Counter({(np.str_('Probe1'), np.str_('Probe1'), 1): 727})
-Probe1 first group match 1.0 depth err median 8.15908521988149
-Probe1 pk-1 group match 1.0 depth err median 8.15908521988149
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > chk2.py <<'EOF'
-import h5py, remfile, numpy as np, collections
-aid="92694e6e-84fd-4198-a7e3-64e764f8e086"
-f=h5py.File(remfile.File(f"https://api.dandiarchive.org/api/assets/{aid}/download/"),'r')
-mv=f['processing/behavior/BehavioralEpochs/wheel_moves']
-ts=mv['timestamps'][:]; d=mv['data'][:]
-print(ts[:10], d[:10], len(ts), len(d))
-print('moves range', ts.min(), ts.max())
-pt=f['stimulus/presentation/passive_left_contrast/timestamps'][:]; print('passive', pt.min(), pt.max())
-tr=f['intervals/trials']
-print('trials', tr['start_time'][0], tr['stop_time'][-1])
-w=f['acquisition/wheel_position/data'][:]
-print('wheel', w[:10], w.min(), w.max(), np.unique(np.diff(w[:200000]))[:20])
-print(dict(f['acquisition/wheel_position/starting_time'].attrs), f['acquisition/wheel_position/starting_time'][()])
-for k in ['visual_stimulus_time','go_cue','response_time','feedback_time','start_time','stop_time','response_choice','feedback_type','rep_num','included','visual_stimulus_left_contrast','visual_stimulus_right_contrast']:
-    print(k, tr[k][:8])
-eye=f['processing/behavior/PupilTracking/eye_area']; et=eye['timestamps'][:]; print('eye', et[:3], np.median(np.diff(et)), et[-1], np.isnan(eye['data'][:]).mean())
-fm=f['processing/behavior/BehavioralTimeSeries/face_motion_energy']; print('face', fm['starting_time'][()], dict(fm['starting_time'].attrs), fm['data'].shape)
-lt=f['processing/behavior/BehavioralEvents/lick_times/timestamps'][:]; print('lick', lt[:3])
-pl=f['stimulus/presentation/passive_left_contrast/data'][:]; pr=f['stimulus/presentation/passive_right_contrast/data'][:]
-print(collections.Counter(zip(pl,pr)))
-pr_t=f['stimulus/presentation/passive_right_contrast/timestamps'][:]; print(np.array_equal(pt,pr_t))
-for k in ['passive_beeps','passive_click_times','passive_white_noise']: print(k, f['stimulus/presentation/'+k+'/timestamps'][:3])
-sp=f['intervals/spontaneous']; print('spont', sp['start_time'][:], sp['stop_time'][:])
-# order of moves types and durations
-dur=ts[1::2]-ts[0::2] if ts.ndim==1 else None
-print('interval series timestamps pattern', ts[:6])
-EOF
-python chk2.py
-```
-
-```
-[47.7025041 47.9205041 56.0525041 56.7645041 56.9675041 58.9365041
- 61.0595041 61.8385041 63.0525041 64.2735041] [0 1 0 1 0 1 0 0 2 0] 1014 507
-moves range 47.70250410481991 2644.32350410482
-passive 1835.2508182617182 2620.495100884
-trials 62.90028371085413 1130.0171543559998
-wheel [0. 0. 0. 0. 0. 0. 0. 0. 0. 0.] -39.0 19232.0 [-1.  0.  1.]
-{'rate': np.float64(0.00040000637758912496), 'unit': 'seconds'} 33.65250410481991
-visual_stimulus_time [65.26940832 71.20270292 76.05238024 81.23526288 86.80095162 90.65061299
- 95.98429803 99.5507549 ]
-go_cue [ 66.29662457  72.07711674  76.87759327  81.99687489  87.46296204
-  91.83743179  96.57230728 100.15716444]
-response_time [ 66.41961196  72.60220579  77.00167129  83.50206455  87.61772745
-  92.16771994  97.11750846 100.90058594]
-feedback_time [ 66.45622712  72.64032572  77.03839584  83.53169936  87.62856468
-  92.19743753  97.12631611 100.9075764 ]
-start_time [62.90028371 68.42083772 74.60290237 79.00365324 85.50179514 89.61759177
- 94.16770229 99.1176188 ]
-stop_time [ 67.42348445  73.60447565  78.00675701  84.50677806  88.62133641
-  93.17147139  98.11970104 101.90397514]
-response_choice [ 1. -1.  1.  0.  1.  1. -1. -1.]
-[... 16 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p entries/000017-steinmetz-2019; ls entries/000017-steinmetz-2019; sed -n 1,80p entries/001453-fouke-2025/omr.py
-```
-
-```
-"""Loading and measures for the freely swimming optomotor data of dandiset 001453.
-
-Fouke, He, Loring & Naumann (2025), Current Biology, doi:10.1016/j.cub.2025.04.027.
-
-Each NWB file holds one fish: x and y position (pixels), heading (`f0_theta`, radians), its
-change per frame (`f0_vtheta`; the file says radians/s, the data show radians per frame),
-velocity estimates, and per frame the stimulus code and trial number (`stim_index`). Files are
-streamed from the archive at the pinned version; nothing is written to disk.
-
-Where the parameters come from:
-
-- Trial processing follows the paper's analysis notebook, Fig1-S1.ipynb, in
-  https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
-  33a5c297ff4ab6ff49f6bdd96139e9fdd867025c (the Methods give none of these): Savitzky-Golay
-  smoothing of positions (21 frames, order 2); rejection of trials whose absolute cumulative
-  heading change exceeds 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or
-  whose mean speed exceeds 100 mm/s; measures from 3 s to 35 s after the first tracked frame;
-  10 pixels per mm (the code divides pixels per second by 10 to give mm/s); per fish the median
-  over trials. The 3 s stationary phase and the 32 s of motion are in the Methods.
-- The names of the stimulus codes combine the protocol file sevenrep_twentyonestim.hdf of the
-[... 60 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000017-steinmetz-2019/steinmetz.py",
- "content": "\"\"\"Loading and measures for dandiset 000017, Steinmetz, Zatka-Haas, Carandini & Harris (2019).\n\n\"Distributed coding of choice, action and engagement across the mouse brain\", Nature 576,\n266-273, doi:10.1038/s41586-019-1787-x. The claims tested are in\nclaims/000017/10.1038-s41586-019-1787-x.yaml; definitions T, N, K, M and R below are those of the\nclaims file's opening comment.\n\nEach NWB file holds one session: a trials table, the detected wheel movements (onset, offset and\ntype, the output of findWheelMoves3), the wheel position, Kilosort/phy units with their spike\ntimes, the brain location of every channel, the passive replay events, pupil area and face motion\nenergy. Files are streamed from the archive at the pinned version; nothing is written to disk.\n\nWhat the files hold and how it is read here:\n\n- A unit's channel is row `peak_channel - 1` of the electrodes table. The units table's\n  `electrodes` column points to the first probe's rows for units on the second and third probes\n  (shown in the notebook), so it is not used.\n- The `rate` attribute of the regular time series (wheel position, lick piezo, face motion\n  energy) holds the sampling interval in seconds, not a rate in Hz; it is read as an interval.\n- `wheel_moves` keeps its onsets and offsets alternately in `timestamps` (twice as many as\n  `data`, which holds the type: 0 flinch, 1 left turn, 2 right turn).\n- `response_choice` is +1 for a Left choice, -1 for Right, 0 for NoGo. Wheel position increases\n  for left turns. Recordings are in the left hemisphere, so right stimuli and Right choices are\n  contralateral (claims file).\n\nWhere the parameters come from: windows, bins, thresholds and smoothing are from the claim's\ncriterion or the definitions of the claims file, which cite the paper's Methods and code\n(github.com/nsteinme/steinmetz-et-al-2019 at commit 9a0bea8). Where a value is a standard\nchoice for a detail that cannot change a result, the docstring says so.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nimport requests\n\nDANDISET_ID = \"000017\"\nDANDISET_VERSION = \"0.240329.1926\"\nAPI = \"https://api.dandiarchive.org/api\"\n\n# Spike count tensors: 5 ms bins from -0.4 to 0.65 s around each event (a window covering every\n# window the claims use, with room for the causal smoothing).\nBIN = 0.005\nT0, T1 = -0.4, 0.65\nNBINS = int(round((T1 - T0) / BIN))\nBIN_EDGES = T0 + BIN * np.arange(NBINS + 1)\nBIN_CENTRES = BIN_EDGES[:-1] + BIN / 2\n\nCONTRASTS = (0.0, 0.25, 0.5, 1.0)   # zero, low, medium, high\n\n# The 42 regions of Extended Data Table 1, with its counts (recordings, mice, responsive neurons,\n# neurons). VISl and VISrl are printed \"VISI\" and \"VISrI\" in the text.\nED_TABLE_1 = {\n    \"ACA\": (11, 8, 395, 608), \"ACB\": (3, 3, 152, 255), \"APN\": (2, 2, 177, 235),\n    \"BLA\": (2, 2, 107, 261), \"CA1\": (21, 10, 494, 1129), \"CA3\": (10, 6, 243, 438),\n    \"CP\": (5, 5, 524, 914), \"DG\": (16, 10, 336, 711), \"GPe\": (3, 3, 146, 274),\n    \"ILA\": (3, 3, 192, 338), \"LD\": (6, 5, 209, 308), \"LGd\": (10, 5, 397, 811),\n    \"LP\": (11, 8, 393, 732), \"LS\": (7, 5, 508, 844), \"MD\": (3, 3, 244, 381),\n    \"MG\": (2, 2, 180, 276), \"MOp\": (3, 3, 553, 682), \"MOs\": (19, 9, 993, 1534),\n    \"MRN\": (11, 7, 722, 857), \"OLF\": (9, 5, 210, 684), \"ORB\": (6, 5, 281, 770),\n    \"PAG\": (3, 3, 72, 130), \"PL\": (10, 7, 438, 728), \"PO\": (5, 4, 342, 620),\n    \"POL\": (3, 3, 132, 190), \"POST\": (4, 3, 163, 272), \"RSP\": (9, 5, 308, 598),\n    \"RT\": (2, 2, 111, 160), \"SCm\": (11, 6, 738, 997), \"SCs\": (10, 6, 192, 317),\n    \"SNr\": (4, 3, 201, 274), \"SSp\": (5, 4, 296, 461), \"SUB\": (9, 7, 494, 669),\n    \"VISa\": (5, 4, 207, 285), \"VISam\": (11, 8, 501, 805), \"VISl\": (3, 2, 248, 403),\n    \"VISp\": (12, 8, 649, 923), \"VISpm\": (4, 4, 230, 516), \"VISrl\": (2, 2, 85, 236),\n    \"VPL\": (4, 3, 202, 255), \"VPM\": (4, 2, 235, 357), \"ZI\": (4, 2, 167, 220),\n}\nREGIONS_42 = tuple(ED_TABLE_1)\n\n# Region groups of the claims file (code utils/brainRegionGroups.m and the Methods).\nVIS = (\"VISp\", \"VISpm\", \"VISl\", \"VISrl\", \"VISa\", \"VISam\")\nFRONTAL_JPECC = (\"MOs\", \"MOp\", \"PL\")\nMIDBRAIN_JPECC = (\"MRN\", \"SCm\", \"SNr\", \"ZI\")\nSTRIATUM = (\"CP\",)\nNEOCORTEX = (\"ACA\", \"ILA\", \"MOp\", \"MOs\", \"ORB\", \"PL\", \"RSP\", \"SSp\") + VIS\nVISUAL_THALAMUS = (\"LGd\", \"LP\", \"LD\")\nTHALAMUS = (\"LP\", \"LD\", \"RT\", \"MD\", \"MG\", \"LGd\", \"VPM\", \"VPL\", \"PO\", \"POL\")\nFIRST_ORDER_THALAMUS = (\"LGd\", \"VPL\", \"VPM\", \"MG\")\nGROUP_MIDBRAIN = (\"MRN\", \"SCm\", \"SCs\", \"APN\", \"PAG\")\nGROUP_BASAL_GANGLIA = (\"CP\", \"GPe\", \"SNr\", \"ACB\", \"LS\")\nGROUP_HIPPOCAMPUS = (\"POST\", \"SUB\", \"DG\", \"CA1\", \"CA3\")\n\n\n# ---------------------------------------------------------------------------------------------\n# Archive access\n\ndef list_assets() -> pd.DataFrame:\n    \"\"\"Path, asset id and size of every file of the pinned version.\"\"\"\n    url = f\"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/assets/?page_size=200\"\n    rows = []\n    while url:\n        page = requests.get(url, timeout=60).json()\n        rows += [(a[\"path\"], a[\"asset_id\"], a[\"size\"]) for a in page[\"results\"]]\n        url = page.get(\"next\")\n    return pd.DataFrame(rows, columns=[\"path\", \"asset_id\", \"size\"]).sort_values(\"path\",\n                                                                              ignore_index=True)\n\n\ndef version_metadata() -> dict:\n    \"\"\"The archive's metadata record of the pinned version.\"\"\"\n    return requests.get(f\"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/\",\n                        timeout=60).json()\n\n\ndef open_nwb(asset_id: str) -> h5py.File:\n    \"\"\"Open an asset for streaming (HTTP range requests through remfile).\"\"\"\n    return h5py.File(remfile.File(f\"{API}/assets/{asset_id}/download/\"), \"r\")\n\n\ndef _s(x) -> str:\n    return x.decode() if isinstance(x, bytes) else str(x)\n\n\n# ---------------------------------------------------------------------------------------------\n# One session, reduced as it loads\n\ndef _counts(st: np.ndarray, starts: np.ndarray, edges: np.ndarray) -> np.ndarray:\n    \"\"\"Spike counts of one unit in bins `starts[:, None] + edges` (st sorted).\"\"\"\n    if len(starts) == 0:\n        return np.zeros((0, len(edges) - 1), dtype=np.uint8)\n    e = starts[:, None] + edges[None, :]\n    c = np.searchsorted(st, e.ravel()).reshape(e.shape)\n    return np.diff(c, axis=1).astype(np.uint8)\n\n\ndef _window_counts(st: np.ndarray, a: np.ndarray, b: np.ndarray) -> np.ndarray:\n    \"\"\"Spike counts of one unit in [a, b) for each pair (st sorted); NaN where a is NaN.\"\"\"\n    out = np.full(len(a), np.nan)\n    ok = np.isfinite(a) & np.isfinite(b)\n    out[ok] = np.searchsorted(st, b[ok]) - np.searchsorted(st, a[ok])\n    return out\n\n\ndef _series_mean(t: np.ndarray, y: np.ndarray, a: np.ndarray, b: np.ndarray) -> np.ndarray:\n    \"\"\"Mean of a sampled series over [a, b) for each pair (t sorted); NaN when no sample.\"\"\"\n    i0 = np.searchsorted(t, a)\n    i1 = np.searchsorted(t, b)\n    cs = np.r_[0.0, np.cumsum(np.nan_to_num(y))]\n    cn = np.r_[0.0, np.cumsum(np.isfinite(y))]\n    n = cn[i1] - cn[i0]\n    with np.errstate(invalid=\"ignore\", divide=\"ignore\"):\n        return np.where(n > 0, (cs[i1] - cs[i0]) / n, np.nan)\n\n\ndef load_session(asset_id: str) -> dict:\n    \"\"\"Read one session and reduce it to what the claims use.\n\n    Returns a dict with:\n    - `session`, `subject`, `date`, `sex`, `genotype`, `age`, `n_probes`;\n    - `trials`: the trials table, times in seconds (session clock), with `n` its row number;\n    - `moves`: detected wheel movements (`onset`, `offset`, `type`) with `dpos`, the position\n      change from onset to offset (encoder ticks, positive for left turns), and `vel`, the\n      velocity pos(t) - pos(t - 10 ms) at t = onset + `VEL_OFFSETS` (ticks per 10 ms);\n    - `units`: every unit (phy label, probe, region, depth, spike count, mean amplitude);\n    - `good`: indices into `units` of the curated single units (phy label 2 or 3) kept below;\n    - `C`: uint8 spike counts (good units x trials x `NBINS`), 5 ms bins aligned to stimulus\n      onset; `Cp`: the same aligned to passive visual stimulus onsets;\n    - `passive`: passive visual events (time, left and right contrast) and `passive_other`\n      (beeps, valve clicks, noise bursts) with `Co`, pre-event counts of the good units in\n      -0.25 to -0.05 s and -0.2 to 0 s (units x events x 2);\n    - `rew`: counts of the good units 0 to 0.15 s after feedback (units x trials);\n    - pupil area and face motion energy means in the pre-stimulus windows of each trial and\n      passive event (`pupil`, `face`: columns w1 = -0.25 to -0.05 s, w2 = -0.2 to 0 s).\n    \"\"\"\n    f = open_nwb(asset_id)\n    out = {}\n    sub = f[\"general/subject\"]\n    out[\"subject\"] = _s(sub[\"subject_id\"][()])\n    out[\"sex\"] = _s(sub[\"sex\"][()])\n    out[\"genotype\"] = _s(sub[\"genotype\"][()])\n    out[\"age\"] = _s(sub[\"age\"][()])\n    out[\"session\"] = _s(f[\"identifier\"][()])\n    out[\"date\"] = out[\"session\"].split(\"_\")[-1]\n\n    tr = f[\"intervals/trials\"]\n    cols = [\"start_time\", \"stop_time\", \"included\", \"go_cue\", \"visual_stimulus_time\",\n            \"visual_stimulus_left_contrast\", \"visual_stimulus_right_contrast\", \"response_time\",\n            \"response_choice\", \"feedback_time\", \"feedback_type\", \"rep_num\"]\n    trials = pd.DataFrame({c: tr[c][:] for c in cols}).rename(columns={\n        \"visual_stimulus_time\": \"stim\", \"visual_stimulus_left_contrast\": \"cL\",\n        \"visual_stimulus_right_contrast\": \"cR\", \"response_choice\": \"choice\",\n        \"feedback_time\": \"fb\", \"feedback_type\": \"fbtype\", \"response_time\": \"resp\"})\n    trials[\"n\"] = np.arange(len(trials))\n    out[\"trials\"] = trials\n\n    # wheel\n    wp = f[\"acquisition/wheel_position\"]\n    w = wp[\"data\"][:]\n    w_t0 = float(wp[\"starting_time\"][()])\n    w_dt = float(wp[\"starting_time\"].attrs[\"rate\"])     # holds the interval (see docstring)\n    out[\"wheel_dt\"] = w_dt\n    mv = f[\"processing/behavior/BehavioralEpochs/wheel_moves\"]\n    ts = mv[\"timestamps\"][:]\n    moves = pd.DataFrame({\"onset\": ts[0::2], \"offset\": ts[1::2], \"type\": mv[\"data\"][:]})\n\n    def pos(t):\n        i = np.clip(np.round((np.asarray(t) - w_t0) / w_dt).astype(int), 0, len(w) - 1)\n        return w[i]\n\n    moves[\"dpos\"] = pos(moves[\"offset\"].values) - pos(moves[\"onset\"].values)\n    vel = np.stack([pos(moves[\"onset\"].values + o) - pos(moves[\"onset\"].values + o - 0.01)\n                    for o in VEL_OFFSETS], axis=1)\n    out[\"moves\"] = moves\n    out[\"move_vel\"] = vel\n    out[\"wheel_range\"] = (w_t0, w_t0 + w_dt * (len(w) - 1))\n    del w\n\n    # passive events\n    sp = f[\"stimulus/presentation\"]\n    passive = pd.DataFrame({\"t\": sp[\"passive_left_contrast/timestamps\"][:],\n                            \"cL\": sp[\"passive_left_contrast/data\"][:],\n                            \"cR\": sp[\"passive_right_contrast/data\"][:]})\n    out[\"passive_right_same_times\"] = bool(np.array_equal(\n        sp[\"passive_left_contrast/timestamps\"][:], sp[\"passive_right_contrast/timestamps\"][:]))\n    other = []\n    for k in (\"passive_beeps\", \"passive_click_times\", \"passive_white_noise\"):\n        other.append(pd.DataFrame({\"t\": sp[k + \"/timestamps\"][:], \"kind\": k}))\n    other = pd.concat(other, ignore_index=True).sort_values(\"t\", ignore_index=True)\n    out[\"passive\"] = passive\n    out[\"passive_other\"] = other\n\n    # pupil and face motion energy, pre-stimulus means\n    eye = f[\"processing/behavior/PupilTracking/eye_area\"]\n    et, ea = eye[\"timestamps\"][:], eye[\"data\"][:]\n    fm = f[\"processing/behavior/BehavioralTimeSeries/face_motion_energy\"]\n    fd = fm[\"data\"][:]\n    ft = float(fm[\"starting_time\"][()]) + float(fm[\"starting_time\"].attrs[\"rate\"]) * np.arange(\n        len(fd))\n\n    def pre(t_ev):\n        return np.stack([_series_mean(et, ea, t_ev - 0.25, t_ev - 0.05),\n                         _series_mean(et, ea, t_ev - 0.2, t_ev),\n                         _series_mean(ft, fd, t_ev - 0.25, t_ev - 0.05),\n                         _series_mean(ft, fd, t_ev - 0.2, t_ev)], axis=1)\n\n    pt = pre(trials[\"stim\"].values)\n    out[\"pupil\"] = pt[:, :2]\n    out[\"face\"] = pt[:, 2:]\n    pp = pre(passive[\"t\"].values)\n    out[\"pupil_passive\"] = pp[:, :2]\n    out[\"face_passive\"] = pp[:, 2:]\n    out[\"pupil_n\"] = len(ea)\n    out[\"pupil_nan_fraction\"] = float(np.mean(~np.isfinite(ea)))\n\n    # units\n    u = f[\"units\"]\n    phy = u[\"phy_annotations\"][:].ravel()\n    pk = u[\"peak_channel\"][:].ravel().astype(int)\n    loc = f[\"general/extracellular_ephys/electrodes/location\"][:].astype(str)\n    gname = f[\"general/extracellular_ephys/electrodes/group_name\"][:].astype(str)\n    eg = u[\"electrode_group\"][:]\n    probe = np.array([f[r].name.split(\"/\")[-1] for r in eg])\n    first_el = u[\"electrodes\"][:][np.r_[0, u[\"electrodes_index\"][:-1]]]\n    sti = u[\"spike_times_index\"][:]\n    starts = np.r_[0, sti[:-1]]\n    st_all = u[\"spike_times\"][:]\n    amps = u[\"spike_amps\"][:].ravel()\n    wf = u[\"waveform_mean\"]\n    units = pd.DataFrame({\n        \"phy\": phy, \"probe\": probe, \"peak_channel\": pk,\n        \"region\": loc[pk - 1], \"probe_of_peak\": gname[pk - 1],\n        \"probe_of_electrodes\": gname[first_el],\n        \"depth\": u[\"cluster_depths\"][:].ravel(),\n        \"n_spikes\": sti - starts,\n        \"mean_amp\": [amps[a:b].mean() if b > a else np.nan for a, b in zip(starts, sti)],\n    })\n    del amps\n    # peak-to-trough amplitude of the mean waveform on its largest channel\n    wfa = []\n    for i0 in range(0, len(units), 200):\n        x = wf[i0:i0 + 200]\n        wfa.append((x.max(axis=1) - x.min(axis=1)).max(axis=1))\n    units[\"wf_amp\"] = np.concatenate(wfa)\n    units[\"n_probes\"] = len(set(gname))\n    out[\"n_probes\"] = len(set(gname))\n    out[\"units\"] = units\n    good = np.flatnonzero(phy >= 2)\n    out[\"good\"] = good\n\n    stim = trials[\"stim\"].values\n    fb = trials[\"fb\"].values\n    C = np.zeros((len(good), len(trials), NBINS), dtype=np.uint8)\n    Cp = np.zeros((len(good), len(passive), NBINS), dtype=np.uint8)\n    Co = np.zeros((len(good), len(other), 2))\n    rew = np.zeros((len(good), len(trials)))\n    oth = other[\"t\"].values\n    for j, i in enumerate(good):\n        st = st_all[starts[i]:sti[i]]\n        if np.any(np.diff(st) < 0):\n            st = np.sort(st)\n        C[j] = _counts(st, stim, BIN_EDGES)\n        Cp[j] = _counts(st, passive[\"t\"].values, BIN_EDGES)\n        Co[j, :, 0] = _window_counts(st, oth - 0.25, oth - 0.05)\n        Co[j, :, 1] = _window_counts(st, oth - 0.2, oth)\n        rew[j] = _window_counts(st, fb, fb + 0.15)\n    out[\"spikes_sorted\"] = bool(all(np.all(np.diff(st_all[a:b]) >= 0)\n                                    for a, b in zip(starts, sti)))\n    del st_all\n    out[\"C\"], out[\"Cp\"], out[\"Co\"], out[\"rew\"] = C, Cp, Co, rew\n    f.close()\n    return out\n\n\nVEL_OFFSETS = np.round(np.arange(-0.1, 0.1001, 0.01), 3)\n\n\ndef load_all(asset_ids, workers: int = 6, progress=None) -> list[dict]:\n    \"\"\"Load sessions in parallel threads (each streams its own file).\"\"\"\n    with ThreadPoolExecutor(workers) as ex:\n        return list(ex.map(load_session, asset_ids))\n"
-}
-```
-
-```
-File created successfully at: entries/000017-steinmetz-2019/steinmetz.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t1.py <<'EOF'
-import sys, time, pickle
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-a=S.list_assets(); print(a.head())
-t=time.time(); s=S.load_session(a.asset_id[0]); print(time.time()-t)
-print(s['session'], s['C'].shape, s['Cp'].shape, s['C'].nbytes/1e6, s['spikes_sorted'], s['units'].region.value_counts().head(20))
-print(s['units'].head()); print(s['moves'].head()); print(s['pupil'][:3], s['face'][:3])
-EOF
-python t1.py
-```
-
-```
-path  ...       size
-0          sub-Cori/sub-Cori_ses-20161214T120000.nwb  ...  311814662
-1          sub-Cori/sub-Cori_ses-20161217T120000.nwb  ...  332879362
-2          sub-Cori/sub-Cori_ses-20161218T120000.nwb  ...  573267819
-3  sub-Forssmann/sub-Forssmann_ses-20171101T12000...  ...  422784529
-4  sub-Forssmann/sub-Forssmann_ses-20171102T12000...  ...  347258464
-
-[5 rows x 3 columns]
-7.226704359054565
-Cori_2016-12-14 (734, 214, 210) (734, 150, 210) 32.98596 True region
-LS      233
-VISp    220
-MOs     162
-ACA     154
-SUB     113
-CA3      93
-DG       63
-root     47
-Name: count, dtype: int64
-   phy   probe  peak_channel region  ... n_spikes    mean_amp    wf_amp  n_probes
-[... 19 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t2.py <<'EOF'
-import sys, time, pickle
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-a=S.list_assets()
-t=time.time(); ss=S.load_all(a.asset_id.tolist(), workers=6); print(time.time()-t)
-pickle.dump(ss, open('sessions.pkl','wb'), protocol=4)
-import resource; print(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1e6,'GB')
-EOF
-python t2.py; ls -la sessions.pkl
-```
-
-```
-278.667573928833
-7.72796 GB
--rw-r--r-- 1 runner runner 2766342471 Oct 21 19:50 sessions.pkl
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-# ---------------------------------------------------------------------------------------------
-# Trials: disengagement and definition T
-
-def disengaged(trials: pd.DataFrame) -> np.ndarray:
-    """Disengaged trials (claims file, definition T; Methods, Training protocol): a Miss (stimulus
-    present, NoGo response) preceded by two or more Misses, and the run of NoGo responses that
-    ends the session."""
-    stim = (trials["cL"].values > 0) | (trials["cR"].values > 0)
-    miss = stim & (trials["choice"].values == 0)
-    out = np.zeros(len(trials), bool)
-    out[2:] = miss[2:] & miss[1:-1] & miss[:-2]
-    nogo = trials["choice"].values == 0
-    k = len(trials)
-    while k > 0 and nogo[k - 1]:
-        k -= 1
-    out[k:] = True
-    return out
-
-
-def classify_trials(trials: pd.DataFrame, moves: pd.DataFrame, rule: str = "methods",
-                    engaged: np.ndarray | None = None, rng=None) -> pd.DataFrame:
-    """Movement class of each trial (definition T).
-
-    rule "methods": the moves overlapping -0.05 to 0.4 s from stimulus onset are found; with none
-    the trial is NoGo ("N"); when the first of them has its onset 0.125 to 0.4 s after stimulus
-    onset and is a left or right turn (type 1 or 2, a turn reaching 90 d.v.a.) the trial is Left
-    ("L") or Right ("R"); otherwise it is dropped.
-    rule "code": findMoveTimes.m and kernelFitBasic.m; the first move with onset after stimulus
-    onset - 0.1 s and before feedback; L or R when it is a left or right turn with onset strictly
-    between 0.125 and 0.4 s; N when such a move exists outside -0.05 to 0.4 s; a trial with no
-    move before feedback is dropped.
-    Adds `cls` (L, R, N or ''), `mt` (movement onset - stimulus onset, s; for N trials a time drawn
-    from the L and R trials' times when `rng` is given, definition T), `keep` (cls set and
-    engaged). `engaged` defaults to not disengaged().
-    """
-    on, off, typ = moves["onset"].values, moves["offset"].values, moves["type"].values
-    stim, fb = trials["stim"].values, trials["fb"].values
-    cls = np.array([""] * len(trials), dtype=object)
-    mt = np.full(len(trials), np.nan)
-    first_type = np.full(len(trials), -1)
-    for i, s in enumerate(stim):
-        if rule == "methods":
-            k = np.flatnonzero((on < s + 0.4) & (off > s - 0.05))
-            if len(k) == 0:
-                cls[i] = "N"
-                continue
-            k = k[np.argmin(on[k])]
-            t = on[k] - s
-            first_type[i] = typ[k]
-            if 0.125 <= t <= 0.4 and typ[k] in (1, 2):
-                cls[i] = "L" if typ[k] == 1 else "R"
-                mt[i] = t
-        else:
-            k = np.flatnonzero(on > s - 0.1)
-            if len(k) == 0 or on[k[0]] >= fb[i]:
-                continue
-            k = k[0]
-            t = on[k] - s
-            first_type[i] = typ[k]
-            if 0.125 < t < 0.4 and typ[k] in (1, 2):
-                cls[i] = "L" if typ[k] == 1 else "R"
-                mt[i] = t
-            elif t < -0.05 or t > 0.4:
-                cls[i] = "N"
-    out = trials.copy()
-    out["cls"] = cls
-    out["first_type"] = first_type
-    if engaged is None:
-        engaged = ~disengaged(trials)
-    out["engaged"] = engaged
-    out["keep"] = (cls != "") & engaged
-    if rng is not None:
-        pool = mt[out["keep"].values & np.isin(cls, ["L", "R"])]
-        nn = out["keep"].values & (cls == "N")
-        mt[nn] = rng.choice(pool, nn.sum())
-    out["mt"] = mt
-    return out
-
-
-def session_has_trials(tt: pd.DataFrame, minimum: int = 12) -> bool:
-    """At least `minimum` kept trials of each of L, R and N (claims file, definition T)."""
-    k = tt[tt["keep"]]
-    return all((k["cls"] == c).sum() >= minimum for c in "LRN")
-
-
-# ---------------------------------------------------------------------------------------------
-# Spike count windows from the 5 ms count tensors
-
-def bin_index(t: float) -> int:
-    """Index of the bin edge at time t (s) relative to the event (5 ms grid)."""
-    return int(round((t - T0) / BIN))
-
-
-def window_rate(C: np.ndarray, a: float, b: float) -> np.ndarray:
-    """Rate (sp/s) in [a, b) relative to the event: C is units x events x bins."""
-    i, j = bin_index(a), bin_index(b)
-    return C[..., i:j].sum(axis=-1) / (BIN * (j - i))
-
-
-def shifted_window_rate(C: np.ndarray, shift: np.ndarray, a: float, b: float) -> np.ndarray:
-    """Rate in [shift + a, shift + b) for each event, shift (s) per event rounded to the 5 ms
-    grid (a standard choice: movement onsets are continuous, the counts are binned)."""
-    out = np.full(C.shape[:2], np.nan)
-    for e, sh in enumerate(shift):
-        if not np.isfinite(sh):
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old='''    # --- clock check'''
+new='''    # --- jPECC inputs: 10 ms counts of VIS, frontal and midbrain neurons ----------
+    reg = U["region"].replace(REGION_PARENT).to_numpy()
+    okr = (U["trial_rate"].to_numpy() >= MIN_RATE)
+    jp = {}
+    for gname, members in [("VIS", VIS), ("Frontal", FRONTAL_JPECC), ("Midbrain", MIDBRAIN_JPECC)]:
+        sel = np.zeros(len(U), bool)
+        for rg in members:
+            m = okr & (reg == rg)
+            if m.sum() >= MIN_PER_REGION:
+                sel |= m
+        if sel.sum() == 0:
             continue
-        i, j = bin_index(sh + a), bin_index(sh + b)
-        if i < 0 or j > C.shape[-1]:
+        sc = S.stim_counts[sel][:, :, :].reshape(sel.sum(), S.stim_counts.shape[1], -1, 2).sum(axis=3)
+        mc = S.move_counts[sel].reshape(sel.sum(), S.move_counts.shape[1], -1, 2).sum(axis=3)
+        jp[gname] = dict(stim=sc.astype(np.uint8), move=mc.astype(np.uint8), unit=np.where(sel)[0])
+    out["jpecc"] = jp
+    # --- clock check'''
+assert old in s; s=s.replace(old,new,1)
+open('steinmetz.py','w').write(s)
+EOF
+grep -n "unit=np.where" steinmetz.py
+```
+
+```
+705:        jp[gname] = dict(stim=sc.astype(np.uint8), move=mc.astype(np.uint8), unit=np.where(sel)[0])
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; wc -l steinmetz.py; grep -n "^def \|^class \|^    def " steinmetz.py
+```
+
+```
+719 steinmetz.py
+132:def asset_paths():
+138:def open_nwb(path):
+145:def _s(x):
+149:def file_metadata(f):
+167:def counts_aligned(spike_times, spike_index, units, events, lo, hi, bin_size=BIN):
+188:def classify_trials(tr, mv_on, mv_off, mv_type):
+242:def disengaged_rule(tr):
+259:class Session:
+262:    def __init__(self, path, rng, bins=True):
+355:    def wheel_at(self, t):
+363:    def moving_in(self, t, lo, hi):
+368:    def pupil_mean(self, t, lo, hi):
+374:    def me_mean(self, t, lo, hi):
+379:def window_rate(counts, win_lo, win_hi, lo):
+387:def half_gauss_kernel(sd, bin_size=BIN):
+394:def causal_smooth(x, sd, axis=-1):
+406:def matched_contrast(groups, levels=(0.25, 0.5, 1.0), rng=None):
+422:def combined_cp(rates, labels, conds, n_shuffle, rng):
+471:def six_tests(S, tr):
+[... 4 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+s=s.replace('''def causal_smooth(x, sd, axis=-1):
+    k = half_gauss_kernel(sd)''','''def causal_smooth(x, sd, axis=-1, bin_size=BIN):
+    k = half_gauss_kernel(sd, bin_size)''')
+s+='''
+
+# ---------------------------------------------------------------------------
+# jPECC (claims fig4d; Methods, jPECC analysis; code jPECC/jPECC.m)
+# ---------------------------------------------------------------------------
+JP_BIN = 0.01          # 10 ms bins (claims fig4d criterion)
+JP_SMOOTH = 0.025      # causal half-Gaussian s.d. (claims)
+JP_LAMBDA = 0.5        # ridge rows appended, as jPECC.m
+JP_MAXPC = 10          # PCs kept, as jPECC.m
+JP_FOLDS = 10
+
+
+def _pcs(X, nd):
+    Xc = X - X.mean(axis=0)
+    u, s, vt = np.linalg.svd(Xc, full_matrices=False)
+    return (u * s)[:, :nd]
+
+
+def _canon_first(X, Y):
+    """First canonical pair of MATLAB canoncorr (columns centred, QR, SVD)."""
+    Xc = X - X.mean(axis=0)
+    Yc = Y - Y.mean(axis=0)
+    q1, r1 = np.linalg.qr(Xc)
+    q2, r2 = np.linalg.qr(Yc)
+    u, s, vt = np.linalg.svd(q1.T @ q2)
+    a = np.linalg.solve(r1, u[:, 0])
+    b = np.linalg.solve(r2, vt[0])
+    return a, b
+
+
+def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC):
+    """sp1, sp2: (trials, bins, neurons). Returns the cross-validated first canonical
+    correlation for every pair of time bins (rows: sp1 time, columns: sp2 time)."""
+    n, nb = sp1.shape[0], sp1.shape[1]
+    nd = min(maxpc, sp1.shape[2], sp2.shape[2])
+    folds = np.array_split(rng.permutation(n), kfold)
+    X = [_pcs(sp1[:, t], nd) for t in range(nb)]
+    Y = [_pcs(sp2[:, t], nd) for t in range(nb)]
+    I = lam * np.eye(nd)
+    Zr = np.zeros((nd, nd))
+    out = np.zeros((nb, nb))
+    for t1 in range(nb):
+        for t2 in range(nb):
+            U = np.zeros(n)
+            V = np.zeros(n)
+            for f in folds:
+                tr = np.setdiff1d(np.arange(n), f)
+                a, b = _canon_first(np.vstack([X[t1][tr], I, Zr]), np.vstack([Y[t2][tr], Zr, I]))
+                U[f] = X[t1][f] @ a
+                V[f] = Y[t2][f] @ b
+            out[t1, t2] = np.corrcoef(U, V)[0, 1]
+    return out
+
+
+def asymmetry(J, lag_bins=5):
+    """Mean r along the slice where the first population leads by up to lag_bins,
+    minus the mean where the second leads, at each time t (NaN near the edges)."""
+    nb = J.shape[0]
+    a = np.full(nb, np.nan)
+    for t in range(lag_bins, nb):
+        lead1 = np.mean([J[t - k, t] for k in range(lag_bins + 1)])
+        lead2 = np.mean([J[t, t - k] for k in range(lag_bins + 1)])
+        a[t] = lead1 - lead2
+    return a
+'''
+open('steinmetz.py','w').write(s)
+EOF
+cat > $TMPDIR/tj.py <<'EOF'
+import sys,time,numpy as np
+sys.path.insert(0,'.')
+import steinmetz as sm
+rng=np.random.default_rng(0)
+X=rng.normal(size=(250,50,30)); Y=X[:,:,:20]+rng.normal(size=(250,50,20))
+t=time.time(); J=sm.jpecc(X,Y,rng); print(time.time()-t, J[0,0], J[0,10])
+EOF
+$TMPDIR/venv/bin/python $TMPDIR/tj.py
+```
+
+```
+5.385594844818115 0.7382465653032493 -0.09392285294370419
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; $TMPDIR/venv/bin/python $TMPDIR/dev_load.py 2 $TMPDIR/R2.pkl 2>&1 | awk '{print $1,$2,$3,$4}'
+```
+
+```
+0 sub-Cori/sub-Cori_ses-20161214T120000.nwb 14 0.635748
+1 sub-Cori/sub-Cori_ses-20161217T120000.nwb 29 0.76034
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; $TMPDIR/venv/bin/python $TMPDIR/dev_load.py 39 $TMPDIR/R39.pkl 2>&1 | awk '{print $1,$2,$3,$4}' | tail -2; ls -la $TMPDIR/R39.pkl; date -u
+```
+
+```
+37 sub-Tatum/sub-Tatum_ses-20171209T120000.nwb 564 1.486716
+38 sub-Theiler/sub-Theiler_ses-20171011T120000.nwb 581 1.486716
+-rw-r--r-- 1 runner runner 542782465 Nov 10 17:06 /tmp/claude-1001/R39.pkl
+Tue Nov 10 17:06:39 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/cells_i.py <<'EOF'
+# %% md
+## jPECC (fig4d claims)
+
+jPECC as in the Methods and code jPECC.m: per recording, populations VIS, Frontal (MOs, MOp, PL) and Midbrain (MRN, SCm, SNr, ZI), each of the regions with at least 13 neurons in the session; spike counts in 10 ms bins, causal half-Gaussian of s.d. 25 ms, divided by each neuron's baseline + 1 sp/s; per time bin PCA to min(10, neurons of either group) dimensions; 10-fold cross-validation over trials; CCA on training PCs with ridge rows (lambda 0.5) appended; Pearson r of the test projections on the first canonical pair, for every pair of time bins. Stimulus-aligned window -0.05 to 0.3 s, movement-aligned -0.3 to 0.05 s (35 bins each; a standard choice that covers the times the claims name). Asymmetry index at t: mean r over lags 0 to 50 ms with the first population leading minus with the second leading; t-test across recordings against 0 at each t, alpha 0.05. Readings: baseline (a) -0.2 to 0 s, (b) -0.1 to 0 s before stimulus onset; trials for the stimulus alignment (a) all trials T, (b) Left and Right choice trials (movement alignment always uses Left and Right trials).
+
+# %% code
+jt0 = time.time()
+JB = 0.01
+def jp_norm(arr, base):
+    rate = arr.astype(float) / JB
+    rate = sm.causal_smooth(rate, sm.JP_SMOOTH, axis=2, bin_size=JB)
+    return rate / (base[:, None, None] + 1.0)
+
+jp_rows = []
+pairs = [("VIS", "Frontal"), ("VIS", "Midbrain"), ("Frontal", "Midbrain")]
+for si, r in enumerate(R):
+    jp = r["jpecc"]
+    tc = r["trials"].t_choice.to_numpy()
+    Tm = np.isin(tc, ["L", "R", "N"])
+    Gm = np.isin(tc, ["L", "R"])
+    for g1, g2 in pairs:
+        if g1 not in jp or g2 not in jp:
             continue
-        out[:, e] = C[:, e, i:j].sum(axis=-1) / (BIN * (j - i))
-    return out
+        for bread, (blo, bhi) in {"a": (-0.2, 0.0), "b": (-0.1, 0.0)}.items():
+            arrs = {}
+            for g in (g1, g2):
+                st = jp[g]["stim"]
+                bi = slice(int(round((blo + 0.3) / JB)), int(round((bhi + 0.3) / JB)))
+                base = st[:, Tm, bi].mean(axis=(1, 2)) / JB
+                arrs[g] = (jp_norm(st, base)[:, :, 25:60], jp_norm(jp[g]["move"], base)[:, :, 0:35])
+            for align, tread, tsel in [("stim", "a", Tm), ("stim", "b", Gm), ("move", "-", Gm)]:
+                k = 0 if align == "stim" else 1
+                a1 = np.transpose(arrs[g1][k][:, tsel], (1, 2, 0))
+                a2 = np.transpose(arrs[g2][k][:, tsel], (1, 2, 0))
+                J = sm.jpecc(a1, a2, np.random.default_rng([60, si]))
+                jp_rows.append(dict(session=r["meta"]["name"], pair=f"{g1}-{g2}", baseline=bread,
+                                    trials=tread, align=align, asym=sm.asymmetry(J),
+                                    n1=a1.shape[2], n2=a2.shape[2], ntr=a1.shape[0]))
+JPD = pd.DataFrame(jp_rows)
+print("jPECC computed in %.0f s; recordings per pair:" % (time.time() - jt0),
+      JPD.groupby("pair").session.nunique().to_dict())
+t_stim = -0.05 + JB * np.arange(35)
+t_move = -0.3 + JB * np.arange(35)
+
+def asym_test(pair, align, baseline, trials):
+    d = JPD[(JPD.pair == pair) & (JPD.align == align) & (JPD.baseline == baseline) & (JPD.trials == trials)]
+    A = np.vstack(d.asym.to_numpy())
+    tt = ss.ttest_1samp(A, 0, axis=0, nan_policy="omit")
+    return pd.DataFrame(dict(t=(t_stim if align == "stim" else t_move), mean=np.nanmean(A, axis=0),
+                             tstat=tt.statistic, p=tt.pvalue, n=len(d)))
+
+# %% md
+## fig4d-jpecc-vis-leads
+
+> In jPECC, visual cortex activity leads frontal cortex activity by about 40 ms in the period about 200 ms before movement, and visual cortex leads frontal cortex and midbrain at about 100 ms after stimulus onset.
+
+Reading of the criterion's open points (they are open in the claims file's checks): "VIS leads Frontal at time points between -0.2 and -0.05 s" holds when at least one time point in that range has a positive asymmetry with p < 0.05; "near 0.1 s" is the points from 0.08 to 0.12 s, at least one with positive asymmetry and p < 0.05 for each of VIS-Frontal and VIS-Midbrain.
+
+# %% code tags=claim:fig4d-jpecc-vis-leads
+rows = []
+for bread in ["a", "b"]:
+    for tread in ["a", "b"]:
+        mv = asym_test("VIS-Frontal", "move", bread, "-")
+        w = mv[(mv.t >= -0.2 - 1e-9) & (mv.t <= -0.05 + 1e-9)]
+        mv_ok = ((w.p < 0.05) & (w["mean"] > 0)).sum()
+        res_ = dict(baseline=bread, trials=tread, n_vis_front=int(mv.n.iloc[0]),
+                    move_sig_pos_points=int(mv_ok), move_points=len(w),
+                    move_mean_asym=w["mean"].mean())
+        for pr in ["VIS-Frontal", "VIS-Midbrain"]:
+            st = asym_test(pr, "stim", bread, tread)
+            w2 = st[(st.t >= 0.08 - 1e-9) & (st.t <= 0.12 + 1e-9)]
+            res_[f"{pr}_stim_sig_pos"] = int(((w2.p < 0.05) & (w2["mean"] > 0)).sum())
+            res_[f"{pr}_stim_mean"] = w2["mean"].mean()
+            res_[f"{pr}_n"] = int(st.n.iloc[0])
+        rows.append(res_)
+f4d = pd.DataFrame(rows)
+f4d["ok"] = (f4d.move_sig_pos_points > 0) & (f4d["VIS-Frontal_stim_sig_pos"] > 0) & (f4d["VIS-Midbrain_stim_sig_pos"] > 0)
+print(f4d.round(4).to_string(index=False))
+print("\nVIS-Frontal, movement aligned, baseline a:")
+print(asym_test("VIS-Frontal", "move", "a", "-").round(4).to_string(index=False))
+print("\nVIS-Frontal and VIS-Midbrain, stimulus aligned, baseline a, trials a:")
+print(asym_test("VIS-Frontal", "stim", "a", "a").merge(asym_test("VIS-Midbrain", "stim", "a", "a"),
+      on="t", suffixes=("_VF", "_VM")).round(4).to_string(index=False))
+print("Reproduced under a reading:", bool(f4d.ok.any()))
+
+# %% md
+## fig4d-jpecc-no-lag-frontal-midbrain
+
+> Population activity in midbrain and frontal cortex shows no consistent lead or lag.
+
+A claim of absence on the paper's test: the t-test across recordings of the Frontal-Midbrain asymmetry index against 0 at each time point from -0.25 to 0 s from movement onset, alpha 0.05 uncorrected. Reproduced when no point is significant.
+
+# %% code tags=claim:fig4d-jpecc-no-lag-frontal-midbrain
+rows = []
+for bread in ["a", "b"]:
+    mv = asym_test("Frontal-Midbrain", "move", bread, "-")
+    w = mv[(mv.t >= -0.25 - 1e-9) & (mv.t <= 0.0 + 1e-9)]
+    rows.append(dict(baseline=bread, recordings=int(mv.n.iloc[0]), points=len(w),
+                     sig_points=int((w.p < 0.05).sum()), sig_bonferroni=int((w.p < 0.05 / len(w)).sum()),
+                     mean_asym=w["mean"].mean(), min_p=w.p.min(),
+                     max_abs_mean=w["mean"].abs().max()))
+f4n = pd.DataFrame(rows)
+print(f4n.round(4).to_string(index=False))
+print(asym_test("Frontal-Midbrain", "move", "a", "-").round(4).to_string(index=False))
+print("No significant point under every reading:", bool((f4n.sig_points == 0).all()),
+      "| under any reading:", bool((f4n.sig_points == 0).any()))
 EOF
-echo ok
+cd $TMPDIR && $TMPDIR/venv/bin/python -c "
+import pickle; R=pickle.load(open('R39.pkl','rb'))
+import collections
+print(collections.Counter(tuple(sorted(r['jpecc'])) for r in R))"
 ```
 
 ```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t3.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('sessions.pkl','rb'))
-tot=np.zeros(6,int)
-for s in ss:
-    tr=s['trials']; d=S.disengaged(tr)
-    agree=np.mean((~d)==tr['included'].values)
-    m=S.classify_trials(tr,s['moves'],'methods'); c=S.classify_trials(tr,s['moves'],'code',engaged=tr['included'].values)
-    name=s['session']
-    L=np.load(f'code/behavior/inclusionData/trials/{name}_hasLeft.npy'); R=np.load(f'code/behavior/inclusionData/trials/{name}_hasRight.npy'); N=np.load(f'code/behavior/inclusionData/trials/{name}_hasNone.npy')
-    code_cls=np.where(L,'L',np.where(R,'R',np.where(N,'N','')))
-    mk=np.where(m.keep,m.cls,''); ck=np.where(c.keep,c.cls,'')
-    print(name, 'diseng agree %.3f'%agree, (~d).sum(), tr.included.sum(), 'methods LRN', [(mk==x).sum() for x in 'LRN'], 'code', [(ck==x).sum() for x in 'LRN'], 'arrays', [L.sum(),R.sum(),N.sum()], 'agree methods %.3f code %.3f'%(np.mean(mk==code_cls), np.mean(ck==code_cls)))
-    tot+= [ (mk==x).sum() for x in 'LRN']+[(ck==x).sum() for x in 'LRN']
-print(tot)
-EOF
-python t3.py
-```
-
-```
-Cori_2016-12-14 diseng agree 0.925 207 201 methods LRN [np.int64(44), np.int64(27), np.int64(104)] code [np.int64(44), np.int64(27), np.int64(60)] arrays [np.int64(44), np.int64(27), np.int64(66)] agree methods 0.274 code 0.284
-Cori_2016-12-17 diseng agree 0.968 237 229 methods LRN [np.int64(44), np.int64(32), np.int64(108)] code [np.int64(44), np.int64(32), np.int64(82)] arrays [np.int64(44), np.int64(32), np.int64(84)] agree methods 0.288 code 0.291
-Cori_2016-12-18 diseng agree 0.996 215 216 methods LRN [np.int64(32), np.int64(38), np.int64(97)] code [np.int64(32), np.int64(38), np.int64(83)] arrays [np.int64(32), np.int64(38), np.int64(87)] agree methods 0.293 code 0.289
-Forssmann_2017-11-01 diseng agree 0.972 234 241 methods LRN [np.int64(22), np.int64(39), np.int64(151)] code [np.int64(22), np.int64(39), np.int64(89)] arrays [np.int64(22), np.int64(39), np.int64(90)] agree methods 0.310 code 0.318
-Forssmann_2017-11-02 diseng agree 0.980 241 246 methods LRN [np.int64(29), np.int64(56), np.int64(130)] code [np.int64(29), np.int64(56), np.int64(76)] arrays [np.int64(29), np.int64(56), np.int64(76)] agree methods 0.271 code 0.285
-Forssmann_2017-11-04 diseng agree 0.983 285 288 methods LRN [np.int64(49), np.int64(59), np.int64(134)] code [np.int64(49), np.int64(59), np.int64(103)] arrays [np.int64(49), np.int64(59), np.int64(103)] agree methods 0.279 code 0.270
-Forssmann_2017-11-05 diseng agree 0.996 243 244 methods LRN [np.int64(33), np.int64(60), np.int64(130)] code [np.int64(33), np.int64(60), np.int64(108)] arrays [np.int64(33), np.int64(60), np.int64(109)] agree methods 0.320 code 0.299
-Hench_2017-06-15 diseng agree 0.984 223 223 methods LRN [np.int64(54), np.int64(33), np.int64(89)] code [np.int64(54), np.int64(33), np.int64(67)] arrays [np.int64(54), np.int64(33), np.int64(80)] agree methods 0.276 code 0.277
-Hench_2017-06-16 diseng agree 0.978 346 350 methods LRN [np.int64(108), np.int64(53), np.int64(108)] code [np.int64(108), np.int64(53), np.int64(86)] arr
-[... 32 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t4.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('sessions.pkl','rb'))
-s=ss[0]; tr=s['trials']; name=s['session']
-L=np.load(f'code/behavior/inclusionData/trials/{name}_hasLeft.npy').ravel(); print(L.shape, L[:20].astype(int))
-m=S.classify_trials(tr,s['moves'],'methods')
-print(np.where(m.keep, m.cls,'')[:20])
-print((L & (m.cls.values=='L')&m.keep.values).sum(), L.sum())
-d=S.disengaged(tr)
-x=pd.DataFrame({'c':tr.choice,'cL':tr.cL,'cR':tr.cR,'incl':tr.included,'mine':~d})
-print(x[x.incl!=x.mine])
-print(x.iloc[150:214].to_string())
-EOF
-python t4.py
-```
-
-```
-(214,) [1 0 1 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0]
-['L' 'R' 'L' 'N' '' 'N' 'N' 'N' 'N' 'L' 'L' 'N' '' '' '' 'R' '' 'R' 'N'
- 'N']
-44 44
-       c    cL    cR   incl   mine
-112  0.0  0.25  1.00   True  False
-113  0.0  0.25  1.00   True  False
-170  0.0  0.25  1.00   True  False
-171  0.0  0.25  1.00   True  False
-196  0.0  1.00  0.25   True  False
-201  0.0  0.00  0.50  False   True
-202  0.0  0.00  0.25  False   True
-205  1.0  0.25  1.00  False   True
-206  1.0  0.25  1.00  False   True
-207  0.0  0.25  1.00  False   True
-208  1.0  0.25  1.00  False   True
-209  1.0  0.25  1.00  False   True
-210  1.0  0.25  1.00  False   True
-211  0.0  0.25  1.00  False   True
-212  0.0  0.25  1.00  False   True
-[... 67 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t5.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('sessions.pkl','rb'))
-def rules(tr):
-    ch=tr.choice.values; stim=(tr.cL.values>0)|(tr.cR.values>0); miss=stim&(ch==0); fbt=tr.fbtype.values
-    n=len(tr); out={}
-    # end after last reward
-    last=np.flatnonzero(fbt==1)[-1]; endA=np.arange(n)>last
-    # end nogo run
-    k=n
-    while k>0 and ch[k-1]==0: k-=1
-    endB=np.arange(n)>=k
-    m3=np.zeros(n,bool); m3[2:]=miss[2:]&miss[1:-1]&miss[:-2]
-    # miss preceded by two nogo (any)
-    ng=ch==0; m3b=np.zeros(n,bool); m3b[2:]=miss[2:]&ng[1:-1]&ng[:-2]
-    out['endA']=~endA; out['endB']=~endB; out['m3+endB']=~(m3|endB); out['m3+endA']=~(m3|endA); out['m3b+endA']=~(m3b|endA)
-    return out
-agg={}
-for s in ss:
-    tr=s['trials']; inc=tr.included.values
-    for k,v in rules(tr).items(): agg.setdefault(k,[]).append((np.sum(v!=inc), v.sum()))
-for k,v in agg.items(): print(k, 'mismatched trials',sum(a for a,b in v),'sessions exact',sum(a==0 for a,b in v),'kept',sum(b for a,b in v))
-EOF
-python t5.py
-```
-
-```
-endA mismatched trials 165 sessions exact 11 kept 9703
-endB mismatched trials 226 sessions exact 5 kept 9720
-m3+endB mismatched trials 174 sessions exact 5 kept 9496
-m3+endA mismatched trials 125 sessions exact 9 kept 9485
-m3b+endA mismatched trials 216 sessions exact 5 kept 9394
+Counter({('Frontal', 'VIS'): 10, ('Frontal', 'Midbrain', 'VIS'): 7, (): 5, ('VIS',): 4, ('Midbrain', 'VIS'): 4, ('Midbrain',): 4, ('Frontal',): 3, ('Frontal', 'Midbrain'): 2})
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old=s[s.index('def jpecc(sp1, sp2'):s.index('def asymmetry')]
+new='''def _inv_sqrt(C):
+    w, v = np.linalg.eigh(C)
+    return (v / np.sqrt(np.maximum(w, 1e-12))[..., None, :]) @ np.swapaxes(v, -1, -2)
 
 
-# ---------------------------------------------------------------------------------------------
-# Neurons: the six responsiveness tests and definition N
+def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC):
+    """sp1, sp2: (trials, bins, neurons). Returns the cross-validated first canonical
+    correlation for every pair of time bins (rows: sp1 time, columns: sp2 time).
 
-def _signrank(x):
-    from scipy.stats import wilcoxon
-    x = x[np.isfinite(x)]
-    x = x[x != 0]
-    if len(x) == 0:
-        return np.nan
-    return wilcoxon(x, zero_method="wilcox", correction=True,
-                    method="exact" if len(x) <= 15 else "approx").pvalue
-
-
-def _ranksum(x, y):
-    from scipy.stats import mannwhitneyu
-    x, y = x[np.isfinite(x)], y[np.isfinite(y)]
-    if len(x) == 0 or len(y) == 0:
-        return np.nan, np.nan
-    if np.all(np.r_[x, y] == np.r_[x, y][0]):
-        return 1.0, 0.0
-    r = mannwhitneyu(x, y, alternative="two-sided", method="auto")
-    from scipy.stats import rankdata
-    ranks = rankdata(np.r_[x, y])
-    return r.pvalue, ranks[:len(x)].sum() - len(x) * (len(x) + len(y) + 1) / 2
-
-
-def six_tests(C: np.ndarray, tt: pd.DataFrame, rew: np.ndarray):
-    """p-values and signed effects of the six tests of the Methods (Data analysis), per unit.
-
-    C: counts (units x trials x bins) aligned to stimulus onset; tt: classify_trials output
-    (trials T are `keep`); rew: counts 0 to 0.15 s after feedback (units x trials). Rates are
-    spike counts in the window divided by its length. Tests: 1 signrank, trial rate (0 to 0.4
-    s) against baseline (-0.2 to 0 s); 2 signrank, 0.05 to 0.15 s against baseline; 3 signrank,
-    -0.1 to 0.05 s from movement onset against baseline, L and R trials; 4 ranksum, that rate on
-    R against L trials; 5 signrank, -0.05 to 0.2 s from movement onset against baseline; 6
-    ranksum, 0 to 0.15 s after feedback on correct NoGo trials (no stimulus, NoGo response,
-    reward) against the baselines of all trials T. Effects follow the code's effectSizes
-    (kernelFitBasic.m): for signrank tests the count of positive minus negative differences, for
-    ranksum tests the rank sum of the first group minus its null value (test 4: R greater is
-    positive; test 6: post-reward greater is positive).
-    """
-    k = tt["keep"].values
-    cls = tt["cls"].values[k]
-    mv = np.isin(cls, ["L", "R"])
-    mt = tt["mt"].values[k]
-    Ck = C[:, k]
-    trial = window_rate(Ck, 0.0, 0.4)
-    bsl = window_rate(Ck, -0.2, 0.0)
-    stim = window_rate(Ck, 0.05, 0.15)
-    pre = shifted_window_rate(Ck[:, mv], mt[mv], -0.1, 0.05)
-    post = shifted_window_rate(Ck[:, mv], mt[mv], -0.05, 0.2)
-    cn = k & (tt["choice"].values == 0) & (tt["fbtype"].values == 1) & \
-        (tt["cL"].values == 0) & (tt["cR"].values == 0)
-    rr = rew[:, cn] / 0.15
-    isR = cls[mv] == "R"
-    n = C.shape[0]
-    p = np.full((n, 6), np.nan)
-    eff = np.full((n, 6), np.nan)
-    for u in range(n):
-        for j, x in ((0, trial[u] - bsl[u]), (1, stim[u] - bsl[u]), (2, pre[u] - bsl[u, mv]),
-                     (4, post[u] - bsl[u, mv])):
-            p[u, j] = _signrank(x)
-            eff[u, j] = np.sum(x > 0) - np.sum(x < 0)
-        p[u, 3], eff[u, 3] = _ranksum(pre[u, isR], pre[u, ~isR])
-        p[u, 5], eff[u, 5] = _ranksum(rr[u], bsl[u])
-    return p, eff
+    As jPECC.m: PCA of each bin over all trials, then per fold the first canonical
+    pair of the training PCs with ridge rows appended (X: lambda*I then zeros; Y:
+    zeros then lambda*I), test trials projected, and the projections of all folds
+    correlated. The canonical pair is computed by whitening (Cxx^-1/2 Cxy Cyy^-1/2),
+    which gives the same directions and unit training variance as canoncorr, batched
+    over the second population's bins."""
+    n, nb = sp1.shape[0], sp1.shape[1]
+    nd = min(maxpc, sp1.shape[2], sp2.shape[2])
+    folds = np.array_split(rng.permutation(n), kfold)
+    X = np.stack([_pcs(sp1[:, t], nd) for t in range(nb)])   # (nb, n, nd)
+    Y = np.stack([_pcs(sp2[:, t], nd) for t in range(nb)])
+    I = lam * np.eye(nd)
+    Zr = np.zeros((nd, nd))
+    U = np.zeros((nb, nb, n))
+    V = np.zeros((nb, nb, n))
+    for f in folds:
+        tr = np.setdiff1d(np.arange(n), f)
+        Xa = np.concatenate([X[:, tr], np.broadcast_to(I, (nb, nd, nd)), np.broadcast_to(Zr, (nb, nd, nd))], axis=1)
+        Ya = np.concatenate([Y[:, tr], np.broadcast_to(Zr, (nb, nd, nd)), np.broadcast_to(I, (nb, nd, nd))], axis=1)
+        Xa = Xa - Xa.mean(axis=1, keepdims=True)
+        Ya = Ya - Ya.mean(axis=1, keepdims=True)
+        m = Xa.shape[1] - 1
+        Cxx = np.swapaxes(Xa, 1, 2) @ Xa / m          # (nb, nd, nd)
+        Cyy = np.swapaxes(Ya, 1, 2) @ Ya / m
+        Wx, Wy = _inv_sqrt(Cxx), _inv_sqrt(Cyy)
+        for t1 in range(nb):
+            Cxy = (Xa[t1].T @ Ya) / m                  # (nb, nd, nd) over t2
+            M = Wx[t1] @ Cxy @ Wy
+            u, s_, vt = np.linalg.svd(M)
+            a = Wx[t1] @ u[:, :, 0].T                  # (nd, nb)
+            b = (Wy @ vt[:, 0, :, None])[:, :, 0]      # (nb, nd)
+            U[t1, :, f] = (X[t1, f] @ a).T
+            V[t1, :, f] = np.einsum("tfd,td->tf", Y[:, f], b).T if False else (Y[:, f] @ b[:, :, None])[:, :, 0].T
+    Uc = U - U.mean(axis=2, keepdims=True)
+    Vc = V - V.mean(axis=2, keepdims=True)
+    return (Uc * Vc).sum(axis=2) / np.sqrt((Uc ** 2).sum(axis=2) * (Vc ** 2).sum(axis=2))
 
 
-def neuron_table(sessions: list[dict], tts: list[pd.DataFrame]) -> pd.DataFrame:
-    """One row per curated single unit (phy label 2 or 3) of every session.
-
-    Columns: session index `s`, `session`, `subject`, `region`, unit index in the session's
-    good units `j`, `rate` (mean over trials T of the spike count 0 to 0.4 s after stimulus
-    onset / 0.4 s), `bsl` (mean rate -0.2 to 0 s over trials T), `mean_amp`, `wf_amp`.
-    """
-    rows = []
-    for si, (s, tt) in enumerate(zip(sessions, tts)):
-        k = tt["keep"].values
-        u = s["units"].iloc[s["good"]]
-        rows.append(pd.DataFrame({
-            "s": si, "session": s["session"], "subject": s["subject"],
-            "region": u["region"].values, "j": np.arange(len(u)),
-            "rate": window_rate(s["C"][:, k], 0.0, 0.4).mean(axis=1),
-            "bsl": window_rate(s["C"][:, k], -0.2, 0.0).mean(axis=1),
-            "mean_amp": u["mean_amp"].values, "wf_amp": u["wf_amp"].values}))
-    return pd.concat(rows, ignore_index=True)
-
-
-def select_n(nt: pd.DataFrame, min_rate=0.1, min_per_region=13, min_subjects=2) -> np.ndarray:
-    """Definition N without the responsiveness tests: rate at least 0.1 Hz, at least 13 such
-    neurons of the region in the session, regions with such sessions in at least two subjects.
-    Returns a boolean mask over `nt`."""
-    ok = nt["rate"].values >= min_rate
-    g = nt[ok].groupby(["s", "region"]).size()
-    big = set(g[g >= min_per_region].index)
-    ok2 = ok & np.array([(s, r) in big for s, r in zip(nt["s"], nt["region"])])
-    subj = nt[ok2].groupby("region")["subject"].nunique()
-    regs = set(subj[subj >= min_subjects].index)
-    return ok2 & nt["region"].isin(regs).values
+'''
+s=s.replace(old,new)
+s=s.replace('''            V[t1, :, f] = np.einsum("tfd,td->tf", Y[:, f], b).T if False else (Y[:, f] @ b[:, :, None])[:, :, 0].T''','''            V[t1, :, f] = (Y[:, f] @ b[:, :, None])[:, :, 0].T''')
+open('steinmetz.py','w').write(s)
 EOF
-cd $TMPDIR && . env/bin/activate && cat > t6.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd, time
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('sessions.pkl','rb'))
-tts=[S.classify_trials(s['trials'],s['moves'],'methods',rng=np.random.default_rng(0)) for s in ss]
-nt=S.neuron_table(ss,tts)
-print('good',len(nt),'rate>=0.1',(nt.rate>=0.1).sum())
-print('regions present', sorted(set(nt.region)-set(S.REGIONS_42)))
-m=S.select_n(nt); print('N',m.sum(), 'in42', nt[m].region.isin(S.REGIONS_42).sum(), 'regions', nt[m].region.nunique())
-print(sorted(set(nt[m].region)^set(S.REGIONS_42)))
-t=time.time()
-P=[];E=[]
-for si,s in enumerate(ss):
-    p,e=S.six_tests(s['C'],tts[si],s['rew']); P.append(p);E.append(e)
-print('tests',time.time()-t)
-P=np.vstack(P);E=np.vstack(E)
-nt['p']=list(P); 
-np.save('P.npy',P); np.save('E.npy',E); nt.to_pickle('nt.pkl')
-act=np.any(P<0.05/6,axis=1); f35=np.any(P[:,:4]<0.05,axis=1)
-print('active among N', (act&m).sum(), (act&m).sum()/m.sum(), 'figs3-5', (f35&m).sum())
-rows=[]
-for r in S.REGIONS_42:
-    x=nt[m&(nt.region==r).values]
-    rows.append((r, x.s.nunique(), x.subject.nunique(), (act[m&(nt.region==r).values]).sum(), len(x))+S.ED_TABLE_1[r])
-df=pd.DataFrame(rows,columns=['region','rec','mice','resp','n','p_rec','p_mice','p_resp','p_n']); print(df.to_string())
+cat > $TMPDIR/tj.py <<'EOF'
+import sys,time,numpy as np
+sys.path.insert(0,'.')
+import steinmetz as sm
+rng=np.random.default_rng(0)
+X=rng.normal(size=(250,35,30)); Y=np.concatenate([X[:,3:,:20],rng.normal(size=(250,3,20))],1)+rng.normal(size=(250,35,20))
+t=time.time(); J=sm.jpecc(X,Y,np.random.default_rng(1)); print(time.time()-t, J[3,0], J[0,0], J[10,7])
+# compare to QR canoncorr version for a pair
+def old(sp1,sp2,t1,t2,rng):
+    n=sp1.shape[0]; nd=min(10,sp1.shape[2],sp2.shape[2]); folds=np.array_split(rng.permutation(n),10)
+    Xs=sm._pcs(sp1[:,t1],nd); Ys=sm._pcs(sp2[:,t2],nd); I=0.5*np.eye(nd); Z=np.zeros((nd,nd)); U=np.zeros(n); V=np.zeros(n)
+    for f in folds:
+        tr=np.setdiff1d(np.arange(n),f); a,b=sm._canon_first(np.vstack([Xs[tr],I,Z]),np.vstack([Ys[tr],Z,I])); U[f]=Xs[f]@a; V[f]=Ys[f]@b
+    return np.corrcoef(U,V)[0,1]
+print(old(X,Y,3,0,np.random.default_rng(1)), old(X,Y,10,7,np.random.default_rng(1)))
+print(sm.asymmetry(J)[:12].round(3))
 EOF
-python t6.py
-```
-
-```
-good 33997 rate>=0.1 29269
-regions present ['AUD', 'BMA', 'CA', 'CA2', 'CL', 'COA', 'DP', 'EP', 'EPd', 'IC', 'LH', 'LSc', 'LSr', 'MB', 'MEA', 'MS', 'NB', 'ORBm', 'OT', 'PIR', 'PT', 'RN', 'SCig', 'SCsg', 'SI', 'SPF', 'SSs', 'TH', 'TT', 'VAL', 'root']
-N 27295 in42 20412 regions 50
-['LSr', 'MB', 'SCig', 'SCsg', 'SPF', 'TH', 'TT', 'root']
-tests 114.91860485076904
-active among N 16472 0.6034804909324052 figs3-5 16577
-   region  rec  mice  resp     n  p_rec  p_mice  p_resp   p_n
-0     ACA   10     8   435   659     11       8     395   608
-1     ACB    3     3   156   260      3       3     152   255
-2     APN    2     2   171   233      2       2     177   235
-3     BLA    2     2   109   264      2       2     107   261
-4     CA1   20    10   527  1156     21      10     494  1129
-5     CA3    8     6   243   427     10       6     243   438
-6      CP    5     5   542   910      5       5     524   914
-7      DG   15    10   367   702     16      10     336   711
-8     GPe    3     3   149   283      3       3     146   274
-9     ILA    3     3   207   354      3       3     192   338
-10     LD    5     4   179   276      6       5     209   308
-11    LGd    8     5   364   789     10       5     397   811
-12     LP    9     7   360   681     11       8     393   732
-[... 30 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-python - <<'EOF'
-import json
-s=json.load(open('schemas/attempt.schema.json'))
-print(json.dumps(s,indent=1)[:9000])
-EOF
-```
-
-```
-{
- "$schema": "https://json-schema.org/draft/2020-12/schema",
- "title": "One attempt at reproducing the claims of a target",
- "description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
- "type": "object",
- "additionalProperties": false,
- "required": [
-  "schema_version",
-  "id",
-  "dataset",
-  "paper",
-  "date",
-  "provenance",
-  "outcomes"
- ],
- "properties": {
-  "schema_version": {
-   "const": 2
-  },
-  "id": {
-[... 354 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -n "data:\|kind: link\|^- id:\|added_by\|where:" claims/001453/*.yaml | head -40; grep -n -B2 -A30 "kind: link" claims/001453/*.yaml | head -60; python -c "
-import json;s=json.load(open('schemas/claims.schema.json'));print(json.dumps(s['properties']['claims']['items'],indent=1)[:5000])"
-```
-
-```
-32:- id: stimulus-code-link
-33:  kind: link
-38:  data: with_labels
-48:- id: fig1d-dc-faster-all-codes
-61:- id: fig1d-median-velocity
-71:  data: with_labels
-91:- id: fig1d-zf-forward-faster-than-static
-97:  data: with_labels
-109:- id: fig1d-dc-no-modulation
-114:  data: with_labels
-122:- id: fig1d-dc-faster-oblique
-137:  data: with_labels
-140:- id: fig1g-follow-direction
-150:  data: with_labels
-158:- id: fig1h-zf-higher-angular-acceleration
-169:  data: with_labels
-182:- id: figs1e-dc-respond-less-monocular
-188:  data: with_labels
-198:- id: fig1c-continuous-vs-bouts
-212:- id: fig1cef-representative-values
-[... 179 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && git clone -q https://github.com/cortex-lab/allenCCF allenCCF 2>&1|tail -1; cd allenCCF && git log -1 --format='%H %ad' && find . -iname "*structure_tree*" | head;
-```
-
-```
-e5a57fe7e1c9fb333fec51c29a8471131c233a76 Tue Jul 15 14:55:48 2025 -0700
-./structure_tree_safe_2017.csv
-./structure_tree_safe.csv
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/allenCCF && head -3 structure_tree_safe_2017.csv; git log --format='%H %ad' -- structure_tree_safe_2017.csv | head -3; . ../env/bin/activate; python - <<'EOF'
-import pandas as pd, sys
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-st=pd.read_csv('structure_tree_safe_2017.csv')
-print(st.columns.tolist())
-acr2id=dict(zip(st.acronym,st.id)); id2acr=dict(zip(st.id,st.acronym))
-labs=['AUD','BMA','CA','CA2','CL','COA','DP','EP','EPd','IC','LH','LSc','LSr','MB','MEA','MS','NB','ORBm','OT','PIR','PT','RN','SCig','SCsg','SI','SPF','SSs','TH','TT','VAL','root','SCm','SCs','LS','OLF']
-for l in labs:
-    row=st[st.acronym==l]
-    if len(row)==0: print(l,'missing'); continue
-    path=row.structure_id_path.values[0]
-    anc=[id2acr[int(x)] for x in path.strip('/').split('/')]
-    p42=[a for a in anc if a in S.REGIONS_42]
-    print(l, '->', p42, anc[-4:])
-EOF
-```
-
-```
-id,atlas_id,name,acronym,st_level,ontology_id,hemisphere_id,weight,parent_structure_id,depth,graph_id,graph_order,structure_id_path,color_hex_triplet,neuro_name_structure_id,neuro_name_structure_id_path,failed,sphinx_id,structure_name_facet,failed_facet,safe_name
-997,-1,root,root,,1,3,8690,,0,1,0,/997/,FFFFFF,,,f,1,385153371,734881840,root
-8,0,Basic cell groups and regions,grey,,1,3,8690,997,1,1,1,/997/8/,BFDAE3,,,f,2,2244697386,734881840,Basic cell groups and regions
-568140012232ef5aa3adbd44d5fd4b55f971c3e2 Fri Dec 1 19:09:14 2017 +0000
-['id', 'atlas_id', 'name', 'acronym', 'st_level', 'ontology_id', 'hemisphere_id', 'weight', 'parent_structure_id', 'depth', 'graph_id', 'graph_order', 'structure_id_path', 'color_hex_triplet', 'neuro_name_structure_id', 'neuro_name_structure_id_path', 'failed', 'sphinx_id', 'structure_name_facet', 'failed_facet', 'safe_name']
-AUD -> [] ['CTX', 'CTXpl', 'Isocortex', 'AUD']
-BMA -> [] ['CH', 'CTX', 'CTXsp', 'BMA']
-CA -> [] ['CTXpl', 'HPF', 'HIP', 'CA']
-CA2 -> [] ['HPF', 'HIP', 'CA', 'CA2']
-CL -> [] ['TH', 'DORpm', 'ILM', 'CL']
-COA -> ['OLF'] ['CTX', 'CTXpl', 'OLF', 'COA']
-DP -> ['OLF'] ['CTX', 'CTXpl', 'OLF', 'DP']
-EP -> [] ['CH', 'CTX', 'CTXsp', 'EP']
-EPd -> [] ['CTX', 'CTXsp', 'EP', 'EPd']
-IC -> [] ['BS', 'MB', 'MBsen', 'IC']
-LH -> [] ['TH', 'DORpm', 'EPI', 'LH']
-LSc -> ['LS'] ['STR', 'LSX', 'LS', 'LSc']
-LSr -> ['LS'] ['STR', 'LSX', 'LS', 'LSr']
-MB -> [] ['root', 'grey', 'BS', 'MB']
-MEA -> [] ['CNU', 'STR', 'sAMY', 'MEA']
-[... 21 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-# ---------------------------------------------------------------------------------------------
-# Region labels: the files label some channels with Allen subregions (SCig, SCsg, LSr ...). The
-# Allen ontology of the paper's atlas tool maps each to its parent among the 42 regions.
-
-ALLEN_TREE_URL = ("https://raw.githubusercontent.com/cortex-lab/allenCCF/"
-                  "e5a57fe7e1c9fb333fec51c29a8471131c233a76/structure_tree_safe_2017.csv")
-
-
-def allen_parent_map(labels, url: str = ALLEN_TREE_URL) -> dict:
-    """For each label, the region of the 42 that contains it in the Allen ontology (itself if it
-    is one of the 42), or None. Labels missing from the ontology map to None."""
-    import io
-    tree = pd.read_csv(io.StringIO(requests.get(url, timeout=60).text))
-    id2acr = dict(zip(tree["id"], tree["acronym"]))
-    paths = dict(zip(tree["acronym"], tree["structure_id_path"]))
-    out = {}
-    for lab in labels:
-        if lab not in paths:
-            out[lab] = None
-            continue
-        anc = [id2acr[int(x)] for x in paths[lab].strip("/").split("/")]
-        hit = [a for a in anc if a in REGIONS_42]
-        out[lab] = hit[-1] if hit else None
-    return out
-EOF
-cd $TMPDIR && . env/bin/activate && cat > t7.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-nt=pd.read_pickle('nt.pkl'); P=np.load('P.npy')
-mp=S.allen_parent_map(sorted(set(nt.region)))
-print({k:v for k,v in mp.items() if k!=v})
-nt['region_ds']=nt.region; nt['region']=nt.region_ds.map(mp).fillna('none')
-for lab in ['region_ds','region']:
-    x=nt.copy(); x['region']=x[lab]
-    m=S.select_n(x); act=np.any(P<0.05/6,axis=1); f35=np.any(P[:,:4]<0.05,axis=1)
-    in42=x.region.isin(S.REGIONS_42).values
-    print(lab,'N',m.sum(),'N&42',(m&in42).sum(),'regions',x[m&in42].region.nunique(),'active',(act&m&in42).sum(), (act&m&in42).sum()/(m&in42).sum(),'f35',(f35&m&in42).sum())
-    print(' all good in 42', in42.sum(), 'rate>=0.1 in 42', (in42&(x.rate>=0.1)).sum())
-    print(' extra regions in N', sorted(set(x[m].region)-set(S.REGIONS_42)))
-    rows=[]
-    for r in S.REGIONS_42:
-        mm=m&(x.region==r).values
-        rows.append((r, x[mm].s.nunique(), x[mm].subject.nunique(), act[mm].sum(), mm.sum())+S.ED_TABLE_1[r])
-    df=pd.DataFrame(rows,columns=['region','rec','mice','resp','n','p_rec','p_mice','p_resp','p_n'])
-    df['dn']=(df.n-df.p_n)/df.p_n
-    print(df[(df.rec!=df.p_rec)|(df.mice!=df.p_mice)|(df.dn.abs()>0.1)].to_string())
-nt.to_pickle('nt.pkl')
-EOF
-python t7.py
-```
-
-```
-{'AUD': None, 'BMA': None, 'CA': None, 'CA2': None, 'CL': None, 'COA': 'OLF', 'DP': 'OLF', 'EP': None, 'EPd': None, 'IC': None, 'LH': None, 'LSc': 'LS', 'LSr': 'LS', 'MB': None, 'MEA': None, 'MS': None, 'NB': None, 'ORBm': 'ORB', 'OT': None, 'PIR': 'OLF', 'PT': None, 'RN': None, 'SCig': 'SCm', 'SCsg': 'SCs', 'SI': None, 'SPF': None, 'SSs': None, 'TH': None, 'TT': 'OLF', 'VAL': None, 'root': None}
-region_ds N 27295 N&42 20412 regions 42 active 12267 0.6009700176366843 f35 12490
- all good in 42 23844 rate>=0.1 in 42 20538
- extra regions in N ['LSr', 'MB', 'SCig', 'SCsg', 'SPF', 'TH', 'TT', 'root']
-   region  rec  mice  resp     n  p_rec  p_mice  p_resp   p_n        dn
-0     ACA   10     8   435   659     11       8     395   608  0.083882
-4     CA1   20    10   527  1156     21      10     494  1129  0.023915
-5     CA3    8     6   243   427     10       6     243   438 -0.025114
-7      DG   15    10   367   702     16      10     336   711 -0.012658
-10     LD    5     4   179   276      6       5     209   308 -0.103896
-11    LGd    8     5   364   789     10       5     397   811 -0.027127
-12     LP    9     7   360   681     11       8     393   732 -0.069672
-13     LS    3     3   225   393      7       5     508   844 -0.534360
-17    MOs   17     9   842  1349     19       9     993  1534 -0.120600
-19    OLF    2     2    47   222      9       5     210   684 -0.675439
-20    ORB    5     4   232   671      6       5     281   770 -0.128571
-22     PL    8     6   461   739     10       7     438   728  0.015110
-26    RSP    8     5   320   587      9       5     308   598 -0.018395
-28    SCm    7     4   237   335     11       6     738   997 -0.663992
-29    SCs    4     3    82   150     10       6     192   317 -0.526814
-[... 24 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-# ---------------------------------------------------------------------------------------------
-# Kernel regression (definition K): reduced-rank regression and elastic net, as
-# reducedRankRegression/ of the paper's code (regFullPipeline.m, kernelFitBasic.m,
-# CanonCor2all.m, determineResidualsWithout.m, predictResidualsWith.m).
-
-SMOOTH_SD = 0.025          # causal half-Gaussian, s (Methods; kernelFitBasic.m)
-VIS_WIN = (-0.05, 0.4)     # Vision kernels, 90 lags
-MOVE_WIN = (-0.25, 0.025)  # Action and Choice kernels, 55 lags
-N_VIS = 90
-N_MOVE = 55
-# predictor column groups: 0-2 left (ipsilateral) low, medium, high; 3-5 right (contralateral);
-# 6 Action; 7 Choice
-KERNEL_COLS = {k: np.arange(k * N_VIS, (k + 1) * N_VIS) for k in range(6)}
-KERNEL_COLS[6] = 6 * N_VIS + np.arange(N_MOVE)
-KERNEL_COLS[7] = 6 * N_VIS + N_MOVE + np.arange(N_MOVE)
-N_PRED = 6 * N_VIS + 2 * N_MOVE
-KERNEL_SETS = {"vis_ipsi": [0, 1, 2], "vis_contra": [3, 4, 5], "action": [6], "choice": [7]}
-
-
-def half_gaussian(sd: float = SMOOTH_SD, dt: float = BIN, n_sd: float = 5.0) -> np.ndarray:
-    """Causal half-Gaussian filter weights (index 0 = current bin), normalised to sum 1. The
-    truncation at 5 s.d. is a standard choice (the tail holds < 1e-5 of the weight)."""
-    n = int(np.ceil(n_sd * sd / dt))
-    w = np.exp(-0.5 * (np.arange(n + 1) * dt / sd) ** 2)
-    return w / w.sum()
-
-
-def causal_smooth(x: np.ndarray, w: np.ndarray) -> np.ndarray:
-    """Filter along the last axis with causal weights w (no look-ahead)."""
-    out = np.zeros(x.shape, dtype=np.float32)
-    n = x.shape[-1]
-    for k, wk in enumerate(w):
-        if k == 0:
-            out += wk * x
-        else:
-            out[..., k:] += wk * x[..., :n - k]
-    return out
-
-
-def kernel_design(tt: pd.DataFrame, choice_values: np.ndarray | None = None,
-                  extended: bool = False):
-    """Toeplitz design of one session for trials T (`keep`).
-
-    Samples: for each kept trial, the 5 ms bins whose centres lie from 0.05 s before stimulus
-    onset to the earlier of 0.4 s after it and 0.025 s after movement onset (kernelFitBasic.m);
-    with `extended`, every bin of the count window (for residuals at any time).
-    Returns (X, trial, rel_t, mt): X sparse CSR (samples x 650), the kept-trial number of each
-    sample, its time from stimulus onset (bin centre) and the trial's movement time (NaN for
-    NoGo). `choice_values` replaces the Choice event values (+1 Left, -1 Right) of the kept L/R
-    trials, in their order (for the shuffle test).
-    """
-    from scipy import sparse
-    k = np.flatnonzero(tt["keep"].values)
-    cls = tt["cls"].values[k]
-    mt = np.where(np.isin(cls, ["L", "R"]), tt["mt"].values[k], np.nan)
-    cL, cR = tt["cL"].values[k], tt["cR"].values[k]
-    cv = np.where(cls == "L", 1.0, np.where(cls == "R", -1.0, 0.0))
-    if choice_values is not None:
-        cv = cv.copy()
-        cv[np.isin(cls, ["L", "R"])] = choice_values
-    rows, cols, vals = [], [], []
-    tr_of, t_of = [], []
-    n = 0
-    for i in range(len(k)):
-        t = BIN_CENTRES
-        if extended:
-            sel = np.ones(len(t), bool)
-        else:
-            end = min(VIS_WIN[1], mt[i] + MOVE_WIN[1]) if np.isfinite(mt[i]) else VIS_WIN[1]
-            sel = (t >= VIS_WIN[0]) & (t <= end)
-        ts = t[sel]
-        idx = n + np.arange(len(ts))
-        lag = np.floor((ts - VIS_WIN[0]) / BIN + 1e-9).astype(int)
-        okv = (lag >= 0) & (lag < N_VIS)
-        for side, c in ((0, cL[i]), (3, cR[i])):
-            if c > 0:
-                col = (side + CONTRASTS.index(c) - 1) * N_VIS + lag[okv]
-                rows.append(idx[okv]); cols.append(col); vals.append(np.ones(okv.sum()))
-        if np.isfinite(mt[i]):
-            lm = np.floor((ts - mt[i] - MOVE_WIN[0]) / BIN + 1e-9).astype(int)
-            okm = (lm >= 0) & (lm < N_MOVE)
-            rows.append(idx[okm]); cols.append(KERNEL_COLS[6][lm[okm]])
-            vals.append(np.ones(okm.sum()))
-            rows.append(idx[okm]); cols.append(KERNEL_COLS[7][lm[okm]])
-            vals.append(np.full(okm.sum(), cv[i]))
-        tr_of.append(np.full(len(ts), i)); t_of.append(ts)
-        n += len(ts)
-    r = np.concatenate(rows) if rows else np.zeros(0, int)
-    X = sparse.csr_matrix((np.concatenate(vals), (r, np.concatenate(cols))), shape=(n, N_PRED))
-    return X, np.concatenate(tr_of), np.concatenate(t_of), mt
-
-
-def sample_rates(R: np.ndarray, trial: np.ndarray, rel_t: np.ndarray) -> np.ndarray:
-    """Rates (units x kept trials x bins) at the design's samples -> samples x units."""
-    b = np.round((rel_t - BIN_CENTRES[0]) / BIN).astype(int)
-    return R[:, trial, b].T
-
-
-def canoncor2all(Ys, Xs, eps: float = 1e-7):
-    """CanonCor2all.m: reduced-rank regression basis over several instances (sessions) with the
-    same predictors. Ys: list of (samples x units) arrays; Xs: list of sparse (samples x p)
-    matrices. Returns b (p x p), columns ordered by the variance of Y they predict."""
-    p = Xs[0].shape[1]
-    n_all = sum(x.shape[0] for x in Xs)
-    sx = sum(np.asarray(x.sum(axis=0)).ravel() for x in Xs)
-    sxx = sum((x.T @ x).toarray() for x in Xs)
-    mu = sx / n_all
-    cxx = (sxx - n_all * np.outer(mu, mu)) / (n_all - 1) + eps * np.eye(p)
-    ev, evec = np.linalg.eigh(cxx)
-    cxxmh = (evec * ev ** -0.5) @ evec.T
-    cyx = []
-    for y, x in zip(Ys, Xs):
-        n = x.shape[0]
-        xm = np.asarray(x.mean(axis=0)).ravel()
-        ym = y.mean(axis=0)
-        cyx.append((np.asarray((x.T @ y)).T - n * np.outer(ym, xm)) / (n - 1))
-    M = np.vstack(cyx) @ cxxmh
-    _, _, vt = np.linalg.svd(M, full_matrices=False)
-    return cxxmh @ vt.T
-
-
-def enet(Z: np.ndarray, Y: np.ndarray, lam: float = 0.5, alpha: float = 0.5, tol: float = 1e-7,
-         max_sweeps: int = 1000):
-    """Elastic net for many responses at once, as glmnet's Gaussian fit with its default options
-    (the paper's code calls glmnet with alpha 0.5 and takes lambda 0.5): predictors standardised
-    (1/n s.d.), an unpenalised intercept, each response scaled by its 1/n s.d. ys and the penalty
-    lam / ys applied on that scale; coefficients returned on the original scale. Coordinate
-    descent on the Gram matrix to a tolerance tighter than glmnet's default (a standard choice).
-    Z: samples x p; Y: samples x m. Returns (W p x m, intercept m)."""
-    n, p = Z.shape
-    zm = Z.mean(axis=0)
-    zs = Z.std(axis=0)
-    zs[zs == 0] = 1.0
-    ym = Y.mean(axis=0)
-    ys = Y.std(axis=0)
-    good = ys > 0
-    Zs = (Z - zm) / zs
-    G = (Zs.T @ Zs) / n
-    c = (Zs.T @ (Y[:, good] - ym[good])) / n / ys[good]
-    lp = lam / ys[good]
-    l1 = alpha * lp
-    den = 1.0 + (1 - alpha) * lp
-    B = np.zeros((p, good.sum()))
-    r = c.copy()                       # c - G B
-    gd = np.diag(G).copy()
-    for _ in range(max_sweeps):
-        dmax = 0.0
-        for j in range(p):
-            bj = B[j]
-            zj = r[j] + gd[j] * bj
-            new = np.sign(zj) * np.maximum(np.abs(zj) - l1, 0) / (gd[j] - 1 + den)
-            d = new - bj
-            if np.any(d):
-                B[j] = new
-                r -= np.outer(G[:, j], d)
-                dmax = max(dmax, float(np.max(d * d)))
-        if dmax < tol:
-            break
-    W = np.zeros((p, Y.shape[1]))
-    W[:, good] = B * ys[good] / zs[:, None]
-    b0 = ym - zm @ W
-    return W, b0
-EOF
-echo done
-```
-
-```
-done
-```
-
-**Agent**
-
-Let me check the elastic-net emulation against scikit-learn, and against the glmnet Fortran code if a Python wrapper installs.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && (uv pip install -q glmnet 2>&1 | tail -2; uv pip install -q glmnet_py 2>&1 | tail -2); python -c "import glmnet; print('glmnet ok')" ; python -c "import glmnet_py; print('glmnet_py ok')"
+cd entries/steinmetz-2019 && $TMPDIR/venv/bin/python $TMPDIR/tj.py
 ```
 
 ```
 Exit code 1
-
-hint: Build failures usually indicate a problem with the package or the build environment
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import glmnet; print('glmnet ok')
-    ^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'glmnet'
-Traceback (most recent call last):
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/scipy/__init__.py", line 140, in __getattr__
-    return globals()[name]
-           ~~~~~~~~~^^^^^^
-KeyError: 'empty'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import glmnet_py; print('glmnet_py ok')
-    ^^^^^^^^^^^^^^^^
-[... 12 more lines not kept]
+/bin/bash: line 73: cd: entries/steinmetz-2019: No such file or directory
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && uv pip install -q scikit-learn && cat > tg.py <<'EOF'
-import numpy as np, scipy, sys
-for n in dir(np):
-    if not hasattr(scipy,n):
-        try: setattr(scipy,n,getattr(np,n))
-        except Exception: pass
-import glmnet_py, os
-sys.path.insert(0, os.path.dirname(glmnet_py.__file__))
-from glmnet import glmnet
-from glmnetCoef import glmnetCoef
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-rng=np.random.default_rng(1)
-n,p=2000,30
-Z=rng.normal(size=(n,p))*rng.uniform(0.5,3,p)+rng.normal(size=p)
-w=rng.normal(size=p)*(rng.uniform(size=p)<0.4)
-Y=np.stack([Z@w*s+rng.normal(size=n)*s*3+7 for s in [0.3,1,5,20]],1)
-W,b0=S.enet(Z,Y)
-for k in range(Y.shape[1]):
-    fit=glmnet(x=Z.copy(), y=Y[:,k].copy(), family='gaussian', alpha=0.5, lambdau=np.array([0.5]))
-    c=glmnetCoef(fit, s=np.array([0.5]), exact=False).ravel()
-    print(k, 'max abs diff coef', np.max(np.abs(c[1:]-W[:,k])), 'scale', np.max(np.abs(W[:,k])), 'b0', c[0], b0[k])
+cd entries/steinmetz-2019 && $TMPDIR/venv/bin/python $TMPDIR/tj.py
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/tj.py", line 6, in <module>
+    t=time.time(); J=sm.jpecc(X,Y,np.random.default_rng(1)); print(time.time()-t, J[3,0], J[0,0], J[10,7])
+                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "entries/steinmetz-2019/steinmetz.py", line 790, in jpecc
+    U[t1, :, f] = (X[t1, f] @ a).T
+    ~^^^^^^^^^^
+ValueError: shape mismatch: value array of shape (35,25) could not be broadcast to indexing result of shape (25,35)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019 && sed -i 's/            U\[t1, :, f\] = (X\[t1, f\] @ a).T/            U[t1, :, f] = X[t1, f] @ a/' steinmetz.py && $TMPDIR/venv/bin/python $TMPDIR/tj.py
+```
+
+```
+0.24222111701965332 0.6283220061632283 -0.050140081797614144 0.5930548299942405
+0.6282146518466608 0.5941991622049242
+[   nan    nan    nan    nan    nan -0.167 -0.159 -0.157 -0.056 -0.187
+ -0.062 -0.142]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_b.py,cells_c.py,cells_d.py,cells_e.py,cells_f.py,cells_g.py,cells_h.py,cells_i.py 2>&1 | sed -n '/^jPECC computed/,$p'
+```
+
+```
+jPECC computed in 100 s; recordings per pair: {'Frontal-Midbrain': 9, 'VIS-Frontal': 17, 'VIS-Midbrain': 11}
+Traceback (most recent call last):
+  File "/tmp/claude-1001/run_cells.py", line 12, in <module>
+    exec(compile(body, f'cell{i}', 'exec'), g)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cell64", line 4, in <module>
+  File "cell62", line 41, in asym_test
+  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/shape_base.py", line 290, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: need at least one array to concatenate
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && printf '# %%%% code\nprint(JPD.groupby(["pair","align","baseline","trials"]).size())\n' > dbg3.py && sed 's/^# %% code tags=claim:fig4d-jpecc-vis-leads/# %% md/' cells_i.py > cells_i2.py && RPKL=$TMPDIR/R39.pkl $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_c.py,cells_i2.py,dbg3.py 2>&1 | tail -22
+```
+
+```
+Cori        F  tetO-G6s x CaMK-tTA         F      tetO-G6s x CaMK-tTA
+Forssmann   M             C57BL/6J         M                 C57BL/6J
+Hench       M  tetO-G6s x CaMK-tTA         M      tetO-G6s x CaMK-tTA
+Lederberg   F           Vglut1-Cre         F       Vglut1-IRES2-Cre-D
+Moniz       M    Ai95 x VGlut1-Cre         M  RCL-GCaMP6f x VGlut-Cre
+Muller      F    Ai95 x VGlut1-Cre         F  RCL-GCaMP6f x VGlut-Cre
+Radnitz     F       Snap25-GCaMP6s         F           Snap25-GCaMP6s
+Richards    M             C57BL/6J         M                 C57BL/6J
+Tatum       F           Vglut1-Cre         F       Vglut1-IRES2-Cre-D
+Theiler     F    Ai95 x VGlut1-Cre         F  RCL-GCaMP6f x VGlut-Cre
+Sex matches in 10 of 10 subjects
+jPECC computed in 99 s; recordings per pair: {'Frontal-Midbrain': 9, 'VIS-Frontal': 17, 'VIS-Midbrain': 11}
+Traceback (most recent call last):
+  File "/tmp/claude-1001/run_cells.py", line 12, in <module>
+    exec(compile(body, f'cell{i}', 'exec'), g)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cell16", line 3, in <module>
+  File "cell12", line 41, in asym_test
+  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/shape_base.py", line 290, in vstack
+    return _nx.concatenate(arrs, 0, dtype=dtype, casting=casting)
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && printf '# %%%% code\nprint(JPD[["pair","align","baseline","trials"]].drop_duplicates().to_string())\n' > dbg3.py && sed -e '/^# %% code tags=claim:fig4d/,$d' cells_i.py > cells_i2.py && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_c.py,cells_i2.py,dbg3.py 2>&1 | tail -20
+```
+
+```
+jPECC computed in 99 s; recordings per pair: {'Frontal-Midbrain': 9, 'VIS-Frontal': 17, 'VIS-Midbrain': 11}
+                pair align baseline trials
+0        VIS-Frontal  stim        a      a
+1        VIS-Frontal  stim        a      b
+2        VIS-Frontal  move        a      -
+3        VIS-Frontal  stim        b      a
+4        VIS-Frontal  stim        b      b
+5        VIS-Frontal  move        b      -
+6       VIS-Midbrain  stim        a      a
+7       VIS-Midbrain  stim        a      b
+8       VIS-Midbrain  move        a      -
+9       VIS-Midbrain  stim        b      a
+10      VIS-Midbrain  stim        b      b
+11      VIS-Midbrain  move        b      -
+60  Frontal-Midbrain  stim        a      a
+61  Frontal-Midbrain  stim        a      b
+62  Frontal-Midbrain  move        a      -
+63  Frontal-Midbrain  stim        b      a
+64  Frontal-Midbrain  stim        b      b
+65  Frontal-Midbrain  move        b      -
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && sed -i 's/(JPD.pair == pair) & (JPD.align == align) & (JPD.baseline == baseline) & (JPD.trials == trials)/(JPD["pair"] == pair) \& (JPD["align"] == align) \& (JPD["baseline"] == baseline) \& (JPD["trials"] == trials)/' cells_i.py && grep -n 'JPD\["align"\]' cells_i.py && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_c.py,cells_i.py 2>&1 | sed -n '/^jPECC computed/,$p'
+```
+
+```
+46:    d = JPD[(JPD["pair"] == pair) & (JPD["align"] == align) & (JPD["baseline"] == baseline) & (JPD["trials"] == trials)]
+jPECC computed in 98 s; recordings per pair: {'Frontal-Midbrain': 9, 'VIS-Frontal': 17, 'VIS-Midbrain': 11}
+baseline trials  n_vis_front  move_sig_pos_points  move_points  move_mean_asym  VIS-Frontal_stim_sig_pos  VIS-Frontal_stim_mean  VIS-Frontal_n  VIS-Midbrain_stim_sig_pos  VIS-Midbrain_stim_mean  VIS-Midbrain_n    ok
+       a      a           17                    4           16          0.0502                         1                 0.0631             17                          0                  0.0375              11 False
+       a      b           17                    4           16          0.0502                         1                 0.0459             17                          0                 -0.0177              11 False
+       b      a           17                    4           16          0.0463                         0                 0.0553             17                          0                  0.0426              11 False
+       b      b           17                    4           16          0.0463                         0                 0.0412             17                          0                 -0.0102              11 False
+
+VIS-Frontal, movement aligned, baseline a:
+    t    mean   tstat      p  n
+-0.30     NaN     NaN    NaN 17
+-0.29     NaN     NaN    NaN 17
+-0.28     NaN     NaN    NaN 17
+-0.27     NaN     NaN    NaN 17
+-0.26     NaN     NaN    NaN 17
+-0.25  0.0024  0.0580 0.9545 17
+-0.24  0.0935  1.9406 0.0701 17
+-0.23  0.0176  0.4839 0.6350 17
+-0.22  0.0270  1.2432 0.2317 17
+-0.21 -0.0128 -0.5882 0.5646 17
+[... 105 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+t=open('paper/10.1038-s41586-019-1787-x.txt').read().split('\n')[6]
+print(t[58300:60460])"; date -u
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd entries/steinmetz-2019; python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old=s[s.index('def asymmetry(J, lag_bins=5):'):]
+new='''def asymmetry(J, half=5):
+    """Asymmetry index (Methods, jPECC analysis): the jPECC matrix is sliced diagonally
+    from -50 to +50 ms around each time point t, i.e. the points (t-k, t+k), k = -5..5
+    bins of 10 ms. The mean over the half where the first population is earlier
+    (t-k, t+k), k = 0..5, minus the mean over the half where it is later (t+k, t-k).
+    Positive means the first population leads. NaN where the slice leaves the window."""
+    nb = J.shape[0]
+    a = np.full(nb, np.nan)
+    for t in range(half, nb - half):
+        lead1 = np.mean([J[t - k, t + k] for k in range(half + 1)])
+        lead2 = np.mean([J[t + k, t - k] for k in range(half + 1)])
+        a[t] = lead1 - lead2
+    return a
+'''
+s=s.replace(old,new)
+s=s.replace('''def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC):''','''def jpecc(sp1, sp2, rng, kfold=JP_FOLDS, lam=JP_LAMBDA, maxpc=JP_MAXPC, pca="bin"):''')
+s=s.replace('''    X = np.stack([_pcs(sp1[:, t], nd) for t in range(nb)])   # (nb, n, nd)
+    Y = np.stack([_pcs(sp2[:, t], nd) for t in range(nb)])''','''    if pca == "bin":     # one PCA per time bin (jPECC.m; claims criterion)
+        X = np.stack([_pcs(sp1[:, t], nd) for t in range(nb)])   # (nb, n, nd)
+        Y = np.stack([_pcs(sp2[:, t], nd) for t in range(nb)])
+    else:                # one PCA across time points and trials (Methods, jPECC analysis)
+        X, Y = [], []
+        for sp, L in [(sp1, X), (sp2, Y)]:
+            flat = sp.reshape(-1, sp.shape[2])
+            mu = flat.mean(axis=0)
+            _, _, vt = np.linalg.svd(flat - mu, full_matrices=False)
+            L.extend([(sp[:, t] - mu) @ vt[:nd].T for t in range(nb)])
+        X, Y = np.stack(X), np.stack(Y)''')
+open('steinmetz.py','w').write(s)
 EOF
-python tg.py 2>&1 | tail -8
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_i.py').read()
+s=s.replace('''Asymmetry index at t: mean r over lags 0 to 50 ms with the first population leading minus with the second leading;''','''Asymmetry index at t: the jPECC matrix sliced diagonally from -50 to +50 ms around t (Methods, jPECC analysis: "the average along a vector from [t-50, t+50] to [t,t] ... subtracted from ... [t, t] to [t+50, t-50]"), the half where the first population is earlier minus the half where it is later, so that positive means the first leads;''')
+s=s.replace('''(movement alignment always uses Left and Right trials).''','''(movement alignment always uses Left and Right trials). The Methods perform the PCA "across time points and trials", while jPECC.m and the criterion do it per time bin; the criterion is followed and the Methods' PCA is run as a variant (baseline a, trials a).''')
+s=s.replace('''            for align, tread, tsel in [("stim", "a", Tm), ("stim", "b", Gm), ("move", "-", Gm)]:
+                k = 0 if align == "stim" else 1
+                a1 = np.transpose(arrs[g1][k][:, tsel], (1, 2, 0))
+                a2 = np.transpose(arrs[g2][k][:, tsel], (1, 2, 0))
+                J = sm.jpecc(a1, a2, np.random.default_rng([60, si]))
+                jp_rows.append(dict(session=r["meta"]["name"], pair=f"{g1}-{g2}", baseline=bread,''','''            combos = [("stim", "a", Tm, "bin"), ("stim", "b", Gm, "bin"), ("move", "-", Gm, "bin")]
+            if bread == "a":
+                combos += [("stim", "a", Tm, "all"), ("move", "-", Gm, "all")]
+            for align, tread, tsel, pca in combos:
+                k = 0 if align == "stim" else 1
+                a1 = np.transpose(arrs[g1][k][:, tsel], (1, 2, 0))
+                a2 = np.transpose(arrs[g2][k][:, tsel], (1, 2, 0))
+                J = sm.jpecc(a1, a2, np.random.default_rng([60, si]), pca=pca)
+                jp_rows.append(dict(session=r["meta"]["name"], pair=f"{g1}-{g2}", baseline=bread, pca=pca,''')
+s=s.replace('''def asym_test(pair, align, baseline, trials):
+    d = JPD[(JPD["pair"] == pair) & (JPD["align"] == align) & (JPD["baseline"] == baseline) & (JPD["trials"] == trials)]''','''def asym_test(pair, align, baseline, trials, pca="bin"):
+    d = JPD[(JPD["pair"] == pair) & (JPD["align"] == align) & (JPD["baseline"] == baseline)
+            & (JPD["trials"] == trials) & (JPD["pca"] == pca)]''')
+# vis-leads: add pca variant loop
+s=s.replace('''rows = []
+for bread in ["a", "b"]:
+    for tread in ["a", "b"]:
+        mv = asym_test("VIS-Frontal", "move", bread, "-")''','''rows = []
+for bread, tread, pca in [("a", "a", "bin"), ("a", "b", "bin"), ("b", "a", "bin"), ("b", "b", "bin"),
+                          ("a", "a", "all")]:
+    if True:
+        mv = asym_test("VIS-Frontal", "move", bread, "-", pca)''')
+s=s.replace('''        res_ = dict(baseline=bread, trials=tread, n_vis_front=''','''        res_ = dict(baseline=bread, trials=tread, pca=pca, n_vis_front=''')
+s=s.replace('''            st = asym_test(pr, "stim", bread, tread)''','''            st = asym_test(pr, "stim", bread, tread, pca)''')
+s=s.replace('''rows = []
+for bread in ["a", "b"]:
+    mv = asym_test("Frontal-Midbrain", "move", bread, "-")''','''rows = []
+for bread, pca in [("a", "bin"), ("b", "bin"), ("a", "all")]:
+    mv = asym_test("Frontal-Midbrain", "move", bread, "-", pca)''')
+s=s.replace('''    rows.append(dict(baseline=bread, recordings=''','''    rows.append(dict(baseline=bread, pca=pca, recordings=''')
+s=s.replace('''print("No significant point under every reading:", bool((f4n.sig_points == 0).all()),
+      "| under any reading:", bool((f4n.sig_points == 0).any()))''','''m_ = f4n.pca == "bin"
+print("No significant point under every reading of the criterion:", bool((f4n[m_].sig_points == 0).all()),
+      "| under any:", bool((f4n[m_].sig_points == 0).any()))''')
+open('cells_i.py','w').write(s)
+EOF
+grep -n "if True" $TMPDIR/cells_i.py; $TMPDIR/venv/bin/python $TMPDIR/run_cells.py $TMPDIR/cells_a.py,$TMPDIR/cells_c.py,$TMPDIR/cells_i.py 2>&1 | sed -n '/^jPECC computed/,$p' | grep -v "^ *-\?0\.[0-9][0-9] "
 ```
 
 ```
-File "/tmp/claude-1001/tg.py", line 19, in <module>
-    fit=glmnet(x=Z.copy(), y=Y[:,k].copy(), family='gaussian', alpha=0.5, lambdau=np.array([0.5]))
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/glmnet_py/glmnet.py", line 277, in glmnet
-    options = glmnetSet(options)
-  File "/tmp/claude-1001/env/lib/python3.13/site-packages/glmnet_py/glmnetSet.py", line 205, in glmnetSet
-    "exclude"             : scipy.empty([0], dtype = scipy.integer),
-                            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-TypeError: Converting 'np.integer' or 'np.signedinteger' to a dtype is not allowed
+67:    if True:
+jPECC computed in 121 s; recordings per pair: {'Frontal-Midbrain': 9, 'VIS-Frontal': 17, 'VIS-Midbrain': 11}
+baseline trials pca  n_vis_front  move_sig_pos_points  move_points  move_mean_asym  VIS-Frontal_stim_sig_pos  VIS-Frontal_stim_mean  VIS-Frontal_n  VIS-Midbrain_stim_sig_pos  VIS-Midbrain_stim_mean  VIS-Midbrain_n    ok
+       a      a bin           17                    3           16          0.0344                         4                 0.0872             17                          0                  0.0507              11 False
+       a      b bin           17                    3           16          0.0344                         3                 0.0734             17                          0                  0.0048              11 False
+       b      a bin           17                    4           16          0.0358                         3                 0.0826             17                          0                  0.0546              11 False
+       b      b bin           17                    4           16          0.0358                         2                 0.0678             17                          0                  0.0110              11 False
+       a      a all           17                    5           16          0.0458                         3                 0.0754             17                          0                  0.0396              11 False
+
+VIS-Frontal, movement aligned, baseline a:
+    t    mean   tstat      p  n
+
+VIS-Frontal and VIS-Midbrain, stimulus aligned, baseline a, trials a:
+    t  mean_VF  tstat_VF   p_VF  n_VF  mean_VM  tstat_VM   p_VM  n_VM
+Reproduced under a reading: False
+baseline pca  recordings  points  sig_points  sig_bonferroni  mean_asym  min_p  max_abs_mean
+       a bin           9      26           1               0    -0.0115 0.0221        0.0804
+       b bin           9      26           2               0    -0.0201 0.0094        0.1263
+       a all           9 
+[... 3 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_i.py').read()
+old_start=s.index('for bread, tread, pca in [("a", "a", "bin")')
+old_end=s.index('f4d = pd.DataFrame(rows)')
+block=s[old_start:old_end]
+lines=block.split('\n')
+new=[]
+for ln in lines:
+    if ln.strip()=='if True:': continue
+    if ln.startswith('        '): ln=ln[4:]
+    new.append(ln)
+s=s[:old_start]+'\n'.join(new)+s[old_end:]
+open('cells_i.py','w').write(s)
+EOF
+sed -n '/^for bread, tread, pca/,/^f4d = /p' $TMPDIR/cells_i.py
+```
+
+```
+for bread, tread, pca in [("a", "a", "bin"), ("a", "b", "bin"), ("b", "a", "bin"), ("b", "b", "bin"),
+                      ("a", "a", "all")]:
+    mv = asym_test("VIS-Frontal", "move", bread, "-", pca)
+    w = mv[(mv.t >= -0.2 - 1e-9) & (mv.t <= -0.05 + 1e-9)]
+    mv_ok = ((w.p < 0.05) & (w["mean"] > 0)).sum()
+    res_ = dict(baseline=bread, trials=tread, pca=pca, n_vis_front=int(mv.n.iloc[0]),
+                move_sig_pos_points=int(mv_ok), move_points=len(w),
+                move_mean_asym=w["mean"].mean())
+    for pr in ["VIS-Frontal", "VIS-Midbrain"]:
+        st = asym_test(pr, "stim", bread, tread, pca)
+        w2 = st[(st.t >= 0.08 - 1e-9) & (st.t <= 0.12 + 1e-9)]
+        res_[f"{pr}_stim_sig_pos"] = int(((w2.p < 0.05) & (w2["mean"] > 0)).sum())
+        res_[f"{pr}_stim_mean"] = w2["mean"].mean()
+        res_[f"{pr}_n"] = int(st.n.iloc[0])
+    rows.append(res_)
+f4d = pd.DataFrame(rows)
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && sed -i 's/^for n in dir(np):/scipy.integer=np.int64; scipy.float64=np.float64\nfor n in dir(np):/' tg.py && sed -i 's/        try: setattr(scipy,n,getattr(np,n))/        if n in ("integer",): continue\n        try: setattr(scipy,n,getattr(np,n))/' tg.py && python tg.py 2>&1 | tail -8
-```
+cat > $TMPDIR/cells_j.py <<'EOF'
+# %% md
+## Kernel regression claims: cost on a subset
 
-```
-return self._dlltype(name)
-           ~~~~~~~~~~~~~^^^^^^
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/ctypes/__init__.py", line 361, in __init__
-    self._handle = self._load_library(name, mode, handle, winmode)
-                   ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/ctypes/__init__.py", line 403, in _load_library
-    return _dlopen(name, mode)
-OSError: libgfortran.so.3: cannot open shared object file: No such file or directory
-Shell cwd was reset to
-```
+Eleven claims rest on kernel test K (fig3c, fig3d, fig3e, ed4f, ed5h, fig4b, fig4c, fig4f, fig4fg, ed5g, ed7c). The cell below builds the design of definition K for one session (the first file), fits the full model of one neuron as the criterion gives it (elastic net, alpha 0.5, lambda 0.5, 5-fold cross-validation over trials, 1 to 50 reduced-rank components), times it, and scales the time to the analysis. scikit-learn's ElasticNet stands in for glmnet (same penalty; it is used here only for the timing). The reduced-rank basis is taken from this session's neurons alone for the timing.
 
-**Agent**
-
-The Fortran wrapper needs a system library that is not available, so I'll check the emulation against scikit-learn on the standardized problem instead.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > tg2.py <<'EOF'
-import numpy as np, sys
+# %% code
 from sklearn.linear_model import ElasticNet
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-rng=np.random.default_rng(1)
-n,p=2000,30
-Z=rng.normal(size=(n,p))*rng.uniform(0.5,3,p)+rng.normal(size=p)
-w=rng.normal(size=p)*(rng.uniform(size=p)<0.4)
-Y=np.stack([Z@w*s+rng.normal(size=n)*s*3+7 for s in [0.3,1,5,20]],1)
-W,b0=S.enet(Z,Y)
-zm,zs=Z.mean(0),Z.std(0); Zs=(Z-zm)/zs
-for k in range(Y.shape[1]):
-    ys=Y[:,k].std(); yp=(Y[:,k]-Y[:,k].mean())/ys
-    m=ElasticNet(alpha=0.5/ys,l1_ratio=0.5,fit_intercept=False,tol=1e-12,max_iter=100000).fit(Zs,yp)
-    wk=m.coef_*ys/zs
-    print(k, np.max(np.abs(wk-W[:,k])), np.max(np.abs(W[:,k])), (W[:,k]!=0).sum())
+kt0 = time.time()
+S0 = sm.Session(paths[0], np.random.default_rng([1, 0]))
+tr0 = S0.trials
+inc0 = np.where(tr0.t_choice.isin(["L", "R", "N"]).to_numpy())[0]
+nb_s = S0.stim_counts.shape[2]
+rate = sm.causal_smooth(S0.stim_counts[:, inc0].astype(np.float32) / sm.BIN, 0.025)
+t_bins = sm.STIM_WIN[0] + sm.BIN * np.arange(nb_s)
+base = rate[:, :, (t_bins >= -0.2) & (t_bins < 0)].mean(axis=(1, 2))
+rows_X, rows_Y, trial_id = [], [], []
+ucl = [0.25, 0.5, 1.0]
+for j, i in enumerate(inc0):
+    mt = tr0.first_move.iloc[i] if tr0.t_choice.iloc[i] in ("L", "R") else np.nan
+    t_end = min(0.4, mt + 0.025) if np.isfinite(mt) else 0.4
+    samp = np.where((t_bins >= -0.05) & (t_bins < t_end))[0]
+    X = np.zeros((len(samp), 6 * 90 + 2 * 55))
+    lag_v = np.round((t_bins[samp] + 0.05) / sm.BIN).astype(int)    # 0..89 from -0.05 s
+    for side, c in [(0, tr0.cl.iloc[i]), (1, tr0.cr.iloc[i])]:
+        if c > 0:
+            k = side * 3 + ucl.index(c)
+            ok = (lag_v >= 0) & (lag_v < 90)
+            X[np.where(ok)[0], k * 90 + lag_v[ok]] = 1
+    if np.isfinite(mt):
+        lag_m = np.round((t_bins[samp] - mt + 0.25) / sm.BIN).astype(int)   # 0..54 from -0.25 s
+        ok = (lag_m >= 0) & (lag_m < 55)
+        X[np.where(ok)[0], 540 + lag_m[ok]] = 1
+        X[np.where(ok)[0], 595 + lag_m[ok]] = 1 if tr0.t_choice.iloc[i] == "L" else -1
+    rows_X.append(X)
+    rows_Y.append(rate[:, j, samp].T - base[None, :])
+    trial_id.append(np.full(len(samp), j))
+X = np.vstack(rows_X); Y = np.vstack(rows_Y); trial_id = np.concatenate(trial_id)
+X1 = np.hstack([X, np.ones((len(X), 1))])
+B = np.linalg.lstsq(X1, Y, rcond=None)[0]
+_, _, vt = np.linalg.svd(X1 @ B, full_matrices=False)
+Wb = np.linalg.lstsq(X1, X1 @ B @ vt[:200].T, rcond=None)[0]     # predictors -> 200 components
+Zc = X1 @ Wb
+print("Design: %d samples, %d predictors, %d neurons; built in %.1f s" % (X.shape[0], X.shape[1], Y.shape[1], time.time() - kt0))
+folds = np.array_split(np.random.default_rng(70).permutation(len(inc0)), 5)
+y = Y[:, int(np.argmax(Y.var(axis=0)))]
+t_fit = time.time()
+n_fits = 0
+for k in range(1, 51):
+    for f in folds:
+        te = np.isin(trial_id, f)
+        ElasticNet(alpha=0.5, l1_ratio=0.5, max_iter=1000).fit(Zc[~te, :k], y[~te])
+        n_fits += 1
+per_neuron = time.time() - t_fit
+n_full = int(units.fig35.sum())
+fits_nested = 3 * (18 * 10 + 1)       # Vision, Action, Choice: 1 to 18 components x 10 folds, plus the 75-component fit
+est_full = per_neuron * n_full
+est_nested = per_neuron / n_fits * fits_nested * 0.3 * n_full   # about 30% of neurons pass VE > 2% (assumption for the estimate)
+est_total = est_full + est_nested
+print("One neuron, full model: %d fits in %.1f s" % (n_fits, per_neuron))
+print("Neurons entering the full model (Figs. 3-5 set): %d -> %.1f h on one core" % (n_full, est_full / 3600))
+print("Nested tests (3 kernels, about 30%% of neurons): %.1f h; total %.1f h on one core, %.1f h on 4 cores"
+      % (est_nested / 3600, est_total / 3600, est_total / 3600 / 4))
+print("The Choice shuffle of ed5h repeats the whole test once more. Notebook limit: 1 h.")
+del S0, rate, X, Y, X1, Zc
 EOF
-python tg2.py
-```
-
-```
-0 2.0112124535232034e-09 0.24874801566838373 6
-1 1.2080089223376334e-07 1.0868662297265137 8
-2 3.292278453253389e-05 6.004894095080688 18
-3 0.0006147852727726999 24.610272764273656 28
-Shell cwd was reset to
-```
-
-**Agent**
-
-The emulation matches scikit-learn to within 1e-6 relative. Now the full kernel pipeline: basis, cross-validated full model, and the nested tests for the four kernel sets.
-
-**Agent calls Bash**
-
-```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-def _fold_ids(n_trials: int, k: int, rng) -> np.ndarray:
-    """Random partition of trials into k folds (cvpartition 'KFold'); the seed is a standard
-    choice."""
-    ids = np.arange(n_trials) % k
-    rng.shuffle(ids)
-    return ids
-
-
-def _cv_ve(Z_parts, Y, folds_of_sample, eval_mask, n_comp, fit_cols=None, lam=0.5):
-    """Cross-validated variance explained of predictions truncated to the first 1..n_comp
-    columns (regFullPipeline.m / predictResidualsWith.m): for each fold, one elastic net on all
-    columns of Z for the training samples; test predictions use the first nc columns and their
-    coefficients, without intercept; VE = 1 - var(y - pred) / var(y) over the test samples in
-    `eval_mask`, all folds together. Z_parts: samples x p array. Returns VE (n_comp x units)."""
-    Z = Z_parts
-    m = Y.shape[1]
-    S1 = np.zeros((n_comp, m)); S2 = np.zeros((n_comp, m)); SYP = np.zeros((n_comp, m))
-    n = 0; sy = np.zeros(m); syy = np.zeros(m)
-    for f in np.unique(folds_of_sample):
-        tr = folds_of_sample != f
-        te = (folds_of_sample == f) & eval_mask
-        if te.sum() == 0:
-            continue
-        W, _ = enet(Z[tr], Y[tr], lam=lam)
-        Zt = Z[te][:, :n_comp]
-        Wt = W[:n_comp]
-        yt = Y[te]
-        n += te.sum(); sy += yt.sum(0); syy += (yt ** 2).sum(0)
-        S1 += np.cumsum(Zt.sum(0)[:, None] * Wt, axis=0)
-        SYP += np.cumsum((Zt.T @ yt) * Wt, axis=0)
-        Q = Zt.T @ Zt
-        Mq = Wt[:, None, :] * Q[:, :, None] * Wt[None, :, :]
-        cs = np.cumsum(np.cumsum(Mq, axis=0), axis=1)
-        S2 += cs[np.arange(n_comp), np.arange(n_comp)]
-    # residual e = y - p: sum e = sy - S1; sum e^2 = syy - 2 SYP + S2
-    se = sy[None] - S1
-    see = syy[None] - 2 * SYP + S2
-    var_e = (see - se ** 2 / n) / (n - 1)
-    var_y = (syy - sy ** 2 / n) / (n - 1)
-    with np.errstate(invalid="ignore", divide="ignore"):
-        return 1 - var_e / var_y[None]
-
-
-def kernel_inputs(s: dict, tt: pd.DataFrame, units: np.ndarray, choice_values=None):
-    """Design, sample rates and smoothed rates of one session for the kernel analysis.
-    units: indices into the session's good units. Rates: 5 ms counts / 0.005 s, causal
-    half-Gaussian s.d. 25 ms, minus each neuron's mean rate -0.2 to 0 s over trials T
-    (kernelFitBasic.m)."""
-    keep = tt["keep"].values
-    R = causal_smooth(s["C"][units][:, keep].astype(np.float32) / BIN, half_gaussian())
-    bm = (BIN_CENTRES >= -0.2) & (BIN_CENTRES <= 0)
-    bsl = R[:, :, bm].mean(axis=(1, 2))
-    R -= bsl[:, None, None]
-    X, trial, rel_t, mt = kernel_design(tt, choice_values)
-    Y = sample_rates(R, trial, rel_t)
-    return dict(R=R, bsl=bsl, X=X, trial=trial, rel_t=rel_t, mt=mt, Y=Y)
-
-
-def full_model(inputs: list[dict], seed: int = 0, n_basis: int = 200, n_comp: int = 50):
-    """Reduced-rank basis over all sessions, then per neuron 5-fold cross-validated VE for 1 to
-    50 components (best kept), evaluated from stimulus onset to the earlier of movement onset and
-    0.4 s; a final fit on all samples gives the kernels. Returns dict with b, and per session
-    VE (n_comp x units), best VE, best number of components and the final coefficients."""
-    b = canoncor2all([d["Y"] for d in inputs], [d["X"] for d in inputs])[:, :n_basis]
-    out = {"b": b, "ve": [], "best": [], "ndim": [], "W": []}
-    for si, d in enumerate(inputs):
-        rng = np.random.default_rng([seed, si])
-        nt_ = len(d["mt"])
-        fold = _fold_ids(nt_, 5, rng)[d["trial"]]
-        end = np.where(np.isfinite(d["mt"]), np.minimum(d["mt"], VIS_WIN[1]), VIS_WIN[1])
-        ev = (d["rel_t"] >= 0) & (d["rel_t"] <= end[d["trial"]])
-        Z = np.asarray(d["X"] @ b)
-        ve = _cv_ve(Z, d["Y"], fold, ev, n_comp)
-        ve = np.nan_to_num(ve, nan=0.0)
-        out["ve"].append(ve)
-        out["best"].append(ve.max(axis=0))
-        out["ndim"].append(ve.argmax(axis=0) + 1)
-        W, _ = enet(Z, d["Y"])
-        out["W"].append(W)
-    return out
-
-
-def nested_test(inputs: list[dict], keep_units: list[np.ndarray], kernel: str, seed: int = 0,
-                n_without: int = 75, n_comp: int = 18):
-    """Nested test of one kernel set (determineResidualsWithout.m, predictResidualsWith.m):
-    a basis without the kernel over the kept neurons of all sessions; each neuron fit with its
-    first 75 columns on all samples and the prediction (without intercept) subtracted; a basis
-    for the kernel alone on these residuals; 10-fold cross-validated VE for 1 to 18 components,
-    over samples 0.05 to 0.4 s after stimulus onset (ending at movement onset) and -0.2 to 0 s
-    from movement onset (not before stimulus onset). Returns per session the best VE of each
-    kept neuron, and the residual model coefficients (for residuals at other times)."""
-    cols = np.concatenate([KERNEL_COLS[k] for k in KERNEL_SETS[kernel]])
-    other = np.setdiff1d(np.arange(N_PRED), cols)
-    Ys = [d["Y"][:, k] for d, k in zip(inputs, keep_units)]
-    Xo = [d["X"][:, other] for d in inputs]
-    b_no = canoncor2all(Ys, Xo)[:, :n_without]
-    resid, Wno = [], []
-    for y, x in zip(Ys, Xo):
-        Z = np.asarray(x @ b_no)
-        W, _ = enet(Z, y)
-        resid.append(y - Z @ W)
-        Wno.append(b_no @ W)          # kernels without the tested set (len(other) x units)
-    Xk = [d["X"][:, cols] for d in inputs]
-    b_k = canoncor2all(resid, Xk)
-    best = []
-    for si, (d, r, x) in enumerate(zip(inputs, resid, Xk)):
-        rng = np.random.default_rng([seed, si, 1])
-        fold = _fold_ids(len(d["mt"]), 10, rng)[d["trial"]]
-        mt = d["mt"][d["trial"]]
-        t = d["rel_t"]
-        stim_end = np.where(np.isfinite(mt), np.minimum(mt, 0.4), 0.4)
-        ev = (t >= 0.05) & (t <= stim_end)
-        ev |= np.isfinite(mt) & (t >= np.maximum(0, mt - 0.2)) & (t <= mt)
-        Z = np.asarray(x @ b_k)
-        if r.shape[1] == 0:
-            best.append(np.zeros(0)); continue
-        ve = np.nan_to_num(_cv_ve(Z, r, fold, ev, n_comp), nan=0.0)
-        best.append(ve.max(axis=0))
-    return {"best": best, "W_without": Wno, "other_cols": other, "b_k": b_k}
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t8.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd, time
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('sessions.pkl','rb'))
-nt=pd.read_pickle('nt.pkl'); P=np.load('P.npy')
-tts=[S.classify_trials(s['trials'],s['moves'],'methods',rng=np.random.default_rng(0)) for s in ss]
-m=S.select_n(nt)&nt.region.isin(S.REGIONS_42).values; f35=m&np.any(P[:,:4]<0.05,axis=1)
-t=time.time()
-inputs=[]; units=[]
-for si,s in enumerate(ss):
-    u=nt[f35 & (nt.s==si).values].j.values; units.append(u)
-    inputs.append(S.kernel_inputs(s,tts[si],u))
-print('inputs',time.time()-t, sum(d['Y'].shape[0] for d in inputs), sum(d['Y'].shape[1] for d in inputs))
-t=time.time()
-fm=S.full_model(inputs)
-print('full',time.time()-t)
-best=np.concatenate(fm['best']); print('VE>=2%', (best>=0.02).sum(), 'median VE', np.median(best))
-pickle.dump((units,fm),open('fm.pkl','wb'))
-keep=[b>=0.02 for b in fm['best']]
-for k in ['choice','action','vis_contra','vis_ipsi']:
-    t=time.time(); res=S.nested_test(inputs,keep,k); 
-    bb=np.concatenate(res['best']); print(k, time.time()-t, (bb>0.02).sum(), len(bb))
-    pickle.dump(res,open(f'nest_{k}.pkl','wb'))
-EOF
-python t8.py
-```
-
-```
-inputs 36.28598165512085 567743 13520
-full 54.00427436828613
-VE>=2% 3148 median VE 0.0035687198760840366
-choice 10.034708023071289 106 3148
-action 9.830573081970215 1004 3148
-vis_contra 37.646490812301636 830 3148
-vis_ipsi 36.40757966041565 69 3148
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && cat > t9.py <<'EOF'
-import sys, pickle, numpy as np, pandas as pd
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-nt=pd.read_pickle('nt.pkl'); units,fm=pickle.load(open('fm.pkl','rb'))
-rows=[]
-for si,u in enumerate(units):
-    for j,uu in enumerate(u): rows.append((si,uu,fm['best'][si][j]))
-k=pd.DataFrame(rows,columns=['s','j','ve']); k=k.merge(nt[['s','j','region','subject']],on=['s','j'])
-keep=k.ve>=0.02
-for kn in ['choice','action','vis_contra','vis_ipsi']:
-    res=pickle.load(open(f'nest_{kn}.pkl','rb')); bb=np.concatenate(res['best'])
-    k[kn]=False; k.loc[keep,kn]=bb>0.02
-g=k.groupby('region').agg(n=('ve','size'),nk=('choice',lambda x: 0),ch=('choice','sum'),ac=('action','sum'),vc=('vis_contra','sum'),vi=('vis_ipsi','sum'))
-g['frac_vc']=g.vc/g.n; g['frac_ac']=g.ac/g.n; g['frac_ch']=g.ch/g.n
-print(g.sort_values('frac_vc',ascending=False).to_string())
-print('mid',k[k.region.isin(['MRN','SCm','SNr','ZI'])].choice.sum(),'fore',k[k.region.isin(['MOs','PL','MOp','CP'])].choice.sum())
-k.to_pickle('kern.pkl')
-EOF
-python t9.py
-```
-
-```
-n  nk  ch   ac   vc  vi   frac_vc   frac_ac   frac_ch
-region                                                         
-VISp    684   0   1   16  214   0  0.312865  0.023392  0.001462
-VISl    241   0   0   11   50   0  0.207469  0.045643  0.000000
-VISpm   253   0   0    8   41   0  0.162055  0.031621  0.000000
-VISam   523   0   2   39   81   0  0.154876  0.074570  0.003824
-CP      542   0   6   43   77   6  0.142066  0.079336  0.011070
-SCs     171   0   0    1   19   0  0.111111  0.005848  0.000000
-LD      197   0   2   18   15   1  0.076142  0.091371  0.010152
-MRN     670   0  19   85   51  11  0.076119  0.126866  0.028358
-ACA     406   0   2   49   27   2  0.066502  0.120690  0.004926
-PL      452   0   9   37   30   6  0.066372  0.081858  0.019912
-LP      383   0   0   15   25   0  0.065274  0.039164  0.000000
-MOs     880   0  16  100   49  10  0.055682  0.113636  0.018182
-SNr     218   0   5   34   11   5  0.050459  0.155963  0.022936
-VISrl   101   0   0    0    5   0  0.049505  0.000000  0.000000
-MOp     528   0   6   83   26   3  0.049242  0.157197  0.011364
-SCm     656   0  13   63   31   8  0.047256  0.096037  0.019817
-ORB     354   0   0   10   14   1  0.039548  0.028249  0.000000
-ZI      183   0  10   29    7   1  0.038251  0.158470  0.054645
-[... 26 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && cat > mknb.py <<'EOF'
-"""Convert a cell-marked python source into a notebook. Markers:
-# %% md            -> markdown cell (following lines start with '# ' stripped)
-# %% code [tag, ..] -> code cell with tags
-"""
-import sys, re, nbformat
-src = open(sys.argv[1]).read().split('\n')
-cells = []; cur = None
-def flush():
-    if cur is None: return
-    kind, tags, lines = cur
-    while lines and not lines[-1].strip(): lines.pop()
-    while lines and not lines[0].strip(): lines.pop(0)
-    if kind == 'md':
-        text = '\n'.join(l[2:] if l.startswith('# ') else (l[1:] if l.startswith('#') else l) for l in lines)
-        c = nbformat.v4.new_markdown_cell(text)
-    else:
-        c = nbformat.v4.new_code_cell('\n'.join(lines))
-        if tags: c.metadata['tags'] = tags
-    cells.append(c)
-for line in src:
-    m = re.match(r'^# %% (md|code)(.*)$', line)
-    if m:
-        flush()
-        tags = [t.strip() for t in m.group(2).strip().strip('[]').split(',') if t.strip()]
-        cur = [m.group(1), tags, []]
-    else:
-        cur[2].append(line)
-flush()
-nb = nbformat.v4.new_notebook(); nb.cells = cells
-nb.metadata['kernelspec'] = {'name': 'python3', 'display_name': 'Python 3', 'language': 'python'}
-nbformat.write(nb, sys.argv[2])
-print(len(cells), 'cells')
-EOF
-cat > devrun.py <<'EOF'
-"""Run the notebook source up to a marker, replacing the streaming cell by the cached sessions."""
-import sys, re, pickle, time
-src = open(sys.argv[1]).read()
-upto = sys.argv[2] if len(sys.argv) > 2 else None
-start = sys.argv[3] if len(sys.argv) > 3 else None
-blocks = re.split(r'^# %% ', src, flags=re.M)
-g = {}
-state = sys.argv[4] if len(sys.argv) > 4 else None
-if state:
-    import dill
-for b in blocks[1:]:
-    head, _, body = b.partition('\n')
-    if head.startswith('md'): continue
-    if 'LOAD-SESSIONS' in body:
-        body = "import pickle\nsessions = pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))\n"
-    t = time.time()
-    exec(compile(body, head, 'exec'), g)
-    if upto and upto in body: break
-EOF
-. env/bin/activate && uv pip install -q nbformat dill jupyter nbconvert ipykernel 2>&1 | tail -1; echo ok
-```
-
-```
-ok
-Shell cwd was reset to
-```
-
-**Agent**
-
-Before writing cells, a look at what `tools/entry.py check` enforces.
-
-**Agent calls Bash**
-
-```bash
-grep -n "def \|tag\|sanity\|claim:\|install\|embedded\|read_csv\|open(" tools/entry.py | head -80; wc -l tools/entry.py
-```
-
-```
-20:- each notebook has a cell tagged `sanity` that prints what was loaded;
-25:notebook through a Jupyter kernel installed in that environment, in the entry
-59:MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one literal is "embedded data"
-68:    def __init__(self):
-71:    def error(self, where, message: str) -> None:
-76:def dataset_id(record: dict) -> str | None:
-80:def schema(name: str) -> Draft202012Validator:
-84:def load(report: Report, path: Path):
-93:def validate(report: Report, path: Path, schema_name: str) -> dict | None:
-103:def _plain(value):
-114:def code_of(notebook_path: Path) -> str:
-121:def check(entry_dir: Path) -> Report:
-174:        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
-175:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
-264:            tag = outcome.get("output")
-265:            if notebook in present and tag:
-267:                if not any(tag in c.metadata.get("tags", []) for c in nb.cells):
-268:                    report.error(path.relative_to(ROOT), f"no cell tagged {tag!r} in {notebook}")
-272:def _derivation_checks(report: Report, where, code: str) -> None:
-286:def lock(entry_dir: Path) -> int:
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,60p tools/entry.py; sed -n 121,300p tools/entry.py; sed -n 330,408p tools/entry.py
-```
-
-```
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 299 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 60,68p tools/entry.py; grep -n "EMBEDDED_IMAGE\|READS_A_FIGURE\|LOCAL_PATH\|LONG_LITERAL" tools/entry.py | head -5; grep -n "LOCAL_PATH =" -A4 tools/entry.py
-```
-
-```
-EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
-READS_A_FIGURE = re.compile(r"""(imread|Image\.open|IPython\.display\.Image|display\.Image)\s*\(""")
-LOCAL_PATH = re.compile(r"""["'](?:~/|/(?:Users|home|tmp|mnt|media|Volumes|data|scratch)/|[A-Za-z]:[\\/])""")
-LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
-
-
-class Report:
-    def __init__(self):
-61:EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
-62:READS_A_FIGURE = re.compile(r"""(imread|Image\.open|IPython\.display\.Image|display\.Image)\s*\(""")
-63:LOCAL_PATH = re.compile(r"""["'](?:~/|/(?:Users|home|tmp|mnt|media|Volumes|data|scratch)/|[A-Za-z]:[\\/])""")
-64:LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
-273:    if EMBEDDED_IMAGE.search(code):
-63:LOCAL_PATH = re.compile(r"""["'](?:~/|/(?:Users|home|tmp|mnt|media|Volumes|data|scratch)/|[A-Za-z]:[\\/])""")
-64-LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
-65-
-66-
-67-class Report:
-```
-
-**Agent**
-
-Now writing the notebook source, starting with the header, loading, data check and the behavioural and count claims.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb1.py",
- "content": "# %% md\n# # Steinmetz et al. (2019) on DANDI:000017\n#\n# Paper: Steinmetz, Zatka-Haas, Carandini & Harris (2019), \"Distributed coding of choice, action and engagement across the mouse brain\", Nature 576, 266-273, [doi:10.1038/s41586-019-1787-x](https://doi.org/10.1038/s41586-019-1787-x).\n#\n# Dataset: [DANDI:000017](https://dandiarchive.org/dandiset/000017/0.240329.1926), version 0.240329.1926 (doi:10.48324/dandi.000017/0.240329.1926). It is the only published version; the paper cites the data on figshare (doi:10.6084/m9.figshare.9598406), not a DANDI version, so the protocol's rule (the most recent published version) applies. The draft has the same 39 assets and size and was last modified one second after this version was published.\n#\n# Claims: `claims/000017/10.1038-s41586-019-1787-x.yaml`, written from the accepted author manuscript (Europe PMC, PMC6913580) with its Methods, Extended Data legends and table, and supplement 2 (Supplementary Discussion, Tables 1 and 2, legends of Supplementary Figs. 1 to 4). The claims file's definitions T (trials), N (neurons), K (kernel test), M (matched contrast) and R (responsive in a condition) are used throughout; the helper module `steinmetz.py` implements them and says where each parameter comes from.\n#\n# Two outside sources are used, both pinned: the Allen ontology of the paper's atlas tool (cortex-lab/allenCCF at commit e5a57fe, `structure_tree_safe_2017.csv`), which maps the files' subregion labels (SCig, SCsg, LSr and others) to the 42 regions of the paper (claims marked `with_labels`, and the link claim `region-label-link`); and the per-session arrays of included trials and units in the paper's code (nsteinme/steinmetz-et-al-2019 at commit 9a0bea8), used only by the link claim `code-inclusion-link`.\n#\n# The table of claims, with which are tested and which blocked, is in the cell below; outcomes are in the summary at the end.\n\n# %% code\nimport time\nT_START = time.time()\nimport numpy as np\nimport pandas as pd\nimport matplotlib\nmatplotlib.use(\"Agg\")\nimport matplotlib.pyplot as plt\nimport yaml, requests, io\nfrom scipy import stats\nimport steinmetz as S\n\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 30)\npd.set_option(\"display.max_rows\", 200)\n\nCLAIMS_URL = None\nclaims_text = open(\"../../claims/000017/10.1038-s41586-019-1787-x.yaml\").read() if False else None\n\n# %% md\n# ## Claims and what is tested\n#\n# Every claim of the claims file is tested here except `histology-alignment-error`, which needs the DiI spot coordinates and electrophysiological landmarks of each probe; the dandiset holds neither (it holds the CCF coordinates of each channel), and the figshare deposit the paper names holds the same processed data. Two link claims are added by this attempt (`region-label-link`, `code-inclusion-link`).\n\n# %% code\nclaim_table = pd.DataFrame([\n    (\"fig1c-easy-performance\", \"behaviour\", \"tested\"),\n    (\"fig1c-low-contrast-performance\", \"behaviour\", \"tested\"),\n    (\"fig1c-competing-performance\", \"behaviour\", \"tested\"),\n    (\"fig1d-reaction-time-difficulty\", \"behaviour\", \"tested\"),\n    (\"ed1q-wheel-choice-decoding\", \"behaviour\", \"tested\"),\n    (\"early-response-fraction\", \"behaviour\", \"tested\"),\n    (\"passive-no-movement\", \"behaviour\", \"tested\"),\n    (\"recording-counts\", \"counts\", \"tested\"),\n    (\"edtable1-region-counts\", \"counts\", \"tested\"),\n    (\"supptable2-sessions\", \"counts\", \"tested\"),\n    (\"task-modulated-fraction\", \"single neurons\", \"tested\"),\n    (\"suppfig2-rate-amplitude\", \"single neurons\", \"tested\"),\n    (\"fig2de-activity-order\", \"population averages\", \"tested\"),\n    (\"fig2fg-miss-restricted\", \"population averages\", \"tested\"),\n    (\"fig3d-vision-localized\", \"kernel regression\", \"tested\"),\n    (\"fig3e-action-global\", \"kernel regression\", \"tested\"),\n    (\"ed4f-focality\", \"kernel regression\", \"tested\"),\n    (\"ed5h-choice-shuffle-fpr\", \"kernel regression\", \"tested\"),\n    (\"fig4b-choice-regions\", \"kernel regression\", \"tested\"),\n    (\"fig4c-choice-timing\", \"population decoding\", \"tested\"),\n    (\"fig4d-jpecc-vis-leads\", \"jPECC\", \"tested\"),\n    (\"fig4d-jpecc-no-lag-frontal-midbrain\", \"jPECC\", \"tested\"),\n    (\"fig4f-contralateral-preference\", \"kernel regression\", \"tested\"),\n    (\"fig4fg-opposed-activity\", \"kernel regression\", \"tested\"),\n    (\"ed7b-detect-probability-widespread\", \"ccCP\", \"tested\"),\n    (\"ed7c-choice-probability-restricted\", \"ccCP\", \"tested\"),\n    (\"ed5g-ipsilateral-vision-rare\", \"population decoding\", \"tested\"),\n    (\"fig3c-variance-explained\", \"kernel regression\", \"tested\"),\n    (\"fig5b-miss-more-than-passive\", \"engagement\", \"tested\"),\n    (\"fig5c-prestimulus-task-vs-passive\", \"engagement\", \"tested\"),\n    (\"ed6b-prestimulus-order\", \"engagement\", \"tested\"),\n    (\"fig5d-go-miss-matches-task-passive\", \"engagement\", \"tested\"),\n    (\"ed7f-detect-probability-engagement\", \"engagement\", \"tested\"),\n    (\"fig5f-engagement-index\", \"engagement\", \"tested\"),\n    (\"fig5e-engagement-predicts-go\", \"engagement\", \"tested\"),\n    (\"ed9i-engagement-beyond-arousal\", \"engagement\", \"tested\"),\n    (\"ed9cf-engagement-controls\", \"engagement\", \"tested\"),\n    (\"ed9k-engagement-vector-specific\", \"engagement\", \"tested\"),\n    (\"suppfig3-nonresponsive-neurons\", \"engagement\", \"tested\"),\n    (\"histology-alignment-error\", \"histology\", \"blocked: data_missing\"),\n    (\"region-label-link\", \"link (added)\", \"tested\"),\n    (\"code-inclusion-link\", \"link (added)\", \"tested\"),\n], columns=[\"claim\", \"group\", \"status\"])\nprint(claim_table.to_string(index=False))\n\n# %% md\n# ## Loading\n#\n# The archive's record of the version, its file list, and every file streamed and reduced as it loads (`steinmetz.load_session`): spike counts of the curated single units in 5 ms bins from -0.4 to 0.65 s around each task and passive stimulus, the detected wheel movements, the trials table, passive events, pupil and face motion energy. About five minutes.\n\n# %% code\nmeta = S.version_metadata()\nassets = S.list_assets()\nprint(meta[\"name\"])\nprint(\"version\", meta[\"version\"], \"| doi\", meta.get(\"doi\"), \"| files\", len(assets),\n      \"| bytes\", int(assets[\"size\"].sum()))\nprint(\"related:\", [r.get(\"identifier\") for r in meta.get(\"relatedResource\", [])])\nsumm = meta[\"assetsSummary\"]\nprint(\"subjects in summary:\", summ.get(\"numberOfSubjects\"), \"| species:\",\n      [s[\"name\"] for s in summ.get(\"species\", [])])\n\n# %% code\n# LOAD-SESSIONS\nt0 = time.time()\nsessions = S.load_all(assets[\"asset_id\"].tolist(), workers=6)\nprint(f\"loaded {len(sessions)} sessions in {time.time() - t0:.0f} s\")\n\n# %% md\n# ## Data check\n#\n# What was loaded, by subject and session, with ranges and units, and each check of the metadata against the values.\n\n# %% code [sanity]\nsess = pd.DataFrame([{\n    \"session\": s[\"session\"], \"subject\": s[\"subject\"], \"date\": s[\"date\"], \"sex\": s[\"sex\"],\n    \"genotype\": s[\"genotype\"], \"age\": s[\"age\"], \"probes\": s[\"n_probes\"],\n    \"trials\": len(s[\"trials\"]), \"included\": int(s[\"trials\"][\"included\"].sum()),\n    \"units\": len(s[\"units\"]), \"good units\": len(s[\"good\"]),\n    \"passive visual\": len(s[\"passive\"]), \"passive other\": len(s[\"passive_other\"]),\n    \"wheel moves\": len(s[\"moves\"]), \"pupil samples\": s[\"pupil_n\"],\n} for s in sessions])\nprint(sess.to_string(index=False))\nprint()\nprint(\"subjects\", sess[\"subject\"].nunique(), \"| sessions\", len(sess), \"| probes\", sess[\"probes\"].sum(),\n      \"| trials\", sess[\"trials\"].sum(), \"| included\", sess[\"included\"].sum(),\n      \"| units\", sess[\"units\"].sum(), \"| curated single units (phy 2 or 3)\", sess[\"good units\"].sum())\nprint(\"sessions per subject:\", sess.groupby(\"subject\").size().to_dict())\nprint(\"identifiers unique:\", sess[\"session\"].is_unique)\n\n# %% code [sanity]\n# Units: labels, channel mapping, amplitudes\nU = pd.concat([s[\"units\"].assign(session=s[\"session\"]) for s in sessions], ignore_index=True)\nprint(\"phy labels (0 noise, 1 MUA, 2 good, 3 unsorted):\", U[\"phy\"].value_counts().sort_index().to_dict())\nprint(\"peak channel range\", U[\"peak_channel\"].min(), \"to\", U[\"peak_channel\"].max())\nprint(\"unit probe = probe of electrodes row peak_channel - 1:\",\n      f\"{(U['probe'] == U['probe_of_peak']).mean():.4f}\")\nprint(\"unit probe = probe of the units table's first `electrodes` row:\",\n      f\"{(U['probe'] == U['probe_of_electrodes']).mean():.4f}\")\nprint(pd.crosstab(U[\"probe\"], U[\"probe_of_electrodes\"], rownames=[\"unit's probe\"],\n                  colnames=[\"probe of `electrodes` row\"]))\nprint(\"mean spike amplitude (spike_amps), range\", f\"{U['mean_amp'].min():.1f} to {U['mean_amp'].max():.1f}\",\n      \"| mean waveform peak-to-trough (waveform_mean), range\",\n      f\"{U['wf_amp'].min():.2f} to {U['wf_amp'].max():.2f}\")\nprint(\"spike times sorted within every unit:\", all(s[\"spikes_sorted\"] for s in sessions))\nprint(\"region labels of curated units:\", U[U[\"phy\"] >= 2][\"region\"].nunique())\n\n# %% code [sanity]\n# Trials, contrasts, choices, times\nTR = pd.concat([s[\"trials\"].assign(session=s[\"session\"]) for s in sessions], ignore_index=True)\nprint(\"left contrasts\", sorted(TR[\"cL\"].unique()), \"| right contrasts\", sorted(TR[\"cR\"].unique()))\nprint(\"response_choice values\", TR[\"choice\"].value_counts().sort_index().to_dict(),\n      \"| feedback_type\", TR[\"fbtype\"].value_counts().sort_index().to_dict())\nd = TR.assign(go_minus_stim=TR[\"go_cue\"] - TR[\"stim\"], resp_minus_go=TR[\"resp\"] - TR[\"go_cue\"],\n              fb_minus_resp=TR[\"fb\"] - TR[\"resp\"])\nprint(d[[\"go_minus_stim\", \"resp_minus_go\", \"fb_minus_resp\"]].describe().round(3).to_string())\nprint(\"stimulus within trial interval:\", bool(((TR[\"stim\"] >= TR[\"start_time\"]) & (TR[\"stim\"] <= TR[\"stop_time\"])).all()))\nnogo = TR[TR[\"choice\"] == 0]\nprint(\"NoGo responses: response - go cue, s: min\", round((nogo[\"resp\"] - nogo[\"go_cue\"]).min(), 3),\n      \"max\", round((nogo[\"resp\"] - nogo[\"go_cue\"]).max(), 3), \"(the task's 1.5 s window)\")\nprint(\"correct trials by condition rule:\",\n      f\"{np.mean(((TR['cL'] > TR['cR']) & (TR['choice'] == 1)) | ((TR['cR'] > TR['cL']) & (TR['choice'] == -1)) | ((TR['cL'] == 0) & (TR['cR'] == 0) & (TR['choice'] == 0)) == (TR['fbtype'] == 1))[(TR['cL'] != TR['cR']) | (TR['cL'] == 0)].mean():.4f}\",\n      \"of trials with unequal contrasts or no stimulus give feedback +1 exactly when the choice is correct\")\n\n# %% code [sanity]\n# Wheel: units, sign, sampling interval\nw_dt = np.array([s[\"wheel_dt\"] for s in sessions])\nprint(\"wheel `rate` attribute: values\", np.unique(np.round(w_dt, 7)),\n      \"(the sampling interval in s: 2,500 samples/s; the wheel trace spans the session)\")\nprint(\"wheel range covers the passive replay in every session:\",\n      all(s[\"wheel_range\"][1] >= s[\"passive\"][\"t\"].max() for s in sessions))\nmv = pd.concat([s[\"moves\"].assign(session=s[\"session\"]) for s in sessions], ignore_index=True)\nprint(\"move types\", mv[\"type\"].value_counts().sort_index().to_dict())\nprint(\"median position change (ticks; 0.135 mm per tick) by move type:\",\n      mv.groupby(\"type\")[\"dpos\"].median().to_dict())\nprint(\"moves of type 1 with a positive position change:\", f\"{(mv[mv.type == 1].dpos > 0).mean():.3f}\",\n      \"| type 2 negative:\", f\"{(mv[mv.type == 2].dpos < 0).mean():.3f}\")\nprint(\"moves end after the last passive event in every session:\",\n      all(s[\"moves\"][\"onset\"].max() > s[\"passive\"][\"t\"].max() for s in sessions))\n# the sign check: response choice against the direction of the first L/R-type move after the stimulus\nagree = []\nfor s in sessions:\n    tr, m = s[\"trials\"], s[\"moves\"]\n    for st, ch in zip(tr[\"stim\"], tr[\"choice\"]):\n        k = np.flatnonzero((m[\"onset\"].values > st) & np.isin(m[\"type\"].values, [1, 2]))\n        if ch != 0 and len(k):\n            agree.append((m[\"type\"].values[k[0]] == 1) == (ch == 1))\nprint(\"first left/right-type move after stimulus onset has the direction of the recorded choice:\",\n      f\"{np.mean(agree):.3f} of {len(agree)} choice trials (type 1 = Left = +1)\")\n\n# %% code [sanity]\n# Passive replay\nPV = pd.concat([s[\"passive\"].assign(session=s[\"session\"]) for s in sessions], ignore_index=True)\nprint(\"passive visual events per session:\", sess[\"passive visual\"].value_counts().to_dict())\nprint(\"left/right contrast pairs:\", PV.groupby([\"cL\", \"cR\"]).size().to_dict())\nprint(\"passive left and right contrasts share timestamps in every session:\",\n      all(s[\"passive_right_same_times\"] for s in sessions))\nprint(\"passive events after the last trial in every session:\",\n      all(s[\"passive\"][\"t\"].min() > s[\"trials\"][\"fb\"].max() for s in sessions))\nprint(\"pupil: fraction of NaN samples, max over sessions\", max(s[\"pupil_nan_fraction\"] for s in sessions))\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/nb1.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python3 - <<'EOF'
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-s=s.replace('\nCLAIMS_URL = None\nclaims_text = open("../../claims/000017/10.1038-s41586-019-1787-x.yaml").read() if False else None\n','\n')
-open(p,'w').write(s)
-EOF
-. env/bin/activate && cd entries/000017-steinmetz-2019 && python $TMPDIR/devrun.py $TMPDIR/nb1.py 2>&1 | tail -120
+cd $TMPDIR && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_c.py,cells_j.py 2>&1 | tail -6; date -u
 ```
 
 ```
 Traceback (most recent call last):
-  File "/tmp/claude-1001/devrun.py", line 17, in <module>
-    exec(compile(body, head, 'exec'), g)
-    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "code", line 10, in <module>
-ModuleNotFoundError: No module named 'steinmetz'
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/^g = {}$/import os; sys.path.insert(0, os.getcwd()); g = {}/' $TMPDIR/devrun.py && . $TMPDIR/env/bin/activate && python $TMPDIR/devrun.py $TMPDIR/nb1.py 2>&1 | tail -120
-```
-
-```
-fig1c-low-contrast-performance           behaviour                tested
-        fig1c-competing-performance           behaviour                tested
-     fig1d-reaction-time-difficulty           behaviour                tested
-         ed1q-wheel-choice-decoding           behaviour                tested
-            early-response-fraction           behaviour                tested
-                passive-no-movement           behaviour                tested
-                   recording-counts              counts                tested
-             edtable1-region-counts              counts                tested
-                supptable2-sessions              counts                tested
-            task-modulated-fraction      single neurons                tested
-            suppfig2-rate-amplitude      single neurons                tested
-              fig2de-activity-order population averages                tested
-             fig2fg-miss-restricted population averages                tested
-             fig3d-vision-localized   kernel regression                tested
-                fig3e-action-global   kernel regression                tested
-                      ed4f-focality   kernel regression                tested
-            ed5h-choice-shuffle-fpr   kernel regression                tested
-               fig4b-choice-regions   kernel regression                tested
-                fig4c-choice-timing population decoding                tested
-              fig4d-jpecc-vis-leads               jPECC                tested
-[... 100 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python3 - <<'EOF'
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-old=s[s.index('print("correct trials by condition rule:",'):s.index('# %% code [sanity]\n# Wheel')]
-new='''correct = (((TR["cL"] > TR["cR"]) & (TR["choice"] == 1)) | ((TR["cR"] > TR["cL"]) & (TR["choice"] == -1))
-           | ((TR["cL"] == 0) & (TR["cR"] == 0) & (TR["choice"] == 0)))
-uneq = (TR["cL"] != TR["cR"]) | (TR["cL"] == 0)
-print("trials with unequal contrasts or no stimulus: feedback +1 exactly when the choice is correct in",
-      f"{np.mean(correct[uneq] == (TR['fbtype'][uneq] == 1)):.4f} of {uneq.sum()}")
-print("go cue - stimulus onset below 0.5 s (the Methods give 0.5 to 1.2 s):",
-      f"{np.mean(d['go_minus_stim'] < 0.5):.3f} of trials; minimum {d['go_minus_stim'].min():.3f} s")
-
-'''
-s=s.replace(old,new); open(p,'w').write(s)
-EOF
-. $TMPDIR/env/bin/activate && python $TMPDIR/devrun.py $TMPDIR/nb1.py 2>&1 | tail -32
-```
-
-```
-Traceback (most recent call last):
-  File "/tmp/claude-1001/devrun.py", line 17, in <module>
-    exec(compile(body, head, 'exec'), g)
-    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "code", line 10, in <module>
-ModuleNotFoundError: No module named 'steinmetz'
+  File "/tmp/claude-1001/run_cells.py", line 12, in <module>
+    exec(compile(body, f'cell{i}', 'exec'), g)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "cell12", line 3, in <module>
+NameError: name 'paths' is not defined
+Tue Nov 10 17:18:40 UTC 2026
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/dev.sh <<'EOF'
-#!/bin/bash
-. /tmp/claude-1001/env/bin/activate
-cd entries/000017-steinmetz-2019
-python /tmp/claude-1001/devrun.py "$@"
-EOF
-chmod +x $TMPDIR/dev.sh; $TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -30
+cd $TMPDIR && sed -i 's/R=pickle.load(open(os.environ.get(.RPKL.,.\/tmp\/claude-1001\/R39.pkl.),.rb.))/R=pickle.load(open(os.environ.get("RPKL","\/tmp\/claude-1001\/R39.pkl"),"rb"))\\nimport steinmetz as sm\\npaths=[p for p,_ in sm.asset_paths()]/' run_cells.py && grep -n pickle run_cells.py && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_c.py,cells_j.py 2>&1 | tail -6
 ```
 
 ```
-mean spike amplitude (spike_amps), range 5.9 to 1290.3 | mean waveform peak-to-trough (waveform_mean), range 0.20 to 16.66
-spike times sorted within every unit: True
-region labels of curated units: 73
-left contrasts [np.float64(0.0), np.float64(0.25), np.float64(0.5), np.float64(1.0)] | right contrasts [np.float64(0.0), np.float64(0.25), np.float64(0.5), np.float64(1.0)]
-response_choice values {-1.0: 3373, 0.0: 3305, 1.0: 3372} | feedback_type {-1: 3127, 1: 6923}
-       go_minus_stim  resp_minus_go  fb_minus_resp
-count      10050.000      10050.000      10050.000
-mean           0.706          0.717          0.027
-std            0.200          0.622          0.016
-min            0.395          0.033         -0.005
-25%            0.550          0.158          0.006
-50%            0.676          0.383          0.036
-75%            0.805          1.502          0.037
-max            1.199          1.820          0.113
-stimulus within trial interval: True
-NoGo responses: response - go cue, s: min 1.493 max 1.82 (the task's 1.5 s window)
-trials with unequal contrasts or no stimulus: feedback +1 exactly when the choice is correct in 1.0000 of 9378
-go cue - stimulus onset below 0.5 s (the Methods give 0.5 to 1.2 s): 0.152 of trials; minimum 0.395 s
-wheel `rate` attribute: values [0.0004] (the sampling interval in s: 2,500 samples/s; the wheel trace spans the session)
-wheel range covers the passive replay in every session: True
-[... 10 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd
-ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
-for s in ss[:5]+ss[20:22]:
-    p=s['passive']; m=s['moves']
-    print(s['session'], len(p), p.groupby(['cL','cR']).size().to_dict())
-    print('  last move onset', m.onset.max().round(1), 'last passive', p.t.max().round(1), 'wheel end', round(s['wheel_range'][1],1), 'moves during passive', ((m.onset>p.t.min())&(m.onset<p.t.max())).sum(), 'types', m[(m.onset>p.t.min())].type.value_counts().to_dict())
-    o=s['passive_other']; print('  other', o.t.min().round(1), o.t.max().round(1), 'vis', p.t.min().round(1))
-for s in ss:
-    p=s['passive']; m=s['moves']
-    print(s['session'], 'last move', round(m.onset.max(),1), 'last passive', round(p.t.max(),1), 'n moves in passive span', ((m.onset>p.t.min())&(m.onset<p.t.max())).sum(), 'type3', (m.type==3).sum())
-EOF
-```
-
-```
-Cori_2016-12-14 150 {(0.0, 0.25): 10, (0.0, 0.5): 10, (0.0, 1.0): 10, (0.25, 0.0): 10, (0.25, 0.25): 10, (0.25, 0.5): 10, (0.25, 1.0): 10, (0.5, 0.0): 10, (0.5, 0.25): 10, (0.5, 0.5): 10, (0.5, 1.0): 10, (1.0, 0.0): 10, (1.0, 0.25): 10, (1.0, 0.5): 10, (1.0, 1.0): 10}
-  last move onset 2644.1 last passive 2620.5 wheel end 2661.7 moves during passive 52 types {0: 52, 2: 3, 1: 1}
-  other 1855.1 2631.5 vis 1835.3
-Cori_2016-12-17 150 {(0.0, 0.25): 10, (0.0, 0.5): 10, (0.0, 1.0): 10, (0.25, 0.0): 10, (0.25, 0.25): 10, (0.25, 0.5): 10, (0.25, 1.0): 10, (0.5, 0.0): 10, (0.5, 0.25): 10, (0.5, 0.5): 10, (0.5, 1.0): 10, (1.0, 0.0): 10, (1.0, 0.25): 10, (1.0, 0.5): 10, (1.0, 1.0): 10}
-  last move onset 3075.3 last passive 3036.5 wheel end 3078.9 moves during passive 112 types {0: 112, 2: 5, 1: 3}
-  other 2234.0 3023.4 vis 2237.2
-Cori_2016-12-18 150 {(0.0, 0.25): 10, (0.0, 0.5): 10, (0.0, 1.0): 10, (0.25, 0.0): 10, (0.25, 0.25): 10, (0.25, 0.5): 10, (0.25, 1.0): 10, (0.5, 0.0): 10, (0.5, 0.25): 10, (0.5, 0.5): 10, (0.5, 1.0): 10, (1.0, 0.0): 10, (1.0, 0.25): 10, (1.0, 0.5): 10, (1.0, 1.0): 10}
-  last move onset 3661.0 last passive 3648.2 wheel end 3789.3 moves during passive 18 types {0: 20, 1: 1}
-  other 2852.3 3643.0 vis 2849.1
-Forssmann_2017-11-01 110 {(0.0, 0.25): 10, (0.0, 0.5): 10, (0.0, 1.0): 50, (1.0, 0.0): 10, (1.0, 0.25): 10, (1.0, 0.5): 10, (1.0, 1.0): 10}
-  last move onset 3107.8 last passive 3042.6 wheel end 3108.3 moves during passive 87 types {0: 92, 2: 7}
-  other 2487.5 3052.0 vis 2490.1
-Forssmann_2017-11-02 110 {(0.0, 0.25): 10, (0.0, 0.5): 10, (0.0, 1.0): 50, (1.0, 0.0): 10, (1.0, 0.25): 10, (1.0, 0.5): 10, (1.0, 1.0): 10}
-  last move onset 3007.3 last passive 2999.9 wheel end 3035.2 moves during passive 110 types {0: 99, 2: 7, 1: 6}
-  other 2450.4 3002.8 vis 2437.3
-Moniz_2017-05-18 70 {(0.0, 0.25): 10, (0.0, 0.5): 10, (0.0, 1.0): 10, (1.0, 0.0): 10, (1.0, 0.25): 10, (1.0, 0.5): 10, (1.0, 1.0): 10}
-  last move onset 2732.3 last passive 2652.2 wheel end 2748.8 
-[... 44 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd, sys
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
-for s in ss:
-    u=s['units'].iloc[s['good']]; vis=u.region.str.startswith('VIS').values|u.region.isin(['LGd','SCs','SCsg']).values
-    if vis.sum()<10: continue
-    p=s['passive']
-    resp=S.window_rate(s['Cp'][vis],0.05,0.15).mean(0)-S.window_rate(s['Cp'][vis],-0.1,0).mean(0)
-    g=p.assign(r=resp).groupby(['cL','cR']).r.agg(['mean','std','size']).round(2)
-    sel=(p.cL==0)&(p.cR==1); r=resp[sel.values]
-    print(s['session'], vis.sum(), 'resp (0,1) events sorted:', np.round(np.sort(r),1)[:: max(1,len(r)//12)])
-    print(g.to_dict('index'))
-    # task trials for comparison
-    tr=s['trials']; rt=S.window_rate(s['C'][vis],0.05,0.15).mean(0)-S.window_rate(s['C'][vis],-0.1,0).mean(0)
-    print(' task right-only 1.0:', round(rt[((tr.cL==0)&(tr.cR==1)).values].mean(),2), 'left-only 1.0:', round(rt[((tr.cL==1)&(tr.cR==0)).values].mean(),2), 'none:', round(rt[((tr.cL==0)&(tr.cR==0)).values].mean(),2))
-EOF
-```
-
-```
-Cori_2016-12-14 178 resp (0,1) events sorted: [-4.1 -3.8 -3.5 -3.  -2.3 -1.6  0.2  2.2  2.6  5.4]
-{(0.0, 0.25): {'mean': -0.3, 'std': 2.56, 'size': 10}, (0.0, 0.5): {'mean': -0.42, 'std': 2.47, 'size': 10}, (0.0, 1.0): {'mean': -0.8, 'std': 3.24, 'size': 10}, (0.25, 0.0): {'mean': 0.17, 'std': 2.88, 'size': 10}, (0.25, 0.25): {'mean': -0.51, 'std': 1.72, 'size': 10}, (0.25, 0.5): {'mean': -0.38, 'std': 1.89, 'size': 10}, (0.25, 1.0): {'mean': -0.47, 'std': 2.9, 'size': 10}, (0.5, 0.0): {'mean': -0.04, 'std': 1.8, 'size': 10}, (0.5, 0.25): {'mean': 0.92, 'std': 2.57, 'size': 10}, (0.5, 0.5): {'mean': 0.82, 'std': 1.51, 'size': 10}, (0.5, 1.0): {'mean': -0.3, 'std': 2.39, 'size': 10}, (1.0, 0.0): {'mean': 0.27, 'std': 2.04, 'size': 10}, (1.0, 0.25): {'mean': -0.3, 'std': 2.95, 'size': 10}, (1.0, 0.5): {'mean': -0.64, 'std': 3.66, 'size': 10}, (1.0, 1.0): {'mean': 1.46, 'std': 2.5, 'size': 10}}
- task right-only 1.0: 0.43 left-only 1.0: 0.68 none: 0.11
-Cori_2016-12-17 533 resp (0,1) events sorted: [-0.3  0.6  1.2  1.4  1.7  1.7  1.7  1.9  2.1  2.3]
-{(0.0, 0.25): {'mean': 0.77, 'std': 0.88, 'size': 10}, (0.0, 0.5): {'mean': 0.79, 'std': 0.52, 'size': 10}, (0.0, 1.0): {'mean': 1.43, 'std': 0.78, 'size': 10}, (0.25, 0.0): {'mean': 0.24, 'std': 0.52, 'size': 10}, (0.25, 0.25): {'mean': 0.75, 'std': 0.57, 'size': 10}, (0.25, 0.5): {'mean': 0.72, 'std': 1.21, 'size': 10}, (0.25, 1.0): {'mean': 1.09, 'std': 0.75, 'size': 10}, (0.5, 0.0): {'mean': -0.44, 'std': 0.72, 'size': 10}, (0.5, 0.25): {'mean': 0.78, 'std': 0.62, 'size': 10}, (0.5, 0.5): {'mean': 0.97, 'std': 0.38, 'size': 10}, (0.5, 1.0): {'mean': 1.28, 'std': 0.97, 'size': 10}, (1.0, 0.0): {'mean': 0.23, 'std': 0.32, 'size': 10}, (1.0, 0.25): {'mean': 0.6, 'std': 0.74, 'size': 10}, (1.0, 0.5): {'mean': 0.71, 'std': 1.19, 'size': 10}, (1.0, 1.0): {'mean': 1.56, 'std': 0.65, 'size': 10}}
- task right-only 1.0: 1.24 left-only 1.0: 0.01 none: 0.06
-Cori_2016-12-18 228 resp (0,1) events sorted: [-2.  -0.3 -0.2  1.5  2.2  2.3 
-[... 88 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### Trials T and the disengagement rule
-#
-# Definition T (claims file): Left and Right choice trials have the onset of a turn reaching 90 d.v.a. (a move of type 1 or 2) 0.125 to 0.4 s after stimulus onset; NoGo trials have no movement from -0.05 to 0.4 s; other trials are dropped, as are disengaged trials (a Miss preceded by two or more Misses, and the run of NoGo responses at the end of the session). The trials table also has a column `included`, described as the disengagement criterion of the Methods. Both are compared here, with the code's rule for movement classes (a variant named in the claims file).
-
-# %% code [sanity]
-rows = []
-tt_m, tt_inc, tt_code = [], [], []
-for si, s in enumerate(sessions):
-    tr = s["trials"]
-    dis = S.disengaged(tr)
-    a = S.classify_trials(tr, s["moves"], "methods", rng=np.random.default_rng([1, si]))
-    b = S.classify_trials(tr, s["moves"], "methods", engaged=tr["included"].values,
-                          rng=np.random.default_rng([1, si]))
-    c = S.classify_trials(tr, s["moves"], "code", engaged=tr["included"].values,
-                          rng=np.random.default_rng([1, si]))
-    tt_m.append(a); tt_inc.append(b); tt_code.append(c)
-    rows.append({"session": s["session"], "trials": len(tr), "engaged (rule)": int((~dis).sum()),
-                 "included (file)": int(tr["included"].sum()), "differ": int(((~dis) != tr["included"].values).sum()),
-                 **{f"T {k}": int(((a["cls"] == k) & a["keep"]).sum()) for k in "LRN"},
-                 **{f"code {k}": int(((c["cls"] == k) & c["keep"]).sum()) for k in "LRN"},
-                 "moves type 3": int((s["moves"]["type"] == 3).sum())})
-trial_check = pd.DataFrame(rows)
-print(trial_check.to_string(index=False))
-print(trial_check.drop(columns="session").sum().to_string())
-print("sessions with at least 12 kept trials of each of L, R, N (rule T):",
-      sum(S.session_has_trials(t) for t in tt_m), "of", len(tt_m))
-tts = tt_m      # trials T used below
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ## Behaviour
-#
-# ### fig1c-easy-performance, fig1c-low-contrast-performance, fig1c-competing-performance
-#
-# > On high-contrast single-stimulus trials mice made 1.7 ± 2.5% incorrect choices and 10.1 ± 8.3% Misses (mean ± s.d. over 39 sessions of 10 mice). With low-contrast single stimuli 5.1 ± 6.4% incorrect choices and 29.8 ± 19.8% Misses. With competing stimuli of similar but unequal contrast (high against medium, medium against low) 20.0 ± 7.9% incorrect choices and 13.9 ± 11.7% Misses.
-#
-# Per session, the percentage of trials of the condition with a recorded response to the wrong side, and with a NoGo response; mean and s.d. over the 39 sessions. Readings (a) all trials; (b) engaged trials (the disengagement rule of definition T). The file's `included` flag is shown as a variant.
-
-# %% code [claim:fig1c-easy-performance, claim:fig1c-low-contrast-performance, claim:fig1c-competing-performance]
-def perf_table(cond, reading):
-    out = []
-    for si, s in enumerate(sessions):
-        tr = s["trials"]
-        if reading == "a":
-            m = np.ones(len(tr), bool)
-        elif reading == "b":
-            m = ~S.disengaged(tr)
-        else:
-            m = tr["included"].values
-        hi, lo = np.maximum(tr["cL"], tr["cR"]).values, np.minimum(tr["cL"], tr["cR"]).values
-        if cond == "easy":
-            c = (hi == 1.0) & (lo == 0)
-        elif cond == "low":
-            c = (hi == 0.25) & (lo == 0)
-        else:
-            c = ((hi == 1.0) & (lo == 0.5)) | ((hi == 0.5) & (lo == 0.25))
-        x = tr[c & m]
-        right_is_correct = x["cR"] > x["cL"]
-        wrong = np.where(right_is_correct, x["choice"] == 1, x["choice"] == -1)
-        out.append((100 * wrong.mean(), 100 * (x["choice"] == 0).mean(), len(x)))
-    return np.array(out)
-
-expected_perf = {"easy": (1.7, 2.5, 10.1, 8.3), "low": (5.1, 6.4, 29.8, 19.8), "competing": (20.0, 7.9, 13.9, 11.7)}
-perf_res = {}
-for cond, (e_inc, sd_inc, e_miss, sd_miss) in expected_perf.items():
-    for reading in ("a", "b", "included flag"):
-        v = perf_table(cond, reading)
-        inc, miss = v[:, 0], v[:, 1]
-        ok = abs(np.nanmean(inc) - e_inc) <= sd_inc and abs(np.nanmean(miss) - e_miss) <= sd_miss
-        perf_res[(cond, reading)] = (np.nanmean(inc), np.nanmean(miss), ok)
-        print(f"{cond:10s} reading {reading:13s}: incorrect {np.nanmean(inc):5.1f} ± {np.nanstd(inc, ddof=1):4.1f}% "
-              f"(paper {e_inc} ± {sd_inc}), Miss {np.nanmean(miss):5.1f} ± {np.nanstd(miss, ddof=1):4.1f}% "
-              f"(paper {e_miss} ± {sd_miss}); trials {int(v[:, 2].sum())}, sessions {int((v[:, 2] > 0).sum())}; "
-              f"both within tolerance: {ok}")
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% code [claim:fig1c-easy-performance, claim:fig1c-low-contrast-performance, claim:fig1c-competing-performance]
-# by subject, reading (a)
-for cond in expected_perf:
-    v = perf_table(cond, "a")
-    d = pd.DataFrame({"subject": [s["subject"] for s in sessions], "incorrect": v[:, 0], "miss": v[:, 1]})
-    print(cond, d.groupby("subject")[["incorrect", "miss"]].mean().round(1).T.to_string())
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -75
-```
-
-```
-passive visual events per session: {110: 35, 150: 3, 70: 1}
-left/right contrast pairs: {(0.0, 0.25): 390, (0.0, 0.5): 390, (0.0, 1.0): 1790, (0.25, 0.0): 30, (0.25, 0.25): 30, (0.25, 0.5): 30, (0.25, 1.0): 30, (0.5, 0.0): 30, (0.5, 0.25): 30, (0.5, 0.5): 30, (0.5, 1.0): 30, (1.0, 0.0): 390, (1.0, 0.25): 390, (1.0, 0.5): 390, (1.0, 1.0): 390}
-passive left and right contrasts share timestamps in every session: True
-passive events after the last trial in every session: True
-pupil: fraction of NaN samples, max over sessions 0.0
-             session  trials  engaged (rule)  included (file)  differ  T L  T R  T N  code L  code R  code N  moves type 3
-     Cori_2016-12-14     214             207              201      16   44   27  104      44      27      60             2
-     Cori_2016-12-17     251             237              229       8   44   32  108      44      32      82             3
-     Cori_2016-12-18     228             215              216       1   32   38   97      32      38      83             2
-Forssmann_2017-11-01     249             234              241       7   22   39  151      22      39      89             0
-Forssmann_2017-11-02     254             241              246       5   29   56  130      29      56      76             0
-Forssmann_2017-11-04     290             285              288       5   49   59  134      49      59     103             0
-Forssmann_2017-11-05     252             243              244       1   33   60  130      33      60     108             0
-    Hench_2017-06-15     250             223              223       4   54   33   89      54      33      67             0
-    Hench_2017-06-16     372             346              350       8  108   53  108     108      53      86             2
-    Hench_2017-06-17     447             430              430      12   99   48  200      99      48     179             0
-    Hench_2017-06-18     342             334              334       0   68   67  109      68      67     102         
-[... 58 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### fig1d-reaction-time-difficulty
-#
-# > Reaction times were longer in the harder conditions (low-contrast single stimuli and competing stimuli of similar contrast) than for high-contrast single stimuli (multi-way ANOVA, p < 1e-4).
-#
-# Reaction time: movement onset minus stimulus onset on Left and Right choice trials. Trial readings (a) all trials whose recorded response is Left or Right, with the onset of the first left or right turn (move type 1 or 2) after stimulus onset and before the response; (b) the L and R trials of definition T. Factor readings F1 condition class and session; F2 condition class and subject; F3 the higher contrast and the presence of a competing stimulus, and session (all trials with a stimulus). Type II sums of squares (main effects only, so type II and III agree).
-
-# %% code [claim:fig1d-reaction-time-difficulty]
-import statsmodels.formula.api as smf
-import statsmodels.api as sm
-
-def rt_table(reading):
-    out = []
-    for si, s in enumerate(sessions):
-        tr = s["trials"]
-        if reading == "a":
-            on, typ = s["moves"]["onset"].values, s["moves"]["type"].values
-            for i, r in tr.iterrows():
-                if r["choice"] == 0:
-                    continue
-                k = np.flatnonzero((on > r["stim"]) & (on < r["resp"]) & np.isin(typ, [1, 2]))
-                if len(k):
-                    out.append((si, s["subject"], r["cL"], r["cR"], on[k[0]] - r["stim"]))
-        else:
-            t = tts[si]
-            k = t[t["keep"] & t["cls"].isin(["L", "R"])]
-            for _, r in k.iterrows():
-                out.append((si, s["subject"], r["cL"], r["cR"], r["mt"]))
-    d = pd.DataFrame(out, columns=["session", "subject", "cL", "cR", "rt"])
-    hi, lo = np.maximum(d["cL"], d["cR"]), np.minimum(d["cL"], d["cR"])
-    d["cls"] = np.select([(hi == 1) & (lo == 0), (hi == 0.25) & (lo == 0),
-                          ((hi == 1) & (lo == 0.5)) | ((hi == 0.5) & (lo == 0.25))],
-                         ["high single", "low single", "competing"], "other")
-    d["hi"], d["competing"] = hi, (lo > 0).astype(int)
-    return d
-
-rt_res = {}
-for reading in ("a", "b"):
-    d = rt_table(reading)
-    c3 = d[d["cls"] != "other"]
-    means = c3.groupby("cls")["rt"].agg(["mean", "median", "size"])
-    print(f"reading ({reading}): reaction time by class, s\n{means.round(3).to_string()}")
-    shortest = means["mean"].idxmin() == "high single"
-    for fac, formula, data, term in (
-            ("F1", "rt ~ C(cls) + C(session)", c3, ["C(cls)"]),
-            ("F2", "rt ~ C(cls) + C(subject)", c3, ["C(cls)"]),
-            ("F3", "rt ~ C(hi) + C(competing) + C(session)", d[d["hi"] > 0], ["C(hi)", "C(competing)"])):
-        a = sm.stats.anova_lm(smf.ols(formula, data).fit(), typ=2)
-        ps = {t: a.loc[t, "PR(>F)"] for t in term}
-        fs = {t: round(a.loc[t, "F"], 1) for t in term}
-        ok = min(ps.values()) < 1e-4 and shortest
-        rt_res[(reading, fac)] = ok
-        print(f"  {fac}: F {fs}, p { {k: f'{v:.2e}' for k, v in ps.items()}}, n = {len(data)}; "
-              f"high single shortest: {shortest}; criterion met: {ok}")
-    # by subject
-    print("  mean RT by subject and class:\n", c3.groupby(["subject", "cls"])["rt"].mean().unstack().round(3).to_string())
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### ed1q-wheel-choice-decoding
-#
-# > Choice decoded from instantaneous wheel velocity is at chance (47.7%) 50 ms before detected movement onset and near perfect (94.6%) 50 ms after it.
-#
-# Velocity: position at t minus position at t - 10 ms, at t = onset ± 50 ms of the movements of the L and R trials of definition T (label: the movement's direction). Readings (a) the sign of the velocity (positive is Left), zero velocity counting as a guess (50%); (b) a logistic regression on velocity, 10-fold cross-validation over trials, per session. Accuracy: mean over sessions. A variant uses all left and right turns of the session (moves of type 1 or 2).
-
-# %% code [claim:ed1q-wheel-choice-decoding]
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold, cross_val_predict
-
-def wheel_decoding(which):
-    accs = {"a": [], "b": []}
-    offs = list(np.round(S.VEL_OFFSETS, 3))
-    for si, s in enumerate(sessions):
-        m = s["moves"]
-        if which == "T":
-            t = tts[si]
-            k = t[t["keep"] & t["cls"].isin(["L", "R"])]
-            on = (k["stim"] + k["mt"]).values
-            idx = np.searchsorted(m["onset"].values, on - 1e-6)
-            lab = (k["cls"] == "L").values
-        else:
-            idx = np.flatnonzero(m["type"].isin([1, 2]).values)
-            lab = (m["type"].values[idx] == 1)
-        v = s["move_vel"][idx]
-        ra, rb = [], []
-        for off in (-0.05, 0.05):
-            x = v[:, offs.index(off)]
-            pred_sign = np.where(x > 0, 1.0, np.where(x < 0, 0.0, 0.5))
-            ra.append(np.mean(np.where(pred_sign == 0.5, 0.5, pred_sign == lab)))
-            cv = StratifiedKFold(10, shuffle=True, random_state=si)
-            p = cross_val_predict(LogisticRegression(), x[:, None], lab, cv=cv)
-            rb.append(np.mean(p == lab))
-        accs["a"].append(ra); accs["b"].append(rb)
-    return {k: 100 * np.array(v) for k, v in accs.items()}
-
-ed1q = {}
-for which in ("T", "all turns"):
-    acc = wheel_decoding(which)
-    for r in ("a", "b"):
-        mb, ma = acc[r].mean(axis=0)
-        sb, sa = acc[r].std(axis=0, ddof=1)
-        ok = abs(mb - 47.7) <= 4.77 and abs(ma - 94.6) <= 9.46
-        ed1q[(which, r)] = (mb, ma, ok)
-        print(f"{which:9s} reading ({r}): -50 ms {mb:5.1f} ± {sb:4.1f}%, +50 ms {ma:5.1f} ± {sa:4.1f}% "
-              f"(paper 47.7, 94.6); within tolerance: {ok}")
-# the time course, reading (a), trials T
-acc_t = []
-for off in S.VEL_OFFSETS:
-    a = []
-    for si, s in enumerate(sessions):
-        t = tts[si]; k = t[t["keep"] & t["cls"].isin(["L", "R"])]
-        idx = np.searchsorted(s["moves"]["onset"].values, (k["stim"] + k["mt"]).values - 1e-6)
-        x = s["move_vel"][idx, list(np.round(S.VEL_OFFSETS, 3)).index(round(off, 3))]
-        lab = (k["cls"] == "L").values
-        a.append(np.mean(np.where(x == 0, 0.5, (x > 0) == lab)))
-    acc_t.append(100 * np.mean(a))
-print("sign decoding by time from onset (s):", dict(zip(np.round(S.VEL_OFFSETS, 2), np.round(acc_t, 1))))
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### early-response-fraction
-#
-# > On trials that ended in a Left or Right choice, mice turned the wheel within 400 ms of stimulus onset on 64.9 ± 14.0% (s.d.) of trials, nearly always (96.6 ± 3.4%) in the direction of their final choice.
-#
-# Per session, of all trials whose recorded response is Left or Right: readings (a) the first left or right turn (move type 1 or 2) with onset 0 to 0.4 s after stimulus onset, direction its type; (b) the first detected movement of any type with onset in that window, direction the sign of its position change. Then the percentage of those turns in the direction of the recorded response. Mean over the 39 sessions.
-
-# %% code [claim:early-response-fraction]
-early = {}
-for reading in ("a", "b"):
-    f1, f2 = [], []
-    for s in sessions:
-        tr, m = s["trials"], s["moves"]
-        on, typ, dp = m["onset"].values, m["type"].values, m["dpos"].values
-        has, same = [], []
-        for _, r in tr[tr["choice"] != 0].iterrows():
-            sel = (on >= r["stim"]) & (on <= r["stim"] + 0.4)
-            if reading == "a":
-                sel &= np.isin(typ, [1, 2])
-            k = np.flatnonzero(sel)
-            has.append(len(k) > 0)
-            if len(k):
-                left = (typ[k[0]] == 1) if reading == "a" else (dp[k[0]] > 0)
-                same.append(left == (r["choice"] == 1))
-        f1.append(100 * np.mean(has)); f2.append(100 * np.mean(same))
-    f1, f2 = np.array(f1), np.array(f2)
-    ok = abs(f1.mean() - 64.9) <= 14.0 and abs(f2.mean() - 96.6) <= 3.4
-    early[reading] = (f1.mean(), f2.mean(), ok)
-    print(f"reading ({reading}): turned within 0.4 s {f1.mean():.1f} ± {f1.std(ddof=1):.1f}% (paper 64.9 ± 14.0); "
-          f"same direction as final choice {f2.mean():.1f} ± {f2.std(ddof=1):.1f}% (paper 96.6 ± 3.4); "
-          f"within tolerance: {ok}")
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### passive-no-movement
-#
-# > In the passive replay mice hardly ever turned the wheel; 94.1% ± 0.6% of passive trials with high-contrast stimuli had no movement.
-#
-# Passive visual presentations with a high-contrast stimulus on either side. No movement: no detected movement with its onset in the window and none in progress at its start. Window readings (a) -0.05 to 0.4 s; (b) 0 to 0.4 s; value (i) mean over sessions; (ii) pooled.
-
-# %% code [claim:passive-no-movement]
-passive_res = {}
-for win in ((-0.05, 0.4), (0.0, 0.4)):
-    fr, n_all, k_all = [], 0, 0
-    for s in sessions:
-        p = s["passive"]
-        p = p[(p["cL"] == 1) | (p["cR"] == 1)]
-        on, off = s["moves"]["onset"].values, s["moves"]["offset"].values
-        still = np.array([not np.any((on < t + win[1]) & (off > t + win[0])) for t in p["t"]])
-        fr.append(100 * still.mean()); n_all += len(still); k_all += still.sum()
-    fr = np.array(fr)
-    for val, x in (("i", fr.mean()), ("ii", 100 * k_all / n_all)):
-        passive_res[(win, val)] = (x, abs(x - 94.1) <= 0.6)
-        print(f"window {win}, value ({val}): {x:.1f}% without movement (paper 94.1 ± 0.6); "
-              f"s.d. over sessions {fr.std(ddof=1):.1f}, s.e. {fr.std(ddof=1) / np.sqrt(len(fr)):.1f}; "
-              f"events {n_all}; within tolerance: {abs(x - 94.1) <= 0.6}")
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -62
-```
-
-```
-miss       26.1       16.7   19.5       11.2   39.3    28.3     28.9      30.5   24.8      6.1
-low subject    Cori  Forssmann  Hench  Lederberg  Moniz  Muller  Radnitz  Richards  Tatum  Theiler
-incorrect   5.9        6.1    7.3        3.4   14.6     5.9      2.9       3.2    1.6      3.7
-miss       29.8       38.7   33.3        5.7   46.2    20.2     44.2      38.0   34.1     25.9
-competing subject    Cori  Forssmann  Hench  Lederberg  Moniz  Muller  Radnitz  Richards  Tatum  Theiler
-incorrect  19.9       20.5   20.5       25.4   19.1    20.8     17.5      13.2   20.5     20.5
-miss       10.3       23.1   20.7        3.5   28.0    21.4     13.0      18.7    7.3      5.1
-reading (a): reaction time by class, s
-              mean  median  size
-cls                             
-competing    0.354   0.221   971
-high single  0.351   0.200  1359
-low single   0.422   0.241   398
-  F1: F {'C(cls)': np.float64(10.5)}, p {'C(cls)': '2.74e-05'}, n = 2728; high single shortest: True; criterion met: True
-  F2: F {'C(cls)': np.float64(8.8)}, p {'C(cls)': '1.54e-04'}, n = 2728; high single shortest: True; criterion met: False
-  F3: F {'C(hi)': np.float64(22.5), 'C(competing)': np.float64(0.0)}, p {'C(hi)': '1.80e-10', 'C(competing)': '9.75e-01'}, n = 5328; high single shortest: True; criterion met: True
-  mean RT by subject and class:
- cls        competing  high single  low single
-subject                                      
-Cori           0.412        0.286       0.440
-[... 42 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% code [claim:passive-no-movement]
-# variants: which movements count, and by session
-for types, label in (([1, 2], "left or right turns only (types 1, 2)"), ([0], "flinches only (type 0)")):
-    fr = []
-    for s in sessions:
-        p = s["passive"]; p = p[(p["cL"] == 1) | (p["cR"] == 1)]
-        m = s["moves"][s["moves"]["type"].isin(types)]
-        on, off = m["onset"].values, m["offset"].values
-        fr.append(100 * np.mean([not np.any((on < t + 0.4) & (off > t - 0.05)) for t in p["t"]]))
-    print(f"variant, window (-0.05, 0.4), {label}: {np.mean(fr):.1f}% of events without such a movement")
-fr = []
-for s in sessions:
-    p = s["passive"]; p = p[(p["cL"] == 1) | (p["cR"] == 1)]
-    on, off = s["moves"]["onset"].values, s["moves"]["offset"].values
-    fr.append(100 * np.mean([not np.any((on < t + 0.4) & (off > t - 0.05)) for t in p["t"]]))
-print("by session, reading (a)(i):", dict(zip([s["session"] for s in sessions], np.round(fr, 1))))
-print("range over sessions", round(min(fr), 1), "to", round(max(fr), 1))
-
-# %% md
-# ## Neurons
-#
-# Curated single units are those with phy label 2 or 3 (the units table's description: "the neurons with _phy_annotation>=2 are the ones that should be included"). Regions: the channel's label, and, for the labels that are Allen subregions of one of the 42 regions (SCig, SCsg, LSr, LSc, ORBm, TT, DP, PIR, COA), that region, through the Allen ontology of the paper's atlas tool (`steinmetz.allen_parent_map`). The six tests of the Methods are run on trials T for every curated unit (about two minutes).
-
-# %% code [sanity]
-labels = sorted(set(U.loc[U["phy"] >= 2, "region"]))
-parent = S.allen_parent_map(labels)
-print("labels of curated units:", len(labels))
-print("labels mapped to a different region of the 42:", {k: v for k, v in parent.items() if v is not None and v != k})
-print("labels outside the 42:", sorted(k for k, v in parent.items() if v is None))
-print("labels not found in the ontology:", [k for k in labels if k not in parent or (parent[k] is None and k not in ("root",) and False)])
-t0 = time.time()
-nt = S.neuron_table(sessions, tts)
-nt["label"] = nt["region"]
-nt["region"] = nt["label"].map(parent).fillna("none")
-P, E = [], []
-for si, s in enumerate(sessions):
-    p, e = S.six_tests(s["C"], tts[si], s["rew"])
-    P.append(p); E.append(e)
-P, E = np.vstack(P), np.vstack(E)
-print(f"six tests in {time.time() - t0:.0f} s; NaN p-values per test:", np.isnan(P).sum(axis=0))
-active = np.any(P < 0.05 / 6, axis=1)
-resp4 = np.any(P[:, :4] < 0.05, axis=1)
-inN = S.select_n(nt) & nt["region"].isin(S.REGIONS_42).values
-inN35 = inN & resp4
-nt_lab = nt.assign(region=nt["label"])
-inN_lab = S.select_n(nt_lab) & nt_lab["region"].isin(S.REGIONS_42).values
-print("curated units", len(nt), "| rate >= 0.1 Hz", int((nt["rate"] >= 0.1).sum()),
-      "| neurons N (42 regions)", int(inN.sum()), "| active", int((inN & active).sum()),
-      "| Figs. 3-5 set", int(inN35.sum()))
-print("with the files' labels as given: neurons N", int(inN_lab.sum()), "| active", int((inN_lab & active).sum()))
-print("trial rate of curated units, sp/s: median", round(nt["rate"].median(), 2), "range",
-      round(nt["rate"].min(), 2), "to", round(nt["rate"].max(), 1))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -14
-```
-
-```
-window (0.0, 0.4), value (i): 85.0% without movement (paper 94.1 ± 0.6); s.d. over sessions 6.6, s.e. 1.1; events 3410; within tolerance: False
-window (0.0, 0.4), value (ii): 84.9% without movement (paper 94.1 ± 0.6); s.d. over sessions 6.6, s.e. 1.1; events 3410; within tolerance: False
-variant, window (-0.05, 0.4), left or right turns only (types 1, 2): 96.3% of events without such a movement
-variant, window (-0.05, 0.4), flinches only (type 0): 88.3% of events without such a movement
-by session, reading (a)(i): {'Cori_2016-12-14': np.float64(84.3), 'Cori_2016-12-17': np.float64(81.4), 'Cori_2016-12-18': np.float64(95.7), 'Forssmann_2017-11-01': np.float64(88.9), 'Forssmann_2017-11-02': np.float64(76.7), 'Forssmann_2017-11-04': np.float64(58.9), 'Forssmann_2017-11-05': np.float64(88.9), 'Hench_2017-06-15': np.float64(82.2), 'Hench_2017-06-16': np.float64(83.3), 'Hench_2017-06-17': np.float64(84.4), 'Hench_2017-06-18': np.float64(90.0), 'Lederberg_2017-12-05': np.float64(86.7), 'Lederberg_2017-12-06': np.float64(84.4), 'Lederberg_2017-12-07': np.float64(78.9), 'Lederberg_2017-12-08': np.float64(90.0), 'Lederberg_2017-12-09': np.float64(86.7), 'Lederberg_2017-12-10': np.float64(78.9), 'Lederberg_2017-12-11': np.float64(73.3), 'Moniz_2017-05-15': np.float64(76.7), 'Moniz_2017-05-16': np.float64(88.9), 'Moniz_2017-05-18': np.float64(88.0), 'Muller_2017-01-07': np.float64(95.6), 'Muller_2017-01-08': np.float64(88.9), 'Muller_2017-01-09': np.float64(90.0), 'Radnitz_2017-01-08': np.float64(82.2), 'Radnitz_2017-01-09': np.float64(83.3), 'Radnitz_2017-01-10': np.float64(90.0), 'Radnitz_2017-01-11': np.float64(93.3), 'Radnitz_2017-01-12': np.float64(82.2), 'Richards_2017-10-29': np.float64(87.8), 'Richards_2017-10-30': np.float64(91.1), 'Richards_2017-10-31': np.float64(85.6), 'Richards_2017-11-01': np.float64(85.6), 'Richards_2017-11-02': np.float64(85.6), 'Tatum_2017-12-06': np.float64(88.9), 'Tatum_2017-12-07': np.float64(84.4), 'Tatum_2017-12-08': np.float64(81.1), 'Tat
-[... 9 more lines not kept]
-```
-
-**Agent**
-
-The neuron selection reproduces the paper's totals closely (22,263 localized, 13,430 active). Before the count claims, a quick look at what the figshare deposit holds, for the histology claim.
-
-**Agent calls Bash**
-
-```bash
-curl -s https://api.figshare.com/v2/articles/9598406 | python3 -c "
-import json,sys; d=json.load(sys.stdin); print(d.get('title'), d.get('doi'), d.get('version'))
-for f in d.get('files',[]): print(f['name'], f['size'])
-print(d.get('description','')[:1500])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && uv pip install -q fsspec aiohttp 2>&1|tail -1; python - <<'EOF'
-import requests, json, fsspec, zipfile, collections
-d=requests.get('https://api.figshare.com/v2/articles/9598406').json()
-f=[x for x in d['files'] if x['name'].endswith('.zip')][0]
-url=f['download_url']; print(url)
-with fsspec.open(url, block_size=2**20).open() as fh:
-    z=zipfile.ZipFile(fh)
-    names=z.namelist()
-print(len(names))
-kinds=collections.Counter(n.split('/')[-1].split('.')[0]+'.'+n.split('/')[-1].split('.')[1] if n.count('.')>=2 else n.split('/')[-1] for n in names)
-print(sorted(kinds))
-print([n for n in names if 'Cori_2016-12-14' in n][:80])
-EOF
-```
-
-```
-https://ndownloader.figshare.com/files/17387882
-1
-['allData.tar']
-[]
+1:import sys,re,pickle,os
+11:        exec("import pickle,os\nR=pickle.load(open(os.environ.get("RPKL","/tmp/claude-1001/R39.pkl"),"rb"))\nimport steinmetz as sm\npaths=[p for p,_ in sm.asset_paths()]", g); continue
+  File "/tmp/claude-1001/run_cells.py", line 11
+    exec("import pickle,os\nR=pickle.load(open(os.environ.get("RPKL","/tmp/claude-1001/R39.pkl"),"rb"))\nimport steinmetz as sm\npaths=[p for p,_ in sm.asset_paths()]", g); continue
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: invalid syntax. Perhaps you forgot a comma?
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && git clone -q https://github.com/nsteinme/steinmetz-et-al-2019.wiki.git wiki 2>&1|tail -1; ls wiki; grep -i -n "histolog\|dii\|ccf\|brainLocation\|\.npy" wiki/*data-files* | head -40
-```
-
-````
-Home.md
-data-files.md
-event-rasters.md
-31:   * **area.npy** : ```[arb. units] (nFrames)``` The area of the pupil extracted with DeepLabCut. Note that it is relatively very small during the discrimination task and during the passive replay because the three screens are medium-grey at this time and black elsewhere - so the much brighter overall luminance levels lead to relatively constricted pupils. 
-32:   * **blink.npy** : ```[logical] (nFrames)``` Times when a blink was detected, to be excluded from analysis. 
-33:   * **xyPos.npy** : ```[arb. units] (nFrames,2)``` The 2D position of the center of the pupil in the video frame. This is not registered to degrees visual angle, but could be used to detect saccades or other changes in eye position.
-34:   * **timestamps.npy**  
-36:   * **motionEnergy.npy** : ```[arb. units] (nFrames)``` The integrated motion energy across the whole frame, i.e. ```sum( (thisFrame-lastFrame)^2 )```. Some smoothing is applied before this operation. 
-37:   * **timestamps.npy**
-39:   * **raw.npy** : ```[V] (nSamples)```
-40:   * **timestamps.npy**
-42:   * **times.npy** ```(nLicks)```
-44:   * **intervals.npy** ```(nSpontaneousIntervals, 2)```
-46:   * **position.npy** : ```[encoder ticks] (nSamples)``` The wheel has radius 31 mm and 1440 ticks per revolution, so multiply by ```2*pi*r/tpr```=0.135 to convert to millimeters. Positive velocity (increasing numbers) correspond to clockwise turns (if looking at the wheel from behind the mouse), i.e. turns that are in the correct direction for stimuli presented to the left. Likewise negative velocity corresponds to right choices. 
-47:   * **timestamps.npy** 
-49:   * **type.npy** ```[enumerated type] (nDetectedMoves)``` 0 for 'flinches' or otherwise unclassified movements, 1 for left/clockwise turns, 2 for right/counter-clockwise turns (where again "left" means "would be the correct direction for a stimulus presented on the left). A detected movement is counted as 'left' or 'right' only if it was sufficie
-[... 28 more lines not kept]
-````
-
-**Agent**
-
-The deposit's file list (the code wiki) holds spike, behaviour and channel-location files and no histology. Now the count claims and the two link claims.
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-s=s.replace('''print("labels not found in the ontology:", [k for k in labels if k not in parent or (parent[k] is None and k not in ("root",) and False)])\n''','''print("labels not found in the ontology:", [k for k in labels if k not in S.allen_acronyms()])\n''')
-open(p,'w').write(s)
-EOF
-python3 - <<'EOF'
-p='entries/000017-steinmetz-2019/steinmetz.py'; s=open(p).read()
-old='''def allen_parent_map(labels, url: str = ALLEN_TREE_URL) -> dict:
-    """For each label, the region of the 42 that contains it in the Allen ontology (itself if it
-    is one of the 42), or None. Labels missing from the ontology map to None."""
-    import io
-    tree = pd.read_csv(io.StringIO(requests.get(url, timeout=60).text))
-'''
-new='''_TREE = {}
-
-
-def allen_tree(url: str = ALLEN_TREE_URL) -> pd.DataFrame:
-    """The Allen structure ontology (CCF 2017) of the paper's atlas tool, read once."""
-    import io
-    if url not in _TREE:
-        _TREE[url] = pd.read_csv(io.StringIO(requests.get(url, timeout=60).text))
-    return _TREE[url]
-
-
-def allen_acronyms() -> set:
-    return set(allen_tree()["acronym"])
-
-
-def allen_parent_map(labels, url: str = ALLEN_TREE_URL) -> dict:
-    """For each label, the region of the 42 that contains it in the Allen ontology (itself if it
-    is one of the 42), or None. Labels missing from the ontology map to None."""
-    tree = allen_tree(url)
-'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ## Counts
-#
-# ### recording-counts
-#
-# > Across 39 sessions in 10 mice with 92 probe insertions, 29,134 neurons were recorded (747 ± 38 per session, mean ± s.e.), 22,458 of them localized to one of 42 brain regions; the behaviour comprised 9,538 trials.
-#
-# Readings of "neurons" (a) all curated single units; (b) those with a trial firing rate of at least 0.1 Hz. Of "localizable" (i) neurons whose channel lies in one of the 42 regions; (ii) neurons of definition N. Of the trials (a) all trials; (b) trials T.
-
-# %% code [claim:recording-counts]
-n_sess, n_mice, n_probes = len(sessions), len({s["subject"] for s in sessions}), int(sess["probes"].sum())
-print(f"sessions {n_sess} (39), mice {n_mice} (10), probe insertions {n_probes} (92)")
-in42 = nt["region"].isin(S.REGIONS_42).values
-in42_lab = nt["label"].isin(S.REGIONS_42).values
-counts = {}
-for nr, mask in (("a", np.ones(len(nt), bool)), ("b", nt["rate"].values >= 0.1)):
-    per = nt[mask].groupby("s").size()
-    counts[nr] = (int(mask.sum()), per.mean(), per.std(ddof=1) / np.sqrt(len(per)))
-    print(f"neurons ({nr}): {mask.sum()} (paper 29,134 ± 2,913); per session {per.mean():.0f} ± "
-          f"{per.std(ddof=1) / np.sqrt(len(per)):.0f} s.e. (paper 747 ± 38); "
-          f"localized (i) {int((mask & in42).sum())}, files' labels {int((mask & in42_lab).sum())}")
-print(f"localized (ii), neurons N: {int(inN.sum())} (paper 22,458 ± 2,246); files' labels {int(inN_lab.sum())}")
-n_trials_all = int(sess["trials"].sum())
-n_trials_T = int(sum(t["keep"].sum() for t in tts))
-print(f"trials (a) all {n_trials_all}; (b) trials T {n_trials_T}; the files' `included` flag {int(sess['included'].sum())} "
-      f"(paper 9,538 ± 954)")
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### edtable1-region-counts
-#
-# > Extended Data Table 1 gives, for each of the 42 regions, the number of recordings, mice, task-responsive neurons and neurons.
-#
-# Per region: sessions with neurons N of the region, mice, neurons N, and neurons N active during the task (any of the six tests below 0.05/6). Reproduced when recordings and mice match exactly and the neuron counts are within 10% in at least 38 regions; partially in 30 to 37. Variants: the files' labels as given; recordings counted as probe insertions with neurons N of the region.
-
-# %% code [claim:edtable1-region-counts, claim:region-label-link]
-def region_table(ntab, mask, act):
-    rows = []
-    for r in S.REGIONS_42:
-        m = mask & (ntab["region"] == r).values
-        x = ntab[m]
-        n_probe = len({(si, S_probe) for si, S_probe in zip(x["s"], x["probe"])}) if "probe" in x else np.nan
-        e = S.ED_TABLE_1[r]
-        rows.append(dict(region=r, rec=x["s"].nunique(), rec_paper=e[0], mice=x["subject"].nunique(),
-                         mice_paper=e[1], active=int((act & m).sum()), active_paper=e[2], n=int(m.sum()),
-                         n_paper=e[3], probes=n_probe))
-    t = pd.DataFrame(rows)
-    t["n_dev_%"] = (100 * (t["n"] - t["n_paper"]) / t["n_paper"]).round(1)
-    t["active_dev_%"] = (100 * (t["active"] - t["active_paper"]) / t["active_paper"]).round(1)
-    t["match"] = (t["rec"] == t["rec_paper"]) & (t["mice"] == t["mice_paper"]) & (t["n_dev_%"].abs() <= 10)
-    return t
-
-probe_of = np.concatenate([s["units"]["probe"].values[s["good"]] for s in sessions])
-nt["probe"] = probe_of
-nt_lab["probe"] = probe_of
-reg_tab = region_table(nt, inN, active)
-print(reg_tab.to_string(index=False))
-print("regions where recordings, mice and neurons (10%) all match:", int(reg_tab["match"].sum()), "of 42")
-print("recordings match:", int((reg_tab["rec"] == reg_tab["rec_paper"]).sum()),
-      "| mice match:", int((reg_tab["mice"] == reg_tab["mice_paper"]).sum()),
-      "| neurons within 10%:", int((reg_tab["n_dev_%"].abs() <= 10).sum()),
-      "| active within 10%:", int((reg_tab["active_dev_%"].abs() <= 10).sum()))
-print("recordings counted as probes with neurons N match:", int((reg_tab["probes"] == reg_tab["rec_paper"]).sum()))
-print("totals: neurons", int(reg_tab["n"].sum()), "(table 22,458), active", int(reg_tab["active"].sum()), "(table 13,467)")
-reg_tab_lab = region_table(nt_lab, inN_lab, active)
-print("variant, files' labels as given: regions matching", int(reg_tab_lab["match"].sum()),
-      "; regions changed by the mapping:")
-print(reg_tab_lab[reg_tab_lab["region"].isin(["SCm", "SCs", "LS", "OLF", "ORB"])][
-    ["region", "rec", "rec_paper", "mice", "mice_paper", "n", "n_paper", "n_dev_%"]].to_string(index=False))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -70
+cd $TMPDIR && sed -i "11s/.*/        exec(\"import pickle,os\\\\nR=pickle.load(open(os.environ.get('RPKL','\/tmp\/claude-1001\/R39.pkl'),'rb'))\\\\nimport steinmetz as sm\\\\npaths=[p for p,_ in sm.asset_paths()]\", g); continue/" run_cells.py && sed -n 11p run_cells.py && $TMPDIR/venv/bin/python run_cells.py cells_a.py,cells_c.py,cells_j.py 2>&1 | tail -6
 ```
 
 ```
-variant, window (-0.05, 0.4), flinches only (type 0): 88.3% of events without such a movement
-by session, reading (a)(i): {'Cori_2016-12-14': np.float64(84.3), 'Cori_2016-12-17': np.float64(81.4), 'Cori_2016-12-18': np.float64(95.7), 'Forssmann_2017-11-01': np.float64(88.9), 'Forssmann_2017-11-02': np.float64(76.7), 'Forssmann_2017-11-04': np.float64(58.9), 'Forssmann_2017-11-05': np.float64(88.9), 'Hench_2017-06-15': np.float64(82.2), 'Hench_2017-06-16': np.float64(83.3), 'Hench_2017-06-17': np.float64(84.4), 'Hench_2017-06-18': np.float64(90.0), 'Lederberg_2017-12-05': np.float64(86.7), 'Lederberg_2017-12-06': np.float64(84.4), 'Lederberg_2017-12-07': np.float64(78.9), 'Lederberg_2017-12-08': np.float64(90.0), 'Lederberg_2017-12-09': np.float64(86.7), 'Lederberg_2017-12-10': np.float64(78.9), 'Lederberg_2017-12-11': np.float64(73.3), 'Moniz_2017-05-15': np.float64(76.7), 'Moniz_2017-05-16': np.float64(88.9), 'Moniz_2017-05-18': np.float64(88.0), 'Muller_2017-01-07': np.float64(95.6), 'Muller_2017-01-08': np.float64(88.9), 'Muller_2017-01-09': np.float64(90.0), 'Radnitz_2017-01-08': np.float64(82.2), 'Radnitz_2017-01-09': np.float64(83.3), 'Radnitz_2017-01-10': np.float64(90.0), 'Radnitz_2017-01-11': np.float64(93.3), 'Radnitz_2017-01-12': np.float64(82.2), 'Richards_2017-10-29': np.float64(87.8), 'Richards_2017-10-30': np.float64(91.1), 'Richards_2017-10-31': np.float64(85.6), 'Richards_2017-11-01': np.float64(85.6), 'Richards_2017-11-02': np.float64(85.6), 'Tatum_2017-12-06': np.float64(88.9), 'Tatum_2017-12-07': np.float64(84.4), 'Tatum_2017-12-08': np.float64(81.1), 'Tatum_2017-12-09': np.float64(75.6), 'Theiler_2017-10-11': np.float64(82.2)}
-range over sessions 58.9 to 95.7
-labels of curated units: 73
-labels mapped to a different region of the 42: {'COA': 'OLF', 'DP': 'OLF', 'LSc': 'LS', 'LSr': 'LS', 'ORBm': 'ORB', 'PIR': 'OLF', 'SCig': 'SCm', 'SCsg': 'SCs', 'TT': 'OLF'}
-labels outside the 42: ['AUD', 'BMA', 'CA', 'CA2', 'CL', 'EP', 'EPd', 'IC', 'LH', 'MB', 'M
-[... 64 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### supptable2-sessions
-#
-# > The 39 sessions are those of Supplementary Table 2, each with its subject, date, age and recorded areas, from the 10 subjects of Supplementary Table 1 with their sex and genotype.
-#
-# The tables' entries are typed in from the supplement (reference values of the paper). Sessions are matched by subject and date; areas are the regions with neurons N in the session. Genotype names that differ only in naming are taken as the same line: "Ai95" is the JAX name of the RCL-GCaMP6f reporter, and "Vglut1-Cre" is the Vglut1-IRES2-Cre-D line the table names.
-
-# %% code [claim:supptable2-sessions]
-SUPP_T1 = {"Cori": ("F", "tetO-G6s x CaMK-tTA"), "Forssmann": ("M", "C57BL/6J"),
-           "Hench": ("M", "tetO-G6s x CaMK-tTA"), "Lederberg": ("F", "Vglut1-IRES2-Cre-D"),
-           "Moniz": ("M", "RCL-GCaMP6f x VGlut-Cre"), "Muller": ("F", "RCL-GCaMP6f x VGlut-Cre"),
-           "Radnitz": ("F", "Snap25-GCaMP6s"), "Richards": ("M", "C57BL/6J"),
-           "Tatum": ("F", "Vglut1-IRES2-Cre-D"), "Theiler": ("F", "RCL-GCaMP6f x VGlut-Cre")}
-SAME_LINE = {"Ai95 x VGlut1-Cre": "RCL-GCaMP6f x VGlut-Cre", "Vglut1-Cre": "Vglut1-IRES2-Cre-D"}
-SUPP_T2 = """Cori 2016-12-14 11 ACA,CA3,DG,LS,MOs,SUB,VISp
-Cori 2016-12-17 12 CA1,POST,VISl,VISpm
-Cori 2016-12-18 12 CA1,DG,LP,MG,MRN,POST,VISam,VISp
-Radnitz 2017-01-08 20 ACA,ILA,MOs,MRN,OLF,PL,RSP,SCm,SCs,VISp
-Radnitz 2017-01-09 20 MOs,MRN,SCm,VISp
-Radnitz 2017-01-10 20 ACA,ACB,CA1,DG,LD,LP,MOs,PL,PO,VISam
-Radnitz 2017-01-11 20 APN,CA1,DG,LP,MRN,POL,RSP,SCm,SCs,VISpm
-Radnitz 2017-01-12 20 CP,MOp,SSp
-Muller 2017-01-07 17 ACA,ACB,MOs,MRN,OLF,PL,RSP,SCs,VISp
-Muller 2017-01-08 17 CA1,DG,LP,MOs,PO,VISam
-Muller 2017-01-09 17 CA1,MRN,RSP,SCm,SCs,VISpm,VISrl
-Moniz 2017-05-15 30 APN,CA1,DG,LP,POL,SUB,VISam,VISpm
-Moniz 2017-05-16 30 CA1,DG,LGd,LP,MG,SUB,VISa,VISp
-Moniz 2017-05-18 30 LD,MOp,SSp
-Hench 2017-06-15 31 CA1,CA3,DG,ILA,LD,LP,LS,MOs,OLF,PL,PO,SUB,VISa,VISp
-Hench 2017-06-16 32 CA1,CA3,LD,LS,OLF,ORB,PL,VISam,VISl,VPL
-Hench 2017-06-17 32 CA1,DG,GPe,MRN,POL,POST,SCm,SCs,VISl,VISp,VISrl
-Hench 2017-06-18 32 CP,LS,MOp
-Theiler 2017-10-11 46 ACA,CA1,DG,ILA,LP,MOs,PL,SUB,VISam,VISp
-Richards 2017-10-29 26 ACA,CA1,DG,LP,LS,MD,MOs,PO,RSP,SUB,VISa,VPM
-Richards 2017-10-30 26 CA3,MOs,OLF,ORB,POST,SCm,SNr
-Richards 2017-10-31 26 MOs,MRN,OLF,ORB,PAG,RSP,SCm,SCs
-Richards 2017-11-01 26 CA1,CA3,CP,LGd,SNr,VPM,ZI
-Richards 2017-11-02 26 LP,OLF,PO,RT
-Forssmann 2017-11-01 26 ACA,CA1,DG,LGd,LS,MOs,SUB,VISa,VISp,VPL
-Forssmann 2017-11-02 26 ACA,CA1,DG,MOs,OLF,ORB,PL,SUB,VISa
-Forssmann 2017-11-04 27 CA1,SSp
-Forssmann 2017-11-05 27 CA3,CP,LD,OLF,SSp,VPL
-Lederberg 2017-12-05 15 ACA,CA1,DG,LGd,MD,MOs,PL,SUB,VISam,VISp
-Lederberg 2017-12-06 15 ACA,CA1,DG,LGd,MOs,MRN,PL,SCm,SCs,VISam,ZI
-Lederberg 2017-12-07 15 CA1,MOs,MRN,ORB,PAG,RSP,SCm,SCs,VISp
-Lederberg 2017-12-08 15 BLA,CA3,GPe,LGd,VPM,ZI
-Lederberg 2017-12-09 15 CA3,LGd,SSp
-Lederberg 2017-12-10 15 LD,RT,VPL,VPM
-Lederberg 2017-12-11 15 ACB,CA3,CP,LGd,SNr,ZI
-Tatum 2017-12-06 15 ACA,CA1,DG,LGd,LP,LS,MD,MOs,RSP,VISam
-Tatum 2017-12-07 15 MOs,MRN,PL,SCm,SCs,VISam
-Tatum 2017-12-08 15 MOs,ORB,PAG,RSP,SCm,SCs,VISam
-Tatum 2017-12-09 15 BLA,CA3,GPe,LGd,SNr"""
-st2 = pd.DataFrame([l.split(" ") for l in SUPP_T2.splitlines()], columns=["subject", "date", "weeks", "areas"])
-rows = []
-for _, r in st2.iterrows():
-    k = [i for i, s in enumerate(sessions) if s["subject"] == r["subject"] and s["date"] == r["date"]]
-    if not k:
-        rows.append(dict(subject=r["subject"], date=r["date"], found=False)); continue
-    si = k[0]; s = sessions[si]
-    paper_areas = set(r["areas"].split(","))
-    ours = set(nt[inN & (nt["s"] == si).values]["region"])
-    any_unit = set(nt[(nt["s"] == si).values & nt["region"].isin(S.REGIONS_42).values]["region"])
-    age_w = int(s["age"].split()[0]) / 7
-    rows.append(dict(subject=r["subject"], date=r["date"], found=True,
-                     sex_ok=s["sex"] == SUPP_T1[r["subject"]][0],
-                     genotype_ok=SAME_LINE.get(s["genotype"], s["genotype"]) == SUPP_T1[r["subject"]][1],
-                     age_weeks_file=round(age_w, 1), weeks_paper=int(r["weeks"]),
-                     areas_match=ours == paper_areas, missing=",".join(sorted(paper_areas - ours)),
-                     extra=",".join(sorted(ours - paper_areas)),
-                     missing_any_unit=",".join(sorted(paper_areas - any_unit))))
-st2c = pd.DataFrame(rows)
-print(st2c.to_string(index=False))
-print("sessions found", int(st2c["found"].sum()), "of 39 | sex matches", int(st2c["sex_ok"].sum()),
-      "| genotype matches", int(st2c["genotype_ok"].sum()), "| areas match", int(st2c["areas_match"].sum()),
-      "| age in weeks within 1 of the table:",
-      int((abs(st2c["age_weeks_file"] - st2c["weeks_paper"]) <= 1).sum()))
-print("files' genotypes:", sorted({s["genotype"] for s in sessions}))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -45
-```
-
-```
-ORB    5          6     4           5 671      770    -12.9
-   SCm    7         11     4           6 335      997    -66.4
-   SCs    4         10     3           6 150      317    -52.7
-  subject       date  found  sex_ok  genotype_ok  age_weeks_file  weeks_paper  areas_match     missing extra missing_any_unit
-     Cori 2016-12-14   True    True         True            11.0           11         True                                   
-     Cori 2016-12-17   True    True         True            12.0           12         True                                   
-     Cori 2016-12-18   True    True         True            12.0           12        False          LP                       
-  Radnitz 2017-01-08   True    True         True            20.0           20         True                                   
-  Radnitz 2017-01-09   True    True         True            20.0           20         True                                   
-  Radnitz 2017-01-10   True    True         True            20.0           20        False          PL                       
-  Radnitz 2017-01-11   True    True         True            20.0           20        False   DG,LP,SCs                       
-  Radnitz 2017-01-12   True    True         True            20.0           20         True                                   
-   Muller 2017-01-07   True    True         True            17.0           17        False     OLF,SCs                       
-   Muller 2017-01-08   True    True         True            17.0           17        False         MOs                    MOs
-   Muller 2017-01-09   True    True         True            17.0           17         True                                   
-    Moniz 2017-05-15   True    True         True            30.0           30         True                                   
-    Moniz 2017-05-16   True    True         True            30.0           30         True                                   
-    Moniz 2017-05-18   True    True         True  
-[... 27 more lines not kept]
-```
-
-**Agent**
-
-Areas match in 24 of 39 sessions; every missing area has some units but fewer than 13 that pass the rate threshold. Testing whether the paper applied the 13-neuron rule before the rate filter.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import sys, numpy as np, pandas as pd, pickle
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-nt=pd.read_pickle('nt.pkl'); P=np.load('P.npy')
-act=np.any(P<0.05/6,axis=1)
-def variant(order):
-    x=nt.copy()
-    ok_rate=x.rate.values>=0.1
-    base=np.ones(len(x),bool) if order=='13first' else ok_rate
-    g=x[base].groupby(['s','region']).size(); big=set(g[g>=13].index)
-    m=base&np.array([(s,r) in big for s,r in zip(x.s,x.region)])
-    subj=x[m].groupby('region').subject.nunique(); regs=set(subj[subj>=2].index)
-    m=m&x.region.isin(regs).values&x.region.isin(S.REGIONS_42).values
-    rec_mask=m.copy()
-    m=m&ok_rate
-    rows=[]
-    for r in S.REGIONS_42:
-        mm=m&(x.region==r).values; rm=rec_mask&(x.region==r).values
-        e=S.ED_TABLE_1[r]
-        rows.append((r,x[rm].s.nunique(),e[0],x[rm].subject.nunique(),e[1],mm.sum(),e[3],act[mm].sum(),e[2]))
-    t=pd.DataFrame(rows,columns=['r','rec','prec','mice','pmice','n','pn','act','pact'])
-    print(order,'rec match',(t.rec==t.prec).sum(),'mice',(t.mice==t.pmice).sum(),'n within10',(abs(t.n-t.pn)/t.pn<=0.1).sum(),'total n',t.n.sum(),'act',t.act.sum())
-    print(t[(t.rec!=t.prec)|(t.mice!=t.pmice)].to_string())
-variant('rate first'); variant('13first')
-x=nt[nt.session=='Muller_2017-01-08']; print(x.groupby('label').size())
-EOF
-```
-
-```
-Exit code 1
-rate first rec match 28 mice 38 n within10 37 total n 22263 act 13430
-      r  rec  prec  mice  pmice     n    pn  act  pact
-0   ACA   10    11     8      8   659   608  435   395
-4   CA1   20    21    10     10  1156  1129  527   494
-5   CA3    8    10     6      6   427   438  243   243
-7    DG   15    16    10     10   702   711  367   336
-10   LD    5     6     4      5   276   308  179   209
-11  LGd    8    10     5      5   789   811  364   397
-12   LP    9    11     7      8   681   732  360   393
-13   LS    6     7     5      5   851   844  536   508
-17  MOs   17    19     9      9  1349  1534  842   993
-19  OLF    7     9     4      5   707   684  231   210
-22   PL    8    10     6      7   739   728  461   438
-26  RSP    8     9     5      5   587   598  320   308
-29  SCs    8    10     6      6   280   317  163   192
-31  SSp    4     5     4      4   446   461  301   296
-13first rec match 32 mice 39 n within10 37 total n 22339 act 13471
-      r  rec  prec  mice  pmice     n    pn  act  pact
-4   CA1   20    21    10     10  1156  1129  527   494
-[... 32 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pandas as pd, pickle
-nt=pd.read_pickle('nt.pkl')
-for sname in ['Muller_2017-01-08','Lederberg_2017-12-05']:
-    x=nt[nt.session==sname]; print(sname, x.groupby('region_ds').agg(n=('rate','size'), n01=('rate',lambda r:(r>=0.1).sum())).to_dict('index'))
-EOF
-```
-
-```
-Muller_2017-01-08 {'CA1': {'n': 84, 'n01': 44}, 'DG': {'n': 75, 'n01': 75}, 'LP': {'n': 164, 'n01': 158}, 'PO': {'n': 202, 'n01': 187}, 'VISam': {'n': 190, 'n01': 158}, 'root': {'n': 555, 'n01': 457}}
-Lederberg_2017-12-05 {'ACA': {'n': 16, 'n01': 11}, 'CA1': {'n': 50, 'n01': 41}, 'DG': {'n': 65, 'n01': 61}, 'LGd': {'n': 11, 'n01': 10}, 'LH': {'n': 18, 'n01': 18}, 'MD': {'n': 126, 'n01': 121}, 'MOs': {'n': 6, 'n01': 4}, 'PL': {'n': 56, 'n01': 44}, 'SUB': {'n': 105, 'n01': 101}, 'VISam': {'n': 79, 'n01': 72}, 'VISp': {'n': 66, 'n01': 57}, 'root': {'n': 100, 'n01': 92}}
+exec("import pickle,os\nR=pickle.load(open(os.environ.get('RPKL','/tmp/claude-1001/R39.pkl'),'rb'))\nimport steinmetz as sm\npaths=[p for p,_ in sm.asset_paths()]", g); continue
+Sex matches in 10 of 10 subjects
+Design: 12494 samples, 650 predictors, 734 neurons; built in 13.7 s
+One neuron, full model: 250 fits in 1.2 s
+Neurons entering the full model (Figs. 3-5 set): 13852 -> 4.5 h on one core
+Nested tests (3 kernels, about 30% of neurons): 2.9 h; total 7.4 h on one core, 1.8 h on 4 cores
+The Choice shuffle of ed5h repeats the whole test once more. Notebook limit: 1 h.
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle, pandas as pd
-ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
-for s in ss:
-    u=s['units']
-    g=u[u.phy>=2].groupby('probe').region.apply(lambda r:(r=='root').mean())
-    if (g>0.9).any(): print(s['session'], g.round(2).to_dict(), u[u.phy>=2].groupby('probe').size().to_dict())
-EOF
-```
-
-```
-Muller_2017-01-08 {'Probe1': 0.01, 'Probe2': 1.0} {'Probe1': 724, 'Probe2': 546}
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np
-f=h5py.File(remfile.File("https://api.dandiarchive.org/api/assets/45e2e274-1770-4aca-8c8b-ff5e690a1e1a/download/"),'r')
-e=f['general/extracellular_ephys/electrodes']
-g=e['group_name'][:].astype(str); loc=e['location'][:].astype(str)
-for k in ['ccf_ap','ccf_dv','ccf_lr','entry_point_rl','entry_point_ap','vertical_angle','distance_advanced']:
-    v=e[k][:]; print(k, [ (p, np.nanmin(v[g==p]), np.nanmax(v[g==p]), np.isnan(v[g==p].astype(float)).mean()) for p in sorted(set(g))])
-print({p: dict(zip(*np.unique(loc[g==p],return_counts=True))) for p in sorted(set(g))})
-EOF
-```
-
-```
-<stdin>:6: RuntimeWarning: All-NaN slice encountered
-ccf_ap [(np.str_('Probe1'), np.float64(7038.3), np.float64(8205.9), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-ccf_dv [(np.str_('Probe1'), np.float64(103.1), np.float64(3714.4), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-ccf_lr [(np.str_('Probe1'), np.float64(3779.4), np.float64(4272.5), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-entry_point_rl [(np.str_('Probe1'), np.float64(-1870.0), np.float64(-1870.0), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-entry_point_ap [(np.str_('Probe1'), np.float64(-2730.0), np.float64(-2730.0), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-vertical_angle [(np.str_('Probe1'), np.float64(70.97426545), np.float64(70.97426545), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-distance_advanced [(np.str_('Probe1'), np.float64(3800.0), np.float64(3800.0), np.float64(0.0)), (np.str_('Probe2'), np.float64(nan), np.float64(nan), np.float64(1.0))]
-{np.str_('Probe1'): {np.str_('CA1'): np.int64(24), np.str_('DG'): np.int64(54), np.str_('LP'): np.int64(68), np.str_('PO'): np.int64(56), np.str_('VISam'): np.int64(106), np.str_('root'): np.int64(66)}, np.str_('Probe2'): {np.str_('root'): np.int64(374)}}
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% code [sanity]
-# probes without brain locations
-for s in sessions:
-    u = s["units"].iloc[s["good"]]
-    frac_root = u.groupby("probe")["region"].apply(lambda r: (r == "root").mean())
-    for pr, fr in frac_root.items():
-        if fr > 0.9:
-            print(f"{s['session']} {pr}: {fr:.0%} of {int((u['probe'] == pr).sum())} curated units on channels labelled 'root' "
-                  "(no location)")
-
-# %% md
-# ### code-inclusion-link (added by this attempt)
-#
-# The paper's code holds, per session, arrays of the trials it counted as Left, Right and NoGo (`hasLeft`, `hasRight`, `hasNone`) and of the units it included, without saying which selection they are. Records are matched by session name and row (trial) or unit index. The link holds (reproduced) when every array has the length of its session's trials or units table and the Left and Right trials of definition T agree with the arrays in at least 95% of trials; partially when the lengths match and the agreement is lower; the NoGo and unit arrays are compared and reported.
-
-# %% code [claim:code-inclusion-link]
-CODE_RAW = "https://raw.githubusercontent.com/nsteinme/steinmetz-et-al-2019/9a0bea8f33e4f43b4881c5e5756aad21cdbb9920/behavior/inclusionData"
-def code_array(kind, name, suffix):
-    r = requests.get(f"{CODE_RAW}/{kind}/{name}_{suffix}.npy", timeout=60)
-    r.raise_for_status()
-    return np.load(io.BytesIO(r.content)).ravel().astype(bool)
-
-link_rows = []
-for si, s in enumerate(sessions):
-    nm = s["session"]
-    L, R, N0 = (code_array("trials", nm, k) for k in ("hasLeft", "hasRight", "hasNone"))
-    Uc = code_array("neurons", nm, "inclNeurons")
-    lens_ok = len(L) == len(R) == len(N0) == len(s["trials"]) and len(Uc) == len(s["units"])
-    t, c = tts[si], tt_code[si]
-    mineL = (t["cls"] == "L").values & t["keep"].values
-    mineR = (t["cls"] == "R").values & t["keep"].values
-    mineN = (t["cls"] == "N").values & t["keep"].values
-    codeN = (c["cls"] == "N").values & c["keep"].values
-    good_all = np.zeros(len(s["units"]), bool)
-    mine_u = np.zeros(len(s["units"]), bool)
-    sel = (nt["s"] == si).values
-    mine_u[s["good"][nt.loc[sel, "j"].values[inN35[sel]]]] = True
-    loose = np.zeros(len(s["units"]), bool)
-    loose[s["good"][nt.loc[sel, "j"].values[((nt["rate"] >= 0.1).values & resp4)[sel]]]] = True
-    link_rows.append(dict(session=nm, lengths_ok=lens_ok,
-                          LR_agree=np.mean((mineL == L) & (mineR == R)),
-                          N_code=int(N0.sum()), N_T=int(mineN.sum()), N_code_rule=int(codeN.sum()),
-                          N_T_overlap=int((N0 & mineN).sum()), N_code_rule_overlap=int((N0 & codeN).sum()),
-                          units_code=int(Uc.sum()), units_N35=int(mine_u.sum()), overlap_N35=int((Uc & mine_u).sum()),
-                          units_rate_resp=int(loose.sum()), overlap_rate_resp=int((Uc & loose).sum())))
-link = pd.DataFrame(link_rows)
-print(link.round(3).to_string(index=False))
-print("all lengths match:", bool(link["lengths_ok"].all()),
-      "| Left/Right agreement, pooled:", f"{np.average(link['LR_agree'], weights=sess['trials']):.4f}",
-      "| min over sessions:", f"{link['LR_agree'].min():.4f}")
-print(link[["N_code", "N_T", "N_code_rule", "N_T_overlap", "N_code_rule_overlap", "units_code", "units_N35",
-            "overlap_N35", "units_rate_resp", "overlap_rate_resp"]].sum().to_string())
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### region-label-link (added by this attempt)
-#
-# The files label some channels with Allen subregions (for example SCig, a layer of SCm) where the paper counts the 42 regions of Extended Data Table 1. Labels are matched to the Allen ontology of the paper's atlas tool by acronym. The link holds (reproduced) when every label of the curated units is found in the ontology and, with the mapping, the neuron count (definition N) of each region the mapping changes is within 10% of Extended Data Table 1; partially when some are. The numbers are in the cells above (labels, and the table with its variant).
-
-# %% code [claim:region-label-link]
-changed = sorted({v for k, v in parent.items() if v is not None and v != k})
-found = all(k in S.allen_acronyms() for k in labels)
-sub = reg_tab[reg_tab["region"].isin(changed)][["region", "n", "n_paper", "n_dev_%"]]
-sub_lab = reg_tab_lab[reg_tab_lab["region"].isin(changed)][["region", "n"]].rename(columns={"n": "n_files_labels"})
-print(sub.merge(sub_lab, on="region").to_string(index=False))
-print("all labels in the ontology:", found, "| regions changed by the mapping within 10%:",
-      int((sub["n_dev_%"].abs() <= 10).sum()), "of", len(sub))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -62
-```
-
-```
-Tatum 2017-12-09   True    True         True            15.0           15         True                                   
-sessions found 39 of 39 | sex matches 39 | genotype matches 39 | areas match 24 | age in weeks within 1 of the table: 39
-files' genotypes: ['Ai95 x VGlut1-Cre', 'C57BL/6J', 'Snap25-GCaMP6s', 'Vglut1-Cre', 'tetO-G6s x CaMK-tTA']
-Muller_2017-01-08 Probe2: 100% of 546 curated units on channels labelled 'root' (no location)
-             session  lengths_ok  LR_agree  N_code  N_T  N_code_rule  N_T_overlap  N_code_rule_overlap  units_code  units_N35  overlap_N35  units_rate_resp  overlap_rate_resp
-     Cori_2016-12-14        True       1.0      66  104           60           66                   60         419        369          141              377                148
-     Cori_2016-12-17        True       1.0      84  108           82           84                   82         584        478          244              546                282
-     Cori_2016-12-18        True       1.0      87   97           83           82                   83         346        288           73              340                 90
-Forssmann_2017-11-01        True       1.0      90  151           89           88                   89         921        726          321              859                382
-Forssmann_2017-11-02        True       1.0      76  130           76           74                   76         618        265           97              602                246
-Forssmann_2017-11-04        True       1.0     103  134          103          100                  103         604         13            7              613                256
-Forssmann_2017-11-05        True       1.0     109  130          108          108                  108         325        246           93              305                117
-    Hench_2017-06-15        True       1.0      80   89           67           69                   67         761        729          318              733 
-[... 49 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, requests, io
-f=h5py.File(remfile.File("https://api.dandiarchive.org/api/assets/92694e6e-84fd-4198-a7e3-64e764f8e086/download/"),'r')
-ids=f['units/id'][:]; print(ids[:20], ids.min(), ids.max(), len(ids), np.all(np.diff(ids)>0))
-eg=f['units/electrode_group'][:]; pr=np.array([f[r].name.split('/')[-1] for r in eg]); print(pr[:5], pr[-5:], [ (p,(pr==p).sum()) for p in set(pr)])
-phy=f['units/phy_annotations'][:].ravel(); dep=f['units/cluster_depths'][:].ravel()
-r=requests.get("https://raw.githubusercontent.com/nsteinme/steinmetz-et-al-2019/9a0bea8f33e4f43b4881c5e5756aad21cdbb9920/behavior/inclusionData/neurons/Cori_2016-12-14_inclNeurons.npy")
-U=np.load(io.BytesIO(r.content)).ravel()
-print('code incl on MUA units (phy 1):', U[phy==1].sum(), 'of', (phy==1).sum(), '; on good:', U[phy>=2].sum(), 'of', (phy>=2).sum())
-print('first 40 code', U[:40].astype(int)); print('first 40 phy', phy[:40])
-EOF
-```
-
-```
-[527 487 243 510 435 107 504 277  67 485 455 502 491  79 153 495 463 108
- 269  27] 0 1084 1085 False
-['Probe1' 'Probe1' 'Probe1' 'Probe1' 'Probe1'] ['Probe1' 'Probe1' 'Probe1' 'Probe1' 'Probe1'] [(np.str_('Probe1'), np.int64(551)), (np.str_('Probe2'), np.int64(534))]
-code incl on MUA units (phy 1): 111 of 351 ; on good: 308 of 734
-first 40 code [0 1 1 0 0 0 0 1 0 1 1 1 0 0 0 0 1 1 0 0 0 0 0 1 0 1 0 1 0 0 0 0 0 1 1 0 1
- 0 0 1]
-first 40 phy [3 3 1 3 3 3 3 3 3 3 3 3 3 3 1 3 3 3 3 3 1 3 3 3 3 3 3 1 3 3 1 3 1 3 3 3 3
- 1 3 3]
-Shell cwd was reset to
-```
-
-**Agent**
-
-The units table's `id` column is a permutation of 0 to 1,084, so the code's arrays probably index by that id. Testing.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import h5py, remfile, numpy as np, requests, io
-f=h5py.File(remfile.File("https://api.dandiarchive.org/api/assets/92694e6e-84fd-4198-a7e3-64e764f8e086/download/"),'r')
-ids=f['units/id'][:]; phy=f['units/phy_annotations'][:].ravel()
-r=requests.get("https://raw.githubusercontent.com/nsteinme/steinmetz-et-al-2019/9a0bea8f33e4f43b4881c5e5756aad21cdbb9920/behavior/inclusionData/neurons/Cori_2016-12-14_inclNeurons.npy")
-U=np.load(io.BytesIO(r.content)).ravel()
-A=U[ids]
-print('aligned by id: incl on MUA', A[phy==1].sum(), 'on good', A[phy>=2].sum())
-EOF
-```
-
-```
-aligned by id: incl on MUA 0 on good 419
-Shell cwd was reset to
-```
-
-**Agent**
-
-Aligned by `id`, the code's array includes no multi-unit clusters and 419 curated units, so the link works through the `id` column. Updating the loader and the dev cache.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000017-steinmetz-2019 && python3 - <<'EOF'
-p='steinmetz.py'; s=open(p).read()
-old='''    units = pd.DataFrame({
-        "phy": phy, "probe": probe, "peak_channel": pk,'''
-new='''    units = pd.DataFrame({
-        "id": u["id"][:], "phy": phy, "probe": probe, "peak_channel": pk,'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''    - `units`: every unit (phy label, probe, region, depth, spike count, mean amplitude);''','''    - `units`: every unit (its `id` in the file, phy label, probe, region, depth, spike count,
-      mean amplitude);''')
-open(p,'w').write(s)
-EOF
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle, h5py, remfile, sys
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-a=S.list_assets(); ss=pickle.load(open('sessions.pkl','rb'))
-for s,aid in zip(ss,a.asset_id):
-    f=S.open_nwb(aid); assert S._s(f['identifier'][()])==s['session']
-    s['units'].insert(0,'id',f['units/id'][:]); f.close()
-pickle.dump(ss,open('sessions.pkl','wb'),protocol=4)
-print('ok')
-EOF
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-old='''    lens_ok = len(L) == len(R) == len(N0) == len(s["trials"]) and len(Uc) == len(s["units"])'''
-new='''    lens_ok = len(L) == len(R) == len(N0) == len(s["trials"]) and len(Uc) == len(s["units"])
-    Uc = Uc[s["units"]["id"].values]     # the arrays index units by the units table's `id`'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''# The paper's code holds, per session, arrays of the trials it counted as Left, Right and NoGo (`hasLeft`, `hasRight`, `hasNone`) and of the units it included, without saying which selection they are. Records are matched by session name and row (trial) or unit index.''','''# The paper's code holds, per session, arrays of the trials it counted as Left, Right and NoGo (`hasLeft`, `hasRight`, `hasNone`) and of the units it included, without saying which selection they are. Records are matched by session name and trial row, and for units by the units table's `id` (the table's rows are not in id order; matched by row, the overlap is at chance).''')
-open(p,'w').write(s)
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -14
-```
-
-```
-ok
-N_T_overlap             2757
-N_code_rule_overlap     2775
-units_code             18248
-units_N35              13520
-overlap_N35            12299
-units_rate_resp        17579
-overlap_rate_resp      15907
-region    n  n_paper  n_dev_%  n_files_labels
-    LS  851      844      0.8             393
-   OLF  707      684      3.4             222
-   ORB  782      770      1.6             671
-   SCm 1002      997      0.5             335
-   SCs  280      317    -11.7             150
-all labels in the ontology: True | regions changed by the mapping within 10%: 4 of 5
-Shell cwd was reset to
-```
-
-**Agent**
-
-With the `id` alignment, 12,299 of the 13,520 neurons in the Figs. 3 to 5 set are in the code's 18,248 included units. Now the task-modulated fraction and Supplementary Fig. 2.
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### task-modulated-fraction
-#
-# > 60.0% of neurons (13,466) were significantly modulated during the task; of these 74.3% consistently increased and 20.2% consistently decreased their activity.
-#
-# Active: any of the six tests below 0.05/6, among neurons N. Direction of a test against baseline: the sign of the code's effect size. Readings of "consistently" (a) every test against baseline (1, 2, 3, 5, 6) with p below 0.05/6 has the same sign (test 4 left out); (b) the same over the tests with p below 0.05.
-
-# %% code [claim:task-modulated-fraction]
-base_tests = [0, 1, 2, 4, 5]
-tm = {}
-nA = int((inN & active).sum())
-print(f"active {nA} of {int(inN.sum())} neurons N = {100 * nA / inN.sum():.1f}% (paper 13,466, 60.0%)")
-for reading, thr in (("a", 0.05 / 6), ("b", 0.05)):
-    Pb, Eb = P[:, base_tests], E[:, base_tests]
-    sig = Pb < thr
-    pos = np.all(~sig | (Eb > 0), axis=1) & sig.any(axis=1)
-    neg = np.all(~sig | (Eb < 0), axis=1) & sig.any(axis=1)
-    m = inN & active
-    inc, dec = 100 * (pos & m).sum() / m.sum(), 100 * (neg & m).sum() / m.sum()
-    ok = (abs(nA - 13466) <= 1347 and abs(100 * nA / inN.sum() - 60.0) <= 6.0 and abs(inc - 74.3) <= 7.4
-          and abs(dec - 20.2) <= 2.0)
-    tm[reading] = (inc, dec, ok)
-    print(f"reading ({reading}): consistently increasing {inc:.1f}% (paper 74.3), decreasing {dec:.1f}% (paper 20.2), "
-          f"neither {100 - inc - dec:.1f}%; all four within tolerance: {ok}")
-# by subject
-d = nt[inN].assign(act=active[inN]).groupby("subject")["act"].mean().mul(100).round(1)
-print("active % by subject:", d.to_dict())
-# per test fractions
-print("fraction of neurons N significant per test (p < 0.05/6):",
-      dict(zip(range(1, 7), np.round(100 * np.nanmean(P[inN] < 0.05 / 6, axis=0), 1))))
-EOF
-cat >> $TMPDIR/nb1.py <<'EOF'
-
-# %% md
-# ### suppfig2-rate-amplitude
-#
-# > Statistically responsive neurons have higher baseline firing rates than other neurons (d' = 0.35 ± 0.04), while their spike amplitudes differ much less (d' = 0.10 ± 0.02).
-#
-# Neurons N. Baseline: mean rate -0.2 to 0 s before stimulus onset over trials T. d' = difference of means over the root mean of the two variances. Readings (a) significant on any of the six tests (p < 0.05/6) against the rest, ± a bootstrap s.e. over neurons (1,000 resamples); (b) mean ± s.e. of the six per-test d' values (significant on that test against the rest). The amplitude measure is not fixed by the claims file: readings (A1) the mean of the spike amplitudes of the unit (`spike_amps`); (A2) the peak-to-trough amplitude of its mean waveform (`waveform_mean`).
-
-# %% code [claim:suppfig2-rate-amplitude]
-def dprime(x, g):
-    a, b = x[g], x[~g]
-    return (a.mean() - b.mean()) / np.sqrt((a.var(ddof=1) + b.var(ddof=1)) / 2)
-
-rng = np.random.default_rng(20)
-x_n = nt[inN]
-sf2 = {}
-for amp in ("mean_amp", "wf_amp"):
-    for reading in ("a", "b"):
-        vals = {}
-        for meas in ("bsl", amp):
-            x = x_n[meas].values
-            if reading == "a":
-                g = active[inN]
-                d0 = dprime(x, g)
-                boots = []
-                for _ in range(1000):
-                    i = rng.integers(0, len(x), len(x))
-                    boots.append(dprime(x[i], g[i]))
-                vals[meas] = (d0, np.std(boots, ddof=1))
-            else:
-                ds = [dprime(x, P[inN, j] < 0.05 / 6) for j in range(6)]
-                vals[meas] = (np.mean(ds), np.std(ds, ddof=1) / np.sqrt(6))
-        (r0, rse), (a0, ase) = vals["bsl"], vals[amp]
-        ok = abs(r0 - 0.35) <= 0.04 and abs(a0 - 0.10) <= 0.02
-        sf2[(amp, reading)] = (r0, a0, ok)
-        print(f"amplitude {amp:8s} reading ({reading}): d' baseline rate {r0:.3f} ± {rse:.3f} (paper 0.35 ± 0.04), "
-              f"d' amplitude {a0:.3f} ± {ase:.3f} (paper 0.10 ± 0.02); both within tolerance: {ok}")
-print("baseline rate of neurons N, sp/s: median", round(x_n["bsl"].median(), 2), "| spike_amps mean, median",
-      round(x_n["mean_amp"].median(), 1), "| waveform peak-to-trough, median", round(x_n["wf_amp"].median(), 2))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | tail -14
-```
-
-```
-ORB  782      770      1.6             671
-   SCm 1002      997      0.5             335
-   SCs  280      317    -11.7             150
-all labels in the ontology: True | regions changed by the mapping within 10%: 4 of 5
-active 13430 of 22263 neurons N = 60.3% (paper 13,466, 60.0%)
-reading (a): consistently increasing 74.8% (paper 74.3), decreasing 20.9% (paper 20.2), neither 4.3%; all four within tolerance: True
-reading (b): consistently increasing 71.2% (paper 74.3), decreasing 19.4% (paper 20.2), neither 9.4%; all four within tolerance: True
-active % by subject: {'Cori': 58.2, 'Forssmann': 58.5, 'Hench': 72.7, 'Lederberg': 61.5, 'Moniz': 55.7, 'Muller': 52.6, 'Radnitz': 71.8, 'Richards': 50.2, 'Tatum': 51.2, 'Theiler': 65.8}
-fraction of neurons N significant per test (p < 0.05/6): {1: np.float64(33.1), 2: np.float64(12.7), 3: np.float64(33.3), 4: np.float64(6.3), 5: np.float64(43.3), 6: np.float64(33.4)}
-amplitude mean_amp reading (a): d' baseline rate 0.388 ± 0.012 (paper 0.35 ± 0.04), d' amplitude 0.045 ± 0.014 (paper 0.10 ± 0.02); both within tolerance: False
-amplitude mean_amp reading (b): d' baseline rate 0.314 ± 0.012 (paper 0.35 ± 0.04), d' amplitude 0.058 ± 0.028 (paper 0.10 ± 0.02); both within tolerance: False
-amplitude wf_amp   reading (a): d' baseline rate 0.388 ± 0.012 (paper 0.35 ± 0.04), d' amplitude 0.199 ± 0.014 (paper 0.10 ± 0.02); both within tolerance: False
-amplitude wf_amp   reading (b): d' baseline rate 0.314 ± 0.012 (paper 0.35 ± 0.04), d' amplitude 0.167 ± 0.037 (paper 0.10 ± 0.02); both within tolerance: False
-baseline rate of neurons N, sp/s: median 1.31 | spike_amps mean, median 111.0 | waveform peak-to-trough, median 2.6
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-# ---------------------------------------------------------------------------------------------
-# Matched contrast (definition M) and responsiveness in a condition (definition R)
-
-def matched_contrast(tt: pd.DataFrame, passive: pd.DataFrame, go: np.ndarray, nogo: np.ndarray,
-                     pas: np.ndarray, rng):
-    """Definition M: at each contralateral (right) contrast above zero, the smallest of the counts
-    of the go, nogo and passive sets is drawn at random from each (without replacement).
-    go, nogo: boolean masks over trials (rows of tt); pas: over passive events.
-    Returns (go_idx, nogo_idx, pas_idx, per-level counts)."""
-    gi, ni, pi, per = [], [], [], {}
-    for c in CONTRASTS[1:]:
-        g = np.flatnonzero(go & (tt["cR"].values == c))
-        n = np.flatnonzero(nogo & (tt["cR"].values == c))
-        p = np.flatnonzero(pas & (passive["cR"].values == c))
-        k = min(len(g), len(n), len(p))
-        per[c] = k
-        if k:
-            gi.append(rng.choice(g, k, replace=False)); ni.append(rng.choice(n, k, replace=False))
-            pi.append(rng.choice(p, k, replace=False))
-    cat = lambda x: np.sort(np.concatenate(x)) if x else np.zeros(0, int)
-    return cat(gi), cat(ni), cat(pi), per
-
-
-def condition_z(C: np.ndarray, idx: np.ndarray, denominator: str = "se") -> np.ndarray:
-    """Definition R: the mean rate 0 to 0.25 s after stimulus onset over the condition's trials,
-    z-scored against the trial-by-trial baseline (-0.1 to 0 s). denominator "se" (reading Z1):
-    s.d. of the baseline rates over trials / sqrt(number of trials); "sd" (reading Z2): their
-    s.d. A neuron with no baseline variance gets +inf when its mean rate rises, 0 otherwise."""
-    post = window_rate(C[:, idx], 0.0, 0.25)
-    bsl = window_rate(C[:, idx], -0.1, 0.0)
-    diff = post.mean(axis=1) - bsl.mean(axis=1)
-    sd = bsl.std(axis=1, ddof=1)
-    den = sd / np.sqrt(len(idx)) if denominator == "se" else sd
-    with np.errstate(divide="ignore", invalid="ignore"):
-        z = np.where(den > 0, diff / den, np.where(diff > 0, np.inf, 0.0))
-    return z
-
-
-def normalized_trace(C: np.ndarray, idx: np.ndarray, all_idx: np.ndarray) -> np.ndarray:
-    """Normalised firing rate (Methods, Data analysis): 5 ms bins, causal half-Gaussian s.d.
-    0.02 s, mean over the condition's trials, causal half-Gaussian s.d. 0.03 s, minus the
-    baseline (-0.02 to 0 s, the same trace over all task trials `all_idx`), divided by baseline
-    + 0.5 sp/s. Returns units x bins."""
-    w1, w2 = half_gaussian(0.02), half_gaussian(0.03)
-    def trace(ix):
-        r = causal_smooth(C[:, ix].astype(np.float32) / BIN, w1).mean(axis=1)
-        return causal_smooth(r, w2)
-    tr = trace(idx)
-    allr = trace(all_idx)
-    bm = (BIN_CENTRES >= -0.02) & (BIN_CENTRES <= 0)
-    b = allr[:, bm].mean(axis=1)
-    return (tr - b[:, None]) / (b[:, None] + 0.5)
-
-
-def ranksum_windows(C: np.ndarray, a_idx: np.ndarray, b_idx: np.ndarray, starts: np.ndarray,
-                    width: float = 0.1) -> np.ndarray:
-    """Two-sided rank-sum p-values (normal approximation with tie correction) between the spike
-    counts of two trial sets in sliding windows [t, t + width) relative to stimulus onset.
-    Returns units x windows."""
-    from scipy.stats import rankdata, norm
-    out = np.ones((C.shape[0], len(starts)))
-    n1, n2 = len(a_idx), len(b_idx)
-    for w, t in enumerate(starts):
-        i, j = bin_index(t), bin_index(t + width)
-        x = np.concatenate([C[:, a_idx, i:j].sum(-1), C[:, b_idx, i:j].sum(-1)], axis=1).astype(float)
-        r = rankdata(x, axis=1)
-        R1 = r[:, :n1].sum(1)
-        U = R1 - n1 * (n1 + 1) / 2
-        # tie correction
-        _, counts = None, None
-        tie = np.array([np.sum(np.unique(row, return_counts=True)[1] ** 3 - np.unique(row, return_counts=True)[1])
-                        for row in x])
-        n = n1 + n2
-        var = n1 * n2 / 12 * ((n + 1) - tie / (n * (n - 1)))
-        with np.errstate(divide="ignore", invalid="ignore"):
-            z = (U - n1 * n2 / 2) / np.sqrt(var)
-        out[:, w] = np.where(var > 0, 2 * norm.sf(np.abs(z)), 1.0)
-    return out
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000017-steinmetz-2019 && python3 - <<'EOF'
-p='steinmetz.py'; s=open(p).read()
-old='''        # tie correction
-        _, counts = None, None
-        tie = np.array([np.sum(np.unique(row, return_counts=True)[1] ** 3 - np.unique(row, return_counts=True)[1])
-                        for row in x])
-'''
-new='''        tie = np.zeros(x.shape[0])
-        for v in np.unique(x):
-            t = (x == v).sum(axis=1).astype(float)
-            tie += t ** 3 - t
-'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/devrun.py <<'EOF'
-"""Run notebook sources (several files in order) on cached sessions; caches the six tests."""
-import sys, re, pickle, time, os
-sys.path.insert(0, os.getcwd())
-files = [a for a in sys.argv[1:] if a.endswith('.py')]
-g = {}
-for fn in files:
-    src = open(fn).read()
-    blocks = re.split(r'^# %% ', src, flags=re.M)
-    for b in blocks[1:]:
-        head, _, body = b.partition('\n')
-        if head.startswith('md'): continue
-        if 'LOAD-SESSIONS' in body:
-            body = "import pickle\nsessions = pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))\n"
-        if 'p, e = S.six_tests(' in body and os.path.exists('/tmp/claude-1001/PE.pkl'):
-            body = body.replace('p, e = S.six_tests(s["C"], tts[si], s["rew"])', 'p, e = PE_CACHE[si]')
-            body = "import pickle\nPE_CACHE = pickle.load(open('/tmp/claude-1001/PE.pkl','rb'))\n" + body
-        t = time.time()
-        exec(compile(body, head, 'exec'), g)
-        if 'p, e = S.six_tests(' in body and not os.path.exists('/tmp/claude-1001/PE.pkl'):
-            pass
-        dt = time.time() - t
-        if dt > 20: print(f'[cell {head.strip()} took {dt:.0f} s]')
-    if 'P' in g and not os.path.exists('/tmp/claude-1001/PE.pkl'):
-        import numpy as np
-        # store per-session split
-        sizes = [len(s['good']) for s in g['sessions']]
-        idx = np.cumsum([0] + sizes)
-        pickle.dump([(g['P'][idx[i]:idx[i+1]], g['E'][idx[i]:idx[i+1]]) for i in range(len(sizes))], open('/tmp/claude-1001/PE.pkl', 'wb'))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | grep -E "took|active 1"
-```
-
-```
-curated units 33997 | rate >= 0.1 Hz 29269 | neurons N (42 regions) 22263 | active 13430 | Figs. 3-5 set 13520
-with the files' labels as given: neurons N 20412 | active 12267
-[cell code [sanity] took 113 s]
-totals: neurons 22263 (table 22,458), active 13430 (table 13,467)
-active 13430 of 22263 neurons N = 60.3% (paper 13,466, 60.0%)
-```
-
-**Agent**
-
-Now the Fig. 2 claims (activity order and Miss-trial activation).
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb2.py",
- "content": "\n# %% md\n# ## Population activity across regions (Fig. 2)\n#\n# Conditions of Fig. 2 are single-sided stimuli (Fig. 2a-c legend: stimuli \"presented on the contralateral or ipsilateral side alone\"): correct contralateral trials are trials T with a Right choice and a right stimulus alone; contralateral Misses are trials T of class NoGo with a right stimulus alone; passive trials are passive presentations of a right stimulus alone; ipsilateral Misses are NoGo trials with a left stimulus alone. The three contralateral sets are matched in contrast as in definition M. The claims file does not say whether the matched sets keep trials with an ipsilateral stimulus; this attempt keeps single-sided trials, as the legend describes (a question is filed). A session is kept for the matched analyses when the matched sets hold at least 10 trials, counted per set (reading M1) or over the three sets (M2).\n\n# %% code\nfig2_sets = []\nfor si, s in enumerate(sessions):\n    t, p = tts[si], s[\"passive\"]\n    k = t[\"keep\"].values\n    go = k & (t[\"cls\"] == \"R\").values & (t[\"cL\"] == 0).values & (t[\"cR\"] > 0).values\n    miss = k & (t[\"cls\"] == \"N\").values & (t[\"cL\"] == 0).values & (t[\"cR\"] > 0).values\n    pas = ((p[\"cL\"] == 0) & (p[\"cR\"] > 0)).values\n    gi, ni, pi, per = S.matched_contrast(t, p, go, miss, pas, np.random.default_rng([2, si]))\n    ipsi = np.flatnonzero(k & (t[\"cls\"] == \"N\").values & (t[\"cL\"] > 0).values & (t[\"cR\"] == 0).values)\n    ipsi_go = np.flatnonzero(k & (t[\"cls\"] == \"L\").values & (t[\"cL\"] > 0).values & (t[\"cR\"] == 0).values)\n    fig2_sets.append(dict(go=gi, miss=ni, pas=pi, ipsi_miss=ipsi, ipsi_go=ipsi_go, n=len(gi),\n                          all_task=np.flatnonzero(k)))\nn_matched = np.array([d[\"n\"] for d in fig2_sets])\nkeep_M1 = n_matched >= 10\nkeep_M2 = 3 * n_matched >= 10\nprint(\"matched trials per set and session:\", dict(zip([s[\"session\"] for s in sessions], n_matched)))\nprint(\"sessions kept, M1 (>= 10 per set):\", int(keep_M1.sum()), \"| M2 (>= 10 over the three sets):\", int(keep_M2.sum()))\nprint(\"ipsilateral Miss trials per session, median\", int(np.median([len(d[\"ipsi_miss\"]) for d in fig2_sets])),\n      \"| correct ipsilateral trials, median\", int(np.median([len(d[\"ipsi_go\"]) for d in fig2_sets])))\n\n# %% md\n# ### fig2de-activity-order\n#\n# > When the mouse chose a contralateral stimulus, activity arose first in visual cortex and superficial superior colliculus and then spread to most regions; when it chose an ipsilateral stimulus, VIS and SCs were among the last areas to respond.\n#\n# Per region, the mean over responsive neurons of the normalized rate (`steinmetz.normalized_trace`) on correct contralateral trials (matched, sessions of reading M1) and on correct ipsilateral trials (Left choice on a left stimulus alone). Responsive readings (a) the display selection (rank-sum p < 1e-4 in at least three consecutive 0.1 s windows stepped by 5 ms, between trials T with a stimulus and a movement and trials T with neither; the claims file gives no range of windows; windows starting 0 to 0.3 s after stimulus onset are used, a question is filed); (b) active during the task; (c) the Figs. 3 to 5 set. Latency readings (L1) first time the region's trace reaches half its maximum in 0 to 0.4 s; (L2) the time of the maximum. Regions are ranked by latency; the claim needs VISp, the VIS group trace and SCs in the earliest quarter on contralateral trials and VISp and SCs in the latest third on ipsilateral trials.\n\n# %% code [claim:fig2de-activity-order]\nt0 = time.time()\nstarts = np.round(np.arange(0.0, 0.3001, 0.005), 3)\ndisp = np.zeros(len(nt), bool)\ntr_contra, tr_ipsi = np.full((len(nt), S.NBINS), np.nan), np.full((len(nt), S.NBINS), np.nan)\nfor si, s in enumerate(sessions):\n    t = tts[si]; k = t[\"keep\"].values\n    stim_any = (t[\"cL\"] > 0).values | (t[\"cR\"] > 0).values\n    a_idx = np.flatnonzero(k & stim_any & t[\"cls\"].isin([\"L\", \"R\"]).values)\n    b_idx = np.flatnonzero(k & ~stim_any & (t[\"cls\"] == \"N\").values)\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    sel = inN[rows]\n    if sel.sum() == 0:\n        continue\n    C = s[\"C\"][nt[\"j\"].values[rows[sel]]]\n    pw = S.ranksum_windows(C, a_idx, b_idx, starts)\n    sig = pw < 1e-4\n    run3 = sig[:, :-2] & sig[:, 1:-1] & sig[:, 2:]\n    disp[rows[sel]] = run3.any(axis=1)\n    d = fig2_sets[si]\n    if keep_M1[si] and len(d[\"go\"]):\n        tr_contra[rows[sel]] = S.normalized_trace(C, d[\"go\"], d[\"all_task\"])\n    if len(d[\"ipsi_go\"]):\n        tr_ipsi[rows[sel]] = S.normalized_trace(C, d[\"ipsi_go\"], d[\"all_task\"])\nprint(f\"display selection and traces in {time.time() - t0:.0f} s; display-responsive neurons N: {int(disp.sum())}\")\n\ndef latency(trace, kind):\n    w = (S.BIN_CENTRES >= 0) & (S.BIN_CENTRES <= 0.4)\n    x, tt_ = trace[w], S.BIN_CENTRES[w]\n    if not np.isfinite(x).any():\n        return np.nan\n    if kind == \"L2\":\n        return tt_[np.nanargmax(x)]\n    return tt_[np.flatnonzero(x >= np.nanmax(x) / 2)[0]]\n\norder_res = {}\nfor resp_name, resp_mask in ((\"a display\", disp), (\"b active\", inN & active), (\"c Figs. 3-5\", inN35)):\n    for lat in (\"L1\", \"L2\"):\n        out = {}\n        for cond, trs in ((\"contra\", tr_contra), (\"ipsi\", tr_ipsi)):\n            lat_r = {}\n            for r in S.REGIONS_42:\n                m = resp_mask & (nt[\"region\"] == r).values & np.isfinite(trs[:, 0])\n                if m.sum():\n                    lat_r[r] = latency(np.nanmean(trs[m], axis=0), lat)\n            m = resp_mask & nt[\"region\"].isin(S.VIS).values & np.isfinite(trs[:, 0])\n            vis_lat = latency(np.nanmean(trs[m], axis=0), lat)\n            ser = pd.Series(lat_r).dropna()\n            rank = ser.rank(method=\"average\")\n            n = len(ser)\n            out[cond] = dict(n=n, VISp=ser.get(\"VISp\"), SCs=ser.get(\"SCs\"), VIS=vis_lat,\n                             rank_VISp=rank.get(\"VISp\"), rank_SCs=rank.get(\"SCs\"),\n                             rank_VIS=(ser < vis_lat).sum() + 0.5 * (1 + (ser == vis_lat).sum()),\n                             q1=np.quantile(ser, 0.25), t2=np.quantile(ser, 2 / 3), median=ser.median())\n        c, i = out[\"contra\"], out[\"ipsi\"]\n        ok = (c[\"VISp\"] <= c[\"q1\"] and c[\"VIS\"] <= c[\"q1\"] and c[\"SCs\"] <= c[\"q1\"]\n              and i[\"VISp\"] >= i[\"t2\"] and i[\"SCs\"] >= i[\"t2\"])\n        order_res[(resp_name, lat)] = ok\n        print(f\"responsive {resp_name:12s} {lat}: contra (regions {c['n']}): VISp {c['VISp']:.3f} s \"\n              f\"(rank {c['rank_VISp']:.0f}), VIS group {c['VIS']:.3f}, SCs {c['SCs']:.3f} (rank {c['rank_SCs']:.0f}); \"\n              f\"earliest-quarter cut {c['q1']:.3f}, median {c['median']:.3f} | ipsi (regions {i['n']}): VISp {i['VISp']:.3f} \"\n              f\"(rank {i['rank_VISp']:.0f}), SCs {i['SCs']:.3f} (rank {i['rank_SCs']:.0f}); latest-third cut {i['t2']:.3f}\"\n              f\" | criterion met: {ok}\")\n\n# %% code [claim:fig2de-activity-order]\n# latencies of every region, reading (b), L1\nfor cond, trs in ((\"contra\", tr_contra), (\"ipsi\", tr_ipsi)):\n    lat_r = {}\n    for r in S.REGIONS_42:\n        m = inN & active & (nt[\"region\"] == r).values & np.isfinite(trs[:, 0])\n        if m.sum():\n            lat_r[r] = (round(latency(np.nanmean(trs[m], axis=0), \"L1\"), 3), int(m.sum()))\n    print(cond, \"L1 latency (s), neurons:\", dict(sorted(lat_r.items(), key=lambda kv: kv[1][0])))\n\n# %% md\n# ### fig2fg-miss-restricted\n#\n# > On Miss trials with a contralateral stimulus, activity appeared in a visual pathway of visual areas, basal ganglia and several midbrain structures but did not spread to the whole brain; on Miss trials with an ipsilateral stimulus there was essentially no activity.\n#\n# Fraction of neurons per region significantly activated (definition R, z > 4; readings Z1, Z2) on the matched correct contralateral Go and contralateral Miss trials (sessions of reading M1), and on ipsilateral Miss trials. The claims file does not name the neurons; readings (a) the Figs. 3 to 5 set; (b) all neurons N (a question is filed). The visual pathway: VIS areas, LGd, LP, LD, SCs, CP, GPe, SNr, SCm, MRN, APN, ZI. Reproduced under one reading when (i) on contralateral Misses the mean fraction over visual pathway regions exceeds that over other regions, (ii) the mean over other regions is at least twice as large on contralateral Go as on contralateral Miss trials, (iii) the pooled fraction on ipsilateral Misses is below half that on contralateral Misses.\n\n# %% code [claim:fig2fg-miss-restricted]\nPATHWAY = set(S.VIS) | {\"LGd\", \"LP\", \"LD\", \"SCs\", \"CP\", \"GPe\", \"SNr\", \"SCm\", \"MRN\", \"APN\", \"ZI\"}\nz = {k: np.full(len(nt), np.nan) for k in (\"go\", \"miss\", \"ipsi_miss\", \"pas\")}\nz_sd = {k: np.full(len(nt), np.nan) for k in z}\nfor si, s in enumerate(sessions):\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    C = s[\"C\"][nt[\"j\"].values[rows]]\n    d = fig2_sets[si]\n    for key in z:\n        idx = d[key]\n        if key != \"ipsi_miss\" and not keep_M1[si]:\n            continue\n        if len(idx) < 2:\n            continue\n        CC = s[\"Cp\"][nt[\"j\"].values[rows]] if key == \"pas\" else C\n        z[key][rows] = S.condition_z(CC, idx, \"se\")\n        z_sd[key][rows] = S.condition_z(CC, idx, \"sd\")\n\nfg_res = {}\nfor zname, zz in ((\"Z1\", z), (\"Z2\", z_sd)):\n    for nname, nmask in ((\"a Figs. 3-5\", inN35), (\"b all N\", inN)):\n        frac = {}\n        for key in (\"go\", \"miss\", \"ipsi_miss\"):\n            v = zz[key] > 4\n            ok = np.isfinite(zz[key]) & nmask\n            frac[key] = pd.Series({r: v[ok & (nt[\"region\"] == r).values].mean()\n                                   for r in S.REGIONS_42 if (ok & (nt[\"region\"] == r).values).sum()})\n            frac[key + \"_pooled\"] = v[ok].mean()\n        vp = [r for r in frac[\"miss\"].index if r in PATHWAY]\n        oth = [r for r in frac[\"miss\"].index if r not in PATHWAY]\n        i1 = frac[\"miss\"][vp].mean() > frac[\"miss\"][oth].mean()\n        i2 = frac[\"go\"][oth].mean() >= 2 * frac[\"miss\"][oth].mean()\n        i3 = frac[\"ipsi_miss_pooled\"] < 0.5 * frac[\"miss_pooled\"]\n        fg_res[(zname, nname)] = i1 and i2 and i3\n        print(f\"{zname} neurons {nname}: contra Miss, pathway {100 * frac['miss'][vp].mean():.1f}% vs other \"\n              f\"{100 * frac['miss'][oth].mean():.1f}% (i {i1}); other regions, Go {100 * frac['go'][oth].mean():.1f}% vs Miss \"\n              f\"{100 * frac['miss'][oth].mean():.1f}% (ii {i2}); pooled ipsi Miss {100 * frac['ipsi_miss_pooled']:.1f}% vs \"\n              f\"contra Miss {100 * frac['miss_pooled']:.1f}% (iii {i3}); all: {i1 and i2 and i3}\")\n# per region, Z1, all N\nv = {k: (z[k] > 4) for k in (\"go\", \"miss\", \"ipsi_miss\")}\ntab = pd.DataFrame({k: [100 * v[k][np.isfinite(z[k]) & inN & (nt[\"region\"] == r).values].mean() for r in S.REGIONS_42]\n                    for k in v}, index=S.REGIONS_42).round(1)\ntab[\"pathway\"] = [r in PATHWAY for r in S.REGIONS_42]\nprint(tab.sort_values(\"miss\", ascending=False).to_string())\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/nb2.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py 2>&1 | tail -70
-```
-
-```
-Hench_2017-06-16        True       1.0      94  108           86           87                   86         501        478          446              497                459
-    Hench_2017-06-17        True       1.0     184  200          179          176                  179         647        475          430              638                580
-    Hench_2017-06-18        True       1.0     104  109          102           98                  102         555        518          499              549                527
-Lederberg_2017-12-05        True       1.0      40   42           39           38                   39         410        328          309              407                375
-Lederberg_2017-12-06        True       1.0      46   50           43           45                   43         596        395          358              598                545
-Lederberg_2017-12-07        True       1.0      39   48           37           36                   37         382        377          338              377                338
-Lederberg_2017-12-08        True       1.0      90  109           89           89                   89         460        381          353              454                419
-Lederberg_2017-12-09        True       1.0      59   66           57           56                   57         279         61           56              282                260
-Lederberg_2017-12-10        True       1.0      45   48           41           41                   41         270        102           96              266                231
-Lederberg_2017-12-11        True       1.0      59   69           57           56                   57         591        375          344              580                531
-    Moniz_2017-05-15        True       1.0     102  121           98           96                   98         380        361          329              375                342
-    Moniz_2017-05-16        True       1.0     128  147          126          1
-[... 58 more lines not kept]
-```
-
-**Agent**
-
-M2 (at least 10 matched trials over the three sets) keeps 34 sessions, the paper's count; M1 keeps 19. I'll run the Fig. 2 claims under both and fix the latency function for traces that never rise.
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb2.py'; s=open(p).read()
-s=s.replace('''    if not np.isfinite(x).any():
-        return np.nan''','''    if not np.isfinite(x).any() or np.nanmax(x) <= 0:
-        return np.nan''')
-s=s.replace('''    if keep_M1[si] and len(d["go"]):''','''    if len(d["go"]) >= 2:''')
-s=s.replace('''# Per region, the mean over responsive neurons of the normalized rate (`steinmetz.normalized_trace`) on correct contralateral trials (matched, sessions of reading M1)''','''# Per region, the mean over responsive neurons of the normalized rate (`steinmetz.normalized_trace`) on correct contralateral trials (matched; sessions of reading M1 or M2)''')
-old=s[s.index('order_res = {}'):s.index('# %% code [claim:fig2de-activity-order]\n# latencies')]
-new='''sess_of = nt["s"].values
-order_res = {}
-for mname, mkeep in (("M1", keep_M1), ("M2", keep_M2)):
-    ok_sess = mkeep[sess_of]
-    for resp_name, resp_mask in (("a display", disp), ("b active", inN & active), ("c Figs. 3-5", inN35)):
-        for lat in ("L1", "L2"):
-            out = {}
-            for cond, trs in (("contra", tr_contra), ("ipsi", tr_ipsi)):
-                use = resp_mask & np.isfinite(trs[:, 0]) & (ok_sess if cond == "contra" else True)
-                lat_r = {}
-                for r in S.REGIONS_42:
-                    m = use & (nt["region"] == r).values
-                    if m.sum():
-                        lat_r[r] = latency(np.nanmean(trs[m], axis=0), lat)
-                m = use & nt["region"].isin(S.VIS).values
-                vis_lat = latency(np.nanmean(trs[m], axis=0), lat)
-                ser = pd.Series(lat_r).dropna()
-                rank = ser.rank(method="average")
-                out[cond] = dict(n=len(ser), VISp=ser.get("VISp", np.nan), SCs=ser.get("SCs", np.nan), VIS=vis_lat,
-                                 rank_VISp=rank.get("VISp", np.nan), rank_SCs=rank.get("SCs", np.nan),
-                                 q1=np.quantile(ser, 0.25), t2=np.quantile(ser, 2 / 3), median=ser.median())
-            c, i = out["contra"], out["ipsi"]
-            ok = bool(c["VISp"] <= c["q1"] and c["VIS"] <= c["q1"] and c["SCs"] <= c["q1"]
-                      and i["VISp"] >= i["t2"] and i["SCs"] >= i["t2"])
-            order_res[(mname, resp_name, lat)] = ok
-            print(f"{mname} responsive {resp_name:12s} {lat}: contra ({c['n']} regions): VISp {c['VISp']:.3f} s "
-                  f"(rank {c['rank_VISp']:.0f}), VIS group {c['VIS']:.3f}, SCs {c['SCs']:.3f} (rank {c['rank_SCs']:.0f}); "
-                  f"earliest-quarter cut {c['q1']:.3f} | ipsi ({i['n']} regions): VISp {i['VISp']:.3f} "
-                  f"(rank {i['rank_VISp']:.0f}), SCs {i['SCs']:.3f} (rank {i['rank_SCs']:.0f}); latest-third cut "
-                  f"{i['t2']:.3f} | criterion met: {ok}")
-
-'''
-s=s.replace(old,new)
-# fig2fg: compute z for all sessions with >=2, evaluate per M reading
-s=s.replace('''        if key != "ipsi_miss" and not keep_M1[si]:
-            continue
-''','')
-old=s[s.index('fg_res = {}'):s.index('# per region, Z1, all N')]
-new='''fg_res = {}
-for mname, mkeep in (("M1", keep_M1), ("M2", keep_M2)):
-    ok_sess = mkeep[sess_of]
-    for zname, zz in (("Z1", z), ("Z2", z_sd)):
-        for nname, nmask in (("a Figs. 3-5", inN35), ("b all N", inN)):
-            frac = {}
-            for key in ("go", "miss", "ipsi_miss"):
-                v = zz[key] > 4
-                ok = np.isfinite(zz[key]) & nmask & (ok_sess if key != "ipsi_miss" else True)
-                frac[key] = pd.Series({r: v[ok & (nt["region"] == r).values].mean()
-                                       for r in S.REGIONS_42 if (ok & (nt["region"] == r).values).sum()})
-                frac[key + "_pooled"] = v[ok].mean()
-            vp = [r for r in frac["miss"].index if r in PATHWAY]
-            oth = [r for r in frac["miss"].index if r not in PATHWAY]
-            oth_go = [r for r in frac["go"].index if r not in PATHWAY]
-            i1 = frac["miss"][vp].mean() > frac["miss"][oth].mean()
-            i2 = frac["go"][oth_go].mean() >= 2 * frac["miss"][oth].mean()
-            i3 = frac["ipsi_miss_pooled"] < 0.5 * frac["miss_pooled"]
-            fg_res[(mname, zname, nname)] = bool(i1 and i2 and i3)
-            print(f"{mname} {zname} neurons {nname}: contra Miss, pathway {100 * frac['miss'][vp].mean():.1f}% vs other "
-                  f"{100 * frac['miss'][oth].mean():.1f}% (i {i1}); other regions, Go {100 * frac['go'][oth_go].mean():.1f}% vs "
-                  f"Miss {100 * frac['miss'][oth].mean():.1f}% (ii {i2}); pooled ipsi Miss {100 * frac['ipsi_miss_pooled']:.1f}%"
-                  f" vs contra Miss {100 * frac['miss_pooled']:.1f}% (iii {i3}); all: {i1 and i2 and i3}")
-'''
-s=s.replace(old,new)
-s=s.replace('''# per region, Z1, all N
-v = {k: (z[k] > 4) for k in ("go", "miss", "ipsi_miss")}
-tab = pd.DataFrame({k: [100 * v[k][np.isfinite(z[k]) & inN & (nt["region"] == r).values].mean() for r in S.REGIONS_42]''','''# per region, M2, Z1, all N
-v = {k: (z[k] > 4) for k in ("go", "miss", "ipsi_miss")}
-okm2 = keep_M2[sess_of]
-tab = pd.DataFrame({k: [100 * v[k][np.isfinite(z[k]) & inN & (okm2 | (k == "ipsi_miss")) & (nt["region"] == r).values].mean()
-                        for r in S.REGIONS_42]''')
-s=s.replace('''trials (sessions of reading M1), and on ipsilateral Miss trials.''','''trials (sessions of reading M1 or M2), and on ipsilateral Miss trials.''')
-open(p,'w').write(s)
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py 2>&1 | tail -72 | cut -c1-400
-```
-
-```
-amplitude wf_amp   reading (b): d' baseline rate 0.314 ± 0.012 (paper 0.35 ± 0.04), d' amplitude 0.167 ± 0.037 (paper 0.10 ± 0.02); both within tolerance: False
-baseline rate of neurons N, sp/s: median 1.31 | spike_amps mean, median 111.0 | waveform peak-to-trough, median 2.6
-matched trials per set and session: {'Cori_2016-12-14': np.int64(14), 'Cori_2016-12-17': np.int64(17), 'Cori_2016-12-18': np.int64(17), 'Forssmann_2017-11-01': np.int64(16), 'Forssmann_2017-11-02': np.int64(12), 'Forssmann_2017-11-04': np.int64(12), 'Forssmann_2017-11-05': np.int64(13), 'Hench_2017-06-15': np.int64(14), 'Hench_2017-06-16': np.int64(23), 'Hench_2017-06-17': np.int64(20), 'Hench_201
-sessions kept, M1 (>= 10 per set): 19 | M2 (>= 10 over the three sets): 34
-ipsilateral Miss trials per session, median 13 | correct ipsilateral trials, median 22
-display selection and traces in 117 s; display-responsive neurons N: 4068
-M1 responsive a display    L1: contra (39 regions): VISp 0.082 s (rank 3), VIS group 0.092, SCs 0.078 (rank 2); earliest-quarter cut 0.115 | ipsi (42 regions): VISp 0.227 (rank 32), SCs 0.232 (rank 34); latest-third cut 0.217 | criterion met: True
-M1 responsive a display    L2: contra (39 regions): VISp 0.278 s (rank 16), VIS group 0.307, SCs 0.107 (rank 1); earliest-quarter cut 0.237 | ipsi (42 regions): VISp 0.327 (rank 21), SCs 0.332 (rank 24); latest-third cut 0.366 | criterion met: False
-M1 responsive b active     L1: contra (40 regions): VISp 0.078 s (rank 3), VIS group 0.087, SCs 0.082 (rank 6); earliest-quarter cut 0.091 | ipsi (42 regions): VISp 0.247 (rank 37), SCs 0.227 (rank 30); latest-third cut 0.224 | criterion met: True
-M1 responsive b active     L2: contra (40 regions): VISp 0.307 s (rank 21), VIS group 0.307, SCs 0.327 (rank 26); earliest-quarter cut 0.227 | ipsi (42 regions): VISp 0.327 (rank 21), SCs 0.327 (rank 21); latest-third cut 0.378 | criterion met: False
-M1 responsive c Figs. 3-5  L1: contra (40 regions): VISp 0.078 s (rank 2), VIS group 0.08
-[... 61 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-# ---------------------------------------------------------------------------------------------
-# Combined-conditions choice probability (ccCP/choiceProbShuf.m, mannWhitneyUshuf.m)
-
-def cccp(X: np.ndarray, label: np.ndarray, cond: np.ndarray, n_shuf: int = 0, rng=None):
-    """ccCP of each unit: X units x trials (spike counts), label boolean (class A), cond the
-    stimulus condition of each trial. Within each condition holding both classes, the
-    Mann-Whitney numerator (ties counted half, through tied ranks) of A against B is summed
-    over conditions and divided by the summed nA * nB. With n_shuf > 0, labels are permuted
-    within each condition (the same permutations for every unit) and p is the tied rank of the
-    true value among [true, shuffles] / (1 + n_shuf), as choiceProbShuf.m. Returns (cp, p,
-    n_trials_used)."""
-    from scipy.stats import rankdata
-    num = np.zeros((X.shape[0], 1 + n_shuf))
-    den = 0.0
-    used = 0
-    for c in np.unique(cond):
-        m = cond == c
-        a, b = label & m, ~label & m
-        na, nb = a.sum(), b.sum()
-        if na == 0 or nb == 0:
-            continue
-        idx = np.flatnonzero(m)
-        r = rankdata(X[:, idx], axis=1)
-        lab = label[idx]
-        sel = [lab]
-        for _ in range(n_shuf):
-            z = np.zeros(len(idx), bool)
-            z[rng.choice(len(idx), na, replace=False)] = True
-            sel.append(z)
-        Sm = np.stack(sel, axis=1).astype(float)
-        num += r @ Sm - na * (na + 1) / 2
-        den += na * nb
-        used += len(idx)
-    if den == 0:
-        return np.full(X.shape[0], np.nan), np.full(X.shape[0], np.nan), 0
-    cp = num / den
-    if n_shuf:
-        rk = rankdata(cp, axis=1)
-        p = rk[:, 0] / (1 + n_shuf)
-    else:
-        p = np.full(X.shape[0], np.nan)
-    return cp[:, 0], p, used
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb3.py",
- "content": "\n# %% md\n# ## Engagement (Fig. 5, Extended Data Figs. 6, 7 and 9, Supplementary Fig. 3)\n#\n# Matched contrast as in definition M: trials T with a contralateral contrast above zero (any ipsilateral contrast), Go (Left or Right), NoGo (Miss) and passive presentations with that contralateral contrast, drawn to equal numbers per contrast level. Sessions kept when the matched sets hold at least 10 trials, per set (M1) or over the three sets (M2). Pre-stimulus rates are spike counts in the window divided by its length; the windows are the claims' readings.\n\n# %% code\neng_sets = []\nfor si, s in enumerate(sessions):\n    t, p = tts[si], s[\"passive\"]\n    k = t[\"keep\"].values\n    go = k & t[\"cls\"].isin([\"L\", \"R\"]).values & (t[\"cR\"] > 0).values\n    miss = k & (t[\"cls\"] == \"N\").values & (t[\"cR\"] > 0).values\n    pas = (p[\"cR\"] > 0).values\n    gi, ni, pi, per = S.matched_contrast(t, p, go, miss, pas, np.random.default_rng([3, si]))\n    eng_sets.append(dict(go=gi, miss=ni, pas=pi, n=len(gi)))\nn_eng = np.array([d[\"n\"] for d in eng_sets])\nkeepE_M1, keepE_M2 = n_eng >= 10, 3 * n_eng >= 10\nprint(\"matched trials per set:\", dict(zip([s[\"session\"] for s in sessions], n_eng)))\nprint(\"sessions kept: M1\", int(keepE_M1.sum()), \"| M2\", int(keepE_M2.sum()), \"(paper 34)\")\nWINDOWS = {\"a\": (-0.2, 0.0), \"b\": (-0.25, -0.05)}\n\n# %% md\n# ### fig5b-miss-more-than-passive\n#\n# > More neurons were significantly activated by contralateral visual stimuli on Miss trials in the task than on passive trials with the same contrasts, and passive responses were weaker than those on Miss trials.\n#\n# Matched Miss and passive trials; per region the fraction of neurons significantly activated (definition R, z > 4; readings Z1, Z2). Neurons (a) the Figs. 3 to 5 set; (b) all neurons N. Passive trials with wheel movement are kept. Reproduced under one reading when the pooled fraction is larger on Miss than on passive trials, the excess is positive in more than half the regions, and 34 sessions are kept.\n\n# %% code [claim:fig5b-miss-more-than-passive]\nzE = {(k, d): np.full(len(nt), np.nan) for k in (\"miss\", \"pas\", \"go\") for d in (\"se\", \"sd\")}\nfor si, s in enumerate(sessions):\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    e = eng_sets[si]\n    if e[\"n\"] < 2:\n        continue\n    for key in (\"miss\", \"pas\", \"go\"):\n        CC = s[\"Cp\"] if key == \"pas\" else s[\"C\"]\n        for dname in (\"se\", \"sd\"):\n            zE[(key, dname)][rows] = S.condition_z(CC[nt[\"j\"].values[rows]], e[key], dname)\nfig5b = {}\nfor mname, mkeep in ((\"M1\", keepE_M1), (\"M2\", keepE_M2)):\n    oks = mkeep[sess_of]\n    for zname, dname in ((\"Z1\", \"se\"), (\"Z2\", \"sd\")):\n        for nname, nmask in ((\"a Figs. 3-5\", inN35), (\"b all N\", inN)):\n            m = nmask & oks & np.isfinite(zE[(\"miss\", dname)])\n            vm, vp = zE[(\"miss\", dname)] > 4, zE[(\"pas\", dname)] > 4\n            per_r = pd.DataFrame({r: (vm[m & (nt[\"region\"] == r).values].mean(), vp[m & (nt[\"region\"] == r).values].mean())\n                                  for r in S.REGIONS_42 if (m & (nt[\"region\"] == r).values).sum()}, index=[\"miss\", \"pas\"]).T\n            excess = per_r[\"miss\"] - per_r[\"pas\"]\n            ok = vm[m].mean() > vp[m].mean() and (excess > 0).mean() > 0.5 and int(mkeep.sum()) == 34\n            fig5b[(mname, zname, nname)] = (vm[m].mean(), vp[m].mean(), (excess > 0).mean(), ok)\n            print(f\"{mname} {zname} {nname}: pooled Miss {100 * vm[m].mean():.1f}% vs passive {100 * vp[m].mean():.1f}%; \"\n                  f\"regions with positive excess {int((excess > 0).sum())} of {len(excess)}, zero {int((excess == 0).sum())}; \"\n                  f\"sessions {int(mkeep.sum())}; criterion met: {ok}\")\nm = inN & keepE_M2[sess_of] & np.isfinite(zE[(\"miss\", \"se\")])\nprint(\"per region, M2 Z1 all N, % activated (Miss, passive):\",\n      {r: (round(100 * (zE[(\"miss\", \"se\")] > 4)[m & (nt[\"region\"] == r).values].mean(), 1),\n           round(100 * (zE[(\"pas\", \"se\")] > 4)[m & (nt[\"region\"] == r).values].mean(), 1)) for r in S.REGIONS_42})\n\n# %% md\n# ### Pre-stimulus rates\n#\n# Per neuron: mean pre-stimulus rate on trials T without wheel movement in the window, on passive events without movement (visual presentations, and all replay events: visual, beeps, valve clicks, noise bursts), and on the matched Go, Miss and passive trials. Both windows.\n\n# %% code\ndef moving_in(moves, t, a, b):\n    on, off = moves[\"onset\"].values, moves[\"offset\"].values\n    return np.array([np.any((on < x + b) & (off > x + a)) for x in t])\n\npre = {}\nfor wname, (a, b) in WINDOWS.items():\n    cols = {k: np.full(len(nt), np.nan) for k in (\"task\", \"pas_vis\", \"pas_all\", \"go\", \"miss\", \"pas_m\", \"task_all\")}\n    for si, s in enumerate(sessions):\n        rows = np.flatnonzero((nt[\"s\"] == si).values)\n        J = nt[\"j\"].values[rows]\n        t = tts[si]\n        k = t[\"keep\"].values & ~moving_in(s[\"moves\"], t[\"stim\"].values, a, b)\n        rT = S.window_rate(s[\"C\"][J], a, b)\n        rP = S.window_rate(s[\"Cp\"][J], a, b)\n        pv = ~moving_in(s[\"moves\"], s[\"passive\"][\"t\"].values, a, b)\n        po = ~moving_in(s[\"moves\"], s[\"passive_other\"][\"t\"].values, a, b)\n        rO = s[\"Co\"][J][:, :, 0 if wname == \"b\" else 1] / (b - a)\n        cols[\"task\"][rows] = rT[:, k].mean(axis=1)\n        cols[\"task_all\"][rows] = rT.mean(axis=1)\n        cols[\"pas_vis\"][rows] = rP[:, pv].mean(axis=1)\n        cols[\"pas_all\"][rows] = np.concatenate([rP[:, pv], rO[:, po]], axis=1).mean(axis=1)\n        e = eng_sets[si]\n        if e[\"n\"]:\n            cols[\"go\"][rows] = rT[:, e[\"go\"]].mean(axis=1)\n            cols[\"miss\"][rows] = rT[:, e[\"miss\"]].mean(axis=1)\n            cols[\"pas_m\"][rows] = rP[:, e[\"pas\"]].mean(axis=1)\n    pre[wname] = pd.DataFrame(cols)\nprint({w: pre[w].describe().loc[[\"count\", \"mean\", \"min\", \"max\"]].round(2).to_dict() for w in pre})\n\n# %% md\n# ### fig5c-prestimulus-task-vs-passive\n#\n# > Before the stimulus, neocortex and sensory thalamus were less active in the task than in the passive context, while basal ganglia and other subcortical choice areas were more active; VISp was lower and CP higher on Miss trials than on passive trials.\n#\n# Per region, neurons N, log10(rate + 1) of each neuron's mean rate -0.25 to -0.05 s in task (trials T) and passive conditions, trials with movement in the window dropped. Factor readings (a) condition, session and neuron nested in session (Methods): with one observation per neuron and condition, the neuron terms absorb session and the condition test is the paired t-test of the neuron differences (F = t squared); (b) condition, session and subject (Extended Data Fig. 9a legend), ordinary least squares, type II. Passive readings (a) all replay events; (b) visual presentations. A region differs when the condition p < 0.0012. VISp and CP: mean rate over neurons on matched Miss against passive trials, windows (a) and (b).\n\n# %% code [claim:fig5c-prestimulus-task-vs-passive]\nfrom statsmodels.formula.api import ols\ndef region_anova(df, factors):\n    if factors == \"a\":\n        d = df[\"task\"] - df[\"pas\"]\n        tstat, p = stats.ttest_1samp(d, 0.0)\n        return p, d.mean()\n    long = pd.concat([df.assign(y=df[\"task\"], cond=\"task\"), df.assign(y=df[\"pas\"], cond=\"passive\")])\n    fit = ols(\"y ~ C(cond) + C(session) + C(subject)\", long).fit()\n    tab = sm.stats.anova_lm(fit, typ=2)\n    return tab.loc[\"C(cond)\", \"PR(>F)\"], (df[\"task\"] - df[\"pas\"]).mean()\n\nfig5c_regions = {}\nfor fac in (\"a\", \"b\"):\n    for pas_r, pcol in ((\"a\", \"pas_all\"), (\"b\", \"pas_vis\")):\n        rows = []\n        w = pre[\"b\"]\n        for r in S.REGIONS_42:\n            m = inN & (nt[\"region\"] == r).values & np.isfinite(w[\"task\"].values) & np.isfinite(w[pcol].values)\n            df = pd.DataFrame({\"task\": np.log10(w[\"task\"].values[m] + 1), \"pas\": np.log10(w[pcol].values[m] + 1),\n                               \"session\": nt[\"s\"].values[m], \"subject\": nt[\"subject\"].values[m]})\n            p, dlt = region_anova(df, fac)\n            rows.append((r, len(df), p, dlt, r in S.NEOCORTEX))\n        res = pd.DataFrame(rows, columns=[\"region\", \"n\", \"p\", \"task_minus_passive_log\", \"neocortex\"])\n        res[\"differs\"] = res[\"p\"] < 0.0012\n        diff = res[res[\"differs\"]]\n        neo_ok = (diff[diff[\"neocortex\"]][\"task_minus_passive_log\"] < 0).all()\n        sub = diff[~diff[\"neocortex\"] & ~diff[\"region\"].isin(S.VISUAL_THALAMUS)]\n        sub_ok = (sub[\"task_minus_passive_log\"] > 0).all()\n        fig5c_regions[(fac, pas_r)] = list(diff[\"region\"])\n        print(f\"factors ({fac}), passive ({pas_r}): {len(diff)} regions differ; neocortical differing lower in task: \"\n              f\"{int((diff[diff['neocortex']]['task_minus_passive_log'] < 0).sum())} of {int(diff['neocortex'].sum())}; \"\n              f\"non-neocortical (not visual thalamus) higher: {int((sub['task_minus_passive_log'] > 0).sum())} of {len(sub)}\"\n              f\" | exceptions: {list(diff[diff['neocortex'] & (diff['task_minus_passive_log'] >= 0)]['region']) + list(sub[sub['task_minus_passive_log'] <= 0]['region'])}\")\n        fig5c_regions[(fac, pas_r, \"ok\")] = bool(neo_ok and sub_ok)\n        if fac == \"a\" and pas_r == \"a\":\n            print(res.sort_values(\"task_minus_passive_log\").round(5).to_string(index=False))\nfor wname in WINDOWS:\n    w = pre[wname]\n    for mname, mkeep in ((\"M1\", keepE_M1), (\"M2\", keepE_M2)):\n        oks = mkeep[sess_of]\n        vals = {r: (np.nanmean(w[\"miss\"].values[inN & oks & (nt[\"region\"] == r).values]),\n                    np.nanmean(w[\"pas_m\"].values[inN & oks & (nt[\"region\"] == r).values])) for r in (\"VISp\", \"CP\")}\n        fig5c_regions[(\"VISpCP\", wname, mname)] = vals[\"VISp\"][0] < vals[\"VISp\"][1] and vals[\"CP\"][0] > vals[\"CP\"][1]\n        print(f\"window ({wname}) {mname}: VISp Miss {vals['VISp'][0]:.2f} vs passive {vals['VISp'][1]:.2f} sp/s; \"\n              f\"CP Miss {vals['CP'][0]:.2f} vs passive {vals['CP'][1]:.2f} sp/s\")\n\n# %% md\n# ### ed6b-prestimulus-order\n#\n# > Pre-stimulus firing in midbrain, basal ganglia and hippocampal regions is ordered Passive < Miss < Go, while in neocortical areas it is higher in Passive than in Miss and Go.\n#\n# Per region, mean over neurons (Figs. 3 to 5 set) of the mean pre-stimulus rate on matched Go, Miss and passive trials. Windows (a) and (b). Reproduced under one reading when more than half the midbrain, basal ganglia and hippocampal regions show Passive < Miss < Go and more than half the neocortical regions show Passive above both.\n\n# %% code [claim:ed6b-prestimulus-order]\nGROUPS3 = set(S.GROUP_MIDBRAIN) | set(S.GROUP_BASAL_GANGLIA) | set(S.GROUP_HIPPOCAMPUS)\ned6b = {}\nfor wname in WINDOWS:\n    for mname, mkeep in ((\"M1\", keepE_M1), (\"M2\", keepE_M2)):\n        w = pre[wname]; oks = mkeep[sess_of]\n        rows = []\n        for r in S.REGIONS_42:\n            m = inN35 & oks & (nt[\"region\"] == r).values & np.isfinite(w[\"go\"].values)\n            if m.sum():\n                rows.append((r, m.sum(), w[\"pas_m\"].values[m].mean(), w[\"miss\"].values[m].mean(), w[\"go\"].values[m].mean()))\n        t = pd.DataFrame(rows, columns=[\"region\", \"n\", \"passive\", \"miss\", \"go\"]).set_index(\"region\")\n        t[\"ordered\"] = (t[\"passive\"] < t[\"miss\"]) & (t[\"miss\"] < t[\"go\"])\n        t[\"passive_top\"] = (t[\"passive\"] > t[\"miss\"]) & (t[\"passive\"] > t[\"go\"])\n        g3 = t[t.index.isin(GROUPS3)]\n        nc = t[t.index.isin(S.NEOCORTEX)]\n        ok = g3[\"ordered\"].mean() > 0.5 and nc[\"passive_top\"].mean() > 0.5\n        ed6b[(wname, mname)] = ok\n        print(f\"window ({wname}) {mname}: midbrain/basal ganglia/hippocampus ordered P<M<G {int(g3['ordered'].sum())} of {len(g3)}; \"\n              f\"neocortex passive highest {int(nc['passive_top'].sum())} of {len(nc)}; criterion met: {ok}\")\n        if wname == \"a\" and mname == \"M2\":\n            print(t.round(2).to_string())\n\n# %% md\n# ### fig5d-go-miss-matches-task-passive\n#\n# > Regions whose pre-stimulus rate differed between task and passive contexts showed similar differences between Go and Miss trials.\n#\n# Per region, mean over neurons (as ed6b) of task minus passive (matched Go and Miss together against matched passive) and of Go minus Miss; Pearson correlation across regions. Reproduced under one reading when r > 0 with p < 0.05. Variant: all neurons N (the Fig. 5d legend: \"averaged over all neurons in a region\").\n\n# %% code [claim:fig5d-go-miss-matches-task-passive]\ndef region_diffs(wname, mkeep, nmask):\n    w = pre[wname]; oks = mkeep[sess_of]\n    rows = []\n    for r in S.REGIONS_42:\n        m = nmask & oks & (nt[\"region\"] == r).values & np.isfinite(w[\"go\"].values)\n        if m.sum():\n            task = (w[\"go\"].values[m] + w[\"miss\"].values[m]) / 2\n            rows.append((r, m.sum(), (task - w[\"pas_m\"].values[m]).mean(), (w[\"go\"].values[m] - w[\"miss\"].values[m]).mean()))\n    return pd.DataFrame(rows, columns=[\"region\", \"n\", \"task_minus_passive\", \"go_minus_miss\"]).set_index(\"region\")\nfig5d = {}\nfor wname in WINDOWS:\n    for mname, mkeep in ((\"M1\", keepE_M1), (\"M2\", keepE_M2)):\n        for nname, nmask in ((\"Figs. 3-5\", inN35), (\"all N (variant)\", inN)):\n            t = region_diffs(wname, mkeep, nmask)\n            r, p = stats.pearsonr(t[\"task_minus_passive\"], t[\"go_minus_miss\"])\n            fig5d[(wname, mname, nname)] = (r, p, r > 0 and p < 0.05)\n            print(f\"window ({wname}) {mname} {nname}: r = {r:.3f}, p = {p:.2g}, regions {len(t)}; \"\n                  f\"range task-passive {t['task_minus_passive'].min():.2f} to {t['task_minus_passive'].max():.2f}, \"\n                  f\"go-miss {t['go_minus_miss'].min():.2f} to {t['go_minus_miss'].max():.2f} sp/s\")\n\n# %% md\n# ### ed7f-detect-probability-engagement\n#\n# > The pre-stimulus detect probability of each area correlated with its task minus passive difference (r = 0.48, p = 0.001), as the Go minus Miss difference does.\n#\n# Per neuron (as fig5d) the pre-stimulus detect probability: ccCP of Go (L or R) against NoGo trials T within the 16 stimulus conditions, minus 0.5; per area the mean over neurons; Pearson r with the area's task minus passive rate (as fig5d). Windows (a), (b). Reproduced under one reading when r is within 0.48 ± 0.048 and p < 0.05.\n\n# %% code [claim:ed7f-detect-probability-engagement]\ndp_pre = {w: np.full(len(nt), np.nan) for w in WINDOWS}\nfor si, s in enumerate(sessions):\n    rows = np.flatnonzero((nt[\"s\"] == si).values); J = nt[\"j\"].values[rows]\n    t = tts[si]; k = t[\"keep\"].values\n    cond = (t[\"cL\"].values * 10 + t[\"cR\"].values * 100)[k]\n    lab = t[\"cls\"].isin([\"L\", \"R\"]).values[k]\n    for wname, (a, b) in WINDOWS.items():\n        X = S.window_rate(s[\"C\"][J][:, k], a, b)\n        cp, _, _ = S.cccp(X, lab, cond)\n        dp_pre[wname][rows] = cp\ned7f = {}\nfor wname in WINDOWS:\n    for mname, mkeep in ((\"M1\", keepE_M1), (\"M2\", keepE_M2)):\n        for nname, nmask in ((\"Figs. 3-5\", inN35), (\"all N (variant)\", inN)):\n            t = region_diffs(wname, mkeep, nmask)\n            dpm = pd.Series({r: np.nanmean(dp_pre[wname][nmask & mkeep[sess_of] & (nt[\"region\"] == r).values]) - 0.5\n                             for r in t.index})\n            r, p = stats.pearsonr(dpm, t[\"task_minus_passive\"])\n            r2, p2 = stats.pearsonr(dpm, t[\"go_minus_miss\"])\n            ok = abs(r - 0.48) <= 0.048 and p < 0.05\n            ed7f[(wname, mname, nname)] = (r, p, ok)\n            print(f\"window ({wname}) {mname} {nname}: DP-0.5 vs task-passive r = {r:.3f} (p = {p:.2g}); vs go-miss r = {r2:.3f} \"\n                  f\"(p = {p2:.2g}); DP-0.5 range {dpm.min():.3f} to {dpm.max():.3f}; within tolerance: {ok}\")\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/nb3.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py 2>&1 | sed -n '/matched trials per set: /,$p' | cut -c1-600
-```
-
-```
-matched trials per set: {'Cori_2016-12-14': np.int64(38), 'Cori_2016-12-17': np.int64(40), 'Cori_2016-12-18': np.int64(29), 'Forssmann_2017-11-01': np.int64(50), 'Forssmann_2017-11-02': np.int64(48), 'Forssmann_2017-11-04': np.int64(51), 'Forssmann_2017-11-05': np.int64(36), 'Hench_2017-06-15': np.int64(36), 'Hench_2017-06-16': np.int64(41), 'Hench_2017-06-17': np.int64(63), 'Hench_2017-06-18': np.int64(28), 'Lederberg_2017-12-05': np.int64(0), 'Lederberg_2017-12-06': np.int64(8), 'Lederberg_2017-12-07': np.int64(6), 'Lederberg_2017-12-08': np.int64(46), 'Lederberg_2017-12-09': np.int64(22), '
-sessions kept: M1 36 | M2 38 (paper 34)
-M1 Z1 a Figs. 3-5: pooled Miss 5.1% vs passive 11.5%; regions with positive excess 4 of 42, zero 0; sessions 36; criterion met: False
-M1 Z1 b all N: pooled Miss 3.4% vs passive 11.9%; regions with positive excess 0 of 42, zero 0; sessions 36; criterion met: False
-M1 Z2 a Figs. 3-5: pooled Miss 0.1% vs passive 8.7%; regions with positive excess 0 of 42, zero 0; sessions 36; criterion met: False
-M1 Z2 b all N: pooled Miss 0.1% vs passive 9.7%; regions with positive excess 0 of 42, zero 0; sessions 36; criterion met: False
-M2 Z1 a Figs. 3-5: pooled Miss 4.9% vs passive 11.7%; regions with positive excess 4 of 42, zero 0; sessions 38; criterion met: False
-M2 Z1 b all N: pooled Miss 3.3% vs passive 12.1%; regions with positive excess 0 of 42, zero 0; sessions 38; criterion met: False
-M2 Z2 a Figs. 3-5: pooled Miss 0.1% vs passive 9.0%; regions with positive excess 0 of 42, zero 0; sessions 38; criterion met: False
-M2 Z2 b all N: pooled Miss 0.0% vs passive 10.0%; regions with positive excess 0 of 42, zero 0; sessions 38; criterion met: False
-per region, M2 Z1 all N, % activated (Miss, passive): {'ACA': (np.float64(6.3), np.float64(13.9)), 'ACB': (np.float64(1.7), np.float64(15.5)), 'APN': (np.float64(3.7), np.float64(10.2)), 'BLA': (np.float64(0.0), np.float64(10.5)), 'CA1': (np.float64(2.1), np.float64(14.6)), 'CA3': (np.float64(1.9), np.flo
-[... 114 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/    C = s\["C"\]\[nt\["j"\].values\[rows\[sel\]\]\]/    Cx = s["C"][nt["j"].values[rows[sel]]]/; s/    pw = S.ranksum_windows(C, a_idx, b_idx, starts)/    pw = S.ranksum_windows(Cx, a_idx, b_idx, starts)/; s/S.normalized_trace(C, d\["go"\], d\["all_task"\])/S.normalized_trace(Cx, d["go"], d["all_task"])/; s/S.normalized_trace(C, d\["ipsi_go"\], d\["all_task"\])/S.normalized_trace(Cx, d["ipsi_go"], d["all_task"])/; s/    C = s\["C"\]\[nt\["j"\].values\[rows\]\]/    Cx = s["C"][nt["j"].values[rows]]/; s/        CC = s\["Cp"\]\[nt\["j"\].values\[rows\]\] if key == "pas" else C$/        CC = s["Cp"][nt["j"].values[rows]] if key == "pas" else Cx/' $TMPDIR/nb2.py; grep -n '\bC\b' $TMPDIR/nb2.py | grep -v 'C(' | head
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd, sys
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
-nt=pd.read_pickle('nt.pkl')
-bins=S.BIN_CENTRES
-for reg in ['VISp','CA1','MRN']:
-    task=[];pas=[];pas_still=[]
-    for si,s in enumerate(ss):
-        u=nt[(nt.s==si)&(nt.region==reg)&(nt.rate>=0.1)]
-        if len(u)==0: continue
-        J=u.j.values
-        tr=s['trials']; m=(tr.cR==1)&(tr.cL==0)&(tr.choice==0)
-        p=s['passive']; pm=((p.cR==1)&(p.cL==0)).values
-        on,off=s['moves'].onset.values,s['moves'].offset.values
-        still=np.array([not np.any((on<t+0.4)&(off>t-0.4)) for t in p.t])
-        task.append(s['C'][J][:,m.values].mean(1).sum(0)); pas.append(s['Cp'][J][:,pm].mean(1).sum(0)); pas_still.append(s['Cp'][J][:,pm&still].mean(1).sum(0))
-        n=len(J)
-    task=np.sum(task,0); pas=np.sum(pas,0); ps=np.nansum(pas_still,0)
-    f=lambda x: np.round(np.add.reduceat(x,np.arange(0,len(x),10))/0.05,0)  # 50 ms bins sums
-    print(reg,'task miss  ', f(task)); print(reg,'passive    ', f(pas)); print(reg,'passive still', f(ps))
-print('bins start', np.round(bins[::10]-0.0025,2))
-EOF
-```
-
-```
-49:    Cx = s["C"][nt["j"].values[rows[sel]]]
-124:    Cx = s["C"][nt["j"].values[rows]]
-<stdin>:17: RuntimeWarning: Mean of empty slice
-/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
-  ret = um.true_divide(
-<stdin>:17: RuntimeWarning: Mean of empty slice
-/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
-  ret = um.true_divide(
-<stdin>:17: RuntimeWarning: Mean of empty slice
-/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
-  ret = um.true_divide(
-<stdin>:17: RuntimeWarning: Mean of empty slice
-/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
-  ret = um.true_divide(
-<stdin>:17: RuntimeWarning: Mean of empty slice
-/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
-  ret = um.true_divide(
-<stdin>:17: RuntimeWarning: Mean of empty slice
-/tmp/claude-1001/env/lib/python3.13/site-packages/numpy/_core/_methods.py:134: RuntimeWarning: invalid value encountered in divide
-  ret = um.true_divide(
-[... 42 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd, sys
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-ss=pickle.load(open('/tmp/claude-1001/sessions.pkl','rb'))
-nt=pd.read_pickle('nt.pkl')
-zs={'miss':[],'pas':[]}; raw={'miss':[],'pas':[]}
-for si,s in enumerate(ss[:20]):
-    t=S.classify_trials(s['trials'],s['moves'],'methods'); p=s['passive']; k=t.keep.values
-    go=k&t.cls.isin(['L','R']).values&(t.cR>0).values; miss=k&(t.cls=='N').values&(t.cR>0).values; pas=(p.cR>0).values
-    gi,ni,pi,_=S.matched_contrast(t,p,go,miss,pas,np.random.default_rng(si))
-    if len(gi)<5: continue
-    J=nt[(nt.s==si)&(nt.rate>=0.1)].j.values
-    for key,C,idx in (('miss',s['C'][J],ni),('pas',s['Cp'][J],pi)):
-        z=S.condition_z(C,idx,'se'); zs[key].append(z)
-        post=S.window_rate(C[:,idx],0,0.25).mean(1); b=S.window_rate(C[:,idx],-0.1,0); raw[key].append((post-b.mean(1), b.std(1,ddof=1), b.mean(1)))
-for key in zs:
-    z=np.concatenate(zs[key]); print(key,'z>4',np.mean(z>4),'inf',np.mean(np.isinf(z)),'z<-4',np.mean(z<-4), 'median z', np.median(z[np.isfinite(z)]))
-    d=np.concatenate([r[0] for r in raw[key]]); sd=np.concatenate([r[1] for r in raw[key]]); bm=np.concatenate([r[2] for r in raw[key]])
-    print('   mean diff', d.mean(), 'median baseline sd', np.median(sd), 'mean baseline', bm.mean())
-EOF
-```
-
-```
-miss z>4 0.16845902077349542 inf 0.13826731681250418 z<-4 0.00046757063656402377 median z 0.0
-   mean diff 0.24617313052962503 median baseline sd 3.7796447300922718 mean baseline 3.3637032151804767
-pas z>4 0.12090040745441186 inf 0.10173001135528689 z<-4 0.00033397902611715985 median z 0.0
-   mean diff 0.14093510545121923 median baseline sd 4.013864859597431 mean baseline 3.677551245308619
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-sed -i 's/np.isfinite(zz\[key\])/~np.isnan(zz[key])/g; s/np.isfinite(z\[k\])/~np.isnan(z[k])/g' $TMPDIR/nb2.py; sed -i 's/np.isfinite(zE\[("miss", dname)\])/~np.isnan(zE[("miss", dname)])/g; s/np.isfinite(zE\[("miss", "se")\])/~np.isnan(zE[("miss", "se")])/g' $TMPDIR/nb3.py; grep -n "isfinite(z" $TMPDIR/nb2.py $TMPDIR/nb3.py; python3 - <<'EOF'
-for p in ['/tmp/claude-1001/nb2.py']:
-    s=open(p).read()
-    s=s.replace("# Fraction of neurons per region significantly activated (definition R, z > 4; readings Z1, Z2)","# Fraction of neurons per region significantly activated (definition R, z > 4; readings Z1, Z2; a neuron without spikes in any baseline window has a zero denominator and counts as activated when its rate rises, as division by zero gives +Inf in the paper's MATLAB code)")
-    open(p,'w').write(s)
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py 2>&1 | sed -n '/M1 Z1 neurons a Figs/,$p' | cut -c1-400 | grep -v "^ \|^region" | head -80
-```
-
-```
-M1 Z1 neurons a Figs. 3-5: contra Miss, pathway 22.7% vs other 17.1% (i True); other regions, Go 27.8% vs Miss 17.1% (ii False); pooled ipsi Miss 16.9% vs contra Miss 21.0% (iii False); all: False
-M1 Z1 neurons b all N: contra Miss, pathway 21.7% vs other 18.5% (i True); other regions, Go 26.1% vs Miss 18.5% (ii False); pooled ipsi Miss 18.6% vs contra Miss 21.6% (iii False); all: False
-M1 Z2 neurons a Figs. 3-5: contra Miss, pathway 19.3% vs other 15.7% (i True); other regions, Go 20.8% vs Miss 15.7% (ii False); pooled ipsi Miss 15.6% vs contra Miss 18.6% (iii False); all: False
-M1 Z2 neurons b all N: contra Miss, pathway 19.2% vs other 17.4% (i True); other regions, Go 21.2% vs Miss 17.4% (ii False); pooled ipsi Miss 17.6% vs contra Miss 19.8% (iii False); all: False
-M2 Z1 neurons a Figs. 3-5: contra Miss, pathway 23.7% vs other 19.3% (i True); other regions, Go 28.5% vs Miss 19.3% (ii False); pooled ipsi Miss 16.9% vs contra Miss 22.1% (iii False); all: False
-M2 Z1 neurons b all N: contra Miss, pathway 22.3% vs other 20.4% (i True); other regions, Go 26.5% vs Miss 20.4% (ii False); pooled ipsi Miss 18.6% vs contra Miss 22.0% (iii False); all: False
-M2 Z2 neurons a Figs. 3-5: contra Miss, pathway 21.0% vs other 18.0% (i True); other regions, Go 22.8% vs Miss 18.0% (ii False); pooled ipsi Miss 15.6% vs contra Miss 20.1% (iii False); all: False
-M2 Z2 neurons b all N: contra Miss, pathway 20.3% vs other 19.5% (i True); other regions, Go 22.7% vs Miss 19.5% (ii False); pooled ipsi Miss 17.6% vs contra Miss 20.6% (iii False); all: False
-VISrl  35.4  38.5       20.4     True
-VISp   42.3  35.5       19.4     True
-MOs    37.4  31.2       24.5    False
-VISa   38.1  29.8       22.1     True
-VISam  32.9  28.0       19.7     True
-ACA    36.7  27.8       20.8    False
-VISl   30.5  27.4       15.5     True
-SCs    39.2  27.1       22.5     True
-VISpm  29.4  26.3       20.0     True
-SUB    28.2  25.3       16.3    False
-MD     23.2  24.3       20.2    False
-PL     32.6  24.0     
-[... 48 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000017-steinmetz-2019 && python3 - <<'EOF'
-p='steinmetz.py'; s=open(p).read()
-old='''def condition_z(C: np.ndarray, idx: np.ndarray, denominator: str = "se") -> np.ndarray:
-    """Definition R: the mean rate 0 to 0.25 s after stimulus onset over the condition's trials,
-    z-scored against the trial-by-trial baseline (-0.1 to 0 s). denominator "se" (reading Z1):
-    s.d. of the baseline rates over trials / sqrt(number of trials); "sd" (reading Z2): their
-    s.d. A neuron with no baseline variance gets +inf when its mean rate rises, 0 otherwise."""'''
-new='''def condition_z(C: np.ndarray, idx: np.ndarray, denominator: str = "se",
-                zero_sd: str = "inf") -> np.ndarray:
-    """Definition R: the mean rate 0 to 0.25 s after stimulus onset over the condition's trials,
-    z-scored against the trial-by-trial baseline (-0.1 to 0 s). denominator "se" (reading Z1):
-    s.d. of the baseline rates over trials / sqrt(number of trials); "sd" (reading Z2): their
-    s.d. A neuron with no baseline variance (no spike in any baseline window) has a zero
-    denominator, which the claims file does not settle: zero_sd "inf" (reading V1) gives +inf
-    when its mean rate rises (as a division by zero in MATLAB), "zero" (reading V2) gives 0."""'''
-assert old in s; s=s.replace(old,new)
-old='''        z = np.where(den > 0, diff / den, np.where(diff > 0, np.inf, 0.0))'''
-new='''        z = np.where(den > 0, diff / den, np.where((diff > 0) & (zero_sd == "inf"), np.inf, 0.0))'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent**
-
-Now rewriting the Fig. 2 section with literal M sets and the V1/V2 readings.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb2.py",
- "content": "\n# %% md\n# ## Population activity across regions (Fig. 2)\n#\n# Trial sets, from the claims: correct contralateral trials for fig2de are trials T with a Right choice on a right stimulus alone; correct contralateral Go trials for fig2fg are trials T with a Right choice where the right contrast is the higher; contralateral Misses are NoGo trials T with a right contrast above zero; passive trials are passive presentations with a right contrast above zero; each Go set is matched in contrast with the Miss and passive sets as in definition M. Ipsilateral Misses: NoGo trials T with a left stimulus alone; correct ipsilateral trials (fig2de): Left choice on a left stimulus alone. A session is kept for a matched analysis when the matched sets hold at least 10 trials, counted per set (reading M1) or over the three sets (M2), the two readings the claims file leaves open.\n\n# %% code\nfig2_sets = []\nfor si, s in enumerate(sessions):\n    t, p = tts[si], s[\"passive\"]\n    k = t[\"keep\"].values\n    miss = k & (t[\"cls\"] == \"N\").values & (t[\"cR\"] > 0).values\n    pas = (p[\"cR\"] > 0).values\n    go_de = k & (t[\"cls\"] == \"R\").values & (t[\"cL\"] == 0).values & (t[\"cR\"] > 0).values\n    go_fg = k & (t[\"cls\"] == \"R\").values & (t[\"cR\"] > t[\"cL\"]).values\n    gi, ni, pi, _ = S.matched_contrast(t, p, go_de, miss, pas, np.random.default_rng([2, si]))\n    gf, nf, pf, _ = S.matched_contrast(t, p, go_fg, miss, pas, np.random.default_rng([4, si]))\n    fig2_sets.append(dict(go_de=gi, n_de=len(gi), go=gf, miss=nf, pas=pf, n_fg=len(gf),\n                          ipsi_miss=np.flatnonzero(k & (t[\"cls\"] == \"N\").values & (t[\"cL\"] > 0).values & (t[\"cR\"] == 0).values),\n                          ipsi_go=np.flatnonzero(k & (t[\"cls\"] == \"L\").values & (t[\"cL\"] > 0).values & (t[\"cR\"] == 0).values),\n                          all_task=np.flatnonzero(k)))\nn_de = np.array([d[\"n_de\"] for d in fig2_sets]); n_fg = np.array([d[\"n_fg\"] for d in fig2_sets])\nkeep_de = {\"M1\": n_de >= 10, \"M2\": 3 * n_de >= 10}\nkeep_fg = {\"M1\": n_fg >= 10, \"M2\": 3 * n_fg >= 10}\nprint(\"fig2de matched trials per set:\", dict(zip([s[\"session\"] for s in sessions], n_de)))\nprint(\"fig2fg matched trials per set:\", dict(zip([s[\"session\"] for s in sessions], n_fg)))\nprint(\"sessions kept, fig2de: M1\", int(keep_de[\"M1\"].sum()), \"M2\", int(keep_de[\"M2\"].sum()),\n      \"| fig2fg: M1\", int(keep_fg[\"M1\"].sum()), \"M2\", int(keep_fg[\"M2\"].sum()))\nprint(\"ipsilateral Miss trials per session, median\", int(np.median([len(d[\"ipsi_miss\"]) for d in fig2_sets])),\n      \"| correct ipsilateral trials, median\", int(np.median([len(d[\"ipsi_go\"]) for d in fig2_sets])))\nsess_of = nt[\"s\"].values\n\n# %% md\n# ### fig2de-activity-order\n#\n# > When the mouse chose a contralateral stimulus, activity arose first in visual cortex and superficial superior colliculus and then spread to most regions; when it chose an ipsilateral stimulus, VIS and SCs were among the last areas to respond.\n#\n# Per region, the mean over responsive neurons of the normalized rate (`steinmetz.normalized_trace`) on the matched correct contralateral trials and on correct ipsilateral trials. Responsive readings (a) the display selection (rank-sum p < 1e-4 in at least three consecutive 0.1 s windows stepped by 5 ms, between trials T with a stimulus and a movement and trials T with neither; the claims file gives no range of windows; windows starting 0 to 0.3 s after stimulus onset are used, a question is filed); (b) active during the task; (c) the Figs. 3 to 5 set. Latency readings (L1) first time the region's trace reaches half its maximum in 0 to 0.4 s; (L2) the time of the maximum. The claim needs VISp, the VIS group trace and SCs in the earliest quarter of regions on contralateral trials, and VISp and SCs in the latest third on ipsilateral trials.\n\n# %% code [claim:fig2de-activity-order]\nt0 = time.time()\nstarts = np.round(np.arange(0.0, 0.3001, 0.005), 3)\ndisp = np.zeros(len(nt), bool)\ntr_contra, tr_ipsi = np.full((len(nt), S.NBINS), np.nan), np.full((len(nt), S.NBINS), np.nan)\nfor si, s in enumerate(sessions):\n    t = tts[si]; k = t[\"keep\"].values\n    stim_any = (t[\"cL\"] > 0).values | (t[\"cR\"] > 0).values\n    a_idx = np.flatnonzero(k & stim_any & t[\"cls\"].isin([\"L\", \"R\"]).values)\n    b_idx = np.flatnonzero(k & ~stim_any & (t[\"cls\"] == \"N\").values)\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    sel = inN[rows]\n    if sel.sum() == 0:\n        continue\n    Cx = s[\"C\"][nt[\"j\"].values[rows[sel]]]\n    sig = S.ranksum_windows(Cx, a_idx, b_idx, starts) < 1e-4\n    disp[rows[sel]] = (sig[:, :-2] & sig[:, 1:-1] & sig[:, 2:]).any(axis=1)\n    d = fig2_sets[si]\n    if d[\"n_de\"] >= 2:\n        tr_contra[rows[sel]] = S.normalized_trace(Cx, d[\"go_de\"], d[\"all_task\"])\n    if len(d[\"ipsi_go\"]) >= 2:\n        tr_ipsi[rows[sel]] = S.normalized_trace(Cx, d[\"ipsi_go\"], d[\"all_task\"])\nprint(f\"display selection and traces in {time.time() - t0:.0f} s; display-responsive neurons N: {int(disp.sum())}\")\n\ndef latency(trace, kind):\n    w = (S.BIN_CENTRES >= 0) & (S.BIN_CENTRES <= 0.4)\n    x, tt_ = trace[w], S.BIN_CENTRES[w]\n    if not np.isfinite(x).any() or np.nanmax(x) <= 0:\n        return np.nan\n    if kind == \"L2\":\n        return tt_[np.nanargmax(x)]\n    return tt_[np.flatnonzero(x >= np.nanmax(x) / 2)[0]]\n\norder_res = {}\nfor mname in (\"M1\", \"M2\"):\n    ok_sess = keep_de[mname][sess_of]\n    for resp_name, resp_mask in ((\"a display\", disp), (\"b active\", inN & active), (\"c Figs. 3-5\", inN35)):\n        for lat in (\"L1\", \"L2\"):\n            out = {}\n            for cond, trs in ((\"contra\", tr_contra), (\"ipsi\", tr_ipsi)):\n                use = resp_mask & np.isfinite(trs[:, 0]) & (ok_sess if cond == \"contra\" else True)\n                lat_r = {}\n                for r in S.REGIONS_42:\n                    m = use & (nt[\"region\"] == r).values\n                    if m.sum():\n                        lat_r[r] = latency(np.nanmean(trs[m], axis=0), lat)\n                vis_lat = latency(np.nanmean(trs[use & nt[\"region\"].isin(S.VIS).values], axis=0), lat)\n                ser = pd.Series(lat_r).dropna()\n                rank = ser.rank(method=\"average\")\n                out[cond] = dict(n=len(ser), VISp=ser.get(\"VISp\", np.nan), SCs=ser.get(\"SCs\", np.nan), VIS=vis_lat,\n                                 rank_VISp=rank.get(\"VISp\", np.nan), rank_SCs=rank.get(\"SCs\", np.nan),\n                                 q1=np.quantile(ser, 0.25), t2=np.quantile(ser, 2 / 3))\n            c, i = out[\"contra\"], out[\"ipsi\"]\n            ok = bool(c[\"VISp\"] <= c[\"q1\"] and c[\"VIS\"] <= c[\"q1\"] and c[\"SCs\"] <= c[\"q1\"]\n                      and i[\"VISp\"] >= i[\"t2\"] and i[\"SCs\"] >= i[\"t2\"])\n            order_res[(mname, resp_name, lat)] = ok\n            print(f\"{mname} responsive {resp_name:12s} {lat}: contra ({c['n']} regions): VISp {c['VISp']:.3f} s \"\n                  f\"(rank {c['rank_VISp']:.0f}), VIS group {c['VIS']:.3f}, SCs {c['SCs']:.3f} (rank {c['rank_SCs']:.0f}); \"\n                  f\"earliest-quarter cut {c['q1']:.3f} | ipsi ({i['n']} regions): VISp {i['VISp']:.3f} \"\n                  f\"(rank {i['rank_VISp']:.0f}), SCs {i['SCs']:.3f} (rank {i['rank_SCs']:.0f}); latest-third cut \"\n                  f\"{i['t2']:.3f} | criterion met: {ok}\")\n\n# %% code [claim:fig2de-activity-order]\n# latencies of every region, M2, reading (b), L1; and the number of neurons\nfor cond, trs in ((\"contra\", tr_contra), (\"ipsi\", tr_ipsi)):\n    lat_r = {}\n    for r in S.REGIONS_42:\n        m = inN & active & (nt[\"region\"] == r).values & np.isfinite(trs[:, 0]) & (keep_de[\"M2\"][sess_of] if cond == \"contra\" else True)\n        if m.sum():\n            lat_r[r] = (round(latency(np.nanmean(trs[m], axis=0), \"L1\"), 3), int(m.sum()))\n    print(cond, \"L1 latency (s), neurons:\", dict(sorted(lat_r.items(), key=lambda kv: (np.nan_to_num(kv[1][0], nan=9)))))\n\n# %% md\n# ### fig2fg-miss-restricted\n#\n# > On Miss trials with a contralateral stimulus, activity appeared in a visual pathway of visual areas, basal ganglia and several midbrain structures but did not spread to the whole brain; on Miss trials with an ipsilateral stimulus there was essentially no activity.\n#\n# Fraction of neurons per region significantly activated (definition R, z > 4; readings Z1, Z2) on the matched correct contralateral Go and contralateral Miss trials, and on ipsilateral Miss trials. Open details, each run: the neurons (a) the Figs. 3 to 5 set, (b) all neurons N; neurons without baseline spikes (V1) counted as activated when their rate rises, (V2) not counted; sessions M1 or M2. The visual pathway: VIS areas, LGd, LP, LD, SCs, CP, GPe, SNr, SCm, MRN, APN, ZI. Reproduced under one reading when (i) on contralateral Misses the mean fraction over visual pathway regions exceeds that over other regions, (ii) the mean over other regions is at least twice as large on contralateral Go as on contralateral Miss trials, (iii) the pooled fraction on ipsilateral Misses is below half that on contralateral Misses.\n\n# %% code [claim:fig2fg-miss-restricted]\nPATHWAY = set(S.VIS) | {\"LGd\", \"LP\", \"LD\", \"SCs\", \"CP\", \"GPe\", \"SNr\", \"SCm\", \"MRN\", \"APN\", \"ZI\"}\nzf = {}\nfor key in (\"go\", \"miss\", \"ipsi_miss\"):\n    for den in (\"se\", \"sd\"):\n        for zsd in (\"inf\", \"zero\"):\n            zf[(key, den, zsd)] = np.full(len(nt), np.nan)\nfor si, s in enumerate(sessions):\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    Cx = s[\"C\"][nt[\"j\"].values[rows]]\n    d = fig2_sets[si]\n    for key in (\"go\", \"miss\", \"ipsi_miss\"):\n        if len(d[key]) < 2:\n            continue\n        for den in (\"se\", \"sd\"):\n            for zsd in (\"inf\", \"zero\"):\n                zf[(key, den, zsd)][rows] = S.condition_z(Cx, d[key], den, zsd)\n\ndef fractions(den, zsd, nmask, mkeep):\n    frac = {}\n    for key in (\"go\", \"miss\", \"ipsi_miss\"):\n        zz = zf[(key, den, zsd)]\n        ok = ~np.isnan(zz) & nmask & (mkeep[sess_of] if key != \"ipsi_miss\" else True)\n        v = zz > 4\n        frac[key] = pd.Series({r: v[ok & (nt[\"region\"] == r).values].mean()\n                               for r in S.REGIONS_42 if (ok & (nt[\"region\"] == r).values).sum()})\n        frac[key + \"_pooled\"] = v[ok].mean()\n    return frac\n\nfg_res = {}\nfor mname in (\"M1\", \"M2\"):\n    for zsd, vname in ((\"inf\", \"V1\"), (\"zero\", \"V2\")):\n        for nname, nmask in ((\"a Figs. 3-5\", inN35), (\"b all N\", inN)):\n            for zname, den in ((\"Z1\", \"se\"), (\"Z2\", \"sd\")):\n                frac = fractions(den, zsd, nmask, keep_fg[mname])\n                vp = [r for r in frac[\"miss\"].index if r in PATHWAY]\n                oth = [r for r in frac[\"miss\"].index if r not in PATHWAY]\n                oth_go = [r for r in frac[\"go\"].index if r not in PATHWAY]\n                i1 = frac[\"miss\"][vp].mean() > frac[\"miss\"][oth].mean()\n                i2 = frac[\"go\"][oth_go].mean() >= 2 * frac[\"miss\"][oth].mean()\n                i3 = frac[\"ipsi_miss_pooled\"] < 0.5 * frac[\"miss_pooled\"]\n                fg_res[(mname, vname, nname, zname)] = bool(i1 and i2 and i3)\n                print(f\"{mname} {vname} {nname:12s} {zname}: contra Miss pathway {100 * frac['miss'][vp].mean():5.1f}% vs other \"\n                      f\"{100 * frac['miss'][oth].mean():5.1f}% (i {i1}); other regions Go {100 * frac['go'][oth_go].mean():5.1f}% vs \"\n                      f\"Miss {100 * frac['miss'][oth].mean():5.1f}% (ii {i2}); pooled ipsi Miss {100 * frac['ipsi_miss_pooled']:5.1f}% vs \"\n                      f\"contra Miss {100 * frac['miss_pooled']:5.1f}% (iii {i3}); all: {i1 and i2 and i3}\")\nfg_by_open = {}\nfor k, v in fg_res.items():\n    fg_by_open.setdefault(k[:3], []).append(v)\nprint(\"met under Z1 or Z2, by open detail (M, V, neurons):\", {k: any(v) for k, v in fg_by_open.items()})\n\n# %% code [claim:fig2fg-miss-restricted]\n# per region, M2, V2, all N, Z1\nfrac = fractions(\"se\", \"zero\", inN, keep_fg[\"M2\"])\ntab = pd.DataFrame({k: 100 * frac[k] for k in (\"go\", \"miss\", \"ipsi_miss\")}).round(1)\ntab[\"pathway\"] = [r in PATHWAY for r in tab.index]\nprint(tab.sort_values(\"miss\", ascending=False).to_string())\n"
-}
-```
-
-```
-<tool_use_error>File has been modified since read, either by the user or by a linter. Read it again before attempting to write it.</tool_use_error>
-```
-
-**Agent calls Bash**
-
-```bash
-rm /tmp/claude-1001/nb2.py; echo removed
-```
-
-```
-removed
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb2.py",
- "content": "\n# %% md\n# ## Population activity across regions (Fig. 2)\n#\n# Trial sets, from the claims: correct contralateral trials for fig2de are trials T with a Right choice on a right stimulus alone; correct contralateral Go trials for fig2fg are trials T with a Right choice where the right contrast is the higher; contralateral Misses are NoGo trials T with a right contrast above zero; passive trials are passive presentations with a right contrast above zero; each Go set is matched in contrast with the Miss and passive sets as in definition M. Ipsilateral Misses: NoGo trials T with a left stimulus alone; correct ipsilateral trials (fig2de): Left choice on a left stimulus alone. A session is kept for a matched analysis when the matched sets hold at least 10 trials, counted per set (reading M1) or over the three sets (M2), the two readings the claims file leaves open.\n\n# %% code\nfig2_sets = []\nfor si, s in enumerate(sessions):\n    t, p = tts[si], s[\"passive\"]\n    k = t[\"keep\"].values\n    miss = k & (t[\"cls\"] == \"N\").values & (t[\"cR\"] > 0).values\n    pas = (p[\"cR\"] > 0).values\n    go_de = k & (t[\"cls\"] == \"R\").values & (t[\"cL\"] == 0).values & (t[\"cR\"] > 0).values\n    go_fg = k & (t[\"cls\"] == \"R\").values & (t[\"cR\"] > t[\"cL\"]).values\n    gi, ni, pi, _ = S.matched_contrast(t, p, go_de, miss, pas, np.random.default_rng([2, si]))\n    gf, nf, pf, _ = S.matched_contrast(t, p, go_fg, miss, pas, np.random.default_rng([4, si]))\n    fig2_sets.append(dict(go_de=gi, n_de=len(gi), go=gf, miss=nf, pas=pf, n_fg=len(gf),\n                          ipsi_miss=np.flatnonzero(k & (t[\"cls\"] == \"N\").values & (t[\"cL\"] > 0).values & (t[\"cR\"] == 0).values),\n                          ipsi_go=np.flatnonzero(k & (t[\"cls\"] == \"L\").values & (t[\"cL\"] > 0).values & (t[\"cR\"] == 0).values),\n                          all_task=np.flatnonzero(k)))\nn_de = np.array([d[\"n_de\"] for d in fig2_sets]); n_fg = np.array([d[\"n_fg\"] for d in fig2_sets])\nkeep_de = {\"M1\": n_de >= 10, \"M2\": 3 * n_de >= 10}\nkeep_fg = {\"M1\": n_fg >= 10, \"M2\": 3 * n_fg >= 10}\nprint(\"fig2de matched trials per set:\", dict(zip([s[\"session\"] for s in sessions], n_de)))\nprint(\"fig2fg matched trials per set:\", dict(zip([s[\"session\"] for s in sessions], n_fg)))\nprint(\"sessions kept, fig2de: M1\", int(keep_de[\"M1\"].sum()), \"M2\", int(keep_de[\"M2\"].sum()),\n      \"| fig2fg: M1\", int(keep_fg[\"M1\"].sum()), \"M2\", int(keep_fg[\"M2\"].sum()))\nprint(\"ipsilateral Miss trials per session, median\", int(np.median([len(d[\"ipsi_miss\"]) for d in fig2_sets])),\n      \"| correct ipsilateral trials, median\", int(np.median([len(d[\"ipsi_go\"]) for d in fig2_sets])))\nsess_of = nt[\"s\"].values\n\n# %% md\n# ### fig2de-activity-order\n#\n# > When the mouse chose a contralateral stimulus, activity arose first in visual cortex and superficial superior colliculus and then spread to most regions; when it chose an ipsilateral stimulus, VIS and SCs were among the last areas to respond.\n#\n# Per region, the mean over responsive neurons of the normalized rate (`steinmetz.normalized_trace`) on the matched correct contralateral trials and on correct ipsilateral trials. Responsive readings (a) the display selection (rank-sum p < 1e-4 in at least three consecutive 0.1 s windows stepped by 5 ms, between trials T with a stimulus and a movement and trials T with neither; the claims file gives no range of windows; windows starting 0 to 0.3 s after stimulus onset are used, a question is filed); (b) active during the task; (c) the Figs. 3 to 5 set. Latency readings (L1) first time the region's trace reaches half its maximum in 0 to 0.4 s; (L2) the time of the maximum. The claim needs VISp, the VIS group trace and SCs in the earliest quarter of regions on contralateral trials, and VISp and SCs in the latest third on ipsilateral trials.\n\n# %% code [claim:fig2de-activity-order]\nt0 = time.time()\nstarts = np.round(np.arange(0.0, 0.3001, 0.005), 3)\ndisp = np.zeros(len(nt), bool)\ntr_contra, tr_ipsi = np.full((len(nt), S.NBINS), np.nan), np.full((len(nt), S.NBINS), np.nan)\nfor si, s in enumerate(sessions):\n    t = tts[si]; k = t[\"keep\"].values\n    stim_any = (t[\"cL\"] > 0).values | (t[\"cR\"] > 0).values\n    a_idx = np.flatnonzero(k & stim_any & t[\"cls\"].isin([\"L\", \"R\"]).values)\n    b_idx = np.flatnonzero(k & ~stim_any & (t[\"cls\"] == \"N\").values)\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    sel = inN[rows]\n    if sel.sum() == 0:\n        continue\n    Cx = s[\"C\"][nt[\"j\"].values[rows[sel]]]\n    sig = S.ranksum_windows(Cx, a_idx, b_idx, starts) < 1e-4\n    disp[rows[sel]] = (sig[:, :-2] & sig[:, 1:-1] & sig[:, 2:]).any(axis=1)\n    d = fig2_sets[si]\n    if d[\"n_de\"] >= 2:\n        tr_contra[rows[sel]] = S.normalized_trace(Cx, d[\"go_de\"], d[\"all_task\"])\n    if len(d[\"ipsi_go\"]) >= 2:\n        tr_ipsi[rows[sel]] = S.normalized_trace(Cx, d[\"ipsi_go\"], d[\"all_task\"])\nprint(f\"display selection and traces in {time.time() - t0:.0f} s; display-responsive neurons N: {int(disp.sum())}\")\n\ndef latency(trace, kind):\n    w = (S.BIN_CENTRES >= 0) & (S.BIN_CENTRES <= 0.4)\n    x, tt_ = trace[w], S.BIN_CENTRES[w]\n    if not np.isfinite(x).any() or np.nanmax(x) <= 0:\n        return np.nan\n    if kind == \"L2\":\n        return tt_[np.nanargmax(x)]\n    return tt_[np.flatnonzero(x >= np.nanmax(x) / 2)[0]]\n\norder_res = {}\nfor mname in (\"M1\", \"M2\"):\n    ok_sess = keep_de[mname][sess_of]\n    for resp_name, resp_mask in ((\"a display\", disp), (\"b active\", inN & active), (\"c Figs. 3-5\", inN35)):\n        for lat in (\"L1\", \"L2\"):\n            out = {}\n            for cond, trs in ((\"contra\", tr_contra), (\"ipsi\", tr_ipsi)):\n                use = resp_mask & np.isfinite(trs[:, 0]) & (ok_sess if cond == \"contra\" else True)\n                lat_r = {}\n                for r in S.REGIONS_42:\n                    m = use & (nt[\"region\"] == r).values\n                    if m.sum():\n                        lat_r[r] = latency(np.nanmean(trs[m], axis=0), lat)\n                vis_lat = latency(np.nanmean(trs[use & nt[\"region\"].isin(S.VIS).values], axis=0), lat)\n                ser = pd.Series(lat_r).dropna()\n                rank = ser.rank(method=\"average\")\n                out[cond] = dict(n=len(ser), VISp=ser.get(\"VISp\", np.nan), SCs=ser.get(\"SCs\", np.nan), VIS=vis_lat,\n                                 rank_VISp=rank.get(\"VISp\", np.nan), rank_SCs=rank.get(\"SCs\", np.nan),\n                                 q1=np.quantile(ser, 0.25), t2=np.quantile(ser, 2 / 3))\n            c, i = out[\"contra\"], out[\"ipsi\"]\n            ok = bool(c[\"VISp\"] <= c[\"q1\"] and c[\"VIS\"] <= c[\"q1\"] and c[\"SCs\"] <= c[\"q1\"]\n                      and i[\"VISp\"] >= i[\"t2\"] and i[\"SCs\"] >= i[\"t2\"])\n            order_res[(mname, resp_name, lat)] = ok\n            print(f\"{mname} responsive {resp_name:12s} {lat}: contra ({c['n']} regions): VISp {c['VISp']:.3f} s \"\n                  f\"(rank {c['rank_VISp']:.0f}), VIS group {c['VIS']:.3f}, SCs {c['SCs']:.3f} (rank {c['rank_SCs']:.0f}); \"\n                  f\"earliest-quarter cut {c['q1']:.3f} | ipsi ({i['n']} regions): VISp {i['VISp']:.3f} \"\n                  f\"(rank {i['rank_VISp']:.0f}), SCs {i['SCs']:.3f} (rank {i['rank_SCs']:.0f}); latest-third cut \"\n                  f\"{i['t2']:.3f} | criterion met: {ok}\")\n\n# %% code [claim:fig2de-activity-order]\n# latencies of every region, M2, reading (b), L1; and the number of neurons\nfor cond, trs in ((\"contra\", tr_contra), (\"ipsi\", tr_ipsi)):\n    lat_r = {}\n    for r in S.REGIONS_42:\n        m = inN & active & (nt[\"region\"] == r).values & np.isfinite(trs[:, 0]) & (keep_de[\"M2\"][sess_of] if cond == \"contra\" else True)\n        if m.sum():\n            lat_r[r] = (round(latency(np.nanmean(trs[m], axis=0), \"L1\"), 3), int(m.sum()))\n    print(cond, \"L1 latency (s), neurons:\", dict(sorted(lat_r.items(), key=lambda kv: (np.nan_to_num(kv[1][0], nan=9)))))\n\n# %% md\n# ### fig2fg-miss-restricted\n#\n# > On Miss trials with a contralateral stimulus, activity appeared in a visual pathway of visual areas, basal ganglia and several midbrain structures but did not spread to the whole brain; on Miss trials with an ipsilateral stimulus there was essentially no activity.\n#\n# Fraction of neurons per region significantly activated (definition R, z > 4; readings Z1, Z2) on the matched correct contralateral Go and contralateral Miss trials, and on ipsilateral Miss trials. Open details, each run: the neurons (a) the Figs. 3 to 5 set, (b) all neurons N; neurons without baseline spikes (V1) counted as activated when their rate rises, (V2) not counted; sessions M1 or M2. The visual pathway: VIS areas, LGd, LP, LD, SCs, CP, GPe, SNr, SCm, MRN, APN, ZI. Reproduced under one reading when (i) on contralateral Misses the mean fraction over visual pathway regions exceeds that over other regions, (ii) the mean over other regions is at least twice as large on contralateral Go as on contralateral Miss trials, (iii) the pooled fraction on ipsilateral Misses is below half that on contralateral Misses.\n\n# %% code [claim:fig2fg-miss-restricted]\nPATHWAY = set(S.VIS) | {\"LGd\", \"LP\", \"LD\", \"SCs\", \"CP\", \"GPe\", \"SNr\", \"SCm\", \"MRN\", \"APN\", \"ZI\"}\nzf = {}\nfor key in (\"go\", \"miss\", \"ipsi_miss\"):\n    for den in (\"se\", \"sd\"):\n        for zsd in (\"inf\", \"zero\"):\n            zf[(key, den, zsd)] = np.full(len(nt), np.nan)\nfor si, s in enumerate(sessions):\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    Cx = s[\"C\"][nt[\"j\"].values[rows]]\n    d = fig2_sets[si]\n    for key in (\"go\", \"miss\", \"ipsi_miss\"):\n        if len(d[key]) < 2:\n            continue\n        for den in (\"se\", \"sd\"):\n            for zsd in (\"inf\", \"zero\"):\n                zf[(key, den, zsd)][rows] = S.condition_z(Cx, d[key], den, zsd)\n\ndef fractions(den, zsd, nmask, mkeep):\n    frac = {}\n    for key in (\"go\", \"miss\", \"ipsi_miss\"):\n        zz = zf[(key, den, zsd)]\n        ok = ~np.isnan(zz) & nmask & (mkeep[sess_of] if key != \"ipsi_miss\" else True)\n        v = zz > 4\n        frac[key] = pd.Series({r: v[ok & (nt[\"region\"] == r).values].mean()\n                               for r in S.REGIONS_42 if (ok & (nt[\"region\"] == r).values).sum()})\n        frac[key + \"_pooled\"] = v[ok].mean()\n    return frac\n\nfg_res = {}\nfor mname in (\"M1\", \"M2\"):\n    for zsd, vname in ((\"inf\", \"V1\"), (\"zero\", \"V2\")):\n        for nname, nmask in ((\"a Figs. 3-5\", inN35), (\"b all N\", inN)):\n            for zname, den in ((\"Z1\", \"se\"), (\"Z2\", \"sd\")):\n                frac = fractions(den, zsd, nmask, keep_fg[mname])\n                vp = [r for r in frac[\"miss\"].index if r in PATHWAY]\n                oth = [r for r in frac[\"miss\"].index if r not in PATHWAY]\n                oth_go = [r for r in frac[\"go\"].index if r not in PATHWAY]\n                i1 = frac[\"miss\"][vp].mean() > frac[\"miss\"][oth].mean()\n                i2 = frac[\"go\"][oth_go].mean() >= 2 * frac[\"miss\"][oth].mean()\n                i3 = frac[\"ipsi_miss_pooled\"] < 0.5 * frac[\"miss_pooled\"]\n                fg_res[(mname, vname, nname, zname)] = bool(i1 and i2 and i3)\n                print(f\"{mname} {vname} {nname:12s} {zname}: contra Miss pathway {100 * frac['miss'][vp].mean():5.1f}% vs other \"\n                      f\"{100 * frac['miss'][oth].mean():5.1f}% (i {i1}); other regions Go {100 * frac['go'][oth_go].mean():5.1f}% vs \"\n                      f\"Miss {100 * frac['miss'][oth].mean():5.1f}% (ii {i2}); pooled ipsi Miss {100 * frac['ipsi_miss_pooled']:5.1f}% vs \"\n                      f\"contra Miss {100 * frac['miss_pooled']:5.1f}% (iii {i3}); all: {i1 and i2 and i3}\")\nfg_by_open = {}\nfor k, v in fg_res.items():\n    fg_by_open.setdefault(k[:3], []).append(v)\nprint(\"met under Z1 or Z2, by open detail (M, V, neurons):\", {k: any(v) for k, v in fg_by_open.items()})\n\n# %% code [claim:fig2fg-miss-restricted]\n# per region, M2, V2, all N, Z1\nfrac = fractions(\"se\", \"zero\", inN, keep_fg[\"M2\"])\ntab = pd.DataFrame({k: 100 * frac[k] for k in (\"go\", \"miss\", \"ipsi_miss\")}).round(1)\ntab[\"pathway\"] = [r in PATHWAY for r in tab.index]\nprint(tab.sort_values(\"miss\", ascending=False).to_string())\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/nb2.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb3.py'; s=open(p).read()
-a=s.index('# %% code [claim:fig5b-miss-more-than-passive]'); b=s.index('# %% md\n# ### Pre-stimulus rates')
-new='''# %% code [claim:fig5b-miss-more-than-passive]
-zE = {}
-for key in ("miss", "pas"):
-    for den in ("se", "sd"):
-        for zsd in ("inf", "zero"):
-            zE[(key, den, zsd)] = np.full(len(nt), np.nan)
-for si, s in enumerate(sessions):
-    rows = np.flatnonzero((nt["s"] == si).values)
-    e = eng_sets[si]
-    if e["n"] < 2:
-        continue
-    for key in ("miss", "pas"):
-        CC = (s["Cp"] if key == "pas" else s["C"])[nt["j"].values[rows]]
-        for den in ("se", "sd"):
-            for zsd in ("inf", "zero"):
-                zE[(key, den, zsd)][rows] = S.condition_z(CC, e[key], den, zsd)
-fig5b = {}
-for mname, mkeep in (("M1", keepE_M1), ("M2", keepE_M2)):
-    oks = mkeep[sess_of]
-    for zsd, vname in (("inf", "V1"), ("zero", "V2")):
-        for zname, den in (("Z1", "se"), ("Z2", "sd")):
-            for nname, nmask in (("a Figs. 3-5", inN35), ("b all N", inN)):
-                zm, zp = zE[("miss", den, zsd)], zE[("pas", den, zsd)]
-                m = nmask & oks & ~np.isnan(zm)
-                vm, vp = zm > 4, zp > 4
-                per_r = pd.DataFrame({r: (vm[m & (nt["region"] == r).values].mean(), vp[m & (nt["region"] == r).values].mean())
-                                      for r in S.REGIONS_42 if (m & (nt["region"] == r).values).sum()}, index=["miss", "pas"]).T
-                excess = per_r["miss"] - per_r["pas"]
-                part = vm[m].mean() > vp[m].mean() and (excess > 0).mean() > 0.5
-                ok = part and int(mkeep.sum()) == 34
-                fig5b[(mname, vname, zname, nname)] = (part, ok)
-                print(f"{mname} {vname} {zname} {nname:12s}: pooled Miss {100 * vm[m].mean():5.1f}% vs passive {100 * vp[m].mean():5.1f}%; "
-                      f"regions with positive excess {int((excess > 0).sum())} of {len(excess)} (zero {int((excess == 0).sum())}); "
-                      f"sessions {int(mkeep.sum())}; fractions part met: {part}; criterion met: {ok}")
-m = inN & keepE_M2[sess_of] & ~np.isnan(zE[("miss", "se", "zero")])
-print("per region, M2 V2 Z1 all N, % activated (Miss, passive):",
-      {r: (round(100 * (zE[("miss", "se", "zero")] > 4)[m & (nt["region"] == r).values].mean(), 1),
-           round(100 * (zE[("pas", "se", "zero")] > 4)[m & (nt["region"] == r).values].mean(), 1)) for r in S.REGIONS_42})
-
-'''
-s=s[:a]+new+s[b:]
-s=s.replace('''    long = pd.concat([df.assign(y=df["task"], cond="task"), df.assign(y=df["pas"], cond="passive")])
-    fit = ols("y ~ C(cond) + C(session) + C(subject)", long).fit()
-    tab = sm.stats.anova_lm(fit, typ=2)''','''    long = pd.concat([df.assign(y=df["task"], cond="task"), df.assign(y=df["pas"], cond="passive")])
-    # session is nested in subject, so the session terms contain the subject terms (aliased)
-    formula = "y ~ C(cond) + C(session)" if long["session"].nunique() > 1 else "y ~ C(cond)"
-    fit = ols(formula, long).fit()
-    tab = sm.stats.anova_lm(fit, typ=2)''')
-s=s.replace("(b) condition, session and subject (Extended Data Fig. 9a legend), ordinary least squares, type II.","(b) condition, session and subject (Extended Data Fig. 9a legend), ordinary least squares, type II; sessions are nested in subjects, so the subject terms are contained in the session terms and drop out.")
-s=s.replace("Passive trials with wheel movement are kept. Reproduced under one reading","Passive trials with wheel movement are kept. Neurons without baseline spikes: readings V1 and V2, as in fig2fg. Reproduced under one reading")
-open(p,'w').write(s)
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py 2>&1 | sed -n '/fig2de matched/,$p' | cut -c1-330 | grep -v "^ \|^region\|^[A-Z][A-Za-z]* *[0-9]" | head -120
-```
-
-```
-fig2de matched trials per set: {'Cori_2016-12-14': np.int64(20), 'Cori_2016-12-17': np.int64(17), 'Cori_2016-12-18': np.int64(19), 'Forssmann_2017-11-01': np.int64(16), 'Forssmann_2017-11-02': np.int64(23), 'Forssmann_2017-11-04': np.int64(18), 'Forssmann_2017-11-05': np.int64(15), 'Hench_2017-06-15': np.int64(19), 'Hench_2017-0
-fig2fg matched trials per set: {'Cori_2016-12-14': np.int64(26), 'Cori_2016-12-17': np.int64(23), 'Cori_2016-12-18': np.int64(21), 'Forssmann_2017-11-01': np.int64(32), 'Forssmann_2017-11-02': np.int64(32), 'Forssmann_2017-11-04': np.int64(30), 'Forssmann_2017-11-05': np.int64(29), 'Hench_2017-06-15': np.int64(22), 'Hench_2017-0
-sessions kept, fig2de: M1 27 M2 38 | fig2fg: M1 35 M2 38
-ipsilateral Miss trials per session, median 13 | correct ipsilateral trials, median 22
-display selection and traces in 118 s; display-responsive neurons N: 4068
-[cell code [claim:fig2de-activity-order] took 120 s]
-contra L1 latency (s), neurons: {'VISp': (np.float64(0.078), 593), 'SCs': (np.float64(0.087), 163), 'VISl': (np.float64(0.087), 235), 'VISrl': (np.float64(0.087), 75), 'POL': (np.float64(0.092), 127), 'VISpm': (np.float64(0.097), 230), 'VISam': (np.float64(0.107), 431), 'GPe': (np.float64(0.112), 149), 'ILA': (np.float64(0.128),
-ipsi L1 latency (s), neurons: {'LS': (np.float64(0.008), 536), 'GPe': (np.float64(0.143), 149), 'PL': (np.float64(0.158), 461), 'DG': (np.float64(0.163), 367), 'POST': (np.float64(0.163), 166), 'MOs': (np.float64(0.173), 842), 'ORB': (np.float64(0.173), 314), 'ACA': (np.float64(0.178), 435), 'PAG': (np.float64(0.182), 73), 'CA3'
-met under Z1 or Z2, by open detail (M, V, neurons): {('M1', 'V1', 'a Figs. 3-5'): False, ('M1', 'V1', 'b all N'): False, ('M1', 'V2', 'a Figs. 3-5'): True, ('M1', 'V2', 'b all N'): True, ('M2', 'V1', 'a Figs. 3-5'): False, ('M2', 'V1', 'b all N'): False, ('M2', 'V2', 'a Figs. 3-5'): True, ('M2', 'V2', 'b all N'): True}
-matched trials per set: {'Cori_2016-12-14': np.int64(38), 'Cori_2016-12-17': np.int6
-[... 31 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py 2>&1 | grep -E "^M[12] (responsive|V[12])" | cut -c1-420
-```
-
-```
-M1 responsive a display    L1: contra (40 regions): VISp 0.078 s (rank 2), VIS group 0.092, SCs 0.078 (rank 2); earliest-quarter cut 0.119 | ipsi (42 regions): VISp 0.227 (rank 32), SCs 0.232 (rank 34); latest-third cut 0.217 | criterion met: True
-M1 responsive a display    L2: contra (40 regions): VISp 0.112 s (rank 2), VIS group 0.317, SCs 0.107 (rank 1); earliest-quarter cut 0.247 | ipsi (42 regions): VISp 0.327 (rank 21), SCs 0.332 (rank 24); latest-third cut 0.366 | criterion met: False
-M1 responsive b active     L1: contra (41 regions): VISp 0.078 s (rank 2), VIS group 0.087, SCs 0.082 (rank 4); earliest-quarter cut 0.128 | ipsi (42 regions): VISp 0.247 (rank 37), SCs 0.227 (rank 30); latest-third cut 0.224 | criterion met: True
-M1 responsive b active     L2: contra (41 regions): VISp 0.112 s (rank 2), VIS group 0.317, SCs 0.337 (rank 23); earliest-quarter cut 0.242 | ipsi (42 regions): VISp 0.327 (rank 21), SCs 0.327 (rank 21); latest-third cut 0.378 | criterion met: False
-M1 responsive c Figs. 3-5  L1: contra (41 regions): VISp 0.078 s (rank 2), VIS group 0.082, SCs 0.082 (rank 4); earliest-quarter cut 0.128 | ipsi (42 regions): VISp 0.247 (rank 38), SCs 0.222 (rank 28); latest-third cut 0.222 | criterion met: True
-M1 responsive c Figs. 3-5  L2: contra (41 regions): VISp 0.112 s (rank 1), VIS group 0.317, SCs 0.337 (rank 23); earliest-quarter cut 0.247 | ipsi (42 regions): VISp 0.327 (rank 22), SCs 0.317 (rank 19); latest-third cut 0.374 | criterion met: False
-M2 responsive a display    L1: contra (41 regions): VISp 0.082 s (rank 2), VIS group 0.092, SCs 0.082 (rank 2); earliest-quarter cut 0.128 | ipsi (42 regions): VISp 0.227 (rank 32), SCs 0.232 (rank 34); latest-third cut 0.217 | criterion met: True
-M2 responsive a display    L2: contra (41 regions): VISp 0.112 s (rank 1), VIS group 0.322, SCs 0.317 (rank 19); earliest-quarter cut 0.288 | ipsi (42 regions): VISp 0.327 (rank 21), SCs 0.332 (rank 24); latest-third cut 0.366 | criterion met: False
-M2 respon
-[... 35 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb3.py <<'EOF'
-
-# %% md
-# ### fig5f-engagement-index
-#
-# > An engagement index, the projection of pre-stimulus population activity onto the task minus passive difference vector, was higher on Go than on Miss trials consistently across recordings (mean difference 8.42 a.u., paired t-test p < 1e-4).
-#
-# Neurons N of the regions that differ in fig5c (each of its four readings gives a region set). x: each neuron's mean rate -0.2 to 0 s on task trials minus that on passive visual presentations, normalized to unit length per session; the index of a trial is x times the trial's vector of pre-stimulus rates (sp/s). Per session, the mean on Go minus the mean on Miss trials, drawing at each contralateral contrast N trials of each, N the smaller count. Readings of task trials (a) trials T (Go: L or R, NoGo: N); (b) all task trials (Go: a Left or Right response, NoGo: a NoGo response); of contrasts (a) contralateral contrast above zero; (b) all four levels. Sessions: those kept by M (M1, M2). Reproduced under one reading when the paired t-test across sessions gives p < 1e-4 with Go higher and the mean is within 8.42 ± 0.84; partially when only the test holds.
-
-# %% code [claim:fig5f-engagement-index]
-def engagement(regions, task_r, contr_r, mkeep, nmask=None, seed=5):
-    """Per-trial engagement index of the matched Go and Miss trials of each kept session."""
-    out, nneur = [], []
-    for si, s in enumerate(sessions):
-        if not mkeep[si]:
-            continue
-        rows = np.flatnonzero((nt["s"] == si).values)
-        base = inN if nmask is None else nmask
-        sel = rows[base[rows] & nt["region"].isin(regions).values[rows]]
-        if len(sel) == 0:
-            continue
-        J = nt["j"].values[sel]
-        t = tts[si]
-        if task_r == "a":
-            task = t["keep"].values
-            go = task & t["cls"].isin(["L", "R"]).values
-            ng = task & (t["cls"] == "N").values
-        else:
-            task = np.ones(len(t), bool)
-            go = (t["choice"] != 0).values
-            ng = (t["choice"] == 0).values
-        f = S.window_rate(s["C"][J], -0.2, 0.0)            # neurons x trials
-        fp = S.window_rate(s["Cp"][J], -0.2, 0.0)
-        x = f[:, task].mean(axis=1) - fp.mean(axis=1)
-        nx = np.linalg.norm(x)
-        if nx == 0:
-            continue
-        x = x / nx
-        idx = x @ f
-        rng = np.random.default_rng([seed, si])
-        levels = S.CONTRASTS[1:] if contr_r == "a" else S.CONTRASTS
-        for c in levels:
-            g = np.flatnonzero(go & (t["cR"].values == c)); n = np.flatnonzero(ng & (t["cR"].values == c))
-            k = min(len(g), len(n))
-            for lab, ix in ((1, rng.choice(g, k, replace=False)), (0, rng.choice(n, k, replace=False))):
-                for i in ix:
-                    out.append((si, i, lab, idx[i], c))
-        nneur.append(len(sel))
-    return pd.DataFrame(out, columns=["s", "trial", "go", "index", "cR"]), np.array(nneur)
-
-def go_miss_test(df):
-    m = df.groupby(["s", "go"])["index"].mean().unstack()
-    d = (m[1] - m[0]).dropna()
-    tstat, p = stats.ttest_rel(m[1].loc[d.index], m[0].loc[d.index])
-    return d, tstat, p
-
-fig5f = {}
-for (fac, pas_r) in (("a", "a"), ("a", "b"), ("b", "a"), ("b", "b")):
-    regions = fig5c_regions[(fac, pas_r)]
-    for mname, mkeep in (("M1", keepE_M1), ("M2", keepE_M2)):
-        for task_r in ("a", "b"):
-            for contr_r in ("a", "b"):
-                df, nn = engagement(regions, task_r, contr_r, mkeep)
-                d, tstat, p = go_miss_test(df)
-                ok_test = p < 1e-4 and d.mean() > 0
-                ok = ok_test and abs(d.mean() - 8.42) <= 0.84
-                fig5f[(fac, pas_r, mname, task_r, contr_r)] = (d.mean(), p, ok_test, ok)
-                print(f"fig5c regions ({fac},{pas_r}) {mname} task ({task_r}) contrasts ({contr_r}): Go-Miss {d.mean():.2f} "
-                      f"(s.e. {d.std(ddof=1) / np.sqrt(len(d)):.2f}), positive in {int((d > 0).sum())} of {len(d)} sessions, "
-                      f"t = {tstat:.2f}, p = {p:.1e}; neurons per session {nn.mean():.0f} ± {nn.std(ddof=1) / np.sqrt(len(nn)):.1f}"
-                      f" | test {ok_test}, mean within tolerance {ok}")
-EOF
-cat >> $TMPDIR/nb3.py <<'EOF'
-
-# %% md
-# ### fig5e-engagement-predicts-go
-#
-# > The probability of a Go response rises with the engagement index on single trials.
-#
-# The index of fig5f (region set of fig5c reading (a, a), the Methods' factors with all passive events; M2 sessions; each task and contrast reading), z-scored (a) within session, (b) over all trials; matched Go and Miss trials pooled; logistic regression of Go on the index. Reproduced under one reading when the slope is positive and its 95% interval excludes 0.
-
-# %% code [claim:fig5e-engagement-predicts-go]
-fig5e = {}
-for task_r in ("a", "b"):
-    for contr_r in ("a", "b"):
-        df, _ = engagement(fig5c_regions[("a", "a")], task_r, contr_r, keepE_M2)
-        for zr in ("a", "b"):
-            z = df.groupby("s")["index"].transform(lambda v: (v - v.mean()) / v.std(ddof=1)) if zr == "a" else \
-                (df["index"] - df["index"].mean()) / df["index"].std(ddof=1)
-            fit = sm.Logit(df["go"].values, sm.add_constant(z.values)).fit(disp=0)
-            lo, hi = fit.conf_int()[1]
-            fig5e[(task_r, contr_r, zr)] = fit.params[1] > 0 and lo > 0
-            bins = pd.qcut(z, 5, labels=False)
-            print(f"task ({task_r}) contrasts ({contr_r}) z ({zr}): slope {fit.params[1]:.3f} [{lo:.3f}, {hi:.3f}], "
-                  f"p = {fit.pvalues[1]:.1e}, trials {len(df)}; P(Go) by index quintile "
-                  f"{np.round(df.groupby(bins)['go'].mean().values, 2)}")
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py 2>&1 | grep -E "^fig5c regions|^task \(" | cut -c1-330
-```
-
-```
-fig5c regions (a,a) M1 task (a) contrasts (a): Go-Miss 7.54 (s.e. 1.58), positive in 30 of 36 sessions, t = 4.77, p = 3.2e-05; neurons per session 344 ± 33.9 | test True, mean within tolerance False
-fig5c regions (a,a) M1 task (a) contrasts (b): Go-Miss 5.40 (s.e. 1.22), positive in 28 of 36 sessions, t = 4.42, p = 9.2e-05; neurons per session 344 ± 33.9 | test True, mean within tolerance False
-fig5c regions (a,a) M1 task (b) contrasts (a): Go-Miss 12.41 (s.e. 2.14), positive in 32 of 36 sessions, t = 5.81, p = 1.4e-06; neurons per session 344 ± 33.9 | test True, mean within tolerance False
-fig5c regions (a,a) M1 task (b) contrasts (b): Go-Miss 6.78 (s.e. 0.99), positive in 33 of 36 sessions, t = 6.86, p = 5.8e-08; neurons per session 344 ± 33.9 | test True, mean within tolerance False
-fig5c regions (a,a) M2 task (a) contrasts (a): Go-Miss 9.78 (s.e. 2.44), positive in 32 of 38 sessions, t = 4.01, p = 2.8e-04; neurons per session 343 ± 32.2 | test False, mean within tolerance False
-fig5c regions (a,a) M2 task (a) contrasts (b): Go-Miss 5.99 (s.e. 1.24), positive in 30 of 38 sessions, t = 4.82, p = 2.4e-05; neurons per session 343 ± 32.2 | test True, mean within tolerance False
-fig5c regions (a,a) M2 task (b) contrasts (a): Go-Miss 15.17 (s.e. 2.80), positive in 34 of 38 sessions, t = 5.42, p = 3.8e-06; neurons per session 343 ± 32.2 | test True, mean within tolerance False
-fig5c regions (a,a) M2 task (b) contrasts (b): Go-Miss 7.29 (s.e. 1.01), positive in 35 of 38 sessions, t = 7.24, p = 1.4e-08; neurons per session 343 ± 32.2 | test True, mean within tolerance False
-fig5c regions (a,b) M1 task (a) contrasts (a): Go-Miss 7.56 (s.e. 1.58), positive in 30 of 36 sessions, t = 4.79, p = 3.0e-05; neurons per session 330 ± 35.7 | test True, mean within tolerance False
-fig5c regions (a,b) M1 task (a) contrasts (b): Go-Miss 5.40 (s.e. 1.21), positive in 28 of 36 sessions, t = 4.45, p = 8.4e-05; neurons per session 330 ± 35.7 | test True, mean within tolerance False
-fig5c r
-[... 29 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb3.py <<'EOF'
-
-# %% md
-# ### ed9i-engagement-beyond-arousal
-#
-# > The engagement index improves the prediction of Go responses beyond inter-trial interval, previous reward, pupil area and motion energy (deviance test, p = 1.5e-8).
-#
-# Matched Go and Miss trials of fig5f (region set of fig5c reading (a, a), M2 sessions, each task and contrast reading). Binomial GLM of Go on inter-trial interval, previous reward (0 or 1), pupil area and face motion energy in the pre-stimulus window (z-scored within session) and their squares, against the same plus the engagement index (z-scored within session). The claims file does not define the inter-trial interval; readings (I1) stimulus onset minus the previous trial's feedback time, (I2) trial start minus the previous trial's end. Window readings (a) -0.2 to 0 s, (b) -0.25 to -0.05 s; pooling (a) one GLM over all sessions, (b) one GLM per session with deviances and degrees of freedom summed. The first trial of a session has no previous trial and is dropped. All 39 sessions have pupil data; the Methods' five sessions with unusable pupil video are not identified in the files, so none is dropped.
-
-# %% code [claim:ed9i-engagement-beyond-arousal]
-def covariates(df, iti_r, win):
-    rows = []
-    for si, g in df.groupby("s"):
-        s = sessions[si]; tr = s["trials"]
-        i = g["trial"].values
-        prev = np.clip(i - 1, 0, None)
-        iti = (tr["stim"].values[i] - tr["fb"].values[prev]) if iti_r == "I1" else (tr["start_time"].values[i] - tr["stop_time"].values[prev])
-        w = 1 if win == "a" else 0
-        pup, me = s["pupil"][i, w], s["face"][i, w]
-        zs = lambda v: (v - np.nanmean(v)) / np.nanstd(v)
-        rows.append(pd.DataFrame({"s": si, "go": g["go"].values, "eng": zs(g["index"].values), "iti": zs(iti),
-                                  "prev_rew": (tr["fbtype"].values[prev] == 1).astype(float), "pupil": zs(pup), "me": zs(me),
-                                  "first": i == 0}))
-    d = pd.concat(rows, ignore_index=True)
-    d = d[~d["first"]].dropna()
-    d["pupil2"], d["me2"] = d["pupil"] ** 2, d["me"] ** 2
-    return d
-
-base_cols = ["iti", "prev_rew", "pupil", "pupil2", "me", "me2"]
-def deviance_test(d, pooling):
-    if pooling == "a":
-        X0 = sm.add_constant(d[base_cols].values); X1 = sm.add_constant(d[base_cols + ["eng"]].values)
-        f0 = sm.GLM(d["go"].values, X0, family=sm.families.Binomial()).fit()
-        f1 = sm.GLM(d["go"].values, X1, family=sm.families.Binomial()).fit()
-        lr, df_ = f0.deviance - f1.deviance, 1
-        return lr, df_, stats.chi2.sf(lr, df_), f1.params[-1]
-    lr, df_ = 0.0, 0
-    for _, g in d.groupby("s"):
-        if g["go"].nunique() < 2 or len(g) < 20:
-            continue
-        try:
-            f0 = sm.GLM(g["go"].values, sm.add_constant(g[base_cols].values, has_constant="add"), family=sm.families.Binomial()).fit()
-            f1 = sm.GLM(g["go"].values, sm.add_constant(g[base_cols + ["eng"]].values, has_constant="add"), family=sm.families.Binomial()).fit()
-        except Exception:
-            continue
-        lr += f0.deviance - f1.deviance; df_ += 1
-    return lr, df_, stats.chi2.sf(lr, df_), np.nan
-
-eng_df = {(tr_, cr_): engagement(fig5c_regions[("a", "a")], tr_, cr_, keepE_M2)[0] for tr_ in ("a", "b") for cr_ in ("a", "b")}
-ed9i = {}
-for (tr_, cr_), df in eng_df.items():
-    for iti_r in ("I1", "I2"):
-        for win in ("a", "b"):
-            d = covariates(df, iti_r, win)
-            for pooling in ("a", "b"):
-                lr, df_, p, coef = deviance_test(d, pooling)
-                ed9i[(tr_, cr_, iti_r, win, pooling)] = p
-                print(f"task ({tr_}) contrasts ({cr_}) {iti_r} window ({win}) pooling ({pooling}): deviance difference {lr:.1f} on {df_} d.f., "
-                      f"p = {p:.1e}, index coefficient {coef:.3f}, trials {len(d)}")
-
-# %% md
-# ### ed9cf-engagement-controls
-#
-# > The Go against Miss difference in engagement index persists on trials after rewards, after regressing out previous reward, and on trials after short and after long inter-trial intervals.
-#
-# The index of fig5f (as ed9i) on four trial sets: trials after a rewarded trial; all trials with each previous-reward group's mean index subtracted (per session); trials after short and after long inter-trial intervals (I1, as ed9i). Readings of the split (a) median per session, (b) median over all trials; of the test (a) paired t-test across sessions, (b) two-sample t-test over pooled Go and Miss trials. Reproduced under one reading when all four sets give Go higher with p < 0.05.
-
-# %% code [claim:ed9cf-engagement-controls]
-ed9cf = {}
-for (tr_, cr_), df in eng_df.items():
-    d = df.copy()
-    rows = []
-    for si, g in d.groupby("s"):
-        tr = sessions[si]["trials"]; i = g["trial"].values; prev = np.clip(i - 1, 0, None)
-        rows.append(pd.DataFrame({"prev_rew": tr["fbtype"].values[prev] == 1, "iti": tr["stim"].values[i] - tr["fb"].values[prev],
-                                  "first": i == 0}, index=g.index))
-    d = d.join(pd.concat(rows))
-    d = d[~d["first"]]
-    d["resid"] = d["index"] - d.groupby(["s", "prev_rew"])["index"].transform("mean")
-    for split in ("a", "b"):
-        med = d.groupby("s")["iti"].transform("median") if split == "a" else d["iti"].median()
-        sets = {"after reward": (d[d["prev_rew"]], "index"), "reward regressed": (d, "resid"),
-                "short ITI": (d[d["iti"] < med], "index"), "long ITI": (d[d["iti"] >= med], "index")}
-        for test in ("a", "b"):
-            res = {}
-            for name, (x, col) in sets.items():
-                if test == "a":
-                    m = x.groupby(["s", "go"])[col].mean().unstack().dropna()
-                    tstat, p = stats.ttest_rel(m[1], m[0]); diff = (m[1] - m[0]).mean()
-                else:
-                    tstat, p = stats.ttest_ind(x[x["go"] == 1][col], x[x["go"] == 0][col]); diff = x[x["go"] == 1][col].mean() - x[x["go"] == 0][col].mean()
-                res[name] = (diff, p)
-            ok = all(v[0] > 0 and v[1] < 0.05 for v in res.values())
-            ed9cf[(tr_, cr_, split, test)] = ok
-            print(f"task ({tr_}) contrasts ({cr_}) split ({split}) test ({test}): " +
-                  "; ".join(f"{k} {v[0]:.2f} (p = {v[1]:.1e})" for k, v in res.items()) + f" | all: {ok}")
-
-# %% md
-# ### ed9k-engagement-vector-specific
-#
-# > The engagement vector correlates better with the Go minus Miss vector than with the vectors of other behavioural variables, though not significantly for previous reward (p = 0.096).
-#
-# Per recording, Pearson correlation over neurons between the engagement vector (task minus passive pre-stimulus rate, as fig5f) and the Go minus Miss vector (matched trials), and between the engagement vector and each variable's vector, computed on the same matched trials (the claims file does not say which trials; a question is filed). Readings of the variable's vector (a) rate on trials above the variable's median minus below (previous reward: rewarded minus not); (b) each neuron's regression slope of rate on the variable; of the test (a) paired t-test, (b) Wilcoxon signed-rank. Reproduced under one reading when the Go-Miss correlation is larger on average for all four variables and the difference has p < 0.05 for pupil, motion energy and inter-trial interval.
-
-# %% code [claim:ed9k-engagement-vector-specific]
-def vectors(tr_, cr_, win="a"):
-    df = eng_df[(tr_, cr_)]
-    out = []
-    for si, g in df.groupby("s"):
-        s = sessions[si]; t = tts[si]; tr = s["trials"]
-        rows = np.flatnonzero((nt["s"] == si).values)
-        sel = rows[inN[rows] & nt["region"].isin(fig5c_regions[("a", "a")]).values[rows]]
-        J = nt["j"].values[sel]
-        f = S.window_rate(s["C"][J], -0.2, 0.0); fp = S.window_rate(s["Cp"][J], -0.2, 0.0)
-        task = t["keep"].values if tr_ == "a" else np.ones(len(t), bool)
-        eng = f[:, task].mean(1) - fp.mean(1)
-        i = g["trial"].values; go = g["go"].values == 1
-        gm = f[:, i[go]].mean(1) - f[:, i[~go]].mean(1)
-        prev = np.clip(i - 1, 0, None)
-        var = {"pupil": s["pupil"][i, 1], "motion energy": s["face"][i, 1], "ITI": tr["stim"].values[i] - tr["fb"].values[prev],
-               "previous reward": (tr["fbtype"].values[prev] == 1).astype(float)}
-        rec = {"s": si, "go-miss": stats.pearsonr(eng, gm)[0]}
-        for k, v in var.items():
-            ok = np.isfinite(v) & (i > 0)
-            fv, vv = f[:, i[ok]], v[ok]
-            if k == "previous reward":
-                hi = vv > 0.5
-            else:
-                hi = vv > np.median(vv)
-            rec[(k, "a")] = stats.pearsonr(eng, fv[:, hi].mean(1) - fv[:, ~hi].mean(1))[0] if hi.any() and (~hi).any() else np.nan
-            vc = vv - vv.mean()
-            slope = (fv - fv.mean(1, keepdims=True)) @ vc / (vc @ vc) if (vc @ vc) > 0 else np.full(len(eng), np.nan)
-            rec[(k, "b")] = stats.pearsonr(eng, slope)[0]
-        out.append(rec)
-    return pd.DataFrame(out)
-
-ed9k = {}
-for tr_ in ("a", "b"):
-    for cr_ in ("a", "b"):
-        V = vectors(tr_, cr_)
-        for vr in ("a", "b"):
-            for test in ("a", "b"):
-                res = {}
-                for k in ("pupil", "motion energy", "ITI", "previous reward"):
-                    x = V[["go-miss", (k, vr)]].dropna()
-                    dlt = x["go-miss"] - x[(k, vr)]
-                    p = stats.ttest_rel(x["go-miss"], x[(k, vr)]).pvalue if test == "a" else stats.wilcoxon(dlt).pvalue
-                    res[k] = (dlt.mean(), p)
-                ok = all(v[0] > 0 for v in res.values()) and all(res[k][1] < 0.05 for k in ("pupil", "motion energy", "ITI"))
-                ed9k[(tr_, cr_, vr, test)] = ok
-                print(f"task ({tr_}) contrasts ({cr_}) vector ({vr}) test ({test}): mean r(eng, go-miss) {V['go-miss'].mean():.3f}; " +
-                      "; ".join(f"{k}: r {V[(k, vr)].mean():.3f}, diff {v[0]:.3f} p = {v[1]:.1e}" for k, v in res.items()) + f" | met: {ok}")
-
-# %% md
-# ### suppfig3-nonresponsive-neurons
-#
-# > The engagement index differs between Go and Miss trials even when computed from neurons that are otherwise not responsive in the task.
-#
-# As fig5f (region set of fig5c reading (a, a), M2 sessions), from all neurons N of those regions, from those of the Figs. 3 to 5 set, and from the others. Reproduced under one reading when the paired t-test gives Go higher with p < 0.05 for each set.
-
-# %% code [claim:suppfig3-nonresponsive-neurons]
-sf3 = {}
-for tr_ in ("a", "b"):
-    for cr_ in ("a", "b"):
-        res = {}
-        for name, mask in (("all", inN), ("responsive", inN35), ("non-responsive", inN & ~resp4)):
-            df, nn = engagement(fig5c_regions[("a", "a")], tr_, cr_, keepE_M2, nmask=mask)
-            d, tstat, p = go_miss_test(df)
-            res[name] = (d.mean(), p, nn.mean())
-        ok = all(v[0] > 0 and v[1] < 0.05 for v in res.values())
-        sf3[(tr_, cr_)] = ok
-        print(f"task ({tr_}) contrasts ({cr_}): " + "; ".join(f"{k}: Go-Miss {v[0]:.2f}, p = {v[1]:.1e}, neurons/session {v[2]:.0f}"
-                                                         for k, v in res.items()) + f" | all p < 0.05: {ok}")
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py 2>&1 | grep -E "^task \(" | cut -c1-500 | tail -60
-```
-
-```
-task (a) contrasts (b) I1 window (a) pooling (a): deviance difference 76.6 on 1 d.f., p = 2.1e-18, index coefficient 0.297, trials 4367
-task (a) contrasts (b) I1 window (a) pooling (b): deviance difference 172.3 on 36 d.f., p = 1.1e-19, index coefficient nan, trials 4367
-task (a) contrasts (b) I1 window (b) pooling (a): deviance difference 78.3 on 1 d.f., p = 8.8e-19, index coefficient 0.300, trials 4367
-task (a) contrasts (b) I1 window (b) pooling (b): deviance difference 170.9 on 36 d.f., p = 1.9e-19, index coefficient nan, trials 4367
-task (a) contrasts (b) I2 window (a) pooling (a): deviance difference 68.8 on 1 d.f., p = 1.1e-16, index coefficient 0.281, trials 4367
-task (a) contrasts (b) I2 window (a) pooling (b): deviance difference 92.1 on 36 d.f., p = 8.2e-07, index coefficient nan, trials 4367
-task (a) contrasts (b) I2 window (b) pooling (a): deviance difference 70.5 on 1 d.f., p = 4.6e-17, index coefficient 0.284, trials 4367
-task (a) contrasts (b) I2 window (b) pooling (b): deviance difference 90.4 on 36 d.f., p = 1.4e-06, index coefficient nan, trials 4367
-task (b) contrasts (a) I1 window (a) pooling (a): deviance difference 83.9 on 1 d.f., p = 5.3e-20, index coefficient 0.481, trials 2038
-task (b) contrasts (a) I1 window (a) pooling (b): deviance difference 143.9 on 33 d.f., p = 8.5e-16, index coefficient nan, trials 2038
-task (b) contrasts (a) I1 window (b) pooling (a): deviance difference 86.1 on 1 d.f., p = 1.7e-20, index coefficient 0.486, trials 2038
-task (b) contrasts (a) I1 window (b) pooling (b): deviance difference -229.4 on 33 d.f., p = 1.0e+00, index coefficient nan, trials 2038
-task (b) contrasts (a) I2 window (a) pooling (a): deviance difference 74.1 on 1 d.f., p = 7.3e-18, index coefficient 0.454, trials 2038
-task (b) contrasts (a) I2 window (a) pooling (b): deviance difference 116.0 on 33 d.f., p = 3.6e-11, index coefficient nan, trials 2038/tmp/claude-1001/env/lib/python3.13/site-packages/statsmodels/genmod/generalized_linear_model.py:1
+cd $TMPDIR && sed -i 's/est_nested = per_neuron \/ n_fits \* fits_nested \* 0.3 \* n_full   # about 30% of neurons pass VE > 2% (assumption for the estimate)/est_nested = per_neuron \/ n_fits * fits_nested * 4240   # about 4,240 neurons pass VE > 2% (claims, ed5h-choice-shuffle-fpr)/; s/print("Nested tests (3 kernels, about 30%% of neurons)/print("Nested tests (3 kernels, about 4,240 neurons)/' cells_j.py && grep -n "4240\|4,240" cells_j.py; sed -n 1,60p entries/fouke-2025/README.md; python3 -c "
+import json;nb=json.load(open('entries/fouke-2025/reproduce_fouke_2025.ipynb'));print(nb['metadata']);c=nb['cells'];print(len(c));[print(x['cell_type'],x.get('metadata'),''.join(x['source'])[:300]) for x in c[:4]]"
+```
+
+```
+57:est_nested = per_neuron / n_fits * fits_nested * 4240   # about 4,240 neurons pass VE > 2% (claims, ed5h-choice-shuffle-fpr)
+61:print("Nested tests (3 kernels, about 4,240 neurons): %.1f h; total %.1f h on one core, %.1f h on 4 cores"
+# Fouke, He, Loring & Naumann (2025) from dandiset 001453
+
+Tests the findings of [Fouke et al. (2025)](https://doi.org/10.1016/j.cub.2025.04.027) that can be
+tested on [DANDI:001453](https://dandiarchive.org/dandiset/001453/0.250518.1950), which holds the
+freely swimming tracking of 25 zebrafish and 12 *Danionella cerebrum* larvae (Figure 1 and Figure
+S1). The imaging and head-fixed tail tracking of Figures 2 to 4 are not in it.
+
+| Claim | Outcome |
+|---|---|
+| The stimulus codes can be linked to the paper's stimuli through its code | Reproduced |
+| DC swim faster than ZF, over all stimulus codes | Reproduced |
+| Median speed over whole-field stimuli, DC 9.8 and ZF 6.4 mm/s | Reproduced |
+| ZF are faster to forward motion than to a static grating (8.8 against 5.0 mm/s) | Reproduced |
+| DC do not modulate speed with stimulus direction | Not reproduced |
+| DC are faster than ZF for oblique stimuli | Reproduced |
+| Both species turn in the direction of motion | Partially reproduced |
+| ZF have higher angular acceleration than DC | Not reproduced |
+| DC turn less than ZF to monocular stimuli | Reproduced |
 [... 46 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb3.py'; s=open(p).read()
-old='''        try:
-            f0 = sm.GLM(g["go"].values, sm.add_constant(g[base_cols].values, has_constant="add"), family=sm.families.Binomial()).fit()
-            f1 = sm.GLM(g["go"].values, sm.add_constant(g[base_cols + ["eng"]].values, has_constant="add"), family=sm.families.Binomial()).fit()
-        except Exception:
-            continue
-        lr += f0.deviance - f1.deviance; df_ += 1'''
-new='''        import warnings
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            try:
-                f0 = sm.GLM(g["go"].values, sm.add_constant(g[base_cols].values, has_constant="add"), family=sm.families.Binomial()).fit()
-                f1 = sm.GLM(g["go"].values, sm.add_constant(g[base_cols + ["eng"]].values, has_constant="add"), family=sm.families.Binomial()).fit()
-            except Exception:
-                continue
-        if not (f0.converged and f1.converged) or f0.deviance - f1.deviance < 0:
-            continue        # a failed or separated fit (reported in the count of sessions)
-        lr += f0.deviance - f1.deviance; df_ += 1'''
-assert old in s; s=s.replace(old,new)
-s=s.replace("with deviances and degrees of freedom summed. The first trial","with deviances and degrees of freedom summed (sessions whose fits fail to converge or separate perfectly are left out, and the d.f. count the sessions kept). The first trial")
-open(p,'w').write(s)
+cd  grep -n -i "install\|header\|tag\|claim:" tools/entry.py | head -40; python3 -c "
+import json;nb=json.load(open('entries/fouke-2025/reproduce_fouke_2025.ipynb'));c=nb['cells'];print(''.join(c[0]['source'])); print(''.join(c[-1]['source']))"
+```
+
+```
+21:- each notebook has a cell tagged `sanity` that prints what was loaded;
+26:notebook through a Jupyter kernel installed in that environment, in the entry
+229:        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
+230:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
+350:            tag = outcome.get("output")
+351:            if notebook in present and tag:
+353:                if not any(tag in c.metadata.get("tags", []) for c in nb.cells):
+354:                    report.error(path.relative_to(ROOT), f"no cell tagged {tag!r} in {notebook}")
+421:def tagged_outputs(notebook: Path) -> dict[str, str]:
+422:    """The text each claim-tagged cell of an executed notebook printed, by tag."""
+427:        for tag in cell.get("metadata", {}).get("tags", []):
+428:            if tag.startswith("claim:"):
+432:                out[tag] = "".join(t if isinstance(t, str) else "".join(t) for t in text)
+456:        a, b = tagged_outputs(old), tagged_outputs(new)
+457:        for tag in sorted(set(a) | set(b)):
+458:            if a.get(tag) != b.get(tag):
+459:                differ.append(f"{nb['path']} {tag}: the output differs")
+477:    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
+480:                ["uv", "pip", "install", "--quiet", "--python", str(python),
+482:                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+[... 97 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/cells_0.py <<'EOF'
+# %% md
+# Reproducing Steinmetz et al. (2019) from dandiset 000017
+
+**Paper.** Steinmetz NA, Zatka-Haas P, Carandini M, Harris KD (2019). Distributed coding of choice, action and engagement across the mouse brain. *Nature* 576, 266-273. [doi:10.1038/s41586-019-1787-x](https://doi.org/10.1038/s41586-019-1787-x). The claims file (`claims/steinmetz-2019.yaml`) was written from the accepted author manuscript in Europe PMC (PMC6913580) with its Methods, Extended Data legends and both supplement files.
+
+**Dandiset.** [DANDI:000017](https://dandiarchive.org/dandiset/000017/0.240329.1926), version 0.240329.1926 (doi:10.48324/dandi.000017/0.240329.1926). The paper cites no DANDI version (its data statement names the figshare deposit), so the most recent published version is pinned; it is the only one, and the draft has the same 39 files and size.
+
+**What the dandiset holds.** One NWB file per session, 39 sessions of 10 mice: spike times of curated units with the location of every channel, the trial table (stimulus, go cue, response, feedback, the dataset's own `included` flag for engaged trials), the wheel position and detected wheel movements, licks, pupil area and face motion energy, the passive replay events and the receptive-field mapping stimuli. It holds no histology (DiI spots).
+
+**Method sources.** Every method is the claim's criterion, or the passage of the paper it cites; details taken from the paper are cited where they are used and in the helper module `steinmetz.py`. The paper's code (github.com/nsteinme/steinmetz-et-al-2019, commit 9a0bea8) is cited where the claims file names it. Random draws (matched-contrast subsets, NoGo movement times, shuffles, folds) use fixed seeds, one generator per use.
+
+| Claim | Status |
+|---|---|
+| fig1c-easy-performance, fig1c-low-contrast-performance, fig1c-competing-performance | tested |
+| fig1d-reaction-time-difficulty, ed1q-wheel-choice-decoding, early-response-fraction, passive-no-movement | tested |
+| recording-counts, edtable1-region-counts, supptable2-sessions | tested |
+| task-modulated-fraction, suppfig2-rate-amplitude | tested |
+| fig2de-activity-order, fig2fg-miss-restricted, fig5b-miss-more-than-passive | tested |
+| fig5c-prestimulus-task-vs-passive, ed6b-prestimulus-order, fig5d-go-miss-matches-task-passive, ed7f-detect-probability-engagement | tested |
+| fig5f-engagement-index, fig5e-engagement-predicts-go, ed9i-engagement-beyond-arousal, ed9cf-engagement-controls, ed9k-engagement-vector-specific, suppfig3-nonresponsive-neurons | tested |
+| ed7b-detect-probability-widespread | tested |
+| fig4d-jpecc-vis-leads, fig4d-jpecc-no-lag-frontal-midbrain | tested |
+| fig3c-variance-explained, fig3d-vision-localized, fig3e-action-global, ed4f-focality, ed5h-choice-shuffle-fpr, fig4b-choice-regions, fig4c-choice-timing, fig4f-contralateral-preference, fig4fg-opposed-activity, ed5g-ipsilateral-vision-rare, ed7c-choice-probability-restricted | blocked: the kernel regression does not fit the time limit (timed below) |
+| histology-alignment-error | blocked: no DiI spot coordinates or landmarks in the dandiset |
+
+# %% md
+## Data check
+
+Counts by subject and session, the ranges and units of the variables used, and each check of the metadata against the values.
+EOF
+cat > $TMPDIR/cells_z.py <<'EOF'
+# %% code
+print(f"Notebook run time {time.time() - T0:.0f} s; peak memory "
+      f"{resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1e6:.2f} GB")
+
+# %% md
+## Summary
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences from the paper's method.
+
+SUMMARY_TABLE
 EOF
 echo ok
 ```
@@ -4797,1330 +3034,518 @@ echo ok
 ok
 ```
 
-**Agent**
-
-Now the kernel-regression claims (Figs. 3 and 4, Extended Data Figs. 4f and 5h).
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb4.py",
- "content": "\n# %% md\n# ## Kernel regression (Figs. 3 and 4, Extended Data Figs. 4f and 5)\n#\n# Definition K, as `steinmetz.full_model` and `steinmetz.nested_test` implement it from the claims file and the paper's code: neurons of the Figs. 3 to 5 set, trials T; rates in 5 ms bins smoothed with a causal half-Gaussian (s.d. 25 ms), minus each neuron's baseline; six Vision kernels (90 lags from -0.05 s), Action and Choice kernels (55 lags from -0.25 s around movement onset); a reduced-rank basis over all sessions (first 200 columns); per neuron an elastic net (alpha 0.5, lambda 0.5, glmnet's scaling) with 5-fold cross-validation over trials and 1 to 50 components; neurons with full-model VE of at least 2% enter the nested tests (a basis without the kernel, 75 components, residuals, a basis for the kernel alone, 10-fold cross-validation, 1 to 18 components); a neuron requires the kernel when its VE exceeds 2%. Folds are drawn with fixed seeds (a standard choice).\n\n# %% code\nt0 = time.time()\nkin, kunits = [], []\nfor si, s in enumerate(sessions):\n    rows = np.flatnonzero((nt[\"s\"] == si).values)\n    u = rows[inN35[rows]]\n    kunits.append(u)\n    kin.append(S.kernel_inputs(s, tts[si], nt[\"j\"].values[u]))\nprint(f\"design and rates: {time.time() - t0:.0f} s; samples {sum(d['Y'].shape[0] for d in kin)}, neurons {sum(len(u) for u in kunits)}\")\nt0 = time.time()\nfm = S.full_model(kin, seed=0)\nve = np.full(len(nt), np.nan); ndim = np.zeros(len(nt), int)\nfor si, u in enumerate(kunits):\n    ve[u] = fm[\"best\"][si]; ndim[u] = fm[\"ndim\"][si]\nkept = [fm[\"best\"][si] >= 0.02 for si in range(len(kin))]\nprint(f\"full model: {time.time() - t0:.0f} s; neurons with VE >= 2%: {int(sum(k.sum() for k in kept))} of {int(inN35.sum())}\")\nt0 = time.time()\nnested = {k: S.nested_test(kin, kept, k, seed=0) for k in (\"vis_contra\", \"vis_ipsi\", \"action\", \"choice\")}\nreq = {}\nfor k, res in nested.items():\n    v = np.zeros(len(nt), bool); vv = np.full(len(nt), np.nan)\n    for si, u in enumerate(kunits):\n        v[u[kept[si]]] = res[\"best\"][si] > 0.02\n        vv[u[kept[si]]] = res[\"best\"][si]\n    req[k] = v; req[k + \"_ve\"] = vv\nprint(f\"nested tests: {time.time() - t0:.0f} s; neurons requiring each kernel:\", {k: int(req[k].sum()) for k in nested})\nin_nested = np.zeros(len(nt), bool)\nfor si, u in enumerate(kunits):\n    in_nested[u[kept[si]]] = True\n\n# %% code\nkt = []\nfor r in S.REGIONS_42:\n    m = inN35 & (nt[\"region\"] == r).values\n    kt.append(dict(region=r, analysed=int(m.sum()), nested=int((m & in_nested).sum()),\n                   vis_contra=int((m & req[\"vis_contra\"]).sum()), vis_ipsi=int((m & req[\"vis_ipsi\"]).sum()),\n                   action=int((m & req[\"action\"]).sum()), choice=int((m & req[\"choice\"]).sum()),\n                   median_ve=np.nanmedian(ve[m])))\nkt = pd.DataFrame(kt).set_index(\"region\")\nfor k in (\"vis_contra\", \"action\", \"choice\"):\n    kt[\"frac_\" + k] = kt[k] / kt[\"analysed\"]\nprint(kt.round(3).sort_values(\"frac_vis_contra\", ascending=False).to_string())\n\n# %% md\n# ### fig3c-variance-explained\n#\n# > The kernels often explained a small fraction of cross-validated variance, even for neurons whose mean rates they predicted well (50.2% for the Fig. 3a neuron, 13.6% for the Fig. 3b neuron).\n#\n# Reproduced when the median full-model VE over analysed neurons is below 10% and, if the two example neurons can be identified, their VE is within tolerance; the paper gives only their regions (VISpm and SUB) and rasters, so they are judged not identifiable and the distributions of the two regions are shown.\n\n# %% code [claim:fig3c-variance-explained]\nv = ve[inN35]\nprint(f\"full-model cross-validated VE over {len(v)} neurons: median {100 * np.median(v):.2f}%, quartiles \"\n      f\"{100 * np.quantile(v, 0.25):.2f} to {100 * np.quantile(v, 0.75):.2f}%, max {100 * v.max():.1f}%; \"\n      f\"neurons below 2%: {100 * np.mean(v < 0.02):.1f}%\")\nfor r, target in ((\"VISpm\", 50.2), (\"SUB\", 13.6)):\n    x = 100 * ve[inN35 & (nt[\"region\"] == r).values]\n    print(f\"{r}: {len(x)} neurons, median {np.median(x):.2f}%, max {x.max():.1f}%, within 10% of {target}%: \"\n          f\"{int((np.abs(x - target) <= 0.1 * target).sum())}\")\nprint(\"median VE by subject (%):\", (100 * nt[inN35].assign(ve=ve[inN35]).groupby(\"subject\")[\"ve\"].median()).round(2).to_dict())\n\n# %% md\n# ### fig3d-vision-localized\n#\n# > Neurons encoding the contralateral visual stimulus were found mainly in classical visual areas, common in visual cortex, thalamus and SCs, and occasionally in frontal cortex (MOs, ACA, PL), basal ganglia (CP, GPe, SNr) and midbrain nuclei (SCm, MRN, APN, ZI).\n#\n# Fractions per region of analysed neurons requiring the Contralateral Vision kernels (regions with fewer than 5 analysed neurons left out). Reproduced when more than half of the neurons requiring them lie in VIS areas, visual thalamus (LGd, LP, LD) and SCs, the five regions with the highest fractions are among these, and each of MOs, ACA, PL, CP, GPe, SNr, SCm, MRN, APN and ZI that is analysed has at least one; partially when the first two hold.\n\n# %% code [claim:fig3d-vision-localized]\nVISUAL_SET = set(S.VIS) | set(S.VISUAL_THALAMUS) | {\"SCs\"}\nOCCASIONAL = [\"MOs\", \"ACA\", \"PL\", \"CP\", \"GPe\", \"SNr\", \"SCm\", \"MRN\", \"APN\", \"ZI\"]\nk5 = kt[kt[\"analysed\"] >= 5]\nshare = k5.loc[k5.index.isin(VISUAL_SET), \"vis_contra\"].sum() / k5[\"vis_contra\"].sum()\ntop5 = list(k5.sort_values(\"frac_vis_contra\", ascending=False).index[:5])\nocc = {r: int(k5.loc[r, \"vis_contra\"]) for r in OCCASIONAL if r in k5.index}\nc1, c2, c3 = share > 0.5, all(r in VISUAL_SET for r in top5), all(v >= 1 for v in occ.values())\nprint(f\"share of Contralateral Vision neurons in VIS, visual thalamus and SCs: {100 * share:.1f}% \"\n      f\"({int(k5.loc[k5.index.isin(VISUAL_SET), 'vis_contra'].sum())} of {int(k5['vis_contra'].sum())}) -> {c1}\")\nprint(f\"five highest fractions: {top5} -> all in the visual set: {c2}\")\nprint(f\"counts in the 'occasional' regions: {occ} -> each at least one: {c3}\")\nprint(\"fractions (%):\", (100 * k5[\"frac_vis_contra\"]).round(1).sort_values(ascending=False).to_dict())\n\n# %% md\n# ### fig3e-action-global\n#\n# > Neurons encoding action (requiring the Action kernel) were found in all recorded regions, and most did not require a Choice kernel.\n#\n# Reproduced when every analysed region (at least 5 neurons) has Action-requiring neurons and more than half of them do not require the Choice kernel; partially when at least 90% of regions have them.\n\n# %% code [claim:fig3e-action-global]\nwith_action = (k5[\"action\"] > 0)\nno_choice = (req[\"action\"] & ~req[\"choice\"]).sum() / req[\"action\"].sum()\nprint(f\"regions with Action-requiring neurons: {int(with_action.sum())} of {len(k5)}; without: {list(k5.index[~with_action])}\")\nprint(f\"Action-requiring neurons that do not require Choice: {100 * no_choice:.1f}% \"\n      f\"({int((req['action'] & ~req['choice']).sum())} of {int(req['action'].sum())})\")\nprint(\"fractions (%):\", (100 * k5[\"frac_action\"]).round(1).sort_values().to_dict())\n\n# %% md\n# ### fig4b-choice-regions\n#\n# > Choice-selective neurons were rare and found in frontal cortex (MOs, PL, MOp), basal ganglia (CP, SNr), higher-order thalamus, SCm, MRN and ZI, but not in VISp; 54 were in the midbrain (MRN, SCm, SNr, ZI) and 48 in the forebrain (MOs, PL, MOp, CP).\n#\n# Higher-order thalamus: the thalamic regions other than LGd, VPL, VPM and MG (claims file). Reproduced when the midbrain and forebrain counts are within 54 ± 5.4 and 48 ± 4.8, VISp has none, each of MOs, PL, MOp, CP, SNr, SCm, MRN, ZI and one higher-order thalamic region has at least one, and fewer than 5% of analysed neurons are choice-selective; partially when the regions hold but a count does not.\n\n# %% code [claim:fig4b-choice-regions]\nMID4, FORE4 = [\"MRN\", \"SCm\", \"SNr\", \"ZI\"], [\"MOs\", \"PL\", \"MOp\", \"CP\"]\nHOT = [r for r in S.THALAMUS if r not in S.FIRST_ORDER_THALAMUS]\ndef choice_summary(rq):\n    cnt = {r: int((inN35 & rq & (nt[\"region\"] == r).values).sum()) for r in S.REGIONS_42}\n    mid, fore = sum(cnt[r] for r in MID4), sum(cnt[r] for r in FORE4)\n    regions_ok = cnt[\"VISp\"] == 0 and all(cnt[r] >= 1 for r in MID4 + FORE4) and any(cnt[r] >= 1 for r in HOT)\n    frac = (inN35 & rq).sum() / inN35.sum()\n    return cnt, mid, fore, regions_ok, frac\ncnt, mid, fore, regions_ok, frac = choice_summary(req[\"choice\"])\nprint(f\"choice-selective: midbrain {mid} (54 ± 5.4), forebrain {fore} (48 ± 4.8); VISp {cnt['VISp']}; \"\n      f\"{ {r: cnt[r] for r in MID4 + FORE4} }; higher-order thalamus { {r: cnt[r] for r in HOT} }; \"\n      f\"all {int((inN35 & req['choice']).sum())} = {100 * frac:.2f}% of analysed neurons\")\nnV = int((inN35 & in_nested & (nt[\"region\"] == \"VISp\").values).sum())\nprint(f\"VISp neurons in the nested test: {nV}; expected false positives at 0.33%: {0.0033 * nV:.2f}\")\nprint(\"regions with choice-selective neurons:\", {r: c for r, c in cnt.items() if c})\nprint(\"by subject:\", nt[inN35 & req[\"choice\"]].groupby(\"subject\").size().to_dict())\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/nb4.py (file state is current in your context — no need to Read it back)
-```
-
 **Agent calls Bash**
 
 ```bash
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py $TMPDIR/nb4.py 2>&1 | sed -n '/^design and rates/,$p' | cut -c1-600
+cd  ls questions | head; f=$(ls questions/*.yaml | head -1); head -40 $f; grep -c "^- id:" claims/steinmetz-2019.yaml; grep -n "question" schemas/*.json | head
 ```
 
 ```
-design and rates: 36 s; samples 567743, neurons 13520
-full model: 54 s; neurons with VE >= 2%: 3148 of 13520
-nested tests: 95 s; neurons requiring each kernel: {'vis_contra': 830, 'vis_ipsi': 69, 'action': 1004, 'choice': 106}
-[cell code took 185 s]
-        analysed  nested  vis_contra  vis_ipsi  action  choice  median_ve  frac_vis_contra  frac_action  frac_choice
-region                                                                                                              
-VISp         684     265         214         0      16       1      0.009            0.313        0.023        0.001
-VISl         241      76          50         0      11       0      0.002            0.207        0.046        0.000
-VISpm        253      76          41         0       8       0      0.003            0.162        0.032        0.000
-VISam        523     167          81         0      39       2      0.007            0.155        0.075        0.004
-CP           542     195          77         6      43       6      0.009            0.142        0.079        0.011
-SCs          171      26          19         0       1       0      0.001            0.111        0.006        0.000
-LD           197      57          15         1      18       2      0.009            0.076        0.091        0.010
-MRN          670     269          51        11      85      19      0.012            0.076        0.127        0.028
-ACA          406     124          27         2      49       2      0.005            0.067        0.121        0.005
-PL           452     107          30         6      37       9      0.003            0.066        0.082        0.020
-LP           383      68          25         0      15       0      0.003            0.065        0.039        0.000
-MOs          880     253          49        10     100      16      0.004            0.056        0.114        0.018
-SNr          218     102          11         5      34       5      0.017            0.050        0.156        0
-[... 44 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb4.py <<'EOF'
-
-# %% md
-# ### ed4f-focality
-#
-# > The Focality index was 0.079 for choice, 0.069 for contralateral vision and 0.040 for action, with choice and vision each significantly more focal than action.
-#
-# F = sum of p_a squared over the square of the sum of p_a, p_a the fraction of analysed neurons in region a requiring the kernel, over the 42 regions. 95% bootstrap intervals with the normal approximation, bootstrap bias and s.e. (MATLAB bootci "norm"), 2,000 resamples. Readings (B1) neurons resampled within each region, (B2) sessions resampled; (S1) the interval of the difference (same resamples) excludes 0; (S2) the two intervals do not overlap. Reproduced under one reading when the three values are within 10% and both differences are significant.
-
-# %% code [claim:ed4f-focality]
-def focality(p):
-    p = np.asarray(p, float)
-    return (p ** 2).sum() / p.sum() ** 2 if p.sum() > 0 else np.nan
-
-regs = [r for r in S.REGIONS_42 if (inN35 & (nt["region"] == r).values).any()]
-KS = ("choice", "vis_contra", "action")
-def region_fracs(mask_rows):
-    sub = nt[mask_rows]
-    return {k: np.array([req[k][mask_rows & (nt["region"] == r).values].mean() if (mask_rows & (nt["region"] == r).values).any() else 0
-                         for r in regs]) for k in KS}
-F0 = {k: focality(v) for k, v in region_fracs(inN35).items()}
-print("focality:", {k: round(v, 4) for k, v in F0.items()}, "(paper choice 0.079, vision 0.069, action 0.040)")
-rng = np.random.default_rng(40)
-idx_by_region = {r: np.flatnonzero(inN35 & (nt["region"] == r).values) for r in regs}
-sess_ids = np.unique(nt["s"].values[inN35])
-boot = {"B1": {k: [] for k in KS}, "B2": {k: [] for k in KS}}
-REQ = {k: req[k].astype(float) for k in KS}
-for b in range(2000):
-    # B1: neurons within region
-    for k in KS:
-        boot["B1"][k].append(focality([REQ[k][rng.choice(ix, len(ix))].mean() for ix in idx_by_region.values()]))
-    # B2: sessions
-    ss_ = rng.choice(sess_ids, len(sess_ids))
-    num = {k: np.zeros(len(regs)) for k in KS}; den = np.zeros(len(regs))
-    for sid in ss_:
-        m = inN35 & (nt["s"].values == sid)
-        for ri, r in enumerate(regs):
-            mm = m & (nt["region"].values == r)
-            den[ri] += mm.sum()
-            for k in KS:
-                num[k][ri] += REQ[k][mm].sum()
-    for k in KS:
-        boot["B2"][k].append(focality(np.where(den > 0, num[k] / np.maximum(den, 1), 0)))
-
-def bootci_norm(theta, bs):
-    bs = np.asarray(bs); bs = bs[np.isfinite(bs)]
-    bias = bs.mean() - theta; se = bs.std(ddof=1)
-    return theta - bias - 1.96 * se, theta - bias + 1.96 * se
-
-ed4f = {}
-for B in ("B1", "B2"):
-    ci = {k: bootci_norm(F0[k], boot[B][k]) for k in KS}
-    res = {}
-    for k in ("choice", "vis_contra"):
-        dci = bootci_norm(F0[k] - F0["action"], np.array(boot[B][k]) - np.array(boot[B]["action"]))
-        res[k] = (dci[0] > 0, ci[k][0] > ci["action"][1])
-    vals_ok = (abs(F0["choice"] - 0.079) <= 0.0079 and abs(F0["vis_contra"] - 0.069) <= 0.0069
-               and abs(F0["action"] - 0.040) <= 0.0040)
-    for S_ in ("S1", "S2"):
-        j = 0 if S_ == "S1" else 1
-        ed4f[(B, S_)] = vals_ok and res["choice"][j] and res["vis_contra"][j]
-    print(f"{B}: 95% intervals { {k: (round(a, 4), round(b, 4)) for k, (a, b) in ci.items()} }; "
-          f"choice > action: S1 {res['choice'][0]}, S2 {res['choice'][1]}; vision > action: S1 {res['vis_contra'][0]}, "
-          f"S2 {res['vis_contra'][1]}; values within tolerance: {vals_ok}")
-
-# %% md
-# ### ed5h-choice-shuffle-fpr
-#
-# > With Left and Right choice labels shuffled, 14 neurons (0.33%) passed the Choice kernel test, the false-positive rate of the test.
-#
-# Each Left or Right trial T takes the choice of another, drawn without replacement (a permutation of the labels within the session); the whole kernel test for Choice is rerun: basis, full model, the 2% selection and the nested test. The neuron set (Figs. 3 to 5) is kept. Reproduced when the fraction of nested-test neurons passing is within 0.33 ± 0.17%.
-
-# %% code [claim:ed5h-choice-shuffle-fpr]
-t0 = time.time()
-kin_sh = []
-for si, s in enumerate(sessions):
-    t = tts[si]
-    lr = t["keep"].values & t["cls"].isin(["L", "R"]).values
-    vals = np.where(t["cls"].values[lr] == "L", 1.0, -1.0)
-    perm = np.random.default_rng([50, si]).permutation(vals)
-    X, trial, rel_t, mt = S.kernel_design(t, choice_values=perm)
-    d = dict(kin[si]); d["X"] = X
-    kin_sh.append(d)
-fm_sh = S.full_model(kin_sh, seed=1)
-kept_sh = [b >= 0.02 for b in fm_sh["best"]]
-nest_sh = S.nested_test(kin_sh, kept_sh, "choice", seed=1)
-n_in = int(sum(k.sum() for k in kept_sh)); n_pass = int(sum((b > 0.02).sum() for b in nest_sh["best"]))
-fpr = 100 * n_pass / n_in
-print(f"shuffled labels: {n_in} neurons in the nested test, {n_pass} pass the Choice test = {fpr:.2f}% "
-      f"(paper 14, 0.33% ± 0.17); time {time.time() - t0:.0f} s")
-pass_sh = np.zeros(len(nt), bool)
-for si, u in enumerate(kunits):
-    pass_sh[u[kept_sh[si]]] = nest_sh["best"][si] > 0.02
-print("shuffle passes by region:", nt[pass_sh].groupby("region").size().to_dict())
-print(f"VISp: {int((pass_sh & (nt['region'] == 'VISp').values).sum())} false positives in the shuffle")
-
-# %% md
-# ### fig4f-contralateral-preference and fig4fg-opposed-activity
-#
-# > Nearly all midbrain choice-selective neurons (53/54, 98%) preferred contralateral choices, while 19/48 (40%) forebrain ones preferred ipsilateral choices, significantly more than in the midbrain. Many midbrain choice-selective neurons (29/54, 54%) increased before one choice and were suppressed below baseline before the other, against 10/48 (21%) in the forebrain.
-#
-# Choice-selective neurons of fig4b. Model activity at movement onset: readings (a) the Action kernel plus (Left) or minus (Right) the Choice kernel at lag 0, kernels of the full model (its final fit, truncated to the neuron's best number of components) on baseline-subtracted rates; (b) the full model's prediction (with intercept) at the sample nearest movement onset, averaged over Left and over Right trials. The preferred choice has the higher activity; Right is contralateral. Suppressed: activity for the non-preferred choice below 0. Two-sided Fisher's exact tests.
-
-# %% code [claim:fig4f-contralateral-preference, claim:fig4fg-opposed-activity]
-lag0 = 50
-act = {}
-for si, u in enumerate(kunits):
-    d = kin[si]
-    W = fm["W"][si]
-    nd = fm["ndim"][si]
-    b = fm["b"]
-    Z = np.asarray(d["X"] @ b)
-    Y = d["Y"]
-    b0 = Y.mean(axis=0) - Z.mean(axis=0) @ W
-    mt_s = d["mt"][d["trial"]]
-    cls_s = tts[si]["cls"].values[tts[si]["keep"].values][d["trial"]]
-    for jj, row in enumerate(u):
-        if not req["choice"][row]:
-            continue
-        K = b[:, :nd[jj]] @ W[:nd[jj], jj]
-        A, Cc = K[S.KERNEL_COLS[6][lag0]], K[S.KERNEL_COLS[7][lag0]]
-        ka = (A + Cc, A - Cc)
-        pred = Z @ W[:, jj] + b0[jj]
-        near = np.isfinite(mt_s) & (np.abs(d["rel_t"] - mt_s) < S.BIN / 2 + 1e-9)
-        kb = (pred[near & (cls_s == "L")].mean(), pred[near & (cls_s == "R")].mean())
-        act[row] = (ka, kb)
-pref_tab = {}
-for rd, ix in (("a", 0), ("b", 1)):
-    rows_ = []
-    for row, v in act.items():
-        L, R = v[ix]
-        reg = nt["region"].values[row]
-        grp = "midbrain" if reg in MID4 else ("forebrain" if reg in FORE4 else "other")
-        rows_.append((row, reg, grp, L, R, R > L, min(L, R) < 0))
-    pref_tab[rd] = pd.DataFrame(rows_, columns=["row", "region", "group", "left", "right", "prefers_contra", "suppressed"])
-fig4f, fig4fg = {}, {}
-for rd, t in pref_tab.items():
-    mb, fb = t[t["group"] == "midbrain"], t[t["group"] == "forebrain"]
-    a1, b1 = int(mb["prefers_contra"].sum()), len(mb)
-    a2, b2 = int((~fb["prefers_contra"]).sum()), len(fb)
-    p1 = stats.fisher_exact([[a1, b1 - a1], [b2 - a2, a2]])[1]
-    c1, c2 = int(mb["suppressed"].sum()), int(fb["suppressed"].sum())
-    p2 = stats.fisher_exact([[c1, b1 - c1], [c2, b2 - c2]])[1]
-    fig4f[rd] = (100 * a1 / b1, 100 * a2 / b2, p1)
-    fig4fg[rd] = (100 * c1 / b1, 100 * c2 / b2, p2)
-    print(f"reading ({rd}): midbrain contralateral {a1}/{b1} = {100 * a1 / b1:.0f}% (paper 98); forebrain ipsilateral {a2}/{b2} = "
-          f"{100 * a2 / b2:.0f}% (paper 40); Fisher p = {p1:.1e} | suppressed: midbrain {c1}/{b1} = {100 * c1 / b1:.0f}% (paper 54), "
-          f"forebrain {c2}/{b2} = {100 * c2 / b2:.0f}% (paper 21); Fisher p = {p2:.2g}")
-    print("   by region, contralateral preference:", t.groupby("region")["prefers_contra"].agg(["sum", "size"]).to_dict("index"))
-EOF
-$TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py $TMPDIR/nb4.py 2>&1 | sed -n '/^focality/,$p' | cut -c1-700
-```
-
-```
-Exit code 143
-Command timed out after 1h 0m 0s
-```
-
-**Agent**
-
-The session bootstrap looped over boolean masks and was far too slow. Rewriting both bootstraps on per-session, per-region count tables (resampling neurons within a region is a binomial draw).
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb4.py'; s=open(p).read()
-a=s.index('rng = np.random.default_rng(40)'); b=s.index('def bootci_norm')
-new='''rng = np.random.default_rng(40)
-sess_ids = np.unique(nt["s"].values[inN35])
-# counts per session and region: analysed neurons and neurons requiring each kernel
-den_sr = np.array([[int((inN35 & (nt["s"].values == sid) & (nt["region"].values == r)).sum()) for r in regs] for sid in sess_ids])
-num_sr = {k: np.array([[int((inN35 & req[k] & (nt["s"].values == sid) & (nt["region"].values == r)).sum()) for r in regs]
-                       for sid in sess_ids]) for k in KS}
-n_r = den_sr.sum(0)
-p_r = {k: num_sr[k].sum(0) / n_r for k in KS}
-boot = {"B1": {k: [] for k in KS}, "B2": {k: [] for k in KS}}
-for b in range(2000):
-    # B1: neurons resampled within each region (the count requiring the kernel is binomial)
-    for k in KS:
-        boot["B1"][k].append(focality(rng.binomial(n_r, p_r[k]) / n_r))
-    # B2: sessions resampled
-    pick = rng.integers(0, len(sess_ids), len(sess_ids))
-    den = den_sr[pick].sum(0)
-    for k in KS:
-        boot["B2"][k].append(focality(np.where(den > 0, num_sr[k][pick].sum(0) / np.maximum(den, 1), 0)))
-
-'''
-s=s[:a]+new+s[b:]
-s=s.replace('''idx_by_region = {r: np.flatnonzero(inN35 & (nt["region"] == r).values) for r in regs}
-''','')
-open(p,'w').write(s)
-EOF
-grep -n "idx_by_region\|REQ\b" $TMPDIR/nb4.py | head; timeout 3000 $TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py $TMPDIR/nb4.py 2>&1 | sed -n '/^focality/,$p' | cut -c1-700
-```
-
-```
-focality: {'choice': np.float64(0.0955), 'vis_contra': np.float64(0.0669), 'action': np.float64(0.0384)} (paper choice 0.079, vision 0.069, action 0.040)
-B1: 95% intervals {'choice': (np.float64(0.0504), np.float64(0.119)), 'vis_contra': (np.float64(0.0591), np.float64(0.0719)), 'action': (np.float64(0.034), np.float64(0.0404))}; choice > action: S1 True, S2 True; vision > action: S1 True, S2 True; values within tolerance: False
-B2: 95% intervals {'choice': (np.float64(-0.0884), np.float64(0.1732)), 'vis_contra': (np.float64(0.0318), np.float64(0.0806)), 'action': (np.float64(0.0206), np.float64(0.0428))}; choice > action: S1 False, S2 False; vision > action: S1 False, S2 False; values within tolerance: False
-shuffled labels: 3106 neurons in the nested test, 9 pass the Choice test = 0.29% (paper 14, 0.33% ± 0.17); time 61 s
-shuffle passes by region: {'CP': 1, 'MOp': 3, 'MRN': 1, 'SCm': 1, 'SSp': 2, 'VISp': 1}
-VISp: 1 false positives in the shuffle
-[cell code [claim:ed5h-choice-shuffle-fpr] took 61 s]
-reading (a): midbrain contralateral 47/47 = 100% (paper 98); forebrain ipsilateral 12/37 = 32% (paper 40); Fisher p = 1.6e-05 | suppressed: midbrain 8/47 = 17% (paper 54), forebrain 3/37 = 8% (paper 21); Fisher p = 0.33
-   by region, contralateral preference: {'ACA': {'sum': 2, 'size': 2}, 'APN': {'sum': 2, 'size': 2}, 'CP': {'sum': 5, 'size': 6}, 'LD': {'sum': 2, 'size': 2}, 'MOp': {'sum': 5, 'size': 6}, 'MOs': {'sum': 10, 'size': 16}, 'MRN': {'sum': 19, 'size': 19}, 'PL': {'sum': 5, 'size': 9}, 'PO': {'sum': 2, 'size': 2}, 'RSP': {'sum': 2, 'size': 3}, 'SCm': {'sum': 13, 'size': 13}, 'SNr': {'sum': 5, 'size': 5}, 'SSp': {'sum': 5, 'size': 6}, 'VISam': {'sum': 2, 'size': 2}, 'VISp': {'sum': 0, 'size': 1}, 'VPL': {'sum': 2, 'size': 2}, 'ZI': {'sum': 10, 'size': 10}}
-reading (b): midbrain contralateral 47/47 = 100% (paper 98); forebrain ipsilateral 12/37 = 32% (paper 40); Fisher p = 1.6e-05 | suppressed: midbrain 12/47 = 26% (paper 54), forebrain 2/37 = 5% (paper 21); Fi
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat >> $TMPDIR/nb4.py <<'EOF'
-
-# %% md
-# ## Population decoding on residuals (Fig. 4c, Extended Data Fig. 5g)
-#
-# Residual rates: the smoothed, baseline-subtracted rates of the neurons in the nested test minus the prediction of the model without the tested kernel set (its fit on all samples, `nested_test`), evaluated at every 5 ms bin of each trial T. One population per area per recording (the neurons of the area in the nested test). An L1-regularized logistic regression is trained on training trials; test trials are projected on its weights at each time; the score is the mean projection on one class minus the other, test trials of all folds pooled. Open details, each run: folds (5 or 10, stratified, fixed seed); L1 strength (inner 5-fold cross-validation over 10 values, or scikit-learn's default C = 1); training samples (D1) the residual averaged over the training window, one sample per trial, or (D2) every bin of the window as a sample.
-
-# %% code
-from sklearn.linear_model import LogisticRegressionCV
-def residual_tensor(si, kernel):
-    d = kin[si]; res = nested[kernel]
-    Xe, trial, rel_t, mt = S.kernel_design(tts[si], extended=True)
-    keep_u = kept[si]
-    if keep_u.sum() == 0:
-        return None
-    pred = np.asarray(Xe[:, res["other_cols"]] @ res["W_without"][si])        # samples x kept units
-    pred = pred.reshape(len(d["mt"]), S.NBINS, -1).transpose(2, 0, 1)
-    return d["R"][keep_u] - pred
-
-def decode(Rr, y, train_bins, test_bins, folds, l1, mode, seed):
-    """Rr: units x trials x bins residuals; train_bins/test_bins: per-trial bin indices (trials x k)."""
-    skf = StratifiedKFold(folds, shuffle=True, random_state=seed)
-    proj = np.zeros((len(y), test_bins.shape[1]))
-    for tr_i, te_i in skf.split(np.zeros(len(y)), y):
-        Xtr = np.stack([Rr[:, i, train_bins[i]] for i in tr_i])            # trials x units x k
-        if mode == "D1":
-            A, yy = Xtr.mean(axis=2), y[tr_i]
-        else:
-            A = Xtr.transpose(0, 2, 1).reshape(-1, Xtr.shape[1]); yy = np.repeat(y[tr_i], Xtr.shape[2])
-        if l1 == "cv":
-            clf = LogisticRegressionCV(Cs=10, cv=5, penalty="l1", solver="liblinear", max_iter=2000).fit(A, yy)
-        else:
-            clf = LogisticRegression(penalty="l1", solver="liblinear", max_iter=2000).fit(A, yy)
-        w = clf.coef_.ravel()
-        for i in te_i:
-            proj[i] = w @ Rr[:, i, test_bins[i]]
-    return proj[y == 1].mean(axis=0) - proj[y == 0].mean(axis=0)
-
-t0 = time.time()
-res_choice = {si: residual_tensor(si, "choice") for si in range(len(sessions))}
-print(f"choice residuals in {time.time() - t0:.0f} s")
-
-# %% md
-# ### fig4c-choice-timing
-#
-# > The time course of choice decoding did not differ between frontal cortex, striatum and midbrain (two-way ANOVA on area and time, no effect of area and no interaction).
-#
-# Left against Right trials T; training window -0.05 to 0 s from movement onset; test times readings (a) -0.25 to 0 s, (b) -0.2 to 0.05 s, 51 points at 5 ms. Areas MOs, PL, MOp (frontal), CP (striatum), SCm, MRN, SNr, ZI (midbrain). Each population's score is divided by its area's mean across recordings at movement onset. A claim of absence, judged on the paper's two-way ANOVA (time and area group, with interaction) at alpha 0.05: reproduced when the area and interaction effects both have p > 0.05, not reproduced when either has p < 0.05.
-
-# %% code [claim:fig4c-choice-timing]
-AREAS4C = {"MOs": "frontal", "PL": "frontal", "MOp": "frontal", "CP": "striatum",
-           "SCm": "midbrain", "MRN": "midbrain", "SNr": "midbrain", "ZI": "midbrain"}
-pops = []
-for si, u in enumerate(kunits):
-    if res_choice[si] is None:
-        continue
-    ku = u[kept[si]]
-    for area, grp in AREAS4C.items():
-        sel = nt["region"].values[ku] == area
-        if sel.sum():
-            pops.append((si, area, grp, sel))
-print("populations:", pd.Series([p[2] for p in pops]).value_counts().to_dict(), "(paper frontal 29, midbrain 29, striatum 5)")
-print("neurons per population: median", int(np.median([p[3].sum() for p in pops])), "range",
-      min(p[3].sum() for p in pops), "to", max(p[3].sum() for p in pops))
-
-def bins_rel_move(mt, offsets):
-    return np.round((mt[:, None] + offsets[None, :] - S.BIN_CENTRES[0]) / S.BIN).astype(int)
-
-fig4c = {}
-t0 = time.time()
-for tr_name, offs in (("a", np.round(np.arange(-0.25, 0.0001, 0.005), 3)), ("b", np.round(np.arange(-0.2, 0.0501, 0.005), 3))):
-    for folds in (5, 10):
-        for l1 in ("cv", "default"):
-            for mode in ("D1", "D2"):
-                rows_ = []
-                for pi_, (si, area, grp, sel) in enumerate(pops):
-                    d = kin[si]
-                    cls_k = tts[si]["cls"].values[tts[si]["keep"].values]
-                    lr = np.flatnonzero(np.isin(cls_k, ["L", "R"]))
-                    y = (cls_k[lr] == "L").astype(int)
-                    Rr = res_choice[si][sel][:, lr]
-                    mt = d["mt"][lr]
-                    trb = bins_rel_move(mt, np.round(np.arange(-0.05, -0.0001, 0.005), 3))
-                    teb = bins_rel_move(mt, offs)
-                    sc = decode(Rr, y, trb, teb, folds, l1, mode, seed=pi_)
-                    rows_ += [(pi_, si, area, grp, o, v) for o, v in zip(offs, sc)]
-                D = pd.DataFrame(rows_, columns=["pop", "s", "area", "group", "t", "score"])
-                norm = D[np.isclose(D["t"], 0)].groupby("area")["score"].mean()
-                D["norm"] = D["score"] / D["area"].map(norm)
-                fit = ols("norm ~ C(t) * C(group)", D).fit()
-                a = sm.stats.anova_lm(fit, typ=2)
-                p_area, p_int, p_t = a.loc["C(group)", "PR(>F)"], a.loc["C(t):C(group)", "PR(>F)"], a.loc["C(t)", "PR(>F)"]
-                fig4c[(tr_name, folds, l1, mode)] = (p_area, p_int)
-                print(f"times ({tr_name}) {folds}-fold L1 {l1:7s} {mode}: time F = {a.loc['C(t)', 'F']:.2f} p = {p_t:.1e}; "
-                      f"area F = {a.loc['C(group)', 'F']:.2f} p = {p_area:.3f}; interaction F = {a.loc['C(t):C(group)', 'F']:.2f} "
-                      f"p = {p_int:.3f}; d.f. {int(a.loc['C(t)', 'df'])}, {int(a.loc['C(group)', 'df'])}, {int(a.loc['C(t):C(group)', 'df'])}; "
-                      f"mean normalised score at -0.1 s by group {D[np.isclose(D['t'], -0.1)].groupby('group')['norm'].mean().round(2).to_dict()}")
-print(f"decoding in {time.time() - t0:.0f} s")
-EOF
-timeout 3000 $TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py $TMPDIR/nb4.py 2>&1 | sed -n '/^choice residuals/,$p' | cut -c1-500
-```
-
-```
-Exit code 143
-Terminated                 timeout 3000 $TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py $TMPDIR/nb4.py 2>&1 | sed -n '/^choice residuals/,$p' | cut -c1-500
-```
-
-**Agent**
-
-That run took more than 50 minutes; the dev loop re-runs everything before the new cells. I'll make the dev runner able to save and reload its state, then profile the decoding alone.
-
-**Agent calls Bash**
-
-```bash
-df -h /tmp . | head; free -g
-```
-
-```
-Filesystem      Size  Used Avail Use% Mounted on
-tmpfs           7.9G  3.6G  4.3G  47% /tmp
-/dev/root       145G   59G   87G  41% 
-               total        used        free      shared  buff/cache   available
-Mem:              15           4           7           3           7          10
-Swap:              2           0           2
-```
-
-**Agent calls Bash**
-
-```bash
-cat .gitignore; mkdir -p executed/devcache && mv /tmp/claude-1001/sessions.pkl /tmp/claude-1001/PE.pkl executed/devcache/ && ls -la executed/devcache; df -h /tmp | tail -1
-```
-
-```
-cat: .gitignore: No such file or directory
-total 2705096
-drwxr-xr-x 2 runner runner       4096 Oct 21 23:05 .
-drwxr-xr-x 3 runner runner       4096 Oct 21 23:05 ..
--rw-r--r-- 1 runner runner    3267035 Oct 21 20:29 PE.pkl
--rw-r--r-- 1 runner runner 2766734515 Oct 21 20:20 sessions.pkl
-tmpfs           7.9G  1.1G  6.8G  13% /tmp
-```
-
-**Agent calls Bash**
-
-```bash
-pwd; ls -a | head -30; git check-ignore -v executed/devcache/sessions.pkl; git status --short | head
-```
-
-```
-entries/000017-steinmetz-2019
-.
-..
-.claude
-__pycache__
-executed
-steinmetz.py
-.gitignore:6:executed/	executed/devcache/sessions.pkl
-?? ../../.bash_profile
-?? ../../.bashrc
-?? ../../.gitconfig
-?? ../../.idea
-?? ../../.mcp.json
-?? ../../.profile
-?? ../../.ripgreprc
-?? ../../.vscode
-?? ../../.zprofile
-?? ../../.zshrc
-```
-
-**Agent calls Bash**
-
-```bash
-cd  && ls -la entries/000017-steinmetz-2019/.claude; mkdir -p executed/devcache && mv entries/000017-steinmetz-2019/executed/devcache/* executed/devcache/ && rmdir -p entries/000017-steinmetz-2019/executed/devcache 2>/dev/null; ls entries/000017-steinmetz-2019 executed/devcache; git check-ignore -v executed/devcache/sessions.pkl
-```
-
-```
-total 12
-drwxr-xr-x 3 runner runner 4096 Oct 21 20:05 .
-drwxr-xr-x 5 runner runner 4096 Oct 21 23:05 ..
-drwx------ 2 runner runner 4096 Oct 21 20:05 .cc-writes
-entries/000017-steinmetz-2019:
-__pycache__
-steinmetz.py
-
-executed/devcache:
-PE.pkl
-sessions.pkl
-.gitignore:6:executed/	executed/devcache/sessions.pkl
+README.md
+ashworth-2025.yaml
+athalye-2023.yaml
+bech-2026.yaml
+bellvila-2026.yaml
+bennett-2024.yaml
+berg-2020.yaml
+boran-2022.yaml
+bouchard-2013.yaml
+buccino-2024.yaml
+dandiset: "001708"
+paper: doi:10.64898/2025.12.15.693905
+questions:
+- claim: figs3-neutral-unmodulated
+  asked: 2026-11-05
+  question: >-
+    The criterion takes the trials of all NEUTRAL units of all files, and expects 32 cells with 69
+    and 70 trials. The dataset has 36 NEUTRAL units. Four are in 'evoked' files, labelled "NEUT";
+    the other 32, labelled "Neutral", are the ongoing and evoked/ongoing cells. The 36 give 76 to 79
+    trials. The paper's n = 32 is the second set, which is also the set of the ongoing analyses.
+[... 31 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd $TMPDIR && python3 - <<'EOF'
-s=open('/tmp/claude-1001/nb4.py').read()
-i=s.index('# %% md\n# ## Population decoding on residuals')
-open('/tmp/claude-1001/nb5.py','w').write('\n'+s[i:])
-open('/tmp/claude-1001/nb4.py','w').write(s[:i])
+s=open('cells_z.py').read()
+table='''| Claim | Outcome |
+|---|---|
+| fig1c-easy-performance | reproduced |
+| fig1c-low-contrast-performance | reproduced |
+| fig1c-competing-performance | reproduced |
+| fig1d-reaction-time-difficulty | reproduced |
+| ed1q-wheel-choice-decoding | reproduced |
+| early-response-fraction | reproduced |
+| passive-no-movement | not reproduced |
+| recording-counts | reproduced |
+| edtable1-region-counts | not reproduced |
+| supptable2-sessions | reproduced (assumption: finer region labels mapped to their parent) |
+| task-modulated-fraction | reproduced |
+| suppfig2-rate-amplitude | partially reproduced |
+| fig2de-activity-order | reproduced |
+| fig2fg-miss-restricted | partially reproduced |
+| fig5b-miss-more-than-passive | partially reproduced |
+| fig5c-prestimulus-task-vs-passive | reproduced |
+| ed6b-prestimulus-order | reproduced |
+| fig5d-go-miss-matches-task-passive | reproduced |
+| ed7f-detect-probability-engagement | reproduced |
+| fig5f-engagement-index | reproduced |
+| fig5e-engagement-predicts-go | reproduced |
+| ed9i-engagement-beyond-arousal | reproduced |
+| ed9cf-engagement-controls | reproduced |
+| ed9k-engagement-vector-specific | reproduced |
+| suppfig3-nonresponsive-neurons | reproduced |
+| ed7b-detect-probability-widespread | reproduced |
+| fig4d-jpecc-vis-leads | partially reproduced |
+| fig4d-jpecc-no-lag-frontal-midbrain | not reproduced |
+| fig3c, fig3d, fig3e, ed4f, ed5h, fig4b, fig4c, fig4f, fig4fg, ed5g, ed7c (kernel regression) | blocked: too large |
+| histology-alignment-error | blocked: data missing |
+
+**How the analysis differs from the paper's.** Trials follow definition T with the dataset's typed wheel movements (types 1 and 2 are the turns that would register a choice) and its `included` flag for engagement, which agrees with the Methods' rule on 98.3% of trials. Regions come from each unit's peak channel; finer Allen labels (SCig, SCsg, LSr, LSc, ORBm, COA, TT, PIR, DP) are mapped to their parent among the 42 regions, an assumption. Rates are spike counts in the windows of the Methods. The z-score of definition R is infinite for neurons without baseline spikes; both treatments are run. jPECC follows the criterion (PCA per time bin, as jPECC.m) and the Methods' diagonal slice for the asymmetry index; the Methods' PCA across time points is a variant. The engagement index uses the regions of the Methods' ANOVA reading. The kernel regression claims were not run: the full model and nested tests are estimated above at several hours.
+
+**What was found about the dandiset.**
+
+- The trial table, wheel movements and spikes reproduce the paper's behavioural numbers closely: 9,538 engaged trials (the paper's count), and the Left and Right trials of definition T (1,970 and 1,729) match the code's inclusion arrays (1,971 and 1,729).
+- The `rate` attribute of `wheel_position` (and of `lickPiezo` and `face_motion_energy`) holds the sampling interval in seconds (0.0004), not a rate in Hz.
+- `peak_channel` is 1-based: the row `peak_channel - 1` of the electrodes table matches the unit's depth; `units/electrodes` indexes rows within a probe in some files. Neither is documented.
+- `wheel_moves` is an IntervalSeries whose `data` (movement type) has half the length of its `timestamps` (interleaved onsets and offsets).
+- Some units carry finer Allen labels than the paper's 42 regions (2,262 units), which must be mapped to their parent to recover the paper's counts.
+- Genotypes are written differently from Supplementary Table 1 (Ai95 x VGlut1-Cre for RCL-GCaMP6f x VGlut-Cre; Vglut1-Cre for Vglut1-IRES2-Cre-D); sexes and ages match.
+- Supplementary Table 2's areas match the regions of each session's neurons in 38 of 39 sessions; Extended Data Table 1's per-region counts are close in total (22,273 against 22,458 neurons) but recordings per region differ in 14 regions.
+- The dandiset does not say which 5 sessions had unusable pupil video; two files have missing values in `eye_area`.
+- The dandiset holds no histology (DiI spot coordinates or landmarks).
+- In the passive replay 84.6% of high-contrast presentations have no detected movement, against 94.1% in the paper.'''
+s=s.replace('SUMMARY_TABLE',table)
+open('cells_z.py','w').write(s)
 EOF
-cat > $TMPDIR/devrun.py <<'EOF'
-"""Run notebook sources on cached sessions. Options: --save PATH (dill the globals at the end),
---load PATH (start from saved globals)."""
-import sys, re, pickle, time, os
-sys.path.insert(0, os.getcwd())
-args = sys.argv[1:]
-save = load = None
-if '--save' in args:
-    i = args.index('--save'); save = args[i + 1]; del args[i:i + 2]
-if '--load' in args:
-    i = args.index('--load'); load = args[i + 1]; del args[i:i + 2]
-CACHE = 'executed/devcache'
-import dill
-g = {}
-if load:
-    t = time.time(); g = dill.load(open(load, 'rb')); print(f'[loaded state in {time.time()-t:.0f} s]')
-for fn in args:
-    src = open(fn).read()
-    for b in re.split(r'^# %% ', src, flags=re.M)[1:]:
-        head, _, body = b.partition('\n')
-        if head.startswith('md'): continue
-        if 'LOAD-SESSIONS' in body:
-            body = f"import pickle\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\n"
-        if 'p, e = S.six_tests(' in body and os.path.exists(f'{CACHE}/PE.pkl'):
-            body = body.replace('p, e = S.six_tests(s["C"], tts[si], s["rew"])', 'p, e = PE_CACHE[si]')
-            body = f"import pickle\nPE_CACHE = pickle.load(open('{CACHE}/PE.pkl','rb'))\n" + body
-        t = time.time()
-        exec(compile(body, head, 'exec'), g)
-        dt = time.time() - t
-        if dt > 20: print(f'[cell {head.strip()} took {dt:.0f} s]', flush=True)
-if save:
-    t = time.time()
-    keep = {k: v for k, v in g.items() if not k.startswith('__') and k not in ('PE_CACHE',)}
-    dill.dump(keep, open(save, 'wb'), protocol=4); print(f'[saved state in {time.time()-t:.0f} s]')
+cat > $TMPDIR/build_nb.py <<'EOF'
+import re,sys,nbformat
+files=sys.argv[1].split(','); out=sys.argv[2]
+src=''.join(open(f).read() for f in files)
+parts=re.split(r'^# %% ',src,flags=re.M)[1:]
+nb=nbformat.v4.new_notebook()
+nb.metadata={'kernelspec': {'display_name': 'Python 3', 'language': 'python', 'name': 'python3'}}
+for p in parts:
+    head,_,body=p.partition('\n')
+    body=body.strip('\n')
+    if head.startswith('md'):
+        nb.cells.append(nbformat.v4.new_markdown_cell(body))
+    else:
+        m=re.search(r'tags=(\S+)',head)
+        c=nbformat.v4.new_code_cell(body)
+        if m: c.metadata['tags']=m.group(1).split(',')
+        nb.cells.append(c)
+nbformat.write(nb,out)
+print(len(nb.cells))
 EOF
-timeout 3000 $TMPDIR/dev.sh $TMPDIR/nb1.py $TMPDIR/nb2.py $TMPDIR/nb3.py $TMPDIR/nb4.py --save executed/devcache/state4.pkl 2>&1 | grep -E "^\[|focality|shuffled" ; ls -la executed/devcache/
+cd  && python3 $TMPDIR/build_nb.py $TMPDIR/cells_0.py,$TMPDIR/cells_a.py,$TMPDIR/cells_b.py,$TMPDIR/cells_c.py,$TMPDIR/cells_d.py,$TMPDIR/cells_e.py,$TMPDIR/cells_f.py,$TMPDIR/cells_g.py,$TMPDIR/cells_h.py,$TMPDIR/cells_i.py,$TMPDIR/cells_j.py,$TMPDIR/cells_z.py entries/steinmetz-2019/reproduce_steinmetz_2019.ipynb
 ```
 
 ```
-ed4f-focality   kernel regression                tested
-[cell code [claim:fig2de-activity-order] took 117 s]
-[cell code took 181 s]
-focality: {'choice': np.float64(0.0955), 'vis_contra': np.float64(0.0669), 'action': np.float64(0.0384)} (paper choice 0.079, vision 0.069, action 0.040)
-shuffled labels: 3106 neurons in the nested test, 9 pass the Choice test = 0.29% (paper 14, 0.33% ± 0.17); time 61 s
-[cell code [claim:ed5h-choice-shuffle-fpr] took 61 s]
-[saved state in 15 s]
-total 8879524
-drwxr-xr-x 2 runner runner       4096 Oct 21 23:13 .
-drwxr-xr-x 3 runner runner       4096 Oct 21 23:05 ..
--rw-r--r-- 1 runner runner    3267035 Oct 21 20:29 PE.pkl
--rw-r--r-- 1 runner runner 2766734515 Oct 21 20:20 sessions.pkl
--rw-r--r-- 1 runner runner 6322608333 Oct 21 23:13 state4.pkl
-Shell cwd was reset to
+73
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/prof5.py <<'EOF'
-# %% code
-import time, cProfile, pstats
-t0=time.time()
-from sklearn.linear_model import LogisticRegressionCV
+cd entries/steinmetz-2019 && python3 - <<'EOF'
+s=open('steinmetz.py').read()
+old='''        wheel_conversion=float(f["acquisition/wheel_position/data"].attrs["conversion"]),
+    )'''
+new='''        wheel_conversion=float(f["acquisition/wheel_position/data"].attrs["conversion"]),
+        lick_samples=f["acquisition/lickPiezo/data"].shape[0],
+        lick_rate_attr=float(f["acquisition/lickPiezo/starting_time"].attrs["rate"]),
+        me_samples=f["processing/behavior/BehavioralTimeSeries/face_motion_energy/data"].shape[0],
+        me_rate_attr=float(f["processing/behavior/BehavioralTimeSeries/face_motion_energy/starting_time"].attrs["rate"]),
+        moves_data=f["processing/behavior/BehavioralEpochs/wheel_moves/data"].shape[0],
+        moves_timestamps=f["processing/behavior/BehavioralEpochs/wheel_moves/timestamps"].shape[0],
+        last_spike=float(f["units/spike_times"][-1]),
+    )'''
+assert old in s; s=s.replace(old,new); open('steinmetz.py','w').write(s)
 EOF
-python3 - <<'EOF'
-s=open('/tmp/claude-1001/nb5.py').read()
-# extract helper cell (residual_tensor/decode) only
-i=s.index('# %% code\nfrom sklearn.linear_model import LogisticRegressionCV'); j=s.index('# %% md\n# ### fig4c-choice-timing')
-helper=s[i:j]
-k=s.index('# %% code [claim:fig4c-choice-timing]'); 
-cell=s[k:]
-# shrink loop to one combo for profiling
-cell=cell.replace('for folds in (5, 10):','for folds in (5,):').replace('for l1 in ("cv", "default"):','for l1 in ("cv",):').replace('for mode in ("D1", "D2"):','for mode in ("D1",):')
-cell=cell.replace('("b", np.round(np.arange(-0.2, 0.0501, 0.005), 3))','')
-open('/tmp/claude-1001/prof5.py','w').write(helper.replace("res_choice = {si: residual_tensor(si, \"choice\") for si in range(len(sessions))}","import time\nt0=time.time()\nres_choice = {si: residual_tensor(si, \"choice\") for si in range(len(sessions))}\nprint('resid',time.time()-t0)")+'\n'+cell)
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_a.py').read()
+old='''print("Units of the 'unit' column'''
+new='''for nm in ["lick", "me"]:
+    print(f"{nm}: 'rate' attribute %.4g to %.4g; samples x attribute = %.0f to %.0f s" % (
+          meta[f"{nm}_rate_attr"].min(), meta[f"{nm}_rate_attr"].max(),
+          (meta[f"{nm}_samples"] * meta[f"{nm}_rate_attr"]).min(), (meta[f"{nm}_samples"] * meta[f"{nm}_rate_attr"]).max()))
+print("Last spike time %.0f to %.0f s (the recording length the intervals must match)" % (meta.last_spike.min(), meta.last_spike.max()))
+print("wheel_moves: data length / timestamps length =", (meta.moves_timestamps / meta.moves_data).unique(),
+      "(timestamps hold onset and offset of each movement)")
+print("Units of the 'unit' column'''
+assert old in s; s=s.replace(old,new)
+s=s.replace('''print("Units of the 'unit' column 'phy_annotations':"''','''print("Values of 'phy_annotations':"''')
+open('cells_a.py','w').write(s)
+s=open('cells_z.py').read()
+s=s.replace("- `peak_channel` is 1-based: the row `peak_channel - 1` of the electrodes table matches the unit's depth; `units/electrodes` indexes rows within a probe in some files. Neither is documented.","- `peak_channel` is 1-based: the row `peak_channel - 1` of the electrodes table matches the unit's depth better than the row `peak_channel`. This is not documented.")
+s=s.replace("holds the sampling interval in seconds (0.0004), not a rate in Hz.","holds the sampling interval in seconds (0.0004 s, 2.5 kHz), not a rate in Hz; the sample counts times this value give the recording lengths.")
+open('cells_z.py','w').write(s)
 EOF
-timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/prof5.py 2>&1 | tail -12
+cd  && python3 $TMPDIR/build_nb.py $TMPDIR/cells_0.py,$TMPDIR/cells_a.py,$TMPDIR/cells_b.py,$TMPDIR/cells_c.py,$TMPDIR/cells_d.py,$TMPDIR/cells_e.py,$TMPDIR/cells_f.py,$TMPDIR/cells_g.py,$TMPDIR/cells_h.py,$TMPDIR/cells_i.py,$TMPDIR/cells_j.py,$TMPDIR/cells_z.py entries/steinmetz-2019/reproduce_steinmetz_2019.ipynb
 ```
 
 ```
-/tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/linear_model/_logistic.py:2116: FutureWarning: The default value of the parameter 'scoring' will change from None, i.e. accuracy, to 'neg_log_loss' in version 1.11. To silence this warning, explicitly set the scoring parameter: scoring='neg_log_loss' for the new, scoring='accuracy' or scoring=None for the old default.
-  warnings.warn(
-/tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/linear_model/_logistic.py:2129: FutureWarning: The fitted attributes of LogisticRegressionCV will be simplified in scikit-learn 1.10 to remove redundancy. Set`use_legacy_attributes=False` to enable the new behavior now, or set it to `True` to silence this warning during the transition period while keeping the deprecated behavior for the time being. The default value of use_legacy_attributes will change from True to False in scikit-learn 1.10. See the docstring of LogisticRegressionCV for more details.
-  warnings.warn(
-[loaded state in 16 s]
-resid 1.194568157196045
-choice residuals in 1 s
-populations: {'midbrain': 29, 'frontal': 25, 'striatum': 5} (paper frontal 29, midbrain 29, striatum 5)
-neurons per population: median 16 range 1 to 97
-times (a) 5-fold L1 cv      D1: time F = 1.62 p = 4.0e-03; area F = 3.08 p = 0.046; interaction F = 0.34 p = 1.000; d.f. 50, 2, 100; mean normalised score at -0.1 s by group {'frontal': 0.42, 'midbrain': 0.49, 'striatum': -0.12}
-decoding in 301 s
-[cell code [claim:fig4c-choice-timing] took 301 s]
-```
-
-**Agent**
-
-One decoding reading takes 5 minutes, far more than the logistic fits should need. Profiling a single population.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/prof6.py <<'EOF'
-# %% code
-import cProfile, pstats, io as _io, time
-si, area, grp, sel = pops[0]
-d = kin[si]; cls_k = tts[si]["cls"].values[tts[si]["keep"].values]
-lr = np.flatnonzero(np.isin(cls_k, ["L", "R"])); y = (cls_k[lr] == "L").astype(int)
-Rr = res_choice[si][sel][:, lr]; mt = d["mt"][lr]
-trb = bins_rel_move(mt, np.round(np.arange(-0.05, -0.0001, 0.005), 3)); teb = bins_rel_move(mt, np.round(np.arange(-0.25, 0.0001, 0.005), 3))
-print(Rr.shape, len(y))
-for l1 in ("cv", "default"):
-    t=time.time(); pr=cProfile.Profile(); pr.enable(); decode(Rr, y, trb, teb, 5, l1, "D1", 0); pr.disable()
-    print(l1, time.time()-t); st=_io.StringIO(); pstats.Stats(pr,stream=st).sort_stats('cumtime').print_stats(8); print(st.getvalue()[:2500])
-EOF
-python3 - <<'EOF'
-s=open('/tmp/claude-1001/prof5.py').read()
-i=s.index('# %% code [claim:fig4c-choice-timing]')
-cell=s[i:]; j=cell.index('fig4c = {}')
-open('/tmp/claude-1001/prof5b.py','w').write(s[:i]+cell[:j])
-EOF
-timeout 1200 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/prof5b.py $TMPDIR/prof6.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -40
-```
-
-```
-choice residuals in 1 s
-populations: {'midbrain': 29, 'frontal': 25, 'striatum': 5} (paper frontal 29, midbrain 29, striatum 5)
-neurons per population: median 16 range 1 to 97
-(21, 71, 210) 71
-cv 0.762718915939331
-         769687 function calls (769486 primitive calls) in 0.761 seconds
-
-   Ordered by: cumulative time
-   List reduced from 587 to 8 due to restriction <8>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.002    0.002    0.763    0.763 code:12(decode)
-        5    0.000    0.000    0.732    0.146 /tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/base.py:1381(wrapper)
-        5    0.001    0.000    0.728    0.146 /tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/linear_model/_logistic.py:2040(fit)
-        5    0.000    0.000    0.704    0.141 /tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/utils/parallel.py:54(__call__)
-        5    0.000    0.000    0.704    0.141 /tmp/claude-1001/env/lib/python3.13/site-packages/joblib/parallel.py:1995(__call__)
-       35    0.000    0.000    0.703    0.020 /tmp/claude-1001/env/lib/python3.13/site-packages/joblib/parallel.py:1914(_get_sequential_output)
-       25    0.001    0.000    0.702    0.028 /tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/utils/parallel.py:140(__call__)
-       25    0.002    0.000    0.698    0.028 /tmp/claude-1001/env/lib/python3.13/site-packages/sklearn/linear_model/_logistic.py:721(_log_reg_scoring_path)
-
-[... 18 more lines not kept]
+73
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb5.py'; s=open(p).read()
-a=s.index('# %% code\nfrom sklearn.linear_model import LogisticRegressionCV'); b=s.index('# %% md\n# ### fig4c-choice-timing')
-new='''# %% code
-from sklearn.linear_model import LogisticRegressionCV
-from joblib import Parallel, delayed
-import warnings
-DECODERS = [(f, l1, mode) for f in (5, 10) for l1 in ("cv", "default") for mode in ("D1", "D2")]
-
-def residual_tensor(si, kernel):
-    d = kin[si]; res = nested[kernel]
-    Xe, trial, rel_t, mt = S.kernel_design(tts[si], extended=True)
-    keep_u = kept[si]
-    if keep_u.sum() == 0:
-        return None
-    pred = np.asarray(Xe[:, res["other_cols"]] @ res["W_without"][si])        # samples x kept units
-    pred = pred.reshape(len(d["mt"]), S.NBINS, -1).transpose(2, 0, 1)
-    return (d["R"][keep_u] - pred).astype(np.float32)
-
-def decode_all(Rtr, Rte, y, seed):
-    """Rtr: trials x units x k (training window), Rte: trials x units x times. For each decoder
-    reading (folds, L1 strength, training samples), the score at each test time: mean projection
-    on class 1 minus class 0 over the test trials of all folds."""
-    out = {}
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        for folds, l1, mode in DECODERS:
-            proj = np.zeros((len(y), Rte.shape[2]))
-            for tr_i, te_i in StratifiedKFold(folds, shuffle=True, random_state=seed).split(np.zeros(len(y)), y):
-                if mode == "D1":
-                    A, yy = Rtr[tr_i].mean(axis=2), y[tr_i]
-                else:
-                    A = Rtr[tr_i].transpose(0, 2, 1).reshape(-1, Rtr.shape[1]); yy = np.repeat(y[tr_i], Rtr.shape[2])
-                if l1 == "cv":
-                    clf = LogisticRegressionCV(Cs=10, cv=5, penalty="l1", solver="liblinear", max_iter=2000).fit(A, yy)
-                else:
-                    clf = LogisticRegression(penalty="l1", solver="liblinear", max_iter=2000).fit(A, yy)
-                proj[te_i] = np.einsum("u,tuk->tk", clf.coef_.ravel(), Rte[te_i])
-            out[(folds, l1, mode)] = proj[y == 1].mean(axis=0) - proj[y == 0].mean(axis=0)
-    return out
-
-def take(Rr, idx, bins):
-    """Rr units x trials x bins -> trials x units x k at per-trial bins."""
-    return np.stack([Rr[:, i, b] for i, b in zip(idx, bins)])
-
-t0 = time.time()
-res_choice = {si: residual_tensor(si, "choice") for si in range(len(sessions))}
-print(f"choice residuals in {time.time() - t0:.0f} s")
-
-'''
-s=s[:a]+new+s[b:]
-a=s.index('# %% code [claim:fig4c-choice-timing]')
-new4c='''# %% code [claim:fig4c-choice-timing]
-AREAS4C = {"MOs": "frontal", "PL": "frontal", "MOp": "frontal", "CP": "striatum",
-           "SCm": "midbrain", "MRN": "midbrain", "SNr": "midbrain", "ZI": "midbrain"}
-pops = []
-for si, u in enumerate(kunits):
-    if res_choice[si] is None:
-        continue
-    ku = u[kept[si]]
-    for area, grp in AREAS4C.items():
-        sel = nt["region"].values[ku] == area
-        if sel.sum():
-            pops.append((si, area, grp, sel))
-print("populations:", pd.Series([p[2] for p in pops]).value_counts().to_dict(), "(paper frontal 29, midbrain 29, striatum 5)")
-print("neurons per population: median", int(np.median([p[3].sum() for p in pops])), "range",
-      min(p[3].sum() for p in pops), "to", max(p[3].sum() for p in pops))
-
-def bins_rel_move(mt, offsets):
-    return np.round((mt[:, None] + offsets[None, :] - S.BIN_CENTRES[0]) / S.BIN).astype(int)
-
-TEST_OFFS = np.round(np.arange(-0.25, 0.0501, 0.005), 3)
-jobs = []
-for pi_, (si, area, grp, sel) in enumerate(pops):
-    cls_k = tts[si]["cls"].values[tts[si]["keep"].values]
-    lr = np.flatnonzero(np.isin(cls_k, ["L", "R"]))
-    y = (cls_k[lr] == "L").astype(int)
-    Rr = res_choice[si][sel]
-    mt = kin[si]["mt"][lr]
-    jobs.append((take(Rr, lr, bins_rel_move(mt, np.round(np.arange(-0.05, -0.0001, 0.005), 3))),
-                 take(Rr, lr, bins_rel_move(mt, TEST_OFFS)), y, pi_))
-t0 = time.time()
-scores = Parallel(n_jobs=4)(delayed(decode_all)(*j) for j in jobs)
-print(f"decoding {len(jobs)} populations x {len(DECODERS)} decoders in {time.time() - t0:.0f} s")
-
-fig4c = {}
-for tr_name, lo, hi in (("a", -0.25, 0.0), ("b", -0.2, 0.05)):
-    tsel = (TEST_OFFS >= lo - 1e-9) & (TEST_OFFS <= hi + 1e-9)
-    for dec in DECODERS:
-        rows_ = []
-        for (si, area, grp, sel), sc in zip(pops, scores):
-            rows_ += [(si, area, grp, o, v) for o, v in zip(TEST_OFFS[tsel], sc[dec][tsel])]
-        D = pd.DataFrame(rows_, columns=["s", "area", "group", "t", "score"])
-        norm = D[np.isclose(D["t"], 0)].groupby("area")["score"].mean()
-        D["norm"] = D["score"] / D["area"].map(norm)
-        a = sm.stats.anova_lm(ols("norm ~ C(t) * C(group)", D).fit(), typ=2)
-        p_area, p_int, p_t = a.loc["C(group)", "PR(>F)"], a.loc["C(t):C(group)", "PR(>F)"], a.loc["C(t)", "PR(>F)"]
-        fig4c[(tr_name,) + dec] = (p_area, p_int)
-        print(f"times ({tr_name}) {dec[0]}-fold L1 {dec[1]:7s} {dec[2]}: time F = {a.loc['C(t)', 'F']:.2f} p = {p_t:.1e}; "
-              f"area F = {a.loc['C(group)', 'F']:.2f} p = {p_area:.3f}; interaction F = {a.loc['C(t):C(group)', 'F']:.2f} "
-              f"p = {p_int:.3f} (d.f. {int(a.loc['C(t)', 'df'])}, {int(a.loc['C(group)', 'df'])}, {int(a.loc['C(t):C(group)', 'df'])}); "
-              f"normalised score at -0.1 s by group {D[np.isclose(D['t'], -0.1)].groupby('group')['norm'].mean().round(2).to_dict()}")
-print("readings with area p > 0.05 and interaction p > 0.05:", sum(v[0] > 0.05 and v[1] > 0.05 for v in fig4c.values()), "of", len(fig4c))
-'''
-s=s[:a]+new4c
-open(p,'w').write(s)
+cd entries/steinmetz-2019 && $TMPDIR/venv/bin/python -c "
+import steinmetz as sm
+f=sm.open_nwb('sub-Cori/sub-Cori_ses-20161214T120000.nwb'); print(sm.file_metadata(f))" 2>&1 | tail -1
+cat > entry.yaml <<'EOF'
+schema_version: 1
+name: steinmetz-2019
+type: reproduction
+title: Choice, action and engagement across the mouse brain (Steinmetz et al. 2019)
+description: Tests the findings of Steinmetz, Zatka-Haas, Carandini and Harris (2019) on dandiset
+  000017, which holds Neuropixels recordings from 39 sessions of 10 mice performing a visual
+  discrimination task, with passive replay. It covers the behaviour, the counts of neurons and
+  regions, task responsiveness, the spread of activity after the stimulus, the pre-stimulus
+  engagement signal, detect probability and the jPECC lead-lag analysis. The kernel regression
+  claims were not run for time.
+license: Apache-2.0
+notebooks:
+- path: reproduce_steinmetz_2019.ipynb
+  title: Reproducing Steinmetz et al. (2019) from dandiset 000017
+  runtime_minutes: 16
+helpers:
+- steinmetz.py
+related:
+- id: dandi:000017/0.240329.1926
+  relation: uses_data
+- id: doi:10.1038/s41586-019-1787-x
+  relation: reproduces
 EOF
-timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/nb5.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -40 | cut -c1-400
+cd  && time python tools/entry.py lock entries/steinmetz-2019 2>&1 | tail -3
 ```
 
 ```
-[loaded state in 5 s]
-choice residuals in 1 s
-populations: {'midbrain': 29, 'frontal': 25, 'striatum': 5} (paper frontal 29, midbrain 29, striatum 5)
-neurons per population: median 16 range 1 to 97
-decoding 59 populations x 8 decoders in 1070 s
-times (a) 5-fold L1 cv      D1: time F = 1.02 p = 4.3e-01; area F = 1.88 p = 0.153; interaction F = 0.38 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.38, 'midbrain': 1.5, 'striatum': -0.14}
-times (a) 5-fold L1 cv      D2: time F = 11.08 p = 1.5e-77; area F = 4.64 p = 0.010; interaction F = 0.68 p = 0.994 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.06, 'midbrain': 0.18, 'striatum': 0.19}
-times (a) 5-fold L1 default D1: time F = 15.17 p = 5.2e-111; area F = 0.82 p = 0.439; interaction F = 0.22 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.03, 'midbrain': 0.2, 'striatum': 0.01}
-times (a) 5-fold L1 default D2: time F = 8.30 p = 2.7e-54; area F = 2.68 p = 0.069; interaction F = 0.20 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.08, 'midbrain': 0.27, 'striatum': 0.23}
-times (a) 10-fold L1 cv      D1: time F = 1.15 p = 2.2e-01; area F = 28.84 p = 0.000; interaction F = 0.50 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.19, 'midbrain': -0.97, 'striatum': 0.29}
-times (a) 10-fold L1 cv      D2: time F = 4.10 p = 9.5e-20; area F = 17.97 p = 0.000; interaction F = 4.97 p = 0.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': -0.04, 'midbrain': -0.0, 'striatum': 0.2}
-times (a) 10-fold L1 default D1: time F = 15.62 p = 1.3e-114; area F = 4.05 p = 0.017; interaction F = 0.22 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.04, 'midbrain': 0.1, 'striatum': 0.01}
-times (a) 10-fold L1 default D2: time F = 9.02 p = 2.2e-60; area F = 0.62 p = 0.539; interaction F = 0.31 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'front
-[... 10 more lines not kept]
+{'identifier': 'Cori_2016-12-14', 'subject': 'Cori', 'sex': 'F', 'genotype': 'tetO-G6s x CaMK-tTA', 'age': '77 days', 'start': '2016-12-14T12:00:00+00:00', 'probes': 2, 'n_units': 1085, 'n_trials': 214, 'n_spikes': 10017476, 'wheel_samples': 6570000, 'wheel_rate_attr': 0.00040000637758912496, 'wheel_conversion': 0.135, 'lick_samples': 1314000, 'lick_rate_attr': 0.002000031887945625, 'me_samples': 106067, 'me_rate_attr': 0.025246256960525466, 'moves_data': 507, 'moves_timestamps': 1014, 'last_spike': 2694.2053333333333}
+wrote steinmetz-2019/requirements.lock.txt (Python 3.13, with hashes)
+
+real	0m0.398s
+user	0m0.199s
+sys	0m0.093s
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb5.py'; s=open(p).read()
-s=s.replace('DECODERS = [(f, l1, mode) for f in (5, 10) for l1 in ("cv", "default") for mode in ("D1", "D2")]','DECODERS = [(f, l1, "D1") for f in (5, 10) for l1 in ("cv", "default")]')
-s=s.replace('''Open details, each run: folds (5 or 10, stratified, fixed seed); L1 strength (inner 5-fold cross-validation over 10 values, or scikit-learn's default C = 1); training samples (D1) the residual averaged over the training window, one sample per trial, or (D2) every bin of the window as a sample.''','''Open details of the claims file, each run: folds (5 or 10, stratified, fixed seed); L1 strength (inner 5-fold cross-validation over 10 values, or scikit-learn's default C = 1). The training samples are the residuals averaged over the training window, one per trial (D1); taking every bin of the window as a sample (D2) is another reading, filed as a question and not run here (it multiplies the run time by about ten).''')
-s+='''
-# %% md
-# ### ed5g-ipsilateral-vision-rare
-#
-# > Ipsilateral visual stimuli are hardly encoded, unlike contralateral ones.
-#
-# Decoding of a contralateral stimulus against none (right contrast above zero or zero) on residuals from the model without the Contralateral Vision kernels, and of an ipsilateral stimulus against none on residuals without the Ipsilateral Vision kernels; all trials T; training window 0.05 to 0.15 s after stimulus onset; the score is the mean over that window of the test projections' class difference; per area the mean over its populations (one per recording). Readings as fig4c. Reproduced when the largest area mean for ipsilateral decoding is below a quarter of the largest for contralateral decoding under every reading. The counts of neurons requiring each kernel are shown as a variant.
+cd entries/steinmetz-2019 && cat > README.md <<'EOF'
+# Steinmetz, Zatka-Haas, Carandini & Harris (2019) from dandiset 000017
 
-# %% code [claim:ed5g-ipsilateral-vision-rare]
-t0 = time.time()
-WIN = np.round(np.arange(0.05, 0.1499, 0.005), 3)
-wb = np.round((WIN - S.BIN_CENTRES[0]) / S.BIN).astype(int)
-ed5g_scores = {}
-for kern, side in (("vis_contra", "cR"), ("vis_ipsi", "cL")):
-    jobs, meta = [], []
-    for si, u in enumerate(kunits):
-        Rk = residual_tensor(si, kern)
-        if Rk is None:
-            continue
-        ku = u[kept[si]]
-        t = tts[si]; k = t["keep"].values
-        y = (t[side].values[k] > 0).astype(int)
-        if y.sum() < 10 or (1 - y).sum() < 10:
-            continue
-        bins = np.tile(wb, (len(y), 1))
-        for area in np.unique(nt["region"].values[ku]):
-            sel = nt["region"].values[ku] == area
-            Rr = Rk[sel]
-            X = take(Rr, np.arange(len(y)), bins)
-            jobs.append((X, X, y, si)); meta.append((si, area))
-    sc = Parallel(n_jobs=4)(delayed(decode_all)(*j) for j in jobs)
-    ed5g_scores[kern] = (meta, sc)
-print(f"vision decoding in {time.time() - t0:.0f} s; populations: contra {len(ed5g_scores['vis_contra'][0])}, "
-      f"ipsi {len(ed5g_scores['vis_ipsi'][0])}")
-ed5g = {}
-for dec in DECODERS:
-    area_mean = {}
-    for kern in ("vis_contra", "vis_ipsi"):
-        meta, sc = ed5g_scores[kern]
-        df = pd.DataFrame([(a, v[dec].mean()) for (si, a), v in zip(meta, sc)], columns=["area", "score"])
-        area_mean[kern] = df.groupby("area")["score"].mean()
-    mc, mi = area_mean["vis_contra"].max(), area_mean["vis_ipsi"].max()
-    ed5g[dec] = mi < mc / 4
-    print(f"{dec[0]}-fold L1 {dec[1]:7s}: largest area mean contra {mc:.2f} ({area_mean['vis_contra'].idxmax()}), "
-          f"ipsi {mi:.2f} ({area_mean['vis_ipsi'].idxmax()}); ratio {mi / mc:.2f}; below a quarter: {mi < mc / 4}")
-    if dec == DECODERS[0]:
-        print("   top areas contra:", area_mean["vis_contra"].sort_values(ascending=False).head(6).round(2).to_dict())
-        print("   top areas ipsi:", area_mean["vis_ipsi"].sort_values(ascending=False).head(6).round(2).to_dict())
-print("variant, neurons requiring the kernels: contralateral", int(req["vis_contra"].sum()), "ipsilateral", int(req["vis_ipsi"].sum()))
-'''
-open(p,'w').write(s)
+Tests the findings of [Steinmetz et al. (2019)](https://doi.org/10.1038/s41586-019-1787-x) on
+[DANDI:000017](https://dandiarchive.org/dandiset/000017/0.240329.1926), which holds Neuropixels
+recordings from 39 sessions of 10 mice during a visual discrimination task, each followed by a
+passive replay of the task stimuli.
+
+| Claims | Outcome |
+|---|---|
+| Behaviour: error and Miss rates, reaction times, wheel decoding, early turns (6) | Reproduced |
+| Passive replay: 94.1% of high-contrast presentations without movement | Not reproduced |
+| Counts of sessions, mice, probes, neurons and trials; sessions of Supplementary Table 2 | Reproduced |
+| Per-region counts of Extended Data Table 1 | Not reproduced |
+| 60% of neurons task-modulated, 74% increasing and 20% decreasing | Reproduced |
+| Responsive neurons have higher baseline rates, similar amplitudes | Partially reproduced |
+| Activity spreads from VIS and SCs on contralateral choices | Reproduced |
+| Miss trials activate a visual pathway only; Miss above passive | Partially reproduced (2 claims) |
+| Pre-stimulus task against passive differences and their order; Go-Miss match; detect probability (4) | Reproduced |
+| Engagement index and its controls (6) | Reproduced |
+| Detect probability around movement is widespread | Reproduced |
+| jPECC: VIS leads frontal cortex and midbrain | Partially reproduced |
+| jPECC: no lag between frontal cortex and midbrain | Not reproduced |
+| Kernel regression claims (11) | Blocked: too large |
+| Histology alignment error | Blocked: data missing |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+The attempt record, with the reasons and the differences from the paper's method, is
+[`attempts/steinmetz-2019-01.yaml`](../../attempts/steinmetz-2019-01.yaml).
+
+- `reproduce_steinmetz_2019.ipynb`: the analysis. It takes about 16 minutes, most of it streaming
+  the 39 files (about 15 GB read in part).
+- `steinmetz.py`: loading the files (trials, wheel movements, passive events, spikes binned around
+  events), the trial and neuron definitions of the claims file, the six responsiveness tests, the
+  combined-conditions choice probability and jPECC. Other notebooks on this dandiset can import it.
 EOF
-timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/nb5.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -22 | cut -c1-400
+cd  && python tools/entry.py check entries/steinmetz-2019 2>&1 | tail -10
 ```
 
 ```
-Exit code 143
-Terminated                 timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/nb5.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -22 | cut -c1-400
-```
-
-**Agent**
-
-Still too slow (over 40 minutes) because Extended Data Fig. 5g has many populations. Measuring the population count and per-population cost before choosing a cheaper inner search.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/prof7.py <<'EOF'
-# %% code
-import time
-t0=time.time()
-cnt=0; sizes=[]
-for si, u in enumerate(kunits):
-    ku = u[kept[si]]
-    t = tts[si]; k = t["keep"].values
-    for area in np.unique(nt["region"].values[ku]):
-        cnt+=1; sizes.append(((nt["region"].values[ku]==area).sum(), k.sum()))
-print('pops', cnt, 'median units', np.median([a for a,b in sizes]), 'median trials', np.median([b for a,b in sizes]))
-si=0; Rk=residual_tensor(si,'vis_contra'); u=kunits[si]; ku=u[kept[si]]; t=tts[si]; k=t['keep'].values; y=(t['cR'].values[k]>0).astype(int)
-area=np.unique(nt["region"].values[ku])[0]; sel=nt["region"].values[ku]==area
-X=take(Rk[sel], np.arange(len(y)), np.tile(wb,(len(y),1)))
-print(X.shape)
-for l1 in ('cv','default'):
-    t1=time.time()
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore')
-        for tr_i, te_i in StratifiedKFold(5, shuffle=True, random_state=0).split(np.zeros(len(y)), y):
-            A=X[tr_i].mean(2)
-            clf = LogisticRegressionCV(Cs=10, cv=5, penalty="l1", solver="liblinear", max_iter=2000).fit(A, y[tr_i]) if l1=='cv' else LogisticRegression(penalty="l1", solver="liblinear", max_iter=2000).fit(A, y[tr_i])
-    print(l1, time.time()-t1)
-EOF
-python3 - <<'EOF'
-s=open('/tmp/claude-1001/nb5.py').read()
-i=s.index('# %% code [claim:fig4c-choice-timing]')
-helper=s[s.index('# %% code\nfrom sklearn.linear_model import LogisticRegressionCV'):s.index('# %% md\n# ### fig4c-choice-timing')]
-helper=helper.replace('res_choice = {si: residual_tensor(si, "choice") for si in range(len(sessions))}','res_choice = {}')
-open('/tmp/claude-1001/prof7h.py','w').write(helper+"\n# %% code\nWIN = np.round(np.arange(0.05, 0.1499, 0.005), 3)\nwb = np.round((WIN - S.BIN_CENTRES[0]) / S.BIN).astype(int)\n")
-EOF
-timeout 900 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/prof7h.py $TMPDIR/prof7.py 2>&1 | grep -v Warn | grep -v warnings.warn | tail
-```
-
-```
-[loaded state in 5 s]
-choice residuals in 0 s
-pops 241 median units 8.0 median trials 194.0
-(175, 22, 20)
-cv 0.3109915256500244
-default 0.007944345474243164
+error: entries/steinmetz-2019/entry.yaml: (top level): Additional properties are not allowed ('python' was unexpected)
+1 error(s)
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb5.py'; s=open(p).read()
-s=s.replace('clf = LogisticRegressionCV(Cs=10, cv=5, penalty="l1", solver="liblinear", max_iter=2000).fit(A, yy)','clf = LogisticRegressionCV(Cs=np.logspace(-3, 1, 9), cv=5, penalty="l1", solver="liblinear", max_iter=500).fit(A, yy)')
-s=s.replace('clf = LogisticRegression(penalty="l1", solver="liblinear", max_iter=2000).fit(A, yy)','clf = LogisticRegression(penalty="l1", solver="liblinear", max_iter=500).fit(A, yy)')
-s=s.replace("L1 strength (inner 5-fold cross-validation over 10 values, or scikit-learn's default C = 1)","L1 strength (inner 5-fold cross-validation over nine values of C from 0.001 to 10, a standard grid, or scikit-learn's default C = 1)")
-open(p,'w').write(s)
-EOF
-grep -n "logspace\|max_iter" $TMPDIR/nb5.py | head; timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/nb5.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -22 | cut -c1-400
+cd  cat entries/steinmetz-2019/entry.yaml | tail -4; git diff --stat tools/entry.py | tail -1; grep -n "python" tools/entry.py | grep -i "yaml\|entry\[" | head; grep -n '"python"' schemas/entry.schema.json
 ```
 
 ```
-38:                    clf = LogisticRegressionCV(Cs=np.logspace(-3, 1, 9), cv=5, penalty="l1", solver="liblinear", max_iter=500).fit(A, yy)
-40:                    clf = LogisticRegression(penalty="l1", solver="liblinear", max_iter=500).fit(A, yy)
-populations: {'midbrain': 29, 'frontal': 25, 'striatum': 5} (paper frontal 29, midbrain 29, striatum 5)
-neurons per population: median 16 range 1 to 97
-decoding 59 populations x 4 decoders in 27 s
-times (a) 5-fold L1 cv      D1: time F = 16.13 p = 1.0e-118; area F = 0.75 p = 0.472; interaction F = 0.14 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': -0.03, 'midbrain': 0.07, 'striatum': -0.08}
-times (a) 5-fold L1 default D1: time F = 15.19 p = 3.7e-111; area F = 0.81 p = 0.445; interaction F = 0.22 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.03, 'midbrain': 0.2, 'striatum': 0.01}
-times (a) 10-fold L1 cv      D1: time F = 8.60 p = 7.2e-57; area F = 5.90 p = 0.003; interaction F = 0.29 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.18, 'midbrain': -0.03, 'striatum': -0.01}
-times (a) 10-fold L1 default D1: time F = 15.60 p = 1.7e-114; area F = 4.08 p = 0.017; interaction F = 0.22 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.04, 'midbrain': 0.1, 'striatum': 0.01}
-times (b) 5-fold L1 cv      D1: time F = 18.28 p = 1.2e-135; area F = 2.19 p = 0.112; interaction F = 0.17 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': -0.03, 'midbrain': 0.07, 'striatum': -0.08}
-times (b) 5-fold L1 default D1: time F = 14.77 p = 7.5e-108; area F = 0.14 p = 0.868; interaction F = 0.13 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.03, 'midbrain': 0.2, 'striatum': 0.01}
-times (b) 10-fold L1 cv      D1: time F = 13.46 p = 3.6e-97; area F = 6.84 p = 0.001; interaction F = 0.18 p = 1.000 (d.f. 50, 2, 100); normalised score at -0.1 s by group {'frontal': 0.18, 'midbr
-[... 12 more lines not kept]
+- id: dandi:000017/0.240329.1926
+  relation: uses_data
+- id: doi:10.1038/s41586-019-1787-x
+  relation: reproduces
+ 1 file changed, 115 insertions(+), 9 deletions(-)
+199:        if entry.get("python") and locked_for and locked_for.group(1) != str(entry["python"]):
+201:                         f"says {entry['python']}; run `tools/entry.py lock`")
+383:    """The Python version an entry runs on: its entry.yaml's `python`, else the version its lock was compiled for
+387:        return str(entry["python"])
+397:    """Write `python: "<version>"` into entry.yaml, replacing the field or adding it after `license`."""
+509:        {"entry": entry["name"], "python": python_of(entry_dir), "results": results}, indent=1) + "\n")
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='entries/000017-steinmetz-2019/steinmetz.py'; s=open(p).read()
-old='''        sel = [lab]
-        for _ in range(n_shuf):
-            z = np.zeros(len(idx), bool)
-            z[rng.choice(len(idx), na, replace=False)] = True
-            sel.append(z)
-        Sm = np.stack(sel, axis=1).astype(float)'''
-new='''        Sm = np.zeros((len(idx), 1 + n_shuf))
-        Sm[:, 0] = lab
-        if n_shuf:
-            order = np.argsort(rng.random((len(idx), n_shuf)), axis=0)[:na]   # na trials drawn per shuffle
-            Sm[order, np.arange(1, 1 + n_shuf)[None, :]] = 1.0'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-cat > $TMPDIR/nb6.py <<'EOF'
-
-# %% md
-# ## Combined-conditions choice and detect probability (Extended Data Fig. 7b, c)
-#
-# ccCP of the paper's code (`steinmetz.cccp`): within each of the 16 stimulus conditions, the Mann-Whitney statistic of one class against the other, numerators and denominators summed over conditions; 2,000 permutations of the labels within conditions; a neuron is significant when the rank of its true value among the shuffles puts it below 0.025 or above 0.975 (chance 5%). Detect probability: Go (L or R) against NoGo trials T; choice probability: Left against Right. NoGo trials take a movement time drawn from the Go trials (definition T). Windows around movement onset, readings (a) -0.1 to 0.05 s, (b) -0.05 to 0 s. Sessions with fewer than 10 includable trials (trials in conditions holding both classes) are left out. The claims file does not name the neurons; readings (a) the Figs. 3 to 5 set, (b) all neurons N (a question is filed). A region is marked when the 95% Clopper-Pearson interval of its fraction lies above 5%.
-
-# %% code [claim:ed7b-detect-probability-widespread, claim:ed7c-choice-probability-restricted]
-from statsmodels.stats.proportion import proportion_confint
-t0 = time.time()
-ccp = {}
-excluded = {}
-for kind in ("DP", "CP"):
-    for wname, (a, b) in (("a", (-0.1, 0.05)), ("b", (-0.05, 0.0))):
-        sig = np.full(len(nt), np.nan)
-        excl = []
-        for si, s in enumerate(sessions):
-            rows = np.flatnonzero((nt["s"] == si).values)
-            rows = rows[inN[rows]]
-            t = tts[si]; k = t["keep"].values
-            cls = t["cls"].values[k]
-            cond = (t["cL"].values * 10 + t["cR"].values * 100)[k]
-            if kind == "DP":
-                use = np.ones(len(cls), bool); lab = np.isin(cls, ["L", "R"])
-            else:
-                use = np.isin(cls, ["L", "R"]); lab = cls == "L"
-            X = S.shifted_window_rate(s["C"][nt["j"].values[rows]][:, k][:, use], t["mt"].values[k][use], a, b)
-            cp, p, n_used = S.cccp(X, lab[use], cond[use], n_shuf=2000, rng=np.random.default_rng([6, si, kind == "CP", wname == "a"]))
-            if n_used < 10:
-                excl.append(s["session"]); continue
-            sig[rows] = ((p < 0.025) | (p > 0.975)).astype(float)
-        ccp[(kind, wname)] = sig
-        excluded[(kind, wname)] = excl
-print(f"ccCP in {time.time() - t0:.0f} s")
-for key, ex in excluded.items():
-    print(key, "sessions excluded:", len(ex), ex)
-
-def marked(sig, nmask):
-    out = {}
-    for r in S.REGIONS_42:
-        m = nmask & (nt["region"] == r).values & ~np.isnan(sig)
-        if m.sum() == 0:
-            continue
-        k_, n_ = int(sig[m].sum()), int(m.sum())
-        lo, hi = proportion_confint(k_, n_, alpha=0.05, method="beta")
-        out[r] = (k_, n_, lo > 0.05)
-    return out
-
-# %% md
-# ### ed7b-detect-probability-widespread
-#
-# > Neurons with significant detect probability (Go against NoGo for the same stimulus) around movement onset are found widely across regions, replicating the global action signal.
-#
-# Reproduced when at least three quarters of regions are marked above chance under one reading.
-
-# %% code [claim:ed7b-detect-probability-widespread]
-ed7b = {}
-for wname in ("a", "b"):
-    for nname, nmask in (("a Figs. 3-5", inN35), ("b all N", inN)):
-        mk = marked(ccp[("DP", wname)], nmask)
-        frac = np.mean([v[2] for v in mk.values()])
-        ed7b[(wname, nname)] = frac >= 0.75
-        print(f"window ({wname}) neurons {nname}: regions marked {sum(v[2] for v in mk.values())} of {len(mk)} ({100 * frac:.0f}%); "
-              f"not marked: {[r for r, v in mk.items() if not v[2]]}")
-mk = marked(ccp[("DP", "a")], inN35)
-print("window (a), Figs. 3-5, % significant:", {r: round(100 * v[0] / v[1], 1) for r, v in mk.items()})
-
-# %% md
-# ### ed7c-choice-probability-restricted
-#
-# > Neurons with significant choice probability around movement onset are restricted to frontal cortex, basal ganglia, midbrain and certain thalamic nuclei; six sessions were excluded for too few trials, holding 20.8% of the MOs choice-selective neurons of the kernel analysis.
-#
-# Frontal: MOs, ACA, PL, ILA, ORB (the code's group); basal ganglia: CP, GPe, SNr, ACB, LS; midbrain: MRN, SCm, SCs, APN, PAG. Reproduced under one reading when no VIS area and no hippocampal region (CA1, CA3, DG, SUB, POST) is marked, at least one frontal, one basal ganglia and one midbrain region is, and six sessions are excluded; partially when the regional pattern holds and the session count does not. The share of the kernel analysis's MOs choice-selective neurons in the excluded sessions is reported against 20.8%.
-
-# %% code [claim:ed7c-choice-probability-restricted]
-FRONTAL5 = ["MOs", "ACA", "PL", "ILA", "ORB"]
-ed7c = {}
-mos_choice = inN35 & req["choice"] & (nt["region"] == "MOs").values
-for wname in ("a", "b"):
-    ex = excluded[("CP", wname)]
-    in_ex = nt["session"].isin(ex).values
-    share = 100 * (mos_choice & in_ex).sum() / max(mos_choice.sum(), 1)
-    for nname, nmask in (("a Figs. 3-5", inN35), ("b all N", inN)):
-        mk = marked(ccp[("CP", wname)], nmask)
-        bad = [r for r, v in mk.items() if v[2] and (r in S.VIS or r in S.GROUP_HIPPOCAMPUS)]
-        has = lambda grp: any(mk.get(r, (0, 0, False))[2] for r in grp)
-        pattern = not bad and has(FRONTAL5) and has(S.GROUP_BASAL_GANGLIA) and has(S.GROUP_MIDBRAIN)
-        ed7c[(wname, nname)] = (pattern, len(ex) == 6)
-        print(f"window ({wname}) neurons {nname}: marked {[r for r, v in mk.items() if v[2]]}; VIS or hippocampal marked: {bad}; "
-              f"frontal {has(FRONTAL5)}, basal ganglia {has(S.GROUP_BASAL_GANGLIA)}, midbrain {has(S.GROUP_MIDBRAIN)}; "
-              f"sessions excluded {len(ex)} (6); MOs choice-selective neurons in them {share:.1f}% (20.8) "
-              f"| pattern {pattern}, sessions {len(ex) == 6}")
-EOF
-timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/nb6.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -22 | cut -c1-600
+cd  grep -n python entries/steinmetz-2019/entry.yaml; git diff tools/entry.py | grep -n "^[+-].*python" | head -20; git status --short schemas
 ```
 
 ```
-[loaded state in 5 s]
-ccCP in 16 s
-('DP', 'a') sessions excluded: 0 []
-('DP', 'b') sessions excluded: 0 []
-('CP', 'a') sessions excluded: 6 ['Cori_2016-12-14', 'Moniz_2017-05-18', 'Muller_2017-01-08', 'Muller_2017-01-09', 'Radnitz_2017-01-11', 'Tatum_2017-12-09']
-('CP', 'b') sessions excluded: 6 ['Cori_2016-12-14', 'Moniz_2017-05-18', 'Muller_2017-01-08', 'Muller_2017-01-09', 'Radnitz_2017-01-11', 'Tatum_2017-12-09']
-window (a) neurons a Figs. 3-5: regions marked 42 of 42 (100%); not marked: []
-window (a) neurons b all N: regions marked 42 of 42 (100%); not marked: []
-window (b) neurons a Figs. 3-5: regions marked 41 of 42 (98%); not marked: ['VISrl']
-window (b) neurons b all N: regions marked 40 of 42 (95%); not marked: ['OLF', 'VISrl']
-window (a), Figs. 3-5, % significant: {'ACA': 45.3, 'ACB': 33.1, 'APN': 62.9, 'BLA': 36.1, 'CA1': 37.9, 'CA3': 46.8, 'CP': 35.4, 'DG': 37.5, 'GPe': 31.5, 'ILA': 42.4, 'LD': 45.2, 'LGd': 23.8, 'LP': 25.8, 'LS': 29.8, 'MD': 24.4, 'MG': 28.6, 'MOp': 56.8, 'MOs': 41.9, 'MRN': 50.7, 'OLF': 21.7, 'ORB': 30.8, 'PAG': 40.3, 'PL': 36.3, 'PO': 50.4, 'POL': 44.3, 'POST': 64.0, 'RSP': 31.2, 'RT': 38.9, 'SCm': 43.8, 'SCs': 35.7, 'SNr': 56.4, 'SSp': 53.2, 'SUB': 54.4, 'VISa': 42.5, 'VISam': 35.8, 'VISl': 31.1, 'VISp': 21.1, 'VISpm': 37.2, 'VISrl': 17.8, 'VPL': 57.4, 'VPM': 44.0, 'ZI': 35.5}
-window (a) neurons a Figs. 3-5: marked ['MRN', 'SCm', 'SNr', 'VPL']; VIS or hippocampal marked: []; frontal False, basal ganglia True, midbrain True; sessions excluded 6 (6); MOs choice-selective neurons in them 6.2% (20.8) | pattern False, sessions True
-window (a) neurons b all N: marked ['MRN', 'SNr', 'VPL']; VIS or hippocampal marked: []; frontal False, basal ganglia True, midbrain True; sessions excluded 6 (6); MOs choice-selective neurons in them 6.2% (20.8) | pattern False, sessions True
-window (b) neurons a Figs. 3-5: marked ['SNr']; VIS or hippocampal marked: []; frontal False, basal ganglia True, midbrain False; sessions excluded 6 (6); MOs choice-sel
+12:python: "3.13"
+10:+        if entry.get("python") and locked_for and locked_for.group(1) != str(entry["python"]):
+12:+                         f"says {entry['python']}; run `tools/entry.py lock`")
+52:-    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
+53:+LOCK_VERSION = re.compile(r"--python-version\s+(\d+\.\d+)")
+56:+def python_of(entry_dir: Path) -> str:
+57:+    """The Python version an entry runs on: its entry.yaml's `python`, else the version its lock was compiled for
+60:+    if entry.get("python"):
+61:+        return str(entry["python"])
+70:+def set_python(entry_dir: Path, version: str) -> None:
+71:+    """Write `python: "<version>"` into entry.yaml, replacing the field or adding it after `license`."""
+74:+    line = f'python: "{version}"'
+75:+    if re.search(r"^python:.*$", text, re.M):
+76:+        text = re.sub(r"^python:.*$", line, text, count=1, flags=re.M)
+86:+    version = version or python_of(entry_dir)
+87:+    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--generate-hashes", "--python-version", version,
+91:+        set_python(entry_dir, version)
+111:+def upgrade_python(entry_dir: Path, version: str, before: Path, output_dir: Path, timeout: int,
+121:+        print(f"error: Python {version} could not lock or run the entry; it stays on {python_of(entry_dir)}",
+153:-    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
 [... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
-
-
-# ---------------------------------------------------------------------------------------------
-# jPECC (jPECC/jPECC.m)
-
-def binned_10ms(C: np.ndarray, starts: np.ndarray, n_bins: int, baseline: tuple, sd: float = 0.025,
-                history: int = 15) -> np.ndarray:
-    """Spike counts in 10 ms bins from `starts` (s from stimulus onset, per trial), smoothed with
-    a causal half-Gaussian (s.d. 25 ms), in sp/s, divided by each neuron's baseline + 1 sp/s
-    (mean rate in `baseline`, s from stimulus onset, over the trials given). C: units x trials
-    x 5 ms bins. Returns trials x n_bins x units."""
-    w = half_gaussian(sd, 0.01)
-    bsl = window_rate(C, *baseline).mean(axis=1)
-    out = np.zeros((C.shape[1], n_bins, C.shape[0]), dtype=np.float32)
-    for i, st in enumerate(starts):
-        i0 = bin_index(st) - 2 * history
-        x = C[:, i, i0:i0 + 2 * (n_bins + history)].astype(np.float32)
-        x = x.reshape(C.shape[0], -1, 2).sum(axis=2) / 0.01
-        x = causal_smooth(x, w)[:, history:]
-        out[i] = (x / (bsl[:, None] + 1.0)).T
-    return out
-
-
-def _pca_scores(X: np.ndarray, nd: int) -> np.ndarray:
-    Xc = X - X.mean(axis=0)
-    U, s, _ = np.linalg.svd(Xc, full_matrices=False)
-    return (U * s)[:, :nd]
-
-
-def jpecc(A: np.ndarray, B: np.ndarray, kfold: int = 10, lam: float = 0.5, max_pc: int = 10,
-          rng=None) -> np.ndarray:
-    """jPECC.m: for each pair of time bins, PCA of each population (trials x neurons) to nd =
-    min(10, nA, nB) dimensions; k-fold over trials, CCA on the training PCs with ridge rows
-    (lam * I appended, as jPECC.m), test PCs projected on the first canonical pair, Pearson r of
-    the projections over all test trials. A: trials x T x nA; B: trials x T x nB. Returns
-    r[t1, t2] (A at t1, B at t2)."""
-    N, T = A.shape[0], A.shape[1]
-    nd = min(max_pc, A.shape[2], B.shape[2])
-    Xs = np.stack([_pca_scores(A[:, t], nd) for t in range(T)])          # T x N x nd
-    Ys = np.stack([_pca_scores(B[:, t], nd) for t in range(T)])
-    fold = np.arange(N) % kfold
-    (rng or np.random.default_rng(0)).shuffle(fold)
-    out = np.zeros((T, T))
-    Iz = np.vstack([lam * np.eye(nd), np.zeros((nd, nd))])
-    Zi = np.vstack([np.zeros((nd, nd)), lam * np.eye(nd)])
-    for t1 in range(T):
-        U = np.zeros((T, N)); V = np.zeros((T, N))
-        for f in range(kfold):
-            tr, te = fold != f, fold == f
-            Xa = np.vstack([Xs[t1][tr], Iz]); Xa = Xa - Xa.mean(axis=0)
-            Ya = np.concatenate([Ys[:, tr], np.broadcast_to(Zi, (T, 2 * nd, nd))], axis=1)
-            Ya = Ya - Ya.mean(axis=1, keepdims=True)
-            Q1, R1 = np.linalg.qr(Xa)
-            Q2, R2 = np.linalg.qr(Ya)
-            Lm, _, Mh = np.linalg.svd(np.einsum("ij,tik->tjk", Q1, Q2))
-            a1 = np.linalg.solve(np.broadcast_to(R1, (T, nd, nd)), Lm[:, :, :1])[:, :, 0]   # T x nd
-            b1 = np.linalg.solve(R2, np.swapaxes(Mh, 1, 2)[:, :, :1])[:, :, 0]
-            U[:, te] = a1 @ Xs[t1][te].T
-            V[:, te] = np.einsum("tnd,td->tn", Ys[:, te], b1)
-        Uc = U - U.mean(axis=1, keepdims=True); Vc = V - V.mean(axis=1, keepdims=True)
-        out[t1] = (Uc * Vc).sum(1) / np.sqrt((Uc ** 2).sum(1) * (Vc ** 2).sum(1))
-    return out
-
-
-def asymmetry(J: np.ndarray, k: int = 5) -> np.ndarray:
-    """Mean r along the diagonal slice from (t, t) to k bins of lead of the first population,
-    J[t - j, t + j], minus the mean along k bins of lead of the second, J[t + j, t - j],
-    j = 0..k. NaN where the slice leaves the matrix."""
-    T = J.shape[0]
-    out = np.full(T, np.nan)
-    for t in range(k, T - k):
-        j = np.arange(k + 1)
-        out[t] = J[t - j, t + j].mean() - J[t + j, t - j].mean()
-    return out
-EOF
-echo ok
+cd  sed -i '/^python: "3.13"$/d' entries/steinmetz-2019/entry.yaml; python tools/entry.py check entries/steinmetz-2019 2>&1 | tail -5; date -u
 ```
 
 ```
-ok
+0 error(s)
+Tue Nov 10 17:21:30 UTC 2026
 ```
 
 **Agent**
 
-Checking jPECC on synthetic data where the first population leads by 30 ms.
+Check passes (after removing a `python:` field the local `lock` tool writes but the schema rejects). Running the full entry now (~16 min estimated).
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import sys, numpy as np, time
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-rng=np.random.default_rng(0)
-N,T=200,40
-lat=rng.normal(size=(N,T+5,3))
-A=np.einsum('ntk,km->ntm',lat[:,5:],rng.normal(size=(3,15)))+rng.normal(size=(N,T,15))
-B=np.einsum('ntk,km->ntm',lat[:,2:T+2],rng.normal(size=(3,12)))+rng.normal(size=(N,T,12))  # B(t)=latent(t+2)?? 
-# B at time t uses latent index t+2 ; A at time t uses latent t+5 -> A(t) = B(t+3): A leads? A(t) matches B(t+3): A is earlier
-t=time.time(); J=S.jpecc(A,B,rng=np.random.default_rng(1)); print('time',time.time()-t)
-i=20; print(np.round([J[i,i+d] for d in range(-5,6)],2))
-print(np.round(S.asymmetry(J)[5:35],2))
-EOF
+cd  time python tools/entry.py all entries/steinmetz-2019 2>&1 | tail -15; date -u
 ```
 
 ```
-time 1.2729265689849854
-[ 0.04 -0.13  0.09  0.16 -0.01 -0.08 -0.09 -0.22  0.94  0.07  0.01]
-[ 0.21 -0.05 -0.08  0.   -0.01  0.11 -0.06  0.02  0.   -0.12  0.03  0.03
-  0.03 -0.01  0.07 -0.14  0.05  0.04  0.01 -0.16  0.11 -0.03 -0.05 -0.11
-  0.04 -0.04 -0.01  0.   -0.1   0.06]
-Shell cwd was reset to
+Installed kernelspec registry-steinmetz-2019 in executed/steinmetz-2019/.venv/share/jupyter/kernels/registry-steinmetz-2019
+0 error(s)
+pass  reproduce_steinmetz_2019.ipynb  (739 s)
+
+real	12m30.127s
+user	11m57.936s
+sys	0m30.601s
+Tue Nov 10 17:34:03 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . env/bin/activate && python - <<'EOF'
-import sys, numpy as np
-sys.path.insert(0,'entries/000017-steinmetz-2019')
-import steinmetz as S
-rng=np.random.default_rng(0); N,T=200,40
-lat=rng.normal(size=(N,T+6,3))
-A=np.einsum('ntk,km->ntm',lat[:,6:],rng.normal(size=(3,15)))+rng.normal(size=(N,T,15))
-B=np.einsum('ntk,km->ntm',lat[:,2:T+2],rng.normal(size=(3,12)))+rng.normal(size=(N,T,12))
-J=S.jpecc(A,B,rng=np.random.default_rng(1)); print(np.round(np.nanmean(S.asymmetry(J)),3), 'J[20,24]',round(J[20,24],2),'J[24,20]',round(J[24,20],2))
+cd  ls executed/steinmetz-2019/; python3 - <<'EOF' > $TMPDIR/exec_out.txt
+import json
+nb=json.load(open('executed/steinmetz-2019/reproduce_steinmetz_2019.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags',[])
+    txt=''.join(''.join(o.get('text','')) if 'text' in o else ''.join(o.get('data',{}).get('text/plain','')) for o in c.get('outputs',[]) if o.get('output_type')!='display_data')
+    print('=====',tags); print(txt[:6000])
 EOF
+wc -c $TMPDIR/exec_out.txt; sed -n 1,140p $TMPDIR/exec_out.txt
 ```
 
 ```
-0.151 J[20,24] 0.93 J[24,20] -0.23
-Shell cwd was reset to
-```
+reproduce_steinmetz_2019.ipynb
+result.json
+57398 /tmp/claude-1001/exec_out.txt
+===== []
 
-**Agent**
+===== []
+39 NWB files in 000017 0.240329.1926
+loaded in 566 s; peak memory 1.58 GB
 
-jPECC behaves as intended (positive asymmetry when the first population leads). Now the jPECC claims.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/nb7.py <<'EOF'
-
-# %% md
-# ## jPECC (Fig. 4d, Extended Data Fig. 8)
-#
-# `steinmetz.jpecc` as jPECC.m: groups VIS (VISp, VISpm, VISl, VISrl, VISa, VISam), Frontal (MOs, MOp, PL), Midbrain (SCm, MRN, ZI, SNr); recordings with neurons of both groups; 10 ms bins smoothed with a causal half-Gaussian (s.d. 25 ms), divided by baseline + 1 sp/s; per group and time bin PCA to min(10, nA, nB) dimensions; 10-fold over trials; ridge CCA (lambda 0.5); Pearson r of the test projections on the first canonical pair. Stimulus-aligned bins start -0.1 to 0.39 s, movement-aligned bins -0.35 to 0.09 s. Asymmetry at t: mean r from (t, t) to 50 ms of lead of the first group, minus the mean to 50 ms of lead of the second (`steinmetz.asymmetry`); across recordings a t-test against 0 at each t. Readings of the claims file: baseline (a) -0.2 to 0 s, (b) -0.1 to 0 s; trials (a) all trials T for the stimulus alignment and Left and Right trials for the movement alignment, (b) Left and Right trials for both. The neurons are not named by the claims file; readings (a) the Figs. 3 to 5 set, (b) all neurons N (a question is filed). Runs in parallel over recordings.
-
-# %% code
-from joblib import Parallel, delayed
-from threadpoolctl import threadpool_limits
-GROUPS = {"VIS": S.VIS, "Frontal": S.FRONTAL_JPECC, "Midbrain": S.MIDBRAIN_JPECC}
-PAIRS = [("VIS", "Frontal"), ("VIS", "Midbrain"), ("Frontal", "Midbrain")]
-STIM_STARTS = np.round(np.arange(-0.1, 0.395, 0.01), 3)
-MOVE_STARTS = np.round(np.arange(-0.35, 0.095, 0.01), 3)
-
-def jpecc_job(A, B, seed):
-    with threadpool_limits(1):
-        return S.jpecc(A, B, rng=np.random.default_rng(seed))
-
-jobs, jmeta = [], []
-for si, s in enumerate(sessions):
-    t = tts[si]; k = t["keep"].values
-    lr = k & t["cls"].isin(["L", "R"]).values
-    for nname, nmask in (("a", inN35), ("b", inN)):
-        rows = np.flatnonzero((nt["s"] == si).values & nmask)
-        reg = nt["region"].values[rows]
-        members = {g: rows[np.isin(reg, v)] for g, v in GROUPS.items()}
-        for g1, g2 in PAIRS:
-            if len(members[g1]) == 0 or len(members[g2]) == 0:
-                continue
-            C1 = s["C"][nt["j"].values[members[g1]]]; C2 = s["C"][nt["j"].values[members[g2]]]
-            for bname, bw in (("a", (-0.2, 0.0)), ("b", (-0.1, 0.0))):
-                for align, trials_r, idx in (("stim", "a", np.flatnonzero(k)), ("stim", "b", np.flatnonzero(lr)),
-                                             ("move", "ab", np.flatnonzero(lr))):
-                    starts = STIM_STARTS[0] * np.ones(len(idx)) if align == "stim" else t["mt"].values[idx] + MOVE_STARTS[0]
-                    nb_ = len(STIM_STARTS) if align == "stim" else len(MOVE_STARTS)
-                    A = S.binned_10ms(C1[:, idx], starts, nb_, bw) if False else None
-                    # baseline over the same trials, then binning
-                    bs1 = S.binned_10ms(C1[:, idx], starts, nb_, bw); bs2 = S.binned_10ms(C2[:, idx], starts, nb_, bw)
-                    jobs.append((bs1, bs2, si)); jmeta.append((si, nname, g1, g2, bname, align, trials_r))
-t0 = time.time()
-Js = Parallel(n_jobs=4)(delayed(jpecc_job)(*j) for j in jobs)
-print(f"jPECC: {len(jobs)} matrices in {time.time() - t0:.0f} s")
-asym = pd.DataFrame(jmeta, columns=["s", "neurons", "g1", "g2", "baseline", "align", "trials"])
-asym["index"] = [S.asymmetry(J) for J in Js]
-print("recordings per pair (neurons a):", asym[(asym["neurons"] == "a") & (asym["baseline"] == "a") & (asym["align"] == "move")]
-      .groupby(["g1", "g2"]).size().to_dict(), "| (neurons b):",
-      asym[(asym["neurons"] == "b") & (asym["baseline"] == "a") & (asym["align"] == "move")].groupby(["g1", "g2"]).size().to_dict())
-
-def ttest_curve(sub):
-    X = np.stack(sub["index"].values)
-    m = np.nanmean(X, axis=0)
-    p = stats.ttest_1samp(X, 0.0, axis=0, nan_policy="omit").pvalue
-    return m, np.asarray(p), len(X)
-
-# %% md
-# ### fig4d-jpecc-vis-leads
-#
-# > In jPECC, visual cortex activity leads frontal cortex activity by about 40 ms in the period about 200 ms before movement, and visual cortex leads frontal cortex and midbrain at about 100 ms after stimulus onset.
-#
-# Reproduced when, under one reading, VIS leads Frontal (positive mean, p < 0.05) at time points between -0.2 and -0.05 s from movement onset, and VIS leads Frontal and Midbrain near 0.1 s after stimulus onset. The claims file says neither how many points nor how near; readings (n1) at least one significant point in the range, (n2) more than half of them; "near 0.1 s": bins starting 0.08 to 0.12 s (a question is filed).
-
-# %% code [claim:fig4d-jpecc-vis-leads]
-vis_res = {}
-for nname in ("a", "b"):
-    for bname in ("a", "b"):
-        for tr_r in ("a", "b"):
-            out = {}
-            for (g1, g2), align, rng_t, trials_r in ((("VIS", "Frontal"), "move", (-0.2, -0.05), "ab"),
-                                                      (("VIS", "Frontal"), "stim", (0.08, 0.12), tr_r),
-                                                      (("VIS", "Midbrain"), "stim", (0.08, 0.12), tr_r)):
-                sub = asym[(asym["neurons"] == nname) & (asym["baseline"] == bname) & (asym["align"] == align)
-                           & (asym["trials"] == trials_r) & (asym["g1"] == g1) & (asym["g2"] == g2)]
-                m, p, n = ttest_curve(sub)
-                tt_ = MOVE_STARTS if align == "move" else STIM_STARTS
-                sel = (tt_ >= rng_t[0] - 1e-9) & (tt_ <= rng_t[1] + 1e-9)
-                sig = (p[sel] < 0.05) & (m[sel] > 0)
-                out[(g1, g2, align)] = (int(sig.sum()), int(sel.sum()), n, m[sel].round(3))
-            vf_m, vf_s, vm_s = out[("VIS", "Frontal", "move")], out[("VIS", "Frontal", "stim")], out[("VIS", "Midbrain", "stim")]
-            n1 = vf_m[0] >= 1 and vf_s[0] >= 1 and vm_s[0] >= 1
-            n2 = vf_m[0] > vf_m[1] / 2 and vf_s[0] >= 1 and vm_s[0] >= 1
-            vis_res[(nname, bname, tr_r)] = (n1, n2)
-            print(f"neurons ({nname}) baseline ({bname}) trials ({tr_r}): VIS-Frontal, -0.2 to -0.05 s from movement: "
-                  f"{vf_m[0]} of {vf_m[1]} points significant ({vf_m[2]} recordings; means {vf_m[3]}); near 0.1 s after stimulus: "
-                  f"VIS-Frontal {vf_s[0]} of {vf_s[1]} ({vf_s[2]} recordings; means {vf_s[3]}), VIS-Midbrain {vm_s[0]} of {vm_s[1]} "
-                  f"({vm_s[2]} recordings; means {vm_s[3]}) | n1 {n1}, n2 {n2}")
-
-# %% md
-# ### fig4d-jpecc-no-lag-frontal-midbrain
-#
-# > Population activity in midbrain and frontal cortex shows no consistent lead or lag.
-#
-# A claim of absence, judged on the paper's test: the t-test across recordings of the Frontal-Midbrain asymmetry index against 0 at each time point from -0.25 to 0 s from movement onset, alpha 0.05 uncorrected. Reproduced when no point is significant, not reproduced when any is. A Bonferroni-corrected variant is shown.
-
-# %% code [claim:fig4d-jpecc-no-lag-frontal-midbrain]
-nolag = {}
-for nname in ("a", "b"):
-    for bname in ("a", "b"):
-        sub = asym[(asym["neurons"] == nname) & (asym["baseline"] == bname) & (asym["align"] == "move")
-                   & (asym["g1"] == "Frontal") & (asym["g2"] == "Midbrain")]
-        m, p, n = ttest_curve(sub)
-        sel = (MOVE_STARTS >= -0.25 - 1e-9) & (MOVE_STARTS <= 0 + 1e-9)
-        nsig = int((p[sel] < 0.05).sum()); nbon = int((p[sel] < 0.05 / sel.sum()).sum())
-        nolag[(nname, bname)] = nsig == 0
-        print(f"neurons ({nname}) baseline ({bname}): {n} recordings; significant points {nsig} of {int(sel.sum())} "
-              f"(Bonferroni {nbon}); mean index {np.nanmean(m[sel]):.4f}, range {np.nanmin(m[sel]):.3f} to {np.nanmax(m[sel]):.3f}; "
-              f"smallest p {np.nanmin(p[sel]):.3f} at {MOVE_STARTS[sel][np.nanargmin(p[sel])]:.2f} s")
-EOF
-sed -i 's/                    A = S.binned_10ms(C1\[:, idx\], starts, nb_, bw) if False else None\n//' $TMPDIR/nb7.py
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb7.py'; s=open(p).read()
-s=s.replace("                    A = S.binned_10ms(C1[:, idx], starts, nb_, bw) if False else None\n                    # baseline over the same trials, then binning\n","")
-open(p,'w').write(s)
-EOF
-timeout 2400 $TMPDIR/dev.sh --load executed/devcache/state4.pkl $TMPDIR/nb7.py 2>&1 | grep -v Warning | grep -v warnings.warn | tail -22 | cut -c1-700
-```
-
-```
-recordings per pair (neurons a): {('Frontal', 'Midbrain'): 9, ('VIS', 'Frontal'): 17, ('VIS', 'Midbrain'): 11} | (neurons b): {('Frontal', 'Midbrain'): 9, ('VIS', 'Frontal'): 17, ('VIS', 'Midbrain'): 11}
-[cell code took 333 s]
-neurons (a) baseline (a) trials (a): VIS-Frontal, -0.2 to -0.05 s from movement: 4 of 16 points significant (17 recordings; means [0.003 0.039 0.009 0.038 0.034 0.081 0.083 0.037 0.033 0.059 0.087 0.066
- 0.038 0.015 0.032 0.029]); near 0.1 s after stimulus: VIS-Frontal 3 of 5 (17 recordings; means [0.05  0.091 0.1   0.125 0.079]), VIS-Midbrain 0 of 5 (11 recordings; means [0.044 0.084 0.083 0.063 0.087]) | n1 False, n2 False
-neurons (a) baseline (a) trials (b): VIS-Frontal, -0.2 to -0.05 s from movement: 4 of 16 points significant (17 recordings; means [0.003 0.039 0.009 0.038 0.034 0.081 0.083 0.037 0.033 0.059 0.087 0.066
- 0.038 0.015 0.032 0.029]); near 0.1 s after stimulus: VIS-Frontal 1 of 5 (17 recordings; means [0.029 0.06  0.08  0.049 0.056]), VIS-Midbrain 0 of 5 (11 recordings; means [-0.033 -0.05   0.027  0.012 -0.008]) | n1 False, n2 False
-neurons (a) baseline (b) trials (a): VIS-Frontal, -0.2 to -0.05 s from movement: 5 of 16 points significant (17 recordings; means [0.001 0.005 0.023 0.027 0.016 0.099 0.067 0.052 0.049 0.057 0.076 0.076
- 0.047 0.039 0.051 0.017]); near 0.1 s after stimulus: VIS-Frontal 3 of 5 (17 recordings; means [0.04  0.067 0.093 0.11  0.07 ]), VIS-Midbrain 0 of 5 (11 recordings; means [0.021 0.095 0.084 0.078 0.103]) | n1 False, n2 False
-neurons (a) baseline (b) trials (b): VIS-Frontal, -0.2 to -0.05 s from movement: 5 of 16 points significant (17 recordings; means [0.001 0.005 0.023 0.027 0.016 0.099 0.067 0.052 0.049 0.057 0.076 0.076
- 0.047 0.039 0.051 0.017]); near 0.1 s after stimulus: VIS-Frontal 2 of 5 (17 recordings; means [0.07  0.063 0.089 0.039 0.068]), VIS-Midbrain 0 of 5 (11 recordings; means [-0.005 -0.029  0.049  0.017  0.01 ]) | n1 False, n2 False
-neurons (b) baseline (a) trials (a): VIS-Fronta
-[... 11 more lines not kept]
+===== ['sanity']
+Sessions 39 | subjects 10 | probes 92
+              identifier sex             genotype       age  probes  n_units  n_trials
+0        Cori_2016-12-14   F  tetO-G6s x CaMK-tTA   77 days       2     1085       214
+1        Cori_2016-12-17   F  tetO-G6s x CaMK-tTA   84 days       2     1146       251
+2        Cori_2016-12-18   F  tetO-G6s x CaMK-tTA   84 days       2     1089       228
+3   Forssmann_2017-11-01   M             C57BL/6J  182 days       3     2073       249
+4   Forssmann_2017-11-02   M             C57BL/6J  182 days       3     1569       254
+5   Forssmann_2017-11-04   M             C57BL/6J  189 days       3     1435       290
+6   Forssmann_2017-11-05   M             C57BL/6J  189 days       2     1029       252
+7       Hench_2017-06-15   M  tetO-G6s x CaMK-tTA  217 days       3     1707       250
+[... 123 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat >> entries/000017-steinmetz-2019/steinmetz.py <<'EOF'
+grep -n -A3 "peak_channel:\|Clock check\|chance (majority\|not established\|Pupil: sessions" $TMPDIR/exec_out.txt | head -20; grep -n -B2 -A12 "claim:edtable1\|claim:recording-counts" $TMPDIR/exec_out.txt | grep -v "True     True     True     True    True$" | head -60
+```
 
+```
+191-Tests returning no p-value (all values equal), among N, per test: [0, 125, 249, 874, 143, 169]
+192-
+193:===== ['claim:recording-counts']
+194-           neurons       localized  total  per_session  per_session_se  localized_n  total_ok  per_ok  loc_ok
+195-          a phy>=2 i in 42 regions  33997        871.7            45.5        26106     False   False   False
+196-          a phy>=2    ii neurons N  33997        871.7            45.5        22273     False   False    True
+197-b phy>=2, >=0.1 Hz i in 42 regions  29283        750.8            38.0        22434      True    True    True
+198-b phy>=2, >=0.1 Hz    ii neurons N  29283        750.8            38.0        22273      True    True    True
+199-
+200-Sessions 39 (expected 39), mice 10 (10), probe insertions 92 (92)
+201-Trials: (a) all 10050, (b) engaged 9538; expected 9538 ± 954
+202-Units per probe count: {1: 1, 2: 23, 3: 15}
+203-
+204:===== ['claim:edtable1-region-counts']
+205-       p_recordings  p_mice  p_responsive  p_neurons  recordings  mice  responsive  neurons  rec_ok  mice_ok  neur_ok  resp_ok  all_ok
+206-ACA              11       8           395        608          10     8         437      660   False     True     True    False   False
+210-CA1              21      10           494       1129          20    10         530     1159   False     True     True     True   False
+211-CA3              10       6           243        438           8     6         239      427   False     True     True     True   False
+213-DG               16      10           336        711          15    10         365      704   False     True     True     True   False
+216-LD                6       5           209        308           5     4         178      276   False    False    False    False   False
+```
 
-# ---------------------------------------------------------------------------------------------
-# The selections both notebooks share
+**Agent calls Bash**
 
-def prepare(sessions: list[dict]) -> dict:
-    """Trials T (Methods rule, disengagement rule as written, NoGo movement times drawn with the
-    seed [1, session]), the table of curated units with regions mapped to the 42 regions through
-    the Allen ontology, the six tests, and the neuron masks: `inN` (definition N), `active` (any
-    test below 0.05/6), `resp4` (any of tests 1 to 4 below 0.05) and `inN35` (the Figs. 3 to 5
-    set)."""
-    tts = [classify_trials(s["trials"], s["moves"], "methods", rng=np.random.default_rng([1, si]))
-           for si, s in enumerate(sessions)]
-    nt = neuron_table(sessions, tts)
-    parent = allen_parent_map(sorted(set(nt["region"])))
-    nt["label"] = nt["region"]
-    nt["region"] = nt["label"].map(parent).fillna("none")
-    P, E = [], []
-    for si, s in enumerate(sessions):
-        p, e = six_tests(s["C"], tts[si], s["rew"])
-        P.append(p); E.append(e)
-    P, E = np.vstack(P), np.vstack(E)
-    active = np.any(P < 0.05 / 6, axis=1)
-    resp4 = np.any(P[:, :4] < 0.05, axis=1)
-    inN = select_n(nt) & nt["region"].isin(REGIONS_42).values
-    return dict(tts=tts, nt=nt, parent=parent, P=P, E=E, active=active, resp4=resp4, inN=inN,
-                inN35=inN & resp4)
+```bash
+cd  python3 - <<'EOF'
+import json
+nb=json.load(open('executed/steinmetz-2019/reproduce_steinmetz_2019.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags',[])
+    txt=''.join(''.join(o.get('text','')) for o in c.get('outputs',[]) if 'text' in o)
+    if 'sanity' in tags: print(txt[-2200:])
+    if any(t in tags for t in ['claim:edtable1-region-counts']): print(txt[-900:])
+    if 'Design:' in txt or 'Notebook run time' in txt or 'jPECC computed' in txt: print(txt[:600])
+    if any(t in tags for t in ['claim:fig4d-jpecc-vis-leads','claim:fig4d-jpecc-no-lag-frontal-midbrain']): print(txt[:1500])
+EOF
+```
+
+```
+50%    95%     max
+choice                                                           
+-1.0    3373.0 -415.3  308.4 -1863.0 -979.0 -371.0  -71.0  1018.0
+ 0.0    3305.0    1.4   74.0  -772.0  -78.0    0.0   71.8   636.0
+ 1.0    3372.0  411.4  281.9  -889.0   84.0  391.5  920.4  1831.0
+20 mm (90 d.v.a., Methods) is 148 encoder units
+
+First movement type of Left/Right trials (T) against response_choice:
+ choice  -1.0   0.0   1.0
+t_raw                   
+L         82    58  1831
+R       1645    44    40
+
+Trials by definition T (engaged only): {'N': 3950, 'X': 2401, 'L': 1970, 'R': 1729} | code rule variant: {'X': 3576, 'N': 2775, 'L': 1970, 'R': 1729}
+Dataset 'included' against the Methods disengagement rule: agree on 98.3% of trials; included 9538, rule 9496
+
+Contrasts in trials: [np.float64(0.0), np.float64(0.25), np.float64(0.5), np.float64(1.0)] | passive: [np.float64(0.0), np.float64(0.25), np.float64(0.5), np.float64(1.0)]
+Passive visual presentations per session: 70 to 150
+
+Good units (phy >= 2): 33997 | region labels: 73 | in the 42 regions: 23844 | 'root': 4305
+[... 85 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+import json
+nb=json.load(open('executed/steinmetz-2019/reproduce_steinmetz_2019.ipynb'))
+want=['claim:supptable2-sessions','claim:passive-no-movement','claim:early-response-fraction','claim:ed1q-wheel-choice-decoding','claim:task-modulated-fraction','claim:suppfig2-rate-amplitude','claim:fig2de-activity-order','claim:fig2fg-miss-restricted','claim:fig5b-miss-more-than-passive']
+for c in nb['cells']:
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags',[])
+    if any(t in tags for t in want):
+        txt=''.join(''.join(o.get('text','')) for o in c.get('outputs',[]) if 'text' in o)
+        print('=====',tags); print(txt[-1800:])
+EOF
+```
+
+```
+===== ['claim:ed1q-wheel-choice-decoding']
+           a          b     
+        mean  std  mean  std
+offset                      
+-0.10   49.4  1.5  58.6  8.5
+-0.09   49.3  1.4  58.4  8.7
+-0.08   49.3  1.8  58.8  8.8
+-0.07   48.8  1.5  59.5  7.7
+-0.06   48.8  1.6  58.8  8.1
+-0.05   48.9  1.9  59.0  8.4
+-0.04   50.0  2.3  59.3  8.6
+-0.03   51.4  2.2  59.5  8.9
+-0.02   56.2  3.1  63.3  8.9
+-0.01   69.1  4.5  74.7  7.2
+-0.00   70.9  5.5  77.1  7.6
+ 0.01   95.3  3.7  95.2  4.1
+ 0.02   93.9  3.5  94.1  3.8
+ 0.03   94.5  3.5  94.5  3.5
+ 0.04   94.5  3.5  94.5  3.2
+ 0.05   94.8  3.5  94.7  3.2
+[... 101 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/results.py <<'EOF'
+RES = {
+"fig1c-easy-performance": "**Result: reproduced.** On engaged trials (reading b) the mean over 39 sessions is 1.71% incorrect choices (s.d. 2.47) and 10.12% Misses (s.d. 8.32), against 1.7 ± 2.5 and 10.1 ± 8.3. With all trials (reading a) Misses are 23.24%, outside tolerance, so the paper's numbers are those of engaged trials.",
+"fig1c-low-contrast-performance": "**Result: reproduced.** Under both readings the values are within tolerance: 5.07% incorrect and 29.84% Misses on engaged trials (s.d. 6.43 and 19.81), against 5.1 and 29.8.",
+"fig1c-competing-performance": "**Result: reproduced.** Engaged trials give 20.01% incorrect choices and 13.89% Misses (s.d. 7.90 and 11.66), against 20.0 and 13.9; all trials give 19.93% and 14.66%.",
+"fig1d-reaction-time-difficulty": "**Result: reproduced.** On the Left and Right trials of definition T (reading b), the mean reaction time is 0.206 s for high-contrast single stimuli, 0.226 s for low-contrast single stimuli and 0.221 s for competing stimuli, and the condition factor has p = 2.9e-10 (F1), 8.7e-09 (F2) and 9.6e-10 for contrast (F3), all below 1e-4. Reading a (first movement after the stimulus on all trials with a Left or Right response) gives p = 0.006 to 0.02 and the competing class shortest (0.410 s against 0.413 s), so the claim holds under reading b only.",
+"ed1q-wheel-choice-decoding": "**Result: reproduced.** With the sign of the velocity (reading a), choice is decoded on 48.9% of trials 50 ms before movement onset and 94.8% 50 ms after, against 47.7 and 94.6. At -50 ms 92.0% of trials have zero velocity. The logistic decoder (reading b) gives 59.0% before onset, above tolerance, because with zero velocity it predicts the more frequent choice.",
+"early-response-fraction": "**Result: reproduced.** Under reading a, 61.48% (s.d. 12.00) of trials with a Left or Right response have a choice turn within 0.4 s, 95.78% (s.d. 3.86) of them in the direction of the response; under reading b, 67.49% and 94.93%. Both are within tolerance of 64.9 ± 14.0 and 96.6 ± 3.4.",
+"passive-no-movement": "**Result: not reproduced.** 84.63% of high-contrast passive presentations have no detected movement in -0.05 to 0.4 s (mean over 39 sessions, s.e. 1.08) and 84.96% in 0 to 0.4 s; pooled values are 84.55% and 84.87%. All four readings are about 9 points below 94.1 ± 0.6. Subjects range from 78.3% to 91.5%.",
+"recording-counts": "**Result: reproduced.** The dataset has 39 sessions, 10 mice and 92 probe insertions. Units curated as single units with a trial rate of at least 0.1 Hz (reading b) number 29,283 (750.8 ± 38.0 per session, mean ± s.e.), against 29,134 and 747 ± 38; 22,434 of them are in the 42 regions (reading i) and 22,273 are neurons N (reading ii), against 22,458. The engaged trials number 9,538, the paper's count exactly. Reading a (all curated units, 33,997) is outside tolerance.",
+"edtable1-region-counts": "**Result: not reproduced.** With neurons N, recordings, mice and neuron counts all match in 26 of the 42 regions (recordings exact in 28, mice in 38, neurons within 10% in 37), below the 30 of a partial reproduction. The totals are close (22,273 neurons and 13,439 active, against 22,458 and 13,467). Counted without the rule of 13 neurons per region and session, all three match in 38 of 42 regions, so the table appears to count every neuron of the 42 regions; this is asked of a reader.",
+"supptable2-sessions": "**Result: reproduced.** All 39 sessions of the table are in the dataset, with matching ages (39 of 39) and sexes (10 of 10 subjects); the genotypes are the same lines under other names. The areas with neurons match the table in 38 of 39 sessions (24 with neurons N, which drops regions with fewer than 13 neurons). The match rests on mapping finer region labels to their parent (with the labels as given, the earlier run of this analysis matched fewer sessions; the outputs here show the mapped labels only).",
+"task-modulated-fraction": "**Result: reproduced.** 13,439 of 22,273 neurons N (60.34%) are active during the task; under reading a 74.95% of them consistently increase and 20.89% consistently decrease, under reading b 71.60% and 19.44%. Expected 13,466, 60.0%, 74.3% and 20.2%; both readings are within tolerance.",
+"suppfig2-rate-amplitude": "**Result: partially reproduced.** Responsive neurons have higher baseline rates: d' = 0.392 ± 0.012 (reading a, outside 0.35 ± 0.04 by 0.002) and 0.316 ± 0.013 (reading b, within tolerance). Amplitudes differ less, but d' is 0.050 ± 0.014 (a) and 0.060 ± 0.028 (b), against 0.10 ± 0.02, outside tolerance under both readings.",
+"fig2de-activity-order": "**Result: reproduced.** With the half-maximum latency (L1), under each responsive reading, VISp is the first region on contralateral choice trials (77.5 ms; percentile 0.024), SCs is at the 0.061 to 0.083 percentile and the VIS mean at 0.195 to 0.214; on ipsilateral choice trials VISp and SCs are at the 0.70 to 0.95 percentiles, in the latest third. With the peak time (L2) SCs is not early (0.42 to 0.56), so the claim holds under L1 only.",
+"fig2fg-miss-restricted": "**Result: partially reproduced.** No reading meets all three parts. Counting only finite z (Z1), (i) the visual pathway has more activated neurons on contralateral Miss trials than other regions (3.39% against 1.29%) and (ii) other regions have over twice as many on Go as on Miss trials (6.75% against 1.29%), but (iii) ipsilateral Misses activate 1.19% against 2.37% for contralateral Misses, just above half. With Z2, (ii) and (iii) hold and (i) does not. Counting infinite z, about 22% of neurons are significant in every condition and (ii) fails. Only 19 of 39 sessions have 10 matched single-stimulus trials per group.",
+"fig5b-miss-more-than-passive": "**Result: partially reproduced.** Contralateral stimuli activate more neurons on matched Miss trials than on passive trials: with Z1, pooled fractions 18.14% against 14.71% (Figs. 3 to 5 set, infinite z counted) or 4.82% against 3.24% (finite z), and Miss exceeds passive in 26 to 30 of 42 regions. With Z2 and finite z, fractions are near zero and the excess is positive in 3 regions. The matched-contrast selection keeps 36 sessions (38 if the 10 trials are counted over the three groups), not the paper's 34, which the criterion requires.",
+"fig5c-prestimulus-task-vs-passive": "**Result: reproduced.** Under the Methods' ANOVA (factors a) with all passive events, 23 regions differ: all 9 differing neocortical regions are lower in the task, and all 11 differing non-neocortical regions outside visual thalamus are higher. VISp is lower on matched Miss than passive trials (1.64 against 2.39 Hz) and CP higher (3.10 against 2.77 Hz). Factors b give 14 differing regions with the same pattern; with passive visual presentations and factors a, ILA (neocortex) is higher in the task, so that reading fails.",
+"ed6b-prestimulus-order": "**Result: reproduced.** In window a, 11 of 15 midbrain, basal ganglia and hippocampal regions show Passive < Miss < Go, and 12 of 14 neocortical regions have Passive above both Miss and Go; window b gives 12 of 15 and 12 of 14.",
+"fig5d-go-miss-matches-task-passive": "**Result: reproduced.** Across 42 regions the task minus passive difference correlates with the Go minus Miss difference, r = 0.641 (p < 1e-5) in window a and 0.622 (p = 1e-5) in window b.",
+"ed7f-detect-probability-engagement": "**Result: reproduced.** The pre-stimulus detect probability of each area correlates with its task minus passive difference, r = 0.515 (p = 0.0005) in window a and 0.488 (p = 0.0011) in window b, against r = 0.48 ± 0.048 and p = 0.001.",
+"fig5f-engagement-index": "**Result: reproduced.** With trials T and contralateral contrasts above zero, the index is higher on Go than on Miss trials by 7.85 a.u. on average (s.e. 1.54; 29 of 36 sessions), paired t-test p = 1e-5, with 344 ± 34 neurons per session; expected 8.42 ± 0.84 and 319 ± 32.5. All task trials give 8.06. Including zero contrast (reading b) gives 4.69 (p = 2e-4). The sessions number 36, not 34, because the matched-contrast selection keeps 36.",
+"fig5e-engagement-predicts-go": "**Result: reproduced.** On 2,434 matched trials, the logistic slope of Go on the index is 0.44 (95% interval 0.35 to 0.53) with the index z-scored within session, and 0.19 (0.11 to 0.27) z-scored over all trials. P(Go) rises from 0.335 to 0.614 across quintiles of the index.",
+"ed9i-engagement-beyond-arousal": "**Result: reproduced.** Adding the index to the GLM of inter-trial interval, previous reward, pupil and motion energy lowers the deviance by 63.1 (p = 2e-15, window a) and 64.0 (p = 1e-15, window b) in one GLM over 34 sessions, and by 169.7 over 34 degrees of freedom (p = 6e-20) with one GLM per session; the paper's p is 1.5e-8.",
+"ed9cf-engagement-controls": "**Result: reproduced.** The z-scored index is higher on Go than on Miss trials after rewarded trials (0.37, paired p = 7e-5), with previous reward removed (0.34, p = 4e-5), after short (0.47, p = 7e-6) and long inter-trial intervals (0.32, p = 0.005), with the median taken per session; the median over all trials and the pooled two-sample test give p below 0.002 in every set.",
+"ed9k-engagement-vector-specific": "**Result: reproduced.** The engagement vector correlates with the Go minus Miss vector at r = 0.21 on average, more than with the pupil (r = -0.07, paired p = 0.0002), motion energy (0.05, p = 0.004), inter-trial interval (0.02, p = 0.0005) and previous reward vectors (0.14, p = 0.13; Wilcoxon p = 0.077), with median-split vectors; regression slopes give the same pattern. As in the paper, the previous reward comparison is not significant.",
+"suppfig3-nonresponsive-neurons": "**Result: reproduced.** Go is higher than Miss with the index from all neurons (7.85, p = 1e-5), from responsive neurons (7.24, p = 4e-5) and from the other neurons alone (3.07, p = 9e-4), over 36 sessions.",
+"ed7b-detect-probability-widespread": "**Result: reproduced.** Around movement onset 28.18% of neurons N have a significant detect probability in window a, and all 42 regions are marked above the 5% chance level (40 of 42 in window b, 17.38%). No session has fewer than 10 includable trials.",
+"fig4d-jpecc-vis-leads": "**Result: partially reproduced.** VIS leads Frontal before movement: 3 to 5 of 16 time points between -0.2 and -0.05 s have a positive asymmetry with p < 0.05 (17 recordings), and VIS leads Frontal at 2 to 4 points from 0.08 to 0.12 s after the stimulus. VIS does not lead Midbrain at those times in any reading (no significant point; 11 recordings).",
+"fig4d-jpecc-no-lag-frontal-midbrain": "**Result: not reproduced.** On the paper's uncorrected test, Frontal-Midbrain asymmetry is significant at 1 of 26 time points from -0.25 to 0 s with baseline a (p = 0.022, at -0.15 s, Midbrain leading) and at 2 with baseline b (smallest p 0.009); the mean index is -0.012 and -0.020 over 9 recordings, and no point survives Bonferroni correction.",
+}
 EOF
 echo ok
 ```
@@ -6132,424 +3557,399 @@ ok
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-a=s.index('t0 = time.time()\nnt = S.neuron_table(sessions, tts)')
-b=s.index('nt_lab = nt.assign(region=nt["label"])')
-new='''t0 = time.time()
-prep = S.prepare(sessions)
-assert all((a["cls"].values == b["cls"].values).all() for a, b in zip(prep["tts"], tts))
-nt, P, E = prep["nt"], prep["P"], prep["E"]
-active, resp4, inN, inN35 = prep["active"], prep["resp4"], prep["inN"], prep["inN35"]
-print(f"six tests in {time.time() - t0:.0f} s; NaN p-values per test:", np.isnan(P).sum(axis=0))
-'''
-s=s[:a]+new+s[b:]
-open(p,'w').write(s)
+cd $TMPDIR && python3 - <<'EOF'
+s=open('cells_c.py').read()
+old='''print("Ages match in %d of 39 sessions"'''
+new='''areasRaw = units[units.region_raw.isin(sm.REGIONS42) & units.rate_ok].groupby("session").region_raw.apply(lambda x: set(x))
+print("Variant, region labels as given (no parent mapping): neurons' areas match in %d of 39 sessions"
+      % (m2.ref_set == m2.identifier.map(areasRaw)).sum())
+print("Ages match in %d of 39 sessions"'''
+assert old in s; s=s.replace(old,new); open('cells_c.py','w').write(s)
+s=open('cells_z.py').read()
+old="Extended Data Table 1's per-region counts are close in total (22,273 against 22,458 neurons) but recordings per region differ in 14 regions."
+new="Extended Data Table 1's per-region counts are close in total (22,273 against 22,458 neurons) but, with the rule of 13 neurons per region and session, recordings per region differ in 14 regions; without that rule, recordings, mice and neurons match in 38 of 42 regions."
+assert old in s; s=s.replace(old,new); open('cells_z.py','w').write(s)
+exec(open('results.py').read())
+RES["supptable2-sessions"]="**Result: reproduced.** All 39 sessions of the table are in the dataset, with matching ages (39 of 39) and sexes (10 of 10 subjects); the genotypes are the same lines under other names. The areas with neurons match the table in 38 of 39 sessions (24 with neurons N, which drops regions with fewer than 13 neurons). The match rests on mapping finer region labels to their parent; the count with the labels as given is printed above as a variant."
+RES["fig2fg-miss-restricted"]=RES["fig2fg-miss-restricted"].replace("Counting infinite z, about 22% of neurons are significant in every condition and (ii) fails.","Counting infinite z, 21.6% of neurons have an infinite z on Go trials and (ii) fails.")
+import json; json.dump(RES, open('results.json','w'))
+b=open('build_nb.py').read()
+b=b.replace("""        nb.cells.append(c)
+""","""        nb.cells.append(c)
+        if m and m.group(1).startswith('claim:'):
+            nb.cells.append(nbformat.v4.new_markdown_cell(RES[m.group(1)[6:]]))
+""")
+b=b.replace("import re,sys,nbformat","import re,sys,nbformat,json\nRES=json.load(open('/tmp/claude-1001/results.json'))")
+open('build_nb.py','w').write(b)
 EOF
-grep -n "prep\b\|prepare" $TMPDIR/nb1.py | head; python3 - <<'EOF'
-p='/tmp/claude-1001/devrun.py'; s=open(p).read()
-old="""        if 'p, e = S.six_tests(' in body and os.path.exists(f'{CACHE}/PE.pkl'):"""
-new="""        if 'import steinmetz as S' in body:
-            exec(compile(body, head, 'exec'), g)
-            if os.path.exists(f'{CACHE}/PE.pkl'):
-                _pe = pickle.load(open(f'{CACHE}/PE.pkl', 'rb'))
-                _key = lambda C: (C.shape, int(C.sum()))
-                g['_PE_BY_KEY'] = {}
-                _orig = g['S'].six_tests
-                def _cached(C, tt, rew, _orig=_orig, _g=g):
-                    k = (C.shape, int(C.sum()))
-                    if k in _g.get('_PE_MAP', {}):
-                        return _g['_PE_MAP'][k]
-                    return _orig(C, tt, rew)
-                g['S'].six_tests = _cached
-                g['_PE_LIST'] = _pe
-            continue
-        if 'LOAD-SESSIONS' in body and os.path.exists(f'{CACHE}/PE.pkl'):
-            body = f"import pickle\\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\\n_PE_MAP = {{(s['C'].shape, int(s['C'].sum())): pe for s, pe in zip(sessions, _PE_LIST)}}\\n"
-        if 'p, e = S.six_tests(' in body and os.path.exists(f'{CACHE}/PE.pkl'):"""
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-echo ok
+cd  && python3 $TMPDIR/build_nb.py $TMPDIR/cells_0.py,$TMPDIR/cells_a.py,$TMPDIR/cells_b.py,$TMPDIR/cells_c.py,$TMPDIR/cells_d.py,$TMPDIR/cells_e.py,$TMPDIR/cells_f.py,$TMPDIR/cells_g.py,$TMPDIR/cells_h.py,$TMPDIR/cells_i.py,$TMPDIR/cells_j.py,$TMPDIR/cells_z.py entries/steinmetz-2019/reproduce_steinmetz_2019.ipynb; date -u
 ```
 
 ```
-488:prep = S.prepare(sessions)
-489:assert all((a["cls"].values == b["cls"].values).all() for a, b in zip(prep["tts"], tts))
-490:nt, P, E = prep["nt"], prep["P"], prep["E"]
-491:active, resp4, inN, inN35 = prep["active"], prep["resp4"], prep["inN"], prep["inN35"]
-ok
+101
+Tue Nov 10 17:35:36 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n 18,60p $TMPDIR/devrun.py
+cd  python tools/entry.py all entries/steinmetz-2019 2>&1 | tail -3; date -u
 ```
 
 ```
-for b in re.split(r'^# %% ', src, flags=re.M)[1:]:
-        head, _, body = b.partition('\n')
-        if head.startswith('md'): continue
-        if 'LOAD-SESSIONS' in body:
-            body = f"import pickle\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\n"
-        if 'import steinmetz as S' in body:
-            exec(compile(body, head, 'exec'), g)
-            if os.path.exists(f'{CACHE}/PE.pkl'):
-                _pe = pickle.load(open(f'{CACHE}/PE.pkl', 'rb'))
-                _key = lambda C: (C.shape, int(C.sum()))
-                g['_PE_BY_KEY'] = {}
-                _orig = g['S'].six_tests
-                def _cached(C, tt, rew, _orig=_orig, _g=g):
-                    k = (C.shape, int(C.sum()))
-                    if k in _g.get('_PE_MAP', {}):
-                        return _g['_PE_MAP'][k]
-                    return _orig(C, tt, rew)
-                g['S'].six_tests = _cached
-                g['_PE_LIST'] = _pe
-            continue
-[... 13 more lines not kept]
+Installed kernelspec registry-steinmetz-2019 in executed/steinmetz-2019/.venv/share/jupyter/kernels/registry-steinmetz-2019
+0 error(s)
+pass  reproduce_steinmetz_2019.ipynb  (773 s)
+Tue Nov 10 17:48:44 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/devrun.py'; s=open(p).read()
-s=s.replace("""        if 'LOAD-SESSIONS' in body:
-            body = f"import pickle\\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\\n"
-        if 'import steinmetz as S' in body:""","""        if 'LOAD-SESSIONS' in body:
-            body = f"import pickle\\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\\n"
-            if os.path.exists(f'{CACHE}/PE.pkl'):
-                body += "_PE_MAP = {(s['C'].shape, int(s['C'].sum())): pe for s, pe in zip(sessions, _PE_LIST)}\\n"
-        if 'import steinmetz as S' in body:""")
-s=s.replace("""        if 'LOAD-SESSIONS' in body and os.path.exists(f'{CACHE}/PE.pkl'):
-            body = f"import pickle\\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\\n_PE_MAP = {{(s['C'].shape, int(s['C'].sum())): pe for s, pe in zip(sessions, _PE_LIST)}}\\n"
-""","")
-open(p,'w').write(s)
+cd  python3 - <<'EOF'
+import json
+nb=json.load(open('executed/steinmetz-2019/reproduce_steinmetz_2019.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']!='code': continue
+    tags=c['metadata'].get('tags',[])
+    txt=''.join(''.join(o.get('text','')) for o in c.get('outputs',[]) if 'text' in o)
+    if 'claim:supptable2-sessions' in tags: print(txt[-1400:-900])
+    if 'Notebook run time' in txt or 'Design:' in txt: print(txt)
+    for o in c.get('outputs',[]):
+        if o.get('output_type')=='error': print('ERROR', tags)
 EOF
-sed -n 18,30p $TMPDIR/devrun.py; timeout 3000 $TMPDIR/dev.sh $TMPDIR/nb1.py 2>&1 | grep -E "six tests|curated units|took|Error|error" | head
+diff <(python3 -c "
+import json
+nb=json.load(open('executed/steinmetz-2019/reproduce_steinmetz_2019.ipynb'))
+for c in nb['cells']:
+  if c['cell_type']=='code' and any(t.startswith('claim:') for t in c['metadata'].get('tags',[])): print(''.join(''.join(o.get('text','')) for o in c['outputs'] if 'text' in o))") $TMPDIR/exec_out.txt | head -5 | cut -c1-200
 ```
 
 ```
-for b in re.split(r'^# %% ', src, flags=re.M)[1:]:
-        head, _, body = b.partition('\n')
-        if head.startswith('md'): continue
-        if 'LOAD-SESSIONS' in body:
-            body = f"import pickle\nsessions = pickle.load(open('{CACHE}/sessions.pkl','rb'))\n"
-            if os.path.exists(f'{CACHE}/PE.pkl'):
-                body += "_PE_MAP = {(s['C'].shape, int(s['C'].sum())): pe for s, pe in zip(sessions, _PE_LIST)}\n"
-        if 'import steinmetz as S' in body:
-            exec(compile(body, head, 'exec'), g)
-            if os.path.exists(f'{CACHE}/PE.pkl'):
-                _pe = pickle.load(open(f'{CACHE}/PE.pkl', 'rb'))
-                _key = lambda C: (C.shape, int(C.sum()))
-                g['_PE_BY_KEY'] = {}
-          histology-alignment-error           histology blocked: data_missing
-region labels of curated units: 73
-labels of curated units: 73
-six tests in 2 s; NaN p-values per test: [1028 1876 2681    0 2114    0]
-curated units 33997 | rate >= 0.1 Hz 29269 | neurons N (42 regions) 22263 | active 13430 | Figs. 3-5 set 13520
-trial rate of curated units, sp/s: median 1.19 range 0.0 to 126.3
-Muller_2017-01-08 Probe2: 100% of 546 curated units on channels labelled 'root' (no location)
+-12-07         15            15.0        True     True      True               []        []
+37      Tatum_2017-12-08         15            15.0        True    False      True            [RSP]        []
+38      Tatum_2017-12-09         15            15.0        True     True      True               []        []
+
+Area sets matching: neurons (phy >= 2, >= 0.1 Hz) 38 of 39; neurons N 24; all units 38
+Variant, region labels as given (no parent mapping): neurons' areas match in 25 of 39 sessions
+Ages 
+Design: 12494 samples, 650 predictors, 734 neurons; built in 13.3 s
+One neuron, full model: 250 fits in 1.1 s
+Neurons entering the full model (Figs. 3-5 set): 13852 -> 4.2 h on one core
+Nested tests (3 kernels, about 4,240 neurons): 2.8 h; total 7.0 h on one core, 1.8 h on 4 cores
+The Choice shuffle of ed5h repeats the whole test once more. Notebook limit: 1 h.
+
+Notebook run time 764 s; peak memory 2.08 GB
+
+0a1,89
+> ===== []
+> 
+> ===== []
+> 39 NWB files in 000017 0.240329.1926
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json;s=json.load(open('schemas/attempt.schema.json'));print(s.get('required'));print(list(s['properties']));o=s['properties']['outcomes']['items'];print(o.get('required'),list(o['properties']));f=s['properties']['findings']['items'];print(f.get('required'),list(f['properties']), f['properties'].get('kind'))
+print(json.dumps(s['properties']['provenance'])[:1500])
+print(o['properties'].get('blocked_by'), o['properties'].get('data'))"
+```
+
+```
+['schema_version', 'id', 'datasets', 'paper', 'date', 'provenance', 'outcomes']
+['schema_version', 'id', 'datasets', 'missing_datasets', 'paper', 'date', 'entry', 'deprecated', 'provenance', 'outcomes', 'verifications', 'findings', 'reconciliation', 'inputs']
+['claim', 'outcome'] ['claim', 'outcome', 'blocked_by', 'notes', 'notebook', 'output', 'measured', 'deviations', 'assumed', 'proposed']
+['kind', 'statement'] ['kind', 'statement', 'found'] {'enum': ['metadata_error', 'data_missing', 'identifier_missing', 'metadata_insufficient', 'selection_undocumented', 'methods_unavailable', 'format_error', 'code_mismatch', 'paper_inconsistency', 'other']}
+{"type": "object", "additionalProperties": false, "required": ["kind", "accountable"], "properties": {"kind": {"enum": ["agent", "person"]}, "accountable": {"description": "The person or organisation responsible for this attempt.", "type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string"}, "orcid": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"}, "ror": {"type": "string"}}}, "agent": {"description": "Required when kind is agent.", "type": "object", "additionalProperties": false, "required": ["harness", "model", "protocol"], "properties": {"harness": {"type": "string"}, "model": {"type": "string"}, "protocol": {"description": "Version of the reproduction protocol the agent followed.", "type": "string"}}}, "runner": {"description": "Where the attempt was run: the platform, and the run that wrote this record. Its other runs (verification rounds, revisions) are linked from their transcripts.", "type": "object", "additionalProperties": false, "required": ["platform"], "properties": {"platform": {"description": "The platform that ran it, e.g. GitHub Actions, or local for a person's machine.", "type": "string", "minLength": 1}, "url": {"description": "The run that wrote the record, e.g. https://github.com/<owner>/<repo>/actions/runs/<id>.", "type":
+[... 1 more lines not kept]
 ```
 
 **Agent**
 
-Both parts run. Now the conclusions: one "**Result:**" cell per claim, each resting on numbers printed above it. Starting with part 1 (behaviour and counts).
+Now writing the attempt record.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "attempts/steinmetz-2019-01.yaml",
+ "content": "schema_version: 3\nid: steinmetz-2019-01\ndatasets:\n- archive: dandi\n  id: \"000017\"\n  version: 0.240329.1926\n  doi: 10.48324/dandi.000017/0.240329.1926\n  relation: primary\npaper: doi:10.1038/s41586-019-1787-x\ndate: 2026-11-10\nentry: steinmetz-2019\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-14\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/catalystneuro/encore/actions/runs/42852600081\noutcomes:\n- claim: fig1c-easy-performance\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig1c-easy-performance\n  measured:\n  - 1.71\n  - 10.12\n  notes: On engaged trials (reading b, the dataset's `included` flag) the means over 39 sessions are\n    1.71% incorrect choices (s.d. 2.47) and 10.12% Misses (s.d. 8.32), against 1.7 ± 2.5 and 10.1 ±\n    8.3. With all trials (reading a) Misses are 23.24%, outside tolerance; incorrect choices are\n    1.47%. Measured values are those of reading b, the reading that matches.\n  deviations:\n  - High contrast is 1.0, the highest of the dataset's four contrasts (0, 0.25, 0.5, 1); the dataset\n    does not name the levels.\n- claim: fig1c-low-contrast-performance\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig1c-low-contrast-performance\n  measured:\n  - 5.06\n  - 30.51\n  notes: All trials (reading a) give 5.06% incorrect and 30.51% Misses (s.d. 6.42 and 19.87);\n    engaged trials (b) give 5.07% and 29.84%. Both readings are within tolerance of 5.1 ± 6.4 and\n    29.8 ± 19.8.\n  deviations:\n  - Low contrast is 0.25, the lowest non-zero contrast of the dataset.\n- claim: fig1c-competing-performance\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig1c-competing-performance\n  measured:\n  - 19.93\n  - 14.66\n  notes: All trials give 19.93% incorrect and 14.66% Misses; engaged trials 20.01% (s.d. 7.90) and\n    13.89% (s.d. 11.66). Expected 20.0 ± 7.9 and 13.9 ± 11.7; both readings match.\n  deviations:\n  - High against medium is 1.0 against 0.5, medium against low 0.5 against 0.25.\n- claim: fig1d-reaction-time-difficulty\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig1d-reaction-time-difficulty\n  notes: On the Left and Right trials of definition T (trial reading b) the mean reaction times are\n    0.206 s (high-contrast single), 0.226 s (low-contrast single) and 0.221 s (competing); the\n    condition factor has p = 2.9e-10 (F1, with session), 8.7e-09 (F2, with subject), and the\n    contrast factor p = 9.6e-10 under F3 (competing-stimulus factor p = 0.017). The high-contrast\n    class is fastest in every subject (medians). Under trial reading a (first detected movement\n    after the stimulus, all trials with a Left or Right response) the condition p is 0.006 to 0.02\n    and the competing class is slightly faster than the high-contrast class (0.410 against 0.413 s),\n    so the claim holds under reading b only.\n  deviations:\n  - The multi-way ANOVA is a type II ANOVA on an ordinary least squares fit (statsmodels); the\n    paper names neither the software nor the sums of squares.\n- claim: ed1q-wheel-choice-decoding\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed1q-wheel-choice-decoding\n  measured:\n  - 48.9\n  - 94.8\n  notes: With the sign of the velocity (reading a), the mean accuracy over 39 sessions is 48.9% (s.d.\n    1.9) 50 ms before movement onset and 94.8% (s.d. 3.5) 50 ms after, against 47.7 and 94.6. 92.0% of\n    trials have zero velocity at -50 ms. The logistic decoder (reading b) gives 59.0% before onset,\n    outside tolerance, as it predicts the more frequent choice when velocity is zero; after onset it\n    gives 94.7%.\n  deviations:\n  - Velocities are taken at the nearest wheel sample (2.5 kHz) to each time; the logistic regression\n    uses scikit-learn defaults, a standard choice.\n- claim: early-response-fraction\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:early-response-fraction\n  measured:\n  - 61.48\n  - 95.78\n  notes: Reading a (first choice-amplitude turn, types 1 and 2) gives 61.48% (s.d. 12.00) of Left and\n    Right response trials with a turn within 0.4 s, 95.78% (s.d. 3.86) of them in the response's\n    direction; reading b (first movement of any kind) gives 67.49% and 94.93%. Both are within\n    tolerance of 64.9 ± 14.0 and 96.6 ± 3.4.\n  deviations:\n  - All trials of each session are used, as the criterion says; the Methods passage does not say\n    whether disengaged trials are dropped.\n- claim: passive-no-movement\n  outcome: not_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:passive-no-movement\n  measured: 84.63\n  notes: Of 3,410 passive presentations with contrast 1.0 on either side, 84.63% (mean over 39\n    sessions, s.e. 1.08) have no detected movement overlapping -0.05 to 0.4 s, and 84.96% for 0 to\n    0.4 s; pooled, 84.55% and 84.87%. Every reading is about 9 points below 94.1 ± 0.6. Subjects\n    range from 78.3% to 91.5%. Movements are the dataset's detected wheel movements of any type,\n    including small unclassified ones; the paper does not say what it counted as a movement here.\n  deviations:\n  - Movements are the dataset's `wheel_moves` intervals; findWheelMoves3 was not rerun on the wheel\n    position.\n- claim: recording-counts\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:recording-counts\n  measured:\n  - 29283\n  - 750.8\n  - 22434\n  - 39\n  - 10\n  - 92\n  - 9538\n  notes: Units curated as single units with a trial firing rate of at least 0.1 Hz (reading b) number\n    29,283 (750.8 ± 38.0 per session, mean ± s.e.); 22,434 of them lie in the 42 regions (reading i)\n    and 22,273 are neurons N (reading ii); 39 sessions, 10 mice, 92 probes. Engaged trials number\n    9,538, the paper's count; all trials 10,050. Reading a of neurons (all 33,997 curated units) is\n    outside tolerance.\n  deviations:\n  - Regions come from the location of each unit's peak channel (row peak_channel - 1 of the\n    electrodes table), with finer Allen labels (SCig, SCsg, LSr, LSc, ORBm, COA, TT, PIR, DP) mapped to\n    their parent among the 42 regions. With the labels as given, 20,544 neurons are in the 42\n    regions, also within tolerance.\n- claim: edtable1-region-counts\n  outcome: not_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:edtable1-region-counts\n  notes: With neurons N, recordings, mice and neuron counts all match in 26 of the 42 regions\n    (recordings exact in 28, mice in 38, neurons within 10% in 37); the criterion needs 38 for\n    reproduced and 30 for partially reproduced. Totals are close, 22,273 neurons and 13,439 active\n    against 22,458 and 13,467. Recordings differ mostly by one or two sessions in which a region has\n    fewer than 13 neurons. Counted without the rule of 13 neurons per region and session, all three\n    match in 38 of 42 regions (recordings exact in 41, mice in 42), and the neurons of the 42 regions\n    number 22,434. The table thus appears to count every neuron of the 42 regions; this is asked of a\n    reader (questions/steinmetz-2019.yaml).\n  deviations:\n  - Finer region labels are mapped to their parent (as recording-counts); with the labels as given 24\n    regions match.\n- claim: supptable2-sessions\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:supptable2-sessions\n  assumed: true\n  notes: All 39 sessions of the table are in the dataset, matched by subject and date, with matching\n    ages (39 of 39) and sexes (10 of 10). Genotypes are the same lines named differently (Ai95 x\n    VGlut1-Cre for RCL-GCaMP6f x VGlut-Cre, Vglut1-Cre for Vglut1-IRES2-Cre-D). The regions of each\n    session's neurons (curated, at least 0.1 Hz) match the table's areas in 38 of 39 sessions\n    (Muller 2017-01-08 lacks MOs); with neurons N, which drop regions with fewer than 13 neurons, 24\n    of 39. With region labels as given (no parent mapping) 25 of 39 match, so the outcome rests on the\n    mapping.\n  deviations:\n  - The areas of a session are those of its neurons as the Methods define a neuron (\"Units passing\n    these criteria were considered to reflect the spiking activity of a neuron\", Methods, Data\n    analysis); the claims file says only \"areas with neurons\". Neurons N are shown as a variant.\n  - Assumption. A unit labelled with a finer Allen division (SCig, SCsg, LSr, LSc, ORBm, COA, TT, PIR,\n    DP; 2,262 units) lies in its parent region among the 42 (Allen CCF hierarchy). The paper does not\n    say how labels were grouped.\n- claim: task-modulated-fraction\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:task-modulated-fraction\n  measured:\n  - 13439\n  - 60.34\n  - 74.95\n  - 20.89\n  notes: 13,439 of 22,273 neurons N (60.34%) have a test below 0.05/6. Under reading a 74.95%\n    consistently increase and 20.89% decrease; under reading b 71.60% and 19.44%. All four values are\n    within tolerance under both readings. The active fraction by subject ranges from 50.3% to 73.2%.\n    With labels as given, 12,263 of 20,418 (60.06%) are active.\n  deviations:\n  - Rates are spike counts in each window divided by its length; the code (kernelFitBasic.m)\n    interpolates binned rates. Tests that return no p-value because all values are equal (0 to 874\n    neurons per test) count as not significant, where the code keeps the neuron as included (its\n    \"BUG\" comment).\n  - Test 6 compares post-reward rates of correct NoGo trials (no stimulus, NoGo, positive feedback)\n    with the baseline rates of all trials T, as kernelFitBasic.m does (ranksum of rewRates against\n    bslRates).\n- claim: suppfig2-rate-amplitude\n  outcome: partially_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:suppfig2-rate-amplitude\n  measured:\n  - 0.392\n  - 0.050\n  notes: Responsive neurons have higher baseline rates, d' = 0.392 ± 0.012 under reading a (0.002\n    outside 0.35 ± 0.04) and 0.316 ± 0.013 under reading b (within tolerance). Amplitudes differ less,\n    d' = 0.050 ± 0.014 (a) and 0.060 ± 0.028 (b), but both are outside 0.10 ± 0.02. The direction of\n    the finding holds; the amplitude value does not.\n  deviations:\n  - Amplitude is the mean of the file's `spike_amps` over each unit's spikes (template-based\n    peak-to-trough amplitude); the legend does not say which amplitude.\n- claim: fig2de-activity-order\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig2de-activity-order\n  notes: With the half-maximum latency (L1) and each responsive reading, VISp is the first region on\n    correct contralateral trials (77.5 ms; rank percentile 0.024), SCs at percentile 0.061 to 0.083\n    (82.5 to 87.5 ms) and the VIS mean at 0.195 to 0.214; on ipsilateral trials VISp is at 0.73 to\n    0.95 and SCs at 0.70 to 0.78, in the latest third. With the time of the maximum (L2) SCs falls at\n    0.42 to 0.56 on contralateral trials, so the claim holds under L1 only. Regions need 5 responsive\n    neurons (41 or 42 regions).\n  deviations:\n  - Contralateral correct trials are Right choices (T) on a right stimulus alone, matched in contrast\n    with contralateral Miss and passive trials of the same single-stimulus type (definition M applied\n    to these three groups). Sessions without matched trials contribute nothing.\n  - The sliding-window display selection (reading a) uses windows starting 0 to 0.3 s after stimulus\n    onset; the Methods do not give the range.\n- claim: fig2fg-miss-restricted\n  outcome: partially_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig2fg-miss-restricted\n  notes: No reading meets all three conditions. With Z1 and finite z only, (i) holds (3.39% of\n    visual-pathway neurons activated on contralateral Miss trials against 1.29% elsewhere) and (ii)\n    holds (6.75% against 1.29% outside the pathway on Go and Miss), but (iii) fails narrowly\n    (ipsilateral Miss 1.19% against contralateral Miss 2.37%, half being 1.185%). With Z2 and finite\n    z, (ii) and (iii) hold and (i) fails (0.05% against 0.06%). Counting infinite z (21.6% of neurons\n    on Go trials have no baseline spikes), (ii) fails. Only 19 of 39 sessions have 10 matched\n    single-stimulus trials per group.\n  deviations:\n  - The z of definition R is infinite for a neuron with no spikes in any baseline window. The paper\n    does not say how such neurons are treated; both treatments (counted significant, or not) are run.\n    The question is recorded for the authors (findings).\n  - Matched trials are single-stimulus trials, as for fig2de; sessions with fewer than 10 matched\n    trials per group are left out of the matched conditions.\n- claim: fig5b-miss-more-than-passive\n  outcome: partially_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig5b-miss-more-than-passive\n  measured: 36\n  notes: More neurons are activated on matched Miss than passive trials under Z1, pooled 18.14%\n    against 14.71% (Figs. 3 to 5 set, infinite z counted) and 4.82% against 3.24% (finite z), with\n    Miss above passive in 26 to 30 of 42 regions. Under Z2 with finite z both fractions are near zero\n    (0.05% and 0.04%) and the excess is positive in 3 regions. The matched-contrast selection keeps 36\n    sessions with at least 10 trials per group (38 if counted over the three groups), not the 34 the\n    criterion requires; the effect holds and the session count does not.\n  deviations:\n  - The infinite z of neurons without baseline spikes is treated both ways, as in fig2fg.\n  - The Methods say \"When fewer than 10 such trials could be found, the session was excluded\" without\n    saying whether per group or in all; both are run, and neither gives 34.\n- claim: fig5c-prestimulus-task-vs-passive\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig5c-prestimulus-task-vs-passive\n  notes: Under factor reading a (the Methods' nested ANOVA) with all passive events, 23 regions differ\n    at p < 0.0012; all 9 differing neocortical regions (ACA, MOp, ORB, SSp, VISa, VISam, VISl, VISp,\n    VISrl) are lower in the task, the visual thalamus (LD, LGd, LP) is lower too, and all 11 other\n    differing regions (ACB, CA1, CA3, CP, DG, GPe, LS, MRN, SNr, VPM, ZI) are higher. VISp is lower on\n    matched Miss than passive trials (1.64 against 2.39 Hz) and CP higher (3.10 against 2.77 Hz) in\n    window a, likewise in window b. Factor reading b gives 14 differing regions with the same pattern.\n    With passive visual presentations and factors a, ILA is higher in the task, so that reading fails.\n  deviations:\n  - Under factor reading a, the condition F of a model with condition and neuron nested in session,\n    with one observation per neuron and condition, equals the square of the paired t across neurons,\n    which is how it is computed.\n  - The VISp and CP comparison uses the sessions kept for definition M (36).\n- claim: ed6b-prestimulus-order\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed6b-prestimulus-order\n  notes: In window a 11 of 15 midbrain, basal ganglia and hippocampal regions show Passive < Miss < Go\n    and 12 of 14 neocortical regions have Passive above Miss and Go; window b gives 12 of 15 and 12 of\n    14.\n- claim: fig5d-go-miss-matches-task-passive\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig5d-go-miss-matches-task-passive\n  notes: Across 42 regions the task minus passive difference and the Go minus Miss difference\n    correlate with r = 0.641 (window a) and 0.622 (window b), p below 1e-4; Spearman 0.639 and 0.636.\n- claim: ed7f-detect-probability-engagement\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed7f-detect-probability-engagement\n  measured: 0.515\n  notes: The correlation across 42 areas between the mean pre-stimulus detect probability minus 0.5\n    and the task minus passive difference is r = 0.515 (p = 0.0005, window a) and 0.488 (p = 0.0011,\n    window b), both within 0.48 ± 0.048.\n- claim: fig5f-engagement-index\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig5f-engagement-index\n  measured:\n  - 7.85\n  - 344.3\n  - 36\n  notes: With trials T and contralateral contrast above zero (readings a, a), Go exceeds Miss by 7.85\n    a.u. on average (s.e. 1.54; positive in 29 of 36 sessions), paired t = 5.09, p = 1.2e-5, with\n    344 ± 34 neurons per session (mean ± s.e.); expected 8.42 ± 0.84 and 319 ± 32.5. All task trials\n    for the vector (b, a) give 8.06. Including zero contrast (contrast reading b) gives 4.69 (p =\n    2.2e-4), outside tolerance. The regions are those of the Methods' ANOVA reading in fig5c; the\n    region sets of the other readings give 6.69 to 7.92 with p below 1e-4. The test and the mean hold\n    as the criterion requires; the session count is 36, not the expected 34, because the\n    matched-contrast selection keeps 36 (fig5b).\n  deviations:\n  - Sessions are those kept for definition M (36), the paper's 34 sessions could not be identified.\n  - Go and Miss trials are those of definition T; the index uses the window -0.2 to 0 s on every\n    task trial without dropping trials with movement, as the Methods' paragraph does not drop them.\n- claim: fig5e-engagement-predicts-go\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig5e-engagement-predicts-go\n  notes: On 2,434 matched trials the logistic slope of Go on the index is 0.44 (95% interval 0.35 to\n    0.53) with z-scoring within session and 0.19 (0.11 to 0.27) over all trials. P(Go) rises from\n    0.335 to 0.614 across quintiles.\n- claim: ed9i-engagement-beyond-arousal\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed9i-engagement-beyond-arousal\n  notes: Adding the index lowers the deviance by 63.1 (1 d.f., p = 2.0e-15) in window a and 64.0 (p =\n    1.2e-15) in window b, one GLM over 34 sessions and 2,350 trials; one GLM per session gives a summed\n    drop of 169.7 over 34 d.f. (p = 6.0e-20). The paper reports p = 1.5e-8. The p-value is smaller\n    here than in the paper.\n  deviations:\n  - Inter-trial interval is stimulus onset minus the previous trial's feedback time, a standard\n    choice; the Methods do not define it.\n  - Sessions are those kept for definition M with pupil data (34; 2.9% of matched trials lack a pupil\n    value and are dropped). The paper excluded 5 sessions for unusable pupil video, which the dandiset\n    does not identify.\n- claim: ed9cf-engagement-controls\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed9cf-engagement-controls\n  notes: The index (z-scored within session) is higher on Go than Miss trials after rewards (0.37,\n    paired p = 7.3e-5), with previous reward removed (0.34, p = 3.8e-5), after short (0.47, p =\n    7e-6) and long intervals (0.32, p = 0.0048), median per session; with the median over all trials\n    paired p is 1.4e-3 or lower; pooled two-sample tests give p below 1e-6 in every set.\n  deviations:\n  - The index is z-scored within session before pooling, so that sessions with larger indices do not\n    dominate the pooled test.\n- claim: ed9k-engagement-vector-specific\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed9k-engagement-vector-specific\n  notes: Over 34 to 36 recordings the engagement vector correlates with the Go minus Miss vector at r =\n    0.21 on average, more than with the pupil (-0.07; paired t p = 0.0002), motion energy (0.05; p =\n    0.004), inter-trial interval (0.02; p = 0.0005) and previous reward vectors (0.14; p = 0.13,\n    Wilcoxon p = 0.077) for median-split vectors; regression slopes give p = 0.00002 to 0.0003 for the\n    first three. As in the paper, the previous reward comparison is not significant.\n  deviations:\n  - The variable vectors use all trials T of the session; the paper does not say which trials.\n- claim: suppfig3-nonresponsive-neurons\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:suppfig3-nonresponsive-neurons\n  notes: Over 36 sessions Go exceeds Miss with all neurons (7.85, p = 1.2e-5), with responsive neurons\n    (Figs. 3 to 5 set, 7.24, p = 4.3e-5) and with the others alone (3.07, p = 9.1e-4).\n- claim: ed7b-detect-probability-widespread\n  outcome: reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:ed7b-detect-probability-widespread\n  notes: In window a (-0.1 to 0.05 s from movement onset) 28.18% of 22,273 neurons N have a significant\n    detect probability and all 42 regions are above the 5% chance level (lowest, VISrl, 10.6% with\n    interval lower bound 6.9%); window b gives 17.38% and 40 of 42 regions. No session has fewer than\n    10 includable trials.\n  deviations:\n  - Significance is the fraction of shuffles below the observed value (ties counting one half)\n    below 0.025 or above 0.975, the reading of the criterion.\n- claim: fig4d-jpecc-vis-leads\n  outcome: partially_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig4d-jpecc-vis-leads\n  notes: Over 17 recordings VIS leads Frontal before movement, with 3 to 5 of 16 time points from -0.2\n    to -0.05 s positive at p < 0.05, and after the stimulus, with 2 to 4 points from 0.08 to 0.12 s.\n    Over 11 recordings VIS does not lead Midbrain near 0.1 s in any reading (no significant point;\n    mean asymmetry 0.005 to 0.055). The VIS-Frontal parts hold and the VIS-Midbrain part does not. The\n    Methods' PCA across time points gives the same result.\n  deviations:\n  - The asymmetry index follows the Methods' diagonal slice, from (t-50, t+50) ms to (t+50, t-50) ms\n    (Methods, jPECC analysis); the claims file's wording (\"from (t, t) to 50 ms of lead\") can be read\n    as a slice along one axis.\n  - The criterion's open counts are read as at least one significant positive time point in -0.2 to\n    -0.05 s, and in 0.08 to 0.12 s for each pair.\n  - The Methods do the PCA \"across time points and trials\"; the criterion and jPECC.m do it per time\n    bin. The criterion is followed and the Methods' PCA is a variant; asked of a reader.\n  - Windows are -0.05 to 0.3 s from stimulus onset and -0.3 to 0.05 s from movement onset; a region\n    group is the regions of the group with at least 13 neurons in the session.\n- claim: fig4d-jpecc-no-lag-frontal-midbrain\n  outcome: not_reproduced\n  notebook: reproduce_steinmetz_2019.ipynb\n  output: claim:fig4d-jpecc-no-lag-frontal-midbrain\n  notes: Over 9 recordings the uncorrected t-test finds 1 significant time point of 26 from -0.25 to 0\n    s with baseline a (-0.15 s, mean -0.080, p = 0.022, Midbrain leading) and 2 with baseline b\n    (smallest p 0.009). The mean index is -0.012 (a) and -0.020 (b); no point survives Bonferroni\n    correction over 26 points. The Methods' PCA variant also has 1 point (p = 0.028). The test as the\n    criterion gives it finds an effect, at single time points that do not survive correction.\n  deviations:\n  - As fig4d-jpecc-vis-leads (diagonal slice, windows, PCA variant).\n- claim: fig3c-variance-explained\n  outcome: blocked\n  blocked_by: too_large\n  notes: Kernel test K was timed on one session (the first file; 12,494 samples, 650 predictors). The\n    full model of one neuron (elastic net, 1 to 50 components, 5 folds, 250 fits) takes 1.1 s; for\n    the 13,852 neurons of the Figs. 3 to 5 set this is 4.2 h on one core, and the nested tests of three\n    kernels for about 4,240 neurons add 2.8 h, 7.0 h in all (1.8 h on 4 cores), over the one-hour\n    notebook limit. Nothing of the claim was run beyond the timing.\n- claim: fig3d-vision-localized\n  outcome: blocked\n  blocked_by: too_large\n  notes: Needs kernel test K for the Contralateral Vision kernels; estimated at 7.0 h on one core (1.8 h\n    on 4 cores) with the full models, as fig3c-variance-explained.\n- claim: fig3e-action-global\n  outcome: blocked\n  blocked_by: too_large\n  notes: Needs kernel test K for the Action and Choice kernels; too large, as fig3c-variance-explained.\n- claim: ed4f-focality\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on fig3d, fig3e and fig4b, blocked for the size of kernel test K.\n- claim: ed5h-choice-shuffle-fpr\n  outcome: blocked\n  blocked_by: too_large\n  notes: Reruns the whole Choice kernel test on shuffled labels, on top of the 7.0 h estimate of kernel\n    test K (fig3c-variance-explained); depends on fig4b, which is blocked.\n- claim: fig4b-choice-regions\n  outcome: blocked\n  blocked_by: too_large\n  notes: Needs kernel test K for the Choice kernel; too large, as fig3c-variance-explained.\n- claim: fig4c-choice-timing\n  outcome: blocked\n  blocked_by: too_large\n  notes: Uses residuals of the kernel model without the Choice kernel and depends on fig4b; too large,\n    as fig3c-variance-explained.\n- claim: fig4f-contralateral-preference\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on fig4b (choice-selective neurons of kernel test K), blocked for size.\n- claim: fig4fg-opposed-activity\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on fig4b, blocked for size.\n- claim: ed7c-choice-probability-restricted\n  outcome: blocked\n  blocked_by: too_large\n  notes: Depends on fig4b for the share of MOs choice-selective neurons in the excluded sessions, so it\n    is blocked with it. The ccCP part of the claim needs no kernel model and could be run alone; the\n    same algorithm runs here for ed7b.\n- claim: ed5g-ipsilateral-vision-rare\n  outcome: blocked\n  blocked_by: too_large\n  notes: Decodes from residuals of the kernel model without the Vision kernels; too large, as\n    fig3c-variance-explained.\n- claim: histology-alignment-error\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The dandiset holds the CCF coordinates and region of every channel, but no DiI spot\n    coordinates, histology images or electrophysiological landmarks, which the measures need. The\n    files and the dandiset metadata were searched; the figshare deposit the paper names\n    (doi:10.6084/m9.figshare.9598406) was not examined, and the claims file does not name it as the\n    source of these data.\nfindings:\n- kind: metadata_error\n  statement: The `rate` attribute of the `starting_time` of `wheel_position`, `lickPiezo` and\n    `face_motion_energy` holds the sampling interval in seconds (0.0004, 0.002 and 0.0253), not a rate\n    in Hz. Sample counts times these values give the recording lengths (2,609 to 4,103 s), so a reader\n    that trusts the attribute gets times wrong by a factor of millions.\n- kind: metadata_insufficient\n  statement: '`units/peak_channel` is 1-based: the electrodes row peak_channel - 1 matches the unit''s\n    cluster depth (median difference 8.0 um, against 13.4 um for row peak_channel). The description\n    does not say so, and a unit''s region depends on it.'\n- kind: format_error\n  statement: '`wheel_moves` is an IntervalSeries whose `data` (the movement type) has half the length\n    of its `timestamps`, which hold each movement''s onset and offset in turn; an IntervalSeries should\n    have one data value per timestamp.'\n- kind: metadata_insufficient\n  statement: Channel locations mix levels of the Allen hierarchy. 2,262 curated units carry finer\n    labels (SCig, LSr, COA, TT, SCsg, ORBm, LSc, PIR, DP) whose parents are among the paper's 42\n    regions, and others carry broad labels (TH, MB, CA). The paper's counts per region are recovered\n    only after mapping the finer labels to their parents, which the dandiset does not document.\n- kind: other\n  statement: Genotypes are written differently from Supplementary Table 1 (Ai95 x VGlut1-Cre for\n    RCL-GCaMP6f x VGlut-Cre, Vglut1-Cre for Vglut1-IRES2-Cre-D); sexes, ages and the 39 sessions\n    match the paper.\n- kind: selection_undocumented\n  statement: The Methods exclude 5 of 39 sessions from the pupil analyses for unusable video, but the\n    dandiset does not say which; eye_area is present in all 39 files, with missing values in two.\n- kind: metadata_insufficient\n  statement: '`spike_amps` gives no unit, and the trial table''s `included` flag (engaged trials)\n    differs from the Methods'' disengagement rule on 1.7% of trials, although it gives the paper''s\n    9,538 trials exactly.'\n- kind: data_missing\n  statement: The dandiset holds no histology (DiI spot coordinates, slice images) or\n    electrophysiological landmarks, so the probe localization of the Methods cannot be checked.\n- kind: methods_unavailable\n  statement: 'Question for the authors. Definition R (Methods, Data analysis) z-scores the mean rate\n    0 to 0.25 s against the trial baselines -0.1 to 0 s. For about 21% of neurons on matched\n    single-stimulus trials no baseline window has a spike, so the z is infinite. Were such neurons\n    counted as significant, left out, or was a variance floor used? Counting them makes about 22% of\n    neurons significant in every condition; leaving them out gives a few percent (fig2fg, fig5b).'\n- kind: methods_unavailable\n  statement: 'Question for the authors. The matched-contrast selection (Methods, Training protocol)\n    excludes sessions \"When fewer than 10 such trials could be found\", leaving 34 of 39. Here 36\n    sessions have at least 10 matched trials per group and 38 have 10 over the three groups. Which\n    count was meant, and does a further criterion remove two sessions?'\n- kind: methods_unavailable\n  statement: 'Question for the authors. \"94.1% ± 0.6% of trials with high contrast stimuli had no\n    movement\" in the passive replay: which window and which movements count? With the dataset''s\n    detected movements of any kind, 84.6% of high-contrast passive presentations have none in -0.05 to\n    0.4 s.'\n"
+}
+```
+
+```
+File created successfully at: attempts/steinmetz-2019-01.yaml (file state is current in your context — no need to Read it back)
+```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
+cd  python3 - <<'EOF'
+p='attempts/steinmetz-2019-01.yaml'
+s=open(p).read()
+s=s.replace("""    their parent among the 42 regions. With the labels as given, 20,544 neurons are in the 42
+    regions, also within tolerance.""","""    their parent among the 42 regions (an assumption, see supptable2-sessions).""")
+s=s.replace("""  deviations:
+  - Finer region labels are mapped to their parent (as recording-counts); with the labels as given 24
+    regions match.""","""  deviations:
+  - Finer region labels are mapped to their parent (as recording-counts).""")
+s=s.replace("""Counting them makes about 22% of
+    neurons significant in every condition; leaving them out gives a few percent (fig2fg, fig5b).'""","""Counting them, 17% to 23% of neurons
+    are significant on contralateral Miss trials; leaving them out, 2% to 5% (Z1; fig2fg, fig5b).'""")
+s=s.replace("so a reader\n    that trusts the attribute gets times wrong by a factor of millions.","so a reader\n    that takes the attribute as a rate in Hz gets every sample time wrong.")
+open(p,'w').write(s)
+import yaml
+d=yaml.safe_load(open(p)); print(len(d['outcomes']))
 import re
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-def insert_before(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-R = {}
-insert_before("# %% md\n# ### fig1d-reaction-time-difficulty", """**Result: reproduced (all three).** Under reading (b), engaged trials by the disengagement rule as written, the session means are 1.7% incorrect and 9.7% Misses for high-contrast single stimuli (paper 1.7 and 10.1), 5.3% and 28.1% for low-contrast single stimuli (5.1 and 29.8), and 20.3% and 13.3% for competing stimuli (20.0 and 13.9), all within the paper's s.d. Reading (a), all trials, puts the low-contrast and competing values within tolerance but not the high-contrast Misses (23.2%). The file's `included` flag gives the paper's six values to the first decimal (1.7, 10.1, 5.1, 29.8, 20.0, 13.9).""")
-insert_before("# %% md\n# ### ed1q-wheel-choice-decoding", """**Result: reproduced.** Mean reaction times are shortest for high-contrast single stimuli under both trial readings (reading (a): 0.351 s against 0.422 s for low-contrast single and 0.354 s for competing stimuli; reading (b): 0.206, 0.226 and 0.221 s). The class effect has p < 1e-4 under F1 with reading (a) (p = 2.7e-05) and under every factor reading with reading (b) (p = 2.9e-10, 8.7e-09, and 4.8e-11 for the contrast factor of F3); F2 with reading (a) gives p = 1.5e-04.""")
-insert_before("# %% md\n# ### early-response-fraction", """**Result: reproduced.** With the sign of the velocity (reading (a)) and the movements of the Left and Right trials T, decoding is at 48.9% 50 ms before the detected onset and 94.8% 50 ms after (paper 47.7% and 94.6%). The logistic regression (reading (b)) gives 59.1% before onset, outside the tolerance; it predicts the more frequent class when the wheel is still. Over all left and right turns the sign rule gives 48.9% and 89.0%, both within tolerance.""")
-insert_before("# %% md\n# ### passive-no-movement", """**Result: reproduced.** Of trials ending in a Left or Right response, 61.3% (s.d. 12.0%) have a left or right turn starting within 0.4 s of stimulus onset (reading (a); paper 64.9 ± 14.0%), and 95.8% of these turn in the direction of the final choice (96.6 ± 3.4%). Counting any detected movement (reading (b)) gives 67.5% and 95.0%, also within tolerance.""")
-insert_before("# %% md\n# ## Neurons\n", """**Result: not reproduced.** 84.6% of passive presentations with a high-contrast stimulus have no detected movement from -0.05 to 0.4 s (mean over sessions; 84.5% pooled; 85.0% and 84.9% from 0 to 0.4 s), against 94.1 ± 0.6%. Sessions range from 58.9% to 95.7%. Most of the movements are flinches (type 0): counting only left and right turns, 96.3% of presentations have none.""")
-s=s.replace('''# %% md\n# ### edtable1-region-counts''','''# %% md
-# **Result: reproduced.** The files hold 39 sessions of 10 mice with 92 probes. Curated single units with a trial rate of at least 0.1 Hz number 29,269 (750 ± 38 per session, mean ± s.e.; paper 29,134 and 747 ± 38), of which 22,424 lie in the 42 regions and 22,263 are neurons N (paper 22,458). All curated units number 33,997, outside the tolerance (reading (a)). The trials number 10,050 (reading (a), within 954 of 9,538); the file's `included` flag holds exactly 9,538; trials T number 7,608. The localized counts use the Allen mapping of subregion labels; with the files' labels as given, 20,538 and 20,412 (both within tolerance).
-
-# %% md
-# ### edtable1-region-counts''',1)
-open(p,'w').write(s)
+for i,l in enumerate(s.split('\n')):
+    if '—' in l or 'rather' in l.lower() or '**' in l: print('BAD',i,l)
 EOF
-echo ok
+grep -n "so a reader" -A1 attempts/steinmetz-2019-01.yaml; python3 - <<'EOF'
+# find plain scalars containing ': ' (continuation lines of plain scalars)
+import re
+lines=open('attempts/steinmetz-2019-01.yaml').read().split('\n')
+for i,l in enumerate(lines):
+    st=l.strip()
+    if ': ' in st:
+        key=re.match(r'^(- )?[a-z_]+: ',st)
+        rest=st[key.end():] if key else st
+        if ': ' in rest and not rest.startswith("'"): print(i+1,l)
+        if not key and not st.startswith("'"): print('cont',i+1,l)
+EOF
 ```
 
 ```
-ok
+40
+468:    in Hz. Sample counts times these values give the recording lengths (2,609 to 4,103 s), so a reader
+469-    that takes the attribute as a rate in Hz gets every sample time wrong.
+510     movement" in the passive replay: which window and which movements count? With the dataset''s
+cont 510     movement" in the passive replay: which window and which movements count? With the dataset''s
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "questions/steinmetz-2019.yaml",
+ "content": "dandiset: \"000017\"\npaper: doi:10.1038/s41586-019-1787-x\nquestions:\n- claim: edtable1-region-counts\n  asked: 2026-11-10\n  question: >-\n    The criterion counts, for each region of Extended Data Table 1, the neurons of definition N,\n    which applies the rule of at least 13 neurons per region in a session. The table's neuron column\n    sums to 22,458, the number the Results give for all neurons \"localizable to one of 42 brain\n    regions\", before any rule of 13 per session. Does the table count every neuron (curated, at least\n    0.1 Hz) of the 42 regions, the rule of 13 deciding only which regions are among the 42? If so,\n    should the criterion use those neurons?\n  passage: >-\n    \"Across all sessions we recorded from 29,134 neurons ... of which 22,458 were localizable to one\n    of 42 brain regions\" (Results, Brain-wide recording in visual behavior). \"Neurons were only\n    included for further analysis when at least 13 neurons passing the above criteria were\n    identified as coming from the same brain region, in the same experiment. Furthermore, brain\n    regions were only included for which recordings from at least two subjects had sufficient\n    numbers of neurons.\" (Methods, Data analysis). The claims file notes that the table's neuron\n    column sums to 22,458.\n  why: >-\n    With neurons N, recordings, mice and neurons match in 26 of the 42 regions and the claim is not\n    reproduced. Counting every neuron of the 42 regions, they match in 38 of 42 (recordings exact in\n    41, mice in 42), and the neurons number 22,434 against 22,458, so the claim would be reproduced.\n    The same reading decides the area lists of supptable2-sessions (38 of 39 sessions match with all\n    neurons, 24 with neurons N).\n- claim: fig4d-jpecc-vis-leads\n  asked: 2026-11-10\n  question: >-\n    The criterion does the PCA \"per group and time bin\", following jPECC.m. The Methods say the PCA\n    was performed \"across time points and trials\". Reader step 2 of the protocol puts the Methods\n    before the code where they disagree. Should the criterion use one PCA across time points and\n    trials, with the per-bin PCA of jPECC.m as a variant? The same applies to\n    fig4d-jpecc-no-lag-frontal-midbrain.\n  passage: >-\n    \"For each region group, principal components analysis was performed across time points and\n    trials to reduce population activity to 10 dimensions.\" (Methods, jPECC analysis). jPECC.m calls\n    pca on squeeze(sp1(:,t1,:)) inside the loop over time bins.\n  why: >-\n    The two PCAs can give different canonical correlations at each pair of bins. Here both were run\n    and give the same outcomes (VIS leads Frontal, not Midbrain; one uncorrected significant point\n    for Frontal-Midbrain), so the misreading does not change these outcomes, but a later attempt\n    should follow the Methods.\n"
+}
+```
+
+```
+File created successfully at: questions/steinmetz-2019.yaml (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb1.py'; s=open(p).read()
-def insert_before(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-insert_before("# %% md\n# ### supptable2-sessions", """**Result: not reproduced.** Recordings, mice and neuron counts (within 10%) all match Extended Data Table 1 in 26 of the 42 regions. Mice match in 38 regions and neuron counts in 37, but the number of recordings is lower than the table's in 14 regions (for example MOs 17 against 19, CA3 8 against 10, LGd 8 against 10). The totals are close: 22,263 neurons and 13,430 active (table 22,458 and 13,467). With the files' labels as given, 24 regions match, and SCm, SCs, LS and OLF lose more than half their neurons.""")
-insert_before("# %% code [sanity]\n# probes without brain locations", """**Result: partially reproduced.** All 39 sessions of Supplementary Table 2 are in the files, matched by subject and date, with the ages of the table, and every subject's sex and genotype match Supplementary Table 1 (with the two naming equivalences stated above). The regions with neurons N match the table's areas in 24 of the 39 sessions. In the other 15 the table lists an area that has fewer than 13 neurons passing the rate threshold here, or none located: in Muller 2017-01-08 the table's MOs is missing because every channel of Probe2 is unlabelled (next cell).""")
-insert_before("# %% md\n# ### region-label-link", """**Result: reproduced.** Every array of the paper's code has the length of its session's trials or units table, and the Left and Right trials of definition T agree with `hasLeft` and `hasRight` in every trial of every session (agreement 1.0000). The NoGo arrays (2,869 trials) are close to the code's rule (2,775 trials, all in the arrays) and not to the Methods' rule (3,908). Matched by `id`, 12,299 of the 13,520 neurons of the Figs. 3 to 5 set are among the code's 18,248 included units.""")
-insert_before("# %% md\n# ### task-modulated-fraction", """**Result: partially reproduced.** All 73 labels of the curated units are in the Allen ontology. The mapping changes five regions; with it, SCm (1,002 against 997), LS (851 against 844), OLF (707 against 684) and ORB (782 against 770) are within 10% of Extended Data Table 1, and SCs is 11.7% below (280 against 317).""")
-insert_before("# %% md\n# ### suppfig2-rate-amplitude", """**Result: reproduced.** 13,430 of the 22,263 neurons N (60.3%) are active during the task (paper 13,466, 60.0%). Under reading (a), 74.8% of them consistently increase and 20.9% consistently decrease (paper 74.3% and 20.2%); reading (b) gives 71.2% and 19.4%, also within tolerance. The active fraction ranges from 50.2% to 72.7% over subjects.""")
-s = s.rstrip() + "\n\n# %% md\n# **Result: partially reproduced.** Active neurons have higher baseline rates than the other neurons N: d' = 0.388 ± 0.012 under reading (a) and 0.314 ± 0.012 under reading (b), both within 0.35 ± 0.04. The amplitude d' is outside 0.10 ± 0.02 under every reading: 0.045 and 0.058 with the mean of `spike_amps`, 0.199 and 0.167 with the peak-to-trough of the mean waveform. With `spike_amps` the amplitude difference is smaller than the rate difference, as the paper states; with the mean waveforms it is about half the rate difference.\n"
-open(p,'w').write(s)
-EOF
-grep -c "Result:" $TMPDIR/nb1.py
+cd  python tools/entry.py check entries/steinmetz-2019 2>&1 | tail -5; ls tools | head -50; date -u
 ```
 
 ```
-12
-```
-
-**Agent calls Bash**
-
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb2.py'; s=open(p).read()
-def insert_before(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-insert_before("# %% md\n# ### fig2fg-miss-restricted", """**Result: reproduced.** With the half-maximum latency (L1), on contralateral trials VISp (0.078 to 0.082 s), the VIS group trace (0.082 to 0.092 s) and SCs (0.078 to 0.087 s) are all in the earliest quarter of regions, and on ipsilateral trials VISp (0.227 to 0.247 s) and SCs (0.222 to 0.232 s) are in the latest third, under every responsiveness reading and both session readings. With the time of the maximum (L2) the criterion fails: on contralateral trials the VIS group trace peaks late (0.317 to 0.322 s).""")
-s = s.rstrip() + """
-
-# %% md
-# **Result: reproduced.** Neurons without baseline spikes are not counted as activated (V2): the Methods equate z > 4 with a two-sided t-test at p < 1e-4, which a neuron firing one or two spikes over the trials cannot pass. Under V2 with Z1, all three conditions hold for both neuron sets and both session readings: on contralateral Misses 4.6 to 4.8% of visual pathway neurons are activated against 2.6 to 2.9% elsewhere (Figs. 3 to 5 set), other regions are activated 9.0 to 9.8% on contralateral Go trials against 2.6 to 2.9% on Misses, and 1.3% are activated on ipsilateral Misses against 3.6 to 3.8% on contralateral Misses. Z2 also meets them, with fractions near zero. When neurons without baseline spikes are counted as activated (V1, shown as a variant), 15 to 20% of neurons are activated in every condition and conditions (ii) and (iii) fail.
-"""
-open(p,'w').write(s)
-
-p='/tmp/claude-1001/nb3.py'; s=open(p).read()
-def ins(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-ins("# %% md\n# ### Pre-stimulus rates", """**Result: partially reproduced.** Under every reading where any neuron counts as activated (Z1; Z2 with V1), the pooled fraction is larger on Miss than on passive trials (V2, Z1: 4.2 to 4.4% against 2.9 to 3.1% for the Figs. 3 to 5 set, 2.8 to 2.9% against 2.2 to 2.3% for all neurons N) and the excess is positive in more than half the regions (26 to 32 of 42). The matched analysis keeps 36 sessions (M1) or 38 (M2), not 34, so the criterion's session count fails. Under Z2 with V2, almost no neuron is activated in either condition (0.0 to 0.1%).""")
-ins("# %% md\n# ### ed6b-prestimulus-order", """**Result: reproduced.** With the Methods' factors (a), all passive replay events (a), 23 regions differ (p < 0.0012): all 9 differing neocortical regions are lower in the task and all 11 differing non-neocortical regions other than visual thalamus are higher; LGd, LP and LD are lower. Reading (b) of the factors also meets the criterion with either passive reading (13 and 15 regions differ); factors (a) with visual presentations only has one exception (ILA, higher in the task). On matched Miss against passive trials VISp is lower (1.65 to 1.69 against 2.21 to 2.30 sp/s) and CP higher (3.10 to 3.13 against 2.79 sp/s) in both windows.""")
-ins("# %% md\n# ### fig5d-go-miss-matches-task-passive", """**Result: reproduced.** Under every reading, more than half of the midbrain, basal ganglia and hippocampal regions are ordered Passive < Miss < Go (10 or 11 of 15) and more than half of the neocortical regions have the highest rate on passive trials (12 or 13 of 14).""")
-ins("# %% md\n# ### ed7f-detect-probability-engagement", """**Result: reproduced.** Across the 42 regions, the task minus passive difference correlates with the Go minus Miss difference: r = 0.544 to 0.553, p = 1.5e-04 to 1.9e-04, for the Figs. 3 to 5 set under every reading (all neurons N: r = 0.445 to 0.488, p = 0.001 to 0.003).""")
-ins("# %% md\n# ### fig5f-engagement-index", """**Result: reproduced.** The area mean of the pre-stimulus detect probability (minus 0.5) correlates with the task minus passive difference: r = 0.499 (p = 7.8e-04) under window (a) and M1, and 0.464 to 0.516 (p = 4.7e-04 to 0.0019) for the Figs. 3 to 5 set under all four readings, all within 0.48 ± 0.048. It correlates more strongly with the Go minus Miss difference (r = 0.787 to 0.807).""")
-ins("# %% md\n# ### fig5e-engagement-predicts-go", """**Result: partially reproduced.** Go trials have a higher engagement index than Miss trials in every reading, and the paired t-test gives p < 1e-4 in 18 of the 32 readings (for example, the Methods' region set, M2 sessions, all task trials, all contrasts: Go-Miss 7.29, 35 of 38 sessions positive, p = 1.4e-08). The mean difference is outside 8.42 ± 0.84 in every reading: 4.49 to 15.23 sp/s, depending mostly on the task-trial and contrast readings. The index uses 330 to 344 neurons per session with the Methods' region sets (paper 319 ± 32.5), and the matched sessions number 32 to 38, not 34.""")
-ins("# %% md\n# ### ed9i-engagement-beyond-arousal", """**Result: reproduced.** The probability of a Go response rises with the z-scored engagement index under every reading: slopes 0.154 to 0.619 per s.d., every 95% interval above zero (the narrowest lower bound 0.096), and P(Go) rises from the lowest to the highest index quintile in every reading.""")
-ins("# %% md\n# ### ed9cf-engagement-controls", """**Result: reproduced.** Adding the engagement index to the GLM of inter-trial interval, previous reward, pupil area, motion energy and their squares improves the fit under every reading with one GLM over all sessions (deviance differences 68.8 to 100.5 on 1 d.f., p = 1.1e-16 to 1.2e-23). With one GLM per session and the deviances summed, p ranges from 3.3e-06 to 1.1e-19 over the sessions whose fits converge.""")
-ins("# %% md\n# ### ed9k-engagement-vector-specific", """**Result: reproduced.** Under every reading, Go trials have a higher index than Miss trials in all four sets with p < 0.05: after rewarded trials, with the previous-reward effect subtracted, and after short and after long inter-trial intervals (for example, trials T, contralateral contrasts, per-session split, paired test: 7.81, 7.08, 9.83 and 8.93 sp/s, p = 7.5e-05 to 2.6e-03).""")
-ins("# %% md\n# ### suppfig3-nonresponsive-neurons", """**Result: reproduced.** Under every reading, the engagement vector correlates more with the Go minus Miss vector (mean r 0.194 to 0.301 over recordings) than with the vectors of pupil area, motion energy, inter-trial interval and previous reward, and the differences for pupil, motion energy and inter-trial interval have p < 0.05 (largest p 0.014). The difference for previous reward is the smallest (0.050 to 0.066) with p = 0.014 to 0.084 (paper p = 0.096).""")
-s = s.rstrip() + """
-
-# %% md
-# **Result: reproduced.** In every reading the index differs between Go and Miss trials with p < 0.05 when computed from all neurons of the regions (p = 2.4e-05 to 1.4e-08 with all contrasts), from the task-responsive neurons, and from the other neurons (Go-Miss 2.21 to 4.63 sp/s, p = 8.0e-06 to 0.016, about 133 neurons per session).
-"""
-open(p,'w').write(s)
-EOF
-grep -c "Result:" $TMPDIR/nb2.py $TMPDIR/nb3.py
-```
-
-```
-/tmp/claude-1001/nb2.py:2
-/tmp/claude-1001/nb3.py:11
+0 error(s)
+__pycache__
+agent_run.py
+archive_transcripts.sh
+archives
+backfill_summaries.py
+blind.sh
+build_dryad_targets.py
+build_figshare_targets.py
+build_openneuro_targets.py
+build_reuse_targets.py
+build_site.py
+build_targets.py
+changed_entries.py
+claims_check.py
+colab.py
+conversion_issue.py
+datasets.py
+entry.py
+flagged.py
+[... 17 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb7.py'; s=open(p).read()
-def ins(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-ins("# %% md\n# ### fig4d-jpecc-no-lag-frontal-midbrain", """**Result: partially reproduced.** VIS leads Frontal before movement (3 to 5 of the 16 points from -0.2 to -0.05 s significant, 17 recordings) and near 0.1 s after stimulus onset (1 to 4 of 5 points), under every reading with at least one significant point (n1); more than half of the pre-movement points (n2) are significant in none. VIS does not lead Midbrain significantly near 0.1 s in any reading (0 of 5 points; mean indices up to 0.103 with 11 recordings), so the criterion is not met under any reading; the VIS-Frontal part of the claim holds.""")
-s = s.rstrip() + """
-
-# %% md
-# **Result: blocked (methods underspecified).** The paper's test, uncorrected t-tests at each of the 26 time points, finds no Frontal-Midbrain lead or lag under one reading (neurons (a), baseline (b): smallest p = 0.074) and 1 to 3 significant points under the other three (smallest p 0.019 to 0.039), with mean indices of -0.011 to 0.001 and no point significant after Bonferroni correction. The outcome depends on details the claims file leaves open (the neurons, the baseline window).
-"""
-open(p,'w').write(s)
-EOF
-grep -c "Result:" $TMPDIR/nb7.py
+cd  ls tests | head -30; grep -ln "questions" tests/*.py | head
 ```
 
 ```
-2
+test_agent_run.py
+test_build_site.py
+test_build_targets.py
+test_claims_check.py
+test_datasets.py
+test_encore.py
+test_entry_tool.py
+test_flagged.py
+test_notify.py
+test_paper_match.py
+test_progress.py
+test_readme_row.py
+test_run_requests.py
+test_runner.py
+test_transcript.py
+tests/test_agent_run.py
+tests/test_build_site.py
+tests/test_encore.py
+```
+
+**Agent calls Bash**
+
+```bash
+cd  timeout 600 python -m pytest -q tests/test_build_site.py -x 2>&1 | tail -3; python tools/entry.py handover entries/steinmetz-2019 2>&1 | tail -5; ls executed/steinmetz-2019/handover/
+```
+
+```
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python: No module named pytest
+wrote executed/steinmetz-2019/handover
+reproduce_steinmetz_2019.ipynb
+steinmetz-2019.yaml
+steinmetz.py
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json;nb=json.load(open('executed/steinmetz-2019/handover/reproduce_steinmetz_2019.ipynb'))
+md=[''.join(c['source']) for c in nb['cells'] if c['cell_type']=='markdown']
+print(len(nb['cells']), sum('**Result' in m for m in md), sum('## Summary' in m for m in md))"; timeout 900 python tools/build_site.py --output $TMPDIR/site 2>&1 | tail -3; git status --short | grep -v "^ M tools\|^?? tools"
+```
+
+```
+72 0 0
+wrote /tmp/claude-1001/site (256 attempts, 393 targets)
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+?? .mcp.json
+?? .profile
+?? .ripgreprc
+?? .vscode
+?? .zprofile
+?? .zshrc
+?? attempts/steinmetz-2019-01.yaml
+?? entries/steinmetz-2019/
+?? questions/steinmetz-2019.yaml
+?? scripts
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls -la .bash_profile .bashrc .gitconfig .mcp.json .profile .ripgreprc .zprofile .zshrc scripts .idea .vscode 2>&1 | head -20; ls entries/steinmetz-2019; date -u
+```
+
+```
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .bash_profile
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .bashrc
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .gitconfig
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .idea
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .mcp.json
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .profile
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .ripgreprc
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .vscode
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .zprofile
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 .zshrc
+crw-rw-rw- 1 nobody nogroup 1, 3 Nov 10 16:13 scripts
+README.md
+__pycache__
+entry.yaml
+reproduce_steinmetz_2019.ipynb
+requirements.in
+requirements.lock.txt
+steinmetz.py
+Tue Nov 10 17:52:02 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+cd  rm -rf entries/steinmetz-2019/__pycache__; sed -i 's/runtime_minutes: 16/runtime_minutes: 13/' entries/steinmetz-2019/entry.yaml; sed -i 's/It takes about 16 minutes/It takes about 13 minutes/' entries/steinmetz-2019/README.md; python tools/entry.py check entries/steinmetz-2019 2>&1 | tail -1
+```
+
+```
+0 error(s)
 ```
 
 **Agent**
 
-Now the part 2 conclusions (kernel regression, decoding, ccCP).
+I've finished steps 1 to 5 and built the handover (step 6). The notebook ran from a clean environment in 12.7 min with 2.08 GB peak memory and passes `tools/entry.py check`. I did not commit, and I did not verify my own work.
 
-**Agent calls Bash**
+**Dataset version.** I pinned 0.240329.1926, the only published version. The paper cites no DANDI version, and the draft has the same 39 files and size.
 
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb4.py'; s=open(p).read()
-def ins(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-ins("# %% md\n# ### fig3d-vision-localized", """**Result: reproduced.** The median full-model cross-validated VE over the 13,520 analysed neurons is 0.36% (quartiles 0.00 to 1.79%), below 10%; 76.7% of neurons explain less than 2%. The two example neurons cannot be identified from the paper; 2 of 253 VISpm neurons are within 10% of 50.2% and 7 of 507 SUB neurons within 10% of 13.6%.""")
-ins("# %% md\n# ### fig3e-action-global", """**Result: not reproduced.** 55.5% of the 830 neurons requiring the Contralateral Vision kernels lie in VIS areas, visual thalamus and SCs, and each of the ten "occasional" regions has some (GPe 3 to CP 77). But CP has the fifth highest fraction (14.2%, after VISp 31.3%, VISl 20.7%, VISpm 16.2% and VISam 15.5%; SCs 11.1% is sixth), and the visual thalamus fractions are low (LGd 1.2%, LP 6.5%, LD 7.6%), so the second condition fails and the criterion gives no partial outcome for the first alone.""")
-ins("# %% md\n# ### fig4b-choice-regions", """**Result: partially reproduced.** Action-requiring neurons are found in 41 of the 42 regions; VISrl has none (6 of its 101 analysed neurons entered the nested test). 90.6% of Action-requiring neurons (910 of 1,004) do not require the Choice kernel.""")
-ins("# %% md\n# ### ed4f-focality", """**Result: not reproduced.** 106 neurons (0.78% of analysed neurons) require the Choice kernel: 47 in the midbrain and 37 in the forebrain (paper 54 and 48, both outside tolerance). Each of MOs, PL, MOp, CP, SNr, SCm, MRN, ZI has some, and so do LD and PO (higher-order thalamus), but VISp has one (of 265 VISp neurons in the nested test; the 0.33% false-positive rate predicts 0.87).""")
-ins("# %% md\n# ### ed5h-choice-shuffle-fpr", """**Result: partially reproduced.** The focality index is 0.0669 for Contralateral Vision and 0.0384 for Action, within 10% of 0.069 and 0.040, and 0.0955 for Choice, outside 0.079 ± 0.0079. With neurons resampled within regions (B1), both Choice and Vision are significantly more focal than Action by either test (S1, S2); with sessions resampled (B2) neither difference is significant.""")
-ins("# %% md\n# ### fig4f-contralateral-preference and fig4fg-opposed-activity", """**Result: reproduced.** With the choice labels permuted, 9 of 3,106 neurons in the nested test pass the Choice test, 0.29% (paper 0.33% ± 0.17).""")
-s = s.rstrip() + """
+### 1. Outcomes (40 claims)
 
-# %% md
-# **Result (fig4f-contralateral-preference): partially reproduced.** All 47 midbrain choice-selective neurons prefer contralateral choices under both readings (paper 98%), and 12 of 37 forebrain neurons (32%) prefer ipsilateral choices (paper 40 ± 4%), more than in the midbrain (Fisher p = 1.6e-05, against the paper's p < 1e-5).
+| Claim | Outcome |
+|---|---|
+| fig1c-easy, fig1c-low-contrast, fig1c-competing | reproduced (easy: 1.71% incorrect and 10.12% Misses on engaged trials) |
+| fig1d-reaction-time-difficulty | reproduced (on the trials of definition T only) |
+| ed1q-wheel-choice-decoding | reproduced (48.9% before onset, 94.8% after) |
+| early-response-fraction | reproduced |
+| passive-no-movement | not reproduced (84.6% against 94.1 ± 0.6) |
+| recording-counts | reproduced (29,283 neurons; 9,538 trials, the paper's count exactly) |
+| edtable1-region-counts | not reproduced (26 of 42 regions match; 38 of 42 without the 13-neurons-per-session rule) |
+| supptable2-sessions | reproduced, resting on an assumption (region-label mapping) |
+| task-modulated-fraction | reproduced (13,439 neurons, 60.3% active; 75% increase, 21% decrease) |
+| suppfig2-rate-amplitude | partially reproduced |
+| fig2de-activity-order | reproduced |
+| fig2fg-miss-restricted | partially reproduced |
+| fig5b-miss-more-than-passive | partially reproduced (36 sessions kept, not 34) |
+| fig5c, ed6b, fig5d, ed7f (r = 0.515) | reproduced |
+| fig5f (7.85 a.u., p = 1e-5), fig5e, ed9i, ed9cf, ed9k, suppfig3 | reproduced |
+| ed7b-detect-probability-widespread | reproduced |
+| fig4d-jpecc-vis-leads | partially reproduced (VIS leads Frontal; it does not lead Midbrain) |
+| fig4d-jpecc-no-lag-frontal-midbrain | not reproduced (1 to 2 uncorrected significant points; none after Bonferroni) |
+| 11 kernel-regression claims (fig3c, fig3d, fig3e, ed4f, ed5h, fig4b, fig4c, fig4f, fig4fg, ed5g, ed7c) | blocked, `too_large`: timed at 7.0 h on one core, 1.8 h on 4 |
+| histology-alignment-error | blocked, `data_missing` |
 
-# %% md
-# **Result (fig4fg-opposed-activity): not reproduced.** Fewer midbrain choice-selective neurons are suppressed for the non-preferred choice than the paper reports: 8 of 47 (17%) under reading (a) and 12 of 47 (26%) under reading (b), against 54%; in the forebrain 3 of 37 (8%) and 2 of 37 (5%), against 21%. The difference between the groups has Fisher p = 0.33 and 0.018 (paper p < 1e-3).
-"""
-open(p,'w').write(s)
+### 2. Dataset, assumptions and questions
 
-p='/tmp/claude-1001/nb5.py'; s=open(p).read()
-def ins2(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-ins2("# %% md\n# ### ed5g-ipsilateral-vision-rare", """**Result: blocked (methods underspecified).** The area effect is absent (p > 0.05) under 5 of the 8 readings (p = 0.112 to 0.868) and present under 3 (10-fold with inner cross-validation, p = 0.003 and 0.001, and 10-fold with the default strength over -0.25 to 0 s, p = 0.017); the interaction has p = 1.000 under every reading, and time is significant under every reading (p < 1e-56). The populations number 25 frontal, 29 midbrain and 5 striatal (paper 29, 29, 5). The outcome depends on the folds and the L1 strength, which the claims file leaves open.""")
-s = s.rstrip() + """
+**Findings about the dataset:**
+- The `rate` attribute of the wheel, lick and face-motion series holds the sampling interval (0.0004 s), not a rate.
+- `peak_channel` is 1-based. This is undocumented, and each unit's region depends on it.
+- `wheel_moves` has half as many data values as timestamps (format error).
+- 2,262 units carry finer Allen labels (SCig, LSr, …) that have to be mapped to the paper's 42 regions.
+- Genotypes are named differently from the paper's Supplementary Table 1.
+- The dandiset does not say which 5 sessions had unusable pupil video.
+- There is no histology.
+- There are no duplicate recordings.
+- The clock check (decoding the stimulus from spikes before and after onset) could not be established for one session, Tatum_2017-12-09.
 
-# %% md
-# **Result: reproduced.** Under every reading the largest area mean for ipsilateral decoding is below a quarter of the largest for contralateral decoding (ratios 0.06 to 0.16; contralateral largest in VISl, 5.59 to 8.96; ipsilateral largest in SSp or CP, 0.53 to 1.11). 830 neurons require the Contralateral Vision kernels and 69 the Ipsilateral ones.
-"""
-open(p,'w').write(s)
+**Assumptions:**
+- Finer region labels are mapped to their parent region. Only supptable2's outcome rests on this.
+- A z-score with zero baseline variance is run both counted as significant and left out (fig2fg, fig5b).
 
-p='/tmp/claude-1001/nb6.py'; s=open(p).read()
-def ins3(anchor, text):
-    global s
-    assert anchor in s, anchor
-    s = s.replace(anchor, "# %% md\n" + "\n".join("# " + l if l else "#" for l in text.strip().split("\n")) + "\n\n" + anchor, 1)
-ins3("# %% md\n# ### ed7c-choice-probability-restricted", """**Result: reproduced.** Neurons with significant detect probability around movement onset are above chance in every region with window (a) (42 of 42 regions marked, both neuron readings) and in 40 to 41 of 42 with window (b).""")
-s = s.rstrip() + """
+**Questions for the paper's authors** (recorded as `methods_unavailable` findings):
+- How were neurons with no baseline spikes (infinite z) treated?
+- Which "fewer than 10 trials" count gives 34 sessions?
+- What counts as movement in the passive replay?
 
-# %% md
-# **Result: not reproduced.** Six sessions are excluded for fewer than 10 includable trials, as in the paper, and no VIS area or hippocampal region has choice probability above chance; basal ganglia (SNr) and, with window (a), midbrain regions (MRN, SCm) do. But no frontal region is marked under any reading (marked: MRN, SCm, SNr and VPL at most), so the criterion fails. The excluded sessions hold 6.2% of the MOs choice-selective neurons of the kernel analysis (paper 20.8%).
-"""
-open(p,'w').write(s)
-EOF
-grep -c "Result" $TMPDIR/nb4.py $TMPDIR/nb5.py $TMPDIR/nb6.py
-```
+**Questions to a reader** (in `questions/steinmetz-2019.yaml`):
+- Extended Data Table 1 seems to count every neuron of the 42 regions, not definition N. This would change edtable1 to reproduced.
+- The jPECC criterion does the PCA per time bin, as the code does, but the Methods do it across time points and trials. I ran both; the outcomes are the same.
 
-```
-/tmp/claude-1001/nb4.py:8
-/tmp/claude-1001/nb5.py:2
-/tmp/claude-1001/nb6.py:2
-```
+### 3. Protocol problems
+1. `tools/entry.py lock` writes a `python:` field into `entry.yaml` that the entry schema rejects. I deleted the line by hand after locking.
+2. For a claim of absence the protocol says to judge on the paper's test alone, but the jPECC baseline window is still open. I ran both baselines; both find a significant point, so I called it not reproduced.
+3. The protocol does not say whether an expected value outside tolerance overrides a criterion that does not mention it (fig5f: 36 sessions against 34). I followed the criterion and recorded the difference.
+4. Several criteria have no "partially reproduced" clause (fig2fg, suppfig2, fig4d-vis-leads). I used the protocol's own definition of partial.
+5. The rule that a claim depending on a blocked claim is blocked forces ed7c out entirely, although its choice-probability part could be run.
+6. A `too_large` block needs a timing from the notebook, so I put a timed fit of one neuron in the notebook. The estimate also relies on the claims file's figure of about 4,240 neurons entering the nested test.
+7. The claims file follows the code where the Methods differ (jPECC PCA), against the reader rule that the Methods come first. I asked a reader.
+8. The asymmetry-slice wording in the claims file is ambiguous. I took the Methods' diagonal slice and cited it.
 
-**Agent calls Bash**
+### 4. Runtime and failures
+- The run took about 1 h 40 min of the 5 h allowed, so no claim was blocked for time.
+- The notebook ran twice in full: 739 s, then 773 s for the final run.
+- Nothing failed apart from the lock/schema mismatch above.
 
-```bash
-python3 - <<'EOF'
-p='/tmp/claude-1001/nb4.py'; s=open(p).read()
-s=s.replace("**Result (fig4f-contralateral-preference): partially reproduced.**","**Result: partially reproduced (fig4f-contralateral-preference).**")
-s=s.replace("**Result (fig4fg-opposed-activity): not reproduced.**","**Result: not reproduced (fig4fg-opposed-activity).**")
-open(p,'w').write(s)
-EOF
-grep -n "Result" $TMPDIR/nb4.py | cut -c1-120
-```
+## End of run
 
-```
-69:# **Result: reproduced.** The median full-model cross-validated VE over the 13,520 analysed neurons is 0.36% (quartil
-93:# **Result: not reproduced.** 55.5% of the 830 neurons requiring the Contralateral Vision kernels lie in VIS areas, v
-111:# **Result: partially reproduced.** Action-requiring neurons are found in 41 of the 42 regions; VISrl has none (6 of
-139:# **Result: not reproduced.** 106 neurons (0.78% of analysed neurons) require the Choice kernel: 47 in the midbrain 
-202:# **Result: partially reproduced.** The focality index is 0.0669 for Contralateral Vision and 0.0384 for Action, wit
-236:# **Result: reproduced.** With the choice labels permuted, 9 of 3,106 neurons in the nested test pass the Choice tes
-293:# **Result: partially reproduced (fig4f-contralateral-preference).** All 47 midbrain choice-selective neurons prefer
-296:# **Result: not reproduced (fig4fg-opposed-activity).** Fewer midbrain choice-selective neurons are suppressed for t
-```
-
-**Agent**
-
-Now the part 2 header, loading and data check, and the summaries for both notebooks.
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/p2head.py <<'EOF'
-# %% md
-# # Steinmetz et al. (2019) on DANDI:000017, part 2: kernel regression, decoding and choice probability
-#
-# Paper: Steinmetz, Zatka-Haas, Carandini & Harris (2019), "Distributed coding of choice, action and engagement across the mouse brain", Nature 576, 266-273, [doi:10.1038/s41586-019-1787-x](https://doi.org/10.1038/s41586-019-1787-x).
-#
-# Dataset: [DANDI:000017](https://dandiarchive.org/dandiset/000017/0.240329.1926), version 0.240329.1926, the only published version (the paper cites its data on figshare, not a DANDI version, so the most recent published version is pinned; part 1 gives the details).
-#
-# Claims: `claims/000017/10.1038-s41586-019-1787-x.yaml`, written from the accepted author manuscript (Europe PMC, PMC6913580) and its supplement. Part 1 (`reproduce_steinmetz_2019_part1.ipynb`) holds the data checks, behaviour, counts, single-neuron tests, population averages, engagement and jPECC; this part holds the kernel regression (Figs. 3 and 4, Extended Data Figs. 4f and 5), population decoding on its residuals, and the combined-conditions choice probability (Extended Data Fig. 7b, c). It streams the data again and repeats the selections of part 1 through `steinmetz.prepare`, so both parts use the same trials T and neurons N. The Allen ontology of the paper's atlas tool (cortex-lab/allenCCF at commit e5a57fe) maps the files' subregion labels to the 42 regions, as in part 1.
-
-# %% code
-import time
-T_START = time.time()
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
-import numpy as np
-import pandas as pd
-from scipy import stats
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold
-import steinmetz as S
-
-pd.set_option("display.width", 200)
-pd.set_option("display.max_columns", 30)
-pd.set_option("display.max_rows", 200)
-
-claim_table = pd.DataFrame([
-    ("fig3c-variance-explained", "tested"), ("fig3d-vision-localized", "tested"), ("fig3e-action-global", "tested"),
-    ("fig4b-choice-regions", "tested"), ("ed4f-focality", "tested"), ("ed5h-choice-shuffle-fpr", "tested"),
-    ("fig4f-contralateral-preference", "tested"), ("fig4fg-opposed-activity", "tested"),
-    ("fig4c-choice-timing", "tested"), ("ed5g-ipsilateral-vision-rare", "tested"),
-    ("ed7b-detect-probability-widespread", "tested"), ("ed7c-choice-probability-restricted", "tested"),
-], columns=["claim", "status"])
-print(claim_table.to_string(index=False))
-
-# %% code
-meta = S.version_metadata()
-assets = S.list_assets()
-print(meta["name"], "| version", meta["version"], "| doi", meta.get("doi"), "| files", len(assets))
-
-# %% code
-# LOAD-SESSIONS
-t0 = time.time()
-sessions = S.load_all(assets["asset_id"].tolist(), workers=6)
-print(f"loaded {len(sessions)} sessions in {time.time() - t0:.0f} s")
-
-# %% md
-# ## Data check
-#
-# The checks of the metadata against the data are in part 1. Here: what was loaded, and the selections, which must equal those of part 1.
-
-# %% code [sanity]
-sess = pd.DataFrame([{"session": s["session"], "subject": s["subject"], "trials": len(s["trials"]),
-                      "good units": len(s["good"]), "passive visual": len(s["passive"])} for s in sessions])
-print("subjects", sess["subject"].nunique(), "| sessions", len(sess), "| trials", sess["trials"].sum(),
-      "| curated single units", sess["good units"].sum())
-t0 = time.time()
-prep = S.prepare(sessions)
-tts, nt, P, E = prep["tts"], prep["nt"], prep["P"], prep["E"]
-active, resp4, inN, inN35 = prep["active"], prep["resp4"], prep["inN"], prep["inN35"]
-print(f"selections in {time.time() - t0:.0f} s")
-print("trials T: L", sum(int(((t["cls"] == "L") & t["keep"]).sum()) for t in tts),
-      "R", sum(int(((t["cls"] == "R") & t["keep"]).sum()) for t in tts),
-      "N", sum(int(((t["cls"] == "N") & t["keep"]).sum()) for t in tts))
-print("neurons N", int(inN.sum()), "| active", int((inN & active).sum()), "| Figs. 3-5 set", int(inN35.sum()))
-print("Figs. 3-5 set by region:", nt[inN35].groupby("region").size().to_dict())
-print("rates of the Figs. 3-5 set, sp/s: median", round(nt["rate"][inN35].median(), 2), "range",
-      round(nt["rate"][inN35].min(), 2), "to", round(nt["rate"][inN35].max(), 1))
-EOF
-echo ok
-```
-
-```
-ok
-```
+109 turns, 89 minutes, $10.46 at API prices, result: success.
