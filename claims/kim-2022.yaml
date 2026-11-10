@@ -479,7 +479,7 @@ claims:
     polarization at 31% emission change (425 datapoints, correlation coefficient 0.93,
     p<0.0001). The best fit for the discharging portion of the curve yielded the same initial
     polarization (31.5% emission change) but, unexpectedly, a 2.5 times larger time constant of
-    520 ns
+    520 ns (425 datapoints, correlation coefficient 0.85, p<0.0001
   datasets:
   - "000448"
   statistics:
@@ -558,6 +558,25 @@ claims:
     the cell values at its minimum differing from zero by a two-sided one-sample Student's t-test
     at p < 0.05 (the Methods 2.5 test and threshold applied by this file, as the paper reports no
     test here).
+- id: fig7-bipolar-alternation
+  statement: In 833 kHz trains, bipolar pulses caused the membrane potential to alternate
+    repeatedly between positive and negative values.
+  source: Results 3.5, paragraph 3; Figure 7
+  quote: Bipolar pulses caused repetitive alternation between positive and negative membrane
+    potentials, which could facilitate pore closure beyond just returning the potential to the
+    base level.
+  datasets:
+  - "000448"
+  criterion: Cathodic pole traces of the 17 bipolar cells, processed as in
+    fig7-unipolar-pole-polarization, with the sign of depolarization fixed there. For each of the
+    five pulses, the value at the end of the first phase and the minimum during the second phase
+    are tested against zero by a two-sided one-sample Student's t-test across cells at p < 0.05
+    (the Methods 2.5 test and threshold applied by this file, as the paper reports no test here).
+    Reproduced when, for every pulse, the first phase value is of the depolarizing sign and the
+    second phase minimum of the opposite sign, both significant; partially reproduced when this
+    holds for some pulses.
+  depends_on:
+  - fig7-unipolar-pole-polarization
 - id: fig7-summation-without-buildup
   statement: With 600 ns unipolar pulses at 833 kHz, each pulse charged the membrane to the same
     peak, with no stepwise build-up; the pulses merged into a continuous sawtooth polarization.
@@ -591,3 +610,16 @@ claims:
     2.4; transitions at 25, 26, 30 and 44 degrees C). Reproduced when the photographs show no blue
     at 1 Hz, and at 833 kHz blue somewhere, no return to black (44 degrees C), and no more than the
     green to blue transition along bb'. Neither dataset's title names these photographs.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig7-charging-time-constant. The quote stopped at "520 ns" and left out the discharge fit's 425 datapoints, r = 0.85 and p < 0.0001, which the statement and statistics record. Extended the quote to include them (Results 3.5, paragraph 2).
+  - Added claim fig7-bipolar-alternation (Results 3.5, paragraph 3; Fig. 7). The paper states that bipolar trains made the membrane potential alternate between positive and negative values, a Fig. 7 finding the file had for the first pulse only (fig7-bipolar-overshoot). The test is the file's, as for the other Fig. 7 claims.
+  - Open. fig2b-exponential-same-slope compares slopes of per-dish exponential fits by t-test; the paper fits the means and gives no test for "did not change the apparent slope", so per-dish fitting is this file's choice.
+  - Open. fig2a-uptake-rises-with-field reads "proportionally" as rising with field (strongest against weakest ROI), since Fig. 2B shows the rise is exponential; the paper gives no test.
+  - Open. fig6be-bipolar-khz-less-than-1hz judges "less than at 1 Hz" at the strongest ROI only and does not judge "just marginally above the background level"; the paper gives no cutoff for either.
+  - Open. The ROI inclusion rule for microsecond pulses (fig4eg-us-bipolar-30-50pct, fig4h-us-stronger-at-low-field) and the decision rules of fig7-unipolar-pole-polarization ("mirroring") are this file's; each criterion says so.
+  - Open. Neither dataset title names the experiments of Figs. 3 to 6 or the thermometry photographs of Fig. 1E; those claims rest on 000489 holding them, for the author to find.
