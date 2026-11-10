@@ -1,0 +1,570 @@
+# Claims for Nishimoto & Gallant (2011), J Neurosci 31(41):14551-14564, tested on CRCNS mt-2.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (paper/10.1523-jneurosci.6801-10.2011.txt, PyMuPDF extraction
+# of the publisher PDF), main text, Materials and Methods and figure legends. The paper has no
+# supplement other than Movie 1 (stimulus spectra, not a result). Figure 2B, Figure 3, Figure 6
+# and Figure 7 were read from the PDF where the text extraction garbled symbols; the
+# inequality signs of every p-value were read there (p < 0.01, p > 0.10 and so on). The paper
+# links no code, so no repository was read. The dataset's own documentation
+# (paper/mt-2.data-description.txt) was read only to know what the dataset is meant to hold.
+#
+# Data the paper used (Materials and Methods, Physiology; Visual stimuli; Results, opening
+# paragraph). 52 single MT neurons from two adult male macaques (Macaca mulatta) performing a
+# fixation task. Each neuron saw 20,000 to 40,000 frames (mean 27,120) of motion-enhanced
+# natural movies at 83 Hz as training data (the Results say 22,000 to 42,000 frames), and a
+# separate 2000-frame motion-enhanced movie repeated 5 to 20 times as validation data. A subset
+# of 15 neurons also saw a 2000-frame natural movie without motion enhancement, repeated 5 to
+# 20 times, as a second validation set. Measured variable is the spike train, analysed at the
+# 83 Hz frame rate. The CRCNS description says mt-2 holds 45 neurons (not 52), each with the
+# movie frames around its receptive field (about two receptive field widths, 128 x 128
+# pixels), spike counts averaged and binned at 83 Hz (psths), and the frame indices of the
+# training (ranges.crange) and validation (ranges.vrange) stimuli. Whether the 15 natural-movie
+# validation sets, single repeats or trial boundaries are present is for the author to find.
+#
+# The model all the claims rest on (Materials and Methods, The V1 filter bank; Regression by
+# boosting; Tests for nonlinearities). The stimulus (a patch two classical receptive field
+# widths across) is filtered by a bank of 5956 spatiotemporal Gabor filters (Eq. 1) spanning
+# 12 directions, five spatial frequencies log spaced from 0 to 6 cycles per classical
+# receptive field (cRF), six velocities and temporal frequencies log spaced from 0 to 30 Hz;
+# filters tiled on a grid with 2.2 sigma between neighbours, one cycle of the carrier per two
+# sigma of the envelope; simple cell outputs (half-wave rectified, phases 0, 90, 180 and 270
+# degrees) limited to 2 cycles per cRF, and complex cell outputs (quadrature energy, Eq. 4).
+# Optional stages are luminance and contrast normalization of the movie (Eq. 10 to 12), a
+# static nonlinearity of half-wave rectification raised to the power alpha (1.0 linear, 0.5
+# compressive, 2.0 expansive; Eq. 13), and divisive normalization by the summed outputs of
+# all filters, each prenormalized to unit SD, plus a semisaturation constant sigma (Eq. 14).
+# The response is a linear sum of filter outputs over delays up to 10 frames (Eq. 5), fit by
+# coordinate gradient boosting (Eq. 6 to 9) with early stopping, five times with a different
+# 20% of the training data held out, the five weight sets averaged. Validation data are never
+# used in fitting. The validation response is the mean over repeats smoothed with a 12 ms
+# temporal Gaussian; prediction accuracy is the correlation between predicted and observed
+# validation responses. The first 220 ms of each trial's movie overlapped the previous trial
+# and the associated responses were removed before analysis (Visual stimuli, paragraph 3).
+#
+# Details the paper leaves open, for every claim that fits the model (each is a deviation,
+# with the readings named; the notebook runs each that could change an outcome).
+# - Temporal width of the Gabor envelopes, the exact six velocities and the filter count per
+#   scale are not given beyond the totals above; a bank matching the stated ranges and a
+#   total near 5956 is a standard choice.
+# - The cRF size, which sets the filter spatial frequencies. Readings are (a) half the stored
+#   stimulus patch, since the analysis window is two cRF widths and the dataset stores about
+#   two receptive field widths; (b) the full stored patch as the analysis window with no
+#   other rescaling. These are the same if the patch is exactly two cRF widths.
+# - The delays. "up to 10 frames or 130 ms" disagree at 83 Hz (10 frames are 120 ms). Readings
+#   are (a) delays 0 to 10 frames (11 delays, 132 ms); (b) delays 1 to 10 frames.
+# - The 12 ms Gaussian may be (a) its SD or (b) its full width at half maximum. At 12 ms
+#   frames the two differ little.
+# - The boosting step size epsilon and the semisaturation constant sigma are not given.
+#   Readings for sigma are (a) chosen on the held-out 20% of the training data, as the early
+#   stopping is; (b) a fixed small constant (1% of the mean pooled response). Step size is a
+#   standard small value (for example 1% of the SD of the response), which changes the
+#   number of iterations more than the result.
+# - How the 20% held-out parts are formed. Readings are (a) five contiguous blocks of the
+#   training frames; (b) five random partitions of frames.
+# - Whether the compressive power applies to complex cell outputs as well as simple cell
+#   outputs. Eq. 13 says "the output of the linearized Gabor filters", which reads as all V1
+#   filter outputs X; that reading is taken, with the power on simple cells only as a variant.
+# - The order of divisive normalization and the static nonlinearity is as in Figure 2A (static
+#   nonlinearity first, then divisive normalization).
+# - Where the validation responses of the natural-movie set exist, the paper averages the two
+#   predictions per neuron (Results, Control to identify any bias, paragraph 2). Where the
+#   dataset holds only one validation set, the prediction is that set's correlation, and this
+#   is recorded as a deviation.
+schema_version: 2
+paper: doi:10.1523/jneurosci.6801-10.2011
+claims:
+- id: fig3b-mean-prediction
+  statement: The compressive and divisive V1 filter model predicts the validation responses of
+    the 52 MT neurons with an average correlation of r = 0.52.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 3; Figure 3B
+  quote: Figure 3B summarizes prediction performance of the compressive/divisive V1 filter model
+    across the entire sample of 52 MT neurons
+  expected:
+  - quantity: mean correlation between predicted and observed validation responses
+    value: 0.52
+    tolerance: 0.052
+  criterion: The model of the opening comment with the compressive nonlinearity (alpha 0.5) and
+    divisive normalization, no luminance and contrast normalization, fit per neuron on the
+    training frames and tested on the validation frames (Materials and Methods, Regression by
+    boosting). Prediction accuracy per neuron is the Pearson correlation of predicted and
+    observed validation responses; the claim is judged on the mean over all neurons in the
+    dataset (45, not the paper's 52). Reproduced when the mean is within tolerance under one
+    of the readings named in the opening comment; the per-neuron distribution is shown against
+    Figure 3B (all neurons between 0.2 and 0.8).
+- id: fig3b-explainable-variance
+  statement: The compressive and divisive model accounts for 35% of the explainable response
+    variance of MT neurons.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 3; Figure 3 legend
+  quote: and the model accounts for 35% of the explainable response variance (David and Gallant,
+    2005)
+  depends_on:
+  - fig3b-mean-prediction
+  expected:
+  - quantity: proportion of explainable variance explained, population
+    value: 35
+    tolerance: 3.5
+    unit: percent
+  criterion: The paper names the measure (explainable variance, after David and Gallant, 2005)
+    and gives no formula. Readings are (a) the mean over neurons of r squared divided by the
+    squared noise ceiling correlation estimated from the validation repeats as in David and
+    Gallant (2005); (b) the mean r squared over neurons divided by the mean squared ceiling.
+    Reproduced when either is within tolerance. Needs the single validation repeats; if the
+    dataset holds only their average, the claim cannot be tested and is blocked as data
+    missing.
+- id: fig3a-example-neuron
+  statement: For one example neuron the correlation between model predictions and observed
+    responses is r = 0.72.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 3; Figure 3A
+  quote: The correlation between model predictions and observed responses for this neuron is
+    quite good
+  depends_on:
+  - fig3b-mean-prediction
+  expected:
+  - quantity: prediction correlation of the example neuron
+    value: 0.72
+    tolerance: 0.072
+  criterion: The paper does not name the neuron, only that its validation movie was repeated 10
+    times. Reproduced when at least one neuron of the dataset has a prediction correlation
+    within tolerance; the neurons that do, and those among them with 10 validation repeats if
+    that can be seen, are listed.
+- id: fig2b-contrast-normalization-no-effect
+  statement: Luminance and contrast normalization of the stimulus does not significantly change
+    prediction accuracy compared with the simplest model (linear half-wave rectification, no
+    normalization stages).
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 2; Figure 2B
+  quote: Contrast normalization does not have a significant effect on predictions compared with
+    the simplest model
+  statistics:
+  - test: Wilcoxon signed-rank test with Bonferroni correction
+    p: 0.1
+    p_relation: ">"
+    corrected: Bonferroni
+    n: 52 neurons
+  criterion: A claim of absence, judged on the paper's test. Per neuron, the prediction accuracy
+    of the model with luminance and contrast normalization (Eq. 10 to 12), linear static
+    nonlinearity and no divisive normalization, against the simplest model, by a Wilcoxon
+    signed-rank test across neurons with Bonferroni correction. The number of comparisons is
+    not stated; the Figure 2B legend marks the significance of each of the 11 other models
+    against the simplest, so the correction is over 11 comparisons. As a claim of absence it
+    is judged on that test alone; a correction over 5 (the comparisons the Results text
+    reports) is shown as a variant. Reproduced when the corrected p is not below 0.05 (the
+    lowest level marked in Figure 2B); the size of the change is given either way. The
+    measure compared ("predictive power") is the correlation of the first claim; the
+    readings of the percent change are those of fig2b-compressive-improves.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig2b-compressive-improves
+  statement: A compressive static output nonlinearity consistently increases predictions over
+    the simplest model, by about 16% without and about 19% with divisive normalization.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 2; Figure 2B
+  quote: The compressive static output nonlinearity consistently increases predictions
+  statistics:
+  - test: Wilcoxon signed-rank test with Bonferroni correction
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 52 neurons
+  expected:
+  - quantity: increase of predictive power, compressive, no divisive normalization, no luminance
+      normalization, read from Figure 2B
+    value: 16
+    tolerance: 4
+    unit: percent
+  - quantity: increase of predictive power, compressive, with divisive normalization, no
+      luminance normalization, read from Figure 2B
+    value: 19
+    tolerance: 4
+    unit: percent
+  criterion: The values are read from the bars of Figure 2B (no number is printed), so the
+    tolerance is 4 percentage points, the reading precision (about 1 point) plus about twice
+    the bootstrap SE shown (about 2 points). The paper does not define "increase of
+    predictive power". Readings are (a) the percent change of the mean correlation over
+    neurons relative to the simplest model; (b) the same with mean squared correlation;
+    (c) the mean over neurons of each neuron's percent change in correlation. Significance by
+    a Wilcoxon signed-rank test across neurons against the simplest model, Bonferroni
+    corrected as in fig2b-contrast-normalization-no-effect. Reproduced when, under one reading,
+    both values are within tolerance and both comparisons give corrected p < 0.01; partially
+    reproduced when both are significant increases but a value falls outside tolerance.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig2b-expansive-decreases
+  statement: An expansive static output nonlinearity always decreases predictions relative to
+    the simplest model, by about 36% without and about 24% with divisive normalization.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 2; Figure 2B
+  quote: while the expansive nonlinearity always decreases predictions
+  statistics:
+  - test: Wilcoxon signed-rank test with Bonferroni correction
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 52 neurons
+  expected:
+  - quantity: change of predictive power, expansive, no divisive normalization, no luminance
+      normalization, read from Figure 2B
+    value: -36
+    tolerance: 4
+    unit: percent
+  - quantity: change of predictive power, expansive, with divisive normalization, no luminance
+      normalization, read from Figure 2B
+    value: -24
+    tolerance: 4
+    unit: percent
+  criterion: As in fig2b-compressive-improves (measure readings, test and the 4 point tolerance
+    for values read from the figure), with alpha 2.0. Reproduced when, under one reading, both
+    values are within tolerance and both decreases have corrected p < 0.01; partially
+    reproduced when both are significant decreases but a value falls outside tolerance.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig2b-divisive-improves
+  statement: Divisive normalization significantly improves predictions over the simplest
+    model, by about 8% with the linear static nonlinearity.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 2; Figure 2B
+  quote: Divisive normalization also improves predictions significantly
+  statistics:
+  - test: Wilcoxon signed-rank test with Bonferroni correction
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 52 neurons
+  expected:
+  - quantity: increase of predictive power, linear static nonlinearity with divisive
+      normalization, no luminance normalization, read from Figure 2B
+    value: 8
+    tolerance: 4
+    unit: percent
+  criterion: As in fig2b-compressive-improves, for the model with linear static nonlinearity and
+    divisive normalization (Eq. 14) against the simplest model. Reproduced when, under one
+    reading, the value is within tolerance and the corrected p < 0.01; partially reproduced
+    when the increase is significant but outside tolerance.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig2b-compressive-divisive-best
+  statement: The model with both a compressive nonlinearity and divisive normalization predicts
+    significantly better than the model with the compressive nonlinearity alone, and is the
+    simplest model that gives accurate predictions.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 2; Figure 2B
+  quote: The model that contains both a compressive nonlinearity and divisive normalization has
+    significantly more predictive power than a model that contains only a compressive
+    nonlinearity
+  statistics:
+  - test: Wilcoxon signed-rank test with Bonferroni correction
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni
+    n: 52 neurons
+  criterion: Per neuron, prediction accuracy of the compressive model with divisive
+    normalization against the compressive model without it (both without luminance
+    normalization), Wilcoxon signed-rank test across neurons, Bonferroni corrected as in
+    fig2b-contrast-normalization-no-effect (readings of 11 or 5 comparisons; this comparison
+    is not one of the 11 against the simplest, so 12 is a third reading). Reproduced when the
+    corrected p < 0.01 with the divisive model better and no model of the 12 has a
+    significantly higher accuracy than it (Wilcoxon signed-rank, same correction). The paper
+    reports no test for "simplest model that gives accurate predictions"; this second
+    condition is this file's reading of it, in line with Figure 2B, where this model has the
+    highest bar. Partially reproduced when the comparison is significant at p <
+    0.05 only.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig2b-no-interaction
+  statement: The effects of the compressive and expansive nonlinearities do not depend on
+    whether divisive normalization is present.
+  source: Results, Linear and nonlinear mechanisms that predict natural visual responses in area
+    MT, paragraph 2; Figure 2B
+  quote: Note, however, that the effects of the compressive and expansive nonlinearities do not
+    depend on whether divisive normalization is present or not
+  criterion: The paper reports no test for this. Read from Figure 2B as the same direction and
+    significance of each effect in both panels. Readings of the effect are (a) against the
+    simplest model, as the figure plots; (b) against the linear model of the same divisive
+    normalization condition. Reproduced when, under one reading, the compressive model is
+    better and the expansive model worse, each at corrected p < 0.01 (Wilcoxon signed-rank,
+    Bonferroni as in fig2b-contrast-normalization-no-effect), both with and without divisive
+    normalization.
+  depends_on:
+  - fig2b-compressive-improves
+  - fig2b-expansive-decreases
+- id: complex-cells-dominate
+  statement: Most of the response variance is captured by the model complex cells, and the
+    model simple cells have only a small effect on prediction performance.
+  source: Materials and Methods, The V1 filter bank, paragraph 3 (data not shown)
+  quote: most of the response variance is captured by the model complex cells, and the model
+    simple cells have only small effect on prediction performance (data not shown)
+  criterion: The paper shows no data and names no test. Within the compressive and divisive
+    model, fit (a) the complex cell channels only and (b) the simple cell channels only, with
+    the same procedure. Reproduced when the complex-only model reaches at least half of the
+    full model's mean squared prediction correlation and drops the mean correlation less than
+    the simple-only model does. The threshold of one half is this file's reading of "most of
+    the response variance"; the per-neuron values are shown.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig6a-null-on-plane
+  statement: For 150 model MT neurons with random weights, the average excitatory on-plane ratio
+    is 0.36.
+  source: Results, Excitatory spectral receptive fields lie on a plane, paragraph 2; Figure 6A
+    (dashed line); Materials and Methods, Null hypotheses test for on-plane ratio
+  quote: The average on-plane ratio for this null model is 0.36
+  expected:
+  - quantity: mean excitatory on-plane ratio, null model neurons
+    value: 0.36
+    tolerance: 0.036
+  criterion: As the Methods say, 150 model neurons with weights drawn from a normal
+    distribution (mean 0, SD 1) on the compressive and divisive filter outputs, used to filter
+    the experiment's movies, Poisson noise added, receptive fields refit by the same procedure,
+    and the on-plane ratio computed as in fig6a-excitatory-on-plane. Open details, with
+    readings. Which movies, (a) each model neuron assigned the training and validation movies
+    of one recorded neuron in turn, (b) all model neurons on one neuron's movies. How rates
+    are made non-negative and scaled for the Poisson noise, (a) rectified and scaled to the
+    mean spike count of the recorded neuron whose movie is used, (b) offset to non-negative
+    and scaled to the same mean. Whether random weights span all delays, (a) all 5956 filters
+    at every delay, (b) a single delay. Reproduced when the mean is within tolerance under
+    one combination of readings; every combination run is shown.
+  depends_on:
+  - fig6a-excitatory-on-plane
+- id: fig6a-excitatory-on-plane
+  statement: Excitatory spectral receptive fields of MT neurons tend to lie on a single plane in
+    the three-dimensional frequency domain; their average on-plane ratio is 0.59, significantly
+    above the null model's 0.36.
+  source: Results, Excitatory spectral receptive fields lie on a plane, paragraphs 1 and 2;
+    Figure 6A
+  quote: Figure 6A summarizes the onplane ratio for the excitatory receptive fields of all 52 area
+    MT neurons in our sample. The average ratio is 0.59
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.01
+    p_relation: "<"
+    n: 52 neurons against 150 null model neurons
+  expected:
+  - quantity: mean excitatory on-plane ratio
+    value: 0.59
+    tolerance: 0.059
+  criterion: From the compressive and divisive model fit of each neuron. The optimal velocity
+    plane passes through the origin and is set by azimuth (direction) and elevation (speed);
+    it maximizes the summed positive V1 filter weights whose temporal frequency lies within
+    1 octave or 5 Hz of the plane, whichever is larger (maximum coverage), together with the
+    symmetry constraint, the negative of the difference of the weights summed on the two sides
+    of the plane's azimuth (Materials and Methods, Optimal velocity plane). The on-plane ratio
+    is the positive weights near the plane over the total positive weights (Figure 6 legend).
+    Open details, with readings. The balance of the two constraints was set by hand; readings
+    are (a) coverage only, with symmetry breaking ties; (b) coverage and symmetry each scaled
+    by the total positive weight and summed with equal weight. The symmetry term is read as
+    the negative of the absolute difference of the two sides (a signed difference would
+    favour one side of every plane); the paper says only "subtracting these quantities and
+    taking the negative". What is summed, (a) the fitted
+    weights, as the Methods and Figure 6 legend say; (b) the weights times each filter's
+    spectral amplitude, as "proportion of the spectral receptive field" in the Results
+    suggests. Sign split, (a) per weight at each delay; (b) after summing each filter's
+    weights over delays. Reproduced when, under one combination, the mean is within tolerance
+    and a Wilcoxon rank-sum test against the null model ratios gives p < 0.01 with the real
+    ratios higher.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig6b-suppressive-off-plane
+  statement: Suppressive spectral receptive fields tend to avoid the optimal excitatory plane;
+    their average on-plane ratio is 0.18, significantly below the null model.
+  source: Results, Suppressive spectral receptive fields lie off the optimal excitatory plane;
+    Figure 6B
+  quote: The average ratio is 0.18, which is significantly smaller than the value for the null
+    model described above
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.01
+    p_relation: "<"
+    n: 52 neurons against 150 null model neurons
+  expected:
+  - quantity: mean suppressive on-plane ratio
+    value: 0.18
+    tolerance: 0.018
+  criterion: The on-plane ratio of fig6a-excitatory-on-plane computed on the negative weights,
+    with the plane found from the excitatory weights (Figure 6 legend), under the same
+    readings. The null comparison is the null model of fig6a-null-on-plane. The text does
+    not say whether the null values here are the excitatory or the suppressive ratios of the
+    model neurons, but the dashed line of Figure 6B (the null, by analogy with Figure 6A) lies
+    at about 0.27, not at the excitatory null mean of 0.36, so the comparison is with the
+    suppressive ratios of the null model neurons (with the plane from their excitatory
+    weights). The test against the null excitatory ratios is shown as a variant. Reproduced
+    when the mean is within tolerance and the rank-sum test against the null suppressive
+    ratios gives p < 0.01 with the real ratios lower.
+  depends_on:
+  - fig6a-excitatory-on-plane
+  - fig6a-null-on-plane
+- id: fig7a-partial-ring
+  statement: The horizontal-vertical ratio is distributed continuously; few neurons form a full
+    ring (ratio near 1) or a single spatiotemporal frequency peak (ratio near 0), and most form
+    a partial ring in the optimal plane that avoids low temporal frequencies.
+  source: Results, Excitatory spectral receptive fields of most MT neurons form a partial ring
+    in the plane, paragraphs 1 and 2; Figure 7A; Figures 4 and 5
+  quote: However, the receptive fields of the large majority of MT neurons lie between these
+    extremes, forming a partial ring in the optimal velocity plane and avoiding the region near
+    zero temporal frequency
+  criterion: The optimal plane of fig6a-excitatory-on-plane is divided into four quadrants, two
+    centred on the vertical axis (along the optimal direction) and two on the horizontal axis
+    (in the zero temporal frequency plane); the excitatory spectral amplitudes are integrated
+    in the horizontal and in the vertical quadrants and the ratio horizontal over vertical is
+    taken (Results, same section, paragraph 1). Open details, with readings. Quadrant borders
+    at 45 degrees from each axis (the only symmetric choice, taken as standard). Amplitudes
+    on the plane are those within the near-plane band of fig6a-excitatory-on-plane (a), or
+    all excitatory amplitude projected onto the plane (b). "Extremes" are not bounded. The ring end
+    has no upper bound, as ratios in Figure 7A run to about 1.7, and the ring neuron of Figure 4A
+    sits at about 1.35. Readings are (a) ratios below 0.2 and at or above 0.8, or (b) below
+    0.1 and at or above 0.9. Reproduced when, under one combination, more than half of the
+    neurons fall between the extremes and fewer than a quarter fall in each extreme (this
+    file's reading of "only a small fraction", Figure 7 legend).
+  depends_on:
+  - fig6a-excitatory-on-plane
+- id: fig7a-no-corr-prediction-hv
+  statement: Prediction performance is not significantly correlated with the
+    horizontal-vertical ratio.
+  source: Results, Excitatory spectral receptive fields of most MT neurons form a partial ring
+    in the plane, paragraph 2
+  quote: Note that there was no significant correlation between prediction performance and the
+    horizontal–vertical ratio
+  statistics:
+  - p: 0.1
+    p_relation: ">"
+    n: 52 neurons
+  criterion: A claim of absence. The paper names no test here; the test it names for the
+    correlation of Figure 7C, the t test for a Pearson correlation coefficient, is used,
+    between each neuron's prediction correlation (fig3b-mean-prediction) and its
+    horizontal-vertical ratio (fig7a-partial-ring). Reproduced when p > 0.10, the bound the
+    paper reports; not reproduced when p < 0.05; between the two is reported as partially
+    reproduced. The coefficient is given either way.
+  depends_on:
+  - fig3b-mean-prediction
+  - fig7a-partial-ring
+- id: fig7b-pattern-index
+  statement: Simulated plaid responses give pattern indices that form a continuum, mostly from
+    -6 to 2, with highly pattern-selective neurons rare (the Discussion says none were extremely
+    pattern selective).
+  source: Results, The horizontal-vertical ratio is correlated with simulated pattern
+    selectivity, paragraphs 2 and 3; Figure 7B; Discussion, paragraph 4
+  quote: The pattern index for most neurons ranges from ... 6 to 2, and highly pattern-selective
+    neurons are relatively rare
+  criterion: Each neuron's fitted compressive and divisive model is driven with drifting
+    gratings and plaids, and the pattern index of Smith et al. (2005) is computed (the
+    Fisher-transformed partial correlation with the pattern prediction minus that with the
+    component prediction). The paper gives no stimulus parameters. Open details, with readings.
+    Grating and plaid spatial and temporal frequency, (a) at each neuron's peak excitatory
+    spectral response, (b) one frequency pair for all neurons near the population peak.
+    Plaid component separation, (a) 120 degrees as in Smith et al. (2005) and Rust et al.
+    (2006), (b) 90 degrees. Directions in 12 steps of 30 degrees, matching the filter bank, as
+    a standard choice. Reproduced when, under one combination, more than half of the neurons
+    have indices from -6.6 to 2.2 (the range widened by 10%) and fewer than 10% exceed 2.2
+    (rare is not quantified; 10% is this file's reading, and the count above 1.28, the
+    pattern-cell bound of Smith et al., 2005, is reported as well).
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig7c-hv-pattern-correlation
+  statement: The horizontal-vertical ratio is significantly correlated with the simulated
+    pattern index (r = 0.46).
+  source: Results, The horizontal-vertical ratio is correlated with simulated pattern
+    selectivity, paragraph 3; Figure 7C
+  quote: The correlation between the two indices is significant
+  statistics:
+  - test: t test for correlation coefficients
+    statistic: r = 0.46
+    p: 0.01
+    p_relation: "<"
+    n: 52 neurons
+  expected:
+  - quantity: Pearson correlation between horizontal-vertical ratio and pattern index
+    value: 0.46
+    tolerance: 0.046
+  criterion: Pearson correlation across neurons between the ratio of fig7a-partial-ring and the
+    index of fig7b-pattern-index, tested by the t test for a correlation coefficient.
+    Reproduced when, under one combination of the readings of those claims, r is within
+    tolerance and p < 0.01; partially reproduced when r is positive and p < 0.01 but outside
+    tolerance.
+  depends_on:
+  - fig7a-partial-ring
+  - fig7b-pattern-index
+- id: fig7c-no-corr-prediction-pattern
+  statement: Prediction performance is not significantly correlated with the pattern index.
+  source: Results, The horizontal-vertical ratio is correlated with simulated pattern
+    selectivity, paragraph 3
+  quote: There was no significant correlation between prediction performance and the pattern
+    index
+  statistics:
+  - p: 0.1
+    p_relation: ">"
+    n: 52 neurons
+  criterion: A claim of absence, judged as in fig7a-no-corr-prediction-hv (t test for a Pearson
+    correlation), between prediction correlation and pattern index.
+  depends_on:
+  - fig3b-mean-prediction
+  - fig7b-pattern-index
+- id: natural-movie-control
+  statement: Models fit on motion-enhanced movies predict responses to natural movies without
+    motion enhancement as well as responses to new motion-enhanced movies (mean r = 0.533
+    against 0.537, 15 neurons).
+  source: Results, Control to identify any bias arising from the use of motion-enhanced natural
+    movies, paragraph 2
+  quote: Receptive field models of area MT neurons estimated using motion-enhanced natural movies
+    predicted responses to novel simple natural movies just as well as they predicted responses
+    to novel motion-enhanced natural movies
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.1
+    p_relation: ">"
+    n: 15 neurons
+  expected:
+  - quantity: mean prediction correlation, natural movies
+    value: 0.533
+    tolerance: 0.053
+  - quantity: mean prediction correlation, motion-enhanced movies
+    value: 0.537
+    tolerance: 0.054
+  criterion: A claim of absence, judged on the paper's test. For the neurons with both
+    validation sets, the compressive and divisive model fit on the motion-enhanced training
+    data predicts each set; per-neuron correlations compared by a Wilcoxon signed-rank test.
+    Reproduced when p is not below 0.05 and both means are within tolerance; partially
+    reproduced when the test finds no difference but a mean is outside tolerance. Needs the
+    natural-movie validation responses of the 15 neurons; if the dataset lacks them, the
+    claim is blocked as data missing.
+  depends_on:
+  - fig3b-mean-prediction
+- id: fig8-recovery-simulated
+  statement: The estimation procedure correctly recovers the spectral receptive fields of three
+    simulated MT neurons, one narrowband, one non-planar with four directions at one frequency,
+    and one with random directions and frequencies that does not avoid low temporal
+    frequencies.
+  source: Results, Control to ensure that the model estimation procedure can recover spectral
+    receptive fields of any shape, paragraph 2; Figure 8
+  quote: These results demonstrate that the receptive field estimation procedure used in this
+    study can characterize arbitrary spectral receptive fields, regardless of their
+    organization within the three-dimensional frequency domain
+  criterion: Three simulated neurons built from the compressive and divisive filter outputs
+    with excitatory weights only (Figure 8 legend), as (A) filters in a narrow band of spatial
+    and temporal frequency, (B) four directions at one spatial and temporal frequency, (C) many
+    filters at random direction and frequency. Their responses to the experiment's movies are
+    refit by the same procedure and spectral receptive fields compared. The paper judges this
+    by eye and gives no noise level, filter counts or measure. Readings for noise are (a)
+    Poisson noise as in the null model of fig6a-null-on-plane, (b) none. Reproduced when, for
+    each simulated neuron, its recovered spectral receptive field correlates better with its
+    own true spectral receptive field than with those of the other two (a measure this file
+    fixes, as the paper names none); the correlations are reported.
+  depends_on:
+  - fig3b-mean-prediction
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3b-mean-prediction, the range shown against Figure 3B set to 0.2 to 0.8, the span of the histogram bars in Figure 3B (was 0.2 to 0.9).
+  - fig2b-contrast-normalization-no-effect, Bonferroni over 11 comparisons fixed as the test, since the Figure 2B legend marks each of the 11 models against the simplest and a claim of absence is judged on one test; 5 kept as a variant.
+  - fig2b-compressive-divisive-best, the condition that no model is significantly better marked as this file's reading of "simplest model that gives accurate predictions", with its test named; the paper reports no such test.
+  - fig6a-excitatory-on-plane, the sign of the symmetry term named as open, with the absolute-difference reading taken; the Methods say only "subtracting these quantities and taking the negative".
+  - fig6b-suppressive-off-plane, the null comparison set to the null model's suppressive ratios, since the dashed null line of Figure 6B lies at about 0.27, not at the excitatory null mean 0.36; the excitatory null kept as a variant.
+  - fig7a-partial-ring, the ring extreme made open-ended (at or above 0.8 or 0.9), since Figure 7A ratios run to about 1.7 and the Figure 4A ring neuron sits near 1.35, so the old 0.8 to 1.2 band left neurons unclassed; the one-quarter bound marked as this file's reading of "only a small fraction".
+  - Open, fig7b-pattern-index, the quote's minus sign before 6 is garbled in the text extraction and stands as "..."; the PDF reads -6.
+  - Open, the Figure 2B values (16, 19, -36, -24, 8 percent) are read from bars; reading them again from the PDF gave the same values.
+  - Open, mt-2 holds 45 of the paper's 52 neurons, and may lack the single validation repeats (fig3b-explainable-variance) and the 15 natural-movie validation sets (natural-movie-control); the author is to find out.
