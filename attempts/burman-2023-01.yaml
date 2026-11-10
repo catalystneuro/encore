@@ -1,0 +1,404 @@
+schema_version: 3
+id: burman-2023-01
+datasets:
+- archive: dandi
+  id: "000458"
+  version: 0.230317.0039
+  doi: 10.48324/dandi.000458/0.230317.0039
+  relation: reuses
+paper: doi:10.1016/j.neuron.2023.08.005
+date: '2026-11-10'
+entry: burman-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42760152737
+inputs:
+- what: 'The paper''s Neuropixels analysis code, burman_et_al_2023_neuropixel_data_analysis.py: the list
+    of 17 sessions and the method details the claims file takes from it (stop_time, the area and waveform
+    selection, the evoked rate of reading F2, entropy and synchrony). No data.'
+  source: https://gist.github.com/paulbrodersen/a77bcf5e06ae27fa96923cb313a02ccf at revision 43a13d89441b7f56e835e84fa5811d9567917daf
+- what: The paper's network simulation, burman_et_al_2023_neuronal_network_simulation.py, transcribed
+    in network.py and run 20 times to generate the data of the four model claims (data elsewhere).
+  source: https://gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661c10051560aa381e334099efd8521617b
+outcomes:
+- claim: dataset-sessions-link
+  outcome: reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:dataset-sessions-link
+  notes: All 17 files the gist lists are in version 0.230317.0039, each with spike_times, location and
+    waveform_duration in its units table, stimulus_type, behavioral_epoch, is_valid, estim_target_region
+    and stop_time in its trials table, and awake and isoflurane electrical trials. They hold 16 subjects
+    (sub-569073 twice, one MOs and one SSp session). Unit ids equal row numbers in every file, so the
+    gist's keying of units by row and lookup by id select the same units. The version holds seven more
+    files, six with EEG only and sub-599017 with units and SSp stimulation, which the gist does not read.
+- claim: fig4c-sample
+  outcome: partially_reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4c-sample
+  measured:
+  - 721
+  - 144
+  - 17
+  - 16
+  - 37
+  - 7
+  - 95
+  notes: Under A1F1, 865 regular spiking units of the stimulated areas are selected (the paper's 662 +
+    203), 721 kept and 144 excluded (143 below 0.1 Hz, 1 above 200 Hz), from 17 recordings in 16 mice,
+    a median of 37 per recording (7 to 95). Kept is within 662 +- 66.2 and excluded is outside 203 +-
+    20.3, so by the criterion the claim is partially reproduced (the total is the paper's). Under the
+    gist's rate (A1F2 and A2F2) every number is the paper's exactly, 662 kept, 203 excluded (143 below
+    0.1 Hz, 61 above 200 Hz), median 34, range 1 to 93. The gist's rate is the summed spike latency over
+    trials times 10 ms, a median 4.50 times the count rate, so its 200 Hz bound drops units whose spike-count
+    rate exceeds about 45 Hz (kept units reach 54.2 Hz).
+  deviations:
+  - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
+    under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
+    holds fully only under that variant.
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: fig4d-synchrony-lower-awake
+  outcome: partially_reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4d-synchrony-lower-awake
+  measured:
+  - 0.3188
+  - 0.3862
+  notes: Under A1F1 (721 units) synchrony is 0.3188 +- 0.0046 awake against 0.3862 +- 0.0067 under isoflurane,
+    paired t = -12.49, p = 1.45e-32. Direction and test hold; the awake mean is just below 0.325 +- 0.005
+    and the isoflurane mean is inside its tolerance. Awake is lower in 489 of 721 units and in 15 of 17
+    recordings. Under the gist's rate (A1F2, A2F2, 662 units) the means are 0.3253 and 0.3928, the paper's
+    (p = 3.12e-29). With the population restricted to kept units, A1F1 gives 0.3225 against 0.3876 and
+    A1F2 gives 0.3686 against 0.4333, further from the paper, which supports the gist's population of
+    all selected units (N6). Timed from start_time, 0.3073 against 0.3720.
+  deviations:
+  - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
+    under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
+    holds fully only under that variant.
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: fig4d-entropy-higher-awake
+  outcome: partially_reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4d-entropy-higher-awake
+  measured:
+  - 1.3887
+  - 1.1502
+  notes: Under A1F1 entropy is 1.3887 +- 0.0182 awake against 1.1502 +- 0.0205 nats under isoflurane over
+    656 units with a value in both conditions (65 left out with fewer than two spikes in a condition),
+    paired t = 12.02, p = 3.28e-30. Direction and test hold; both means are outside tolerance. Awake is
+    higher in 15 of 17 recordings. Under the gist's rate (A1F2, A2F2) the means are 1.3474 and 1.1106
+    over 597 units, the paper's values; taking each condition's mean over its own defined units gives
+    1.324 and 1.104 there, so the paper's means are over units defined in both conditions, though it gives
+    n = 662.
+  deviations:
+  - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
+    under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
+    holds fully only under that variant.
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: fig4-rate-higher-awake
+  outcome: reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4-rate-higher-awake
+  notes: Under A1F1 the evoked spike-count rate is 14.00 +- 0.66 Hz awake against 7.59 +- 0.47 Hz under
+    isoflurane over 721 units, paired t = 12.36 (p printed as 0, far below 0.05); higher awake in 539
+    of 721 units and 15 of 17 recordings. Every reading gives the same direction (gist rate 45.05 against
+    24.29). The paper reports no value or test for this in the text read; the test is the claims file's.
+  deviations:
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: figs6-rate-regressed
+  outcome: reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:figs6-rate-regressed
+  notes: Under A1F1, with the evoked rate regressed out, the awake difference keeps its sign with p below
+    1e-10 in all six tests. Synchrony R1 -0.0593 (p = 3.3e-26), R2 -0.0619 (p = 1.5e-13), R3 -0.0625 (p
+    = 2.8e-24); entropy R1 0.171 (p = 7.1e-17), R2 0.179 (p = 4.2e-11), R3 0.210 (p = 1.1e-20). Every
+    other reading gives the same. By recording (R2), the coefficient has the expected sign in 15 of 17
+    for each measure. The regression of Figure S6 is in a legend not read; as all three readings the criterion
+    names agree, the outcome does not depend on which it is.
+  deviations:
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is shown as a variant and keeps the direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+  - The regression method is open (Figure S6 legend not in the text read); the three readings of the criterion
+    were all run and agree.
+- claim: fig4f-model-hyperpolarizing-less-activity
+  outcome: reproduced
+  notebook: network_model.ipynb
+  output: claim:fig4f-model-hyperpolarizing-less-activity
+  notes: Over the 16,000 excitatory neurons of 20 runs, the peri-stimulus rate is 8.785 +- 0.020 Hz with
+    hyperpolarizing E_GABA against 19.468 +- 0.026 Hz with shunting E_GABA, paired t = 446.42 (p underflows
+    to 0); lower in all 20 runs. No neuron is without a spike. The spike-time parts of the statement are
+    judged in fig4h-model-synchrony and fig4h-model-entropy, where the direction holds.
+  deviations: &id001
+  - Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the
+    paper's model; this cannot change the model, only the sample.
+  - The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit
+    in memory; a small run with both gives identical spike trains (data check).
+- claim: fig4h-model-synchrony
+  outcome: partially_reproduced
+  notebook: network_model.ipynb
+  output: claim:fig4h-model-synchrony
+  measured:
+  - 0.7833
+  - 0.8789
+  notes: Synchrony 0.7833 +- 0.0005 shunting against 0.8789 +- 0.0006 hyperpolarizing over 16,000 neurons,
+    paired t = -134.60 (p underflows to 0, below 0.001), lower with shunting in all 20 runs. The shunting
+    mean is within 0.784 +- 0.001; the hyperpolarizing mean is 0.0011 below 0.880, so the criterion gives
+    partially reproduced. Per-run hyperpolarizing means span 0.8661 to 0.8909, so the tolerance (the paper's
+    SEM over pooled neurons) is narrower than the spread between seeds, and the paper's seeds are not
+    known.
+  deviations: *id001
+- claim: fig4h-model-entropy
+  outcome: partially_reproduced
+  notebook: network_model.ipynb
+  output: claim:fig4h-model-entropy
+  measured:
+  - 0.4516
+  - 0.2014
+  notes: Entropy 0.4516 +- 0.0020 shunting against 0.2014 +- 0.0019 nats hyperpolarizing over 16,000 neurons,
+    paired t = 93.09 (p underflows to 0, below 0.001), higher with shunting in all 20 runs. The shunting
+    mean is within 0.451 +- 0.002; the hyperpolarizing mean is 0.0024 above 0.199, so the criterion gives
+    partially reproduced. Per-run hyperpolarizing means span 0.1798 to 0.2217, wider than the tolerance.
+  deviations: *id001
+- claim: figs7-model-decoding
+  outcome: reproduced
+  notebook: network_model.ipynb
+  output: claim:figs7-model-decoding
+  notes: Mean decoding accuracy 0.9848 shunting against 0.9315 hyperpolarizing (chance 0.01). D1, paired
+    t test of the 20 per-run accuracies, t = 16.92, p = 6.52e-13; D2, shunting higher in 20 of 20 runs.
+  deviations:
+  - Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the
+    paper's model; this cannot change the model, only the sample.
+  - The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit
+    in memory; a small run with both gives identical spike trains (data check).
+  - The cross-validation shuffle is seeded with the run's seed (the gist sets none), a standard choice
+    that cannot change the outcome.
+- claim: figs4-intrinsic-properties
+  outcome: blocked
+  blocked_by: other
+  notes: 'The claim rests on the paper''s NEURON model of an L2/3 pyramidal neuron and a Matlab analysis
+    of its simulated ramps (github.com/richardjburman/burman-et-al-2022---Awake-EGABAAR at commit a404c3e:
+    hoc files and NEURON_Egaba_Analysis.m). The measure and test of Figure S4 are in the supplement, which
+    was not supplied with the text, and the claims file gives no criterion for them, so there is nothing
+    fixed to judge; the analysis code is Matlab, which cannot be run in a locked Python environment here
+    (a transcription was not attempted). Neither part uses the dandiset.'
+- claim: fig1b-perforation-rs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig1h-vu-egaba
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig1i-vu-rmp
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig1j-vu-df
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: figs2-ramp-equals-step
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: figs3-egaba-unrelated-amplitude-rs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: rm-awake-lower
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2c-vm-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2d-subthreshold-fluctuation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2f-response-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2h-egaba-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2i-rmp-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2j-df-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2j-awake-df-zero
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2k-conductance-same
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: figs5-within-anesthetized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: rm-nbqx-higher
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3c-nbqx-vm
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3d-nbqx-fluctuation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3e-nbqx-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3g-nbqx-egaba
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3h-nbqx-rmp
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3i-nbqx-df
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3j-nbqx-conductance-same
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+findings:
+- kind: code_mismatch
+  statement: The paper's analysis code computes the evoked firing rate used for the exclusion (below 0.1
+    Hz or above 200 Hz) as the sum of the spikes' latencies in ms (np.sum of spike_times) over trials
+    times 10 ms, where the Methods describe an average evoked firing rate. With this rate the dataset
+    gives the paper's sample exactly (662 kept, 203 excluded, median 34 per recording, 1 to 93) and its
+    Figure 4D means (synchrony 0.325 and 0.393, entropy 1.347 and 1.111); with the spike-count rate it
+    gives 721 kept and 144 excluded. The 200 Hz bound thus acted on spike-count rates near 45 Hz.
+- kind: selection_undocumented
+  statement: Version 0.230317.0039 holds 18 files with units and electrical stimulation awake and under
+    isoflurane; the paper uses 17. sub-599017_ses-20220210 (943 units, SSp stimulation, 718 awake and
+    720 isoflurane valid trials) is not in the paper's code list, and the paper does not say why. Six
+    further files hold EEG only, with no units.
+- kind: data_missing
+  statement: The paper's gramicidin perforated patch recordings (Figures 1 to 3, S1 to S5), which carry
+    most of its findings, are not in DANDI:000458 nor in any other dandiset found; the paper offers them
+    on request. 24 of its claims cannot be tested.
+- kind: code_mismatch
+  statement: The Methods select regular spiking units with a waveform duration of 0.4 ms or more, the
+    code more than 0.4 ms, and the Methods name the areas SSp-ll, SSp-tr and MOs where the code takes
+    every unit whose location begins with the stimulated region. Neither difference changes the units
+    selected in this dataset.
