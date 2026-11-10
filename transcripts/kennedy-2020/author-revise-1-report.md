@@ -1,0 +1,13 @@
+No outcomes changed. The verifier agreed with all 39: `imaging-cell-counts` is partially reproduced and the other 38 are blocked. Every point in its report was marked as not affecting a conclusion. I fixed each one and added the outputs it asked for. The entry re-runs cleanly with `tools/entry.py all` (checks pass, notebook runs in 43 s), the cell counts came out the same (203, 183 and 176 cells per day, 187.33 ± 8.09), and nothing is committed.
+
+**What I added or corrected, by report point:**
+1. **Header table:** `imaging-cell-counts` now shows its outcome, partially reproduced.
+2. **Which mouse was imaged at 20 Hz:** a new section compares how successive frames relate in each file, plus a slow timescale. M5 stands apart on all three days: its frames are correlated with their neighbours, unlike the other four mice. So M5 is most likely the 20 Hz mouse, converted to 11 Hz before deposit. The method isn't identified: two standard resampling methods, simulated on noise, don't give M5's values. Its timescale and step spacing show no sign that its stated 11 Hz is wrong, but the spread between mice is too wide to rule that out. I added this to the sampling-rate finding.
+3. **Segments against the protocol:** a new cell counts the roughly 100 s segments in each file. Outside the baseline periods, a day has room for 16.0 to 18.6 segments against 10 stimulus presentations. So the segments don't line up one-to-one with presentations, and the blocked claims stay blocked. I added this to the existing finding about these steps in the traces.
+4. **Text values in the files:** a new cell prints every text field in every file, including `identifier`, `general/keywords` and `general/experimenter`. None holds a stimulus order or a note.
+5. **Helper functions:** a new cell runs them on synthetic data with known answers, and each gives the expected result. The verifier had no environment to do this. The new helpers are in `vmhdm.py`, with their parameters documented.
+6. **Claims file reading:** the verifier found no misreading, so `questions/kennedy-2020.yaml` is unchanged. The 158-cell upper bound stays as context only, as the verifier noted.
+
+**Record:** round 1 is written under `verifications` in `attempts/kennedy-2020-01.yaml`. Each of the 39 claims has the verifier's agreement, its outcome and its reason in its own words, plus my response. The notebook summary and findings match the new numbers.
+
+**Not done:** none of the new checks can supply stimulus times, labels or cross-day cell matching, so the blocked claims had nothing new to test. The git status shows some untracked dotfiles plus `.idea`, `.vscode` and `scripts` in the repo root. They are environment files, not from this run, and I left them alone.

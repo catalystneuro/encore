@@ -11,6 +11,13 @@ Parameters and where they come from:
 - STEP_Z = 15 and the robust SD of the frame-to-frame differences in `step_counts`: a standard
   choice for a descriptive check that marks discontinuities (steps far above a cell's own
   frame-to-frame noise); it decides no outcome.
+- STEP_ROBUST_Z = 10 in `step_times`: a transition is marked when its mean step lies more than
+  10 robust SDs (1.4826 MAD of the file's mean-step series) above the series' median; a standard
+  outlier rule for a descriptive check of where shared steps fall. It decides no outcome.
+- The frame-to-frame measures in `frame_noise_structure` (autocorrelation of first differences at
+  lags 1 to 3, and the share of their power above a quarter of the stated rate) are standard
+  descriptions of how frames relate; for independent noise in each frame the lag-1 value is -0.5.
+  They are used to look for the mouse the Methods say was imaged at 20 Hz; they decide no outcome.
 - The cells-per-day measure in `cells_per_day` counts the columns of each file's trace matrix,
   which the file describes as CNMF-E output (Methods, "Microendoscopic imaging data acquisition
   and processing": traces "extracted ... using CNMF-E" and "manually screened"). The two ways of
@@ -30,6 +37,7 @@ DANDISET_VERSION = "0.240827.1656"
 API = "https://api.dandiarchive.org/api"
 
 STEP_Z = 15.0
+STEP_ROBUST_Z = 10.0
 
 
 def list_assets(version=DANDISET_VERSION):
@@ -80,6 +88,20 @@ def _walk(f):
     return rows
 
 
+def _strings(f):
+    """The value of every small string dataset in the file (outside the specifications)."""
+    out = {}
+
+    def visit(name, obj):
+        if name.startswith("specifications") or not isinstance(obj, h5py.Dataset):
+            return
+        if obj.dtype.kind in ("O", "S", "U") and obj.size < 50:
+            out[name] = _str(obj[()])
+
+    f.visititems(visit)
+    return out
+
+
 def load_file(asset):
     """Stream one file and return its traces, annotation and metadata."""
     f = h5py.File(remfile.File(_s3_url(asset["asset_id"])), "r")
@@ -106,6 +128,7 @@ def load_file(asset):
         "processing": {k: list(f["processing"][k].keys()) for k in f["processing"]},
         "has_imaging_planes": "general/optophysiology" in f,
         "contents": _walk(f),
+        "strings": _strings(f),
     }
     for key, p in [("subject_id", "general/subject/subject_id"), ("age", "general/subject/age"),
                    ("sex", "general/subject/sex"), ("species", "general/subject/species"),
@@ -139,6 +162,31 @@ def mean_step(X):
     D = np.diff(X, axis=0)
     sd = 1.4826 * np.median(np.abs(D - np.median(D, axis=0)), axis=0) + 1e-12
     return (np.abs(D) / sd).mean(axis=1)
+
+
+def step_times(X, rate, z=STEP_ROBUST_Z):
+    """Frames (index of the later frame) of the transitions whose mean step is more than z robust
+    SDs above the median of the file's mean-step series, merging transitions within 1 s."""
+    ms = mean_step(X)
+    med = np.median(ms)
+    sd = 1.4826 * np.median(np.abs(ms - med))
+    merged = []
+    for i in np.flatnonzero((ms - med) / sd > z):
+        if not merged or i - merged[-1] > rate:
+            merged.append(i)
+    return np.array(merged, dtype=int) + 1
+
+
+def frame_noise_structure(X, rate):
+    """Median over cells of the autocorrelation of the first differences at lags 1 to 3, and of
+    the share of their power above rate / 4 (half the Nyquist frequency)."""
+    D = np.diff(X, axis=0)
+    D = D - D.mean(axis=0)
+    ac = [np.median((D[:-k] * D[k:]).sum(0) / (D * D).sum(0)) for k in (1, 2, 3)]
+    P = np.abs(np.fft.rfft(D, axis=0)) ** 2
+    f = np.fft.rfftfreq(len(D), 1 / rate)
+    hi = np.median(P[f > rate / 4].sum(0) / P.sum(0))
+    return {"diff_ac1": ac[0], "diff_ac2": ac[1], "diff_ac3": ac[2], "high_band_share": hi}
 
 
 def max_cross_file_correlation(Xa, Xb, n_frames=None):
