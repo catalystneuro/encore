@@ -155,6 +155,12 @@ author can find them in the dataset.
      ones the claim rests on. With one dataset, leave it out; every claim
      rests on it. A claim on data in none of them is `data: elsewhere`, or
      rests on a dataset listed as not available.
+   - A paper that reuses its datasets (`relation: reuses` in
+     `papers/datasets/<paper>.yaml`) is read like any other: its claims are
+     its own findings, from its analysis of those data. Its findings on
+     recordings of its own, or on other data, are `data: elsewhere` when they
+     are public and blocked as `data_missing` when not; the claims the
+     reused dataset can test are the ones the attempt is about.
 
 ### 4. Data from outside the paper's own recordings
 
@@ -426,7 +432,8 @@ python tools/entry.py lock entries/<name>
 python tools/entry.py all  entries/<name>    # check, then run from a clean environment
 ```
 
-Commit notebooks without outputs. Read the executed copy in
+`lock` pins every package, with its hashes, for the entry's Python version, and records that version as
+`python` in entry.yaml (the registry's current one for a new entry). Commit notebooks without outputs. Read the executed copy in
 `executed/<name>/` and confirm the conclusions still match the numbers: counts
 near a threshold can move when a random split changes.
 
