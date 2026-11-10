@@ -1,0 +1,867 @@
+schema_version: 3
+id: jones-2019-01
+datasets:
+- archive: crcns
+  id: hc-26
+  version: unversioned
+  doi: 10.6080/K0D798NB
+  relation: primary
+paper: doi:10.1016/j.celrep.2019.10.056
+date: '2026-11-09'
+entry: jones-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42720732785
+inputs:
+- what: The ripple filter kernels of the paper's code, Preprocessing/agripplefilter.mat (150-250 Hz, 199
+    taps) and agripplefilter3.mat (125-250 Hz, 396 taps), a method detail named in the claims file (method
+    A).
+  source: https://github.com/emilyasterjones/Jones_2019 at commit ca056a835631a8fea44a30cbf9845b53457dcbd1
+outcomes:
+- claim: fig1e-swr-abundance-genotype
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig1e-swr-abundance-genotype
+  notes: Reproduced. E4 mice had lower SWR abundance than E3 mice, 0.113 against 0.245 Hz, t(27) = 8.21,
+    p = 8.2e-09 (paper t(27) = 8.42, p < 0.0001). The 3 SD and 125-250 Hz variants agree in direction
+    and significance.
+- claim: fig1f-sg-power-genotype
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig1f-sg-power-genotype
+  notes: "Reproduced. SG power during SWRs was lower in E4 mice in all three regions under every reading:\
+    \ CA1-sr t(27) = 6.48, CA3 t(27) = 4.82, DG U = 40 (p = 0.0054) under the Methods reading. The data's\
+    \ site labels give CA3 sites in all 29 mice, where the paper has 11 E3 and 13 E4 (t(22)), so the CA3\
+    \ test has 5 more mice than the paper's."
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - DG sites are the chinfo dg sites with layer gc or hil; the Methods' check for dentate spikes was not
+    run. Restricting DG to the sites labelled 'val' (perhaps validated) gives the same screen-cohort genotype
+    test (U = 40, p = 0.0054).
+- claim: figs1a-mua-during-swrs
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs1a-mua-during-swrs
+  notes: Reproduced. MUA rose from before to during SWRs in both genotypes (E3 paired t(12) = 5.30, E4
+    t(15) = 3.91, whole 400 ms baseline; the same with the -400 to -300 ms bin), and the genotypes did
+    not differ before (p = 0.72) or during SWRs (p = 0.49).
+- claim: fig1g-mwm-impaired
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig1g-mwm-impaired
+  notes: Reproduced. The aligned rank transform ANOVA gives a genotype effect F(1,37) = 13.08, p = 0.0009,
+    as printed, with E4 slower; Sidak-adjusted Mann-Whitney tests are significant on days 1, 3 and 5 (adjusted
+    p 0.022, 0.039, 0.030) and not on days 2 and 4.
+- claim: screen-88-comparisons
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:screen-88-comparisons
+  measured: 5
+  notes: Not reproduced. 5 of the 88 correlations have p < 0.05 (the same 5 under the pooled SG reading),
+    against 9 in the paper; the one-sided binomial p is 0.45, not below 0.05.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - DG sites are the chinfo dg sites with layer gc or hil; the Methods' check for dentate spikes was not
+    run. Restricting DG to the sites labelled 'val' (perhaps validated) gives the same screen-cohort genotype
+    test (U = 40, p = 0.0054).
+- claim: fig2b-swr-slope-days-1-2
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2b-swr-slope-days-1-2
+  measured: -0.471
+  notes: Not reproduced. R = -0.471 has the paper's sign but p = 0.066 (n = 16; paper R = -0.56, p = 0.024).
+    The 3 SD variant gives R = -0.332.
+- claim: figs1b-swr-slope-days-1-3
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs1b-swr-slope-days-1-3
+  measured: -0.572
+  notes: "Partially reproduced. R = -0.572, p = 0.021 (n = 16): sign and significance hold, but R is outside\
+    \ the tolerance of -0.66 +- 0.066."
+- claim: fig2c-swr-latency-day-3
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2c-swr-latency-day-3
+  measured: -0.434
+  notes: Not reproduced. R = -0.434, p = 0.093 (n = 16; paper R = -0.50, p = 0.046).
+- claim: fig2d-swr-overnight
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2d-swr-overnight
+  measured: -0.524
+  notes: "Partially reproduced. R = -0.524, p = 0.037 (n = 16): sign and significance hold, R is outside\
+    \ -0.64 +- 0.064. The 3 SD variant gives R = -0.267, p = 0.32."
+- claim: fig2e-learning-score
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2e-learning-score
+  measured:
+  - 0.375
+  - 0.612
+  notes: Partially reproduced. The learning score correlates with z-scored SWR abundance, R = +0.612,
+    p = 0.012 (n = 16), but R squared is 0.375 (0.377 with the all-mice z-score), outside 0.51 +- 0.051.
+  deviations:
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+- claim: screen-features-independent
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:screen-features-independent
+  notes: "Not reproduced. SWR abundance and CA3 SG power are correlated in the 16 E4 mice, R = -0.533,\
+    \ p = 0.034 (pooled: R = -0.543, p = 0.030); the learning and memory precision scores are not (R =\
+    \ -0.144, p = 0.60). The paper's test was on 13 mice with CA3 sites, which the data's labels do not\
+    \ identify."
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: fig2f-ca3-probe1-quadrant
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2f-ca3-probe1-quadrant
+  measured: 0.487
+  notes: Not reproduced. R = +0.487, p = 0.056 (per session) and +0.474, p = 0.063 (pooled), n = 16 (paper
+    R = 0.77, n = 13). The data's CA3 labels include 3 E4 mice the paper excluded.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: figs1d-ca3-probe2-quadrant
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs1d-ca3-probe2-quadrant
+  measured: 0.356
+  notes: Not reproduced. R = +0.356, p = 0.18 (n = 16; paper R = 0.57, p = 0.041).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: fig2g-ca3-probe1-crossings
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2g-ca3-probe1-crossings
+  measured: 0.641
+  notes: "Partially reproduced. R = +0.641, p = 0.0075 (n = 16) per session, +0.625 pooled: sign and significance\
+    \ hold, R is outside 0.78 +- 0.078."
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: fig2h-ca3-probe1-auc
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2h-ca3-probe1-auc
+  measured: -0.46
+  notes: Not reproduced. R = -0.460, p = 0.073 (n = 16; paper R = -0.61, p = 0.027).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: figs1f-ca3-probe2-auc
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs1f-ca3-probe2-auc
+  measured: -0.27
+  notes: Not reproduced. R = -0.270, p = 0.31 (n = 16; paper R = -0.59).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: fig2i-memory-precision-score
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2i-memory-precision-score
+  measured:
+  - 0.641
+  - 0.411
+  notes: Partially reproduced. The memory precision score correlates with CA3 SG power, R = +0.641, p
+    = 0.0074 (n = 16; R squared 0.41), positive and significant under all four readings, but R is outside
+    0.844 +- 0.084 under each (largest 0.660).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+- claim: rep-mwm-swr-slope-days-1-2
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-swr-slope-days-1-2
+  measured: -0.021
+  notes: Not reproduced. In the 11 replication E4 mice, R = -0.021, p = 0.95 (paper R = -0.675).
+- claim: rep-mwm-swr-latency-day-3
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-swr-latency-day-3
+  measured: -0.113
+  notes: Not reproduced. R = -0.113, p = 0.74 (n = 11; paper R = -0.614).
+- claim: rep-mwm-swr-overnight
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-swr-overnight
+  measured: -0.087
+  notes: Not reproduced. R = -0.087, p = 0.80 (n = 11; expected R = -0.652).
+- claim: rep-mwm-swr-slope-days-1-3
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-swr-slope-days-1-3
+  measured: -0.25
+  notes: Not reproduced. R = -0.250, p = 0.46 (n = 11; expected R = -0.773).
+- claim: fig2n-rep-learning-score
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2n-rep-learning-score
+  measured: 0.017
+  notes: Not reproduced. The predicted learning score explains 1.7% of the variance of the actual score
+    in the 11 replication E4 mice (R = +0.131, p = 0.70), against 56%.
+  deviations:
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+- claim: rep-mwm-ca3-probe1-quadrant
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-ca3-probe1-quadrant
+  measured: 0.034
+  notes: Not reproduced. R = +0.034, p = 0.94, in the 8 E4 mice whose deposited site labels include CA3
+    at 13-17 months (paper n = 10, R = 0.896).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: rep-mwm-ca3-probe1-crossings
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-ca3-probe1-crossings
+  measured: 0.199
+  notes: Not reproduced. R = +0.199, p = 0.64 (n = 8; paper R = 0.792).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: rep-mwm-ca3-probe1-auc
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-ca3-probe1-auc
+  measured: 0.415
+  notes: Not reproduced. R = +0.415, p = 0.31 (n = 8), the opposite sign to the paper's -0.698.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: rep-mwm-ca3-probe2
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-mwm-ca3-probe2
+  measured:
+  - 0.36
+  - -0.285
+  notes: Not reproduced. Percent time in quadrant on probe 2 R = +0.360, p = 0.38; area under the curve
+    R = -0.285, p = 0.49 (n = 8).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: fig2r-rep-memory-score
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig2r-rep-memory-score
+  measured: 0.02
+  notes: Not reproduced. The predicted memory precision score explains 2.0 to 3.2% of the variance across
+    readings (R = +0.142, p = 0.74 per session; n = 8), against 79%.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+- claim: rep-all-replicated
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:rep-all-replicated
+  notes: Not reproduced. None of the 9 replication relationships has the paper's sign with p < 0.05.
+- claim: cohort-swr-differences
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:cohort-swr-differences
+  measured:
+  - 0.113
+  - 0.197
+  - 16.18
+  - 11.43
+  notes: Reproduced, under reading (b) for the baseline. SWR abundance is 0.113 Hz in screen E4 mice against
+    0.197 Hz in replication E4 mice, t(29) = -4.52, p = 9.7e-05 (the paper's t(29) = 4.75). The baseline
+    of all mice is 16.18 against 11.43 int16 units, t(51) = 5.39, p = 1.8e-06, within tolerance of 16.2
+    and 11.5; the E4-only readings give 16.17 against 9.57 (t(29)) and 16.17 against 9.77 (t(25), reading
+    (c)), outside tolerance for the second value. The units are taken as microvolts, as the paper prints
+    them (as mV), which the data cannot confirm.
+- claim: robust-single-point
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:robust-single-point
+  notes: "Not reproduced. Of the 7 correlations that reproduced here at least in part, 2 lose significance\
+    \ when one mouse is removed: figs1b (1 removal) and fig2d (5 removals). The other 5 stay below 0.05\
+    \ for every removal."
+- claim: robust-detection-parameters
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:robust-detection-parameters
+  notes: Not reproduced. Of the 26 of 36 correlations run, 8 have the expected sign with p < 0.05; the
+    10 not run (CA3 SG power of SWRs detected at 125-250 Hz) could not lift the count to the 32 needed.
+  deviations:
+  - The CA3 SG power of SWRs detected with the 125-250 Hz filter was not computed (the reduction keeps
+    SG power for the 150-250 Hz SWRs only), so 26 of the 36 correlations were run. The 125-250 Hz SWRs
+    use the 150-250 Hz noise channels of the other sites.
+- claim: age-no-correlation
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:age-no-correlation
+  notes: Reproduced. Age does not correlate with SWR abundance, CA3 SG power or the nine MWM score metrics
+    in the E4 mice of either cohort (0 of 11 with p < 0.05 in each).
+- claim: figs2-nonspatial-no-difference
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs2-nonspatial-no-difference
+  notes: Reproduced. None of the 10 tests has p < 0.05 (smallest p = 0.118, visible-platform latency).
+    The hot plate has 12 E3 and 10 E4 mice in the data set, against 12 and 13 in the legend.
+  deviations:
+  - Hot plate has 12 E3 and 10 E4 mice in the data set (legend 12 and 13); the open field percent time
+    in centre is the sheet's CenT/TotT, a ratio of beam-break counts, as the file holds no time.
+- claim: nonspatial-not-correlated
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:nonspatial-not-correlated
+  notes: Not reproduced on the claim's test. 2 of 60 correlations have p < 0.05 (closed-arm distance against
+    SWR abundance, R = -0.60, p = 0.050 with n = 11; hot plate latency against CA3 SG power, R = -0.91,
+    n = 5), fewer than the 3 expected by chance.
+  deviations:
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+  - Distance per bout is the walk-bout column of pull_apa_metrics.py, the one whose day 1 genotype test
+    gives the printed Figure S3C statistic (U = 30); the all-bouts column (U = 45) is shown for fig3h-ca3-distance-per-bout
+    and figs3-apa-day1-and-probe.
+- claim: ca1-dg-not-predictive
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:ca1-dg-not-predictive
+  notes: Not reproduced on the claim's test. 1 of the 44 correlations has p < 0.05 (DG SG power against
+    day 1 latency, R = -0.508, p = 0.045), where the claim requires none. No CA1-sr correlation is significant.
+  deviations:
+  - DG sites are the chinfo dg sites with layer gc or hil; the Methods' check for dentate spikes was not
+    run. Restricting DG to the sites labelled 'val' (perhaps validated) gives the same screen-cohort genotype
+    test (U = 40, p = 0.0054).
+- claim: e3-relationships
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:e3-relationships
+  measured:
+  - -0.548
+  - 0.407
+  notes: Not reproduced. In screen E3 mice, day 2 latency against SWR abundance gives R = -0.548, p =
+    0.053 (n = 13); in the 6 replication E3 mice linked to behavior, R = +0.407, p = 0.42. The day 3 correlation
+    is absent (R = -0.015, p = 0.96), and E3 and E4 abundance overlap (E3 minimum 0.194, E4 maximum 0.210
+    Hz).
+  deviations:
+  - Only 6 of the 9 replication E3 mice recorded at 13-17 months are linked to the 14-18 month MWM through
+    the manifest.
+- claim: fig3b-apa-entrances-day1
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3b-apa-entrances-day1
+  notes: Reproduced. E4 mice entered the shock zone more on day 1, 14.5 against 8.2, t(23) = 3.43, Sidak-adjusted
+    p = 0.0091, as printed.
+- claim: figs3-apa-day1-and-probe
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs3-apa-day1-and-probe
+  notes: Partially reproduced. Path length (t(23) = -4.64), percent time opposite (t(23) = -2.27) and
+    probe pseudoshocks per entrance (t(18) = 2.76) reproduce the printed statistics with the stated directions.
+    Distance per bout reproduces the printed U = 30 (p = 0.0098, walk bouts), but E4 mice moved less far
+    per bout than E3 mice (median 1.37 against 3.80 cm), against the Results text.
+  deviations:
+  - Distance per bout is the walk-bout column of pull_apa_metrics.py, the one whose day 1 genotype test
+    gives the printed Figure S3C statistic (U = 30); the all-bouts column (U = 45) is shown for fig3h-ca3-distance-per-bout
+    and figs3-apa-day1-and-probe.
+  - Pseudoshocks per entrance are the sheet's 'Probe - Shocks per Entrance' column; mice without a probe
+    entrance are left out (n = 20).
+- claim: apa-40-comparisons
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:apa-40-comparisons
+  measured: 2
+  notes: Not reproduced. 2 of the 40 correlations have p < 0.05 (one on day 1, one on day 2), binomial
+    p = 0.60, against 8.
+  deviations:
+  - Distance per bout is the walk-bout column of pull_apa_metrics.py, the one whose day 1 genotype test
+    gives the printed Figure S3C statistic (U = 30); the all-bouts column (U = 45) is shown for fig3h-ca3-distance-per-bout
+    and figs3-apa-day1-and-probe.
+- claim: apa-day2-variance
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:apa-day2-variance
+  measured:
+  - 24.77
+  - 47.97
+  notes: "Partially reproduced. The day 2 variance exceeds day 1 under all three readings, but no reading\
+    \ gives both values within tolerance: (a) 24.77 and 47.97, (b) 7.21 and 27.07, (c) 31.18 and 57.91,\
+    \ against 15.76 and 33.82."
+- claim: figs3fg-day2-predicts-later
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs3fg-day2-predicts-later
+  measured:
+  - 0.904
+  - 0.773
+  notes: "Reproduced. Day 2 entrances predict day 3 (R = +0.904, F(1,11) = 49.27) and day 4 (R = +0.773,\
+    \ F(1,11) = 16.32) entrances, as printed; the top half differs from the bottom half on days 3 and\
+    \ 4 and not on day 1 under both readings (reading (b): t(44) = -1.66, -5.06, -5.28)."
+- claim: fig3c-swr-latency-first-entrance
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3c-swr-latency-first-entrance
+  measured: 0.321
+  notes: Not reproduced. R = +0.321, p = 0.37 (n = 10; paper R = 0.65).
+- claim: fig3de-swr-path-and-quadrant
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3de-swr-path-and-quadrant
+  measured:
+  - 0.277
+  - 0.28
+  notes: Not reproduced. Path length R = +0.277, p = 0.44; percent time opposite R = +0.280, p = 0.43
+    (n = 10).
+- claim: fig3f-apa-learning-score
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3f-apa-learning-score
+  measured: 0.107
+  notes: Not reproduced. The predicted APA learning score explains 10.7 to 12.6% of the variance across
+    readings (n = 10, p >= 0.31), against 75%.
+  deviations:
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+- claim: fig3g-ca3-entrances
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3g-ca3-entrances
+  measured:
+  - -0.591
+  - -0.418
+  - -0.16
+  notes: Not reproduced. In the 7 E4 mice with CA3 labels and APA, entrances on days 2, 3 and 4 give R
+    = -0.591, -0.418, -0.160, none with p < 0.05.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: fig3h-ca3-distance-per-bout
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3h-ca3-distance-per-bout
+  measured:
+  - -0.197
+  - -0.472
+  notes: Not reproduced. Distance per bout (walk bouts) gives R = -0.197 (day 2) and -0.472 (day 3), n
+    = 7, p > 0.28; over all bouts, day 3 gives R = -0.701, p = 0.080.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - Distance per bout is the walk-bout column of pull_apa_metrics.py, the one whose day 1 genotype test
+    gives the printed Figure S3C statistic (U = 30); the all-bouts column (U = 45) is shown for fig3h-ca3-distance-per-bout
+    and figs3-apa-day1-and-probe.
+- claim: fig3i-apa-memory-score
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig3i-apa-memory-score
+  measured: 0.41
+  notes: Not reproduced. The predicted APA memory precision score explains 40 to 41% of the variance (R
+    = +0.64, p = 0.12, n = 7), against 73%.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+  - Distance per bout is the walk-bout column of pull_apa_metrics.py, the one whose day 1 genotype test
+    gives the printed Figure S3C statistic (U = 30); the all-bouts column (U = 45) is shown for fig3h-ca3-distance-per-bout
+    and figs3-apa-day1-and-probe.
+- claim: figs3ij-mwm-predicts-apa
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs3ij-mwm-predicts-apa
+  measured:
+  - 0.638
+  - 0.626
+  notes: Partially reproduced. The learning scores correlate in the 10 E4 mice recorded at 13-17 months
+    with the two-metric APA learning score (R = +0.638, p = 0.047; +0.658, p = 0.039 with the all-mice
+    z-score), within tolerance of 0.665; with the three-metric score R = +0.562, p = 0.091. The memory
+    precision scores, in the 7 E4 mice with CA3 labels, give R = +0.626, p = 0.13. With all 11 E4 mice
+    that did both tasks (not the legend's mice) memory precision gives R = +0.687, p = 0.019.
+  deviations:
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+- claim: figs4ab-young-deficits
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4ab-young-deficits
+  notes: Not reproduced. SWR abundance is lower in E4 mice (mixed-effects genotype F = 85.4, p = 3.8e-10;
+    5-8 months U = 22, adjusted p = 0.0027), but for CA3 SG power the genotype effect is F = 3.18, p =
+    0.087, with E4 lower at 5-8 months (adjusted p = 0.032) and not at 9-11 or 13-17 months.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: figs4ab-aging-increase
+  outcome: partially_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4ab-aging-increase
+  notes: Partially reproduced. E3 SWR abundance rises from 0.251 to 0.347 Hz (adjusted p = 0.0020); E4
+    CA3 SG power rises from 0.617 to 0.875 (p = 0.041, adjusted 0.117); E3 CA3 SG power does not change
+    (p = 0.95, 4 mice with CA3 labels at 13-17 months). Two of three increases hold under reading (b),
+    one under (a).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: figs4cd-baseline-sd-swr-band
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4cd-baseline-sd-swr-band
+  notes: Reproduced. The baseline falls in E3 (19.10 to 14.54, adjusted p = 0.020) and E4 mice (17.06
+    to 9.57, p < 1e-4), the SD falls in E4 mice (14.05 to 9.06, p < 1e-4) and not in E3 mice (adjusted
+    p = 1.0).
+- claim: figs4ef-ca3-sg-baseline-stable
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4ef-ca3-sg-baseline-stable
+  notes: Not reproduced on the claim's test. In E4 mice the CA3 SG baseline (U = 11, adjusted p = 0.002)
+    and SD (U = 28, adjusted p = 0.038) fall from 5-8 to 13-17 months; in E3 mice neither changes (adjusted
+    p 0.89 and 1.0, with 4 mice at 13-17 months).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+- claim: figs4g-young-no-deficit
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4g-young-no-deficit
+  notes: Reproduced. In the 26 mice at 6-9 months the genotype effect is F(1,24) = 0.08, p = 0.78.
+- claim: table-s4-young-no-prediction
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The claim correlates SWR abundance and CA3 SG power at 5-8 months with the 6-9 month MWM. The
+    6-9 month MWM spreadsheet identifies its 26 mice (13 E3, 13 E4) by an MWM ID of its own; neither the
+    manifest of the APA mouse list nor any other file in the data set maps these IDs to the recorded animals'
+    names, so the correlations cannot be formed. The genotype comparison of the same file is tested in
+    figs4g-young-no-deficit.
+- claim: fig4bc-swr-not-stable
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4bc-swr-not-stable
+  notes: Reproduced. None of the four correlations across ages has p < 0.05 (smallest p = 0.096, E3 9-11
+    against 5-8 months).
+  deviations:
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: fig4de-ca3-sg-stable
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4de-ca3-sg-stable
+  measured:
+  - 0.835
+  - 0.983
+  - -0.084
+  - 0.372
+  notes: Not reproduced. The E3 correlations hold (R = +0.835, n = 7; R = +0.983, n = 4), but the E4 correlations
+    do not (R = -0.084, n = 11; R = +0.372, n = 10).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: ca3-sg-5-8-vs-13-17
+  outcome: reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:ca3-sg-5-8-vs-13-17
+  notes: Reproduced on the claim's test. In the 4 E3 mice with CA3 labels at both ages R = +0.891, p =
+    0.11; the E4 variant gives R = -0.275, p = 0.51 (n = 8).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: fig4g-young-ca3-slope-days-1-2
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4g-young-ca3-slope-days-1-2
+  measured: -0.032
+  notes: Not reproduced. R = -0.032, p = 0.94, in the 8 E4 mice with CA3 power at 5-8 months and MWM at
+    14-18 months (paper n = 11).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: fig4h-young-ca3-latency-day-3
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4h-young-ca3-latency-day-3
+  measured: 0.074
+  notes: Not reproduced. R = +0.074, p = 0.86 (n = 8).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: figs4h-young-ca3-slope-days-1-3
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4h-young-ca3-slope-days-1-3
+  measured: 0.18
+  notes: Not reproduced. R = +0.180, p = 0.67 (n = 8).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: fig4i-young-mwm-learning-score
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4i-young-mwm-learning-score
+  measured: 0.003
+  notes: Not reproduced. The predicted score explains 0.3% of the variance (R = -0.054, n = 8), against
+    50%.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: fig4jk-young-ca3-apa
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4jk-young-ca3-apa
+  measured:
+  - -0.07
+  - -0.155
+  notes: Not reproduced. Latency to first entrance R = -0.070 and path length R = -0.155 (n = 8), both
+    with the wrong sign.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: fig4l-young-apa-learning-score
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:fig4l-young-apa-learning-score
+  measured: 0.005
+  notes: Not reproduced. The predicted score explains 0.2 to 2.0% of the variance (R between -0.14 and
+    -0.05, n = 8), against 71%.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - Performance scores run under both z-score populations of Claims method E; the outcome holds under
+    either reading.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+- claim: table-s4-30-comparisons
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:table-s4-30-comparisons
+  measured: 4
+  notes: Not reproduced. 4 of 30 correlations have p < 0.05 (within the tolerance of 5 +- 1), but the
+    binomial p is 0.061, not below 0.05; the significant ones are not the paper's (for example SWR abundance
+    against day 2 latency to first entrance, R = -0.926, the opposite sign to the claims' direction).
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+  - Distance per bout is the walk-bout column of pull_apa_metrics.py, the one whose day 1 genotype test
+    gives the printed Figure S3C statistic (U = 30); the all-bouts column (U = 45) is shown for fig3h-ca3-distance-per-bout
+    and figs3-apa-day1-and-probe.
+  - Table S4's 15 metrics are taken as the 9 MWM metrics (slopes days 1-2 to 1-5, latency day 3, night
+    1, probe 1 percent time, crossings, area) and 6 APA day 2 and 3 metrics listed in the notebook.
+- claim: figs4i-young-ca3-predicts-later-swr
+  outcome: not_reproduced
+  notebook: reproduce_jones_2019.ipynb
+  output: claim:figs4i-young-ca3-predicts-later-swr
+  measured: 0.447
+  notes: Not reproduced. In E4 mice R = +0.447, p = 0.19 (n = 10; paper R = 0.823, n = 15); in E3 mice
+    R = +0.126, p = 0.79.
+  deviations:
+  - CA3 sites are the deposited chinfo sites with area ca3 and layer pyr or sr (plotRTSstats.m); they
+    do not give the CA3 membership of Table S1 (screen cohort 16 E4 mice with CA3 labels, paper 13; replication
+    at 13-17 months 4 E3 and 11 E4, paper 9 and 14), so the CA3 tests use the mice the labels give.
+  - SG power read as in Claims method B, both open readings run (per session as the Methods, pooled over
+    sessions as plotRTSstats.m); they gave the same outcome. Code variants (3 SD trigger, 54.7 Hz bin)
+    shown.
+  - The data set holds 14 E4 mice at 5-8 months against 17 in Table S1, so 8 E4 mice have CA3 power at
+    5-8 months and the later behavior, against 10 or 11 in the paper.
+findings:
+- kind: metadata_error
+  statement: The data descriptor gives the MUA spike times in ms; in every Cohort 1 session the values
+    are spike times in samples at 30 kHz (they fall inside the recording only when divided by 30000, as
+    the paper's RTMUA.m does).
+- kind: format_error
+  statement: All_Figures.pzfx is named as a Prism XML file but is Prism's binary format (header PCFFGRA4),
+    so the per-mouse values the descriptor says it holds cannot be read without Prism.
+- kind: selection_undocumented
+  statement: The deposited site labels (chinfo) do not give the CA3 membership of Table S1. In the screen
+    cohort all 29 mice have sites labelled ca3 pyr or sr, where the paper analyses CA3 SG power in 11
+    E3 and 13 E4 mice; at 13-17 months 4 E3 and 11 E4 mice have such labels, where the paper has 9 and
+    14. Labels also change across ages for the same mouse (for example JellyBean and KitKat have CA3 sites
+    at 5-8 and 9-11 months and none at 13-17 months). The histology-based site list the paper used is
+    not in the data set.
+- kind: data_missing
+  statement: The replication cohort holds 13 E3 and 14 E4 mice at 5-8 months and 12 E3 and 16 E4 at 9-11
+    months, against 13 and 17, and 12 and 17, in Table S1.
+- kind: identifier_missing
+  statement: The 6-9 month MWM spreadsheet identifies mice by an MWM ID of its own, which no file maps
+    to the recorded animals; the 5-8 month recordings cannot be linked to the 6-9 month behavior that
+    Table S4 correlates with them.
+- kind: other
+  statement: "The behavior link of the replication cohort holds: the 14-18 month MWM file's 'Sheet1' values\
+    \ under each of 12 mouse names correlate with the escape latencies of the blind code the manifest\
+    \ gives that name (r 0.89 to 0.99, best match in every case). In Cohort 1 the code in parentheses\
+    \ of the MWM labels ('1360 (12)') is the NN of the recorded animal r?_NN_, with no genotype disagreement;\
+    \ ear tags 1386 and 1388 are each used by one E3 and one E4 mouse."
+- kind: metadata_insufficient
+  statement: The hot plate sheet lacks four E4 mice (Chocolate, Bonbon, Espresso, DevilsFoodCake), so
+    the data set has 12 E3 and 10 E4 hot plate values (excluding the mouse excluded from APA), against
+    12 and 13 in Figure S2. Cohort 1 mouse 1585 (19) is marked EUTH with no MWM data. Hidden-platform
+    sheets hold 7 days where the Methods describe 5.
+- kind: metadata_insufficient
+  statement: The int16 LFP has no stated unit. The SWR-band baseline of the screen cohort is 16.2 int16
+    units, which matches the paper's 16.2 (printed as mV) if one unit is 1 uV; the data set does not say
+    so.
+- kind: paper_inconsistency
+  statement: The Results say apoE4-KI mice 'moved further from the shock zone in bouts of movement' on
+    APA day 1 (Figure S3C). The walk-bout distance of the paper's pull_apa_metrics.py reproduces the printed
+    U = 30 exactly, but with apoE4-KI mice moving less far (median 1.37 against 3.80 cm).
+- kind: methods_unavailable
+  statement: Questions for the paper's authors. (1) Which CA3 sites and mice entered the CA3 SG analyses
+    at each age (Table S1 counts differ from the deposited chinfo labels)? (2) How are the 6-9 month MWM
+    IDs linked to the recorded animals? (3) Which distance-per-bout column of pull_apa_metrics.py (all
+    bouts or walk bouts) is Figure S3C and the memory precision score? (4) Was SG power averaged per session
+    (Methods) or pooled over sessions (plotRTSstats.m)? Here the two gave the same outcomes. (5) Which
+    mice form the z-score population of the performance scores? Here both readings gave the same outcomes.
+- kind: other
+  statement: "33 sessions are marked FAIL in task.env and are left out, as the paper's epoch filter does;\
+    \ 24 further sessions have less than 10 min of immobility and are left out by the Methods' rule (14\
+    \ of them E3 mice at 5-8 months). Several sessions are split or abbreviated (task.descript notes such\
+    \ as 'Split: first half' or 'abbreviated due to loose headstage'); they are used as deposited."
