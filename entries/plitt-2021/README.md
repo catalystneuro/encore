@@ -48,11 +48,11 @@ attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/plitt-2021-01.yaml`](../../attempts/plitt-2021-01.yaml).
 
 - `01_sessions_place_cells.ipynb`: the data check of every file, sessions, licking, place cells,
-  their similarity matrices, NMF and UMAP. About 28 minutes, most of it streaming the files and the
+  their similarity matrices, NMF and UMAP. About 23 minutes, most of it streaming the files and the
   place-cell shuffles.
 - `02_population_inference.ipynb`: the link to the figshare VR deposit and the training trials,
   population similarity, SF, Q estimates, prior reconstruction, the decision mice, the Hebbian
-  model and the simulated posterior population, and the summary. About 24 minutes.
+  model and the simulated posterior population, and the summary. About 20 minutes.
 - `morph.py`: streaming and reducing the files, place cells, the stimulus axis, priors, posteriors,
   Q estimates, Delta D_KL, the mouse permutation test, and reading and linking the figshare VR deposit. Other notebooks on this dandiset can
   import it.
