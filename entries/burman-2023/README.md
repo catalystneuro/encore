@@ -19,7 +19,7 @@ dandiset nor deposited anywhere.
 | Model: synchrony lower with shunting E_GABA (0.784 against 0.881) | Partially reproduced |
 | Model: entropy higher with shunting E_GABA (0.451 against 0.197 nats) | Partially reproduced |
 | Model: shunting networks decoded more accurately | Reproduced |
-| Multi-compartment model of Figure S4 | Blocked: other |
+| Multi-compartment model of Figure S4 | Blocked: methods underspecified |
 | Patch-clamp findings of Figures 1 to 3 and S1 to S5 (24 claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -34,7 +34,7 @@ method, is [`attempts/burman-2023-01.yaml`](../../attempts/burman-2023-01.yaml).
 
 - `reproduce_burman_2023.ipynb`: the Neuropixels claims. About two minutes, most of it streaming the
   units and trials of 24 files.
-- `network_model.ipynb`: 20 runs of the paper's network model on four processes, about 35 minutes.
+- `network_model.ipynb`: 20 runs of the paper's network model on four processes, about 20 minutes.
 - `npx.py`: loading the dandiset and the per-unit measures (rate, entropy, synchrony) of the paper's
   code. Other notebooks on this dandiset can import it.
 - `network.py`: the paper's Brian 2 network, transcribed from its simulation code.

@@ -171,13 +171,17 @@ def simulate(seed, stimuli=100, repeats=100, verbose=False, periodic=True, spike
     net = b2.Network(exc, inh, *synapses, mon)
 
     # the gist's loop runs the balancing set with eta = 0.1, then the test with eta = 0
-    timing, w_sums = [], []
+    # eta_used: the value of eta in the compiled code of the plastic synapses' pre and post
+    # pathways after each run, i.e. the value Brian 2 used in that run
+    timing, w_sums, eta_used = [], [], []
     for sim_time, eta in zip((balancing_time, testing_time), (0.1, 0.)):
         syn_ns["eta"] = eta
         tic = time.time()
         net.run(sim_time * b2.ms, namespace={})
         timing.append(time.time() - tic)
         w_sums.append(float(np.sum(synapses[3].w / b2.nsiemens)))
+        eta_used.append([float(getattr(synapses[3], path).codeobj.variables["eta"].get_value())
+                         for path in ("pre", "post")])
     if verbose:
         print("run times", timing)
 
@@ -238,9 +242,52 @@ def simulate(seed, stimuli=100, repeats=100, verbose=False, periodic=True, spike
     # summed inhibitory-to-excitatory weight (nS) at the start, after balancing and after the
     # test: plasticity acts only during balancing (gist: eta 0.1, then 0)
     out["w_sums"] = [float(len(synapses[3]) * 1.0)] + w_sums
+    out["eta_used"] = eta_used
     return out
 
 
 def run(seed):
     """One full run at the gist's defaults, for a process pool."""
     return simulate(seed)
+
+
+GIST_URL = ("https://gist.githubusercontent.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f/raw/"
+            "f6a05661c10051560aa381e334099efd8521617b/burman_et_al_2023_neuronal_network_simulation.py")
+
+
+def run_gist(seed, stimuli=10, repeats=5):
+    """Run the paper's simulation gist, unmodified, on a small network run, for the check that
+    simulate() transcribes it. Returns the gist's module namespace after the run.
+
+    The gist is fetched at its revision and run with its own command-line options (--stimuli,
+    --repeats), after np.random.seed(seed) and b2.seed(seed) as in simulate(). Three things
+    around it are changed, none in its code: umap, imported for a plot the run does not make, is
+    a stand-in; scipy.sparse.coo_matrix returns a CSR matrix while it runs, as the installed
+    scipy cannot index a COO matrix (X[:, :50]); and Brian 2's code generation target is cython,
+    as in simulate(). Its decoding uses an unseeded shuffle, so its accuracy is not compared.
+    """
+    import sys
+    import types
+    import requests
+    import scipy.sparse
+
+    src = requests.get(GIST_URL, timeout=60).text
+    saved = sys.argv, sys.modules.get("umap"), scipy.sparse.coo_matrix
+    coo = scipy.sparse.coo_matrix
+    sys.argv = ["burman_et_al_2023_neuronal_network_simulation.py",
+                "--stimuli", str(stimuli), "--repeats", str(repeats)]
+    sys.modules["umap"] = types.SimpleNamespace(UMAP=None)
+    scipy.sparse.coo_matrix = lambda *a, **k: coo(*a, **k).tocsr()
+    b2.prefs.codegen.target = "cython"
+    np.random.seed(seed)
+    b2.seed(seed)
+    g = {"__name__": "__main__"}
+    try:
+        exec(compile(src, "burman_et_al_2023_neuronal_network_simulation.py", "exec"), g)
+    finally:
+        sys.argv, scipy.sparse.coo_matrix = saved[0], saved[2]
+        if saved[1] is None:
+            sys.modules.pop("umap", None)
+        else:
+            sys.modules["umap"] = saved[1]
+    return g

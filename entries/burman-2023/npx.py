@@ -32,6 +32,8 @@ VERSION = "0.230317.0039"  # the version the analysis gist names
 API = "https://api.dandiarchive.org/api"
 INTERVAL = (2, 12)  # ms after the stimulus (Methods; gist)
 KEEP = (0.0, 20.0)  # ms after stop_time kept on loading, wider than every window used
+SHIFTS = (-1500.0, 1500.0)  # ms: the clock check's windows away from the pulses (standard choice;
+#                            inter-pulse intervals are 3.5 to 4.5 s, so these hold no evoked spikes)
 
 SESSIONS = [
     "sub-546655_ses-20201023", "sub-551397_ses-20210211", "sub-551399_ses-20210128",
@@ -92,7 +94,8 @@ def read_session(asset_id):
     Returns a dict with `trials` (all trials), `units` (all units, with the electrode group
     name), `spikes` (per unit row: an array of (index into trials, time in ms after the
     trial's stop_time) for spikes within KEEP of an electrical trial), `n_spikes` (each unit's
-    total spike count) and file metadata.
+    total spike count), `shifted` (for each lag in SHIFTS, arrays (unit row, index into trials)
+    of the spikes 2 to 12 ms after stop_time + lag, for the clock check) and file metadata.
     """
     f = open_asset(asset_id)
     trials = read_table(f["intervals/trials"]) if "intervals/trials" in f else pd.DataFrame()
@@ -120,6 +123,7 @@ def read_session(asset_id):
     n_total = int(index[-1]) if len(index) else 0
     unit_of = np.repeat(np.arange(len(index)), units["n_spikes"].to_numpy())
     kept_unit, kept_trial, kept_time = [], [], []
+    shift_parts = {lag: ([], []) for lag in SHIFTS}
     sorted_ok = True
     for a in range(0, n_total, chunk):
         t = st[a:a + chunk] * 1000.0  # s -> ms
@@ -131,12 +135,22 @@ def read_session(asset_id):
         kept_unit.append(unit_of[a:a + chunk][m])
         kept_trial.append(el[j[m]])
         kept_time.append(rel[m])
+        for lag in SHIFTS:
+            origin = stops * 1000.0 + lag
+            j2 = np.searchsorted(origin, t, side="right") - 1
+            rel2 = t - origin[np.clip(j2, 0, None)]
+            m2 = (j2 >= 0) & (rel2 >= INTERVAL[0]) & (rel2 < INTERVAL[1])
+            shift_parts[lag][0].append(unit_of[a:a + chunk][m2])
+            shift_parts[lag][1].append(el[j2[m2]])
     ku = np.concatenate(kept_unit) if kept_unit else np.array([], int)
     kt = np.concatenate(kept_trial) if kept_trial else np.array([], int)
     kx = np.concatenate(kept_time) if kept_time else np.array([])
     for r in range(len(units)):
         m = ku == r
         spikes[r] = np.c_[kt[m], kx[m]]
+    shifted = {lag: (np.concatenate(us) if us else np.array([], int),
+                     np.concatenate(ts) if ts else np.array([], int))
+               for lag, (us, ts) in shift_parts.items()}
     # spike times sorted within each unit (checked on a sample of units)
     for r in range(0, len(units), max(1, len(units) // 20)):
         s0, s1 = starts[r], index[r]
@@ -155,7 +169,7 @@ def read_session(asset_id):
         ids_are_rows=bool(np.array_equal(u["id"][:], np.arange(len(units)))),
     )
     f.close()
-    return dict(trials=trials, units=units, spikes=spikes, meta=meta)
+    return dict(trials=trials, units=units, spikes=spikes, shifted=shifted, meta=meta)
 
 
 # ---------------------------------------------------------------- selection
@@ -330,3 +344,68 @@ def paired(df, measure):
     return dict(n=int(ok.sum()), awake=a[ok].mean(), awake_sem=a[ok].sem(),
                 anesthetized=b[ok].mean(), anesthetized_sem=b[ok].sem(),
                 t=float(t.statistic), p=float(t.pvalue), dropped=int((~ok).sum()))
+
+
+# ---------------------------------------------------------------- the paper's own code
+
+GIST_URL = ("https://gist.githubusercontent.com/paulbrodersen/a77bcf5e06ae27fa96923cb313a02ccf/raw/"
+            "43a13d89441b7f56e835e84fa5811d9567917daf/burman_et_al_2023_neuropixel_data_analysis.py")
+
+
+def run_gist(sessions):
+    """Run the paper's analysis gist, unmodified, on sessions loaded by read_session, and return
+    the table it writes per session (the CSV it would save), keyed by session name.
+
+    The gist reads each file with pynwb and writes a CSV. Here pynwb's NWBHDF5IO is replaced by
+    an object that returns the loaded trials table and a units table (location,
+    waveform_duration, spike_times in s, indexed by id), and DataFrame.to_csv is captured. The
+    spike times given are the spikes read_session keeps (0 to 20 ms after an electrical
+    stop_time, rebuilt as stop_time + latency); the gist uses only spikes 2 to 12 ms after
+    valid electrical trials, so its results are the same as with the full trains. The gist's
+    list names all 17 sessions; `sessions` must hold them all.
+    """
+    import contextlib
+    import io
+    import sys
+    import types
+
+    src = requests.get(GIST_URL, timeout=60).text
+
+    class _Table:
+        def __init__(self, df):
+            self.df = df
+
+        def to_dataframe(self):
+            return self.df.copy()
+
+    def _nwb(s):
+        stops = s["trials"].stop_time.to_numpy()
+        u = s["units"][["location", "waveform_duration"]].copy()
+        u["spike_times"] = [np.sort(stops[a[:, 0].astype(int)] + a[:, 1] / 1000.0) if len(a)
+                            else np.array([]) for a in (s["spikes"][r] for r in range(len(u)))]
+        u.index = pd.Index(np.arange(len(u)), name="id")
+        return types.SimpleNamespace(units=_Table(u), intervals={"trials": _Table(s["trials"])})
+
+    def _io(path, mode):
+        name = path.name.replace("_behavior+ecephys.nwb", "")
+        return types.SimpleNamespace(read=lambda: _nwb(sessions[name]))
+
+    out = {}
+
+    def _capture(self, path, index=False):
+        out[path.name.replace("_behavior+ecephys.csv", "")] = self.copy()
+
+    saved_mod, saved_csv = sys.modules.get("pynwb"), pd.DataFrame.to_csv
+    sys.modules["pynwb"] = types.SimpleNamespace(NWBHDF5IO=_io)
+    pd.DataFrame.to_csv = _capture
+    try:
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(compile(src, "burman_et_al_2023_neuropixel_data_analysis.py", "exec"),
+                 {"__name__": "__main__"})
+    finally:
+        pd.DataFrame.to_csv = saved_csv
+        if saved_mod is None:
+            sys.modules.pop("pynwb", None)
+        else:
+            sys.modules["pynwb"] = saved_mod
+    return out
