@@ -555,9 +555,14 @@ def test_datasets_are_named_by_archive_and_id():
 def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipeline(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
+    targets = {t["key"] for t in data["targets"]}
     for key in site.claims_only(data):
-        row = next(r for r in rows if r["key"] == key)
-        assert row["page"] == site.page_of(key)
+        # The pipeline lists the archives' targets. A dataset only a reuse paper names (targets/reuse.yaml) can be
+        # outside them: it has its page, and no row.
+        row = next((r for r in rows if r["key"] == key), None)
+        assert (row is not None) == (key in targets)
+        if row:
+            assert row["page"] == site.page_of(key)
         page = (out / site.page_of(key) / "index.html").read_text()
         claims = [c for f in data["claim_files"][key] for c in f["claims"]]
         assert all(f'id="claim-{c["id"]}"' in page for c in claims)
