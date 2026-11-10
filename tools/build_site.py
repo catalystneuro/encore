@@ -1265,10 +1265,11 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
-  <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow">{nav}
+  <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
   <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
+  <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
@@ -1294,7 +1295,11 @@ b.setAttribute('aria-label','Colour theme: '+name[t].toLowerCase()+'. Change the
 b.addEventListener('click',function(){var t=order[(order.indexOf(get())+1)%3];
 try{t==='auto'?localStorage.removeItem('theme'):localStorage.setItem('theme',t);}catch(e){}
 if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;show(t);});
-show(get());})();</script>"""
+show(get());})();
+(function(){var n=document.getElementById('navtoggle'),bar=n&&n.closest('nav.top');if(!n)return;
+function set(o){bar.classList.toggle('open',o);n.setAttribute('aria-expanded',String(o));}
+n.addEventListener('click',function(){set(!bar.classList.contains('open'));});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape')set(false);});})();</script>"""
 
 
 def caution_block() -> str:
