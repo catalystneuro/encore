@@ -312,7 +312,9 @@ def transition_codes(d):
 def wt_dynamics(d, twin=20, smooth=10, mask=None):
     """Delta z-scored wait time around block transitions (block_dynamics_wt.m): z-scored over
     catch trials, then within each offer over non-violation catch trials; windows of +-twin trials
-    over the concatenated trials; mean over transitions, then smoothed."""
+    over the concatenated trials, so a window may reach into the next or previous session, as
+    block_dynamics_wt.m does (lat_dynamics keeps its windows within the session, as
+    block_dynamics_latency.m does); mean over transitions, then smoothed."""
     w = d["wt"].copy()
     c = d["catch"]
     w[c] = nanz(w[c])
@@ -479,12 +481,14 @@ def fit_exp_decay(x, y, lb, ub, iters=10, rng=None):
 
 def regress_wt(d, nback=10):
     """Wait time on catch trials in mixed blocks regressed on the current and previous log2
-    offers (regress_wt_vs_rew.m): z-scored over those trials; offers outside mixed blocks NaN;
+    offers (regress_wt_vs_rew.m), offers as male volumes: z-scored over those trials; offers outside mixed blocks NaN;
     column j is the offer j-1 trials back, zero-padded at the start; constant last."""
     use = d["optout"] & d["catch"] & (d["block"] == 1)
     WT = np.full(len(use), np.nan)
     WT[use] = nanz(d["wt"][use])
-    R = np.log2(d["vol_raw"].astype(float))  # the code uses log2(A.reward), the raw volumes
+    # Male volumes (claims file, common method); the code's log2(A.reward) takes the raw volumes,
+    # which for females are 4 to 64 uL
+    R = np.log2(d["vol"].astype(float))
     R[d["block"] != 1] = np.nan
     n = len(R)
     X = np.empty((n, nback + 1))
@@ -502,7 +506,7 @@ def regress_iti(d, nback=10):
     use = d["block"] == 1
     L = np.full(len(use), np.nan)
     L[use] = nanz(clip99(d["iti"][use]))
-    R = np.log2(d["vol_raw"].astype(float)) * d["hit"]  # raw volumes, as the code
+    R = np.log2(d["vol"].astype(float)) * d["hit"]  # male volumes (claims file, common method)
     R[d["block"] != 1] = np.nan
     n = len(R)
     X = np.empty((n, nback + 1))
@@ -564,24 +568,34 @@ def taus(d, rng):
     return out
 
 
-def tau_shuffle_test(first_q, last_q, betas, nshuffle, rng):
+def tau_shuffle_test(first_q, last_q, betas, nshuffle, rng, same_scale=False):
     """myTauShuffleTest.m: labels of the two groups shuffled; the mean coefficients of each half
     refitted (10*b, D in [-3, 1], tau in [0, 50]); the observed fits use b, D in [-10, 1], tau in
-    [0, 10]; p = share of |shuffled difference| > |observed| over 2*nshuffle."""
-    B = betas[first_q | last_q][:, :10]
+    [0, 10]; p = share of |shuffled difference| > |observed| over 2*nshuffle. The code fits every
+    column but the constant (for wait times, the current offer and 9 previous ones); `betas` here
+    holds those columns only, and x runs from 1 to their number. same_scale (a variant, not the
+    code): the observed fits also use 10*b and the shuffle bounds. Returns (p, observed
+    difference, tau fast, tau slow, share of shuffled fits with D at its upper bound 1)."""
+    B = betas[first_q | last_q]
     n = len(B)
-    x = np.arange(1, 11)
+    x = np.arange(1, B.shape[1] + 1)
     sh = np.empty((nshuffle, 2))
+    dsh = np.empty((nshuffle, 2))
     for i in range(nshuffle):
         perm = rng.permutation(n)
         g1, g2 = perm[: n // 2], perm[n // 2:]
-        sh[i, 0] = fit_exp_decay(x, 10 * np.nanmean(B[g1], 0), [-3, 0], [1, 50], 10, rng)[1]
-        sh[i, 1] = fit_exp_decay(x, 10 * np.nanmean(B[g2], 0), [-3, 0], [1, 50], 10, rng)[1]
-    o1 = fit_exp_decay(x, np.nanmean(betas[first_q][:, :10], 0), [-10, 0], [1, 10], 10, rng)[1]
-    o2 = fit_exp_decay(x, np.nanmean(betas[last_q][:, :10], 0), [-10, 0], [1, 10], 10, rng)[1]
+        for k, g in enumerate((g1, g2)):
+            dsh[i, k], sh[i, k] = fit_exp_decay(x, 10 * np.nanmean(B[g], 0), [-3, 0], [1, 50], 10, rng)
+    if same_scale:
+        o1 = fit_exp_decay(x, 10 * np.nanmean(betas[first_q], 0), [-3, 0], [1, 50], 10, rng)[1]
+        o2 = fit_exp_decay(x, 10 * np.nanmean(betas[last_q], 0), [-3, 0], [1, 50], 10, rng)[1]
+    else:
+        o1 = fit_exp_decay(x, np.nanmean(betas[first_q], 0), [-10, 0], [1, 10], 10, rng)[1]
+        o2 = fit_exp_decay(x, np.nanmean(betas[last_q], 0), [-10, 0], [1, 10], 10, rng)[1]
     obs = o1 - o2
     shd = sh[:, 0] - sh[:, 1]
-    return float(np.sum(np.abs(shd) > abs(obs)) / (2 * nshuffle)), obs, o1, o2
+    return (float(np.sum(np.abs(shd) > abs(obs)) / (2 * nshuffle)), obs, o1, o2,
+            float(np.mean(dsh >= 1 - 1e-9)))
 
 
 # ---------------------------------------------------------------------------------------------
@@ -590,8 +604,9 @@ def tau_shuffle_test(first_q, last_q, betas, nshuffle, rng):
 
 def wt_by_previous(d):
     """waittime_20ul_by_previous_vol.m: 20 uL opt-out catch trials in mixed blocks (not the first
-    trial), z-scored over these trials, split by previous offer below or above 20 uL; two-tailed
-    rank-sum. Returns (mean below, mean above, p)."""
+    trial), z-scored over these trials, split by previous offer below or above 20 uL (the previous
+    trial of the concatenated data, which may be in another block or session, as in the code);
+    two-tailed rank-sum. Returns (mean below, mean above, p)."""
     from scipy.stats import mannwhitneyu
     f = (d["vol"] == 20) & (d["block"] == 1) & d["optout"] & d["catch"]
     f[0] = False
@@ -604,16 +619,21 @@ def wt_by_previous(d):
     return _m(a), _m(b), p
 
 
-def iti_by_previous(d, reading="code"):
+def iti_by_previous(d, reading="code", drop_post_vio=False):
     """Initiation time in mixed blocks by previous offer below or above 20 uL, z-scored over all
     the rat's trials after the 99th percentile cut (latency_post20ul_by_previous_vol.m). reading
     "code": all mixed-block trials; "methods": 20 uL trials only (Methods, Trial history effects).
-    Two-tailed rank-sum. Returns (mean below, mean above, p)."""
+    drop_post_vio (a variant for the pre-cue task): trials after a violation left out, since they
+    repeat the previous offer (Methods, Pre-initiation cue task). As in the code, the previous
+    trial may be in another block or session. Two-tailed rank-sum. Returns (mean below, mean
+    above, p)."""
     from scipy.stats import mannwhitneyu
     z = nanz(clip99(d["iti"]))
     m = d["block"] == 1
     if reading == "methods":
         m = m & (d["vol"] == 20)
+    if drop_post_vio:
+        m = m & ~np.r_[False, d["vio"][:-1]]
     a = z[m & (d["prev_vol"] < 20)]
     b = z[m & (d["prev_vol"] > 20)]
     a, b = a[np.isfinite(a)], b[np.isfinite(b)]
@@ -628,13 +648,16 @@ def iti_by_previous(d, reading="code"):
 PCATCH = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35]
 
 
-def wt_by_pcatch(d):
+def wt_by_pcatch(d, optout=False):
     """wtByPCatch.m: mean wait time on catch trials in mixed blocks by offer, per catch
-    probability, leaving out the rat's first 1000 trials. Returns {p: 5 means}."""
+    probability, leaving out the rat's first 1000 trials. The code does not ask for an opt-out;
+    optout=True adds it (the claims file's common method), a variant. Returns {p: 5 means}."""
     keep = np.arange(len(d["vol"])) >= 1000
     out = {}
     for p in PCATCH:
         use = (d["block"] == 1) & np.isclose(d["catch_p"], p) & d["catch"] & keep
+        if optout:
+            use = use & d["optout"]
         out[p] = np.array([_m(d["wt"][use & (d["vol"] == v)]) for v in VOLUMES])
     return out
 
@@ -725,6 +748,252 @@ def lognormal_noise(mean, var, rng, nsims=1):
     mu = np.log(mean) - v / 2
     draws = rng.lognormal(mu[None, :], np.sqrt(v)[None, :], size=(nsims, len(mean)))
     return draws.mean(0)
+
+
+# ---------------------------------------------------------------------------------------------
+# Wait time models fitted per rat (Fig. 3f; timing for fig3j)
+# ---------------------------------------------------------------------------------------------
+
+WT_TAU = 2.5      # tau of the delay distribution (Methods, Behavioral models; GenerateSynthData_Bayes.m). "paper"
+WT_NOISE = 8.0    # log-normal noise variance of the wait time model (Methods, Behavioral models). "paper"
+
+
+def inferential_setup(d, P=None):
+    """What the inferential model (GenerateSynthData_Bayes.m) needs from a rat: the trials with a
+    wait time, the most likely block on each (order mixed, high, low, as kappa_vec), log2 of the
+    raw volume (the script's R = log2(rew_vol)), C = max(1 - catch probability), and the minimum
+    raw volume, which scales the kappas."""
+    P = transition_matrix() if P is None else P
+    good, vols, new = model_trials(d)
+    belief, _ = infer_blocks(vols, new, P)
+    blk = np.argmax(belief, 1)  # MATLAB's max returns the first of tied maxima, as argmax
+    raw = d["vol_raw"][good].astype(float)
+    return dict(good=good, blk=blk, R=np.log2(raw), C=float(np.nanmax(1 - d["catch_p"])),
+                min_rew=float(raw.min()), belief=belief)
+
+
+def inferential_wt_opt(params, setup):
+    """Predicted wait time on each trial with a wait time (Equation 1; GenerateSynthData_Bayes.m):
+    params [kappa_mi, kappa_hi, kappa_lo, D] in [0, 1], kappa_b = params_b C log2(min reward) / tau,
+    D = 10 params_4."""
+    C, tau = setup["C"], WT_TAU
+    kv = np.asarray(params[:3]) * C * np.log2(setup["min_rew"]) / tau
+    k = kv[setup["blk"]]
+    return 10 * params[3] * tau * np.log((setup["R"] - k * tau) / (k * tau) * C / (1 - C))
+
+
+def _lognormal_nll_cells(m, n, s1, s2, var=WT_NOISE):
+    """Negative log-likelihood of log-normal noise with mean m and variance var, summed over the
+    trials of each cell from their count n, sum of log x (s1) and sum of (log x)^2 (s2)."""
+    v = np.log(var / m ** 2 + 1)
+    mu = np.log(m) - v / 2
+    return float(np.sum(s1 + n * 0.5 * np.log(2 * np.pi * v) + (s2 - 2 * mu * s1 + n * mu ** 2) / (2 * v)))
+
+
+def fit_inferential(d, rng, nstarts=100, use=None):
+    """The inferential model fitted to a rat's wait times by maximum likelihood, with nstarts random
+    starts in [0, 1] (Methods, Fitting and evaluating models: 100 random seeds; fmincon replaced by
+    scipy's bounded L-BFGS-B). The likelihood is the log-normal density (variance 8) of the wait
+    times of opt-out catch trials, the trials on which the wait time is the rat's choice: an
+    assumption, as the fitting code is not in the paper's repository. `use` restricts the
+    likelihood to some trials (a mask over all trials). As the prediction depends only on the
+    inferred block and the offer, the likelihood is summed over those 15 cells from their sufficient
+    statistics. Returns (best params, nLL, number of trials, mean evaluations per start, setup)."""
+    from scipy.optimize import minimize
+    st = inferential_setup(d)
+    g = st["good"]
+    obs = (d["optout"] & d["catch"])[g] & np.isfinite(d["wt"][g]) & (d["wt"][g] > 0)
+    if use is not None:
+        obs &= use[g]
+    lx = np.log(d["wt"][g][obs])
+    rv = st["R"][obs]
+    cells, ninv = np.unique(np.c_[st["blk"][obs], rv], axis=0, return_inverse=True)
+    ninv = ninv.ravel()
+    n = np.bincount(ninv).astype(float)
+    s1 = np.bincount(ninv, lx)
+    s2 = np.bincount(ninv, lx ** 2)
+    cb, cr = cells[:, 0].astype(int), cells[:, 1]
+    C, tau, lm = st["C"], WT_TAU, np.log2(st["min_rew"])
+
+    def nll(p):
+        k = np.asarray(p[:3])[cb] * C * lm / tau
+        m = 10 * p[3] * tau * np.log((cr - k * tau) / (k * tau) * C / (1 - C))
+        if not np.all(np.isfinite(m)) or np.any(m <= 0):
+            return 1e12
+        return _lognormal_nll_cells(m, n, s1, s2)
+
+    eps = 1e-6
+    best, nev = None, []
+    for x0 in rng.uniform(eps, 1 - eps, size=(nstarts, 4)):
+        r = minimize(nll, x0, method="L-BFGS-B", bounds=[(eps, 1 - eps)] * 4)
+        nev.append(r.nfev)
+        if best is None or r.fun < best.fun:
+            best = r
+    return best.x, float(best.fun), int(obs.sum()), float(np.mean(nev)), st
+
+
+def _retro_wt_nll_py(alpha0, D, R, ridx, new, obs_idx, lx, C, tau, var):
+    """Negative log-likelihood of the retrospective wait time model (GenerateSynthData_AlphaPHModel.m:
+    kappa by Equation 9 with the gain of Equation 10, scaled to min(R) C / tau, D = 15 params_2) on
+    the trials in obs_idx. Compiled with numba by retro_wt_nll; used only to time an evaluation."""
+    n = len(R)
+    pr = np.array([[0.2, 0.2, 0.2, 0.2, 0.2], [0.0, 0.0, 1 / 3, 1 / 3, 1 / 3], [1 / 3, 1 / 3, 1 / 3, 0.0, 0.0]])
+    h0 = 1.0 / 40
+    kappa = np.empty(n)
+    k0 = (np.log(5.0) + np.log(10.0) + np.log(20.0) + np.log(40.0) + np.log(80.0)) / 5
+    kappa[0] = k0
+    b0, b1, b2 = 1 / 3, 1 / 3, 1 / 3
+    for t in range(n - 1):
+        if new[t]:
+            b0, b1, b2 = 0.5, 0.25, 0.25
+            kappa[t] = k0
+            a = alpha0
+        else:
+            q0 = (1 - h0) * b0 + h0 * b1 + h0 * b2
+            q1 = h0 / 2 * b0 + (1 - h0) * b1
+            q2 = h0 / 2 * b0 + (1 - h0) * b2
+            l0, l1, l2 = pr[0, ridx[t]] * q0, pr[1, ridx[t]] * q1, pr[2, ridx[t]] * q2
+            s = l0 + l1 + l2
+            nb0 = l0 / s
+            a = min(alpha0 / (1 - abs(nb0 - b0)), 1.0)
+            b0, b1, b2 = nb0, l1 / s, l2 / s
+        kappa[t + 1] = kappa[t] + a * (R[t] - kappa[t])
+    kmax = kappa.max()
+    rmin = R.min()
+    out = 0.0
+    for j in range(len(obs_idx)):
+        t = obs_idx[j]
+        k = kappa[t] / kmax * (rmin * C / tau)
+        if k < 0:
+            k = 2.2e-16
+        m = 15 * D * tau * np.log((R[t] - k * tau) / (k * tau) * C / (1 - C))
+        if m <= 0:
+            m = 2.2e-16
+        v = np.log(var / m ** 2 + 1)
+        mu = np.log(m) - v / 2
+        out += lx[j] + 0.5 * np.log(2 * np.pi * v) + (lx[j] - mu) ** 2 / (2 * v)
+    return out
+
+
+def retro_wt_nll():
+    """The compiled form of _retro_wt_nll_py (numba), for timing."""
+    import numba
+    return numba.njit(cache=False)(_retro_wt_nll_py)
+
+
+def _subopt_labels_py(ridx, new, lam, h0):
+    """Most likely block under the sub-optimal prior of Equation 8 (GenerateSynthData_Bayes_subopt_onlylambda_flat.m):
+    prior = lambda P(B_t) + (1 - lambda)/3, belief and prior flat (1/3) at session starts. Order mixed, high, low."""
+    n = len(ridx)
+    pr = np.array([[0.2, 0.2, 0.2, 0.2, 0.2], [0.0, 0.0, 1 / 3, 1 / 3, 1 / 3], [1 / 3, 1 / 3, 1 / 3, 0.0, 0.0]])
+    out = np.empty(n, np.int64)
+    b0, b1, b2 = 1 / 3, 1 / 3, 1 / 3
+    for t in range(n):
+        if new[t]:
+            b0, b1, b2 = 1 / 3, 1 / 3, 1 / 3
+        else:
+            q0 = lam * ((1 - h0) * b0 + h0 * b1 + h0 * b2) + (1 - lam) / 3
+            q1 = lam * (h0 / 2 * b0 + (1 - h0) * b1) + (1 - lam) / 3
+            q2 = lam * (h0 / 2 * b0 + (1 - h0) * b2) + (1 - lam) / 3
+            l0, l1, l2 = pr[0, ridx[t]] * q0, pr[1, ridx[t]] * q1, pr[2, ridx[t]] * q2
+            s = l0 + l1 + l2
+            b0, b1, b2 = l0 / s, l1 / s, l2 / s
+        k = 0
+        if b1 > b0:
+            k = 1
+        if b2 > (b0 if k == 0 else b1):
+            k = 2
+        out[t] = k
+    return out
+
+
+def subopt_labels():
+    """The compiled form of _subopt_labels_py (numba)."""
+    import numba
+    return numba.njit(cache=False)(_subopt_labels_py)
+
+
+def fit_subopt_lambda(d, rng, lambdas, labels_fn, nstarts=5):
+    """The sub-optimal inferential model (Equation 8) fitted to a rat's wait times, likelihood as fit_inferential.
+    The labels, and so the likelihood, change with lambda only in steps, so a gradient search cannot move lambda;
+    lambda is profiled over a grid (`lambdas`), and for each value the 4 other parameters are fitted from nstarts
+    random starts, the first warm-started from the previous grid value's fit (a standard choice in place of
+    fmincon's 100 random starts, which sample lambda at random).
+    `labels_fn` is the compiled _subopt_labels_py. Returns (lambda, the 4 parameters, nLL, nLL over the grid)."""
+    from scipy.optimize import minimize
+    good, vols, new = model_trials(d)
+    ridx = np.array([VOL_IDX[int(v)] for v in vols])
+    raw = d["vol_raw"][good].astype(float)
+    Rr = np.log2(raw)
+    C, tau, lm = float(np.nanmax(1 - d["catch_p"])), WT_TAU, np.log2(raw.min())
+    obs = (d["optout"] & d["catch"])[good] & np.isfinite(d["wt"][good]) & (d["wt"][good] > 0)
+    lx = np.log(d["wt"][good][obs])
+    rv = Rr[obs]
+    eps = 1e-6
+    prof, best = [], None
+    for lam in lambdas:
+        blk = labels_fn(ridx, new, float(lam), 1 / 40)[obs]
+        cells, inv = np.unique(np.c_[blk, rv], axis=0, return_inverse=True)
+        inv = inv.ravel()
+        n = np.bincount(inv).astype(float); s1 = np.bincount(inv, lx); s2 = np.bincount(inv, lx ** 2)
+        cb, cr = cells[:, 0].astype(int), cells[:, 1]
+
+        def nll(p):
+            k = np.asarray(p[:3])[cb] * C * lm / tau
+            m = 10 * p[3] * tau * np.log((cr - k * tau) / (k * tau) * C / (1 - C))
+            if not np.all(np.isfinite(m)) or np.any(m <= 0):
+                return 1e12
+            return _lognormal_nll_cells(m, n, s1, s2)
+        bl = None
+        starts = rng.uniform(eps, 1 - eps, size=(nstarts, 4))
+        if best is not None:
+            starts[0] = prev  # warm start from the previous lambda's fit
+        for x0 in starts:
+            r = minimize(nll, x0, method="L-BFGS-B", bounds=[(eps, 1 - eps)] * 4)
+            if bl is None or r.fun < bl.fun:
+                bl = r
+        prof.append(bl.fun)
+        prev = bl.x
+        if best is None or bl.fun < best[2]:
+            best = (float(lam), bl.x, float(bl.fun))
+    return best[0], best[1], best[2], np.array(prof)
+
+
+def fit_sigmoid(x, y, rng, iters=10):
+    """my_fit_sigmoid.m: y = p4 + (p1 - p4) / (1 + exp(-p2 (x - p3))) fitted by least squares within
+    lb = [-5, 0, 0, -5], ub = [5, 5, 30, 5] from iters random starts (scipy's bounded least_squares in place of
+    fmincon). In Equation 11's names p1 is D (upper asymptote), p2 C (inverse temperature), p3 x0, p4 A."""
+    from scipy.optimize import least_squares
+    lb, ub = np.array([-5, 0, 0, -5.0]), np.array([5, 5, 30, 5.0])
+    ok = np.isfinite(y)
+    x, y = np.asarray(x, float)[ok], np.asarray(y, float)[ok]
+
+    def res(p):
+        return p[3] + (p[0] - p[3]) / (1 + np.exp(-p[1] * (x - p[2]))) - y
+    best = None
+    for x0 in rng.uniform(lb, ub, size=(iters, 4)):
+        r = least_squares(res, x0, bounds=(lb, ub))
+        if best is None or r.cost < best.cost:
+            best = r
+    return best.x
+
+
+def lambda_shuffle_test(data_lo, data_hi, nperms, twin, rng):
+    """myLambdaShuffleTest.m: trials -(twin-10)..(twin-10) kept; group labels shuffled nperms times, the mean curve
+    of each half refitted with fit_sigmoid (10 starts); p per parameter = share of |shuffled difference| > |observed
+    difference (high - low)| over 2 nperms. Returns (p for p1..p4, observed difference, params low, params high)."""
+    xs = np.arange(-(twin - 10), twin - 9)
+    allc = np.r_[data_lo, data_hi][:, 10:-10]
+    n = len(allc)
+    sh = np.empty((nperms, 4))
+    for i in range(nperms):
+        perm = rng.permutation(n)
+        g1, g2 = perm[: n // 2], perm[n // 2:]
+        sh[i] = fit_sigmoid(xs, np.nanmean(allc[g1], 0), rng) - fit_sigmoid(xs, np.nanmean(allc[g2], 0), rng)
+    plo = fit_sigmoid(xs, np.nanmean(data_lo[:, 10:-10], 0), rng)
+    phi = fit_sigmoid(xs, np.nanmean(data_hi[:, 10:-10], 0), rng)
+    obs = phi - plo
+    return (np.abs(sh) > np.abs(obs)).sum(0) / (2 * nperms), obs, plo, phi
 
 
 # ---------------------------------------------------------------------------------------------
