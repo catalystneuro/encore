@@ -16,7 +16,7 @@
 # the 17 NWB sessions of DANDI:000458 (version 0.230317.0039, named in its docstring) and writes,
 # per unit, evoked firing rate, peri-stimulus histogram entropy and synchrony for the awake and
 # isoflurane epochs. It does not hold the exclusion step, the statistics or the plots.
-# (2) gist.github.com/paulbrodersen/2ce61e4e790e2a351d52d921f848e122, revision
+# (2) gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f, revision
 # f6a05661c10051560aa381e334099efd8521617b, burman_et_al_2023_neuronal_network_simulation.py: the
 # Brian 2 network of Figure 4E to 4H and Figure S7, one run per call. (3)
 # github.com/richardjburman/burman-et-al-2022---Awake-EGABAAR, commit
@@ -70,16 +70,21 @@
 # N6 Synchrony. Per trial, the histogram of the spikes of all the session's selected units (the
 #    unit itself included), divided by its total spike count; for each spike of a unit, the
 #    value of that histogram at the spike's bin; the unit's synchrony is the mean over all its
-#    spikes in all trials (Methods and gist).
+#    spikes in all trials (Methods and gist). The Methods' "all recorded neurons" is open (the
+#    Figure 4C legend calls the 662 kept neurons "recorded neurons"); the gist settles it: the
+#    population is the units selected by N2, before the exclusion of N7. The population of kept
+#    units only is shown as a variant.
 # N7 Evoked firing rate and exclusion. Units with an evoked rate below 0.1 Hz or above 200 Hz in
 #    either condition are excluded (Methods). The rate is open between two readings: (F1) the
 #    Methods, the unit's spike count in the window divided by the number of trials times 10 ms;
 #    (F2) the gist's get_firing_rate, which sums the spikes' times in ms after the stimulus
 #    (np.sum of spike_times) where a count would be expected, and divides by (the highest index
-#    of a trial with any population spike, plus one) times 10 ms. The Methods come first; F2 is
-#    the code that produced the paper's numbers. The gist does not apply the exclusion; it is
-#    taken to act on the rate column it writes. Every claim on the dandiset is run under the four
-#    readings A1F1, A1F2, A2F1 and A2F2.
+#    of a trial with any population spike, plus one) times 10 ms. The gist does not apply the
+#    exclusion; it is taken to act on the rate column it writes. Where the Methods and the gist
+#    disagree (the waveform cut, A1 against A2, F1 against F2) the Methods come first (protocol,
+#    Reader step 2): every claim on the dandiset is judged under the Methods reading A1F1, and
+#    A1F2, A2F1 and A2F2, and the gist's waveform cut, are run and shown as variants. A claim that
+#    holds only under a variant is recorded as a deviation.
 # N8 Statistics. Values are mean +- SEM over neurons and awake against anesthetized is a paired
 #    t test (scipy.stats.ttest_rel) over the neurons (Figure 4D legend; Methods). A unit with an
 #    undefined value in either condition is left out of that measure's test, a standard choice.
@@ -655,11 +660,11 @@ claims:
     value: 93
     tolerance: 9.3
   criterion: Counts of regular spiking units in the stimulated area (N2) before and after the exclusion
-    (N7), per recording. Method N1 to N8 of the opening comment (Methods and the analysis gist), under
-    each of the readings A1F1, A1F2, A2F1 and A2F2. Reproduced when, under one reading, the numbers kept
-    and excluded are within tolerance and the recording and mouse counts are 17 and 16; partially reproduced
-    when only the total (865) is within 10%. The per-recording median and range are reported under each
-    reading.
+    (N7), per recording. Method N1 to N8 of the opening comment (Methods and the analysis gist), judged
+    under the Methods reading A1F1, with A1F2, A2F1, A2F2 and the gist's waveform cut shown as variants
+    (N7). Reproduced when the numbers kept and excluded are within tolerance and the recording and mouse
+    counts are 17 and 16; partially reproduced when only the total (865) is within 10%. The per-recording
+    median and range are reported under each reading.
 - id: fig4d-synchrony-lower-awake
   statement: Neurons show lower stimulus-evoked synchrony with the population awake than under isoflurane
     (0.325 against 0.393).
@@ -682,11 +687,10 @@ claims:
     value: 0.393
     tolerance: 0.007
   criterion: Synchrony (N6) per neuron and condition over the kept neurons, mean and SEM, paired t test
-    (N8). Method N1 to N8 of the opening comment (Methods and the analysis gist), under each of the readings
-    A1F1, A1F2, A2F1 and A2F2. Reproduced when, under one reading, both means are within tolerance and
-    the paired t test gives awake lower at p < 0.001; partially reproduced when the direction and test
-    hold under every reading but no reading puts both means within tolerance. The gist's waveform cut
-    (> 0.4 ms) is shown as a variant.
+    (N8). Method N1 to N8 of the opening comment (Methods and the analysis gist), judged under the Methods
+    reading A1F1, with A1F2, A2F1, A2F2 and the gist's waveform cut (> 0.4 ms) shown as variants (N7).
+    Reproduced when both means are within tolerance and the paired t test gives awake lower at p < 0.001;
+    partially reproduced when the direction and test hold but a mean is outside tolerance.
 - id: fig4d-entropy-higher-awake
   statement: Peri-stimulus histogram entropy is higher awake than under isoflurane (1.347 against 1.111
     nats), so responses are more variable in time.
@@ -711,10 +715,10 @@ claims:
     tolerance: 0.02
     unit: nats
   criterion: Entropy (N5) per neuron and condition over the kept neurons, mean and SEM, paired t test
-    (N8). Method N1 to N8 of the opening comment (Methods and the analysis gist), under each of the readings
-    A1F1, A1F2, A2F1 and A2F2. Reproduced when, under one reading, both means are within tolerance and
-    the paired t test gives awake higher at p < 0.001; partially reproduced when the direction and test
-    hold under every reading but no reading puts both means within tolerance.
+    (N8). Method N1 to N8 of the opening comment (Methods and the analysis gist), judged under the Methods
+    reading A1F1, with A1F2, A2F1, A2F2 and the gist's waveform cut shown as variants (N7). Reproduced
+    when both means are within tolerance and the paired t test gives awake higher at p < 0.001; partially
+    reproduced when the direction and test hold but a mean is outside tolerance.
 - id: fig4-rate-higher-awake
   statement: The same electrical stimuli evoke more spiking awake than under isoflurane; the mean evoked
     firing rate is higher in the awake state.
@@ -727,8 +731,9 @@ claims:
   criterion: Evoked firing rate (N7) per neuron and condition over the kept neurons. The paper reports
     no value or test in the text read (Figure S6 may hold them); the paired t test of N8, used for every
     per-neuron comparison of Figure 4D, is used here. Method N1 to N8 of the opening comment (Methods
-    and the analysis gist), under each of the readings A1F1, A1F2, A2F1 and A2F2. Reproduced when the
-    awake mean is higher with p < 0.05 under every reading; the means under each reading are reported.
+    and the analysis gist), judged under the Methods reading A1F1, with A1F2, A2F1, A2F2 and the gist's
+    waveform cut shown as variants (N7). Reproduced when the awake mean is higher with p < 0.05; the
+    means under each reading are reported.
 - id: figs6-rate-regressed
   statement: The awake decrease in synchrony and increase in entropy remain after the effect of firing
     rate is regressed out.
@@ -745,10 +750,11 @@ claims:
     of N8; (R2) an ordinary least squares model of the measure on condition and firing rate, the condition
     coefficient tested; (R3) per neuron, the awake minus anesthetized difference of the measure regressed
     on the difference of firing rate, the intercept tested against zero. Method N1 to N8 of the opening
-    comment (Methods and the analysis gist), under each of the readings A1F1, A1F2, A2F1 and A2F2. Reproduced
-    when, for both synchrony and entropy, the awake difference keeps the sign of Figure 4D with p < 0.05
-    under every reading; partially reproduced when it holds for one measure, or under some readings only
-    (the outcome then rests on the reading adopted).'
+    comment (Methods and the analysis gist), judged under the Methods reading A1F1, with A1F2, A2F1, A2F2
+    and the gist''s waveform cut shown as variants (N7). Reproduced when, for both synchrony and entropy,
+    the awake difference keeps the sign of Figure 4D with p < 0.05 under every regression reading; partially
+    reproduced when it holds for one measure only. When the regression readings differ, the author adopts
+    the one the paper best supports, as an assumption, and the outcome rests on it.'
 - id: fig4f-model-hyperpolarizing-less-activity
   statement: In the network model, shunting E_GABAAR gives more variable input-evoked spike times, while
     hyperpolarizing E_GABAAR gives less activity and spiking more closely aligned across neurons.
@@ -758,7 +764,7 @@ claims:
     times, whereas networks with hyperpolarizing E GABAAR exhibited less activity and the input-evoked
     spiking was more closely aligned to the spiking of other neurons in the network
   data: elsewhere
-  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e790e2a351d52d921f848e122
+  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f
     at revision f6a05661
   criterion: The paper's simulation gist at revision f6a05661, run 20 times (Methods, "Each simulation
     was repeated 20 times"), with its defaults (100 patterns, 100 repeats, 800 excitatory and 200 inhibitory
@@ -766,9 +772,12 @@ claims:
     and synchrony of each excitatory neuron, from spikes 0 to 12 ms after each input in the first stimulus
     set of the condition; the 20 runs pooled (16,000 neurons). Random seeds are not fixed by the paper
     and are taken as given by the gist (none set). The paper gives no number or test for the activity;
-    the mean peri-stimulus firing rate of the excitatory neurons (the gist's firing_rates) is compared
-    between conditions. Reproduced when it is lower under the hyperpolarizing condition in at least 18
-    of the 20 runs (a standard choice); the alignment part is judged in fig4h-model-synchrony.
+    the peri-stimulus firing rate of the excitatory neurons (the gist's firing_rates) is compared between
+    conditions by the paired t test over the pooled neurons that the paper uses for the other per-neuron
+    model measures (Figure 4H), neurons with no spike in either condition included at rate zero. Reproduced
+    when the rate is lower under the hyperpolarizing condition at p < 0.05; the number of runs in which
+    the mean rate is lower is reported. The spike-time variability and alignment parts are judged in
+    fig4h-model-entropy and fig4h-model-synchrony.
 - id: fig4h-model-synchrony
   statement: Model pyramidal neurons are less synchronous with shunting than with hyperpolarizing E_GABAAR
     (0.784 against 0.881).
@@ -781,7 +790,7 @@ claims:
     p_relation: <
     n: 16,000 pyramidal neurons from the model
   data: elsewhere
-  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e790e2a351d52d921f848e122
+  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f
     at revision f6a05661
   expected:
   - quantity: mean synchrony shunting
@@ -811,7 +820,7 @@ claims:
     p_relation: <
     n: 16,000 pyramidal neurons from the model
   data: elsewhere
-  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e790e2a351d52d921f848e122
+  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f
     at revision f6a05661
   expected:
   - quantity: mean entropy shunting
@@ -839,7 +848,7 @@ claims:
   quote: when we assessed a network’s ability to encode different patterned inputs, we observed that networks
     with shunting E GABAAR could be more accurately decoded by a downstream classifier
   data: elsewhere
-  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e790e2a351d52d921f848e122
+  where: Not deposited; generated by the paper's simulation code, gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f
     at revision f6a05661
   criterion: 'The paper''s simulation gist, run 20 times as in fig4h-model-synchrony: per run and condition,
     spike counts of the first 50 excitatory neurons in each 25 ms epoch, a k-nearest neighbor classifier
@@ -848,3 +857,37 @@ claims:
     a paired t test of the 20 per-run accuracies, shunting against hyperpolarizing, p < 0.05; (D2) shunting
     higher in every run. Reproduced when the mean accuracy is higher under shunting and both readings
     hold; partially reproduced when only one does.'
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment and the where fields of fig4f-model-hyperpolarizing-less-activity, fig4h-model-synchrony,
+    fig4h-model-entropy and figs7-model-decoding. The simulation gist id was wrong (2ce61e4e790e... does
+    not exist); the author's gist with that file and revision f6a05661 is 2ce61e4e57c7659b727d30e3e1e0128f.
+  - Opening comment N7, and the criteria of fig4c-sample, fig4d-synchrony-lower-awake, fig4d-entropy-higher-awake,
+    fig4-rate-higher-awake and figs6-rate-regressed. They counted a claim as reproduced when any of the
+    four area and rate readings matched, while the Methods and the gist disagree on both (and on the waveform
+    cut); the protocol (Reader, step 2) has the Methods give the main result and the code a variant, so
+    each claim is now judged under A1F1, with the gist readings shown as variants.
+  - Opening comment N6. The Methods' population of "all recorded neurons" is open (the Figure 4C legend
+    calls the 662 kept neurons recorded neurons); the gist, read at revision 43a13d89, builds it from the
+    N2 units before any rate exclusion, so that is now stated, with kept units only as a variant.
+  - figs6-rate-regressed criterion. Partial reproduction when the regression readings differed is replaced
+    by the protocol rule (the author adopts the reading the paper best supports, as an assumption).
+  - fig4f-model-hyperpolarizing-less-activity criterion. The 18 of 20 runs rule is not in the paper; the
+    activity comparison now uses the paired t test over pooled neurons that the paper applies to the model's
+    per-neuron measures in Figure 4H, with the per-run count reported.
+  - Checked against the gists. Analysis gist a77bcf5e at 43a13d89 matches N1 to N7 as written (stop_time,
+    2 to 12 ms, waveform_duration > 0.4, location[:3] in estim_target_region, np.sum of spike times in
+    get_firing_rate, entropy for more than one spike). Simulation gist matches the model criteria (E_GABA
+    -60 then -80 mV after a -70 mV balancing set, first stimulus set, 0 to 12 ms, first 50 excitatory
+    neurons, KNeighborsClassifier with shuffled 5-fold StratifiedKFold).
+  - Open. The supplement (Figures S1 to S7 and legends) is not in the text read, so the tests and methods
+    of figs2, figs3, figs4, figs5, figs6 and figs7 claims, and any value or test for the evoked firing
+    rate, remain unread; the readings named for figs6 and figs7 stand in for them.
+  - Open. Paragraph numbers in the Results sources cannot be checked against the flattened text; the figure
+    panels cited with them are correct.
+  - Open, for the author. The analysis gist keys units by the units table's row index in get_peristimulus_spikes
+    and looks them up by the id column afterwards; the two agree only when unit ids equal row numbers.
