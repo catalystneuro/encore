@@ -134,6 +134,53 @@ def adc_pulses(url: str, recording: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def adc_scan(url: str) -> pd.DataFrame:
+    """Every ADC channel of every recording in one ecephys file (`adc_pulses` per recording), with
+    the recording's length, the pulse amplitude (the channel's max) and the number of long pulses of
+    1.5 to 2.5 s with their median interval, to find the 2-s rotarod bouts (Methods, Chronic
+    silicon-probe recordings: "driven in 2-s bouts ... inter-bout intervals were pseudo-random 4-35
+    s"). The thresholds are a standard choice for a pulse search; no claim's outcome uses them."""
+    rows = []
+    with h5py.File(remfile.File(url), "r") as f:
+        acq = f["acquisition"]
+        # One series per channel (ADC_<recording>_ADC<j>) or, in one file, one series of 8 columns per
+        # recording (ADC_<recording>).
+        series = {}
+        for k in acq:
+            if k.startswith("ADC_"):
+                rec = k[4:].rsplit("_ADC", 1)[0]
+                series.setdefault(rec, []).append(k)
+        for rec in sorted(series, key=lambda r: int(r.rsplit("recording", 1)[1])):
+            channels = []
+            for k in sorted(series[rec], key=lambda k: int(k.rsplit("ADC", 1)[1]) if "_ADC" in k[4:] else 0):
+                ncol = acq[k]["data"].shape[1]
+                channels += [(k, j, k.rsplit("_", 1)[1] if ncol == 1 else f"ADC{j + 1}") for j in range(ncol)]
+            for k, j, name in channels:
+                d = acq[k]["data"]
+                rate = float(acq[k]["starting_time"].attrs["rate"])
+                x = d[:, j].astype(np.float32) * d.attrs["conversion"]
+                lo, hi = float(x.min()), float(x.max())
+                row = {"recording": rec, "channel": name, "minutes": len(x) / rate / 60,
+                       "min_V": lo, "max_V": hi, "pulses": 0, "median_interval_s": np.nan,
+                       "median_width_ms": np.nan, "long_pulses": 0, "long_median_interval_s": np.nan}
+                if hi - lo > 2.0:      # a digital-like swing, as in `adc_pulses`
+                    high = x > (lo + hi) / 2
+                    on = np.flatnonzero(high[1:] & ~high[:-1]) + 1
+                    off = np.flatnonzero(~high[1:] & high[:-1]) + 1
+                    if len(on):
+                        nxt = np.searchsorted(off, on)
+                        ok = nxt < len(off)
+                        widths = (off[nxt[ok]] - on[ok]) / rate
+                        long_on = on[ok][(widths >= 1.5) & (widths <= 2.5)]
+                        row.update(pulses=len(on), median_width_ms=float(np.median(widths) * 1000) if ok.any() else np.nan,
+                                   median_interval_s=float(np.median(np.diff(on)) / rate) if len(on) > 1 else np.nan,
+                                   long_pulses=len(long_on),
+                                   long_median_interval_s=float(np.median(np.diff(long_on)) / rate) if len(long_on) > 1 else np.nan)
+                rows.append(row)
+                del x
+    return pd.DataFrame(rows)
+
+
 def time_raw_read(url: str, recording: str, seconds: float = 20.0) -> tuple[float, float]:
     """Stream `seconds` of all channels of one raw recording; return (megabytes, seconds taken)."""
     import time
@@ -176,7 +223,7 @@ def load_photometry(path: str, url: str) -> dict:
                 iso_range=(float(np.nanmin(iso)), float(np.nanmax(iso))))
     d, fit_meta = dff(ca, iso)
     meta.update(fit_meta)
-    return {"meta": meta, "stim": stim, "t": t, "dff": d}
+    return {"meta": meta, "stim": stim, "t": t, "dff": d, "ca": _interp_nan(ca).astype(np.float32)}
 
 
 def _interp_nan(y: np.ndarray) -> np.ndarray:
@@ -283,13 +330,16 @@ def epoch_value(grid: np.ndarray, trace: np.ndarray, epoch: tuple[float, float],
     return float(np.trapezoid(trace[m], grid[m]))
 
 
-def photometry_measures(rec: dict, onsets: np.ndarray) -> list[dict]:
+def photometry_measures(rec: dict, onsets: np.ndarray, signal: str = "dff") -> list[dict]:
     """Pre and Stim epoch values of one file's trial-averaged z trace under every reading: z baseline
     (Methods, code), z form (mean_sd, robust), sampling (100 Hz, native) and epoch value (mean, area).
-    Also returns the mean traces, at 100 Hz, for plotting."""
+    Also returns the mean traces, at 100 Hz, for plotting. `signal` "dff" is the isosbestic-corrected
+    dF/F; "ca" is the 470-nm signal alone, without the 405-nm fit (a variant asked for in
+    verification; any fixed F0 cancels in the per-trial z-score, so the raw signal stands for its
+    dF/F)."""
     rows = []
     for rate_name, hz in (("100Hz", DOWNSAMPLE_HZ), ("native", None)):
-        t, y = downsample(rec["t"], rec["dff"].astype(np.float64), hz)
+        t, y = downsample(rec["t"], rec[signal].astype(np.float64), hz)
         grid, trials = trial_traces(t, y, onsets)
         for bname, base in BASELINES.items():
             for form in ("mean_sd", "robust"):
@@ -315,24 +365,30 @@ def shifted_contrast(rec: dict, onsets: np.ndarray, shift: float) -> float:
 
 
 def regular_onsets(stim: pd.DataFrame) -> np.ndarray:
-    """Onsets of the intervals whose length is the file's most common one (to within 10 ms): the
-    regular train, without stray intervals of another length."""
-    length = (stim.stop - stim.start).round(2)
-    return stim.start[(length - length.mode().iloc[0]).abs() <= 0.01].to_numpy()
+    """Onsets of the intervals whose length is within 20 ms of the file's median length: the regular
+    train, without stray intervals of another length (the train lengths are 2.80 to 3.0 s, and the
+    stray intervals of photometry-exp-5 at 5 Hz are 3.0 s against 2.80). The lengths are compared
+    unrounded: an earlier version rounded them to 10 ms and dropped 10-Hz intervals of 2.905 s that
+    rounded either way."""
+    length = stim.stop - stim.start
+    return stim.start[(length - length.median()).abs() <= 0.02].to_numpy()
 
 
 def process_photometry(path: str, url: str) -> dict:
     """Load one file, compute its measures under every reading, for all intervals and for the regular
-    train only (`regular_onsets`), and keep only the 100-Hz dF/F, so that one file at a time is held
-    at full rate."""
+    train only (`regular_onsets`), and, for all intervals, on the 470-nm signal without the 405-nm
+    fit; then keep only the 100-Hz dF/F, so that one file at a time is held at full rate."""
     rec = load_photometry(path, url)
     onsets_all = rec["stim"].start.to_numpy()
     onsets_reg = regular_onsets(rec["stim"])
-    rec["measures"] = {"all": photometry_measures(rec, onsets_all)}
-    rec["measures"]["regular"] = (rec["measures"]["all"] if len(onsets_reg) == len(onsets_all)
-                                  else photometry_measures(rec, onsets_reg))
+    rec["n_onsets"] = {"all": len(onsets_all), "regular": len(onsets_reg)}
+    rec["measures"] = {("dff", "all"): photometry_measures(rec, onsets_all)}
+    rec["measures"]["dff", "regular"] = (rec["measures"]["dff", "all"] if len(onsets_reg) == len(onsets_all)
+                                         else photometry_measures(rec, onsets_reg))
+    rec["measures"]["470_only", "all"] = photometry_measures(rec, onsets_all, signal="ca")
     rec["contrast"] = {s: shifted_contrast(rec, onsets_all, s) for s in (0.0, 6.5, -6.5)}
     rec["t"], rec["dff"] = downsample(rec["t"], rec["dff"].astype(np.float64), DOWNSAMPLE_HZ)
+    del rec["ca"]
     return rec
 
 
@@ -363,13 +419,23 @@ def within_opsin_tests(df: pd.DataFrame, anova: str, posthoc: str = "separate") 
     """Figure 3b as the claims file reads it: on opsin mice, a two-way ANOVA epoch (Pre, Stim) by
     frequency, with repeated measures on both factors (`anova` "rm") or as independent cells
     ("plain"); post hoc Pre against Stim per frequency, Benjamini-Hochberg over the four. The post
-    hoc test is either a separate paired t-test per frequency (`posthoc` "separate") or the
-    ANOVA's own contrast on its pooled error ("pooled": for "rm" the Stim - Pre differences with
-    their variance pooled over the four frequencies, df 4(n - 1); for "plain" the cell means with
-    the residual mean square of the two-way model, df 8(n - 1)), as post hoc comparisons after a
-    two-way ANOVA are computed by default in GraphPad Prism, which the Methods name
-    (Quantification and statistical analysis). `df` has one row per mouse and frequency, with
-    columns pre and stim."""
+    hoc test is one of:
+
+    - "separate": a paired t-test per frequency, df n - 1. This is also what GraphPad Prism does
+      after a repeated-measures ANOVA when sphericity is not assumed ("For each comparison of two
+      groups, it uses only the data in those two groups ... When two groups are matched, it is
+      identical to a paired t test"; GraphPad, "How Prism 8.0 computes multiple comparisons tests
+      following ANOVA", cdn.graphpad.com/faq/1688/file/MulitpleComparisonAlgorithmsPrism8.pdf).
+    - "prism": Prism's error when sphericity is assumed (same document). For "rm", matched values
+      both stacked and spread across a row, a simple effect uses MS(Error) = MS(Residual), the
+      epoch x frequency x subject mean square, with df (2 - 1)(4 - 1)(n - 1); for "plain", the
+      residual mean square of the two-way model, df 8(n - 1). SE = sqrt(2 MS / n) in both.
+    - "pooled" ("rm" only): the variance of the Stim - Pre differences averaged over the four
+      frequencies, df 4(n - 1), the form run before verification. It is not Prism's, and is kept as
+      a variant.
+
+    `df` has one row per mouse and frequency, with columns pre and stim. Returns, per frequency, the
+    mean difference, the SE and df of the test, and the raw and BH p."""
     import pingouin as pg
     from scipy import stats
     op = df[df.group == "opsin"]
@@ -380,21 +446,34 @@ def within_opsin_tests(df: pd.DataFrame, anova: str, posthoc: str = "separate") 
         a = pg.anova(data=long, dv="z", between=["epoch", "condition"])
     inter = a[a.Source == "epoch * condition"]
     anova_p = float(inter["p_unc"].iloc[0]) if "p_unc" in a else float(inter["p-unc"].iloc[0])
-    groups = {c: op[op.condition == c] for c in FREQUENCIES}
+    groups = {c: op[op.condition == c].sort_values("subject") for c in FREQUENCIES}
     diffs = {c: float((d.stim - d.pre).mean()) for c, d in groups.items()}
     ns = {c: len(d) for c, d in groups.items()}
     n = min(ns.values())
     if posthoc == "separate":
-        raw = [stats.ttest_rel(groups[c].stim, groups[c].pre).pvalue for c in FREQUENCIES]
-    elif anova == "rm":
+        se = {c: float(np.std(groups[c].stim - groups[c].pre, ddof=1) / np.sqrt(ns[c])) for c in FREQUENCIES}
+        dfe = {c: ns[c] - 1 for c in FREQUENCIES}
+    elif posthoc == "pooled" and anova == "rm":
         var = np.mean([np.var(groups[c].stim - groups[c].pre, ddof=1) for c in FREQUENCIES])
-        raw = [_pooled_t(diffs[c], np.sqrt(var / n), len(FREQUENCIES) * (n - 1)) for c in FREQUENCIES]
-    else:
+        se = {c: float(np.sqrt(var / n)) for c in FREQUENCIES}
+        dfe = {c: len(FREQUENCIES) * (n - 1) for c in FREQUENCIES}
+    elif posthoc == "prism" and anova == "rm":
+        d = op.assign(d=op.stim - op.pre).pivot(index="subject", columns="condition", values="d")[FREQUENCIES].to_numpy()
+        resid = d - d.mean(1, keepdims=True) - d.mean(0, keepdims=True) + d.mean()
+        dfr = (len(FREQUENCIES) - 1) * (d.shape[0] - 1)
+        ms = 0.5 * float((resid ** 2).sum()) / dfr      # SS(epoch x frequency x subject) from the differences
+        se = {c: float(np.sqrt(2 * ms / n)) for c in FREQUENCIES}
+        dfe = {c: dfr for c in FREQUENCIES}
+    elif posthoc in ("prism", "pooled") and anova == "plain":
         mse = np.mean([np.var(groups[c][e], ddof=1) for c in FREQUENCIES for e in ("pre", "stim")])
-        raw = [_pooled_t(diffs[c], np.sqrt(2 * mse / n), 2 * len(FREQUENCIES) * (n - 1)) for c in FREQUENCIES]
+        se = {c: float(np.sqrt(2 * mse / n)) for c in FREQUENCIES}
+        dfe = {c: 2 * len(FREQUENCIES) * (n - 1) for c in FREQUENCIES}
+    else:
+        raise ValueError(posthoc)
+    raw = [_pooled_t(diffs[c], se[c], dfe[c]) for c in FREQUENCIES]
     adj = bh(raw)
     return {"interaction_p": anova_p, "p_raw": dict(zip(FREQUENCIES, raw)), "p_bh": dict(zip(FREQUENCIES, adj)),
-            "mean_diff": diffs, "n": ns}
+            "mean_diff": diffs, "se": se, "df": dfe, "n": ns}
 
 
 def opsin_vs_control_tests(df: pd.DataFrame, anova: str, posthoc: str = "separate") -> dict:
@@ -402,9 +481,14 @@ def opsin_vs_control_tests(df: pd.DataFrame, anova: str, posthoc: str = "separat
     ANOVA group by frequency, frequency repeated within mouse (`anova` "rm", a mixed ANOVA) or
     not ("plain"); post hoc opsin against control per frequency, Benjamini-Hochberg over the four.
     The post hoc test is a separate unpaired (Student) t-test per frequency (`posthoc`
-    "separate") or the contrast on the pooled within-cell error of the group by frequency cells
-    ("pooled", df = mice x frequencies - 8), the error of a between-group comparison at each level
-    in either design."""
+    "separate"; Prism's form when sphericity is not assumed, "identical to an unpaired t test", in
+    the GraphPad document cited in `within_opsin_tests`) or the contrast on the pooled within-cell
+    error of the group by frequency cells ("pooled", df = mice x frequencies - 8). The pooled form is
+    Prism's error when sphericity is assumed: for the mixed design, a comparison of the unmatched
+    groups within a level of the repeated factor uses MS(Error) = (SS(Subjects) + SS(Residuals)) /
+    (DF(Subjects) + DF(Residuals)) with df DF(Subjects) + DF(Residuals), which is the within-cell
+    sum of squares over its df, 6 + 18 = 24 here; for the ordinary design it is MS(Residual), the
+    same."""
     import pingouin as pg
     from scipy import stats
     d = df.assign(delta=df.stim - df.pre)
@@ -417,14 +501,20 @@ def opsin_vs_control_tests(df: pd.DataFrame, anova: str, posthoc: str = "separat
     anova_p = float(inter["p_unc"].iloc[0]) if "p_unc" in a else float(inter["p-unc"].iloc[0])
     cells = {(g, c): d[(d.condition == c) & (d.group == g)].delta for g in ("opsin", "control") for c in FREQUENCIES}
     diffs = [float(cells["opsin", c].mean() - cells["control", c].mean()) for c in FREQUENCIES]
+    se, dfe = {}, {}
     if posthoc == "separate":
-        raw = [stats.ttest_ind(cells["opsin", c], cells["control", c]).pvalue for c in FREQUENCIES]
+        for c in FREQUENCIES:
+            x, y = cells["opsin", c], cells["control", c]
+            sp2 = ((len(x) - 1) * x.var(ddof=1) + (len(y) - 1) * y.var(ddof=1)) / (len(x) + len(y) - 2)
+            se[c], dfe[c] = float(np.sqrt(sp2 * (1 / len(x) + 1 / len(y)))), len(x) + len(y) - 2
     else:
         ss = sum(((x - x.mean()) ** 2).sum() for x in cells.values())
-        dfe = sum(len(x) for x in cells.values()) - len(cells)
-        mse = ss / dfe
-        raw = [_pooled_t(diffs[k], np.sqrt(mse * (1 / len(cells["opsin", c]) + 1 / len(cells["control", c]))), dfe)
-               for k, c in enumerate(FREQUENCIES)]
+        dfw = sum(len(x) for x in cells.values()) - len(cells)
+        mse = ss / dfw
+        for c in FREQUENCIES:
+            se[c] = float(np.sqrt(mse * (1 / len(cells["opsin", c]) + 1 / len(cells["control", c]))))
+            dfe[c] = dfw
+    raw = [_pooled_t(diffs[k], se[c], dfe[c]) for k, c in enumerate(FREQUENCIES)]
     adj = bh(raw)
     return {"interaction_p": anova_p, "p_raw": dict(zip(FREQUENCIES, raw)), "p_bh": dict(zip(FREQUENCIES, adj)),
-            "mean_diff": dict(zip(FREQUENCIES, diffs))}
+            "mean_diff": dict(zip(FREQUENCIES, diffs)), "se": se, "df": dfe}
