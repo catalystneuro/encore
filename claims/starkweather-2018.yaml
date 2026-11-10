@@ -1,0 +1,864 @@
+# Claims for Starkweather, Gershman & Uchida (2018), Neuron 98, 616-629, tested on CRCNS vta-1.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (paper/10.1016-j.neuron.2018.03.036.txt, supplied by a
+# person), with its STAR Methods and the Supplemental Information (legends of Figures S1 to
+# S8). The PDF could not be rendered here, so numbers printed only inside figures were read
+# from the extracted text; the claims that rest on them say so.
+#
+# Code read: https://github.com/cstarkweather/Starkweather2018 at commit d667730 (the
+# "GitHub link" of Code Availability points to the account; this is its repository for the
+# paper). It holds only the belief state TD model (training, simulation, plotting, MATLAB).
+# No analysis code for the recordings is linked, so every method for the recorded data comes
+# from the Methods and legends. The code differs from the Methods in two settings of the
+# simulation script (allSimulations_Saline_SalB.m) as committed, 10 simulations where the
+# legends say 50, and every simulation intact (belief_impaired_dist all zeros) where the text
+# says 60% impaired; the Methods are followed and the code's settings are variants.
+#
+# Data the paper used. 12 male DAT-Cre mice. Dopamine recordings in the left VTA of 8
+# KORD-expressing mice, 4 trained on task 1 (odors A to C rewarded in 100% of trials) and 4 on
+# task 2 (90%); 2 more task 2 mice without KORD, injected with SalB (Figure S6F to S6H); 2
+# mice with tetrodes in the mPFC to test KORD (Figure 2), and one task 1 mouse with an mPFC
+# tetrode as well (Figure S6A to S6E). Each recording day began with a subcutaneous injection
+# of saline (control) or SalB (mPFC inactivation); recording began 15 min after SalB and the
+# first 40 min after recording onset are analysed. Trials. Odor A (1 s odor, reward 1.2 to 2.8
+# s after odor onset in 9 steps of 0.2 s, Gaussian, mean 2 s, SD 0.5 s), odor B (1.2 s), odor
+# C (2.8 s), odor D (unrewarded); omission trials of A to C in task 2; free water deliveries
+# outside cued trials. ITI exponential, mean 12 s; 150 to 300 trials per session. Units are
+# light-identified dopamine neurons (SALT p < 0.05 within 10 ms, waveform correlation > 0.9,
+# latency below 10 ms with jitter < 3 ms). Neuron counts by group, odor A analyses (Figure 4),
+# task 1 saline 42, task 1 SalB 42, task 2 saline 41, task 2 SalB 47; 26 neurons in the no-KORD
+# controls. Measured variables are spike times, odor and reward times, trial types, and licks
+# (infrared beam). The CRCNS description of vta-1 lists one file per light-identified dopamine
+# neuron with odor onsets, reward onsets, spike times and trial types, named by task and drug;
+# it lists no licks, no mPFC units and no unidentified VTA neurons. Whether the dataset holds
+# what each claim needs is the author's to find.
+#
+# Method details fixed here from the paper (Methods, Data analysis, unless said otherwise).
+# Post-reward response, spikes 50 to 200 ms after reward onset. Pre-reward response, spikes
+# before reward onset, 0 to 400 ms in the Methods and 0 to 200 ms in the Figure 4A legend; the
+# two are readings of the pre-reward claims. Both baseline-subtracted, baseline 0 to 1 s
+# before odor onset; responses as firing rates (spikes/s; figures). Omission response, spikes
+# 0 to 1000 ms after the usual reward time. Free water response, spikes 0 to 300 ms after
+# reward onset, counted only when 4 or more licks follow within 1 s. The two-way ANOVAs
+# (factors ISI and neuron, Statistics) are taken on one value per neuron and ISI, the mean
+# over trials, without interaction, as their degrees of freedom imply (F(8, 328) for 42
+# neurons is 8 and 8 x 41). Slopes of individual neurons, a straight line fit of post-reward
+# response on ISI over that neuron's rewarded odor A trials (Results, Individual neurons;
+# Statistics); a slope is significant when its p < 0.05 or its 95% confidence interval
+# excludes 0 (Figure 5 legend). Tests are two-tailed with alpha 0.05 (Data analysis).
+# Open, and named where it bears on a claim. Whether baseline is subtracted trial by trial or
+# as a neuron's mean; whether the free water lick criterion can be applied when licks are not
+# in the data (readings, with the criterion where licks exist, or all free water deliveries);
+# the observation unit of the ANOVAs that mix tasks and drug, whose degrees of freedom do not
+# follow from the neuron counts.
+schema_version: 2
+paper: doi:10.1016/j.neuron.2018.03.036
+claims:
+- id: fig2-kord-suppresses-mpfc
+  statement: After SalB injection in KORD-expressing mice, more than 60% of recorded mPFC
+    neurons fell below half their pre-injection firing rate, and these suppressed neurons fell
+    to less than 20% of their pre-injection rate within 15 min.
+  source: Results, KORD Inactivates mPFC Neurons, paragraph 1; Figure 2F to 2H
+  quote: More than 60% of recorded neurons suppressed their averaged firing rates to below half of
+    their pre-injection rates (Figures 2F-2H). On average, these suppressed neurons decreased their
+    firing rates to less than 20% of their pre-injection rates within 15 min post-SalB injection
+  data: dataset
+  expected:
+  - quantity: fraction of mPFC neurons suppressed below half of baseline after SalB
+    value: 0.6
+    tolerance: 0.06
+  criterion: mPFC units of the two mPFC-implanted mice. A neuron is inhibited when its firing
+    rate more than 15 min after SalB injection is below half its pre-injection rate (Figure 2F
+    and 2G legends). Reproduced when the inhibited fraction among SalB-session neurons exceeds
+    0.54 (the reported bound less 10%) and the mean normalized rate of inhibited neurons is
+    below 0.2 by 15 min after injection. These recordings are not described in vta-1.
+- id: figs1e-kord-abolishes-late-activity
+  statement: Before SalB the mPFC population had neurons peaking at times tiling the whole ISI;
+    after SalB the distribution of peak times shifted significantly, with activity only right
+    after odor onset, and saline did not shift it significantly.
+  source: Results, KORD Inactivates mPFC Neurons, paragraph 1; Figure S1D and S1E legend
+  quote: Wilcoxon rank-sum test revealed the distribution was significantly shifted post-injection in
+    the SalB condition (z = 3.93, p = 8.6 × 10-5) but not the Saline condition (z = 1.72, p = 0.084)
+  statistics:
+  - about: time bin of maximal auROC, before against after SalB
+    test: Wilcoxon rank-sum test
+    statistic: z = 3.93
+    p: 8.6e-5
+  - about: time bin of maximal auROC, before against after saline
+    test: Wilcoxon rank-sum test
+    statistic: z = 1.72
+    p: 0.084
+  data: dataset
+  criterion: mPFC units, odor 3 trials (constant ISI 2.8 s, Figure S1A). For each neuron, auROC
+    of its responses against baseline in time bins after odor onset, before and after the
+    injection, and the bin of maximal auROC (Figure S1D and S1E legends). Bin width and baseline
+    window are not given; 100 ms bins and the 1 s before odor onset are a standard choice, with
+    200 ms bins as a variant. Reproduced when the rank-sum test of peak bins before against
+    after is p < 0.05 for SalB, with later peaks fewer after SalB, and p >= 0.05 for saline.
+- id: fig3g-anticipatory-licking
+  statement: In both tasks mice licked in anticipation of reward after odors A to C, above
+    baseline, but not after odor D.
+  source: Results, Behavior and Electrophysiology, paragraph 1; Figure 3G
+  quote: In both tasks, animals learned to lick in anticipation of reward in odor A-C trials (Figure
+    3G; number of licks for odors A-C in tasks 1 and 2 ... but not in odor D trials
+  statistics:
+  - about: anticipatory licks after odors A to C against baseline, each odor and task
+    test: one-way ANOVA
+    statistic: F(1, 36) > 32
+    p: 1.9e-6
+    p_relation: "<"
+  - about: licks after odor D against baseline, each task
+    test: one-way ANOVA
+    statistic: F(1, 41) < 1.4
+    p: 0.23
+    p_relation: ">"
+  data: dataset
+  criterion: Per session, anticipatory licks after the odor against baseline licks; one-way ANOVA
+    for each odor and task. The paper gives neither the windows nor the observation unit of this
+    test, so these are open. Windows, readings (a) licks from odor onset to reward against licks
+    in an equal span just before odor onset, (b) lick rates from odor onset to reward against the
+    rate in the 1 s before odor onset (the spike baseline of the Methods). For odor D, which has
+    no reward, the span is odor onset to 2.8 s (the longest ISI, as in Figure S3A), a standard
+    choice. The error df (36 for odors A to C, 41 for odor D) fit neither all sessions of a task
+    as two groups (df 74 and 78, from the 38 and 40 sessions implied by Figure S3A) nor a paired
+    design; readings are (i) all sessions of a task, (ii) sessions of each task and drug
+    separately, and the observation counts used are reported. Reproduced when all six odor A to C
+    comparisons have p < 0.05 with more licks after the odor, and neither odor D comparison does.
+- id: figs3-task1-licks-more-sooner
+  statement: Mice licked more in anticipation of odor A reward, and ramped up their lick rate
+    sooner, in task 1 than in task 2.
+  source: Results, Behavior and Electrophysiology, paragraph 1; Figure S3A and S3H
+  quote: Animals licked more (number of anticipatory licks for odor A in task 1 ... ramped up their
+    lick rates sooner (time point halfway to maximum lick rate in task 1 ... in task 1 compared with
+    task 2
+  statistics:
+  - about: anticipatory licks for odor A, task 1 against task 2
+    test: one-way ANOVA
+    statistic: F(1, 77) = 6.7 (F(1, 76) in the Figure S3A legend)
+    p: 0.012
+  - about: time halfway to maximum lick rate, task 1 against task 2
+    test: one-way ANOVA
+    statistic: F(1, 77) = 7.7 (7.69 with F(1, 76) in the Figure S3H legend)
+    p: 7.0e-3
+  data: dataset
+  criterion: Per session, odor A trials with reward at 2.8 s; anticipatory licks are those from
+    odor onset to reward (Figure S3A legend), and the halfway time is the x50 of a sigmoid fit of
+    lick rate against time after odor A before reward (Figure S3G and S3H legends; the sigmoid
+    form is not given, a four-parameter logistic is a standard choice; the trials fitted are not
+    given, odor A trials rewarded at 2.8 s as in Figure S3A and all odor A trials up to their
+    reward are the readings). One-way ANOVA of task 1
+    against task 2 sessions. Reproduced when both are p < 0.05 with task 1 higher in licks and
+    earlier in x50.
+- id: figs3-salb-spares-licking
+  statement: SalB did not change the pattern of licking in either task; anticipatory licks, lick
+    rates in 200 ms epochs, the lick slope, x50 and sigmoid steepness did not differ between
+    saline and SalB sessions.
+  source: Results, Behavior and Electrophysiology, paragraph 1; Figure S3B to S3I legends
+  quote: SalB did not affect any measures used to quantify the pattern of licking across time
+    (Figures S3B-S3I)
+  statistics:
+  - about: anticipatory licks, task 1 SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 36) = 0.16
+    p: 0.69
+  - about: anticipatory licks, task 2 SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 38) = 0.01
+    p: 0.91
+  - about: x50, task 1 SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 36) = 0.02
+    p: 0.9
+  - about: x50, task 2 SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 38) = 0.42
+    p: 0.52
+  - about: lick rate in each 200 ms epoch after odor A, task 1 SalB against saline
+    test: one-way ANOVA, no correction for multiple comparisons
+    statistic: F(1, 36) < 4.0
+    p: 0.4
+    p_relation: ">"
+  - about: lick rate in each 200 ms epoch after odor A, task 2 SalB against saline
+    test: one-way ANOVA, no correction for multiple comparisons
+    statistic: F(1, 38) < 4.0
+    p: 0.4
+    p_relation: ">"
+  - about: slope of licks on time, task 1 SalB against saline (labelled anticipatory licks in the
+      Figure S3F legend)
+    test: one-way ANOVA
+    statistic: F(1, 36) = 0.87
+    p: 0.36
+  - about: slope of licks on time, task 2 SalB against saline (labelled anticipatory licks in the
+      Figure S3F legend)
+    test: one-way ANOVA
+    statistic: F(1, 38) = 0.04
+    p: 0.84
+  - about: sigmoid steepness, task 1 SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 36) = 0.3
+    p: 0.59
+  - about: sigmoid steepness, task 2 SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 38) = 0.05
+    p: 0.82
+  data: dataset
+  criterion: A claim of absence, judged on the paper's tests, one-way ANOVAs over sessions of
+    saline against SalB within each task at alpha 0.05, uncorrected, for anticipatory licks,
+    the lick rate in each of the 14 epochs of 200 ms after odor A, the slope of licks on time
+    before reward, x50 and the sigmoid steepness (Figure S3 legends). Reproduced when none of
+    these is p < 0.05; not reproduced when any is, with each effect size given.
+- id: figs4-cell-types-unchanged
+  statement: The types of VTA neurons recorded (phasic, sustained positive, sustained negative,
+    by k-means clustering) did not differ appreciably between saline and SalB sessions in either
+    task.
+  source: Results, Behavior and Electrophysiology, paragraph 2; Figure S4
+  quote: Based on this analysis, we did not find appreciable differences in the types of recorded
+    neurons between saline and SalB conditions in each task
+  data: dataset
+  expected:
+  - quantity: neurons clustered, all VTA neurons within 500 um of an identified dopamine neuron
+    value: 761
+    tolerance: 0
+  criterion: All VTA neurons within 500 um of an identified dopamine neuron, auROC of odor A
+    (ISI 2.0 s) responses against baseline in time bins, k-means with 3 clusters (Figure S4A
+    legend; bins, baseline and distance metric are not given, 100 ms bins, the 1 s before odor
+    onset and Euclidean distance are standard choices). The paper reports no test; the counts
+    read from the extracted Figure S4B text are, in the order printed (type 1, 2, 3), task 1
+    saline 138, 27, 17; task 1 SalB 118, 24, 15; task 2 saline 164, 14, 39; task 2 SalB 150, 14,
+    41 (they sum to 761). The difference is judged by a chi-square test of type by drug within
+    each task, a standard choice. Reproduced when neither task shows p < 0.05. These neurons go
+    beyond the dopamine neurons vta-1 describes.
+- id: fig4a-task1-saline-post-decrease
+  statement: In task 1 under saline, dopamine post-reward responses on odor A trials decreased
+    as the ISI grew (42 neurons).
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 1; Figure 4A
+  quote: In task 1, post-reward responses decreased as a function of time (Figure 4A, colored
+    lines; F8,328 = 12.6
+  statistics:
+  - test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 328) = 12.6 (13 in the Figure 4A legend)
+    p: 9.1e-16
+    n: 42 neurons
+  data: dataset
+  expected:
+  - quantity: dopamine neurons, task 1 saline
+    value: 42
+    tolerance: 0
+  criterion: Task 1 saline neurons, rewarded odor A trials in the first 40 min after recording
+    onset. Post-reward response as fixed in the opening comment, one mean per neuron and ISI;
+    additive two-way ANOVA (ISI, neuron). Reproduced when the ISI effect has p < 0.05 and the
+    slope of the neuron-averaged response on ISI is negative. The neuron count is reported.
+- id: fig4b-task2-saline-post-increase
+  statement: In task 2 under saline, dopamine post-reward responses on odor A trials increased
+    as the ISI grew (41 neurons).
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 1; Figure 4B
+  quote: In contrast, in task 2, postreward responses increased as a function of time (Figure 4B,
+    colored lines; F8,320 = 3.7
+  statistics:
+  - test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 320) = 3.7
+    p: 3.8e-4
+    n: 41 neurons
+  data: dataset
+  expected:
+  - quantity: dopamine neurons, task 2 saline
+    value: 41
+    tolerance: 0
+  criterion: As fig4a-task1-saline-post-decrease, on task 2 saline neurons and rewarded odor A
+    trials. Reproduced when the ISI effect has p < 0.05 and the slope of the neuron-averaged
+    response on ISI is positive.
+- id: fig4b-odorc-below-latest-odora
+  statement: In task 2 under saline, the post-reward response to odor C (ISI 2.8 s) was
+    significantly smaller than that to odor A rewards at 2.8 s, so ISI length alone does not
+    explain the positive temporal modulation.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 1; Figure 4B legend
+  quote: The post-reward response to odor C (with an ISI of 2.8 s; Figure 3F) was significantly
+    smaller than the post-reward response to the latest possible odor A reward, which also had an
+    ISI of 2.8 s
+  statistics:
+  - test: two-way ANOVA, factors ISI and neuron
+    statistic: F(1, 41) = 22.4
+    p: 2.7e-5
+    n: 41 neurons
+  data: dataset
+  criterion: Task 2 saline neurons; per neuron the mean post-reward response on rewarded odor C
+    trials and on odor A trials rewarded at 2.8 s; additive two-way ANOVA (condition, neuron).
+    Reproduced when p < 0.05 with odor C smaller. The reported F(1, 41) does not match the
+    F(1, 40) such a test gives on 41 neurons; the test on trials (condition and neuron as
+    factors over single trials) is a reading as well, and both are run.
+- id: fig4ab-saline-pre-decrease
+  statement: Under saline, pre-reward firing on odor A trials decreased over time in both
+    tasks.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 1; Figure 4A and 4B
+    legends
+  quote: In addition, pre-reward firing rates decreased over time (Figures 4A and 4B, black lines;
+    F8,328 > 9.0
+  statistics:
+  - about: task 1 saline
+    test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 328) = 15 (legend; F > 9.0 in the Results)
+    p: 3.5e-11
+  - about: task 2 saline
+    test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 320) = 14
+    p: 5.3e-18
+  data: dataset
+  criterion: Task 1 and task 2 saline neurons, rewarded odor A trials; pre-reward response as
+    fixed in the opening comment, one mean per neuron and ISI; additive two-way ANOVA (ISI,
+    neuron). The window is 0 to 400 ms before reward in the Methods and 0 to 200 ms in the
+    Figure 4A legend; both are run. Reproduced when, under a reading, both tasks have p < 0.05
+    and a negative slope of the neuron-averaged pre-reward response on ISI.
+- id: fig4c-task1-salb-post-decrease
+  statement: In task 1 under SalB (mPFC inactivation), post-reward responses still decreased
+    as the ISI grew, as under saline (42 neurons).
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure 4C
+  quote: In inactivation sessions, post-reward dopamine responses decreased as a function of time,
+    similar to the control data (Figure 4C, colored lines; F8,328 = 11
+  statistics:
+  - test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 328) = 11
+    p: 3.3e-14
+    n: 42 neurons
+  data: dataset
+  expected:
+  - quantity: dopamine neurons, task 1 SalB
+    value: 42
+    tolerance: 0
+  criterion: As fig4a-task1-saline-post-decrease, on task 1 SalB neurons. Reproduced when the
+    ISI effect has p < 0.05 and the slope of the neuron-averaged response on ISI is negative.
+- id: fig4d-task2-salb-flat
+  statement: In task 2 under SalB, mPFC inactivation abolished the increase of post-reward
+    responses with ISI; the ISI effect was not significant (47 neurons).
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure 4D
+  quote: Strikingly, in task 2, mPFC inactivation abolished the pattern of increasing post-reward
+    RPEs across time (Figure 4D, colored lines; F8,368 = 0.69, p = 0.70
+  statistics:
+  - test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 368) = 0.69
+    p: 0.7
+    n: 47 neurons
+  data: dataset
+  expected:
+  - quantity: dopamine neurons, task 2 SalB
+    value: 47
+    tolerance: 0
+  criterion: A claim of absence, judged on the paper's test, the additive two-way ANOVA (ISI,
+    neuron) of post-reward responses on task 2 SalB neurons, rewarded odor A trials, at alpha
+    0.05. Reproduced when the ISI effect has p >= 0.05; not reproduced when p < 0.05. The F, p
+    and slope of the neuron-averaged response on ISI are given either way.
+- id: figs5b-task2-salb-below-free-water
+  statement: Task 2 SalB post-reward responses on odor A trials, though flat, were still
+    smaller than responses to unexpected (free) water, at about 55% of them.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure S5B
+  quote: although the responses were still smaller ... compared with their responses to unexpected
+    reward (Figure S5B)
+  data: dataset
+  expected:
+  - quantity: task 2 SalB odor A post-reward response as a fraction of the free water response
+    value: 0.55
+    tolerance: 0.055
+  criterion: Task 2 SalB neurons with a free water response. Per neuron, baseline-subtracted
+    post-reward spikes (50 to 200 ms) on odor A trials divided by baseline-subtracted spikes
+    after free water (Figure S5A legend). The free water window is 0 to 300 ms in the Methods;
+    the S5 legend divides spike counts over windows of different length, so the count ratio is
+    the main reading and the rate ratio a variant. The mean over neurons and ISIs is compared
+    with 0.55. The free water lick criterion is applied where licks exist; all free water
+    deliveries is the other reading.
+- id: fig4cd-salb-pre-decrease
+  statement: Under SalB, pre-reward responses still decreased over time in both tasks.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure 4C and 4D
+    legends
+  quote: Interestingly, pre-reward RPEs in both tasks 1 and 2 decreased over time, similar to the
+    control ... condition (Figures 4C and 4D, black lines; F8,368 > 14
+  statistics:
+  - about: task 1 SalB
+    test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 328) = 16
+    p: 2.4e-19
+  - about: task 2 SalB
+    test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 368) = 14
+    p: 2.7e-17
+  data: dataset
+  criterion: As fig4ab-saline-pre-decrease, on task 1 and task 2 SalB neurons, with both
+    pre-reward windows. Reproduced when, under a reading, both tasks have p < 0.05 and a
+    negative slope of the neuron-averaged pre-reward response on ISI.
+- id: figs6-salb-without-kord
+  statement: In two task 2 mice lacking KORD, SalB left the increase of post-reward responses
+    with ISI intact (26 neurons, 18 with positive slopes), so the effect is due to mPFC
+    inactivation and not SalB itself.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure S6F to S6H
+  quote: F8,200 = 2.18, p = 0.03, 2-way ANOVA ... F8,200 = 14.98, p = 1.1 × 10-6. (H) 18/26 neurons
+    displayed positive temporal modulation
+  statistics:
+  - about: post-reward firing on ISI
+    test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 200) = 2.18
+    p: 0.03
+    n: 26 neurons
+  - about: pre-reward firing on ISI
+    test: two-way ANOVA, factors ISI and neuron
+    statistic: F(8, 200) = 14.98
+    p: 1.1e-6
+    n: 26 neurons
+  data: dataset
+  expected:
+  - quantity: neurons with positive slope
+    value: 18
+    tolerance: 1.8
+  - quantity: neurons recorded
+    value: 26
+    tolerance: 0
+  criterion: Dopamine neurons of the two no-KORD task 2 mice under SalB, rewarded odor A trials,
+    tests as in fig4b-task2-saline-post-increase and slopes as in fig5f-task2-slope-signs.
+    Reproduced when the post-reward ISI effect has p < 0.05 with a positive slope of the average
+    and the positive-slope count is within tolerance. vta-1 is described as holding 8 mice, so
+    these neurons may not be in it.
+- id: figs6ce-kord-task1-animal
+  statement: In the task 1 mouse recorded with an mPFC tetrode as well, SalB inhibited the
+    majority of recorded mPFC neurons, so KORD was effective in task 1 too.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure S6A to S6E
+    legends
+  quote: We confirmed that KORD inhibited the majority of mPFC neurons in this task 1 animal
+    (Figures S6C–S6E)
+  data: dataset
+  criterion: mPFC units of the one task 1 mouse with a tetrode in the mPFC (Figure S6A), SalB
+    sessions. A neuron is inhibited when its firing rate more than 15 min after injection is below
+    half its baseline rate, the baseline being the first 5 min after SalB injection (Figure S6C to
+    S6E legends). The paper gives no count or test. Reproduced when more than half of these
+    neurons are inhibited. These recordings are not described in vta-1.
+- id: anova-time-task-drug-interaction
+  statement: In an ANOVA of post-reward responses over all neurons, reward time interacted with
+    task 1, with task 2 and with drug in task 2, but not with drug in task 1, so SalB changed the
+    temporal modulation only in task 2.
+  source: Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 3
+  quote: Task and drug, only in the case of task 2, interacted with the timing variable to explain a
+    significant proportion of variance in post-reward responses
+  statistics:
+  - about: tr x task 1
+    test: ANOVA
+    statistic: F(8, 1347) = 2.2
+    p: 0.027
+  - about: tr x task 2
+    test: ANOVA
+    statistic: F(8, 1347) = 3.2
+    p: 1.1e-3
+  - about: tr x drug x task 2
+    test: ANOVA
+    statistic: F(9, 1347) = 2.6
+    p: 6.2e-3
+  - about: tr x drug x task 1
+    test: ANOVA
+    statistic: F(9, 1347) = 0.79
+    p: 0.62
+  data: dataset
+  criterion: All odor A neurons of the four groups, post-reward responses; terms tr x task 1, tr
+    x task 2, tr x drug x task 1, tr x drug x task 2 and the neuron's free water response, with
+    task 1, task 2 and drug as 0 or 1 indicators (Statistics). tr is categorical over the 9 ISIs,
+    as the 8 degrees of freedom imply. The observation unit is open; the error df of 1347 fits
+    neither the neuron counts nor single trials. Readings are (a) one mean per neuron and ISI,
+    neurons without a free water response left out; (b) single rewarded odor A trials. Reproduced
+    when, under a reading, the first three terms have p < 0.05 and tr x drug x task 1 has p >=
+    0.05.
+- id: fig5f-task2-slope-signs
+  statement: In task 2, 29 of 41 neurons (70%) had positive slopes of post-reward response on
+    ISI under saline and 12 of 41 negative, while under SalB 24 of 47 (51%) had negative slopes.
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 1; Figure 5F
+  quote: Under the control condition, 29 of 41 neurons (70%) displayed positive slopes (slope [m] >
+    0), whereas 12 of 41 (29%) displayed negative slopes (Figure 5F). In contrast, 24 of 47 (51%)
+    displayed negative slopes under the inactivation condition
+  data: dataset
+  expected:
+  - quantity: task 2 saline neurons with positive slope
+    value: 29
+    tolerance: 2.9
+  - quantity: task 2 saline neurons with negative slope
+    value: 12
+    tolerance: 1.2
+  - quantity: task 2 SalB neurons with negative slope
+    value: 24
+    tolerance: 2.4
+  criterion: Per neuron, a least-squares line of the post-reward response (spikes/s, 50 to 200
+    ms, baseline-subtracted) on ISI over its rewarded odor A trials (Results; Figure 5 legend).
+    Baseline subtraction trial by trial, by the neuron's mean baseline, or none are the readings
+    (only the first can change a slope); all are run. Reproduced when under a reading all three
+    counts are within tolerance.
+- id: fig5e-task1-significant-slopes-unchanged
+  statement: In task 1 the proportion of significant negative against positive slopes did not
+    differ between saline (16 negative, 0 positive) and SalB (16 negative, 2 positive).
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 1; Figure 5E
+  quote: the proportion of significant slopes showing negative versus positive modulation
+    was not significantly different between drug and control conditions (Figure 5E; saline, 16
+    negative, 0 positive; SalB, 16 negative, 2 positive; p = 0.49, Fisher's exact test)
+  statistics:
+  - test: Fisher's exact test
+    p: 0.49
+    n: 42 saline and 42 SalB task 1 neurons
+  data: dataset
+  expected:
+  - quantity: task 1 saline significant negative slopes
+    value: 16
+    tolerance: 1.6
+  - quantity: task 1 saline significant positive slopes
+    value: 0
+    tolerance: 1
+  - quantity: task 1 SalB significant negative slopes
+    value: 16
+    tolerance: 1.6
+  - quantity: task 1 SalB significant positive slopes
+    value: 2
+    tolerance: 1
+  criterion: Slopes as in fig5f-task2-slope-signs on task 1 neurons; a slope is significant when
+    p < 0.05 for the slope coefficient (Figure 5 legend). Tolerance on counts of 0 and 2 is one
+    neuron, as 10% of so small a count is below one. A claim of absence for the test, judged on
+    the paper's two-sided Fisher exact test of sign by drug at alpha 0.05; reproduced when it is
+    p >= 0.05 and the counts are within tolerance, not reproduced when p < 0.05.
+- id: fig5f-task2-significant-slopes-shift
+  statement: In task 2 the proportions of significant negative and positive slopes changed
+    under SalB (saline 1 negative, 9 positive; SalB 9 negative, 7 positive), so neurons were
+    more likely to show significant negative modulation under SalB.
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 1; Figure 5F
+  quote: whereas in task 2, the proportions of significant slopes showing negative versus positive
+    modulation were significantly altered (Figure 5F; saline, 1 negative, 9 positive; SalB, 9
+    negative, 7 positive; p = 4.1 3 10
+  statistics:
+  - test: Fisher's exact test
+    p: 0.041
+    n: 41 saline and 47 SalB task 2 neurons
+  data: dataset
+  expected:
+  - quantity: task 2 saline significant negative slopes
+    value: 1
+    tolerance: 1
+  - quantity: task 2 saline significant positive slopes
+    value: 9
+    tolerance: 1
+  - quantity: task 2 SalB significant negative slopes
+    value: 9
+    tolerance: 1
+  - quantity: task 2 SalB significant positive slopes
+    value: 7
+    tolerance: 1
+  criterion: Slopes and significance as in fig5e-task1-significant-slopes-unchanged on task 2
+    neurons; tolerance one neuron (10% is below one). Reproduced when the two-sided Fisher exact
+    test of sign by drug has p < 0.05 with a larger share of negative slopes under SalB, and the
+    counts are within tolerance; partially reproduced when the test holds and a count does not.
+- id: fig4e-task2-slope-distribution-shift
+  statement: In task 2 the distribution of slopes under SalB shifted toward smaller values than
+    under saline.
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 2; Figures 4E and 5F
+  quote: Accordingly, the distribution of slopes under the inactivation condition shifted
+    significantly toward smaller values in task 2
+  statistics:
+  - test: Wilcoxon rank-sum test
+    statistic: z = 2.1
+    p: 0.038
+    n: 41 saline and 47 SalB task 2 neurons
+  data: dataset
+  depends_on:
+  - fig5f-task2-slope-signs
+  criterion: Slopes as in fig5f-task2-slope-signs. Reproduced when the two-sided rank-sum test
+    of saline against SalB slopes has p < 0.05 with the SalB median lower.
+- id: fig5e-task1-slope-distribution-unchanged
+  statement: In task 1 the distribution of slopes did not differ between saline and SalB.
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 2; Figure 5E
+  quote: The distribution of slopes was not different under the SalB condition in task 1 (Figure 5E;
+    medianSalinesmedianSalB, z = 0.14, p = 0.89
+  statistics:
+  - test: Wilcoxon rank-sum test
+    statistic: z = 0.14
+    p: 0.89
+    n: 42 saline and 42 SalB task 1 neurons
+  data: dataset
+  criterion: A claim of absence, judged on the paper's test, the two-sided Wilcoxon rank-sum test
+    of task 1 saline against SalB slopes (as in fig5f-task2-slope-signs) at alpha 0.05.
+    Reproduced when p >= 0.05; not reproduced when p < 0.05; the median difference is given
+    either way.
+- id: anova-slopes-task-drug
+  statement: In an ANOVA of normalized slopes, task and task 2 x drug explained significant
+    variance and task 1 x drug did not, so the slope distribution differed between tasks and
+    SalB changed it only in task 2.
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 2
+  quote: Task and task 2 3 drug both explained a significant level of variance in the slopes ...
+    whereas task 1 3 drug did not explain a significant level of variance in the slopes
+  statistics:
+  - about: task
+    test: ANOVA
+    statistic: F(1, 163) = 2.2
+    p: 1.7e-5
+  - about: task 2 x drug
+    test: ANOVA
+    statistic: F(1, 163) = 4.7
+    p: 0.032
+  - about: task 1 x drug
+    test: ANOVA
+    statistic: F(1, 163) = 0.065
+    p: 0.94
+  data: dataset
+  criterion: Per neuron, post-reward responses divided by its free water response before the
+    slope is fitted (Results), slope as in fig5f-task2-slope-signs; ANOVA with terms task, task
+    1 x drug and task 2 x drug as 0 or 1 indicators (Statistics). The printed F(1, 163) = 2.2 for
+    task does not give p = 1.7e-5, so the claim is judged on p. Reproduced when task and task 2 x
+    drug have p < 0.05 and task 1 x drug p >= 0.05. Neurons without a free water response are
+    left out; with no lick data, all free water deliveries is the other reading. The error df of
+    163 with three terms imply 167 neurons of the 172, the same number the df of the Figure S5C
+    ANOVAs imply (see figs5c-odorbc-normalized), which supports leaving 5 neurons out.
+- id: fig5f-task2-slope-variance-up
+  statement: In task 2 the variance of slopes was significantly greater under SalB than under
+    saline (about 20.0 against 10.2), seen in individual mice as well.
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 3; Figure 5F and inset
+  quote: The variance of the slopes was significantly greater under the inactivation condition in
+    task 2
+  statistics:
+  - test: F-test for equality of two variances
+    statistic: F(40, 46) = 0.51
+    p: 0.03
+    n: 41 saline and 47 SalB task 2 neurons
+  data: dataset
+  depends_on:
+  - fig5f-task2-slope-signs
+  expected:
+  - quantity: ratio of saline to SalB slope variance, task 2
+    value: 0.51
+    tolerance: 0.051
+  - quantity: task 2 SalB slope variance
+    value: 20.0
+    tolerance: 2.0
+    unit: (spikes/s per s)^2
+  - quantity: task 2 saline slope variance
+    value: 10.2
+    tolerance: 1.02
+    unit: (spikes/s per s)^2
+  criterion: Slopes as in fig5f-task2-slope-signs, in spikes/s per s (the example slopes of
+    Figure 5A to 5D fit this unit). The variances are printed only in Figure 5 and were assigned
+    to groups from the extracted text by their ratio (10.2 over 20.0 is the reported 0.51).
+    Reproduced when the two-sided F-test has p < 0.05 with SalB larger and the ratio is within
+    tolerance; the variances are reported against their values. The per-mouse inset is shown as
+    a description; the paper gives no test for it.
+- id: fig5e-task1-slope-variance-unchanged
+  statement: In task 1 the variance of slopes was not significantly greater under SalB (about
+    14.9 against 8.8).
+  source: Results, Individual Neurons Recorded in Task 2, paragraph 3; Figure 5E
+  quote: The variance of the slopes was not significantly greater under the inactivation condition
+    in task 1
+  statistics:
+  - test: F-test for equality of two variances
+    statistic: F(41, 41) = 0.59
+    p: 0.1
+    n: 42 saline and 42 SalB task 1 neurons
+  data: dataset
+  criterion: A claim of absence, judged on the paper's two-sided F-test for equality of
+    variances of task 1 saline against SalB slopes (as in fig5f-task2-slope-signs) at alpha
+    0.05. Reproduced when p >= 0.05; not reproduced when p < 0.05. The ratio is compared with
+    0.59 and the variances with 8.8 (saline) and 14.9 (SalB), read from the extracted Figure 5
+    text by their ratio.
+- id: fig6ab-odorc-above-odorb
+  statement: In task 2, post-reward responses after odor C (2.8 s) were slightly larger than
+    after odor B (1.2 s), under 1 Hz, significant under saline and not under SalB, and the
+    difference was not larger under inactivation.
+  source: Results, mPFC Inactivation Spared Timing-Related Aspects, paragraph 1; Figure 6A and 6B
+    legend
+  quote: However, this difference was slight (<1 Hz) and was not significantly larger in the
+    inactivation condition (z = 0.30, p = 0.76, Wilcoxon rank-sum test)
+  statistics:
+  - about: odor C against odor B, task 2 saline
+    test: two-way ANOVA, factors neuron and odor
+    statistic: F(1, 40) = 5.8
+    p: 0.02
+  - about: odor C against odor B, task 2 SalB
+    test: two-way ANOVA, factors neuron and odor
+    statistic: F(1, 40) = 2.6
+    p: 0.11
+  - about: C minus B difference, saline against SalB
+    test: Wilcoxon rank-sum test
+    statistic: z = 0.30
+    p: 0.76
+  data: dataset
+  expected:
+  - quantity: odor C minus odor B post-reward response, task 2 saline
+    value: 0.95
+    tolerance: 0.095
+    unit: spikes/s
+  - quantity: odor C minus odor B post-reward response, task 2 SalB
+    value: 1.0
+    tolerance: 0.1
+    unit: spikes/s
+  criterion: Task 2 neurons, rewarded odor B and C trials, post-reward response per neuron as in
+    the opening comment; additive two-way ANOVA (odor, neuron) in each condition; per-neuron C
+    minus B compared between saline and SalB by a two-sided rank-sum test. The SalB F(1, 40)
+    does not match 47 neurons; the counts used are reported. Reproduced when the saline ANOVA
+    has p < 0.05 with C larger, both differences are within tolerance, and the rank-sum test has
+    p >= 0.05 (the absence part, judged on that test alone).
+- id: fig6cd-omission-dips-intact
+  statement: On task 2 omission trials of odors B and C, dopamine neurons paused at the usual
+    reward time, below baseline, under both saline and SalB.
+  source: Results, mPFC Inactivation Spared Timing-Related Aspects, paragraph 1; Figure 6C and 6D
+    legend
+  quote: The decrease in spikes during the omission ''dip'' was significantly smaller than baseline
+    under both the control and inactivation conditions
+  statistics:
+  - about: saline, odor B
+    test: two-way ANOVA, factors neuron and time window
+    statistic: F(1, 40) = 37
+    p: 3.8e-7
+  - about: saline, odor C
+    test: two-way ANOVA, factors neuron and time window
+    statistic: F(1, 40) = 14
+    p: 7.0e-4
+  - about: SalB, odor B
+    test: two-way ANOVA, factors neuron and time window
+    statistic: F(1, 40) = 13
+    p: 9.0e-4
+  - about: SalB, odor C
+    test: two-way ANOVA, factors neuron and time window
+    statistic: F(1, 40) = 12
+    p: 1.3e-3
+  data: dataset
+  criterion: Task 2 neurons, omission trials of odor B and odor C. Per neuron, firing rate 0 to 1
+    s after the usual reward time (1.2 s or 2.8 s after odor onset) and 0 to 1 s before odor
+    onset (Figure 6 legend; Methods); additive two-way ANOVA (window, neuron) for each drug and
+    odor. Reproduced when all four have p < 0.05 with the omission window lower. The Results
+    print F(1, 47) > 12.4 and the legend F(1, 40) for both drugs; the counts used are reported.
+- id: figs5c-odorbc-normalized
+  statement: Odor B and C post-reward responses, as a fraction of free water responses, did not
+    differ between saline and SalB in either task, and were larger in task 2 (about 55%) than in
+    task 1 (about 45%) under both drugs.
+  source: Discussion, paragraph 7; Figure S5C legend
+  quote: We found that the responses in the 90%-rewarded task were suppressed to ... 55% of free
+    water responses and were not significantly different between saline and SalB conditions (Figure
+    S5C). Furthermore, these task 2 responses (90% rewarded) were significantly bigger than in task
+    1 (100% rewarded) under both the saline and SalB conditions
+  statistics:
+  - about: task 1, SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 162) = 2.4
+    p: 0.12
+  - about: task 2, SalB against saline
+    test: one-way ANOVA
+    statistic: F(1, 168) = 0.06
+    p: 0.81
+  - about: saline, task 1 against task 2
+    test: one-way ANOVA
+    statistic: F(1, 158) = 19
+    p: 2.6e-5
+  - about: SalB, task 1 against task 2
+    test: one-way ANOVA
+    statistic: F(1, 172) = 5.3
+    p: 0.023
+  data: dataset
+  expected:
+  - quantity: task 2 normalized odor B and C post-reward response
+    value: 0.55
+    tolerance: 0.055
+  - quantity: task 1 normalized odor B and C post-reward response
+    value: 0.45
+    tolerance: 0.045
+  criterion: Per neuron with a free water response, post-reward spikes on rewarded odor B and on
+    odor C trials, each divided by its free water spikes (Figure S5C legend); the observations
+    are neuron and odor pairs, B and C pooled, as the degrees of freedom imply (the four error df
+    give 82, 85, 80 and 87 neurons per comparison, consistent with 167 of the 172 neurons having a
+    free water response, 40 to 42 of them task 1 saline). One-way ANOVAs as
+    listed. Reproduced when both task comparisons have p < 0.05 with task 2 larger, both drug
+    comparisons have p >= 0.05 (absence, judged on these tests), and the two means are within
+    tolerance. Count ratio and rate ratio, and the free water lick criterion against all
+    deliveries, are the readings, as in figs5b-task2-salb-below-free-water.
+- id: figs5d-omission-unchanged-by-salb
+  statement: In task 2, baseline-subtracted omission responses in 200 ms epochs did not differ
+    between saline and SalB for any trial type.
+  source: Figure S5D legend
+  quote: Firing rates at each epoch, in each trial type, were not significantly different between
+    Saline and SalB conditions (P > 0.05 for all comparisons, Bonferroni corrected for multiple
+    comparisons)
+  statistics:
+  - test: not named
+    p: 0.05
+    p_relation: ">"
+    corrected: Bonferroni
+  data: dataset
+  criterion: Task 2 neurons, omission trials of odors A, B and C, baseline-subtracted firing
+    rate in 200 ms epochs from odor onset to 6 s (Figure S5D axes). The test between saline and
+    SalB neurons is not named, nor the family the Bonferroni correction spans. Readings are the
+    two-sided Wilcoxon rank-sum test (the panel's other test is a Wilcoxon test) and the one-way
+    ANOVA (the test of the Figure S5C comparisons between drugs), each with Bonferroni over all
+    epochs and trial types and over the epochs of each trial type. A claim of absence; reproduced
+    when no epoch is significant after correction, not reproduced when any is.
+- id: fig7cd-model-intact
+  statement: The belief state TD model reproduces the data with an intact belief state;
+    post-reward RPEs decrease with ISI in task 1 and increase in task 2, most task 2 simulations
+    have positive slopes, pre-reward RPEs decrease in both tasks, and odors B and C give omission
+    responses at the expected reward time.
+  source: Results, Computational Modeling Implicates the mPFC, paragraph 3; Figure 7C to 7E
+  quote: Post-reward firing in task 1 decreased over time (Figure 7C, left) ... Post-reward firing
+    in task 2 increased over time (Figure 7C, right) ... This revealed that the majority of
+    simulations produced positive temporal modulation over time (Figure 7D)
+  data: dataset
+  criterion: A model claim, using no recorded data, run with the paper's code (commit d667730)
+    and the Methods' settings, Weber fraction 0.05, cue jitter 2 sub-states, gamma 0.93, alpha
+    0.1, 500 training sessions of 50 trials, awgn noise at SNR 12, and 50 simulations (Figure 7
+    legend; the code's 10 is a variant). Slopes are least-squares fits of reward-time RPE on ISI
+    per simulation, as in the code. Reproduced when the averaged task 1 slope is negative, the
+    averaged task 2 slope positive, more than half of task 2 simulations have positive slopes,
+    pre-reward RPE slopes are negative in both tasks, and the averaged omission RPE of odors B
+    and C is negative around the expected reward time.
+- id: fig7fgh-model-belief-impaired
+  statement: Impairing hidden state inference in 60% of simulations recapitulates the
+    inactivation data; task 1 post-reward RPEs still decrease, task 2 averaged RPEs flatten, more
+    task 2 simulations have negative slopes than in the intact model, pre-reward RPEs still
+    decrease, and omission responses remain.
+  source: Results, Computational Modeling Implicates the mPFC, paragraph 4; Figure 7F to 7H
+  quote: We could recapitulate our mPFC inactivation data by running 60% of the simulations with
+    this impoverished belief state
+  data: dataset
+  depends_on:
+  - fig7cd-model-intact
+  criterion: A model claim run as fig7cd-model-intact, with 30 of 50 simulations impaired
+    (O(30,30,1) set to 1 and O(30,30,2) to 1e-7, as in the code; Methods, Impairing the belief
+    state). The paper fixes no threshold for flattened; it is judged against the intact model.
+    Reproduced when the averaged task 1 slope stays negative, the absolute averaged task 2 slope
+    is smaller than in the intact run, the fraction of negative task 2 slopes is larger than in
+    the intact run, task 2 pre-reward slopes stay negative, and odor B and C omission RPEs stay
+    negative around the expected reward time. The impairment acts on task 2 only, as the Methods
+    say; in the code the flag changes the observation matrix of the task 2 simulations (odor A
+    with omissions, odors B and C) and leaves task 1 as intact (SimulateOdorA_withoutOmission.m
+    sets the same values either way).
+- id: fig7ijk-model-timing-impaired
+  statement: Impairing timing by blurring the transition matrix flattens task 1 post-reward RPEs
+    and pre-reward RPEs in both tasks, leaves most task 2 simulations with positive slopes, and
+    abolishes omission responses, unlike the data.
+  source: Results, Computational Modeling Implicates the mPFC, paragraph 5; Figure 7I to 7K
+  quote: For example, task 1 post-reward responses were also flattened (Figure 7I, left),
+    pre-reward responses in both tasks 1 and 2 were flattened (Figure 7I, black lines), most
+    simulations still showed positive modulation of post-reward responses over time (Figure 7J),
+    and reward omission responses were abolished (Figure 7K)
+  data: dataset
+  depends_on:
+  - fig7cd-model-intact
+  criterion: A model claim run as fig7cd-model-intact with a larger Weber fraction. The Methods
+    give a range of 0.5 to 1.5 and Figure S7D shows 0.56; readings are (a) a Weber fraction drawn
+    uniformly from 0.5 to 1.5 per simulation (the code's Weber + Randomness_Weber * rand); (b)
+    0.56 for all. Reproduced when, under a reading, the absolute averaged task 1 post-reward slope
+    and the absolute averaged pre-reward slopes of both tasks are smaller than in the intact run,
+    more than half of task 2 simulations
+    have positive slopes, and the averaged odor B and C omission RPE shows no dip below the
+    intact run's minimum near the expected time; the paper gives no threshold for abolished, so
+    the dip depth is reported against the intact run.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. The 16 p-values it flagged are all in the text, printed by the extraction as "N 3 10" with a garbled minus sign for N × 10^-k (Results and legends of Figures 3, 4, 5 and 6); each was read and matches.
+  - fig3g-anticipatory-licking. The criterion fixed the windows (and an odor D span "the same as to reward", which odor D lacks) and the observation unit as if the paper gave them. It gives neither. Named the window readings (equal-span counts, or rates against the 1 s before odor onset), set the odor D span to 0 to 2.8 s as a standard choice, and said the error df 36 and 41 fit no design over the 38 and 40 sessions of Figure S3A, with all sessions of a task and each task and drug as readings.
+  - figs3-task1-licks-more-sooner. Which trials the sigmoid fits use is not given; named the 2.8 s trials of Figure S3A and all odor A trials as readings.
+  - figs3-salb-spares-licking. The criterion tests the epoch lick rates, lick slope and sigmoid steepness, but statistics held only the anticipatory lick and x50 tests. Added the Figure S3B, S3C, S3F and S3I tests, noting that the S3F legend labels the slope tests as anticipatory licks.
+  - figs5d-omission-unchanged-by-salb. The test is not named and the Bonferroni family is not given; the criterion chose one of each. Named the rank-sum test and the one-way ANOVA (used between drugs in Figure S5C), each with the correction over all epochs and over each trial type, as readings.
+  - figs5c-odorbc-normalized and anova-slopes-task-drug. Added that the error df of the four Figure S5C ANOVAs and of the slope ANOVA all imply 167 of the 172 neurons, which supports leaving out neurons without a free water response.
+  - fig7fgh-model-belief-impaired. The criterion said the code's impairment flag applies to every task and named task 2 only as another reading. In the code at d667730, SimulateOdorA_withoutOmission.m sets the same observation matrix whether impaired or not, so only task 2 simulations are impaired, as the Methods say; the second reading was removed.
+  - fig7ijk-model-timing-impaired. The paper says pre-reward responses were flattened in both tasks 1 and 2 (Results, Computational Modeling, paragraph 5); the statement and criterion had task 1 only. Both now include task 2.
+  - Added claim figs6ce-kord-task1-animal (Results, mPFC Inactivation Impaired Dopamine Responses, paragraph 2; Figure S6C to S6E), a control finding with no claim. Its baseline is the first 5 min after SalB, as the S6C legend says.
+  - Open. fig5f-task2-significant-slopes-shift. The two-sided Fisher exact test on the printed counts (saline 1 negative, 9 positive; SalB 9 negative, 7 positive) gives p = 0.037, not the reported 0.041; the conclusion at alpha 0.05 is the same, and the counts may be rounded or the test computed otherwise. The criterion is left as it is.
+  - Open. fig2-kord-suppresses-mpfc. The pie charts of Figure 2F print counts (377, 202, 124, 32, and 599 and 156 on the axes of 2H) that cannot be assigned to groups from the extracted text, and the PDF could not be rendered here; the claim rests on the "more than 60%" of the Results.
+  - Open. The degrees of freedom of fig4b-odorc-below-latest-odora (F(1, 41)), fig6ab-odorc-above-odorb and fig6cd-omission-dips-intact (F(1, 40) for SalB with 47 neurons; F(1, 47) in the Results) and anova-time-task-drug-interaction (error df 1347) do not follow from the neuron counts; the criteria already name the readings and ask for the counts used.
