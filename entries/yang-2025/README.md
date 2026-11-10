@@ -22,7 +22,7 @@ rests on that assumption.
 | Seizure duration proportion, seizure frequency | Blocked: data missing |
 | PSD ratio, alpha and theta or beta up and gamma down after target stimulation | Not reproduced |
 | No difference in the other bands | Not reproduced |
-| Lower IIS rate 15 to 45 s after target stimulation | Reproduced |
+| Lower IIS rate 15 to 45 s after target stimulation | Reproduced, resting on one rat (R7) |
 | Interictal IIS, IIS against seizure frequency, interictal HFOs | Blocked: data missing |
 | No difference in ictal ripples | Reproduced |
 | Target stimulation reduces ictal fast ripples | Not reproduced |
@@ -30,7 +30,7 @@ rests on that assumption.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The Granger causality targets come back for 20 of the 28 baseline groups when cf_w is read as
+The Granger causality targets come back for 21 of the 28 baseline groups (AIC order) when cf_w is read as
 causal outflow (out minus in strength), which settles a sign the Methods state the other way. The
 dandiset's baseline groups hold some stimulated seizures, some clip names occur in two groups, and
 the stimulation order of two rats differs from the paper's Figure S2. The attempt record, with the

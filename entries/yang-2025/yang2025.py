@@ -303,13 +303,13 @@ def conditional_gc(X, p):
     return F
 
 
-def onset_gc(x, onset, crit="bic"):
+def onset_gc(x, onset, crit="bic", max_order=GC_MAX_ORDER):
     """Mean GC matrix over the 9 windows of the first 5 s after onset, and the orders used."""
     Fs, orders = [], []
     for a, b in GC_WINDOWS:
         i0, i1 = int(round((onset + a) * FS)), int(round((onset + b) * FS))
         X = x[i0:i1].astype(float)
-        p = select_order(X, crit=crit)
+        p = select_order(X, max_order=max_order, crit=crit)
         Fs.append(conditional_gc(X, p))
         orders.append(p)
     return np.mean(Fs, axis=0), orders
@@ -347,13 +347,16 @@ def targets_test(cf, alpha=0.05):
 # group, pre from onset to the start of the first train, post the 5 s after the first train
 # ([assumption] "5s after the first stimulation train" read as the 5 s from the train's end,
 # the pause before the next detection); baseline group, pre 0 to 5 s after onset, post 10 to
-# 15 s. Open [criterion]: segment length 1 s or 0.5 s (Hann, 50% overlap), total 0.5-120 Hz or
-# 0-500 Hz.
+# 15 s. The windows are computed under three readings (psd_windows): as worded, "guarded" (the
+# main one, clear of the trains; added after verification round 1, which found post windows
+# reaching the next train) and "guarded_pre5". Open [criterion]: segment length 1 s or 0.5 s
+# (Hann, 50% overlap), total 0.5-120 Hz or 0-500 Hz.
 
 BANDS = {"delta": (0.5, 4), "theta": (4, 8), "alpha": (8, 12), "beta": (12, 30),
          "gamma": (30, 90), "high_gamma": (90, 120)}
 PSD_NPERSEG = (1000, 500)
 PSD_TOTALS = {"0.5-120": (0.5, 120), "0-500": (0, 500)}
+WINDOW_READINGS = ("guarded", "guarded_pre5", "paper")
 
 
 def psd_ratios(seg):
@@ -372,14 +375,39 @@ def psd_ratios(seg):
     return out
 
 
-def psd_windows(kind, onset, trains):
+TRAIN_GUARD_S = 0.25  # [standard] the train edges are known to one step of find_trains (0.25 s)
+PRE_CAP_S = 5.0  # [assumption] variant: the pre window limited to the 5 s before the first train
+
+
+def psd_windows(kind, onset, trains, reading="guarded"):
+    """Pre and post windows (s) of one seizure, or None when a stimulation clip has no train after
+    onset. Readings: "paper", Methods D as worded (stimulation group: onset to the first train,
+    and the 5 s from the end of the first train); "guarded" (main), the same with TRAIN_GUARD_S
+    kept clear of each train edge and the post window cut where the next train starts, so that no
+    window holds train artefact; "guarded_pre5", as guarded with the pre window limited to the
+    PRE_CAP_S before the first train (onsets detected long before the first train put pre-ictal
+    signal in the pre window). Baseline groups: 0 to 5 s and 10 to 15 s after onset in all."""
     if kind == "baseline":
         return (onset, onset + 5.0), (onset + 10.0, onset + 15.0)
-    first = [t for t in trains if t[1] > onset]
-    if not first:
+    after = [t for t in trains if t[1] > onset]
+    if not after:
         return None
-    t0, t1 = first[0]
-    return (onset, t0), (t1, t1 + 5.0)
+    t0, t1 = after[0]
+    if reading == "paper":
+        return (onset, t0), (t1, t1 + 5.0)
+    g = TRAIN_GUARD_S
+    nxt = after[1][0] - g if len(after) > 1 else np.inf
+    pre0 = onset if reading == "guarded" else max(onset, t0 - g - PRE_CAP_S)
+    return (pre0, t0 - g), (t1 + g, min(t1 + g + 5.0, nxt))
+
+
+def in_trains(t, trains, guard=TRAIN_GUARD_S):
+    """True for times t (s) within a train or within `guard` of one."""
+    t = np.asarray(t, float)
+    m = np.zeros(t.shape, bool)
+    for a, b in trains:
+        m |= (t >= a - guard) & (t <= b + guard)
+    return m
 
 
 # ---------------------------------------------------------------------------------------------
@@ -407,34 +435,61 @@ def detect_iis(xc, base):
 
 
 # ---------------------------------------------------------------------------------------------
-# HFOs during seizures (Methods E). [paper] short line length detector (HFO App, ref. 50);
-# ripples 80-250 Hz, fast ripples 250-500 Hz (here 250-490 Hz, below the 500 Hz Nyquist limit
-# [criterion]). The HFO App's settings are not given and its code was not read here, so
-# [assumption] a line length detector in the manner of Gardner et al. (2007): zero-phase 4th
-# order Butterworth band-pass; line length in sliding windows of HFO_WIN_MS; threshold the
-# HFO_PCT percentile of the channel's line length over the whole clip; an event is a run above
-# threshold lasting at least 4 cycles of the band's lower edge, runs closer than 10 ms merged.
-# The manual review of the paper cannot be repeated. Rates (events/s) in the PSD windows.
+# HFOs during seizures (Methods E). [paper] short line length detector of the HFO App (ref. 50,
+# Zhou et al. 2021, github.com/zelanolab/hfoapp at commit 1ccff19, Functions/HFOAutoDetectorSLL.m,
+# modified from RIPPLELAB's f_findHFOxSLL); ripples 80-250 Hz, fast ripples 250-490 Hz (below the
+# 500 Hz Nyquist limit [criterion]). [criterion: fig6cd, "the HFO App defaults are used"] The
+# defaults of its detector dialog (GUIs/ConfigAutoDetector.mlapp): window 5 ms, threshold
+# percentile 97.5, minimum duration 12 ms, no equalization filter, and an epoch equal to the
+# displayed range, here the 600 s clip. The band-pass is FieldTrip's default Butterworth (4th
+# order, two-pass), as HFOFiltData calls it. As in HFOAutoDetectorSLL: energy = 10 x the mean of
+# |diff| over the window, centred; the first and last 0.5% of the clip tapered by a Gaussian
+# window (1% of the length, alpha 5.25); threshold the percentile of the energy over the epoch;
+# an event is a run at or above the threshold longer than the minimum duration. The manual review
+# of the paper cannot be repeated; in its place [assumption] events within TRAIN_GUARD_S of a
+# stimulation train are removed as artefact, and a variant takes the threshold from the samples
+# outside the trains.
 
 HFO_BANDS = {"ripple": (80, 250), "fast_ripple": (250, 490)}
-HFO_WIN_MS = {"ripple": 20, "fast_ripple": 8}
-HFO_PCT = (97.5, 99.0)
+HFO_WIN_S = 0.005
+HFO_PCT = 97.5
+HFO_MIN_DUR_S = 0.012
+HFO_THRESH = ("clip", "outside_trains")
 
 
-def hfo_events(xc, band, pcts=HFO_PCT):
-    """HFO event centres (s) in the 1-D signal xc, one array per threshold percentile."""
+def _sll_energy(xc, band):
     lo, hi = HFO_BANDS[band]
     sos = signal.butter(4, [lo, hi], btype="band", fs=FS, output="sos")
-    y = signal.sosfiltfilt(sos, xc)
-    w = int(HFO_WIN_MS[band] * FS / 1000)
-    c = np.r_[0, np.cumsum(np.abs(np.diff(y)))]
-    ll = c[w:] - c[:-w]
-    min_len = int(np.ceil(4 / lo * FS))
+    v = signal.sosfiltfilt(sos, xc.astype(float))
+    w = int(round(HFO_WIN_S * FS))
+    d = np.abs(np.diff(np.r_[v[0], v]))
+    m = signal.lfilter(np.ones(w), 1, d) / w
+    e = np.zeros(len(m))
+    h = int(np.ceil(w / 2))
+    e[:len(m) - h + 1] = 10 * m[h - 1:]
+    n = int(round(len(e) * 0.01))
+    g = signal.windows.gaussian(n, std=(n - 1) / (2 * 5.25))
+    c = int(np.argmax(g))
+    taper = np.r_[g[:c + 1], np.ones(len(e) - n), g[c + 1:]]
+    return e * taper
+
+
+def hfo_events(xc, band, trains):
+    """HFO event centres (s) in the 1-D signal xc, per threshold reading, with the events within
+    TRAIN_GUARD_S of a train removed."""
+    e = _sll_energy(xc, band)
+    keep = ~in_trains(np.arange(len(e)) / FS, trains)
     out = {}
-    for pct in pcts:
-        thr = np.percentile(ll, pct)
-        ev = [(a + (b + w - a) / 2) / FS for a, b in runs(ll > thr, gap=10) if b + w - a >= min_len]
-        out[pct] = np.array(ev)
+    for th in HFO_THRESH:
+        thr = np.percentile(e if th == "clip" or not keep.any() else e[keep], HFO_PCT)
+        ev = []
+        for a, b in runs(e >= thr):
+            if (b - a + 1) > HFO_MIN_DUR_S * FS:
+                ev.append((a, b))
+        ev = np.array([(a / FS, b / FS) for a, b in ev]).reshape(-1, 2)
+        bad = np.array([any(s <= t1 + TRAIN_GUARD_S and e_ >= t0 - TRAIN_GUARD_S for t0, t1 in trains)
+                        for s, e_ in ev], bool)
+        out[th] = ev[~bad].mean(1) if len(ev) else np.array([])
     return out
 
 
@@ -462,21 +517,26 @@ def process_clip(x, kind):
     if kind == "baseline" and on + 5.0 <= len(x) / FS:
         out["gc_bic"], out["orders_bic"] = onset_gc(x, on, "bic")
         out["gc_aic"], out["orders_aic"] = onset_gc(x, on, "aic")
-    # PSD and HFO windows
-    win = psd_windows(kind, on, trains)
-    out["psd_windows"] = win
-    if win is not None:
+        out["gc_aic30"], out["orders_aic30"] = onset_gc(x, on, "aic", max_order=30)
+    # PSD and HFO windows, under each window reading
+    i = lambda t: int(round(t * FS))
+    out["psd_windows"], out["psd_pre"], out["psd_post"] = {}, {}, {}
+    ev = {(band, c): hfo_events(x[:, c], band, trains) for band in HFO_BANDS for c in range(4)}
+    out["hfo_counts"] = {}
+    for reading in WINDOW_READINGS:
+        win = psd_windows(kind, on, trains, reading)
+        out["psd_windows"][reading] = win
+        if win is None:
+            continue
         (a0, a1), (b0, b1) = win
-        i = lambda t: int(round(t * FS))
-        if a1 - a0 >= 0.5 and b1 <= len(x) / FS:
-            out["psd_pre"] = psd_ratios(x[i(a0):i(a1)])
-            out["psd_post"] = psd_ratios(x[i(b0):i(b1)])
-        hfo = {(band, pct): np.zeros((4, 2), int) for band in HFO_BANDS for pct in HFO_PCT}
-        for band in HFO_BANDS:
-            for c in range(4):
-                for pct, ev in hfo_events(x[:, c], band).items():
-                    hfo[(band, pct)][c] = [((ev >= a0) & (ev < a1)).sum(), ((ev >= b0) & (ev < b1)).sum()]
-        out["hfo_counts"] = hfo
+        if a1 - a0 >= 0.5 and b1 - b0 >= 0.5 and b1 <= len(x) / FS:
+            out["psd_pre"][reading] = psd_ratios(x[i(a0):i(a1)])
+            out["psd_post"][reading] = psd_ratios(x[i(b0):i(b1)])
+        hfo = {(band, th): np.zeros((4, 2), int) for band in HFO_BANDS for th in HFO_THRESH}
+        for (band, c), e in ev.items():
+            for th, t in e.items():
+                hfo[(band, th)][c] = [((t >= a0) & (t < a1)).sum(), ((t >= b0) & (t < b1)).sum()]
+        out["hfo_counts"][reading] = hfo
     # IIS around the seizure, times relative to onset (pre) and to end (post)
     i0 = int(max(0.0, on - IIS_SPAN_S) * FS)
     i_on, i_end = int(on * FS), int(end * FS)
@@ -485,7 +545,10 @@ def process_clip(x, kind):
     if i_on - i0 >= 30 * FS:
         pre, post = [], []
         for c in range(4):
-            base = x[i0:i_on, c]
+            # [assumption] samples within TRAIN_GUARD_S of a train are left out of the threshold
+            # baseline; spikes found there are dropped in the notebook
+            tb = np.arange(i0, i_on) / FS
+            base = x[i0:i_on, c][~in_trains(tb, trains)] if trains else x[i0:i_on, c]
             pk_pre = detect_iis(x[i0:i_on, c], base) + i0
             pk_post = detect_iis(x[i_end:i1, c], base) + i_end
             pre.append(pk_pre / FS - on)
@@ -511,17 +574,21 @@ def process_file(a):
     return meta, clips
 
 
-def load_all(assets=None, workers=3):
+def load_all(assets=None, workers=4):
     """Stream every file of the pinned version (or `assets`) and reduce each clip, `workers`
     files at a time (each worker holds one clip, about 20 MB, at a time). Returns the files'
     metadata and one record per clip."""
+    import multiprocessing
     import os
     from concurrent.futures import ProcessPoolExecutor
-    os.environ.setdefault("OMP_NUM_THREADS", "1")
-    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+    # one linear-algebra thread per worker; the workers are spawned, not forked, so that they load
+    # numpy with this setting (a forked worker keeps the parent's thread pool, and the VAR fits of
+    # several workers then compete for the CPUs: 44 min against 10 min for the whole dandiset)
+    for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+        os.environ[k] = "1"
     assets = list_assets() if assets is None else assets
     files, clips = [], []
-    with ProcessPoolExecutor(workers) as ex:
+    with ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context("spawn")) as ex:
         for meta, cl in ex.map(process_file, assets):
             files.append(meta)
             clips += cl
