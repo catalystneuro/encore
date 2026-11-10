@@ -1,0 +1,1198 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001250",
+  "label": "DANDI:001250"
+ },
+ "page": "datasets/dandi/001250/",
+ "generated": "2026-11-10T23:57:53+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 5,
+  "blocked": 11
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 5,
+  "partially_reproduced": 6,
+  "not_reproduced": 6,
+  "blocked": 4
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "laquitaine-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001250",
+    "version": "0.251012.1648",
+    "doi": "10.48324/dandi.001250/0.251012.1648",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001250"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001250",
+   "label": "DANDI:001250",
+   "dataset_version": "0.251012.1648",
+   "paper": "10.1101/2024.12.04.626805",
+   "paper_title": "Preprint ",
+   "date": "2026-11-05",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41982292755"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "laquitaine-2024",
+   "entry_title": "Spike sorting biases in a detailed cortical model (Laquitaine et al. 2024)",
+   "summary": "The amplitude and noise of the simulated traces rise with depth as in vivo, and Kilosort4 yields far fewer single units than the model predicts, mostly degraded ones. The in vivo amplitude-to-noise range, power-law spectra, six WaveMap profiles (8 clusters in the simulation), log-normal firing rates and the layer 5 selection bias did not reproduce. The accuracy, curation and predictor claims could not be tested, as sortings of the synthetic and 10-minute evoked recordings are missing or analyses were too large. The five manifold claims could not be tested, as the dandiset has no stimulus table.",
+   "description": "Tests the findings of Laquitaine, Imbeni, Tharayil, Isbister and Reimann (bioRxiv 2024) on dandiset 001250, which holds simulated Neuropixels and dense probe recordings of a cortical column model with their ground truth spikes, the in vivo recordings they are compared with, and the paper's sortings. It checks the validation of the simulated traces against in vivo, the firing rates and yields of the sorted units, their accuracy against the ground truth, and the selection bias of the sorters. The manifold analyses of Figure 7 cannot be run, as the dandiset holds no stimulus table.",
+   "notebooks": [
+    {
+     "path": "reproduce_laquitaine_2024.ipynb",
+     "title": "Reproducing Laquitaine et al. (2024) from dandiset 001250",
+     "executed": "notebooks/laquitaine-2024/reproduce_laquitaine_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "ground-truth-neuron-counts",
+     "statement": "The simulations hold spikes from 1,388 model neurons within 50 um of the Neuropixels probe in the spontaneous regime, 1,836 in the 1-hour evoked regime at 20 kHz and 1,552 in the 10-minute evoked regime at 40 kHz, and every one of them fired at least once in the first 10 minutes.",
+     "source": "Methods, Datasets and simulations, Biophysical model, paragraph 1",
+     "quote": "We detected spikes from 1,388 model neurons during the spontaneous activity condition, 1,836 model neurons during the 1-hour evoked condition sampled at 20 kHz, and 1,552 neurons during the 10 minute evoked condition sampled at 40 kHz, within 50 \u00b5m of the Neuropixels probe ... All model neurons fired at least once in the first 10 minutes",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The ground truth tables hold exactly 1,388 (NS), 1,836 (1-hour evoked) and 1,552 (10-minute evoked) units, and every soma is within 50 um of an electrode (largest distance 49.96 um). The statement that every neuron fired in the first 10 minutes does not hold. 78 NS neurons and 213 neurons of the 1-hour evoked recording have no spike in the first 600 s; all of them fire later in their files (none is silent over the whole file). All 1,552 neurons of the 10-minute recording fire. The criterion requires both parts and names no partial outcome, so the claim is not reproduced (changed from partially reproduced after verification round 1).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fitted-trace-maximal-amplitude",
+     "statement": "After gain and noise fitting, the maximal amplitude of the spontaneous Neuropixels simulation (361 uV) matches that of the Marques-Smith recording (362 uV), and the evoked simulation reaches 387 uV.",
+     "source": "Methods, Fitting amplitude and background noise, paragraph 1",
+     "quote": "The spontaneous regime\u2019s maximal amplitude (361 \u00b5V) closely matched Marques-Smith\u2019s (362 \u00b5V), while the evoked regime produced a slightly higher value (387 \u00b5V)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Over the whole first 600 s, under reading (a), after preprocessing, the maxima over cortical sites are 331.1 uV for NS, 363.5 for M and 387.0 for the 1-hour evoked recording (380.0 for the 10-minute one), all within 10% of 361, 362 and 387. Under reading (b), the raw traces, NS 372.7 and M 374.0 are within, and the evoked value is within for the 10-minute recording (421.1) but not for the 1-hour one (435.6). On the 60 s blocks of the first version the outcome was the same (reading b, 360.4, 345.0 and 424.7). The maxima still grow with duration (E40 raw 385.4 after the first 60 s, 421.1 after 600 s).",
+     "deviations": [
+      "The maxima are streamed over the whole first 600 s in 2.5 s blocks, each filtered with 50 ms margins (verifier round 1); the 60 s blocks are shown as a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2m-peak-amplitude-increases-with-depth",
+     "statement": "In both in vivo datasets the median peak amplitude of the traces increased with cortical depth, and the biophysical models reproduced this trend, although their medians differed from in vivo.",
+     "source": "Results, Validation of recording traces, paragraph 2; Figure 2m, o",
+     "quote": "In both Marques-Smith and Horvath\u2019s data, median peak amplitude increased with cortical depth ... While the models\u2019 median peak amplitudes differed from in vivo (most p < 0.01, Mann-Whitney U test), all captured the in vivo trend",
+     "statistics": [
+      {
+       "about": "peak amplitude across layers, in vivo and in each model",
+       "test": "Kruskal-Wallis",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "model against in vivo median peak amplitude, per layer",
+       "test": "Mann-Whitney U test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Kruskal-Wallis across layers gives p = 1.2e-25 (NS), 1.2e-23 (E), 2.2e-07 (DS), 2.0e-32 (M) and 3.6e-25 (H), and the layer medians rise from layer 1 to layer 6 with one inversion in each (layer 6 below layer 5, or for DS layer 4 below layer 2/3). Models differ from in vivo at p < 0.01 in 12 of 15 layer comparisons with H in counts, as the statement's \"most p < 0.01\" says (1 of 5 for DS against H scaled to 0.195 uV per count).",
+     "deviations": [
+      "Traces are six 10 s blocks of the first 10 minutes (60 s per recording), not 10 minutes.",
+      "E is the 1-hour evoked recording (sub-002-fitted), as in the code; the 10-minute recording is shown and gives the same.",
+      "The Horvath files' scale is inconsistent (finding); H in counts is used for DS against H, as the fitted dense model's noise matches H in counts (median 28.3 against 28.7) and not at 0.195 uV per count (5.6). The comparison with H is reported and does not decide the outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2np-noise-increases-with-depth",
+     "statement": "Background noise increased with cortical depth in vivo, and the biophysical models reproduced this trend.",
+     "source": "Results, Validation of recording traces, paragraph 2; Figure 2n, p",
+     "quote": "In vivo background noise also increased with cortical depth ( p < 0.001, Kruskall Wallis, Fig. 2n, p ), a trend reproduced by the biophysical models",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Noise (mean absolute deviation, minimum over 1 s segments) differs across layers in NS (p = 1.4e-35), E (2.9e-34), DS (p below 1e-300), M (1.9e-14) and H (2.0e-31), with medians rising from layer 1 to layer 5 and one inversion at layer 6 in every experiment. The median absolute deviation gives the same pattern.",
+     "deviations": [
+      "Traces are 60 s per recording (six 10 s blocks of the first 10 minutes), not 10 minutes, so the minimum over 1 s segments is over 60 segments, not 600."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2q-anr-within-vivo-range",
+     "statement": "The amplitude-to-noise ratio distributions of the models span a wide dynamic range and lie within the in vivo range, with data between -10 and 10 times the noise level.",
+     "source": "Results, Validation of recording traces, paragraph 2; Figure 2q",
+     "quote": "The distributions of ANRs observed in vivo and in the models showed a wide dynamic range, with alignment of data points between -10 and 10 times the noise level ( Fig. 2q ), particularly in layers 1, 5, and 6. Despite deviations from in vivo due to difference in peak amplitudes, simulated ANRs remained within the in vivo range",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Over the whole first 600 s every experiment has ANR values beyond -10 and +10, but no model lies within its in vivo range widened by 10%. NS (-149.2 to 54.5), E (-158.5 to 58.3) and E40 (-152.7 to 53.5) extend beyond M's widened range (-112.6 to 41.1) at both ends, and DS (-207.7 to 89.8) beyond H's (-177.6 to 68.9) at both ends. On the 60 s blocks, DS lay within H's range and NS and E did not, so the outcome does not depend on the duration. More than 99.7% of the samples of the 60 s blocks have |ANR| below 10 in every experiment.",
+     "deviations": [
+      "The ANR extremes use the minimum and maximum of the preprocessed traces over the whole first 600 s, divided by each site's median absolute deviation from the 60 s blocks (verifier round 1); the histograms use the 60 s blocks."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2r-power-law-spiking-band",
+     "statement": "In simulated and real traces, power decreased with frequency in the spiking band (0.3 to 6 kHz) and followed a power law in all layers.",
+     "source": "Results, Validation of recording traces, paragraph 3; Figure 2r",
+     "quote": "In both the simulated and real traces, power decreased with increasing frequency in the frequency band of spiking activity (0.3 - 6 KHz) and followed a power law in all layers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The log-log slope of the median normalised spectrum in 0.3 to 6 kHz is negative in all 30 layer and experiment pairs, but R2 is 0.9 or more in only 7 (M layers 5 and 6, all five H layers). In the models R2 ranges from 0.05 (DS layer 1) to 0.89 (10-minute E, layer 5); NS ranges from 0.41 to 0.85. The R2 threshold is the claims file's reading of \"followed a power law\".",
+     "deviations": [
+      "Spectra are Welch averages over six 10 s blocks, not the first 10 minutes."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2s-v-ap-power-and-scaling-increase-with-depth",
+     "statement": "In the biophysical models the power in the spike frequency band and the power-law scaling slope in the spiking band increased with cortical depth, as in vivo; the dense probe model had weaker power and slope than in vivo but within the in vivo range.",
+     "source": "Results, Validation of recording traces, paragraph 3; Figure 2s-v",
+     "quote": "The biophysical models\u2019 median power in the frequency band of a spike waveform and the scaling slope in the spiking band also increased with cortical depth as in vivo (2s-v, all p < 0.001, Kruskall Wallis) ... Nonetheless the dense probe\u2019s AP power and frequency scaling remained within in vivo range",
+     "statistics": [
+      {
+       "test": "Kruskal-Wallis",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "AP power in 0.3 to 2 kHz rises with depth in NS, E and DS under both readings, median PSD and summed power (Kruskal-Wallis p from 1.2e-41 to 3.0e-32, at most one inversion), so the AP power part holds without the methods_underspecified case. The slope alpha differs across layers in every model (p below 1e-8), but its layer medians do not rise in every model. Read as steepness (|alpha|) it holds for E and DS and fails for NS (two inversions); read as the signed slope it fails for all three. With H in counts, DS has weaker AP power (median summed power 257 against 1,723 uV2) and a shallower slope (-0.10 against -1.27) than H, but only 9.5% (summed power) and 3.3% (alpha) of DS sites lie within H's range; with H at 0.195 uV per count, 88.5% of DS sites lie within H's summed power range. The 0.3 to 1 kHz variant gives the same for the models.",
+     "deviations": [
+      "Traces are 60 s per recording, not 10 minutes.",
+      "The claims file does not say whether \"the scaling slope increased\" refers to the signed slope or its magnitude; both are shown, and the outcome is partial under both."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supp2-no-slow-oscillations",
+     "statement": "The Horvath traces are dominated by slow (0.5 to 1.5 Hz) and delta (1 to 4 Hz) waves of slow-wave sleep, which the Marques-Smith traces and the biophysical models lack.",
+     "source": "Results, Validation of recording traces, paragraph 4; Supplementary figure \"Validation of raw simulated traces\"",
+     "quote": "In Horvath\u2019s data but not in Marques-Smith\u2019s, the traces were dominated by high-amplitude slow (0.5 - 1.5Hz) and \u03b4 waves (1 - 4Hz) characteristic of slow-wave sleep ... The biophysical models did not replicate these oscillations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The share of 0.5 to 300 Hz power that lies in 0.5 to 4 Hz is 0.702 in H against 0.092 (M), 0.038 (NS), 0.066 (E) and 0.038 (DS), so H's share is 7.6 to 18.7 times the others'.",
+     "deviations": [
+      "Spectra at 1 Hz resolution from six 10 s raw blocks, not 10 minutes; the 0.5 Hz bin is not resolved, so the band is the 1 to 4 Hz bins."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-amplitude-decay-with-distance",
+     "statement": "The peak-to-peak amplitude of a model cell's spikes drops by more than half within 75 um of the soma, and the trace is strongly distorted by noise beyond 200 um.",
+     "source": "Results, Validation of single unit spike waveforms, paragraph 1; Figure 3d, e",
+     "quote": "The peak-to-peak amplitude of the spikes rapidly decayed between nearby electrodes, dropping by more than half within 75 \u00b5m ( Fig. 3e ), therefore making the summed extracellular potentials difficult to isolate at 75 \u00b5m from the somata. The extracellular traces was strongly distorted by noise beyond 200 \u00b5m",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Every electrode 75 um or more from the soma has an isolated spike-triggered peak-to-peak amplitude below half that of the nearest electrode. The largest is 0.408 of it with the electrode of largest amplitude as the soma, and 0.339 with the code's soma position. Beyond 200 um the summed trace's spike-triggered peak-to-peak is below 5 MAD at all 122 electrodes (the reported part, a threshold of the claims file). The Reyes grid is sparse. With the electrode of largest amplitude as the soma, one electrode lies within 25 um, none in 25 to 50 um, and one in each of 50 to 75 and 75 to 100 um; with the code's soma position the nearest is at 25.5 um, and one lies in each 25 um band from 25 to 100 um.",
+     "deviations": [
+      "The files hold no soma position; distances are from the electrode of largest amplitude, with the code's soma position as a variant (an outside input). Both give the same outcome."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-five-temporal-profiles",
+     "statement": "Spikes sorted with Kilosort3 from the spontaneous Neuropixels simulation qualitatively match the five temporal profiles reported in humans and cats.",
+     "source": "Results, Validation of single unit spike waveforms, paragraph 1; Figure 3a-c",
+     "quote": "The simulated temporal waveforms qualitatively matched the five shapes reported in cats [ 46 ] and humans [ 9 ]",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The criterion judges this claim with fig3fg-wavemap-six-profiles, which is not reproduced (8 WaveMap clusters for NS, 6 for M). The qualitative comparison with the five shapes of cats and humans has no measure and was not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3fg-wavemap-six-profiles",
+     "statement": "WaveMap clustering of multi-electrode spike waveforms identifies six distinct profiles in the simulation, as in the Marques-Smith data.",
+     "source": "Results, Validation of single unit spike waveforms, paragraph 2; Figure 3f, g",
+     "quote": "Consistent with the experimental data, the algorithm identified six distinct profiles from the simulations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "With the six nearest sites and the Louvain resolution that maximises modularity, NS's 230 Kilosort3 single units give 8 clusters (9 and 7 with two other UMAP seeds) and M's 107 give 6 (all three seeds), so M matches and the simulation does not. Variants give NS 11 and M 6 with three sites, 8 and 5 with the six largest sites anywhere, 7 and 5 with units of 20 spikes or more, 12 and 8 at resolution 1.5, E 8 and NS with E pooled 12. The claims file notes that the code's own saved outputs printed 7 to 10 clusters for NS and 7 for M.",
+     "deviations": [
+      "Templates are means over each unit's spikes inside the six 10 s blocks (median 43 spikes for NS, 54 for M), not over all spikes of 10 minutes.",
+      "The six sites are the site of largest template amplitude and the sites nearest to it (3-D positions for the models), ordered by amplitude (\"the six nearest sites\", Methods, WaveMap), each 6 ms segment resampled to 50 points (the WaveMap paper's length, a standard choice so that 30 and 40 kHz give vectors of one length) and the concatenated vector scaled to 0 to 1; the UMAP seed is a standard choice, shown with two others. The code's own WaveMap notebook uses other settings (n_neighbors 6, bandpass to 3 kHz, waveform curation) than the Methods; the claims file's criterion is followed.",
+      "Louvain is run on UMAP's neighbour graph (python-louvain), as WaveMap does; umap-learn and python-louvain are recent versions, not 0.5.3 and 0.16."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-lognormal-firing-rates",
+     "statement": "The firing rates of single units sorted by Kilosort4 from the spontaneous and evoked simulations are distributed log-normally across layers, as in Marques-Smith's data.",
+     "source": "Results, Validation of firing rates, paragraph 2; Figure 4a",
+     "quote": "Like Marques-Smith\u2019s sorted unit firing rates, the firing rates from the spontaneous (red dots, Fig. 4a ) and evoked (orange dots) biophysical simulations were distributed log-normally across layers",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Shapiro-Wilk on log10 rates of Kilosort4 single units does not reject normality in M (layer 5 p = 0.84, n = 20; layer 6 p = 0.31, n = 74) but does in NS layer 6 (p = 0.014, n = 39) and E layer 5 (p = 0.00056, n = 300). NS layer 5 (p = 0.19) and E layer 6 (p = 0.93) pass, so each simulation fails in one deep layer, and neither the full nor the partial outcome holds.",
+     "deviations": [
+      "E is the first 10 minutes of the 1-hour recording; the 10-minute 40 kHz recording has no deposited sorting.",
+      "Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-yield-deep-layers",
+     "statement": "Single-unit yields are low in superficial layers and high in layers 5 and 6; in vivo the yields in these layers are at least 20 times that of layer 4 and no unit is found in layers 1 and 2/3, a trend also seen in the simulated data.",
+     "source": "Results, Validation of firing rates, paragraph 1; Figure 4a (unit counts)",
+     "quote": "In vivo , the yields in these layers were at least 20 times that in layer 4, and no units were found in layers 1 and 2/3, a trend also reflected in the simulated data",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "M has 20 (layer 5) and 74 (layer 6) Kilosort4 single units against 1 in layer 4, ratios of 20 and 74 (94 pooled), and NS and E have more single units in layers 5 and 6 than in each of layers 1, 2/3 and 4. M has one single unit in layer 2/3, where the criterion requires none, so that part fails by one unit. The criterion names no partial outcome, so the claim is not reproduced, narrowly (changed from partially reproduced after verification round 1).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-median-firing-rates",
+     "statement": "The median firing rate of sorted single units over layers 5 and 6 is 2.8 spikes/s in Marques-Smith's data, 1.2 in the spontaneous and 0.7 in the evoked simulations, and 5 in Buccino's synthetic simulation.",
+     "source": "Results, Validation of firing rates, paragraph 2; Figure 4b",
+     "quote": "The overall median firing rate averaged over layer 5 and 6 differed but only by a small margin (Marques-Smith: 2.8 \u00b1 1% (95% CI) spikes/secs, spontaneous biophysical simulation: 1.2 \u00b1 0.2%, evoked simulation: 0.7 \u00b1 0.1% and Buccino\u2019s full synthetic simulation: 5 \u00b1 0.4% (95% CI))",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Under reading (a), the median of the pooled layer 5 and 6 rates, M is 2.85, NS 1.16 and E 0.66 spikes/s, all within the paper's intervals, and the 1.96 SD / sqrt(n) of the code is 1.14, 0.21 and 0.08, as the code printed. Under reading (b) E is 0.81, outside. The fourth value, Buccino's synthetic simulation, cannot be computed, as the dandiset holds no sorting of it.",
+     "deviations": [
+      "E is the first 10 minutes of the 1-hour recording.",
+      "No value for S (no sorting in the dandiset).",
+      "Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).",
+      "Assumed after verification round 2. Partially reproduced is used for \"every part that can be tested holds and the rest cannot be tested\", which the criterion does not provide for (it names no partial outcome). Without this convention the claim would be blocked (data_missing, S) for its untested parts."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4bc-lower-median-narrower-distribution",
+     "statement": "Compared with in vivo, the biophysical simulations have lower median firing rates and narrower firing rate distributions across layers, while the synthetic model has a lower variance in layer 5 but a higher median.",
+     "source": "Results, Validation of firing rates, paragraph 2; Figure 4b, c",
+     "quote": "Specifically, the biophysical simulations had lower median firing rates ( Fig. 4b , p < 0.001, Mann-Whitney) and distributions were narrower ( c, p < 0.001) than in vivo across layers. For reference, the synthetic model distribution also had a lower variance in layer 5 (all p < 0.01) but it displayed higher median firing rate ( p < 0.01)",
+     "statistics": [
+      {
+       "about": "median log10 firing rate, biophysical simulations against Marques-Smith",
+       "test": "Mann-Whitney U test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "variance of log10 firing rate, biophysical simulations against Marques-Smith",
+       "test": "Mann-Whitney U test on 100 bootstrapped variances",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "synthetic against Marques-Smith, layer 5, variance and median",
+       "test": "Mann-Whitney U test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "In layers 5 and 6 (the only layers with three or more M single units) NS and E have lower medians than M (Mann-Whitney p from 4.3e-08 to 2.2e-04) and lower bootstrapped variances (p below 1e-20), 4 of 4 comparisons each, so the biophysical part holds. The synthetic model's part (layer 5 variance and median against M) cannot be tested, as S has no sorting.",
+     "deviations": [
+      "E is the first 10 minutes of the 1-hour recording.",
+      "Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).",
+      "Assumed after verification round 2. Partially reproduced is used for \"every part that can be tested holds and the rest cannot be tested\", which the criterion does not provide for (it defines partial as the medians or the variances part holding alone, while here both hold and the S part cannot be tested). Without this convention the claim would be blocked (data_missing, S) for its untested parts."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supp4-other-sorters-firing-rates",
+     "statement": "With other sorters, Kilosort3 gives log-normal firing rate distributions that match in vivo, older sorters give bimodal distributions, and across regimes the simulated medians and variances tend to be lower than in vivo.",
+     "source": "Results, Validation of firing rates, paragraph 3; Supplementary figure \"Validation of firing rate distributions\"",
+     "quote": "While newer sorters like Kilosort3 produced log-normal distributions ( Supplementary Fig. 4a ) that better matched in vivo data (b, p > 0.15), older sorters often generated bimodal distributions ... firing rate medians (b, p < 0.05) and variances ( c, p < 0.01) in simulations tended to be reduced",
+     "statistics": [
+      {
+       "about": "Kilosort3, simulated against in vivo",
+       "test": "Mann-Whitney U test",
+       "p": 0.15,
+       "p_relation": ">"
+      },
+      {
+       "about": "medians, simulations against in vivo",
+       "test": "Mann-Whitney U test",
+       "p": 0.05,
+       "p_relation": "<"
+      },
+      {
+       "about": "variances, simulations against in vivo",
+       "test": "Mann-Whitney U test",
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The Kilosort3 part, a claim of absence on the paper's test, fails. 2 of 4 median comparisons have p <= 0.15 (E layer 5 p = 0.0016, E layer 6 p = 0.058) and 4 of 4 variance comparisons do. Over the 18 comparisons of Kilosort, 2, 2.5 and 3 against M, 12 have lower variances at p < 0.01 but only 5 have lower medians at p < 0.05, so the \"tended to be reduced\" part fails on the medians. Hartigan's dip test rejects unimodality for Kilosort, 2 and 2.5 in every experiment, M included (p < 0.0001), and not for Kilosort 3 or 4 (p from 0.29 to 0.996).",
+     "deviations": [
+      "E is the first 10 minutes of the 1-hour recording.",
+      "Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml).",
+      "The Kilosort2 sorting of E covers 240 s (its last spike), as the Methods say Kilosort2 sorted 4 minutes of the evoked recording, so its rates are counts over 240 s (verifier round 1). The counts of the outcome are unchanged by this."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-single-unit-fraction-differs",
+     "statement": "For the spontaneous Neuropixels simulation sorted by Kilosort4, on average 41% of sorted units are single units, and the proportion of single units differs between experiments.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 2; Figure 5a",
+     "quote": "We found that for spontaneous activity recorded with Neuropixels and sorted by Kilosort4, on average 41% of sorted units were \u2018single-units\u2019. This proportion differed between experiments",
+     "statistics": [
+      {
+       "test": "chi-square",
+       "statistic": "chi2(4, N = 5,241) = 43.9",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The proportion of single units differs between experiments under reading (c), chi2(4, N = 5,079) = 488.6, p = 1.9e-104 (M, H, NS, E, DS), and on the experiments available for readings (a) and (b) (M, NS, E; p = 2e-05 and 8.7e-76). The 41% is not found under reading (i), the only one that can be computed; NS's fraction is 0.354 (184 of 520), outside 0.369 to 0.451. Readings (ii) and (iii) need NS-2X, which is not in the dandiset. The paper's own NS counts (182 of 504) also give 36%. For reference only, with NS-2X taken from the paper's counts (193 of 508), reading (ii) gives 0.367 (outside) and reading (iii), which the claims file says the paper's counts favour, 0.405 (within); these use the paper's numbers and do not decide the outcome.",
+     "deviations": [
+      "NS-2X and S have no sorting, so readings (a) and (b) are run on M, NS and E only.",
+      "NS has 520 cortical Kilosort4 units against the paper's 504.",
+      "Assumed after verification round 2. The test part holds; the fraction fails under reading (i), the only one the dandiset allows, and readings (ii) and (iii) need NS-2X. Partially reproduced is used for \"one part holds and the other cannot be fully tested\", which the criterion does not provide for (it names no partial outcome). Without this convention the claim would be blocked (data_missing, NS-2X) for the fraction."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-single-unit-counts",
+     "statement": "The simulations give at least twice as many single units as in vivo (182 and 193 against 96 for Neuropixels, 206 against 93 for the dense probe), yet the fractions of single units are similar.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 2; Figure 5a",
+     "quote": "At least twice more \u2018single-units\u2019 were detected from the simulations than in vivo , with the largest difference being 206 vs. 93 for the dense probe ( Fig. 5a , 182 and 193 vs. 96 for Neuropixels). Yet the fractions of \u2018single-units\u2019 were similar",
+     "statistics": [
+      {
+       "about": "Neuropixels, Marques-Smith against simulations",
+       "test": "chi-square",
+       "statistic": "chi2(2, N = 1,212) = 2.0",
+       "p": 0.37
+      },
+      {
+       "about": "dense probe, Horvath against simulation",
+       "test": "chi-square",
+       "statistic": "chi2(1, N = 920) = 1.8",
+       "p": 0.18
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Single-unit counts are NS 184 (182), M 96 (96) and H 93 (93), within tolerance. Neither test of the fractions can be run as the criterion has it. The NS-2X count (193) and the paper's three-way test with it cannot be computed, as NS-2X is not in the dandiset; M against NS, run two-way, gives p = 0.17 (with NS-2X taken from the paper's counts, 193 of 508, the three-way test gives p = 0.33, for reference only). The DS count is incomplete, as depth 1 has no sorting of its own; depths 2 and 3 give 199 single units of 481 (fraction 0.414, against the paper's 206 of 562, 0.367) and H against DS p = 0.061, while the deposit with DS2 counted twice gives 275, outside tolerance, and p = 0.024. So H against DS is undetermined. If depth 1 adds the 81 units that separate 481 from the paper's 562, p is 0.05 or more when 37 or fewer of them are single and below 0.05 when 38 or more are; the paper's own total (206 single units, 7 more) gives chi2 = 1.82, p = 0.177, its printed 1.8, which confirms the form of the test. That the fractions do not differ is not established. The measured values are given for NS, M, DS (depths 2 and 3) and H, in that order, NS-2X having none.",
+     "deviations": [
+      "DS sums depths 2 and 3, as the deposited depth 1 sortings are copies of depth 2's.",
+      "The contingency chi-square variant gives p = 0.0025 (M, NS) and 5.2e-06 (H, DS).",
+      "Assumed after verification round 2. Partially reproduced is used for \"the counts that can be computed hold and the rest cannot be tested\", which the criterion does not provide for (it names no partial outcome). Without this convention the claim would be blocked (data_missing, NS-2X and the depth 1 sortings) for its untested parts."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-synthetic-mostly-single-units",
+     "statement": "Most units sorted from Buccino's synthetic traces are single units, four times more than in vivo.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 2; Figure 5a",
+     "quote": "In contrast with the in vivo yield, the majority of units sorted from the synthetic traces were \u2018single-units\u2019, four times more than in vivo",
+     "statistics": [
+      {
+       "test": "chi-square",
+       "statistic": "chi2(1, N = 740) = 4.0",
+       "p": 0.042
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The claim analyses the Kilosort4 sorting of Buccino's synthetic recording S. The dandiset holds S's traces and 250 ground truth units (sub-mearec-synthetics-buccino-rep) but no sorting of it; the paper's sortings of S are not public elsewhere. Re-sorting with Kilosort 4 was not attempted.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-evoked-more-units",
+     "statement": "The model predicts that in a stimulus-evoked regime the number of sorted units increases at least threefold and the single-unit yield doubles, while the ratio shifts toward multi-units.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 3; Figure 5a",
+     "quote": "The model predicts that the number of sorted units should increase at least three times in a stimulus-evoked regime. Although the ratio should strongly shift to \u2018multi-units\u2019, a key prediction is that the single-unit yield should double",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "E has 6.77 times NS's cortical Kilosort4 units (3,520 against 520) and a lower single-unit fraction (0.116 against 0.354), but 2.212 times NS's single units (407 against 184), outside the criterion's 1.8 to 2.2. Two of three parts hold; the criterion requires all three and names no partial outcome, so the claim is not reproduced, narrowly (changed from partially reproduced after verification round 1). The E sorting belongs to the 1-hour recording - 250 Kilosort4 units reach an agreement of 0.5 with its ground truth and none with that of the 10-minute 40 kHz recording. Whether the paper's evoked recording in Figures 4 and 5a is this one is asked of a reader (questions/001250.yaml). The criterion says the claim holds under either recording, and the 10-minute 40 kHz recording cannot be tested, so the outcome rests on the assumption that E is the paper's evoked recording.",
+     "deviations": [
+      "Only the first 10 minutes of the 1-hour recording has a sorting; the 10-minute 40 kHz recording has none, so the claim is judged on that reading alone.",
+      "Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml)."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-dense-probe-more-multi-units",
+     "statement": "In vivo, multi-units were twice as frequent with the dense probe as with Neuropixels, which the model did not reproduce; despite its higher-resolution sampling the dense probe did not give a higher single-unit yield than Neuropixels.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 4; Figure 5a",
+     "quote": "These were mostly \u2018multi-units\u2019, which were twice more frequent for the dense probe in vivo (M:104, H:265, \u03c7 2 (1, N = 558) = 6.6, p = 0.01). The model did not reproduce this effect (NS:182, DS:206, \u03c7 2 (1, N = 1066) = 0.004, p = 0.9)",
+     "statistics": [
+      {
+       "about": "Marques-Smith against Horvath",
+       "test": "chi-square",
+       "statistic": "chi2(1, N = 558) = 6.6",
+       "p": 0.01
+      },
+      {
+       "about": "NS against DS",
+       "test": "chi-square",
+       "statistic": "chi2(1, N = 1066) = 0.004",
+       "p": 0.9
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "M has 104 and H 265 multi-units (exact), H's multi-unit share is higher (0.74 against 0.52), and the code's goodness-of-fit test gives chi2 = 6.56, p = 0.0105 (paper 6.6, p = 0.01). NS against DS does not differ (p = 0.49, chi2 = 0.47 against the paper's 0.004; 0.29 with DS as deposited).",
+     "deviations": [
+      "DS sums depths 2 and 3 (481 units against the paper's 562), as the deposited depth 1 sortings are copies of depth 2's."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-downsampling-small-gain",
+     "statement": "Down-sampling the simulated traces by two to shorten spikes improves the Kilosort4 single unit yield only marginally, by 6%.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 5; Figure 5a (NS-2X)",
+     "quote": "We applied this approach but observed only a marginal 6% improvement in single-unit yield",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "NS-2X, NS with every second sample kept, has neither traces nor sortings in the dandiset, and is not public elsewhere.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-yield-far-below-theory",
+     "statement": "Raw single-unit yields per site are an order of magnitude lower than the theoretical yields (active neurons within 50 um per site, NS 6.9, NE 8.4, S 0.65, DS 5.3) and do not differ significantly between probes or sorters.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 6; Figure 5b legend",
+     "quote": "For the biophysical models, the raw single-unit yields were an order of magnitude lower than the theoretical yields and were not significantly different between probes or spike sorters (5b)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The theoretical yields are 6.88 (NS), 8.44 (E; 8.27 for the 10-minute recording) and 0.651 (S), within tolerance. DS's cannot be computed, because the dense probe ground truth tables hold spike times only, with no soma layer or position (56 of DS1's 287 neurons can be found by name in the Neuropixels tables). Kilosort4's yield per site is 8.0 times below the theoretical one for NS and 4.8 times for E, an order of magnitude under reading (b), 3.16 or more, and not under reading (a), 10 or more. Across sorters the ratio ranges from 0.8 (Kilosort) to 9.2 (herdingspikes on E). No test of the differences between probes or sorters is run, as the criterion says. Both parts hold for what can be computed; only DS's theoretical yield stops a full reproduction.",
+     "deviations": [
+      "E's theoretical yield uses the first 10 minutes of the 1-hour recording; the 10-minute recording is shown.",
+      "Assumed after verification round 2. Partially reproduced is used for \"every part that can be tested holds and the rest cannot be tested\", which the criterion does not provide for (it defines partial as one of its two parts holding, while here both hold for what can be computed). Without this convention the claim would be blocked (metadata_insufficient, DS layers) for its untested parts."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-synthetic-redundant-units",
+     "statement": "In Buccino's synthetic model, Kilosort4 produces more single units than there are modelled neurons, which indicates redundant units.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 6; Figure 5b (blue)",
+     "quote": "In Buccino\u2019s full synthetic model, Kilosort4 produced more \u2018single-units\u2019 than the number of modeled neurons, indicating the production of redundant units",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No sorting of S is in the dandiset (see fig5a-synthetic-mostly-single-units).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5cd-most-units-degraded",
+     "statement": "Most single units isolated by Kilosort4 are less than 80% accurate, contain spikes of several true neurons (merged) and miss at least 20% of their matched neuron's spikes; Kilosort4 produces no false positives.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 7; Figure 5c, d",
+     "quote": "The majority of the isolated \u2018single-units\u2019 were less than 80% accurate and degraded across layers ( Fig. 5d , white area) and spike sorters ( Supplementary Fig. 5b ). They contained spikes from multiple true units (\u2019merged unit\u2019) and missed at least 20% of the matched true units spikes ( Fig. 5c , green). Kilosort4 did not produce false positives",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Among cortical Kilosort4 single units, 54.3% (NS, 184 units) and 74.2% (E, 407) have a best agreement score below 0.8, all are tagged merged, and none is a false positive. The merged part is met almost by chance coincidence over many neurons - the median Kilosort4 single unit scores above chance with 308 (NS) and 597 (E) neurons - so it says little about the sorting. The other sorters give 57.8% to 96.4% below 0.8 and 96.6% to 100% merged, with up to 37 false positives (Kilosort on E).",
+     "deviations": [
+      "E is the first 10 minutes of the 1-hour recording.",
+      "Agreement scores use SpikeInterface 0.105 (the paper used 0.100.5). After verification round 1 the quality tags are computed over every sorted unit of the sorting, and \"partial\" looks only at the unit's above-chance neurons, as the claims file defines it; the Kilosort4 numbers are unchanged. The Kilosort2 sorting of E is scored over its 240 s.",
+      "Assumed after verification round 2. E, the first 10 minutes of the 1-hour 20 kHz recording, is taken as the paper's evoked recording of Figures 4 and 5. The criterion leaves the evoked recording open and asks for both; the 10-minute 40 kHz recording (E40) has no deposited sorting, so it cannot be tested. The basis is that the deposited E Kilosort4 sorting matches E's ground truth (250 units with an agreement of 0.5 or more) and not E40's (none), and that it reproduces the code's printed median of 0.655 spikes/s (fig4-median-firing-rates). Asked of a reader (questions/001250.yaml)."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ef-curation-precision-recall",
+     "statement": "A logistic regression on unit quality metrics classifies good against degraded Kilosort4 single units with 89% and 93% precision and 61% and 55% recall in the spontaneous and evoked simulations.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 8; Figure 5e, f",
+     "quote": "The model achieved 89% \u00b1 2% (95% CI) and 93% \u00b1 2% precision and 61% \u00b1 3% and 55% \u00b1 2% recall in the spontaneous ( Fig. 5e ) and evoked simulations (f) respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "The features are SpikeInterface quality metrics (snr, silhouette, amplitude cutoff, sd_ratio and others) and mad_ratio, which need waveforms, spike amplitudes on all spikes and principal components over the full 10 minutes of NS and E. Timed on 30 s of NS (184 single units), sparsity, waveforms, amplitudes and principal components took 27, 41, 25 and 53 s, mostly streaming (about 45 MB/s). Scaled to 10 minutes this is about 40 to 50 minutes for NS and 20 to 25 for E, some 70 minutes in all, beyond the 60-minute limit for one notebook. Splitting it over notebooks, with development on a subset and a full run, was judged not to fit the five-hour run beside the other claims. The data are in the dandiset; the timing was run outside the notebook and decides nothing else.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5g-mad-ratio-and-firing-predict-quality",
+     "statement": "The new mad_ratio metric has the largest correlation with unit sorting accuracy (R = -0.46), and the firing rate statistics and the spike trough variability metrics (mad_ratio, sd_ratio) are the key significant predictors of a good unit.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 8; Figure 5g",
+     "quote": "We also introduced a new metric, which we called the \u201cmad_ratio\u201d (see Methods), which better reflected contamination by multiple units, displaying the largest correlation with unit sorting accuracy ( R = \u2212 0.46). The model offered the additional insight that two key predictive features of a good unit are its firing rate statistics ( Fig. 5g , including firing rate and range, p < 0.001) and the variability of its spike troughs compared to background noise variability (mad_ratio and sd_ratio, p < 0.001)",
+     "statistics": [
+      {
+       "about": "weights of firing rate, firing range, mad_ratio and sd_ratio",
+       "test": "logistic regression weight, Wald test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the NS quality metrics of fig5ef-curation-precision-recall (estimated 40 to 50 minutes of streaming and computation for NS alone), not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supp5-cebra-knn-curation",
+     "statement": "A CEBRA embedding of full waveforms with a k-nearest neighbour classifier gives better recall (82% and 90%) but lower precision (61% and 55%) than the logistic regression in the spontaneous and evoked regimes.",
+     "source": "Results, Model predicts low yield, quality and biases, paragraph 9; Supplementary figure \"Single-unit yield and quality ...\", panels c, d",
+     "quote": "The model achieved better recall (82%, \u00b1 3% and 90% \u00b1 2% for the spontaneous ( Supplementary Fig. 5c ) and evoked (d) regimes respectively) but lower precision (61% \u00b1 3% and 55% \u00b1 3%) than the logistic regression",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Needs the waveforms and quality metrics of fig5ef-curation-precision-recall, on which it depends, plus CEBRA fits over 100 splits; not run.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-synthetic-accuracy-range",
+     "statement": "On Buccino's synthetic simulation most spike sorters detect most neurons, with accuracies ranging from 50% for herdingspikes to 99% for Kilosort2.",
+     "source": "Results, Biological factors of sorting failures, paragraph 2; Figure 6a",
+     "quote": "As previously reported, for the synthetic simulation [ 16 ] most spike sorters detected most neurons with accuracies ranging from 50% for herdingspikes to 99% for Kilosort2",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No sorting of S is in the dandiset, for any of the six sorters.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6ab-biophysical-accuracy-15-percent",
+     "statement": "For the biophysical models the sorters well-sort similarly low proportions of ground truth neurons, on average 15% of the neurons within 50 um of the electrodes.",
+     "source": "Results, Biological factors of sorting failures, paragraph 2; Figure 6a, b",
+     "quote": "However, the sorters produced similarly low proportions of well-sorted ground truth neurons for the biophysical models ( Fig. 6a ), on average 15% of the neurons within 50 \u00b5m of the electrodes across the simulations",
+     "statistics": [
+      {
+       "about": "well-sorted proportion across the six sorters",
+       "test": "chi-square",
+       "statistic": "chi2(5, N = 3,190) = 4.9",
+       "p": 0.43
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Both readings of the criterion sum the 10-minute 40 kHz evoked recording, and reading (a) also S, and neither has a deposited sorting. On what is available, the mean well-sorted fraction over the six sorters is 0.093 for NS alone (goodness-of-fit p = 0.043) and 0.070 for NS with the first 10 minutes of the 1-hour E (p = 0.42; the Kilosort2 sorting of E scored over its 240 s); neither substitutes for the criterion's readings, since S's near-perfect accuracies would raise reading (a).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-dense-probe-lower-accuracy",
+     "statement": "The dense probe gives five times fewer neurons sorted with above 80% accuracy than the Neuropixels probe, on average 3% against 15% across sorters.",
+     "source": "Results, Biological factors of sorting failures, paragraph 3; Figure 6a, b",
+     "quote": "We found that the dense probe produced five times fewer neurons sorted with above 80% accuracy across spike sorters than the Neuropixels probe (on average 3% vs. 15%)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Depends on fig6ab-biophysical-accuracy-15-percent for the Neuropixels value, which is blocked. The dense probe value can be computed in part. With depths 2 and 3 the mean well-sorted fraction is 0.0225 (0.0196 as deposited, the depth 1 neurons scored against depth 2's sortings), below the expected 0.03 +- 0.003. Only one depth 3 neuron is well sorted, by Kilosort2. In a scan of lags from -100 to +100 ms (data check, every sorter since verification round 2), no depth 3 sorting's coincidence rate with any of the three dense probe ground truths rises more than 0.011 above its median over lags, so their scores are unreliable.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-f-accuracy-predictors",
+     "statement": "A fractional regression of Kilosort4 sorting accuracy on 21 neuron features fits the data (R2 = 0.42 spontaneous, 0.34 evoked) and finds seven significant features in both regimes; accuracy rises with firing rate and spike spatial extent, is higher for pyramidal cells and in layer 5, and falls with distance to the nearest electrode.",
+     "source": "Results, Biological factors of sorting failures, paragraph 4; Figure 6c-f",
+     "quote": "The model provided a good fit to the data ( Fig. 6 , R 2 = 0.42 and R 2 = 0.34 in the spontaneous (c) and evoked (d) regimes respectively) and identified seven significantly predictive features out of 21 in both regimes. Accuracy improved as neuronal firing rates increased and spike spatial extent (or \u2018footprint\u2019 [ 6 ]) expanded. It was also higher for pyramidal cells compared to interneurons and in layer 5 compared to other cortical layers. Sorting accuracy decreased when neuron\u2019s distance to the nearest electrode increased",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Two of the 21 features, snr and spatial_extent of each ground truth neuron, need the neurons' waveforms over the full 10 minutes of NS and of the 1-hour E (1,388 and 1,836 neurons), a larger computation than fig5ef-curation-precision-recall's, which is already estimated beyond the limit. After verification round 1 the other 19 features were run. In both regimes and both fits (the criterion's alpha 0 fit and an identified unpenalised refit) firing rate is positive (refit 1.09 spontaneous, 0.77 evoked, p < 1e-4), synapse class (excitatory) positive (0.22 and 0.23, p = 0.083 and 0.056), layer 5 positive (0.57 and 0.45, p < 1e-4) and distance negative (-1.23 and -1.32, p < 1e-4), so four of the five signs of the claim hold. The 19-feature test R2 is 0.307 and 0.279 (paper 0.42 and 0.34 with 21 features). In the evoked regime none of the alpha 0 fits converged within the paper's 100 iterations. The sign of spatial extent and the 21-feature R2 and count, which decide the outcome, cannot be computed.",
+     "deviations": [
+      "The part run uses statsmodels 0.15.0 (the paper used 0.14.2), an intercept (a standard choice), and an identified refit for the Wald p values, as the 19-feature indicator design of the code is rank-deficient."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "supp6-sorted-rates-overestimated",
+     "statement": "Because sorting favours highly active units, mean firing rates in most layers are overestimated three to four times by sorted spike trains compared with the ground truth.",
+     "source": "Results, Biological factors of sorting failures, paragraph 4; Supplementary figure \"Ground truth firing rate distribution\"",
+     "quote": "Notably, the bias for high firing units led to mean firing rates in most layers being overestimated by a factor of three to four from sorted spike trains compared to the ground truth",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "Sorted Kilosort4 single-unit rates exceed the true NS rates in four of five layers, by 3.23 (layer 5) and 4.30 (layer 4) within 2.7 to 4.4, and by 4.55 (layer 6) and 5.27 (layer 2/3) beyond it; layer 1, with one sorted unit, gives 0.52. Two of five layers fall in the range, not a majority; the bootstrap variant gives the same count. The overestimation the statement describes is present, larger than three to four times in two layers.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6gh-selection-bias-layer5-pyramidal",
+     "statement": "Pyramidal neurons, 91% of the ground truth, are under-represented after sorting by about a factor of two in every layer except layer 5, where they are over-represented by about two; most interneurons are represented in proportion, but rare interneuron types are over-represented by 2.9 to 8.1 by some sorters, mainly Kilosort 1 to 2.5.",
+     "source": "Results, Biological factors of sorting failures, paragraph 5; Figure 6g, h",
+     "quote": "Excitatory pyramidal neurons, which made up 91% of the ground truth population ( Fig. 6g ), were consistently underrepresented across all layers by approximately a factor of 2, except in layer 5, where they were over-represented by the same factor ( Fig. 6h , ratios in blue; Fisher\u2019s exact test, two-tailed, p < 0.05). In contrast, most interneurons were proportionally represented relative to the ground truth, except for rare interneuron types, which were over-represented by factors ranging from 2.9 to 8.1 by some spike sorters, particularly Kilosort (1 to 2.5)",
+     "statistics": [
+      {
+       "test": "Fisher's exact test, two-tailed",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The 1-hour evoked ground truth is 91.2% excitatory. With the 1-hour sortings layer 5 excitatory neurons are over-represented by every sorter (ratios 1.43 to 2.20, p < 1e-6), but the other excitatory layers are not all at 0.67 or below with p < 0.05 for any sorter (Kilosort4 has layer 6 at 0.81); with the 10-minute sortings layer 5 is at 1.5 or more for Kilosort 3, 4 and herdingspikes only and no sorter meets the criterion. Both durations give the same outcome. The interneuron part holds in both, as at least one of Kilosort, 2 and 2.5 lies within 2.6 to 8.9. With the 1-hour sortings the largest interneuron-type ratios are 9.98 (Kilosort2.5, INH L4 cSTUT, 1 unit; outside), 8.07 (Kilosort2) and 4.12 (Kilosort); with the 10-minute sortings 13.3 (Kilosort, 324 units of 17 L5 cNAC neurons; outside), 4.01 (Kilosort2) and 2.90 (Kilosort2.5). Apart from Kilosort's 13.3, each rests on 1 to 9 units. The measured values are the excitatory share and the largest interneuron ratio of Kilosort 1 to 2.5 with the 1-hour sortings (9.98, outside 8.1 +- 0.81; corrected from 8.07 after verification round 2).",
+     "deviations": [
+      "Sorted units whose scores are all 0 have no best match and are dropped (at most 37 of 2,665, Kilosort, 10 minutes).",
+      "After verification round 1, p < 0.05 is required only of the excitatory layers whose ratio is 1.5 or more or 0.67 or less (\"for those that differ\"); the earlier rule, p < 0.05 in every layer, is shown and gives the same. The Kilosort2 10-minute sorting of E is scored over its 240 s."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-ring-manifold",
+     "statement": "The ground truth neural manifold has a ring-like geometry tracking stimulus direction; spike sorting distorts it for all sorters, but the recent sorters (Kilosort2 to 4) still preserve the stimulus mapping.",
+     "source": "Results, Spike sorting degrades stimulus representation, paragraphs 1 and 2; Figure 7a",
+     "quote": "The ground truth neural manifold exhibited a ring-like geometry ( Fig. 7a ), which continuously reflected changes in the stimulus direction across trials. Spike sorting distorted the manifold\u2019s geometry for all spike sorters, but the most recent sorters still preserved stimulus mapping (from Kilosort2 to 4)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": "reproduce_laquitaine_2024.ipynb",
+     "notes": "The responses are spike counts in each 200 ms presentation of 8 directions, so the analysis needs each presentation's time and direction. No file of the dandiset holds a stimulus table, trial intervals or stimulus metadata (stimulus/presentation, intervals and processing are empty in sub-002, sub-002-fitted and sub-npx-evoked-sf-40Hz). The paper's code rebuilds the schedule from task parameters in its scripts (igeom.get_task_parameters and get_stimulus_labels); the claims file does not name it as an input, so it was not used.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-sorting-halves-capacity",
+     "statement": "Spike sorting significantly reduces the information capacity of the population, on average by 50% across sorters, from 25% above the lower bound.",
+     "source": "Results, Spike sorting degrades stimulus representation, paragraph 3; Figure 7b",
+     "quote": "Distortions in manifold geometry were associated with significant reductions in information capacity, averaging 50% decrease across spike sorters, from 25% above the lower bound ( Fig. 7b , t(199) ranging from -68 to -24, all p < 0.001, t-test)",
+     "statistics": [
+      {
+       "test": "t-test",
+       "statistic": "t(199) from -68 to -24",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "200 bootstraps per population"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "As fig7a-ring-manifold, no stimulus table.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7f-undersampling-no-loss-selection-bias-loss",
+     "statement": "Randomly under-sampling ground truth neurons to the sorters' yields does not change information capacity, but also matching the neuron type distribution of the sorted units reduces it by an average 21% across sorters.",
+     "source": "Results, Spike sorting degrades stimulus representation, paragraph 4; Figure 7d-f",
+     "quote": "Under-sampling ground truth neurons to match sorting yields neither disrupted the manifold\u2019s structure nor its information capacity (example for Kilosort4, Fig. 7d , and all sorters in f, red boxes vs. red line, t(199) ranging from -0.71 to -0.02, all p > 0.47, t-test). However, also matching neuron type distribution to that of sorted units visibly degraded the manifold structure and its information capacity by an averaged 21% across sorters",
+     "statistics": [
+      {
+       "about": "random under-sampling against ground truth",
+       "test": "t-test",
+       "statistic": "t(199) from -0.71 to -0.02",
+       "p": 0.47,
+       "p_relation": ">"
+      },
+      {
+       "about": "type-matched sampling against ground truth",
+       "test": "t-test",
+       "statistic": "t(199) from -17 to -8",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "As fig7a-ring-manifold, no stimulus table; it also depends on fig7b-sorting-halves-capacity.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7g-assignment-bias-capacity",
+     "statement": "Good and degraded sorted units differ in type distribution; good units have on average 37% lower capacity than the ground truth, and degraded units, matched to the good units' type distribution, a further 12% lower for most sorters.",
+     "source": "Results, Spike sorting degrades stimulus representation, paragraph 5; Figure 7g",
+     "quote": "Unit type distributions differed significantly between biased and good units across spike sorters ( p < 0.001, Fisher exact test with Monte Carlo simulations) ... On average, the information capacity of good units was 37% lower than the ground truth across spike sorters ( Fig. 7g , red boxes vs. red line, t(199) ranging from -0.31 to -15, all p < 0.001, t-test). Degraded units exhibited even lower capacity, averaging a 12% decrease from good units\u2019 capacity across most sorters (Kilosort4, 2.5, 1, and herdingspikes)",
+     "statistics": [
+      {
+       "about": "type distributions, degraded against good units",
+       "test": "Fisher exact test with Monte Carlo simulations",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "good units against ground truth capacity",
+       "test": "t-test",
+       "statistic": "t(199) from -0.31 to -15",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "As fig7a-ring-manifold, no stimulus table; it also depends on fig7b-sorting-halves-capacity.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7h-j-manifold-geometry",
+     "statement": "The capacity loss comes with larger direction manifold radii (6% on average, except a 3% decrease for Kilosort), larger dimensions (6% on average, except a 19% decrease for Kilosort and Kilosort2) and slightly more correlated centroids (1% for Kilosort3, 2, 1 and herdingspikes).",
+     "source": "Results, Spike sorting degrades stimulus representation, paragraph 6; Figure 7h-j",
+     "quote": "Except for Kilosort which showed a 3% decrease, direction mani-folds\u2019 radii increased by an averaged 6% across sorters ( Fig. 7h , t(199) ranging from -87 to 0.18, all p < 0.001, t-test). Except for Kilosort and Kilosort2 which displayed a 19% decrease in direction manifold\u2019s dimension, dimension also increased by an averaged 6% across sorters (i, t(199) ranging from -59 to 234, all p < 0.001). A marginal but significant increase in center correlation of 1% was observed for Kilosort3, 2, 1, and Herdingspikes",
+     "statistics": [
+      {
+       "about": "radius, sorted against ground truth",
+       "test": "t-test",
+       "statistic": "t(199) from -87 to 0.18",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "dimension, sorted against ground truth",
+       "test": "t-test",
+       "statistic": "t(199) from -59 to 234",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "As fig7a-ring-manifold, no stimulus table; it also depends on fig7b-sorting-halves-capacity.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The sortings in the sub-003-fitted folder (dense probe, depth 1) are identical, spike for spike, to those in sub-004-fitted (depth 2) for all six sorters, and they match the depth 2 ground truth (78 of 131 Kilosort4 units with a best agreement of 0.5 or more) and not the depth 1 ground truth (none). The depth 1 sortings are therefore missing, and the depth 1 folder holds a copy of depth 2's.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The paper's results on Buccino's synthetic recording (S), on NS down-sampled by two (NS-2X) and on the 10-minute 40 kHz evoked recording rest on sortings that are not in the dandiset. S's traces and ground truth are deposited without sortings, NS-2X is absent, and the 10-minute evoked recording has traces and ground truth but no sortings. Seven claims cannot be tested, or only in part, for this reason.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The evoked recordings (sub-002, sub-002-fitted, sub-npx-evoked-sf-40Hz and their sortings) carry no stimulus table, trial intervals or stimulus description, so the stimulus direction and time of each presentation cannot be recovered from the dandiset. The paper's code rebuilds the schedule from parameters in its scripts. The five Figure 7 claims cannot be tested.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ground truth tables of the dense probe simulations (sub-003 to sub-005, raw and fitted) hold only spike times and neuron names, without the soma positions, layers, synapse classes and electrical types that the Neuropixels ground truth tables carry. Only 56 of the 287 depth 1 neurons can be found by name in the Neuropixels tables.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The Horvath recordings (sub-vivo-horvath-depth-1 to 3) store int16 counts with an NWB conversion of 0.195, which declares 0.195 volts per count, and an electrode column gain_to_uV of 195000; neither is plausible, and they disagree. At 0.195 uV per count the median noise is 5.6 uV, while the dense probe model fitted to these data has 28.3 uV; in counts the noise is 28.7. The intended scale should be stated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The Reyes probe traces of cell 3754013 (sub-biophy-isolated-traces-reyes and sub-biophy-summed-traces-reyes) both declare microvolts (conversion 1e-6), but the cell's spike-triggered peak-to-peak at the nearest electrode is 0.0424 in the isolated file and 37.9 in the summed file; the paper's code plots the isolated values in mV. The isolated file appears to be in millivolts. The files also lack the soma position of the cell, which the code hard-codes.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "78 of the 1,388 NS ground truth units (sub-001) and 213 of the 1,836 units of the 1-hour evoked recording (sub-002) have no spike in the first 10 minutes, though all fire later in their files, while the paper says that all model neurons fired at least once in the first 10 minutes.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "The depth 3 dense probe sortings (sub-005-fitted) barely agree with the depth 3 ground truth. 34.6% of Kilosort4 spikes fall within 0.65 ms of a ground truth spike, against 33.6% after a 50 ms shift (every sorter gives an excess of at most 1.1 points), no lag within 100 ms raises any sorter's coincidence rate more than 0.011 above its median over lags against the depth 1, 2 or 3 ground truth, no Kilosort4 unit reaches an agreement of 0.5, and one neuron in 1,123 is well sorted by any sorter. The deposit could not be shown to pair these sortings with any deposited ground truth.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "In the paper's code (notebooks/1_results/fig2_M_amplitude_npx_DONE.ipynb, commit 6e9af03), the Marques-Smith recording is overwritten by the spontaneous model before the peak amplitudes are computed (`RecNV = preprocess(RecNS, FREQ_MIN)`), so the printed maximal amplitude and per-site amplitudes labelled Marques-Smith are the model's; the notebook then loads saved figure data, so whether the published panel is affected cannot be told from the code.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The sorting tables' columns (KSLabel, KSLabel_repeat, layer, contact, ContamPct, Amplitude, firing_rates) have \"No description\", the contact column is a row index for the Neuropixels files and a 1-based channel name for the Horvath files, and the session descriptions of the Horvath and dense probe sortings contain an unformatted \"{depth}\" placeholder. Many raw files give related_publications as \"doi:\" with no identifier.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The Kilosort2 sorting of the evoked recording labelled 10 minutes (sub-002-fitted_ses-ks2-10m) ends at 240 s, as the Methods say Kilosort2 sorted only 4 minutes of the evoked recording, but neither its file name nor its metadata says so. Rates computed over 600 s would be 2.5 times too low.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Which evoked recording enters Figures 4 and 5a is not stated. The Figure 6 legend names the 10-minute 40 kHz recording for panels a and b and the 1-hour 20 kHz recording for d, f, g and h; Figures 4 and 5 name none. The deposited evoked sortings are of the first 10 minutes of the 1-hour recording (250 Kilosort4 units reach an agreement of 0.5 with its ground truth, none with the 40 kHz one), and they reproduce the code's printed median rate of 0.655 spikes/s. This attempt assumes that recording; could the authors confirm it?",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-05",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the first run (executed notebook with the conclusions and summary removed, the helper module and the claims file); the verifier also checked the archive's asset list and file contents for the blocked claims and tested helper functions on synthetic inputs.",
+     "agreed": 36,
+     "of": 39,
+     "disagreements": [
+      {
+       "claim": "ground-truth-neuron-counts",
+       "outcome": "not_reproduced",
+       "reason": "The counts are exact, 1388, 1836 and 1552, all within 50 um. But 78 NS units and 213 units of the 1-hour E are silent in the first 600 s. The criterion requires that every unit spikes."
+      },
+      {
+       "claim": "fig4a-yield-deep-layers",
+       "outcome": "not_reproduced",
+       "reason": "M has one single unit in layer 2/3, where the criterion requires none. M's L5/L4 ratio is exactly 20.0. The NS and E parts hold (narrow)."
+      },
+      {
+       "claim": "fig5a-evoked-more-units",
+       "outcome": "not_reproduced",
+       "reason": "Total units rise 6.77-fold and the single fraction drops (0.116 against 0.354). But single units rise 407/184 = 2.21, outside 1.8-2.2 (narrow). The E40 reading is blocked, no sorting. 2.21 is printed next to '(1.8 to 2.2)' without noting that it misses (problem 9)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-05",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the revision after round 1, with its conclusions and summary, the helper module, the claims file and the attempt record.",
+     "agreed": 39,
+     "of": 39,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "laquitaine-2024",
+   "type": "reproduction",
+   "title": "Spike sorting biases in a detailed cortical model (Laquitaine et al. 2024)",
+   "description": "Tests the findings of Laquitaine, Imbeni, Tharayil, Isbister and Reimann (bioRxiv 2024) on dandiset 001250, which holds simulated Neuropixels and dense probe recordings of a cortical column model with their ground truth spikes, the in vivo recordings they are compared with, and the paper's sortings. It checks the validation of the simulated traces against in vivo, the firing rates and yields of the sorted units, their accuracy against the ground truth, and the selection bias of the sorters. The manifold analyses of Figure 7 cannot be run, as the dandiset holds no stimulus table.",
+   "datasets": [
+    "dandi:001250"
+   ],
+   "papers": [
+    "10.1101/2024.12.04.626805"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_laquitaine_2024.ipynb",
+     "title": "Reproducing Laquitaine et al. (2024) from dandiset 001250",
+     "executed": "notebooks/laquitaine-2024/reproduce_laquitaine_2024.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 113,
+   "hashed": false
+  }
+ ]
+}
