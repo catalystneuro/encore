@@ -161,7 +161,9 @@ def cell_features(X):
 
 
 def cells_per_day(sessions):
-    """Cell counts by mouse and day, and the two readings of 'cells imaged per day'."""
+    """Cell counts by mouse and day. The claim's unit (claims file, imaging-cell-counts, as amended
+    by a reader) is cells per day summed over the five mice, with the tolerance read as the SEM over
+    the three days; the mean per mouse and day, the claim's earlier unit, is kept for reference."""
     import pandas as pd
 
     df = pd.DataFrame([{"mouse": s["mouse"], "day": s["day"], "cells": s["traces"].shape[1]} for s in sessions])
