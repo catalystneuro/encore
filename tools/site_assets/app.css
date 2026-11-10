@@ -32,16 +32,24 @@ nav.top a.tab .n{margin-left:6px;font-size:.76rem;color:var(--muted);font-weight
 button.theme{align-self:center;margin-left:8px;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.84rem;
 color:var(--text2);background:none;border:1px solid var(--line);border-radius:3px;padding:3px 10px;cursor:pointer;white-space:nowrap}
 button.theme:hover{background:var(--hover);color:var(--text)}
+/* The tabs are one group (.tabrow): on a wide screen they sit in the bar as before; on a phone the brand and the
+   theme button take the first line and the tabs one line under it that scrolls sideways, so the bar is two lines
+   high, not three or four. */
+nav.top .tabrow{display:contents}
 @media (max-width:640px){
-nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 2px}
-nav.top .brand{flex:1 1 auto;padding:8px 0 0;order:-2}
-button.theme{order:-1;margin:8px 0 0}
-nav.top .wrap::after{content:"";flex-basis:100%;order:-1}
+nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 8px;overflow:visible}
+nav.top .brand{padding:8px 0 0;margin-right:0;order:1}
+nav.top .by{align-self:center;padding:8px 0 0;margin-right:auto;order:2}
+button.theme{margin:8px 0 0;order:3;padding:3px 8px}
+button.theme .t{display:none}
+nav.top .tabrow{order:4;display:flex;flex:0 0 100%;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px;
+  -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+nav.top .tabrow::-webkit-scrollbar{display:none}
 nav.top a.tab{padding:6px 10px 9px}
-nav.top a.tab:first-of-type{padding-left:0}
+nav.top .tabrow>a.tab:first-child{padding-left:0}
 nav.top a.tab .n{display:none}
-html{scroll-padding-top:92px}
-.facets{top:92px}}
+html{scroll-padding-top:84px}
+.facets{top:84px}}
 .demo{background:var(--warning);color:#0b0b0b;font-size:.85rem;font-weight:600;text-align:center;padding:4px}
 
 .eyebrow{font-size:.78rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}

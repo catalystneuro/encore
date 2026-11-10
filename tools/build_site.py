@@ -1265,10 +1265,10 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
-  <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a>{nav}
+  <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow">{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
-  <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
+  <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
