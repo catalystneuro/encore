@@ -717,3 +717,21 @@ def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
     assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
     assert data["queue_counts"]["with_a_paper"] == len(data["targets"])
 
+
+def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives():
+    """Three archive colours, none an outcome's: DANDI and CRCNS each have one, every other archive shares the third."""
+    data = site.collect()
+    p = site.progress_data(data)
+    keys = [a["key"] for a in p["archives"]]
+    assert keys[: len([k for k in keys if k in site.OWN_COLOUR])] == [k for k in site.OWN_COLOUR if k in keys]
+    assert all(a["slot"] in (1, 2, 3) for a in p["archives"])
+    present = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    if present - set(site.OWN_COLOUR):
+        other = next(a for a in p["archives"] if a["key"] == "other")
+        assert other["slot"] == 3 and other["label"].startswith("Other archives (")
+    # Every dataset is counted once, in its archive's series or in the other archives'.
+    rows = p["series"]["all"]
+    assert sum(rows["datasets"]) == sum(sum(rows[f"archive:{k}"]) for k in keys)
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    assert "--archive-4" not in css
+
