@@ -126,7 +126,10 @@ claims:
     read) and the timings of Methods C for Fig. 2(b) (stimuli from t = 1 s, 0.15 s long, every
     0.45 s; chunking clusters 0.01 s long at 0.2 s intervals; background switching between 10
     and -10 Hz for 0.8 s during retrieval), with Eq. (8) extended so that level-k chunking
-    clusters inhibit all lower-level clusters presented before them (Methods A).
+    clusters inhibit all lower-level clusters presented before them (Methods A). Methods C
+    writes "k = 2, 3 level chunking clusters", but the Results put chunking clusters at
+    k = 1, 2 and stimulus clusters at k = 3, so the 0.01 s timing is read as that of the
+    chunking clusters. Tolerances are 0, as counts.
 - id: figs2-delayed-hebbian-binding
   statement: Replacing the imposed chunking inhibition (Eq. 8) by a time-delayed Hebbian
     strengthening of chunk-to-stimulus inhibitory synapses approximates the activity of
@@ -223,10 +226,12 @@ claims:
   criterion: Per included subject, the non-boundary trace of fig3a-dip-after-boundary
     (that subject's pooled neurons, all its cut trials), with the dip and ramp tests of that
     claim and its readings, the boundary peak being that subject's own (the red dashed line of
-    Fig. S3). "Most" is read as more than half of the 14 subjects. Reproduced when more than
-    half show both a dip and a ramp under a reading; partially reproduced when they do but
-    P64CS shows a ramp or TWH120 shows a dip under every reading. The count, and the subjects
-    sorted by dip time as in Fig. 3(b), are reported.
+    Fig. S3). "Most" is read as more than half of the 14 subjects (8 or more). Reproduced
+    when, under one reading, 8 or more subjects show both a dip and a ramp, P64CS shows no
+    ramp and TWH120 shows no dip; partially reproduced when 8 or more show both under a
+    reading but under no reading do both named exceptions hold. Not reproduced when fewer than
+    8 show both under every reading. The count, and the subjects sorted by dip time as in
+    Fig. 3(b), are reported.
 - id: fig3c-onset-control
   statement: Aligned to movie onset, onset-responsive neurons show a peak, but the remaining
     neurons (boundary neurons included) show no dip-then-ramp, so the pattern is specific to
@@ -257,10 +262,11 @@ claims:
     observed that all the different n-gram curves are well approximated by straight lines. We
     hence collapsed all the curves into a common line by adjusting the individual intercepts
   data: elsewhere
-  where: Miller and Selfridge 1950, Am J Psychol 63:176 (published recall table); not in any
-    archive
-  criterion: Not testable on DANDI:000207. On the data of [42], f against log2 L per order n,
-    one common slope with a separate intercept per n. The fitting method is open; (a) least
+  where: Miller and Selfridge 1950, Am J Psychol 63:176, doi:10.2307/1418920 (published
+    recall table); not in any data archive
+  criterion: Not testable on DANDI:000207. On the data of [42], f against log2 L per order n
+    and for natural text (the black curve of Fig. 4a), one common slope with a separate
+    intercept per curve. The fitting method is open; (a) least
     squares with a shared slope, (b) the mean of the separate slopes. No measure of "well
     approximated" is given.
 - id: fig4b-plateau-near-eight
@@ -271,8 +277,8 @@ claims:
   quote: Lc increases with n as expected but starts to plateau around n = 4, saturating at
     roughly the predicted value of 8.
   data: elsewhere
-  where: Miller and Selfridge 1950, Am J Psychol 63:176 (published recall table); not in any
-    archive
+  where: Miller and Selfridge 1950, Am J Psychol 63:176, doi:10.2307/1418920 (published
+    recall table); not in any data archive
   depends_on:
   - fig4a-universal-slope
   expected:
@@ -292,10 +298,42 @@ claims:
     Hindi [46, 47] reveals similar trends. ... Notably, in Fig. 4(b) for all three languages, Lc
     saturates within the region predicted by M ∗ = 2C−1, when substituting for C = 4 [4].
   data: elsewhere
-  where: Maher and Skovengaard 1988, Scand J Psychol 29:194; Sharma and Sen 1977, Indian J
-    Psychol (published recall tables); not in any archive
+  where: Maher and Skovengaard 1988, Scand J Psychol 29:194,
+    doi:10.1111/j.1467-9450.1988.tb00791.x; Sharma and Sen 1977, Indian J Psychol, no DOI or
+    volume given in the paper (published recall tables); not in any data archive
   depends_on:
   - fig4b-plateau-near-eight
   criterion: Not testable on DANDI:000207. The analysis of fig4a-universal-slope and
     fig4b-plateau-near-eight applied to each replication. "Within the region predicted" is
-    open; (a) the plateau within 10% of 8, (b) the plateau at or below 8.
+    open; (a) the plateau within 10% of 8, (b) the plateau at or below 8, M* being stated as
+    a limit beyond which perfect retrieval is impossible. Reproduced when in each replication
+    Lc rises with n and then plateaus (the "similar trends") and, under one reading, the
+    plateau of all three languages is in the region.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3b-individual-subjects, criterion rewritten so the outcomes do not overlap. The old
+    wording made a result with a majority and a failed exception both reproduced and partially
+    reproduced; the statement includes the two exceptions of the Fig. S3 legend, so reproduced
+    now needs them, and "more than half of 14" is made explicit as 8 or more.
+  - fig2b-hierarchical-retrieval, criterion notes that Methods C names the 0.01 s clusters
+    "k = 2, 3 level chunking clusters" while the Results put chunking clusters at k = 1, 2, and
+    gives the reason for the 0 tolerances.
+  - fig4a-universal-slope, criterion adds the natural-text curve, which the Fig. 4a legend
+    includes ("Black color represents natural text").
+  - fig4a-universal-slope, fig4b-plateau-near-eight, fig4b-three-languages, `where` now give
+    the DOIs the paper's reference list holds for refs. [42] and [46].
+  - fig4b-three-languages, criterion states when the claim is reproduced, including the
+    "similar trends" of the Results, and why reading (b) is allowed (Eq. 1 as a limit).
+  - Open, the Hindi replication (ref. [47]) has no DOI or volume in the paper, so the author
+    may not be able to pin it; fig4b-three-languages may then be blocked on that part.
+  - Open, fig3a-dip-after-boundary and fig3c-onset-control rest on measures the paper does not
+    give (bins, smoothing, window, z-score reference, how a dip, a ramp and a peak are judged,
+    how boundary and onset neurons are selected); the criteria name them as open and fix
+    readings, which the outcome will rest on as assumptions.
+  - Open, whether "all trials" in the Fig. 3 legend includes clips of [41] without a cut is
+    not said; the text ("each consisting of two episodes separated by a cut") supports cut
+    clips only, the reading the criterion takes.
