@@ -1731,7 +1731,7 @@ def page_pipeline(data: dict) -> str:
         else:
             place, sort, when, hours = "", 999999, "", None
         body += (f'<tr {states}><td>{name}</td>'
-                 f'<td class="pname">{e(r["title"])}</td><td class="small">{sets}</td>{cells}<td class="small">{e(r["next"])}'
+                 f'<td class="pname">{e(r["title"])}</td><td class="small psets">{sets}</td>{cells}<td class="small">{e(r["next"])}'
                  + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td>'
                  f'<td class="small" data-sort="{sort}">{e(place)}</td>'
                  f'<td class="small" data-sort="{999999 if hours is None else round(hours * 10)}">{e(when)}</td></tr>')
