@@ -14,21 +14,22 @@ every image and scored as in Table 3.
 | Myelin Dice is below axon Dice in every test sample (mouse images) | Reproduced |
 | Sensitivity above 93% in every test set (mouse images) | Reproduced |
 | Pixel-wise accuracy 0.8438 on the macaque image (data elsewhere) | Blocked: methods underspecified |
-| Myelin is underestimated on the macaque image (data elsewhere) | Reproduced |
-| Pixel-wise accuracy 0.8510 and 0.8822 on the two SEM rat test images (data elsewhere: the AxonDeepSeg SEM dataset) | Reproduced |
+| Myelin is underestimated on the macaque image (data elsewhere) | Reproduced, assuming the masks of ref. 7 in the White Matter Microscopy Database are the paper's ground truth; the predicted myelin is 0.35 to 0.51 of the ground truth's, not a slight underestimate, and the other macaque measures are far from Table 3, so the result carries little weight |
+| Pixel-wise accuracy 0.8510 and 0.8822 on the two SEM rat test images (data elsewhere: the AxonDeepSeg SEM dataset) | Reproduced, assuming the two images matched by Table 1 are the paper's test images |
 | Pixel-wise accuracy 0.8114 on the human SEM test image | Blocked: data missing |
-| Dice, sensitivity and precision of the rat, human and macaque rows of Table 3 | Blocked: data missing (human image); the rat values are within tolerance |
+| Dice, sensitivity and precision of the rat, human and macaque rows of Table 3 | Blocked: data missing (human image); the 8 rat values are within tolerance, and the 4 macaque values are outside it on all 7 macaque images |
 | Full rat spinal cord slice: processing time and Figure 7 morphometrics (five claims) | Blocked: data missing |
 
 The paper does not name its 3 test mice; every set of 3 mice of the dandiset gives values within
 the tolerances. The dandiset does not say which mice are controls; the group comes from the
-folder names of the White Matter Microscopy Database (OSF), linked by mouse number and checked
-by image content. The SEM rat test images come from the AxonDeepSeg SEM dataset on GitHub (tag
+folder names of the White Matter Microscopy Database (OSF), linked by mouse number. The link was confirmed by image content for 8 of the 20 mice; 3 more
+were checked without a match among their first four OSF micrographs, and 9 have no full-size
+micrograph on OSF and are linked by number only. The SEM rat test images come from the AxonDeepSeg SEM dataset on GitHub (tag
 r20211130, doi:10.5281/zenodo.5498378), matched to Table 1 by pixel size, field of view and
 fixation, and segmented with the paper's `default_SEM_model_v1`. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/zaimi-2018-01.yaml`](../../attempts/zaimi-2018-01.yaml).
 
-- `reproduce_zaimi_2018.ipynb`: the analysis. It takes about 12 minutes, most of it the
+- `reproduce_zaimi_2018.ipynb`: the analysis. It takes about 16 minutes, most of it the
   segmentation of 158 images twice (with and without the contrast inversion) on CPU.
 - `axondeepseg_tem.py`: reading the dandiset and the OSF deposits, the TEM and SEM models rebuilt from
   their checkpoints in TensorFlow 2, the inference pipeline of AxonDeepSeg's `segment.py`, and the scores
