@@ -128,8 +128,9 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_mah_2023.ipynb
   output: claim:fig2f-tau-uncorrelated
-  notes: Pearson r = -0.033, p = 0.572 (Methods' taus) and r = +0.023, p = 0.693 (code's taus), close to the legend's
-    r = -0.03, p = 0.53; the Results print r = 0.08, p = 0.18.
+  notes: Pearson r = -0.033, p = 0.572 (Methods' taus) and r = +0.023, p = 0.693 (code's taus), both far from significance;
+    the first is close to the legend's r = -0.03, p = 0.53, while the second has the opposite sign, near 0. The Results
+    print r = 0.08, p = 0.18.
 - claim: fig2g-h-fast-slow-tau-groups
   outcome: reproduced
   notebook: reproduce_mah_2023.ipynb
@@ -217,8 +218,9 @@ outcomes:
   deviations:
   - For the Fig. 3i part, Figure3.m simulates each rat with its own retrospective parameters fitted to wait times, which
     are not in the dandiset (they are in the Zenodo deposit) and were not refitted (see fig3j). J004's parameters (alpha_0
-    0.1042, D 0.2527) are used for every rat, an assumption; the direction of the effect follows from the model's update
-    rule for any small positive alpha_0.
+    0.1042, D 0.2527) are used for every rat, an assumption. The direction does not depend on alpha_0 - without noise, the model
+    is higher after offers below 20 uL at every alpha_0 from 0.01 to 0.8 tried (by +0.077 to +1.076 z on average; in
+    273 of 291 rats at 0.01 and 290 or 291 at the others).
   - Each script's own scaling of D, initial kappa and reset at session starts is used (D times 25, 10 and 15; kappa starting
     at mean(log(rewards)), 20 and 0.5), as GenerateLatencyData_AlphaPHModel.m, _VanillaAlpha.m and _RPEAlpha.m set them.
     The static model averages 10 noise draws per trial, as its script does.
@@ -291,7 +293,14 @@ outcomes:
     violations left out, which repeat the previous offer while the cued current offer drives initiation on this task
     (fig5b), the mean is lower after smaller offers (-0.108 against -0.072 z), 5 rats are slower after smaller offers
     and p = 0.30. After 30 pre-cue sessions 11 rats remain (9 with p < 0.05 and p = 0.000182 with all trials; 10 and
-    p = 0.47 with 20 uL trials). Changed from reproduced after the round 1 verification.
+    p = 0.47 with 20 uL trials). Changed from reproduced after the round 1 verification. Added after round 2 - within
+    a session and block every post-violation trial repeats the previous offer (share 1.000 in all 16 rats; 0.985 to
+    0.996 over all post-violation trials, against 0.195 to 0.226 after other trials). The only post-violation trials
+    that do not repeat are a session's first trials, whose previous trial in the concatenated data ends the previous
+    session; dropping post-violation trials from the 20 uL test removes 455 of its 18,075 trials, all of them session
+    first trials, with mean z initiation time +2.920 against -0.057, and moves p from 0.0676 to 0.611. The 14 significant
+    rats include 5 in the opposite direction and three with mean differences near 0 (E008 +0.0007, S042 -0.0073, M044
+    -0.0173), so the count is weak support.
   deviations:
   - The 20 uL reading of the Fig. 5c legend is adopted (an assumption between the readings the criterion lists). The
     all-trials reading of Figure5.m matches the claim only through the post-violation trials, which carry the previous
@@ -314,12 +323,14 @@ outcomes:
   output: claim:fig3j-inferential-beats-retrospective-for-wait-times
   notes: The refit needs each rat's wait times fitted by the inferential and retrospective models with 100 random starts
     (Methods, Fitting and evaluating models), on all data and on 5 folds. Revised after the round 1 verification - with
-    the retrospective likelihood compiled (numba), one evaluation on J004 takes 0.15 ms (19 ms in pure Python), and an
-    inferential fit with 100 starts takes about 0.65 s per rat (fig3f). From the 192 evaluations per start counted in
-    those fits, the refit on all data and 5 folds is estimated at 2.6 h on one core for the retrospective model (0.64
-    h on 4) and 0.6 h for the inferential and belief state models, about 3 h in all, beyond the notebook limit of 1 h
-    with the 26 minutes the notebook already takes. The first run's 138 h estimate timed a pure Python loop and an assumed
-    200 evaluations per start. The fitting code is not in the paper's repository, so the trials in the likelihood, the
+    the retrospective likelihood compiled (numba), one evaluation on J004 takes 0.157 ms (19.9 ms in pure Python), and
+    an inferential fit with 100 starts takes 0.68 s per rat (fig3f). From the 192 evaluations per start counted in those
+    fits, the refit on all data and 5 folds is estimated at 2.68 h on one core for the retrospective model (0.67 h on
+    4) and 0.66 h for the inferential and belief state models, about 3.3 h in all, beyond the notebook limit of 1 h with
+    the 24.0 minutes the notebook already takes. These are the numbers of the final run; the timings depend on the machine,
+    and the verifier's round 2 re-execution gave 0.253 ms, 1.24 s per rat, 4.32 h (1.08 h on 4) and 1.20 h, about 5.5
+    h in all, with a notebook of 45.3 minutes. The first run's estimate, 138 h in the author's run and 162 h in the verifier's
+    round 1 re-execution, timed a pure Python loop and an assumed 200 evaluations per start. The fitting code is not in the paper's repository, so the trials in the likelihood, the
     bounds, the starting ranges and the folds are also open. The paper's fits are in the Zenodo deposit (doi:10.5281/zenodo.10031483)
     as BestFit.mat files of about 1.1 GB each inside a 12.4 GB zip; using them would test the paper's fits, not the dandiset,
     and was not tried.
@@ -327,7 +338,7 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Needs the belief state model fitted as in fig3j, on all data and 5 folds, beside the inferential fits; not run
-    with fig3j (estimated about 3 h on one core in all).
+    with fig3j (estimated at 3.3 h on one core in all in the final run, 5.5 h in the verifier's round 2 re-execution).
 - claim: fig3f-inferential-model-not-sensitive-to-previous-offer
   outcome: not_reproduced
   assumed: true
@@ -375,7 +386,10 @@ outcomes:
     wait time upper asymptote D differs (p = 0.000 under both splits) but C does not (0.355, 0.237). Initiation times
     also differ in D at mixed to high (p = 0.028; 0.007 with per-session detrending, 0.006 with the 40/60 split), so
     their absence fails under the legend's reading; their C does not differ (0.129 to 0.494). Neither reading holds under
-    either split. Changed from blocked after the round 1 verification.
+    either split. Changed from blocked after the round 1 verification. The paper's 20/80 split gives N = 116, which
+    ties at the bounds could not give, so the refit's lambdas are not distributed as the paper's, and the groups here
+    come from a tie-break, not the paper's rule; the failure may be the refit's and cannot be separated from it. The
+    40/60 split, which has no ties, also fails.
   deviations:
   - The sub-optimal model follows GenerateSynthData_Bayes_subopt_onlylambda_flat.m and is fitted with the likelihood
     of fig3f (opt-out catch trials, log-normal noise of variance 8), an assumption, as the fitting code is not public.
@@ -627,23 +641,24 @@ verifications:
       model. The fitting code, free parameters and folds are not in the paper's repository; the more defensible block
       reason is methods_underspecified.
     response: Kept blocked as too_large, with the disagreement on the reason recorded. The timing now uses a compiled
-      (numba) retrospective likelihood (0.15 ms per evaluation on J004) and the real inferential fit of fig3f, with the
-      evaluations per start counted there (192); the refit is estimated at about 3 h on one core, beyond the notebook
-      limit. methods_underspecified was not adopted because a defensible fit was made for fig3f (the likelihood over
+      (numba) retrospective likelihood (0.157 ms per evaluation on J004 in the final run, 0.253 ms in the verifier's round 2 re-execution) and the real inferential fit of fig3f, with the
+      evaluations per start counted there (192); the refit is estimated at about 3.3 h on one core in the final run (5.5 h in the verifier's round 2 re-execution),
+      beyond the notebook limit. methods_underspecified was not adopted because a defensible fit was made for fig3f (the likelihood over
       opt-out catch trials, the scaling of the model scripts); the open details are in the notes and the methods_unavailable
       finding.
   - claim: suppfig8-belief-state-not-distinguished
     agrees: true
     outcome: blocked
     reason: Blocked (too_large / methods_underspecified). Needs the fits of fig3j.
-    response: Kept blocked as too_large, with the corrected estimate of fig3j (about 3 h on one core).
+    response: Kept blocked as too_large, with the corrected estimate of fig3j (about 3.3 h on one core in the final
+      run, 5.5 h in the verifier's round 2 re-execution).
   - claim: fig3f-inferential-model-not-sensitive-to-previous-offer
     agrees: true
     outcome: blocked
     reason: Blocked, but partly testable. It needs only the inferential fit on all data, about 0.4 h by cell 64's own
       timing, within the 1 h limit. An actual inferential-only fit for fig3f would have settled it.
-    response: Tested. The inferential model of GenerateSynthData_Bayes.m is fitted per rat (100 starts, 3 min for all
-      rats); its wait times are sensitive to the previous offer (rank-sum p = 9.52e-11, +0.065 z), so the outcome is
+    response: Tested. The inferential model of GenerateSynthData_Bayes.m is fitted per rat (100 starts, 197 s for all
+      rats in the final run, 361 s in the verifier's round 2 re-execution); its wait times are sensitive to the previous offer (rank-sum p = 9.52e-11, +0.065 z), so the outcome is
       now not_reproduced, resting on the likelihood assumption. Round 2 reviews this change.
   - claim: suppfig9-wait-times-reflect-misinferences
     agrees: true
@@ -660,7 +675,8 @@ verifications:
     reason: Blocked (too_large / methods_underspecified). Needs a fit of the sub-optimal model; for that model the belief
       depends on lambda, so cell 64 understates its cost.
     response: Tested. The sub-optimal model is fitted per rat, with lambda profiled over a grid because the likelihood
-      changes with it only in steps (2.5 min for all rats, the belief rerun at each grid value). The wait time slope
+      changes with it only in steps (152 s for all rats in the final run, 277 s in the verifier's round 2 re-execution, the belief rerun at each
+      grid value). The wait time slope
       at mixed to low does not differ between the lambda groups (p = 0.242) and initiation times differ in the mixed-to-high
       asymptote (p = 0.028), so the outcome is now not_reproduced, resting on the fit and on a tie-break for the groups.
       Round 2 reviews this change.
@@ -713,4 +729,217 @@ verifications:
     outcome: partially_reproduced
     reason: Cell 56 links 14 of 16 rats; S042 (p = 0.15) and S050 (p = 0.60) are not. The rule was written after a first
       look at the same check.
+    response: No change of outcome.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run, re-executed by the verifier, the helper module,
+    the claims file and this record, with the paper. Report in transcripts/mah-2023/verifier-2-report.md. The verifier agrees
+    with all 33 outcomes. It found stale timings for fig3j and suppfig8 in the record and the Summary, a stale loading time
+    in cell 2 and the README, a wrong statement on the fig2f readings, an unbacked deviation in fig3i, an unverified premise
+    in fig5c and a missing caveat in fig3l. After it, two cells were added (fig3i over alpha_0, fig5c offer repeats), the
+    text was corrected and the entry re-run; no outcome changed and none is proposed.
+  results:
+  - claim: cohort-size
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: fig1e-wait-time-increases-with-reward
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: fig1f-wait-time-block-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: fig1i-initiation-block-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: suppfig2-initiation-block-effect-after-unrewarded
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: suppfig3-wait-time-not-affected-by-previous-outcome
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: fig2a-wait-time-converges-in-mixed-blocks
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: suppfig5-mixed-to-adaptation-transitions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: fig2c-d-regression-on-previous-rewards
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the re-executed outputs match round 1 or move trivially.
+    response: No change of outcome.
+  - claim: fig2e-tau-differ
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the re-executed outputs match round 1 or move trivially (p = 1.25e-45).
+    response: No change of outcome.
+  - claim: fig2f-tau-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (p = 0.572). Minor mismatch - cell 44 and the notes say both readings are close to the legend's r = -0.03,
+      p = 0.53, but the code reading is r = +0.023, p = 0.693, which has the opposite sign.
+    response: No change of outcome. Cell 44 and the notes now say both readings are far from significance, the Methods reading
+      is close to the legend's r, and the code reading has the opposite sign, near 0.
+  - claim: fig2g-h-fast-slow-tau-groups
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. It now passes on the paper's test (cell 46, p = 0.187 and 0.200) and on the Methods variant (0.223 to
+      0.260).
+    response: No change of outcome.
+  - claim: fig2j-wait-time-not-sensitive-to-previous-offer
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: fig2k-initiation-sensitive-to-previous-offer
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: fig2l-sensitivity-greater-for-initiation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: suppfig6-results-without-detrending
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: fig3c-wait-time-by-catch-probability
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: fig3i-retrospective-model-captures-initiation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the assumption (J004's parameters for every rat in the Fig. 3i part) is stated and reasonable. Under
+      the criterion as written the alternatives show both features at 3 of 6 settings (cell 64). The noise-only control's
+      95th percentiles come from only 20 replicates, and the decisive margin is small (RPE at 0.8, overshoot +0.0284 against
+      +0.0291), so the control cannot reverse the outcome. The measure still does not separate the models. The deviation
+      saying the Fig. 3i direction follows from the update rule for any small positive alpha_0 has no output behind it.
+    response: No change of outcome. Added a cell that runs the Equation 10 model without noise for every rat at alpha_0
+      0.01, 0.05, 0.1042, 0.2, 0.4 and 0.8; the model is higher after offers below 20 uL at every value (+0.077 to +1.076
+      z on average; 273 of 291 rats at 0.01, 290 or 291 at the others). The deviation now cites these numbers. The thin
+      control (20 replicates) was not enlarged, since by the verifier's reading it cannot reverse the outcome.
+  - claim: bayes-observer-offer-reduces-uncertainty
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: suppfig12-no-sex-differences
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: suppfig14-contextual-effects-without-threshold
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: fig3j-inferential-beats-retrospective-for-wait-times
+    agrees: true
+    outcome: blocked
+    reason: Now accepts the too_large reason - by cell 98 the retrospective refit alone takes 1.08 h on 4 cores, plus 1.20
+      h for the inferential and belief state fits. The numbers in the record are stale (0.15 ms against 0.253 ms, 0.65 s
+      against 1.24 s per rat, 2.6 h against 4.32 h, 0.6 h against 1.20 h, about 3 h against about 5.5 h, 26 against 45.3
+      minutes). The record calls the first run's estimate 138 h while the verifier's round 1 reason says 162 h.
+    response: No change of outcome. The timings depend on the machine; the final run gave 0.157 ms, 0.68 s per rat, 2.68
+      h and 0.66 h (about 3.3 h) and a 24.0 minute notebook. The notes, responses, blocked-claims text and Summary now give
+      the final run's numbers beside the verifier's (about 5.5 h), and say the first estimate was 138 h in the author's
+      run and 162 h in the verifier's re-execution.
+  - claim: suppfig8-belief-state-not-distinguished
+    agrees: true
+    outcome: blocked
+    reason: Accepts the too_large reason, as for fig3j; the notes' "about 3 h on one core in all" is stale.
+    response: No change of outcome. The notes give 3.3 h (final run) and 5.5 h (verifier's re-execution).
+  - claim: fig3f-inferential-model-not-sensitive-to-previous-offer
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The likelihood assumption (opt-out catch trials, L-BFGS-B) is stated and reasonable, and parameter recovery
+      on J004 works (within 0.004). The effect is the model's own (mislabelled mixed trials with kappa_low < kappa_mixed),
+      so it would likely appear under any fit that produces the block effect. The paper gives no test for this panel, so
+      the failure rests on the claims file's reading (p >= 0.05); the record says so. The response's "3 min for all rats"
+      does not match cell 68 (361 s).
+    response: No change of outcome. The round 1 response now gives 200 s in the final run and 361 s in the verifier's re-execution.
+  - claim: suppfig9-wait-times-reflect-misinferences
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The labels depend only on H0 and the session resets; the fold assumption (whole sessions) is stated
+      and barely matters, as the inference does not use the fitted parameters. 230 of 291 rats, p = 9.72e-23 (cell 71).
+    response: No change of outcome.
+  - claim: fig3l-lambda-groups-wait-time-dynamics
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, with a caveat for the notes. The refit puts 128 rats at the lambda bounds (59 at 0, 69 at 1); the paper's
+      20/80 split gives N = 116, which ties at the bounds could not produce, so the refit's lambda distribution is not the
+      paper's and the groups come from a tie-break. The failure cannot be separated from the refit. The 40/60 split has
+      no ties and also fails (wait time C p = 0.197 at mixed to low; initiation D p = 0.006 at mixed to high). The response's
+      "2.5 min for all rats" does not match cell 74 (277 s).
+    response: No change of outcome. The caveat is added to the notes and the Result cell, with the 40/60 numbers. The round
+      1 response now gives 155 s in the final run and 277 s in the verifier's re-execution.
+  - claim: fig4a-wait-time-block-sensitivity-emerges
+    agrees: true
+    outcome: blocked
+    reason: Agrees with data_missing; the reason for not running a partial test is stated and reasonable.
+    response: No change of outcome.
+  - claim: fig4c-initiation-previous-reward-stable
+    agrees: true
+    outcome: blocked
+    reason: Agrees with data_missing; the reason for not running a partial test is stated and reasonable.
+    response: No change of outcome.
+  - claim: fig4d-overshoot-grows-with-training
+    agrees: true
+    outcome: blocked
+    reason: Agrees with data_missing; the reason for not running a partial test is stated and reasonable.
+    response: No change of outcome.
+  - claim: fig5b-pre-cue-initiation-sensitive-to-offer
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome; the dependence on the link is stated in the notes.
+    response: No change of outcome.
+  - claim: fig5c-pre-cue-initiation-still-sensitive-to-previous-reward
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; adopting the legend's 20 uL reading is stated and reasonable, and it fails the population test (cell
+      92, p = 0.0676 by date, 0.47 after 30 sessions). The confound argument (post-violation trials repeat the previous
+      offer) is not verified in the data - if they always repeated, dropping them could not change the 20 uL result, yet
+      it goes from 14 to 15 rats and p from 0.0676 to 0.611, so offers are not always repeated; the notebook should print
+      the share that repeat. Under the 20 uL reading the per-rat test flags rats with mean differences near 0 at p = 0.0000
+      (E008 +0.0007, S042 -0.0073, M044 -0.0173), so the count of 14 is weak support, and only 9 of the 14 are in the claimed
+      direction.
+    response: No change of outcome. Added a cell printing, per rat, the share of post-violation mixed-block trials that
+      repeat the offer - 1.000 within a session and block in all 16 rats, 0.985 to 0.996 over all, against 0.195 to 0.226
+      after other trials. The trials that do not repeat are a session's first trials, whose previous trial in the concatenated
+      data ends the previous session; they are all 455 of the 18,075 trials the drop removes from the 20 uL test, with mean
+      z initiation time +2.920 against -0.057, which is why the drop moves p. The confound argument holds within sessions,
+      as the paper's Methods state. The weak per-rat support (5 opposite, 3 near 0) is now stated in the Result cell and
+      the notes.
+  - claim: fig5d-pre-cue-initiation-depends-on-previous-block
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the unchanged reproduced outcome.
+    response: No change of outcome.
+  - claim: pre-cue-session-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 86, 14 of 16 rats).
     response: No change of outcome.

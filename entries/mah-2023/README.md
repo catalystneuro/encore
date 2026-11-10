@@ -4,7 +4,7 @@ Tests the claims in `claims/mah-2023.yaml` for Mah, Schiereck, Bossio and Consta
 value computations support rapid sequential decisions", Nature Communications 14, 7573
 (doi:10.1038/s41467-023-43250-x), on dandiset 001169, version 0.260825.1909.
 
-- `reproduce_mah_2023.ipynb` streams every session of the dandiset (about ten minutes), checks the data
+- `reproduce_mah_2023.ipynb` streams every session of the dandiset (6 to 14 minutes in the runs so far), checks the data
   against its description, and tests each claim.
 - `mah2023.py` holds the loader and the measures, rewritten from the paper's MATLAB code
   (github.com/constantinoplelab/published, rat_behavior, commit b7b68ca8c107); each function says which script
