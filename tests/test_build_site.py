@@ -693,7 +693,21 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     assert attempted and all((site / p["page"] / "index.html").is_file() for p in attempted)
     page = (site / "papers" / "tingley-2021" / "index.html").read_text()
     assert "A metabolic function of the hippocampal sharp wave-ripple" in page and "tingley-2021-01" in page
-    assert 'href="../../datasets/dandi/000233/#claim-' in page
+    # The paper's page stands on its own: its claims, with their outcomes, tests and notes, are on the page, and no
+    # claim sends the reader to a dataset's page. So are the findings, notebooks, verification and provenance.
+    assert 'id="claim-' in page and "/#claim-" not in page
+    for panel in ("claims", "findings", "notebooks", "verification", "differences", "provenance"):
+        assert f'<section class="tabpanel" id="{panel}">' in page
+    assert '<a href="../../papers/">Papers</a>' in page and 'href="../../datasets/dandi/000233/"' in page
+    # Every attempted paper's page has each claim of its latest attempts, once.
+    import build_site
+    for q in build_site.papers_of(_):
+        if q["attempts"]:
+            text = (site / "papers" / q["key"] / "index.html").read_text()
+            for a in q["attempts"]:
+                assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
+    # And a dataset's page names the paper's page.
+    assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
     # A paper on several datasets lists them all; the Results menu leads to Papers and Datasets.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
