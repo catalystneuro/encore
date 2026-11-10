@@ -780,7 +780,8 @@ def paper_pipeline_rows(data: dict) -> list[dict]:
 
     groups: dict[str, list[dict]] = {}
     for t in data["targets"]:
-        if t["key"] in primary:
+        # A dataset its own paper is listed for, or one that only a paper reusing it names: in that paper's row.
+        if t["key"] in primary or t.get("reuse_only"):
             continue
         doi = paper_match.clean_doi(t["paper"]) if t.get("paper") else None
         match = t.get("match", "unchecked")
