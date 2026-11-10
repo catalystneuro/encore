@@ -1,0 +1,792 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001521",
+  "label": "DANDI:001521"
+ },
+ "page": "datasets/dandi/001521/",
+ "generated": "2026-11-10T22:11:27+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 1,
+  "not_reproduced": 3,
+  "blocked": 21
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "semenov-2026-05",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001521",
+    "version": "0.261006.1845",
+    "doi": "10.48324/dandi.001521/0.261006.1845",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001521"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001521",
+   "label": "DANDI:001521",
+   "dataset_version": "0.261006.1845",
+   "paper": "10.1016/j.bioelechem.2026.109283",
+   "paper_title": "Sub-microsecond optical measurements of cell membrane charging and lesioning by pulsed electric fields",
+   "date": "2026-11-02",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41538711548"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "semenov-2026-001521",
+   "entry_title": "Ca2+ uptake after 1-us pulses in CHO cells (Semenov et al. 2026)",
+   "summary": "Most of the paper's main findings, the optical measurements of membrane charging and pole leakage with voltage-sensitive dyes, could not be tested, because this dandiset holds only Fluo-4 calcium imaging. Of the calcium findings, clear Ca2+ entry after a single pulse at 1000 and 1200 V/cm held, though the effect is small. The signal staying elevated through 5 minutes did not hold, because unpulsed cells lose about 12% of their signal, which the paper's figure does not show. The strong response in 28% of cells at 780 V/cm with pulse trains did not reproduce either. The records give no way to match the paper's cell counts, since the cells were recorded repeatedly. A minor conductivity calculation matched only in part.",
+   "description": "Tests the findings of Semenov, Silkuniene, Silkunas, Pakhomova, Bixler, Ibey, Kochunov and Pakhomov (2026) that can be tested on dandiset 001521, which holds the Fluo-4 imaging of CHO cells after single 1-us pulses and after 60-pulse trains (Fig. 6). It segments the cells, computes dF for each, and compares field strengths under two readings of the voltage to field conversion. The potentiometric imaging of Figures 1 to 5 and 7 is not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2026.ipynb",
+     "title": "Reproducing Semenov et al. (2026) from dandiset 001521",
+     "executed": "notebooks/semenov-2026-001521/reproduce_semenov_2026.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig6a-ca-entry-1000-1200",
+     "statement": "A single 1-us pulse causes clear Ca2+ entry into CHO cells at 1000 and 1200 V/cm, among field strengths escalated from 0 to 1200 V/cm.",
+     "source": "Results, 3.6 Electroporative uptake of Ca2+, paragraph 2; Figure 6A",
+     "quote": "Exposure to a single 1-\u03bcs pulse at escalating field strengths, from 0 to 1200 V/cm established a clear peak of Ca2+ entry at 1000 and 1200 V/cm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2026.ipynb",
+     "notes": "Under M1 (1000 and 1200 V/cm at 250 and 300 V) three of the four readings hold at both fields. The end value (last 10 frames) is above the 0 V/cm group by 6.58 and 8.19% (Student's t-test p = 4.9e-09 and 3.0e-11), and the peak is above zero (2.30 and 5.35%, p = 3.3e-07 and 5.0e-07) and above the 0 V/cm peak (p = 6.1e-06 and 1.9e-08); the group means at both fields exceed those at 650 V/cm or less (0 and 150 V, at most -10.26% for the end value and 0.55% for the peak). The end value against zero fails, as it is negative at both fields (-5.44 and -3.83%), with the sham at -12.02%. Under M2 (300 and 350 V) the same three readings hold. With fields of view as the unit, the peak less the same field of view's sham is 2.42% at 250 V (4 fields of view, p = 0.0004) and 5.02% at 300 V (5, p = 0.0002). The end and peak readings compare later recordings with the sham, which is always recorded first, while the decline of the signal is steepest in the first recording (pre-pulse slope -3.97% per min in the first recording, -0.41 to -1.46% per min in the fifth to seventh). The step of dF at the pulse (5 frames after less 5 before), which this does not affect, is above the sham's at 250 V (0.35 +- 0.17%, p = 0.025) and 300 V (1.78 +- 0.31%, p = 3.2e-07), but not at 150 or 200 V (p = 0.13 and 0.10); at 250 V it is not above zero on its own (p = 0.058). So the entry at 1000 V/cm under M1 is small. The single-pulse session holds 27 cells in 6 fields of view, and three sets of fields of view give 14 cells, so the 14 cells of Fig. 6A cannot be identified. The results hold with regions of 0.5 and 1.0 of the radius and end windows of 5 and 20 frames.",
+     "deviations": [
+      "The files give generator voltages and the paper field strengths, with no conversion in either. Two readings are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion), because the single-pulse voltages then fall on the paper's field series 570 to 1400 V/cm and the six train voltages nearest the fields labelled in Fig. 6B (230, 570, 650, 780, 900, 1000 V/cm) have group sizes close to the n the figure gives (28, 38, 36, 68, 47, 39 against 28, 37, 34, 54, 35, 36). M2, 3.3 V/cm per V, puts the train voltages 70, 200 and 230 V on the 230, 650 and 780 V/cm named in Section 3.6 and is shown as a variant. A named field is assigned to the nearest voltage. Neither factor follows from the electrode gap (V/d is 10 V/cm per V for the 1.00 mm of the files, 6.25 for the 1.6 mm of Methods 2.2). The outcome is the same under both.",
+      "Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of 0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile of the cell-free pixels.",
+      "Every detected cell in every file is used, as the dataset does not say which cells the paper used.",
+      "The paper names no test for this panel; the claims file's readings (one-sample t-test or Student's t-test against 0 V/cm, end value or peak) are all run."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-ca-sustained",
+     "statement": "After a single 1-us pulse at 1000 or 1200 V/cm the Ca2+ signal stays elevated through the 5-min observation period.",
+     "source": "Results, 3.6 Electroporative uptake of Ca2+, paragraph 2; Figure 6A",
+     "quote": "Ca2+ signal remained elevated through the 5-min observation period",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2026.ipynb",
+     "notes": "The mean dF over the last 10 frames is below zero at 1000 and 1200 V/cm under M1 (-5.44 +- 0.55% and -3.83 +- 0.71%) and at 1000 V/cm under M2 (-3.83%); at 1200 V/cm under M2 (350 V) it is +1.24 +- 1.95%, p = 0.53. The ratio of final to peak group mean is -63 and -2.4 under M1, -2.4 and 0.18 under M2. Unpulsed cells decline to -12.0% over the same window. The decline is in the cells' own fluorescence, -8.7% before background subtraction, while the cell-free background falls by 1.0%, so no choice of background region removes it. The paper's Fig. 6A shows the 0 V/cm mean trace rising to about +1% by 300 s, so these recordings or the processing behind the figure differ in a way the paper does not describe. Against the 0 V/cm group the end value is higher by 6.6 and 8.2% under M1 (p = 4.9e-09 and 3.0e-11), and less the same field of view's sham trace it is 6.4 and 8.4% above zero (p = 7.3e-10 and 4.5e-11), but these comparisons include the change of the decline with recording order. With a background taken as the 10th percentile of the cell-free pixels the sham still falls to -11.3% and the end values stay negative (-5.06 and -3.51%). The signal stays above that of unpulsed cells to the end of the 5 min, but not above its own pre-pulse level, which is what the criterion tests. With other region sizes and end windows the end values move by less than 1% and stay negative at 250 and 300 V. The question of how the paper's traces handle the decline is for the authors (see findings).",
+     "deviations": [
+      "The files give generator voltages and the paper field strengths, with no conversion in either. Two readings are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion), because the single-pulse voltages then fall on the paper's field series 570 to 1400 V/cm and the six train voltages nearest the fields labelled in Fig. 6B (230, 570, 650, 780, 900, 1000 V/cm) have group sizes close to the n the figure gives (28, 38, 36, 68, 47, 39 against 28, 37, 34, 54, 35, 36). M2, 3.3 V/cm per V, puts the train voltages 70, 200 and 230 V on the 230, 650 and 780 V/cm named in Section 3.6 and is shown as a variant. A named field is assigned to the nearest voltage. Neither factor follows from the electrode gap (V/d is 10 V/cm per V for the 1.00 mm of the files, 6.25 for the 1.6 mm of Methods 2.2). The outcome is the same under both.",
+      "Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of 0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile of the cell-free pixels.",
+      "Every detected cell in every file is used, as the dataset does not say which cells the paper used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-780-not-significant",
+     "statement": "After a single 1-us pulse at 780 V/cm the Ca2+ signal rises only subtly, at the detection limit, and not significantly.",
+     "source": "Results, 3.6 Electroporative uptake of Ca2+, paragraph 2; Figure 6A",
+     "quote": "A subtle \u0394F increase after exposure at 780 V/cm was at the detection limit and not statistically significant",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2026.ipynb",
+     "notes": "The criterion's test, a one-sample t-test of the end value against zero, finds no increase at 780 V/cm, with -7.42 +- 0.52% under M1 (200 V, n = 24) and -5.44 +- 0.55% under M2 (250 V, n = 18), one-sided p = 1 for both. That test cannot detect an increase here, as it finds none at 1000 and 1200 V/cm either (-5.44 and -3.83% under M1), so the outcome carries little information. Against the 0 V/cm group the end value is higher by 4.60% (M1, p = 1.3e-06), and the peak is 1.76 +- 0.61% (one-sample p = 0.0086; against the sham peak p = 0.021); both comparisons include the slowing of the decline with recording order. The step of dF at the pulse against the 0 V/cm group, which detects 1000 and 1200 V/cm under M1 (p = 0.025 and 3.2e-07), finds no increase at 780 V/cm under M1 (0.15 +- 0.16%, p = 0.10), and finds one under M2, where 780 V/cm is 250 V (p = 0.025). The step is the only reading not confounded by recording order, but it separates 1000 V/cm from the sham only barely (p = 0.025, and p = 0.058 against zero), and the steps at 780 and 1000 V/cm under M1 do not differ (0.15 +- 0.16 and 0.35 +- 0.17%, p = 0.40), so it is weak evidence for the absence at 780 V/cm. Whether the criterion's test can stand for the paper's is asked of a reader (questions/001521.yaml).",
+     "deviations": [
+      "The files give generator voltages and the paper field strengths, with no conversion in either. Two readings are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion), because the single-pulse voltages then fall on the paper's field series 570 to 1400 V/cm and the six train voltages nearest the fields labelled in Fig. 6B (230, 570, 650, 780, 900, 1000 V/cm) have group sizes close to the n the figure gives (28, 38, 36, 68, 47, 39 against 28, 37, 34, 54, 35, 36). M2, 3.3 V/cm per V, puts the train voltages 70, 200 and 230 V on the 230, 650 and 780 V/cm named in Section 3.6 and is shown as a variant. A named field is assigned to the nearest voltage. Neither factor follows from the electrode gap (V/d is 10 V/cm per V for the 1.00 mm of the files, 6.25 for the 1.6 mm of Methods 2.2). The outcome is the same under both.",
+      "Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of 0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile of the cell-free pixels.",
+      "Every detected cell in every file is used, as the dataset does not say which cells the paper used."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-train-threshold",
+     "statement": "With trains of sixty 1-us pulses at 6 Hz (each cell tested once, 224 cells), a strong Ca2+ response occurs in 28% of cells at 780 V/cm and in nearly all cells at higher fields.",
+     "source": "Results, 3.6 Electroporative uptake of Ca2+, paragraph 3; Figure 6B",
+     "quote": "A strong Ca2+ response was recorded in 28% of cells exposed at 780 V/cm and in nearly all cells at higher intensities",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2026.ipynb",
+     "notes": "No reading meets the criterion. The fields above 780 V/cm are taken as those of Fig. 6B, 900 and 1000 V/cm (230 and 250 V under M1, 250 and 300 V under M2). The fraction of strong responders at 780 V/cm is 2.9 to 22.1% under M1 (200 V, 68 cell exposures) and 44.7 to 78.7% under M2 (230 V, 47), against 28 +- 2.8%, over six rules, including \"above 3 s.d.\" read literally as a threshold of 3 s.d. of the reference group. The lower of the two fractions at the higher fields is 44.7 to 78.7% under M1 and 61.5 to 79.5% under M2, against at least 90%. With regions of 0.5 and 1.0 of the radius the criterion is met in none of the 36 combinations of region, conversion and rule. The six voltage groups that correspond to the Fig. 6B fields hold 256 cell exposures under M1 (224 under M2), against 224; in all, the dataset holds 311 exposures to trains of 82 distinct cells in 9 fields of view, each recorded at 1 to 7 voltages, where the paper states 224 cells each tested once (measured gives the 780 V/cm fraction under M1 and rule (a) against 0 V/cm, and the cells in the M1 groups of the Fig. 6B fields). The figure's group sizes are close to the dataset's exposures, so the paper may have counted exposures as cells. Taking only the first train of each field of view, 9.1 to 18.2% respond at 200 V and 90.9 to 100% at 250 V (11 cells each). The end values carry the decline of the sham signal (-15.7% in the train session) that the Fig. 6B traces do not show. These numbers use the criterion's end window of 10 frames; with 5 frames and a region of 0.5 of the radius the 780 V/cm fraction under M1 and the rule above the largest of the lowest field is 27.9%, within tolerance, but the higher fields reach 76.6 and 82.1%, not 90%. With a background taken as the 10th percentile of the cell-free pixels, which dim unsegmented cells affect less (the background falls from 1.81 to 1.21 times the corrected cell signal), the criterion is met in none of 12 combinations of conversion and rule (780 V/cm 2.9 to 23.5% under M1, 42.6 to 91.5% under M2; lower higher-field fraction at most 87.2%).",
+     "deviations": [
+      "The files give generator voltages and the paper field strengths, with no conversion in either. Two readings are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion), because the single-pulse voltages then fall on the paper's field series 570 to 1400 V/cm and the six train voltages nearest the fields labelled in Fig. 6B (230, 570, 650, 780, 900, 1000 V/cm) have group sizes close to the n the figure gives (28, 38, 36, 68, 47, 39 against 28, 37, 34, 54, 35, 36). M2, 3.3 V/cm per V, puts the train voltages 70, 200 and 230 V on the 230, 650 and 780 V/cm named in Section 3.6 and is shown as a variant. A named field is assigned to the nearest voltage. Neither factor follows from the electrode gap (V/d is 10 V/cm per V for the 1.00 mm of the files, 6.25 for the 1.6 mm of Methods 2.2). The outcome is the same under both.",
+      "Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of 0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile of the cell-free pixels.",
+      "The cells were tested more than once in the dataset; all exposures are used, and the first exposure of each field of view is shown as a variant.",
+      "Reading (b), above 3 s.d. of the reference group, is run as above its mean plus 3 s.d. and, literally, above 3 s.d."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-650-weak-but-significant",
+     "statement": "With 60-pulse trains at 650 V/cm only 2 cells (5.9%) respond strongly, but the mean Ca2+ signal at the end of recording is significantly above zero and marginally above that at 230 V/cm.",
+     "source": "Results, 3.6 Electroporative uptake of Ca2+, paragraph 3; Figure 6B",
+     "quote": "At 650 V/cm, only 2 cells (5.9%) showed a strong response, but the mean Ca2+ signal by the end of recording was significantly different from zero (p < 0.001, one sample t-test) and marginally higher than after exposure at 230 V/cm (p < 0.05, single-tailed t-test)",
+     "statistics": [
+      {
+       "about": "650 V/cm end-of-recording signal against zero",
+       "test": "one sample t-test",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "650 V/cm against 230 V/cm",
+       "test": "single-tailed t-test",
+       "p": 0.05,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2026.ipynb",
+     "notes": "The statement's tests fail under both conversions. Under M1 the mean end value at 170 V (650 V/cm) is -9.17 +- 0.83%, significantly below zero (two-sided p = 6.4e-13, one-sided p = 1 for above zero), and not above the 70 V group (single-tailed p = 0.20). Under M2 the 200 V mean is -1.98 +- 1.77% (p = 0.27 against zero) and above the 70 V group (single-tailed p = 0.0023). The count is met under one combination of 36 (M1, 170 V, rule above the largest of the lowest field, region 0.7 of the radius, 2 of 36, 5.6%); measured gives the first reading, rule (a) against 0 V/cm under M1, 0 cells. Regions of 0.5 and 1.0 give 1 cell (2.8%) under the same rule, the other five rules give 0 under M1, and M2 (200 V, 68 exposures) gives 2 to 17 cells (2.9 to 25.0%). As the tests fail under both conversions and every rule, the outcome does not rest on the choice. The end values carry the decline of the sham signal. With a background taken as the 10th percentile of the cell-free pixels the 650 V/cm mean is -7.37% under M1 and -1.54% under M2 (one-sided p = 1.0 and 0.87 for above zero), and the count of 2 cells (5.9%) is met in none of 12 combinations. In round 1 this claim was blocked as methods_underspecified; the statement's tests are fully specified and fail, so it is not reproduced.",
+     "deviations": [
+      "The files give generator voltages and the paper field strengths, with no conversion in either. Two readings are run. M1, 3.9 V/cm per V, is adopted as the main reading (an assumption, as the paper gives no conversion), because the single-pulse voltages then fall on the paper's field series 570 to 1400 V/cm and the six train voltages nearest the fields labelled in Fig. 6B (230, 570, 650, 780, 900, 1000 V/cm) have group sizes close to the n the figure gives (28, 38, 36, 68, 47, 39 against 28, 37, 34, 54, 35, 36). M2, 3.3 V/cm per V, puts the train voltages 70, 200 and 230 V on the 230, 650 and 780 V/cm named in Section 3.6 and is shown as a variant. A named field is assigned to the nearest voltage. Neither factor follows from the electrode gap (V/d is 10 V/cm per V for the 1.00 mm of the files, 6.25 for the 1.6 mm of Methods 2.2). The outcome is the same under both.",
+      "Cells are found by an Otsu threshold and watershed of the pre-pulse mean image, with a circular region of 0.7 of each cell's equivalent radius and the median of pixels more than 15 px from any cell as background; the paper drew the regions by hand (Methods 2.4) and these are standard choices, shown with regions of 0.5 and 1.0 of the radius, end windows of 5 and 20 frames, and a background taken as the 10th percentile of the cell-free pixels."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-conductivity-calibration",
+     "statement": "By Eq. 2, a 10-fold increase of effective membrane conductivity from 0.0003 mS/m reduces the pole IMP by only about 2%, and a 100-fold increase by 12%.",
+     "source": "Results, 3.5 Membrane charging in the presence of Gd3+ ions, paragraph 3; Figure 5B",
+     "quote": "its 10-fold increase would go unnoticed, yielding just a ~2% IMP reduction, and a 100-fold increase would reduce IMP by just 12%",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_semenov_2026.ipynb",
+     "notes": "Eq. 2 with the paper's constants gives f = 1.4801 for a 10-fold and 1.3220 for a 100-fold increase from 3e-7 S/m, a reduction of 1.33% of IMPC (outside 2 +- 0.2%) and 11.87% (within 12 +- 1.2%). Relative to f at the intact conductivity the reductions are 1.20 and 11.75%. This is a computation from the paper's equation and uses no recordings, so it says nothing about the dataset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-pole-leakage-pattern",
+     "statement": "With Di-8-ANEPPS, polarization by 1-us pulses grows with field strength up to 570 to 780 V/cm; at stronger fields the poles become leaky and show reduced or absent polarization while regions near the equator stay polarized.",
+     "source": "Results, 3.1 Visualization of electroporation, paragraph 1; Figure 1",
+     "quote": "Still stronger electric fields produce a distinct pattern of reduced or absent polarization at the poles (where the membrane becomes too leaky to accumulate the charge) while regions closer to the equator remain relatively intact and may polarize more than the poles",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-fluovolt-saturation",
+     "statement": "FluoVolt dF rises with field strength until it saturates at 66% (255 mV) at 360 V/cm at the cathodic pole and at -83% (-320 mV) at 570 V/cm at the anodic pole; stronger fields do not increase it at the anodic pole and decrease it at the cathodic pole.",
+     "source": "Results, 3.2 Polarization by multiple repeated stimuli, paragraph 2; Figure 2A",
+     "quote": "\u0394F increased proportionally to the electric field strength until reaching apparent saturation at 66% \u0394F (255 mV IMP) at 360 V/cm at the cathodic pole, and \u221283% \u0394F (\u2212320 mV IMP) at 570 V/cm at the anodic pole",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-fluovolt-stable-within-set",
+     "statement": "FluoVolt responses stayed stable through the 60 pulses of each set, even at 1000 V/cm and above, which electroporate strongly.",
+     "source": "Results, 3.2 Polarization by multiple repeated stimuli, paragraph 2; Figure 2A",
+     "quote": "Field strengths of 1000 V/cm and higher caused strong electroporation (see Section 3.5), but the dye response in each set stayed stable through the 60 pulses applied",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-di8-decline-within-set",
+     "statement": "Di-8-ANEPPS dF keeps rising up to 570 V/cm at both poles, and at 780 V/cm and above it declines gradually within each set of 60 pulses.",
+     "source": "Results, 3.2 Polarization by multiple repeated stimuli, paragraph 3; Figure 2B",
+     "quote": "In addition, responses to PEFs at and above 780 V/cm decreased gradually in each set of 60 images",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2cd-stable-then-drop",
+     "statement": "Alternating sets at 150 and 230 V/cm give dF that stays constant within and between sets; after electroporation at 1000 V/cm the set-averaged dF drops by about 20% and stays lower.",
+     "source": "Results, 3.2 Polarization by multiple repeated stimuli, paragraph 4; Figure 2C and 2D",
+     "quote": "\u0394F values averaged across each set of 60 PEFs stayed nearly constant before the electroporation, but dropped by about 20% in the sets acquired after it (Fig. 2D, p < 0.05)",
+     "statistics": [
+      {
+       "test": "2-tailed paired t-test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "8 cells, one per experiment"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-1000-within-set-trend",
+     "statement": "At 1000 V/cm, cathodic dF fell from 40% at the start of the set to 26.6% at its end, a trend that was not significant.",
+     "source": "Results, 3.2 Polarization by multiple repeated stimuli, paragraph 4; Figure 2C",
+     "quote": "\u0394F at the cathodic pole decreased from 40 \u00b1 10% at the beginning of the set to 26.6 \u00b1 8% at the end of it. Although not statistically significant (p > 0.05)",
+     "statistics": [
+      {
+       "p": 0.05,
+       "p_relation": ">",
+       "n": "8 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-dye-calibration",
+     "statement": "Fitted through the origin over -150 to +150 mV of calculated IMP, FluoVolt and Di-8-ANEPPS change emission by 26% and 9.1% per 100 mV, with correlation coefficients of 0.96 and 0.78.",
+     "source": "Results, 3.3 Calibration of the potentiometric dyes, paragraph 1; Figure 3",
+     "quote": "The correlation coefficients of the fits equaled 0.96 for FluoVolt and 0.78 for Di-8 ANEPPS (due to a lower signal-to-noise ratio), with respective slope coefficients of 26% and 9.1% \u0394F per 100 mV of IMP",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-fluovolt-nonlinear",
+     "statement": "FluoVolt becomes non-linear already at plus or minus 200 mV while Di-8-ANEPPS stays nearly linear from -500 to +500 mV, so the early departure of FluoVolt reflects its dynamic range, not electroporation.",
+     "source": "Results, 3.3 Calibration of the potentiometric dyes, paragraph 1; Figure 3",
+     "quote": "The actual measurements with FluoVolt gradually became non-linear already at \u00b1200 mV, while those for Di-8-ANEPPS stayed essentially linear throughout the tested range from \u2212500 to +500 mV",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here. It also depends on fig3-dye-calibration, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4a-fluovolt-maximum",
+     "statement": "With FluoVolt the maximum dF reached 71% and -83.5% at the cathodic and anodic poles, and cathodic polarization fell from 71% at 360 V/cm to 45 to 50% at 1000 to 1400 V/cm.",
+     "source": "Results, 3.4 Azimuthal membrane charging and polarization limits, paragraph 1; Figure 4A",
+     "quote": "With stronger PEFs, maximum \u0394F reached 71 \u00b1 10% and \u221283.5 \u00b1 5% at the cathodic and anodic poles, respectively ... polarization at the cathodic pole decreased from 71% at 360 V/cm to 45\u201350% at 1000\u20131400 V/cm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-di8-maximum",
+     "statement": "With Di-8-ANEPPS, measured IMP fell below the calculated value at 570 V/cm, where dF reached its maximum of 57% at the cathodic and -55% at the anodic pole, over 600 mV, twice the FluoVolt value.",
+     "source": "Results, 3.4 Azimuthal membrane charging and polarization limits, paragraph 2; Figure 4B",
+     "quote": "The measured IMP decreased below the calculated value when the electric field reached 570 V/cm, concurrently with reaching the maximum \u0394F of 57 \u00b1 14% at the cathodic pole and \u221255 \u00b1 4% at the anodic pole",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-first-10-pulses",
+     "statement": "Averaged over the first 10 of 60 pulses, Di-8-ANEPPS polarization at the cathodic pole reached 66% (710 mV).",
+     "source": "Results, 3.4 Azimuthal membrane charging and polarization limits, paragraph 3; Figure 4B (dotted lines)",
+     "quote": "Polarization measured this way reached 66 \u00b1 15% (710 \u00b1 200 mV) at the cathodic pole",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-cathodic-asymmetry",
+     "statement": "Above 780 V/cm the IMP at the poles falls progressively with field strength, more at the cathodic pole; at 1400 V/cm charging is undetectable at the cathodic pole and about -30% dF at the anodic pole.",
+     "source": "Results, 3.4 Azimuthal membrane charging and polarization limits, paragraph 4; Figure 4B",
+     "quote": "As the electric field increased further, the IMP reached at the poles progressively decreased, and the reduction was more pronounced at the cathodic pole ... At 1400 V/cm, charging was no longer detectable at the cathodic pole",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-equator-cosine",
+     "statement": "Membrane regions near the equator are relatively unaffected and follow the cosine dependence of the Schwan equation up to 1000 V/cm.",
+     "source": "Results, 3.4 Azimuthal membrane charging and polarization limits, paragraph 4; Figure 4C",
+     "quote": "Membrane areas closer to the equator (at polar angles closer to 0\u25e6and 270\u25e6) appeared relatively unaffected and followed the cosine dependence predicted by Schwan formula up to 1000 V/cm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-short-pulses-same-limit",
+     "statement": "Shortening the pulse to 0.3 us at higher fields (357 to 3320 V/cm) did not raise the polarization limit; the maximum dF was 53% (about 600 mV) at both poles, as with 1-us pulses.",
+     "source": "Results, 3.4 Azimuthal membrane charging and polarization limits, paragraph 5; Figure 4D",
+     "quote": "Contrary to the expectations, the results were similar to those with 1-\u03bcs pulses in Fig. 4B ... the maximum \u0394F reached was 53 \u00b1 4% (~600 mV) at both cell poles",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here. It also depends on fig4b-di8-maximum, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-gd-extends-anodic",
+     "statement": "1 mM Gd3+ extended anodic charging to -864 mV against -542 mV in parallel controls, and the measured IMP stayed close to the calculated IMP down to -780 mV.",
+     "source": "Results, 3.5 Membrane charging in the presence of Gd3+ ions, paragraph 1; Figure 5A",
+     "quote": "Indeed, we found that 1 mM Gd3+ extended the range of membrane charging at the anodic pole down to \u2212864 \u00b1 44 mV (p < 0.001 compared to \u2212542 \u00b1 57 mV in parallel control experiments, Fig. 5A)",
+     "statistics": [
+      {
+       "test": "2-tailed t-test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "7 cells with Gd3+ and 5 control cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-gd-cathodic-not-higher",
+     "statement": "At the cathodic pole the IMP with Gd3+ reached 647 mV, not significantly higher than in controls, but Gd3+ prevented the decline of IMP with stronger fields.",
+     "source": "Results, 3.5 Membrane charging in the presence of Gd3+ ions, paragraph 2; Figure 5A",
+     "quote": "At the cathodic pole, polarization in the presence of Gd3+ reached 647 \u00b1 44 mV, a value not significantly higher than that in the control group without Gd3+. However, Gd3+ prevented the progressive decline in IMP as the electric field was increased",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5c-gd-reduces-conductivity",
+     "statement": "Gd3+ reduced the electroporation-induced effective membrane conductivity 2 to 3-fold for most datapoints.",
+     "source": "Results, 3.5 Membrane charging in the presence of Gd3+ ions, paragraph 4; Figure 5C",
+     "quote": "For most datapoints, Gd3+ reduced the electroporation- induced effective conductivity 2\u20133-fold",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here. It also needs the pole IMP of Fig. 5A; its dependency fig5b-conductivity-calibration was tested.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7a-test-pulse-cosine",
+     "statement": "A 150 V/cm test pulse 5 us after a conditioning pulse still charges the membrane along a cosine after conditioning up to 1000 V/cm, while 1200 and 1400 V/cm conditioning markedly hinders charging at the poles.",
+     "source": "Results, 3.7 Fast restoration of membrane conductivity, paragraph 3; Figure 7A",
+     "quote": "Polarization still followed a cosine function after conditioning PEFs of up to 1000 V/cm. However, 1200 and 1400 V/cm conditioning PEFs markedly hindered charging by the test pulse at cell poles",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here. It also depends on fig7b-test-pulse-recovery, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-conditioning-sublinear",
+     "statement": "During the conditioning pulse, pole dF falls 1.5 times below linear scaling at 560 V/cm, 2-fold at 760 V/cm and further at stronger fields.",
+     "source": "Results, 3.7 Fast restoration of membrane conductivity, paragraph 5; Figure 7B top",
+     "quote": "Actual measurements fell 1.5 times below this line for 560 V/cm PEFs, 2- fold for 760 V/cm PEFs, and diverged further for more intense PEFs (p < 0.01 for all datapoints \u2265560 V/cm, one sample t-test)",
+     "statistics": [
+      {
+       "test": "one sample t-test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "5 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-test-pulse-recovery",
+     "statement": "Six us after the conditioning pulse, test-pulse charging is unchanged after conditioning up to 760 V/cm, about 80% (not significant) after 1000 V/cm, and about 70% and 50% after 1200 and 1400 V/cm.",
+     "source": "Results, 3.7 Fast restoration of membrane conductivity, paragraph 5; Figure 7B bottom",
+     "quote": "Still more intense PEFs of 1200 and 1400 V/cm reduced charging by the test pulse to ~70% and ~ 50%, respectively (p < 0.05 and p < 0.01, two-sided t-test)",
+     "statistics": [
+      {
+       "about": "1200 V/cm conditioning",
+       "test": "two-sided t-test",
+       "p": 0.05,
+       "p_relation": "<",
+       "n": "5 cells"
+      },
+      {
+       "about": "1400 V/cm conditioning",
+       "test": "two-sided t-test",
+       "p": 0.01,
+       "p_relation": "<",
+       "n": "5 cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7c-fast-resealing",
+     "statement": "Effective membrane conductivity at the poles dropped about 10-fold (range 7 to 20) within 6 us after the electroporating pulse, with full resealing after 570 and 760 V/cm and residual conductivity after stronger pulses.",
+     "source": "Results, 3.7 Fast restoration of membrane conductivity, paragraph 7; Figure 7C",
+     "quote": "Fig. 7C shows a profound reduction in the \u03bbm,eff within just 6 \u03bcs after the electroporating pulse. For most datapoints, it dropped by a factor of 10 (range ... 7\u201320)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The pulsed-laser potentiometric imaging (FluoVolt and Di-8-ANEPPS) is not in this dandiset, which holds only Fluo-4 time-lapses. The paper's Data availability says data are available on request. Six other dandisets of the same lab name this paper in their metadata (001515, 001516, 001517, 001518, 001525 and 001526) and by their titles hold the potentiometric experiments; they are targets of their own, and the claims file does not name them as data the paper relies on, so they were not used here. It also depends on fig7b-test-pulse-recovery, blocked for the same reason.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds only the Fluo-4 imaging of Fig. 6. The pulsed-laser potentiometric imaging behind Figs. 1 to 5 and 7, which carries most of the paper's findings (21 of 27 claims), is not in it. Six other dandisets of the lab (001515, 001516, 001517, 001518, 001525, 001526) name the same paper and by their titles hold these experiments, but neither the paper's Data availability (on request) nor this dandiset's description points to them.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files give each pulse as a generator voltage (0 to 400 V); the paper reports only field strengths and gives no conversion. At about 3.9 V/cm per V the single-pulse voltages fall on the paper's field series and the six train voltages nearest the Fig. 6B fields have group sizes close to the figure's n (28, 38, 36, 68, 47, 39 against 28, 37, 34, 54, 35, 36). At about 3.3 V/cm per V the train voltages fall on the 230, 650 and 780 V/cm named in the text. The conversion is an assumption here.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Every file states an electrode gap of 1.00 mm and an electrode diameter of 0.5 mm; the paper's Methods 2.2 give tungsten rods 500 um in diameter at 1.6 mm spacing.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "In the train session (2025-05-02) each subject is one field of view recorded at 1 to 7 escalating voltages after a sham, so the same 82 cells account for 311 exposures to trains. The paper states that each cell was tested only once, 28 to 54 cells per field strength, 224 cells in all. Either the dandiset holds different recordings from Fig. 6B, or the paper's description is wrong.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The single-pulse session holds 27 cells in 6 fields of view, recorded at 0 to 400 V; Fig. 6A averages 14 cells over 0 to 1200 V/cm. Three different sets of fields of view hold 14 cells. The dandiset does not say which cells or recordings the paper used, and it holds no cell regions or traces, so the paper's selection cannot be repeated.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset's description and title describe only single 1-us pulses with recordings of 5 min at 1 frame/s, but 33 of the 73 files are 60-pulse 6 Hz trains recorded for 3 min at 0.5 frame/s (the other 9 files of that session are shams). Subjects are fields of view of a cell line, yet each has an age of P1D, and the archive's species summary names two species, 'Cricetulus griseus - Cricetulus aureus', for the one taxon NCBITaxon 10029.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How were generator voltages converted to the field strengths of Fig. 6, and was the same conversion used for single pulses and trains? 3.9 V/cm per V fits the fields and group sizes of Fig. 6B and was adopted; 3.3 V/cm per V puts the train voltages on the three fields named in the text and was run as a variant. No outcome changes between the two.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How was a strong Ca2+ response defined in Fig. 6B, how large was the region over each cell, and which cells formed each group? The count of 2 responders at 650 V/cm is met under one of 36 combinations of conversion, rule and region size here.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Unpulsed cells lose 12% (single-pulse session) and 16% (train session) of their background-corrected Fluo-4 signal by the end of a recording, relative to the pre-pulse mean; the raw cell signal falls by 8.7 and 7.5% while the cell-free background falls by 1.0 and 0.6%. The 0 V/cm trace of Fig. 6A rises by about 1% and the Fig. 6B traces are flat. Were the dF traces of Fig. 6 corrected for this decline, or do they come from other recordings, and which test gave \"not statistically significant\" at 780 V/cm? Without a correction the end-of-recording dF at 1000 and 1200 V/cm is below zero, and fig6a-ca-sustained is not reproduced.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Eq. 2 with the constants of Methods 2.3 gives a 1.3% reduction of pole IMP for a 10-fold increase of membrane conductivity, where Section 3.5 states about 2%.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "Each field of view was recorded first without a pulse and then at escalating voltages, and the decline of the Fluo-4 signal is steepest in the first recording (before the pulse, -3.97% per min in the first recording of the single-pulse session and -0.41 to -1.46% per min in the fifth to seventh, slowing with each recording; -11.4% per min in the first recording of the train session and -2.0 to -5.4% per min in later ones, without a steady trend). Field strength and recording order therefore go together, and comparisons with the sham, always recorded first, include part of this difference.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier queried the archive API, rendered Fig. 6 of the paper, and tested the helper functions on synthetic stacks. Report in transcripts/001521/verifier-1-report.md. Its other points were also addressed: the docstring file counts are corrected (31 and 42), the conversion is now taken from Fig. 6B, and results with fields of view as the unit are added.",
+     "agreed": 26,
+     "of": 27,
+     "disagreements": [
+      {
+       "claim": "fig6b-650-weak-but-significant",
+       "outcome": "not_reproduced",
+       "reason": "Both tests the statement names are fully specified, and both conversions fail at least one. Under M1 the count matches under one rule, but the end mean is -9.2%, significant in the wrong direction, and the single-tailed test against 230 V/cm gives p = 0.20; under M2 against zero p = 0.27."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-03",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook with the conclusions and summary, the README and this record. Report in transcripts/001521/verifier-2-report.md. In reply to its section 2, the notebook and record now print and cite the p-values that were given as below a bound (4.9e-09 and 3.0e-11 against the sham), the README states the 12 to 16% decline as the background-corrected dF and the raw decline as 7.5 to 8.7%, the summary and data check say the decline is steepest in the first recording and has no steady trend later in the train session, the train result is qualified to the 10-frame window with the 5-frame case (27.9%, higher fields 76.6 and 82.1%) given, the guess about Fig. 5B is removed, the file count is corrected to 33 trains and 9 shams in the train session, and outputs were added for the subject age and species and for the six other dandisets that name the paper (archive metadata). In reply to its section 3, a background taken as the 10th percentile of the cell-free pixels, less affected by dim unsegmented cells, was added; it changes no outcome. No outcome changed and none is proposed.",
+     "agreed": 27,
+     "of": 27,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "semenov-2026-001521",
+   "type": "reproduction",
+   "title": "Ca2+ uptake after 1-us pulses in CHO cells (Semenov et al. 2026)",
+   "description": "Tests the findings of Semenov, Silkuniene, Silkunas, Pakhomova, Bixler, Ibey, Kochunov and Pakhomov (2026) that can be tested on dandiset 001521, which holds the Fluo-4 imaging of CHO cells after single 1-us pulses and after 60-pulse trains (Fig. 6). It segments the cells, computes dF for each, and compares field strengths under two readings of the voltage to field conversion. The potentiometric imaging of Figures 1 to 5 and 7 is not in the dandiset.",
+   "datasets": [
+    "dandi:001521"
+   ],
+   "papers": [
+    "10.1016/j.bioelechem.2026.109283"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_semenov_2026.ipynb",
+     "title": "Reproducing Semenov et al. (2026) from dandiset 001521",
+     "executed": "notebooks/semenov-2026-001521/reproduce_semenov_2026.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 106,
+   "hashed": false
+  }
+ ]
+}
