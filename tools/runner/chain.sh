@@ -60,7 +60,10 @@ here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
 # A paper's key, or a dataset's folder name (000147 for DANDI, <archive>-<id> otherwise), names the chain's files
 # and branch; a dataset's name is replaced by its paper's once the paper match lists it for one.
-if [[ "$1" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*-[0-9]{4}(-[a-z0-9]+)?$ ]] && ! python "$here/describe.py" folder "$1" >/dev/null 2>&1; then
+# A paper is one main lists (papers/datasets/<key>.yaml); the dataset parser would take "holdgraf-2016" for archive
+# "holdgraf", so it cannot tell them apart.
+git fetch -q origin main 2>/dev/null || true
+if git cat-file -e "origin/main:papers/datasets/$1.yaml" 2>/dev/null; then
   d=$1; is_paper=1
 else
   d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: neither a paper nor a dataset"; exit 1; }
