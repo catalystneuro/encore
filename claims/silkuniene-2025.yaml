@@ -1,0 +1,781 @@
+# Claims for Silkuniene, Silkunas, Pakhomova, Semenov & Pakhomov (2025), "MHz compression of pulse
+# packets facilitates remote focusing of electroporation", Bioelectrochemistry 166, 109016, tested on
+# dandisets 001047, 001276, 001277 and 001284.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md. It replaces the three files written 2026-10-22
+# under pilot-10, one per dataset (claims/silkuniene-2025/001047.yaml, 001276.yaml, 001277.yaml);
+# ids are kept where the finding is the same, taken from the file of the dataset that holds the
+# figure (Figs. 3 to 5 from 001047, Fig. 6 from 001277, Fig. 7 from 001276).
+#
+# Text read. The accepted author manuscript in PubMed Central (PMC12331426, NIHMS2087238), as served
+# by ncbi_pmc, in paper/10.1016-j.bioelechem.2025.109016.txt: abstract, Introduction, Materials and
+# methods 2.1 to 2.5, Results 3.1 to 3.4, Discussion, Conclusion and the legends of Figs. 1 to 7.
+# It is not the version of record. The paper has no supplement (PMC marks "has-supplement no" and
+# the text cites none). No PDF was supplied, so no figure was seen; values printed only in a figure
+# (the packet rates other than 1 Hz, 1 kHz, 10 kHz and 0.2 MHz, the ROI positions, the zones of Fig.
+# 5C, axis values) are not used.
+#
+# Code. The paper links no code and no data deposit ("Data will be made available on request").
+# It names the software only: MetaMorph 7.8.13 for intensities, RStudio, Excel and Grapher 16 for
+# processing, fits and graphs, Sim4Life Lite 7.0.1.8169 for the field. No repository was read, so no
+# method detail below is settled by code.
+#
+# The datasets, from their titles and descriptions on DANDI (draft metadata, read 2026-11-10).
+# - 001047, "Optimizing NG-CanCan Protocol Delivery with MHz Compression to Minimize Near-Electrode
+#   Ablation"; packets at 0.2 MHz against 1 Hz, YP and propidium. The packet-rate series of Figs. 3
+#   and 4 rest on it. Its description also names propidium two hours after delivery, which in the
+#   paper is measured only in the Fig. 5 series, so the 0-mm Fig. 5 claims list it as well.
+# - 001276, "... Impact of Burst Number Variation ..."; 0.2 MHz, 600 ns, 1, 2, 4 or 6 bursts,
+#   Hoechst and YP. The Fig. 7 series.
+# - 001277, "... Impact of Pulse Duration and Protocol Delivery Frequency"; 300, 600 and 900 ns, 18,
+#   9 or 6 packets, repeated twice, Hoechst and YP. The Fig. 6 series.
+# - 001284, "... Focused Cell Electroporation and Ablation in a Pseudo-3D Model"; electrodes 0, 1 or
+#   2 mm above the monolayer, YP and propidium. The Fig. 5 series.
+# - No description names the thermochromic film images (Fig. 2) or the field simulation (Fig. 1).
+#   Those claims list all four datasets; the author checks each and blocks the claim as data_missing
+#   when none holds the data. The descriptions give a 10-mm inter-electrode spacing; with the
+#   paper's geometry this is the edge-to-edge distance along a side (12.8 mm between centres minus
+#   2.8 mm), and the paper's 15.3-mm diagonal is used throughout.
+#
+# Data the paper used, as it reports them. Confluent monolayers of CT26 mouse colon carcinoma cells
+# (all series) and CHO-K1 cells (Fig. 7 only) in 6-well plates. Four hollow needle electrodes, 2.8 mm
+# outer diameter, in a square with 15.3-mm side-to-side diagonals (Methods 2.2), touching the
+# monolayer unless raised 1 or 2 mm (Fig. 5); 6 and 7 mm from the centre along a diagonal are 1.65
+# and 0.65 mm from an electrode (Results 3.1). Packets of 16 pulses (Fig. 1B), first pulse 7.2 kV,
+# later pairs 12.5% lower per phase; 9 packets per burst, bursts at 1 Hz, rotated over 4 directions
+# ("2 bursts (x4)" is 8 bursts). Controls deliver only the first pulse of each packet. Each well is
+# imaged as one stitched image (4x, 0.16 NA): Hoechst 33342 (DAPI cube) before exposure, YO-PRO-1
+# (YP, 1 uM, FITC cube) 30 min after exposure, and in killing experiments propidium (Pr, Cy3 cube) 2
+# h after, with Hoechst re-imaged (Methods 2.4). Series:
+# - (S1) Figs. 3 and 4. CT26, 600 ns, 2 bursts (x4), packet rates from 1 Hz to 0.208333 MHz
+#   ("0.2 MHz", no interval between packets) and control; n = 3 per CANCAN rate, n = 5 controls.
+#   The text names 1 Hz, 1 kHz, 10 kHz and 0.2 MHz; the Fig. 4C fit has n = 15 at n = 3 per rate
+#   below 0.2 MHz, so five rates below 0.2 MHz. One set also has ROIs parallel to the sides (Fig. 3C).
+# - (S2) Fig. 5. CT26, 0.2 MHz, 2 bursts (x4), electrodes at 0, 1 or 2 mm; YP n = 6 to 7, Pr n = 4
+#   to 5; high-resolution images of three zones (Fig. 5C).
+# - (S3) Fig. 6. CT26, packets of 300-, 600- or 900-ns pulses with no interval, 18, 9 or 6 packets
+#   per 43.2-us burst, 2 bursts (x4); n = 5 each.
+# - (S4) Fig. 7. CT26 (n = 3 to 5) and CHO (n = 4), 0.2 MHz, 600 ns; the text names 1, 2 and 6
+#   bursts (x4), and the 001276 description gives 1, 2, 4 and 6.
+# - (S5) Fig. 2. Thermochromic film after 2 and 6 bursts at 0.2 MHz without rotation.
+# - (S6) Fig. 1. Sim4Life field maps; model outputs, not recordings.
+#
+# Method fixed by the paper, cited by the criteria (Methods 2.5 unless noted).
+# (F1) Intensity is the mean fluorescence in 325 x 406 um ROIs placed along the diagonals of the
+#      square, connecting the electrode footprints, at signed distances x (mm) from the geometrical
+#      centre of the array; in one S1 set also along lines through the centre parallel to the sides.
+# (F2) Background is the mean of 3 ROIs inside an electrode footprint, subtracted from every ROI.
+# (F3) The two diagonals of a well are pooled as one experiment; n counts wells (also Fig. 3B and 4B
+#      legends). Data are mean +/- s.e. over experiments, in a.u. or in % of the centre value.
+# (F4) YP profiles are fitted with YP(x) = a (b/2)^2 / (x^2 + (b/2)^2), a the value at x = 0 and b
+#      the FWHM in mm. Pr profiles are fitted with Pr(x) = a exp(-x^2 / (2 sigma^2)), FWHM about
+#      2.4 sigma (Methods 2.5, which says Fig. 6 where the Gaussian appears in Fig. 5; the Fig. 5B
+#      legend fixes it for Pr). Fits are least squares in Grapher, the standard reading of "fitted".
+# (F5) FWHM per condition is the mean of the FWHM of Lorentzian fits to each experiment (Results 3.1;
+#      Fig. 4C and 6D legends). FWHM in % of the gap is FWHM / 15.3 mm (Fig. 4C legend, "% of the
+#      diagonal distance between electrodes"; Results 3.3 gives 1.7 mm as 11.1%).
+# (F6) Fitted ranges. -4 to 4 mm for the mean profiles of Fig. 3 (Results 3.1, Fig. 3B legend); -5 to
+#      5 mm for the mean profiles of Figs. 5B and 6B (legends, Results 3.2). The range of the
+#      per-experiment fits (Figs. 4C, 6D, 7) is not stated; see O3.
+# (F7) Tests. Two-sided Student's t-tests, with Bonferroni correction where several comparisons are
+#      made, or ANOVA, at p < 0.05. Groups are different wells, so t-tests are unpaired and
+#      equal-variance (Student's); Welch's form is a variant only. Slopes are tested by the
+#      two-sided one-sample t test of the regression slope (Fig. 4C, 6D and 7 legends).
+# (F8) The paper's reading of its graphs. "A gap exceeding the length of the error bars indicates a
+#      significant difference at p<0.05" (Methods 2.5, citing Cumming et al. 2007). Where the paper
+#      states a difference from a graph without a test, it is judged by this rule on mean +/- s.e.,
+#      and the t-test of F7 is reported.
+# (F9) Near electrodes is 6 and 7 mm from the centre toward an electrode (Results 3.1, Fig. 4B).
+# (F10) Fields from the paper's simulation, not from the data. 7.2 kV on one electrode gives 3.3
+#      kV/cm at the centre, 9.4 and 13.5 kV/cm at 6 and 7 mm toward it (Methods 2.2).
+#
+# Details the paper leaves open, with the readings it allows. A criterion that uses one says so. For
+# an expected value, the claim holds when it matches under any combination of readings (the paper
+# reports one number for a choice it leaves open). For a test, the outcome is the one all readings
+# give; when they differ, the author adopts the reading the paper best supports, as an assumption,
+# or blocks the claim as methods_underspecified, with every result shown. Claims of absence are
+# judged on the one test each names.
+# (O1) ROI positions along a diagonal are not given; the text names only whole-mm distances (0, 2,
+#      4, 5, 6, 7 mm). Positions are taken from the dataset when it holds them; otherwise readings
+#      (a) ROIs centred at whole-mm distances, 0 to 7 mm each way; (b) contiguous ROIs from the
+#      centre outward, one ROI length per step. Which side of the ROI (325 or 406 um) lies along the
+#      diagonal is not given; 406 um along the diagonal is a standard choice that moves a centre by
+#      under 0.05 mm. Which footprint holds the background ROIs is not given; any one, a standard
+#      choice.
+# (O2) Pooling of diagonals. Readings (a) the two diagonals averaged at each signed distance (the
+#      profiles run from -x to x in Figs. 3B, 5B, 6B); (b) all four half-diagonals averaged at each
+#      distance (Fig. 4A legend, "measurements in 4 diagonal directions from the center were pooled"),
+#      mirrored to -x for fitting.
+# (O3) Fit range of per-experiment fits, which no figure or passage fixes. Methods say "limited to
+#      4-6 mm". For Fig. 4C readings (a) -4 to 4 mm, the range Results 3.1 gives for the Fig. 3 fits
+#      of the same experiments, (b) -5 to 5 mm, (c) -6 to 6 mm; for Fig. 6D ("as described in 3.1")
+#      readings (a) -4 to 4 mm, (b) -5 to 5 mm (Fig. 6B legend), (c) -6 to 6 mm; for Fig. 7 readings
+#      (a) 4, (b) 5, (c) 6 mm half-widths.
+# (O4) Points of a regression. Fig. 4C fits individual experiments (n = 15 for fitting). Figs. 6D
+#      and 7 do not say; readings (a) individual experiments, the one Fig. 4C supports, (b) group
+#      means.
+# (O5) Which near-electrode distance and which ratio give the reported centre to near-electrode
+#      ratios. Readings (a) 6 mm, (b) 7 mm (F9); (i) the ratio of group means, (ii) the mean of
+#      per-experiment ratios.
+schema_version: 2
+paper: doi:10.1016/j.bioelechem.2025.109016
+claims:
+- id: fig1e-field-simulation
+  statement: In the simulation, 7.2 kV on one electrode gives 3.3 kV/cm in the centre of the array and
+    9.4 and 13.5 kV/cm at 6 and 7 mm from the centre toward the active electrode.
+  source: Methods 2.2, paragraph 4; Figure 1E
+  quote: Specifically, 7.2 kV applied to one electrode produced the electric field of 3.3 kV/cm in the
+    center, and 9.4 and 13.5 kV/cm at 6 and 7 mm from the center towards the active electrode,
+    respectively
+  datasets:
+  - "001047"
+  - "001276"
+  - "001277"
+  - "001284"
+  expected:
+  - quantity: field at the centre, 7.2 kV on one electrode
+    value: 3.3
+    tolerance: 0.33
+    unit: kV/cm
+  - quantity: field at 6 mm toward the active electrode
+    value: 9.4
+    tolerance: 0.94
+    unit: kV/cm
+  - quantity: field at 7 mm toward the active electrode
+    value: 13.5
+    tolerance: 1.35
+    unit: kV/cm
+  criterion: The values are outputs of the paper's Sim4Life Lite model (Methods 2.2, built as in its
+    references 16 and 18), which the paper does not deposit. The claim is tested only if a dataset
+    holds the simulated field maps; a field model built by the author is not the paper's and is not
+    a test. With the maps (1 kV on one electrode, scaled linearly to 7.2 kV as Methods 2.2 says),
+    reproduced when the three values are within tolerance along the diagonal from the active
+    electrode. Without them, blocked as data_missing.
+- id: fig2-heating-below-44c
+  statement: With packets at the maximum rate, heating followed the field and was largest near the
+    electrodes; after 2 bursts it was confined to about 2 mm next to the electrodes and could exceed
+    30 C but not 44 C; after 6 bursts it spread further, exceeding 30 C even near the centre, yet
+    never exceeded 44 C.
+  source: Methods 2.3, paragraph 1; Figure 2
+  quote: With 2 bursts ( Fig. 2A ), heating was restricted to an approximately 2-mm zone next to
+    electrodes, where it could reach over 30 °C but did not exceed 44 °C. With 6 bursts ( Fig. 2B ),
+    heating was more widespread ... Temperature could exceed 30 °C even near the center of the
+    array, but did not exceed 44 °C even near the electrodes.
+  datasets:
+  - "001047"
+  - "001276"
+  - "001277"
+  - "001284"
+  criterion: Set S5, film frames at the end of the 2nd and 6th burst (Methods 2.3). Temperature classes
+    from the calibrated colour transitions, black to red, green, blue and back to black at 25, 26, 30
+    and 44 C (Methods 2.3). The hue limits of the colours are not given; readings (a) red below 45,
+    green 75 to 165, blue 180 to 270 degrees of hue, (b) red below 30, green 90 to 150, blue 195 to
+    255 degrees, with black any pixel of HSV value below 0.2 (standard choices). Above 30 C is blue;
+    above 44 C is black after blue, a dark pixel enclosed by a blue region outside the electrode
+    footprints (dashed circles, Fig. 2 legend). "Near the center" is not given as a distance;
+    readings (a) within 1 mm, (b) within 2 mm of the centre. Reproduced when, under every reading,
+    the 2-burst image has blue pixels only within 2.2 mm of an electrode edge ("approximately 2-mm",
+    widened by 10%), the 6-burst image has blue pixels near the centre, and neither image has a dark
+    pixel enclosed by blue. Blocked as data_missing when no dataset holds the film images.
+- id: fig3a-centre-enhanced
+  statement: Every CANCAN protocol enhanced electroporation at the array centre, while in the control
+    (a single unipolar pulse per packet) YP uptake decreased gradually toward the centre.
+  source: Results 3.1, paragraph 2; Figure 3A
+  quote: All CANCAN protocols visibly enhanced electroporation at the center of the array, in
+    contrast to its gradual decrease toward the center in the control ( Fig. 3A ).
+  datasets:
+  - "001047"
+  criterion: Set S1, diagonal profiles by F1 to F3, under O1 and O2. The field at the centre is the
+    same in CANCAN and control (Methods 2.2), so enhanced at the centre is read as a central peak.
+    For each CANCAN rate, mean YP at x = 0 exceeds mean YP at 4 mm by a gap larger than the error
+    bars (F8); 4 mm, the edge of the Fig. 3B fit range, is a choice the paper does not make. For the
+    control, mean YP at x = 0 is below the means at 4, 6 and 7 mm by such a gap. Reproduced when both
+    hold for every rate under every reading; YP at 6 and 7 mm against x = 0 for each CANCAN rate is
+    reported and judged in fig4b-near-electrode-decline. The sentence also allows reading "enhanced"
+    as centre YP above the control's centre YP; that comparison is reported for each rate. The
+    t-tests of F7 are reported.
+- id: fig3bc-rate-suppresses-off-target
+  statement: Raising the packet rate from 1 Hz to 0.2 MHz suppressed electroporation better both near
+    the electrodes (diagonal profile) and at the perimeter between electrodes (profile parallel to
+    the sides).
+  source: Results 3.1, paragraph 2; Figure 3B, 3C
+  quote: The most conspicuous effect of increasing the packet rate from 1 Hz to 0.208333 MHz
+    (abbreviated to 0.2 MHz below and in figure legends) was better suppression of electroporation
+    both near electrodes ( Fig. 3B ) and at the perimeter between electrodes ( Fig. 3C ).
+  datasets:
+  - "001047"
+  criterion: Set S1, F1 to F3, F8, F9, O1, O2. Near electrodes is YP at 6 and 7 mm on the diagonals.
+    The perimeter between electrodes is the end of the parallel profile, which meets the side of the
+    square about 6.4 mm from the centre (half the 12.8-mm side between electrode centres, from the
+    15.3-mm diagonal and 2.8-mm needles of Methods 2.2); readings (a) the outermost parallel ROIs,
+    (b) the parallel ROIs at 6 mm. Reproduced when, under every reading, mean YP at 0.2 MHz is below
+    that at 1 Hz by a gap larger than the error bars (F8) at 6 mm, at 7 mm and at the perimeter; the
+    two-sided t-tests (F7) are reported. The perimeter part is blocked as data_missing when the
+    dataset has no parallel measurements.
+- id: fig3-lorentzian-profile
+  statement: The decline of YP emission from the centre was bell-shaped and fitted a Lorentzian
+    function over -4 to 4 mm nearly perfectly (R > 0.9, p < 0.001) for every packet rate.
+  source: Results 3.1, paragraph 3; Figure 3B, 3C legend; Methods 2.5
+  quote: The fit correlation with data in the −4 to 4 mm radius was nearly perfect (R>0.9, p<0.001).
+  datasets:
+  - "001047"
+  statistics:
+  - about: correlation of the Lorentzian fit with the data, -4 to 4 mm
+    statistic: R > 0.9
+    p: 0.001
+    p_relation: "<"
+  - about: significance of each YP fit in Figures 3, 5 and 6 (Methods 2.5)
+    p: 0.0001
+    p_relation: "<"
+  expected:
+    quantity: correlation of fitted and measured mean YP, -4 to 4 mm, each rate and direction
+    value: 0.9
+    tolerance: 0
+  criterion: Set S1, CANCAN rates, F1 to F4, F6, O1, O2. The Lorentzian is fitted to the mean
+    diagonal profile over -4 to 4 mm (the dotted fits of Fig. 3B, drawn on mean +/- s.e.), and to the
+    mean parallel profile where present (Fig. 3C). How R is computed is not given; readings (a) the
+    Pearson correlation of fitted and measured values over the fitted points, with its t test; (b)
+    the square root of R2 = 1 - SSres/SStot, with the F test of the fit. Reproduced when R exceeds
+    0.9 with p < 0.001 for every rate and direction under every reading; 0.9 is the paper's bound,
+    so the tolerance is zero.
+- id: fig3-tail-deviation-falls-with-rate
+  statement: Beyond the fitted range, the data deviated from the Lorentzian fit less as the packet
+    rate increased.
+  source: Results 3.1, paragraph 3; Figure 3B, 3C
+  quote: The deviation of experimental data from the fits at larger distances from the center
+    diminished with increasing the packet repetition rate, highlighting better suppression of the
+    off-target electroporation.
+  datasets:
+  - "001047"
+  depends_on:
+  - fig3-lorentzian-profile
+  criterion: Set S1, the fits of fig3-lorentzian-profile extended to all distances (Fig. 3B legend,
+    the plots were extended to the x-axis limits). The paper gives no measure or test of the
+    deviation. The measure is the mean of (data - fit) over the ROIs beyond 4 mm; its units are not
+    given, readings (a) a.u., (b) percent of the fitted peak a. Reproduced when, under every
+    reading and in both directions, the deviation is largest at 1 Hz and smallest at 0.2 MHz, and
+    its Spearman correlation with rate over the tested rates is negative (a standard measure of a
+    monotone trend, as the paper names none). The value for every rate is reported.
+- id: fig4b-40-fold-ratio
+  statement: At 0.2 MHz, YP uptake at the centre was 40 times that near the electrodes, despite the
+    field there being about 4 times weaker (3.3 against about 14 kV/cm).
+  source: Results 3.1, paragraph 2; Figure 4A, 4B; Abstract
+  quote: Now, by increasing the packet repetition rate to 0.2 MHz, we achieved a 40-fold difference (
+    Fig. 4B ), despite using a bigger array with larger reduction of the electric field from
+    electrodes to the center.
+  datasets:
+  - "001047"
+  expected:
+    quantity: ratio of centre YP to near-electrode YP, CT26, 2 bursts (x4), 0.2 MHz
+    value: 40
+    tolerance: 4
+  criterion: Set S1 at 0.2 MHz, F1 to F3, F9, O2, O5. Background-subtracted YP at x = 0 over YP at
+    the near-electrode distance. Reproduced when the ratio is within 36 to 44 under one combination
+    of the readings of O2 and O5; every combination is shown. The fields are from the simulation
+    (F10) and are not tested here.
+- id: fig4b-centre-no-rate-effect
+  statement: YP uptake at the array centre showed no significant effect of packet rate.
+  source: Results 3.1, paragraph 4; Figure 4B
+  quote: YP intensity in the center showed no significant effect of the packet rate ( t -test with
+    Bonferroni correction, Fig. 4B ).
+  datasets:
+  - "001047"
+  criterion: A claim of absence, judged on the paper's test. Set S1, CANCAN rates, F1 to F3, O2;
+    per experiment the background-subtracted YP at x = 0. Two-sided Student's t-tests with
+    Bonferroni correction (F7). The comparisons are not named here; the test is each rate against 1
+    Hz, the family the Fig. 4C legend uses on the same experiments, with Bonferroni over the number
+    of rates compared with 1 Hz. Reproduced when no corrected comparison has p < 0.05; not
+    reproduced when any does. Group means and the largest ratio between rates are reported either
+    way; all pairs of rates are shown as a variant.
+- id: fig4b-near-electrode-decline
+  statement: In contrast to the centre, YP uptake at 6 and 7 mm from the centre (1.65 and 0.65 mm from
+    the electrodes) declined steeply as the packet rate increased.
+  source: Results 3.1, paragraph 4; Figure 4B
+  quote: It contrasted with a steep, packet rate-dependent decline of YP uptake at 6 and 7 mm from
+    the center (i.e., 1.65 and 0.65 mm from electrodes).
+  datasets:
+  - "001047"
+  criterion: Set S1, CANCAN rates, F1 to F3, O2. At 6 mm and at 7 mm, a power function YP = c rate^k
+    is fitted to YP against packet rate by least squares (Fig. 4B legend, "best fits using power
+    function"; Methods 2.5). Whether the fit uses the plotted means or the individual experiments is
+    not given; readings (a) group means, (b) per-experiment values. Reproduced when, under every
+    reading, k < 0 at both distances and mean YP at 0.2 MHz is below that at 1 Hz by a gap larger
+    than the error bars (F8) at both; the two-sided t-tests (F7) are reported.
+- id: fig4c-fwhm-falls-with-rate
+  statement: Higher packet rates focused electroporation into a smaller spot; the FWHM fell from about
+    4 mm at 1 Hz to about 2 mm at 1 kHz, 10 kHz and 0.2 MHz (p = 0.03, 0.02 and 0.09 against 1 Hz),
+    and could be under 15% of the gap between electrodes.
+  source: Results 3.1, paragraphs 5 and 6; Figure 4C
+  quote: FWHM decreased from ~4 mm at 1 Hz to ~2 mm at 1 kHz, 10 kHz, and 0.2 MHz packet rates (p =
+    0.03; 0.02, and 0.09, respectively; t -test with Bonferroni correction).
+  datasets:
+  - "001047"
+  statistics:
+  - about: 1 kHz against 1 Hz
+    test: t-test with Bonferroni correction
+    p: 0.03
+    corrected: Bonferroni
+    n: 3 experiments per rate
+  - about: 10 kHz against 1 Hz
+    test: t-test with Bonferroni correction
+    p: 0.02
+    corrected: Bonferroni
+    n: 3 experiments per rate
+  - about: 0.2 MHz against 1 Hz
+    test: t-test with Bonferroni correction
+    p: 0.09
+    corrected: Bonferroni
+    n: 3 experiments per rate
+  expected:
+  - quantity: mean FWHM at 1 Hz
+    value: 4
+    tolerance: 0.4
+    unit: mm
+  - quantity: mean FWHM at 1 kHz
+    value: 2
+    tolerance: 0.2
+    unit: mm
+  - quantity: mean FWHM at 10 kHz
+    value: 2
+    tolerance: 0.2
+    unit: mm
+  - quantity: mean FWHM at 0.2 MHz
+    value: 2
+    tolerance: 0.2
+    unit: mm
+  criterion: Set S1, CANCAN rates, F1 to F7, O1 to O3. Per experiment, the Lorentzian fitted over the
+    range of O3 for Fig. 4C gives b; FWHM per rate is the mean over experiments (F5). Two-sided t-tests of
+    each rate against 1 Hz (Fig. 4C legend), Bonferroni over the rates compared with 1 Hz; the
+    number of comparisons is not given, readings (a) every other tested rate, (b) the three rates the
+    text names. Reproduced when the four means are within tolerance, 1 kHz and 10 kHz differ from 1
+    Hz at corrected p < 0.05 (the legend marks *p<0.05), and at least one rate has mean FWHM below
+    15% of 15.3 mm (2.3 mm). Partially reproduced when the tests hold but a mean is outside
+    tolerance. The 0.2 MHz comparison (p = 0.09) is reported, not required.
+- id: fig4c-log-trend
+  statement: FWHM fell logarithmically with packet rate from 1 Hz to 10 kHz (R = 0.77, p < 0.001; n =
+    15), with no further narrowing from 10 kHz to 0.2 MHz.
+  source: Results 3.1, paragraph 5; Figure 4C legend
+  quote: FWHM decrease followed the logarithmic dependence from 1 Hz to 10 kHz (correlation
+    coefficient R = 0.77, p<0.001), but there was no further focality increase when the packet rate
+    increased from 10 kHz to 0.2 MHz.
+  datasets:
+  - "001047"
+  statistics:
+  - about: log fit of FWHM against packet rate, 1 Hz to 10 kHz
+    test: correlation
+    statistic: R = 0.77
+    p: 0.001
+    p_relation: "<"
+    n: 15 experiments (0.2 MHz excluded)
+  - about: slope of the log fit (Fig. 4C legend)
+    test: 2-sided, one-sample t test
+    p: 0.0001
+    p_relation: "<"
+    n: 15 experiments
+  expected:
+    quantity: correlation of FWHM with log packet rate, 1 Hz to 10 kHz
+    value: 0.77
+    tolerance: 0.077
+  depends_on:
+  - fig4c-fwhm-falls-with-rate
+  criterion: Per-experiment FWHM from fig4c-fwhm-falls-with-rate, rates 1 Hz to 10 kHz, 0.2 MHz left
+    out (Fig. 4C legend, n = 15 for fitting). FWHM = m log(rate) + c by least squares; R is the
+    absolute Pearson correlation of FWHM with log rate; the slope is tested by the two-sided
+    one-sample t test (legend). Reproduced when R is within tolerance, the slope is negative with p <
+    0.001, and mean FWHM at 0.2 MHz is not below that at 10 kHz by a gap larger than the error bars
+    (F8, the paper's reading for "no further focality increase"; the t-test is reported). Partially
+    reproduced when the slope is negative with p < 0.05 but R or p falls short.
+- id: fig5-raised-electrodes-weaken-centre
+  statement: Since with MHz-CANCAN there was practically no YP staining near electrodes (a finding the
+    text cites to Figure 4), the only clear effect of raising the electrodes 1 or 2 mm above the
+    monolayer was a weakening of electroporation in the central spot.
+  source: Results 3.2, paragraph 1; Figure 5A, 5B
+  quote: With MHz-CANCAN (CT26 cells, 2 bursts (x4), Fig. 4 ), there was practically no YP staining
+    near electrodes to start with, so the only clear effect of raising electrodes was the weakening
+    of electroporation in the central spot.
+  datasets:
+  - "001284"
+  criterion: Set S2, F1 to F3, F8, O1, O2. YP in percent of the mean 0-mm peak (Fig. 5B legend); the
+    centre is x = 0. The paper gives no test. Reproduced when mean centre YP at 1 mm and at 2 mm
+    elevation are each below that at 0 mm by a gap larger than the error bars (F8); two-sided t-tests
+    with Bonferroni over the two comparisons (F7) are reported. The near-electrode part is the Figure
+    4 finding, judged in fig4b-40-fold-ratio; mean YP at 6 and 7 mm at each elevation, in % of the
+    0-mm centre, is reported.
+- id: fig5-killing-focused-centre
+  statement: With MHz-CANCAN, cell killing (propidium uptake 2 h after exposure) was produced at the
+    centre of the array with negligible effect near the electrodes.
+  source: Discussion, paragraph 1; Results 3.2; Figure 5A, 5B
+  quote: The principal accomplishment of this study is the selective electroporation and cell killing
+    at a remote location with negligible effect near electrodes.
+  datasets:
+  - "001284"
+  - "001047"
+  criterion: Set S2, Pr profiles, F1 to F3, F8, F9, O1, O2. Focusing is measured as the paper
+    measures it, centre against near electrodes (Results 3.1). Reproduced when, at 0 mm elevation,
+    mean background-subtracted Pr at x = 0 exceeds mean Pr at 6 mm and at 7 mm by a gap larger than
+    the error bars (F8); the two-sided t-tests (F7) are reported. The paper puts no number on
+    "negligible"; Pr at 6 and 7 mm in % of the centre is reported, not judged. The 1 and 2 mm
+    elevations are reported.
+- id: fig5ab-yp-spot-slightly-larger-than-pr
+  statement: The central spot of YP staining (electroporation) was only slightly larger than the spot
+    of Pr staining (cell killing).
+  source: Results 3.2, paragraph 1; Figure 5A, 5B
+  quote: Somewhat unexpectedly, the central spot of YP staining (electroporation) was just slightly
+    larger than the spot of Pr staining (cell killing; Fig 5A and B ).
+  datasets:
+  - "001284"
+  - "001047"
+  criterion: Set S2, F1 to F4, F6, O1, O2. Spot size is the FWHM, the paper's measure of spot size
+    (Results 3.1). FWHM of the Lorentzian fit to mean YP and of the Gaussian fit to mean Pr over -5 to
+    5 mm (Fig. 5B legend); the Gaussian FWHM is 2.4 sigma as the Methods give it, and 2.355 sigma as
+    a variant. The paper bounds "slightly" by no number; readings (a) YP FWHM / Pr FWHM between 1 and
+    1.25, (b) between 1 and 1.5. Reproduced when the ratio falls in the range under every reading at
+    0 mm elevation (Fig. 5A shows all three; the text gives no elevation); the 1 and 2 mm elevations
+    are reported.
+- id: fig5b-gaussian-pr-lorentzian-yp
+  statement: Pr intensity declined from the peak as a Gaussian and YP as a Lorentzian; in the left
+    panel of Figure 5B the R2 was 0.92 (Lorentzian) against 0.96 (Gaussian) for Pr, and 0.98 against
+    0.95 for YP, fitted from -5 to 5 mm with p < 0.0001.
+  source: Results 3.2, paragraph 2; Figure 5B
+  quote: For Pr data in the left panel of Fig. 5B , the coefficient of determination increased from
+    0.92 for Lorentzian fit to 0.96 for Gaussian fit. YP data showed the opposite trend, with the
+    coefficients of 0.98 and 0.95 for Lorentzian and Gaussian fits, respectively (for all these
+    fits, the fitted region was from −5 to 5 mm, p<0.0001).
+  datasets:
+  - "001284"
+  - "001047"
+  statistics:
+  - about: each of the four fits
+    p: 0.0001
+    p_relation: "<"
+  expected:
+  - quantity: R2 of Lorentzian fit to Pr
+    value: 0.92
+    tolerance: 0.092
+  - quantity: R2 of Gaussian fit to Pr
+    value: 0.96
+    tolerance: 0.096
+  - quantity: R2 of Lorentzian fit to YP
+    value: 0.98
+    tolerance: 0.098
+  - quantity: R2 of Gaussian fit to YP
+    value: 0.95
+    tolerance: 0.095
+  criterion: Set S2. The left panel of Figure 5B is not named; it is read as the 0-mm panel, the one
+    whose peak is 100% (legend). Mean profiles in percent, F4 fits over -5 to 5 mm, O1, O2. R2 is 1 -
+    SSres / SStot over the fitted points. As 10% tolerances on R2 near 1 are loose, the orderings are
+    part of the claim. Reproduced when every R2 is within tolerance and the ordering holds (Gaussian
+    above Lorentzian for Pr, Lorentzian above Gaussian for YP) under every reading; partially when
+    the values are within tolerance but an ordering fails. The other elevations are reported.
+- id: fig5b-reversible-beyond-2mm
+  statement: The Lorentzian YP profile and the Gaussian Pr profile differ mainly in the tails, where
+    YP is broader, marking an area of predominantly reversible electroporation that starts about 2
+    mm from the centre.
+  source: Results 3.2, paragraph 2; Figure 5B
+  quote: The difference between the fits is primarily in the tails, which are broader in Lorentzian
+    distribution compared to Gaussian. This difference highlights the area of predominantly
+    reversible electroporation, which extends outwards starting at about 2 mm from the center.
+  datasets:
+  - "001284"
+  - "001047"
+  depends_on:
+  - fig5b-gaussian-pr-lorentzian-yp
+  expected:
+    quantity: distance from the centre where YP first exceeds Pr, both in % of their peaks, 0 mm
+      elevation
+    value: 2
+    tolerance: 0.2
+    unit: mm
+  criterion: Set S2 at 0 mm elevation, F1 to F4, O1, O2. YP and Pr each in % of their own 0-mm peak
+    (Fig. 5B legend). The paper does not say how 2 mm was found; readings (a) the smallest distance at
+    which mean YP% exceeds mean Pr% by a gap larger than the error bars (F8); (b) the smallest
+    distance at which the fitted Lorentzian, in % of its a, exceeds the fitted Gaussian, in % of its
+    a, by more than the mean s.e. of YP% over the fitted points. Each side of the centre is taken
+    separately and averaged. Reproduced when the distance is within 1.8 to 2.2 mm under one reading;
+    where the ROIs are more than 0.4 mm apart (O1), when it is the ROI nearest 2 mm.
+- id: fig5c-nuclear-yp-centre
+  statement: In the central spot cells showed bright nuclear YP staining, indicating irreversible
+    damage, while farther out reversibly electroporated cells were weakly stained with less contrast
+    between nucleus and cytoplasm; cells inside the electrode footprint were unstained though present
+    (Hoechst).
+  source: Results 3.2, paragraph 1; Figure 5C
+  quote: Indeed, a closer examination of the central spot confirmed bright YP staining of cell nuclei
+    ( Fig. 5C , zone 1), which is indicative of the irreversible membrane damage and cell death.
+    Reversible electroporation is distinguished by a much weaker YP staining and smaller difference
+    in staining of the nucleus and cytoplasm, such as in zones 2 and 3 in Fig. 5C .
+  datasets:
+  - "001284"
+  - "001047"
+  criterion: Set S2 at 0 mm. The zones are marked only in Figure 5A, not seen. Zone 1 is in the
+    central spot; zone 3 straddles an electrode wall (its right portion lies inside the footprint,
+    Results 3.2; the Fig. 5C legend marks the wall), so its outside part is the band within 0.5 mm
+    outside a wall; zone 2 is not placed by the text, readings (a) 2 to 4 mm, (b) 3 to 5 mm from the
+    centre along a diagonal; zone 1 is within 1 mm of the centre. Intensity part, on the whole-well
+    images. Background-subtracted YP (F2) in zone 1 exceeds that in zones 2 and 3, footprint YP is
+    below zones 2 and 3, and the footprint holds Hoechst-positive cells in the Hoechst image taken
+    after the Pr image (Methods 2.4, re-imaged "to check for possible cell loss"), judged against
+    the same footprint's cell-free lumen or, without one, against the camera offset (a standard
+    choice; the paper names no reference level). Nuclear part, on the high-resolution images of Fig.
+    5C. Nuclei are Hoechst-positive objects (Otsu threshold, a standard choice) and the cytoplasm a
+    ring around each, readings (a) 2 to 4 um, (b) 4 to 8 um; the median nucleus to cytoplasm YP
+    ratio is higher in zone 1 than in zones 2 and 3. Reproduced when both parts hold under every
+    reading; partially when the intensity part holds and the nuclear part is blocked because no
+    dataset holds high-resolution images. Blocked as data_missing for the footprint part when no
+    post-exposure Hoechst image is held.
+- id: fig6b-peak-900ns-not-significant
+  statement: The central YP peak was highest for 900-ns pulses, but not significantly different from
+    300- or 600-ns pulses.
+  source: Results 3.3, paragraph 2; Figure 6B
+  quote: The central peak of YP uptake was higher for 900-ns pulses, but the difference from the
+    other two pulse durations was not statistically significant (CT26 cells, 2 bursts (x4), Fig. 6B ).
+  datasets:
+  - "001277"
+  criterion: A claim of absence. Set S3, F1 to F3, O2; per experiment the background-subtracted YP at
+    x = 0, n = 5 per duration. The paper does not name the test here; the sentence frames two
+    comparisons ("the difference from the other two"), and Fig. 6D tests durations by two-sided
+    t-tests with Bonferroni correction, so the test is 900 ns against 300 ns and against 600 ns,
+    two-sided Student's t-tests with Bonferroni over the two (F7). Reproduced when the 900-ns mean is
+    the highest and no corrected p is below 0.05; not reproduced when one is. A one-way ANOVA over
+    the three durations (Methods 2.5) and Bonferroni over all three pairs are shown as variants;
+    effect sizes are reported.
+- id: fig6c-normalized-decline-similar
+  statement: Normalized to the central peak, the sideways decline of YP was similar for the three
+    pulse durations.
+  source: Results 3.3, paragraph 2; Figure 6C
+  quote: When the peak YP emission was taken as 100%, its decline sideways was similar for the three
+    tested pulse durations ( Fig. 6C ).
+  datasets:
+  - "001277"
+  criterion: A claim of absence, for which the paper reports no test; it is judged by the paper's own
+    rule for its graphs (F8). Set S3, F1 to F3, O1, O2; each experiment's profile in percent of its
+    value at x = 0, then mean +/- s.e. per duration (Fig. 6C, "same data as in B, but normalized to
+    the peak"; per-experiment normalization is the one that gives per-experiment error bars).
+    Reproduced when at no measured distance do two durations' means differ by a gap larger than the
+    error bars; not reproduced when any does, with the distances and gaps reported. Normalizing the
+    mean profile and limiting the range to -5 to 5 mm (the Fig. 6B fit range) are shown as variants.
+- id: fig6d-longer-pulses-sharper-peak
+  statement: Fitted per experiment, the FWHM of the central YP peak decreases with pulse duration from
+    300 to 900 ns, with a trend slope different from zero (p = 0.003).
+  source: Results 3.3, paragraph 2; Figure 6D legend
+  quote: However, a more detailed analysis based on fitting of individual experiments (as described
+    in 3.1 ) revealed significant sharpening of the central peak when packets were built from 600-
+    and 900-ns pulses ( Fig. 6D ). The slope coefficient of the logarithmic fit of the data was
+    different from zero at p = 0.003 (one sample, 2-sided t -test).
+  datasets:
+  - "001277"
+  statistics:
+  - about: slope of FWHM against pulse duration
+    test: one sample, 2-sided t-test
+    p: 0.003
+    n: 5 experiments per duration
+  criterion: Set S3, F1 to F5, F7, O1 to O4. Per-experiment Lorentzian FWHM (centre fixed at 0, a and
+    b free, no offset, as F4 writes it). The form of the trend is open, as the text says "logarithmic
+    fit" and the legend "best linear fit"; readings (a) FWHM against duration, (b) FWHM against log
+    duration, each slope tested by the two-sided one-sample t test. Reproduced when the slope is
+    negative with p < 0.05 under every reading; the p under each is reported and compared with
+    0.003.
+- id: fig6d-600-900-differ-from-300
+  statement: FWHM for 600-ns and for 900-ns packets is each significantly smaller than for 300-ns
+    packets (Bonferroni-corrected t-tests, p = 0.028 for one and p = 0.0072 for the other).
+  source: Figure 6D legend
+  quote: "*p=0.028, **p=0.0072 for the difference from 300-ns pulse exposure (2-sided t -test with
+    Bonferroni correction)"
+  datasets:
+  - "001277"
+  statistics:
+  - about: one of 600 ns and 900 ns against 300 ns (the legend does not say which)
+    test: 2-sided t-test with Bonferroni correction
+    p: 0.028
+    corrected: Bonferroni
+    n: 5 experiments per duration
+  - about: the other of 600 ns and 900 ns against 300 ns
+    test: 2-sided t-test with Bonferroni correction
+    p: 0.0072
+    corrected: Bonferroni
+    n: 5 experiments per duration
+  depends_on:
+  - fig6d-longer-pulses-sharper-peak
+  criterion: Per-experiment FWHM as in fig6d-longer-pulses-sharper-peak. Two-sided Student's t-tests
+    of 600 against 300 ns and of 900 against 300 ns (legend), Bonferroni-corrected; the number of
+    comparisons is not stated, readings (a) 2, each against 300 ns as the legend frames them, (b) 3,
+    all pairs. Reproduced when both corrected p are below 0.05 with the smaller FWHM at the longer
+    duration under every reading of O1 to O3 and the comparison count; partially when only one of
+    the two is. The legend's asterisks are not assigned to durations in the text, so the p-values
+    are compared with 0.028 and 0.0072 in either order and shown.
+- id: fig6d-900ns-fwhm
+  statement: Packets of 900-ns pulses reduced FWHM to 1.7 +/- 0.08 mm, 11.1 +/- 0.6% of the gap between
+    electrodes.
+  source: Results 3.3, paragraph 2; Figure 6D
+  quote: 900-ns pulse packets reduced FWHM to 1.7 ± 0.08 mm, that was 11.1 ± 0.6% of the gap between
+    electrodes.
+  datasets:
+  - "001277"
+  depends_on:
+  - fig6d-longer-pulses-sharper-peak
+  expected:
+  - quantity: mean FWHM, 900-ns packets
+    value: 1.7
+    tolerance: 0.08
+    unit: mm
+  - quantity: mean FWHM, 900-ns packets, in % of 15.3 mm
+    value: 11.1
+    tolerance: 0.6
+    unit: "%"
+  criterion: Mean over the 5 experiments of the per-experiment FWHM of
+    fig6d-longer-pulses-sharper-peak, in mm and in % of 15.3 mm (F5). Tolerances are the paper's
+    stated spread, read as the s.e. (Methods 2.5). Reproduced when both values are within tolerance
+    under one combination of O1 to O3; the result under each is shown.
+- id: fig7be-center-linear-with-bursts
+  statement: The central YP peak grew linearly with the number of bursts in both CT26 and CHO cells
+    (slopes different from zero at p < 0.001), except that it saturated after 6 bursts (x4) in CT26
+    cells.
+  source: Results 3.4, paragraph 1; Figure 7B, 7E and legend
+  quote: Increasing the number of bursts increased the amplitude of the central peak of YP uptake in
+    both CT26 and CHO cells ( Fig 7A and D ). The increase was linear in both cell lines, except
+    when it reached saturation after 6 bursts (x4) in CT26 cells ( Fig. 7B and E ).
+  datasets:
+  - "001276"
+  statistics:
+  - about: slope of centre YP against bursts, CT26, 6 bursts (x4) excluded
+    test: 2-sided one-sample t test
+    p: 0.001
+    p_relation: "<"
+    n: 3 to 5 experiments per burst number
+  - about: slope of centre YP against bursts, CHO
+    test: 2-sided one-sample t test
+    p: 0.001
+    p_relation: "<"
+    n: 4 experiments per burst number
+  criterion: Set S4, F1 to F3, F7, O1, O2, O4. Per experiment the background-subtracted YP at x = 0,
+    regressed linearly on the number of bursts (x4) by least squares, the CT26 6-burst point left
+    out (Fig. 7B legend), all CHO points in; slopes tested by the two-sided one-sample t test.
+    Counting bursts as 1, 2, 4, 6 or as 4, 8, 16, 24 gives the same p. Reproduced when both slopes
+    are positive with p < 0.001 under every reading; partially when a slope is positive with p <
+    0.05 only, or when it holds in one cell line only. The saturation is fig7b-ct26-saturation.
+- id: fig7b-ct26-saturation
+  statement: In CT26 cells the central YP uptake saturated at 6 bursts (x4), falling below the linear
+    increase seen at fewer bursts, as expected when all central cells are already killed.
+  source: Results 3.4, paragraph 1; Figure 7B legend
+  quote: Considering that even 2 bursts (x4) caused strong cell death in the center ( Fig. 5 ),
+    saturation was expected and indicated that all cells were already killed and YP staining
+    reached its maximum.
+  datasets:
+  - "001276"
+  depends_on:
+  - fig7be-center-linear-with-bursts
+  criterion: The paper gives no test of saturation; it shows it by leaving the 6-burst point out of
+    the CT26 fit and drawing the fit's 95% confidence band (Fig. 7 legend). Readings (a) the CT26
+    mean centre YP at 6 bursts (x4) lies below the lower edge of the 95% confidence band of the
+    linear fit of fig7be-center-linear-with-bursts, extrapolated to 6 bursts; (b) the 6-burst mean
+    is not above the mean at the next lower burst number by a gap larger than the error bars (F8).
+    Reproduced when both hold under every reading of O4; partially when the 6-burst mean lies below
+    the fitted line but inside the band. The CHO 6-burst mean against the CHO fit through the lower
+    burst numbers is reported.
+- id: fig7cf-fwhm-with-bursts
+  statement: The FWHM of the central peak increased in proportion to the number of bursts in CT26
+    cells (slope p < 0.001) but not in CHO cells (p = 0.44).
+  source: Results 3.4, paragraph 2; Figure 7C, 7F legend
+  quote: Concurrently, FWHM of the central peak increased proportionally to the burst number in CT26
+    cells, but not in CHO cells ( Fig. 7C and F ).
+  datasets:
+  - "001276"
+  statistics:
+  - about: slope of FWHM against bursts, CT26
+    test: 2-sided one-sample t test
+    p: 0.001
+    p_relation: "<"
+  - about: slope of FWHM against bursts, CHO
+    test: 2-sided one-sample t test
+    p: 0.44
+  criterion: Set S4, F1 to F5, F7, O1 to O4. Per-experiment Lorentzian FWHM against burst number,
+    linear least squares, slope tested by the two-sided one-sample t test. CHO 1-burst wells are left
+    out (Fig. 7 legend, too small to measure FWHM). The CT26 6-burst point is kept, as the legend
+    leaves it out of panel B only; leaving it out is a variant. The CHO part is a claim of absence
+    judged on the paper's test, the slope t test at p < 0.05. Reproduced when, under every reading,
+    the CT26 slope is positive with p < 0.001 and the CHO slope has p >= 0.05. Partially when the
+    CT26 slope is positive with p < 0.05 only; not reproduced when the CHO slope has p < 0.05.
+- id: fig7-sharpest-peak-one-burst
+  statement: One burst (x4) in CT26 cells gave the sharpest peak of the study, FWHM 1.1 +/- 0.1 mm,
+    7.3% of the inter-electrode gap and 2.3% of the electrode array area.
+  source: Results 3.4, paragraph 3; Figure 7A, 7C; Abstract
+  quote: That being said, 1 burst (x4) in CT26 cells produced the sharpest peak of electroporation
+    seen in this study ... at FWHM of 1.1 ± 0.1 mm, it occupied just 7.3% of the inter-electrode gap
+    and 2.3% of the electrode array area.
+  datasets:
+  - "001276"
+  - "001047"
+  - "001277"
+  - "001284"
+  depends_on:
+  - fig7cf-fwhm-with-bursts
+  expected:
+  - quantity: mean FWHM, CT26, 1 burst (x4)
+    value: 1.1
+    tolerance: 0.1
+    unit: mm
+  - quantity: FWHM in % of 15.3 mm
+    value: 7.3
+    tolerance: 0.73
+    unit: "%"
+  - quantity: spot area in % of the electrode array area
+    value: 2.3
+    tolerance: 0.23
+    unit: "%"
+  criterion: Set S4, CT26 1-burst wells, FWHM as in fig7cf-fwhm-with-bursts under every reading of O3;
+    the FWHM tolerance is the paper's spread (s.e.). The paper does not say how the area percentage
+    is computed; readings (a) a disk of diameter FWHM over the square with 15.3-mm diagonals (117
+    mm2); (b) a disk of radius FWHM over the square of the electrode centres (12.8-mm sides, 164 mm2,
+    from Methods 2.2), the reading that gives 2.3% from 1.1 mm; (c) a disk of diameter FWHM over the
+    square of the electrode centres. Sharpest in the study means the smallest mean FWHM of any group
+    fitted per experiment in S1, S3 and S4 (Figs. 4C, 6D, 7C, 7F), with S2 as reported. Reproduced
+    when the three values are within tolerance under one reading and the 1-burst CT26 FWHM is the
+    smallest; partially when the FWHM alone is within tolerance. Groups held in datasets other than
+    001276 enter the comparison where they are held; a missing series is reported.
+- id: fig7-offtarget-40-50-fold
+  statement: In the burst-number experiments with MHz-CANCAN, YP emission near the electrodes was 40
+    to 50 times smaller than at the remote target in the centre.
+  source: Results 3.4, paragraph 3
+  quote: Off-target effects, characterized by YP emission near electrodes, were 40–50 times smaller
+    than at the remote target.
+  datasets:
+  - "001276"
+  expected:
+    quantity: ratio of centre YP to near-electrode YP, Fig. 7 series
+    value: 45.5
+    tolerance: 9.5
+  criterion: Set S4, F1 to F3, F9, O2, O5. The reported range 40 to 50, widened by 10% of each bound,
+    is 36 to 55, which the value and tolerance give. The group is not named; readings (A) CT26 at 1
+    burst (x4) only, as the sentence follows the 1-burst result; (B) every CT26 burst number below
+    saturation (1, 2 and 4 bursts (x4)), as the sentence closes a paragraph on all of them and a
+    range can be the span over groups; (C) every CHO burst number, as the paragraph covers both cell
+    lines and the sentence names none. Reproduced when the ratio lies in 36 to 55 under one
+    combination of readings (for B and C, for each of those groups); every combination is shown.
+- id: fig7-cho-replicates-ct26
+  statement: Remote focusing of electroporation was consistent across the two cell types; in CHO cells
+    as in CT26 cells the YP uptake peaked at the centre of the array.
+  source: Conclusion; Results 3.4, paragraph 1; Figure 7D
+  quote: The improved focusing was consistent across two cell types and extended to both
+    electroporation and cell killing.
+  datasets:
+  - "001276"
+  criterion: Set S4, CHO diagonal profiles by F1 to F3, O1, O2. Reproduced when, for each burst number
+    from 2 bursts (x4) up (after one burst CHO uptake was too small to measure FWHM, Fig. 7 legend;
+    the 1-burst profile is reported), mean centre YP exceeds mean YP at 6 and at 7 mm (the paper's
+    measure of focusing, centre against near electrodes, Results 3.1) by a gap larger than the error
+    bars (F8), and the same holds for CT26 at the same burst numbers. The growth of the CHO peak
+    with bursts is judged in fig7be-center-linear-with-bursts; the cell-killing part rests on CT26
+    only (Fig. 5) and is not tested here.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header F6 and O3, fig4c-fwhm-falls-with-rate. F6 fixed the range of the per-experiment fits of Fig. 4C at -4 to 4 mm, citing Results 3.1 and the Fig. 3B legend; both give that range for the fits to the mean profiles of Fig. 3, and Methods 2.5 allows 4 to 6 mm. The Fig. 4C range is now open in O3, readings 4, 5 and 6 mm, with 4 mm the one Results 3.1 supports; the criterion cites O3. fig4c-log-trend takes its FWHM from that claim.
+  - Header O3. Added a 6-mm reading for Fig. 6D; Methods 2.5 allows 4 to 6 mm and neither the text nor the legend fixes the per-experiment range.
+  - fig3a-centre-enhanced. Said that comparing x = 0 with 4 mm is this file's choice, not the paper's. Added that centre YP of each rate against the control's centre YP, which the sentence also allows as the meaning of "enhanced", is reported.
+  - fig7-offtarget-40-50-fold. The statement and readings confined the 40 to 50-fold ratio to CT26; the sentence (Results 3.4) names no cell line and closes a paragraph on CT26 and CHO. The statement no longer names a cell line and the criterion adds reading (C), the CHO groups.
+  - Added claim fig5-killing-focused-centre (Discussion, paragraph 1; Results 3.2; Figure 5). Remote cell killing with negligible effect near electrodes is named the principal accomplishment and had no claim; the existing Fig. 5 claims test only the Pr spot size and profile shape.
+  - Open. No PDF or figure was available, so ROI positions, the packet rates other than the four named, the Fig. 5C zones and the assignment of the Fig. 6D asterisks rest on the readings each criterion names.
+  - Open. The text is flattened with no paragraph breaks, so the paragraph numbers in the sources could not be checked; sections and figures were.
+  - Open. Several criteria use operational rules the paper does not give (hue limits in fig2-heating-below-44c, the deviation measure and Spearman trend in fig3-tail-deviation-falls-with-rate, the 1.25 and 1.5 bounds on "slightly" in fig5ab-yp-spot-slightly-larger-than-pr, the zone placements and nucleus rings in fig5c-nuclear-yp-centre, the comparison family for fig4b-centre-no-rate-effect and fig6b-peak-900ns-not-significant); each says so.
