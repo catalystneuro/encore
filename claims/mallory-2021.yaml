@@ -1,0 +1,1351 @@
+# Claims for Mallory, Hardcastle, Campbell, Attinger, Low, Raymond & Giocomo (2021), Nat Commun
+# 12, 671, tested on DANDI:000053.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol as stated in docs/protocol.md.
+#
+# Text read. The version of record (paper/10.1038-s41467-021-20936-8.txt, Europe PMC full text
+# of PMC7844029), with its Methods, figure legends and the three supplementary files from the
+# PMC Open Access set, the Supplementary Information (legends of Supplementary Figures 1 to 12),
+# the peer review file (an editorial note only) and the reporting summary. The PDFs of the
+# supplement were not opened; no claim needed a number printed only inside a figure.
+#
+# Code read. The Code availability statement links two MATLAB repositories.
+# https://github.com/khardcastle/spline-lnp-model at commit 34b470f (2018-05-10) holds the
+# spline LN Poisson model (cardinal spline regressors, spline_1d.m, spline_1d_circ.m,
+# spline_2d.m; Poisson likelihood with an L2 penalty of weight 1, glm_model.m; 10-fold
+# cross-validation, fit_model_kfold.m and compute_test_train_ind.m; forward search with a
+# one-sided signed-rank test at 0.05 and a final signed-rank test of the selected model against
+# 0, forward_search_kfold.m; log-likelihood increase over a mean rate model in bits per spike,
+# compute_llh.m; the reduced-model contribution, compute_llh_increase.m) and an example script
+# for position, head direction and speed (create_glm.m). https://github.com/GiocomoLab/
+# ln-model-of-mec-neurons at commit 643386b (2022-06-20) is the older one-hot model of Hardcastle
+# et al. 2017 (fixed 15 models, roughness penalty), which this paper's Methods do not use; it was
+# read and is not followed. Neither repository holds the pitch, roll or eye variables, the
+# tuning curve classification, the stability measure or the PCA clustering; for those every
+# method comes from the Methods and legends. Where the code and the Methods differ, the Methods
+# are followed. create_glm.m uses 3-s chunks for the folds (the Methods say 10-s sections),
+# position bins of box size x 10/100 (the Methods say 15/100) and 12 head direction control
+# points (the Methods say 10 bins); these code settings are variants only.
+#
+# Data the paper used. Freely moving dataset, tetrodes in MEC layers II/III, 20 ms bins (50 Hz
+# tracking), mice foraging for 20 to 60 min in square or rectangular arenas (100 x 100, 50 x 50,
+# 70 x 70 or 70 x 35 cm), sessions kept when 70% or more of the arena was covered. Cohort 1,
+# 6 C57BL/6 mice (4 female, 2 male), right MEC, 179 cells, two headstage LEDs (body position B,
+# body speed Bs, azimuthal head direction Ha, azimuthal head velocity) and an IMU accelerometer
+# (pitch Hp, roll Hr, pitch and roll velocity), calibrated each session by brief head fixation
+# at pitch and roll 0. Cohort 2, 20 mice, 1021 cells, right (7) or left (13) MEC, LEDs only
+# (B, Bs, Ha, azimuthal head velocity); it includes 228 unpublished cells and cells from three
+# earlier papers (Campbell et al. 2018, 122 cells; Eggink et al. 2014, 389 cells; Munn et al.
+# 2020, 282 cells). Head-fixed dataset, 8 female C57BL/6 mice in virtual reality on a 400 cm
+# linear track with a checkered floor and five landmark towers, water reward at one tower;
+# Neuropixels 1.0 recordings in left (4 recordings, 3 mice) or right (7 recordings, 7 mice)
+# MEC, 11 recordings, 2861 units (Kilosort2 and Phy); VR position and running speed resampled
+# to 50 Hz; right eye video, pupil centre minus corneal reflection, high-pass filtered,
+# extreme 1% removed, projected on the eye's horizontal (nasal-temporal) and vertical axes and
+# divided by eye width, giving horizontal and vertical eye position (Eh, Ev) and velocity (Eh
+# dot, Ev dot), smoothed with Gaussians (about 10 ms for position, 140 ms for velocity). A second
+# head-fixed dataset, 6 sessions in 6 mice, 1621 cells, alternates blocks of the landmark track
+# and a track of the same length without landmarks (Figure 8); the paper does not say whether
+# these sessions are among the 11. The raw data are said to be at
+# https://figshare.com/authors/Lisa_Giocomo/9864194 (Data availability). The DANDI:000053
+# description lists tetrode recordings in MEC during open field navigation with inertial head
+# measurements, and Neuropixels recordings during a virtual linear track with eye measurements.
+# Whether it holds Cohort 2 (no IMU), the no-landmark sessions, spike-sorted units, the
+# calibrated pitch and roll, and the processed eye traces is the author's to find.
+#
+# Method details fixed here from the Methods (LN model framework) and the spline code, the
+# "LN pipeline" the criteria refer to. Time bins 20 ms. Epochs kept only where behaviour lies
+# in the inner 95% (2.5th to 97.5th percentile, freely moving) or inner 98% (1st to 99th,
+# head-fixed) of the session's distribution. Variables as cardinal spline regressors
+# (spline_1d.m), head direction circular (spline_1d_circ.m), position 2D in the open field
+# (spline_2d.m); control points, open field position (arena side in cm) x 15/100 per axis, 10
+# head direction bins, speed bins 5 cm/s wide, 8 bins for pitch, roll and azimuthal head
+# velocity; the Methods give no bin count for pitch and roll velocity, and 8, as for the other
+# head variables, is a standard choice; VR 20 position bins, speed bins 5 cm/s, 5 bins for
+# each eye variable. Tension
+# s = 0.5 (the code's value; the Methods give 0.5 to 0.7 and call results insensitive; 0.7 is a
+# variant). Poisson log-likelihood with L2 penalty beta = 1, fitted with fminunc. Performance
+# is the log-likelihood increase over a mean rate model on held-out data, 10-fold
+# cross-validation. Forward search, as in forward_search_kfold.m, adds the best variable while
+# a one-sided Wilcoxon signed-rank test over the 10 folds gives P < 0.05, and a cell encodes the
+# variables of the selected model when that model's fold values exceed 0 by a one-sided
+# signed-rank test (P < 0.05). Variables searched, Cohort 1 B, Bs, Ha, Hp, Hr and the azimuthal,
+# pitch and roll head velocities; Cohort 2 B, Bs, Ha and azimuthal head velocity; head-fixed B,
+# Bs, Eh, Ev, Eh dot, Ev dot. Model-derived tuning curves by Methods equation 10 (M = 200 bins),
+# shown and compared over the ranges of "Visualizing tuning curves" (the larger of the 2.5th
+# percentile and -50 deg for pitch and roll, -100 deg/s for azimuthal head velocity, and the
+# matching upper bounds; eye variables the larger of the 1st percentile and -3 units for Eh and
+# Eh dot, -2 for Ev and Ev dot, and the matching upper bounds). Stability is the Pearson
+# correlation of model-derived tuning curves from LN models refitted on the first and second
+# halves of the session with the full session's selected variables, on the overlapping range,
+# the shorter curve up-sampled. Tuning curve class is the lowest polynomial order (1 to 5)
+# whose fraction of error explained over a flat line exceeds 0.9, on range-normalized curves,
+# pitch and roll curves first smoothed (smoothdata, width 20); classified only when the animal
+# explored 50% (head) or 80% (eye) of the range. Binomial tests are against one half,
+# two-sided. Kruskal-Wallis tests are followed by two-sided Wilcoxon rank-sum tests at the
+# Bonferroni level given in each legend.
+#
+# Open, and named in the claims it bears on. (1) Fold construction. The Methods say each fold
+# is 10% of the data "chosen from 10-s sections" with no overlap; readings, (a) consecutive 10-s
+# sections assigned to folds 1 to 10 in turn (compute_test_train_ind.m with 10-s sections),
+# (b) 10-s sections assigned to folds at random; create_glm.m's 3-s sections are a variant.
+# (2) Range restriction. Readings, (a) only time bins where every variable lies within its
+# inner range are kept, (b) each variable is clipped to its own inner range and all bins kept.
+# (3) Contribution to model performance. The Methods say the difference between the selected
+# and the reduced model's performance, "normalized by the model performance for the selected
+# model and subtracted from 1"; readings, (a) (full - reduced) / full, the reading under which
+# body position is the largest contributor as the paper reports, (b) 1 - (full - reduced) /
+# full, the literal wording; performance is the mean over the 10 folds, or (c) one held-out
+# section as in compute_llh_increase.m. (4) "Explored" for shape classification; readings, (a)
+# the fraction of the preset range covered between the behavioural percentile limits, (b) the
+# fraction of tuning curve bins with any occupancy. (5) Preference of a cell (upward or
+# downward, nasal or temporal, ipsiversive or contraversive); readings, (a) the sign of the
+# slope for linear cells and the side of the tuning curve maximum for the others, (b) the side
+# with the larger absolute slope of lines fitted on either side of 0 (Methods, Quantifying head
+# and eye velocity tuning curves). (6) Asymmetric against symmetric velocity cells. The paper
+# compares slopes below and above 0 and gives no rule; readings, (a) symmetric when the two
+# slopes have opposite signs (V or inverted V), asymmetric otherwise, (b) the rule of the
+# Methods' shuffle comparison, symmetric when the correlation below 0 and the one above 0 fall
+# beyond the 5th and 95th percentiles of a 500-shift shuffle in opposite directions. (7) Fig. 8
+# tuning curves across tracks; readings, (a) model-derived curves from LN models fitted on each
+# track with the variables selected on the landmark track, (b) raw tuning curves (20 bins,
+# occupancy-normalized). (8) Which values a pairwise P stands for when one P is printed for
+# several pairs ("H a versus remaining variables, P = 3.5e-4"); read as the largest P of those
+# pairs. Eye units for the preset bounds are fixed as % of eye width, since the Results define
+# 1 unit as 1/100 of the eye width and Fig. 4f-i use % of eye width; a fraction of eye width
+# would put the bounds beyond the eye.
+schema_version: 2
+paper: doi:10.1038/s41467-021-20936-8
+claims:
+- id: fig1b-head-posture-distributions
+  statement: Across Cohort 1 mice the median head pitch is 11.5 deg (inner 95% from -23.0 to
+    55.6 deg) and the median roll -0.8 deg (-50.9 to 43.6 deg); azimuthal head velocity has a
+    median near 0 deg/s and an inner 95% from -389.9 to 385.1 deg/s across 25 mice of both
+    cohorts.
+  source: Figure 1b legend
+  quote: pitch ... 2.5th percentile = −23.0 ± 4.5° ... median = 11.5 ± 4.1° ... 97.5th percentile =
+    55.6 ± 4.1° ( n = 6 mice); roll ... 2.5th percentile = −50.9 ± 3.6° ... median = −0.8 ± 7.6°
+  expected:
+  - quantity: pitch median, mean over mice
+    value: 11.5
+    tolerance: 4.1
+    unit: deg
+  - quantity: pitch 2.5th percentile, mean over mice
+    value: -23.0
+    tolerance: 4.5
+    unit: deg
+  - quantity: pitch 97.5th percentile, mean over mice
+    value: 55.6
+    tolerance: 4.1
+    unit: deg
+  - quantity: roll median, mean over mice
+    value: -0.8
+    tolerance: 7.6
+    unit: deg
+  - quantity: roll 2.5th percentile, mean over mice
+    value: -50.9
+    tolerance: 3.6
+    unit: deg
+  - quantity: roll 97.5th percentile, mean over mice
+    value: 43.6
+    tolerance: 4.0
+    unit: deg
+  - quantity: azimuthal head velocity 2.5th percentile, mean over mice
+    value: -389.9
+    tolerance: 34.7
+    unit: deg/s
+  - quantity: azimuthal head velocity 97.5th percentile, mean over mice
+    value: 385.1
+    tolerance: 34.7
+    unit: deg/s
+  criterion: As the legend says, percentiles are taken per session, averaged over a mouse's
+    sessions, then the mean over mice is compared, with the legend's sem across mice as the
+    tolerance. Reproduced when at least seven of the eight values are within tolerance,
+    partially reproduced for four to six.
+- id: fig1c-head-direction-cells
+  statement: In Cohort 1, 63 of 179 MEC cells (35%) encode azimuthal head direction.
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 1;
+    Figure 1c
+  quote: a large fraction of the 179 MEC neurons recorded encoded azimuthal head direction ( n =
+    63 cells, 35%)
+  expected:
+  - quantity: Cohort 1 cells encoding Ha
+    value: 63
+    tolerance: 6.3
+  - quantity: fraction of Cohort 1 cells encoding Ha
+    value: 0.35
+    tolerance: 0.035
+  criterion: Cells are counted as encoding a variable when it is in the model selected by the
+    LN pipeline (opening comment) over the eight Cohort 1 variables. Open details (1) and (2)
+    are run under both readings; reproduced when a reading puts the count within tolerance.
+- id: fig1c-pitch-roll-cells
+  statement: In Cohort 1, 46 MEC cells (26%) encode head pitch and 53 (30%) encode head roll.
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 1;
+    Figure 1c
+  quote: In addition, 46 neurons [26%] encoded head pitch position and 53 [30%] encoded head roll
+    position.
+  depends_on:
+  - fig1c-head-direction-cells
+  expected:
+  - quantity: Cohort 1 cells encoding pitch
+    value: 46
+    tolerance: 4.6
+  - quantity: Cohort 1 cells encoding roll
+    value: 53
+    tolerance: 5.3
+  criterion: Same LN pipeline and readings as fig1c-head-direction-cells. Reproduced when both
+    counts are within tolerance under one reading; partially reproduced when one is.
+- id: fig1c-pitch-roll-velocity-rare
+  statement: Few Cohort 1 cells encode angular velocity about the pitch (4 of 179) or roll (5 of
+    179) axes.
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 1
+  quote: Few cells encoded angular velocity along the pitch or roll axes ... and were not examined
+    further
+  depends_on:
+  - fig1c-head-direction-cells
+  expected:
+  - quantity: Cohort 1 cells encoding pitch velocity
+    value: 4
+    tolerance: 0.4
+  - quantity: Cohort 1 cells encoding roll velocity
+    value: 5
+    tolerance: 0.5
+  criterion: Same LN pipeline as fig1c-head-direction-cells. A 10% tolerance on counts this small
+    is below one cell, so the claim is judged on "few", reproduced when each count is at most
+    twice its reported count (8 of 179 for pitch velocity, 10 of 179 for roll velocity), with
+    the exact counts reported.
+- id: fig1c-azimuthal-velocity-cells
+  statement: A small population of Cohort 1 cells (12 of 179, 7%) encodes azimuthal head
+    velocity, and this is verified in Cohort 2, where 55 of 1021 cells (5%) do.
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 1
+  quote: A small population of neurons encoded azimuthal head velocity ... Tuning of neurons to
+    azimuthal head velocity was verified in an additional dataset in which head movements were
+    only measured in the azimuthal plane ( n = 55/1021 cells, 5%; Methods)
+  depends_on:
+  - fig1c-head-direction-cells
+  expected:
+  - quantity: Cohort 1 cells encoding azimuthal head velocity
+    value: 12
+    tolerance: 1.2
+  - quantity: Cohort 2 cells encoding azimuthal head velocity
+    value: 55
+    tolerance: 5.5
+  criterion: LN pipeline over the Cohort 1 variables, and over B, Bs, Ha and azimuthal head
+    velocity for Cohort 2. Reproduced when both counts are within tolerance under one reading
+    of open details (1) and (2); partially reproduced when one is.
+- id: fig1d-conjunctive-head
+  statement: Individual Cohort 1 cells commonly encode more than one variable (95 of 179); few
+    encode body speed, head direction, pitch, roll or azimuthal head velocity alone (2%, 5%,
+    1%, 5% and 0%), while 15% encode body position alone.
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 1;
+    Figure 1d legend
+  quote: Individual neurons commonly encoded information about multiple variables corresponding to
+    head or body movement (95/179 cells encoded > 1 variable)
+  depends_on:
+  - fig1c-head-direction-cells
+  expected:
+  - quantity: Cohort 1 cells encoding more than one variable
+    value: 95
+    tolerance: 9.5
+  - quantity: fraction of Cohort 1 cells encoding body position alone
+    value: 0.15
+    tolerance: 0.015
+  criterion: From the same selected models as fig1c-head-direction-cells. Reproduced when both
+    expected values are within tolerance under one reading and each of the five single-variable
+    fractions the legend gives for Bs, Ha, Hp, Hr and azimuthal head velocity is at most 5%;
+    partially reproduced when the count of conjunctive cells alone is within tolerance.
+- id: fig2-pitch-roll-shapes
+  statement: Nearly all pitch (44 of 46) and roll (52 of 53) tuning curves are fit by a
+    polynomial of order 5 or lower; most pitch cells are linear (17) or quadratic (16), and most
+    roll cells are quadratic (28, with 10 linear).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 2;
+    Figure 2a iii, 2b iii
+  quote: The majority of cells encoding pitch exhibited either linear or quadratic relationships
+    between firing rate and pitch position (linear n = 17/46, quadratic n = 16/46 cells, Fig. 2 a
+    iii ), while the majority of cells encoding roll exhibited quadratic relationships between
+    firing rate and roll position (linear n = 10/53, quadratic n = 28/53 cells
+  depends_on:
+  - fig1c-pitch-roll-cells
+  expected:
+  - quantity: pitch cells well fit
+    value: 44
+    tolerance: 4.4
+  - quantity: roll cells well fit
+    value: 52
+    tolerance: 5.2
+  - quantity: linear pitch cells
+    value: 17
+    tolerance: 1.7
+  - quantity: quadratic pitch cells
+    value: 16
+    tolerance: 1.6
+  - quantity: linear roll cells
+    value: 10
+    tolerance: 1.0
+  - quantity: quadratic roll cells
+    value: 28
+    tolerance: 2.8
+  criterion: Classification as in the opening comment (Methods, Quantifying tuning curve
+    shape), on the cells of fig1c-pitch-roll-cells, with open detail (4) run under both
+    readings. Reproduced when, under one reading, linear plus quadratic is the majority of
+    pitch cells, quadratic cells are more than half of roll cells, and at least four of the six
+    counts are within tolerance; partially reproduced when the two majority statements hold
+    alone.
+- id: fig2a-pitch-up-down-similar
+  statement: Similar proportions of pitch cells prefer upward and downward head tilts (26 of 44
+    upward).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 2;
+    Figure 2a iii, iv
+  quote: Similar proportions of pitch-encoding cells were maximally activated by upward or downward
+    tilts of the head (upward-preferring n = 26/44 cells, Z = 1.06, P = 0.29, binomial test
+  statistics:
+  - test: binomial test
+    statistic: Z = 1.06
+    p: 0.29
+    n: 44 pitch cells
+  depends_on:
+  - fig2-pitch-roll-shapes
+  criterion: A claim of absence. Preference under open detail (5), on the well-fit pitch cells;
+    the binomial test against one half at P < 0.05. Reproduced when the test does not find a
+    preference; the proportion upward is given either way.
+- id: fig2b-roll-left-right-similar
+  statement: Similar proportions of roll cells prefer leftward (contraversive) and rightward
+    (ipsiversive) tilts (30 of 52 leftward).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 2;
+    Figure 2b iii, iv
+  quote: similar proportions of roll-encoding cells preferred leftward (contraversive) and rightward
+    (ipsiversive) tilts (leftward-preferring n = 30/52 cells, Z = 0.82, P = 0.41
+  statistics:
+  - test: binomial test
+    statistic: Z = 0.82
+    p: 0.41
+    n: 52 roll cells
+  depends_on:
+  - fig2-pitch-roll-shapes
+  criterion: A claim of absence, judged as fig2a-pitch-up-down-similar on the well-fit roll
+    cells.
+- id: fig2-pitch-roll-stability
+  statement: Tuning to pitch (median 0.67) and roll (0.54) is about as stable across session
+    halves as tuning to azimuthal head direction (0.65).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 2;
+    Figure 2a v, 2b v
+  quote: The stability of tuning to pitch or roll ... was comparable to that of azimuthal head
+    direction (median [1st–3rd quartile]; pitch = 0.67 [0.35–0.80], n = 44; roll = 0.54
+    [0.23–0.74], n = 52; azimuthal head direction = 0.65 [0.47–0.81], n = 63; Χ 2 = 4.26, P = 0.12,
+    df = 2, Kruskal–Wallis test
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: chi2 = 4.26, df = 2
+    p: 0.12
+    n: 44 pitch, 52 roll and 63 head direction cells
+  depends_on:
+  - fig2-pitch-roll-shapes
+  - fig1c-head-direction-cells
+  expected:
+  - quantity: median stability, pitch
+    value: 0.67
+    tolerance: 0.067
+  - quantity: median stability, roll
+    value: 0.54
+    tolerance: 0.054
+  - quantity: median stability, head direction
+    value: 0.65
+    tolerance: 0.065
+  criterion: A claim of absence. Stability as in the opening comment on the well-fit pitch and
+    roll cells and all head direction cells; reproduced when the Kruskal-Wallis test across
+    the three groups gives P >= 0.05, not reproduced when P < 0.05; the medians are compared
+    with their tolerances and reported either way.
+- id: fig2c-azimuthal-velocity-shapes
+  statement: Of 67 azimuthal head velocity cells pooled from both cohorts, 64 are fit by a
+    polynomial of order 5 or lower; 10 are linear (linear-asymmetric) and most are fit by higher
+    orders (30 quadratic, 8 cubic, 16 quartic).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 3;
+    Figure 2c i to iii
+  quote: A subpopulation of neurons linearly increased or decreased their firing with azimuthal
+    head velocity ... However, most tuning curves were best fit by higher order polynomials
+    (quadratic n = 30/67, cubic n = 8/67, quartic n = 16/67 cells)
+  depends_on:
+  - fig1c-azimuthal-velocity-cells
+  expected:
+  - quantity: azimuthal head velocity cells well fit
+    value: 64
+    tolerance: 6.4
+  - quantity: linear cells
+    value: 10
+    tolerance: 1.0
+  - quantity: quadratic cells
+    value: 30
+    tolerance: 3.0
+  - quantity: cubic cells
+    value: 8
+    tolerance: 0.8
+  - quantity: quartic cells
+    value: 16
+    tolerance: 1.6
+  criterion: Classification as in fig2-pitch-roll-shapes (no smoothing for this variable), on
+    the cells of fig1c-azimuthal-velocity-cells from both cohorts. Reproduced when, under one
+    reading of open detail (4), higher orders hold the majority and at least three of the five
+    counts are within tolerance; partially reproduced when the majority holds alone.
+- id: fig2c-velocity-extrema-near-zero
+  statement: Maxima and minima of nonlinear azimuthal head velocity tuning curves cluster near 0
+    deg/s; their median does not differ from 0, and 52 of 63 lie within 50 deg/s.
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 3;
+    Supplementary Figure 7d
+  quote: Maxima and minima of these curves clustered near 0°/s
+  statistics:
+  - about: median peak or valley location against 0
+    test: two-sided Wilcoxon signed rank test
+    statistic: Z = 1.52
+    p: 0.13
+  - about: peaks or valleys within 50 deg/s against beyond
+    test: binomial test
+    statistic: Z = 5.04
+    p: 2.0e-7
+    n: 63 peaks or valleys
+  - about: entropy of peak or valley locations against a uniform distribution
+    p: 0.0020
+  depends_on:
+  - fig2c-azimuthal-velocity-shapes
+  expected:
+  - quantity: peaks or valleys with absolute velocity below 50 deg/s
+    value: 52
+    tolerance: 5.2
+  criterion: Peaks and valleys found with findpeaks on the nonlinear curves, keeping those that
+    take the curve's maximum or minimum (Methods, Quantifying head and eye velocity tuning
+    curves). Reproduced when the count below 50 deg/s is within tolerance, the binomial test
+    gives P < 0.05 and the signed rank test of the median against 0 gives P >= 0.05.
+- id: fig2c-symmetric-asymmetric-classes
+  statement: About half of nonlinear azimuthal head velocity cells are asymmetric (28 of 64) and
+    half symmetric (26 of 64); most symmetric cells increase firing with head speed (20 of 26),
+    significantly more than fire most when the head is still (6 of 26).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 3;
+    Figure 2c iii, iv
+  quote: Whereas the majority of symmetric cells increased their firing rates with increasing head
+    speeds [NL s-pos ] ( n = 20/26), others fired maximally when the head was stationary [NL s-neg
+    ] ( n = 6/26, Z = 2.55, P = 0.009)
+  statistics:
+  - about: positive against negative symmetric cells
+    test: binomial test
+    statistic: Z = 2.55
+    p: 0.009
+    n: 26 symmetric cells
+  depends_on:
+  - fig2c-azimuthal-velocity-shapes
+  expected:
+  - quantity: nonlinear-asymmetric cells
+    value: 28
+    tolerance: 2.8
+  - quantity: nonlinear-symmetric cells
+    value: 26
+    tolerance: 2.6
+  - quantity: symmetric cells increasing with speed
+    value: 20
+    tolerance: 2.0
+  criterion: Classes under open detail (6), run under both readings. Reproduced when, under one
+    reading, the asymmetric and symmetric counts are within tolerance and the binomial test of
+    positive against negative symmetric cells gives P < 0.05 with more positive cells;
+    partially reproduced when the binomial result holds alone. The paper names no test for this
+    Z and P; it is read as the binomial test against one half that the same paragraph uses for
+    pitch and roll preference.
+- id: fig2c-asymmetric-direction-similar
+  statement: Similar proportions of asymmetric azimuthal head velocity cells prefer ipsiversive
+    and contraversive head rotation (23 of 38 contraversive).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 3;
+    Figure 2c iii
+  quote: Similar proportions of asymmetric cells preferred ipsiversive ... versus contraversive head
+    movements (contraversive-preferring n = 23/38, Z = 1.16, P = 0.26)
+  statistics:
+  - test: binomial test
+    statistic: Z = 1.16
+    p: 0.26
+    n: 38 asymmetric cells
+  depends_on:
+  - fig2c-symmetric-asymmetric-classes
+  criterion: A claim of absence. The 38 cells are the linear and nonlinear asymmetric cells
+    (10 + 28); direction is relative to the recorded hemisphere, preference under open detail
+    (5). Reproduced when the binomial test against one half gives P >= 0.05. The paper names
+    no test for this Z and P; it is read as the binomial test of the paragraph's other
+    preference results.
+- id: fig2c-velocity-stability
+  statement: Tuning to azimuthal head velocity is highly stable across session halves (median
+    0.91), comparable to tuning to body speed (0.86).
+  source: Results, Entorhinal neurons encode head movements in three dimensions, paragraph 3;
+    Figure 2c v
+  quote: Tuning to azimuthal head velocity was highly stable across the first and second half of
+    the recording session (median [1st–3rd quartile]; 0.91 [0.74–0.96], n = 64; Fig. 2 c v ), and
+    comparable to the stability of tuning to body speed (0.86 [0.63–0.95], n = 52; Z = 1.66, P =
+    0.097, Wilcoxon rank-sum test)
+  statistics:
+  - test: Wilcoxon rank-sum test
+    statistic: Z = 1.66
+    p: 0.097
+    n: 64 azimuthal head velocity and 52 body speed cells
+  depends_on:
+  - fig2c-azimuthal-velocity-shapes
+  expected:
+  - quantity: median stability, azimuthal head velocity
+    value: 0.91
+    tolerance: 0.091
+  - quantity: median stability, body speed
+    value: 0.86
+    tolerance: 0.086
+  criterion: A claim of absence. The 52 body speed cells are not identified; read as the Cohort
+    1 body speed cells (52 of 179, the count Supplementary Fig. 3b gives). Reproduced when the
+    rank-sum test gives P >= 0.05; medians reported against their tolerances.
+- id: fig3ab-head-contributions
+  statement: Body position contributes most to MEC spiking, then azimuthal head direction; pitch
+    and roll each contribute less than head direction but on par with body speed, and azimuthal
+    head velocity contributes least.
+  source: Results, Conjunctive coding of head movements and other navigation-related variables,
+    paragraph 1; Figure 3a, b
+  quote: we observed that body position was the strongest predictor of MEC spiking, followed by
+    azimuthal head direction ... head pitch and roll position each contributed less to MEC spiking
+    than azimuthal head direction ( P = 3.7e−7), but were on par with body speed
+  statistics:
+  - about: all six variables
+    test: Kruskal-Wallis test
+    statistic: chi2 = 410.3, df = 5
+    p: 1.7e-86
+  - about: B against Ha
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 1.3e-26
+    corrected: Bonferroni, alpha 0.0033
+  - about: Ha against the remaining variables
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 3.5e-4
+    corrected: Bonferroni, alpha 0.0033
+  - about: pitch and roll against Ha
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 3.7e-7
+    corrected: Bonferroni, alpha 0.0033
+  - about: pitch and roll against body speed
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.38
+    corrected: Bonferroni, alpha 0.0033
+  depends_on:
+  - fig1c-azimuthal-velocity-cells
+  expected:
+  - quantity: median contribution, B (n = 394)
+    value: 0.64
+    tolerance: 0.064
+  - quantity: median contribution, Ha (n = 327)
+    value: 0.32
+    tolerance: 0.032
+  - quantity: median contribution, Bs (n = 332)
+    value: 0.15
+    tolerance: 0.015
+  - quantity: median contribution, pitch (n = 44)
+    value: 0.13
+    tolerance: 0.013
+  - quantity: median contribution, roll (n = 44)
+    value: 0.17
+    tolerance: 0.017
+  - quantity: median contribution, azimuthal head velocity (n = 64)
+    value: 0.06
+    tolerance: 0.006
+  criterion: Contribution under open detail (3), for cells of both cohorts that encode the
+    variable and at least one other (Figure 3a legend). Kruskal-Wallis over the six variables
+    and post hoc rank-sum tests at alpha 0.0033, with open detail (8) for the pooled pairs.
+    Reproduced when, under one reading, the order B > Ha > (pitch, roll, Bs) > azimuthal head
+    velocity of medians holds, B against Ha, Ha against each of Bs, pitch and roll, and pitch and
+    roll against Ha are significant, pitch and roll against Bs are not, and at least four of
+    the six medians are within tolerance. Partially reproduced when the order and tests hold
+    but fewer medians are in tolerance.
+- id: fig3c-freely-moving-model-fit
+  statement: Over 869 freely moving cells that encode at least one variable, the
+    spike-normalized held-out log-likelihood increase has median 0.11.
+  source: Figure 3c legend
+  quote: The spike-normalized average log-likelihood increase in information across 10 folds of
+    held-out data for all cells significantly encoding at least one variable (median [1st–3rd
+    quartile]; 0.11 [0.04–0.26], n = 869)
+  depends_on:
+  - fig1c-azimuthal-velocity-cells
+  expected:
+  - quantity: cells encoding at least one variable, both cohorts
+    value: 869
+    tolerance: 86.9
+  - quantity: median log-likelihood increase
+    value: 0.11
+    tolerance: 0.011
+    unit: bits per spike
+  criterion: Fold mean of the selected model's log-likelihood increase in bits per spike
+    (compute_llh.m). Reproduced when both values are within tolerance under one reading of open
+    details (1) and (2).
+- id: fig3e-head-no-clustering
+  statement: Cells with similar tuning to a head or body variable do not tend to encode the same
+    additional variables; no combination shows clustering of labels in tuning curve profile
+    space.
+  source: Results, Conjunctive coding of head movements and other navigation-related variables,
+    paragraph 2; Figure 3e; Supplementary Figure 11a to c
+  quote: Across all possible combinations, we did not observe any clustering in the assigned
+    labels (all Bonferroni corrected P > 0.005; Methods; Supplementary Fig. 11 )
+  statistics:
+  - test: k-nearest-neighbour distance against label-scrambled null
+    p: 0.005
+    p_relation: ">"
+    corrected: Bonferroni, over k = 1 to 10
+  depends_on:
+  - fig1c-azimuthal-velocity-cells
+  criterion: A claim of absence. For each primary variable, model-derived tuning curves (50 bins,
+    Methods) are mean-subtracted and scaled to unit range, projected on two principal components;
+    for each secondary variable, the mean distance from each labelled cell to its k nearest
+    labelled neighbours, k from 1 to 10, is compared with a label-scrambled null, P the fraction
+    of null distances smaller than observed. The number of scrambles is not given; 1000 is a
+    standard choice. Reproduced when no combination and k gives P < 0.005.
+- id: fig4f-eye-movement-distributions
+  statement: Head-fixed mice in VR move their eyes considerably; the inner 98% of horizontal eye
+    position spans about -3.5 to 5.3% of eye width and of vertical position -2.7 to 1.6%; that
+    of horizontal eye velocity -6.2 to 6.9% of eye width per s and of vertical eye velocity -2.8
+    to 3.2% per s.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 2; Figure 4c to i legend
+  quote: On the virtual track with landmarks, head-fixed mice moved their eyes considerably, as
+    reported previously
+  expected:
+  - quantity: horizontal eye position 1st percentile
+    value: -3.50
+    tolerance: 0.61
+    unit: percent of eye width
+  - quantity: horizontal eye position 99th percentile
+    value: 5.28
+    tolerance: 0.87
+    unit: percent of eye width
+  - quantity: vertical eye position 1st percentile
+    value: -2.74
+    tolerance: 0.64
+    unit: percent of eye width
+  - quantity: vertical eye position 99th percentile
+    value: 1.60
+    tolerance: 0.21
+    unit: percent of eye width
+  - quantity: horizontal eye velocity 1st percentile
+    value: -6.19
+    tolerance: 0.74
+    unit: percent of eye width per s
+  - quantity: horizontal eye velocity 99th percentile
+    value: 6.87
+    tolerance: 0.66
+    unit: percent of eye width per s
+  - quantity: vertical eye velocity 1st percentile
+    value: -2.83
+    tolerance: 0.55
+    unit: percent of eye width per s
+  - quantity: vertical eye velocity 99th percentile
+    value: 3.15
+    tolerance: 0.68
+    unit: percent of eye width per s
+  criterion: Percentiles per session, about the mean position, averaged per mouse, mean over 8
+    mice, with the legend's sem across mice as tolerance. Reproduced when at least seven of
+    eight are within tolerance; partially for four to six.
+- id: fig4j-eye-encoding-cells
+  statement: Of 2861 MEC cells in head-fixed mice, 711 (25%) carry eye movement signals; 343
+    (12%) encode horizontal eye position, 234 (9%) vertical eye position, 244 (9%) horizontal
+    eye velocity and 135 (5%) vertical eye velocity.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 2; Figure 4j
+  quote: 711/2861 MEC cells [25%] carried signals related to eye movements ... 343 cells [12%]
+    encoded horizontal eye position, 234 cells [9%] encoded vertical eye position, 244 cells [9%]
+    cells encoded horizontal eye velocity, and 135 cells [5%] encoded vertical eye velocity.
+  expected:
+  - quantity: cells encoding any eye variable
+    value: 711
+    tolerance: 71.1
+  - quantity: cells encoding Eh
+    value: 343
+    tolerance: 34.3
+  - quantity: cells encoding Ev
+    value: 234
+    tolerance: 23.4
+  - quantity: cells encoding Eh dot
+    value: 244
+    tolerance: 24.4
+  - quantity: cells encoding Ev dot
+    value: 135
+    tolerance: 13.5
+  criterion: LN pipeline over B, Bs, Eh, Ev, Eh dot and Ev dot for the 11 recordings on the
+    landmark track, with open details (1) and (2) under both readings. Reproduced when, under
+    one reading, the count of eye-encoding cells and at least three of the four per-variable
+    counts are within tolerance; partially reproduced when the total alone is.
+- id: fig4k-eye-conjunctive
+  statement: Most eye movement cells (96%) also encode body position or speed, 28% encode more
+    than one eye parameter, and few cells encode an eye variable alone; 23% of cells encode body
+    position alone.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 2; Figure 4j, k legend
+  quote: The majority of cells encoding eye movements conjunctively encoded body position or speed
+    (96%), and a subset of cells encoded multiple parameters of eye movements (28%, Fig. 4j, k )
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: fraction of eye cells also encoding B or Bs
+    value: 0.96
+    tolerance: 0.096
+  - quantity: fraction of eye cells encoding more than one eye variable
+    value: 0.28
+    tolerance: 0.028
+  - quantity: fraction of all cells encoding B alone
+    value: 0.23
+    tolerance: 0.023
+  criterion: From the selected models of fig4j-eye-encoding-cells. Reproduced when all three are
+    within tolerance under one reading; partially for two. A tolerance of 0.096 on 0.96 is
+    capped at 1.
+- id: fig5a-eh-nasal-temporal-similar
+  statement: Among horizontal eye position cells, similar proportions fire most for nasal and
+    temporal positions (170 of 343 nasal), also in each hemisphere.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 3; Figure 5a iii
+  quote: Of the cells encoding horizontal eye position, a similar proportion fired maximally for
+    nasal versus temporal eye positions (nasal-preferring n = 170/343, Z = 0.11, P = 0.91
+  statistics:
+  - about: all cells
+    test: binomial test
+    statistic: Z = 0.11
+    p: 0.91
+    n: 343 cells
+  - about: ipsilateral hemisphere
+    test: binomial test
+    statistic: Z = 1.07
+    p: 0.28
+    n: 87 cells
+  - about: contralateral hemisphere
+    test: binomial test
+    statistic: Z = 0.43
+    p: 0.66
+    n: 256 cells
+  depends_on:
+  - fig4j-eye-encoding-cells
+  criterion: A claim of absence. Preference under open detail (5) on all Eh cells (343 of 343
+    are classified); recordings in the right MEC are ipsilateral to the tracked right eye.
+    Reproduced when none of the three binomial tests gives P < 0.05.
+- id: fig5b-ev-up-down-similar
+  statement: Of 234 vertical eye position cells 177 are classified by shape, and similar
+    proportions of them fire most for upward and downward positions (88 of 177 upward).
+  source: Results, Entorhinal neurons encode eye movements, paragraph 3; Figure 5b iii
+  quote: of cells encoding vertical eye position, similar proportions fired maximally for upward
+    versus downward eye positions (upward-preferring n = 88/177, Z = 0, P = 1
+  statistics:
+  - test: binomial test
+    statistic: Z = 0
+    p: 1
+    n: 177 cells
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: Ev cells classified by shape
+    value: 177
+    tolerance: 17.7
+  criterion: A claim of absence. Classification and preference as in the opening comment and
+    open details (4) and (5). Reproduced when the binomial test gives P >= 0.05; the count
+    classified is compared with its tolerance.
+- id: fig5-eye-position-stability
+  statement: Tuning to eye position is stable across session halves; horizontal eye position
+    (median 0.87) is significantly more stable than virtual body position (0.71), and vertical
+    eye position (0.72) is similar to body position.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 3; Figure 5a v, 5b v
+  quote: with tuning to horizontal eye position significantly more stable than tuning to virtual
+    body position, and tuning to vertical eye position similar to that of virtual body position
+  statistics:
+  - about: Eh, Ev and B
+    test: Kruskal-Wallis test
+    statistic: chi2 = 103.51, df = 2
+    p: 3.3e-23
+  - about: Eh against B
+    test: Wilcoxon rank-sum, pairwise
+    p: 8.6e-25
+  - about: Ev against B
+    test: Wilcoxon rank-sum, pairwise
+    p: 0.91
+  depends_on:
+  - fig5b-ev-up-down-similar
+  expected:
+  - quantity: median stability, Eh (n = 343)
+    value: 0.87
+    tolerance: 0.087
+  - quantity: median stability, Ev (n = 177)
+    value: 0.72
+    tolerance: 0.072
+  - quantity: median stability, B (n = 1968)
+    value: 0.71
+    tolerance: 0.071
+  criterion: Stability as in the opening comment for all Eh cells, the classified Ev cells and
+    all B cells. The Kruskal-Wallis P is printed "3.3–23" and is read as 3.3e-23. The pairwise
+    alpha is not stated for this test; 0.0167 (Bonferroni over three pairs, as in the Figure 5
+    legends) is used. Reproduced when Eh is significantly more stable than B, Ev against B is not
+    significant, and the three medians are within tolerance; partially reproduced when the tests
+    hold but a median is out of tolerance.
+- id: fig5av-eh-linear-most-stable
+  statement: Linearly tuned horizontal eye position cells are more stable than those with
+    greater curvature (medians 0.93, 0.87 and 0.66 for linear, quadratic and higher order).
+  source: Figure 5a v legend
+  quote: linearly tuned cells were significantly more stable than those exhibiting greater
+    curvature (median [1st–3rd quartile]; 1° = 0.93 [0.85–0.98]; 2° = 0.87 [0.71–0.95]; >2° = 0.66
+    [0.15–0.83]; Χ 2 = 69.59, P = 7.7e−16, df = 2
+  statistics:
+  - about: three classes
+    test: Kruskal-Wallis test
+    statistic: chi2 = 69.59, df = 2
+    p: 7.7e-16
+  - about: linear against quadratic
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 2.6e-5
+    corrected: Bonferroni, alpha 0.0167
+  - about: linear against higher order
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 1.8e-15
+    corrected: Bonferroni, alpha 0.0167
+  - about: quadratic against higher order
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 4.1e-8
+    corrected: Bonferroni, alpha 0.0167
+  depends_on:
+  - fig5-eye-position-stability
+  expected:
+  - quantity: median stability, linear Eh cells
+    value: 0.93
+    tolerance: 0.093
+  - quantity: median stability, quadratic Eh cells
+    value: 0.87
+    tolerance: 0.087
+  - quantity: median stability, higher order Eh cells
+    value: 0.66
+    tolerance: 0.066
+  criterion: Reproduced when the Kruskal-Wallis test gives P < 0.05, linear cells are
+    significantly more stable than both other classes at alpha 0.0167, and at least two medians
+    are within tolerance, under one reading of open detail (4).
+- id: fig5bv-ev-low-order-more-stable
+  statement: Linearly or quadratically tuned vertical eye position cells are more stable than
+    those with greater curvature.
+  source: Figure 5b v legend
+  quote: linearly or quadratically tuned cells were significantly more stable than those
+    exhibiting greater curvature
+  statistics:
+  - about: three classes
+    test: Kruskal-Wallis test
+    statistic: chi2 = 17.17, df = 2
+    p: 1.9e-4
+  - about: linear against higher order
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.012
+    corrected: Bonferroni, alpha 0.0167
+  - about: quadratic against higher order
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.0001
+    corrected: Bonferroni, alpha 0.0167
+  - about: linear against quadratic
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.87
+    corrected: Bonferroni, alpha 0.0167
+  depends_on:
+  - fig5b-ev-up-down-similar
+  expected:
+  - quantity: median stability, linear Ev cells
+    value: 0.86
+    tolerance: 0.086
+  - quantity: median stability, quadratic Ev cells
+    value: 0.86
+    tolerance: 0.086
+  - quantity: median stability, higher order Ev cells
+    value: 0.56
+    tolerance: 0.056
+  criterion: Reproduced when the Kruskal-Wallis test gives P < 0.05, linear and quadratic cells
+    are each significantly more stable than higher order cells at alpha 0.0167, and at least two
+    medians are within tolerance, under one reading of open detail (4).
+- id: fig6-eye-velocity-linear-nasal
+  statement: A small subpopulation of eye velocity cells is linear (43 of 244 horizontal, 29 of
+    131 vertical); linear horizontal cells prefer nasal-directed movement (30 of 43), and linear
+    vertical cells show no up or down preference (16 of 29 upward).
+  source: Results, Entorhinal neurons encode eye movements, paragraph 4; Figure 6a iii, iv and
+    6b iii, iv
+  quote: Linear-asymmetric cells encoding horizontal eye velocity showed a preference for
+    nasal-directed movements (nasal-preferring n = 30/43, Z = 2.44, P = 0.014)
+  statistics:
+  - about: linear Eh dot cells, nasal against temporal
+    test: binomial test
+    statistic: Z = 2.44
+    p: 0.014
+    n: 43 cells
+  - about: linear Ev dot cells, upward against downward
+    test: binomial test
+    statistic: Z = 0.37
+    p: 0.71
+    n: 29 cells
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: linear Eh dot cells
+    value: 43
+    tolerance: 4.3
+  - quantity: linear Ev dot cells
+    value: 29
+    tolerance: 2.9
+  - quantity: nasal-preferring linear Eh dot cells
+    value: 30
+    tolerance: 3.0
+  criterion: Classification as in the opening comment; preference is the sign of the linear fit.
+    Reproduced when, under one reading of open detail (4), the horizontal binomial test gives
+    P < 0.05 with a nasal majority, the vertical test gives P >= 0.05, and the two linear counts
+    are within tolerance; partially reproduced when the tests hold alone.
+- id: fig6-eye-velocity-nonlinear-temporal
+  statement: Most eye velocity cells are nonlinear (201 of 244 horizontal, 102 of 131 vertical),
+    split into asymmetric (147 and 68) and symmetric (54 and 34) cells; asymmetric horizontal
+    cells prefer temporal movement (87 of 147) and asymmetric vertical cells show no preference.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 4; Figure 6a iii, iv and
+    6b iii, iv
+  quote: Nonlinear-asymmetric cells encoding horizontal movement preferred temporal-directed
+    movements ... temporal-preferring n = 87/147, Z = 2.22, P = 0.026
+  statistics:
+  - about: nonlinear-asymmetric Eh dot cells, temporal against nasal
+    test: binomial test
+    statistic: Z = 2.22
+    p: 0.026
+    n: 147 cells
+  - about: nonlinear-asymmetric Ev dot cells, downward against upward
+    test: binomial test
+    statistic: Z = -0.61
+    p: 0.54
+    n: 68 cells
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: nonlinear-asymmetric Eh dot cells
+    value: 147
+    tolerance: 14.7
+  - quantity: nonlinear-symmetric Eh dot cells
+    value: 54
+    tolerance: 5.4
+  - quantity: nonlinear-asymmetric Ev dot cells
+    value: 68
+    tolerance: 6.8
+  - quantity: nonlinear-symmetric Ev dot cells
+    value: 34
+    tolerance: 3.4
+  criterion: Classes under open detail (6), preference under open detail (5), both run under
+    each reading. Reproduced when, under one combination, the horizontal binomial test gives
+    P < 0.05 with a temporal majority, the vertical one gives P >= 0.05, and at least three of the
+    four counts are within tolerance; partially reproduced when the tests hold alone.
+- id: fig6-eye-velocity-stability
+  statement: Tuning to horizontal eye velocity (median 0.93) is significantly more stable than
+    tuning to virtual body speed (0.84), and tuning to vertical eye velocity (0.74) is
+    significantly less stable.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 4; Figure 6a v, 6b v
+  quote: Tuning to horizontal eye velocity was significantly more stable than that to virtual body
+    speed, while tuning to vertical eye velocity was significantly less stable
+  statistics:
+  - about: Eh dot, Ev dot and Bs
+    test: Kruskal-Wallis test
+    statistic: chi2 = 90.78, df = 2
+    p: 1.9e-20
+  - about: Eh dot against Bs
+    test: Wilcoxon rank-sum, pairwise
+    p: 6.5e-18
+  - about: Ev dot against Bs
+    test: Wilcoxon rank-sum, pairwise
+    p: 0.00061
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: median stability, Eh dot (n = 244)
+    value: 0.93
+    tolerance: 0.093
+  - quantity: median stability, Ev dot (n = 131)
+    value: 0.74
+    tolerance: 0.074
+  - quantity: median stability, Bs (n = 1321)
+    value: 0.84
+    tolerance: 0.084
+  criterion: The Kruskal-Wallis P is printed "1.9–20" and is read as 1.9e-20; pairwise alpha
+    0.0167 as in fig5-eye-position-stability. Reproduced when Eh dot is significantly more and
+    Ev dot significantly less stable than Bs and the medians are within tolerance; partially
+    reproduced when the tests hold but a median is out of tolerance.
+- id: fig6v-asymmetric-more-stable
+  statement: Asymmetric eye velocity cells are more stable than symmetric ones; for horizontal
+    eye velocity both linear and nonlinear asymmetric cells exceed symmetric cells, for vertical
+    eye velocity nonlinear asymmetric cells exceed symmetric cells.
+  source: Figure 6a v and 6b v legends
+  quote: linear-asymmetric and nonlinear-asymmetric cells were significantly more stable than
+    nonlinear-symmetric cells
+  statistics:
+  - about: Eh dot classes
+    test: Kruskal-Wallis test
+    statistic: chi2 = 19.30, df = 2
+    p: 6.4e-5
+  - about: Eh dot, linear-asymmetric against symmetric
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.00028
+    corrected: Bonferroni, alpha 0.0167
+  - about: Eh dot, nonlinear-asymmetric against symmetric
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.00012
+    corrected: Bonferroni, alpha 0.0167
+  - about: Ev dot classes
+    test: Kruskal-Wallis test
+    statistic: chi2 = 11.37, df = 2
+    p: 0.0034
+  - about: Ev dot, nonlinear-asymmetric against symmetric
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.0014
+    corrected: Bonferroni, alpha 0.0167
+  depends_on:
+  - fig6-eye-velocity-nonlinear-temporal
+  expected:
+  - quantity: median stability, Eh dot linear-asymmetric
+    value: 0.96
+    tolerance: 0.096
+  - quantity: median stability, Eh dot nonlinear-asymmetric
+    value: 0.94
+    tolerance: 0.094
+  - quantity: median stability, Eh dot nonlinear-symmetric
+    value: 0.86
+    tolerance: 0.086
+  - quantity: median stability, Ev dot nonlinear-asymmetric
+    value: 0.85
+    tolerance: 0.085
+  - quantity: median stability, Ev dot nonlinear-symmetric
+    value: 0.38
+    tolerance: 0.038
+  criterion: Reproduced when, under one reading of open detail (6), both Kruskal-Wallis tests
+    give P < 0.05 and the three named pairwise comparisons are significant at alpha 0.0167 in the
+    stated direction; partially reproduced when the horizontal or the vertical part holds alone.
+    The medians are compared with their tolerances and reported either way.
+- id: fig7ab-eye-contributions
+  statement: Body position and speed influence MEC spiking more than eye movement signals, and eye
+    position contributes more than eye velocity.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 5; Figure 7a, b
+  quote: body position and speed influenced MEC spiking more strongly than eye movement-related
+    signals ... The contributions of horizontal and vertical eye position were greater than those
+    of horizontal and vertical eye velocity ( P = 1.9e–10)
+  statistics:
+  - about: all six variables
+    test: Kruskal-Wallis test
+    statistic: chi2 = 1.3e3, df = 5
+    p: 5.5e-276
+  - about: eye position against eye velocity
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 1.9e-10
+    corrected: Bonferroni, alpha 0.0033
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: median contribution, B (n = 1319)
+    value: 0.65
+    tolerance: 0.065
+  - quantity: median contribution, Bs (n = 1187)
+    value: 0.26
+    tolerance: 0.026
+  - quantity: median contribution, Eh (n = 335)
+    value: 0.10
+    tolerance: 0.010
+  - quantity: median contribution, Ev (n = 231)
+    value: 0.14
+    tolerance: 0.014
+  - quantity: median contribution, Eh dot (n = 237)
+    value: 0.05
+    tolerance: 0.005
+  - quantity: median contribution, Ev dot (n = 132)
+    value: 0.04
+    tolerance: 0.004
+  criterion: Contribution under open detail (3) for cells encoding the variable and at least one
+    other. Reproduced when, under one reading, B and Bs each exceed every eye variable and Eh and
+    Ev each exceed Eh dot and Ev dot by post hoc rank-sum tests at alpha 0.0033, and at least
+    four of the six medians are within tolerance; partially reproduced when the tests hold alone.
+- id: fig7c-head-fixed-model-fit
+  statement: Over 2191 head-fixed cells that encode at least one variable, the held-out
+    log-likelihood increase has median 0.05 bits per spike.
+  source: Figure 7c legend
+  quote: The spike-normalized average log-likelihood increase in information across 10 folds of
+    held-out data for all cells significantly encoding at least one variable (median [1st–3rd
+    quartile]; 0.05 [0.02–0.11], n = 2191)
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: cells encoding at least one variable, head-fixed
+    value: 2191
+    tolerance: 219.1
+  - quantity: median log-likelihood increase
+    value: 0.05
+    tolerance: 0.005
+    unit: bits per spike
+  criterion: As fig3c-freely-moving-model-fit, on the head-fixed cells.
+- id: fig7e-eye-no-clustering
+  statement: Cells with similar tuning to eye position or velocity do not tend to encode similar
+    additional variables.
+  source: Results, Entorhinal neurons encode eye movements, paragraph 5; Figure 7e, f;
+    Supplementary Figure 11d to f
+  quote: As with cells encoding head movements, cells that exhibited similar tuning to eye position
+    or velocity did not tend to encode similar additional variables
+  depends_on:
+  - fig4j-eye-encoding-cells
+  criterion: A claim of absence, judged as fig3e-head-no-clustering on the head-fixed variables,
+    at the Bonferroni level 0.05/10 the Methods give. Reproduced when no combination and k gives
+    P < 0.005.
+- id: fig8c-eye-tuning-without-landmarks
+  statement: Without visual landmarks, body position tuning degrades or remaps (median
+    correlation across tracks 0.02), while tuning to body speed and to all eye movement variables
+    is preserved significantly more (medians 0.40 to 0.82).
+  source: Results, Encoding of eye position and eye velocity persists in the absence of visual
+    landmark features, paragraph 1; Figure 8c, d
+  quote: Position tuning curves were nearly uncorrelated between the tracks (median [1st–3rd
+    quartile], B = 0.02 [−0.19–0.25], whereas the tuning curves for cells encoding all eye
+    movement-related variables and body speed were preserved to a significantly greater extent
+  statistics:
+  - about: six variables
+    test: Kruskal-Wallis test
+    statistic: chi2 = 748.27, df = 5
+    p: 1.8e-159
+  - about: B against each other variable
+    test: two-sided Wilcoxon rank-sum, post hoc
+    p: 0.00024
+    p_relation: "<"
+    corrected: Bonferroni, alpha 0.0033
+    n: 1621 cells from 6 sessions in 6 mice
+  expected:
+  - quantity: median correlation, B
+    value: 0.02
+    tolerance: 0.1
+  - quantity: median correlation, Bs
+    value: 0.82
+    tolerance: 0.082
+  - quantity: median correlation, Eh
+    value: 0.69
+    tolerance: 0.069
+  - quantity: median correlation, Ev
+    value: 0.54
+    tolerance: 0.054
+  - quantity: median correlation, Eh dot
+    value: 0.73
+    tolerance: 0.073
+  - quantity: median correlation, Ev dot
+    value: 0.40
+    tolerance: 0.040
+  criterion: Cells are those encoding each variable on the landmark track (LN pipeline on the
+    landmark blocks), the correlation between their tuning curves in the two tracks under open
+    detail (7). The B tolerance is 0.1, as 10% of 0.02 is below any meaningful resolution of a
+    correlation; 0.1 is a tenth of the scale. Reproduced when, under one reading, the
+    Kruskal-Wallis test gives P < 0.05, B is lower than each other variable at alpha 0.0033, and
+    at least four of the six medians are within tolerance; partially reproduced when the tests
+    hold alone.
+- id: fig8e-joint-cells-preserve-eye-tuning
+  statement: Eye position tuning is preserved across tracks even in cells that jointly encode
+    body position and eye position.
+  source: Results, Encoding of eye position and eye velocity persists in the absence of visual
+    landmark features, paragraph 1; Figure 8e
+  quote: This effect was observed even in cells that jointly encoded body position and eye position
+    (Fig. 8e ).
+  depends_on:
+  - fig8c-eye-tuning-without-landmarks
+  criterion: The paper shows examples and no test. For cells encoding both B and Eh on the landmark
+    track, the cross-track correlation of Eh tuning curves is compared with that of their B
+    tuning curves by the test the Figure 8c legend uses for the same comparison over all cells,
+    a two-sided Wilcoxon rank-sum test at alpha 0.0033. Applying it to this subset is a reading
+    (the paper gives no test for Fig. 8e) and an outcome on it rests on that assumption; a
+    paired two-sided Wilcoxon signed-rank test is a variant. Reproduced when the median Eh
+    correlation exceeds the median B correlation with P < 0.0033 under one reading of open
+    detail (7).
+- id: methods-hemispheres-similar
+  statement: The proportion of MEC neurons tuned to eye movement variables does not differ between
+    left (mean 0.23) and right (0.43) hemisphere recordings.
+  source: Methods, Head-fixed dataset, Data collection
+  quote: We did not observe a difference in the proportions of MEC neurons encoding eye
+    movement-related variables across the left and right hemispheres
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.23
+    n: 4 left and 7 right recordings
+  depends_on:
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: mean proportion, left hemisphere
+    value: 0.23
+    tolerance: 0.083
+  - quantity: mean proportion, right hemisphere
+    value: 0.43
+    tolerance: 0.083
+  criterion: A claim of absence. Per recording, the fraction of cells encoding one or more eye
+    variable; reproduced when the rank-sum test over recordings gives P >= 0.05. Means compared
+    with the sem the paper gives as tolerance.
+- id: supp3-low-false-positives
+  statement: Shuffling one variable in time and refitting yields few falsely detected cells for
+    each variable, in both datasets (for example 0 of 46 for pitch, 1 of 12 for azimuthal head
+    velocity, 5 of 343 for horizontal eye position, 13 of 135 for vertical eye velocity).
+  source: Supplementary Figure 3b, c
+  quote: Here, we observed a very low chance of false positives for each variable
+  depends_on:
+  - fig1c-head-direction-cells
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: falsely detected vertical eye velocity cells, head-fixed
+    value: 13
+    tolerance: 1.3
+  - quantity: falsely detected horizontal eye velocity cells, head-fixed
+    value: 8
+    tolerance: 0.8
+  criterion: As in the Methods (Identifying rate of falsely detected encoded variables), one
+    variable at a time is shuffled across time bins in Cohort 1 and in the head-fixed data and the
+    whole LN pipeline is rerun. One shuffle per variable, as the counts imply. The variables are
+    the six the legend reports for each dataset (Cohort 1 B, Bs, Ha, Hp, Hr and azimuthal head
+    velocity; head-fixed B, Bs, Eh, Ev, Eh dot and Ev dot); pitch and roll velocity are not
+    among them. Reproduced when for each of these variables the falsely detected count is at most 10% of the normally detected count
+    (the largest the paper reports is 13 of 135), with the counts reported; the expected values
+    are given for reference, a shuffle being random.
+- id: supp4-ln-conservative
+  statement: Shuffle-based significance tests (within-cell and pooled) identify far more cells
+    than the LN model, and nearly all LN model cells are also found by shuffling, so the LN model
+    is a conservative estimate.
+  source: Supplementary Figure 4d
+  quote: note that nearly all of the cells identified by the LN-model were also identified by
+    shuffling
+  depends_on:
+  - fig1c-head-direction-cells
+  - fig4j-eye-encoding-cells
+  criterion: Shuffling as in the Methods (Comparison between LN and shuffling-based methods),
+    Pearson correlation of instantaneous behaviour and firing rate against 500 spike train shifts
+    of more than 20 s, 2.5th and 97.5th percentiles (5th and 95th for the symmetric velocity
+    test). "Linearly encoding" cells are read as the LN cells of the variable, all classes.
+    Reproduced when, for each of pitch, roll, azimuthal head velocity and the four eye variables,
+    each shuffle method finds more cells than the LN model and at least 90% of LN cells are
+    found by within-cell shuffling (a reading of "nearly all").
+- id: supp5-model-raw-tuning-agree
+  statement: Model-derived and raw tuning curves are highly correlated (median 0.85 to 0.94
+    across the seven head and eye variables).
+  source: Supplementary Figure 5b
+  quote: Overall, we found the model-derived and firing rate-derived tuning curves for a given
+    variable to be highly correlated
+  depends_on:
+  - fig1c-pitch-roll-cells
+  - fig4j-eye-encoding-cells
+  expected:
+  - quantity: median correlation, pitch
+    value: 0.94
+    tolerance: 0.094
+  - quantity: median correlation, roll
+    value: 0.93
+    tolerance: 0.093
+  - quantity: median correlation, azimuthal head velocity
+    value: 0.90
+    tolerance: 0.090
+  - quantity: median correlation, Eh
+    value: 0.90
+    tolerance: 0.090
+  - quantity: median correlation, Ev
+    value: 0.85
+    tolerance: 0.085
+  - quantity: median correlation, Eh dot
+    value: 0.85
+    tolerance: 0.085
+  - quantity: median correlation, Ev dot
+    value: 0.87
+    tolerance: 0.087
+  criterion: Raw tuning curves from 20 bins, spikes over occupancy, smoothed with rlowess over 7
+    bins, on the visualizing ranges (Methods, Raw tuning curves); Pearson correlation with the
+    model-derived curve resampled to the same 20 bins (the resampling is not stated; a standard
+    choice). Reproduced when at least six of seven medians are within tolerance.
+- id: supp7e-eye-velocity-extrema-near-zero
+  statement: Peaks and valleys of nonlinear eye velocity tuning curves lie mostly near 0 (170 of
+    224 horizontal, 82 of 138 vertical within half the range), although their medians differ
+    from 0.
+  source: Supplementary Figure 7e
+  quote: Distribution of peaks/valleys for horizontal eye velocity (top) and vertical eye velocity
+    (bottom) tuning curves are centered on 0 eye position units/sec
+  statistics:
+  - about: horizontal, within against outside half range
+    test: binomial test
+    statistic: Z = 7.68
+    p: 1.0e-8
+    n: 224 peaks or valleys
+  - about: vertical, within against outside half range
+    test: binomial test
+    statistic: Z = 2.13
+    p: 0.03
+    n: 138 peaks or valleys
+  - about: horizontal median against 0
+    test: two-sided Wilcoxon signed rank test
+    statistic: Z = 2.63
+    p: 0.0080
+  - about: vertical median against 0
+    test: two-sided Wilcoxon signed rank test
+    statistic: Z = 3.34
+    p: 8.0e-4
+  - about: entropy of peak or valley locations against a uniform distribution, each variable
+    p: 1.0e-4
+  depends_on:
+  - fig6-eye-velocity-nonlinear-temporal
+  expected:
+  - quantity: horizontal peaks or valleys within half range
+    value: 170
+    tolerance: 17
+  - quantity: vertical peaks or valleys within half range
+    value: 82
+    tolerance: 8.2
+  criterion: As fig2c-velocity-extrema-near-zero, the half range being halfway between 0 and the
+    maximum or minimum velocity of the range. Reproduced when both binomial tests give P < 0.05
+    with a majority within half range and both counts are within tolerance.
+- id: supp9-correlation-contributions
+  statement: Measured by correlation coefficients, body position contributes most in freely
+    moving mice (median 0.42) and azimuthal head velocity least (0.02), and in head-fixed mice
+    body position and speed exceed the eye variables.
+  source: Supplementary Figure 9
+  quote: We report the contribution of each variable to the correlation coefficient between a
+    cell’s smoothed spiketrain and the model-predicted firing rate
+  statistics:
+  - about: freely moving, six variables
+    test: Kruskal-Wallis test
+    statistic: chi2 = 488.5, df = 5
+    p: 2.4e-103
+  - about: head-fixed, six variables
+    test: Kruskal-Wallis test
+    statistic: chi2 = 1.4e3, df = 5
+    p: 5.4e-292
+  depends_on:
+  - fig3ab-head-contributions
+  - fig7ab-eye-contributions
+  expected:
+  - quantity: freely moving median contribution, B
+    value: 0.42
+    tolerance: 0.042
+  - quantity: freely moving median contribution, Ha
+    value: 0.17
+    tolerance: 0.017
+  - quantity: head-fixed median contribution, B
+    value: 0.38
+    tolerance: 0.038
+  - quantity: head-fixed median contribution, Bs
+    value: 0.13
+    tolerance: 0.013
+  criterion: Contribution as in fig3ab-head-contributions with the Pearson correlation of the
+    spike train smoothed by gausswin over 20 bins and the model rate as performance (Methods,
+    Computing contribution to model performance). Reproduced when both Kruskal-Wallis tests give
+    P < 0.05, B is the largest contributor in both datasets, azimuthal head velocity the smallest
+    in the freely moving one, B and Bs exceed every eye variable, and at least three of the four
+    medians are within tolerance.
+- id: supp12-no-false-eye-detection
+  statement: Eye variables share information with body position and speed, yet when eye-related
+    contributions are deleted from simulated spike trains, the LN model does not falsely detect
+    eye tuning.
+  source: Supplementary Figure 12e to g
+  quote: Note that eye variables were not falsely detected.
+  depends_on:
+  - fig4j-eye-encoding-cells
+  criterion: As in the Methods (Generating simulated data without eye-encoded information),
+    spike trains are drawn from each cell's fitted model with eye terms removed and the LN
+    pipeline rerun. Mutual information between each eye variable and B or Bs against 100
+    shuffles (legend). Reproduced when the data mutual information exceeds all shuffles in most
+    sessions and, for each eye variable, the cells detected in the simulated data are at most 10%
+    of those in the original (a reading of "not falsely detected"; the Supplementary Fig. 3c
+    false positive rates reach this level).
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, LN pipeline. Said 8 bins for pitch, roll and the three head velocities; the Methods give 8 bins for pitch, roll and azimuthal head velocity only. The pitch and roll velocity bin count is now named as not given, with 8 as a standard choice.
+  - fig1c-pitch-roll-velocity-rare. The criterion allowed 10 of 179 for each count, called twice the reported count; twice 4 is 8. The limits are now 8 for pitch velocity and 10 for roll velocity.
+  - fig2-pitch-roll-shapes. The criterion asked only that quadratic be the largest roll class; the paper says the majority of roll cells are quadratic (28 of 53). It now asks for more than half.
+  - fig2c-symmetric-asymmetric-classes, fig2c-asymmetric-direction-similar. The paper names no test for these Z and P values; the criteria now say the binomial test is read from the paragraph's other preference tests.
+  - fig4f-eye-movement-distributions. The vertical eye velocity 1st and 99th percentiles (-2.83 +- 0.55, 3.15 +- 0.68, Figure 4i legend) were left out without reason. Added them and the velocity ranges to the statement; the rule is now seven of eight (partially four to six), as in fig1b.
+  - fig6v-asymmetric-more-stable. Added the Eh dot nonlinear-asymmetric median (0.94, Figure 6a v legend), part of the statement, and said the medians are reported against their tolerances, since the criterion did not use them.
+  - fig8e-joint-cells-preserve-eye-tuning. The criterion used a signed-rank test chosen by the writer. It now uses the paper's own test for this comparison (Figure 8c legend, two-sided rank-sum at alpha 0.0033) on the joint cells, marked as a reading and an assumption, with the signed-rank test as a variant.
+  - supp3-low-false-positives. "Every variable" was unclear; the legend reports six variables per dataset and not pitch or roll velocity. The criterion now lists them.
+  - supp7e-eye-velocity-extrema-near-zero. Added the legend's entropy test (both P = 1.0e-4), as fig2c-velocity-extrema-near-zero records its entropy test.
+  - supp9-correlation-contributions. The statement said contributions "follow the same order"; the paper does not say so (the medians happen to rank alike, with Bs and pitch tied at 0.07), and the criterion does not test it. Removed it.
+  - Checker. Flagged P = 2.0e-7 (fig2c-velocity-extrema-near-zero) and 8.0e-4 (supp7e-eye-velocity-extrema-near-zero) as not found; both are printed in the Supplementary Figure 7d and 7e legend. No change.
+  - Open. Fold construction, range restriction, the normalization of the contribution, "explored", preference, the symmetric rule, the Fig. 8 tuning curves and pooled P values (header details 1 to 8) stay open with their readings; the paper and the linked code do not settle them.
+  - Open. The Methods give eye units as fraction of eye width while the Results and Figure 4 legend use 1/100 of the eye width; the header's choice of percent for the preset bounds is a reading.
+  - Open. Whether the 6 sessions of Figure 8 are among the 11 landmark sessions is not stated.
+  - Open. Several criteria use thresholds of this file where the paper gives words only ("few" in fig1c-pitch-roll-velocity-rare, "nearly all" as 90% in supp4-ln-conservative, "not falsely detected" as at most 10% in supp12-no-false-eye-detection); each says so.

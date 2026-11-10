@@ -1,0 +1,768 @@
+# Claims for Wirth, Baraduc, Plante, Pinede & Duhamel (2017), PLoS Biology 15(2), e2001045,
+# tested on CRCNS hc-21.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record (PMC5328243, open access), full text from Europe PMC JATS
+# XML as stored under paper/: Results, Discussion, Materials and Methods, the figure legends of
+# Figs 1 to 7 and the legends of S1 to S7 Figs. The supplementary text files S1 Appendix
+# (sections A1 to A5: point-of-gaze density maps, gaze before joystick actions, recording
+# methods and cell selection, population averages, the control for space dimensionality) and
+# S2 Appendix (description of the CRCNS files and scripts) are DOCX files that are not under
+# paper/ and were not read. The claims that rest on them say so (gaze-anticipates-action,
+# gaze-anticipates-landmarks, dimensionality-control, fields-per-cell). No PDF was read; the
+# reference list is absent from the stored text, so reference 60 (the learning curve method)
+# is not named.
+#
+# Code: the paper links no repository. It says some Matlab scripts are hosted with the data on
+# CRCNS (Supporting data; S2 Appendix). These are files of the dataset and were not read. No
+# criterion below takes a method from code.
+#
+# Data the paper used (Results; Materials and Methods). Two rhesus macaques, monkey S and
+# monkey K, navigating with a joystick a virtual 3-D star maze of five arms (radius 16 m,
+# speed 5 m/s) with five landmarks placed between the arms at twice the arm length, projected
+# in stereo on a 152 x 114 cm screen at 101 cm, 70 degree horizontal field of view. The reward
+# is at the end of one arm (by convention north, between the two landmarks neighboring it).
+# Each day a new landmark layout; sessions of 80 (plus or minus 5) trials. A trial starts at an
+# arm end, the animal moves to the center, rotates (72 degrees facing a path, 36 degrees facing
+# a landmark), enters an arm, is rewarded at its end if correct, and is relocated passively to
+# a random new start along a path outside the arms ("return paths"). Probe sessions (9 for S,
+# 15 for K) started from one or two eastern entries, with the western entries introduced later.
+# Binocular eye tracking (ASL) gives the point of gaze. 270 cells recorded in the right
+# hippocampus (128 S, 142 K), sites in CA3 (99), CA1 (101) and dentate gyrus (8); 189 cells
+# with more than 100 spikes per session are analysed, on successful trials only. Measured
+# variables are spike times, virtual position and head (camera) direction, eye position, task
+# events, and the state-space coordinates.
+#
+# The archive's descriptor (paper/hc-21.data-description.txt, read for this alone) describes
+# 101 cells from the two monkeys (files "sn" for monkey 1, Snorre, and "ke" for monkey 2,
+# Kevin), each file with a familiar maze ("famallo") and a daily new maze ("newallo"), and the
+# state-space coordinates and transition tags. The paper describes only daily new layouts and
+# names no familiar maze. The figure legends give the underlying data as doi 10.6080/K0R49NQV,
+# while the descriptor asks that hc-21 be cited as doi 10.6080/K0GX48R9. Whether hc-21 holds
+# the paper's cells, and which ones, is the author's to find.
+#
+# Method shared by the claims (every claim that says "Method W"). Each part is cited.
+#  - Trials. Only successful trials (Results, What is encoded, paragraph 1). Whether the
+#    passive return following a correct trial belongs to it is open; the paper analyses return
+#    paths (Results, Direction selectivity) and the state space includes them (Fig 1F legend).
+#    Readings (a) from trial start to the end of the following return; (b) from trial start to
+#    reward, return paths taken from the returns that follow correct trials. A deviation.
+#  - Cells. The 189 cells with more than 100 spikes per session; responsive cells are those
+#    with significant IC (p < 0.01) in at least one of the four spaces (Results, Sensitivity
+#    of the cells, paragraph 2).
+#  - Spaces. Position (virtual X, Y), direction (virtual head direction), point of gaze
+#    (Methods, Mapping the animal's point of gaze), and state space (Fig 1F; Results, What is
+#    encoded, paragraph 2). Point of gaze combines horizontal and vertical eye position with
+#    virtual position and camera orientation; points beyond the landmark wall, or above the
+#    horizon, are put on a vertical cylinder through the landmark centroids, flattened into an
+#    annulus (Methods; Fig 1G legend). Open: which eye (left, right, or the mean of both), the
+#    eye units and calibration, the virtual eye height and the vertical field of view. A
+#    deviation; the readings are the three eye choices.
+#  - Maps. Rate per bin is spikes over time in the bin, unsmoothed for comparisons; bins kept
+#    with at least four successful trials (Methods, Activity maps) and, for IC, more than
+#    400 ms of time in successful trials (Methods, Information Content). The resolution of each
+#    map is adjusted so that the number of valid bins is as close to 200 as possible (Methods,
+#    Information Content). How the resolution is stepped in each space is open; a standard
+#    choice (square grid for position and gaze, equal angular bins for direction, equal
+#    lengths along graph edges for the state space), stated as a deviation.
+#  - IC is Skaggs information in bits per spike, sparsity is (M - (sum rate)^2 / sum rate^2) /
+#    (M - 1) over M bins (Methods, Information Content; Sparsity index). Normalized indexes
+#    subtract the mean of the 999 surrogate values (Methods; Results, Hippocampal cells encode,
+#    paragraph 1).
+#  - Surrogates. 999 surrogate spike sets from 5 s chunks of recording time randomly shifted;
+#    p is the rank of the actual value among the 1,000, bilateral (Methods, Permutation
+#    statistics). How chunks are shifted is open; readings (a) the order of the chunks is
+#    permuted (Results, "randomly shuffling periods of spiking activity in time"); (b) each
+#    chunk is displaced by an independent random time shift. The bilateral p is taken as twice
+#    the smaller tail rank fraction, a standard choice.
+#  - Binomial tests of a count of significant cells against chance. The chance rate is not
+#    stated. Readings (a) 0.05; (b) 0.025, one tail of a bilateral 0.05 test. From the paper's
+#    own numbers, 12 and 4 of 111 (state-space selectivity, p = 0.01 and p = 0.81) match (a);
+#    3 of 56 (direction correlation, p = 0.16) matches (b); 1 of 42 (path invariance,
+#    p = 0.37) matches the lower tail P(X <= 1) under (a). Each claim names the reading its
+#    numbers fit.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: hc-21
+paper: doi:10.1371/journal.pbio.2001045
+claims:
+- id: gaze-anticipates-action
+  statement: During the 500 ms before each joystick action, gaze anticipated the direction of the
+    subsequent movement.
+  source: Results, Animals use direction and compute trajectory, paragraph 2; S1 Fig and S2 Fig
+    (S2A and S2B legend)
+  quote: During the 500 ms before each action on the joystick ( Fig 1D , S1 Fig , S2 Fig , and S1
+    Appendix A2), gaze anticipated the direction of the subsequent movement (Wilcoxon test, p <
+    0.001
+  statistics:
+  - test: Wilcoxon test
+    p: 0.001
+    p_relation: "<"
+  criterion: The analysis is described in S1 Appendix A2, which was not read. The paper's text
+    and the S2 Fig legend disagree on the window, 500 ms (Results) or 300 ms (S2A legend). Per
+    monkey, the mean horizontal eye position in the window before each left or right joystick
+    move (event codes for rotation), with Method W's trials. Readings (a) 500 ms; (b) 300 ms;
+    the Wilcoxon test is read as a rank-sum test of eye positions before right against before
+    left turns (the distributions of S2A). The Results give one p while S2 Fig shows each
+    monkey; readings (i) each monkey separately, (ii) both monkeys pooled. Reproduced when,
+    under one reading, eye position before right turns lies to the right of that before left
+    turns, with p < 0.001 (in each monkey under (i)).
+- id: gaze-anticipates-landmarks
+  statement: When relocated to a new entry, the monkeys gazed proactively at the location where
+    the landmarks would appear.
+  source: Results, Animals use direction and compute trajectory, paragraph 2; S2C Fig
+  quote: Similarly, when being relocated to a new entry, monkeys proactively gazed at the location
+    at which the landmarks would appear (see S2 Fig and S1 Appendix A2) (Wilcoxon test, p < 0.001)
+  statistics:
+  - test: Wilcoxon test
+    p: 0.001
+    p_relation: "<"
+  criterion: The analysis is in S1 Appendix A2, which was not read; the S2C legend shows the mean
+    horizontal eye position during passive returns toward the right against toward the left.
+    Per monkey, mean horizontal eye position during returns turning right against left, by a
+    Wilcoxon rank-sum test. Per monkey or pooled, as in gaze-anticipates-action. Reproduced when,
+    under one of these readings, eye position lies toward the side of the turn with p < 0.001
+    (in each monkey when taken separately). The test the paper ran is not fully specified, a
+    deviation.
+- id: learning-trials
+  statement: Both monkeys learned the rewarded arm in about a dozen trials; monkey S performed
+    above chance after 12.3 plus or minus 2 trials (SEM) and monkey K after 14.8 plus or minus 2.4.
+  source: Results, Animals use direction and compute trajectory, paragraph 3; S3A and S3B Fig
+  quote: monkey S performed above chance after 12.3 ± 2 trials (SEM), and monkey K did so after 14.8
+    ± 2.4 trials
+  expected:
+  - quantity: monkey S, mean trials to above-chance performance
+    value: 12.3
+    tolerance: 2
+  - quantity: monkey K, mean trials to above-chance performance
+    value: 14.8
+    tolerance: 2.4
+  criterion: Per session, the first trial at which the lower confidence bound of the probability
+    of a correct response exceeds 1/4 (S3B legend; the reward is never at the end of the entry
+    arm). The bounds come from the method of the paper's reference 60, which the stored text
+    does not name; the descriptor says each file holds learning curves with bounds, which may be
+    used, the curves recomputed otherwise being a variant. Which sessions enter is open;
+    readings (a) all sessions of the monkey; (b) the sessions that are not probe sessions.
+    Tolerances are the paper's SEM. Reproduced when both means fall within tolerance under one
+    reading.
+- id: learning-to-90
+  statement: From above-chance performance to the upper confidence bound of success reaching 90%,
+    fewer than 10 trials were usually needed (89% of sessions).
+  source: Results, Animals use direction and compute trajectory, paragraph 3
+  quote: From then to when the upper confidence bound of success reached 90%, less than 10 trials
+    were usually necessary (89% of sessions).
+  expected:
+  - quantity: fraction of sessions with fewer than 10 trials from above chance to upper bound 90%
+    value: 0.89
+    tolerance: 0.089
+  criterion: With the learning curves of learning-trials, per session the number of trials from
+    the first trial with lower bound above 1/4 to the first with upper bound at or above 0.9;
+    the fraction of sessions where it is below 10, both monkeys pooled. Sessions as in the
+    readings of learning-trials.
+  depends_on:
+  - learning-trials
+- id: probe-transfer
+  statement: In probe sessions, performance after the new western entries were introduced was
+    higher than at the start of the session (monkey K 73% against 44%, monkey S 80% against 55%).
+  source: Results, Animals use direction and compute trajectory, paragraph 4; S3C Fig and legend
+  quote: Monkey K was 73% correct after introducing the new entries versus 44% correct at beginning
+    of the sessions; monkey S was 80% versus 55% correct ( S3C Fig , Wilcoxon, p = 0.01).
+  statistics:
+  - test: Wilcoxon
+    p: 0.01
+    n: 9 probe sessions for monkey S and 15 for monkey K
+  expected:
+  - quantity: monkey K, percent correct after new entries
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  - quantity: monkey K, percent correct at beginning of session
+    value: 44
+    tolerance: 4.4
+    unit: percent
+  - quantity: monkey S, percent correct after new entries
+    value: 80
+    tolerance: 8
+    unit: percent
+  - quantity: monkey S, percent correct at beginning of session
+    value: 55
+    tolerance: 5.5
+    unit: percent
+  criterion: Probe sessions are those that start from one or two entries (northeastern and
+    southeastern) and later add the others (Results; S3C legend). Per session, percent correct
+    over the 5 trials after the new entries are introduced and over the first 5 trials of the
+    session (S3C legend). The test is a Wilcoxon signed-rank on paired session values; whether
+    the two monkeys are pooled is open (the legend says "for both monkeys"); readings (a) the 24
+    sessions pooled; (b) each monkey separately. Reproduced when the four means are within
+    tolerance and, under one reading, the test gives p < 0.05 with performance higher after
+    the new entries.
+- id: probe-faster-criterion
+  statement: In probe sessions, performance above the learning criterion was reached faster
+    after the new entries (within 4 trials for monkey K and 2.7 for monkey S, against 14.8 and
+    12.3).
+  source: Results, Animals use direction and compute trajectory, paragraph 4
+  quote: Further, performances above the learning criterion were reached significantly faster
+    (within 4 trials for monkey K and within 2.7 trials for monkey S, compared to 14.8 and 12.3
+    trials; Wilcoxon, p = 0.002).
+  statistics:
+  - test: Wilcoxon
+    p: 0.002
+  expected:
+  - quantity: monkey K, trials to criterion after new entries
+    value: 4
+    tolerance: 0.4
+  - quantity: monkey S, trials to criterion after new entries
+    value: 2.7
+    tolerance: 0.27
+  depends_on:
+  - learning-trials
+  - probe-transfer
+  criterion: How trials to criterion after the new entries are counted is not stated. The
+    learning criterion is the lower confidence bound exceeding 1/4 (S3B legend); on the
+    session's running learning curve it is usually already met when the new entries come in
+    (S3C legend, trials 37 and 60), so the curve is taken from the introduction on. Readings
+    (a) a learning curve on all trials from the introduction of the new entries; (b) a learning
+    curve on the trials from the new entries only; in each, the number of trials until the
+    lower bound exceeds 1/4. Compared with the session's trials to criterion of
+    learning-trials by a Wilcoxon test (signed-rank for paired sessions; rank-sum against all
+    sessions as a variant). Reproduced when, under one reading, both means are within
+    tolerance and the test gives p < 0.05 with fewer trials after the new entries.
+- id: cells-recorded
+  statement: Of 270 cells recorded in the right hippocampus (128 in monkey S, 142 in monkey K), 189
+    fired more than 100 spikes per session and were analysed.
+  source: Results, What is encoded in hippocampal cell activity, paragraph 1; Methods,
+    Electrophysiological recordings
+  quote: Of the 270 cells recorded in the full extent of the right hippocampus (128 cells in monkey
+    S, 142 in monkey K; S4 Fig ), we focused on 189 cells that fired more than 100 spikes per
+    session
+  expected:
+  - quantity: cells recorded
+    value: 270
+    tolerance: 27
+  - quantity: cells with more than 100 spikes per session
+    value: 189
+    tolerance: 18.9
+  criterion: Counts of cells, per monkey and in total, and of cells with more than 100 spikes in
+    the session (the new maze session, as the paper describes only new layouts). The site
+    counts of the Methods (CA3 99, CA1 101, dentate gyrus 8) sum to 208, which matches neither
+    count, and are reported from the recording locations for comparison only. The full cell
+    selection is in S1 Appendix A3, not read.
+- id: responsive-cells
+  statement: 111 of the 189 cells (59%) had significant information content in at least one of
+    the four coding spaces.
+  source: Results, Sensitivity of the cells to a combination of variables, paragraph 2; Fig 3A
+  quote: Significant IC ( p < 0.01) was present in at least one of the spaces for 111 out of the
+    189 cells (59%, responsive cells).
+  expected:
+  - quantity: responsive cells
+    value: 111
+    tolerance: 11.1
+  - quantity: fraction of analysed cells responsive
+    value: 0.59
+    tolerance: 0.059
+  criterion: Method W. For each cell and each space, normalized IC and its surrogate p-value; a
+    cell is responsive when p < 0.01 in at least one space. Every reading of Method W is run.
+    Reproduced when the count and fraction are within tolerance under one reading.
+  depends_on:
+  - cells-recorded
+- id: state-space-most-responsive
+  statement: The proportions of cells responsive to each space were unequal; the state space
+    accounted for the most cells (84), and more cells were responsive to state space than to
+    point of gaze.
+  source: Results, Sensitivity of the cells to a combination of variables, paragraph 2; Fig 3A
+  quote: The proportion of cells responsive to each space was significantly unequal (chi-squared
+    test, p = 0.014). The state space accounted for the largest number (84 cells, Fig 3A ), and
+    pitting state space against the other three, there were more cells responsive to state space
+    than to point of gaze (chi-squared test, p = 0.012, Bonferroni corrected
+  statistics:
+  - about: proportions across the four spaces
+    test: chi-squared test
+    p: 0.014
+  - about: state space against point of gaze
+    test: chi-squared test
+    p: 0.012
+    corrected: Bonferroni
+  expected:
+  - quantity: cells with significant IC in state space
+    value: 84
+    tolerance: 8.4
+  depends_on:
+  - responsive-cells
+  criterion: Method W. Per space, the number of the 189 cells with IC p < 0.01. The chi-squared
+    test's layout is not stated; readings (a) a 4 x 2 contingency test of responsive and not
+    responsive counts across the four spaces, over the 189 cells; (b) the same over the 111
+    responsive cells; the pairwise tests are the 2 x 2 tables of state space against each other
+    space, Bonferroni over three. Reproduced when the state-space count is within tolerance and
+    the largest, and under one reading the overall test gives p < 0.05 and state space against
+    point of gaze gives a corrected p < 0.05 with more state-space cells. The other pairwise
+    comparisons were not significant in the paper; their p-values are reported.
+- id: multi-space-coding
+  statement: Sensitivity to the four variables was not mutually exclusive; most responsive cells
+    carried significant activity in more than one coding space.
+  source: Results, Sensitivity of the cells to a combination of variables, paragraph 2; Fig 3B
+    legend
+  quote: Most responsive cells carry significant activity in more than one coding space.
+  depends_on:
+  - responsive-cells
+  criterion: Method W. Among responsive cells, the number with significant IC (p < 0.01) in two or
+    more spaces. Reproduced when it exceeds half of the responsive cells.
+- id: direction-center-vs-periphery
+  statement: For direction-selective cells, both information per spike and sparsity of
+    directional firing were higher in the maze center than on the peripheral return paths.
+  source: Results, Direction selectivity, paragraph 1; Fig 3C
+  quote: Both IC and sparsity measures were significantly higher in the center, which is the choice
+    point, when compared to return tracks (both p < 0.001).
+  statistics:
+  - about: IC, center against return paths
+    p: 0.001
+    p_relation: "<"
+  - about: sparsity, center against return paths
+    p: 0.001
+    p_relation: "<"
+  criterion: Method W. Directional maps of each cell from time in the maze center and from time on
+    return paths. Which cells enter is open; readings (a) cells with significant direction IC;
+    (b) all responsive cells (Fig 3C legend, "the responsive cells"). The test is not named;
+    it is taken as a Wilcoxon signed-rank test across cells of the paired normalized values, the
+    test the Results use for the comparisons of Fig 3D to 3F. Reproduced when, under one
+    reading, IC and sparsity are both higher in the center with p < 0.001; partially reproduced
+    when both are higher at p < 0.05 or one at p < 0.001.
+- id: direction-tuning-not-maintained
+  statement: Direction tuning was not maintained across positions; the correlation between
+    directional tuning in the center and on return paths was significantly low in 20 of 56 cells
+    (36%), more than chance, and significantly high in only 3, consistent with chance.
+  source: Results, Direction selectivity, paragraph 1; Fig 3C inset
+  quote: "the correlation between direction selectivity in the center and in the return paths was
+    significantly lower in 20 out of 56 cells (inset in Fig 3C , blue bars). This represents 36% of
+    the population and is higher than what is expected by chance ( p < 0.001, binomial test; note
+    that correlation was only significantly higher in 3 cells, consistent with chance: p = 0.16,
+    binomial test)"
+  statistics:
+  - about: cells with significantly low correlation
+    test: binomial test
+    p: 0.001
+    p_relation: "<"
+    n: 20 of 56 cells
+  - about: cells with significantly high correlation
+    test: binomial test
+    p: 0.16
+    n: 3 of 56 cells
+  expected:
+  - quantity: cells with significantly low center-periphery correlation
+    value: 20
+    tolerance: 2
+  - quantity: cells tested
+    value: 56
+    tolerance: 5.6
+  - quantity: cells with significantly high correlation
+    value: 3
+    tolerance: 0.3
+  criterion: Method W. Per cell, the uncentered correlation of center and return-path directional
+    rates over the directional bins valid in both (Methods, Directional correlations); its
+    significance from the surrogates, bilateral, at 0.05 per test with 0.025 per tail as the
+    binomial chance rate (reading (b) of Method W, the one that gives p = 0.16 for 3 of 56).
+    The 56 cells are read as the cells of direction-center-vs-periphery with enough common
+    valid bins; the cell readings of that claim apply. Reproduced when, under one reading, the
+    counts are within tolerance (the high count within 2 to 4, as a count of 3 cannot carry a
+    10% tolerance) and the low count passes the binomial test at p < 0.001.
+  depends_on:
+  - direction-center-vs-periphery
+- id: state-space-ic-higher
+  statement: Spike information content was systematically higher in state space than in position,
+    direction or point-of-gaze space, for cells responsive in both spaces compared.
+  source: Results, Hippocampal cells encode a fine-grained state-space representation, paragraph
+    1; Fig 3D to 3F
+  quote: The spike information content for the state space was systematically higher when compared
+    to position, direction, or gaze space (Wilcoxon, all p < 0.01).
+  statistics:
+  - test: Wilcoxon
+    p: 0.01
+    p_relation: "<"
+  criterion: Method W. For each other space, the cells responsive in both it and state space;
+    per cell the normalized state-space IC minus the normalized IC in the other space; a
+    Wilcoxon signed-rank test across cells. Reproduced when all three differences are positive
+    with p < 0.01; partially reproduced for two of three.
+  depends_on:
+  - responsive-cells
+- id: sparsity-state-vs-direction
+  statement: Sparsity was significantly higher in state space than in direction space.
+  source: Results, Hippocampal cells encode a fine-grained state-space representation, paragraph
+    1; Fig 3E
+  quote: Sparsity was significantly higher (Wilcoxon test) in state space compared to direction
+    space ( p = 0.006)
+  statistics:
+  - test: Wilcoxon test
+    p: 0.006
+  criterion: Method W, as in state-space-ic-higher with normalized sparsity. Reproduced when the
+    median difference is positive with p < 0.05.
+  depends_on:
+  - responsive-cells
+- id: sparsity-state-vs-position
+  statement: Sparsity was not significantly higher in state space than in position space overall,
+    but the 15 cells whose difference was individually significant were sparser in state space.
+  source: Results, Hippocampal cells encode a fine-grained state-space representation, paragraph
+    1; Fig 3D
+  quote: but not significantly higher compared to position space ( p = 0.19), although the 15 cells
+    for which the difference was individually significant (as assessed with permutation tests on
+    surrogate data) were sparser in state space ( p = 0.001)
+  statistics:
+  - about: all cells responsive in both spaces
+    test: Wilcoxon test
+    p: 0.19
+  - about: the 15 cells with an individually significant difference
+    test: Wilcoxon test
+    p: 0.001
+    n: 15 cells
+  expected:
+  - quantity: cells with individually significant sparsity difference
+    value: 15
+    tolerance: 1.5
+  criterion: Method W, as in state-space-ic-higher with normalized sparsity. The overall part is
+    a claim of absence, judged on the paper's Wilcoxon signed-rank test at p < 0.05; the effect
+    size is reported. Per cell, the difference is significant when its surrogate p (the
+    difference recomputed on each surrogate) is below the per-cell level, bilateral. The level
+    is not stated (Fig 3 legend, "permutation tests"); readings (a) 0.05, the level the binomial
+    counts imply; (b) 0.01, the level of the IC tests. Reproduced when the
+    overall test is not significant, the count is within tolerance, and those cells' signed-rank
+    test gives p < 0.05 with state space sparser.
+  depends_on:
+  - responsive-cells
+- id: sparsity-gaze-vs-state
+  statement: Sparsity was higher overall in point-of-gaze space than in state space, an effect
+    not confirmed among the 18 cells whose difference was individually significant.
+  source: Results, Hippocampal cells encode a fine-grained state-space representation, paragraph
+    1; Fig 3F
+  quote: Conversely, sparsity was significantly higher overall in gaze space than in state space (
+    p < 0.001), but this effect could not be confirmed when considering only 18 cells for which the
+    difference was individually significant ( p = 0.68).
+  statistics:
+  - about: all cells responsive in both spaces
+    test: Wilcoxon test
+    p: 0.001
+    p_relation: "<"
+  - about: the 18 cells with an individually significant difference
+    test: Wilcoxon test
+    p: 0.68
+    n: 18 cells
+  expected:
+  - quantity: cells with individually significant sparsity difference
+    value: 18
+    tolerance: 1.8
+  criterion: Method W, with the per-cell significance of sparsity-state-vs-position. Reproduced
+    when the overall signed-rank test gives p < 0.001 with gaze sparser, the count is within
+    tolerance, and the test on those cells is not significant at p < 0.05 (the absence part,
+    judged on the paper's test).
+  depends_on:
+  - responsive-cells
+- id: state-space-selectivity
+  statement: In the maze center, at the same position and direction, 12 of 111 responsive cells
+    (11%) showed significantly high state-space selectivity, discriminating the current
+    rotational move, more than chance; only 4 showed significantly low selectivity, as expected
+    by chance.
+  source: Results, Cells discriminate different contexts for the same position and direction,
+    paragraph 1; Fig 4B
+  quote: Only 4 cells showed significantly low state-space selectivity, as expected by chance ( p =
+    0.81, binomial test), but 12 cells out of 111 (11%, p = 0.01, binomial test) showed
+    significantly high state-space selectivity
+  statistics:
+  - about: cells with significantly high selectivity
+    test: binomial test
+    p: 0.01
+    n: 12 of 111 responsive cells
+  - about: cells with significantly low selectivity
+    test: binomial test
+    p: 0.81
+    n: 4 of 111 responsive cells
+  expected:
+  - quantity: cells with significantly high state-space selectivity
+    value: 12
+    tolerance: 1.2
+  - quantity: cells with significantly low state-space selectivity
+    value: 4
+    tolerance: 0.4
+  criterion: Method W. Time in the maze center only; per 3.6 degree head-direction bin, firing
+    rates in each of the three rotational moves, keeping bins with at least 400 ms in each of at
+    least two move types; SSI = sum over bins of (max - min) over sum of (max + min), centered
+    by the surrogate mean; significance from the surrogates (Methods, State-space selectivity).
+    The rotational moves are taken from the state-space transition tags. Binomial chance rate
+    0.05 (reading (a) of Method W, which gives the paper's p = 0.01 and 0.81). Reproduced when
+    the high count is within tolerance (or 11 to 13) and passes the binomial test at p < 0.05,
+    and the low count (3 to 5) does not.
+  depends_on:
+  - responsive-cells
+- id: landmark-identity-distance
+  statement: A two-way ANOVA of firing on the entry paths by landmark viewed and relative distance
+    gave a main effect of landmark identity in 30 of 111 responsive cells and of relative distance
+    in 64; 29 cells coded a combination (14 with a significant interaction, 15 with both main
+    effects), more than chance.
+  source: Results, Cells encode landmark identity and distance with respect to landmark, paragraph
+    1; Fig 5
+  quote: A two-way ANOVA revealed a main effect of landmark identity (30 cells out of 111
+    responsive cells) and relative distance (64 cells out of 111 responsive cells).
+  statistics:
+  - about: cells with a significant interaction (14) or both factors (15)
+    test: binomial test
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: cells with a main effect of landmark identity
+    value: 30
+    tolerance: 3
+  - quantity: cells with a main effect of relative distance
+    value: 64
+    tolerance: 6.4
+  - quantity: cells with a significant interaction
+    value: 14
+    tolerance: 1.4
+  - quantity: cells with both main effects significant
+    value: 15
+    tolerance: 1.5
+  criterion: Per responsive cell, firing rate per lap in each of four equal segments of each of
+    the four entry paths facing a landmark, RD1 16 to 12 m, RD2 12 to 8 m, RD3 8 to 4 m, RD4 4
+    to 0 m from the center (Methods, ANOVA for landmark identity and relative distance); a 4 x 4
+    two-way ANOVA with interaction, at alpha 0.05 (not stated; the standard level, and the one
+    matching the binomial reading (a) of the one-way count). Whether "both factors significant"
+    excludes cells with an interaction is open; readings (a) both main effects and no
+    interaction; (b) both main effects regardless. Reproduced when all four counts are within
+    tolerance under one reading; partially reproduced when the identity and distance counts are.
+    Fig 5 reports F(9,756), the interaction degrees of freedom, for two example cells recorded
+    together (F = 4.4076, p < 0.001 and F = 2.1243, p = 0.025); the cells are not identified,
+    and the session's cells whose interaction tests come nearest are reported.
+  depends_on:
+  - responsive-cells
+- id: landmark-identity-center
+  statement: The main effect of landmark identity was confirmed by a one-way ANOVA on firing to
+    the four landmark views at the center, significant in 12 of 111 responsive cells, more than
+    chance.
+  source: Results, Cells encode landmark identity and distance with respect to landmark, paragraph
+    1
+  quote: The main effect of landmark identity was confirmed by a one-way ANOVA on the activity to
+    the four landmark views at the center only (12 cells out of 111 responsive cells, which is a
+    higher proportion than expected by chance; p = 0.01, binomial test).
+  statistics:
+  - test: binomial test
+    p: 0.01
+    n: 12 of 111 responsive cells
+  expected:
+  - quantity: cells with a significant one-way landmark effect at the center
+    value: 12
+    tolerance: 1.2
+  criterion: Per responsive cell, firing rate in the maze center while facing each of the four
+    landmarks (head direction toward the landmark, one value per visit); one-way ANOVA at alpha
+    0.05, binomial chance rate 0.05 (reading (a) of Method W, which gives p = 0.01 for 12 of
+    111). How a view is delimited is open; readings (a) time with the landmark straight ahead
+    within the 3.6 degree bin of state-space-selectivity; (b) the whole rotation step facing
+    the landmark (the 36 degree rotation tags). Reproduced when, under one reading, the count is
+    within tolerance (11 to 13) and passes the binomial test at p < 0.05.
+  depends_on:
+  - responsive-cells
+- id: path-selectivity
+  statement: Of 42 cells responding to the appearance of a landmark neighboring the reward, only
+    one was significantly path invariant, while 12 (29%) discriminated significantly between
+    viewpoints of the same landmark; the distribution of indices differed from the surrogates.
+  source: Results, Landmark-triggered activity and viewpoint dependence, paragraph 2; Fig 6D
+  quote: We found that only one landmark-responsive cell was significantly path invariant ( Fig 6B ,
+    corresponding to cell 1 in Fig 2 , 5% of the 42 cells, p = 0.37, binomial test), whereas 12/42
+    cells (29%, p < 0.001, binomial test) discriminated significantly amongst different viewpoints
+    of the same landmark
+  statistics:
+  - about: path-invariant cells
+    test: binomial test
+    p: 0.37
+    n: 1 of 42 cells
+  - about: viewpoint-dependent cells
+    test: binomial test
+    p: 0.001
+    p_relation: "<"
+    n: 12 of 42 cells
+  - about: actual against surrogate index distributions
+    test: Kolmogorov-Smirnov test
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: landmark-responsive cells analysed
+    value: 42
+    tolerance: 4.2
+  - quantity: viewpoint-dependent cells
+    value: 12
+    tolerance: 1.2
+  criterion: For the northwestern and northeastern landmarks, the five trajectories on which the
+    landmark enters the field of view; rate from -400 to 500 ms around entry at 10 ms
+    resolution. A cell enters when it has significant point-of-gaze IC and the evoked rate
+    exceeds the 400 ms baseline mean plus 2.5 SD (Methods, Path selectivity index; Results).
+    Index S = (N - sum of rates over max rate) / (N - 1), N = 5, on the mean rate of the 500 ms
+    window, for the most informative landmark; significance from the surrogates (Method W).
+    Open, each a deviation, (1) the start of the 500 ms window, (a) 120 ms after entry
+    (Results) or (b) at entry (Methods); (2) entry into the field of view, (a) the landmark
+    centroid within the 70 degree horizontal field or (b) any part of it; (3) "most
+    informative landmark", (a) the higher index or (b) the stronger evoked response; (4) how
+    the evoked rate is compared with the threshold, (a) the peak of the 10 ms rate in 0 to
+    500 ms or (b) its mean. Binomial chance rate 0.05 (Method W, reading (a)); the paper's
+    p = 0.37 for one cell equals the lower tail P(X <= 1) at 0.05 and is reported, not judged.
+    Reproduced when, under one
+    reading, the counts of 42 and 12 are within tolerance, 12 passes the binomial test at
+    p < 0.001, and the Kolmogorov-Smirnov test gives p < 0.001.
+  depends_on:
+  - responsive-cells
+- id: gaze-aligned-dynamics
+  statement: Aligned on first foveation of the best-driving landmark, mean activity rose until
+    the saccade to the landmark and peaked shortly after.
+  source: Results, Visual exploration and hippocampal activity dynamics, paragraph 1; Fig 7E
+  quote: Gaze-aligned activity significantly rose until the saccade to the landmark and peaked
+    shortly after.
+  criterion: Per cell, the best-driving landmark (maximal activity; Methods, Latencies); foveation
+    is gaze within plus or minus 10 degrees of the landmark in azimuth and elevation for more
+    than 100 ms (Methods, Landmark foveation). Population mean rate aligned on the first
+    foveation after the landmark appears. Which cells enter is open; readings (a) the responsive
+    cells; (b) the 42 landmark-responsive cells of path-selectivity. No test or window is named
+    for the rise; it is judged by a Wilcoxon signed-rank test across cells of the rate in the
+    100 ms before foveation against the rate at -500 to -150 ms (the baseline of Methods,
+    Latencies), and the peak of the mean must fall after 0 and within the 500 ms post-foveation
+    window the paper uses (Results, paragraph 3). Reproduced when, under one reading, both hold
+    with p < 0.05. The test is not the paper's, a deviation.
+  depends_on:
+  - responsive-cells
+- id: latency-skew
+  statement: Response latencies to the best landmark are left skewed when aligned on gaze and
+    right skewed when aligned on landmark onset, and some cells respond before the landmark
+    enters the field of view.
+  source: Results, Visual exploration and hippocampal activity dynamics, paragraph 1; Fig 7F
+  quote: The distribution of the latencies of the responses to the best landmark are left skewed
+    when aligned on gaze and right skewed when aligned on landmark onset ( Fig 7F , see Materials
+    and Methods ). For a small but nonnegligible proportion of cells, the response latency even
+    preceded the landmark's entry in the FOV
+  criterion: Per cell, latency to its best landmark as the first time after alignment when the rate
+    exceeds the mean of the -500 to -150 ms baseline plus 2.5 SD for 100 consecutive ms
+    (Methods, Latencies), aligned on onset and on foveation. How a latency before entry is found
+    when the search starts after onset is open; readings (a) the search starts at the end of
+    the baseline (-150 ms); (b) at alignment, with no negative latencies (then the last part of
+    the claim cannot hold). Cells as in gaze-aligned-dynamics. Reproduced when, under one
+    reading, the sample skewness is negative for gaze-aligned and positive for onset-aligned
+    latencies, and some onset-aligned latencies are negative.
+  depends_on:
+  - gaze-aligned-dynamics
+- id: eccentricity-modulation
+  statement: Activity was modulated by the eccentricity of the best-driving landmark, more so just
+    after the landmark appeared, and cells could fire for a landmark not yet visible.
+  source: Results, Visual exploration and hippocampal activity dynamics, paragraph 1; Fig 7G and
+    legend
+  quote: Overall, cells showed a modulation of their activity by landmark eccentricity ( Fig 7G ,
+    blue line). This modulation was increased by the recent appearance of the landmark (red line).
+  criterion: Population mean rate against eccentricity of the best-driving landmark in four sets
+    of epochs, (1) 500 ms after appearance, (2) 500 ms before appearance with eccentricity as
+    in a 180 x 180 degree field, (3) after the landmark has been visible 1,000 ms or more, (4)
+    all data (Results). The eccentricity bins are not given; 10 degree bins, a standard choice.
+    Reproduced when rate decreases with eccentricity in set 4 (Spearman correlation of bin means
+    below 0), the range of bin means is larger in set 1 than in set 4, and set 2 lies above the
+    mean firing rate in its lowest-eccentricity bin. The comparisons are read from the figure's
+    description, no test being reported, a deviation.
+  depends_on:
+  - gaze-aligned-dynamics
+- id: foveation-selectivity
+  statement: Landmark selectivity was significantly enhanced when the landmark was foveated
+    compared with appearing in the visual periphery, while path selectivity was only moderately
+    improved by direct gaze.
+  source: Results, Visual exploration and hippocampal activity dynamics, paragraph 2; Fig 7H and
+    7I (the Results cite them as Fig 7G and 7H)
+  quote: Landmark selectivity was significantly enhanced if the landmark was foveated compared to
+    appearing in the visual periphery (one-sided logit-Wilcoxon, p < 0.001, Fig 7G ).
+  statistics:
+  - about: landmark selectivity, foveated against peripheral
+    test: one-sided logit-Wilcoxon
+    p: 0.001
+    p_relation: "<"
+  - about: path selectivity, foveated against peripheral
+    p: 0.036
+  criterion: Per cell, (a) rate in the 500 ms after landmark appearance, leaving out appearances
+    with a saccade to the landmark in that period, and (b) rate in the 500 ms after foveation
+    (Results, paragraph 2). Landmark selectivity index with N = 4 (Methods, Landmark
+    selectivity, with a 150 ms offset after onset) and path selectivity index with N = 5
+    (Methods, Path selectivity index), each from (a) and from (b). The test is a one-sided
+    Wilcoxon signed-rank on the logit of the paired indices; the path test is read the same
+    way. Open, the cells (as in gaze-aligned-dynamics) and whether the 150 ms offset applies to
+    the foveation window, (a) no offset after foveation or (b) the same 150 ms. Reproduced when,
+    under one reading, landmark selectivity is higher foveated with p < 0.001 and path
+    selectivity higher with p < 0.05.
+  depends_on:
+  - gaze-aligned-dynamics
+- id: fields-per-cell
+  statement: Most cells had narrow selectivity and fewer than three positional fields, with an
+    average of 2.7 fields per cell, more than the about 1.5 reported in the rat.
+  source: Results, What is encoded in hippocampal cell activity, paragraph 3; Discussion,
+    Differences and similarities, paragraph 1; S5B Fig
+  quote: In addition, the number of fields per cell (average = 2.7) was greater than the number of
+    fields described in the rat (about 1.5)
+  expected:
+  - quantity: mean number of position fields per spatially selective cell
+    value: 2.7
+    tolerance: 0.27
+  criterion: The paper does not define a field in its main text or legends (S5B counts "peaks" of
+    cells "displaying a spatial selectivity"); the definition is presumably in S1 Appendix, which
+    was not read. Cells are read as those with significant position IC (Method W). No field
+    definition is fixed by the paper, so the author takes the claim as methods_underspecified
+    unless a definition is found in the paper; a count with a standard definition may be shown
+    as a variant.
+  depends_on:
+  - responsive-cells
+- id: spatial-selectivity-fraction
+  statement: Approximately 50% of the cells showed spatial selectivity like that reported in rats.
+  source: Discussion, Differences and similarities across mammalian hippocampal codes, paragraph 1
+  quote: Approximately 50% of our cells showed spatial selectivity like that in rats
+  expected:
+  - quantity: fraction of cells with spatial selectivity
+    value: 0.5
+    tolerance: 0.05
+  criterion: Method W. Which fraction is meant is open; readings (a) cells with significant
+    position IC among the 189; (b) responsive cells among the 189 (59%, responsive-cells);
+    (c) cells with significant position IC among the 111 responsive cells (Fig 3A).
+    Reproduced when the fraction under one reading is within tolerance.
+  depends_on:
+  - responsive-cells
+- id: gaze-map-landmarks
+  statement: In the population average of point-of-gaze maps, areas surrounding the landmarks
+    elicited up to 40% more activity than other areas, and all landmarks appeared represented.
+  source: S6C Fig legend; Results, What is encoded in hippocampal cell activity, paragraph 3
+  quote: Point of gaze map. Areas surrounding the landmarks (black rectangles) elicit up to 40% more
+    activity than other areas.
+  expected:
+  - quantity: maximal excess of mean normalized activity near landmarks over other areas
+    value: 0.4
+    tolerance: 0.04
+  criterion: Method W. Cells with point-of-gaze IC p < 0.001; each map normalized to its peak and
+    averaged (S6 legend). The area around a landmark is not delimited; readings (a) bins within
+    plus or minus 10 degrees of the landmark's direction (the foveation zone of the Methods);
+    (b) bins over the landmark's rectangle on the flattened map. How "more activity" is
+    measured is not stated; the excess is taken as the peak mean near a landmark over the mean
+    elsewhere, minus 1, a standard choice and a deviation. Reproduced when, under one reading, the
+    excess is within tolerance and every landmark's area exceeds the mean elsewhere. The
+    population averages are described in S1 Appendix A4, not read.
+- id: dimensionality-control
+  statement: The higher information content of the state space is not due to the higher number of
+    dimensions of that space.
+  source: Results, Sensitivity of the cells, paragraph 3, and Hippocampal cells encode,
+    paragraph 1; S7 Fig
+  quote: This effect cannot be attributed to a modeling bias related to the higher number of
+    dimensions in the state space ( S1 Appendix A5 and S7 Fig ).
+  criterion: The control is described in S1 Appendix A5, which was not read; the S7 legend shows
+    only that spikes were simulated on the animal's trajectory with a box-shaped place field.
+    The method is not available from the text read; the author takes the claim as
+    methods_underspecified unless S1 Appendix is supplied.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, Method W, binomial tests. Added that 1 of 42 with p = 0.37 matches the lower tail P(X <= 1) at a chance rate of 0.05 (computed, 0.372); the file had said no reading gives it.
+  - path-selectivity. Same correction in the criterion; the chance rate is now 0.05 (reading (a)), and the p = 0.37 is still reported, not judged.
+  - gaze-anticipates-action, gaze-anticipates-landmarks. The criteria required p < 0.001 in each monkey, but the Results give one p and do not say the monkeys were tested separately (S2 Fig shows them apart). Named per monkey and pooled as readings.
+  - probe-faster-criterion. Reading (b), trials to the first correct trial from a new entry, is not the learning criterion (lower bound above 1/4, S3B legend) and was made up. Reading (a), the session's running curve, is in most sessions already past criterion when the new entries come in (S3C legend, trials 37 and 60). Replaced both with learning curves begun at the introduction, on all trials or on new-entry trials only.
+  - sparsity-state-vs-position (and through it sparsity-gaze-vs-state). The per-cell significance level for the sparsity difference was fixed at 0.05 without a source; the paper does not state it. Named 0.05 and 0.01 as readings.
+  - fields-per-cell, gaze-map-landmarks. The source said paragraph 4 of "What is encoded in hippocampal cell activity"; the sentences are in paragraph 3 (the section has three paragraphs before the Fig 2 legend).
+  - gaze-map-landmarks. The excess measure (peak near a landmark over mean elsewhere, minus 1) is not the paper's; it is now marked as a standard choice and a deviation.
+  - spatial-selectivity-fraction. Added reading (c), position-responsive cells among the 111 responsive cells, which the Discussion's "our cells" also allows (Fig 3A gives proportions per space).
+  - Open. S1 Appendix (A1 to A5) is not under paper/. gaze-anticipates-action and gaze-anticipates-landmarks take their methods from the S2 legend alone, and fields-per-cell and dimensionality-control cannot be judged without it. Supplying S1 Appendix would settle them.
+  - Open. Reference 60 (the learning curve method of learning-trials, learning-to-90 and probe-faster-criterion) is not named in the stored text, as the reference list is absent.
+  - Open. landmark-identity-distance. The paper gives p < 0.001 for 14 of 111 interaction cells, but at a chance rate of 0.05 the binomial tail is 0.0013; the chance rate for these counts remains unsettled. The criterion does not judge this test.
+  - Open. No claim covers the gaze density result that gaze was attracted to the rewarded path and the landmarks (Results, Animals use direction, paragraph 2; Fig 1H); its method is in S1 Appendix A1, not read. A minor finding, left without a claim.
