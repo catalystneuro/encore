@@ -143,6 +143,15 @@ def tier_of(attempt: dict) -> str:
     return VERIFICATION_TIER.get(latest["kind"], "runs") if claims <= agreed else "runs"
 
 
+MARKUP = re.compile(r"</?(?:i|em|b|strong|sub|sup|scp|u|mml:[a-z]+)(?:\s[^>]*)?>", re.I)
+
+
+def plain_title(text) -> str:
+    """A title without the markup publishers and archives put in it (<i>Ralstonia</i>, CO<sub>2</sub>), which the
+    site would otherwise show as literal tags."""
+    return " ".join(MARKUP.sub("", html.unescape(str(text))).split()) if text else text
+
+
 def squash(text) -> str:
     return " ".join((text or "").split())
 
@@ -269,7 +278,7 @@ def collect(executed: Path | None = None) -> dict:
             "key": key, "label": dataset_label(key),
             "dataset_version": used.get("version"),
             "paper": a["paper"].removeprefix("doi:"),
-            "paper_title": titles.get(a["paper"].removeprefix("doi:").lower()),
+            "paper_title": plain_title(titles.get(a["paper"].removeprefix("doi:").lower())),
             "date": str(a["date"]),
             "kind": a["provenance"]["kind"],
             "accountable": a["provenance"]["accountable"]["name"],
@@ -332,9 +341,9 @@ def collect(executed: Path | None = None) -> dict:
         status = ("attempted" if key in attempted else "pilot" if key in pilot
                   else "no_match" if match == "no_match" else "open")
         targets.append({
-            "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
+            "key": key, "label": dataset_label(key), "name": plain_title(t["name"]), "size_gb": t["size_gb"],
             "files": t["asset_count"], "status": status, "match": match,
-            "paper": first["doi"], "paper_title": first["title"] or t["name"],
+            "paper": first["doi"], "paper_title": plain_title(first["title"] or t["name"]),
             "papers": [p["doi"] for p in t["papers"]],
             "n_papers": len(t["papers"]),
             "technique": sorted({part.replace(" approach", "").strip()
@@ -357,10 +366,10 @@ def collect(executed: Path | None = None) -> dict:
             have.add(d["key"])
             t, doi = outside.get(d["key"], {}), paper_records.doi_of(paper_key)
             targets.append({
-                "key": d["key"], "label": dataset_label(d["key"]), "name": t.get("name") or dataset_label(d["key"]),
+                "key": d["key"], "label": dataset_label(d["key"]), "name": plain_title(t.get("name")) or dataset_label(d["key"]),
                 "size_gb": t.get("size_gb") or 0.0, "files": t.get("asset_count") or 0,
                 "status": "attempted" if d["key"] in attempted else "open", "match": "matched", "reuse_only": True,
-                "paper": doi, "paper_title": body.get("title") or t.get("name") or dataset_label(d["key"]),
+                "paper": doi, "paper_title": plain_title(body.get("title") or t.get("name")) or dataset_label(d["key"]),
                 "papers": [doi], "n_papers": 1,
                 "technique": sorted({part.replace(" approach", "").strip()
                                      for a in t.get("approaches") or [] if a for part in a.split(";") if part.strip()}),
@@ -977,7 +986,7 @@ def papers_of(data: dict) -> list[dict]:
                     atts.append(a)
         atts.sort(key=lambda a: (a["date"], a["id"]))
         live = [a for a in atts if not a.get("deprecated")]
-        title = (body.get("title") or next((a.get("paper_title") for a in atts if a.get("paper_title")), None)
+        title = plain_title(body.get("title") or next((a.get("paper_title") for a in atts if a.get("paper_title")), None)
                  or next((by_key[k]["paper_title"] for k in ds if k in by_key and by_key[k].get("paper") == doi), None)
                  or byline(key))
         out.append({
