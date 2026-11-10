@@ -735,3 +735,13 @@ def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives()
     css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
     assert "--archive-4" not in css
 
+
+def test_titles_lose_the_markup_publishers_put_in_them():
+    assert site.plain_title("Resistance in <i>Ralstonia solanacearum</i>") == "Resistance in Ralstonia solanacearum"
+    assert site.plain_title("CO<sub>2</sub> and Ca<sup>2+</sup> &amp; <scp>dopamine</scp>") == "CO2 and Ca2+ & dopamine"
+    assert site.plain_title("x < y and a <b class='z'>bold</b> word") == "x < y and a bold word"
+    data = site.collect()
+    titles = [t["name"] for t in data["targets"]] + [t["paper_title"] for t in data["targets"]]
+    titles += [q["title"] for q in site.papers_of(data)]
+    assert not [t for t in titles if t and site.MARKUP.search(t)]
+
