@@ -102,8 +102,8 @@ claims:
     not a finding on recorded data, and DANDI:000978 cannot test it.
 - id: fig3bc-mlp-theory-tracks-error
   statement: In random and trained multilayer perceptrons fed Gaussian latents, the
-    theoretical error of Eq. 1 closely tracks the empirical Hebbian readout error at every
-    layer, and the trained network reaches a lower error in its later layers.
+    theoretical error of Eq. 1 closely tracks the empirical Hebbian readout error across
+    layers, and the trained network reaches a lower error in its later layers.
   source: Figure 3b,c and legend; Results, Geometry of multitask learning in multilayer
     perceptrons, paragraph 2
   quote: Theoretical predictions closely track empirical errors, and the trained network
@@ -236,7 +236,9 @@ claims:
     figures/SM-svm-comparison-fig.ipynb, per area, the squared Pearson correlation over the 64
     rat and session values (means over the 500 subsets of the shared pipeline) between the
     theoretical Hebbian error (Eq. 5) and the error of a linear SVC (scikit-learn LinearSVC,
-    one per task, on the same 300 training and 200 test bins, utils.emp_error). The empirical
+    one per task, on the same 300 training and 200 test bins, utils.emp_error). The notebook
+    loads an older results file (abstraction/results/<area>_results_nu_dt_0.5.npy) and does not
+    cut it to sessions 1 to 8; the 64 values of the shared pipeline are used here. The empirical
     Hebbian error in place of the theoretical one is a variant. The paper sets no bound for
     "strong", and the Supplementary Fig. 3 values were not read. The readings are (a) a
     positive Pearson correlation with p < 0.05 in each area; (b) r2 of at least 0.5 in each
@@ -500,3 +502,26 @@ claims:
     Reproduced when all four values are within tolerance under one combination of readings.
     The cross-validation folds are random and the GLM fit may differ slightly from the
     paper's; the seed is a standard choice.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3bc-mlp-theory-tracks-error, statement "at every layer" changed to "across layers"; the
+    Fig. 3b,c legend and the Results say only that theory closely tracks the empirical errors.
+  - svc-hebbian-correlation, criterion now says that figures/SM-svm-comparison-fig.ipynb loads an
+    older results file and uses all its sessions, so the 64 values of the shared pipeline are a
+    choice; checked against the code at commit 9674a6c.
+  - Checked against the code at commit 9674a6c, no change needed. 19 units for both areas
+    (run-pfc-hp-analysis-rats.py), behavioural error as 1 minus fraction correct and R2 0.477 and
+    0.510 (figure notebook), Fig. 7 panels g to k as total dimension, task dimension, SSF,
+    correlation and SNF (notebook layout, so Fig. 7j is the correlation), session coded 0 to 7,
+    Benjamini-Hochberg over 24 P values, and results/rat_stats.csv agreeing with every P bound of
+    the four mixed-model claims.
+  - Open, the Supplementary Information (Supplementary Figs. 3 and 12, Supplementary Tables 1 and
+    2) is not in the text read; the values the rat claims would match there are taken from the
+    code's results/rat_stats.csv and printed outputs.
+  - Open, the paper gives no measure for "plateau" (fig7d, fig7e), "good agreement" (fig7f) or
+    "strong correlation" (svc); the bounds used are the reader's, named as readings in each
+    criterion.
