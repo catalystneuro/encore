@@ -34,6 +34,9 @@ Where the parameters come from:
   Behavioral data analysis). The paper does not say so for the neural analyses; it is a
   standard choice in this task (an early lick restarts the epoch, so its timing differs), and
   the notebook reports how many trials it drops.
+- Neural analyses also leave out trials outside the units' observation intervals (`obs_intervals`
+  of the units table). Only BAYLORCD8 20171020 has any: its spikes end at 7221 s and its last 127
+  trials, to 8481 s, hold no spike of any unit.
 - Time courses use trials whose sample and delay epochs last 1.3 s (within 10 ms), aligned to
   the go cue; trials with longer epochs are counted and dropped. A standard choice.
 """
@@ -75,6 +78,9 @@ class Session:
     waveforms: np.ndarray = field(repr=False)
     cell_type: np.ndarray = field(repr=False)
     wf_rate: float = 20000.0
+    obs_intervals: list = field(default_factory=list, repr=False)   # per unit, [n, 2] array (s)
+    units_columns: list = field(default_factory=list)
+    groups: dict = field(default_factory=dict)   # top-level HDF5 groups and their members
 
     @property
     def n_units(self):
@@ -103,6 +109,13 @@ def _read(asset) -> Session:
         wf = np.asarray(f["units/waveform_mean"][:])
         ct = np.array([c.decode() if isinstance(c, bytes) else c for c in f["units/cell_type"][:]])
         rate = float(f["units/sampling_rate"][0])
+        oi = f["units/obs_intervals"][:]
+        obs = np.split(oi, f["units/obs_intervals_index"][:][:-1])
+        cols = [c.decode() if isinstance(c, bytes) else str(c) for c in f["units"].attrs["colnames"]]
+        groups = {k: sorted(f[k].keys()) for k in f.keys() if isinstance(f[k], h5py.Group)}
+        for k in ("stimulus/presentation", "stimulus/templates"):
+            if k in f:
+                groups[k] = sorted(f[k].keys())
         site = list(nwb.ogen_sites.values())[0]
         sloc = json.loads(site.location)
         eg = list(nwb.electrode_groups.values())[0]
@@ -110,7 +123,8 @@ def _read(asset) -> Session:
         s = Session(path=asset.path, subject=nwb.subject.subject_id, genotype=nwb.subject.genotype,
                     site=site.name, site_hemisphere=sloc.get("hemisphere"),
                     rec_ml=eloc.get("rec_coordinate_ml"), trials=trials.drop(columns=["session_directory"]),
-                    spikes=spikes, waveforms=wf, cell_type=ct, wf_rate=rate)
+                    spikes=spikes, waveforms=wf, cell_type=ct, wf_rate=rate, obs_intervals=obs,
+                    units_columns=cols, groups=groups)
         s.trials["session_file"] = trials["session_directory"].str.split("/").str[-1]
         io.close()
     return s
@@ -291,6 +305,7 @@ class Prep:
     units: np.ndarray          # unit indices into Session.spikes
     spikes: list = field(repr=False)
     ep: dict = field(repr=False)   # epoch name -> counts [units, trials]
+    n_unobserved: int = 0      # trials (no lick early) left out as outside the units' obs_intervals
 
 
 def epoch_windows(t: pd.DataFrame) -> dict:
@@ -304,11 +319,29 @@ def epoch_windows(t: pd.DataFrame) -> dict:
     return {k: (np.asarray(a, float), np.asarray(b, float)) for k, (a, b) in w.items()}
 
 
+def observed(s: Session) -> np.ndarray:
+    """Trials that lie inside the observation intervals of every unit of the session. Spikes
+    are only recorded inside them (in one session the recording ends before the behavior does)."""
+    t = s.trials
+    a, b = t["start_time"].to_numpy(float), t["stop_time"].to_numpy(float)
+    ok = np.ones(len(t), bool)
+    for iv in s.obs_intervals:
+        inside = np.zeros(len(t), bool)
+        for lo, hi in iv:
+            inside |= (a >= lo - 1e-6) & (b <= hi + 1e-6)
+        ok &= inside
+    return ok
+
+
 def prepare(S: list[Session], use_file_cell_type: bool = False) -> list[Prep]:
+    """Neural analyses use trials without lick early inside the units' observation intervals;
+    the behavior analyses take every trial of the session (notebook)."""
     out = []
     for i, s in enumerate(S):
         t = add_trial_fields(s.trials)
-        t = t[t["lick_early"] == 0].reset_index(drop=True)
+        keep = (t["lick_early"] == 0).to_numpy()
+        n_out = int((keep & ~observed(s)).sum())
+        t = t[keep & observed(s)].reset_index(drop=True)
         if use_file_cell_type:
             units = np.where(s.cell_type == "pyramidal")[0]
         else:
@@ -317,7 +350,7 @@ def prepare(S: list[Session], use_file_cell_type: bool = False) -> list[Prep]:
         ep = {k: np.array([counts(s.spikes[u], a, b) for u in units]).reshape(len(units), len(t))
               for k, (a, b) in wins.items()}
         out.append(Prep(i, s.path, s.subject, session_group(s), s.site_hemisphere, t, units,
-                        [s.spikes[u] for u in units], ep))
+                        [s.spikes[u] for u in units], ep, n_out))
     return out
 
 

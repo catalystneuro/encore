@@ -14,18 +14,18 @@ CN recording, licking, VGAT-ChR2 and anatomy data are not in it.
 | Dentate photo-activation has little effect on choice | Reproduced |
 | Delay photo-inhibition biases choice either way, depending on the mouse | Partially reproduced |
 | Most ALM pyramidal neurons are selective for trial type | Reproduced |
-| ALM selectivity emerges gradually and peaks in the response epoch | Blocked: methods underspecified |
-| CN photo-inhibition rapidly alters many ALM neurons | Partially reproduced |
+| ALM selectivity emerges gradually and peaks in the response epoch | Partially reproduced |
+| CN photo-inhibition rapidly alters many ALM neurons | Not reproduced |
 | The mean ALM rate is nearly unchanged by CN photo-inhibition | Partially reproduced |
-| Modulated ALM neurons increase or decrease | Reproduced |
-| CN photo-inhibition abolishes ALM selectivity | Reproduced (on an assumption) |
+| Modulated ALM neurons increase or decrease | Partially reproduced |
+| CN photo-inhibition abolishes ALM selectivity | Reproduced |
 | Fastigial photo-activation changes ALM activity within a few ms | Partially reproduced |
 | Fastigial photo-activation abolishes most ALM selectivity | Reproduced |
 | The fastigial effect persists more than 1 s after the photostimulus | Reproduced |
 | ALM recovers quickly after dentate photo-activation | Not reproduced |
 | Trajectories separate along the coding direction in control trials | Reproduced |
 | Fastigial, not dentate, photo-activation collapses the separation | Reproduced |
-| The coding direction captures 64% of selectivity and 27% of variance | Reproduced (on an assumption) |
+| The coding direction captures 64% of selectivity and 27% of variance | Partially reproduced |
 | After fastigial photo-activation ALM no longer predicts the movement | Not reproduced |
 | Lesions, CN recordings, licking, other photostimulation epochs, VGAT-ChR2 mice, anatomy (26 claims) | Blocked: data missing |
 
