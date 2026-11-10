@@ -3904,11 +3904,11 @@
     "ready": true,
     "date": "2026-10-23"
    },
-   "dandi:000289": {
+   "dandi:000469": {
     "ready": true,
     "date": "2026-10-23"
    },
-   "dandi:000469": {
+   "dandi:000289": {
     "ready": true,
     "date": "2026-10-23"
    },
@@ -4071,6 +4071,10 @@
    "crcns:am-3": {
     "ready": true,
     "date": "2026-11-09"
+   },
+   "dandi:000727": {
+    "ready": true,
+    "date": "2026-11-10"
    },
    "dandi:001749": {
     "ready": true,
@@ -33062,110 +33066,332 @@
     ]
    }
   ],
-  "dandi:000289": [
+  "dandi:000469": [
    {
-    "path": "claims/kutschireiter-2023.yaml",
-    "paper": "10.1073/pnas.2210622120",
+    "path": "claims/kussovska-2025.yaml",
+    "paper": "10.1101/2025.10.31.684900",
     "check": {
      "ready": true,
-     "date": "2026-10-23"
+     "date": "2026-11-10"
     },
     "claims": [
      {
-      "id": "fig1-conflict-decreases-certainty",
-      "statement": "In the circular Kalman filter, an HD observation consistent with the current estimate increases certainty, while one that strongly conflicts with it (opposite direction) decreases certainty.",
-      "source": "Results, Circular Kalman Filtering, HD Observations, paragraph 1; Fig. 1 D and E",
-      "quote": "HD observations increase the observer\u2019s certainty if they are confirmatory ... if HD observations strongly conflict with the current estimate (e.g., if they point in the opposite direction), they actually decrease certainty",
-      "criterion": "The update is the vector addition of Fig. 1 D and E and the observation term of Eq. 9 (kappa changes by kappa_z cos(z - mu) dt). In the code's circKF step (vM_Projection in circularFiltering.py, kappa_phi = 1, kappa_v = 1, dt = 0.01) the observation enters as that vector addition on the natural parameters, followed by the prediction step. Take a state with certainty kappa_t (any of 1, 2, 5) and apply one step with an HD observation at z = mu (confirmatory) and one at z = mu + pi (opposite). The paper fixes no single reliability for this; use the per-step reliabilities the Methods give, xi_fun_inv(gamma_z dt) for gamma_z = 1/s (Fig. 3E) and 10/s (Fig. 2H). Compare (a) the certainty right after the observation update with the certainty before it (the update of Fig. 1 D and E alone, before the prediction step), and (b) the certainty after the full step with the certainty after the same step with no observation (kappa_z = 0). Reproduced when, under both comparisons, every kappa_t and both reliabilities, the confirmatory observation gives higher and the opposite one lower certainty."
+      "id": "units-by-region",
+      "statement": "Recordings from the 21 patients yielded 902 well-isolated units, 259 in the amygdala, 171 in the dACC, 190 in the hippocampus, 250 in the preSMA and 32 in the vmPFC.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 1; Figure 1i; Methods, Electrophysiology, paragraph 2",
+      "quote": "Recordings from the 21 patients yielded 902 well-isolated units (Fig. 1b,i), distributed across the amygdala (AMY; 259 neurons), dorsal anterior cingulate cortex (dACC; 171 neurons), hippocampus (HPC; 190 neurons), presupplementary motor area (preSMA; 250 neurons), and ventromedial prefrontal cortex (vmPFC; 32 neurons).",
+      "criterion": "Counted over the units of the 21 Sternberg sessions, left and right hemispheres of each region merged (as main_1e,f.py:87-104 merges the location labels). Counts are exact, so the tolerance is zero."
      },
      {
-      "id": "fig2h-bump-tracks-circkf",
-      "statement": "In a simulated Bayesian ring attractor of 80 neurons, the bump position tracks HD about as accurately as the circular Kalman filter, the bump amplitude tracks the filter's certainty, and when the visual cue is removed the amplitude decays toward its baseline.",
-      "source": "Results, Neural Network Implementation, paragraph 6; Fig. 2H",
-      "quote": "This network exhibits a spatially localized bump whose position tracks HD, with an accuracy similar to that of the circular Kalman filter itself ( Fig. 2 H ). Meanwhile, the amplitude of the bump accurately tracks the fluctuating HD posterior certainty in the circular Kalman filter ... When the visual cue is removed, the bump amplitude decays toward baseline",
-      "criterion": "Run Figure2h.ipynb as released (seed 42, T = 15, dt = 0.01, kappa_phi = 1, kappa_v = 2, N = 80, cue off from 5 to 10 s, information rate 15). The Methods give gamma_z = 10/s; run that as a second reading of the cue strength. Bump position and amplitude are decoded as in the Methods (x = A r, position arctan2(x2, x1), amplitude the vector length), with the notebook's scaling x = (2/N) A r, which puts the amplitude on the scale of kappa. The paper gives no number for \"similar\" or \"accurately\"; readings for both cue strengths: (a) the mean absolute circular difference between the network's and the circKF's HD estimates is smaller than the circKF's own mean absolute error to the true HD, over the whole run; (b) the Pearson correlation between bump amplitude and circKF certainty over the cue periods is at least 0.9. Decay: over the darkness period (5 to 10 s) the bump amplitude falls and ends closer to the baseline kappa* = 1 (Methods, Bayesian ring attractor) than it started. Reproduced when the decay holds and (a) and (b) hold under both cue strengths."
+      "id": "behavior-accuracy",
+      "statement": "Task accuracy was 88.73% \u00b1 1.25%.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 2; Extended Data Fig. 1a (not in the text read)",
+      "quote": "Task accuracy was 88.73% \u00b1 1.25%",
+      "criterion": "Accuracy is the fraction of correct responses over all trials of a participant, averaged over the 21 participants, as 01_task/supp_1a.py:9-17 computes it (mean and s.e.m. across subjects). The tolerance is the paper's stated spread. The spread is printed as \u00b1; Methods, Statistical analyses say descriptive values are mean \u00b1 s.d., while the code computes s.e.m.; the spread is reported both ways and does not decide the claim. A second reading, correct trials over all trials pooled across participants, is shown as a variant."
      },
      {
-      "id": "fig2i-accuracy-and-certainty-vs-reliability",
-      "statement": "The Bayesian ring attractor tracks HD with the same accuracy as the circular Kalman filter when HD observations are reliable and with slightly lower accuracy when they are unreliable; in the unreliable regime its certainty stays near its baseline and overestimates the filter's certainty.",
-      "source": "Fig. 2I legend; Results, Neural Network Implementation, paragraph 7",
-      "quote": "The Bayesian ring attractor network tracks the true HD with the same accuracy ... if HD observations are reliable and, therefore, more informative but with slightly lower accuracy once they become less reliable, and therefore less informative. This drop co-occurs with an overestimate in the belief\u2019s certainty",
-      "criterion": "From figure2i.npz as Figure2i.ipynb reads it, compare the circKF (vonMises_stats) and the Bayesian ring attractor (vonMises_q_stats) over the 23 information rates (0.01 to 100/s, kappa_v = 1, T = 20). Accuracy is the stored |m1|, certainty the mean final kappa. The paper names no rate that separates reliable from unreliable; readings for the reliable set: (a) rates of 1/s and above, (b) rates of 3/s and above. \"Same accuracy\" readings: the absolute difference is at most (i) 0.01 or (ii) 0.02 at every reliable rate. Reproduced when, under every combination, the accuracies are the same on the reliable set, the attractor's accuracy is below the circKF's at the lowest rates (0.01 to 0.1/s), and at those rates its mean certainty is above the circKF's."
+      "id": "fig1c-accuracy-load1-vs-load3",
+      "statement": "Accuracy was higher for load 1 than for load 3 trials across patients.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 2; Figure 1c",
+      "quote": "Task accuracy was 88.73% \u00b1 1.25% and was higher for load 1 than for load 3 (Wilcoxon rank-sum, P = 0.027; Fig. 1c).",
+      "criterion": "Per patient, the accuracy at each load; load 1 against load 3 with a two-sided Wilcoxon rank-sum (Mann-Whitney) test, as in 01_task/main_1c.py:16-36. The code runs a Kruskal-Wallis test over the three loads and then pairwise rank-sum tests with a Bonferroni factor of 3 and prints both raw and corrected p; the paper does not say which it reports. Readings are (a) the raw p and (b) the Bonferroni-corrected p. Reproduced when load 1 accuracy is higher and p < 0.05 under one reading; the value of p under both is reported. A paired signed-rank test across patients is shown as a variant."
      },
      {
-      "id": "fig3b-bayesian-beats-conventional",
-      "statement": "A conventional ring attractor (fast decay to a fixed bump amplitude, with that amplitude optimized) is less accurate than the Bayesian ring attractor at every HD observation reliability, and reaches its accuracy only when observations are highly unreliable.",
-      "source": "Results, Bayesian vs. Conventional Ring Attractors, paragraphs 2 and 3; Fig. 3B",
-      "quote": "Even after this optimization of the conventional ring attractor, it does not rival the accuracy of the Bayesian ring attractor. The Bayesian attractor performs consistently better, regardless of the amount of information available to the network",
-      "criterion": "As in Figure3b,c,e,d_FigureS3.ipynb, the conventional attractor is the fixed-certainty filter (noUncert_stats) at the kappa* that maximizes the prior-weighted average accuracy (objective() with mean 0.5 and SD 1 over log rate, Methods, Performance measures, and Fig. 3B inset); the Bayesian ring attractor is vonMises_q_stats. Reproduced when the Bayesian attractor's accuracy is at least the conventional one's at every one of the 23 rates and strictly above it at every rate from 0.1/s to 10/s. The paper's \"only once HD observations become highly unreliable\" is checked as the difference being smallest at the lowest rates (0.01 and 0.03/s); reported, not judged."
+      "id": "behavior-rt",
+      "statement": "Reaction time for correct trials was 1.06 \u00b1 0.28 s.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 2; Figure 1d",
+      "quote": "Reaction time for correct trials was 1.06 \u00b1 0.28 s.",
+      "criterion": "Reaction time is probe onset to button press (Methods, Psychophysical task), the probe interval of the trials table as in 01_data_extraction.py:304-309 and main_1d.py:6-8. No code computes the reported value, and Methods, Statistical analyses say RTs are reported as median with IQR while the Results print a \u00b1. Readings are (a) the mean across participants of each participant's median RT on correct trials (main_1d.py takes the median per subject); (b) the mean across participants of each participant's mean RT; (c) the median over all correct trials pooled. The tolerance is the paper's stated spread. Reproduced when one reading falls within it; the spread under each reading (s.d., and half the IQR) is reported."
      },
      {
-      "id": "fig3c-update-weights",
-      "statement": "The weight given to a new HD observation by the Bayesian ring attractor depends on both the observation's reliability and the current certainty and is close to that of the circular Kalman filter, deviating only for very uninformative observations; a conventional attractor weights observations by their reliability alone.",
-      "source": "Fig. 3C legend; Results, Bayesian vs. Conventional Ring Attractors, paragraph 3; SI Appendix, Fig. S3 legend",
-      "quote": "The update weight of the Bayesian attractor is close to optimal, visually indistinguishable from the circKF",
-      "criterion": "In the notebook, Fig. 3C plots the weight for a 90 degree observation as a map over the observation's and the posterior's informativeness and draws on it each model's mean certainty against information rate: circKF (vonMises_stats[0,:,2]) and Bayesian attractor (vonMises_q_stats[0,:,2]), both as Fisher information xi(kappa); the conventional attractor is a constant kappa*. Compute, at each of the 23 rates, the weight under the circKF's and under the attractor's mean certainty, with the per-observation reliability alpha = xi_fun_inv(rate x Delta t). The Methods and the code differ on the weight: readings (i) the Methods, w = (1/pi) tan^-1(alpha / kappa) with Delta t = 0.01 (10-ms observation, Fig. 3C legend and Methods); (ii) the notebook, w = arctan2(alpha, kappa) / (pi/2) with Delta t = 0.1. The paper gives no bound for \"close\"; readings: the absolute weight difference is at most (a) 0.02 or (b) 0.05 at every rate of 1/s and above. Reproduced when every combination holds and the largest difference falls at rates below 1/s (Fig. S3, \"only deviates ... for very uninformative observations\"). The conventional attractor's weight depending on reliability only follows from its constant kappa* and is not tested."
+      "id": "rt-in-vs-out-memory",
+      "statement": "Reaction time was faster for probes held in memory than for probes not in memory.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 2",
+      "quote": "Reaction time was faster for probes held in memory than for probes not in memory (permutation test, P = 0.001)",
+      "criterion": "No code in the repository computes this test, and the paper names only a permutation test (1,000 shuffles unless stated, Methods, Statistical analyses; two-sided by default). Which trials enter (correct trials, as for the RT above, or all trials) and what is permuted are open. Readings are (a) a paired permutation (sign flips, 1,000) of the per-participant difference in median RT between in-memory and not-in-memory probes; (b) a permutation of the in/out labels over all trials pooled, on the difference in mean RT; each on correct trials and on all trials. Reproduced when in-memory probes are faster and p < 0.05 under one reading."
      },
      {
-      "id": "fig3d-best-network-slow-decay",
-      "statement": "Across ring attractors with different bump decay speeds and baseline amplitudes, the best network has a slow decay (low beta) and performs about as well as the Bayesian ring attractor; performance drops as decay speed increases, which a larger baseline amplitude partly offsets.",
-      "source": "Results, Bayesian vs. Conventional Ring Attractors, paragraph 4; Fig. 3D",
-      "quote": "The network with the best performance overall had a slow bump decay speed (low \u03b2 ), as expected ( Fig. 3 D and E ). While it featured similar performance to the Bayesian ring attractor, it had slightly different \u03b2 and \u03ba * parameters ... As the bump decay speed \u03b2 increased further, performance dropped.",
-      "criterion": "figure3d.npz holds MSE_array, the prior-weighted average accuracy over the grid of kappa* (0.1 to 2.5) and beta (0.1 to 8), normalized by the particle filter reference as in the notebook. The Bayesian ring attractor is kappa* = 1, beta = 1/(kappa_phi + kappa_v) = 0.5 (Methods). The best network is the grid maximum. Reproduced when (1) the best beta is at most 1 (the scanned values above 1 are 2, 4 and 8); (2) the best network differs from (1, 0.5) in kappa* or beta; (3) the Bayesian attractor's normalized performance is within 10% of the best (the paper's \"similar\", default tolerance); (4) for beta above the best, the maximum over kappa* falls as beta rises; (5) for beta above the best, the kappa* that maximizes performance is at least the best network's kappa*."
+      "id": "rt-correct-vs-incorrect",
+      "statement": "Correct decisions were faster than incorrect ones.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 2",
+      "quote": "correct decisions were faster than incorrect ones (permutation test, P = 0.002)",
+      "criterion": "No code computes this test. Readings are (a) a paired permutation (sign flips, 1,000) of the per-participant difference in median RT between correct and incorrect trials, over participants with incorrect trials; (b) a permutation of the correct/incorrect labels over all trials pooled, on the difference in mean RT. Reproduced when correct trials are faster and p < 0.05 under one reading."
      },
      {
-      "id": "fig3f-noise-drop-below-70",
-      "statement": "In a network of 64 neurons with additive neural noise, inference accuracy drops below 70% of its noise-free value once the noise is large enough.",
-      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraph 1; Fig. 3F",
-      "quote": "Indeed, simulating a network of 64 noisy neurons shows that, once the noise becomes sufficiently large, inference accuracy drops to below 70% of its noise-free value",
-      "criterion": "The paper states a bound, so no tolerance applies. The network without retuning keeps the kappa* and beta that are best at noise SD 0 (noretuning_MSE in the notebook). Normalization readings: (a) the notebook's, performance divided by the particle filter reference; (b) the legend's, performance divided by the same network's performance at noise SD 0. Range readings: (i) noise SD up to 10, the plotted range; (ii) up to 20, the largest simulated. Reproduced when the relative performance without retuning is below 70% at the largest noise SD under every combination."
+      "id": "fig1e-load-modulated-neurons",
+      "statement": "During maintenance a significant proportion of neurons in the preSMA (19.6%), vmPFC (18.75%) and dACC (10.53%) was modulated by memory load.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 3; Figure 1e",
+      "quote": "During the maintenance epoch, the preSMA, vmPFC, and dACC showed a significant proportion of neurons modulated by memory load (preSMA: 19.6%, vmPFC: 18.75%, dACC: 10.53%; permutation test, PpreSMA = 0.001, PvmPFC = 0.009, and PdACC = 0.026; Fig. 1e)",
+      "criterion": "From the Methods (GLM encoding analysis) and 01_task/main_1e,f.py. For each neuron the spike count in the first 2.5 s of maintenance (main_1e,f.py:67-75) on each trial is the response of a Poisson GLM with log link on z-scored load (sklearn PoissonRegressor, alpha 0, main_1e,f.py:147). A neuron is significant when |beta1| is at or above the 95th percentile of its null from 1,000 permutations of the predictor (seed 17 in the code); a region's p is the fraction of null counts of significant neurons at or above the observed count. Open details, with the readings run. For the trials, the Methods say \"96 trials per participant matched on load\" and also \"load 1 encoding and maintenance epochs\", which cannot hold for a load predictor; readings are (a) the code's 96 load-matched trials of data/new_trial_info.xlsx (an input from the code repository), (b) all trials of each participant. The permutation is within participant (Methods) or over the shared trial vector (the code, whose blocks are None, main_1e,f.py:124-135); both are run. For correction, the code applies none across regions; the paper's P values are taken as uncorrected. Reproduced when, under one reading, each of the three regions is within tolerance and has p < 0.05."
      },
      {
-      "id": "fig3f-retuning-reduces-drop",
-      "statement": "Retuning the bump decay speed and baseline amplitude for each noise level reduces the drop in inference accuracy by about 35% compared with the network tuned for noise-free performance, and raises the signal-to-noise ratio.",
-      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraph 3; Fig. 3F; SI Appendix, Fig. S4",
-      "quote": "Indeed, doing so reduced the drop in inference accuracy by about 35% when compared to the network tuned to optimize noise-free performance ( Fig. 3 D and F ) and also boosted the network\u2019s signal-to-noise ratio",
-      "criterion": "From the notebook, retuned performance is the grid maximum at each noise SD (max_MSE), and the untuned one the noise-free optimum's value (noretuning_MSE); signal-to-noise as the notebook computes it (mean kappa over the weighted average, divided by sigma / sqrt(N/2), Methods). The drop is 100% minus relative performance, and the reduction is 1 minus the retuned drop over the untuned drop. The paper does not say at which noise level the 35% is taken; readings: (a) noise SD 10, the largest plotted; (b) noise SD 20, the largest simulated; (c) the mean of the reduction over noise SD 1 to 10. Each under the two normalizations of fig3f-noise-drop-below-70. These are readings of which number the 35% is, so the value part holds when the reduction is within 31.5 to 38.5% under at least one of them (every reading is shown). Reproduced when the value part holds and the retuned signal-to-noise ratio is at least the untuned one at every noise SD above 0. Fig. S4's statement that larger noise needs larger kappa* and beta is reported from the same grid, not judged."
+      "id": "fig1f-rt-modulation-not-significant",
+      "statement": "No region had a significant proportion of neurons whose maintenance firing covaried with reaction time after correction, although the amygdala (5.79%), preSMA (8.00%) and vmPFC (6.25%) showed elevated percentages.",
+      "source": "Results, Behavior and single-neuron recordings in a working memory task, paragraph 3; Figure 1f",
+      "quote": "Although elevated percentages of RT-modulated neurons were observed in the amygdala (5.79%), preSMA (8.00%), and vmPFC (6.25%), none were significant after correction for multiple comparisons (permutation tests, P > 0.05; Fig. 1f).",
+      "criterion": "A claim of absence, on the paper's test, the GLM and count permutation of fig1e-load-modulated-neurons with RT as the predictor, and Benjamini-Hochberg FDR over the five regions at 0.05 (Methods, Statistical analyses name BH-FDR for multiple comparisons). Reproduced when no region has corrected p < 0.05; not reproduced when one does. RT is each trial's own reaction time in its participant (the code uses subject 1's RT vector for every neuron, main_1e,f.py:113; shown as a variant). The trial readings of fig1e-load-modulated-neurons apply to the expected percentages; uncorrected p values are reported."
      },
      {
-      "id": "noise-effects-on-mu-and-kappa",
-      "statement": "Neural noise makes the bump position diffuse without bias and makes the bump amplitude drift upward and diffuse, which leads to overconfidence; for additive noise, a four-fold larger network halves the noise's effective SD.",
-      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraphs 2 and 3; SI Appendix, section 5",
-      "quote": "First, it causes an unbiased random diffusion of \u03bc t and, thus, an increasingly imprecise memory of the HD estimate. Second, it causes a positive drift and random diffusion of \u03ba t",
-      "criterion": "The result is a derivation (SI Appendix, section 5); the Methods give the diffusion SD of kappa under additive noise as sqrt(sigma_nn^2 / N) per unit time. Test it with the code's RNN_filter_Run (with z=None added to its signature, see the code notes above) at the Bayesian ring attractor's parameters (kappa* = 1, beta = 0.5, tau = 1, so w_even = 1.5 and w_quad = 0.5 as in performance_scan_figure3f.py; stoch_corr 0, since it corrects for angular velocity input, which is absent here), with no HD input (I_ext = 0) and no angular velocity input (dy = 0), noise SD 1 and 2, N = 64 and 256, dt = 0.01, from a bump of amplitude 1, over 2,000 runs of T = 5. Reproduced when (1) the mean change of position is within 2 standard errors of 0 and its variance grows with time; (2) the mean amplitude at the end exceeds that of the noise-free run; (3) the SD of the one-step amplitude increments at N = 256 is half that at N = 64, within 10%. The run length, number of runs and starting amplitude are not given by the paper; they are standard choices that set only the precision."
+      "id": "concept-cells-count",
+      "statement": "Of 902 neurons, 58 (6.4%) were concept cells, 4 \u00b1 4 across participants, 70.69% of them in the amygdala, 18.96% in the hippocampus, 1.72% in the dACC, 3.45% in the preSMA and 5.15% in the vmPFC.",
+      "source": "Results, Concept cell definition and criteria, paragraphs 1 and 2; Figure 1j; Methods, Identification of concept cells",
+      "quote": "Of 902 neurons (Fig. 1i), 58 were identified as concept cells (6.4%; 4 \u00b1 4 across participants). Of these 58 concept cells, 70.69% were in the AMY, 18.96% in the HPC, 1.72% in the dACC, 3.45% in the preSMA, and 5.15% in the vmPFC (Fig. 1j).",
+      "criterion": "From the Methods (Identification of concept cells) and 04_concept_cells.py. For each neuron, spike counts 200 to 1000 ms after the onset of the first encoding image, on all trials of all loads; the two images with the highest mean rate; a bootstrap of the difference in mean rate between them (1,000 resamples with replacement), two-tailed p as twice the smaller tail; concept cell when p < 0.05 and both images have more than one trial. The code differs from the Methods in two ways, run as readings, (a) the Methods, each image's trials resampled to their own number; (b) the code, both resampled to the smaller number and p as the minimum of the four terms at 04_concept_cells.py:86-90. The code sets no seed, so each reading is run with ten seeds and the range of counts reported. Reproduced when, under one reading, the count is within tolerance and the amygdala is the region with most concept cells, with the two largest shares within tolerance. The small shares (one to three cells) and the per-participant 4 \u00b1 4 are reported without deciding."
      },
      {
-      "id": "fig4b-connectome-motifs",
-      "statement": "The connectivity among EPG, Delta7 and PEN1 neurons in the hemibrain connectome resembles the connectivity of a network that implements the approximate circular Kalman filter, with shifted PEN1 to EPG projections and broad EPG to Delta7 to EPG inhibition.",
-      "source": "Fig. 4 B and C legends; SI Appendix, section 4A",
-      "quote": "The connectivity profile of a recurrent neural network (RNN) ( Fig. 2 D \u2013 F ) that implements an approximate circKF is strikingly similar to the connectivity of neurons in the Drosophila HD system.",
-      "criterion": "Fig. 4B legend: connections from hemibrain:v1.2.1, total synapse count per cell pair as the connection strength, neurons sorted by spatial position as a proxy for preferred HD, Delta7 to Delta7 omitted. The code does not hold this analysis. Sorting is open; readings: (a) by the protocerebral bridge glomerulus in the neuron's name (L9 to R9), (b) by the ellipsoid body or gall position in the name. Reproduced when, under both, (1) PEN1 to EPG connections are offset from the EPG to PEN1 connections, in opposite directions for left and right PEN1 neurons; (2) each Delta7 neuron receives EPG input from, and sends output to, EPG neurons at more than half of the sorted positions (broad inhibition, Fig. 4E)."
+      "id": "fig2ab-single-cells-not-persistent",
+      "statement": "Examined neuron by neuron, most concept cells did not maintain elevated firing for their preferred image throughout the maintenance epoch.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 2; Figure 2a,b",
+      "quote": "Neuron-by-neuron examination showed that most concept cells did not maintain elevated firing throughout the maintenance epoch (Fig. 2a\u2013b).",
+      "criterion": "The paper shows one example cell and gives no rule for \"throughout\". From the Fig. 2a legend and Methods, Electrophysiology, per concept cell, load 1 trials, firing in 50 ms bins of maintenance z-scored to fixation and smoothed (Gaussian, sigma one bin), preferred (first encoding image is the preferred image) against nonpreferred trials, with a permutation test per bin at P < 0.05. The rule for \"elevated throughout\" is open; readings are (a) significantly higher on preferred trials in at least half of the bins of the first 2.5 s of maintenance; (b) significantly higher spike count on preferred trials in each of the three 1 s windows from maintenance onset (M1 to M3 as in Burst detection; M3 truncated at the end of maintenance), permutation test of counts, P < 0.05. Reproduced when, under one reading, more than half of the concept cells are not persistent; the counts under both are reported."
      },
      {
-      "id": "fig4gh-drosophila-network-matches",
-      "statement": "A Drosophila-like multipopulation network, constrained by the connectome, tracks HD with an accuracy indistinguishable from the idealized Bayesian ring attractor across observation reliabilities.",
-      "source": "Results, Tuning a Biological Ring Attractor, paragraph 3; Fig. 4 G and H",
-      "quote": "We found that this network achieves a HD encoding accuracy which is indistinguishable from that of our idealized Bayesian ring attractor network ( Fig. 4 G and H ).",
-      "criterion": "From figure4g.npz as Figure4g,h.ipynb reads it, compare the Drosophila-like network (CX_stats) with the Bayesian ring attractor (vonMises_q_stats of the same file, same runs, dt = 0.001) at every information rate stored (the 23 rates of performance_scan_figure4g.py, since the notebook's glob over the empty data_raw/figure4g/ yields none). Readings for \"indistinguishable\": the absolute accuracy difference is at most (a) 0.01 or (b) 0.02 at every rate. Reproduced when both hold. The mean certainties (Fig. 4H) are reported, not judged."
+      "id": "fig2c-population-persistence",
+      "statement": "Averaged across the 58 concept cells, firing on preferred trials stayed higher than on nonpreferred trials across the maintenance epoch of load 1 trials, a pattern of persistent activity.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 2; Figure 2c and legend",
+      "quote": "By contrast, averaging across the concept cell population revealed a clear pattern of persistent activity (n = 58; Fig. 2c).",
+      "criterion": "From the Fig. 2c legend and 02_psth_decoding/main_2c,5k,l,supp_1b,c.py. Load 1 trials; per concept cell the trial-mean rate in 50 ms bins of maintenance (aligned to its onset), z-scored with the cell's fixation mean and s.d. and smoothed (Gaussian, sigma one bin); preferred trials are those whose first encoding image is the cell's preferred image, nonpreferred all others (06_add_category.py:24-25). Per bin, a bootstrap over cells (1,000, paired resampling of cells, seed 42) of the preferred minus nonpreferred mean, two-sided, with BH-FDR over all bins of all panels as in the code (lines 196-286); per-panel FDR is shown as a variant. What counts as persistent is open; readings are (a) significant bins cover at least half of the first 2.5 s of maintenance; (b) every 500 ms segment of the first 2.5 s holds a significant bin. Reproduced when the mean preferred trace is above the nonpreferred one and the rule holds under one reading."
      },
      {
-      "id": "figs2-performance-independent-of-n",
-      "statement": "The Bayesian ring attractor's inference accuracy depends little on its number of neurons.",
-      "source": "SI Appendix, Fig. S2 legend; Results, Neural Network Implementation, paragraph 6",
-      "quote": "Network inference performance is mostly independent of the number of neurons N in the Bayesian ring attractor network.",
-      "criterion": "figureS2.npz holds accuracy per information rate for N = 3, 4, 8, 16, 32, 64 and 128 (the notebook's N_array), and vonMises_q_stats.npz the quadratic circKF reference. \"Mostly\" is not quantified; readings: for (a) N of 8 and more, (b) N of 16 and more, the accuracy is within 0.02 of the reference at every rate. Reproduced when both hold. The values for N = 3 and 4 are reported."
+      "id": "ext1bc-persistence-by-load",
+      "statement": "The population-level persistence of concept cells was robust at loads 1 and 2 and attenuated at load 3.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 2; Extended Data Fig. 1b,c (not in the text read)",
+      "quote": "This effect was robust at loads 1 and 2, and attenuated at load 3 (Extended Data Fig. 1b\u2013c).",
+      "criterion": "The analysis of fig2c-population-persistence for load 2 and load 3 trials, with a trial preferred when any encoded image is the preferred image (06_add_category.py:96-125). The Extended Data legends are not in the text read, so the measure is open; it is the fraction of maintenance bins (first 2.5 s) with a significant preferred-over-nonpreferred difference. Reproduced when loads 1 and 2 meet a reading of fig2c-population-persistence and load 3 has a smaller fraction of significant bins than either."
      },
      {
-      "id": "prediction-bump-amplitude-cue-reliability",
-      "statement": "The paper predicts that the bump amplitude in the HD system is higher in the presence of reliable external HD cues, such as salient visual landmarks. The paper does not test this.",
-      "source": "Discussion, paragraph 7",
-      "quote": "Second, we predict that bump amplitude in the HD system should vary dynamically, with higher amplitudes in the presence of reliable external HD cues, such as salient visual landmarks.",
-      "criterion": "The paper gives the measure and nothing else. Bump amplitude is the length of the population vector of the activity's first Fourier component, ordered by preferred HD (Eq. 3; Methods, Simulation parameters, decoder A = (cos phi, sin phi)), in the EPG population that holds the HD bump (SI Appendix, section 4A). The paper does not say how cue reliability is set in an experiment, which activity signal (raw fluorescence or dF/F) feeds the decoder, the time windows, the unit of comparison or a test. Comparison as the paper's text allows: bump amplitude while the fly sees the more reliable cue against the less reliable cue, as the dataset labels them. Readings for the test: (a) per fly, mean amplitude higher with the more reliable cue in more than half of the flies; (b) a one-sided paired Wilcoxon signed-rank test over flies, p below 0.05. Activity signal readings: (i) dF/F, (ii) raw fluorescence minus baseline. Reproduced when every combination finds higher amplitude with the more reliable cue; blocked as methods_underspecified when they differ. The second half of the prediction (a high bump amplitude makes the bump position less sensitive to new cues) has no measure in the paper and is not tested."
+      "id": "fig2d-cross-temporal-localized",
+      "statement": "In load 1 trials, decoders trained at specific times of encoding or early maintenance classified the image above chance at other times, but cross-time generalization clusters were sparse and temporally localized, so the information was not stably held across maintenance.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 3; Figure 2d and legend; Methods, Population decoding analysis, paragraph 2",
+      "quote": "However, cross-time generalization clusters were sparse and temporally localized, indicating that the stimulus-specific information was not stably maintained across the maintenance epoch but re-emerged at specific moments (Fig. 2d).",
+      "criterion": "From the Methods and 02_psth_decoding/main_2d,supp_1d,e.py. A pseudo-population of all concept cells, trials aligned across participants on the 75 identity-matched trials (data/new_trial_final.xlsx of the code; how they were chosen is not stated), load 1 trials, labels the first encoding image (five classes). Spike counts in 250 ms windows stepped by 100 ms from first-encoding onset through encoding, maintenance and probe, z-scored with fixation; a linear SVM (sklearn SVC, linear kernel, C = 1; the Methods name the Neural Decoding Toolbox with LIBSVM) trained at each bin and tested at every bin with LOOCV. Per pair a binomial test against 20% with BH-FDR over the grid. Open, the sidedness of the binomial test (two-sided in Methods, Population decoding; one-sided in Methods, Statistical analyses and in the code) and the cluster rule (a 95th-percentile cluster-duration null from 1,000 label shuffles in the Methods; contours longer than 13 points in the code, lines 175-178). Both sidedness readings and both cluster rules are run. Reproduced when, under one reading, above-chance clusters exist for training bins in encoding or early maintenance, and no training bin in maintenance generalizes above chance to more than half of the maintenance test bins."
+     },
+     {
+      "id": "ext1de-cross-temporal-load23",
+      "statement": "In load 2 and load 3 trials cross-time generalization was minimal.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 3; Extended Data Fig. 1d,e (not in the text read)",
+      "quote": "In load 2 and load 3 trials, cross-time generalization was minimal, suggesting that higher memory load further fragments or destabilizes these representations (Extended Data Fig. 1d\u2013e).",
+      "criterion": "The analysis of fig2d-cross-temporal-localized on load 2 and load 3 trials. The label is the first encoding image (Methods) or the last (the code, main_2d,supp_1d,e.py:147-152); both are run. \"Minimal\" is open; it is read as fewer off-diagonal train-test pairs in surviving clusters than at load 1, under the same cluster rule. Reproduced when both loads have fewer than load 1 under one label reading."
+     },
+     {
+      "id": "fig2e-maintenance-decoding-amy-mtl",
+      "statement": "Concept cells in the amygdala and in the MTL carried significant stimulus information during load 1 maintenance (35.56% and 32.13% decoding accuracy, chance 20%).",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 4; Figure 2e",
+      "quote": "concept cells in AMY and in the medial temporal lobe (MTL; AMY and HPC combined) carried significant stimulus-relevant information during load 1 maintenance (AMY: 35.56% decoding accuracy, P = 0.001; MTL: 32.13% decoding accuracy, P = 0.001; permutation test; Fig. 2e)",
+      "criterion": "From the Results, Methods (Population decoding, paragraph 3) and 02_psth_decoding/main_2e,supp_1f.py. Within each participant, the participant's concept cells in the region, all of its load 1 trials, labels the last (for load 1 the only) image; features are spike counts in 1 s windows stepped by 250 ms over the first 2.5 s of maintenance, all windows and cells concatenated (lines 24-27, 115-122); linear SVM, LOOCV; accuracy is the mean over participants. p from 1,000 label shuffles, (count of null means at or above the real + 1) / 1001, BH-FDR within the load over the region groups (lines 313-336). Open, the minimum number of concept cells per participant, at least three (Methods) or more than three (the code, line 70); both are run. The Fig. 2e legend says \"pooled across participants\" while the Results and code are within participant; a pseudo-population variant is shown. Reproduced when, under one reading, both accuracies are within tolerance and both p < 0.05."
+     },
+     {
+      "id": "ext1f-maintenance-decoding-load2",
+      "statement": "Amygdala and MTL concept cells also carried significant information about the last image during load 2 maintenance (23.56% and 28.89%).",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 4; Extended Data Fig. 1f (not in the text read)",
+      "quote": "The same held for AMY and MTL concept cells at load 2 (AMY: 23.56%, P = 0.031; MTL: 28.89%, P = 0.002; permutation test; Extended Data Fig. 1f)",
+      "criterion": "As fig2e-maintenance-decoding-amy-mtl on load 2 trials, the label the second encoding image (Results). Reproduced when, under one reading, both accuracies are within tolerance and both p < 0.05."
+     },
+     {
+      "id": "fig2f-bin-width-decoding",
+      "statement": "In load 1 trials, pseudo-population decoding of the image during maintenance was above chance at every bin width and rose with bin width (250 ms 40.00%, 500 ms 56.67%, 750 ms 66.67%, 1000 ms 80.00%).",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 5; Figure 2f",
+      "quote": "In load 1 trials, accuracy was above chance at all bin widths (250 ms: 40.00%; 500 ms: 56.67%; 750 ms: 66.67%; 1000 ms: 80.00%; permutation tests against shuffled controls, Pmax = 0.001) and increased nearly twofold as bin width increased",
+      "criterion": "From the Methods (Population decoding, paragraph 3) and 02_psth_decoding/main_2f,supp_1g.py. A pseudo-population of all concept cells, trials aligned on the identity-matched trial ids, load 1 trials (the reported accuracies are multiples of 1/30, consistent with 30 trials), label the image; features are spike counts in windows of the given width slid by 25 ms over the first 2.5 s of maintenance, z-scored with fixation, all windows and cells concatenated (lines 118-139); linear SVM, LOOCV. p from 1,000 label shuffles, (k + 1) / 1001, BH-FDR over the 12 tests of 4 widths and 3 loads (lines 186-192). Open, the trial alignment; readings are (a) the code's data/new_trial_final.xlsx (an input from the code repository), (b) for each participant the first six load 1 trials of each image in trial order, aligned by image and rank (30 trials). Reproduced when, under one reading, every accuracy is within tolerance, each p < 0.05 and accuracy rises from 250 to 1000 ms."
+     },
+     {
+      "id": "fig2f-bin-width-pairwise",
+      "statement": "Pairwise, accuracy was higher for 750 than 250 ms, for 1000 than 250 ms and for 1000 than 500 ms bins, while 500 against 250, 1000 against 750 and 750 against 500 ms did not differ after correction.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 5; Figure 2f",
+      "quote": "Pairwise comparisons across bin widths confirmed higher accuracies for 750 versus 250 ms (66.67% vs. 40.00%, P = 0.026), 1000 versus 250 ms (80.00% vs. 40.00%, P = 0.004), and 1000 versus 500 ms (80.00% vs. 56.67%, P = 0.032), whereas differences for 500 versus 250 ms (56.67% vs. 40.00%, P > 0.05), 1000 versus 750 ms (80.00% vs. 66.67%, P > 0.05), and 750 versus 500 ms (66.67% vs. 56.67%, P > 0.05) were not significant after correction (permutation tests).",
+      "criterion": "No code in the repository computes these tests and the paper names only permutation tests with FDR correction. Readings are (a) a paired permutation over trials, swapping each trial's LOOCV correctness between the two widths (1,000 permutations), p two-sided; (b) the observed accuracy difference against the distribution of differences between the two widths' label-shuffled nulls (1,000); each with BH-FDR over the six pairs. Reproduced when, under one reading, the three named pairs have corrected p < 0.05 and the other three do not; partially reproduced when the three named pairs are significant and another is too. The trial readings of fig2f-bin-width-decoding apply."
+     },
+     {
+      "id": "ext1g-bin-width-load2",
+      "statement": "Bin width had little effect on decoding of the second image in load 2 trials, and load 2 accuracy was lower than load 1 accuracy.",
+      "source": "Results, Persistent activity during maintenance emerges with population pooling and coarse temporal binning, paragraph 5; Extended Data Fig. 1g (not in the text read)",
+      "quote": "Temporal bin width had little effect on decoding accuracy for the second image in load 2 trials. Decoding accuracy in load 2 was also lower than in load 1 (Extended Data Fig. 1g).",
+      "criterion": "The analysis of fig2f-bin-width-decoding on load 2 trials with the second image as label (main_2f,supp_1g.py:98-109). \"Little effect\" is open; it is read as the range of the four load 2 accuracies being less than half the load 1 range (40.0 points). Reproduced when that holds and each load 2 accuracy is below the load 1 accuracy at the same width, under one trial reading."
+     },
+     {
+      "id": "fig3abc-trajectory-complexity",
+      "statement": "dPCA encoding trajectories of load 1 concept-cell activity made a single large excursion in state space, while maintenance trajectories were more complex, with multiple turns and changes in direction.",
+      "source": "Results, Encoding and maintenance occupy distinct neural subspaces, paragraph 2; Figure 3a-c",
+      "quote": "Applying dPCA revealed simple encoding trajectories characterized by a single large excursion in state space ... In contrast, maintenance trajectories were markedly more complex, with multiple turns and changes in direction",
+      "criterion": "The dPCA fits of fig3d-encoding-vs-maintenance-separability. The paper gives no measure of complexity; the figure is a visual reading. The measure is open; readings are (a) tortuosity, the path length of each held-out stimulus trajectory in the first three stimulus dPCs divided by the largest distance from its start point; (b) the number of reversals of direction (sign changes of the derivative) summed over the first three stimulus dPCs. Reproduced when, under one reading, the median over stimuli and resampling splits is larger for maintenance than for encoding."
+     },
+     {
+      "id": "fig3d-encoding-vs-maintenance-separability",
+      "statement": "Stimulus separation in dPCA space was higher during encoding than during maintenance, and higher than maintenance activity projected into the encoding space, while maintenance separation did not differ between its own space and the encoding space.",
+      "source": "Results, Encoding and maintenance occupy distinct neural subspaces, paragraph 2; Figure 3d",
+      "quote": "Stimulus separation, quantified as the mean pairwise Euclidean distance between condition-averaged trajectories in dPCA space, differed significantly across conditions (Kruskal-Wallis, H = 457.217, P = 1.20 \u00d7 10\u221297). Separation in the encoding state space was higher than during maintenance and higher than maintenance activity projected into the encoding state space (Dunn's post hoc test, Penc vs. maint = 2.38 \u00d7 10\u221238, Penc vs. projected maint = 1.25 \u00d7 10\u221229)",
+      "criterion": "From the Methods (State-space analysis) and 08_dpca_matrices.py with 03_dpca/main_3d,supp_2a,b,i.py. All 58 concept cells, 30 load 1 trials (6 per image), spikes in 2 ms bins, z-scored with fixation and smoothed with a Gaussian of 60 bins (120 ms; Methods \"\u03b1 = 60; bin width = 120 ms\" and the code agree, the Results \"\u03c3 = 60 ms\" is a variant); encoding 0 to 1 s, maintenance 0 to 2.5 s. 100 stratified splits, 3 train and 3 test trials per image; dPCA (Kobak) with labels stimulus and time, regularizer chosen by its cross-validation; per split the mean over the 10 image pairs of the Euclidean distance between time-averaged held-out trajectories on the first five stimulus dPCs (lines 26-68). Kruskal-Wallis then Dunn with BH-FDR (scikit-posthocs). Open, the groups of the Kruskal-Wallis; the code has five (the three test conditions and the two training sets), the Methods compare \"conditions\"; H = 457 exceeds what three groups of 100 can give, so the five-group reading is the main one and three groups a variant. Open, the trials; the code draws the 30 from subject 14's load-matched trial ids (random_state 42) and selects maintenance trials by trial_id, not new_trial_id (08_dpca_matrices.py:192); readings are (a) the same 30 trials for both epochs, (b) the code as written. Reproduced when, under one reading, H is within tolerance, encoding is above both maintenance conditions with Dunn corrected p < 0.05, and the two maintenance conditions do not differ (Dunn corrected p at or above 0.05, the paper's test, judged as written)."
+     },
+     {
+      "id": "fig3h-early-vs-late-maintenance",
+      "statement": "Stimulus separation was higher in the first half of maintenance than in the second half, and higher than second-half activity projected into the first-half space.",
+      "source": "Results, Encoding and maintenance occupy distinct neural subspaces, paragraph 3; Figure 3e-h",
+      "quote": "stimulus separability was significantly higher in the early half than in the late half, and higher than late-maintenance activity projected into the early-maintenance state space (Kruskal-Wallis, H = 417.58, P = 4.43 \u00d7 10\u221289, Dunn's post hoc, Pearly vs. late = 9.70 \u00d7 10\u221212, Pearly vs. late\u2192early = 2.54 \u00d7 10\u22129; Fig. 3g\u2013h)",
+      "criterion": "As fig3d-encoding-vs-maintenance-separability, with maintenance split at bin 624 of 1249 (about 1.25 s, 03_dpca/main_3h,supp_2c,d,l.py:22) into early and late halves, each with its own dPCA fit, and late test data also projected into the early space. The code's Kruskal-Wallis again takes five groups (train sets included). The code protects time in the early fit (protect ['t']) and not in the late one (lines 115 and 124); both settings for both halves are run as readings. Reproduced when, under one reading, H is within tolerance and early separation exceeds both late conditions with Dunn corrected p < 0.05."
+     },
+     {
+      "id": "fig4c-encoding-bursts-vs-poisson",
+      "statement": "During encoding, population bursting did not exceed a rate-matched Poisson null for most neuronal groups; it differed from the null only for all neurons and for the low mean ACG amplitude group.",
+      "source": "Results, Bursting dynamics reorganize spiking activity between encoding and maintenance, paragraph 2; Figure 4c",
+      "quote": "During encoding, population bursting did not exceed a rate-matched Poisson null (Wilcoxon signed-rank; Fig. 4c) for most neuronal groups. Significant effects were detected for all neurons (W = 9.0, P = 0.003) and for the group with low mean ACG amplitude (W = 0.0, P = 0.012).",
+      "criterion": "Burst detection from the Methods (Burst detection) and 04_bursting/main_4c,d,6a,b.py. Within each participant and group, load 1 trials, the first encoding image (1 s per trial); the group's spikes pooled and trials concatenated, binned at 70 ms and smoothed with a Gaussian of sigma 40 ms; peaks at least 2 bins (140 ms) apart. Rate-matched Poisson surrogates per neuron and trial (each trial's count as the rate, spike times uniform), 100 per participant and group, their mean burst count compared with the real count by a paired two-sided Wilcoxon signed-rank test over participants, BH-FDR over the groups. Open details, with readings run. Peak rule; (a) the smoothed value exceeds the 90th percentile of the epoch's bins (Methods), (b) prominence at or above that percentile (Results, \"a 90th-percentile prominence threshold\", and the code, lines 251-255). Peak spacing; 2 bins (140 ms) in the Methods and the code (line 17) is the main reading; the Results say candidates \"within 70 ms of a previous event were suppressed\", run as a variant with a spacing of 1 bin. Surrogate threshold; the real data's (code) or each surrogate's own. Groups; (a) median split within participant on mean ACG amplitude and on tau decay, participants with fewer than 5 neurons in a group left out (Methods), (b) the code's 6 lowest and 6 highest of participants with at least 10 neurons (lines 52, 95-120, 164-172); groups use neurons with R2 > 0.3 (acg-fit-yield); \"all neurons\" is all 902 (code, line 183; participants with at least 10 neurons, line 185) or the 294 fitted neurons; concept cells need at least 3 per participant (code) or 5 (Methods). Reproduced when, under one reading, all neurons and low ACG differ from the null with corrected p < 0.05 and the other four groups do not; partially reproduced when the two named groups differ and one other does too."
+     },
+     {
+      "id": "fig4d-maintenance-bursts-vs-poisson",
+      "statement": "During maintenance, bursting exceeded the Poisson null for all neurons pooled and for the low and high mean ACG and short and long tau decay groups, but not for concept cells.",
+      "source": "Results, Bursting dynamics reorganize spiking activity between encoding and maintenance, paragraph 3; Figure 4d",
+      "quote": "During maintenance, bursting exceeded the Poisson null across most groups (Fig. 4d)",
+      "criterion": "The method and readings of fig4c-encoding-bursts-vs-poisson on the maintenance epoch of load 1 trials, each trial's window 2.8 s from maintenance onset (the code's TRIAL_WIN for maintenance, line 13; the maintenance lasts 2.5 to 2.8 s, so the window is also run as each trial's own maintenance). Reproduced when, under one reading, the five named groups have more real than surrogate bursts in most participants with corrected p < 0.05, and concept cells do not differ (the paper's test, judged as written)."
+     },
+     {
+      "id": "fig4-acg-group-differences",
+      "statement": "The low mean ACG group burst more than the high mean ACG group in both encoding and maintenance, whereas the short tau decay group exceeded the long tau decay group only during encoding.",
+      "source": "Results, Bursting dynamics reorganize spiking activity between encoding and maintenance, paragraph 4",
+      "quote": "Specifically, the low mean ACG group showed greater bursting than the high mean ACG group in both encoding (W = 0.0, P = 0.002) and maintenance (W = 0.0, P = 0.003), whereas the short \u03c4decay group exceeded the long \u03c4decay group only during encoding (W = 3.5, P = 0.015).",
+      "criterion": "Real burst counts of fig4c-encoding-bursts-vs-poisson and fig4d-maintenance-bursts-vs-poisson, compared between groups within participant by a paired two-sided Wilcoxon signed-rank test; the code compares all 28 pairs of the 8 groups with BH-FDR over them (main_4c,d,6a,b.py:482-518), shown as given and also with FDR over the four tests named here. Reproduced when, under one reading of fig4c-encoding-bursts-vs-poisson, low ACG exceeds high ACG in both epochs and short exceeds long tau decay in encoding with p < 0.05, and short and long tau decay do not differ in maintenance."
+     },
+     {
+      "id": "fig4f-all-cells-epochs",
+      "statement": "At the population level, load 1 burst rates increased from encoding to each of the three 1 s maintenance windows and to the probe.",
+      "source": "Results, Bursting dynamics reorganize spiking activity between encoding and maintenance, paragraph 5; Figure 4f",
+      "quote": "At the population level, burst rates increased from encoding to each maintenance window (load 1; Wilcoxon signed-rank, Enc \u2192 M1: W = 1.0, P = 0.007; Enc \u2192 M2: W = 0.0, P = 0.005; Enc \u2192 M3: W = 0.0, P = 0.005), as well as to probe (load 1; Wilcoxon signed-rank, Enc \u2192 Probe: W = 4.0, P = 0.039)",
+      "criterion": "Burst detection of fig4c-encoding-bursts-vs-poisson (its peak-rule readings), within participant, on encoding (1 s), maintenance and probe (1 s, the code's window, 04_bursting/main_4f-k,6c,d.py:19-25). Open, how M1 to M3 are formed; readings are (a) the Methods, three consecutive 1 s windows from each trial's maintenance onset, M3 ending at the end of maintenance; (b) the code, peaks of the concatenated 3 s maintenance trains assigned to thirds of the whole train (lines 216-219). Counts are per window; with 1 s windows count and rate agree, and for a shorter M3 the rate per second is also reported. Open, the population; all 902 neurons (as in fig4c) or the 294 fitted neurons (the code here, line 47). Paired two-sided Wilcoxon signed-rank tests over participants with BH-FDR over the 10 pairs of periods (line 289). Reproduced when, under one reading, each of the four comparisons shows more bursts after encoding with corrected p < 0.05. The Results also say the rate rose \"across successive maintenance windows\" but report no test of M1 against M2 or M3; those pairs are reported without deciding."
+     },
+     {
+      "id": "fig4hj-group-epochs",
+      "statement": "The increase of bursting from encoding into maintenance was driven by neurons with high mean ACG amplitude (also increasing to the probe) and neurons with a long tau decay, while the low ACG, short tau decay and concept-cell groups showed no change across epochs.",
+      "source": "Results, Bursting dynamics reorganize spiking activity between encoding and maintenance, paragraph 5; Figure 4g-k",
+      "quote": "Neurons with high mean ACG amplitude increased from encoding to maintenance and to the probe period (Fig. 4h; Enc \u2192 M1: W = 1.0, P = 0.020; Enc \u2192 M2: W = 3.5, P = 0.020; Enc \u2192 Probe: W = 1.0, P = 0.020), and and neurons with a long \u03c4decay also increased from encoding to maintenance (Fig. 4j; Enc \u2192 M1: W = 2.5, P = 0.033; Enc \u2192 M2: W = 2.0, P = 0.033; Enc \u2192 M3: W = 3.0, P = 0.033). Other groups showed no change across epochs (Fig. 4g,i,k; Wilcoxon signed-rank, P > 0.05)",
+      "criterion": "The method and readings of fig4f-all-cells-epochs for each group, with the group readings of fig4c-encoding-bursts-vs-poisson. Reproduced when, under one reading, high ACG exceeds encoding at M1, M2 and probe and long tau decay at M1, M2 and M3 with corrected p < 0.05, and the low ACG, short tau decay and concept-cell groups have no epoch pair with corrected p < 0.05 (the paper's test for the absence). Partially reproduced when the increases hold for one of the two groups."
+     },
+     {
+      "id": "ext2-bursts-loads23",
+      "statement": "The patterns of burst rates across epochs held for loads 2 and 3.",
+      "source": "Results, Bursting dynamics reorganize spiking activity between encoding and maintenance, paragraph 5; Extended Data Fig. 2b-m (not in the text read)",
+      "quote": "Similar patterns held for load 2 and load 3 (Extended Data Fig. 2b\u2013m)",
+      "criterion": "The analyses of fig4f-all-cells-epochs and fig4hj-group-epochs on load 2 and load 3 trials, encoding taken from the last encoding image (the code, main_4f-k,6c,d.py:49). The Extended Data legends are not in the text read, so \"similar\" is read as all cells and the high ACG and long tau decay groups showing more bursts in each maintenance window than in encoding, in the median over participants, at each load. Reproduced when that holds at both loads under one reading; the tests are reported."
+     },
+     {
+      "id": "acg-fit-yield",
+      "statement": "Fitting CellExplorer's triple-exponential model to each neuron's autocorrelogram and keeping well-fit units (R2 > 0.3) left 294 neurons for cell-type analysis.",
+      "source": "Results, Feature-based classification of putative cell types, paragraph 2; Methods, Autocorrelogram-based characterization of single-neuron temporal dynamics",
+      "quote": "For each neuron, we fit Cell Explorer's triple-exponential model [72] to its spike train and retained well-fit units (R2 > 0.3), yielding 294 neurons for analysis.",
+      "criterion": "From the Methods and data/cell_analysis/calc_ACG_metrics.m and fit_ACG.m. Spikes of all task epochs of each neuron aggregated; the narrow ACG within \u00b150 ms in 0.5 ms bins (201 bins), self-coincidences removed, divided by spike count and bin width; the raw narrow ACG fitted at positive lags with the CellExplorer triple-exponential, start, lower and upper bounds as in fit_ACG.m:19-21, by bounded nonlinear least squares; R2 the fit's goodness-of-fit. Open, which spikes are \"all task epochs\"; readings are (a) every spike of the unit in the session, (b) only spikes within the trial epochs (fixation to probe end). The threshold is R2 > 0.3 (Results) or R2 >= 0.3 (07_spectral_clustering.py:16); both are reported. Reproduced when the count under one reading is within tolerance."
+     },
+     {
+      "id": "fig5c-cell-type-clusters",
+      "statement": "Spectral clustering on firing rate, mean normalised ACG and ACG rise time constant split the 294 neurons into two clusters, 92 putative pyramidal neurons and 202 putative interneurons.",
+      "source": "Results, Feature-based classification of putative cell types, paragraph 3; Figure 5c",
+      "quote": "We labeled this cluster as putative interneurons (IN; n = 202). The remaining neurons, with lower firing rates, lower normalized mean ACG amplitude, and smaller \u03c4rise, were labeled as putative pyramidal neurons (PY; n = 92).",
+      "criterion": "From the Methods (Putative cell-type classification) and 07_spectral_clustering.py. Features firing rate (spike count over the time from first to last spike, 02_trial_info.py:37-40), mean of the max-normalised wide ACG (\u00b1500 ms, 1 ms bins; Mean_ACG.m and normalize_acg_to_unit.m) and tau_rise of the fit; standardised; SpectralClustering with two clusters, nearest-neighbour affinity (10 neighbours, the default), random_state 42. The cluster with higher firing rate, mean ACG and tau_rise is labelled IN (Results; the code instead fixes cluster label 1 as PY, lines 37-45, which depends on the library version). Reproduced when the two counts are within tolerance."
+     },
+     {
+      "id": "fig5dfh-cluster-features",
+      "statement": "Putative interneurons had higher firing rates, greater normalised mean ACG amplitude and larger tau_rise than putative pyramidal neurons.",
+      "source": "Results, Feature-based classification of putative cell types, paragraph 3; Figure 5d-f",
+      "quote": "One cluster comprised neurons with higher firing rates (Mann\u2013Whitney U = 17294, P = 1.42 \u00d7 10\u221232; Fig. 5d), greater normalized mean ACG amplitude (U = 18522, P = 2.16 \u00d7 10\u221241; Fig. 5e), and larger \u03c4rise (U = 13465, P = 2.58 \u00d7 10\u22129; Fig. 5f).",
+      "criterion": "Two-sided Mann-Whitney U tests of IN against PY on each feature, with Benjamini-Yekutieli FDR over the five metrics of Fig. 5d-h as in 05_cell_analysis/main_5d-h.py:49-63. Reproduced when IN is higher on all three with corrected p < 0.05. The features are those the clusters were formed on, so the claim follows from fig5c-cell-type-clusters by construction; the U values are reported."
+     },
+     {
+      "id": "fig5gh-burst-index-cv2",
+      "statement": "Putative pyramidal neurons had a higher burst index (0.985 against 0.622) and greater spike-train irregularity (CV2 1.673 against 1.319) than putative interneurons.",
+      "source": "Results, Feature-based classification of putative cell types, paragraph 4; Figure 5g,h",
+      "quote": "Putative pyramidal neurons showed higher burst index (PY = 0.985 vs. IN = 0.622; U = 6835, P = 6.35 \u00d7 10\u22126; Fig. 5g). They also exhibited greater spike-train irregularity (CV2; PY = 1.673 vs. IN = 1.319; U = 6056, P = 4.84 \u00d7 10\u22124; Fig. 5h)",
+      "criterion": "Burst index as defined by Royer et al. (ref. 97), computed as in calc_ACG_metrics.m:45, the mean wide ACG at lags +2 to +4 ms over its mean at +199 to +299 ms. CV2 is Holt's local coefficient of variation (Methods cite ref. 98) of the session's interspike intervals; the column the code feeds to Fig. 5h is std/mean of the ISIs (02_trial_info.py:42-46), a plain CV; both are run as readings. Whether the printed values are group means or medians is open; both are reported. Two-sided Mann-Whitney U with Benjamini-Yekutieli FDR over the five metrics. Reproduced when PY is higher on both with corrected p < 0.05 and, under one reading of each open detail, the four values are within tolerance."
+     },
+     {
+      "id": "supp4-rodent-validation",
+      "statement": "Applied to a labelled rodent dataset of 44 pyramidal neurons and 299 PV and SST interneurons, the spectral-clustering classifier assigned 333 of 343 neurons correctly (97%).",
+      "source": "Results, Feature-based classification of putative cell types, paragraph 4; Methods, Putative cell-type classification, paragraph 4; Extended Data Fig. 4a (not in the text read)",
+      "quote": "Using \u03c4rise, normalized mean ACG amplitude, and firing rate as inputs to spectral clustering, 333 of 343 neurons were correctly assigned, with only one pyramidal neuron and nine interneurons (PV or SST) misclassified (Extended Data Fig. 4a).",
+      "criterion": "Not testable on DANDI:000469. As in 05_cell_analysis/supp_4a-e.py, the three features standardised and clustered as in fig5c-cell-type-clusters; each cluster labelled by its majority ground-truth type (pyramidal or interneuron); accuracy is matched over total. Reproduced when 333 of 343 are matched, with 1 pyramidal and 9 interneurons misassigned; the tolerance is zero as a count from a deterministic clustering of fixed features."
+     },
+     {
+      "id": "fig5kl-concept-cell-types",
+      "statement": "Of the classified concept cells, 11 were putative pyramidal and 14 putative interneurons; pyramidal concept cells showed pronounced bursting, interneuron concept cells smoother regular spiking.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 1; Figure 5i-l and legend",
+      "quote": "Pyramidal concept-cell populations showed pronounced bursting (Fig. 5i,k), whereas interneuron populations exhibited smoother regular-spiking activity (Fig. 5j,l).",
+      "criterion": "Counts are the concept cells among the PY and IN neurons (Fig. 5k,l legends). \"Pronounced bursting\" and \"smoother\" are read from rasters in the paper; they are judged by the Royer burst index and CV2 of fig5gh-burst-index-cv2 in these concept cells, PY median above IN median for both. Reproduced when the counts are within tolerance and the medians are so ordered; no test is reported for the second part."
+     },
+     {
+      "id": "fig6ab-celltype-bursts-vs-null",
+      "statement": "Pyramidal populations showed elevated bursting over a null in both encoding and maintenance, whereas interneurons showed elevated bursting during maintenance but not during encoding.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 2; Figure 6a,b and legend",
+      "quote": "Across participants, pyramidal populations showed elevated bursting during both encoding and maintenance relative to chance (label-shuffled null; Encoding: W = 1.0, P = 0.012; Maintenance: W = 0.0, P = 0.004; Fig. 6a\u2013b). By contrast, interneurons exhibited elevated population bursting during maintenance (W = 5.0, P = 0.001) but not during encoding (W = 41.0, P > 0.05)",
+      "criterion": "The burst method and peak-rule readings of fig4c-encoding-bursts-vs-poisson on the PY and IN groups, all of a participant's PY (or IN) neurons, participants with fewer than 3 in the group left out (Methods, Putative cell-type classification; code lines 178-181). The null is open; the Results say \"label-shuffled null\", the Fig. 6a,b legend says rate-matched Poisson surrogates and the code has only the Poisson null; readings are (a) the Poisson surrogates, (b) a null from shuffling the cell-type labels within participant (100 shuffles). BH-FDR over the groups tested together, as in fig4c. Reproduced when, under one reading, PY exceeds the null in both epochs and IN in maintenance with corrected p < 0.05, and IN in encoding does not (the paper's test, judged as written)."
+     },
+     {
+      "id": "fig6cd-celltype-epochs",
+      "statement": "Pyramidal burst rates stayed stable across task epochs at every load, whereas interneuron burst rates changed from encoding to each maintenance window and to the probe in load 1 trials.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 3; Figure 6c,d",
+      "quote": "Pyramidal burst rates remained stable across task epochs and load (Wilcoxon signed-rank, all P > 0.05; Fig. 6c, Extended Data Fig. 5a,c), whereas interneuron burst rates changed across task epochs (load 1; Enc \u2192 M1: W = 17.0, P = 0.011; Enc \u2192 M2: W = 26.0, P = 0.024; Enc \u2192 M3: W = 7.5, P = 0.001; Enc \u2192 Probe: W = 18.5, P = 0.003; Fig. 6d)",
+      "criterion": "The epoch method and readings of fig4f-all-cells-epochs on the PY and IN groups (participants with at least 3 neurons in the group), paired two-sided Wilcoxon signed-rank, BH-FDR within group and load over the 10 period pairs. Reproduced when, under one reading, IN differs from encoding at M1, M2, M3 and probe with corrected p < 0.05 and PY has no pair with corrected p < 0.05 at load 1, 2 or 3 (the paper's test for the absence; \"all P > 0.05\" covers Fig. 6c and Extended Data Fig. 5a,c). Partially reproduced when this holds at load 1 only. The direction of the IN change is reported; the paper does not state it."
+     },
+     {
+      "id": "ext5bd-in-load-dependence",
+      "statement": "Interneuron burst-rate differences across maintenance epochs increased with load.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 3; Extended Data Fig. 5b,d (not in the text read)",
+      "quote": "Interneuron burst-rate differences across maintenance epochs increased with load (Extended Data Fig. 5b,d)",
+      "criterion": "The analysis of fig6cd-celltype-epochs on IN at loads 1, 2 and 3. The Extended Data legends are not in the text read, so the measure is open; it is read as the median over participants of the absolute difference in bursts between encoding and each of M1 to M3, averaged over the three windows. Reproduced when it rises from load 1 to load 3, under one reading of the epochs."
+     },
+     {
+      "id": "fig6e-load-modulation-in",
+      "statement": "A significant portion of interneurons was modulated by memory load during maintenance (14.36%), including interneuron concept cells (21.42%), while pyramidal neurons showed minimal load modulation (5.43%; concept pyramidal 0.00%).",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 4; Figure 6e; Extended Data Fig. 5e (not in the text read)",
+      "quote": "A significant portion of interneurons was modulated by memory load during maintenance (14.36%; permutation test, P = 0.002; Fig. 6e), including interneuron concept cells (21.42%; P = 0.032; Extended Data Fig. 5e).",
+      "criterion": "The GLM, permutation and trial readings of fig1e-load-modulated-neurons, with groups PY, IN, PY concept cells and IN concept cells (06_cell_specific/main_6e,f,supp_e,f.py, the concept subsets by its commented option, lines 24-32). The tolerance of PY concept cells is zero, as 10% of 0. Reproduced when, under one reading, the IN and IN concept percentages are within tolerance with p < 0.05, and the PY groups have p at or above 0.05 (the paper's test for the absence); the PY percentages are reported."
+     },
+     {
+      "id": "fig6f-rt-modulation-in-concept",
+      "statement": "Interneuron concept cells were modulated by reaction time during maintenance (35.71%), but not all interneurons, and pyramidal neurons showed no significant RT modulation in either the full population or the concept subset.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 4; Figure 6f; Extended Data Fig. 5f (not in the text read)",
+      "quote": "Interneuron concept cells were also modulated by reaction time (RT; 35.71%; P = 0.002), although this effect was not robust across all interneurons (P > 0.05; Fig. 6f; Extended Data Fig. 5f). Pyramidal neurons showed no significant RT modulation in either the full population or the concept-cell subset (permutation tests, all P > 0.05; Fig. 6f; Extended Data Fig. 5f).",
+      "criterion": "The GLM of fig1e-load-modulated-neurons with RT as predictor, each trial's own RT (fig1f-rt-modulation-not-significant), the groups of fig6e-load-modulation-in. Reproduced when the IN concept percentage is within tolerance with p < 0.05, and all IN, all PY and PY concept cells have p at or above 0.05 (the paper's test for the absence), under one trial reading."
+     },
+     {
+      "id": "fig6gh-in-concept-cv2",
+      "statement": "Interneuron concept cells had higher CV2 during maintenance than encoding on preferred load 1 trials but not on nonpreferred trials, while pyramidal concept cells showed stable CV2.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 5; Figure 6g,h",
+      "quote": "By contrast, interneuron concept cells exhibited higher CV2 during maintenance than during encoding on preferred trials (W = 13.0, P = 0.032), but not on nonpreferred trials (W = 50.0, P > 0.05; Fig. 6g\u2013h)",
+      "criterion": "From the Results and 06_cell_specific/main_6g,h.py. Per PY or IN concept cell, CV2 (Holt's local measure, lines 117-122) of the interspike intervals of spikes concatenated over preferred (or nonpreferred) trials, in encoding (first image, 1 s) and maintenance (2.5 s); encoding against maintenance by a two-sided Wilcoxon signed-rank test over cells. Open, the trials; the Results say load 1 trials, the code uses all loads (no load filter); both are run. Open, which PY comparisons the Results mean by \"stable CV2 across preferred and nonpreferred trials during both encoding and maintenance\"; readings are (a) encoding against maintenance within preferred and within nonpreferred trials (the code, lines 138-139, run once per trial type), (b) preferred against nonpreferred within encoding and within maintenance (paired over cells). Reproduced when, under one reading, IN preferred has maintenance above encoding with p < 0.05, IN nonpreferred does not, and PY has no comparison with p < 0.05 (the paper's tests, judged as written)."
+     },
+     {
+      "id": "ext5gh-py-decay-preferred",
+      "statement": "Pyramidal concept cells showed increased decay time constants on preferred trials during encoding and maintenance, an effect absent in interneurons.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 5; Extended Data Fig. 5g,h (not in the text read)",
+      "quote": "Pyramidal concept cells showed increased decay time constants during encoding and maintenance on preferred trials (Wilcoxon signed-rank, Pmax = 0.029), an effect absent in interneurons (all P > 0.05; Extended Data Fig. 5g\u2013h).",
+      "criterion": "No code computes the decay constants per trial type; 06_cell_specific/supp_5g,h.py reads them from the shipped decay_constant_change.xlsx and tests them with a paired t-test, while the paper names a Wilcoxon signed-rank test (the paper's test is used, the t-test is a variant). The paper does not define the \"decay time constants\" of this test; the reading taken is tau_decay of the ACG fit of acg-fit-yield (the only decay constant the Methods define) on the spikes of preferred (or nonpreferred) trials of each epoch, and the outcome rests on it. Open, the trials (load 1 or all loads), both run. Reproduced when, under one reading, PY tau_decay is larger on preferred than nonpreferred trials in both epochs with p < 0.05 and IN has no comparison with p < 0.05."
+     },
+     {
+      "id": "fig6i-py-bin-width-decoding",
+      "statement": "Pyramidal concept cells did not decode the image above chance during load 1 maintenance with 250 and 500 ms bins (26.67%, 23.33%) but did with 750 and 1000 ms bins (40.00%, 43.33%).",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 6; Figure 6i",
+      "quote": "For pyramidal neurons, decoding accuracy did not exceed chance with short temporal windows (250 ms: 26.67%, permutation test, P > 0.05; 500 ms: 23.33%, P > 0.05) ... Accuracy improved with larger windows (750 ms: 40.00%, P = 0.030; 1000 ms: 43.33%, P = 0.030)",
+      "criterion": "The method and trial readings of fig2f-bin-width-decoding with the PY concept cells as the pseudo-population (06_cell_specific/main_6i,j,supp_5i,j.py), BH-FDR over the 12 tests of 4 widths and 3 loads (line 193). Reproduced when, under one reading, the four accuracies are within tolerance, 750 and 1000 ms have corrected p < 0.05 and 250 and 500 ms do not."
+     },
+     {
+      "id": "fig6j-in-bin-width-decoding",
+      "statement": "Interneuron concept cells decoded the image above chance during load 1 maintenance at all bin widths (53.33%, 50.00%, 46.67%, 53.33%), less sensitive to bin width than pyramidal cells.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 7; Figure 6j",
+      "quote": "In contrast, interneurons (n = 14) decoded above chance across all window sizes (250 ms: 53.33%, P = 0.002; 500 ms: 50.00%, P = 0.002; 750 ms: 46.67%, P = 0.002; 1000 ms: 53.33%, P = 0.002; Fig. 6j)",
+      "criterion": "As fig6i-py-bin-width-decoding with the IN concept cells. Reproduced when, under one reading, the four accuracies are within tolerance and each has corrected p < 0.05."
+     },
+     {
+      "id": "fig6kl-cross-temporal-by-type",
+      "statement": "Cross-temporal decoding showed no above-chance generalization for the 11 pyramidal concept cells, while interneuron concept cells decoded above chance in cross-temporal maps.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraphs 6 and 7; Figure 6k,l",
+      "quote": "Cross-temporal decoding showed no above-chance generalization across time even for populations of 11 pyramidal concept cells (Fig. 6k)",
+      "criterion": "The method and readings of fig2d-cross-temporal-localized (06_cell_specific/main_6k,l.py) with PY and with IN concept cells. Reproduced when, under one reading, no off-diagonal train-test pair survives for PY (the paper's test for the absence, the binomial test with FDR and the cluster rule) and at least one cluster survives for IN."
+     },
+     {
+      "id": "ext5ij-load2-decoding-by-type",
+      "statement": "Interneuron concept cells also decoded the second image in load 2 trials above chance at all bin widths, while pyramidal concept cells did not.",
+      "source": "Results, Distinct temporal activity patterns during memory maintenance in interneurons and pyramidal neurons, paragraph 7; Extended Data Fig. 5i,j (not in the text read)",
+      "quote": "Interneurons also decoded the second stimulus in load 2 trials above chance across all windows (all P < 0.05), an effect not observed in pyramidal concept cells (all P > 0.05; Extended Data Fig. 5i\u2013j).",
+      "criterion": "As fig6i-py-bin-width-decoding and fig6j-in-bin-width-decoding on load 2 trials with the second image as label. Reproduced when, under one reading, IN has corrected p < 0.05 at all four widths and PY at none."
      }
     ]
-   }
-  ],
-  "dandi:000469": [
+   },
    {
     "path": "claims/kyzar-2024.yaml",
     "paper": "10.1038/s41597-024-02943-8",
@@ -33313,6 +33539,109 @@
       "source": "Technical Validation, Proportion of selective cells, paragraph 3",
       "quote": "In the MFC, 144 (31.79%) cells qualified as maintenance cells and 122 (26.93%) as probe cells.",
       "criterion": "Per Sternberg unit, all trials, the rate 200 to 1000 ms after probe onset against the encoding rate (200 to 1000 ms) and, separately, against the maintenance rate (0 to 2500 ms), each by a one-sided permutation t-test (probe higher) at P < 0.05; a probe cell passes both (Methods). The Methods do not fix the encoding rate; readings are (i) the rate pooled over the 200 to 1000 ms windows of every encoding period shown in the trial, as the code intends, and (ii) Encoding 1 only. The permutation is read as (a) label shuffling and (b) paired sign flipping, as in maintenance-cells-mfc; 2000 permutations. The code's paired one-sided t-tests, with its Encoding 3 window taken at Encoding 2 onset, are a variant. Percent over the 453 MFC Sternberg units. Reproduced when count and percent are within tolerance under all readings; blocked as methods_underspecified when the readings disagree."
+     }
+    ]
+   }
+  ],
+  "dandi:000289": [
+   {
+    "path": "claims/kutschireiter-2023.yaml",
+    "paper": "10.1073/pnas.2210622120",
+    "check": {
+     "ready": true,
+     "date": "2026-10-23"
+    },
+    "claims": [
+     {
+      "id": "fig1-conflict-decreases-certainty",
+      "statement": "In the circular Kalman filter, an HD observation consistent with the current estimate increases certainty, while one that strongly conflicts with it (opposite direction) decreases certainty.",
+      "source": "Results, Circular Kalman Filtering, HD Observations, paragraph 1; Fig. 1 D and E",
+      "quote": "HD observations increase the observer\u2019s certainty if they are confirmatory ... if HD observations strongly conflict with the current estimate (e.g., if they point in the opposite direction), they actually decrease certainty",
+      "criterion": "The update is the vector addition of Fig. 1 D and E and the observation term of Eq. 9 (kappa changes by kappa_z cos(z - mu) dt). In the code's circKF step (vM_Projection in circularFiltering.py, kappa_phi = 1, kappa_v = 1, dt = 0.01) the observation enters as that vector addition on the natural parameters, followed by the prediction step. Take a state with certainty kappa_t (any of 1, 2, 5) and apply one step with an HD observation at z = mu (confirmatory) and one at z = mu + pi (opposite). The paper fixes no single reliability for this; use the per-step reliabilities the Methods give, xi_fun_inv(gamma_z dt) for gamma_z = 1/s (Fig. 3E) and 10/s (Fig. 2H). Compare (a) the certainty right after the observation update with the certainty before it (the update of Fig. 1 D and E alone, before the prediction step), and (b) the certainty after the full step with the certainty after the same step with no observation (kappa_z = 0). Reproduced when, under both comparisons, every kappa_t and both reliabilities, the confirmatory observation gives higher and the opposite one lower certainty."
+     },
+     {
+      "id": "fig2h-bump-tracks-circkf",
+      "statement": "In a simulated Bayesian ring attractor of 80 neurons, the bump position tracks HD about as accurately as the circular Kalman filter, the bump amplitude tracks the filter's certainty, and when the visual cue is removed the amplitude decays toward its baseline.",
+      "source": "Results, Neural Network Implementation, paragraph 6; Fig. 2H",
+      "quote": "This network exhibits a spatially localized bump whose position tracks HD, with an accuracy similar to that of the circular Kalman filter itself ( Fig. 2 H ). Meanwhile, the amplitude of the bump accurately tracks the fluctuating HD posterior certainty in the circular Kalman filter ... When the visual cue is removed, the bump amplitude decays toward baseline",
+      "criterion": "Run Figure2h.ipynb as released (seed 42, T = 15, dt = 0.01, kappa_phi = 1, kappa_v = 2, N = 80, cue off from 5 to 10 s, information rate 15). The Methods give gamma_z = 10/s; run that as a second reading of the cue strength. Bump position and amplitude are decoded as in the Methods (x = A r, position arctan2(x2, x1), amplitude the vector length), with the notebook's scaling x = (2/N) A r, which puts the amplitude on the scale of kappa. The paper gives no number for \"similar\" or \"accurately\"; readings for both cue strengths: (a) the mean absolute circular difference between the network's and the circKF's HD estimates is smaller than the circKF's own mean absolute error to the true HD, over the whole run; (b) the Pearson correlation between bump amplitude and circKF certainty over the cue periods is at least 0.9. Decay: over the darkness period (5 to 10 s) the bump amplitude falls and ends closer to the baseline kappa* = 1 (Methods, Bayesian ring attractor) than it started. Reproduced when the decay holds and (a) and (b) hold under both cue strengths."
+     },
+     {
+      "id": "fig2i-accuracy-and-certainty-vs-reliability",
+      "statement": "The Bayesian ring attractor tracks HD with the same accuracy as the circular Kalman filter when HD observations are reliable and with slightly lower accuracy when they are unreliable; in the unreliable regime its certainty stays near its baseline and overestimates the filter's certainty.",
+      "source": "Fig. 2I legend; Results, Neural Network Implementation, paragraph 7",
+      "quote": "The Bayesian ring attractor network tracks the true HD with the same accuracy ... if HD observations are reliable and, therefore, more informative but with slightly lower accuracy once they become less reliable, and therefore less informative. This drop co-occurs with an overestimate in the belief\u2019s certainty",
+      "criterion": "From figure2i.npz as Figure2i.ipynb reads it, compare the circKF (vonMises_stats) and the Bayesian ring attractor (vonMises_q_stats) over the 23 information rates (0.01 to 100/s, kappa_v = 1, T = 20). Accuracy is the stored |m1|, certainty the mean final kappa. The paper names no rate that separates reliable from unreliable; readings for the reliable set: (a) rates of 1/s and above, (b) rates of 3/s and above. \"Same accuracy\" readings: the absolute difference is at most (i) 0.01 or (ii) 0.02 at every reliable rate. Reproduced when, under every combination, the accuracies are the same on the reliable set, the attractor's accuracy is below the circKF's at the lowest rates (0.01 to 0.1/s), and at those rates its mean certainty is above the circKF's."
+     },
+     {
+      "id": "fig3b-bayesian-beats-conventional",
+      "statement": "A conventional ring attractor (fast decay to a fixed bump amplitude, with that amplitude optimized) is less accurate than the Bayesian ring attractor at every HD observation reliability, and reaches its accuracy only when observations are highly unreliable.",
+      "source": "Results, Bayesian vs. Conventional Ring Attractors, paragraphs 2 and 3; Fig. 3B",
+      "quote": "Even after this optimization of the conventional ring attractor, it does not rival the accuracy of the Bayesian ring attractor. The Bayesian attractor performs consistently better, regardless of the amount of information available to the network",
+      "criterion": "As in Figure3b,c,e,d_FigureS3.ipynb, the conventional attractor is the fixed-certainty filter (noUncert_stats) at the kappa* that maximizes the prior-weighted average accuracy (objective() with mean 0.5 and SD 1 over log rate, Methods, Performance measures, and Fig. 3B inset); the Bayesian ring attractor is vonMises_q_stats. Reproduced when the Bayesian attractor's accuracy is at least the conventional one's at every one of the 23 rates and strictly above it at every rate from 0.1/s to 10/s. The paper's \"only once HD observations become highly unreliable\" is checked as the difference being smallest at the lowest rates (0.01 and 0.03/s); reported, not judged."
+     },
+     {
+      "id": "fig3c-update-weights",
+      "statement": "The weight given to a new HD observation by the Bayesian ring attractor depends on both the observation's reliability and the current certainty and is close to that of the circular Kalman filter, deviating only for very uninformative observations; a conventional attractor weights observations by their reliability alone.",
+      "source": "Fig. 3C legend; Results, Bayesian vs. Conventional Ring Attractors, paragraph 3; SI Appendix, Fig. S3 legend",
+      "quote": "The update weight of the Bayesian attractor is close to optimal, visually indistinguishable from the circKF",
+      "criterion": "In the notebook, Fig. 3C plots the weight for a 90 degree observation as a map over the observation's and the posterior's informativeness and draws on it each model's mean certainty against information rate: circKF (vonMises_stats[0,:,2]) and Bayesian attractor (vonMises_q_stats[0,:,2]), both as Fisher information xi(kappa); the conventional attractor is a constant kappa*. Compute, at each of the 23 rates, the weight under the circKF's and under the attractor's mean certainty, with the per-observation reliability alpha = xi_fun_inv(rate x Delta t). The Methods and the code differ on the weight: readings (i) the Methods, w = (1/pi) tan^-1(alpha / kappa) with Delta t = 0.01 (10-ms observation, Fig. 3C legend and Methods); (ii) the notebook, w = arctan2(alpha, kappa) / (pi/2) with Delta t = 0.1. The paper gives no bound for \"close\"; readings: the absolute weight difference is at most (a) 0.02 or (b) 0.05 at every rate of 1/s and above. Reproduced when every combination holds and the largest difference falls at rates below 1/s (Fig. S3, \"only deviates ... for very uninformative observations\"). The conventional attractor's weight depending on reliability only follows from its constant kappa* and is not tested."
+     },
+     {
+      "id": "fig3d-best-network-slow-decay",
+      "statement": "Across ring attractors with different bump decay speeds and baseline amplitudes, the best network has a slow decay (low beta) and performs about as well as the Bayesian ring attractor; performance drops as decay speed increases, which a larger baseline amplitude partly offsets.",
+      "source": "Results, Bayesian vs. Conventional Ring Attractors, paragraph 4; Fig. 3D",
+      "quote": "The network with the best performance overall had a slow bump decay speed (low \u03b2 ), as expected ( Fig. 3 D and E ). While it featured similar performance to the Bayesian ring attractor, it had slightly different \u03b2 and \u03ba * parameters ... As the bump decay speed \u03b2 increased further, performance dropped.",
+      "criterion": "figure3d.npz holds MSE_array, the prior-weighted average accuracy over the grid of kappa* (0.1 to 2.5) and beta (0.1 to 8), normalized by the particle filter reference as in the notebook. The Bayesian ring attractor is kappa* = 1, beta = 1/(kappa_phi + kappa_v) = 0.5 (Methods). The best network is the grid maximum. Reproduced when (1) the best beta is at most 1 (the scanned values above 1 are 2, 4 and 8); (2) the best network differs from (1, 0.5) in kappa* or beta; (3) the Bayesian attractor's normalized performance is within 10% of the best (the paper's \"similar\", default tolerance); (4) for beta above the best, the maximum over kappa* falls as beta rises; (5) for beta above the best, the kappa* that maximizes performance is at least the best network's kappa*."
+     },
+     {
+      "id": "fig3f-noise-drop-below-70",
+      "statement": "In a network of 64 neurons with additive neural noise, inference accuracy drops below 70% of its noise-free value once the noise is large enough.",
+      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraph 1; Fig. 3F",
+      "quote": "Indeed, simulating a network of 64 noisy neurons shows that, once the noise becomes sufficiently large, inference accuracy drops to below 70% of its noise-free value",
+      "criterion": "The paper states a bound, so no tolerance applies. The network without retuning keeps the kappa* and beta that are best at noise SD 0 (noretuning_MSE in the notebook). Normalization readings: (a) the notebook's, performance divided by the particle filter reference; (b) the legend's, performance divided by the same network's performance at noise SD 0. Range readings: (i) noise SD up to 10, the plotted range; (ii) up to 20, the largest simulated. Reproduced when the relative performance without retuning is below 70% at the largest noise SD under every combination."
+     },
+     {
+      "id": "fig3f-retuning-reduces-drop",
+      "statement": "Retuning the bump decay speed and baseline amplitude for each noise level reduces the drop in inference accuracy by about 35% compared with the network tuned for noise-free performance, and raises the signal-to-noise ratio.",
+      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraph 3; Fig. 3F; SI Appendix, Fig. S4",
+      "quote": "Indeed, doing so reduced the drop in inference accuracy by about 35% when compared to the network tuned to optimize noise-free performance ( Fig. 3 D and F ) and also boosted the network\u2019s signal-to-noise ratio",
+      "criterion": "From the notebook, retuned performance is the grid maximum at each noise SD (max_MSE), and the untuned one the noise-free optimum's value (noretuning_MSE); signal-to-noise as the notebook computes it (mean kappa over the weighted average, divided by sigma / sqrt(N/2), Methods). The drop is 100% minus relative performance, and the reduction is 1 minus the retuned drop over the untuned drop. The paper does not say at which noise level the 35% is taken; readings: (a) noise SD 10, the largest plotted; (b) noise SD 20, the largest simulated; (c) the mean of the reduction over noise SD 1 to 10. Each under the two normalizations of fig3f-noise-drop-below-70. These are readings of which number the 35% is, so the value part holds when the reduction is within 31.5 to 38.5% under at least one of them (every reading is shown). Reproduced when the value part holds and the retuned signal-to-noise ratio is at least the untuned one at every noise SD above 0. Fig. S4's statement that larger noise needs larger kappa* and beta is reported from the same grid, not judged."
+     },
+     {
+      "id": "noise-effects-on-mu-and-kappa",
+      "statement": "Neural noise makes the bump position diffuse without bias and makes the bump amplitude drift upward and diffuse, which leads to overconfidence; for additive noise, a four-fold larger network halves the noise's effective SD.",
+      "source": "Results, The Impact of Neural Noise on Inference Accuracy, paragraphs 2 and 3; SI Appendix, section 5",
+      "quote": "First, it causes an unbiased random diffusion of \u03bc t and, thus, an increasingly imprecise memory of the HD estimate. Second, it causes a positive drift and random diffusion of \u03ba t",
+      "criterion": "The result is a derivation (SI Appendix, section 5); the Methods give the diffusion SD of kappa under additive noise as sqrt(sigma_nn^2 / N) per unit time. Test it with the code's RNN_filter_Run (with z=None added to its signature, see the code notes above) at the Bayesian ring attractor's parameters (kappa* = 1, beta = 0.5, tau = 1, so w_even = 1.5 and w_quad = 0.5 as in performance_scan_figure3f.py; stoch_corr 0, since it corrects for angular velocity input, which is absent here), with no HD input (I_ext = 0) and no angular velocity input (dy = 0), noise SD 1 and 2, N = 64 and 256, dt = 0.01, from a bump of amplitude 1, over 2,000 runs of T = 5. Reproduced when (1) the mean change of position is within 2 standard errors of 0 and its variance grows with time; (2) the mean amplitude at the end exceeds that of the noise-free run; (3) the SD of the one-step amplitude increments at N = 256 is half that at N = 64, within 10%. The run length, number of runs and starting amplitude are not given by the paper; they are standard choices that set only the precision."
+     },
+     {
+      "id": "fig4b-connectome-motifs",
+      "statement": "The connectivity among EPG, Delta7 and PEN1 neurons in the hemibrain connectome resembles the connectivity of a network that implements the approximate circular Kalman filter, with shifted PEN1 to EPG projections and broad EPG to Delta7 to EPG inhibition.",
+      "source": "Fig. 4 B and C legends; SI Appendix, section 4A",
+      "quote": "The connectivity profile of a recurrent neural network (RNN) ( Fig. 2 D \u2013 F ) that implements an approximate circKF is strikingly similar to the connectivity of neurons in the Drosophila HD system.",
+      "criterion": "Fig. 4B legend: connections from hemibrain:v1.2.1, total synapse count per cell pair as the connection strength, neurons sorted by spatial position as a proxy for preferred HD, Delta7 to Delta7 omitted. The code does not hold this analysis. Sorting is open; readings: (a) by the protocerebral bridge glomerulus in the neuron's name (L9 to R9), (b) by the ellipsoid body or gall position in the name. Reproduced when, under both, (1) PEN1 to EPG connections are offset from the EPG to PEN1 connections, in opposite directions for left and right PEN1 neurons; (2) each Delta7 neuron receives EPG input from, and sends output to, EPG neurons at more than half of the sorted positions (broad inhibition, Fig. 4E)."
+     },
+     {
+      "id": "fig4gh-drosophila-network-matches",
+      "statement": "A Drosophila-like multipopulation network, constrained by the connectome, tracks HD with an accuracy indistinguishable from the idealized Bayesian ring attractor across observation reliabilities.",
+      "source": "Results, Tuning a Biological Ring Attractor, paragraph 3; Fig. 4 G and H",
+      "quote": "We found that this network achieves a HD encoding accuracy which is indistinguishable from that of our idealized Bayesian ring attractor network ( Fig. 4 G and H ).",
+      "criterion": "From figure4g.npz as Figure4g,h.ipynb reads it, compare the Drosophila-like network (CX_stats) with the Bayesian ring attractor (vonMises_q_stats of the same file, same runs, dt = 0.001) at every information rate stored (the 23 rates of performance_scan_figure4g.py, since the notebook's glob over the empty data_raw/figure4g/ yields none). Readings for \"indistinguishable\": the absolute accuracy difference is at most (a) 0.01 or (b) 0.02 at every rate. Reproduced when both hold. The mean certainties (Fig. 4H) are reported, not judged."
+     },
+     {
+      "id": "figs2-performance-independent-of-n",
+      "statement": "The Bayesian ring attractor's inference accuracy depends little on its number of neurons.",
+      "source": "SI Appendix, Fig. S2 legend; Results, Neural Network Implementation, paragraph 6",
+      "quote": "Network inference performance is mostly independent of the number of neurons N in the Bayesian ring attractor network.",
+      "criterion": "figureS2.npz holds accuracy per information rate for N = 3, 4, 8, 16, 32, 64 and 128 (the notebook's N_array), and vonMises_q_stats.npz the quadratic circKF reference. \"Mostly\" is not quantified; readings: for (a) N of 8 and more, (b) N of 16 and more, the accuracy is within 0.02 of the reference at every rate. Reproduced when both hold. The values for N = 3 and 4 are reported."
+     },
+     {
+      "id": "prediction-bump-amplitude-cue-reliability",
+      "statement": "The paper predicts that the bump amplitude in the HD system is higher in the presence of reliable external HD cues, such as salient visual landmarks. The paper does not test this.",
+      "source": "Discussion, paragraph 7",
+      "quote": "Second, we predict that bump amplitude in the HD system should vary dynamically, with higher amplitudes in the presence of reliable external HD cues, such as salient visual landmarks.",
+      "criterion": "The paper gives the measure and nothing else. Bump amplitude is the length of the population vector of the activity's first Fourier component, ordered by preferred HD (Eq. 3; Methods, Simulation parameters, decoder A = (cos phi, sin phi)), in the EPG population that holds the HD bump (SI Appendix, section 4A). The paper does not say how cue reliability is set in an experiment, which activity signal (raw fluorescence or dF/F) feeds the decoder, the time windows, the unit of comparison or a test. Comparison as the paper's text allows: bump amplitude while the fly sees the more reliable cue against the less reliable cue, as the dataset labels them. Readings for the test: (a) per fly, mean amplitude higher with the more reliable cue in more than half of the flies; (b) a one-sided paired Wilcoxon signed-rank test over flies, p below 0.05. Activity signal readings: (i) dF/F, (ii) raw fluorescence minus baseline. Reproduced when every combination finds higher amplitude with the more reliable cue; blocked as methods_underspecified when they differ. The second half of the prediction (a high bump amplitude makes the bump position less sensitive to new cues) has no measure in the paper and is not tested."
      }
     ]
    }
@@ -42448,6 +42777,228 @@
       "source": "Results, Mechanistic model and discussion, paragraph 8; Extended Data Fig. 10i-k",
       "quote": "We found that, by using different learning parameters, our model allows bout-onset seed neurons to induce the formation of a new syllable chain at bout onset",
       "criterion": "As model-ed10ad-bout-onset with the Methods' parameters for this case (seed input 2.5 Wmax throughout; beta 0.13, eta 0.05, epsilon 0.15; m 5 to 2.5; gamma 0.01 to 0.05). Reproduced when at the end there are neurons specific to the bout-onset element and neurons specific to the protosyllable, and the protosyllable seed neurons are still active on every protosyllable input."
+     }
+    ]
+   }
+  ],
+  "dandi:000727": [
+   {
+    "path": "claims/okuno-2025.yaml",
+    "paper": "10.7554/elife.107990.1",
+    "check": {
+     "ready": true,
+     "date": "2026-11-10"
+    },
+    "claims": [
+     {
+      "id": "fig1-poltcomp-optimal",
+      "statement": "Among the nuisance removal methods tested, polynomial detrending combined with tCompCor gives the best FC-SC correlation and detection for the three ROI types.",
+      "source": "Results, Investigation of the optimal nuisance factor removal method, paragraph 1; Figure 1d to 1f",
+      "quote": "After the comparison of the raw (leftmost) and removal methods for various ROI types, the combination of polynomial detrending [41] & tCompCor [42] was found to yield the optimal results.",
+      "criterion": "For hemibrain 52, SCKm 50 and DistKm 50 ROIs (M5), FlyEM SC, no smoothing (Figure 1 names none, and the code's hemibrain runs use none), the score of M4 for every method in the code's list of 37 combinations (extractROItimeseries.m; global mean, global signal, white matter, 6 and 24 head motion, aCompCor, tCompCor, polynomial). Readings for \"optimal\"; (a) Poly-tCompCor has the highest score with SC (neuron) in each ROI type; (b) it has the highest score averaged over the three ROI types and both SC kinds. Reproduced when (a) or (b) holds; partially reproduced when Poly-tCompCor is within the top three under (b) but neither holds. Rests on O2 and O3."
+     },
+     {
+      "id": "fig2b-distkm-smoothing-optimum",
+      "statement": "For DistKm ROIs spatial smoothing raises FC-SC agreement strongly, and the best kernel is about 23 voxels (52.44 um) across ROI counts.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 1; Figure 2b",
+      "quote": "In DistKm, smoothing was highly effective, and the optimal kernel radius of the Gaussian filter was around 23 voxels (52.44 \u03bcm) for various ROI counts (Fig. 2b).",
+      "criterion": "DistKm at 20, 30, 50, 100, 200, 500 and 1000 ROIs, the seven counts the code's Figure 2 block (checkLargeSmoothingPoltcompByRoinum, its column offsets and commit 999a2f2) is laid out for; the active list at 4b92add, 20, 50, 100, 200, 500 and 1000 (README demo 2), is shown as a variant. Poly-tCompCor, FlyEM SC, smoothing 0 to 30 voxels by 1 (M2). For each count, the size that maximizes the score of M4 with SC (neuron), as the code's max of B per ROI count does. Reproduced when the median of the optimal sizes is within tolerance and the score at the optimum exceeds the unsmoothed score at every count; partially reproduced when smoothing raises the score at every count but the median optimum falls outside tolerance. The optima with SC (synapse) are shown. Rests on O2 and O3."
+     },
+     {
+      "id": "figs2-1b-sckm-smoothing",
+      "statement": "For SCKm ROIs, smoothing does not help below 100 ROIs, while kernels above 16 voxels (36.48 um) help above 100 ROIs.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 1; Extended Data Figure 2-1b",
+      "quote": "In SCKm, smoothing was ineffective for ROI count below 100, while the kernel radius above 16 voxels (36.48 \u03bcm) was effective for ROI count above 100 (Ext.Data.Fig.2-1b).",
+      "criterion": "As fig2b-distkm-smoothing-optimum, on SCKm. Reproduced when, for 20, 30 and 50 ROIs, no smoothing size raises the score of M4 (SC neuron) by more than 0.05 over no smoothing, and for 200 to 1000 ROIs every size from 17 to 30 voxels gives a higher score than no smoothing. The 0.05 margin for \"ineffective\" is not from the paper; the curves are shown so that a reader can judge them. Partially reproduced when one of the two halves holds. Rests on O2 and O3."
+     },
+     {
+      "id": "fig2c-smoothing-plus-poltcomp",
+      "statement": "Smoothing combined with Poly-tCompCor gives significantly higher FC-SC scores than smoothing alone, for SCKm and DistKm.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 1; Figure 2c",
+      "quote": "We found that this combination was significantly more effective than smoothing alone for SCKm and DistKm (Fig. 2c, Mann\u2013Whitney U test p<1.67e-4 Bonferroni corrected).",
+      "criterion": "The code's ranksum block (plotFuncConnectivity.m checkLargeSmoothingPoltcompByRoinum, commented at 4b92add, laid out for counts 20, 30, 50, 100, 200, 500 and 1000) runs six tests, on the score of M4 with SC (neuron), the 31 smoothing sizes 0 to 30 with no nuisance removal against the same with Poly-tCompCor, at the first, fourth and seventh counts (20, 100 and 1000 ROIs) of SCKm and of DistKm; six tests give the 0.001/6 = 1.67e-4 of the legend. Its fifth test compares DistKm raw at 100 with raw at 1000, a slip in the indices; raw against Poly-tCompCor at 100 ROIs is run in its place. Two-sided Mann-Whitney U test. Reproduced when Poly-tCompCor is higher with p < 1.67e-4 in all six; partially reproduced in four or five. The legend's \"at each ROI count\" allows the test at every count of the seven as a variant, shown with SC (synapse). Rests on O2 and O3."
+     },
+     {
+      "id": "figs2-1d-highpass-degrades",
+      "statement": "Adding a temporal high-pass filter to nuisance removal degrades FC-SC agreement.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 1; Extended Data Figure 2-1d",
+      "quote": "the combination of a high-pass filter and nuisance factor removal overlapped for the purpose of noise removal, and the effect was degraded (Ext.Data.Fig.2-1d)",
+      "criterion": "As the code's checkHighpassFilterPoltcompByRoinum (plotFuncConnectivity.m) sets it, DistKm ROIs (legend) at 20, 50, 100, 200, 500 and 1000, Poly-tCompCor, smoothing 23 voxels (s230), FlyEM SC, with high-pass cut-offs 0.1, 0.05, 0.025, 0.02, 0.01, 0.005 and 0.001 Hz (Methods \"from 0.1 Hz to 0.001 Hz\"; extractROItimeseries.m's commented list adds 0.009 and 0.008, shown as a variant), applied after the regression, as extractROItimeseries.m does (MATLAB highpass). Reproduced when, with SC (neuron), the score of M4 with every cut-off is below the score without the filter at four or more of the six counts. Rests on O2 and O3."
+     },
+     {
+      "id": "fig2d-log-decline",
+      "statement": "The best FC-SC correlation falls linearly with the logarithm of the ROI count.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 2; Figure 2d",
+      "quote": "Results showed that the correlation decreased proportionally to the logarithm of the ROI count (Fig. 2d).",
+      "criterion": "As the code's Figure 2d block (\"this is for figure.2 SC-FC corr & detection from 20 to 10000 ROIs\", plotFuncConnectivity.m checkSmoothingPoltcompByLargeRoinum), for SCKm and DistKm at 20, 50, 100, 500, 1000, 5000, 10,000 and 20,000 ROIs, the largest FC-SC correlation (SC neuron, FlyEM, row 7) over the 12 settings of smoothing 0, 3, 8, 15, 23 and 30 voxels with no nuisance removal or Poly-tCompCor. Reproduced when, for each ROI type, the slope of r on log10(ROI count) is negative and the Pearson correlation of r with log10(count) is -0.9 or lower (a standard bar for \"linear\", not the paper's). Partially reproduced when it holds for one type. Rests on O2 and O3."
+     },
+     {
+      "id": "fig2d-fly-values",
+      "statement": "The fly FC-SC correlation is 0.71 to 0.81 at about 50 ROIs and 0.6 to 0.67 at about 1000 ROIs (SCKm and DistKm), against 0.66 and 0.54 in humans.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 2; Figure 2d",
+      "quote": "At approximately 50 ROIs, the difference was nearly 1.08-fold to 1.22-fold (r=0.66 for humans and r=0.71-0.81 for flies [SCKm, DistKm]); by contrast, at approximately 1,000 ROIs, the difference was roughly 1.12-fold to 1.24-fold (r=0.54 for humans and r=0.6-0.67 for flies)",
+      "criterion": "FC-SC correlation as in fig2d-log-decline at 50 and at 1000 ROIs, SCKm and DistKm with SC (neuron), as Figure 2d plots (legend \"FC-SC correlation (neuron)\"; code row 7 only). The human values are from the literature and are not tested. A reported range holds inside the range widened by 10% of each bound (0.639 to 0.891 at 50 ROIs, 0.54 to 0.737 at 1000). Reproduced when both values at 50 ROIs and both at 1000 ROIs lie in their widened ranges. Rests on O2 and O3."
+     },
+     {
+      "id": "fig2d-ten-thousand-rois",
+      "statement": "At about 10,000 ROIs the fly FC-SC correlation is 0.46 to 0.57.",
+      "source": "Results, Comparison of the FC-SC correlation between humans and flies, paragraph 2; Discussion, paragraph 3",
+      "quote": "The difference was slightly larger (1.21 to 1.5-fold ... r=0.378 for marmosets and r=0.46-0.57 for flies) than the marmoset results at around 10,000 ROIs",
+      "criterion": "As fig2d-fly-values, at 10,000 ROIs (code atlases hemiCmkm10000 and hemiDistKm10000). Reproduced when both values lie in the range widened by 10% of each bound, 0.414 to 0.627. Rests on O2 and O3."
+     },
+     {
+      "id": "discussion-twenty-rois",
+      "statement": "With optimal nuisance removal and smoothing the FC-SC correlation reaches 0.87 at 20 ROIs, and 0.928 with Spearman correlation.",
+      "source": "Discussion, paragraph 3",
+      "quote": "Through optimal nuisance factor removal and smoothing, we achieved r=0.87 at 20 ROIs. Furthermore, by applying Spearman correlation instead of Pearson, we obtained r=0.928.",
+      "criterion": "The paper does not name the ROI type, SC kind or smoothing grid. Readings; SCKm or DistKm at 20 ROIs, SC (neuron) or (synapse), the largest Pearson r and the largest Spearman r (the code's SR, on the same elements as M4) over (a) Poly-tCompCor with smoothing 0 to 30 by 1 (Figure 2b grid, whose block plots both), or (b) the 12 settings of fig2d-log-decline. Reproduced when, under one reading, both values are within tolerance. Rests on O2 and O3."
+     },
+     {
+      "id": "fig3d-confidence-threshold",
+      "statement": "Raising the FlyEM synapse confidence threshold to 0.8 increases the FC-SC correlation.",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3d; Extended Data Figure 3-1b",
+      "quote": "we set the confidence threshold of 0.8 as high as possible, thereby increasing the FC-SC correlation (Fig. 3d, ExtFig.3-1b)",
+      "criterion": "63 hemibrain primary ROIs, no smoothing, Poly-tCompCor (the code's combination index 4 in plotStructConnectivity.m), SC (neuron) from FlyEM at confidence 0.5, 0.6, 0.7, 0.8 and 0.9. Reproduced when the FC-SC correlation at 0.8 exceeds that at 0.5, 0.6 and 0.7. Rests on O2 and O3."
+     },
+     {
+      "id": "fig3d-flyem-vs-flywire",
+      "statement": "Against the same FC, FlyEM gives a higher matrix-level FC-SC correlation than FlyWire (0.73 against 0.68).",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3d",
+      "quote": "As a result, FlyEM r=0.73 differed from FlyWire r=0.68 at the matrix level (Fig. 3d).",
+      "criterion": "63 hemibrain primary ROIs, no smoothing, Poly-tCompCor (the code's combination index 4), SC (neuron), FlyEM confidence 0.8 and FlyWire cleft score 140 (M4). Reproduced when both values are within tolerance and FlyEM is higher; partially reproduced when FlyEM is higher but a value is outside tolerance. Rests on O2 and O3."
+     },
+     {
+      "id": "fig3e-flyem-higher-most-regions",
+      "statement": "Per region, FlyEM gives the higher FC-SC correlation in 58 of the 63 primary neuropils, FlyWire in 5.",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3e",
+      "quote": "In the FC-SC correlation of each region, FlyEM had higher values in most regions at 58:5 (Fig. 3e, ExtFig.3-1a).",
+      "criterion": "The code's per-region FC-SC correlation (analyzeFuncConnectivity.m, roiR column 7); for region i, the Pearson r between log10(SC neuron) of row i and column i stacked and |mean z-FC| of row i and column i stacked, with the settings of fig3d-flyem-vs-flywire. Reproduced when the count is within tolerance. Rests on O2 and O3."
+     },
+     {
+      "id": "fig3g-transmitter-correlation",
+      "statement": "Across regions, the FC-SC correlation rises with the share of cholinergic output neurons (r = 0.39, p = 0.0013) and falls with the share of GABAergic ones (r = -0.25, p = 0.046).",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3g",
+      "quote": "The analysis of the relationship between this ratio and FC-SC correlation in each neurotransmitter revealed significant correlations for acetylcholine (r=0.39, p=0.0013) and GABA (r=-0.25, p=0.046).",
+      "criterion": "As plotStructConnectivity.m showNeuralTransmitter, the per-region FC-SC correlation of fig3e-flyem-higher-most-regions with FlyWire sc140 SC (no smoothing, Poly-tCompCor), against each region's share of output neurons of each predicted transmitter (FlyWire), Pearson r and its p over the 63 regions. Reproduced when both r are within tolerance and both p < 0.05; partially reproduced when the signs hold and p < 0.05 for one. The other four transmitters are shown. Rests on O2 and O3."
+     },
+     {
+      "id": "fig3a-postsynapse-counts",
+      "statement": "In the hemibrain region FlyEM has 21.4 million post-synapses at confidence 0 and FlyWire 18.8 million at cleft score 50; FlyWire at cleft score 140 has about 11.4 million, matched to FlyEM at confidence 0.8.",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3a",
+      "quote": "FlyEM has a synaptic \u201cconfidence\u201d threshold and contains 21.4 million post-synapses in the hemibrain region at its initial value of 0. ... FlyWire has a \u2018CleftScore\u2019 [17] threshold and 18.8 million post-synapses at its initial value of 50. ... Then we adjusted the CleftScore to 140, which has a post-synapse number of approximately 11.4 million",
+      "criterion": ""
+     },
+     {
+      "id": "fig3c-regional-detection",
+      "statement": "FlyEM detects more synapses in the mushroom bodies and the central complex (EB, FB, NO, PB), FlyWire more in the optic lobe (LO, ME) and the periesophageal neuropils (CAN, FLA).",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3c",
+      "quote": "FlyEM had more synapses in the mushroom bodies (aL, bL, etc.) and in the major neuropils of the central nervous system (CNS; EB, FB, NO, and PB). In comparison, FlyWire had more synapses in the visual system (LO and ME) and in the periesophageal neuropils (CAN and FLA; Fig. 3c)",
+      "criterion": "Post-synapse count per hemibrain primary ROI, FlyEM cf0.8 against FlyWire sc140 (Figure 3c legend). Reproduced when FlyEM's count is higher in EB, FB, NO and PB and in the mushroom body ROIs, and FlyWire's is higher in LO, ME, CAN and FLA. \"Mushroom bodies (aL, bL, etc.)\" is open; readings (a) aL and bL, (b) every mushroom body ROI among the 63 primary ROIs of the atlas (data/hemiroi.mat); reproduced under either."
+     },
+     {
+      "id": "figs3-1a-regional-count-similarity",
+      "statement": "Regional post-synapse counts of FlyEM and FlyWire over the 63 primary ROIs correlate with Pearson r = 0.778, Spearman r = 0.9, and Pearson r = 0.919 on log10 counts.",
+      "source": "Extended Data Figure 3-1a",
+      "quote": "The Pearson correlation is not so similar, r=0.778, but the Spearman correlation is much more similar, r=0.9. ... Pearson correlation shows r=0.919, a higher similarity.",
+      "criterion": ""
+     },
+     {
+      "id": "fig3f-output-transmitters",
+      "statement": "Across the primary ROIs, output neurons are mostly cholinergic (62.8% +- 14.2%), then glutamatergic (15.5% +- 9.2%) and GABAergic (11.4% +- 8.2%).",
+      "source": "Results, Comparison between FlyEM and FlyWire connectome data, paragraph 1; Figure 3f",
+      "quote": "The highest percentage was acetylcholine (62.8%\u00b114.2%), followed by glutamine (15.5%\u00b19.2%), then GABA (11.4%\u00b18.2%) in neurotransmitter output.",
+      "criterion": ""
+     },
+     {
+      "id": "figs3-2cd-apl-similarity",
+      "statement": "The APL right neuron occupies a similar volume in FlyEM and FlyWire (Dice 0.716), but its voxelwise post-synapse counts correlate weakly (r = 0.104), more after smoothing (0.379 at 2 voxels, 0.66 at 8 voxels).",
+      "source": "Extended Data Figure 3-2c and 3-2d",
+      "quote": "S\u00f8rensen-Dice index (0.716) shows similarity ... Pearson correlation shows r=0.104, so not similar at all. ... Similarity was increased (r=0.379). ... Similarity was increased (r=0.66).",
+      "criterion": ""
+     },
+     {
+      "id": "fig4b-ppssi-distribution",
+      "statement": "Over the 139,255 FlyWire neurons the PPSSI histogram resembles a normal distribution with a mean near 0.5, so many neurons have unsegregated synapses.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraph 1; Figure 4b; Methods, PPSSI",
+      "quote": "Fig. 4b shows the result of applying PPSSI to 139,255 whole-brain neurons of FlyWire. The result showed a histogram resembling a normal distribution.",
+      "criterion": "PPSSI as M7. Reproduced when the neuron count matches and the mean PPSSI is within 0.4 to 0.6 (the Methods' \"its mean is close to 0.5\", read with a 0.1 margin, a choice made here)."
+     },
+     {
+      "id": "fig4a-unsegregated-ranking",
+      "statement": "The unsegregated ranking puts APL and CT1 cells in the top four places in FlyWire, and APL first in FlyEM.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraph 1; Figure 4a; Extended Data Figure 4-1a",
+      "quote": "APL and CT1 cells occupied the top 1\u20134 positions, indicating that we efficiently extracted unsegregated neurons (Fig. 4a, Ext.Data.Fig.4-3a). APL was also at the top for FlyEM",
+      "criterion": "Ranking by (1 - PPSSI) log10(W) (M7). Reproduced when ranks 1 to 4 in FlyWire are all APL or CT1 cells and rank 1 in FlyEM is APL."
+     },
+     {
+      "id": "fig4c-segregated-ranking",
+      "statement": "The segregated ranking puts OA-AL2b2 cells first and second in FlyWire, and AOTU019_R first and DNa02_R second in FlyEM.",
+      "source": "Figure 4c; Extended Data Figure 4-1c",
+      "quote": "Segregated first (OA-AL2b2 cell) and second (OA-AL2b2 cell) ranking in FlyWire (sc140) connectome data.",
+      "criterion": "Ranking by PPSSI log10(W) (M7). Reproduced when the two top FlyWire cells are OA-AL2b2 and the two top FlyEM cells are AOTU019_R and DNa02_R."
+     },
+     {
+      "id": "figs4-1ij-segregation-index-biased",
+      "statement": "The segregation index of Schneider-Mizell et al. is heavily biased toward 0, with a mean much closer to 0 than to 0.5, in both connectomes.",
+      "source": "Methods, PPSSI, last paragraph; Extended Data Figure 4-1i and 4-1j",
+      "quote": "Despite the [0 1] range of indices, the histogram is heavily biased toward 0 because of the use of the logarithm, and the mean is much closer to 0 than 0.5 (Ext.Data.Fig.4-1i, j).",
+      "criterion": "Segregation index on the DBSCAN clusters as plotNeuralFC.m computes it (1 - S/Snorm, with entropy terms; 1 for neurons with only inputs or only outputs). Reproduced when the mean is below 0.25 in both connectomes and below the PPSSI mean of fig4b-ppssi-distribution. The 0.25 bound for \"much closer to 0\" is a choice made here."
+     },
+     {
+      "id": "fig4e-unsegregated-higher",
+      "statement": "The SC matrix of unsegregated synapses (cPPSSI 0 to 0.1) has a significantly higher FC-SC correlation than 99 random synapse samples of matched size, for both neuron and synapse SC.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraph 2; Figure 4e",
+      "quote": "The FC-SC correlations of the SC matrices (unsegregated synapses) of neurons and synapses were significantly higher than those of the randomly extracted samples (Fig. 4e, p=0, 6.5e-43",
+      "criterion": "M6 with the synapses of FlyWire sc140 whose pre-side and post-side cPPSSI are both in [0, 0.1) (M7; code target sp10db3000mi1_only1). For neuron and synapse SC, reproduced when the unsegregated FC-SC correlation is above the null mean with p < 0.05/6 for both; partially reproduced for one. The paper's check that the null totals match the selected total (p=0.832) tests the null's construction, not the finding; it is rerun and shown, and a null whose totals differ at p < 0.05 makes the test invalid as built. Rests on O2 and O3."
+     },
+     {
+      "id": "fig4f-segregated-lower",
+      "statement": "The SC matrix of highly segregated synapses (cPPSSI 0.9 to 1) has a significantly lower FC-SC correlation than random synapse samples.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraph 2; Figure 4f",
+      "quote": "A similar analysis was performed on synapses with a cPPSSI of 0.9\u20131, which surprisingly showed a significantly lower FC-SC correlation (Fig. 4f, p=9.2e-14, 0",
+      "criterion": "As fig4e-unsegregated-higher, with segregated synapses. Which synapses is open; readings (a) the code's (target sp90db3000mi1, rtype 0 in makeSCcountMatrixFw.m), every synapse not having both sides in [0, 0.9), so a synapse with either side at 0.9 or more is kept, (b) both sides at 0.9 or more, as \"synapses with a cPPSSI of 0.9-1\" and the selection of fig4e-unsegregated-higher read. The code's reading is the main one. Reproduced when the FC-SC correlation is below the null mean with p < 0.05/6 for neuron and synapse SC; partially reproduced for one. Rests on O2 and O3."
+     },
+     {
+      "id": "fig4i-reciprocal-higher",
+      "statement": "The SC matrix of reciprocal synapses within 2 um has a significantly higher FC-SC correlation than random synapse samples.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraph 3; Figure 4i",
+      "quote": "The comparison of the SC matrix based on reciprocal synapses (<2 \u03bcm) with the null SC matrices showed that the FC-SC correlation was significantly higher (Fig. 4I, p=0, 2.7e-32",
+      "criterion": "As fig4e-unsegregated-higher, with the reciprocal synapses whose shortest reciprocal distance is below 2 um on both the pre and the post side (code target rc20_only1, makeSCcountMatrixFw.m, which uses \"<\"; the legend's \"\u2264 2\u03bcm\" differs only at the bound). Reproduced when the FC-SC correlation is above the null mean with p < 0.05/6 for neuron and synapse SC; partially reproduced for one. Rests on O2 and O3."
+     },
+     {
+      "id": "figs4-1-flyem-permutation",
+      "statement": "The same three results hold with the FlyEM connectome, unsegregated and reciprocal synapses higher and segregated synapses lower than random samples.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraphs 2 and 3; Extended Data Figure 4-1d, 4-1e and 4-1h",
+      "quote": "",
+      "criterion": "M6 with FlyEM cf0.8 synapses (the code's commented hb0sr80 targets and nulls in plotFuncConnectivity.m). Reproduced when all three directions hold at p < 0.05/6 for SC (neuron); partially reproduced when two do. Rests on O2 and O3."
+     },
+     {
+      "id": "fig4h-reciprocal-distances",
+      "statement": "Reciprocal synapses are particularly abundant within 2 um, and most are cholinergic or GABAergic.",
+      "source": "Results, Unsegregated synapses contribute considerably to functional connectivity, paragraph 3; Figure 4h",
+      "quote": "They are particularly abundant within 2 \u03bcm (Ext.Data.Fig.4-2a,c for CT1 and APL cells), and acetylcholine and GABA constitute the majority (Fig. 4h).",
+      "criterion": "Histogram of each reciprocal pair's shortest distance (code checkReciprocalSynapseDistanceFw). Reproduced when the histogram's mode lies at or below 2 um and acetylcholine plus GABA make up more than half of the pairs. Reading \"particularly abundant within 2 \u03bcm\" as the mode, and \"majority\" as more than half, are choices made here."
+     },
+     {
+      "id": "fig5b-walking-activation",
+      "statement": "In the group GLM of walking, the LAL, FB, IPS and GNG neuropils show strong activity.",
+      "source": "Results, Region suppression analysis during fly walking, paragraph 1; Figure 5b",
+      "quote": "Similar to the results of Brezovec et al., our findings revealed that LAL, FB, and IPS neuropils showed strong activity; the GNG neuropil, which is highly connected to leg neuropils in the ventral nerve code [51], also exhibited strong activity.",
+      "criterion": "Second-level t map of the walking regressor over the nine flies (M8, O1), height p < 0.001 and the code's cluster extent. Neuropils by O4. \"Strong\" is not defined; readings (a) each of the four neuropils holds voxels of a surviving positive cluster with a peak t at least half the brain-wide maximum, (b) each neuropil's mean t ranks in the top third of neuropils. Reproduced when all four hold under one reading and one atlas; partially reproduced when three do. The code's README prints one positive cluster of 416,801 voxels with peak t = 14.7, to compare with. Rests on O1, O2 and O4."
+     },
+     {
+      "id": "fig5b-walking-suppression",
+      "statement": "The Wedge and AVLP neuropils are inactive or strongly suppressed during walking.",
+      "source": "Results, Region suppression analysis during fly walking, paragraph 1; Figure 5b",
+      "quote": "Conversely, we found inactivity or strong suppression in the Wedge and AVLP neuropils.",
+      "criterion": "As fig5b-walking-activation, the negative contrast. Reproduced when a surviving negative cluster (t below the negative height threshold) lies mainly in WED or AVLP under one atlas (O4), and neither neuropil holds surviving positive voxels covering more than half its volume. The code's README prints two negative clusters (406 voxels, peak t = -6.14 at voxel (82,78,12), and 260 voxels, peak t = -5.65 at (174,80,15)), to compare with. Partially reproduced when one of the two neuropils meets this. Rests on O1, O2 and O4."
+     },
+     {
+      "id": "fig5-wagn",
+      "statement": "The left Wedge-AVLP GABA neuron has unsegregated synapses (PPSSI 0.133), receives 212 synapses from 22 ascending neurons and sends 65 to WPNb, and its closest WPNb output to AN input distance is 852.3 nm.",
+      "source": "Results, Region suppression analysis during fly walking, paragraphs 1 and 2; Figure 5d to 5g",
+      "quote": "the left WAGN was strongly interconnected with WPNb tier 2/3 [54] and received input from 22 ascending neurons (ANs; Fig. 5d) ... it has highly unsegregated synapses (PPSSI=0.133). ... It received input from ANs (212 synapses) mainly on the ventral side, and outputs to WPNb (65 synapses) ... the closest distance was 852.3 nm (Fig. 5g)",
+      "criterion": "The PPSSI is M7 on FlyWire sc140. The 22 ANs are from the network graph of Figure 5d (codex, sc50, connection threshold above 5). The paper does not say at which threshold the 212 AN synapses, the 65 WPNb synapses and the 852.3 nm distance were counted; readings (a) sc50 with the connection threshold of Figure 5d, (b) sc140, as Figure 5c and the PPSSI use. Reproduced when every value is within tolerance under one reading."
      }
     ]
    }
@@ -81912,7 +82463,7 @@
   "dandi:001193": "zhu-2022",
   "dandi:001177": "zhuang-2025"
  },
- "generated": "2026-11-10T05:10:36+00:00",
+ "generated": "2026-11-10T05:13:33+00:00",
  "queue_generated": "2026-11-05T14:39:45+00:00",
  "queue_counts": {
   "public_dandisets": 672,
@@ -342781,27 +343332,27 @@
    },
    "001212": {
     "kind": "full",
-    "hours": 0.16626795305555575
+    "hours": 0.11706625111111135
    },
    "000489": {
     "kind": "full",
-    "hours": 2.3587679530555556
+    "hours": 2.3095662511111117
    },
    "000448": {
     "kind": "full",
-    "hours": 2.3587679530555556
+    "hours": 2.3095662511111117
    },
    "000548": {
     "kind": "full",
-    "hours": 2.3587679530555556
+    "hours": 2.3095662511111117
    },
    "000549": {
     "kind": "full",
-    "hours": 2.3587679530555556
+    "hours": 2.3095662511111117
    },
    "001349": {
     "kind": "full",
-    "hours": 2.395156841944445
+    "hours": 2.34595514
    },
    "001425": {
     "kind": "full",
@@ -342809,43 +343360,47 @@
    },
    "000055": {
     "kind": "full",
-    "hours": 2.6279346197222226
+    "hours": 2.578732917777778
    },
    "000987": {
     "kind": "full",
-    "hours": 1.8754346197222223
+    "hours": 1.8262329177777779
    },
    "001530": {
     "kind": "full",
-    "hours": 0.7096012863888889
+    "hours": 0.6603995844444445
    },
    "001037": {
     "kind": "full",
-    "hours": 1.9034901752777778
+    "hours": 1.8542884733333334
    },
    "000623": {
     "kind": "full",
-    "hours": 1.9784901752777777
+    "hours": 1.929288473333333
    },
    "001454": {
     "kind": "full",
-    "hours": 0.6489068419444445
+    "hours": 0.59970514
    },
    "000978": {
     "kind": "full",
-    "hours": 4.058490175277778
+    "hours": 4.009288473333334
    },
    "000458": {
     "kind": "full",
-    "hours": 4.162379064166667
+    "hours": 4.113177362222222
    },
    "000727": {
     "kind": "full",
-    "hours": 4.1715457308333335
+    "hours": 4.1223440288888895
    },
    "001436": {
     "kind": "full",
-    "hours": 2.097101286388889
+    "hours": 2.0478995844444445
+   },
+   "000469": {
+    "kind": "full",
+    "hours": 4.148732917777778
    }
   }
  },
