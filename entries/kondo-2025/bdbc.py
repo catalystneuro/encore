@@ -8,7 +8,7 @@ session (``task``), a resting-state session (``resting-state``) or a sensory-map
 (``sensory-stim``). The functions below read only what the analysis needs and return small
 per-session summaries, so the notebook can map them over sessions in parallel processes.
 
-Where the parameters come from (claims file ``claims/001425/10.1101-2025.02.03.631599.yaml``,
+Where the parameters come from (claims file ``claims/kondo-2025.yaml``,
 "criterion"; the paper, Methods, cited by section; or a standard choice that cannot change a
 result, said to be one):
 
@@ -22,14 +22,22 @@ result, said to be one):
   range; claims fig6b-*).
 - ``BASE_MOVE = (-1.0, -0.5)``: the keypoint baseline window, and the 2 and 3 s.d. onset rules
   (``onset_time``), are the claims file's standard choices for fig6b-movement-order.
+  ``SUSTAIN_S = 0.1``: the variant of the onset rule that requires the trace to stay outside the
+  band for at least 100 ms (3 samples at 30 Hz) is an assumption, added after the verifier found
+  that the rule as written fires on traces without movement; it is the verifier's example of a
+  sustained-crossing rule, and a common guard against single-sample crossings.
 - ``SENSORY_WINDOW_S = 2.0``: the response is the trial average over 2 s from stimulus onset
   (Figure 4d legend); ``SENSORY_PRE_S = 2.0`` the pre-stimulus baseline of reading (2b) of
   fig4d-visual-map.
-- ``N_BLUE_FRAMES = 8``: the raw blue fluorescence of a session (claim
-  methods-no-signal-degradation, reading (a)) is the median over 8 evenly spaced frames of the
-  ROI-mean intensity. The criterion asks for the median over all frames; reading every frame
-  (54000 of 288 x 288 pixels, about 0.6 s each over the network) does not fit the time limit,
-  so this is a subsample, recorded as a deviation.
+- ``N_BLUE_BLOCKS, BLUE_BLOCK_LEN = 16, 10``: the raw blue fluorescence of a session (claim
+  methods-no-signal-degradation, reading (a)) is the median, and the mean, of the ROI-mean
+  intensity over 16 evenly spaced blocks of 10 consecutive frames (160 frames). The criterion asks
+  for the median over all frames (or the session mean of the stack, where no raw ROI series is
+  held, as here); reading all 54000 frames of every session (288 x 288 pixels, about 3.6 ms a
+  frame) does not fit the time limit, so this is a subsample, recorded as a deviation. A spread
+  frame costs about 0.3 s to reach over the network and a consecutive one about 4 ms, hence
+  blocks. ``blue_full`` reads every frame of a few sessions, to measure the subsampling error of
+  this measure and of the 8 single frames used in the first round.
 - ``PUPIL_MAX_PX = 300``: pupil diameters that are not finite, not positive or wider than the
   300 x 300 pixel eye video are set missing before averaging (a standard cleaning step; the
   archive's diameters include values of 1e5 pixels and more, see the notebook).
@@ -70,7 +78,8 @@ PRE_S, POST_S = 1.0, 3.0
 BASE_MOVE = (-1.0, -0.5)
 SENSORY_WINDOW_S = 2.0
 SENSORY_PRE_S = 2.0
-N_BLUE_FRAMES = 8
+N_BLUE_BLOCKS, BLUE_BLOCK_LEN = 16, 10
+SUSTAIN_S = 0.1
 CLOCK_SHIFTS_S = (-6.0, -3.0, 0.0, 3.0, 6.0)
 PUPIL_MAX_PX = 300.0      # width of the eye video (its `dimensions`); see task_session
 
@@ -101,7 +110,7 @@ def list_assets(version=DANDISET_VERSION) -> pd.DataFrame:
     parsed = df["path"].str.extract(pat)
     df = pd.concat([df, parsed], axis=1)
     df["day"] = pd.to_numeric(df["day"])
-    df["kind"] = np.where(df["path"].str.endswith(".nwb"), "nwb", "mp4")
+    df["kind"] = df["path"].str.extract(r"\.([A-Za-z0-9]+)$")[0].str.lower().fillna("none")
     return df
 
 
@@ -173,6 +182,9 @@ def session_meta(asset_id: str) -> dict:
         out["trial_cols"] = "|".join(f["intervals/trials"].attrs.get("colnames", [])) if "intervals/trials" in f else ""
         out["acq"] = "|".join(sorted(f["acquisition"].keys()))
         out["analysis"] = "|".join(sorted(f["analysis"].keys())) if "analysis" in f else ""
+        names = []
+        f["processing/ophys"].visit(lambda k: names.append(k) if k.count("/") <= 1 else None)
+        out["ophys"] = "|".join(sorted(names))
         out["lever_unit"] = (f["acquisition/lever/data"].attrs.get("unit") if "acquisition/lever" in f else None)
     return out
 
@@ -213,6 +225,7 @@ def task_session(asset_id: str) -> dict:
         # --- raw 5 kHz channels: lever, tone, reward, state_lever
         lev = f["acquisition/lever/data"][:]
         lt = f["acquisition/lever/timestamps"][:]
+        out["lever_dt"] = (float(np.median(np.diff(lt[:50000]))), float((lt[-1] - lt[0]) / (len(lt) - 1)))
         tone_on = lt[_rising(f["acquisition/tone/data"][:])]
         rew_on = lt[_rising(f["acquisition/reward/data"][:])]
         out["raw_tone_onsets"] = tone_on
@@ -242,13 +255,13 @@ def task_session(asset_id: str) -> dict:
         lev30 = f["processing/downsampled/lever/data"][:]
         out["ds_reward_onsets"] = t30[_rising(f["processing/downsampled/reward/data"][:])]
         out["ds_tone_onsets"] = t30[_rising(f["processing/downsampled/tone/data"][:])]
-        # --- raw blue fluorescence, subsampled frames, mean within each ROI mask
+        # --- raw blue fluorescence, blocks of consecutive frames, mean within each ROI mask
         masks = f["processing/ophys/ImageSegmentation/ROIs/image_mask"][:]
-        nb = f["acquisition/widefield_blue/data"].shape[0]
-        fr = np.linspace(0, nb - 1, N_BLUE_FRAMES + 2).astype(int)[1:-1]
-        blue = np.stack([f["acquisition/widefield_blue/data"][i].astype(float) for i in fr])
-        out["blue_roi"] = np.stack([[b[m].mean() for m in masks] for b in blue])  # frames x ROI
-        out["blue_frames_idx"] = fr
+        bd = f["acquisition/widefield_blue/data"]
+        starts = blue_block_starts(bd.shape[0])
+        W = _mask_weights(masks)
+        out["blue_roi"] = np.concatenate([_roi_means(bd[i:i + BLUE_BLOCK_LEN], W) for i in starts])  # frames x ROI
+        out["blue_block_starts"] = starts
         # --- keypoints and pupil
         has_body = "processing/behavior/body_video_keypoints" in f
         out["has_body_kp"] = has_body
@@ -337,11 +350,20 @@ def _keypoint_lever_corr(f, tr, lev, lt, t30, lev30, kp30):
     return res
 
 
-def onset_time(trace, t, base=BASE_MOVE, nsd=2.0):
-    """First time after the baseline window that ``trace`` leaves its baseline mean +/- nsd s.d."""
+def onset_time(trace, t, base=BASE_MOVE, nsd=2.0, sustain=0):
+    """First time after the baseline window that ``trace`` leaves its baseline mean +/- nsd s.d.
+
+    With ``sustain`` > 0 the trace must stay outside the band for at least ``sustain`` s
+    (``SUSTAIN_S``), counted in samples of ``t``.
+    """
     b = (t >= base[0]) & (t < base[1])
     mu, sd = np.nanmean(trace[b]), np.nanstd(trace[b])
-    after = np.flatnonzero((t >= base[1]) & (np.abs(trace - mu) > nsd * sd))
+    out_ = (t >= base[1]) & (np.abs(trace - mu) > nsd * sd)
+    k = max(int(round(sustain / np.median(np.diff(t)))), 1) if sustain else 1
+    if k > 1:
+        run = np.convolve(out_.astype(int), np.ones(k, int), "full")[k - 1:k - 1 + len(out_)]
+        out_ = run >= k                                 # run[i] = number outside in samples i to i+k-1
+    after = np.flatnonzero(out_)
     return float(t[after[0]]) if len(after) else np.nan
 
 
@@ -454,6 +476,47 @@ def sensory_session(asset_id: str, gap_s=3.0) -> dict:
             pre = np.nanmean(seg[:, :npre, :], axis=(0, 1))
             out["resp"][key] = {"none": post, "baseline": post - pre}
             out.setdefault("clock", {})[key] = _clock_contrast(dff, t30, on)
+    return out
+
+
+# ---------------------------------------------------------------- raw blue stack, every frame
+
+def blue_block_starts(n_frames):
+    """First frames of the ``N_BLUE_BLOCKS`` blocks of ``BLUE_BLOCK_LEN`` frames, evenly spaced."""
+    return np.linspace(0, n_frames - BLUE_BLOCK_LEN, N_BLUE_BLOCKS + 2).astype(int)[1:-1]
+
+
+def _mask_weights(masks):
+    m = masks.reshape(len(masks), -1).astype(np.float64)
+    return (m / m.sum(1, keepdims=True)).T.astype(np.float32)          # pixels x ROI
+
+
+def _roi_means(frames, W):
+    return frames.reshape(len(frames), -1).astype(np.float32) @ W     # frames x ROI
+
+
+def blue_full(asset_id: str, step=250, n_uv=5400) -> dict:
+    """ROI-mean intensity of every frame of the blue stack of one session, with checks.
+
+    Also returns, for the first ``n_uv`` frames, the ROI means of the violet stack, and the
+    session's dFF_B and dFF_V, so that the notebook can tell from the data which stack carries the
+    calcium signal (the files' ``excitation_lambda`` contradicts the stacks' names; finding).
+    """
+    out = {"asset_id": asset_id}
+    with open_nwb(asset_id) as f:
+        W = _mask_weights(f["processing/ophys/ImageSegmentation/ROIs/image_mask"][:])
+        bd = f["acquisition/widefield_blue/data"]
+        n = bd.shape[0]
+        out["blue"] = np.concatenate([_roi_means(bd[i:i + step], W) for i in range(0, n, step)])
+        uv = f["acquisition/widefield_UV/data"]
+        out["uv"] = np.concatenate([_roi_means(uv[i:min(i + step, n_uv)], W) for i in range(0, min(n_uv, n), step)])
+        out["dff_b"] = f["processing/ophys/DfOverF/dFF_B/data"][:]
+        out["dff_v"] = f["processing/ophys/DfOverF/dFF_V/data"][:]
+        out["t30"] = f["processing/ophys/DfOverF/dFF/timestamps"][:]
+        tr = _trial_table(f)
+        out["success_onsets"] = tr.loc[tr["trial_outcome"] == "success", "pull_onset"].dropna().to_numpy()
+    out["eight_frames"] = np.linspace(0, n - 1, 10).astype(int)[1:-1]     # the first round's frames
+    out["block_starts"] = blue_block_starts(n)
     return out
 
 

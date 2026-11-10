@@ -15,10 +15,10 @@ dataset: wide-field calcium imaging (44 Allen CCF ROIs), behavioural sensors and
 | Success rate roughly constant | Blocked: methods underspecified |
 | Ward clustering of T_pull_final gives clusters of 7 and 18 | Reproduced |
 | Cluster A: high early success, high late T_pull_final | Reproduced |
-| Cluster B: rarely high T_pull_final, similar late rates | Reproduced |
+| Cluster B: rarely high T_pull_final, similar late rates | Blocked: methods underspecified |
 | No fluorescence degradation across sessions | Reproduced |
 | MesoNet landmarks agree with manual annotations | Blocked: data missing |
-| Visual, tactile and auditory sensory maps | Reproduced (three claims) |
+| Visual, tactile and auditory sensory maps | Reproduced (three claims; the auditory one with little evidence) |
 | No aberrant short, large transients | Reproduced |
 | DeepLabCut error against manual annotations | Blocked: data missing |
 | Lever-tip keypoint correlates with the lever, R 0.98 | Reproduced |
@@ -33,7 +33,8 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/kondo-2025-01.yaml`](../../attempts/kondo-2025-01.yaml).
 
 - `reproduce_kondo_2025.ipynb`: the analysis. It streams about 400 NWB files, reading only the
-  arrays it needs, and takes about 20 minutes with 8 worker processes.
+  arrays it needs, and every frame of four task sessions, and takes about 25 minutes with 8 worker
+  processes.
 - `bdbc.py`: listing and streaming the files, and the per-session measures (trial outcomes and
   rates, lever and keypoint correlations, pull-aligned averages, sensory responses). Other notebooks
   on this dandiset can import it.
