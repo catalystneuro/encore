@@ -33,7 +33,8 @@ inputs:
     response windows and baseline of compile_all_traces.ipynb, the code's extra exclusion filters of
     Fig2&3_prepare_data.ipynb, the class collapsing of Fig5.ipynb, the band-pass filter and the
     stimulus series of compile_all_traces.ipynb and Fig4_prepare_data.ipynb). Parameters only; no
-    data.
+    data. The code's four band-pass functions are copied into the notebook to check the helper on a
+    toy trace.
   source: https://github.com/venkatachalamlab/whole-brain-chemosensory-responses at commit
     b0dbdbf50c579d056d7991b7612fcff30091ffbd
 outcomes:
@@ -63,7 +64,10 @@ outcomes:
   notes: 86 of 89 canonical classes are responsive under exclusion (a) and 85 under (b), at p <= 0.05
     and at p < 0.05 alike (not responsive AVD, I4 and RMG, and AQR under (b)). Each subclass has 32
     tests (8 cues, 2 windows, 2 sexes), and 22.1% of all tests are significant, so the count is near
-    its ceiling; this is the paper's test as written.
+    its ceiling; this is the paper's test as written. The paper states no chance level. With 32
+    uncorrected tests per class, a class with no effect would be called responsive with probability
+    up to 1 - 0.95^32 = 0.81 if the tests were independent, so about 72 of 89 classes could be
+    expected by chance and the count is weakly diagnostic.
   deviations:
   - The code's identification-confidence filter (conf == 1) cannot be applied; the dandiset has no
     confidence values. Its time ranges to ignore are already blank in the traces; its ganglia to
@@ -80,29 +84,31 @@ outcomes:
     1760 subclass-cue-window sex tests have p <= 0.05, 7.6% after Benjamini-Hochberg over all of
     them.
 - claim: fig5b-layer-counts
-  outcome: partially_reproduced
-  assumed: true
+  outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:fig5b-layer-counts
   measured:
   - 24
   - 24
+  - 35
   - 34
-  - 33
-  - 15
-  - 15
+  - 14
+  - 14
   - 13
   - 11
-  notes: Under exclusion (a) with dimorphism reading (a), sensory 24 responsive and 24 dimorphic, inter
-    34 and 33, motor 15 and 15, pharyngeal 13 and 11. Seven of eight counts are within tolerance
-    under each of the four combinations of exclusion and dimorphism readings; the motor dimorphic
-    count (15 of 15) exceeds 13 plus or minus 1.3 in all four. The outcome rests on the assumed layer
-    of each class.
+  notes: With the layers of Figure 3A and dimorphism reading (a), dimorphic and responsive, all eight
+    counts are within tolerance under both exclusion readings. Exclusion (a), sensory 24 responsive
+    and 24 dimorphic, inter 35 and 34, motor 14 and 14, pharyngeal 13 and 11; exclusion (b), 23 and
+    22, 35 and 34, 14 and 14, 13 and 12. Reading (b), dimorphic alone, has seven of eight within
+    tolerance (motor dimorphic 15). With the assignment the first version assumed (IL1 motor, URB
+    sensory, RMG inter), shown as a variant, seven of eight hold under every combination (motor 15
+    and 15).
   deviations:
-  - The layer of each canonical class is assumed, as the claims file asks (CLASSES, OPEN). The code's
-    neuron_classes.json is not public. The assignment gives the paper's totals (24, 36, 15, 14) with
-    IL1 and URA as motor and RMG, SAA, SAB, SIA and SIB as interneurons; it is listed in the
-    notebook's data check and in chemo.LAYER_CLASSES.
+  - The layer of each canonical class is read from the column groups of Figure 3A (headings Sensory,
+    Interneuron, Motor and Pharyngeal over the subclass labels), as the claims file's CLASSES leaves
+    it OPEN and the code's neuron_classes.json is not public. Collapsed to canonical classes it gives
+    the paper's totals (24, 36, 15, 14), with IL1 sensory, URB an interneuron and RMG a motor neuron;
+    it is listed in the notebook's data check and in chemo.LAYER_CLASSES.
 - claim: fig3-each-stimulus-mixed
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
@@ -115,28 +121,28 @@ outcomes:
     are used, as Figure 5B counts them (claims file, criterion).
 - claim: sensory-dimorphic-and-monomorphic
   outcome: not_reproduced
-  assumed: true
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:sensory-dimorphic-and-monomorphic
   notes: 21 of 24 sensory classes are dimorphic to one cue and monomorphic to another under exclusion
     (a) (ASJ, FLP and OLL have no monomorphic cue) and 20 of 24 under (b) (AQR, IL2, OLL and URX),
     against at least 22. All are dimorphic to at least one cue except IL2 under (b). The sensory
-    classes are those of the assumed layer assignment; the threshold of 22 is the claims file's
-    reading of "nearly every".
+    classes are those of Figure 3A; the threshold of 22 is the claims file's
+    reading of "nearly every". The assignment the first version assumed gives the same counts.
   deviations:
-  - Sensory classes from the assumed layer assignment (see fig5b-layer-counts).
+  - Sensory classes from Figure 3A (see fig5b-layer-counts).
 - claim: layers-sensory-most-dimorphic
   outcome: reproduced
-  assumed: true
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:layers-sensory-most-dimorphic
-  notes: Under reading (c) the share of subclass-cue-window cells that are dimorphic is 0.272 in
-    sensory, 0.198 in inter and 0.171 in motor subclasses under exclusion (a), and 0.265, 0.200 and
-    0.144 under (b). Reading (a), class-cue combinations dimorphic, does not order them (sensory
-    0.484, inter 0.372, motor 0.417); reading (b), responsive, does under exclusion (b) only (0.688,
-    0.566, 0.508). The criterion asks for one reading.
+  notes: With the layers of Figure 3A, under reading (c) the share of subclass-cue-window cells that
+    are dimorphic is 0.260 in sensory, 0.197 in inter and 0.180 in motor subclasses under exclusion
+    (a), and 0.254, 0.198 and 0.150 under (b); under reading (b), the share of class-cue
+    combinations that are responsive, 0.688, 0.566 and 0.517 (a) and 0.677, 0.587 and 0.475 (b).
+    Reading (a), class-cue combinations dimorphic, does not order them (sensory 0.495, inter 0.368,
+    motor 0.408). The criterion asks for one reading. With the assignment the first version assumed,
+    reading (c) holds under both exclusions and reading (b) under exclusion (b) only.
   deviations:
-  - Layers from the assumed assignment (see fig5b-layer-counts).
+  - Layers from Figure 3A (see fig5b-layer-counts).
 - claim: fig3a-osmotic-onset-examples
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
@@ -176,23 +182,21 @@ outcomes:
     holds is the high one.
 - claim: pharynx-dimorphic-food-salt-pheromone
   outcome: reproduced
-  assumed: true
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:pharynx-dimorphic-food-salt-pheromone
   notes: Under both exclusion readings pharyngeal subclasses are dimorphic to food (I4, M2, M5), to
     pheromone (I2, I3, I4, I5, M2, M4, MC, NSM), to low salt (four or five) and to high salt (six).
   deviations:
-  - Pharyngeal classes from the assumed layer assignment; the 14 pharyngeal classes are those of the
-    dandiset's own "pharyngeal" neuron group, so the assumption does not bear on this claim.
+  - Pharyngeal classes from Figure 3A; they are also the dandiset's own "pharyngeal" neuron group.
 - claim: fig2-awa-awb-nociceptive
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:fig2-awa-awb-nociceptive
   notes: AWB responds to sorbitol and CuSO4 in both sexes (p 0.0046 or below at onset). AWA responds
     to sorbitol in hermaphrodites (onset p = 3.5e-11, offset p = 0.00019) but not in males, and to
     CuSO4 in neither sex nor window (smallest p 0.077 under exclusion (a), 0.085 under (b)). Three of
-    the four class-cue pairs hold. The criterion requires all four and names no partial outcome;
-    partially reproduced follows the protocol's definition (holds only in part).
+    the four class-cue pairs hold. The criterion requires all four and names no partial outcome, so
+    the outcome is not reproduced (changed from partially reproduced after round 1).
 - claim: fig2-adf-m2-switch
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
@@ -215,7 +219,11 @@ outcomes:
   blocked_by: data_missing
   notes: The trace tables hold head neurons only. The NeuroPAL segmentations identify tail neurons
     (PHA, PHB, PLM, PVQ, DVA and others), but none has a trace, and the paper says tail neurons were
-    recorded. No other public source of these traces is named in the paper.
+    recorded. A listing of every group and dataset of two files (data check) shows no trace table
+    other than ActivityTraces. The tracked ROIs (TrackedNeuronROIs) include 31 tail neurons with one
+    ROI per volume, but every sampled ROI has coordinates (0, 0, 0), so their traces cannot be
+    re-extracted from the raw volumes at the tracked positions; doing so would mean tracking them
+    again. No other public source of these traces is named in the paper.
 - claim: figs2f-left-right-similar
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
@@ -251,25 +259,30 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:figs3fg-state-dependence-interneurons
-  notes: Of the 24 combinations of the open motor-state details (AVA trace, change measure, fit
-    divided or subtracted) and the two exclusion readings, the interneurons have the highest share of
-    state-dependent dimorphic cells in 22, at q < 0.05 and at p < 0.05 alike; with AVAR alone, the fit
-    divided and (max - min) / mean they do not (sensory 0.43% against inter 0.31% at q < 0.05 under
-    exclusion (a)). With the mean of AVAL and AVAR, the fit divided and (max - min) / mean, the share
-    at q < 0.05 is 0.62% in interneurons against 0% in sensory and motor (exclusion (a)), and at p <
-    0.05 11.6% against 8.6% and 9.7%. The claims file blocks the claim when the motor-state readings
-    disagree (opening comment, READINGS). All shares at q < 0.05 are under 2%. The open details are a
-    question for the paper's authors (findings).
+  notes: Of the 48 combinations of the open motor-state details (AVA trace, change measure, fit
+    divided or subtracted, fit to the whole trace or to its baseline) and the two exclusion readings,
+    the interneurons have the highest share of state-dependent dimorphic cells in 36 at q < 0.05 and
+    in 44 at p < 0.05. Ten of the 12 exceptions at q < 0.05 use the fit to the baseline, under
+    which 0 to 9 of the 640 interneuron cells reach q < 0.05; the other two are AVAR alone, divided
+    by the fit to the whole trace, with (max - min) / mean, under each exclusion reading. Under the main reading (mean of AVAL and AVAR,
+    divided by the whole-trace fit, (max - min) / mean, exclusion a), 0 of 496 sensory, 4 of 640
+    inter and 0 of 400 motor cells have q < 0.05, and 40, 75 and 41 have p < 0.05 (8.1%, 11.7% and
+    10.3%). No combination has more than 13 interneuron cells at q < 0.05. The claims file blocks
+    the claim when the motor-state readings disagree (opening comment, READINGS). The layers of
+    Figure 3A and the earlier assumed ones give the same counts of combinations. The open details
+    are a question for the paper's authors (findings).
   deviations:
-  - The exponential baseline is fitted to the whole AVA trace (a * exp(-t / tau) + c), the 5 s window
-    is the 13 frames before the onset frame, and the subtracted variant adds back the fit's mean;
-    these are standard choices for details the Methods do not give.
+  - The exponential a * exp(-k t) + c is fitted by least squares either to the whole AVA trace or to
+    its baseline, the 10th percentile of each 100-frame bin (Methods, "estimating the baseline using
+    an exponential fit", allows both); the 5 s window is the 13 frames before the onset frame, and
+    the subtracted variant adds back the fit's mean. These are standard choices for details the
+    Methods do not give.
 - claim: figs2c-aib-state
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:figs2c-aib-state
-  notes: All 24 reading combinations meet the criterion. With the mean AVA trace, fit divided, (max -
-    min) / mean, exclusion (a), AIB's high-salt onset response is dimorphic in reverse (p below 1e-4)
+  notes: All 48 reading combinations meet the criterion. With the mean AVA trace, fit to the whole
+    trace and divided, (max - min) / mean, exclusion (a), AIB's high-salt onset response is dimorphic in reverse (p below 1e-4)
     and not in forward (p = 0.12), interaction p = 0.0027; its pheromone onset response has
     interaction p = 0.0012. Offset responses do not meet it.
   deviations:
@@ -278,11 +291,11 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:figs8-state-insensitive
-  notes: All 24 reading combinations meet the criterion. With the mean AVA trace, fit divided, (max -
-    min) / mean, exclusion (a), 81.7% of 672 forward against reverse comparisons over the Figure 2B
+  notes: All 48 reading combinations meet the criterion. With the mean AVA trace, fit to the whole
+    trace and divided, (max - min) / mean, exclusion (a), 81.7% of 672 forward against reverse comparisons over the Figure 2B
     to 2E classes have p > 0.05, and 37 of 48 dimorphic sensory class-cue-window responses (77%) stay
-    dimorphic within the forward or the reverse state. Over all combinations, 79.8% to 87.2% and 69%
-    to 80%.
+    dimorphic within the forward or the reverse state. Over all combinations, 77.8% to 87.2% and 69%
+    to 82%.
   deviations:
   - Motor-state details as in figs3fg-state-dependence-interneurons.
 - claim: fig4c-functional-connectivity-similar
@@ -294,15 +307,15 @@ outcomes:
     under reading (a); with raw traces, R2 = 0.763.
 - claim: fig4-stimuli-correlate-sensory
   outcome: reproduced
-  assumed: true
   notebook: reproduce_seyedolmohadesin_2026.ipynb
   output: claim:fig4-stimuli-correlate-sensory
-  notes: Over the 880 stimulus-subclass pairs, CORRELATION reading (b), mean |r| with sensory
-    subclasses 0.037 in hermaphrodites and 0.038 in males, with interneurons 0.017 and 0.017, with
-    motor neurons 0.016 and 0.015; root mean square r 0.073 and 0.078 against 0.020 to 0.026. The same
-    under reading (a). All correlations are small.
+  notes: Over the 880 stimulus-subclass pairs, with the layers of Figure 3A and CORRELATION reading
+    (b), mean |r| with sensory subclasses 0.035 in hermaphrodites and 0.036 in males, with
+    interneurons 0.017 and 0.018, with motor neurons 0.016 and 0.015; root mean square r 0.071 and
+    0.075 against 0.020 to 0.026. The same under reading (a) and with the earlier assumed layers. All
+    correlations are small.
   deviations:
-  - Layers from the assumed assignment (see fig5b-layer-counts).
+  - Layers from Figure 3A (see fig5b-layer-counts).
 - claim: fig4-pharynx-uncorrelated
   outcome: reproduced
   notebook: reproduce_seyedolmohadesin_2026.ipynb
@@ -326,7 +339,10 @@ outcomes:
     185 in the male matrix and 155 in each Witvliet dataset. Outside the pharynx and the ventral cord,
     83 of 86 sex-shared subclasses (96.5%) have neurons in all four; AVG, SABD and SABV are not in the
     Witvliet datasets. All 14 pharyngeal and 10 ventral cord subclasses are missing from at least one,
-    as the paper says. The six pairs of Figure 4F are among the most synaptically dimorphic pairs the
+    as the paper says; the same with Cook's counts sheets, whose White matrix (452 by 468) differs from
+    the sections one (300 by 453). Known connections read as expected in every sheet (ASHL to AVAL 12
+    synapses in White's counts, 15 in its sections, 8 and 16 in Witvliet's datasets 7 and 8, none
+    from AVAL to ASHL), which checks the parse and orientation of each sheet. The six pairs of Figure 4F are among the most synaptically dimorphic pairs the
     match gives (fig4f-synaptic-top-not-functional), which supports the link.
 - claim: connectome-normalization-sem
   outcome: not_reproduced
@@ -343,7 +359,9 @@ outcomes:
     1.143 (expected 1.14) but its SD 1.68 (2.07), and after normalization the mean SEM rises to 1.32 and
     the SD is 1.55 (expected 0.62 and 0.87). With Cook's synapse counts the values are 0.69 to 0.71 before
     and 0.66 after. The 95% quantiles are 22 to 25 for White's sections and 11 to 13 for the Witvliet
-    counts, so scaling to White's quantile raises the Witvliet weights.
+    counts, so scaling to White's quantile raises the Witvliet weights. The match of the mean SEM
+    before normalization with sections suggests the paper used sections; the other three values
+    still miss.
   deviations:
   - The paper's merged connectome table is not public; the four connectomes are read from the journals'
     supplements, and Cook's synapse counts (SI 3) and EM sections (SI 5) are both run, as the paper does
@@ -382,8 +400,12 @@ outcomes:
     (zero in both sexes) and 13 of 15 connected ones not dimorphic, (ii) 22 of 27 with both sums below
     3 and 4 of 5 connected not dimorphic. With Cook's sections order (i) meets it (20 of 36, 13 of 16)
     and order (ii) does not (10 of 27 unconnected under reading a; 21 of 27 under reading b, with 3 of
-    6 connected not dimorphic). The outcome rests on which form of the Cook connectomes the paper
-    used, which neither the paper nor its code says; the question is in the findings.
+    6 connected not dimorphic). The layers (Figure 3A or the earlier assumed ones), which decide the
+    sensory-sensory exclusion of order (i), do not change these counts. The mean SEM before
+    normalization matches the paper's 1.14 with sections (1.143) and not with counts (0.69 to 0.71),
+    which points to sections; with sections the two orders disagree, and the criterion requires them
+    to agree, so the claim stays blocked whichever form is taken. Neither the paper nor its code says
+    which form or order was used; the question is in the findings.
   deviations:
   - Connectomes rebuilt from their sources (see connectome-normalization-sem).
 - claim: figs20-multihop-no-match
@@ -436,23 +458,26 @@ findings:
 - kind: other
   statement: The traces cover 189 distinct sex-shared neuron names across the 47 animals, where the
     paper says 196 sex-shared neurons were studied.
-- kind: methods_unavailable
-  statement: Question for the paper's authors. Which class is in which layer (sensory,
-    interneuron, motor, pharyngeal) for the counts of Figure 5? The code reads it from
-    neurons/neuron_classes.json, which is not in the repository. This attempt assumed IL1 and URA
-    motor and RMG, SAA, SAB, SIA and SIB interneurons, which gives the paper's totals; the per-layer
-    counts and the sensory-class claims rest on that choice.
+- kind: data_missing
+  statement: In sub-20220327-h2 (the file read for this), the tracked neuron ROIs
+    (processing/NeuroPAL/TrackedNeurons/TrackedNeuronROIs, "Neuron centers as tracked throughout
+    GCaMP video. Formatted as (x, y, z, t)") have x = y = z = 0 in every sampled ROI (every 997th of
+    1130705); only the fourth field, 0 to 4980, varies. The tracked labels include 31 tail neurons
+    with one ROI per volume, whose traces are not in the file, so the tracked positions that would
+    let them be extracted from the raw volumes are missing.
 - kind: methods_unavailable
   statement: Question for the paper's authors. For the motor state from AVA (Methods, Classifying
     motor state), which trace is used (AVAL, AVAR or their mean), how is a change of more than 20%
-    measured, and is the exponential baseline divided or subtracted? Of the 24 combinations run here,
-    22 put the interneurons highest for Figures S3F and S3G and 2 do not, which leaves that claim
+    measured, is the exponential fitted to the whole trace or to its baseline, and is it divided or
+    subtracted? Of the 48 combinations run here (with the two exclusion readings), 36 put the
+    interneurons highest for Figures S3F and S3G at q < 0.05 and 12 do not, which leaves that claim
     blocked.
 - kind: methods_unavailable
   statement: Question for the paper's authors. Which form of the Cook et al. (2019) connectomes, synapse
     counts or EM serial sections, went into the merged table of Figure 4, and over which values is
-    the 95% quantile taken? Neither reproduces the SEMs the Methods report (1.14 falling to 0.62), and
-    the Figure 4G result depends on the choice.
+    the 95% quantile taken? The mean SEM before normalization matches the Methods' 1.14 with sections
+    (1.143) and not with counts (0.69 to 0.71), but neither reproduces the fall to 0.62, and the
+    Figure 4G result depends on the choice and on the order of its exclusions.
 - kind: other
   statement: The connectome table the paper's code reads (prepared by S.J. Cook) is not in the
     repository or the dandiset, nor are neurons/neuron_classes.json, the per-recording spreadsheet of
@@ -462,3 +487,271 @@ findings:
     on response amplitude as a function of stimulus order" (Figure S2E)? A regression on position
     finds none, while a one-way ANOVA over positions finds one under the Methods' exclusion alone (p
     = 0.034) and not with the code's filters (p = 0.056).
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file, with the paper. The verifier queried the archive's
+    API (47 ophys NWB files), re-ran the connectome normalization from the journal supplements, and tested
+    responses, exclude, ttest, subclass, canonical, stimulus_series and ma_past on synthetic inputs, all
+    correct (points 4, 8, 11). Its outcomes agree with the record as it then stood for 33 of 34 claims;
+    it gave fig2-awa-awb-nociceptive as not reproduced. Point 12 found no misreading of the paper in the
+    claims file, so no question was added for a reader. Point 5 (the split of the shared h3 and m3 table)
+    it judged well supported; nothing was changed. It could not check the per-stimulus counts of Figure
+    5B, as Data S4 is not available, nor the recorded-neuron set of the normalization; these stay unchecked.
+    Report in transcripts/seyedolmohadesin-2026/verifier-1-report.md.
+  results:
+  - claim: recordings-animals
+    agrees: true
+    outcome: reproduced
+    reason: The subject descriptions give 22 hermaphrodites and 25 males; the subject ids agree. The data
+      hold 189 sex-shared neurons against the paper's 196, but the criterion counts animals only.
+    response: Outcome kept. No change needed.
+  - claim: fig5b-responsive-classes
+    agrees: true
+    outcome: reproduced
+    reason: '86 classes under exclusion (a) and 85 under (b), against 84 plus or minus 8.4. Problem 7:
+      the paper states no chance level; with 32 uncorrected tests per class a class with no effect is
+      called responsive with probability up to 81%, so about 72 of 89 classes could be expected by chance
+      and the 84/80 counts are weakly diagnostic.'
+    response: Outcome kept. The notes now give the chance expectation (up to 0.81 per class, about 72
+      of 89) and say the count is weakly diagnostic; the paper states no chance level, so it does not
+      change the outcome.
+  - claim: fig5b-dimorphic-classes
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), dimorphic and responsive, 83 and 82; reading (b), dimorphic alone, 86 and 85.
+      All are within 80 plus or minus 8 under both exclusion readings.
+    response: Outcome kept. No change needed.
+  - claim: fig5b-layer-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: '7 of 8 counts are within tolerance in all four combinations; motor dimorphic is always 15
+      against 13 plus or minus 1.3. This rests on the notebook''s own layer assignment (problem 1): only
+      one assignment is run, e.g. IL1 and URA as motor, RMG and RIV as inter; moving one non-dimorphic
+      class such as RMG, AVD or RIV into motor could give 8 of 8. No sensitivity run is shown.'
+    response: Outcome changed to reproduced. The layers are now read from the column groups of the paper's
+      Figure 3A (Sensory, Interneuron, Motor, Pharyngeal over the subclass labels), which give the paper's
+      totals and put IL1 in sensory, URB in inter and RMG in motor. With them all eight counts are within
+      tolerance under dimorphism reading (a) and both exclusions (motor 14 and 14). The earlier assignment
+      is run as a variant (7 of 8 in every combination), and assumed is no longer set.
+  - claim: fig3-each-stimulus-mixed
+    agrees: true
+    outcome: reproduced
+    reason: All 8 cues have at least one dimorphic and one monomorphic class under both exclusion readings.
+    response: Outcome kept. No change needed.
+  - claim: sensory-dimorphic-and-monomorphic
+    agrees: true
+    outcome: not_reproduced
+    reason: 21 of 24 sensory classes under (a) and 20 of 24 under (b), below the 22 required. This depends
+      on which classes count as sensory (problem 1); a different sensory set could flip it.
+    response: Outcome kept. With the sensory classes of Figure 3A (IL1 in place of URB) the counts are
+      still 21 and 20, and the earlier assignment, run as a variant, gives the same; assumed is no longer
+      set.
+  - claim: layers-sensory-most-dimorphic
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c) gives sensory > inter > motor under both exclusions (0.272 > 0.198 > 0.171 and
+      0.265 > 0.200 > 0.144). Reading (a) fails under both; reading (b) holds only under exclusion (b).
+      The layer assignment also feeds this claim (problem 1).
+    response: Outcome kept. With the layers of Figure 3A reading (c) gives 0.260 > 0.197 > 0.180 and 0.254
+      > 0.198 > 0.150, and reading (b) now holds under both exclusions; the earlier assignment is shown
+      as a variant. Assumed is no longer set.
+  - claim: fig3a-osmotic-onset-examples
+    agrees: true
+    outcome: reproduced
+    reason: AWA p = 4e-11, AWB p = 7e-7; ASER p = 0.45 and ASH p = 0.80, both responsive. The same holds
+      under (b).
+    response: Outcome kept. No change needed.
+  - claim: fig2b-bag-high-odor-monomorphic
+    agrees: true
+    outcome: reproduced
+    reason: Readings (a), (b) and (c) all hold under both exclusions. BAG is responsive (p 3e-4 or below)
+      with sex p 0.38 or above.
+    response: Outcome kept. No change needed.
+  - claim: fig3a-ash-stimulus-dependent
+    agrees: true
+    outcome: reproduced
+    reason: High salt p = 8e-13. Sorbitol p = 0.80 and CuSO4 p = 0.13, both responsive. Exclusion (b)
+      agrees.
+    response: Outcome kept. No change needed.
+  - claim: fig3a-aser-salt-concentration
+    agrees: true
+    outcome: not_reproduced
+    reason: Low salt p = 0.055 / 0.059, so not dimorphic. High salt is not responsive (p = 0.72 and 0.33
+      against control).
+    response: Outcome kept. No change needed.
+  - claim: fig2e-i2-dimorphic
+    agrees: true
+    outcome: reproduced
+    reason: Pheromone, osmotic and high salt all have p 0.05 or below at onset under both exclusions.
+      Low salt is not dimorphic.
+    response: Outcome kept. No change needed.
+  - claim: pharynx-dimorphic-food-salt-pheromone
+    agrees: true
+    outcome: reproduced
+    reason: 'Dimorphic pharyngeal classes per cue: food 3 (I4, M2, M5), pheromone 8, low and high salt
+      several, under both exclusions.'
+    response: Outcome kept. The pharyngeal classes are those of Figure 3A, the same 14 as before; assumed
+      is no longer set.
+  - claim: fig2-awa-awb-nociceptive
+    agrees: false
+    outcome: not_reproduced
+    reason: AWA is not responsive to CuSO4; smallest p = 0.077 under (a), 0.085 under (b).
+    response: Outcome changed from partially reproduced to not reproduced, as the verifier gives it. The
+      criterion requires AWA and AWB each to be responsive to both cues and names no partial outcome,
+      unlike the criteria of this claims file that do; three of the four pairs holding does not meet it.
+  - claim: fig2-adf-m2-switch
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (b), dimorphic in the direction of a switch, holds for both ADF and M2 under both
+      exclusions; all four windows have the switch direction. Problem 9: the direction is taken from the
+      window with the smaller p, the author''s choice, but both windows give the same direction, so it
+      does not matter here.'
+    response: Outcome kept. No change needed.
+  - claim: male-specific-unresponsive
+    agrees: true
+    outcome: reproduced
+    reason: 'Significant tests out of 16: CEMD 0, CEMV 2 to 3, MCM 1.'
+    response: Outcome kept. No change needed.
+  - claim: tail-unresponsive
+    agrees: true
+    outcome: blocked
+    reason: No tail neuron has a trace. The archive's API shows 47 ophys NWB files and nothing else. A
+      part could be testable from the raw volumes if they image the tail (NeuroPAL IDs list PLM, PHA,
+      ALN), but that means re-tracking the volumes, too_large and methods. The archive metadata do not
+      show whether other trace tables exist (problem 6); an h5 group listing of one NWB file would show
+      it.
+    response: 'Outcome kept. The data check now lists every group and dataset of two files (one of each
+      sex): there is no trace table other than ActivityTraces. It also reads the tracked ROIs of one file:
+      31 tail neurons are tracked with one ROI per volume, but every sampled ROI has coordinates (0, 0,
+      0), so the tail traces cannot be re-extracted at tracked positions either. This is added to the
+      findings.'
+  - claim: figs2f-left-right-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Band-passed, 77 of 79 classes (herm) and 80 of 82 (male); raw traces, 72 of 79 and 73 of
+      82. Problem 8: chemo.ma_past counts missing values as 0 inside the window; the docstring says this
+      follows the code, which could not be checked.'
+    response: Outcome kept. The code's correct(), band_pass, z_score and ma_past are now copied into the
+      notebook from compile_all_traces.ipynb at the pinned commit and compared with chemo.band_pass on
+      a toy trace with a gap; the largest difference is 0.0 and the missing frames are the same, so the
+      helper is the code's filter.
+  - claim: figs3e-pattern-robust
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), 0.78 / 0.83 of representation-1 classes stay dimorphic under all three. Dimorphic
+      pairs drop from 368 (rep 1) to 262 (rep 2) and 254 (rep 3); exclusion (b) gives 355, 256, 255.
+    response: Outcome kept. No change needed.
+  - claim: figs2e-no-order-effect
+    agrees: true
+    outcome: blocked
+    reason: Under exclusion (a) the one-way ANOVA finds a dependence (p = 0.034) while both regressions
+      do not (p = 0.063 and 0.335). Under (b) all three find none. The readings disagree, so the criterion
+      sends this to blocked.
+    response: Outcome kept. No change needed.
+  - claim: figs3fg-state-dependence-interneurons
+    agrees: true
+    outcome: blocked
+    reason: 'Interneurons are highest in 22 of 24 combinations, not with AVAR / range / divide under either
+      exclusion; the READINGS rule requires all to agree. Problem 2: the Methods fit an exponential to
+      AVA''s baseline and the notebook fits the whole trace, including the reversal bouts; a baseline-only
+      fit is a reading the paper allows and was not run. The q < 0.05 fractions are at most 2% (often
+      0 for sensory and motor), so inter highest rests on a handful of cells. The state labels could not
+      be judged.'
+    response: 'Outcome kept. A baseline-only fit (10th percentile of each 100-frame bin) is now run beside
+      the whole-trace fit, giving 48 combinations: interneurons are highest in 36 at q < 0.05 and 44 at
+      p < 0.05, so the claim stays blocked. The notebook prints the per-layer counts of cells at q < 0.05
+      and p < 0.05 for every combination (at most 13 interneuron cells at q < 0.05), and for three animals
+      the AVA trace with both fits and the state, window ratio and change of every presentation.'
+  - claim: figs2c-aib-state
+    agrees: true
+    outcome: reproduced
+    reason: The criterion is met in 24 of 24 combinations, e.g. high-salt onset interaction p = 0.003.
+    response: Outcome kept. With the baseline-fit readings added it is met in 48 of 48.
+  - claim: figs8-state-insensitive
+    agrees: true
+    outcome: reproduced
+    reason: Met in 24 of 24 combinations; 0.80 to 0.87 of state tests have p > 0.05, and 0.69 to 0.80
+      of dimorphic sensory responses are kept.
+    response: Outcome kept. With the baseline-fit readings added it is met in 48 of 48 (77.8% to 87.2%,
+      and 69% to 82%).
+  - claim: fig4c-functional-connectivity-similar
+    agrees: true
+    outcome: reproduced
+    reason: R2 = 0.806 under reading (b), against 0.8 plus or minus 0.08; reading (a) also gives 0.806.
+    response: Outcome kept. No change needed.
+  - claim: fig4-stimuli-correlate-sensory
+    agrees: true
+    outcome: reproduced
+    reason: Sensory has the highest mean |r| and rms r in both sexes, under both CORRELATION readings.
+      The layer assignment also feeds this claim (problem 1).
+    response: Outcome kept. With the layers of Figure 3A the order holds in every case (sensory 0.035
+      and 0.036, inter 0.017 and 0.018, motor 0.016 and 0.015), and with the earlier assignment as a variant;
+      assumed is no longer set.
+  - claim: fig4-pharynx-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: Pharyngeal-to-other pairs are lowest by both measures, in both sexes and under both readings.
+    response: Outcome kept. No change needed.
+  - claim: fig4-functional-dimorphism-small
+    agrees: true
+    outcome: reproduced
+    reason: 99.98% of the 5,995 pairs are below 0.4.
+    response: Outcome kept. No change needed.
+  - claim: connectome-link
+    agrees: true
+    outcome: reproduced
+    reason: '83 of 86 subclasses outside the pharynx and ventral cord (96.5%) are in all four connectomes.
+      Problem 10: it uses only the sections sheets, whose White cell list (300 by 453) differs from the
+      counts sheet (452 by 468). The Cook counts parse was not checked; a printed known connection (e.g.
+      ASHL to AVAL) from each sheet would settle it.'
+    response: Outcome kept. The link is now run with both Cook forms (83 of 86 with each), and the notebook
+      prints six known connections from every sheet (ASHL to AVAL 12 in White's counts, 15 in its sections,
+      8 and 16 in Witvliet's; AVAL to ASHL 0), which confirm the parse and the orientation.
+  - claim: fig4d-functional-synaptic-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: Slope p = 0.64 with Cook's counts and 0.91 with sections. The variant with regularization
+      3 gives p = 0.009 with counts, but it is a variant only.
+    response: Outcome kept. No change needed.
+  - claim: fig4f-synaptic-top-not-functional
+    agrees: true
+    outcome: reproduced
+    reason: Without functional dimorphism, 35 of 36 (counts) or at least 30 of 36 (sections), and 6 of
+      6 of the Figure 4F pairs. The descriptive part is weak; the top 36 have mean |r| 0.15 to 0.18.
+    response: Outcome kept. No change needed; the notes report the mean |r| as the criterion asks, descriptively.
+  - claim: fig4g-functional-top-not-synaptic
+    agrees: true
+    outcome: blocked
+    reason: 'With Cook''s counts both exclusion orders meet the criterion. With sections, order (ii) fails
+      under both not-connected readings (3 of 6 connected pairs not dimorphic). The orders must agree.
+      Problem 3: sections give a pre-normalization mean SEM of 1.143 (paper 1.14), which suggests the
+      paper used sections. The same layer assignment feeds the sensory-sensory exclusion (problem 1).'
+    response: Outcome kept. The notes and the notebook now draw out that the SEM match points to sections,
+      and that with sections the two orders disagree, so the claim stays blocked whichever form is taken.
+      The sensory-sensory exclusion is run with the layers of Figure 3A and the earlier ones; the counts
+      do not change.
+  - claim: figs20-multihop-no-match
+    agrees: true
+    outcome: reproduced
+    reason: Indirect strength is at least the direct one for 100% of pairs; slope p = 0.215 (counts) and
+      0.963 (sections).
+    response: Outcome kept. No change needed.
+  - claim: connectome-normalization-sem
+    agrees: true
+    outcome: not_reproduced
+    reason: 'None of the four unit-by-set combinations has all four values in tolerance; after normalization
+      the SEM rises with sections (1.32 to 1.41) and barely changes with counts (0.66). Problem 4: the
+      95% quantile of nonzero weights is the author''s own choice, but the verifier re-ran reading (b)
+      from the journal supplements and got the notebook''s numbers exactly; with the quantile over the
+      masked synapses including zeros the after-values are 0.69 (counts) and 1.41 (sections), also outside
+      tolerance. Witvliet''s sheets put the presynaptic cell in columns, so the parse is correct.'
+    response: Outcome kept. The notes now say that the match of the SEM before normalization with sections
+      suggests the paper used sections, and that the other three values miss either way.
+  - claim: figs1-behavior
+    agrees: true
+    outcome: blocked
+    reason: The archive's API confirms the dandiset holds only 47 ophys NWB files and no drop-test data.
+    response: Outcome kept. No change needed.

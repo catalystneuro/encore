@@ -9,9 +9,9 @@ calcium imaging of 22 hermaphrodites and 25 males during three cycles of ten che
 | 22 hermaphrodites and 25 males recorded | Reproduced |
 | 84 of 89 classes responsive | Reproduced |
 | 80 of 89 classes dimorphic | Reproduced |
-| Responsive and dimorphic classes per layer | Partially reproduced (layers assumed) |
+| Responsive and dimorphic classes per layer | Reproduced |
 | Every stimulus has dimorphic and monomorphic classes | Reproduced |
-| Nearly every sensory class dimorphic to one cue and monomorphic to another | Not reproduced (layers assumed) |
+| Nearly every sensory class dimorphic to one cue and monomorphic to another | Not reproduced |
 | Dimorphism less present in interneurons, least in motor neurons | Reproduced |
 | Osmotic onset: ASER, ASH monomorphic; AWA, AWB dimorphic | Reproduced |
 | AWA dimorphic to osmotic stress, BAG monomorphic to high odor | Reproduced |
@@ -19,7 +19,7 @@ calcium imaging of 22 hermaphrodites and 25 males during three cycles of ten che
 | ASER dimorphic to low salt, monomorphic to high salt | Not reproduced |
 | I2 dimorphic to pheromone, osmotic stress and salt | Reproduced |
 | Pharyngeal neurons dimorphic to food, salt and pheromone | Reproduced |
-| AWA and AWB respond to osmotic and toxic stress | Partially reproduced |
+| AWA and AWB respond to osmotic and toxic stress | Not reproduced |
 | ADF and M2 switch between food and pheromone | Reproduced |
 | CEM and MCM predominantly unresponsive | Reproduced |
 | Left and right neurons more alike than other classes | Reproduced |
@@ -44,10 +44,10 @@ reasoning and the differences from the paper's method.
 Two files (20220403-h3 and 20220403-m3) carry the same trace table, which holds both animals'
 traces; the notebook shows which rows belong to which. The connectome claims use the published
 connectomes of Cook et al. (2019) and Witvliet et al. (2021), as the paper's merged table is not
-public. The attempt record, with the reasons and the differences from the paper's method, is
+public. The layer of each class is read from the column groups of the paper's Figure 3A. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/seyedolmohadesin-2026-01.yaml`](../../attempts/seyedolmohadesin-2026-01.yaml).
 
-- `reproduce_seyedolmohadesin_2026.ipynb`: the analysis. It takes about six minutes, nearly two of
+- `reproduce_seyedolmohadesin_2026.ipynb`: the analysis. It takes about seven minutes, nearly two of
   them streaming the trace tables.
 - `chemo.py`: loading the traces and stimulus annotations, the responses, exclusion and class tests
   of the paper's methods and code, the band-passed correlations, and the connectomes. Other notebooks

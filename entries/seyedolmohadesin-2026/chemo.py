@@ -31,11 +31,12 @@ at commit b0dbdbf50c579d056d7991b7612fcff30091ffbd, which the claims file cites.
   keeps its name (assumption: the code reads classes from neuron_classes.json, not in the
   repository, and AVL would otherwise become "AV"; it is the standard name of a single cell).
 - COLLAPSED: code Fig5.ipynb, `collapsed`.
-- LAYER: an assumption, as the claims file asks (CLASSES, OPEN). The code's neuron_classes.json
-  is not public. The assignment here gives the paper's totals, 24 sensory, 36 inter, 15 motor
-  and 14 pharyngeal classes: IL1 and URA are counted as motor (they are sensory-motor neurons
-  with neuromuscular synapses), RMG, SAA, SAB, SIA and SIB as interneurons. Other assignments
-  with the same totals are possible; the notebook lists this one.
+- LAYER: Figure 3A of the paper, whose columns are grouped under the headings Sensory,
+  Interneuron, Motor and Pharyngeal and labelled with the subclasses (read from the PDF). Collapsed
+  to canonical classes it gives the paper's totals, 24 sensory, 36 inter, 15 motor and 14
+  pharyngeal (claims file, CLASSES, OPEN). It counts IL1 as sensory, URB as an interneuron and RMG
+  as a motor neuron. LAYER_CLASSES_ALT is the assignment the first version of this entry assumed
+  before Figure 3A was read (IL1 motor, URB sensory, RMG inter), kept as a sensitivity variant.
 - Band-pass filter (BP_SHORT 10, BP_LONG 240 frames, windows including the current frame),
   z-scoring, the first 96 frames blanked and frames 98 to 4978 correlated, the stimulus series
   set to 1 from 2 frames before each onset frame for 40 frames: claims file, CORRELATION (code
@@ -88,18 +89,22 @@ COLLAPSED = {
 }
 TO_CANONICAL = {sub: canon for canon, subs in COLLAPSED.items() for sub in subs}
 
-LAYER_CLASSES = {
-    "sensory": ["ADF", "ADL", "AFD", "ASEL", "ASER", "ASG", "ASH", "ASI", "ASJ", "ASK", "AWA",
-                "AWB", "AWC", "ADE", "AQR", "BAG", "FLP", "URB", "URX", "URY", "CEP", "IL2",
-                "OLL", "OLQ"],
-    "inter": ["ADA", "AIA", "AIB", "AIM", "AIN", "AIY", "AIZ", "ALA", "AUA", "AVF", "AVG", "AVH",
-              "AVJ", "AVK", "AVL", "RIA", "RIB", "RIC", "RID", "RIF", "RIG", "RIH", "RIM", "RIP",
-              "RIR", "RIS", "RIV", "AVA", "AVB", "AVD", "AVE", "RMG", "SAA", "SAB", "SIA", "SIB"],
-    "motor": ["IL1", "URA", "RMD", "RME", "RMF", "RMH", "SMB", "SMD", "AS", "DA", "DB", "DD",
+LAYER_CLASSES = {   # Figure 3A column groups
+    "sensory": ["ADE", "ADF", "ADL", "AFD", "AQR", "ASEL", "ASER", "ASG", "ASH", "ASI", "ASJ",
+                "ASK", "AWA", "AWB", "AWC", "BAG", "CEP", "FLP", "IL1", "IL2", "OLL", "OLQ", "URX",
+                "URY"],
+    "inter": ["ADA", "AIA", "AIB", "AIM", "AIN", "AIY", "AIZ", "ALA", "AUA", "AVA", "AVB", "AVD",
+              "AVE", "AVF", "AVG", "AVH", "AVJ", "AVK", "AVL", "RIA", "RIB", "RIC", "RID", "RIF",
+              "RIG", "RIH", "RIM", "RIP", "RIR", "RIS", "RIV", "SAA", "SAB", "SIA", "SIB", "URB"],
+    "motor": ["RMD", "RME", "RMF", "RMG", "RMH", "SMB", "SMD", "URA", "AS", "DA", "DB", "DD",
               "VA", "VB", "VD"],
     "pharyngeal": ["I1", "I2", "I3", "I4", "I5", "I6", "M1", "M2", "M3", "M4", "M5", "MC", "MI",
                    "NSM"],
 }
+# The assignment assumed before Figure 3A was read: IL1 motor, URB sensory, RMG inter.
+_MOVE_ALT = {"IL1": "motor", "URB": "sensory", "RMG": "inter"}
+LAYER_ALT = {c: _MOVE_ALT.get(c, layer) for layer, cs in LAYER_CLASSES.items() for c in cs}
+LAYER_CLASSES_ALT = {layer: [c for c, l in LAYER_ALT.items() if l == layer] for layer in LAYER_CLASSES}
 LAYER = {c: layer for layer, cs in LAYER_CLASSES.items() for c in cs}
 
 
@@ -125,6 +130,7 @@ def load_recording(path: str, url: str) -> dict:
         subj = f["general/subject"]
         rec = {
             "path": path,
+            "url": url,
             "subject": path.split("/")[0].removeprefix("sub-"),
             "neuron": [_s(x) for x in tab["neuron"][:]],
             "group": [_s(x) for x in tab["neuron_group"][:]],
@@ -147,6 +153,27 @@ def load_recording(path: str, url: str) -> dict:
     rec["cue_frames"] = np.array([t for n, t in zip(rec["stim_names"], rec["stim_frames"])
                                   if n != "CTX"])
     return rec
+
+
+def list_objects(url: str, tops=("acquisition", "processing", "analysis", "stimulus")) -> list:
+    """Every group and dataset under the given top-level groups of one file, as (path, kind,
+    shape); no data are read."""
+    out = []
+
+    def walk(g, prefix):
+        for k in g.keys():
+            o = g[k]
+            if isinstance(o, h5py.Group):
+                out.append((prefix + k, "group", None))
+                walk(o, prefix + k + "/")
+            else:
+                out.append((prefix + k, "dataset", o.shape))
+
+    with h5py.File(remfile.File(url), "r") as f:
+        for top in tops:
+            out.append((top, "group", None))
+            walk(f[top], top + "/")
+    return out
 
 
 def load_all(workers: int = 6) -> list[dict]:
