@@ -83,8 +83,8 @@ outcomes:
   notes: Day 1 shocked block means 0.370, 0.556, 0.741, 0.889; block 1 against 4 Sidak p = 0.0012 (6 pairs) and
     0.0006 (against block 1). Shocked above non-shocked at day 2 blocks 2 to 4 (p = 0.0014 to 0.032) and day 1 blocks
     1 and 4 (p = 0.042 and 0.021). Success is the hand-scored outcome (pma_results `avoids`) in the 21 sessions
-    that have one, else the code's rule; the rule disagrees with the hand scoring on 26 of 358 trials with the clock
-    windows and 38 with the paper's bouts. Both readings meet the criterion.
+    that have one, else the code's rule; over the 252 hand-scored trials the rule disagrees with the hand scoring
+    on 24 with the clock windows and 36 with the paper's bouts (data check). Both readings meet the criterion.
   deviations:
   - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
     calcium imaging and behaviour labels for 2 of 30 sessions.
@@ -257,8 +257,10 @@ outcomes:
   notes: 'Day 2 platform-exit excited cells (whole-session ROC) of shocked mice have a larger post-exit area than
     those of non-shocked mice (12.09 against 6.43, Welch t = 2.03, p = 0.044), but they number 77 and 84, outside
     the expected 104 (10.4) and 100 (10), and stay outside under every event window, cleaning of the platform bouts
-    and seed tried (80 to 93 shocked cells). The effect sits at the threshold: across four shuffle seeds p = 0.044,
-    0.043, 0.050 and 0.025 (difference 5.3 to 6.5), and with the shuffles of the paper-bout run p = 0.117. Calcium
+    and seed tried (80 to 93 shocked cells). The effect sits at the threshold. Of eight printed runs (the main run;
+    the shuffles of the paper-bout run, p = 0.117; three seeds of the exit calls alone, p = 0.068, 0.039 and 0.044;
+    three seeds of the whole-session ROC, p = 0.043, 0.050 and 0.025) shocked cells are higher in all eight (difference
+    4.30 to 6.45) and p >= 0.05 in three (0.050, 0.068, 0.117). Calcium
     follows the freezing labels by 0.9 to 3.8 s in every session (data check), so no clock offset explains the low
     counts.'
   deviations:
@@ -382,8 +384,30 @@ outcomes:
     classifier''s parameters only. Making the labels would mean running BehaviorDEPOT''s default jumping and rearing
     classifiers (the paper''s method, STAR Methods, Definitions of examined behaviors) on the deposited DeepLabCut
     tracking; BehaviorDEPOT is MATLAB and cannot be installed in the entry''s locked Python environment, and the
-    paper gives no thresholds to rebuild them. Escape could be derived from the platform labels, but the criterion
-    needs the jumping part too, and the escape part was not run here.'
+    paper gives no thresholds to rebuild them. The escape part is computed from the platform labels, as the
+    STAR Methods define escape (off the platform in the final 2 s of the tone). Escape-excited cells of shocked
+    mice are not more active after escape onset than those of non-shocked mice on day 1 in any run (3, 4 and 5
+    s windows, both tone readings, four shuffle seeds; p = 0.40 to 0.99; for example clock, seed 0, 4 s, 68 and
+    28 cells, 3.26 against 3.73, p = 0.90); on day 2 shocked cells are higher in every run but p >= 0.067. The
+    part holds in 0 of 24 runs. Escape-suppressed cells do not differ in any run (smallest p 0.17).'
+  notebook: reproduce_gabriel_2025.ipynb
+  output: claim:figs2-innate-behaviors
+  deviations:
+  - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
+    calcium imaging and behaviour labels for 2 of 30 sessions.
+  - Escape frames are the calcium frames off the platform in the last 2 s of each tone, from the STAR Methods
+    (Definitions of examined behaviors, "Escape behavior was manually defined as the period of time when animals
+    were off the platform during the final 2s of the tone"); escape onsets are the first frame of each such bout.
+    Escape cells are called by the whole-session ROC on that vector, as for the other features.
+  - Tone windows are the BehaviorDEPOT tone onsets divided by the 25 frames/s of the paper's cue conversion, placed
+    on the camera clock (the `clock` reading of pma.tone_windows); in six sessions (F5, M5, F6 on both days) the
+    camera ran at 28 to 30 frames/s, so the paper's own bouts, taken as frames, drift from the tones (data check).
+    Every result is also shown on the paper's bouts (`paper`).
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion is met only when the jumping, escape-excited and similar-activity parts all hold. The
+      escape part, run after round 2 as the round-2 report noted it could be, fails in all 24 runs (day 1 p = 0.40
+      to 0.99), so the claim fails whatever the jumping part gives. The jumping part still cannot be tested.
 - claim: fig2-day1-tone-stronger
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
@@ -491,7 +515,19 @@ outcomes:
     (without F1 and F2: p = 9.9e-05 and 1.0e-06; two-class: p = 0.0012 and 2.2e-05). Under C1 N2, C2 N1 and C2 N2
     the pre-shock difference is not significant in any cohort (p = 0.39 to 1). On the paper''s tone bouts C1 N1
     holds without F1 and F2 (p = 0.012 and 0.0032) and fails with all mice (p = 0.15 and 0.064) and in the two-class
-    cohort (p = 0.17 and 0.057).'
+    cohort (p = 0.17 and 0.057). Shuffled-label control (each mouse decoded again with its outcomes permuted 5
+    times): with shuffled labels shocked mice score 0.476 pre-shock and 0.482 in the shock epoch, non-shocked
+    mice 0.230 and 0.262. Above the shuffled values the pre-shock difference is not significant in any cohort or
+    coding (C1 N1 0.013 against -0.122, Sidak p = 0.57, 0.67 and 0.55 in the three cohorts); the shock epoch
+    is higher in shocked mice (C1 N1 p = 0.054, 0.046 and 0.048; C2 N1 p = 0.0018 to 0.013).'
+  proposed:
+    outcome: partially_reproduced
+    reason: The shuffled-label control the round-2 report asked for shows the shocked mice's pre-shock value under
+      C1 N1 equals their value with shuffled outcomes (0.489 against 0.476), and above the shuffled values the
+      pre-shock difference is not significant in any cohort or coding (p >= 0.55); the C1 N1 difference there
+      comes from the non-shocked mice scoring below their own shuffled values (0.108 against 0.230). The shock
+      epoch difference stays above the shuffled values (C1 N1 p = 0.046 to 0.054, C2 N1 p = 0.0018 to 0.013). The
+      claim holds for the shock epoch and not for the pre-shock epoch.
   deviations:
   - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
     calcium imaging and behaviour labels for 2 of 30 sessions.
@@ -511,8 +547,8 @@ outcomes:
   - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
     as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
     where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
-  - Assumed the clock tone windows (data check); on the paper's bouts all cells are decoded as a variant, the modulated
-    and non-modulated sets are not, to stay within time.
+  - Assumed the clock tone windows (data check); on the paper's bouts all cells and the modulated and non-modulated
+    sets of the P1-F1 reading are decoded as variants.
 - claim: fig3a-decoding-before-tone
   outcome: reproduced
   notebook: reproduce_gabriel_2025.ipynb
@@ -521,7 +557,11 @@ outcomes:
   notes: 'C1 N1, clock: from 5 s before the tone to its onset shocked mice decode better than non-shocked mice in
     every cohort (all mice 0.481 against 0.134, Sidak p = 0.15, which the criterion does not use; without F1 and
     F2 0.619 against 0.134; two-class 0.619 against 0.188); also on the paper''s bouts (0.377 against 0.129). Under
-    C1 N2 and C2 N2 shocked mice are not higher in any cohort (for example C1 N2 -0.114 against -0.057).'
+    C1 N2 and C2 N2 shocked mice are not higher in any cohort (for example C1 N2 -0.114 against -0.057). In the
+    shuffled-label control the shocked mice''s pre-cue value equals their shuffled-label value (0.481 against
+    0.480) and the non-shocked mice''s is below theirs (0.134 against 0.262); above the shuffled values shocked
+    mice are higher under C1 N1 (0.001 against -0.128, p = 0.78) and C2 N1 and lower under C1 N2 and C2 N2. The
+    criterion, a comparison of means, is met; decoding above chance before the tone in shocked mice is not shown.'
   deviations:
   - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
     calcium imaging and behaviour labels for 2 of 30 sessions.
@@ -542,8 +582,8 @@ outcomes:
   - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
     as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
     where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
-  - Assumed the clock tone windows (data check); on the paper's bouts all cells are decoded as a variant, the modulated
-    and non-modulated sets are not, to stay within time.
+  - Assumed the clock tone windows (data check); on the paper's bouts all cells and the modulated and non-modulated
+    sets of the P1-F1 reading are decoded as variants.
 - claim: fig3a-decoding-peak-preshock
   outcome: not_reproduced
   notebook: reproduce_gabriel_2025.ipynb
@@ -576,8 +616,12 @@ outcomes:
   notes: 'C1 N1, clock: modulated cells lower the shocked mice''s pre-shock and shock values (K1 0.383 and 0.626,
     K2 0.442 and 0.582, against 0.489 and 0.658 with all cells; E1 fails) and leave fewer epochs with shocked mice
     significantly higher (0 against 3 with all cells; E2 fails), for K1 and K2 in all three cohorts (without F1
-    and F2, 1 against 4). Under the six other combinations of coding and cell set E2 holds in most and E1 in two
-    (K2 with C2).'
+    and F2, 1 against 4). The same holds with the cell sets of the other three period and frame readings: E1
+    and E2 fail for K1 and K2 in 24 of 24 cases. On the paper''s tone bouts (P1-F1 sets) E1 holds for K1 and K2
+    in all three cohorts (K1, all mice, 0.487 and 0.660 against 0.407 and 0.561) and E2 in two, where the all-cell
+    decoder has no significant epoch; without F1 and F2 E2 fails (2 and 0 against 3), so the outcome rests on the
+    clock windows as well as on C1 N1. Under the six other combinations of coding and cell set on the clock windows
+    E2 holds in most and E1 in two (K2 with C2).'
   deviations:
   - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
     calcium imaging and behaviour labels for 2 of 30 sessions.
@@ -594,22 +638,23 @@ outcomes:
   - 'Assumed the Methods reading C1 N1: the Methods code success as 1 and use the min-max normalized F1 (STAR Methods,
     Decoding analysis), and the Methods come before the code (protocol, reader step 2). The code counts failure
     as positive (C2) and calls Zscore_Sz (N2); under those readings the result differs.'
-  - Modulated cells are those with any tone, platform or freezing call in BL (F1 frames) or D1 (P1-F1) for K1, and
-    in D1 only for K2; the ROC_IDs file the code reads is not public, and one period reading is used to keep the
-    run within time.
+  - Modulated cells are those with any tone, platform or freezing call in BL or D1 for K1, and in D1 only for K2;
+    the ROC_IDs file the code reads is not public. The base sets use BL F1 and D1 P1-F1; the sets of the other three
+    period and frame readings (P1-F2, P2-F1, P2-F2) are decoded too on the clock windows.
   - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
     as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
     where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
-  - Assumed the clock tone windows (data check); on the paper's bouts all cells are decoded as a variant, the modulated
-    and non-modulated sets are not, to stay within time.
+  - Assumed the clock tone windows (data check); on the paper's bouts all cells and the modulated and non-modulated
+    sets of the P1-F1 reading are decoded as variants.
 - claim: fig3c-nonmod-cells-worsen
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_gabriel_2025.ipynb
   output: claim:fig3c-nonmod-cells-worsen
   notes: 'C1 N1, clock: non-modulated cells give fewer significant epochs than all cells (0 against 3; E2 holds)
-    but a higher shocked pre-shock value (0.499 against 0.489; E1 fails), in all three cohorts. The criterion makes
-    a disagreement between E1 and E2 methods_underspecified.'
+    but a higher shocked pre-shock value (0.499 against 0.489; E1 fails), in all three cohorts, and the same under
+    the other three period and frame readings (E1 fails and E2 holds in 12 of 12 cases). On the paper''s tone bouts
+    E1 and E2 both fail in every cohort. The criterion makes a disagreement between E1 and E2 methods_underspecified.'
   deviations:
   - Tested on the Zenodo record of analyzed datasets (doi:10.5281/zenodo.13381210), as dandiset 001887 holds no
     calcium imaging and behaviour labels for 2 of 30 sessions.
@@ -623,7 +668,10 @@ outcomes:
     seeded per bin, a standard choice.
   - Sidak comparisons between groups per epoch are unpaired t-tests corrected over the four Methods epochs; the
     mixed ANOVA with Geisser-Greenhouse correction is printed beside them.
-  - Non-modulated cells have no call in BL (F1) or D1 (P1-F1); 5 to 102 per mouse.
+  - Non-modulated cells have no call in BL or D1; 5 to 102 per mouse under the base reading (BL F1, D1 P1-F1).
+    The sets of the other three period and frame readings are decoded too on the clock windows, and the base sets
+    on the paper's bouts.
+  - Assumed the clock tone windows (data check); on the paper's bouts both E1 and E2 fail in every cohort.
   - C and gamma are chosen by cross-validation on all nine trials before the leave-one-out test (the code's method,
     as the claims file gives it), so the test trial enters model selection. Bin times use the code's 15 frames/s
     where the frames run at 14.9 frames/s, which moves the epoch edges by about 0.2 s at 28 s.
@@ -635,8 +683,11 @@ outcomes:
     mean squared residual over blocks of three trials (0.0048 to 0.0076, against 0.0243 to 0.0364 shock-only and
     0.0167 to 0.0221 avoid-only); repeated measures ANOVA p = 0.0052 to 0.021 (Geisser-Greenhouse p = 0.012 to 0.050).
     The fit stays at alpha = 1 in every mouse from the code''s start [1, 1] and from four other starts; q ranges
-    0.46 to 1.00. With the Methods'' update U2 (R_t) alpha is interior and the hybrid model is still lowest (0.0185
-    to 0.0231, avoid-only 0.0197 to 0.0263, shock-only 0.13 to 0.18; GG p = 0.0037 to 0.0070), only just below avoid-only.
+    0.46 to 1.00. With the Methods'' update U2 (R_t) alpha ranges 0.00 to 1.00 across mice (0 in F2, 9 successes
+    of 9, where the three models coincide) and the hybrid model is still lowest (0.0184 to 0.0231, avoid-only 0.0197
+    to 0.0263, shock-only 0.12 to 0.18; GG p = 0.0036 to 0.0070), only just below avoid-only. The ANOVA does not
+    compare hybrid with avoid-only; paired over mice on the clock windows (reported, deciding nothing) hybrid is below avoid-only with
+    p = 0.0035 to 0.0073 under U1 and p = 0.078 to 0.35 under U2.
     On the paper''s tone bouts U1 holds for T2 (GG p = 0.020) and fails for T1 (GG p = 0.097 and 0.11); U2 holds
     for all four. Whether the model uses R(t+1) or R_t is asked of a reader (questions/gabriel-2025.yaml).'
   deviations:
@@ -837,7 +888,8 @@ findings:
   statement: 'No cell registration across days (the CellReg output behind the 463 and 322 registered cells of Figure
     1N and 1O) is in the Zenodo record or the dandiset, though the footprints (ta_rois) are. Jumping, rearing and
     escape labels (Figure S2) are in neither: Behavior.mat holds no such field and Params.mat holds the freezing
-    classifier''s parameters only.'
+    classifier''s parameters only. Escape, as the STAR Methods define it, can be computed from the platform labels;
+    jumping and rearing cannot.'
 - kind: methods_unavailable
   statement: 'Question for the authors: the ROC routine (run_caAnalyze from the caAnalyze repository), the alignment
     of calcium and behaviour frames, and the frames that make up the BL, D1 and D2 periods are not public. Which
@@ -1227,3 +1279,311 @@ verifications:
       9 trials against 10 tones, and F7 day 2 was converted from M7's file. The F1 and F2 BehaviorDEPOT arrays equal
       Zenodo's.
     response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2: the full executed notebook of the author-revise-1 run (commit 273a9ebb), the helper module pma.py,
+    the entry README, the claims file, the attempt record and the round-1 report, with the paper. Report in transcripts/gabriel-2025/verifier-2-report.md.'
+  results:
+  - claim: data-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: data-registered-cells
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1, agreed: blocked (not_runnable). Cell 8 shows ta_rois footprints in all 30 sessions,
+      but no registration is deposited.'
+    response: No change.
+  - claim: fig1e-platform-time
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: fig1f-successful-trials
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed. The fig1f notes say the rule disagrees with the hand scoring on 26 of 358
+      trials and 38 with the paper's bouts; this matches cell 26, but 358 is all trials, not the 252 hand-scored ones.
+      Cells 11 and 13 give 24 of 252 (clock) and 36 (paper), and the record's own round-1 response says 228 of 252 agree,
+      so the record contradicts itself.
+    response: 'Notes corrected: over the 252 hand-scored trials the rule disagrees on 24 with the clock windows and 36
+      with the paper''s bouts. Outcome unchanged.'
+  - claim: fig1g-freezing
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1, agreed: blocked (methods_underspecified).'
+    response: No change.
+  - claim: fig1h-latency
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1, agreed: blocked (methods_underspecified).'
+    response: No change.
+  - claim: fig1kl-overall-encoding-similar
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, agreed (blocked).
+    response: No change.
+  - claim: fig1kl-day1-categories-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: disc-tone-cells-baseline
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged since round 1, agreed (blocked). Still open (round-1 point 2): the cause of the low event-call
+      counts is explored but not found; it drives fig1p''s cell-count failure, the cell sets behind fig1q and disc-tone,
+      and the mouse numbers in fig2e and fig2f (6/5 and 4/4 against the paper''s 7/7 and 6/7).'
+    response: No change. No further cause of the low event-call counts was found this round; the finding (kind other)
+      stands and now says, as the report does, that the gap holds for day 1 tone onsets and day 2 shocked platform exits,
+      and the summary no longer says every count stays below the paper's.
+  - claim: fig1k-mixed-day2
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: fig1o-tone-to-mixed
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1, agreed: blocked (not_runnable); no registration is deposited.'
+    response: No change.
+  - claim: fig1o-nonmod-to-mixed
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1, agreed: blocked (not_runnable); no registration is deposited.'
+    response: No change.
+  - claim: fig1p-platform-exit-excited-day2
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Unchanged since round 1, agreed (partially reproduced), but weaker than the record says. Cell 47 says with
+      three other seeds p = 0.043, 0.050 and 0.025 and the difference 5.3 to 6.5 in every run, as do the notes and the
+      round-1 response. Cell 46 prints its own run on three other seeds: p = 0.068, 0.039 and 0.044, differences 4.87,
+      5.82 and 5.31, cells 88, 78 and 89, and the paper-bout run gives a difference of 4.30. So the differences range
+      from 4.3 to 6.5, and across the 8 printed runs p >= 0.05 in 3 (0.0501, 0.068, 0.117). The cell-46 run is not reported
+      anywhere. Still open (round-1 point 2): the cause of the low event-call counts is explored but not found; it drives
+      fig1p''s cell-count failure, the cell sets behind fig1q and disc-tone, and the mouse numbers in fig2e and fig2f
+      (6/5 and 4/4 against the paper''s 7/7 and 6/7).'
+    response: 'Cell 47 and the notes now report all eight runs: shocked cells higher in all eight (difference 4.30 to
+      6.45), p >= 0.05 in three (0.050, 0.068, 0.117). Outcome unchanged. No further cause of the low cell counts was
+      found this round.'
+  - claim: fig1q-platform-exit-inhibited-day2
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, agreed. Still open (round-1 point 2): the cause of the low event-call counts is
+      explored but not found; it drives fig1p''s cell-count failure, the cell sets behind fig1q and disc-tone, and the
+      mouse numbers in fig2e and fig2f (6/5 and 4/4 against the paper''s 7/7 and 6/7).'
+    response: No change. No further cause of the low event-call counts was found this round; the finding (kind other)
+      stands and now says, as the report does, that the gap holds for day 1 tone onsets and day 2 shocked platform exits,
+      and the summary no longer says every count stays below the paper's.
+  - claim: fig1pq-freezing-day2
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: fig1r-mixed-exit-day1
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed, assumption M2 stated and reasonable (the claims file ties M2 to the code's split). Day 1 has p <
+      0.05 in 1 of 5 runs (cell 58), and the difference is positive in all of them. I withdraw my round-1 blocked.
+    response: No change.
+  - claim: figs1h-exit-not-shock
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed (reproduced). p < 0.05 in 4 of 5 runs; 0.143 with the paper-bout shuffles.
+    response: No change.
+  - claim: figs2-innate-behaviors
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1, agreed: blocked (not_runnable). Cell 8 lists every Behavior.mat field, and none is
+      for jumping, rearing or escape. One reservation: the escape-excited part can be computed, and if it failed it would
+      settle the claim as not_reproduced. The record''s reason for not running it only covers the case where it holds.'
+    response: The escape part is now run (new section, Escape (Figure S2)), with escape as the STAR Methods define it,
+      off the platform in the final 2 s of the tone, on both tone readings, four seeds and the 3, 4 and 5 s windows.
+      Escape-excited cells of shocked mice are not more active on day 1 in any run (p = 0.40 to 0.99), so the part fails
+      in 0 of 24 runs. The verified outcome (blocked) is kept and not_reproduced is proposed for round 3.
+  - claim: fig2-day1-tone-stronger
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: fig2-day2-tone-further
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed, assumption H1 stated and reasonable (the Figure 2C/D histograms pool cells). Exits hold in every
+      run; entries hold only in the main run (cells 58, 61).
+    response: No change.
+  - claim: fig2e-modulation-entries
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Unchanged since round 1, agreed. Still open (round-1 point 2): the cause of the low event-call counts is
+      explored but not found; it drives fig1p''s cell-count failure, the cell sets behind fig1q and disc-tone, and the
+      mouse numbers in fig2e and fig2f (6/5 and 4/4 against the paper''s 7/7 and 6/7).'
+    response: No change. No further cause of the low event-call counts was found this round; the finding (kind other)
+      stands and now says, as the report does, that the gap holds for day 1 tone onsets and day 2 shocked platform exits,
+      and the summary no longer says every count stays below the paper's.
+  - claim: fig2f-modulation-exits
+    agrees: true
+    outcome: reproduced
+    reason: 'Unchanged since round 1, agreed. Still open (round-1 point 2): the cause of the low event-call counts is
+      explored but not found; it drives fig1p''s cell-count failure, the cell sets behind fig1q and disc-tone, and the
+      mouse numbers in fig2e and fig2f (6/5 and 4/4 against the paper''s 7/7 and 6/7).'
+    response: No change. No further cause of the low event-call counts was found this round; the finding (kind other)
+      stands and now says, as the report does, that the gap holds for day 1 tone onsets and day 2 shocked platform exits,
+      and the summary no longer says every count stays below the paper's.
+  - claim: fig3a-decoding-shock-gt-ns
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed, given the assumptions (C1 N1 and the clock windows, stated and reasonable: the Methods code success
+      as 1 and use min-max normalised F1). On the paper''s bouts it fails with all 9 mice and in the two-class cohort
+      (cell 69). New concern: whichever class is the majority in a group gets the higher F1. Under C1 N1 shocked mice
+      score 0.481 against 0.134 before the tone, as high as in the pre-shock epoch (0.489); shocked mice average 6.6
+      successes in 9 trials, non-shocked mice 4.3 (cell 68); with failure as the positive class the direction reverses
+      (C2 N2, 0.214 below the non-shocked mice against 0.100 above zero for them, cell 71). So the group difference may
+      come from the share of successes, not from decoding. A per-mouse decoder on shuffled labels would show whether
+      it does.'
+    response: 'The shuffled-label control is now run: each mouse''s all-cell decoder again with its outcomes permuted
+      5 times (new cell after the fig3a cell). With shuffled labels shocked mice score 0.476 in the pre-shock epoch (observed
+      0.489), non-shocked mice 0.230 (observed 0.108). Above the shuffled values the pre-shock difference is not significant
+      in any cohort or coding (C1 N1 p = 0.55 to 0.67); the shock epoch stays higher in shocked mice (C1 N1 p = 0.046
+      to 0.054, C2 N1 p = 0.0018 to 0.013). The verified outcome (reproduced) is kept and partially_reproduced is proposed
+      for round 3.'
+  - claim: fig3a-decoding-before-tone
+    agrees: true
+    outcome: reproduced
+    reason: Agreed, given the same assumptions; the same base-rate concern as fig3a-decoding-shock-gt-ns.
+    response: The shuffled-label control shows the shocked mice's pre-cue value equals their shuffled-label value (0.481
+      against 0.480), the non-shocked mice's is below theirs (0.134 against 0.262). The criterion, a comparison of the
+      group means, is met, and above the shuffled values shocked mice are still higher under C1 N1 (p = 0.78) and C2
+      N1, lower under C1 N2 and C2 N2, so no change of outcome is proposed; the notes say that decoding above chance
+      before the tone is not shown.
+  - claim: fig3a-decoding-peak-preshock
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: fig3b-feature-cells-enhance
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agreed (not reproduced, assumption C1 N1 stated and consistent with fig3a). Under C1 N1, E1 and E2 both
+      fail for K1 and K2 in all cohorts (cell 75); under C2, K2 passes both. Still open: the cell sets use only BL-F1
+      and D1-P1-F1 and the paper''s bouts were not run, so robustness to the period and frame readings, which the claims
+      file treats as deciding, is untested. In the README table fig3b is not marked as assumed.'
+    response: The cell sets of the other three period and frame readings are now decoded on the clock windows, and the
+      P1-F1 sets on the paper's bouts. On the clock windows E1 and E2 fail for K1 and K2 in 24 of 24 cases under C1 N1.
+      On the paper's bouts E1 holds in all three cohorts and E2 in two (where the all-cell decoder has no significant
+      epoch), so the outcome is now said to rest on the clock windows as well; the README marks it as assumed. Outcome
+      unchanged.
+  - claim: fig3c-nonmod-cells-worsen
+    agrees: true
+    outcome: blocked
+    reason: 'Unchanged since round 1, agreed (blocked). The same robustness point as fig3b: only BL-F1 and D1-P1-F1,
+      and the paper''s bouts not run.'
+    response: The other three period and frame readings are now decoded on the clock windows (E1 fails and E2 holds in
+      12 of 12 cases) and the P1-F1 set on the paper's bouts (E1 and E2 both fail). On the clock windows E1 and E2 still
+      disagree, so blocked (methods_underspecified) is unchanged.
+  - claim: fig4b-hybrid-model-best
+    agrees: true
+    outcome: reproduced
+    reason: 'Agreed, assumption on the clock windows stated and reasonable. The Methods'' update (U2) also passes on
+      both tone readings (cell 80). Cell 81 and the notes say with U2 alpha is interior; cell 80 shows alpha from 0.00
+      to 1.00, and alpha = 0 for F2, where all three models coincide; the multi-start rows give hybrid 0.0184 and GG
+      p 0.0036. Reported, not corrected: the claims file''s R(t+1) still contradicts the Methods'' formula, and under
+      it alpha = 1 in every mouse; under U2 the hybrid model is lowest only just below avoid-only (0.0223 against 0.0233);
+      the hybrid model contains both other models as special cases, and the one-way ANOVA the criterion uses does not
+      test hybrid against avoid-only.'
+    response: 'Cell 85 and the notes corrected: under U2 alpha ranges 0.00 to 1.00 across mice, 0 in F2 where the models
+      coincide, hybrid 0.0184 to 0.0231, GG p = 0.0036 to 0.0070. A paired test of hybrid against avoid-only is now printed
+      and decides nothing: p = 0.0035 to 0.0073 under U1, 0.078 to 0.35 under U2. The R(t+1) question stays in questions/gabriel-2025.yaml.
+      The one-way ANOVA is the Methods'' test (Quantification and Statistical Analysis) and the Figure 4B legend''s,
+      so the criterion follows the paper and no question is added. Outcome unchanged.'
+  - claim: fig4e-day1-onset-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4f-day1-preshock-distance-none
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4g-day2-onset-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4h-day2-preshock-distance-none
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4i-day1-onset-trajectory-none
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4j-day1-preshock-first-avoid
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4k-day2-onset-first-shock
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: fig4l-day2-preshock-trajectory-none
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: figs3ab-day1-post-onset-distance
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: figs3cd-day1-distance-groups-similar
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: figs3ef-first-success-trajectory
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: figs3gh-behavior-similar
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged since round 1, agreed.
+    response: No change.
+  - claim: figs4ab-iti-midtone-none
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: figs4cd-iti-before-first-avoid
+    agrees: true
+    outcome: blocked
+    reason: 'Changed after round 1 in the notes, agreed: blocked (not_runnable). The notes now say the block is the software,
+      not the data. I accept this.'
+    response: No change.
+  - claim: zenodo-dandiset-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Unchanged since round 1, agreed. My round-1 reason was stated faithfully but was my own error: I wrote spread
+      under 0.04 s, while cell 15 gives up to 0.050 (F7 day 1). The outcome is unaffected.'
+    response: No change; the record's notes give the spread as under 0.1 s, which cell 15 supports.

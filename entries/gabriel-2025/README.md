@@ -19,24 +19,25 @@ timestamps of all 30 imaged sessions, so every claim is tested there and counted
 | Platform-exit and freezing activity on day 2 (Figure 1P, 1Q, S1H) | Reproduced, except 1P partially; 1P and S1H sit near p = 0.05 |
 | Excited mixed cells at platform exits on day 1 (Figure 1R) | Partially reproduced (assumed reading) |
 | Tone strengthens entry and exit encoding (Figure 2) | Day 1 and exits reproduced; day 2 entries partially or not reproduced |
-| Decoding better in shocked mice (Figure 3A) | Reproduced (assumed readings); peak before the shock not reproduced |
-| Feature-encoding cells enhance decoding (Figure 3B) | Not reproduced; 3C blocked |
+| Decoding better in shocked mice (Figure 3A) | Reproduced (assumed readings; a change to partially reproduced is proposed, as the pre-shock part does not exceed shuffled-label decoders); peak before the shock not reproduced |
+| Feature-encoding cells enhance decoding (Figure 3B) | Not reproduced (assumed readings); 3C blocked |
 | Hybrid Rescorla-Wagner model fits best (Figure 4B) | Reproduced (assumed tone windows) |
 | Cell registration (Figure 1N, 1O) | Blocked: not runnable (no registration deposited; CellReg is MATLAB) |
 | CILDS latent trajectories (Figure 4E to 4L, S3, S4; 13 claims) | Blocked: not runnable (MATLAB) |
-| Innate behaviours (Figure S2) | Blocked: not runnable (no jumping, rearing or escape labels) |
+| Innate behaviours (Figure S2) | Blocked: not runnable (no jumping or rearing labels); the escape part fails, so not reproduced is proposed |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 In six sessions the camera ran near 30 frames/s while the paper's code placed the tones at 25 frames/s,
 so its tone windows drift from the real tones; the notebook places them by the camera timestamps and
-shows every result on the paper's windows too, and the mean-activity and Figure 2 results with four
-shuffle seeds of the ROC. The attempt record, with the reasons and the differences from
+shows every result on the paper's windows too (the Figure 3B and 3C cell sets for one period reading
+only), the mean-activity and Figure 2 results with four shuffle seeds of the ROC, and the Figure 3A
+decoders beside decoders trained on shuffled trial outcomes. The attempt record, with the reasons and the differences from
 the paper's method, is [`attempts/gabriel-2025-01.yaml`](../../attempts/gabriel-2025-01.yaml).
 
-- `reproduce_gabriel_2025.ipynb`: the analysis. It takes about 35 minutes: 10 to stream about 10 GB
-  from Zenodo, 5 for the ROC calls and 20 for the 80 decoders of Figure 3.
+- `reproduce_gabriel_2025.ipynb`: the analysis. It takes about 41 minutes: 9 to stream about 10 GB
+  from Zenodo, 7 for the ROC calls and 25 for the 342 decoders of Figure 3, run in four processes.
 - `pma.py`: streaming the dandiset and the Zenodo zip members, the tone windows on both readings, trial
   measures, ROC calls, event-aligned activity, the decoder and the Rescorla-Wagner model. Other notebooks
   on this dataset can import it.
