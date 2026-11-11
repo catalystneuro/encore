@@ -13,13 +13,21 @@ Where each parameter comes from:
 - Baseline 25 ms before stimulus onset (Results, S1 Recordings, paragraph 2; claim baseline-rates).
 - Impulse windows: evoked 5-35 ms after impulse onset, impulse baseline 0-10 ms before it, peak in a
   40-ms window after onset of the 10-ms boxcar smoothed 1-ms PSTH (Methods, Stimulus-evoked responses).
-  The boxcar is centred, a standard choice.
+  The Methods do not place the boxcar; it is centred (Matlab's smooth), a standard choice, with
+  trailing, forward and no smoothing as variants (smooth_window).
 - Temporal modulation: 10-ms bins, 10,000 permutations, p < 0.05 (Methods, Temporal response
   modulation). Spikes permuted uniformly within the window on each trial (claim's standard choice);
   pooled over trials this makes the null PSTH multinomial with equal bin probabilities, which is
   how it is drawn here. The variance of the PSTH across bins and the sum of squared deviations from
   the mean permuted PSTH differ only by a constant under this null, so the two statistics the
-  claim names give the same p-value.
+  claim names give the same p-value. A second null, shuffling each trial's 10-ms bins
+  (perm_pval_shuffle), is a variant.
+- Temporally modulated units used by the claims that depend on temporal-modulation-count: the data
+  set's TempSig.TemporalPval < 0.05, which the data descriptor names as the units of the paper's
+  analyses ("For many analyses in the paper, we only analyzed units whose firing rate was
+  significantly temporally modulated ... These units can be identified by
+  AllRats(expt).TempSig.TemporalPval(unit) < 0.05"). The set recomputed with the Methods' test is a
+  variant (an assumption, stated in the notebook).
 - Regression: 5-ms bins 0-180 ms, regressor the integrated panel speed over 5-180 ms windows ending at
   the bin start (Methods, Stimulus regression). The regressor values are the data set's own (Xval in
   StimReg), the stimulus record the claim allows.
@@ -33,6 +41,7 @@ Where each parameter comes from:
 from __future__ import annotations
 
 import collections
+import hashlib
 import io
 
 import fsspec
@@ -47,6 +56,7 @@ DOI = "10.6080/K06D5QXN"
 MD5 = "a929b803ca0feab5270e807f571d13eb"  # AllRats.mat, from ssc-4/live/checksums.md5
 S1_DATA = "https://journals.plos.org/plosbiology/article/file?type=supplementary&id=10.1371/journal.pbio.1002549.s001"
 S2_DATA = "https://journals.plos.org/plosbiology/article/file?type=supplementary&id=10.1371/journal.pbio.1002549.s002"
+S1_TABLE = "https://journals.plos.org/plosbiology/article/file?type=supplementary&id=10.1371/journal.pbio.1002549.s010"
 
 RAT_NAMES = {"18FB": "18FB", "18RI": "18Ri", "18R": "18Ro", "62B": "62BS", "107ST": "107St"}
 STIMS = ["FMS", "SMF", "FFF", "SSS"]          # StimNumber 1..4 (data descriptor)
@@ -70,6 +80,18 @@ def load_mat():
 def fetch_xlsx(url):
     with fsspec.open(url, block_size=2**20).open() as f:
         return pd.read_excel(io.BytesIO(f.read()), sheet_name=None, header=None)
+
+
+def fetch_docx_table(url):
+    """Rows of the tables of a DOCX file (cell texts), read from its XML."""
+    import re
+    import zipfile
+    with fsspec.open(url, block_size=2**20).open() as f:
+        raw = f.read()
+    x = zipfile.ZipFile(io.BytesIO(raw)).read("word/document.xml").decode()
+    rows = [[''.join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", c)) for c in re.findall(r"<w:tc>.*?</w:tc>", r, re.S)]
+            for r in re.findall(r"<w:tr[ >].*?</w:tr>", x, re.S)]
+    return rows, hashlib.md5(raw).hexdigest()
 
 
 class Data:
@@ -156,29 +178,62 @@ def perm_pval(counts, rng, nperm=10000):
     return (np.sum(null >= obs - 1e-12) + 1) / (nperm + 1)
 
 
-def temporal_counts(D, uid, reading):
-    """Pooled 10-ms counts. reading 'np': 0-180 ms after nose poke entry; 'stim': 0-180 ms after
-    stimulus onset; 'deposit': -50 to 300 ms after onset (TempSig.Params of the data set)."""
+def perm_pval_shuffle(bins, rng, nperm=1000, chunk=100):
+    """Permutation p-value of the variance of a pooled PSTH against the PSTHs obtained by shuffling
+    the 10-ms bins of each trial independently (a second null, asked for by the verifier: it keeps
+    each trial's bin counts, so bursts stay together)."""
+    bins = np.asarray(bins, float)
+    if bins.sum() == 0:
+        return 1.0
+    obs = bins.sum(0).var()
+    null = []
+    for _ in range(nperm // chunk):
+        keys = rng.random((chunk,) + bins.shape).argsort(2)
+        null.append(np.take_along_axis(np.broadcast_to(bins, keys.shape), keys, 2).sum(1).var(1))
+    null = np.concatenate(null)
+    return (np.sum(null >= obs - 1e-12) + 1) / (nperm + 1)
+
+
+def temporal_bins(D, uid, reading):
+    """10-ms counts per completed trial (trials x bins). reading 'np': 0-180 ms after nose poke
+    entry; 'stim': 0-180 ms after stimulus onset; 'deposit': -50 to 300 ms after onset
+    (TempSig.Params of the data set)."""
     M, t, _ = D.unit_trials(uid)
     if reading == "stim":
-        return M[:, -T0:180 - T0].reshape(len(M), 18, 10).sum((0, 2))
+        return M[:, -T0:180 - T0].reshape(len(M), 18, 10).sum(2)
     if reading == "deposit":
-        return M[:, -50 - T0:300 - T0].reshape(len(M), 35, 10).sum((0, 2))
-    out = np.zeros(18)
+        return M[:, -50 - T0:300 - T0].reshape(len(M), 35, 10).sum(2)
+    out = np.zeros((len(M), 18))
     for i, d in enumerate(t.delay.values.astype(int)):   # NP entry is `delay` ms before onset
-        out += M[i, -d - T0:-d + 180 - T0].reshape(18, 10).sum(1)
+        out[i] = M[i, -d - T0:-d + 180 - T0].reshape(18, 10).sum(1)
     return out
+
+
+def temporal_counts(D, uid, reading):
+    """Pooled 10-ms counts over completed trials (see temporal_bins)."""
+    return temporal_bins(D, uid, reading).sum(0)
 
 
 # ---------- impulse-locked measures ----------
 
-def box10(x):
-    return np.convolve(x, np.ones(10) / 10, mode="same")
+SMOOTH = {"centred": (-5, 5), "trailing": (-9, 1), "forward": (0, 10)}
+
+
+def smooth_window(psth, how="centred"):
+    """10-ms boxcar of a segment's 1-ms PSTH (index 0 = -10 ms) at 0..39 ms after impulse onset.
+    'centred' averages t-5..t+4 ms, 'trailing' t-9..t, 'forward' t..t+9 (Methods: "10 ms
+    smoothing", placement not given; centred is Matlab's smooth, a standard choice, and the other
+    two are shown as variants); 'none' is the unsmoothed PSTH."""
+    if how == "none":
+        return psth[10:50]
+    a, b = SMOOTH[how]
+    return np.array([psth[10 + t + a:10 + t + b].mean() for t in range(40)])
 
 
 def impulse_segments(D, uid, stims=None, pulses=(0, 1, 2), kinds=None, trials_sel=None):
     """Per impulse instance (sequence, pulse) the trial x ms spike matrix aligned to impulse onset,
-    from -10 to +40 ms. Returns a list of dicts."""
+    from -10 to +50 ms (the 10 ms after the 40-ms peak window are there so that the smoothing
+    needs no padding). Returns a list of dicts."""
     M, t, _ = D.unit_trials(uid, trials_sel)
     si = int(D.units.iloc[uid].session)
     segs = []
@@ -192,22 +247,24 @@ def impulse_segments(D, uid, stims=None, pulses=(0, 1, 2), kinds=None, trials_se
             if kinds and k not in kinds:
                 continue
             a = on[p] - 10 - T0
-            segs.append(dict(stim=s, pulse=p, kind=k, X=M[m, a:a + 50], trials=t[m]))
+            segs.append(dict(stim=s, pulse=p, kind=k, X=M[m, a:a + 60], trials=t[m]))
     return segs
 
 
-def evoked_peak(segs, pooled=True):
+def evoked_peak(segs, pooled=True, smooth="centred"):
     """Peak modulation (signed extreme of larger |deviation| from the 0-10 ms pre-impulse baseline,
     in the 10-ms smoothed PSTH over 0-40 ms after onset), the 5-35 ms mean minus baseline, and the
-    latency of the maximum. pooled: one PSTH over all impulses (reading i); else per impulse, averaged
-    (reading ii)."""
+    latency of the maximum (the mean of the times that share the maximum, so that a plateau is not
+    read at its first sample). pooled: one PSTH over all impulses (reading i); else per impulse,
+    averaged (reading ii). smooth: see smooth_window."""
     def one(X):
         psth = X.mean(0) * 1000.0
         base = psth[0:10].mean()
-        sm = box10(psth)[10:50] - base
+        sm = smooth_window(psth, smooth) - base
         imax, imin = sm.argmax(), sm.argmin()
         peak = sm[imax] if abs(sm[imax]) >= abs(sm[imin]) else sm[imin]
-        return peak, psth[15:45].mean() - base, float(imax)
+        lat = float(np.flatnonzero(np.isclose(sm, sm[imax])).mean())
+        return peak, psth[15:45].mean() - base, lat
     if pooled:
         X = np.concatenate([g["X"] for g in segs])
         return one(X)
