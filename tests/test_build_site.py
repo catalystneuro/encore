@@ -777,3 +777,15 @@ def test_the_papers_are_the_one_index_and_find_a_paper_by_its_datasets(built):
     for page in ("index.html", "datasets/dandi/000233/index.html", "papers/tingley-2021/index.html"):
         assert 'datasets/?' not in (out / page).read_text(), page
 
+
+def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):
+    data, out = built
+    papers = [q for q in site.papers_of(data) if q["status"] == "claims"]
+    assert papers
+    for q in papers:
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        files = [f for k in q["datasets"] for f in data["claim_files"].get(k, []) if f["paper"].lower() == q["doi"]]
+        ids = {c["id"] for f in files for c in f["claims"]}
+        assert ids and all(f'id="claim-{i}"' in page for i in ids), q["key"]
+        assert "Not attempted yet" in page and "No attempt on this paper yet" not in page
+

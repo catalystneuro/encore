@@ -933,6 +933,13 @@ def rows(data: dict) -> dict[str, list]:
 _PAPERS: dict = {}
 
 
+def journal_name(doi: str) -> str | None:
+    """The paper's journal as papers/journals.yaml names it (tools/journals.py), for its page; None when not recorded."""
+    path = ROOT / "papers" / "journals.yaml"
+    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    return (known.get(re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (doi or "").strip().lower())) or {}).get("journal")
+
+
 def paper_journals(dois: list[str]) -> dict[str, str]:
     """Each paper's journal for the papers list's filter (papers/journals.yaml): one of the TOP_JOURNALS journals with
     the most papers, "Preprint", "Other journals", or "Not recorded"."""
@@ -2155,7 +2162,7 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict]) -
 def page_paper(data: dict, p: dict) -> str:
     """A paper's page. An attempted paper's is the full page of its results (page_dandiset, by paper): the papers
     are the site's primary index, and nothing on the page needs a dataset's page. A paper with claims and no attempt
-    yet has its datasets, which link to the claims."""
+    yet has its claims, as read and checked, and where it stands in the pipeline."""
     if p["attempts"]:
         return page_dandiset(data, p["attempts"][-1]["key"], paper=p)
     root = "../../"
@@ -2164,11 +2171,35 @@ def page_paper(data: dict, p: dict) -> str:
         f'<li><a href="{root}{e(d["page"])}">{e(d["label"])}</a>' if d["page"] else f'<li>{e(d["label"])}'
         for d in row["datasets"])
     relation = " (data the paper reuses)" if p["relation"] == ["reuses"] else ""
-    head = (f'<header class="page"><p class="eyebrow">{e(p["byline"])} · {e(row["journal"])}</p>'
+    head = (f'<header class="page"><p class="eyebrow">{e(p["byline"])}{(" · " + e(journal_name(p["doi"]))) if journal_name(p["doi"]) else ""}</p>'
             f'<h1>{e(p["title"])}</h1>'
             f'<p class="sub"><a href="https://doi.org/{e(p["doi"])}">doi:{e(p["doi"])}</a> · paper key '
             f'<code>{e(p["key"])}</code></p></header>')
     parts = [f'<section class="panel"><h2>Datasets{relation}</h2><ul class="inline">{datasets_html}</ul></section>']
+    if not p["attempts"]:
+        # Claims read from the paper, before its first attempt: the paper's own claims file. collect files it under each
+        # of the paper's datasets with that dataset's claims only, so the copies are put back together, each claim once.
+        by_path: dict = {}
+        for k in p["datasets"]:
+            for f in data.get("claim_files", {}).get(k, []):
+                if f["paper"].lower() != p["doi"]:
+                    continue
+                kept = by_path.setdefault(f["path"], {**f, "claims": []})
+                known = {c["id"] for c in kept["claims"]}
+                kept["claims"] += [c for c in f["claims"] if c["id"] not in known]
+        files = list(by_path.values())
+        claims_html, n = claims_list(files, {p["doi"]: p["title"]})
+        if n:
+            prow = next((r for r in paper_pipeline_rows(data) if r.get("paper") == p["key"]), None)
+            nxt = ("; next in the pipeline: " + e(prow["next"].lower())) if prow and prow["next"] else ""
+            steps = "".join(f'<dt>{e(label)}</dt><dd>{e(prow["state"][k][0])}'
+                            + (f' ({e(prow["state"][k][1])})' if prow["state"][k][1] else "") + "</dd>"
+                            for k, label in PAPER_STEPS) if prow else ""
+            parts.append(f'<p class="lede">Not attempted yet. These are the claims read from the paper, which an '
+                         f'attempt will test{nxt}.</p>')
+            parts.append(f'<section class="panel"><h2>Claims <span class="count">{n}</span></h2>{claims_html}</section>')
+            if steps:
+                parts.append(f'<section class="panel"><h2>Pipeline</h2><dl class="kv" style="margin-top:14px">{steps}</dl></section>')
     if p["live"]:
         # Each attempt's summary, named by the datasets it ran on when there are several.
         shown = [a for a in p["live"] if a.get("summary")]
@@ -2197,8 +2228,8 @@ def page_paper(data: dict, p: dict) -> str:
         parts.append(f'<section class="panel"><h2>Attempt <code>{e(a["id"])}</code></h2>'
                      f'<p class="small muted">{e(a["date"])} · on {used}</p>{dep}{flag}'
                      f'<ul class="paper-claims">{items}</ul></section>')
-    if not p["attempts"]:
-        parts.append('<section class="panel"><p class="muted">No attempt on this paper yet.</p></section>')
+    if not p["attempts"] and len(parts) == 1:
+        parts.append('<section class="panel"><p class="muted">No attempt on this paper yet, and no claims read from it.</p></section>')
     body = head + '<main class="paper">' + "".join(parts) + "</main>"
     return shell(data, f'{p["byline"]}: {p["title"]} · {SITE_NAME}', root, "papers", body,
                  path=f'papers/{p["key"]}/',
@@ -2504,7 +2535,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
             e((m.get("archive", "") + ":" + m.get("id", "")).strip(":") or m.get("name", "a dataset"))
             + f' ({e(m.get("why", ""))})' for m in missing)) if missing else ""
         top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {e(paper["byline"])}</p>'
-               f'<p class="eyebrow">{e(paper["byline"])} · {e(row["journal"])}</p>'
+               f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}</p>'
                f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
                f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
                f'<code>{e(paper["key"])}</code></p>'
@@ -2567,14 +2598,10 @@ def claims_only(data: dict) -> list[str]:
     return sorted(k for k in data.get("claim_files", {}) if k not in current)
 
 
-def page_claims(data: dict, key: str) -> str:
-    """A dataset's page before its first attempt: the claims read from its paper, and where it stands."""
-    root = "../../../"
-    target = next((t for t in data["targets"] if t["key"] == key), None)
-    row = next((r for r in pipeline_rows(data) if r["key"] == key), None)
-    titles = {t["paper"].lower(): t["paper_title"] for t in data["targets"] if t.get("paper")}
+def claims_list(files: list[dict], titles: dict) -> tuple[str, int]:
+    """Claims files as lists of claims, each with its quote and how it will be judged; and how many claims."""
     claims_html, n = "", 0
-    for f in data["claim_files"][key]:
+    for f in files:
         check = ("not yet checked" if f["check"] is None else
                  f'checked {e(f["check"]["date"])}: ' + ("ready" if f["check"]["ready"] else "not ready"))
         items = ""
@@ -2596,6 +2623,16 @@ def page_claims(data: dict, key: str) -> str:
                         f'<a href="https://doi.org/{e(f["paper"])}">{e(paper)}</a> · '
                         f'<a href="{REPO_URL}/blob/main/{e(f["path"])}">claims file</a> · {check}</p>'
                         f'<ul class="claims">{items}</ul>')
+    return claims_html, n
+
+
+def page_claims(data: dict, key: str) -> str:
+    """A dataset's page before its first attempt: the claims read from its paper, and where it stands."""
+    root = "../../../"
+    target = next((t for t in data["targets"] if t["key"] == key), None)
+    row = next((r for r in pipeline_rows(data) if r["key"] == key), None)
+    titles = {t["paper"].lower(): t["paper_title"] for t in data["targets"] if t.get("paper")}
+    claims_html, n = claims_list(data["claim_files"][key], titles)
     steps = ""
     if row:
         steps = "".join(f'<dt>{e(label)}</dt><dd>{e(row["state"][k][0])}'
