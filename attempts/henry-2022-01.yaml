@@ -1,0 +1,431 @@
+schema_version: 3
+id: henry-2022-01
+datasets:
+- archive: crcns
+  id: v4-2
+  version: unversioned
+  doi: 10.6080/K0736P4H
+  relation: primary
+paper: doi:10.1016/j.cub.2022.10.049
+date: 2026-11-11
+entry: henry-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42928791681
+outcomes:
+- claim: data-populations
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:data-populations
+  measured:
+  - 11
+  - 22
+  - 18.0
+  - 31.41
+  - 396
+  - 691
+  notes: The data set holds 11 sessions and 22 populations per area, with exactly 396 V1 and 691 V4
+    units (264 and 132, 288 and 403 per animal, as in Figure S7) and mean population sizes 18.0
+    +/- 1.7 and 31.4 +/- 3.4, all within tolerance (given as measured). The deposited units are the
+    paper's selected units. The Methods' rule applied to them, with blank epochs as the spontaneous
+    condition, keeps 115 V1 and 147 V4 units under reading (a) and 133 and 174 under reading (b),
+    mean sizes 5.2 to 7.9, outside tolerance. So sessions and populations hold under both readings
+    and the unit counts hold only for the deposit as it is. In 12 of 22 populations per area
+    (sessions 1, 2, 8 to 11) the epochs labelled blank respond like the target epochs, so no unit
+    there can pass the rule.
+  assumed: true
+  deviations:
+  - Assumed that the spontaneous rate is the count in the blank epochs (target and distractor
+    contrast 0), the only spontaneous data in the files; the Methods do not say how it was
+    measured. The question is recorded for the paper's authors as a methods_unavailable finding.
+  - All later analyses use every deposited unit, since the stated selection does not regenerate the
+    paper's counts and the deposit holds exactly those counts.
+- claim: fig1b-v4-rf-larger
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The receptive-field mapping sessions (small gratings on a 9 x 9 degree grid) are not in the
+    data set, which holds only data.zip with the two experiments' spike counts (bucket listing of
+    v4-2/live and its filelist.txt). The paper names no other deposit.
+- claim: fig2a-v1-single-neuron-near
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2a-v1-single-neuron-near
+  measured: 0.580
+  notes: V1 slope at 1.3 degrees 0.580 (bootstrap 95% CI 0.486 to 0.669), within 0.60 +/- 0.10,
+    CI below 1; 0.607 for a fit through (0.5, 0.5); 0.602 with the lower orientation as preferred.
+    Per animal 0.495 (AL) and 0.644 (CA).
+  deviations:
+  - The preferred extreme is the one closer to 0 degrees as an axial orientation (Results, "We
+    assumed the orientation closer to 0 would evoke stronger responses"); for references at 0
+    degrees, where both are equally close, the lower is taken.
+- claim: fig2b-v4-single-neuron-near
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2b-v4-single-neuron-near
+  measured: 0.206
+  notes: V4 slope at 1.3 degrees 0.206 (0.145 to 0.269), within 0.20 +/- 0.06; 0.203 through (0.5,
+    0.5). Per animal 0.319 (AL) and 0.122 (CA).
+- claim: fig2c-farthest-spacing-slopes
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2c-farthest-spacing-slopes
+  measured:
+  - 0.728
+  - 0.437
+  notes: At 2.6 degrees V1 0.728 (0.647 to 0.798) and V4 0.437 (0.368 to 0.501), within 0.74 +/-
+    0.08 and 0.44 +/- 0.07.
+- claim: fig2c-v4-worse-all-spacings
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2c-v4-worse-all-spacings
+  notes: V4 slopes 0.206, 0.297, 0.313, 0.437 against V1 0.580, 0.689, 0.641, 0.728 at 1.3 to 2.6
+    degrees; the 95% CIs do not overlap at any spacing (reading b), and V4 is lower in each animal
+    at every spacing.
+- claim: fig2de-population-decoding-example
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2de-population-decoding-example
+  notes: Monkey AL has the 84 cases (14 populations x 6 pairs). V4 with target-alone performance
+    above 0.5 (74 cases) - 0.645 alone against 0.536 crowded, paired t p = 1.5e-15, Wilcoxon p =
+    2.8e-11. V1 over all 84 cases - 0.560 against 0.552, p = 0.46 and 0.60, so the V1 part holds
+    under the unrestricted reading; with the V4 restriction (62 cases) V1 gives p = 0.018 and 0.025.
+    The 5-fold variant and monkey CA give the same pattern.
+  deviations:
+  - Decoders z-score each unit on the training trials and choose the penalty from 13 values of C
+    (0.01 to 100); neither is stated in the paper (standard choices, in crowding.py).
+- claim: fig2f-v1-threshold-elevation
+  outcome: not_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2f-v1-threshold-elevation
+  measured:
+  - 1.685
+  - 1.669
+  notes: V1 threshold elevation 1.685 +/- 0.351 at 1.3 degrees and 1.669 +/- 0.314 at 2.6 (mean of
+    AL 1.888 and CA 1.483; AL 2.062 and CA 1.277), outside 1.31 +/- 0.10 and 1.15 +/- 0.08. The
+    permutation test gives p < 0.05 only at 2.1 degrees (0.048 and 0.047), not at 1.3 or 1.6 (0.18
+    to 0.42) or 2.6 (0.059 and 0.062); with 5 folds none. Both trial-count readings give the same
+    estimates, since they differ only in scale of the likelihood. 62 of 84 AL and 34 of 48 CA points
+    have target-alone performance above 0.5 and enter the fit.
+  deviations:
+  - The binomial trial count is read as (a) the held-out trials of one fold and (b) all trials of
+    the pair; the maximum-likelihood k is the same under both, and only the bootstrap SEM differs.
+  - The paper's code is not public; the decoder's standardisation and penalty grid and the k grid
+    (0.2 to 20) are standard choices that could change the estimates.
+- claim: fig2f-v4-threshold-elevation
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig2f-v4-threshold-elevation
+  measured:
+  - 7.302
+  - 2.607
+  notes: V4 7.302 +/- 2.465 at 1.3 degrees and 2.607 +/- 0.289 at 2.6, against 2.52 +/- 0.23 and
+    1.89 +/- 0.19; permutation p = 0.001 (the smallest attainable) at all four spacings and V4 above
+    V1 at every spacing. So the elevation is greater in V4 and significant, but three times the
+    paper's value at 1.3 degrees. The CA estimates are 10.87 and 18.52 at 1.3 and 1.6 degrees, near
+    the grid bound of 20; AL gives 3.74 and 1.83 at 1.3 and 2.6. With 5 folds 10.17 and 3.04.
+- claim: figs3-pseudo-populations
+  outcome: reproduced
+  notebook: pseudo_populations.ipynb
+  output: claim:figs3-pseudo-populations
+  notes: Pseudo-populations give a broader range of target-alone performance (V1 0.343 to 1.000,
+    SD 0.172; V4 0.370 to 1.000, SD 0.174) than recorded populations (0.395 to 0.973 and 0.420 to
+    0.963, SD 0.117 and 0.123). Their threshold elevations lie within twice the recorded SEM at 7
+    of 8 area and spacing pairs under both trial counts; V4 at 1.6 degrees is 3.83 against 10.35 +/-
+    2.45. The comparison is with this attempt's recorded estimates, which differ from the paper's
+    (fig2f claims). The pseudo-population V1 value at 2.6 degrees (1.17) is near the paper's 1.15;
+    at 1.3 degrees (1.67) it is not near 1.31.
+  deviations:
+  - 10 draws per size where the claims file's standard choice is 20; with 20 the pseudo-population
+    decoding took 36 minutes on this runner, close to the notebook limit with the rest. The estimate
+    is pooled over all draws (240 points per area and spacing).
+  - Each population contributes, per draw, a random subset of its trials of each stimulus, as many
+    as the smallest count over populations (19 to 24), the same trials for all its units; trials
+    are matched by index across populations.
+- claim: fig3ab-correlations-reduced
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig3ab-correlations-reduced
+  measured:
+  - 0.0672
+  - 0.0479
+  - 0.1122
+  - 0.0555
+  - 4036
+  - 13101
+  notes: Mean rSC from 0.0672 +/- 0.0025 to 0.0479 +/- 0.0023 in V1 and from 0.1122 +/- 0.0013 to
+    0.0555 +/- 0.0010 in V4 with the nearest distractors; paired t p = 2e-21 (V1) and below 1e-300
+    (V4). 4036 and 13101 pairs. The decrease holds in each animal (V1 AL 0.034 to 0.030, CA 0.152 to
+    0.092; V4 AL 0.066 to 0.050, CA 0.127 to 0.057).
+  deviations:
+  - Only reading (a), every stored epoch as a presentation, could be run; the files do not mark
+    which epoch of a trial came first, and the residuals do not reveal the pairing.
+- claim: fig3c-shuffled-threshold-elevation
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig3c-shuffled-threshold-elevation
+  notes: Under both readings (all trials shuffled, or training trials only) and both trial counts,
+    the shuffled estimates lie within twice the bootstrap SEM of the original at 8 of 8 area and
+    spacing pairs (for example V4 at 1.3 degrees 8.40 and 9.64 against 7.30 +/- 2.47), and V4
+    exceeds V1 at every spacing. The originals are this attempt's estimates, which differ from the
+    paper's values (fig2f claims).
+- claim: fig3d-v1-fano-closest
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig3d-v1-fano-closest
+  measured:
+  - 1.051
+  - 0.985
+  notes: Geometric mean Fano factor 1.051 alone and 0.985 at 1.3 degrees; paired t p = 3.3e-08 on
+    Fano factors and 1.4e-07 on logs. No neuron or condition had to be dropped.
+- claim: fig3e-v4-fano-all-spacings
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig3e-v4-fano-all-spacings
+  measured:
+  - 0.997
+  - 0.928
+  notes: V4 0.997 alone and 0.928 at 1.3 degrees; the decrease has p < 0.001 at all four spacings
+    (largest 1.4e-09 on Fano factors, 8.7e-09 on logs).
+- claim: fig4a-v1-modulation-indices
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig4a-v1-modulation-indices
+  measured:
+  - 24.5
+  - 26.5
+  - 2.0
+  - 14.4
+  notes: Two-sided rule, pooling within orientation (first readings, given as measured) - at 1.3
+    degrees 24.5% suppressed and 26.5% facilitated, both within tolerance (pooling over all 24.7%
+    and 26.0%); 56.6% of indices below 1. At 2.6 degrees 2.0% facilitated and 14.4% suppressed
+    (pooling over all 1.8% and 12.9%), each set with one value outside tolerance. One-sided at 2.6
+    degrees gives 2.5% facilitation but 19.7% suppression, and the one-sided closest pair (28.8%
+    and 28.3%) is out. Pooled over the three farther spacings facilitation is 4.0 to 5.1%. The
+    closest-spacing pair holds and the far pair does not, the criterion's partial case.
+- claim: fig4b-v4-modulation-indices
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig4b-v4-modulation-indices
+  measured:
+  - 1.134
+  - 50.7
+  - 15.1
+  - 1.009
+  - 23.9
+  - 33.8
+  notes: Under the two-sided rule, percentages of all neurons and the farthest spacing, all six
+    values are within tolerance under both poolings; mean index 1.134 (SD 0.379, the paper's
+    0.38), 69.8% above 1, p = 1.9e-19 against 1; far mean 1.009 (SD 0.473). V4 against V1 at 1.3
+    degrees, one-sided, p = 0.009 on log indices and p = 0.074 on the indices (V1 mean 1.097), so
+    the comparison holds only on logs, a reading the criterion lists. With percentages of the
+    facilitated and suppressed neurons the values are far out (72.6% and 49.8%).
+- claim: fig4c-modulation-strength-significant
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig4c-modulation-strength-significant
+  notes: Observed strength 0.087 to 0.285 against a null 99th percentile of 0.071 to 0.074 at all
+    eight area and spacing pairs, under both poolings; p = 0.001 in each, the smallest attainable.
+- claim: fig4c-v4-stronger-than-v1
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig4c-v4-stronger-than-v1
+  notes: One-sided p = 0.011 at 1.3 degrees (Welch 0.012) and 1.9e-17 to 4.7e-26 at the others
+    (Welch 2.8e-22 to 1.4e-39). V4 0.285, 0.278, 0.283, 0.281 against V1 0.243, 0.137, 0.091, 0.087.
+- claim: fig4c-v4-maintained-v1-weaker-far
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig4c-v4-maintained-v1-weaker-far
+  notes: V4 nearest 0.2854 against farthest 0.2813 (difference 0.0041), one-sided p = 0.403 paired
+    and 0.409 two-sample (paper 0.44); V1 0.2426 against 0.0866, p = 9.3e-23 paired and 2.5e-22
+    two-sample.
+- claim: figs4-rf-alignment
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The coarse mapping at the start of each session (targets and each distractor shown alone)
+    is not in the data set. The files hold distractor-only epochs, but with all four distractors
+    together, so the per-distractor responses the Figure S4 classes need cannot be formed.
+- claim: figs5-additive-vs-multiplicative
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:figs5-additive-vs-multiplicative
+  notes: In the tuning model's cases 89.8% (V1) and 97.0% (V4) of facilitated cases favour the
+    additive model and 83.7% and 92.1% of suppressed cases the multiplicative one (all neurons
+    86.1%, 92.2%, 81.0%, 88.5%). The single-form simulation gives slopes 0.826 to 0.911 (V1) and
+    0.776 to 0.822 (V4) with recorded trial counts, below 1 and above the measured Figure 2 slopes
+    at 4 of 4 spacings in each area; the V1 upper CI at 2.6 degrees is 1.001.
+  deviations:
+  - The selection is the tuning model's (reliability above 0.5), as the criterion reads it, so the
+    V4 cases inherit the different even/odd split (see fig5bc-tuning-model-terms).
+- claim: fig5bc-tuning-model-terms
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig5bc-tuning-model-terms
+  measured:
+  - 0.405
+  - 0.596
+  - 0.154
+  - 0.907
+  - 146
+  - 244
+  notes: The criterion keeps 146 V1 neurons, exactly the paper's (89 and 57 per animal), and 244 V4
+    against 198 (114 and 130 against 93 and 105). m is below 1 in both areas (p < 1e-35), V4 has
+    the smaller m (-0.251, p = 3.6e-18) and the larger a (+0.312, p = 3.7e-18). Only the V4
+    additive term is within tolerance; V1 m 0.405 and a 0.596 against 0.59 and 0.39, V4 m 0.154
+    against 0.36. Fits on single trials and on means, and means over cases or neurons, agree within
+    0.001. The effect is present with different values, so partially reproduced.
+  deviations:
+  - Even and odd presentations follow the stored order of the epochs. The V4 epochs are not stored
+    in recording order (data check), so the V4 split cannot be the paper's.
+- claim: fit-quality
+  outcome: not_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fit-quality
+  measured:
+  - 0.455
+  - 0.410
+  notes: Mean per case 0.455 (V1) and 0.410 (V4), given as measured; median 0.460 and 0.328;
+    pooled 0.623 and 0.589. V1 pooled is within 0.63 +/- 0.063, but no reading puts V4 within 0.73
+    +/- 0.073.
+- claim: fig5-terms-covary
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig5-terms-covary
+  notes: Pearson r = -0.892 (V1, 584 cases) and -0.682 (V4, 976 cases), p < 1e-130; Spearman -0.955
+    and -0.839.
+- claim: fig5-negative-multiplicative
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig5-negative-multiplicative
+  notes: m < 0 in 23.3% of V1 and 35.1% of V4 cases (Fisher p = 7.7e-07); mean a with m < 0 is 1.29
+    and 1.41 against 0.38 and 0.63 otherwise. V4 is more frequent, but the V1 fraction is not below
+    10%, the criterion's partial case.
+- claim: fig5de-simulated-discriminability
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig5de-simulated-discriminability
+  notes: With recorded trial counts and the Figure 2C slopes over all neurons (readings a and a),
+    simulated V4 slopes 0.243 to 0.336 are below V1 0.404 to 0.567 at every spacing, and the
+    simulated slope is at or below the measured one at 4 of 4 spacings in V1 and 3 of 4 in V4. With
+    1000 trials V4 meets this at only 1 of 4 spacings against all neurons (3 of 4 against the fitted
+    neurons). The claim's "similar" and "weakly on spacing" are not tested by the criterion.
+- claim: fig6c-tuning-correlation-near
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig6c-tuning-correlation-near
+  measured:
+  - 0.389
+  - 0.161
+  notes: Reading (a), criterion 0.5 - V1 0.389 +/- 0.042 (within) and V4 0.161 +/- 0.039 (below
+    0.22 +/- 0.03), p = 8.9e-05; reading (b) - V1 0.460 (out) and V4 0.238 (within), p = 1.2e-04.
+    V4 is lower than V1 at every criterion (p = 5.9e-05 at 0.7, 0.009 at 0.9). No reading gives both
+    values; V4 is lower than the paper's value, a larger effect. The V4 selection rests on a split
+    that is not the paper's (fig5bc-tuning-model-terms); a random-split reliability gives V1 0.413
+    and V4 0.159.
+- claim: fig6d-tuning-correlation-spacing
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig6d-tuning-correlation-spacing
+  measured:
+  - 0.135
+  - 0.432
+  notes: Reading (a) V4 0.135 and V1 0.432, p = 1.2e-06; reading (b) 0.214 and 0.515, p = 1.8e-07.
+    V4 is lower than V1 as claimed, but no value is within 0.17 +/- 0.02 and 0.36 +/- 0.02.
+- claim: fig6e-tuning-correlation-configuration
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig6e-tuning-correlation-configuration
+  measured:
+  - 0.214
+  - 0.644
+  notes: Criterion 0.5 - V4 0.214 +/- 0.047 (90 neurons) and V1 0.644 +/- 0.061 (50 neurons), p =
+    6.7e-08; also at criteria 0.7 (p = 2.1e-05) and 0.9 (p = 0.006).
+- claim: fig6-well-isolated
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold spike counts only, with no waveforms or SNR per unit, so the best-isolated
+    third cannot be chosen. No other deposit is named by the paper.
+- claim: fig7cd-fixed-decoder-generalization
+  outcome: partially_reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:fig7cd-fixed-decoder-generalization
+  measured:
+  - 0.354
+  - 0.380
+  - 0.411
+  - 0.265
+  notes: Reading (a), all pairs - V1 same 0.354 +/- 0.044 and cross 0.380 +/- 0.039 (22
+    populations), paired t p = 0.36, no drop; V4 0.411 +/- 0.044 against 0.265 +/- 0.043, p =
+    0.0004. With the 18 degree pair alone V4 0.710 against 0.467 (p = 0.002) and V1 0.645 against
+    0.682 (p = 0.50). The tests hold under every reading, the d' values are well below the paper's
+    under every reading, the criterion's partial case.
+  deviations:
+  - Ten folds over all trials of both conditions and all four orientations; in each, both decoders
+    are trained on the extremes of the training trials and all held-out trials are projected. The
+    d' is signed so that the trained direction is positive.
+- claim: figs6-common-neuron-pool
+  outcome: reproduced
+  notebook: reproduce_henry_2022.ipynb
+  output: claim:figs6-common-neuron-pool
+  notes: Mean fraction still driven with distractors 0.944 to 0.960 (V1) and 0.866 to 0.953 (V4),
+    at least 0.8 at every spacing; the top unit's normalized d' alone correlates with its value
+    with near (r = 0.672, p = 0.0006) and far (r = 0.803, p = 6.8e-06) distractors across 22 V4
+    populations. The driven fractions rest on the 10 populations per area (sessions 3 to 7) where
+    any unit responds above the epochs labelled blank. The fraction driven by targets, 0.372 (V1)
+    and 0.396 (V4), lies in Figure S6A's range of 0.3 to 0.5.
+  deviations:
+  - Driven fractions computed on the 10 populations per area with any target-driven unit; in the
+    other 12 the blank epochs respond like target epochs.
+findings:
+- kind: metadata_error
+  statement: In sessions 1, 2 and 8 to 11 of the separation file (12 of 22 populations in each
+    area, both animals) the epochs labelled blank (target and distractor contrast 0) and those
+    labelled distractor-only give the same mean counts as the target epochs (mean z against blank
+    -0.18 to 0.16), while in sessions 3 to 7 targets drive the units 1.7 to 3.7 SD above the blank
+    epochs. The labels are aligned with the counts in all sessions (orientation tuning appears with
+    the true labels and not with labels shifted by one epoch), so the blank and distractor-only
+    labels of these six sessions cannot describe what was shown, or their counts are not those
+    epochs'. The spontaneous rate the Methods' selection needs cannot be measured there.
+- kind: metadata_insufficient
+  statement: The V1 and V4 entries of each population hold the same number of epochs of every
+    condition but in different orders (the condition agrees at the same index for 3 to 5% of
+    epochs, the level of unrelated orders). The V1 order carries slow fluctuations consistent with
+    recording order (median residual autocorrelation 0.11 at a lag of 10 epochs, 13 of 22
+    populations above 0.1); the V4 order carries none (0 of 22). The description does not say how
+    epochs are ordered, so V1 and V4 epochs cannot be matched and the even/odd split of V4 cannot be
+    repeated (244 V4 units pass the paper's tuning criterion against its 198, while V1 gives
+    exactly its 146).
+- kind: metadata_insufficient
+  statement: Each column is one stimulus epoch, and each trial had two epochs, but the files do
+    not mark which epochs form a trial or which came first. The orientation experiment's file does
+    not store the distractor spacing. The description mentions neither the blank nor the
+    distractor-only epochs the files hold.
+- kind: selection_undocumented
+  statement: The data set holds exactly the paper's 396 V1 and 691 V4 units, but the Methods' rule
+    (responses at least 1 SD above spontaneous) applied to them keeps only 115 to 133 V1 and 147 to
+    174 V4 units, using blank epochs as the spontaneous condition. Figure S6A, which uses the same
+    definition, shows only 0.3 to 0.5 of each population driven. How the deposited units were
+    selected is not documented.
+- kind: data_missing
+  statement: The receptive-field mapping sessions (Figure 1B), the per-session coarse mapping of
+    the target and each distractor (Figure S4) and the waveforms or SNR used for the well-isolated
+    subset are not deposited; three claims cannot be tested.
+- kind: paper_inconsistency
+  statement: The Results state that the additive term was significantly larger in V4 than in V1 as
+    "t test, p > 0.001", in a sentence that calls the difference significant.
+- kind: methods_unavailable
+  statement: For the paper's authors. (1) How was the spontaneous rate of the selection ("responses
+    at least 1 SD above spontaneous rate") measured, and against which response; the deposited
+    units cannot be regenerated from the blank epochs. (2) The decoders' feature scaling, penalty
+    grid and folds, and the binomial trial count of the threshold-elevation fit, are not given;
+    the threshold elevations here (V1 1.69, V4 7.30 at 1.3 degrees) differ from the reported ones.
+    (3) How the tuning model's means and fit quality were averaged; V1 gives the paper's 146 fitted
+    neurons but m = 0.41 against 0.59. The analysis code, which the paper offers on request, would
+    settle these.
