@@ -152,7 +152,13 @@ jobs:
         run: |
           # The credential scrub runs the agent's commands in a sandbox built on bubblewrap and
           # socat. Bubblewrap needs unprivileged user namespaces; Ubuntu 24.04 restricts them.
-          sudo apt-get install -y -q bubblewrap socat
+          # The runner's DNS can fail for a few minutes (2026-11-11: six author runs stopped here in an hour, on
+          # "Temporary failure resolving archive.ubuntu.com"). Each download is tried again, then the whole install.
+          for try in 1 2 3 4; do
+            sudo apt-get install -y -q -o Acquire::Retries=3 bubblewrap socat && break
+            [ $try = 4 ] && { echo "::error::could not install bubblewrap and socat (the network?)"; exit 1; }
+            sleep $((try * 30)); sudo apt-get update -q || true
+          done
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           bwrap --ro-bind / / --unshare-all true && echo "bubblewrap works"
           npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"

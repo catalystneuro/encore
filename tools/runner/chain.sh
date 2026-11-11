@@ -209,7 +209,7 @@ run_role(){ local role=$1 tries=0 flaky=0 outage=0 start before id st runlog acc
     fi
     # A failure of the network or of the machine, not of the agent: a connection dropped or timed out, the runner
     # was shut down, or the run left no log. Tried twice more; an agent that ran out of time is not.
-    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication"; } \
+    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication|Temporary failure resolving|Could not resolve host|Unable to fetch some archives"; } \
        && ! echo "$runlog" | grep -q "timed out after" && [ $flaky -lt 2 ]; then
       flaky=$((flaky+1))
       reset_branch "$start" || { last_why="could not reset attempt/$d after a failed run"; log "STOPPED: $last_why"; return 1; }
