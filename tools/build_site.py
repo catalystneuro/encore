@@ -1004,7 +1004,8 @@ def paper_rows(data: dict) -> list[dict]:
         rows_.append({
             "id": p["key"], "title": p["title"], "byline": p["byline"], "doi": p["doi"],
             "journal": journal.get(p["doi"], "Not recorded"),
-            "datasets": [{"key": k, "label": dataset_label(k), "page": page_of(k) if k in {a["key"] for a in atts}
+            "datasets": [{"key": k, "label": dataset_label(k), "name": by_key.get(k, {}).get("name"),
+                          "page": page_of(k) if k in {a["key"] for a in atts}
                           or k in data.get("claim_files", {}) else None} for k in p["datasets"]],
             "n_datasets": len(p["datasets"]),
             "archive": sorted({split_key(k)[0] for k in p["datasets"]}),
@@ -1019,6 +1020,10 @@ def paper_rows(data: dict) -> list[dict]:
             "has": sorted({o["outcome"] for o in outcomes}),
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "findings": sum(len(a["findings"]) for a in live) if live else None,
+            # What the datasets list had, now that the papers are the one list: what was found about the data, and
+            # whether CatalystNeuro converted any of the paper's datasets.
+            "found": sorted({f["kind"] for a in live for f in a["findings"]}),
+            "converted": "catalystneuro" if any(by_key.get(k, {}).get("catalystneuro") for k in p["datasets"]) else "other",
             "missing": sum(len(a.get("missing_datasets") or []) for a in live),
             "page": f"papers/{p['key']}/" if atts or p["status"] == "claims" else None,
         })
@@ -1232,24 +1237,13 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
     n_papers = sum(1 for p in papers_of(data) if p["attempts"])
-    n_datasets = len({a["key"] for a in data["attempts"]})
-    results = [("papers", "Papers", f"{root}papers/", n_papers), ("datasets", "Datasets", f"{root}datasets/", n_datasets)]
-    tabs = [("overview", "Overview", root or "./", None), ("results", None, None, None),
+    tabs = [("overview", "Overview", root or "./", None), ("papers", "Papers", f"{root}papers/", n_papers),
             ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
     for key, label, href, n in tabs:
-        if key == "results":
-            # A menu on a wide screen; on a narrow one, where the tab bar scrolls, its two items as tabs.
-            in_results = active in ("papers", "datasets")
-            items = "".join(f'<a href="{h}"{" aria-current=page" if k == active else ""}>{l}<span class="n">{c:,}</span></a>'
-                            for k, l, h, c in results)
-            nav += (f'<details class="menu"><summary class="tab{" current" if in_results else ""}">Results</summary>'
-                    f'<div class="menu-items">{items}</div></details>')
-            nav += "".join(f'<a class="tab narrow"{" aria-current=page" if k == active else ""} href="{h}">{l}'
-                           f'<span class="n">{c:,}</span></a>' for k, l, h, c in results)
-            continue
-        current = ' aria-current="page"' if key == active else ""
+        # A dataset's page is reached from its papers, so the Papers tab is current there too.
+        current = ' aria-current="page"' if key == active or (key == "papers" and active == "datasets") else ""
         count = f'<span class="n">{n:,}</span>' if n is not None else ""
         nav += f'<a class="tab" href="{href}"{current}>{label}{count}</a>'
     banner = '<div class="demo">Demo data: made-up attempts, for testing the site only</div>' if data["demo"] else ""
@@ -1333,18 +1327,40 @@ def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = 
     return f'<div class="panel"><h2>{link}{e(title)}</h2><div class="rows">{body}</div></div>'
 
 
-def attempt_row(a: dict, root: str, share: bool = False, paper: dict | None = None) -> str:
+def quiet_tier(tier: str) -> str:
+    """Verification as the papers list shows it (list.js, check): a quiet mark when verified, its tier on hover; only
+    the exception, not yet verified, spelled out."""
+    if tier == "runs":
+        return '<span class="tier pending">Not yet verified</span>'
+    return f'<span class="verified" title="{e(TIERS[tier])}"><span aria-hidden="true">✓</span> Verified</span>'
+
+
+def attempt_row(a: dict, root: str, share: bool = False, paper: dict | None = None, data: dict | None = None) -> str:
     """One attempt in a list; with `share`, the share of its claims reproduced in place of its date. Given its
-    paper (papers_of), the row is the paper's and opens the paper's page, the primary one."""
+    paper (papers_of), the row is the paper's, laid out as in the papers list (list.js, papers): the byline and
+    journal above the title, which opens the paper's page, then its datasets and the outcomes."""
     counts = outcome_counts(a)
-    page = f'{root}papers/{paper["key"]}/' if paper else f'{root}{page_of(a["key"])}'
     side = (f'<span class="small"><b>{reproduced_share(counts):.0%}</b> reproduced</span>' if share
             else f'<span class="small muted">{e(a["date"])}</span>')
-    return (f'<div class="row drow"><div class="id"><a href="{page}">{e(paper["byline"] if paper else a["label"])}</a></div>'
-            f'<div><p class="title"><a href="{page}">{e((paper or {}).get("title") or a["entry_title"] or a["id"])}</a></p>'
-            f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
-            f'<div class="right">{deprecated_badge() if a.get("deprecated") else tier_badge(a["tier"])}'
-            f'{side}</div></div>')
+    mark = deprecated_badge() if a.get("deprecated") else quiet_tier(a["tier"]) if paper else tier_badge(a["tier"])
+    if not paper:
+        page = f'{root}{page_of(a["key"])}'
+        return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["label"])}</a></div>'
+                f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
+                f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
+                f'<div class="right">{mark}{side}</div></div>')
+    row = next((r for r in rows_cache(data)["papers"] if r["id"] == paper["key"]), {}) if data else {}
+    page = f'{root}papers/{paper["key"]}/'
+    sets = ", ".join(f'<a href="{root}{e(d["page"])}">{e(d["label"])}</a>' if d.get("page") else e(d["label"])
+                     for d in row.get("datasets") or [])
+    said = " · ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in counts.items() if n)
+    journal = f'<span class="sep" aria-hidden="true">·</span>{e(row["journal"])}' if row.get("journal") else ""
+    return (f'<div class="row drow prow"><div><p class="byline">{e(paper["byline"])}{journal}</p>'
+            f'<p class="title"><a href="{page}">{e(paper.get("title") or a["entry_title"] or a["id"])}</a></p>'
+            + (f'<div class="meta"><span>{sets}</span></div>' if sets else "")
+            + f'<div class="meta" style="margin-top:6px">{bar(counts, "Outcomes", "bar mini")}'
+            f'<span class="small muted">{e(said)}</span></div></div>'
+            f'<div class="right">{mark}{side}</div></div>')
 
 
 def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
@@ -1489,11 +1505,11 @@ def page_overview(data: dict) -> str:
     n_papers = sum(1 for q in papers_of(data) if q["attempts"])
     tiles = [
         (f"{n_papers:,}", "papers attempted", "papers/?status=attempted"),
-        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "datasets/?status=attempted"),
+        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "papers/?status=attempted"),
         (f"{n_claims:,}", "claims attempted", "papers/?status=attempted"),
         (f"{verified:,}", "datasets independently verified",
-         "datasets/?tier=agent_verified,human_verified,author_endorsed"),
-        (f'{len(r["findings"]):,}', "findings about the data", "datasets/?status=attempted"),
+         "papers/?tier=agent_verified,human_verified,author_endorsed"),
+        (f'{len(r["findings"]):,}', "findings about the data", "papers/?status=attempted"),
     ]
     tile_html = "".join(f'<a class="tile" href="{href}"><div class="n">{n}</div><div class="l">{e(label)}</div></a>'
                         for n, label, href in tiles)
@@ -1538,8 +1554,8 @@ def page_overview(data: dict) -> str:
         breakdown("Why claims could not be tested",
                   ordered(blocked, BLOCKED_BY, lambda k: f"papers/?blocked_by={k}"),
                   "papers/?has=blocked"),
-        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"datasets/?found={k}"),
-                  "datasets/?status=attempted"),
+        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"papers/?found={k}"),
+                  "papers/?status=attempted"),
         breakdown("Verification of attempted datasets",
                   ordered(tiers, TIERS, lambda k: f"papers/?status=attempted&tier={k}"),
                   "papers/?status=attempted"),
@@ -1558,8 +1574,8 @@ def page_overview(data: dict) -> str:
                 out.append(a)
         return out[:n]
     recent = once_a_paper(sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True))
-    recent_html = "".join(attempt_row(a, "", paper=its(a)) for a in recent) or '<p class="empty">No attempts yet.</p>'
-    top_html = ("".join(attempt_row(a, "", share=True, paper=its(a))
+    recent_html = "".join(attempt_row(a, "", paper=its(a), data=data) for a in recent) or '<p class="empty">No attempts yet.</p>'
+    top_html = ("".join(attempt_row(a, "", share=True, paper=its(a), data=data)
                         for a in once_a_paper(most_reproduced(attempts, n=24)))
                 or '<p class="empty">No verified attempt yet.</p>')
 
@@ -1879,14 +1895,19 @@ def page_about(data: dict) -> str:
                              "the claims, the author and verifier roles, and where the agents run.")
 
 
+# The site's lists. Only the papers list is a page (INDEX_LISTS): since 2026-11-11 the papers are the one index,
+# and a dataset's page is reached from its papers. The datasets rows are still written as data (data/datasets.json).
+INDEX_LISTS = ("papers",)
 LISTS = {
     "papers": {
         "title": "Papers", "noun": "papers", "data": "data/papers.json",
         "intro": "Every paper the registry tests, on the datasets its data are in: the paper the data were published "
                  "with, or a paper that reuses them. Each opens the page of its results: every claim and its "
-                 "outcome, the notebooks, what was found about the data, and the verification.",
+                 "outcome, the notebooks, what was found about the data, and the verification. Search finds a "
+                 "paper by its datasets too, by identifier or by name.",
         "facets": [("status", "Status"), ("journal", "Journal"), ("relation", "Data"), ("archive", "Archive"),
                    ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"),
+                   ("found", "Findings about the data"), ("converted", "Converted by"),
                    ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-reproduced", "Most reproduced"), ("-date", "Most recently attempted"), ("byline", "First author"),
                   ("-failures", "Most claims not reproduced"), ("-n_datasets", "Most datasets"), ("title", "Title")],
@@ -2260,7 +2281,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      'checked the earlier finding">found on prompt</span>')
         return tags
     findings_html = "".join(
-        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
+        f'<li><span><a class="kind" href="{root}papers/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
         for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
     for a in atts:
@@ -2389,9 +2410,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                f'{human_size(t["size_gb"])}</span>' for t in mine])
     elif target:
         tags = " ".join(
-            [f'<a class="tag" href="{root}datasets/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
-            + [f'<a class="tag" href="{root}datasets/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
-            + ([f'<a class="tag" href="{root}datasets/?converted=catalystneuro" '
+            [f'<a class="tag" href="{root}papers/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
+            + [f'<a class="tag" href="{root}papers/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
+            + ([f'<a class="tag" href="{root}papers/?converted=catalystneuro" '
                 f'title="{e("; ".join(target["catalystneuro"]))}">Converted by CatalystNeuro</a>']
                if target["catalystneuro"] else [])
             + [f'<span class="tag" title="{target["size_gb"]:,.1f} GB">{human_size(target["size_gb"])}</span>',
@@ -2471,7 +2492,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                           + "dataset " + version_text(a) for a in atts)
     name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
     tier = weakest_tier(atts)
-    tier_link = f'{root}{"papers" if paper else "datasets"}/?status=attempted&tier={tier}'
+    tier_link = f'{root}papers/?status=attempted&tier={tier}'
     crumb = (f'<a href="{root}{page_of(dandiset)}">{e(dataset_label(dandiset))}</a> / {e(attempt["id"])}' if attempt
              else e(dataset_label(dandiset)))
     if paper:
@@ -2490,7 +2511,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                f'<p class="sub">{"Data the paper reuses" if paper["relation"] == ["reuses"] else "Datasets"}: {sets}'
                f'{could_not}</p>')
     else:
-        top = (f'<p class="crumbs"><a href="{root}datasets/">Datasets</a> / {crumb}</p>'
+        top = (f'<p class="crumbs"><a href="{root}papers/">Papers</a> / {crumb}</p>'
                f'<div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>'
                f'<p class="sub">{e(name)}</p>')
     body = f'''<header class="page">
@@ -2589,7 +2610,7 @@ def page_claims(data: dict, key: str) -> str:
                f'<a href="{root}pipeline/">Pipeline</a>')
     name = (target or {}).get("name") or dataset_label(key)
     body = f'''<header class="page">
-  <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
+  <p class="crumbs"><a href="{root}papers/">Papers</a> / {e(dataset_label(key))}</p>
   <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
   <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
@@ -2621,7 +2642,9 @@ def build(data: dict, output: Path) -> None:
     (output / "pipeline" / "index.html").write_text(page_pipeline(data))
     (output / "data" / "pipeline.json").write_text(json.dumps(pipeline_rows(data), separators=(",", ":")) + "\n")
     for kind in LISTS:
-        (output / kind / "index.html").write_text(page_list(data, kind))
+        (output / kind).mkdir(exist_ok=True)
+        (output / kind / "index.html").write_text(page_list(data, kind) if kind in INDEX_LISTS
+                                                  else redirect_page("papers/", "../"))
         (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
     for key, attempts in current_attempts(data).items():
         page = output / page_of(key)
@@ -2659,7 +2682,7 @@ def build(data: dict, output: Path) -> None:
         page.mkdir(parents=True, exist_ok=True)
         (page / "index.html").write_text(page_claims(data, key))
     renamed_redirects(data, output)
-    (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
+    (output / "dandisets" / "index.html").write_text(redirect_page("papers/", "../"))
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     (output / "sitemap.xml").write_text(sitemap(data))
@@ -2723,7 +2746,7 @@ def page_not_found(data: dict) -> str:
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
     pages = [("", data["generated"][:10]), ("about/", data["generated"][:10]), ("pipeline/", data["generated"][:10])]
-    pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
+    pages += [(f"{kind}/", data["generated"][:10]) for kind in INDEX_LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
     pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)

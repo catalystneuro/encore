@@ -542,7 +542,7 @@ def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
         for a in site.earlier_attempts(data, key):
             moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
             assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
-    assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
+    assert 'url=../papers/"' in (out / "dandisets" / "index.html").read_text()
 
 
 def test_datasets_are_named_by_archive_and_id():
@@ -708,11 +708,11 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
                 assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
     # And a dataset's page names the paper's page.
     assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
-    # A paper on several datasets lists them all; the Results menu leads to Papers and Datasets.
+    # A paper on several datasets lists them all; the tab bar leads to the papers, the one index.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
     nav = (site / "index.html").read_text()
-    assert 'class="menu"' in nav and 'href="papers/"' in nav and 'href="datasets/"' in nav
+    assert 'href="papers/"' in nav and 'href="datasets/"' not in nav and 'class="menu"' not in nav
 
 
 def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
@@ -758,4 +758,22 @@ def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives()
     assert sum(rows["datasets"]) == sum(sum(rows[f"archive:{k}"]) for k in keys)
     css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
     assert "--archive-4" not in css
+
+
+def test_the_papers_are_the_one_index_and_find_a_paper_by_its_datasets(built):
+    import json
+    data, out = built
+    # The datasets list is gone; its address sends the reader to the papers list, filters and all.
+    old = (out / "datasets" / "index.html").read_text()
+    assert 'url=../papers/"' in old and "location.search" in old
+    assert "datasets/</loc>" not in (out / "sitemap.xml").read_text()
+    # What only the datasets list had is on the papers list: findings and converted-by facets, dataset names.
+    keys = [k for k, _ in site.LISTS["papers"]["facets"]]
+    assert "found" in keys and "converted" in keys
+    rows = json.loads((out / "data" / "papers.json").read_text())
+    named = [r for r in rows if any(d.get("name") for d in r["datasets"])]
+    assert named and all({"found", "converted"} <= set(r) for r in rows)
+    # Every link to the old list's filters now goes to the papers list.
+    for page in ("index.html", "datasets/dandi/000233/index.html", "papers/tingley-2021/index.html"):
+        assert 'datasets/?' not in (out / page).read_text(), page
 
