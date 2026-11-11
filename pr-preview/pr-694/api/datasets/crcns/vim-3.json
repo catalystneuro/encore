@@ -1,0 +1,559 @@
+{
+ "dataset": {
+  "archive": "crcns",
+  "id": "vim-3",
+  "label": "CRCNS:vim-3"
+ },
+ "page": "datasets/crcns/vim-3/",
+ "generated": "2026-11-11T12:48:52+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 8
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 7
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "mannion-2015-01",
+   "dataset": {
+    "archive": "crcns",
+    "id": "vim-3",
+    "version": "unversioned",
+    "doi": "10.6080/K0JS9NC2",
+    "relation": "primary"
+   },
+   "datasets": [
+    "crcns:vim-3"
+   ],
+   "missing_datasets": [],
+   "key": "crcns:vim-3",
+   "label": "CRCNS:vim-3",
+   "dataset_version": "unversioned",
+   "paper": "10.7717/peerj.1038",
+   "paper_title": null,
+   "date": "2026-11-08",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42461502178"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "mannion-2015",
+   "entry_title": "Visual field origin of natural image patches in human V1 to V3 (Mannion 2015)",
+   "summary": "None of the paper's main findings could be tested in this data. These are the interaction between where a natural image patch is shown and where it was taken from, the larger lower-field responses to patches from below fixation, and the links between patch statistics such as mean luminance and the field preference. All rest on responses in V1, V2 and V3, and the dataset holds the raw functional runs without the anatomy or area definitions. The image statistics also need the monitor's colour calibration, which is not public. Of the minor claims, equal task performance across conditions held up, while the residual and radial-bias checks could not be decided.",
+   "description": "Tests the findings of Mannion (2015) on CRCNS vim-3, which holds the raw functional runs, event sequences and central-task records of the seven participants and the stimulus screenshots. The V1, V2 and V3 definitions, cortical surfaces and anatomical images are not in the data set, so the response claims are blocked; the task performance claim is tested, the data check fits the paper's GLM in the volume to check timing, run order and retinotopic layout, and the radial-bias test is run on the stimulus screenshots under assumed monitor calibrations, for information.",
+   "notebooks": [
+    {
+     "path": "reproduce_mannion_2015.ipynb",
+     "title": "Reproducing Mannion (2015) from CRCNS vim-3",
+     "executed": "notebooks/mannion-2015/reproduce_mannion_2015.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "localiser-masks-ventral-dorsal",
+     "statement": "The localiser masks for upper visual field presentation lie largely in ventral subregions of V1 to V3 and those for lower visual field presentation in dorsal subregions.",
+     "source": "Materials & Methods, Localiser, paragraph 1; Figure 2B",
+     "quote": "These upper and lower presentation masks were largely confined to ventral and dorsal subregions, respectively",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The criterion needs the participants' cortical surfaces and their V1, V2 and V3 definitions with the ventral and dorsal halves of each area. The data set holds the functional runs only; its descriptor says anatomical images and visual area definitions are not part of it, and the paper's code reads them from a local database (config.py roi_dir /sci/anat/db_ver1). They are not public elsewhere. As a volume check, not the paper's test, the voxels responding to upper-field presentation lie below those responding to lower-field presentation in 6 of 7 participants (by 1.6 to 13.7 mm; p1011 the reverse).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "presentation-source-interaction",
+     "statement": "Response amplitude shows a significant interaction between presentation location (upper, lower visual field) and source location (above, below fixation), F(1,6) = 11.19, p = 0.016.",
+     "source": "Results and Discussion, paragraph 1; Figure 3",
+     "quote": "We find a significant interaction between the presentation and source locations ( F 1,6 = 11.19, p = 0.016), as is apparent in Fig. 3",
+     "statistics": [
+      {
+       "test": "three-way repeated measures ANOVA (visual area, presentation, source), presentation by source interaction",
+       "statistic": "F(1,6) = 11.19",
+       "p": 0.016,
+       "n": "7 participants"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs psc responses in V1, V2 and V3 (localiser masks restricted to each area), and the area definitions are not in the data set or public elsewhere. A volume variant on all localiser voxels of the occipital slab, without motion correction and without the area factor, gives a presentation by source interaction of F(1,6) = 2.94, p = 0.137; it is not the paper's region and decides nothing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "interaction-not-area-dependent",
+     "statement": "The presentation by source interaction does not depend on visual area (three-way interaction F(1.9,11.4) = 1.52, p = 0.260), which justifies combining V1, V2 and V3.",
+     "source": "Results and Discussion, paragraph 1",
+     "quote": "Because there was little evidence to indicate that this interaction depended on the visual area ( F 1.9,11.4 = 1.52, p = 0.260), we combined across the visual areas",
+     "statistics": [
+      {
+       "test": "three-way repeated measures ANOVA, area by presentation by source interaction, Huynh-Feldt corrected degrees of freedom",
+       "statistic": "F(1.9,11.4) = 1.52",
+       "p": 0.26,
+       "n": "7 participants"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the area factor (V1, V2, V3), whose definitions are not in the data set. Also depends on presentation-source-interaction, which is blocked.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "lower-field-below-greater",
+     "statement": "For presentation in the lower visual field, combined over V1 to V3, patches sourced from below fixation evoke larger responses than patches from above (0.80 against 0.72 psc), a significant difference (t(6) = 5.17, p = 0.002).",
+     "source": "Results and Discussion, paragraph 1",
+     "quote": "Responses to images sourced from below fixation were higher than those from above fixation when presented in the lower visual field ... 0.80 psc (SE = 0.02) and 0.72 psc (SE = 0.02), respectively. This difference was statistically significant ( t 6 = 5.17, p = 0.002)",
+     "statistics": [
+      {
+       "test": "paired t-test, below against above source, lower field presentation",
+       "statistic": "t(6) = 5.17",
+       "p": 0.002,
+       "n": "7 participants"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs responses averaged over V1 to V3, whose definitions are not in the data set. In the volume variant (not V1 to V3) lower-field responses are 0.997 psc for patches from below and 0.870 from above, t(6) = 2.73, p = 0.034; it decides nothing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "upper-field-no-source-difference",
+     "statement": "For presentation in the upper visual field, patches sourced from below and above fixation evoke comparable responses (0.84 against 0.85 psc; t(6) = 0.38, p = 0.719), so the predicted preference for above-sourced patches in the upper field was not found.",
+     "source": "Results and Discussion, paragraphs 1 and 2",
+     "quote": "When presented in the upper visual field, images sourced from below fixation elicited comparable response amplitudes to those from above fixation (below: mean = 0.84 psc, SE = 0.03; above: mean = 0.85 psc, SE = 0.02; t 6 = 0.38, p = 0.719)",
+     "statistics": [
+      {
+       "test": "paired t-test, below against above source, upper field presentation",
+       "statistic": "t(6) = 0.38",
+       "p": 0.719,
+       "n": "7 participants"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs responses averaged over V1 to V3, whose definitions are not in the data set. In the volume variant upper-field responses are 0.963 and 0.965 psc for below and above, t(6) = -0.06, p = 0.957; it decides nothing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-top-five-matching-source",
+     "statement": "Ranking the 60 image patch pairs by the difference between upper and lower field responses, four of the five most upper-preferred pairs are sourced from above fixation and four of the five most lower-preferred pairs from below fixation.",
+     "source": "Results and Discussion, paragraph 3; Figure 4",
+     "quote": "We find that four out of the top five patches for both upper-preferred and lower-preferred are from the matching source location",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs per-image responses averaged over V1 to V3, whose definitions are not in the data set. In the volume variant 4 of the 5 most upper-preferred pairs are from above and 5 of the 5 most lower-preferred from below; it decides nothing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-qualitative-content",
+     "statement": "The upper-preferred patch pairs are regions of largely uniform luminance and mostly depict sky; the lower-preferred pairs are more variegated and mostly depict the ground.",
+     "source": "Results and Discussion, paragraph 3; Figure 4",
+     "quote": "The image patch pairs preferred by the upper visual field consist of regions of largely uniform luminance (either bright or dark), whereas those preferred by the lower visual field are more variegated",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig4-top-five-matching-source, which is blocked for missing V1 to V3 definitions. The stimulus screenshots it would view are in the data set (120 PNG files).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-mean-luminance",
+     "statement": "Higher mean luminance of a patch pair goes with a larger upper minus lower response difference (Spearman r = 0.31, p = 0.016).",
+     "source": "Results and Discussion, paragraph 4; Figure 5A",
+     "quote": "higher levels of mean luminance were related to greater differences in the responses evoked by upper and lower visual field presentation (Spearman's r = 0.31, p = 0.016)",
+     "statistics": [
+      {
+       "test": "Spearman correlation",
+       "statistic": "r = 0.31",
+       "p": 0.016,
+       "n": "60 image and source location pairs (30 images by 2 source locations), from imstats.py"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig4-top-five-matching-source (the upper minus lower response difference in V1 to V3), which is blocked. The DKL conversion also needs the CIE coordinates of the monitor's primaries and the conversion function, which the claims file says come from a local PsychoPy calibration and the unlinked package monitors.conversions; neither the paper, its code at 571e9312, nor the data set gives them, so this outside input is not public.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-no-other-pixel-relations",
+     "statement": "Neither the mean pixel value of either chromatic channel nor the standard deviation of pixel values in any channel is significantly related to the upper minus lower response difference.",
+     "source": "Results and Discussion, paragraph 4",
+     "quote": "No significant relationship was evident for the mean values in the chromatic channels, or for the standard deviation of the pixel intensities for any of the channels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig5a-mean-luminance, blocked for the same reasons (V1 to V3 responses and the monitor calibration).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5bc-spatial-frequency",
+     "statement": "Higher output of luminance Gabor filters at 1 and 2 cycles per degree goes with a larger upper minus lower response difference (Spearman r = 0.32, p = 0.013 and r = 0.26, p = 0.049).",
+     "source": "Results and Discussion, paragraph 5; Figures 5B and 5C",
+     "quote": "(Spearman's r = 0.32, p = 0.013; Spearman's r = 0.26, p = 0.049; for spatial frequencies of 1 and 2 cycles per degree of visual angle, respectively)",
+     "statistics": [
+      {
+       "about": "1 cycle per degree",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.32",
+       "p": 0.013,
+       "n": "60 image and source location pairs"
+      },
+      {
+       "about": "2 cycles per degree",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.26",
+       "p": 0.049,
+       "n": "60 image and source location pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig5a-mean-luminance, blocked for the same reasons (V1 to V3 responses and the monitor calibration).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5def-orientation",
+     "statement": "Higher output of luminance Gabor filters at 45, 90 and 135 degrees goes with a larger upper minus lower response difference (Spearman r = 0.34, 0.25 and 0.39; p = 0.008, 0.050 and 0.002).",
+     "source": "Results and Discussion, paragraph 5; Figures 5D, 5E and 5F",
+     "quote": "(Spearman's r = 0.34, p = 0.008; Spearman's r = 0.25, p = 0.050; Spearman's r = 0.39, p = 0.002; for orientations of 45\u00b0, 90\u00b0, and 135\u00b0, respectively)",
+     "statistics": [
+      {
+       "about": "45 degrees",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.34",
+       "p": 0.008,
+       "n": "60 image and source location pairs"
+      },
+      {
+       "about": "90 degrees",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.25",
+       "p": 0.05,
+       "n": "60 image and source location pairs"
+      },
+      {
+       "about": "135 degrees",
+       "test": "Spearman correlation",
+       "statistic": "r = 0.39",
+       "p": 0.002,
+       "n": "60 image and source location pairs"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig5bc-spatial-frequency, blocked for the same reasons.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-no-other-filter-relations",
+     "statement": "No other luminance spatial frequency (4, 8, 16 cpd) or orientation (0 degrees), and no spatial frequency or orientation in the chromatic channels, is significantly related to the upper minus lower response difference.",
+     "source": "Results and Discussion, paragraph 5",
+     "quote": "No significant relationships were evident for any other spatial frequencies or orientations in the luminance channel, or for any spatial frequency or orientation in the chromatic channels",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Depends on fig5bc-spatial-frequency, blocked for the same reasons.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "no-radial-bias-in-patches",
+     "statement": "The output of Gabor filters oriented at 45 and 135 degrees does not differ significantly, so the patches show no reliable radial bias.",
+     "source": "Results and Discussion, paragraph 6",
+     "quote": "there were no significant differences between the output of Gabor filters oriented at 45\u00b0 and 135\u00b0, which would be expected if a reliable radial bias was present in the image patches",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The test needs no responses, only the 120 stimulus screenshots, which are in the data set, and the DKL transform, which needs the CIE coordinates of the monitor's primaries (Methods, Image patch analysis). These are given neither in the paper, nor in its code (a local PsychoPy monitor profile and the unlinked package monitors.conversions), nor in the data set, so the screenshots cannot be put in DKL space as the paper did. 118 of the 120 patches have R, G and B not all equal in more than half their pixels inside the mask, so the chromatic channels depend on the calibration. The claims file lists fig5bc-spatial-frequency under depends_on for the filter method only; that claim is blocked for the V1 to V3 responses, which this test does not use, and the filter method itself was run here. As a variant on which no outcome rests, the test was run as imstats.py runs it under two assumed calibrations (sRGB and Adobe RGB primaries) at 78.7 pixels per degree, and under sRGB at 78.2. None of the 12 paired t-tests has p < 0.05 under any of the three (smallest p 0.063, 0.065 and 0.064, each the luminance channel for patches from below on the right, t(29) = -1.93 to -1.92), and none of the 4 luminance tests does; the mean 45 minus 135 degree difference is at most 7% of the mean output. The patch geometry was checked on the screenshots.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2-task-no-condition-difference",
+     "statement": "Performance on the central fixation task does not differ across the presentation and source location conditions.",
+     "source": "Results and Discussion, paragraph 7; Figure S2 legend",
+     "quote": "there are no apparent differences in performance on the behavioural task (Fig. S2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mannion_2015.ipynb",
+     "notes": "Window 0.4 to 0.9 s, two-way repeated measures ANOVA over 7 participants. Reading (a), task.py as written, presentation F(1,6) = 2.60, p = 0.158, source F = 0.00, p = 0.979, interaction F = 0.45, p = 0.529. Reading (b), assignment by absolute run time, presentation F = 0.00, p = 0.987, source F = 0.01, p = 0.947, interaction F = 1.04, p = 0.347. Variant (c), binning the whole of 32 to 332 s, no effect below p = 0.27. Variant (d), which keeps targets falling exactly on an event onset (dropped by task.py's strict window, 1023 targets in reading (a) and 918 in (b)), no effect below p = 0.49. Variant (e), assignment to the event in progress (starting up to 2 s before the target), interaction F = 5.77, p = 0.053, the other effects p >= 0.43. Condition means 0.036 to 0.043, range over mean 0.039 to 0.083. The mean response peaks at 0.6 s in all four conditions under readings (a), (c) and (e); under (b) and (d) it peaks at 0.7 s for lower/above and 0.6 s for the others. Every participant has 103 to 200 assigned targets per condition in every reading. The notebook prints the lines of task.py (bin edges, p1004 rule, any key as a response, the skipping of presses and targets at or before 32 s, the 0 to 2 s assignment) that the helper follows. Of six other window and reading combinations shown, one gives a presentation effect (reading (a), 0.6 to 0.9 s, p = 0.034). Under reading (a) a target is labelled by the event starting 32 to 34 s after it (task.py line 141, printed); that these labels are unrelated to the target's own event is inferred from the code, not measured. 6214 targets after 32 s; 3642 were assigned to an image event under reading (a), 3821 under (b) and 4979 under (c), the others falling on null events or on no event.",
+     "deviations": [
+      "The paper reports no test for Figure S2; the test is group.py tasks(), as the criterion says. The ANOVA is computed as paired contrasts over participants (exact for a 2 by 2 within-subject design, F = t squared) in place of the code's fmri_tools.stats.anova, which is not public.",
+      "Variant (c), with bins over the whole of 32 to 332 s, is an addition of this attempt shown for information; task.py puts every press and target after 300 s into its last bin.",
+      "Variants (d), the assignment window with its start included, and (e), assignment to the event in progress, are additions of this attempt on the timing of reading (b), shown for information."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-residual-no-condition-difference",
+     "statement": "The residual error of the GLM after event onset does not differ across source location conditions within each presentation location.",
+     "source": "Results and Discussion, paragraph 7; Figure S3 legend",
+     "quote": "or in the quality of the GLM model after event onset (Fig. S3) across conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The residuals are taken from the GLM of the V1 to V3 localiser regions, whose area definitions are not in the data set.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-residual-upper-larger",
+     "statement": "The residual error of the GLM is larger for upper than for lower visual field presentation.",
+     "source": "Figure S3 legend",
+     "quote": "the residual error was larger for the upper presentation than the lower",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As figs3-residual-no-condition-difference. In the volume variant the region's mean squared residual is larger for upper presentation in 5 of 7 participants, not on average (p1011 dominates); it decides nothing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The data set holds the raw functional runs, event sequences, task records and stimulus screenshots, but not the anatomical images, cortical surfaces, retinotopic mapping or V1, V2 and V3 definitions that every response measure of the paper uses. The descriptor says so and asks users to request them on the CRCNS forum. 15 of the 16 claims are blocked, 14 of them for this reason.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The data set holds the 120 stimulus screenshots, but not the measured CIE coordinates of the monitor's primaries needed to convert their pixel values to DKL space, in which the image statistics of Figure 5 and the radial-bias test are computed; nor are they in the paper or its code (a local PsychoPy monitor profile and the unlinked package monitors.conversions). The patches are in colour (R, G and B differ in most pixels of 118 of the 120 patches), so the chromatic channels cannot be formed without them.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The data set's README.txt says it contains fMRI measurements in areas V1, V2 and V3. The files are whole volumes of a 35-slice occipital slab with no area labels, so no measurement in V1, V2 or V3 can be formed from the data set alone.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The NIfTI files are named by scanner series number (for p1003 series 3, 4, 6 to 13, for p1010 series 4 to 13), while the sequence and task files are named by run, and the descriptor does not give the mapping. The participant configurations of the paper's code take the series in order as runs 1 to 10; a leave-one-run-out fit supports this for six participants, and for p1011 it could not be confirmed.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "other",
+     "statement": "For p1011 the timing of the event sequences and the run order could not be confirmed from the data without motion correction; the held-out runs barely follow their own sequences (mean t 0.7 and 1.1, against 2.6 to 4.9 in the others), and a coarse motion index reaches 3.6 mm by run 10, against at most 1.8 mm in the other participants. Its upper-field responsive voxels also lie above its lower-field ones, the reverse of the other six.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "For p1004 runs 1 to 5 the target column of the task lookup does not describe the task the participant performed; the paper's code redefines the targets as white 9 and black 5 for those runs (the participant misunderstood the instructions). The descriptor does not say so, and the four button keys used in the task files are not described.",
+     "found": null,
+     "status": null
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Figure S2 legend describes task performance for target onsets near each condition, but task.py skips targets and button presses at or before 32 s, bins the others in absolute run time and assigns each target to the event starting within 2 s after the bin time plus 32 s (lines 53, 99 and 141 to 145, printed in the notebook), so the condition labels come from events about 32 s after the target. It also puts every press and target after 300 s into one last bin. With the assignment by absolute time the conclusion of no difference is unchanged.",
+     "found": null,
+     "status": null
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-08",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness and model, separate context, did not write the notebook)",
+     "reviewed": "The handover of the first run, the executed notebook with the Result cells and the Summary section removed, the helper module and the claims file. The introduction (cell 0) still held a table of outcomes and the section headings named them, and the verifier saw and quoted these; the verifier also read the paper under paper/ and checked the archive's file list. Report in transcripts/crcns-vim-3/verifier-1-report.md.",
+     "agreed": 15,
+     "of": 16,
+     "disagreements": [
+      {
+       "claim": "no-radial-bias-in-patches",
+       "outcome": "blocked",
+       "reason": "Blocked (metadata_insufficient), partly testable. It needs no responses, only the 120 screenshots, which are in the archive. The only thing missing is the monitor's CIE coordinates, and the claims file leaves the choice of a substitute to the author. The luminance-only variant (4 tests, 45 against 135 degrees) could have been run under a stated calibration, but it was not. The summary labels it \"blocked, data missing\", though it needs only the screenshots and a calibration."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-08",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness and model, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the second run with its conclusions and summary, the helper module, the claims file and this record. Report in transcripts/crcns-vim-3/verifier-2-report.md.",
+     "agreed": 16,
+     "of": 16,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "mannion-2015",
+   "type": "reproduction",
+   "title": "Visual field origin of natural image patches in human V1 to V3 (Mannion 2015)",
+   "description": "Tests the findings of Mannion (2015) on CRCNS vim-3, which holds the raw functional runs, event sequences and central-task records of the seven participants and the stimulus screenshots. The V1, V2 and V3 definitions, cortical surfaces and anatomical images are not in the data set, so the response claims are blocked; the task performance claim is tested, the data check fits the paper's GLM in the volume to check timing, run order and retinotopic layout, and the radial-bias test is run on the stimulus screenshots under assumed monitor calibrations, for information.",
+   "datasets": [
+    "crcns:vim-3"
+   ],
+   "papers": [
+    "10.7717/peerj.1038"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mannion_2015.ipynb",
+     "title": "Reproducing Mannion (2015) from CRCNS vim-3",
+     "executed": "notebooks/mannion-2015/reproduce_mannion_2015.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 16,
+   "hashed": false
+  }
+ ]
+}
