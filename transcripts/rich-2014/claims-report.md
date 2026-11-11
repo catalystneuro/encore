@@ -1,18 +1,43 @@
-I wrote no claims for rich-2014. Under the Reader section, step 1, the supplement this paper's results rest on is missing, so I stopped there. `claims/rich-2014.yaml` was not created and nothing else changed.
+I've written `claims/rich-2014.yaml`: 27 claims, every one with a quote. The quote checker passes with 0 problems. Nothing is committed.
 
-**What was read:** `paper/10.1126-science.1255635.txt`, the version of record of Science 345:814 (2014). It is the main text only: the 4-page report plus the publisher's cover page. Its last page stops at reference 29, so references 30 and 31, the acknowledgments and the supplementary materials list are cut off. The PDF has the same 5 pages and nothing more.
+**Text read.** The version of record (Science 345:814–817) and its full supplement: Materials and Methods, Supplementary Text, and Figs. S1 to S18 with legends. I rendered PDF pages only to read Fig. 3 and Figs. S5, S7, S15 and S17. The paper links no analysis code, so I read none.
 
-**What is missing:** the Supplementary Materials, at http://www.sciencemag.org/content/suppl/2014/08/13/345.6198.814.DC1.html. That means the Materials and Methods and figs. S1 to S18. The main text has no Methods section, so nothing in hand fixes:
-- how cells were selected and isolated in the flanking sleep sessions (fig. S1);
-- the track layout and how position was linearized (fig. S2);
-- the place field detection criteria (the text gives only the <5 cm/s speed cutoff, in the Fig. 1 legend), and the variants in fig. S15;
-- which spikes count toward the analysis windows, given that only the novel sections of each epoch were analyzed;
-- how the negative binomial was fit, and how the Kolmogorov-Smirnov and Anderson-Darling tests and the false discovery rate correction were applied;
-- how pre-exposure slow-wave sleep firing rates were computed (Fig. 4A);
-- the memoryless recruitment analysis (fig. S13).
+**Missing from the paper.** The last page of the supplied PDF (p. 817) is damaged. Its text columns survive, but Fig. 4, its legend, refs 30–31 and the acknowledgments don't render and aren't in the text. The main text, Methods and supplement are otherwise complete, so I went ahead. Three claims rest on Fig. 4:
+- **Fig. 4A:** the legend would say which correlation gives r = 0.45, so the readings are Pearson, Pearson on log rates, or Spearman. With n = 253, r = 0.45 matches a Pearson p of about 5e-14.
+- **Fig. 4B:** the range of environment sizes it plots is unknown.
+- **Fig. 4C:** what it plots is unknown, so how to compare the two models' results is left open.
 
-Several findings are shown only in the supplement: overdispersion and the per-animal recruitment range (fig. S7), the second novel environment (fig. S8), stationarity (fig. S11), pairwise correlations between cells (fig. S12), anatomical modulation (fig. S16) and correlated propensities across environments (fig. S17).
+**Counts.**
+- 27 claims, 27 quotes, none inferred.
+- 10 claims carry statistics, 17 entries in all.
+- 17 claims have expected values.
+- All 27 have criteria.
 
-**Other notes:** the paper links no code. The hc-31 data description says the dataset holds 5 rats on the novel 48 m track, a repeat exposure, a second open-field environment and the flanking sleep sessions. That matches the paper. As instructed, I did not look at the data.
+**Details the paper leaves open, with the readings named for each:**
+- **What counts as a pass through a field** (for the 50% firing rule): a full traversal of the field, or any visit to it in that direction.
+- **Open-field speed and occupancy thresholds:** the track's values (5 cm/s, 0.001 s per bin), or no speed threshold.
+- **Anderson-Darling test for exponential intervals:** with the mean estimated, or with the cell's mean plugged in. The set for the false discovery rate adjustment is open too: the 61 location tests and 61 interval tests apart, or all 122 together.
+- **Comparing Fig. 2B/C with the null:** a two-sample KS test, or a KS test on per-cell percentiles.
+- **Overdispersion test:** index of dispersion, or a likelihood ratio of negative binomial against Poisson.
+- **Recruitment KS surrogates:** fixed fitted parameters, or refitted per surrogate (the approach of ref. 37).
+- **Sidedness of p in Fig. S11:** two-sided or one-sided.
+- **Section-boundary test (Fig. S11):**
+  - Piece length: a 7 m piece does not fit twice in the 12 m section 3.
+  - Shuffle: swap two pieces per cell, or permute all three.
+- **Fig. S10:** bin widths and what counts as a corner are not given, so I used standard choices and marked each as a deviation. The test is open: count of bins outside the shuffle interval, or a Spearman trend.
+- **Fig. S12:** KS against the null, or the mean against the null interval.
+- **Memoryless curves (Fig. 3E):** start points every 5 m or every 10 m.
+- **Size and rate of merged fields (Fig. S14):** the union of the two directions, or their mean.
+- **Fig. S16 correlation:** Pearson or Spearman.
+- **"In the environment" for silent-cell firing rates:** novel-section time only, or all RUN1 time on the track.
+- **Fig. S17 window at the track's end:** wrap around, or only starts where it fits.
+- **Fig. 4C environment sizes:** spaced on a log or a linear scale.
+- **Recomputed fields:** fields are recomputed by the Methods. If the dataset holds the paper's own detected fields, they're shown as a variant.
 
-**To proceed:** add the supplement's text, or its PDF, under `paper/` and rerun the reader.
+**Conflicts with the paper's own numbers.** Working from the rounded parameters printed in the paper (r = 0.57, p = 0.14), two results don't match the text. I recorded both in the criteria without changing the expected values:
+- 90% recruitment comes at about 436 m, against the paper's "~500 m".
+- The single-field proportion is about 16% at 48 m, not 5–10%. It falls inside 5–10% only at about 200–600 m (and near 1 m).
+
+Values read only from figures have the figure named in the claim:
+- the per-animal means in Fig. S7A;
+- the Fig. S17 correlations, about 0.41 and 0.22, with tolerances taken from the 95% intervals as read off the figure.
