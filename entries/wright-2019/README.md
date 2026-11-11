@@ -15,9 +15,11 @@ sessions of six rats. All 39 claims of the claims file are tested.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The paper leaves the nose poke baseline of the suppression ratio unstated. Its printed regression
-input for one Onset neuron is reproduced by one unit of the data set only with a 20 s baseline for
-total fear, a 2 s baseline for interval fear and 0/0 ratios set to 1. That reading is used as the
-primary one, beside the claims file's readings; several regression outcomes rest on it. The
-attempt record, with the reasons and the differences from the paper's method, is
+The paper states neither nose poke baseline of the suppression ratios. Its printed regression
+input for one Onset neuron is reproduced by one unit of the data set only with a 2 s baseline for
+interval fear, a 20 s baseline for total fear and 0/0 ratios set to 1. After this attempt asked
+about it, the claims file gave the two ratios separate windows and added these choices to its
+readings. That reading is the primary one, and every reading of the amended claims file is run;
+several regression outcomes rest on the primary reading or on the trial's own firing baseline.
+The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/wright-2019-01.yaml`](../../attempts/wright-2019-01.yaml).

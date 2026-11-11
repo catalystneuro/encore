@@ -24,10 +24,12 @@ Where the parameters come from:
   rate in 100 ms bins from 10 s before onset to 12 s after offset (320 bins), minus the trial
   type's mean 2 s baseline, Z-scored over all trial types and bins of the neuron.
 - Suppression ratio (Methods, Calculating suppression ratios): (baseline rate - cue rate) /
-  (baseline rate + cue rate), per trial. The baseline window is open (detail 1 of the claims
-  file): 2 s or 10 s (the claims file's readings), or 20 s, the window of the data set's
-  cubeScript.m, which the values of the Methods regression table also imply. A 0/0 ratio is
-  open (detail 2): 0, left out (NaN), or 1 as cubeScript.m sets it.
+  (baseline rate + cue rate), per trial. The baseline windows are open (detail 1 of the claims
+  file, as amended after this attempt's question): interval fear and total fear have separate
+  windows ending at cue onset, readings (a) 2 s and 10 s, (b) 2 s and 20 s, (c) 10 s and 20 s.
+  Reading b reproduces the Methods regression table, and 20 s is the window of the data set's
+  cubeScript.m. A 0/0 ratio is open (detail 2): 0, left out (NaN), or 1 as the table and
+  cubeScript.m set it.
 """
 
 from __future__ import annotations
