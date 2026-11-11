@@ -131,7 +131,7 @@
       return `<div class="row drow prow">
         <div><p class="byline">${esc(r.byline)}<span class="sep" aria-hidden="true">·</span>${esc(r.journal)}</p>
           <p class="title"><a href="${href}">${esc(r.title)}</a></p>
-          <div class="meta">${ds}${reuse}${missing}
+          <div class="meta"><span>${ds}</span>${reuse}${missing}
             <a href="https://doi.org/${esc(r.doi)}">doi</a></div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;
