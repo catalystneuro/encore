@@ -245,6 +245,8 @@ def summarize(out):
         pre_avg_t1=ph["A100"][:, :, 0].mean(0), pre_avg_t2=ph["A90"][:, :, 0].mean(0),
         omission_B=np.mean([o[2] for o in out["B"]], axis=0),
         omission_C=np.mean([o[2] for o in out["C"]], axis=0),
+        omission_B_sims=np.array([o[2] for o in out["B"]]),
+        omission_C_sims=np.array([o[2] for o in out["C"]]),
     )
     return res
 

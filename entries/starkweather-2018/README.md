@@ -14,13 +14,13 @@ mPFC recordings and other VTA neurons the paper also analyses are not in it.
 | SalB spares the task 1 pattern and flattens the task 2 pattern (Figure 4C, 4D) | Reproduced |
 | Slopes of single neurons: signs, significant slopes, distributions, variances (Figures 4E, 5) | Reproduced; two rest on an assumption about baseline subtraction |
 | Odor B and C responses and omission dips are spared by SalB (Figures 6, S5D) | Reproduced |
-| Belief state TD model, intact, belief impaired and timing impaired (Figure 7) | Reproduced, with the code ported to Python |
+| Belief state TD model, intact, belief impaired and timing impaired (Figure 7) | Reproduced, with the code ported to Python; under the timing impairment the omission dips are reduced, not removed, which the criterion allows (asked of a reader) |
 | mPFC recordings, licks, unidentified VTA neurons, free water responses, no-KORD controls (12 claims) | Blocked: data missing |
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/starkweather-2018-01.yaml`](../../attempts/starkweather-2018-01.yaml).
 
-- `reproduce_starkweather_2018.ipynb`: the analysis. It takes about three minutes; the data are one
+- `reproduce_starkweather_2018.ipynb`: the analysis. It takes about five minutes; the data are one
   7.9 MB zip, and most of the time is the model.
 - `vta.py`: loading the zip from the CRCNS bucket, the trial table and the response measures of the
   paper's Methods. Other notebooks on this data set can import it.

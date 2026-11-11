@@ -37,7 +37,10 @@ Where each parameter comes from:
   the files carry no session or subject identifier.
 - Trial types 1 to 9 are odor A with ISIs 1.2 to 2.8 s, 10 and 11 odor B and C,
   13 to 15 omissions of A to C, 16 odor D (data description). Trials whose type
-  is missing (NaN) are left out.
+  is missing (NaN) are left out; `untyped="nearest"` keeps them as a variant,
+  as odor A trials at the grid ISI nearest their reward delay (an assumption
+  made only to show that leaving them out changes nothing: their delays,
+  1471 to 2421 ms, lie within odor A's range and are neither B's nor C's).
 """
 
 import hashlib
@@ -79,14 +82,17 @@ def load():
     """Stream data.zip and return {name: dict of arrays} for every neuron file.
 
     Also returns the MD5 of the bytes read, so the notebook can compare it with
-    checksums.md5 (the zip is 7.9 MB and is read once, in memory).
+    checksums.md5 (the zip is 7.9 MB and is read once, in memory), and the
+    zip's full member list, so the notebook can show that nothing but the
+    neuron files is skipped.
     """
     with fsspec.open(DATA_ZIP, block_size=2**20) as f:
         raw = f.read()
     md5 = hashlib.md5(raw).hexdigest()
     neurons = {}
     with zipfile.ZipFile(io.BytesIO(raw)) as z:
-        for name in sorted(z.namelist()):
+        members = z.namelist()
+        for name in sorted(members):
             if not name.endswith(".mat"):
                 continue
             m = sio.loadmat(io.BytesIO(z.read(name)))
@@ -94,7 +100,7 @@ def load():
                 k: np.asarray(m[k], dtype=float).ravel()
                 for k in ("odor_onsets", "reward_onsets", "spiketimes", "trial_type")
             }
-    return neurons, md5
+    return neurons, md5, members
 
 
 def neuron_table(neurons):
@@ -125,13 +131,15 @@ def _count(spikes, starts, t0, t1):
     return out
 
 
-def trials(neurons, table, window="file"):
+def trials(neurons, table, window="file", untyped="drop"):
     """One row per trial with the response measures, in spikes/s.
 
     Columns: base (rate 0-1 s before odor), post_raw (rate 50-200 ms after
     reward), pre400_raw / pre200_raw (rate before reward), omit_raw (rate 0-1 s
     after the usual reward time, omission trials of B and C), and the
-    baseline-subtracted versions without `_raw`.
+    baseline-subtracted versions without `_raw`. Trials without a type are
+    dropped (`untyped="drop"`) or kept as odor A at the nearest grid ISI
+    (`untyped="nearest"`, column `untyped` marks them).
     """
     out = []
     for row in table.itertuples():
@@ -152,6 +160,14 @@ def trials(neurons, table, window="file"):
         df["isi_ms"] = rew - odor
         out.append(df)
     df = pd.concat(out, ignore_index=True)
+    df["untyped"] = ~np.isfinite(df["type"])
+    if untyped == "nearest":
+        nearest = np.clip(np.round((df["isi_ms"] / 1000 - 1.0) / 0.2), 1, 9)
+        fill = df["untyped"] & np.isfinite(df["reward"])
+        df.loc[fill, "type"] = nearest[fill]
+        df.loc[fill, "isi"] = df.loc[fill, "type"].map(ISI_S)
+    elif untyped != "drop":
+        raise ValueError(untyped)
     df = df[np.isfinite(df["type"])].copy()
     df["type"] = df["type"].astype(int)
     if window == "40min":
@@ -250,3 +266,29 @@ def epoch_rates(neurons, df, types, t_end=6000, width=200):
             rows.append(dict(neuron=n, drug=drug, type=t, epoch=e, y=r.mean(),
                              n_trials=len(g)))
     return pd.DataFrame(rows)
+
+
+def partial_f(y, base, terms):
+    """F test of each term (a list of columns) against the full least-squares model.
+
+    `base` holds columns kept in every model (intercept, main effects); each term
+    is dropped in turn and the increase in residual sum of squares tested, its
+    degrees of freedom the drop in rank. Used for the parts of the paper's
+    indicator ANOVAs (Statistics) that can be run without free water responses.
+    """
+    def fit(cols):
+        M = np.column_stack(cols)
+        b, *_ = np.linalg.lstsq(M, y, rcond=None)
+        r = y - M @ b
+        return r @ r, np.linalg.matrix_rank(M)
+
+    y = np.asarray(y, dtype=float)
+    rss_full, k_full = fit(base + [c for cols in terms.values() for c in cols])
+    df2 = len(y) - k_full
+    rows = {}
+    for name in terms:
+        rss, k = fit(base + [c for t, cols in terms.items() if t != name for c in cols])
+        df1 = k_full - k
+        F = ((rss - rss_full) / df1) / (rss_full / df2)
+        rows[name] = dict(F=F, df1=df1, df2=df2, p=stats.f.sf(F, df1, df2))
+    return pd.DataFrame(rows).T

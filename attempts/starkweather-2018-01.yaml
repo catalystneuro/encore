@@ -160,8 +160,11 @@ outcomes:
   blocked_by: data_missing
   notes: >-
     The ANOVA's terms include each neuron's free water response, and free water deliveries are not in
-    the files (see figs5b-task2-salb-below-free-water). The model without that term was not run, as it
-    is not the paper's test.
+    the files (see figs5b-task2-salb-below-free-water). As a deviation that decides no outcome, the four
+    tr terms were run without the free water term. On one mean per neuron and ISI none is significant
+    (tr x task 1 p = 0.41, tr x task 2 0.94, tr x drug x task 1 0.99, tr x drug x task 2 0.87); on
+    single trials all four are (p 1.3e-10, 0.021, 0.032 and 0.0086), including tr x drug x task 1, which
+    the paper finds not significant (0.62). Neither is the paper's test, so the claim stays blocked.
 - claim: fig5f-task2-slope-signs
   outcome: reproduced
   notebook: reproduce_starkweather_2018.ipynb
@@ -213,7 +216,10 @@ outcomes:
     all within one neuron); the negative share rises from 0.10 to 0.53 and Fisher two-sided p = 0.0405,
     the paper's 0.041, while the paper's printed counts give 0.0367. With the neuron's mean baseline or
     none, saline has 3 significant negative slopes and p = 0.239, so the claim does not hold under those
-    readings. Asked of the paper's authors (findings).
+    readings, and the outcome rests on the trial-by-trial reading. That reading follows the Methods'
+    wording and is the only one that recovers the paper's printed counts and Fisher p values. Keeping
+    the untyped trials or counting the doubly deposited units once gives the same counts and p. Asked of
+    the paper's authors (findings).
   deviations:
   - >-
     Assumed trial-by-trial baseline subtraction, for the reasons given under
@@ -237,7 +243,11 @@ outcomes:
   blocked_by: data_missing
   notes: >-
     The slopes are computed on responses normalized by each neuron's free water response, and free
-    water deliveries are not in the files (see figs5b-task2-salb-below-free-water).
+    water deliveries are not in the files (see figs5b-task2-salb-below-free-water). As a deviation that
+    decides no outcome, the ANOVA was run on the unnormalized slopes of all 172 neurons (trial-by-trial
+    baseline). Task F(1, 168) = 21.3, p = 7.9e-06; task 1 x drug F = 0.002, p = 0.96; task 2 x drug
+    F = 3.42, p = 0.066 (paper 1.7e-5, 0.94 and 0.032). The normalization the criterion requires could
+    change these, so the claim stays blocked.
 - claim: fig5f-task2-slope-variance-up
   outcome: reproduced
   notebook: reproduce_starkweather_2018.ipynb
@@ -329,7 +339,12 @@ outcomes:
     -0.114 intact; pre-reward slopes +0.005 and +0.040 against -0.030 and -0.094; 50 of 50 task 2
     slopes positive; omission minima -0.110 and -0.090 against -0.313 and -0.186 intact. Reading (b),
     0.56, gives the same, and every part holds in 5 of 5 further seeds under each reading. The dips are
-    reduced, not removed (means -0.073 and -0.032).
+    reduced, not removed. Over the 50 simulations the mean omission RPE in the 1 s from the usual reward
+    time is -0.073 (SE 0.014, t(49) = -5.05, p = 6.6e-06) for odor B and -0.032 (SE 0.016, p = 0.045) for
+    odor C, 40% and 25% of the intact dips (-0.181 and -0.131); reading (b) gives -0.077 (p = 0.00015)
+    and -0.043 (p = 0.019). The statement's "abolishes" therefore holds only in the weaker sense the
+    criterion tests. Whether the criterion reads the paper rightly is asked of a reader
+    (questions/starkweather-2018.yaml); the outcome is given on the criterion as written.
   deviations:
   - The model is the Python port; see fig7cd-model-intact.
 findings:
@@ -346,7 +361,8 @@ findings:
   statement: >-
     The mPFC recordings (Figure 2, Figures S1 and S6A to S6E), the unidentified VTA neurons clustered in
     Figure S4, and the 26 neurons of the no-KORD SalB controls (Figure S6F to S6H) are not in vta-1,
-    which holds only the 172 identified dopamine neurons of the four KORD groups.
+    which holds only the 172 identified dopamine neurons of the four KORD groups. data.zip has 173
+    members, the 172 neuron files and the directory entry data/.
 - kind: identifier_missing
   statement: >-
     No file names its mouse or recording session. Sessions can be recovered as files with identical
@@ -362,7 +378,9 @@ findings:
 - kind: metadata_insufficient
   statement: >-
     21 file trials (9 session trials in 8 sessions) are rewarded but have a missing (NaN) trial_type,
-    at delays off the 0.2 s grid (1471 to 2421 ms). The data description does not mention them.
+    at delays off the 0.2 s grid (1471 to 2421 ms). The data description does not mention them. They
+    are 5, 1, 1 and 14 neuron trials in task 1 saline, task 1 SalB, task 2 saline and task 2 SalB; kept
+    as odor A trials at the nearest grid ISI, they change no result.
 - kind: metadata_insufficient
   statement: >-
     The files give no recording onset or injection time, so the paper's window of the 40 minutes
@@ -384,3 +402,250 @@ findings:
     slightly different slopes and p-values. Trial by trial reproduces every printed count and the Fisher
     p-values; the neuron's mean gives 3 significant negative task 2 saline slopes (paper 1) and a
     non-significant Fisher test (p = 0.24). This attempt assumes trial by trial.
+verifications:
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    The first executed notebook with the conclusion cells and the summary removed, the helper modules
+    vta.py and belief_td.py and the claims file, with the paper's full text. The verifier read the
+    archive's S3 listing, tested _count, auroc, isi_anova and slopes on synthetic inputs, and compared
+    belief_td.py with the MATLAB code at d667730. It had no attempt record.
+  results:
+  - claim: fig2-kord-suppresses-mpfc
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The archive holds only data.zip, docs, filelist.txt and checksums.md5 (S3 listing). The files are
+      172 dopamine-neuron files with four variables. There are no mPFC units. It could not check whether
+      data.zip holds members other than the neuron files, as the notebook never printed its member list.
+    response: >-
+      The data check now prints the zip's member list. data.zip has 173 members, the 172 neuron files
+      and the directory entry data/, so no mPFC file is skipped. No change of outcome.
+  - claim: figs1e-kord-abolishes-late-activity
+    agrees: true
+    outcome: blocked
+    reason: Same reason, no mPFC units.
+    response: No change; the zip's member list is now printed (see fig2-kord-suppresses-mpfc).
+  - claim: figs6ce-kord-task1-animal
+    agrees: true
+    outcome: blocked
+    reason: Same reason, no mPFC units.
+    response: No change; the zip's member list is now printed (see fig2-kord-suppresses-mpfc).
+  - claim: fig3g-anticipatory-licking
+    agrees: true
+    outcome: blocked
+    reason: No lick variable in any file. The data description lists none.
+    response: No change; the zip's member list, now printed, holds no lick file.
+  - claim: figs3-task1-licks-more-sooner
+    agrees: true
+    outcome: blocked
+    reason: No licks.
+    response: No change; the zip's member list, now printed, holds no lick file.
+  - claim: figs3-salb-spares-licking
+    agrees: true
+    outcome: blocked
+    reason: No licks.
+    response: No change; the zip's member list, now printed, holds no lick file.
+  - claim: figs4-cell-types-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Only the 172 identified dopamine neurons are present, not the 761 VTA neurons.
+    response: No change; the zip's member list, now printed, holds only those 172 files.
+  - claim: figs5b-task2-salb-below-free-water
+    agrees: true
+    outcome: blocked
+    reason: >-
+      There are no free-water events. reward_onsets exist only on odor A to C rewarded trials (0
+      elsewhere), and no trial type 12 exists.
+    response: No change; the zip's member list, now printed, holds no free water file.
+  - claim: figs5c-odorbc-normalized
+    agrees: true
+    outcome: blocked
+    reason: Same reason, no free-water events.
+    response: No change; the zip's member list, now printed, holds no free water file.
+  - claim: anova-slopes-task-drug
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Normalization by the free-water response is impossible. The task and task x drug terms could be run
+      on unnormalized slopes as a stated deviation; that would not satisfy the criterion, so blocked
+      stands, but the notebook should say that part could be tested.
+    response: >-
+      The notebook now runs the ANOVA on unnormalized slopes as a deviation that decides no outcome, and
+      the notes give the result (task p = 7.9e-06, task 1 x drug 0.96, task 2 x drug 0.066). Outcome
+      unchanged, blocked.
+  - claim: anova-time-task-drug-interaction
+    agrees: true
+    outcome: blocked
+    reason: >-
+      The free-water response is a required term. The tr x task and tr x drug x task terms could be run
+      without the free-water covariate as a stated deviation; that would not satisfy the criterion, so
+      blocked stands, but the notebook should say that part could be tested.
+    response: >-
+      The notebook now runs the four tr terms without the free water term, on both of the criterion's
+      readings, as a deviation that decides no outcome, and the notes give the result (no term
+      significant on neuron means; all four, including tr x drug x task 1, on single trials). Outcome
+      unchanged, blocked.
+  - claim: figs6-salb-without-kord
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Files by group are 42/42/41/47 = 172, matching the four KORD groups exactly. The 26 no-KORD neurons
+      are absent.
+    response: No change.
+  - claim: fig4a-task1-saline-post-decrease
+    agrees: true
+    outcome: reproduced
+    reason: F(8,328) = 12.61, p = 8.4e-16, slope -2.21, 42 neurons. Paper F = 12.6, p = 9.1e-16.
+    response: >-
+      No change. The verifier could not check that leaving out the 21 untyped trials does not matter; the
+      data check now gives their count per group and the Figure 4 ANOVAs with them kept as odor A trials
+      at the nearest ISI (here F 12.6, p = 9.7e-16).
+  - claim: fig4b-task2-saline-post-increase
+    agrees: true
+    outcome: reproduced
+    reason: F(8,320) = 3.70, p = 3.8e-4 (same as the paper), slope +1.30, 41 neurons.
+    response: No change; keeping the untyped trials gives the same F and p (data check).
+  - claim: fig4b-odorc-below-latest-odora
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      C 12.30 vs A at 2.8 s 15.06 spikes/s, F(1,40) = 22.66, p = 2.5e-5. The single-trial reading also
+      gives p = 1.6e-7.
+    response: No change.
+  - claim: fig4ab-saline-pre-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Both tasks p of 1e-7 or less with negative slopes, under both windows and both 40-min readings. 0-400
+      ms gives p = 3.6e-11 and 5.3e-18, matching the paper's 3.5e-11 and 5.3e-18.
+    response: No change; keeping the untyped trials changes no p by more than its second digit (data check).
+  - claim: fig4c-task1-salb-post-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      F = 11.34, p = 3.3e-14 (paper 11, 3.3e-14), slope -2.33. The count-once variant with 39 neurons
+      holds too. Three task 1 SalB file pairs share 65 to 99.7% of their spikes, so they are probably the
+      same neuron deposited twice; every task 1 conclusion holds in the count-once variant.
+    response: No change; the doubly deposited pairs were already a finding and a variant.
+  - claim: fig4d-task2-salb-flat
+    agrees: true
+    outcome: reproduced
+    reason: F(8,368) = 0.70, p = 0.69 (paper 0.69, 0.70), slope -0.27, 47 neurons.
+    response: >-
+      No change. This group holds 14 of the 21 untyped neuron trials; kept as odor A trials, F = 0.68,
+      p = 0.71 (data check).
+  - claim: fig4cd-salb-pre-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      All p of 1.4e-9 or less with negative slopes, both windows. Task 1 0-400 ms gives p = 2.4e-19, the
+      same as the paper.
+    response: No change; keeping the untyped trials gives F 7.59 in place of 7.72 at most (data check).
+  - claim: fig5f-task2-slope-signs
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      29 positive and 12 negative (saline), 24 negative of 47 (SalB) under the trial baseline. All
+      readings are within tolerance.
+    response: No change; the slope sections now also show a reading with the untyped trials kept, which gives the same counts.
+  - claim: fig5e-task1-significant-slopes-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Trial baseline, 16/0 and 16/2, Fisher p = 0.487. Fisher p is 0.05 or more under every reading.
+      Counts fall outside tolerance under the mean and none baselines (SalB 18 negative).
+    response: No change; the outcome was already marked as resting on the trial-by-trial reading.
+  - claim: fig5f-task2-significant-slopes-shift
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Trial baseline, 1/9 against 8/7, p = 0.0405 (paper 0.041), negative share 0.10 rising to 0.53. This
+      depends on the reading; mean and none baselines give p = 0.239. That reading is the Methods' wording
+      and the notebook's stated default, and the only one that recovers the paper's exact counts and p.
+      The criterion does not say "under a reading", so this choice should be stated with the conclusion.
+    response: >-
+      The conclusion and the notes now say that the outcome rests on the trial-by-trial reading, why it is
+      adopted, and that the other readings fail. Outcome unchanged, still marked assumed.
+  - claim: fig4e-task2-slope-distribution-shift
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      z = 2.15, p = 0.032. The SalB median is lower (-0.06 against 1.42). Holds under all readings (p of
+      0.037 or less).
+    response: No change.
+  - claim: fig5e-task1-slope-distribution-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: z = 0.14, p = 0.886 (paper z = 0.14, p = 0.89). p of 0.63 or more under all readings.
+    response: No change.
+  - claim: fig5f-task2-slope-variance-up
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Variances 10.23 and 20.29, ratio 0.50, p = 0.029. All within tolerance. Per mouse cannot be shown
+      (no subject IDs); the criterion asks only for a description.
+    response: No change.
+  - claim: fig5e-task1-slope-variance-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Ratio 0.59, variances 8.81 and 14.89, p = 0.097. p of 0.053 or more under all readings, so the
+      result sits near the threshold under the mean and none baselines.
+    response: No change.
+  - claim: fig6ab-odorc-above-odorb
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Saline C-B 0.913 (within 0.95 +- 0.095), F(1,40) = 5.31, p = 0.027. SalB C-B 0.997 (within 1.0 +-
+      0.1). Rank-sum p = 0.81. The 47 SalB neurons give df 46 where the paper prints df 40, consistent
+      with the paper's own inconsistency, and the counts are reported.
+    response: No change.
+  - claim: fig6cd-omission-dips-intact
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      All four omission rates are below baseline, p of 0.0013 or less. SalB used df (1,46) against the
+      paper's (1,40); the counts are reported.
+    response: No change.
+  - claim: figs5d-omission-unchanged-by-salb
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      No epoch significant under either test or either Bonferroni family. Smallest uncorrected p = 0.023.
+    response: No change.
+  - claim: fig7cd-model-intact
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Every part holds (post-reward slopes -0.114 and +0.149, 100% of task 2 slopes positive, pre-reward
+      slopes negative, omission dips -0.18 and -0.13), in 5 of 5 extra seeds. The port matches the MATLAB
+      in every part compared; blur_matrix, blur_vector, the tonic and phasic indexing in simulate and the
+      A-odor simulation scripts were not checked line by line, and a fixed-seed trace compared with a
+      MATLAB or Octave run would have verified the port directly.
+    response: >-
+      Not done. Neither MATLAB nor Octave is available in the run's environment or the entry's locked
+      Python environment, so no MATLAB trace can be produced to compare with. No change.
+  - claim: fig7fgh-model-belief-impaired
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Task 2 slope falls from +0.149 to +0.037, negative fraction rises from 0 to 0.32, task 1 slope
+      -0.154, omission responses stay. Holds in 5 of 5 seeds.
+    response: No change; the MATLAB comparison could not be run (see fig7cd-model-intact).
+  - claim: fig7ijk-model-timing-impaired
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Passes the claims-file criterion under both readings, in 5 of 5 seeds. The criterion is weaker than
+      the paper's word "abolished"; it only requires that the omission minimum is not below the intact
+      run's. The mean omission RPE is still -0.073 (B) and -0.032 to -0.043 (C), about 40% of the intact
+      dip, and for B about 4 standard errors below zero. So the dip is reduced, not gone. The verdict
+      follows the criterion; whether "abolished" holds is left open.
+    response: >-
+      Added to questions/starkweather-2018.yaml as a question for a reader; the claim is unchanged. The
+      notebook now prints the mean omission RPE with its standard error and a t-test against zero for
+      each condition (odor B -0.073, SE 0.014, p = 6.6e-06; odor C -0.032, p = 0.045; 25 to 43% of the
+      intact dips), and the conclusion and notes say that "abolishes" holds only in the criterion's
+      weaker sense. Outcome unchanged, as tested on the criterion as written.
