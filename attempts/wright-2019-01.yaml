@@ -226,8 +226,11 @@ outcomes:
     Danger departs from safety before uncertainty at both thresholds under every reading. With
     measure a and window starts (the first readings listed, given as measured), the times are 2.7,
     4.5, 5.1 and 6.4 s against 2.8, 5.8, 5.7 and 6.5. Measure b gives 2.7, 4.7, 5.2 and 6.4 s, with
-    three of four within tolerance. Under no reading is the danger time at p < 0.00025 within
-    5.8 +- 0.58. Window ends put every time 1 s later.
+    three of four within tolerance. Window ends put every time 1 s later (3.7, 5.5, 6.1 and 7.4 s
+    with measure a, 3.7, 5.7, 6.2 and 7.4 s with measure b). There the danger time at p < 0.00025
+    is within 5.8 +- 0.58, but the danger time at p < 0.05 (3.7 s against 2.8 +- 0.28) and the
+    uncertainty time at p < 0.00025 (7.4 s against 6.5 +- 0.65) are not. No reading puts all four
+    times within tolerance.
 - claim: fig2e-rate-no-difference
   outcome: reproduced
   notebook: reproduce_wright_2019.ipynb
@@ -638,8 +641,9 @@ outcomes:
     (interval fear window, total fear window) 2 s and 10 s, 2 s and 20 s, or 10 s and 20 s, with
     0/0 set to 0, left out or set to 1, 18 readings with detail 4. The earlier run used 2 s and
     20 s with 0/0 = 1 beside the claims file's same-window readings (2 s or 10 s for both
-    ratios); those are shown as former readings and no longer count. Earlier one reading
-    differed in outcome, now two; the outcome and the assumption are unchanged. The outcome is
+    ratios); those are shown as former readings and no longer count. Earlier two readings
+    differed in outcome (0/0 left out with the type baseline, under former 2 s for both ratios
+    and under 2 s and 20 s), and two do now; the outcome and the assumption are unchanged. The outcome is
     partial only through the criterion's partial branch (3 > 0 and 1 > 0); the reported counts are
     missed by a factor of about four under every reading.
   deviations:
@@ -939,6 +943,311 @@ verifications:
       at both thresholds while a count differs), and the criterion decides the outcome. The conclusion
       and the notes now say that the outcome is partial only through that branch and that the counts are
       missed by a factor of about four under every reading.'
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions, Summary
+    and README, the helper module pag.py, the claims file and the attempt record, with the paper's full
+    text.
+  results:
+  - claim: fig1c-total-suppression
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Summary (cell 139): "most reported statistics to their
+      printed precision" is not supported by the printed outputs. Exact matches to printed precision are
+      few: F = 7.16 (cell 100), F = 3.14 (cell 127) and the fig5i means (cell 118). Many values are close
+      but not exact, such as F = 595 against 592.00 and t = 12.3 against 12.36 (cell 18).'
+    response: The Summary now says that few statistics match to their printed precision (F = 7.16, F =
+      3.14, the fig5i means), that many are close but not exact, and that some miss widely, with examples.
+  - claim: fig1c-nonlinear-scaling
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig1d-interval-suppression
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. The primary reading is justified by the data check. Cell
+      13 matches the paper's printed regression table on one Onset unit (rf03092316 SPK12a), within 0.004
+      for Z firing with the trial's own baseline, within 0.003 for interval fear with a 2 s window and
+      0/0 = 1, and within 0.004 for total fear with a 20 s window. fig1d rests on 0/0 = 1. The table gives
+      1.0 on all 10 of the unit's 0/0 trials, which supports that rule. Separately, the Summary and the
+      record's code_mismatch finding say the cube's interval suppression ratios (cubeScript.m) use the
+      20 s baseline, but cell 13 prints only the 20 s baseline line and the NaN to 1 line; nothing printed
+      shows that the interval ratios use that baseline.
+    response: The data check (cell 13) now also prints the lines of cubeScript.m that compute poke.base
+      over the 20 s window and the lines cer.cue and cer.s1.interval, which both use poke.base. The text
+      after it, the Summary and the code_mismatch finding now say so. Outcome unchanged.
+  - claim: fig1s1a-nose-poke-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 39 stated outcomes. fig1s1a takes the 20 s window. That is the primary reading's
+      total-fear window, and it is the one of the two windows that fails the baseline test (p = 0.017),
+      so it was not chosen because it passes. Round-1 point 2 is resolved.
+    response: No change.
+  - claim: fig1s1b-sr-poke-correlation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig1e-two-clusters
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Round-1 point 6 (gaps in the spike trains) is resolved:
+      spikes are stored only from 20 s before to 31 to 34 s after each cue onset, the session-rate reading
+      was recomputed over those windows, and the cluster sizes are unchanged. Round-1 point 9 is resolved:
+      the Onset neurons'' features are now printed (cell 36); they can only be compared with the paper''s
+      figure, which was not supplied as a PDF.'
+    response: No change.
+  - claim: onset-population
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Round-1 point 9 (waveform features) is resolved: the
+      Onset neurons'' features are now printed (cell 36).'
+    response: No change.
+  - claim: ramping-population
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig2a-onset-anova
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Summary (cell 139): "most reported statistics to their
+      printed precision" is not supported by the printed outputs. Exact matches to printed precision are
+      few: F = 7.16 (cell 100), F = 3.14 (cell 127) and the fig5i means (cell 118). Close but not exact:
+      1.89 against 1.94 (cell 44).'
+    response: The Summary now says that few statistics match to their printed precision (F = 7.16, F =
+      3.14, the fig5i means), that many are close but not exact, and that some miss widely, with examples.
+  - claim: fig2b-onset-first-interval
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Summary (cell 139): "most reported statistics to their
+      printed precision" is not supported by the printed outputs. Exact matches to printed precision are
+      few: F = 7.16 (cell 100), F = 3.14 (cell 127) and the fig5i means (cell 118). Close but not exact:
+      t = 5.05 against 4.54 (cell 47).'
+    response: The Summary now says that few statistics match to their printed precision (F = 7.16, F =
+      3.14, the fig5i means), that many are close but not exact, and that some miss widely, with examples.
+  - claim: fig2b-onset-last-interval
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig2c-ramping-anova
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig2d-ramping-first-interval
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig2d-ramping-last-interval
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig2e-departure-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 39 stated outcomes. The record note says "Under no reading is the danger
+      time at p < 0.00025 within 5.8 +- 0.58." This is false. With window ends, cell 62 prints 5.5 s (measure
+      a) and 5.7 s (measure b), and both are within 5.22 to 6.38 s. The finding's wording "No reading
+      gives the Bonferroni danger time of 5.8 s (4.5 to 4.7 s by window start)" is misleading for the
+      same reason. The outcome still stands, because with window ends the danger time at p < 0.05 is 3.7
+      s, outside 2.8 +- 0.28. My own round-1 reason, as recorded, has the same error. The record note
+      and the finding should say that window ends put the danger Bonferroni time within tolerance.
+    response: The conclusion (cell 63), the record note and the finding now give the window-end times
+      (3.7, 5.5, 6.1 and 7.4 s with measure a; 3.7, 5.7, 6.2 and 7.4 s with measure b), say that the danger
+      time at p < 0.00025 is then within tolerance while the danger time at p < 0.05 and the uncertainty
+      time at p < 0.00025 are not, and that no reading puts all four within tolerance. The round-1 reason
+      is left as the verifier gave it. Outcome unchanged.
+  - claim: fig2e-rate-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig2s1-single-trial
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 39 stated outcomes. This outcome is "partial" by the author''s judgement,
+      not by a branch of the criterion: the criterion defines only "reproduced", with no partial branch.
+      The judgement is disclosed and reasonable. Round-1 point 4 is resolved: cell 68 now prints the verdict
+      "not met in full".'
+    response: No change.
+  - claim: fig2s2-nose-poke-cessation
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. Round-1 point 8 (reading sensitivity) is disclosed and
+      needs nothing more.
+    response: No change.
+  - claim: fig3-onset-ramping-independent
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 39 stated outcomes. This outcome is "partial" by the author''s judgement:
+      the criterion covers neither 3 pairs nor 0 negative betas. The record says so, and the judgement
+      is disclosed and reasonable. Round-1 point 3 is resolved: cell 74 prints the near-threshold units;
+      nine units with screen p from 0.025 to 0.046 could each supply a fourth pair.'
+    response: No change.
+  - claim: fig4abc-onset-single-unit-biases
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. Round-1 point 5 is resolved by the within-neuron shuffle
+      null (cell 77); the observed r values lie inside the shuffled range, and this is disclosed. The
+      correlations the criterion asks for are no stronger than the Z-scoring alone produces. The outcome
+      follows the criterion, which only asks for p < 0.05, so it stays. A reader should take that part
+      of the claim as not tested beyond what the procedure forces, and the Summary says so.
+    response: No change.
+  - claim: fig4d-onset-patterns
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. Round-1 point 8 (reading sensitivity) is disclosed and
+      needs nothing more.
+    response: No change.
+  - claim: fig4efg-ramping-single-unit-biases
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 39 stated outcomes. Round-1 point 5 is resolved by the within-neuron shuffle
+      null (cell 83). The correlations the criterion asks for are no stronger than the Z-scoring alone
+      produces. The outcome follows the criterion, so it stays; a reader should take that part of the
+      claim as not tested beyond what the procedure forces, and the Summary says so.
+    response: No change.
+  - claim: fig4h-ramping-patterns
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig5a-onset-probability-first-interval
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig5bc-onset-beta-bias
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. The primary reading is justified by the data check. Cell
+      13 matches the paper's printed regression table on one Onset unit (rf03092316 SPK12a), within 0.004
+      for Z firing with the trial's own baseline, within 0.003 for interval fear with a 2 s window and
+      0/0 = 1, and within 0.004 for total fear with a 20 s window. fig5bc depends on the poke windows
+      and the 0/0 rule, which the table fixes. The assumption is reasonable.
+    response: No change.
+  - claim: fig5d-onset-all-intervals
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. The primary reading is justified by the data check. Cell
+      13 matches the paper's printed regression table on one Onset unit (rf03092316 SPK12a), within 0.004
+      for Z firing with the trial's own baseline, within 0.003 for interval fear with a 2 s window and
+      0/0 = 1, and within 0.004 for total fear with a 20 s window. fig5d depends on detail 4 (which firing
+      baseline is subtracted); the table fixes it as the trial's own baseline. Round-1 point 7 is disclosed
+      and needs nothing more.
+    response: No change.
+  - claim: fig5s1-regressor-combinations
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. The primary reading is justified by the data check. Cell
+      13 matches the paper's printed regression table on one Onset unit (rf03092316 SPK12a), within 0.004
+      for Z firing with the trial's own baseline, within 0.003 for interval fear with a 2 s window and
+      0/0 = 1, and within 0.004 for total fear with a 20 s window. fig5s1 depends on detail 4; the table
+      fixes it as the trial's own baseline.
+    response: No change.
+  - claim: fig5e-onset-tuning-curve
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. The primary reading is justified by the data check. Cell
+      13 matches the paper's printed regression table on one Onset unit (rf03092316 SPK12a), within 0.004
+      for Z firing with the trial's own baseline, within 0.003 for interval fear with a 2 s window and
+      0/0 = 1, and within 0.004 for total fear with a 20 s window. fig5e depends on the poke windows and
+      the 0/0 rule, which the table fixes.
+    response: No change.
+  - claim: fig5s2-binary-regressor
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig5f-ramping-last-interval
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig5gh-ramping-beta-bias
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes. The primary reading is justified by the data check. Cell
+      13 matches the paper's printed regression table on one Onset unit (rf03092316 SPK12a), within 0.004
+      for Z firing with the trial's own baseline, within 0.003 for interval fear with a 2 s window and
+      0/0 = 1, and within 0.004 for total fear with a 20 s window. fig5gh depends on the poke windows
+      and the 0/0 rule, which the table fixes. It holds on the primary reading, but the probability vs
+      interval-fear correlation that it needs is only p = 0.035 (cell 115).
+    response: No change.
+  - claim: fig5i-ramping-all-intervals
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig5s1-ramping-regressor-combinations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 39 stated outcomes. The primary reading is justified by the data check.
+      Cell 13 matches the paper''s printed regression table on one Onset unit (rf03092316 SPK12a), within
+      0.004 for Z firing with the trial''s own baseline, within 0.003 for interval fear with a 2 s window
+      and 0/0 = 1, and within 0.004 for total fear with a 20 s window. It depends on detail 4; the table
+      fixes it as the trial''s own baseline. In cell 122, "Under the former 2 s readings ... the claim
+      held in full in 6 of 12" is ambiguous: it held in all 6 of the former 2 s readings; 6 of 12 is the
+      count over all former readings.'
+    response: Cell 122 now says that the claim held in full in all six former readings with 2 s for both
+      ratios and in none of the six former 10 s readings, so in 6 of the 12 former readings. Outcome unchanged.
+  - claim: fig5j-ramping-tuning-curve
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
+  - claim: fig6ab-post-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. F = 3.14 (cell 127) is one of the few exact matches
+      to printed precision. Round-1 point 10 is resolved: the A x B and A x B x G terms now match a
+      sums-of-squares model comparison (cell 128).'
+    response: No change.
+  - claim: fig6c-onset-post-cue-regression
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Summary (cell 139): "most reported statistics to their
+      printed precision" is not supported by the printed outputs. Exact matches to printed precision are
+      few: F = 7.16 (cell 100), F = 3.14 (cell 127) and the fig5i means (cell 118). Close but not exact:
+      0.51 against 1.02 (cell 131).'
+    response: The Summary now says that few statistics match to their printed precision (F = 7.16, F =
+      3.14, the fig5i means), that many are close but not exact, and that some miss widely, with examples.
+  - claim: fig6d-ramping-post-cue-regression
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with all 39 stated outcomes. Summary (cell 139): "most reported statistics to their
+      printed precision" is not supported by the printed outputs. Exact matches to printed precision are
+      few: F = 7.16 (cell 100), F = 3.14 (cell 127) and the fig5i means (cell 118). Close but not exact:
+      7.00 against 5.20 (cell 134).'
+    response: The Summary now says that few statistics match to their printed precision (F = 7.16, F =
+      3.14, the fig5i means), that many are close but not exact, and that some miss widely, with examples.
+  - claim: fig6ef-beta-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with all 39 stated outcomes. The primary reading is justified by the data check.
+      Cell 13 matches the paper''s printed regression table on one Onset unit (rf03092316 SPK12a), within
+      0.004 for Z firing with the trial''s own baseline, within 0.003 for interval fear with a 2 s window
+      and 0/0 = 1, and within 0.004 for total fear with a 20 s window. fig6ef depends on the poke windows
+      and the 0/0 rule, which the table fixes. Round-1 point 1 is resolved: the outcome is kept as partial
+      under the criterion''s partial branch, and the fourfold miss in the counts is stated in cell 138
+      and in the record. The record note "Earlier one reading differed in outcome, now two" is wrong:
+      counting the 12 former readings plus the six with 2 s interval fear and 20 s total fear, two earlier
+      readings had Ramping above Onset in cell 137 (former 2/2 with 0/0 left out and type baseline, and
+      2 s/20 s with 0/0 left out and type baseline), not one. The Summary''s claim of printed precision
+      also misses widely here: 3/20 against 13/20 (cell 137).'
+    response: The record note now says that two readings differed in outcome earlier, and names them,
+      and that two do now. The Summary cites 3 of 20 against 13 of 20 as a wide miss. Outcome unchanged.
+  - claim: fig1s5-hfr-units
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 39 stated outcomes.
+    response: No change.
 findings:
 - kind: metadata_error
   statement: >-
@@ -955,7 +1264,8 @@ findings:
     baseline does Figure 1, figure supplement 1A plot?
 - kind: code_mismatch
   statement: >-
-    The data set's cubeScript.m computes interval suppression ratios over the 20 s baseline, while
+    The data set's cubeScript.m computes the total and the interval suppression ratios over the
+    20 s baseline (poke.base, used in cer.cue and cer.s1.interval), while
     the paper's interval fear (its regression table, and the Figure 1D statistics) uses the 2 s
     baseline. The script also rounds the 2 s baseline firing rate down to an integer; the paper's
     table uses the unrounded rate, and the rounded one would change the Onset screen to 31 neurons.
@@ -996,6 +1306,7 @@ findings:
 - kind: methods_unavailable
   statement: >-
     The sliding-window departure times of Figure 2E depend on the firing measure and on whether a
-    window is timed by its start or end, which the paper does not state. No reading gives the
-    Bonferroni danger time of 5.8 s (4.5 to 4.7 s by window start). Question for the authors: which
+    window is timed by its start or end, which the paper does not state. No reading gives all
+    four times. By window start the Bonferroni danger time is 4.5 to 4.7 s against 5.8 s; by window
+    end it is 5.5 to 5.7 s, but the danger time at p < 0.05 is then 3.7 s against 2.8 s. Question for the authors: which
     measure and time point were used?
