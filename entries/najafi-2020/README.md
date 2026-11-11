@@ -23,9 +23,9 @@ relative to each trial. The attempt record, with the reasons and the differences
 method, is [`attempts/najafi-2020-01.yaml`](../../attempts/najafi-2020-01.yaml).
 
 - `01_single_neurons_correlations.ipynb`: data checks, behaviour, single-neuron ROC and noise
-  correlations, about 30 minutes, most of it streaming.
-- `02_decoders.ipynb`: choice decoders in every session at the bin before the choice, about 40 minutes.
-- `03_learning_decoders.ipynb`: decoder time courses, per-bin weights and the learning analysis, about 50 minutes.
-- `04_time_course_per_bin_C.ipynb`: the decoder time course for mice 2 and 3 with C chosen at every bin, about 20 minutes.
+  correlations, about 41 minutes, most of it streaming.
+- `02_decoders.ipynb`: choice decoders in every session at the bin before the choice, about 52 minutes.
+- `03_learning_decoders.ipynb`: decoder time courses, per-bin weights and the learning analysis, about 53 minutes.
+- `04_time_course_per_bin_C.ipynb`: the decoder time course and per-bin weights for mice 1, 2 and 3 with C chosen at every bin, about 28 minutes.
 - `najafi.py`: streaming and loading, the ROC, decoder, correlation and learning measures. Other
   notebooks on this dandiset can import it.

@@ -638,15 +638,18 @@ def timecourse(Z, y, C, rng, nrep=50, return_w=False):
     return acc, sh
 
 
-def timecourse_perbin(Z, y, rng, bins, nrep=50, cgrid=None):
+def timecourse_perbin(Z, y, rng, bins, nrep=50, cgrid=None, return_w=False):
     """The paper's decoder at each of the given bins (indices into Z's bin axis), with C chosen at that bin
     by svm_cv (claims file, opening comment: C chosen separately per bin, 50 splits). Returns mean accuracy
-    and mean shuffled accuracy per bin (percent)."""
+    and mean shuffled accuracy per bin (percent), and with return_w the weight vector per bin (mean over
+    the splits at the chosen C, bins x neurons)."""
     cgrid = CGRID_RUN if cgrid is None else cgrid
-    acc, sh = [], []
+    acc, sh, W = [], [], []
     for b in bins:
         r = svm_cv(Z[:, b], y, rng, nrep=nrep, cgrid=cgrid)
-        acc.append(r["acc"]); sh.append(r["acc_sh"])
+        acc.append(r["acc"]); sh.append(r["acc_sh"]); W.append(r["w"])
+    if return_w:
+        return np.array(acc), np.array(sh), np.array(W)
     return np.array(acc), np.array(sh)
 
 

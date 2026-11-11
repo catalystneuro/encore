@@ -54,7 +54,7 @@ outcomes:
   deviations:
   - Only the 4 imaged mice are in the dandiset; Figure 1B uses 10.
   - Trials are those with trial_is_good true and a correct or incorrect response (the file's flag is false for every
-    other response, as the notebook shows); trials without a choice-aligned trace (1983 of 26021) are left out.
+    other response, as the notebook shows); trials without a choice-aligned trace (1982 of 25883) are left out.
   - 16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is
     unknown; they are left out of every analysis (138 trials with a response). The trial table has no column for helped
     trials or the first trials of a session, and trial_is_good is exactly a correct or incorrect response, so the code's
@@ -109,7 +109,10 @@ outcomes:
     sessions finds a difference in mouse 4 (p = 0.01335), as the paper reports, but also in mouse 2 (p = 0.04023), where
     the criterion requires none; in both, inhibitory neurons are more often selective. Neither the reproduced band nor
     the partial band (t-tests only) holds. With the empirical-p variant only mouse 4 differs (p = 0.03105), but the medians
-    (0.2120, 0.2528) are then outside tolerance.
+    (0.2120, 0.2528) are then outside tolerance. Over 10 further seeds of the 50 shuffles mouse 2 has p < 0.05 in 4 of
+    10 (p 0.0178 to 0.0913, median 0.0517) and mouse 4 in all 10, with the medians within tolerance in every seed, so
+    the criterion's band is reproduced in 6 seeds and not reproduced in 4. The outcome is that of the main draw, which
+    lies on the not-reproduced side; it is not stable across seeds.
   deviations:
   - 127 of 135 sessions have at least 10 correct trials of each choice; 8 are left out.
   - The files name no lick side; choices are coded as the high-rate or low-rate side from trial_type and the outcome.
@@ -166,7 +169,10 @@ outcomes:
   notes: The median fractions across mice are E 0.197 and I 0.260 under reading (a) and E 0.204 and I 0.262 under reading
     (b), all within tolerance. Excitatory neurons per session are 63.357 and 65.322, within 69 +/- 6.9. Inhibitory neurons
     per session are 9.819 under (a) and 9.883 under (b), both below the lower bound 9.9. Both readings fail on the same
-    value, and the criterion has no partial band.
+    value, and the criterion has no partial band. Over 10 further seeds of the 50 shuffles the inhibitory count is 9.471
+    to 10.157 under (a) and 9.668 to 10.191 under (b); all four values are within tolerance in 2 of 10 seeds under (a)
+    and 6 of 10 under (b), and the readings disagree in 4 seeds. The outcome is that of the main draw; it sits on the
+    bound and is not stable across seeds.
 - claim: figs3e-correct-error-correlation
   outcome: not_reproduced
   notebook: 01_single_neurons_correlations.ipynb
@@ -183,11 +189,11 @@ outcomes:
   notebook: 02_decoders.ipynb
   output: claim:fig3bc-decoding-similar
   notes: In every mouse the inhibitory and subsampled excitatory decoders are above their shuffles (p below 0.003), and
-    they do not differ. Mean accuracies are E 65.3, 64.3, 60.2, 67.3 and I 64.5, 66.0, 58.5, 69.6 percent (p = 0.63,
-    0.21, 0.57, 0.16). The all-neuron decoder reaches 73.3 to 87.2 percent.
+    they do not differ. Mean accuracies are E 65.3, 64.3, 60.2, 67.2 and I 64.6, 66.1, 58.9, 69.6 percent (p = 0.671,
+    0.185, 0.64, 0.153). The all-neuron decoder reaches 73.3 to 87.2 percent.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - Excitatory populations are 5 random subsamples per session where the paper uses 50, for runtime.
   - Choices are matched once per session by random subsampling; the paper does not say whether this is redone per repetition.
   - 16 Hz trials are rewarded on a random side (Methods) and all carry trial_type High-rate, so their choice side is
@@ -200,18 +206,18 @@ outcomes:
   output: claim:fig3b-decoding-time-course
   notes: With C chosen at bin -1 and 25 splits (03), all-neuron accuracy on correct trials rises from the earliest bin
     (59.4 to 70.2 percent) to the bin before the choice (72.4 to 86.4) in every mouse; the peak falls at bin 2 in mice
-    1 and 4, bin 3 in mouse 2 (86.6, equal to bin 2 at one decimal) and bin 6 in mouse 3. With C chosen at every bin
-    and 50 splits (04, mice 2 and 3), mouse 2 peaks at bin 2 (88.4, next 88.2) and mouse 3 at bin 6 (83.6). The peak
+    1 and 4, bin 3 in mouse 2 (86.6) and bin 6 in mouse 3. With C chosen at every bin and 50 splits (04, mice 1, 2 and 3), mouse
+    1 peaks at bin 3 (89.5, next 88.5), mouse 2 at bin 2 (88.4, next 88.2) and mouse 3 at bin 6 (83.6). The peak
     is never in bins -1 or 0, reading (a), and in mouse 3 it lies outside 300 ms, reading (b), under both C rules, so
     the claim fails under both readings; the criterion has no partial band.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - The time courses train a decoder at every bin with the C chosen at bin -1 (the paper chooses C at every bin), with
     25 random splits per bin (the paper 50), and 3 excitatory subsamples, for runtime.
   - C chosen at bin -1 could favour that bin; the peak still falls after it in every mouse.
-  - Notebook 04 repeats the test for mice 2 and 3 with C chosen at every bin and 50 splits (claims file, opening comment),
-    on the earliest bin and bins -3 to the last, for runtime.
+  - Notebook 04 repeats the test for mice 1, 2 and 3 with C chosen at every bin and 50 splits (claims file, opening
+    comment), on the earliest bin and bins -3 to the last, for runtime; mouse 4 is not repeated.
 - claim: fig3df-weights-similar
   outcome: partially_reproduced
   notebook: 02_decoders.ipynb
@@ -223,22 +229,25 @@ outcomes:
     not differ between types in any mouse across sessions (p = 0.75, 0.051, 0.32, 0.13). Per bin (03, the time-course
     decoders with C chosen at bin -1), inhibitory weights are larger in 12 of 25 bins of mouse 2 (smallest p 0.0041)
     and in 1 of 25 bins of mouse 4 (p = 0.012), and no bin differs in mice 1 and 3 (smallest p 0.10 and 0.14). So two
-    mice differ in part of the trial, the criterion's partial band. The pooled counts, 42019 excitatory and 5172 inhibitory
-    neurons, equal the expected values.
+    mice differ in part of the trial, the criterion's partial band. With C chosen at every bin and 50 splits (04, mice
+    1, 2 and 3), no bin differs in mice 1 and 3 (smallest p 0.171 and 0.0851) and inhibitory weights are larger in 3
+    of 12 bins of mouse 2 (smallest p 0.0222), so the band is the same under that C rule; mouse 4 was not repeated.
+    The pooled counts, 42019 excitatory and 5172 inhibitory neurons, equal the expected values.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - The per-bin weights come from the time-course decoders of 03, with C chosen at bin -1 and 25 splits (the paper chooses
-    C at every bin, 50 splits), for runtime.
+    C at every bin, 50 splits), for runtime. Notebook 04 repeats them for mice 1, 2 and 3 with C chosen at every bin and
+    50 splits, on the earliest bin and bins -3 to the last.
 - claim: fig3hi-mixed-no-advantage
   outcome: reproduced
   notebook: 02_decoders.ipynb
   output: claim:fig3hi-mixed-no-advantage
   notes: Mixed populations (n inhibitory plus n excitatory) and 2n-excitatory populations decode the choice equally in
-    every mouse (differences -0.08 to +0.72 points, p 0.69 to 0.98).
+    every mouse (differences -0.02 to +0.66 points, p 0.689 to 0.996).
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - 5 subsamples of the mixed and 2n-excitatory populations where the code uses 50.
 - claim: figs5-fluorescence-decoding
   outcome: blocked
@@ -263,15 +272,15 @@ outcomes:
   notebook: 02_decoders.ipynb
   output: claim:figs6de-incorrect-trials
   notes: Decoders trained on correct trials predict the choice on incorrect trials above the shuffle in mice 1 and 2
-    for all three populations (p below 6e-6). In mice 3 and 4 they do not (mouse 3 p 0.12 to 0.73; mouse 4 accuracy 44.0
-    to 47.6 percent, below the shuffle). The reduction from correct to incorrect trials does not differ between inhibitory
-    and excitatory decoders in any mouse (p 0.26 to 0.99), and it is largest in mouse 4 for the all-neuron decoder (43.2
+    for all three populations (p below 6e-6). In mice 3 and 4 they do not (mouse 3 p 0.086 to 0.7; mouse 4 accuracy 44.0
+    to 47.8 percent, below the shuffle). The reduction from correct to incorrect trials does not differ between inhibitory
+    and excitatory decoders in any mouse (p 0.278 to 0.993), and it is largest in mouse 4 for the all-neuron decoder (43.2
     points, others 7.4 to 8.6). The variant with at least 10 incorrect trials of each choice gives the same pattern for
     the cell-type decoders. The criterion has no partial band. Whether the criterion's above-shuffle rule in every mouse
     reads the paper correctly is asked of a reader (questions/najafi-2020.yaml).
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - Excitatory populations are 5 random subsamples per session where the paper uses 50, for runtime.
   - The paper gives no minimum of incorrect trials; sessions with at least one incorrect trial of each choice are used,
     with at least 10 as a variant; both give the same pattern. Incorrect trials are z-scored with the correct-trial mean
@@ -282,10 +291,11 @@ outcomes:
   output: claim:fig4bd-stability-similar
   notes: The stability duration of decoders trained at 0-97 ms before the choice does not differ between excitatory and
     inhibitory populations by the t-test of the mouse means under every reading (SD or SE rule, any or contiguous bins,
-    alpha 0.001 or 0.05; p 0.55 to 0.97). Per mouse across sessions no test is significant either (smallest p 0.056).
+    alpha 0.001 or 0.05; p 0.524 to 0.991). Per mouse across sessions, a variant, 1 of 28 tests is below 0.05 (mouse 4,
+    alpha 0.05, SE rule, any bins, p = 0.037); the others have p 0.064 or more.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - Excitatory populations are 5 random subsamples per session where the paper uses 50, for runtime.
   - Stability is measured for the decoder trained at 0-97 ms before the choice, tested at every bin on its held-out trials,
     as the criterion says.
@@ -319,7 +329,7 @@ outcomes:
     than of opposite preference for EI, EE and II pairs in every mouse (largest p 0.00017). Spontaneous correlations
     before the initiation tone show the same pattern in every mouse and pair type (largest p 0.012). Mouse 3 is significant
     for EE and II too, where the paper reports it is not; the criterion does not require that. Across sessions, the variant,
-    the noise effect holds in mice 1, 2 and 4 (mouse 2 EI p = 0.05) and not in mouse 3 (p 0.15 to 0.24).
+    the noise effect holds in mice 1, 2 and 4 (mouse 2 EI p = 0.0498) and not in mouse 3 (p 0.15 to 0.24).
   deviations:
   - Noise correlations use all trials with a choice; preference from the correct-trial AUC without 16 Hz trials (claims
     file).
@@ -360,7 +370,7 @@ outcomes:
     so the claim is blocked.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - Only the largest ensemble, all neurons, is computed, as the criterion's change is taken there; the neuron ranking
     does not change it.
   - Pseudo populations are built by shuffling each neuron's trials within each choice on the whole trial set at every
@@ -371,20 +381,20 @@ outcomes:
   output: claim:fig8ab-learning-accuracy
   measured:
   - 0.39
-  - 0.23
-  - 0.2
+  - 0.22
+  - 0.21
   - 0.57
-  - 0.56
-  - 0.31
+  - 0.55
+  - 0.32
   notes: Decoder accuracy correlates positively with easy-trial performance in every learning mouse and population. With
-    all trials, reading (a), mouse 1 has r = 0.66, 0.57, 0.53 (all p < 0.001), mouse 2 0.39, 0.23, 0.20 (p = 0.0067,
-    0.13, 0.19) and mouse 4 0.57, 0.56, 0.31 (p = 0.00035, 0.00042, 0.068). Reading (b) gives mouse 2 0.36, 0.06, 0.20
-    and mouse 4 0.29, 0.27, 0.11. Under the reading of the legend's mice as the paper's mice 2 and 4, mouse 2 matches
-    none of the reported values and mouse 4 matches 0.57 and 0.32 but not 0.63 (0.56). Not all p < 0.05, so neither the
+    all trials, reading (a), mouse 1 has r = 0.66, 0.57, 0.52 (all p < 0.001), mouse 2 0.39, 0.22, 0.21 (p = 0.0067,
+    0.14, 0.16) and mouse 4 0.57, 0.55, 0.32 (p = 0.00035, 0.0007, 0.063). Reading (b) gives mouse 2 0.36, 0.07, 0.21
+    and mouse 4 0.29, 0.26, 0.12. Under the reading of the legend's mice as the paper's mice 2 and 4, mouse 2 matches
+    none of the reported values and mouse 4 matches 0.57 and 0.32 but not 0.63 (0.55). Not all p < 0.05, so neither the
     reproduced nor the partial band holds.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - 3 excitatory subsamples per session.
   - Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a)
     of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day
@@ -399,43 +409,49 @@ outcomes:
   output: claim:fig8ce-choice-signal-onset
   measured:
   - -0.07
-  - -0.05
-  - -0.26
+  - -0.04
+  - -0.24
   - -0.11
   - -0.14
-  - 0.08
+  - -0.12
   notes: The onset of the first 500 ms run of above-shuffle accuracy correlates negatively with performance in mouse
-    1 for the all-neuron and excitatory decoders (r = -0.49, -0.41; p = 0.0013, 0.014), not for inhibitory (r = -0.07).
-    In mice 2 and 4 it does not (r -0.26 to 0.08, p >= 0.12), under trial reading (a) and the Methods alpha 0.05. Reading
+    1 for the all-neuron and excitatory decoders (r = -0.49, -0.42; p = 0.0013, 0.01), not for inhibitory (r = -0.06).
+    In mice 2 and 4 it does not (r -0.24 to -0.04, p >= 0.16), under trial reading (a) and the Methods alpha 0.05. Reading
     (b) and the code's alpha 0.001 give no more. None of the six reported values is matched. Per-bin C was not run for
     these decoders (estimated over 6 hours of CPU).
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - The time courses train a decoder at every bin with the C chosen at bin -1 (the paper chooses C at every bin), with
     25 random splits per bin (the paper 50), and 3 excitatory subsamples, for runtime.
   - A bin counts as above chance when its accuracy exceeds the shuffle with p < 0.05 by an unpaired t-test across the
     25 splits.
 - claim: fig8de-learning-parallel
   outcome: not_reproduced
+  assumed: true
   notebook: 03_learning_decoders.ipynb
   output: claim:fig8de-learning-parallel
   notes: With all trials, reading (a), and early and late days by reading (a), the subsampled excitatory and inhibitory
-    decoders do not differ in accuracy or onset in early or late days in any learning mouse (p 0.22 to 0.91 where testable).
-    Late accuracy exceeds early for both types in mice 1 and 4 (p 0.0013 to 0.032), but not in mouse 2 (p = 0.07, 0.26).
-    Under trial reading (b), late-day accuracy differs between types in mouse 2 (I 67.6 against E 60.5, p = 0.024), and
+    decoders do not differ in accuracy or onset in early or late days in any learning mouse (p 0.2 to 0.81 where testable).
+    Late accuracy exceeds early for both types in mice 1 and 4 (p 0.0013 to 0.03), but not in mouse 2 (p = 0.084, 0.24).
+    Under trial reading (b), late-day accuracy differs between types in mouse 2 (I 67.9 against E 60.6, p = 0.016), and
     late exceeds early for excitatory neurons in neither mouse 2 nor mouse 4. Early and late days by reading (b) give
-    0 or 1 day in most mice and cannot be tested. The claim fails under both trial readings, so it is not reproduced.
+    0 or 1 day in most mice and cannot be tested, so the outcome rests on reading (a), an assumption. The claim fails
+    under both trial readings, so it is not reproduced.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
   - The time courses train a decoder at every bin with the C chosen at bin -1 (the paper chooses C at every bin), with
     25 random splits per bin (the paper 50), and 3 excitatory subsamples, for runtime.
-  - Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a)
-    of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day
-    for most mice and cannot be tested. Days are ordered by session_start_time.
+  - 'Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance,
+    reading (a) of the criterion (the code''s perc_thb = [20, 80]). Reading (b), the runs of such days at the start and
+    end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone.
+    Reading (a) is adopted because it is what the paper''s code does, and because the Methods speak of several days
+    ("Early days: first few training days in which the animal''s performance was lower than the 20th percentile"),
+    which reading (b) cannot give here. Days are ordered by session_start_time.'
 - claim: figs13c-equal-trials
   outcome: not_reproduced
+  assumed: true
   notebook: 03_learning_decoders.ipynb
   output: claim:figs13c-equal-trials
   notes: With 12, 14 and 15 correct trials of each choice in every session, all-neuron accuracy is higher late than early
@@ -443,10 +459,13 @@ outcomes:
     and 2 (p = 0.073, 0.32).
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
-  - Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a)
-    of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day
-    for most mice and cannot be tested. Days are ordered by session_start_time.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
+  - 'Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance,
+    reading (a) of the criterion (the code''s perc_thb = [20, 80]). Reading (b), the runs of such days at the start and
+    end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone.
+    Reading (a) is adopted because it is what the paper''s code does, and because the Methods speak of several days
+    ("Early days: first few training days in which the animal''s performance was lower than the 20th percentile"),
+    which reading (b) cannot give here. Days are ordered by session_start_time.'
   - The number of trials per choice is the minimum over the sessions of a mouse that have at least 10 (12, 14 and 15).
 - claim: figs12-licking-running
   outcome: not_reproduced
@@ -461,6 +480,7 @@ outcomes:
   - The lick part is not tested; the lick series names no spout. The running part decides.
 - claim: fig8f-correlations-decrease
   outcome: partially_reproduced
+  assumed: true
   notebook: 01_single_neurons_correlations.ipynb
   output: claim:fig8f-correlations-decrease
   notes: With early and late days by reading (a), noise correlations are higher early than late for EE, II and EI in
@@ -468,11 +488,15 @@ outcomes:
     mice 1 and 4 (p 0.16 to 0.43). Reading (b) of early and late days gives no days in mice 1 and 4 and 1 late day in
     mouse 2, so it cannot be tested.
   deviations:
-  - Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a)
-    of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day
-    for most mice and cannot be tested. Days are ordered by session_start_time.
+  - 'Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance,
+    reading (a) of the criterion (the code''s perc_thb = [20, 80]). Reading (b), the runs of such days at the start and
+    end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone.
+    Reading (a) is adopted because it is what the paper''s code does, and because the Methods speak of several days
+    ("Early days: first few training days in which the animal''s performance was lower than the 20th percentile"),
+    which reading (b) cannot give here. Days are ordered by session_start_time.'
 - claim: figs13ab-pseudo-learning
   outcome: not_reproduced
+  assumed: true
   notebook: 03_learning_decoders.ipynb
   output: claim:figs13ab-pseudo-learning
   notes: Pseudo-population accuracy of the all-neuron decoder rises from early to late days in every learning mouse (75.5
@@ -480,13 +504,17 @@ outcomes:
     2 (p = 0.18). Excitatory and inhibitory pseudo populations rise in the same direction in every mouse.
   deviations:
   - The SVM regularisation is chosen from 10^-6 to 10^6 in steps of 1 in log10 where the code uses steps of 0.2, for
-    runtime; on four sessions the accuracy differs by 0 to 0.67 points.
-  - Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a)
-    of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day
-    for most mice and cannot be tested. Days are ordered by session_start_time.
+    runtime; on four sessions the accuracy differs by 0 to 0.44 points.
+  - 'Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance,
+    reading (a) of the criterion (the code''s perc_thb = [20, 80]). Reading (b), the runs of such days at the start and
+    end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone.
+    Reading (a) is adopted because it is what the paper''s code does, and because the Methods speak of several days
+    ("Early days: first few training days in which the animal''s performance was lower than the 20th percentile"),
+    which reading (b) cannot give here. Days are ordered by session_start_time.'
   - 3 excitatory subsamples per session.
 - claim: fig8g-fraction-selective-triples
   outcome: not_reproduced
+  assumed: true
   notebook: 01_single_neurons_correlations.ipynb
   output: claim:fig8g-fraction-selective-triples
   measured: 3.81
@@ -496,9 +524,12 @@ outcomes:
     and 4 for E and only mouse 1 for I (p = 0.12 E and 0.063 I in mouse 2, 0.4 I in mouse 4). The reproduced and partial
     bands both need the increase significant in every learning mouse.
   deviations:
-  - Early and late days are the days below the 20th or above the 80th percentile of easy-trial performance, reading (a)
-    of the criterion (the code's perc_thb); reading (b), the runs at the start and end of training, gives 0 or 1 day
-    for most mice and cannot be tested. Days are ordered by session_start_time.
+  - 'Assumption: early and late days are the days below the 20th or above the 80th percentile of easy-trial performance,
+    reading (a) of the criterion (the code''s perc_thb = [20, 80]). Reading (b), the runs of such days at the start and
+    end of training, gives 0 or 1 day for most mice and cannot be tested, so the outcome rests on reading (a) alone.
+    Reading (a) is adopted because it is what the paper''s code does, and because the Methods speak of several days
+    ("Early days: first few training days in which the animal''s performance was lower than the 20th percentile"),
+    which reading (b) cannot give here. Days are ordered by session_start_time.'
 - claim: figs2-temporal-dynamics-similar
   outcome: blocked
   blocked_by: other
@@ -558,6 +589,11 @@ findings:
   statement: 'Question for the paper''s authors: do the learning decoders of Figure 8 use all trials balanced by choice
     or equal numbers of correct and incorrect trials within each choice? The comparison of cell types in late days of
     mouse 2 depends on it.'
+- kind: methods_unavailable
+  statement: 'Question for the paper''s authors: are the early and late days of Figure 8, S12 and S13 every day below
+    the 20th or above the 80th percentile of performance (the code''s perc_thb), or only the run of such days at the
+    start and end of training? Here the second gives 0 or 1 day in most learning mice, so the learning outcomes rest
+    on the first, as an assumption.'
 - kind: metadata_insufficient
   statement: The trial table has no column for helped trials or for the first trials of a session, and trial_is_good
     is true exactly for a correct or incorrect response, so the paper's code's trial exclusions (setTrs2rmv.m) cannot
@@ -588,13 +624,14 @@ verifications:
     response: Fixed. The per-rate table now groups on rates rounded to 1 Hz, and 16 Hz trials, whose choice side is unknown,
       are out of the fit and of every other analysis. The 16 Hz fractions are withdrawn. Outcome unchanged.
   - claim: figs1b-trial-history
-    agrees: true
+    agrees: false
     outcome: blocked
-    reason: Blocked (metadata_insufficient) in the verifier's table, against data_missing in the record. Trial times
+    reason: Blocked (metadata_insufficient) in the verifier's table. Trial times
       are relative to each trial (start_time -0.48 to 0.21 s), so there is no ITI. Part is testable, since the stimulus-strength
       coefficients and the previous-outcome terms without the ITI split can be fitted from the consecutive trial table,
       but this was not attempted.
-    response: Kept as blocked, data_missing, with the disagreement on the reason recorded. The data check now lists every
+    response: Kept as blocked, data_missing, with the disagreement on the reason recorded (agrees is false here because
+      the verifier gave metadata_insufficient; the outcome, blocked, is the same). The data check now lists every
       trial-table column; none gives a session clock, so the ITI that the criterion splits on is not in the files. A
       fit without the ITI split would not test the claim and was not run.
   - claim: fig1gi-inferred-spiking-differs
@@ -830,4 +867,304 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Blocked (data_missing), confirmed. The archive holds only the 135 session NWB files, no histology.
+    response: No change.
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The full executed notebooks 01 to 04 with the conclusions and summaries, the attempt record, the README, the
+    helper module and the claims file, with the paper's full text (round 2).
+  results:
+  - claim: data-composition
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: fig1b-psychometric
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. The fig1b deviation
+      gives 1983 of 26021; 01 cell 3 prints 1982 of 25883.
+    response: Corrected to 1982 of 25883. Outcome unchanged.
+  - claim: figs1b-trial-history
+    agrees: true
+    outcome: blocked
+    reason: 'The record keeps data_missing where I had metadata_insufficient, and records the disagreement. Either category
+      is reasonable, because no session clock exists. The figs1b reason of round 1 adds "against data_missing in the record";
+      I had no attempt record in round 1, so I made no such comparison. figs1b is marked agrees: true even though the blocked_by
+      category differs.'
+    response: 'Kept blocked, data_missing. The round-1 reason no longer carries the added words, and round 1 is now recorded
+      as agrees: false, since that verifier gave metadata_insufficient.'
+  - claim: fig1gi-inferred-spiking-differs
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: fig2a-example-session
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: fig2bc-fraction-selective-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Seed sensitivity:
+      this knife-edge outcome rests on one draw of 50 shuffles, with no repetition across seeds; mouse 2 p = 0.040, the
+      empirical variant gives 0.10, and under the criterion''s stated rule a non-significant mouse 2 could make the claim
+      reproduced. fig2a used 20 repetitions for this reason; this did not.'
+    response: Added a repetition over 10 further seeds (01). Mouse 2 has p < 0.05 in 4 of 10 seeds (p 0.0178 to 0.0913,
+      median 0.0517) and the medians stay within tolerance, so the band is reproduced in 6 seeds and not reproduced in 4.
+      The verified outcome, from the main draw, is kept, and the notes say that it is not stable across seeds. No change
+      is proposed, as the seeds split almost evenly.
+  - claim: fig2bd-selectivity-time-course
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: fig2de-selectivity-magnitude-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: figs3d-same-spiking-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Round-1 point 9
+      (matched activity) is resolved: the median rule keeps neurons whose median activity is zero, and a variant matched
+      on mean activity was added.'
+    response: No change.
+  - claim: figs3c-wider-window
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Seed sensitivity:
+      reading (b) gives 9.883 against the bound of 9.9 on one draw of 50 shuffles; a value of 9.9 or more would make the
+      readings disagree and the claim blocked.'
+    response: Added a repetition over 10 further seeds (01). The inhibitory count is 9.471 to 10.157 under (a) and 9.668
+      to 10.191 under (b); all four values are within tolerance in 2 of 10 seeds under (a) and 6 of 10 under (b), and the
+      readings disagree in 4 seeds. The verified outcome, from the main draw, is kept, and the notes say that it sits on
+      the bound and is not stable across seeds. No change is proposed, as no single outcome holds across seeds.
+  - claim: figs3e-correct-error-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: fig3bc-decoding-similar
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. 02 cell 6 says "Mean
+      accuracies are E 65.3, 64.3, 60.2, 67.3 and I 64.5, 66.0, 58.5, 69.6 percent (p = 0.63, 0.21, 0.57, 0.16)"; cell 5
+      prints E 67.2 for mouse 4, I 64.6, 66.1, 58.8, and p = 0.661 and 0.59. The C-grid check is quoted as 0 to 0.67 points
+      in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints differences of 0 to 0.44.
+    response: Corrected to the re-run's printed values (E 65.3, 64.3, 60.2, 67.2; I 64.6, 66.1, 58.9, 69.6; p = 0.671, 0.185,
+      0.64, 0.153). The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.
+  - claim: fig3b-decoding-time-course
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Round-1 point resolved:
+      rerun with C chosen at every bin for mice 2 and 3 (notebook 04). The outcome rests on mouse 3, which still peaks at
+      bin 6 under both C rules.'
+    response: No change of outcome. Notebook 04 now also covers mouse 1, which peaks at bin 3 (89.5) with C chosen at every
+      bin; mouse 3 still peaks at bin 6 (83.6). The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation
+      and Summary.
+  - claim: fig3df-weights-similar
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. The per-bin weights
+      also use C chosen at bin -1. Mouse 4's single significant bin (p = 0.012) does not change the band, but per-bin C
+      in mice 1 or 3 is untested.
+    response: 'Notebook 04 now gives the per-bin weights with C chosen at every bin and 50 splits for mice 1, 2 and 3: no
+      bin differs in mice 1 and 3 (smallest p 0.171 and 0.0851), and mouse 2 differs in 3 of 12 bins. The band is unchanged;
+      mouse 4 was not repeated. The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.'
+  - claim: fig3hi-mixed-no-advantage
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. 02 cell 9 says "differences
+      -0.08 to +0.72 points, p 0.69 to 0.98"; cell 8 prints -0.05 to +0.70, p 0.678 to 0.989. The C-grid check is quoted
+      as 0 to 0.67 points in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints differences
+      of 0 to 0.44.
+    response: Corrected to the re-run's printed values (-0.02 to +0.66 points, p 0.689 to 0.996). The C-grid difference
+      is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.
+  - claim: figs5-fluorescence-decoding
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: figs6ab-previous-choice-stimulus
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. Still no analysis;
+      it could be tested from the data.
+    response: Not run. One run of the entry took about 2.9 hours of the five, split in foreground calls, and the time left
+      went to the corrections; a tested outcome would also need another round of verification. Kept blocked.
+  - claim: figs6c-outcome-decoding
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. Still no analysis;
+      it could be tested from the data.
+    response: Not run, for the same reason as figs6ab. Kept blocked.
+  - claim: figs6de-incorrect-trials
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. 02 cell 15 says
+      "mouse 3 p 0.12 to 0.73" (cell 14 prints 0.12, 0.25, 0.76), "mouse 4 accuracy 44.0 to 47.6" (the main set gives 44.0,
+      47.7, 46.3) and "(p 0.26 to 0.99)" (the smallest printed p is 0.279). The claims-file misreading (my problem 2) is
+      still open: the criterion requires above-shuffle accuracy on incorrect trials in every mouse, and the paper''s S6D,
+      S6E and S3E legends do not support that for mouse 4; it was referred to a reader and the claim was tested as written.
+      The C-grid check is quoted as 0 to 0.67 points in every decoder deviation and in the Summaries of 01, 02 and 03; 02
+      cell 25 prints differences of 0 to 0.44.'
+    response: Corrected to the re-run's printed values (mouse 3 p 0.086 to 0.7, mouse 4 accuracy 44.0 to 47.8 percent, reduction
+      p 0.278 to 0.993), also in the question to the reader. The question stays open in questions/najafi-2020.yaml; the
+      claim is tested as written. The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.
+  - claim: fig4bd-stability-similar
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. 02 cell 18 says "p
+      0.55 to 0.97" (cell 17 prints 0.212 to 0.993) and "smallest p 0.056" (the smallest per-mouse p is 0.098). The C-grid
+      check is quoted as 0 to 0.67 points in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints
+      differences of 0 to 0.44.
+    response: 'Corrected to the re-run''s printed values: across mice p 0.524 to 0.991; per mouse, a variant, 1 of 28 tests
+      is below 0.05 (mouse 4, alpha 0.05, SE rule, any bins, p = 0.037). Outcome unchanged, as the criterion''s test is
+      across mice. The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.'
+  - claim: figs7c-angle-stability
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. Still no analysis;
+      it could be tested from the data.
+    response: Not run; kept blocked, too_large, by the subset timing in the notes.
+  - claim: fig5a-nonselective-model
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. A simulation with
+      no analysis.
+    response: Not run; kept blocked.
+  - claim: fig5bc-selective-models-match
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. A simulation with
+      no analysis.
+    response: Not run; kept blocked.
+  - claim: figs9-signal-selective-best
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. A simulation with
+      no analysis.
+    response: Not run; kept blocked.
+  - claim: fig6a-same-selectivity-correlations
+    agrees: true
+    outcome: reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Minor: 01 cell
+      41 counts "(mouse 2 EI p = 0.05)" as holding, but at the printed precision it is not shown to be below 0.05.'
+    response: The across-session p are now printed to 4 decimals; mouse 2 EI is p = 0.0498.
+  - claim: fig6bc-inhibitory-correlations-higher
+    agrees: true
+    outcome: blocked
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. The criterion''s
+      median match does not equalise activity: the kept inhibitory neurons stay more active in mouse 2 (p = 0.016). Under
+      the mean-matched variant, reading (b) also fails in mouse 3 (II 0.0006 below EE 0.0048), and EI is not between them
+      in mice 3 and 4. The outcome is blocked either way, but the matched component is not robust.'
+    response: No change; the notes already give the mean-matched result, which shows the matched component is not robust.
+  - claim: fig7-noise-correlations-limit-decoding
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. The C-grid check
+      is quoted as 0 to 0.67 points in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints
+      differences of 0 to 0.44.
+    response: No change. The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.
+  - claim: fig8ab-learning-accuracy
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. 03 cell 12: mouse
+      1 inh "0.53" (printed 0.51); mouse 2 "0.23, 0.20 (p = 0.13, 0.19)" (printed 0.22, 0.19, p = 0.15, 0.2); mouse 4 "0.56
+      (p 0.00042) ... 0.068" (printed 0.55, p 0.00056, 0.069); reading (b) "0.06" and "0.11" (printed 0.07 and 0.14). The
+      measured list in the record (0.23, 0.2, 0.56) is wrong in the same way. The C-grid check is quoted as 0 to 0.67 points
+      in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints differences of 0 to 0.44.'
+    response: Corrected text and measured list to the re-run's printed values (mouse 2 0.39, 0.22, 0.21; mouse 4 0.57, 0.55,
+      0.32). The re-run moved some values by 0.01 to 0.02 from those the verifier saw. Outcome unchanged. The C-grid difference
+      is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.
+  - claim: fig8ce-choice-signal-onset
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. 03 cell 15 says "r
+      = -0.49, -0.41; p = 0.0013, 0.014 ... inhibitory (r = -0.07)" (cell 14 prints exc -0.43, p 0.0089, and inh -0.13)
+      and "r -0.26 to 0.08, p >= 0.12" (printed -0.24 to 0.02, p >= 0.15). The measured list (-0.05, -0.26, -0.14, 0.08)
+      does not match the printed -0.07, -0.24, -0.12, 0.02. C is still chosen once at bin -1, with 25 splits, for the onset
+      decoders. The C-grid check is quoted as 0 to 0.67 points in every decoder deviation and in the Summaries of 01, 02
+      and 03; 02 cell 25 prints differences of 0 to 0.44.
+    response: Corrected text and measured list to the re-run's printed values (mouse 1 exc r = -0.42, p = 0.01, inh -0.06;
+      mice 2 and 4 r -0.24 to -0.04, p >= 0.16). Per-bin C for the onset decoders was not run (estimated over 6 hours of
+      CPU); the notes say the onsets rest on C chosen at bin -1. Outcome unchanged. The C-grid difference is now 0 to 0.44
+      points, as 02 prints, in every deviation and Summary.
+  - claim: fig8de-learning-parallel
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Five outcomes rest
+      on reading (a) of early and late days alone, because reading (b) gives 0 or 1 days. The record states this in each
+      deviation, and it is reasonable. But under the claims file''s rule an untestable second reading means the outcome
+      rests on one reading, so these five should be marked assumed: true. 03 cell 18 says "p 0.22 to 0.91" (printed 0.23
+      to 0.89), "p 0.0013 to 0.032" (maximum printed 0.031), "(p = 0.07, 0.26)" (printed 0.086, 0.27) and "I 67.6 against
+      E 60.5, p = 0.024" (printed I 67.8, E 60.6, p = 0.019). The C-grid check is quoted as 0 to 0.67 points in every decoder
+      deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints differences of 0 to 0.44.'
+    response: 'Marked assumed: true; the deviation now states the assumption and why (the paper''s code, perc_thb = [20,
+      80], and the Methods'' several early days), and a methods_unavailable finding asks the paper''s authors. Outcome unchanged.
+      Text corrected to the re-run''s printed values (p 0.2 to 0.81; 0.0013 to 0.03; 0.084, 0.24; I 67.9 against E 60.6,
+      p = 0.016). The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.'
+  - claim: figs13c-equal-trials
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Five outcomes rest
+      on reading (a) of early and late days alone, because reading (b) gives 0 or 1 days. The record states this in each
+      deviation, and it is reasonable. But under the claims file''s rule an untestable second reading means the outcome
+      rests on one reading, so these five should be marked assumed: true. The C-grid check is quoted as 0 to 0.67 points
+      in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints differences of 0 to 0.44.'
+    response: 'Marked assumed: true; the deviation now states the assumption and why (the paper''s code, perc_thb = [20,
+      80], and the Methods'' several early days), and a methods_unavailable finding asks the paper''s authors. Outcome unchanged.
+      The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.'
+  - claim: figs12-licking-running
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: fig8f-correlations-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Five outcomes rest
+      on reading (a) of early and late days alone, because reading (b) gives 0 or 1 days. The record states this in each
+      deviation, and it is reasonable. But under the claims file''s rule an untestable second reading means the outcome
+      rests on one reading, so these five should be marked assumed: true.'
+    response: 'Marked assumed: true; the deviation now states the assumption and why (the paper''s code, perc_thb = [20,
+      80], and the Methods'' several early days), and a methods_unavailable finding asks the paper''s authors. Outcome unchanged.'
+  - claim: figs13ab-pseudo-learning
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Five outcomes rest
+      on reading (a) of early and late days alone, because reading (b) gives 0 or 1 days. The record states this in each
+      deviation, and it is reasonable. But under the claims file''s rule an untestable second reading means the outcome
+      rests on one reading, so these five should be marked assumed: true. The C-grid check is quoted as 0 to 0.67 points
+      in every decoder deviation and in the Summaries of 01, 02 and 03; 02 cell 25 prints differences of 0 to 0.44.'
+    response: 'Marked assumed: true; the deviation now states the assumption and why (the paper''s code, perc_thb = [20,
+      80], and the Methods'' several early days), and a methods_unavailable finding asks the paper''s authors. Outcome unchanged.
+      The C-grid difference is now 0 to 0.44 points, as 02 prints, in every deviation and Summary.'
+  - claim: fig8g-fraction-selective-triples
+    agrees: true
+    outcome: not_reproduced
+    reason: 'I agree with the outcome as the claims file''s criterion applies it to the printed outputs. Five outcomes rest
+      on reading (a) of early and late days alone, because reading (b) gives 0 or 1 days. The record states this in each
+      deviation, and it is reasonable. But under the claims file''s rule an untestable second reading means the outcome
+      rests on one reading, so these five should be marked assumed: true.'
+    response: 'Marked assumed: true; the deviation now states the assumption and why (the paper''s code, perc_thb = [20,
+      80], and the Methods'' several early days), and a methods_unavailable finding asks the paper''s authors. Outcome unchanged.'
+  - claim: figs2-temporal-dynamics-similar
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs. Still no analysis;
+      it could be tested from the data.
+    response: Not run, for the same reason as figs6ab. Kept blocked.
+  - claim: figs14-neuropil
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
+    response: No change.
+  - claim: figs15-labeling-specificity
+    agrees: true
+    outcome: blocked
+    reason: I agree with the outcome as the claims file's criterion applies it to the printed outputs.
     response: No change.
