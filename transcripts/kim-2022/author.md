@@ -1,35 +1,35 @@
-# 000489 · author · run 41081361942
+# kim-2022 · author · run 42748694997
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cat docs/protocol.md; ls; ls paper claims/000489 entries | head -50
+date -u; ls; ls docs entries claims attempts paper | head -80; wc -l docs/*.md README.md
 ```
 
 ```
-<persisted-output>
-Output too large (36.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/678b206e-08c9-4a25-affa-51890c5b582e/tool-results/btxq3qlr2.txt
-
-Preview (first 2KB):
-Fri Oct 30 15:34:32 UTC 2026
-# Protocol for an attempt
-
-Version: `pilot-12`. Record this version in the attempt's provenance.
-
-This is what agents, or people, do to attempt a target and deposit the
-result. A target is a dataset in a public archive and a paper it names. How
-each archive's datasets are named, versioned and read is in
-[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-
-An attempt has three roles, each a separate run with a separate context:
-
-- The **reader** reads the paper and writes the claims file: every finding,
-  and how each is to be tested, taken from the paper. A second reader checks
-  it against the paper. Readers never see the dataset's data.
-[... 20 more lines not kept]
+Tue Nov 10 03:25:31 UTC 2026
+LICENSE
+LICENSE-data
+README.md
+attempts
+bunfig.toml
+claims
+docs
+encore_science
+entries
+node_modules
+package-lock.json
+package.json
+paper
+papers
+pnpm-lock.yaml
+pyproject.toml
+questions
+queue
+schemas
+[... 100 more lines not kept]
 ```
 
 **Agent calls Read**
@@ -43,7 +43,7 @@ An attempt has three roles, each a separate run with a separate context:
 ```
 1	# Protocol for an attempt
 2	
-3	Version: `pilot-12`. Record this version in the attempt's provenance.
+3	Version: `pilot-14`. Record this version in the attempt's provenance.
 4	
 5	This is what agents, or people, do to attempt a target and deposit the
 6	result. A target is a dataset in a public archive and a paper it names. How
@@ -61,169 +61,117 @@ An attempt has three roles, each a separate run with a separate context:
 18	  claim's statement, expected values or criterion. A method detail the file
 19	  lacks it takes from the paper, citing the passage, and it asks a reader
 20	  only when it believes the file misreads the paper.
-[... 593 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls paper claims/000489 entries/001453-fouke-2025 attempts | head -30; cat README.md | head -80; wc -c docs/design.md docs/archives.md
-```
-
-```
-attempts:
-000003-senzai-2017-01.yaml
-000004-chandravadia-2020-01.yaml
-000005-yu-2016-01.yaml
-000005-yu-2016-02.yaml
-000006-economo-2018-01.yaml
-000006-economo-2018-02.yaml
-000008-scala-2021-01.yaml
-000009-guo-2017-01.yaml
-000010-li-2015-01.yaml
-000011-li-2016-01.yaml
-000013-hires-2015-01.yaml
-000015-chen-2017-01.yaml
-000019-bouchard-2013-01.yaml
-000023-berg-2020-01.yaml
-000034-buccino-2020-01.yaml
-000035-scala-2021-01.yaml
-000036-mayner-2022-01.yaml
-000037-gillon-2023-01.yaml
-000041-watson-2016-01.yaml
-[... 93 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cat docs/design.md docs/archives.md
-```
-
-```
-<persisted-output>
-Output too large (29.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/678b206e-08c9-4a25-affa-51890c5b582e/tool-results/b6doau1mw.txt
-
-Preview (first 2KB):
-# Reproduction registry: design
-
-Status: draft for discussion. "Reproduction registry" is a working name.
-
-## Goal
-
-Agents work through the dandisets on the DANDI Archive that have an associated
-paper. For each one, an agent tries to reproduce the paper's key findings and
-figures from the open data, writes the analysis as a notebook, and registers it
-here. People can deposit too, but most deposits are expected to come from
-agents.
-
-This serves two purposes:
-
-1. **Check the data.** A finding that can be reproduced shows the dandiset is
-   complete and accurate enough to support it. A finding that cannot be
-[... 38 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-ls paper claims/000489 entries/001453-fouke-2025; cat claims/000489/*
-```
-
-```
-<persisted-output>
-Output too large (39KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/678b206e-08c9-4a25-affa-51890c5b582e/tool-results/bx52obnwl.txt
-
-Preview (first 2KB):
-claims/000489:
-10.1016-j.bioelechem.2022.108319.yaml
-
-entries/001453-fouke-2025:
-README.md
-entry.yaml
-omr.py
-reproduce_fouke_2025.ipynb
-requirements.in
-requirements.lock.txt
-
-paper:
-10.1016-j.bioelechem.2022.108319.txt
-# Claims for Kim, Semenov, Kiester, Keppler, Ibey, Bixler & Pakhomov (2022) on dandiset 000489.
-# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
-# protocol pilot-10 as stated in docs/protocol.md.
-[... 22 more lines not kept]
+[... 635 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "claims/000489/10.1016-j.bioelechem.2022.108319.yaml"
+ "file_path": "claims/kim-2022.yaml"
 }
 ```
 
 ```
-1	# Claims for Kim, Semenov, Kiester, Keppler, Ibey, Bixler & Pakhomov (2022) on dandiset 000489.
-2	# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-23,
-3	# protocol pilot-10 as stated in docs/protocol.md.
-4	#
-5	# Text read. The accepted author manuscript in PubMed Central (PMC9729435, NIHMS1849847), as
-6	# served by ncbi_pmc, in paper/10.1016-j.bioelechem.2022.108319.txt. It holds the main text,
-7	# the Methods (sections 2.1 to 2.6), the Results, the Discussion and the legends of Figs. 1 to 7.
-8	# The paper has no supplement (PMC lists none, and the text cites none). No PDF was supplied;
-9	# figures were not read, so values shown only in a figure are not used. The paper links no
-10	# code and no data deposit, so no repository was read.
-11	#
-12	# The dandiset. Its title on DANDI is "The impact of the second phase amplitude (% to the first
-13	# phase) on the electroporation efficiency (measured as YP emission)" and its description
-14	# names 5-pulse, 1-Hz trains of unipolar 600 ns pulses (0%) or bipolar 600+600 ns pulses with
-15	# a second phase of 25, 50, 75 or 100%, delivered by two stainless-steel cylinders 1.5 mm in
-16	# diameter and 3 mm apart. That is the experiment of Fig. 2 (Results 3.1). The claims on Figs.
-17	# 3 to 7 and on heating cover the paper's other findings; the dandiset is not meant to hold
-18	# them, and whether it does is the author's to find.
-19	#
-20	# Data the paper used, as it reports them.
-[... 517 more lines not kept]
+1	# Claims for Kim, Semenov, Kiester, Keppler, Ibey, Bixler & Pakhomov (2022), tested on dandisets
+2	# 000489 and 000448.
+3	# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+4	# protocol pilot-14 as stated in docs/protocol.md. It replaces the file written 2026-10-23 under
+5	# pilot-10 for dandiset 000489 alone; ids are kept where the finding is the same.
+6	#
+7	# Text read. The accepted author manuscript in PubMed Central (PMC9729435, NIHMS1849847), as
+8	# served by ncbi_pmc, in paper/10.1016-j.bioelechem.2022.108319.txt. It holds the main text, the
+9	# Methods (sections 2.1 to 2.6), the Results (3.1 to 3.5), the Discussion and the legends of Figs.
+10	# 1 to 7. It is not the version of record. The paper has no supplement (PMC marks
+11	# "has-supplement no", and the text cites none). No PDF was supplied, so figures were not read and
+12	# values shown only in a figure are not used. The paper links no code and no data deposit, so no
+13	# repository was read.
+14	#
+15	# The datasets, from their titles on DANDI.
+16	# - 000489, "The impact of the second phase amplitude (% to the first phase) on the electroporation
+17	#   efficiency (measured as YP emission)", bovine cells. This is the title of Fig. 2A, so it is
+18	#   meant to hold the experiment of Fig. 2 (Results 3.1). The claims on Fig. 2 rest on it.
+19	# - 000448, "Time kinetics of the membrane potential at the cathode- and anode-facing poles of a
+20	#   cell induced by a train of 5 pulses at 833 kHz", Chinese hamster. This is the title of Fig. 7,
+[... 606 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat README.md | head -80; echo ----; cat papers/datasets/kim-2022.yaml; ls paper/ entries/kim-2022 questions | head; ls entries/fouke-2025; cat entries/fouke-2025/entry.yaml entries/fouke-2025/requirements.in
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cat attempts/fouke-2025-01.yaml | head -250; sed -n '/## DANDI/,/^## [A-Z]/p' docs/archives.md
+```
+
+```
+schema_version: 3
+id: fouke-2025-01
+datasets:
+- archive: dandi
+  id: "001453"
+  version: 0.250518.1950
+  doi: 10.48324/dandi.001453/0.250518.1950
+  relation: primary
+paper: doi:10.1016/j.cub.2025.04.027
+date: 2026-10-14
+entry: fouke-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-5
+  runner:
+[... 248 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+sed -n 250,400p attempts/fouke-2025-01.yaml; ls schemas; ls tools
+```
+
+```
+- kind: metadata_insufficient
+  statement: The stimulus codes 0 to 20 have no names or description in the files or the
+    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
+    file of its stimulus software.
+- kind: code_mismatch
+  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
+    while its conversion of the stimulus software's names gives the reverse (it carries a remap
+    that swaps them). The data do not settle which is right; zebrafish barely turn to either, and
+    Danionella turn more to the right for code 11, which fits the stimulus software's assignment
+    only if the fish turn with lateral motion.
+- kind: metadata_error
+  statement: Subject ids 0 to 11 are each used for one zebrafish and one Danionella cerebrum, so
+    subject_id does not identify an animal. The archive's summary counts 25 subjects and lists
+    only Danio rerio; the files hold 37 fish of two species.
+- kind: metadata_error
+  statement: f0_vtheta is stated in radians/s but holds the heading change per frame in radians,
+    and f0_vx and f0_vy are stated in pixels/s but are per frame. In most Danionella files the sum
+    of f0_vtheta over a trial does not match the change of f0_theta (median ratios 0.09 to 0.89).
+- kind: other
+  statement: 18 of 25 zebrafish files and 1 of 12 Danionella files are sampled at 32 to 35 Hz,
+[... 170 more lines not kept]
 ```
 
 **Agent**
 
-Read the protocol and the claims file (22 claims). Now surveying dataset 000489.
+Now the datasets.
 
 **Agent calls Bash**
 
 ```bash
-grep -n -A60 "^## DANDI" docs/archives.md | head -120
-```
-
-```
-16:## DANDI
-17-
-18-- **Datasets.** A dandiset, identified by six digits (`000003`). Targets are the
-19-  public dandisets whose metadata names a paper (`targets/dandisets.json`, built
-20-  by `tools/build_targets.py` and refreshed daily by the Track DANDI workflow).
-21-- **Versions.** A published version (`0.220126.1855`) is fixed and has a DOI,
-22-  `10.48324/dandi.<id>/<version>`. The draft can change. Pin the version the
-23-  paper cites, or the latest published one. For a draft, record its
-24-  modification time under `dataset: modified` in the attempt.
-25-- **Reading.** List the assets and read metadata with the DANDI REST API
-26-  (`https://api.dandiarchive.org/api/dandisets/<id>/versions/<version>/` and its
-27-  `assets/` endpoint). Read NWB files by streaming them: open each asset's S3
-28-  URL with `remfile` and `h5py`, and read it with `pynwb`. Do not download files
-29-  to disk.
-30-- **In an entry.** The entry names the dataset as `dandi:<id>/<version>` under
-31-  `related`. The helper module keeps the version in one constant.
-32-
-33-## CRCNS
-34-
-35-- **Datasets.** A CRCNS data set, identified by its short name (`ret-1`,
-[... 41 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -s https://api.dandiarchive.org/api/dandisets/000489/ | python -m json.tool | head -40; curl -s "https://api.dandiarchive.org/api/dandisets/000489/versions/" | python -m json.tool
+for d in 000489 000448; do echo "== $d"; curl -s https://api.dandiarchive.org/api/dandisets/$d/ | python -c "import json,sys;d=json.load(sys.stdin);print(d['most_recent_published_version'] and d['most_recent_published_version']['version'], d['draft_version']['modified'])"; curl -s "https://api.dandiarchive.org/api/dandisets/$d/versions/" | python -c "import json,sys;[print(v['version'],v['created'],v['asset_count'],v['size']) for v in json.load(sys.stdin)['results']]"; done
 ```
 
 Result: the fetched text is not kept.
@@ -231,53 +179,104 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-V=0.230518.1811; curl -s "https://api.dandiarchive.org/api/dandisets/000489/versions/$V/" | python -c "
-import json,sys; d=json.load(sys.stdin)
-for k in ['description','relatedResource','assetsSummary','contributor','keywords','license','citation']: print(k, json.dumps(d.get(k),indent=1)[:3000])"; curl -s "https://api.dandiarchive.org/api/dandisets/000489/versions/$V/assets/?page_size=100" | python -c "
-import json,sys; d=json.load(sys.stdin)
-for a in d['results']: print(a['asset_id'], a['path'], a['size'])"
+for d in "000489/versions/0.230518.1811" "000448/versions/0.230421.1844"; do echo "== $d"; curl -s "https://api.dandiarchive.org/api/dandisets/$d/" | python -c "
+import json,sys;d=json.load(sys.stdin)
+for k in ['name','description','citation','relatedResource','assetsSummary','contributor','protocol','keywords']: print(k, json.dumps(d.get(k))[:1500])"; curl -s "https://api.dandiarchive.org/api/dandisets/$d/assets/?page_size=100" | python -c "import json,sys;[print(a['asset_id'],a['path'],a['size']) for a in json.load(sys.stdin)['results']]"; done
 ```
 
 Result: the fetched text is not kept.
 
-**Agent**
+**Agent calls Bash**
 
-Dataset holds 17 Fig. 2 dishes (0%:3, 25%:3, 50%:5, 75%:3, 100%:3) plus one Fig. 1F staining image, ~1 GB each. Opening one.
+```bash
+wc -c paper/*.txt; date -u
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "paper/10.1016-j.bioelechem.2022.108319.txt"
+}
+```
+
+Result: not kept, because it reads the paper's text.
 
 **Agent calls Bash**
 
 ```bash
-python -c "import pynwb, remfile, h5py; print(pynwb.__version__)" 2>&1; ls tools; cat entries/001453-fouke-2025/requirements.in entries/001453-fouke-2025/entry.yaml
+python -c "
+t=open('paper/10.1016-j.bioelechem.2022.108319.txt').read()
+i=t.find('Fig. 1.')
+i=t.find('Figure 1') if i<0 else i
+import re
+for m in re.finditer(r'(Fig(ure)?\.? ?\d\.)',t): pass
+j=t.rfind('[60]')
+print(t[j:j+20000])"
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+python -c "
+t=open('paper/10.1016-j.bioelechem.2022.108319.txt').read()
+for k in ['Fig. 1','Figure 1.','Fig. 2.','Figure 2']:
+  print(k,[i for i in range(len(t)) if t.startswith(k,i)][:20])
+print(len(t))
+i=t.find('Highlights'); print(i)
+"
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+python -c "
+t=open('paper/10.1016-j.bioelechem.2022.108319.txt').read()
+print(t[57800:])"
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+which python uv; python -c "import h5py, remfile, pynwb, dandi; print('ok')" 2>&1; cat pyproject.toml | head -40; date -u
 ```
 
 ```
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/python
+/opt/hostedtoolcache/Python/3.13.18/x64/bin/uv
 Traceback (most recent call last):
   File "<string>", line 1, in <module>
-    import pynwb, remfile, h5py; print(pynwb.__version__)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'pynwb'
-__pycache__
-agent_run.py
-archive_transcripts.sh
-archives
-blind.sh
-build_dryad_targets.py
-build_figshare_targets.py
-build_openneuro_targets.py
-build_site.py
-build_targets.py
-claims_check.py
-conversion_issue.py
-datasets.py
-entry.py
-flagged.py
-[... 41 more lines not kept]
+    import h5py, remfile, pynwb, dandi; print('ok')
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'h5py'
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "encore-science"
+dynamic = ["version"]
+description = "Check a dataset against the paper it came from: an AI agent reads the paper's claims and tests them on the data."
+readme = "docs/encore.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+dependencies = [
+  "pyyaml",
+[... 23 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && uv venv -q dev && . dev/bin/activate && uv pip install -q pynwb remfile h5py numpy scipy pandas matplotlib dandi statsmodels jupyter nbconvert ipykernel 2>&1 | tail -3; python -c "import pynwb; print(pynwb.__version__)"
+cd $TMPDIR && uv venv -q ve && . ve/bin/activate && uv pip install -q h5py remfile pynwb numpy scipy matplotlib pandas requests nbformat nbclient ipykernel pyyaml jsonschema 2>&1 | tail -3; python -c "import h5py,remfile,pynwb;print(pynwb.__version__)"
 ```
 
 ```
@@ -288,263 +287,230 @@ Shell cwd was reset to
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && cat > probe.py <<'EOF'
+cd $TMPDIR && cat > explore.py <<'EOF'
 import h5py, remfile, requests, sys
-aid=sys.argv[1]
-url=f"https://api.dandiarchive.org/api/assets/{aid}/download/"
-r=requests.head(url,allow_redirects=True); s3=r.url
-f=h5py.File(remfile.File(s3),'r')
-def vis(name,obj):
-    if isinstance(obj,h5py.Dataset):
-        print(name, obj.shape, obj.dtype, obj.chunks, obj.compression, dict(obj.attrs) if obj.size<5 or len(obj.attrs) else '')
-        if obj.size<50: print('   =',obj[()])
+def url(ds, ver, aid):
+    r = requests.get(f"https://api.dandiarchive.org/api/dandisets/{ds}/versions/{ver}/assets/{aid}/", )
+    md = r.json()
+    return [u for u in md['contentUrl'] if 's3' in u][0]
+ds, ver, aid = sys.argv[1:4]
+u = url(ds, ver, aid)
+f = h5py.File(remfile.File(u), 'r')
+def show(name, obj):
+    if isinstance(obj, h5py.Dataset):
+        v = ''
+        if obj.size < 20: v = obj[()]
+        print(name, obj.shape, obj.dtype, obj.chunks, obj.compression, dict(obj.attrs) if len(obj.attrs)<8 else list(obj.attrs), v)
     else:
-        print(name+'/', dict(obj.attrs))
-f.visititems(vis)
+        print(name+'/', {k: (v if not hasattr(v,'shape') or v.size<5 else v.shape) for k,v in obj.attrs.items()})
+f.visititems(show)
 EOF
-time python probe.py 1e7fcc84-e5eb-4ead-802f-c26c91621306
+. ve/bin/activate; time python explore.py 000489 0.230518.1811 1e7fcc84-e5eb-4ead-802f-c26c91621306
 ```
 
 ```
 <persisted-output>
-Output too large (144.7KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/678b206e-08c9-4a25-affa-51890c5b582e/tool-results/bpnqkndua.txt
+Output too large (144.5KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-encore-encore/a941cf72-d159-45b2-9f19-3665c9632467/tool-results/bi9j4tvrr.txt
 
 Preview (first 2KB):
 acquisition/ {}
 acquisition/Fig2_0_03/ {'comments': 'no comments', 'description': 'Channel1 ex/em 350/460nm and ex/em 480/535nm. All cells labeled with MemBrite dye (Channel 1), permeabilized cells visualized by membrane-impermeable fluorescence dye YOPRO-1, Dark circles with no electroporated cells are the footprints of electrodes. An image was obtained by scanning a whole well from a six-well plate, and a total of 144 images (12x12 grid) were captured. These images were then automatically stitched together to create a composite image.', 'namespace': 'core', 'neurodata_type': 'ImageSeries', 'object_id': '57ff58ad-680e-41b8-a9c1-dcdb5b096aea'}
-acquisition/Fig2_0_03/data (22323, 22323, 2) uint16 (175, 349, 1) gzip {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'n.a.'}
-acquisition/Fig2_0_03/starting_time () float64 None None {'rate': np.float64(2.0), 'unit': 'seconds'}
-   = 0.0
+acquisition/Fig2_0_03/data (22323, 22323, 2) uint16 (175, 349, 1) gzip {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'n.a.'} 
+acquisition/Fig2_0_03/starting_time () float64 None None {'rate': np.float64(2.0), 'unit': 'seconds'} 0.0
 analysis/ {}
-file_create_date (1,) object None None {}
-   = [b'2023-05-18T11:32:06.239396-04:00']
+file_create_date (1,) object None None {} [b'2023-05-18T11:32:06.239396-04:00']
 general/ {}
-general/experimenter (1,) object None None {}
-   = [b'Kim Vitalii']
-general/institution () object None None {}
-   = b'Old Dominion University'
-general/lab () object None None {}
-   = b'Pakhomov Lab'
-general/session_id () object None None {}
-[... 19 more lines not kept]
+general/experimenter (1,) object None None {} [b'Kim Vitalii']
+general/institution () object None None {} b'Old Dominion University'
+general/lab () object None None {} b'Pakhomov Lab'
+general/session_id () object None None {} b'BPAE_bipolar_0 percent'
+general/subject/ {'namespace': 'core', 'neurodata_type': 'Subject', 'object_id': '490f4e89-312c-4fab-942e-d1dac4918e95'}
+general/subject/age () object None None {} b'P1D'
+general/subject/sex () object None None {} b'U'
+general/subject/species () object None None {} b'http://purl.obolibrary.org/obo/NCBITaxon_9913'
+general/subject/strain () object None None {} b'cellline: BPAE'
+[... 6 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-F=/home/runner/.claude/projects/-home-runner-work-encore-encore/678b206e-08c9-4a25-affa-51890c5b582e/tool-results/bpnqkndua.txt; sed -n 30,60p $F | cut -c1-400; echo; grep -c . $F; tail -5 $F | cut -c1-300; grep -v "^specifications" $F | cut -c1-200 | tail -20
+grep -v "^specifications" /home/runner/.claude/projects/-home-runner-work-encore-encore/a941cf72-d159-45b2-9f19-3665c9632467/tool-results/bi9j4tvrr.txt | cut -c1-400 | head -60
 ```
 
 ```
-= b'ad676920-0838-40c5-bf59-8dff79b1a3f1'
+acquisition/ {}
+acquisition/Fig2_0_03/ {'comments': 'no comments', 'description': 'Channel1 ex/em 350/460nm and ex/em 480/535nm. All cells labeled with MemBrite dye (Channel 1), permeabilized cells visualized by membrane-impermeable fluorescence dye YOPRO-1, Dark circles with no electroporated cells are the footprints of electrodes. An image was obtained by scanning a whole well from a six-well plate, and a total
+acquisition/Fig2_0_03/data (22323, 22323, 2) uint16 (175, 349, 1) gzip {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'n.a.'} 
+acquisition/Fig2_0_03/starting_time () float64 None None {'rate': np.float64(2.0), 'unit': 'seconds'} 0.0
+analysis/ {}
+file_create_date (1,) object None None {} [b'2023-05-18T11:32:06.239396-04:00']
+general/ {}
+general/experimenter (1,) object None None {} [b'Kim Vitalii']
+general/institution () object None None {} b'Old Dominion University'
+general/lab () object None None {} b'Pakhomov Lab'
+general/session_id () object None None {} b'BPAE_bipolar_0 percent'
+general/subject/ {'namespace': 'core', 'neurodata_type': 'Subject', 'object_id': '490f4e89-312c-4fab-942e-d1dac4918e95'}
+general/subject/age () object None None {} b'P1D'
+general/subject/sex () object None None {} b'U'
+general/subject/species () object None None {} b'http://purl.obolibrary.org/obo/NCBITaxon_9913'
+general/subject/strain () object None None {} b'cellline: BPAE'
+general/subject/subject_id () object None None {} b'Fig2_0_03'
+identifier () object None None {} b'ad676920-0838-40c5-bf59-8dff79b1a3f1'
 processing/ {}
-session_description () object None None {}
-   = b'Cells were electroporated by a train of 5 unipolar 600 ns pulses (no second pulse(0%)) at 1 Hz.The electrodes were two parallel stainless-steel cylinders, 1.5 mm in diameter and 3 mm apart'
-session_start_time () object None None {}
-   = b'2021-07-29T13:00:26-04:00'
-specifications/ {}
-specifications/core/ {}
-specifications/core/2.5.0/ {}
-specifications/core/2.5.0/namespace () object None None {}
-   = b'{"namespaces":[{"doc":"NWB namespace","schema":[{"namespace":"hdmf-common"},{"source":"nwb.base"},{"source":"nwb.device"},{"source":"nwb.epoch"},{"source":"nwb.image"},{"source":"nwb.file"},{"source":"nwb.misc"},{"source":"nwb.behavior"},{"source":"nwb.ecephys"},{"source":"nwb.icephys"},{"source":"nwb.ogen"},{"source":"nwb.ophys"},{"source":"nwb.retinotopy"}],"name":"core","full_name":"NWB 
-specifications/core/2.5.0/nwb.base () object None None {}
-   = b'{"datasets":[{"doc":"An abstract data type for a dataset.","neurodata_type_inc":"Data","neurodata_type_def":"NWBData"},{"dtype":[{"doc":"Start index into the TimeSeries \'data\' and \'timestamp\' datasets of the referenced TimeSeries. The first dimension of those arrays is always time.","name":"idx_start","dtype":"int32"},{"doc":"Number of data samples available in this time series, during 
-specifications/core/2.5.0/nwb.behavior () object None None {}
-   = b'{"groups":[{"datasets":[{"shape":[[null],[null,1],[null,2],[null,3]],"dims":[["num_times"],["num_times","x"],["num_times","x,y"],["num_times","x,y,z"]],"dtype":"numeric","doc":"1-D or 2-D array storing position or direction relative to some reference frame.","name":"data","attributes":[{"doc":"Base unit of measurement for working with the data. The default value is \'meters\'. Actual stored
-specifications/core/2.5.0/nwb.device () object None None {}
-   = b'{"groups":[{"doc":"Metadata about a data acquisition device, e.g., recording system, electrode, microscop
-[... 41 more lines not kept]
-```
-
-**Agent**
-
-Each file holds a single stitched 22323×22323×2 uint16 image (MemBrite and YP channels). There are no ROIs, no field map and no pixel size. Reading the paper's Methods next.
-
-**Agent calls Bash**
-
-```bash
-wc -w paper/*.txt; grep -n "" paper/*.txt | sed -n 1,400p | cut -c1-2500 | head -c 60000
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-sed -n 7p paper/*.txt | fold -s -w 4000 | head -c 45000
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-encore-encore/678b206e-08c9-4a25-affa-51890c5b582e/tool-results/bujpy3j98.txt"
-}
-```
-
-```
-1	pmc Bioelectrochemistry Bioelectrochemistry 319 nihpa 100953583 Bioelectrochemistry (Amsterdam, Netherlands) 1567-5394 1878-562X pmc-is-collection-domain yes pmc-collection-title NIHPA Author Manuscripts PMC9729435 PMC9729435.1 9729435 9729435 NIHMS1849847 36375440 10.1016/j.bioelechem.2022.108319 NIHMS1849847 NIHPA1849847 1 Article Action spectra and mechanisms of (in)efficiency of bipolar electric pulses at electroporation Kim Vitalii a Semenov Iurii a Kiester Allen S. b Keppler Mark A. c Ibey Bennett L. b Bixler Joel N. b Pakhomov Andrei G. a * a Frank Reidy Research Center for Bioelectrics, Old Dominion University, Norfolk, VA, USA b Bioeffects Division, Airman System Directorate, 711th Human Performance Wing, Air Force Research Laboratory, JBSA Fort Sam Houston, TX, USA c SAIC, San Antonio, TX, USA Author contributions A.G.P. conceived the study; V.K. and I.S. performed experiments; A.S.K., B.L.I., M.A.K., and J.N.B. built and set up the strobe imaging system; V.K. performed electric field simulations; V.K., I.S., and A.G.P. analyzed and interpreted the data; V.K. and A.G.P. wrote the manuscript, with contributions and editing by all authors. * Corresponding author: Andrei G. Pakhomov, Frank Reidy Research Center for Bioelectrics, Old Dominion University, 4211 Monarch Way, Room 340, Norfolk, VA 23508, 757-683-8003, 210-204-9012 (cell), [removed: an e-mail address] ; [removed: an e-mail address] 2 2023 08 11 2022 149 423304 108319 108319 13 11 2022 01 02 2024 01 02 2024 09 12 2022 13 06 2024 This file is available for text mining. It may also be used consistent with the principles of fair use under the copyright law. The reversal of the electric field direction inhibits various biological effects of nanosecond electric pulses (nsEP). This feature, known as “bipolar cancellation,” enables interference targeting of nsEP bioeffects remotely from stimulating electrodes, for prospective applications such as precise cancer ablation and non-invasive deep brain stimulation. This study wa
-[... 11 more lines not kept]
+session_description () object None None {} b'Cells were electroporated by a train of 5 unipolar 600 ns pulses (no second pulse(0%)) at 1 Hz.The electrodes were two parallel stainless-steel cylinders, 1.5 mm in diameter and 3 mm apart'
+[... 9 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-sed -n '8,$p' paper/*.txt | grep -v "^\[" | grep -v "^$" | cut -c1-3000; grep -o "Fig\(ure\)\? 2[^.]*\..\{0,1500\}" paper/*.txt | grep -i "legend\|kV/cm\|exponential" | head
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-grep -o "Fig\. [0-9]\. .\{0,1800\}" paper/*.txt | head -20; grep -o "Figure [0-9][^0-9].\{0,1800\}" paper/*.txt | head; grep -ob "6–8 kV/cm\|6-8 kV/cm\|Semi-log\|semi-log" paper/*.txt
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-grep -o "Fig\. 1\. .\{0,2500\}" paper/*.txt | head -3
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-python3 -c "
-t=open('paper/10.1016-j.bioelechem.2022.108319.txt').read()
-i=t.find('Fig. 2. The addition'); print(t[i-3000:i])"
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-date -u; cd $TMPDIR && . dev/bin/activate && uv pip install -q fsspec aiohttp requests && cat > band.py <<'EOF'
-import h5py, remfile, requests, time, numpy as np, fsspec
-aid="1e7fcc84-e5eb-4ead-802f-c26c91621306"
-s3=requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/",allow_redirects=True).url
-print(s3)
+cd $TMPDIR && cat > t1.py <<'EOF'
+import h5py, remfile, requests, time, numpy as np
+aid='1e7fcc84-e5eb-4ead-802f-c26c91621306'
+md=requests.get(f"https://api.dandiarchive.org/api/dandisets/000489/versions/0.230518.1811/assets/{aid}/").json()
+u=[x for x in md['contentUrl'] if 's3' in x][0]; print(u)
+f=h5py.File(remfile.File(u),'r'); d=f['acquisition/Fig2_0_03/data']
+t=time.time(); a=d[0:175,0:349,1]; print('1 chunk',time.time()-t)
+t=time.time(); a=d[175*60:175*61,:,1]; print('row band ch1',time.time()-t, a.mean())
+t=time.time(); a=d[175*61:175*62,:,:]; print('row band both',time.time()-t, a.mean(axis=(0,1)))
+dsid=d.id
 t=time.time()
-f=h5py.File(remfile.File(s3),'r'); d=f['acquisition/Fig2_0_03/data']
-a=d[0:350,:,:]; print('remfile 2 chunk rows', time.time()-t, a.shape, a.mean(axis=(0,1)))
-t=time.time()
-fs=fsspec.filesystem('http')
-fo=fs.open(s3,'rb',block_size=32*2**20,cache_type='readahead')
-g=h5py.File(fo,'r'); d=g['acquisition/Fig2_0_03/data']
-a=d[350:700,:,:]; print('fsspec 2 chunk rows', time.time()-t)
-t=time.time(); a=d[10000:10350,:,:]; print('fsspec mid rows', time.time()-t, a.mean(axis=(0,1)), a.max(axis=(0,1)))
-dc=d.id.get_chunk_info(0); print(dc, d.id.get_num_chunks())
-for i in [1,2,64,65,8192]: print(d.id.get_chunk_info(i))
+n=dsid.get_num_chunks(); print('nchunks',n)
+infos=[dsid.get_chunk_info(i) for i in range(0,200)]
+print(time.time()-t)
+for ci in infos[:12]: print(ci.chunk_offset, ci.byte_offset, ci.size)
 EOF
-python band.py
+. ve/bin/activate; python t1.py
 ```
 
 ```
-Fri Oct 30 15:39:42 UTC 2026
-https://dandiarchive.s3.amazonaws.com/blobs/04d/53e/04d53e12-dfd0-42ef-9b4b-404632e9b1a4?response-content-disposition=attachment%3B%20filename%3D%22sub-Fig2-0-03_ses-BPAE-bipolar-0%20percent_image.nwb%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=[removed: an AWS key]%2F20261030%2Fus-east-2%2Fs3%2Faws4_request&X-Amz-Date=20261030T153942Z&X-Amz-Expires=21600&X-Amz-SignedHeaders=host&X-Amz-Signature=38e32925c84533a0ebf43a3bb044f7d95c8f8ebe19cf05a301fabbe3b0d7a3ca
-remfile 2 chunk rows 1.7763416767120361 (350, 22323, 2) [755.25057679 339.79195257]
-fsspec 2 chunk rows 4.5744829177856445
-fsspec mid rows 3.281217098236084 [274.67639667 342.71441486] [65438 22032]
-StoreInfo(chunk_offset=(0, 0, 0), filter_mask=0, byte_offset=6600, size=141) 16384
-StoreInfo(chunk_offset=(0, 0, 1), filter_mask=0, byte_offset=6741, size=141)
-StoreInfo(chunk_offset=(0, 349, 0), filter_mask=0, byte_offset=6882, size=141)
-StoreInfo(chunk_offset=(0, 11168, 0), filter_mask=0, byte_offset=2629931, size=84952)
-StoreInfo(chunk_offset=(0, 11168, 1), filter_mask=0, byte_offset=2721155, size=77295)
-StoreInfo(chunk_offset=(11200, 0, 0), filter_mask=0, byte_offset=516389396, size=88157)
+https://dandiarchive.s3.amazonaws.com/blobs/04d/53e/04d53e12-dfd0-42ef-9b4b-404632e9b1a4
+1 chunk 0.22450971603393555
+row band ch1 1.18094801902771 353.1728515752491
+row band both 0.605881929397583 [261.68103545 344.17359239]
+nchunks 16384
+21.056722402572632
+(0, 0, 0) 6600 141
+(0, 0, 1) 6741 141
+(0, 349, 0) 6882 141
+(0, 349, 1) 7023 141
+(0, 698, 0) 7164 141
+(0, 698, 1) 7305 141
+(0, 1047, 0) 7446 141
+(0, 1047, 1) 7587 141
+(0, 1396, 0) 7728 141
+(0, 1396, 1) 7869 141
+(0, 1745, 0) 8010 141
+(0, 1745, 1) 8151 141
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && cat > chunks.py <<'EOF'
-import h5py, remfile, requests, time, numpy as np, zlib
-from concurrent.futures import ThreadPoolExecutor
-aid="1e7fcc84-e5eb-4ead-802f-c26c91621306"
-s3=requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/",allow_redirects=True).url
-f=h5py.File(remfile.File(s3),'r'); d=f['acquisition/Fig2_0_03/data']
-print(d._filters if hasattr(d,'_filters') else None, d.compression_opts, d.shuffle, d.fletcher32, d.scaleoffset)
-t=time.time()
-n=d.id.get_num_chunks()
-info=[d.id.get_chunk_info(i) for i in range(n)]
-print('chunk index', time.time()-t)
-sess=requests.Session()
-def fetch(si):
-    r=sess.get(s3,headers={'Range':f'bytes={si.byte_offset}-{si.byte_offset+si.size-1}'})
-    return np.frombuffer(zlib.decompress(r.content),dtype='<u2').reshape(175,349)
-sel=[s for s in info if s.chunk_offset[2]==1 and (s.chunk_offset[0]//175)%3==0 and (s.chunk_offset[1]//349)%3==0]
-t=time.time()
-with ThreadPoolExecutor(32) as ex: out=list(ex.map(fetch,sel))
-print(len(sel),'chunks', time.time()-t, sum(s.size for s in sel)/1e6,'MB')
-# check vs h5py
-s=sel[len(sel)//2]; r0,c0,_=s.chunk_offset
-print(np.array_equal(out[len(sel)//2], d[r0:r0+175,c0:c0+349,1]))
-EOF
-python chunks.py
+cd $TMPDIR && . ve/bin/activate; python explore.py 000448 0.230421.1844 3283075d-c6ad-478b-be41-e6b6d7a663a7 | grep -v "^specifications" | cut -c1-1500
 ```
 
 ```
-{'gzip': 4} 4 False False None
-chunk index 29.637131690979004
-946 chunks 3.438566207885742 58.256119 MB
-True
+acquisition/ {}
+acquisition/StrobeImaging/ {'comments': 'no comments', 'description': 'Strobe Imaging method utilizes pulsed laser fluorescence microscopy where a single short pulse laser flash is delivered at a precise time interval before, during, or after the event (aplication of ns Electric pulse (nsEP)). Cells are loaded with a voltage-sensitive FluoVolt dye, which responds to Transmembrane Membrane Potential (TMP) changes within nanoseconds. The camera shutter opens in advance of and closes after the laser flash, capturing one TMP image per event (nsEP exposure). Multiple nsEP and laser flash combinations are delivered with programmed time interval increments (+25 ns) or decrements (-25 ns), to capture the time course of TMP during and after nsEP.', 'namespace': 'core', 'neurodata_type': 'ImageSeries', 'object_id': '3e13debd-0da2-4322-9c42-e515790df1a1'}
+acquisition/StrobeImaging/data (500, 512, 512) uint16 (32, 32, 32) gzip {'conversion': np.float64(1.0), 'offset': np.float64(0.0), 'resolution': np.float64(-1.0), 'unit': 'n.a.'} 
+acquisition/StrobeImaging/starting_time () float64 None None {'rate': np.float64(40000000.0), 'unit': 'seconds'} 0.0
+analysis/ {}
+file_create_date (1,) object None None {} [b'2023-03-14T15:40:31.929065+00:00']
+general/ {}
+general/experimenter (1,) object None None {} [b'Semenov, Iurii ']
+general/institution () object None None {} b'Old Dominion University'
+general/lab () object None None {} b'Pakhomov Lab'
+general/session_id () object None None {} b'08_05_2022_cell09_F'
+general/subject/ {'namespace': 'core', 'neurodata_type': 'Subject', 'object_id': 'f30e4f45-2eeb-4bb3-842c-2ccb1ac0aa4f'}
+general/subject/age () object None None {'reference': 'birth'} b'P1D'
+general/subject/sex () object None None {} b'U'
+general/subject/species () object None None {} b'http://purl.obolibrary.org/obo/NCBITaxon_10029'
+general/subject/strain () object None None {} b'cellline: CHO'
+general/subject/subject_id () object None None {} b'001_F'
+identifier () 
+[... 8 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && cat > sd.py <<'EOF'
+import h5py, remfile, requests
+from concurrent.futures import ThreadPoolExecutor
+r=requests.get("https://api.dandiarchive.org/api/dandisets/000448/versions/0.230421.1844/assets/?page_size=100").json()['results']
+def go(a):
+    md=requests.get(f"https://api.dandiarchive.org/api/dandisets/000448/versions/0.230421.1844/assets/{a['asset_id']}/").json()
+    u=[x for x in md['contentUrl'] if 's3' in x][0]
+    f=h5py.File(remfile.File(u),'r')
+    return a['path'], f['session_description'][()].decode(), f['session_start_time'][()].decode(), f['acquisition/StrobeImaging/data'].shape, md.get('digest',{}).get('dandi:sha2-256','')[:10]
+with ThreadPoolExecutor(6) as ex:
+    for x in sorted(ex.map(go,r)): print(x)
+EOF
+. ve/bin/activate; python sd.py
+```
+
+```
+('sub-001-F/sub-001-F_ses-08-05-2022-cell09-F_image.nwb', 'Pulse_shape: bipolar, Recording: forward (cell09), Cell_line: CHO, Pulse_duration: 600ns, Number_of_pulses: 5p, Pulse_repetition_rate: 833kHz, Electric_field: 0.3kV/cm, Dye: FluoVolt, Recording_type: strobe imaging', '2022-08-05T21:36:26+00:00', (500, 512, 512), '026bdf3d40')
+('sub-001-R/sub-001-R_ses-08-05-2022-cell09-R_image.nwb', 'Pulse_shape: bipolar, Recording: reverse (cell09), Cell_line: CHO, Pulse_duration: 600ns, Number_of_pulses: 5p, Pulse_repetition_rate: 833kHz, Electric_field: 0.3kV/cm, Dye: FluoVolt, Recording_type: strobe imaging', '2022-08-05T21:33:59+00:00', (500, 512, 512), 'd079dbe37e')
+('sub-002-F/sub-002-F_ses-08-05-2022-cell12-F_image.nwb', 'Pulse_shape: bipolar, Recording: forward (cell12), Cell_line: CHO, Pulse_duration: 600ns, Number_of_pulses: 5p, Pulse_repetition_rate: 833kHz, Electric_field: 0.3kV/cm, Dye: FluoVolt, Recording_type: strobe imaging', '2022-08-05T21:54:14+00:00', (500, 512, 512), '32de7d0b41')
+('sub-002-R/sub-002-R_ses-08-05-2022-cell12-R_image.nwb', 'Pulse_shape: bipolar, Recording: reverse (cell12), Cell_line: CHO, Pulse_duration: 600ns, Number_of_pulses: 5p, Pulse_repetition_rate: 833kHz, Electric_field: 0.3kV/cm, Dye: FluoVolt, Recording_type: strobe imaging', '2022-08-05T21:58:24+00:00', (500, 512, 512), '6e8a15190f')
+('sub-003-F/sub-003-F_ses-08-05-2022-cell19-F_image.nwb', 'Pulse_shape: bipolar, Recording: forward (cell19), Cell_line: CHO, Pulse_duration: 600ns, Number_of_pulses: 5p, Pulse_repetition_rate: 833kHz, Electric_field: 0.3kV/cm, Dye: FluoVolt, Recording_type: strobe imaging', '2022-08-05T23:42:44+00:00', (500, 512, 512), 'd74e55dfa1')
+('sub-003-R/sub-003-R_ses-08-05-2022-cell19-R_image.nwb', 'Pulse_shape: bipolar, Recording: reverse (cell19), Cell_line: CHO, Pulse_duration: 600ns, Number_of_pulses: 5p, Pulse_repetition_rate: 833kHz, Electric_field: 0.3kV/cm, Dye: FluoVolt, Recording_type: strobe imaging', '2022-08-05T23:40:33+00:00', (500, 512, 512)
+[... 13 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+mkdir -p entries/kim-2022 && cd $TMPDIR && cat > ds.py <<'EOF'
+import h5py, remfile, requests, time, numpy as np, sys
+aid=sys.argv[1]
+md=requests.get(f"https://api.dandiarchive.org/api/dandisets/000489/versions/0.230518.1811/assets/{aid}/").json()
+u=[x for x in md['contentUrl'] if 's3' in x][0]
+f=h5py.File(remfile.File(u),'r'); k=list(f['acquisition'])[0]; d=f['acquisition'][k]['data']
+F=7; n=d.shape[0]; out=np.zeros((n//F,n//F,2),np.float32)
+t=time.time()
+for r0 in range(0,n,1225):
+    a=d[r0:min(r0+1225,n)].astype(np.float32)
+    h=a.shape[0]//F
+    out[r0//F:r0//F+h]=a.reshape(h,F,n//F,F,2).mean(axis=(1,3))
+print(k,time.time()-t)
+np.save(f'ds_{aid[:8]}.npy',out)
+EOF
+. ve/bin/activate; /usr/bin/time -v python ds.py 1e7fcc84-e5eb-4ead-802f-c26c91621306 2>&1 | egrep "Fig|Maximum resident|Elapsed"
+```
+
+```
+Fig2_0_03 67.98540306091309
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:08.96
+	Maximum resident set size (kbytes): 1746740
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && cat > ov.py <<'EOF'
-import h5py, remfile, requests, time, numpy as np, zlib, sys
-from concurrent.futures import ThreadPoolExecutor
-import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-aid=sys.argv[1]; name=sys.argv[2]
-s3=requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/",allow_redirects=True).url
-t=time.time()
-f=h5py.File(remfile.File(s3),'r'); d=f[f'acquisition/{name}/data']
-info=[]
-d.id.chunk_iter(lambda si: info.append((si.chunk_offset,si.byte_offset,si.size)))
-print('chunk_iter', time.time()-t, len(info))
-sess=requests.Session()
-def fetch(x):
-    off,b,s=x
-    r=sess.get(s3,headers={'Range':f'bytes={b}-{b+s-1}'})
-    a=np.frombuffer(zlib.decompress(r.content),dtype='<u2').reshape(175,349)
-    return a.reshape(7,25,349).mean(1).reshape(7,349//349,349).mean(1) if False else a.reshape(7,25,1,349).mean(axis=(1,2))
-step=2
-sel=[x for x in info if (x[0][0]//175)%step==0 and (x[0][1]//349)%step==0]
-t=time.time()
-with ThreadPoolExecutor(48) as ex: out=list(ex.map(fetch,sel))
-print(len(sel), time.time()-t)
-H=22323//175+1; W=22323//349+1
-img=np.full((2,H,W),np.nan)
-for (off,b,s),a in zip(sel,out): img[off[2],off[0]//175,off[1]//349]=a.mean()
-np.save(f'ov_{name}.npy',img)
+cd $TMPDIR && . ve/bin/activate; curl -s "https://api.dandiarchive.org/api/dandisets/000489/versions/0.230518.1811/assets/?page_size=100" | python -c "import json,sys;[print(a['asset_id']) for a in json.load(sys.stdin)['results']]" | grep -v 1e7fcc84 > ids.txt; (cat ids.txt | xargs -P 4 -n 1 python ds.py > ds.log 2>&1 &) ; python - <<'EOF'
+import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+a=np.load('ds_1e7fcc84.npy')
 fig,ax=plt.subplots(1,2,figsize=(14,7))
-for c in range(2): ax[c].imshow(img[c],aspect=349/175,vmax=np.nanpercentile(img[c],99.5))
-plt.savefig(f'ov_{name}.png',dpi=70)
+for i in range(2):
+    im=a[::4,::4,i]; ax[i].imshow(im,vmin=np.percentile(im,1),vmax=np.percentile(im,99.5)); ax[i].set_title(f'ch{i}')
+plt.savefig('ov.png',dpi=70)
+print(a.shape, [np.percentile(a[...,i],[1,50,99]) for i in range(2)])
 EOF
-python ov.py 1e7fcc84-e5eb-4ead-802f-c26c91621306 Fig2_0_03
 ```
 
-```
-chunk_iter 18.84627676010132 16384
-4096 10.42707085609436
-Shell cwd was reset to
-```
+Result: the fetched text is not kept.
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/ov_Fig2_0_03.png"
+ "file_path": "/tmp/claude-1001/ov.png"
 }
 ```
 
@@ -553,21 +519,118 @@ Result: no output.
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python -c "
+cd $TMPDIR && . ve/bin/activate; python - <<'EOF'
 import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-img=np.load('ov_Fig2_0_03.npy')[:, ::2, ::2]
-fig,ax=plt.subplots(1,2,figsize=(14,7))
-for c in range(2): 
-  im=ax[c].imshow(img[c],aspect=175/349,vmax=np.nanpercentile(img[c],99.5)); plt.colorbar(im,ax=ax[c])
-plt.savefig('ov2.png',dpi=70)
-print(np.nanpercentile(img,[1,50,99],axis=(1,2)))
-"
+from scipy import ndimage as ndi
+a=np.load('ds_1e7fcc84.npy')
+yp=a[...,1]; mb=a[...,0]
+sub=yp[1100:2000,800:2400]
+fig,ax=plt.subplots(2,1,figsize=(14,12))
+ax[0].imshow(ndi.uniform_filter(sub,5),vmin=150,vmax=900,extent=[800,2400,2000,1100]); 
+r=ndi.uniform_filter(yp,5)
+ax[1].plot(np.arange(800,2400), r[1500:1560,800:2400].mean(0)); ax[1].plot(np.arange(800,2400), ndi.uniform_filter(mb,5)[1500:1560,800:2400].mean(0))
+plt.savefig('zoom.png',dpi=60)
+EOF
 ```
 
 ```
-[[   0.            0.        ]
- [ 202.21283668  292.46559967]
- [1688.63189832  750.45428359]]
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/zoom.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; cat ds.log; ls ds_*.npy | wc -l; date -u
+```
+
+```
+1
+Tue Nov 10 03:31:05 UTC 2026
+Shell cwd was reset to
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "entries/kim-2022/kim2022.py",
+ "content": "\"\"\"Loading and measures for Kim et al. (2022), Bioelectrochemistry 149:108319.\n\nTwo dandisets, streamed from the DANDI archive at pinned versions:\n\n- 000489: stitched two-channel images of BPAE monolayers after 5 pulses of\n  600 ns (unipolar) or 600+600 ns (bipolar, second phase 25 to 100%) at 1 Hz\n  (the experiment of Fig. 2). Channel index 0 is MemBrite (350/460 nm),\n  index 1 is YO-PRO-1 (480/535 nm); this is checked in the notebook.\n- 000448: strobe image stacks (500 frames, 25 ns apart) of FluoVolt-loaded CHO\n  cells given trains of 5 pulses at 833 kHz (Fig. 7).\n\nWhere each parameter comes from is said where it is defined.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport h5py\nimport numpy as np\nimport remfile\nimport requests\nfrom scipy import ndimage as ndi\n\nAPI = \"https://api.dandiarchive.org/api\"\nVERSIONS = {\"000489\": \"0.230518.1811\", \"000448\": \"0.230421.1844\"}\n\n# ---------------------------------------------------------------- archive\n\n\ndef list_assets(dandiset: str) -> list[dict]:\n    \"\"\"Asset records of the pinned version, sorted by path.\"\"\"\n    url = f\"{API}/dandisets/{dandiset}/versions/{VERSIONS[dandiset]}/assets/?page_size=200\"\n    out = []\n    while url:\n        r = requests.get(url, timeout=60)\n        r.raise_for_status()\n        j = r.json()\n        out += j[\"results\"]\n        url = j[\"next\"]\n    return sorted(out, key=lambda a: a[\"path\"])\n\n\ndef s3_url(dandiset: str, asset_id: str) -> str:\n    r = requests.get(\n        f\"{API}/dandisets/{dandiset}/versions/{VERSIONS[dandiset]}/assets/{asset_id}/\", timeout=60\n    )\n    r.raise_for_status()\n    return [u for u in r.json()[\"contentUrl\"] if \"s3\" in u][0]\n\n\ndef open_nwb(dandiset: str, asset_id: str) -> h5py.File:\n    \"\"\"Open an asset as a streamed HDF5 file (no download to disk).\"\"\"\n    return h5py.File(remfile.File(s3_url(dandiset, asset_id)), \"r\")\n\n\n# ---------------------------------------------------------------- 000489: dish images\n\n# Pixel size. The files give none (resolution -1). Methods 2.5 names the camera\n# (ORCA-Flash4 sCMOS, 6.5 um pixels by its specification) and the 10x objective,\n# hence 0.65 um per pixel; the notebook checks it against the electrode spacing\n# (Methods 2.2, 3 mm side to side, 1.5 mm diameter, so 4.5 mm centre to centre).\nUM_PER_PX = 0.65\nBLOCK = 7  # block averaging factor on loading (22323 = 7 x 3189); 4.55 um, a standard choice\nUM_PER_BLOCK = UM_PER_PX * BLOCK\nROI_UM = 200.0  # Methods 2.5, \"200-um square ROI\"\nFIRST_PHASE_KV = 5.75  # Results 3.1, first phase kept at 5.75 kV\n\n# Electrode geometry for the field model, Methods 2.3: two cylinders 1.5 mm in\n# diameter, 3 mm apart (side to side).\nELECTRODE_RADIUS_MM = 0.75\nELECTRODE_HALF_SPACING_MM = 0.75 + 1.5  # centre at +-2.25 mm\n\n\ndef dish_info(f: h5py.File) -> dict:\n    k = list(f[\"acquisition\"])[0]\n    return {\n        \"series\": k,\n        \"session_description\": f[\"session_description\"][()].decode(),\n        \"subject_id\": f[\"general/subject/subject_id\"][()].decode(),\n        \"session_id\": f[\"general/session_id\"][()].decode(),\n        \"session_start_time\": f[\"session_start_time\"][()].decode(),\n        \"shape\": f[\"acquisition\"][k][\"data\"].shape,\n        \"description\": f[\"acquisition\"][k].attrs[\"description\"],\n    }\n\n\ndef load_dish(dandiset: str, asset_id: str, block: int = BLOCK) -> np.ndarray:\n    \"\"\"Stream a stitched dish image and return its block means, float32 (rows, cols, 2).\n\n    The image is read in bands of 1225 rows (7 rows of HDF5 chunks), so that one\n    band (about 110 MB) is in memory at a time.\n    \"\"\"\n    with open_nwb(dandiset, asset_id) as f:\n        d = f[\"acquisition\"][list(f[\"acquisition\"])[0]][\"data\"]\n        n0, n1, nc = d.shape\n        out = np.zeros((n0 // block, n1 // block, nc), np.float32)\n        step = 175 * block\n        for r0 in range(0, (n0 // block) * block, step):\n            r1 = min(r0 + step, (n0 // block) * block)\n            a = d[r0:r1, : (n1 // block) * block, :].astype(np.float32)\n            h = a.shape[0] // block\n            out[r0 // block : r0 // block + h] = a.reshape(h, block, n1 // block, block, nc).mean(axis=(1, 3))\n    return out\n\n\ndef find_footprints(yp: np.ndarray, r_px: float = 75.0) -> dict:\n    \"\"\"Find the two electrode footprints, the dark discs of the YP channel (Fig. 1F).\n\n    A disc of radius r_px (block pixels) is compared with the ring from 1.3 to\n    1.8 r_px around it; the two deepest minima of disc minus ring that are more\n    than 6 r_px apart are the footprints. The search is a standard choice; the\n    notebook shows the result for every dish. Returns centres (row, col) in block\n    pixels, refined to the centroid of the dark pixels within 1.3 r_px.\n    \"\"\"\n    s = 4\n    small = yp[: yp.shape[0] // s * s, : yp.shape[1] // s * s]\n    small = small.reshape(small.shape[0] // s, s, small.shape[1] // s, s).mean(axis=(1, 3))\n    r = r_px / s\n    yy, xx = np.mgrid[-int(2 * r) : int(2 * r) + 1, -int(2 * r) : int(2 * r) + 1]\n    rr = np.hypot(yy, xx)\n    disc = (rr <= r).astype(float)\n    ring = ((rr >= 1.3 * r) & (rr <= 1.8 * r)).astype(float)\n    m_disc = ndi.convolve(small, disc / disc.sum(), mode=\"nearest\")\n    m_ring = ndi.convolve(small, ring / ring.sum(), mode=\"nearest\")\n    score = m_disc - m_ring\n    # Only the central part of the image holds the electrodes; the glass edge is\n    # also dark-against-bright, so the outer 30% on each side is excluded.\n    n0, n1 = score.shape\n    mask = np.zeros_like(score, bool)\n    mask[int(0.3 * n0) : int(0.7 * n0), int(0.2 * n1) : int(0.8 * n1)] = True\n    sc = np.where(mask, score, np.inf)\n    i1 = np.unravel_index(np.argmin(sc), sc.shape)\n    yy2, xx2 = np.mgrid[0:n0, 0:n1]\n    far = np.hypot(yy2 - i1[0], xx2 - i1[1]) > 6 * r\n    i2 = np.unravel_index(np.argmin(np.where(far, sc, np.inf)), sc.shape)\n    centres = []\n    for (a, b) in (i1, i2):\n        c = np.array([a * s + s / 2, b * s + s / 2])\n        # refine: centroid of the pixels darker than the ring median within 1.3 r_px\n        y0, x0 = int(c[0]), int(c[1])\n        w = int(1.6 * r_px)\n        win = ndi.gaussian_filter(yp[y0 - w : y0 + w, x0 - w : x0 + w], 3)\n        gy, gx = np.mgrid[-w:w, -w:w]\n        dist = np.hypot(gy, gx)\n        ringv = np.median(win[(dist > 1.3 * r_px) & (dist < 1.6 * r_px)])\n        dark = (win < ringv) & (dist < 1.3 * r_px)\n        dy, dx = gy[dark].mean(), gx[dark].mean()\n        centres.append(c + np.array([dy, dx]))\n    centres.sort(key=lambda c: c[1])  # left electrode first\n    return {\"centres\": np.array(centres), \"score\": [float(score[i1]), float(score[i2])]}\n\n\ndef field_kv_cm(x_mm, y_mm, volts: float = FIRST_PHASE_KV * 1000):\n    \"\"\"Electric field (kV/cm) of two parallel cylinders in a conducting layer.\n\n    The geometry is that of Methods 2.3 (cylinders 1.5 mm in diameter, 3 mm apart,\n    touching the glass, solution 3.5 mm deep). As the electrodes cross the whole\n    solution layer, the field does not depend on height and the problem is two\n    dimensional; it is solved exactly with the two line charges of the\n    two-cylinder problem. The dish wall (17.5 mm away) is ignored. x is along the\n    line through both electrode centres (aa'), y along bb', both from the midpoint.\n    This replaces the paper's finite element model (Sim4Life), whose output is not\n    deposited; the notebook compares it with the paper's 15.1 kV/cm at the centre.\n    \"\"\"\n    d = ELECTRODE_HALF_SPACING_MM\n    a = ELECTRODE_RADIUS_MM\n    b = np.sqrt(d * d - a * a)\n    c = volts / (2 * np.log((d + b) / a))  # volts per unit of ln(r2/r1)\n    x = np.asarray(x_mm, float)\n    y = np.asarray(y_mm, float)\n    r1 = (x - b) ** 2 + y**2\n    r2 = (x + b) ** 2 + y**2\n    ex = c * ((x + b) / r2 - (x - b) / r1)\n    ey = c * (y / r2 - y / r1)\n    return np.hypot(ex, ey) / 1000 * 10  # V/mm -> kV/cm\n\n\ndef roi_mean_field(x_mm: float, y_mm: float, side_mm: float = ROI_UM / 1000, n: int = 21) -> float:\n    \"\"\"Mean field over a square ROI (Methods 2.5: the mean field of each ROI is used).\"\"\"\n    g = (np.arange(n) + 0.5) / n - 0.5\n    gx, gy = np.meshgrid(x_mm + g * side_mm, y_mm + g * side_mm)\n    return float(field_kv_cm(gx, gy).mean())\n\n\ndef dish_frame(centres: np.ndarray):\n    \"\"\"Midpoint, unit vector along aa' (left to right electrode) and along bb'.\"\"\"\n    c0, c1 = centres\n    mid = (c0 + c1) / 2\n    ua = (c1 - c0) / np.linalg.norm(c1 - c0)\n    ub = np.array([-ua[1], ua[0]])\n    return mid, ua, ub\n\n\ndef square_mean(img: np.ndarray, centre_rc: np.ndarray, ua: np.ndarray, ub: np.ndarray, side_px: float) -> float:\n    \"\"\"Mean of img over a square of side side_px centred at centre_rc, aligned with ua and ub.\"\"\"\n    n = int(np.ceil(side_px))\n    g = (np.arange(n) + 0.5) / n * side_px - side_px / 2\n    s, t = np.meshgrid(g, g)\n    rr = centre_rc[0] + s * ua[0] + t * ub[0]\n    cc = centre_rc[1] + s * ua[1] + t * ub[1]\n    return float(ndi.map_coordinates(img, [rr.ravel(), cc.ravel()], order=1).mean())\n\n\ndef footprint_mean(img: np.ndarray, centre_rc: np.ndarray, radius_px: float) -> float:\n    n0, n1 = img.shape\n    r0, c0 = int(round(centre_rc[0])), int(round(centre_rc[1]))\n    w = int(np.ceil(radius_px)) + 1\n    gy, gx = np.mgrid[-w : w + 1, -w : w + 1]\n    m = np.hypot(gy, gx) <= radius_px\n    return float(img[r0 - w : r0 + w + 1, c0 - w : c0 + w + 1][m].mean())\n\n\n# Footprint area used for YP0 and MB0 (Methods 2.5: \"the monolayer area within the\n# footprints of the hollow electrodes ... was used to measure the spontaneous YP\n# uptake\"). The disc of radius 0.2 mm around each footprint centre, well inside the\n# dark disc (radius about 0.35 mm in these images); a standard choice, varied in\n# the notebook.\nFOOTPRINT_RADIUS_MM = 0.2\n\n\ndef roi_table(img: np.ndarray, centres: np.ndarray, line: str = \"bb\", max_mm: float = 3.0,\n              fp_radius_mm: float = FOOTPRINT_RADIUS_MM) -> list[dict]:\n    \"\"\"YP per ROI along a line (Methods 2.5).\n\n    ROI are contiguous 200 um squares tiled outward from the midpoint between the\n    electrodes on both sides of it (the claims file's reading (a); reading (b), one\n    side, is the subset with offset of one sign). Along bb' the first ROI is centred\n    on the midpoint and the others at multiples of 0.2 mm. Along aa' the ROI start at\n    the midpoint and stop before the electrode edge. YP = YP_ROI x MB0 / MB_ROI - YP0,\n    with YP0 and MB0 the means over both footprints.\n    \"\"\"\n    mb, yp = img[..., 0], img[..., 1]\n    mid, ua, ub = dish_frame(centres)\n    side = ROI_UM / UM_PER_BLOCK\n    fp_r = fp_radius_mm * 1000 / UM_PER_BLOCK\n    yp0 = np.mean([footprint_mean(yp, c, fp_r) for c in centres])\n    mb0 = np.mean([footprint_mean(mb, c, fp_r) for c in centres])\n    rows = []\n    step = ROI_UM / 1000\n    if line == \"bb\":\n        offsets = np.arange(-int(round(max_mm / step)), int(round(max_mm / step)) + 1) * step\n        for o in offsets:\n            ctr = mid + ub * (o * 1000 / UM_PER_BLOCK)\n            rows.append({\"offset_mm\": round(float(o), 3), \"x_mm\": 0.0, \"y_mm\": float(o)})\n    else:\n        lim = ELECTRODE_HALF_SPACING_MM - ELECTRODE_RADIUS_MM - step / 2\n        k = int(np.floor(lim / step + 1e-9))\n        offsets = (np.arange(-k, k + 1)) * step\n        for o in offsets:\n            rows.append({\"offset_mm\": round(float(o), 3), \"x_mm\": float(o), \"y_mm\": 0.0})\n    for r in rows:\n        if line == \"bb\":\n            ctr = mid + ub * (r[\"y_mm\"] * 1000 / UM_PER_BLOCK)\n        else:\n            ctr = mid + ua * (r[\"x_mm\"] * 1000 / UM_PER_BLOCK)\n        y = square_mean(yp, ctr, ua, ub, side)\n        m = square_mean(mb, ctr, ua, ub, side)\n        r.update({\n            \"field_kv_cm\": roi_mean_field(r[\"x_mm\"], r[\"y_mm\"]),\n            \"YP_roi\": y, \"MB_roi\": m, \"YP0\": yp0, \"MB0\": mb0,\n            \"YP\": y * mb0 / m - yp0,\n        })\n    return rows\n\n\n# ---------------------------------------------------------------- 000448: strobe imaging\n\nFRAME_NS = 25.0  # Methods 2.6, 25 ns steps; the files' rate of 40 MHz agrees\nN_BASE = 40  # Methods 2.6, \"the mean value for the 40 datapoints before the pulse\"\nPERIOD_NS = 1200.0  # 833 kHz\nPULSE_NS = 600.0\n\n\ndef strobe_info(f: h5py.File) -> dict:\n    d = f[\"acquisition/StrobeImaging/data\"]\n    desc = f[\"session_description\"][()].decode()\n    kv = dict(p.split(\": \", 1) for p in desc.split(\", \"))\n    return {\n        \"subject_id\": f[\"general/subject/subject_id\"][()].decode(),\n        \"session_id\": f[\"general/session_id\"][()].decode(),\n        \"start\": f[\"session_start_time\"][()].decode(),\n        \"shape\": d.shape,\n        \"rate\": float(f[\"acquisition/StrobeImaging/starting_time\"].attrs[\"rate\"]),\n        \"pulse_shape\": kv[\"Pulse_shape\"],\n        \"recording\": kv[\"Recording\"].split(\" \")[0],\n        \"cell\": kv[\"Recording\"].split(\"(\")[1].rstrip(\")\"),\n        \"field\": kv[\"Electric_field\"],\n        \"rate_label\": kv[\"Pulse_repetition_rate\"],\n        \"n_pulses\": kv[\"Number_of_pulses\"],\n    }\n\n\ndef load_stack(asset_id: str) -> np.ndarray:\n    \"\"\"Stream a strobe stack (500, 512, 512) as float32.\"\"\"\n    with open_nwb(\"000448\", asset_id) as f:\n        return f[\"acquisition/StrobeImaging/data\"][()].astype(np.float32)\n"
+}
+```
+
+```
+File created successfully at: entries/kim-2022/kim2022.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; ls ds_*.npy | wc -l; cat ds.log; . ve/bin/activate; PYTHONPATH=entries/kim-2022 python - <<'EOF'
+import numpy as np, kim2022 as k
+print(k.field_kv_cm(0,0), k.roi_mean_field(0,0), [round(k.roi_mean_field(0,y),2) for y in np.arange(0,3.01,0.2)])
+a=np.load('ds_1e7fcc84.npy')
+fp=k.find_footprints(a[...,1]); print(fp)
+c=fp['centres']; print('sep mm', np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000)
+rows=k.roi_table(a,c)
+for r in rows: print(r['offset_mm'], round(r['field_kv_cm'],2), round(r['YP_roi']), round(r['MB_roi']), round(r['YP'],1))
+print(rows[0]['YP0'], rows[0]['MB0'])
+EOF
+```
+
+```
+1
+15.376998099719149 15.376994648508848 [15.38, 15.24, 14.85, 14.24, 13.46, 12.58, 11.65, 10.71, 9.8, 8.94, 8.14, 7.41, 6.75, 6.15, 5.61, 5.13]
+{'centres': array([[1512.6224079 , 1100.19702152],
+       [1319.85799473, 1922.94244904]]), 'score': [-95.18106079101562, -83.96560668945312]}
+sep mm 3.8448661914827036
+-3.0 5.13 296 222 37.4
+-2.8 5.61 320 225 56.9
+-2.6 6.15 321 236 42.9
+-2.4 6.75 331 253 31.1
+-2.2 7.41 330 240 46.5
+-2.0 8.14 332 204 102.7
+-1.8 8.94 368 225 105.3
+-1.6 9.8 380 247 82.7
+-1.4 10.71 437 250 129.1
+-1.2 11.65 406 276 67.0
+-1.0 12.58 386 276 51.5
+-0.8 13.46 339 248 45.5
+-0.6 14.24 377 243 85.0
+-0.4 14.85 340 346 -40.3
+-0.2 15.24 347 234 69.5
+[... 18 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; . ve/bin/activate; PYTHONPATH=entries/kim-2022 python - <<'EOF'
+import numpy as np, kim2022 as k, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+from scipy import ndimage as ndi
+a=np.load('ds_1e7fcc84.npy')
+fp=k.find_footprints(a[...,1]); c=fp['centres']
+mid,ua,ub=k.dish_frame(c)
+fig,ax=plt.subplots(figsize=(12,10))
+ax.imshow(ndi.uniform_filter(a[...,1],5),vmin=150,vmax=900)
+for cc in c: ax.add_patch(plt.Circle((cc[1],cc[0]),0.2e3/k.UM_PER_BLOCK,fill=False,color='r'))
+for o in np.arange(-15,16):
+    p=mid+ub*o*44; ax.plot(p[1],p[0],'r+')
+ax.set_xlim(700,2500); ax.set_ylim(2300,500)
+plt.savefig('ov2.png',dpi=60)
+EOF
+```
+
+```
 Shell cwd was reset to
 ```
 
@@ -584,231 +647,128 @@ Result: no output.
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && cat > ov3.py <<'EOF'
-import h5py, remfile, requests, time, numpy as np, zlib, sys
-from concurrent.futures import ThreadPoolExecutor
-import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-aid=sys.argv[1]; name=sys.argv[2]
-s3=requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/",allow_redirects=True).url
-f=h5py.File(remfile.File(s3),'r'); d=f[f'acquisition/{name}/data']
-info=[]; t=time.time()
-d.id.chunk_iter(lambda si: info.append((si.chunk_offset,si.byte_offset,si.size)))
-print('iter',time.time()-t)
-sess=requests.Session()
-def fetch(x):
-    off,b,s=x
-    r=sess.get(s3,headers={'Range':f'bytes={b}-{b+s-1}'})
-    a=np.frombuffer(zlib.decompress(r.content),dtype='<u2').reshape(175,349).astype(float)
-    return a[:175,:345].reshape(7,25,15,23).mean(axis=(1,3))  # 25x23 px blocks
-t=time.time()
-with ThreadPoolExecutor(64) as ex: out=list(ex.map(fetch,info))
-print(len(info), time.time()-t)
-H=128*7; W=64*15
-img=np.zeros((2,H,W))
-for (off,b,s),a in zip(info,out):
-    r=off[0]//175*7; c=off[1]//349*15; a=a[:H-r if r+7>H else 7]
-    img[off[2],r:r+7,c:c+15]=a
-np.save(f'ovf_{name}.npy',img)
-fig,ax=plt.subplots(1,2,figsize=(16,8))
-for c in range(2):
-  im=ax[c].imshow(img[c],aspect=25/23,vmax=np.nanpercentile(img[c],99)); plt.colorbar(im,ax=ax[c])
-plt.savefig(f'ovf_{name}.png',dpi=70)
+cd entries/kim-2022 && python - <<'EOF'
+s=open('kim2022.py').read()
+old=s[s.index("        # refine: centroid"):s.index("    centres.sort")]
+new='''        # refine: the smoothed window is thresholded halfway between the disc
+        # interior and the ring around it, and the centroid of the dark component
+        # that holds the first estimate is taken.
+        y0, x0 = int(c[0]), int(c[1])
+        w = int(2.5 * r_px)
+        win = ndi.gaussian_filter(yp[y0 - w : y0 + w, x0 - w : x0 + w], 4)
+        gy, gx = np.mgrid[-w:w, -w:w]
+        dist = np.hypot(gy, gx)
+        inner = np.median(win[dist < 0.5 * r_px])
+        ringv = np.median(win[(dist > 1.5 * r_px) & (dist < 2.2 * r_px)])
+        lab, _ = ndi.label(win < (inner + ringv) / 2)
+        comp = lab == lab[w, w]
+        dy, dx = gy[comp].mean(), gx[comp].mean()
+        centres.append(c + np.array([dy, dx]))
+        radii.append(float(np.sqrt(comp.sum() / np.pi)))
+'''
+s=s.replace(old,new)
+s=s.replace("    centres = []\n    for (a, b)","    centres, radii = [], []\n    for (a, b)")
+s=s.replace('''    centres.sort(key=lambda c: c[1])  # left electrode first
+    return {"centres": np.array(centres), "score": [float(score[i1]), float(score[i2])]}''','''    order = np.argsort([c[1] for c in centres])  # left electrode first
+    return {"centres": np.array(centres)[order], "radius_px": np.array(radii)[order],
+            "score": [float(score[i1]), float(score[i2])]}''')
+open('kim2022.py','w').write(s)
 EOF
-python ov3.py 1e7fcc84-e5eb-4ead-802f-c26c91621306 Fig2_0_03
+cd $TMPDIR; . ve/bin/activate; PYTHONPATH=entries/kim-2022 python -c "
+import numpy as np, kim2022 as k
+a=np.load('ds_1e7fcc84.npy'); fp=k.find_footprints(a[...,1]); print(fp); c=fp['centres']; print(np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000, fp['radius_px']*k.UM_PER_BLOCK/1000)
+"; ls ds_*npy | wc -l
 ```
 
 ```
-iter 19.0802903175354
-16384 34.3420193195343
-Shell cwd was reset to
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/ovf_Fig2_0_03.png"
-}
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import h5py, remfile, requests, time, fsspec, inspect
-print(inspect.signature(remfile.File.__init__))
-aid="1e7fcc84-e5eb-4ead-802f-c26c91621306"
-s3=requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/",allow_redirects=True).url
-for bs in [2**20, 8*2**20]:
-    t=time.time()
-    fo=fsspec.filesystem('http').open(s3,'rb',block_size=bs,cache_type='blockcache')
-    d=h5py.File(fo,'r')['acquisition/Fig2_0_03/data']; info=[]
-    d.id.chunk_iter(lambda si: info.append(si.byte_offset))
-    print(bs, time.time()-t, len(info))
-EOF
-```
-
-```
-(self, url: Union[str, Any], *, verbose: bool = False, disk_cache: Optional[remfile.DiskCache.DiskCache] = None, _min_chunk_size: int = 102400, _max_cache_size: int = 1000000000.0, _chunk_increment_factor: int = 1.7, _bytes_per_thread: int = 4194304, _max_threads: int = 1, _max_chunk_size: int = 104857600, _impose_request_failures_for_testing: bool = False, _size: Optional[int] = None, _use_session: bool = True)
-1048576 18.557095766067505 16384
-8388608 18.650027751922607 16384
+{'centres': array([[1471.56996604, 1050.98959419],
+       [1304.86149637, 1980.60025123]]), 'radius_px': array([137.60443993, 136.00831124]), 'score': [-95.18106079101562, -83.96560668945312]}
+4.2972038643012835 [0.6261002  0.61883782]
+1
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-mkdir -p $TMPDIR/ov && cd $TMPDIR && . dev/bin/activate && cat > ovall.py <<'EOF'
-import h5py, remfile, requests, time, numpy as np, zlib, sys, json
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
-V="0.230518.1811"
-assets=requests.get(f"https://api.dandiarchive.org/api/dandisets/000489/versions/{V}/assets/?page_size=100").json()['results']
-def one(a):
-    aid=a['asset_id']; 
-    s3=requests.head(f"https://api.dandiarchive.org/api/assets/{aid}/download/",allow_redirects=True).url
-    f=h5py.File(remfile.File(s3),'r'); name=list(f['acquisition'].keys())[0]; d=f[f'acquisition/{name}/data']
-    info=[]; d.id.chunk_iter(lambda si: info.append((si.chunk_offset,si.byte_offset,si.size)))
-    sess=requests.Session()
-    def fetch(x):
-        off,b,s=x
-        r=sess.get(s3,headers={'Range':f'bytes={b}-{b+s-1}'})
-        a=np.frombuffer(zlib.decompress(r.content),dtype='<u2').reshape(175,349).astype(float)
-        return a[:175,:345].reshape(7,25,15,23).mean(axis=(1,3))
-    with ThreadPoolExecutor(32) as ex: out=list(ex.map(fetch,info))
-    img=np.zeros((2,896,960))
-    for (off,b,s),q in zip(info,out):
-        r=off[0]//175*7; c=off[1]//349*15
-        img[off[2],r:r+7,c:c+15]=q[:min(7,896-r)]
-    np.save(f'ov/{name}.npy',img); return name
-t=time.time()
-with ProcessPoolExecutor(6) as ex:
-    for n in ex.map(one,assets): print(n, time.time()-t, flush=True)
-EOF
-python ovall.py
+ps aux | grep "ds.py" | grep -v grep | wc -l; cd $TMPDIR; cat ds.log; ls
 ```
 
 ```
-Exit code 1
-Channel1 and Channel2 129.0765631198883
-Fig2_25 134.71102929115295
-Fig2_25 135.43318724632263
-Fig2_25 135.4332299232483
-Fig2_100_03 135.4332492351532
-Fig2_0_03 135.43328952789307
-Fig2_100_07 217.4285101890564
-Fig2_0_06 233.96910047531128
-Fig2_0_07 243.30504298210144
-concurrent.futures.process._RemoteTraceback: 
-"""
-Traceback (most recent call last):
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/urllib3/connectionpool.py", line 793, in urlopen
-    response = self._make_request(
-        conn,
-    ...<10 lines>...
-        **response_kw,
-    )
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/urllib3/connectionpool.py", line 540, in _make_request
-[... 130 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && rm -f ov/*.npy && python - <<'EOF'
-import re
-s=open('ovall.py').read()
-s=s.replace("sess=requests.Session()","sess=requests.Session(); from requests.adapters import HTTPAdapter; from urllib3.util.retry import Retry; sess.mount('https://',HTTPAdapter(pool_maxsize=32,max_retries=Retry(total=8,backoff_factor=0.5,allowed_methods=None)))")
-s=s.replace("np.save(f'ov/{name}.npy',img); return name","key=a['path'].split('/')[0]; np.save(f'ov/{key}.npy',img); return key+' '+name")
-open('ovall.py','w').write(s)
-EOF
-python ovall.py 2>&1 | tail -20; date -u
-```
-
-```
-sub-Fig1F Channel1 and Channel2 110.86313009262085
-sub-Fig2-25-14 Fig2_25 123.59492683410645
-sub-Fig2-25-10 Fig2_25 123.59496998786926
-sub-Fig2-25-04 Fig2_25 126.37746596336365
-sub-Fig2-100-03 Fig2_100_03 126.3775064945221
-sub-Fig2-0-03 Fig2_0_03 126.37751936912537
-sub-Fig2-100-07 Fig2_100_07 221.00917673110962
-sub-Fig2-0-06 Fig2_0_06 221.10337853431702
-sub-Fig2-0-07 Fig2_0_07 221.10347819328308
-sub-Fig2-100-08 Fig2_100_08 227.24770426750183
-sub-Fig2-50-10 Fig2_50_10 228.51366519927979
-sub-Fig2-50-13 Fig2_50_13 228.51371216773987
-sub-Fig2-50-06 Fig2_50_06 305.97473335266113
-sub-Fig2-50-12 Fig2_50_12 312.2579257488251
-sub-Fig2-50-18 Fig2_50_18 328.16889214515686
-sub-Fig2-75-02 Fig2_75_02 328.1689193248749
-sub-Fig2-75-10 Fig2_75_10 328.1689279079437
-sub-Fig2-75-05 Fig2_75_05 331.8743770122528
-Fri Oct 30 15:56:40 UTC 2026
+0
+-home-runner-work--temp
+-home-runner-work-encore-encore
+bash-edit-diff
+ds.log
+ds.py
+ds_1e7fcc84.npy
+explore.py
+ids.txt
+ov.png
+ov2.png
+sd.py
+t1.py
+ve
+zoom.png
 Shell cwd was reset to
 ```
 
-**Agent**
+**Agent calls Bash**
 
-All 18 overviews fetched in 5.5 minutes. Viewing them as a montage.
+```bash
+cd $TMPDIR; . ve/bin/activate; time (cat ids.txt | xargs -P 4 -n 1 python ds.py); ls ds_*npy | wc -l; date -u
+```
+
+```
+Channel1 and Channel2 66.16134071350098
+Fig2_25 68.2520124912262
+Fig2_25 71.9757821559906
+Fig2_25 76.83557200431824
+Fig2_100_03 68.92428255081177
+Fig2_100_07 73.8075225353241
+Fig2_0_06 71.75033283233643
+Fig2_0_07 68.47982549667358
+Fig2_100_08 70.91067457199097
+Fig2_50_13 67.45120429992676
+Fig2_50_10 71.56562685966492
+Fig2_50_06 69.56478309631348
+Fig2_50_12 64.93142795562744
+Fig2_75_02 64.77959108352661
+Fig2_50_18 69.86095118522644
+Fig2_75_10 68.77122044563293
+Fig2_75_05 70.97538638114929
+
+real	5m47.824s
+user	5m26.984s
+[... 4 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import numpy as np, glob, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-fs=sorted(glob.glob('ov/*.npy'))
-fig,ax=plt.subplots(4,5,figsize=(25,20))
-for a,f in zip(ax.flat,fs):
-    im=np.load(f)[1]; a.imshow(im[200:700,150:800],vmax=np.percentile(im[im>0],99.5),vmin=np.percentile(im[im>0],5)); a.set_title(f)
-plt.savefig('mont.png',dpi=40)
-fig,ax=plt.subplots(4,5,figsize=(25,20))
-for a,f in zip(ax.flat,fs):
-    im=np.load(f)[0]; a.imshow(im[200:700,150:800],vmax=np.percentile(im[im>0],99),vmin=np.percentile(im[im>0],5)); a.set_title(f)
-plt.savefig('montmb.png',dpi=40)
-EOF
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/mont.png"
-}
-```
-
-```
-Shell cwd was reset to
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+cd $TMPDIR; . ve/bin/activate; python - <<'EOF'
 import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-im=np.load('ov/sub-Fig1F.npy')
-fig,ax=plt.subplots(1,2,figsize=(16,8))
-for c in range(2):
-    x=im[c]; ax[c].imshow(x,vmax=np.percentile(x[x>0],99.5),vmin=np.percentile(x[x>0],5))
-plt.savefig('f1f.png',dpi=50)
-print(im.shape,(im[1]>0).mean())
+from scipy import ndimage as ndi
+import glob
+fs=sorted(glob.glob('ds_*.npy'))
+fig,axs=plt.subplots(5,4,figsize=(20,24)); axs=axs.ravel()
+for i,f in enumerate(fs):
+    a=np.load(f); yp=ndi.uniform_filter(a[...,1],4)
+    axs[i].imshow(yp[::3,::3],vmin=np.percentile(yp,5),vmax=np.percentile(yp,99.5)); axs[i].set_title(f)
+plt.savefig('all.png',dpi=40)
 EOF
+```
+
+```
+Shell cwd was reset to
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/f1f.png"
+ "file_path": "/tmp/claude-1001/all.png"
 }
-```
-
-```
-(2, 896, 960) 0.8346400669642857
-Shell cwd was reset to
 ```
 
 Result: no output.
@@ -816,355 +776,224 @@ Result: no output.
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import numpy as np, glob
-fs=sorted(glob.glob('ov/*.npy')); ims={f[3:-4]:np.load(f) for f in fs}
-a=ims['sub-Fig1F']; print('Fig1F ch0==ch1', np.array_equal(a[0],a[1]), np.corrcoef(a[0].ravel(),a[1].ravel())[0,1])
-for k,v in ims.items(): print(k, [round(float(np.mean(v[c][v[c]>0])),1) for c in range(2)], [round(float(np.median(v[c][300:600,300:700])),1) for c in range(2)])
-ks=list(ims); 
-for i in range(len(ks)):
-  for j in range(i+1,len(ks)):
-    x=ims[ks[i]][1].ravel(); y=ims[ks[j]][1].ravel(); r=np.corrcoef(x,y)[0,1]
-    if r>0.9 or np.array_equal(x,y): print('similar',ks[i],ks[j],r)
+cd entries/kim-2022 && python - <<'EOF'
+s=open('kim2022.py').read()
+a=s.index("        # refine: the smoothed window")
+b=s.index("    order = np.argsort")
+new='''        # refine: the same disc-minus-ring score on the full block grid, within
+        # +-3 coarse pixels of the first estimate; the radius is where the
+        # azimuthal mean profile crosses halfway between disc and ring.
+        y0, x0 = int(c[0]), int(c[1])
+        w = int(2 * r_px) + 3 * s
+        win = yp[y0 - w : y0 + w + 1, x0 - w : x0 + w + 1].astype(float)
+        yy1, xx1 = np.mgrid[-int(1.8 * r_px) - 1 : int(1.8 * r_px) + 2, -int(1.8 * r_px) - 1 : int(1.8 * r_px) + 2]
+        rr1 = np.hypot(yy1, xx1)
+        k_disc = (rr1 <= r_px).astype(float)
+        k_ring = ((rr1 >= 1.3 * r_px) & (rr1 <= 1.8 * r_px)).astype(float)
+        sc1 = ndi.convolve(win, k_disc / k_disc.sum(), mode="nearest") - ndi.convolve(win, k_ring / k_ring.sum(), mode="nearest")
+        cut = sc1[w - 3 * s : w + 3 * s + 1, w - 3 * s : w + 3 * s + 1]
+        dy, dx = np.unravel_index(np.argmin(cut), cut.shape)
+        cc = np.array([y0 + dy - 3 * s, x0 + dx - 3 * s], float)
+        gy, gx = np.mgrid[-w : w + 1, -w : w + 1]
+        dist = np.hypot(gy - (dy - 3 * s), gx - (dx - 3 * s))
+        prof = np.array([win[(dist >= q) & (dist < q + 2)].mean() for q in range(0, int(1.8 * r_px), 2)])
+        half = (prof[: int(0.5 * r_px / 2)].mean() + prof[int(1.3 * r_px / 2) :].mean()) / 2
+        above = np.nonzero(prof > half)[0]
+        above = above[above > int(0.3 * r_px / 2)]
+        centres.append(cc)
+        radii.append(float(above[0] * 2) if len(above) else np.nan)
+'''
+s=s[:a]+new+s[b:]
+open('kim2022.py','w').write(s)
 EOF
+cd $TMPDIR; . ve/bin/activate; PYTHONPATH=entries/kim-2022 python -c "
+import numpy as np, kim2022 as k, glob
+for f in sorted(glob.glob('ds_*.npy')):
+    a=np.load(f); fp=k.find_footprints(a[...,1]); c=fp['centres']; print(f, c.round(0).tolist(), round(np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000,3), (fp['radius_px']*k.UM_PER_BLOCK/1000).round(3), np.round(fp['score'],1))
+"
 ```
 
 ```
-Fig1F ch0==ch1 True 1.0
-sub-Fig1F [443.1, 443.1] [244.9, 244.9]
-sub-Fig2-0-03 [373.5, 357.7] [224.6, 302.5]
-sub-Fig2-0-06 [383.5, 387.8] [207.2, 340.9]
-sub-Fig2-0-07 [390.6, 399.9] [213.6, 363.0]
-sub-Fig2-100-03 [456.8, 363.8] [252.2, 275.7]
-sub-Fig2-100-07 [431.3, 372.8] [239.7, 289.7]
-sub-Fig2-100-08 [401.2, 339.0] [260.6, 287.6]
-sub-Fig2-25-04 [435.2, 357.7] [294.1, 302.5]
-sub-Fig2-25-10 [444.7, 433.7] [263.5, 391.5]
-sub-Fig2-25-14 [401.8, 392.3] [230.7, 350.3]
-sub-Fig2-50-06 [456.5, 364.1] [308.5, 326.8]
-sub-Fig2-50-10 [446.2, 340.8] [286.3, 289.2]
-sub-Fig2-50-12 [436.2, 374.7] [285.1, 329.9]
-sub-Fig2-50-13 [377.6, 390.4] [244.5, 334.5]
-sub-Fig2-50-18 [398.8, 421.8] [246.8, 346.5]
-sub-Fig2-75-02 [439.8, 377.5] [250.5, 283.4]
-sub-Fig2-75-05 [428.9, 350.8] [249.6, 258.4]
-sub-Fig2-75-10 [404.1, 345.3] [268.2, 271.4]
-similar sub-Fig2-0-03 sub-Fig2-25-04 1.0
+Exit code 143
+Command timed out after 1h 0m 0s
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd entries/kim-2022 && python - <<'EOF'
+s=open('kim2022.py').read()
+s=s.replace("from scipy import ndimage as ndi","from scipy import ndimage as ndi\nfrom scipy.signal import fftconvolve")
+s=s.replace('''        sc1 = ndi.convolve(win, k_disc / k_disc.sum(), mode="nearest") - ndi.convolve(win, k_ring / k_ring.sum(), mode="nearest")''','''        sc1 = fftconvolve(win, k_disc / k_disc.sum(), mode="same") - fftconvolve(win, k_ring / k_ring.sum(), mode="same")''')
+s=s.replace('''    m_disc = ndi.convolve(small, disc / disc.sum(), mode="nearest")
+    m_ring = ndi.convolve(small, ring / ring.sum(), mode="nearest")''','''    m_disc = fftconvolve(small, disc / disc.sum(), mode="same")
+    m_ring = fftconvolve(small, ring / ring.sum(), mode="same")''')
+open('kim2022.py','w').write(s)
+EOF
+cd $TMPDIR; . ve/bin/activate; timeout 300 env PYTHONPATH=entries/kim-2022 python -c "
+import numpy as np, kim2022 as k, glob,time
+for f in sorted(glob.glob('ds_*.npy')):
+    t=time.time(); a=np.load(f); fp=k.find_footprints(a[...,1]); c=fp['centres']; print(f, c.round(0).tolist(), round(np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000,3), (fp['radius_px']*k.UM_PER_BLOCK/1000).round(3), np.round(fp['score'],1), round(time.time()-t,1))
+"
+```
+
+```
+Tue Nov 10 04:39:02 UTC 2026
+ds_0882af3b.npy [[1567.0, 1118.0], [1457.0, 1952.0]] 3.828 [0.437 0.382] [-150. -133.] 0.2
+ds_1e53ad95.npy [[1502.0, 1247.0], [1460.0, 2025.0]] 3.545 [0.346 0.337] [-359.  -230.1] 0.2
+ds_1e7fcc84.npy [[1521.0, 1114.0], [1328.0, 1907.0]] 3.713 [0.382 0.355] [-95.2 -84. ] 0.2
+ds_2abb0c68.npy [[1462.0, 1135.0], [1416.0, 1929.0]] 3.619 [0.364 0.373] [-231.3 -198.4] 0.3
+ds_35d46f5c.npy [[1554.0, 1152.0], [1460.0, 1945.0]] 3.633 [0.382 0.337] [-612.4 -271.4] 0.2
+ds_3ab61bc6.npy [[1531.0, 1159.0], [1304.0, 1975.0]] 3.854 [0.337 0.382] [-225.3 -214.3] 0.2
+ds_3b82b765.npy [[1482.0, 1177.0], [1476.0, 2005.0]] 3.767 [0.391 0.437] [-158.6 -140.6] 0.2
+ds_487cf0b3.npy [[1571.0, 1131.0], [1580.0, 1943.0]] 3.695 [0.41  0.318] [-670.7 -331.8] 0.2
+ds_498d83a2.npy [[1399.0, 1151.0], [1246.0, 1945.0]] 3.679 [0.264 0.482] [-1129.8  -430.4] 0.2
+ds_75ca0104.npy [[1589.0, 1110.0], [1494.0, 1898.0]] 3.611 [0.355 0.346] [-245.9 -194.9] 0.2
+ds_9d180178.npy [[1569.0, 1146.0], [1426.0, 1970.0]] 3.805 [0.373 0.428] [-182.5 -181.3] 0.2
+ds_a3272df4.npy [[1470.0, 1186.0], [1451.0, 1968.0]] 3.559 [0.346 0.41 ] [-413.3 -317.7] 0.2
+ds_a343e4c9.npy [[1595.0, 1116.0], [1572.0, 1913.0]] 3.628 [0.346 0.437] [-346.4 -164.5] 0.2
+ds_a48c9123.npy [[1358.0, 1107.0], [1025.0, 2118.0]] 4.843 [0.146 0.391] [-37.1 -35.8] 0.2
+ds_ad57ee8c.npy [[1550.0, 1146.0], [1474.0, 1933.0]] 3.598 [0.364 0.346] [-350.4 -283.3] 0.2
+ds_b8fb1ff4.npy [[1591.0, 1244.0], [1488.0, 2001.0]] 3.476 [0.282 0.382] [-213.  -184.8] 0.2
+ds_e0be194e.npy [[1521.0, 1114.0], [1328.0, 1907.0]] 3.713 [0.382 0.355] [-95.2 -84. ] 0.2
+ds_f914475a.npy [[1592.0, 1150.0], [1587.0, 1957.0]] 3.672 [0.364 0.364] [-523.  -333.4] 0.2
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/kim-2022 && python - <<'EOF'
+s=open('kim2022.py').read()
+a=s.index("        # refine: the same disc-minus-ring score")
+b=s.index("        gy, gx = np.mgrid[-w : w + 1, -w : w + 1]\n        dist = np.hypot(gy - (dy")
+new='''        # refine: the disc-minus-ring score is pulled towards the bright side, so
+        # the centre is refined with the mean over a smaller disc (0.8 r_px) alone:
+        # the centroid of the positions, within r_px of the first estimate, where
+        # that mean is within 10% (of the window's range) of its minimum.
+        y0, x0 = int(c[0]), int(c[1])
+        w = int(2 * r_px)
+        win = yp[y0 - w : y0 + w + 1, x0 - w : x0 + w + 1].astype(float)
+        yy1, xx1 = np.mgrid[-int(0.8 * r_px) : int(0.8 * r_px) + 1, -int(0.8 * r_px) : int(0.8 * r_px) + 1]
+        k_disc = (np.hypot(yy1, xx1) <= 0.8 * r_px).astype(float)
+        md = fftconvolve(win, k_disc / k_disc.sum(), mode="same")
+        gy, gx = np.mgrid[-w : w + 1, -w : w + 1]
+        near = np.hypot(gy, gx) <= r_px
+        lo, hi = md[near].min(), np.median(win)
+        sel = near & (md <= lo + 0.1 * (hi - lo))
+        dy, dx = gy[sel].mean() + w, gx[sel].mean() + w
+        cc = np.array([y0 + dy - w, x0 + dx - w], float)
+'''
+s=s[:a]+new+s[b:]
+s=s.replace("        dist = np.hypot(gy - (dy - 3 * s), gx - (dx - 3 * s))","        dist = np.hypot(gy - (dy - w), gx - (dx - w))")
+open('kim2022.py','w').write(s)
+EOF
+grep -n "dist = np.hypot(gy - (dy" kim2022.py 2>/dev/null; cd $TMPDIR; . ve/bin/activate; timeout 300 env PYTHONPATH=entries/kim-2022 python -c "
+import numpy as np, kim2022 as k, glob,time
+A=np.load('ds_1e7fcc84.npy'); B=np.load('ds_e0be194e.npy'); print('identical', np.array_equal(A,B))
+for f in sorted(glob.glob('ds_*.npy')):
+    a=np.load(f); fp=k.find_footprints(a[...,1]); c=fp['centres']; print(f, c.round(0).tolist(), round(np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000,3), (fp['radius_px']*k.UM_PER_BLOCK/1000).round(3))
+"
+```
+
+```
+156:        dist = np.hypot(gy - (dy - w), gx - (dx - w))
+identical False
+ds_0882af3b.npy [[1547.0, 1074.0], [1416.0, 2004.0]] 4.274 [0.428 0.318]
+ds_1e53ad95.npy [[1515.0, 1194.0], [1476.0, 2086.0]] 4.061 [0.473 0.519]
+ds_1e7fcc84.npy [[1541.0, 1053.0], [1344.0, 1931.0]] 4.094 [0.328 0.391]
+ds_2abb0c68.npy [[1470.0, 1069.0], [1427.0, 1994.0]] 4.21 [0.346 0.41 ]
+ds_35d46f5c.npy [[1552.0, 1087.0], [1516.0, 1991.0]] 4.115 [0.391 0.482]
+ds_3ab61bc6.npy [[1535.0, 1089.0], [1289.0, 2011.0]] 4.344 [0.437 0.455]
+ds_3b82b765.npy [[1467.0, 1145.0], [1456.0, 2063.0]] 4.178 [0.482 0.328]
+ds_487cf0b3.npy [[1554.0, 1064.0], [1532.0, 1940.0]] 3.984 [0.309 0.41 ]
+ds_498d83a2.npy [[1373.0, 1088.0], [1310.0, 1939.0]] 3.883 [0.5   0.382]
+ds_75ca0104.npy [[1570.0, 1057.0], [1488.0, 1958.0]] 4.113 [0.482 0.537]
+ds_9d180178.npy [[1579.0, 1088.0], [1431.0, 2023.0]] 4.304 [0.491 0.382]
+ds_a3272df4.npy [[1464.0, 1134.0], [1414.0, 2020.0]] 4.04 [0.419 0.364]
+ds_a343e4c9.npy [[1567.0, 1059.0], [1557.0, 1985.0]] 4.215 [0.318 0.164]
+ds_a48c9123.npy [[1373.0, 1104.0], [1032.0, 2132.0]] 4.927 [0.228 0.264]
+ds_ad57ee8c.npy [[1574.0, 1086.0], [1483.0, 2000.0]] 4.178 [0.491 0.519]
+ds_b8fb1ff4.npy [[1590.0, 1186.0], [1501.0, 2062.0]] 4.005 [0.473 0.51 ]
+ds_e0be194e.npy [[1541.0, 1053.0], [1344.0, 1931.0]] 4.094 [0.328 0.391]
+ds_f914475a.npy [[1561.0, 1086.0], [1545.0, 2008.0]] 4.193 [0.428 0.537]
 [... 1 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import numpy as np
-a=np.load('ov/sub-Fig2-0-03.npy'); b=np.load('ov/sub-Fig2-25-04.npy')
-print('YP equal',np.array_equal(a[1],b[1]),'MB equal',np.array_equal(a[0],b[0]), np.corrcoef(a[0].ravel(),b[0].ravel())[0,1])
-import glob
-for f in sorted(glob.glob('ov/*.npy')):
-    x=np.load(f); 
-    for g in sorted(glob.glob('ov/*.npy')):
-        y=np.load(g)
-        if f<g and np.corrcoef(x[0].ravel(),y[1].ravel())[0,1]>0.9: print('MB of',f,'~ YP of',g)
-        if f!=g and np.corrcoef(x[0].ravel(),y[0].ravel())[0,1]>0.9: print('MB',f,g)
-# MB vs YP within the 25-04 file
-print(np.corrcoef(b[0].ravel(),b[1].ravel())[0,1], np.corrcoef(a[0].ravel(),a[1].ravel())[0,1])
+cd entries/kim-2022 && python - <<'EOF'
+s=open('kim2022.py').read()
+a=s.index("        # refine: the disc-minus-ring score is pulled")
+b=s.index("        gy, gx = np.mgrid[-w : w + 1, -w : w + 1]\n        dist = np.hypot(gy - (dy")
+new='''        # refine: the smoothed window is thresholded at 30% of the way from the
+        # dark level (5th percentile) to the median of the window, and the centroid
+        # of the dark component holding the estimate is taken; repeated twice.
+        cc = c.copy()
+        w = int(2 * r_px)
+        for _ in range(3):
+            y0, x0 = int(round(cc[0])), int(round(cc[1]))
+            win = ndi.gaussian_filter(yp[y0 - w : y0 + w + 1, x0 - w : x0 + w + 1].astype(float), 3)
+            lo, hi = np.percentile(win, 5), np.median(win)
+            lab, _ = ndi.label(win < lo + 0.3 * (hi - lo))
+            g0, g1 = np.mgrid[-w : w + 1, -w : w + 1]
+            ids = lab[np.hypot(g0, g1) < 0.3 * r_px]
+            ids = ids[ids > 0]
+            if len(ids) == 0:
+                break
+            comp = lab == np.bincount(ids).argmax()
+            cc = np.array([y0 + g0[comp].mean(), x0 + g1[comp].mean()])
+        dy, dx = cc[0] - y0 + w, cc[1] - x0 + w
+'''
+s=s[:a]+new+s[b:]
+open('kim2022.py','w').write(s)
 EOF
+cd $TMPDIR; . ve/bin/activate; timeout 300 env PYTHONPATH=entries/kim-2022 python -c "
+import numpy as np, kim2022 as k, glob,time
+for f in sorted(glob.glob('ds_*.npy')):
+    a=np.load(f); fp=k.find_footprints(a[...,1]); c=fp['centres']; print(f, c.round(0).tolist(), round(np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000,3), (fp['radius_px']*k.UM_PER_BLOCK/1000).round(3))
+"
 ```
 
 ```
-YP equal True MB equal False 0.6438780075697021
-0.7170212518536603 0.6701252919155234
+ds_0882af3b.npy [[1538.0, 1070.0], [1458.0, 1954.0]] 4.038 [0.437 0.391]
+ds_1e53ad95.npy [[1535.0, 1203.0], [1468.0, 2058.0]] 3.9 [0.482 0.464]
+ds_1e7fcc84.npy [[1518.0, 1123.0], [1343.0, 1964.0]] 3.906 [0.455 0.437]
+ds_2abb0c68.npy [[1457.0, 1132.0], [1414.0, 1926.0]] 3.617 [0.437 0.41 ]
+ds_35d46f5c.npy [[1508.0, 1060.0], [1452.0, 1943.0]] 4.026 [0.255 0.328]
+ds_3ab61bc6.npy [[1520.0, 1034.0], [1275.0, 2049.0]] 4.748 [0.473 0.473]
+ds_3b82b765.npy [[1487.0, 1176.0], [1413.0, 2078.0]] 4.114 [0.419 0.146]
+ds_487cf0b3.npy [[1508.0, 1034.0], [1518.0, 1968.0]] 4.25 [0.228 0.51 ]
+ds_498d83a2.npy [[1276.0, 1044.0], [1246.0, 1946.0]] 4.105 [0.391 0.473]
+ds_75ca0104.npy [[1531.0, 1052.0], [1465.0, 1896.0]] 3.85 [0.482 0.382]
+ds_9d180178.npy [[1581.0, 1067.0], [1396.0, 2014.0]] 4.389 [0.191 0.364]
+ds_a3272df4.npy [[1473.0, 1140.0], [1451.0, 1991.0]] 3.872 [0.428 0.491]
+ds_a343e4c9.npy [[1562.0, 1017.0], [1562.0, 1954.0]] 4.265 [0.355 0.519]
+ds_a48c9123.npy [[1396.0, 1131.0], [1055.0, 2143.0]] 4.859 [0.228 0.155]
+ds_ad57ee8c.npy [[1569.0, 1058.0], [1465.0, 2000.0]] 4.314 [0.246 0.51 ]
+ds_b8fb1ff4.npy [[1581.0, 1167.0], [1505.0, 1996.0]] 3.788 [0.5   0.355]
+ds_e0be194e.npy [[1518.0, 1123.0], [1343.0, 1964.0]] 3.906 [0.455 0.437]
+ds_f914475a.npy [[1590.0, 1150.0], [1547.0, 1996.0]] 3.854 [0.41  0.537]
 Shell cwd was reset to
 ```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/montmb.png"
-}
-```
-
-Result: no output.
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
+cd $TMPDIR; . ve/bin/activate; timeout 120 python - <<'EOF'
 import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-from scipy.ndimage import gaussian_filter
-fig,ax=plt.subplots(2,2,figsize=(16,16))
-for i,k in enumerate(['sub-Fig2-0-03','sub-Fig2-25-04']):
-    x=np.load(f'ov/{k}.npy')
-    for c in range(2):
-        y=gaussian_filter(x[c][250:600,250:700],1)
-        ax[i,c].imshow(y,vmin=np.percentile(y,2),vmax=np.percentile(y,99)); ax[i,c].set_title(f'{k} ch{c}')
-plt.savefig('dup.png',dpi=45)
-EOF
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/dup.png"
-}
-```
-
-```
-Shell cwd was reset to
-```
-
-Result: no output.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import numpy as np, glob
-from scipy.ndimage import gaussian_filter
-def hp(x): 
-    x=x[150:750,150:810].astype(float); x=np.log1p(x); return x-gaussian_filter(x,8)
-def xcorr(a,b):
-    A=np.fft.fft2(hp(a)); B=np.fft.fft2(hp(b)); R=A*np.conj(B); R/=np.abs(R)+1e-9; r=np.real(np.fft.ifft2(R))
-    i=np.unravel_index(np.argmax(r),r.shape); sh=[(i[k] if i[k]<r.shape[k]//2 else i[k]-r.shape[k]) for k in range(2)]
-    return sh, r.max(), np.sort(r.ravel())[-2]
-ims={f[3:-4]:np.load(f) for f in sorted(glob.glob('ov/*.npy'))}
-for k,v in ims.items(): print(k,'MB vs YP shift (rows,cols)',xcorr(v[0],v[1]))
-a=ims['sub-Fig2-0-03']; b=ims['sub-Fig2-25-04']
-print('MB 0-03 vs MB 25-04',xcorr(a[0],b[0]))
+from scipy import ndimage as ndi
+fig,axs=plt.subplots(2,3,figsize=(18,12))
+for j,f in enumerate(['ds_1e7fcc84.npy','ds_3ab61bc6.npy','ds_9d180178.npy']):
+    a=np.load(f); yp=ndi.gaussian_filter(a[...,1],2); mb=ndi.gaussian_filter(a[...,0],2)
+    axs[0,j].imshow(yp[1100:1800,850:2250],vmin=np.percentile(yp,2),vmax=np.percentile(yp,99),extent=[850,2250,1800,1100]); axs[0,j].grid(True,color='w')
+    axs[1,j].imshow(mb[1100:1800,850:2250],vmin=np.percentile(mb,2),vmax=np.percentile(mb,99),extent=[850,2250,1800,1100]); axs[1,j].grid(True,color='w')
+plt.tight_layout(); plt.savefig('fp.png',dpi=50)
 EOF
 ```
 
 ```
-sub-Fig1F MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.9999974747425391), np.float64(-2.5252507414578833e-06))
-sub-Fig2-0-03 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.028254990330005236), np.float64(0.022604336331385547))
-sub-Fig2-0-06 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.2873130212906124), np.float64(0.03334460379245079))
-sub-Fig2-0-07 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.3214923436767548), np.float64(0.03829631685178292))
-sub-Fig2-100-03 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.3478200544159833), np.float64(0.03248971827460957))
-sub-Fig2-100-07 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.32799476957968743), np.float64(0.03162029865553251))
-sub-Fig2-100-08 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.32431706552164097), np.float64(0.03304226411480063))
-sub-Fig2-25-04 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.4538963885116403), np.float64(0.04539641441361525))
-sub-Fig2-25-10 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.31040524226806065), np.float64(0.04112239744542617))
-sub-Fig2-25-14 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.3325374147547482), np.float64(0.029950078049678343))
-sub-Fig2-50-06 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.3785567281904055), np.float64(0.035143929845947476))
-sub-Fig2-50-10 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.3553384892854481), np.float64(0.04100589456929503))
-sub-Fig2-50-12 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.36289282748020185), np.float64(0.030840322439167442))
-sub-Fig2-50-13 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.3488539179597074), np.float64(0.03750231575149821))
-sub-Fig2-50-18 MB vs YP shift (rows,cols) ([np.int64(0), np.int64(0)], np.float64(0.377
-[... 5 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 1,80p entries/001453-fouke-2025/omr.py; python -c "
-import json;nb=json.load(open('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb'))
-for c in nb['cells'][:6]: print(c['cell_type'],c.get('metadata'),''.join(c['source'])[:1500]); print('----')
-print(nb['metadata'])"
-```
-
-```
-"""Loading and measures for the freely swimming optomotor data of dandiset 001453.
-
-Fouke, He, Loring & Naumann (2025), Current Biology, doi:10.1016/j.cub.2025.04.027.
-
-Each NWB file holds one fish: x and y position (pixels), heading (`f0_theta`, radians), its
-change per frame (`f0_vtheta`; the file says radians/s, the data show radians per frame),
-velocity estimates, and per frame the stimulus code and trial number (`stim_index`). Files are
-streamed from the archive at the pinned version; nothing is written to disk.
-
-Where the parameters come from:
-
-- Trial processing follows the paper's analysis notebook, Fig1-S1.ipynb, in
-  https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
-  33a5c297ff4ab6ff49f6bdd96139e9fdd867025c (the Methods give none of these): Savitzky-Golay
-  smoothing of positions (21 frames, order 2); rejection of trials whose absolute cumulative
-  heading change exceeds 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or
-  whose mean speed exceeds 100 mm/s; measures from 3 s to 35 s after the first tracked frame;
-  10 pixels per mm (the code divides pixels per second by 10 to give mm/s); per fish the median
-  over trials. The 3 s stationary phase and the 32 s of motion are in the Methods.
-- The names of the stimulus codes combine the protocol file sevenrep_twentyonestim.hdf of the
-[... 162 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import requests, json
-def get(v): 
-    r=requests.get(f"https://api.dandiarchive.org/api/dandisets/000489/versions/{v}/assets/?page_size=100").json()['results']
-    return {a['path']:(a['asset_id'],a['size'],a.get('blob')) for a in r}
-a=get('0.230518.1811'); b=get('draft')
-print(a==b, set(a)^set(b))
-for p in a: 
-    if a[p]!=b.get(p): print(p,a[p],b.get(p))
-m1=requests.get("https://api.dandiarchive.org/api/dandisets/000489/versions/0.230518.1811/").json()
-m2=requests.get("https://api.dandiarchive.org/api/dandisets/000489/versions/draft/").json()
-print([k for k in set(m1)|set(m2) if m1.get(k)!=m2.get(k)])
-EOF
-```
-
-```
-True set()
-['manifestLocation', 'version', 'doi', 'url', 'citation', 'id']
-Shell cwd was reset to
-```
-
-**Agent**
-
-Draft and published version hold the same assets, so I'm pinning 0.230518.1811. Writing the helper.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000489-kim-2022/bipolar.py",
- "content": "\"\"\"Loading and measures for the electroporation images of dandiset 000489.\n\nKim, Semenov, Kiester, Keppler, Ibey, Bixler & Pakhomov (2022), Bioelectrochemistry 149:108319,\ndoi:10.1016/j.bioelechem.2022.108319.\n\nEach NWB file holds one dish: a stitched image of the whole glass bottom, 22323 x 22323 pixels,\nstored as an ImageSeries `data` of shape (22323, 22323, 2), uint16, in gzip chunks of 175 x 349 x 1.\nChannel 0 is MemBrite (ex/em 350/460 nm) and channel 1 YO-PRO-1 (YP, ex/em 480/535 nm), as the\nseries description lists them. Files are streamed from the archive at the pinned version: the\nchunk index is read with h5py over `remfile`, and the chunks needed are fetched by HTTP range\nrequests and decompressed in memory. Nothing is written to disk.\n\nWhere the parameters come from:\n\n- Electrode geometry and field: two parallel stainless-steel cylinders 1.5 mm in diameter, 3 mm\n  apart side to side, touching the glass of a dish filled to 3.5 mm with a 1.6 S/m solution, the\n  field taken 1 um above the glass for 1 V and scaled by the applied voltage (Methods 2.2 and\n  2.3; claims file, opening comment). The electrodes span the whole depth of the solution and the\n  glass and the free surface carry no current, so the potential does not vary with depth and the\n  field is that of two parallel conducting cylinders in a plane, which has a closed form\n  (`field_kv_cm`). The 35 mm dish wall is left out (assumption: at 17.5 mm from the centre it\n  changes the field near the electrodes by about 1%, see the notebook). \"3-mm side-to-side\n  separation\" (Methods 2.2) gives centres 4.5 mm apart; 3 mm between centres would give 34 kV/cm\n  at the centre for 5.75 kV, against the 15.1 kV/cm the paper cites.\n- First phase voltage 5.75 kV (Results 3.1).\n- ROI: 200 um squares (Methods 2.5) along bb', the line at equal distance from both electrodes\n  (Methods 2.3), tiled contiguously outward from the centre on both sides (claims file, opening\n  comment, reading a). The squares are aligned with the image axes (a standard choice; the\n  electrodes lie within a few degrees of the image rows, so it cannot change a result).\n- YP = YP_ROI x MB_0 / MB_ROI - YP_0, with YP_0 and MB_0 measured within the electrode\n  footprints (Methods 2.5). The footprint is the dark disc in the YP image; the measuring area is\n  a disc of `FOOTPRINT_FRACTION` of its radius on the same centre, to keep away from its edge (a\n  standard choice), and YP_0 and MB_0 are the means over both footprints (assumption: the paper\n  says \"within the electrodes' footprints\", plural; the notebook gives each footprint).\n- Pixel size: `UM_PER_PX` = 0.65 um, the ORCA-Flash4 sCMOS pixel (6.5 um) through the 10x objective\n  (Methods 2.5 names both). The files give no pixel size (assumption). The variant\n  `scale_from_electrodes` instead sets the scale so that the measured distance between electrode\n  centres is 4.5 mm.\n\"\"\"\n\nfrom __future__ import annotations\n\nimport zlib\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport remfile\nimport requests\nfrom requests.adapters import HTTPAdapter\nfrom scipy import ndimage\nfrom urllib3.util.retry import Retry\n\nDANDISET_ID = \"000489\"\nDANDISET_VERSION = \"0.230518.1811\"\nAPI = \"https://api.dandiarchive.org/api\"\n\nSHAPE = 22323\nCHUNK = (175, 349)\nMB, YP = 0, 1                     # channel order in the files (series description)\n\nUM_PER_PX = 0.65                  # 6.5 um camera pixel / 10x objective (assumption, see above)\nROI_UM = 200.0                    # Methods 2.5\nELECTRODE_RADIUS_MM = 0.75        # Methods 2.2, 2.3\nELECTRODE_GAP_MM = 3.0            # Methods 2.2, \"3-mm side-to-side separation\"\nCENTRE_DISTANCE_MM = 2 * ELECTRODE_RADIUS_MM + ELECTRODE_GAP_MM\nFIRST_PHASE_KV = 5.75             # Results 3.1\nN_ROI_SIDE = 15                   # ROI centres from 0 to 3.0 mm along bb' on each side\nFOOTPRINT_FRACTION = 0.7          # standard choice, see above\n\n# Overview: block means of 25 x 23 pixels, 7 x 15 blocks per chunk.\nBLOCK = (25, 23)\nOV_SHAPE = (896, 960)\n\n\ndef _session() -> requests.Session:\n    s = requests.Session()\n    retry = Retry(total=10, backoff_factor=0.5, allowed_methods=None,\n                  status_forcelist=[500, 502, 503, 504])\n    s.mount(\"https://\", HTTPAdapter(pool_maxsize=32, max_retries=retry))\n    return s\n\n\ndef assets() -> list[dict]:\n    \"\"\"Path, asset id, size and blob of every file at the pinned version.\"\"\"\n    url = f\"{API}/dandisets/{DANDISET_ID}/versions/{DANDISET_VERSION}/assets/?page_size=100\"\n    out = requests.get(url, timeout=60).json()[\"results\"]\n    return sorted(({\"path\": a[\"path\"], \"asset_id\": a[\"asset_id\"], \"size\": a[\"size\"],\n                    \"blob\": a.get(\"blob\")} for a in out), key=lambda a: a[\"path\"])\n\n\ndef dandiset_metadata(version: str = DANDISET_VERSION) -> dict:\n    return requests.get(f\"{API}/dandisets/{DANDISET_ID}/versions/{version}/\", timeout=60).json()\n\n\ndef condition(path: str) -> tuple[str, int | None, str]:\n    \"\"\"(subject, second phase percent, dish label) from a path such as\n    'sub-Fig2-50-10/sub-Fig2-50-10_ses-BPAE-bipolar-50 percent_image.nwb'.\"\"\"\n    subject = path.split(\"/\")[0]\n    parts = subject.split(\"-\")\n    if parts[1] != \"Fig2\":\n        return subject, None, subject\n    return subject, int(parts[2]), f\"{parts[2]}%-{parts[3]}\"\n\n\nclass Dish:\n    \"\"\"One file: its metadata, chunk index and a fetcher for pixel boxes.\"\"\"\n\n    def __init__(self, asset: dict):\n        self.path = asset[\"path\"]\n        self.subject, self.amplitude, self.label = condition(self.path)\n        self.url = requests.head(f\"{API}/assets/{asset['asset_id']}/download/\",\n                                 allow_redirects=True, timeout=60).url\n        f = h5py.File(remfile.File(self.url), \"r\")\n        names = list(f[\"acquisition\"].keys())\n        self.series_name = names[0]\n        g = f[f\"acquisition/{self.series_name}\"]\n        d = g[\"data\"]\n        self.meta = {\n            \"acquisition\": names,\n            \"shape\": d.shape, \"dtype\": str(d.dtype), \"chunks\": d.chunks,\n            \"compression\": d.compression, \"unit\": d.attrs.get(\"unit\"),\n            \"conversion\": float(d.attrs.get(\"conversion\")),\n            \"rate\": float(g[\"starting_time\"].attrs.get(\"rate\")),\n            \"description\": g.attrs.get(\"description\"),\n            \"session_description\": f[\"session_description\"][()].decode(),\n            \"session_id\": f[\"general/session_id\"][()].decode(),\n            \"subject_id\": f[\"general/subject/subject_id\"][()].decode(),\n            \"session_start\": f[\"session_start_time\"][()].decode(),\n            \"strain\": f[\"general/subject/strain\"][()].decode(),\n            \"processing\": list(f[\"processing\"].keys()),\n            \"analysis\": list(f[\"analysis\"].keys()),\n            \"stimulus\": list(f[\"stimulus/presentation\"].keys()),\n        }\n        index = []\n        d.id.chunk_iter(lambda si: index.append((si.chunk_offset, si.byte_offset, si.size)))\n        self.index = {off: (b, s) for off, b, s in index}\n        f.close()\n        self._s = _session()\n\n    def chunk(self, row: int, col: int, channel: int) -> np.ndarray:\n        \"\"\"Full chunk with origin (row, col), as float; edge chunks are cut to the image.\"\"\"\n        b, s = self.index[(row, col, channel)]\n        r = self._s.get(self.url, headers={\"Range\": f\"bytes={b}-{b + s - 1}\"}, timeout=120)\n        r.raise_for_status()\n        a = np.frombuffer(zlib.decompress(r.content), dtype=\"<u2\").reshape(CHUNK)\n        return a[: SHAPE - row, : SHAPE - col].astype(float)\n\n    def overview(self, threads: int = 32) -> np.ndarray:\n        \"\"\"Both channels as block means of 25 x 23 pixels, shape (2, 896, 960).\"\"\"\n        def one(key):\n            row, col, ch = key\n            a = self.chunk(row, col, ch)\n            full = np.zeros(CHUNK)\n            full[: a.shape[0], : a.shape[1]] = a\n            return key, full[:, :345].reshape(7, 25, 15, 23).mean(axis=(1, 3))\n        img = np.zeros((2,) + OV_SHAPE)\n        with ThreadPoolExecutor(threads) as ex:\n            for (row, col, ch), q in ex.map(one, list(self.index)):\n                r, c = row // CHUNK[0] * 7, col // CHUNK[1] * 15\n                img[ch, r: r + 7, c: c + 15] = q[: min(7, OV_SHAPE[0] - r)]\n        return img\n\n    def box(self, r0: int, r1: int, c0: int, c1: int, channel: int, threads: int = 16) -> np.ndarray:\n        \"\"\"Pixels [r0:r1, c0:c1] of one channel at full resolution.\"\"\"\n        rows = range(r0 // CHUNK[0] * CHUNK[0], r1, CHUNK[0])\n        cols = range(c0 // CHUNK[1] * CHUNK[1], c1, CHUNK[1])\n        keys = [(r, c) for r in rows for c in cols]\n        out = np.zeros((r1 - r0, c1 - c0))\n        with ThreadPoolExecutor(threads) as ex:\n            parts = list(ex.map(lambda k: self.chunk(k[0], k[1], channel), keys))\n        for (r, c), a in zip(keys, parts):\n            rr0, cc0 = max(r, r0), max(c, c0)\n            rr1, cc1 = min(r + a.shape[0], r1), min(c + a.shape[1], c1)\n            out[rr0 - r0: rr1 - r0, cc0 - c0: cc1 - c0] = a[rr0 - r: rr1 - r, cc0 - c: cc1 - c]\n        return out\n\n\n# ---------------------------------------------------------------- electrode footprints\n\ndef find_footprints(yp_overview: np.ndarray) -> dict:\n    \"\"\"Centres (full-resolution pixels, row and column) and radius of the two electrode footprints.\n\n    The footprints are dark discs in the YP image, ringed by the brightest uptake. A disc of\n    radius 450 px darker than the ring from 700 to 1000 px around it is searched for in the\n    overview; the two best non-overlapping centres are kept, and each radius is the distance at\n    which the radial YP profile crosses halfway between the inside and the ring.\n    \"\"\"\n    y = np.log1p(yp_overview)\n    rr, cc = np.mgrid[-45:46, -45:46]\n    dist = np.hypot(rr * BLOCK[0], cc * BLOCK[1])\n    disc = (dist <= 450).astype(float)\n    ring = ((dist >= 700) & (dist <= 1000)).astype(float)\n    inside = ndimage.convolve(y, disc / disc.sum(), mode=\"constant\")\n    around = ndimage.convolve(y, ring / ring.sum(), mode=\"constant\")\n    score = around - inside\n    # keep away from the rim of the glass bottom and the empty corners\n    R, C = np.mgrid[: OV_SHAPE[0], : OV_SHAPE[1]]\n    centre = (np.array(OV_SHAPE) - 1) / 2\n    on_glass = np.hypot((R - centre[0]) * BLOCK[0], (C - centre[1]) * BLOCK[1]) < 7000\n    score = np.where(on_glass, score, -np.inf)\n    first = np.unravel_index(np.argmax(score), score.shape)\n    far = np.hypot((R - first[0]) * BLOCK[0], (C - first[1]) * BLOCK[1]) > 3000\n    second = np.unravel_index(np.argmax(np.where(far, score, -np.inf)), score.shape)\n    centres = []\n    for p in sorted([first, second], key=lambda p: p[1]):\n        centres.append(((p[0] + 0.5) * BLOCK[0], (p[1] + 0.5) * BLOCK[1]))\n    radii = [_radius(yp_overview, c) for c in centres]\n    return {\"centres\": np.array(centres), \"radii\": np.array(radii),\n            \"score\": [float(score[first]), float(score[second])]}\n\n\ndef _radius(yp_overview: np.ndarray, c) -> float:\n    R, C = np.mgrid[: OV_SHAPE[0], : OV_SHAPE[1]]\n    d = np.hypot((R + 0.5) * BLOCK[0] - c[0], (C + 0.5) * BLOCK[1] - c[1])\n    edges = np.arange(0, 1300, 25)\n    prof = np.array([np.median(yp_overview[(d >= a) & (d < a + 25)]) for a in edges])\n    lo = np.median(prof[edges < 250])\n    hi = prof[(edges > 400) & (edges < 1100)].max()\n    k = np.argmax((prof > (lo + hi) / 2) & (edges > 200))\n    return float(edges[k] + 12.5)\n\n\n# ---------------------------------------------------------------- field model\n\ndef field_kv_cm(x_mm, y_mm, kv: float = FIRST_PHASE_KV):\n    \"\"\"|E| (kV/cm) in the plane for two conducting cylinders at (+-h, 0) mm, radius a, with kv\n    between them: the field of two line sources at +-c, c = sqrt(h^2 - a^2), whose\n    equipotentials are the cylinders. |E| = V c / (acosh(h/a) r1 r2).\"\"\"\n    a = ELECTRODE_RADIUS_MM\n    h = CENTRE_DISTANCE_MM / 2\n    c = np.sqrt(h * h - a * a)\n    r1 = np.hypot(np.asarray(x_mm) - c, y_mm)\n    r2 = np.hypot(np.asarray(x_mm) + c, y_mm)\n    return kv * (c / 10) / (np.arccosh(h / a) * (r1 / 10) * (r2 / 10))  # mm -> cm\n\n\ndef roi_mean_field(centre_mm, axis, um_per_px: float, n: int = 21) -> float:\n    \"\"\"Mean model field over a 200 um square aligned with the image axes, centred at\n    `centre_mm` (model coordinates); `axis` is the unit vector of the electrode axis in image\n    (row, col) coordinates, used to rotate the square into the model frame.\"\"\"\n    half = ROI_UM / 1000 / 2\n    s = np.linspace(-half, half, n)\n    dr, dc = np.meshgrid(s, s, indexing=\"ij\")\n    # image offsets (row, col) -> model (x along electrodes, y along bb')\n    perp = np.array([-axis[1], axis[0]])\n    x = centre_mm[0] + dr * axis[0] + dc * axis[1]\n    y = centre_mm[1] + dr * perp[0] + dc * perp[1]\n    return float(field_kv_cm(x, y).mean())\n\n\n# ---------------------------------------------------------------- ROI measures\n\ndef measure(dish: Dish, fp: dict, um_per_px: float = UM_PER_PX) -> dict:\n    \"\"\"Raw YP and MB means in each ROI along bb' and in each footprint, with each ROI's model\n    field. ROI k (k = -N..N) is centred k x 200 um from the midpoint of the electrode centres,\n    along the perpendicular to the electrode axis; negative k is towards the top of the image.\"\"\"\n    e1, e2 = fp[\"centres\"]\n    mid = (e1 + e2) / 2\n    sep_px = float(np.hypot(*(e2 - e1)))\n    axis = (e2 - e1) / sep_px\n    perp = np.array([-axis[1], axis[0]])\n    if perp[0] > 0:\n        perp = -perp                       # perp points to the top of the image\n    side = ROI_UM / um_per_px\n    rois = []\n    for k in range(-N_ROI_SIDE, N_ROI_SIDE + 1):\n        cen = mid + (-k) * side * perp     # k < 0 towards the top (perp), k > 0 towards the bottom\n        r0, c0 = int(round(cen[0] - side / 2)), int(round(cen[1] - side / 2))\n        r1, c1 = r0 + int(round(side)), c0 + int(round(side))\n        vals = {ch: dish.box(r0, r1, c0, c1, ch).mean() for ch in (MB, YP)}\n        off = cen - mid\n        x_mm = float(off @ axis) * um_per_px / 1000\n        y_mm = float(off @ perp) * um_per_px / 1000\n        rois.append({\"k\": k, \"distance_mm\": abs(k) * ROI_UM / 1000, \"row\": cen[0], \"col\": cen[1],\n                     \"field\": roi_mean_field((x_mm, y_mm), axis, um_per_px),\n                     \"YP_roi\": vals[YP], \"MB_roi\": vals[MB]})\n    feet = []\n    for c, rad in zip(fp[\"centres\"], fp[\"radii\"]):\n        r = FOOTPRINT_FRACTION * rad\n        r0, c0 = int(c[0] - r), int(c[1] - r)\n        r1, c1 = int(c[0] + r) + 1, int(c[1] + r) + 1\n        RR, CC = np.mgrid[r0:r1, c0:c1]\n        m = np.hypot(RR - c[0], CC - c[1]) <= r\n        feet.append({ch: float(dish.box(r0, r1, c0, c1, ch)[m].mean()) for ch in (MB, YP)})\n    return {\"rois\": rois, \"footprints\": feet, \"separation_px\": sep_px, \"axis\": axis}\n\n\ndef yp_index(yp_roi, mb_roi, yp0, mb0):\n    \"\"\"Methods 2.5: YP = YP_ROI x MB_0 / MB_ROI - YP_0.\"\"\"\n    return yp_roi * mb0 / mb_roi - yp0\n"
-}
-```
-
-```
-File created successfully at: entries/000489-kim-2022/bipolar.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && cp entries/000489-kim-2022/bipolar.py . && python - <<'EOF'
-import numpy as np, glob, bipolar as bp, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-fs=sorted(glob.glob('ov/sub-Fig2*.npy'))
-fig,ax=plt.subplots(4,5,figsize=(25,20))
-for a,f in zip(ax.flat,fs):
-    im=np.load(f)[1]; fp=bp.find_footprints(im)
-    sep=np.hypot(*(fp['centres'][1]-fp['centres'][0]))
-    print(f[3:-4], fp['centres'].round(0).tolist(), fp['radii'], 'sep px',round(sep), 'sep mm',round(sep*0.65/1000,3),'diam mm',(2*fp['radii']*0.65/1000).round(3), np.round(fp['score'],2))
-    a.imshow(im,vmax=np.percentile(im[im>0],99.5),vmin=np.percentile(im[im>0],5))
-    for c,r in zip(fp['centres'],fp['radii']):
-        a.add_patch(plt.Circle((c[1]/23,c[0]/25),r/24,fill=False,color='r'))
-    a.set_xlim(150,800); a.set_ylim(700,200); a.set_title(f)
-plt.savefig('fp.png',dpi=40)
-EOF
-```
-
-```
-sub-Fig2-0-03 [[10688.0, 7578.0], [9312.0, 13260.0]] [762.5 712.5] sep px 5845 sep mm 3.799 diam mm [0.991 0.926] [0.24 0.22]
-sub-Fig2-0-06 [[10662.0, 7900.0], [10888.0, 13420.0]] [812.5 837.5] sep px 5525 sep mm 3.591 diam mm [1.056 1.089] [0.63 0.48]
-sub-Fig2-0-07 [[10938.0, 7808.0], [11038.0, 13444.0]] [962.5 937.5] sep px 5636 sep mm 3.663 diam mm [1.251 1.219] [0.74 0.46]
-sub-Fig2-100-03 [[10912.0, 7900.0], [10362.0, 13420.0]] [812.5 937.5] sep px 5547 sep mm 3.606 diam mm [1.056 1.219] [0.62 0.52]
-sub-Fig2-100-07 [[10338.0, 8222.0], [9162.0, 13604.0]] [812.5 887.5] sep px 5509 sep mm 3.581 diam mm [1.056 1.154] [0.5  0.41]
-sub-Fig2-100-08 [[10462.0, 8498.0], [10888.0, 14386.0]] [887.5 887.5] sep px 5903 sep mm 3.837 diam mm [1.154 1.154] [0.66 0.53]
-sub-Fig2-25-04 [[10688.0, 7578.0], [9312.0, 13260.0]] [762.5 712.5] sep px 5845 sep mm 3.799 diam mm [0.991 0.926] [0.24 0.22]
-sub-Fig2-25-10 [[10412.0, 8084.0], [10088.0, 13582.0]] [862.5 987.5] sep px 5507 sep mm 3.579 diam mm [1.121 1.284] [0.51 0.42]
-sub-Fig2-25-14 [[10888.0, 7970.0], [10412.0, 13374.0]] [962.5 862.5] sep px 5426 sep mm 3.527 diam mm [1.251 1.121] [0.65 0.42]
-sub-Fig2-50-06 [[10838.0, 7670.0], [10988.0, 13214.0]] [712.5 937.5] sep px 5545 sep mm 3.604 diam mm [0.926 1.219] [0.53 0.34]
-sub-Fig2-50-10 [[11038.0, 7670.0], [10538.0, 13144.0]] [837.5 887.5] sep px 5497 sep mm 3.573 diam mm [1.089 1.154] [0.48 0.42]
-sub-Fig2-50-12 [[10712.0, 7716.0], [9712.0, 13328.0]] [862.5 837.5] sep px 5700 sep mm 3.705 diam mm [1.121 1.089] [0.37 0.35]
-sub-Fig2-50-13 [[10912.0, 7762.0], [10088.0, 13558.0]] [787.5 937.5] sep px 5854 sep mm 3.805 diam mm [1.024 1.219] [0.3  0.24]
-sub-Fig2-50-18 [[10862.0, 7970.0], [9888.0, 13674.0]] [887.5 762.5] sep px 5787 sep mm 3.761 diam mm [1.154 0.991] [0.33 0.3 ]
-sub-Fig2-75-02 [[11312.0, 8498.0], [10362.0, 13834.0]] [862.5 812.5] sep px 5420 sep mm 3.523 diam mm [1.121 1.056] [0.42 0.36]
-sub-Fig2-75-05 [[9412.0, 7878.0], [10288.0, 13904.0]] [737.5 712.5] sep px 6089 sep m
-[... 2 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/fp.png"
-}
-```
-
-Result: no output.
-
-**Agent**
-
-Footprint centres come out biased toward the gap, because the bright ring is only on the inner side. I'm refining them by segmenting the dark disc and taking its centroid.
-
-**Agent calls Bash**
-
-```bash
-cd entries/000489-kim-2022 && python - <<'EOF'
-s=open('bipolar.py').read()
-old=s[s.index('    centres = []\n    for p in sorted'):s.index('def _radius')]
-new='''    centres, radii = [], []
-    for p in sorted([first, second], key=lambda p: p[1]):
-        c, r = _segment(y, p)
-        centres.append(c)
-        radii.append(r)
-    return {"centres": np.array(centres), "radii": np.array(radii),
-            "score": [float(score[first]), float(score[second])]}
-
-
-def _segment(y: np.ndarray, p) -> tuple[tuple[float, float], float]:
-    """Refine a footprint: the dark connected region around the coarse centre `p` (overview
-    blocks) in the smoothed log YP image, thresholded halfway between its core and the median
-    of a 3 mm window. Returns the centroid (full-resolution row, col) and the radius of the disc
-    of equal area (px)."""
-    w = 90
-    r0, c0 = max(p[0] - w, 0), max(p[1] - w, 0)
-    win = ndimage.gaussian_filter(y[r0: p[0] + w + 1, c0: p[1] + w + 1], 1.5)
-    pr, pc = p[0] - r0, p[1] - c0
-    core = np.median(win[pr - 5: pr + 6, pc - 5: pc + 6])
-    thr = (core + np.median(win)) / 2
-    lab, _ = ndimage.label(win < thr)
-    target = lab[pr, pc]
-    if target == 0:
-        sub = lab[pr - 10: pr + 11, pc - 10: pc + 11]
-        target = np.bincount(sub[sub > 0]).argmax()
-    m = lab == target
-    m = ndimage.binary_fill_holes(m)
-    rr, cc = np.nonzero(m)
-    centre = ((rr.mean() + r0 + 0.5) * BLOCK[0], (cc.mean() + c0 + 0.5) * BLOCK[1])
-    area = m.sum() * BLOCK[0] * BLOCK[1]
-    return centre, float(np.sqrt(area / np.pi))
-
-
-'''
-s=s.replace(old,new)
-# drop _radius function
-i=s.index('def _radius'); j=s.index('# ----------------------------------------------------------------', i)
-s=s[:i]+s[j:]
-s=s.replace("""    overview; the two best non-overlapping centres are kept, and each radius is the distance at
-    which the radial YP profile crosses halfway between the inside and the ring.""","""    overview; the two best centres more than 3000 px apart are kept and refined by `_segment`.""")
-open('bipolar.py','w').write(s)
-EOF
-cp bipolar.py $TMPDIR/ && cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import numpy as np, glob, bipolar as bp, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-fs=sorted(glob.glob('ov/sub-Fig2*.npy'))
-fig,ax=plt.subplots(4,5,figsize=(25,20))
-for a,f in zip(ax.flat,fs):
-    im=np.load(f)[1]; fp=bp.find_footprints(im)
-    sep=np.hypot(*(fp['centres'][1]-fp['centres'][0]))
-    print(f[3:-4], fp['centres'].round(0).tolist(), 'sep mm',round(sep*0.65/1000,3),'diam mm',(2*fp['radii']*0.65/1000).round(3))
-    a.imshow(im,vmax=np.percentile(im[im>0],99.5),vmin=np.percentile(im[im>0],5))
-    for c,r in zip(fp['centres'],fp['radii']):
-        a.add_patch(plt.Circle((c[1]/23,c[0]/25),r/24,fill=False,color='r'))
-    a.set_xlim(150,800); a.set_ylim(700,200); a.set_title(f)
-plt.savefig('fp.png',dpi=40)
-EOF
-```
-
-```
-sub-Fig2-0-03 [[10051.0, 7118.0], [9120.0, 13861.0]] sep mm 4.424 diam mm [1.524 1.372]
-sub-Fig2-0-06 [[10899.0, 7163.0], [10769.0, 14199.0]] sep mm 4.574 diam mm [1.542 1.469]
-sub-Fig2-0-07 [[10912.0, 7157.0], [10012.0, 13877.0]] sep mm 4.407 diam mm [1.395 1.83 ]
-sub-Fig2-100-03 [[10813.0, 7175.0], [9713.0, 14272.0]] sep mm 4.668 diam mm [1.462 1.612]
-sub-Fig2-100-07 [[10225.0, 7400.0], [9360.0, 14231.0]] sep mm 4.475 diam mm [1.503 1.37 ]
-sub-Fig2-100-08 [[10926.0, 7807.0], [10394.0, 14694.0]] sep mm 4.49 diam mm [1.491 1.322]
-sub-Fig2-25-04 [[10051.0, 7118.0], [9120.0, 13861.0]] sep mm 4.424 diam mm [1.524 1.372]
-sub-Fig2-25-10 [[10517.0, 7232.0], [9755.0, 14225.0]] sep mm 4.572 diam mm [1.559 1.644]
-sub-Fig2-25-14 [[11123.0, 6981.0], [9932.0, 14298.0]] sep mm 4.818 diam mm [1.776 1.667]
-sub-Fig2-50-06 [[11025.0, 6943.0], [10697.0, 14155.0]] sep mm 4.693 diam mm [1.502 1.625]
-sub-Fig2-50-10 [[10916.0, 6980.0], [10146.0, 13922.0]] sep mm 4.54 diam mm [1.388 1.511]
-sub-Fig2-50-12 [[10257.0, 7187.0], [9792.0, 14046.0]] sep mm 4.469 diam mm [1.445 1.427]
-sub-Fig2-50-13 [[10238.0, 7353.0], [9666.0, 14528.0]] sep mm 4.678 diam mm [1.481 1.814]
-sub-Fig2-50-18 [[10443.0, 7080.0], [9618.0, 14573.0]] sep mm 4.9 diam mm [1.59  1.845]
-sub-Fig2-75-02 [[11091.0, 7696.0], [10455.0, 14542.0]] sep mm 4.469 diam mm [1.474 1.358]
-sub-Fig2-75-05 [[10047.0, 7497.0], [9757.0, 14328.0]] sep mm 4.444 diam mm [1.409 1.357]
-sub-Fig2-75-10 [[9555.0, 7103.0], [9213.0, 14177.0]] sep mm 4.603 diam mm [1.388 1.389]
 Shell cwd was reset to
 ```
 
@@ -1181,141 +1010,469 @@ Result: no output.
 **Agent calls Bash**
 
 ```bash
-cd entries/000489-kim-2022 && python - <<'EOF'
-s=open('bipolar.py').read()
-s=s.replace("FOOTPRINT_FRACTION = 0.7          # standard choice, see above","FOOTPRINT_MEASURE_MM = 0.5        # standard choice, see above")
-s=s.replace("""a disc of `FOOTPRINT_FRACTION` of its radius on the same centre, to keep away from its edge (a
-  standard choice)""","""a disc of radius `FOOTPRINT_MEASURE_MM` (0.5 mm, two thirds of the electrode radius) on the
-  centre found, to keep away from its edge (a standard choice)""")
-s=s.replace("""    for c, rad in zip(fp["centres"], fp["radii"]):
-        r = FOOTPRINT_FRACTION * rad""","""    for c in fp["centres"]:
-        r = FOOTPRINT_MEASURE_MM * 1000 / um_per_px""")
-open('bipolar.py','w').write(s)
-EOF
-grep -n "FOOTPRINT" bipolar.py; cp bipolar.py $TMPDIR/ && cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import numpy as np, bipolar as bp, time, pandas as pd
-A=[a for a in bp.assets() if 'Fig2-50-10' in a['path']][0]
-t=time.time(); d=bp.Dish(A); print('open',time.time()-t); print(d.meta)
-ov=np.load('ov/sub-Fig2-50-10.npy'); fp=bp.find_footprints(ov[1])
-t=time.time(); m=bp.measure(d,fp); print('measure',time.time()-t)
-df=pd.DataFrame(m['rois']); print(df.round(2).to_string()); print(m['footprints'], m['separation_px'])
-f=m['footprints']; yp0=np.mean([x[1] for x in f]); mb0=np.mean([x[0] for x in f])
-df['YP']=bp.yp_index(df.YP_roi,df.MB_roi,yp0,mb0); print(df[['k','field','YP']].round(1).to_string())
-print('centre field', bp.field_kv_cm(0,0))
-EOF
+cd entries/kim-2022 && sed -i 's/def find_footprints(yp: np.ndarray, r_px: float = 75.0)/def find_footprints(yp: np.ndarray, r_px: float = 160.0)/; s/    mask\[int(0.3 \* n0) : int(0.7 \* n0), int(0.2 \* n1) : int(0.8 \* n1)\] = True/    mask[int(0.25 * n0) : int(0.75 * n0), int(0.15 * n1) : int(0.85 * n1)] = True/; s/    far = np.hypot(yy2 - i1\[0\], xx2 - i1\[1\]) > 6 \* r/    far = np.hypot(yy2 - i1[0], xx2 - i1[1]) > 4 * r/' kim2022.py && cd $TMPDIR && . ve/bin/activate && timeout 300 env PYTHONPATH=entries/kim-2022 python -c "
+import numpy as np, kim2022 as k, glob,time
+for f in sorted(glob.glob('ds_*.npy')):
+    a=np.load(f); fp=k.find_footprints(a[...,1]); c=fp['centres']; print(f, c.round(0).tolist(), round(np.linalg.norm(c[1]-c[0])*k.UM_PER_BLOCK/1000,3), (fp['radius_px']*k.UM_PER_BLOCK/1000).round(3))
+"
 ```
 
 ```
-32:  a disc of radius `FOOTPRINT_MEASURE_MM` (0.5 mm, two thirds of the electrode radius) on the
-69:FOOTPRINT_MEASURE_MM = 0.5        # standard choice, see above
-293:        r = FOOTPRINT_MEASURE_MM * 1000 / um_per_px
-open 26.233885526657104
-{'acquisition': ['Fig2_50_10'], 'shape': (22323, 22323, 2), 'dtype': 'uint16', 'chunks': (175, 349, 1), 'compression': 'gzip', 'unit': 'n.a.', 'conversion': 1.0, 'rate': 2.0, 'description': 'Channel1 ex/em 350/460nm and ex/em 480/535nm. All cells labeled with MemBrite dye (Channel 1), permeabilized cells visualized by membrane-impermeable fluorescence dye YOPRO-1, Dark circles with no electroporated cells are the footprints of electrodes. An image was obtained by scanning a whole well from a six-well plate, and a total of 144 images (12x12 grid) were captured. These images were then automatically stitched together to create a composite image.', 'session_description': 'Cells were electroporated by a train of 5 bipolar 600+600 ns pulses (second pulse amplitude 50% in comparison to the first pulse amplitude) at 1 Hz.The electrodes were two parallel stainless-steel cylinders, 1.5 mm in diameter and 3 mm apart', 'session_id': 'BPAE_bipolar_50 percent', 'subject_id': 'Fig2_50_10', 'session_start': '2021-07-26T19:52:44-04:00', 'strain': 'cellline: BPAE', 'processing': [], 'analysis': [], 'stimulus': []}
-measure 8.510610103607178
-     k  distance_mm       row       col  field  YP_roi   MB_roi
-0  -15          3.0   5943.35   9942.49   5.13  244.64   306.53
-1  -14          2.8   6249.17   9976.41   5.61  251.62   260.87
-2  -13          2.6   6554.98  10010.33   6.15  254.16   269.28
-3  -12          2.4   6860.80  10044.25   6.75  271.13   309.03
-4  -11          2.2   7166.62  10078.17   7.41  284.16   320.18
-5  -10          2.0   7472.43  10112.09   8.14  282.43   316.91
-6   -9          1.8   7778.25  10146.01   8.94  279.96   293.78
-7   -8          1.6   8084.07  10179.93   9.80  296.46   295.67
-8   -7          1.4   8389.88  10213.85  
-[... 57 more lines not kept]
+ds_0882af3b.npy [[1466.0, 1074.0], [1464.0, 2090.0]] 4.62 [0.783 0.564]
+ds_1e53ad95.npy [[1559.0, 1134.0], [1484.0, 2121.0]] 4.501 [0.792 0.719]
+ds_1e7fcc84.npy [[1458.0, 1025.0], [1315.0, 2013.0]] 4.546 [0.428 0.719]
+ds_2abb0c68.npy [[1465.0, 1046.0], [1400.0, 2032.0]] 4.496 [0.728 0.746]
+ds_35d46f5c.npy [[1527.0, 1038.0], [1476.0, 2043.0]] 4.576 [0.828 0.755]
+ds_3ab61bc6.npy [[1458.0, 1072.0], [1335.0, 2052.0]] 4.494 [0.783 0.728]
+ds_3b82b765.npy [[1432.0, 1084.0], [1391.0, 2065.0]] 4.466 [0.728 0.71 ]
+ds_487cf0b3.npy [[1544.0, 1034.0], [1496.0, 2009.0]] 4.444 [0.692 0.737]
+ds_498d83a2.npy [[1360.0, 1024.0], [1341.0, 2047.0]] 4.658 [0.801 0.71 ]
+ds_75ca0104.npy [[1556.0, 1015.0], [1472.0, 1995.0]] 4.478 [0.719 0.746]
+ds_9d180178.npy [[1526.0, 1068.0], [1467.0, 2047.0]] 4.461 [0.528 0.655]
+ds_a3272df4.npy [[1490.0, 1063.0], [1455.0, 2056.0]] 4.518 [0.846 0.746]
+ds_a343e4c9.npy [[1572.0, 1002.0], [1563.0, 2011.0]] 4.59 [0.755 0.755]
+ds_a48c9123.npy [[2382.0, 2686.0], [810.0, 2706.0]] 7.153 [0.883 0.846]
+ds_ad57ee8c.npy [[1544.0, 1041.0], [1446.0, 2026.0]] 4.505 [0.755 0.737]
+ds_b8fb1ff4.npy [[1579.0, 1118.0], [1491.0, 2096.0]] 4.468 [0.755 0.71 ]
+ds_e0be194e.npy [[1458.0, 1025.0], [1315.0, 2013.0]] 4.546 [0.428 0.719]
+ds_f914475a.npy [[1559.0, 1041.0], [1538.0, 2045.0]] 4.57 [0.774 0.746]
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000489-kim-2022 && python - <<'EOF'
-s=open('bipolar.py').read()
-s=s.replace("""(`field_kv_cm`). The 35 mm dish wall is left out (assumption: at 17.5 mm from the centre it
-  changes the field near the electrodes by about 1%, see the notebook).""","""(`field_kv_cm`). The 35 mm dish wall, 15 mm or more from the electrodes, is left out
-  (assumption); the notebook compares the model's field at the centre with the 15.1 kV/cm the
-  paper cites.""")
-s+='''
+cd $TMPDIR && . ve/bin/activate && timeout 600 env PYTHONPATH=entries/kim-2022 python - <<'EOF'
+import numpy as np, kim2022 as k, json, requests
+A=np.load('ds_1e7fcc84.npy'); B=np.load('ds_e0be194e.npy')
+for i in range(2): print('ch',i, np.corrcoef(A[...,i].ravel()[::50],B[...,i].ravel()[::50])[0,1], np.abs(A[...,i]-B[...,i]).max(), (A[...,i]!=B[...,i]).mean())
+assets=k.list_assets('000489')
+res={}
+for a in assets:
+    aid=a['asset_id']; sub=a['path'].split('/')[0]
+    if 'Fig1F' in sub: continue
+    img=np.load(f'ds_{aid[:8]}.npy'); fp=k.find_footprints(img[...,1])
+    rows=k.roi_table(img,fp['centres'],max_mm=3.0)
+    res[sub]=rows
+    print(sub, ' '.join(f"{r['YP']:.0f}" for r in rows if r['offset_mm']>=0), '| YP0 %.0f MB0 %.0f'%(rows[0]['YP0'],rows[0]['MB0']))
+json.dump(res,open('rois.json','w'))
+EOF
+```
 
-def load_dish(asset: dict) -> dict:
-    """Everything the notebook uses from one file: metadata, overview, footprints, and the ROI
-    measures at the camera pixel size and at the scale set by the electrode separation."""
-    dish = Dish(asset)
-    out = {"path": dish.path, "subject": dish.subject, "amplitude": dish.amplitude,
-           "label": dish.label, "meta": dish.meta}
-    ov = dish.overview()
-    out["overview"] = ov
-    if dish.amplitude is None:
+```
+ch 0 0.48865110723066074 65257.652 0.8369447893408285
+ch 1 1.0 0.0 0.0
+sub-Fig2-0-03 69 2 26 -8 33 45 17 6 -2 11 8 17 27 38 38 51 | YP0 254 MB0 210
+sub-Fig2-0-06 547 483 764 496 405 225 190 53 51 48 13 70 17 3 16 19 | YP0 236 MB0 191
+sub-Fig2-0-07 754 534 342 272 249 99 27 56 88 94 -12 -26 -13 -14 -3 -16 | YP0 292 MB0 217
+sub-Fig2-100-03 655 533 439 416 301 273 224 195 133 106 89 52 40 62 57 24 | YP0 200 MB0 244
+sub-Fig2-100-07 774 760 822 521 549 556 317 160 110 97 76 74 45 19 41 17 | YP0 209 MB0 247
+sub-Fig2-100-08 808 782 1043 652 574 440 282 239 137 119 120 94 51 42 24 26 | YP0 177 MB0 259
+sub-Fig2-25-04 92 115 142 116 127 137 117 75 85 81 86 78 80 62 77 67 | YP0 254 MB0 330
+sub-Fig2-25-10 765 502 370 355 409 247 183 195 136 30 70 96 80 58 42 47 | YP0 292 MB0 262
+sub-Fig2-25-14 507 765 459 352 404 187 275 126 83 32 26 53 50 89 58 23 | YP0 256 MB0 233
+sub-Fig2-50-06 159 242 221 224 157 104 130 117 93 96 52 33 49 44 72 67 | YP0 248 MB0 323
+sub-Fig2-50-10 322 335 343 186 209 229 146 105 79 44 30 28 15 40 56 39 | YP0 217 MB0 279
+sub-Fig2-50-12 348 239 117 215 115 143 183 92 49 62 66 50 54 31 18 28 | YP0 253 MB0 299
+sub-Fig2-50-13 158 211 119 140 174 95 87 33 12 4 22 5 -10 -5 5 4 | YP0 284 MB0 249
+sub-Fig2-50-18 155 139 165 123 99 100 72 79 62 23 50 29 -6 51 56 10 | YP0 295 MB0 256
+sub-Fig2-75-02 238 254 141 134 137 187 107 53 56 23 -0 21 19 23 17 -6 | YP0 227 MB0 248
+sub-Fig2-75-05 203 211 196 194 159 129 107 38 69 40 28 43 20 2 18 25 | YP0 221 MB0 267
+sub-Fig2-75-10 340 294 379 294 189 151 101 164 133 127 111 84 46 72 63 120 | YP0 220 MB0 309
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+date -u; cd $TMPDIR && . ve/bin/activate && timeout 600 env PYTHONPATH=entries/kim-2022 python - <<'EOF'
+import numpy as np, kim2022 as k, time
+assets={a['path'].split('/')[0]:a['asset_id'] for a in k.list_assets('000448')}
+for sub in ['sub-005-F','sub-005-R']:
+    t=time.time(); s=k.load_stack(assets[sub]); print(sub, time.time()-t, s.shape, s.min(), s.max())
+    np.save(f'st_{sub}.npy', s.mean(0)); 
+    m=s.mean(0); thr=np.percentile(m,90)
+    mask=m>thr
+    tr=s[:,mask].mean(1)
+    print(np.round(tr[:300:4]/tr[:40].mean()*100-100,2))
+    np.save(f'tr_{sub}.npy', s[:, ::4, ::4])
+EOF
+```
+
+```
+Tue Nov 10 04:40:41 UTC 2026
+sub-005-F 7.921105623245239 (500, 512, 512) 79.0 6968.0
+[-88.05  10.89  -9.71  -1.79  -7.87  -1.2   19.54   5.36 -12.17   9.57
+  -4.89  -4.2    6.58   5.08  -9.11 -13.2   -3.1    1.69   0.11   2.31
+  -5.95  -3.05  -7.76  -7.85  -1.4   -9.17  -7.26   2.52 -13.38  -5.77
+ -10.83  -0.44 -10.28 -16.63 -20.72 -11.14 -14.58  -0.85  -9.99 -10.61
+  -9.2   -6.17 -11.69  -3.81  -9.25 -13.28  -4.73  -6.05 -11.54  -9.34
+ -18.81  -0.44  -6.53 -18.   -14.15  -9.79 -22.89   8.16  -2.17 -11.57
+ -23.62 -10.59 -18.78 -15.61  -4.5  -20.7   -7.16 -11.97 -20.88 -18.2
+  -9.23 -17.8  -14.48 -20.79  -8.89]
+sub-005-R 16.743108987808228 (500, 512, 512) 73.0 6475.0
+[-87.05  11.13  13.43  10.43  -5.92   4.99  -3.5    1.83  -5.12  -6.82
+  -7.53  -3.29   4.17   1.13  -5.81  -5.63   4.43  -3.26   9.26   0.59
+  -1.42 -12.17  -6.36   4.6   10.62   0.15  -1.49   6.07 -11.51   3.17
+  -4.94 -11.35 -20.98  -8.99   0.42  -6.48   0.68  -5.27 -14.77  -5.28
+  -6.99  -2.28  -9.6   -8.57   3.22  -1.01 -11.11  -1.72  -6.73  -4.03
+ -10.41 -15.57   5.04 -23.83  -8.43 -14.78 -16.45 -14.22 -11.5   -3.66
+ -20.    -3.72  -8.45  -4.11  -5.77 -11.68 -17.42 -15.67  -8.36  -3.74
+  -7.34 -18.16  -5.06 -12.33  -9.92]
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . ve/bin/activate && timeout 300 python - <<'EOF'
+import numpy as np, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+from scipy import ndimage as ndi
+fig,axs=plt.subplots(2,3,figsize=(18,11))
+for j,sub in enumerate(['sub-005-F','sub-005-R']):
+    s=np.load(f'tr_{sub}.npy').astype(float)  # 500,128,128
+    m=s[1:].mean(0); mask=m>np.percentile(m,85)
+    lab,n=ndi.label(mask); big=lab==np.bincount(lab.ravel()[lab.ravel()>0]).argmax(); 
+    wc=s[:,big].mean(1)
+    R=s/wc[:,None,None]
+    D=ndi.gaussian_filter(R[44:64].mean(0)-R[1:40].mean(0),1)
+    axs[j,0].imshow(m); axs[j,0].contour(big,colors='r')
+    v=np.abs(D[big]).max(); axs[j,1].imshow(np.where(big,D,0),cmap='bwr',vmin=-v,vmax=v)
+    # projection along x and y
+    yy,xx=np.nonzero(big); cy,cx=yy.mean(),xx.mean()
+    w=D[big]; print(sub,'cell px',big.sum(),'dipole',(w*(xx-cx)).sum(),(w*(yy-cy)).sum())
+    # pole traces along the dipole axis
+    ang=np.arctan2((w*(yy-cy)).sum(),(w*(xx-cx)).sum()); p=(xx-cx)*np.cos(ang)+(yy-cy)*np.sin(ang)
+    hi=p>np.percentile(p,80); lo=p<np.percentile(p,20)
+    th=s[:,yy[hi],xx[hi]].mean(1)/wc; tl=s[:,yy[lo],xx[lo]].mean(1)/wc
+    th=th/th[1:41].mean()*100-100; tl=tl/tl[1:41].mean()*100-100
+    axs[j,2].plot(th); axs[j,2].plot(tl); axs[j,2].set_xlim(0,500)
+plt.savefig('st.png',dpi=50)
+EOF
+```
+
+```
+sub-005-F cell px 1795 dipole 169.63855437030426 -1010.3364010882535
+sub-005-R cell px 1792 dipole 118.39830667166648 57.499586393087625
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/st.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd entries/kim-2022 && cat >> kim2022.py <<'EOF'
+
+
+def membrane_and_poles(mean_img: np.ndarray, pct: float = 85.0, cone_deg: float = 45.0, sigma: float = 6.0):
+    """Cell membrane mask and the two pole masks along the image's vertical axis.
+
+    The paper does not say how the pole regions were drawn (Methods 2.6 says only
+    that the signals of the cathode- and anode-facing poles were scaled to the
+    whole-cell signal). Assumption, varied in the notebook: the membrane is the
+    pixels of the frame-averaged image above its 85th percentile, in the largest
+    connected group (cells imaged alone or in small groups, Methods 2.6); its
+    holes filled give the cells' outline, and a pole is the membrane where the
+    outward normal of the smoothed outline points within 45 degrees of the field
+    axis. The field axis is the image's vertical axis, the axis of the response
+    dipole in every file (checked in the notebook); upper and lower poles are
+    returned, and which faces the cathode is decided from the data.
+    """
+    m = ndi.gaussian_filter(mean_img, 1)
+    mask = m > np.percentile(m, pct)
+    lab, n = ndi.label(mask)
+    counts = np.bincount(lab.ravel())
+    counts[0] = 0
+    memb = lab == counts.argmax()
+    filled = ndi.binary_fill_holes(memb)
+    g = ndi.gaussian_filter(filled.astype(float), sigma)
+    gy, gx = np.gradient(g)
+    mag = np.hypot(gy, gx)
+    strong = mag > 0.2 * mag[memb].max()
+    with np.errstate(invalid="ignore", divide="ignore"):
+        ny = -gy / mag  # outward normal, y component (image rows grow downwards)
+    c = np.cos(np.deg2rad(cone_deg))
+    upper = memb & strong & (ny < -c)
+    lower = memb & strong & (ny > c)
+    return memb, upper, lower
+
+
+def pole_traces(stack: np.ndarray, memb, upper, lower) -> dict:
+    """Per-frame mean of each pole divided by the whole-cell (membrane) mean (Methods 2.6)."""
+    wc = stack[:, memb].mean(axis=1)
+    return {"upper": stack[:, upper].mean(axis=1) / wc, "lower": stack[:, lower].mean(axis=1) / wc, "whole": wc}
+EOF
+cd $TMPDIR && cat > st_all.py <<'EOF'
+import numpy as np, kim2022 as k, json, time, sys
+from concurrent.futures import ThreadPoolExecutor
+assets=k.list_assets('000448')
+def go(a):
+    with k.open_nwb('000448',a['asset_id']) as f: info=k.strobe_info(f); s=f['acquisition/StrobeImaging/data'][()].astype(np.float32)
+    s=s.reshape(500,256,2,256,2).mean(axis=(2,4))
+    m=s[1:].mean(0)
+    memb,up,lo=k.membrane_and_poles(m)
+    tr=k.pole_traces(s,memb,up,lo)
+    np.save(f"st2_{info['subject_id']}.npy", s)
+    return info, {kk:v.tolist() for kk,v in tr.items()}, int(memb.sum()), int(up.sum()), int(lo.sum())
+t=time.time()
+with ThreadPoolExecutor(3) as ex: out=list(ex.map(go,assets))
+print(time.time()-t)
+json.dump(out,open('st.json','w'))
+for info,tr,a,b,c in out: print(info['subject_id'],info['pulse_shape'],a,b,c)
+EOF
+. ve/bin/activate && timeout 900 env PYTHONPATH=entries/kim-2022 python st_all.py
+```
+
+```
+111.99137759208679
+001_F bipolar 3803 353 910
+001_R bipolar 3824 341 903
+002_F bipolar 6454 831 830
+002_R bipolar 6401 828 829
+003_F bipolar 6029 901 695
+003_R bipolar 6079 952 709
+004_F bipolar 2833 616 503
+004_R bipolar 2820 616 502
+005_F unipolar 7171 1022 862
+005_R unipolar 7152 1018 839
+006_F unipolar 6375 1160 1412
+006_R unipolar 6400 1168 1390
+007_F unipolar 6840 1030 1095
+007_R unipolar 6779 1031 1114
+008_F unipolar 2780 670 653
+008_R unipolar 2764 682 653
+009_F unipolar 4036 510 655
+009_R unipolar 4142 517 651
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && . ve/bin/activate && timeout 300 python - <<'EOF'
+import numpy as np, json, matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
+out=json.load(open('st.json'))
+fig,axs=plt.subplots(3,3,figsize=(18,13)); axs=axs.ravel()
+cells=sorted(set(o[0]['subject_id'][:3] for o in out))
+for i,c in enumerate(cells):
+    for o in out:
+        if o[0]['subject_id'][:3]!=c: continue
+        rec=o[0]['subject_id'][-1]
+        for pole,col in [('upper','r'),('lower','b')]:
+            t=np.array(o[1][pole]); 
+            if rec=='R': t=t[::-1]
+            t=t/np.median(t[1:41] if rec=='F' else t[1:41])*100-100
+            axs[i].plot(t,col,alpha=.6,ls='-' if rec=='F' else ':')
+    axs[i].set_title(c+' '+o[0]['pulse_shape']); axs[i].set_xlim(0,500); axs[i].set_ylim(-40,40)
+plt.savefig('st2.png',dpi=45)
+w=np.array(out[0][1]['whole']); print(np.round(w[:6]), np.round(w[-6:]))
+for o in out:
+    w=np.array(o[1]['whole']); print(o[0]['subject_id'], round(w[0]), round(np.median(w[1:50])), round(np.median(w[-50:])))
+EOF
+```
+
+```
+[ 170. 1439. 1432. 1408. 1526. 1371.] [1043. 1070. 1020. 1028. 1047. 1198.]
+001_F 170 1350 1127
+001_R 1604 1460 1210
+002_F 177 1390 1201
+002_R 180 1343 1123
+003_F 193 1010 879
+003_R 194 1166 943
+004_F 187 1044 894
+004_R 185 982 800
+005_F 181 1427 1215
+005_R 183 1326 1174
+006_F 186 1106 982
+006_R 185 1170 1022
+007_F 189 936 783
+007_R 189 850 724
+008_F 186 729 628
+008_R 702 689 633
+009_F 177 1123 906
+009_R 180 1313 1048
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/st2.png"
+}
+```
+
+Result: no output.
+
+**Agent calls Bash**
+
+```bash
+cd entries/kim-2022 && cat >> kim2022.py <<'EOF'
+
+
+def process_dish(asset: dict) -> dict:
+    """Load one dish image and reduce it to what the analysis needs.
+
+    Returns the file's metadata, the footprints, ROI tables along bb' (footprint
+    disc of 0.2 mm, and 0.1 and 0.3 mm as variants), channel summaries, a digest
+    of each channel's block means (to find images deposited twice) and a
+    thumbnail of the YP channel.
+    """
+    import hashlib
+
+    with open_nwb("000489", asset["asset_id"]) as f:
+        info = dish_info(f)
+    img = load_dish("000489", asset["asset_id"])
+    out = {"path": asset["path"], "asset_id": asset["asset_id"], **info}
+    out["digest"] = [hashlib.sha1(np.ascontiguousarray(img[..., c]).tobytes()).hexdigest()[:12] for c in range(img.shape[2])]
+    out["channel_median"] = [float(np.median(img[..., c])) for c in range(img.shape[2])]
+    out["channel_max"] = [float(img[..., c].max()) for c in range(img.shape[2])]
+    out["thumb_yp"] = img[::8, ::8, 1].copy()
+    out["thumb_mb"] = img[::8, ::8, 0].copy()
+    if "Fig2" not in info["subject_id"]:
         return out
-    fp = find_footprints(ov[YP])
+    fp = find_footprints(img[..., 1])
     out["footprints"] = fp
-    out["measure"] = measure(dish, fp)
-    sep_mm_nominal = CENTRE_DISTANCE_MM * 1000
-    out["measure_scaled"] = measure(dish, fp, um_per_px=sep_mm_nominal / out["measure"]["separation_px"])
+    out["rois"] = roi_table(img, fp["centres"], "bb", max_mm=3.0)
+    out["rois_fp01"] = roi_table(img, fp["centres"], "bb", max_mm=3.0, fp_radius_mm=0.1)
+    out["rois_fp03"] = roi_table(img, fp["centres"], "bb", max_mm=3.0, fp_radius_mm=0.3)
+    # channel identity: mean of each channel in the 1 mm square between the
+    # electrodes over its mean in squares 3 mm away along bb'
+    mid, ua, ub = dish_frame(fp["centres"])
+    side = 1000 / UM_PER_BLOCK
+    out["centre_over_far"] = [
+        square_mean(img[..., c], mid, ua, ub, side)
+        / np.mean([square_mean(img[..., c], mid + s * ub * 3000 / UM_PER_BLOCK, ua, ub, side) for s in (-1, 1)])
+        for c in range(img.shape[2])
+    ]
     return out
-
-
-def load_all(workers: int = 4) -> list[dict]:
-    with ThreadPoolExecutor(workers) as ex:
-        return list(ex.map(load_dish, assets()))
-'''
-open('bipolar.py','w').write(s)
 EOF
 date -u
 ```
 
 ```
-Fri Oct 30 16:03:52 UTC 2026
+Tue Nov 10 04:44:54 UTC 2026
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && cp entries/000489-kim-2022/bipolar.py . && time python -c "
-import bipolar as bp, pickle, time
-t=time.time(); D=bp.load_all(); print(time.time()-t)
-pickle.dump(D,open('all.pkl','wb'))
-" 2>&1 | tail -5
+cat >> kim2022.py <<'EOF'
+
+
+def process_strobe(asset: dict, pct: float = 85.0, cone_deg: float = 45.0) -> dict:
+    """Load one strobe stack (2x2 binned on loading, a standard choice) and return
+    its pole traces, the frame-averaged image and the response map."""
+    with open_nwb("000448", asset["asset_id"]) as f:
+        info = strobe_info(f)
+        s = f["acquisition/StrobeImaging/data"][()].astype(np.float32)
+    s = s.reshape(s.shape[0], s.shape[1] // 2, 2, s.shape[2] // 2, 2).mean(axis=(2, 4))
+    wc_all = s.mean(axis=(1, 2))
+    mean_img = s[wc_all > 0.5 * np.median(wc_all)].mean(axis=0)
+    out = {"path": asset["path"], **info, "mean_img": mean_img}
+    for p, c in [(pct, cone_deg), (80.0, cone_deg), (90.0, cone_deg), (pct, 30.0), (pct, 60.0)]:
+        memb, up, lo = membrane_and_poles(mean_img, p, c)
+        tr = pole_traces(s, memb, up, lo)
+        out[f"traces_{p:.0f}_{c:.0f}"] = tr
+        out[f"npx_{p:.0f}_{c:.0f}"] = (int(memb.sum()), int(up.sum()), int(lo.sum()))
+    memb, up, lo = membrane_and_poles(mean_img, pct, cone_deg)
+    out["masks"] = (memb, up, lo)
+    out["frame_mean"] = wc_all
+    return out
+
+
+def dark_frames(whole: np.ndarray) -> np.ndarray:
+    """Frames whose whole-cell signal is below half the median: failed flashes
+    (the first frame of most files). Left out; a standard choice."""
+    return whole < 0.5 * np.median(whole)
+
+
+def align_lag(ref: np.ndarray, x: np.ndarray, max_lag: int = 150) -> int:
+    """Lag (frames) that best aligns x to ref, by correlation of the mean-removed
+    signals; x shifted by the lag (x[i - lag]) matches ref[i]."""
+    a = np.nan_to_num(ref - np.nanmean(ref))
+    b = np.nan_to_num(x - np.nanmean(x))
+    best, lag_best = -np.inf, 0
+    for lag in range(-max_lag, max_lag + 1):
+        c = np.sum(a * np.roll(b, lag))
+        if c > best:
+            best, lag_best = c, lag
+    return lag_best
+
+
+def shift(x: np.ndarray, lag: int) -> np.ndarray:
+    y = np.full_like(x, np.nan, dtype=float)
+    if lag >= 0:
+        y[lag:] = x[: len(x) - lag]
+    else:
+        y[:lag] = x[-lag:]
+    return y
+
+
+def charge_fit(t, v):
+    """Least-squares fit of A (1 - exp(-t / tau)) (Fig. 7 legend, single exponential)."""
+    from scipy.optimize import curve_fit
+
+    f = lambda t, a, tau: a * (1 - np.exp(-t / tau))
+    p, _ = curve_fit(f, t, v, p0=[np.nanmax(v), 200.0], maxfev=20000)
+    return p, f(t, *p)
+
+
+def charge_fit_free(t, v):
+    """V0 + (A - V0)(1 - exp(-t / tau)), for pulses that start from a charged membrane."""
+    from scipy.optimize import curve_fit
+
+    f = lambda t, a, v0, tau: v0 + (a - v0) * (1 - np.exp(-t / tau))
+    p, _ = curve_fit(f, t, v, p0=[np.nanmax(v), v[0] if np.isfinite(v[0]) else 0.0, 200.0], maxfev=20000)
+    return p, f(t, *p)
+
+
+def discharge_fit(t, v):
+    """Least-squares fit of A exp(-t / tau) (Fig. 7 legend, single exponential)."""
+    from scipy.optimize import curve_fit
+
+    f = lambda t, a, tau: a * np.exp(-t / tau)
+    p, _ = curve_fit(f, t, v, p0=[np.nanmax(v), 500.0], maxfev=20000)
+    return p, f(t, *p)
+EOF
+python -c "import ast;ast.parse(open('kim2022.py').read())"
 ```
 
 ```
-822.1637380123138
-
-real	13m42.998s
-user	16m22.768s
-sys	4m27.731s
-Shell cwd was reset to
+(Bash completed with no output)
 ```
-
-**Agent**
-
-The full load took 13.7 min, CPU-bound in a single process. Checking cores so I can switch to processes.
 
 **Agent calls Bash**
 
 ```bash
-nproc; free -g | head -2; date -u
-```
-
-```
-4
-               total        used        free      shared  buff/cache   available
-Mem:              15           1          10           0           4          14
-Fri Oct 30 16:17:43 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000489-kim-2022 && python - <<'EOF'
-s=open('bipolar.py').read()
-s=s.replace('''def load_all(workers: int = 4) -> list[dict]:
-    with ThreadPoolExecutor(workers) as ex:
-        return list(ex.map(load_dish, assets()))''','''def load_all(workers: int = 4) -> list[dict]:
-    """All files, one process per file at a time (decompression is CPU bound)."""
-    with ProcessPoolExecutor(workers) as ex:
-        return list(ex.map(load_dish, assets()))''')
-s=s.replace("from concurrent.futures import ThreadPoolExecutor","from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor")
-open('bipolar.py','w').write(s)
+mkdir -p $TMPDIR/nb && cat > $TMPDIR/nb/build.py <<'EOF'
+import nbformat, sys, re
+src = open(sys.argv[1]).read()
+cells = []
+for block in re.split(r'^# %%', src, flags=re.M)[1:]:
+    head, _, body = block.partition('\n')
+    tags = re.findall(r'tags=(\S+)', head)
+    tags = tags[0].split(',') if tags else []
+    body = body.strip('\n')
+    if '[markdown]' in head:
+        text = '\n'.join(l[2:] if l.startswith('# ') else l.lstrip('#') for l in body.split('\n'))
+        c = nbformat.v4.new_markdown_cell(text)
+    else:
+        c = nbformat.v4.new_code_cell(body)
+    if tags: c.metadata['tags'] = tags
+    cells.append(c)
+nb = nbformat.v4.new_notebook(cells=cells)
+nb.metadata['kernelspec'] = {'name': 'python3', 'display_name': 'Python 3', 'language': 'python'}
+nbformat.write(nb, sys.argv[2])
 EOF
 echo ok
 ```
@@ -1324,164 +1481,88 @@ echo ok
 ok
 ```
 
-**Agent**
+**Agent calls Write**
 
-Now developing the claim analyses on the cached results.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd, bipolar as bp
-D=pickle.load(open('all.pkl','rb'))
-for d in D:
-    if d['amplitude'] is None: continue
-    m=d['measure']; f=m['footprints']
-    print(d['label'], 'sep mm', round(m['separation_px']*0.65/1000,3), 'fp YP', [round(x[1],1) for x in f], 'fp MB',[round(x[0],1) for x in f], 'dates', d['meta']['session_start'])
-EOF
+```json
+{
+ "file_path": "/tmp/claude-1001/nb/partA.py",
+ "content": "# %% [markdown]\n# ## Setup\n\n# %%\nimport os\nos.environ.setdefault(\"OMP_NUM_THREADS\", \"1\")\nimport numpy as np\nimport pandas as pd\nimport matplotlib\nimport matplotlib.pyplot as plt\nfrom concurrent.futures import ThreadPoolExecutor\nfrom scipy import stats\nimport kim2022 as k\n\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 40)\nprint(\"versions:\", k.VERSIONS)\n\n# %% [markdown]\n# ## Data check: dandiset 000448 (strobe imaging, Fig. 7)\n#\n# Each file holds one trial of one cell (or small group of cells): 500 frames of\n# 512 x 512 pixels. The session description gives the pulse shape and whether the\n# delays were stepped forward (F) or in reverse (R). Methods 2.6: two trials per\n# cell, ascending and descending delays, averaged.\n\n# %%\nstrobe_assets = k.list_assets(\"000448\")\nwith ThreadPoolExecutor(3) as ex:\n    strobe = list(ex.map(k.process_strobe, strobe_assets))\nst_meta = pd.DataFrame([{kk: s[kk] for kk in [\"path\", \"subject_id\", \"cell\", \"pulse_shape\", \"recording\", \"rate\",\n                                               \"field\", \"rate_label\", \"n_pulses\", \"start\", \"shape\"]} for s in strobe])\nprint(st_meta.to_string())\n\n# %% tags=sanity\nprint(\"files:\", len(strobe), \"| cells:\", st_meta.cell.nunique())\nprint(st_meta.groupby(\"pulse_shape\").cell.nunique().rename(\"cells per pulse shape\").to_string())\nprint(\"frames per file:\", sorted(set(s[\"shape\"][0] for s in strobe)), \"| frame rate (Hz):\", sorted(set(s[\"rate\"] for s in strobe)),\n      \"-> frame step (ns):\", 1e9 / strobe[0][\"rate\"])\nprint(\"trials per cell:\", st_meta.groupby(\"cell\").recording.apply(lambda r: \"\".join(sorted(r))).value_counts().to_dict())\nfor s in strobe:\n    wc = s[\"frame_mean\"]\n    dk = k.dark_frames(wc)\n    print(f\"{s['subject_id']:6s} raw frame mean {wc.min():7.1f} to {wc.max():7.1f} counts; dark frames {np.nonzero(dk)[0].tolist()};\"\n          f\" mean of frames 1-50 {wc[1:51].mean():.0f}, of frames 450-499 {wc[450:].mean():.0f}; membrane/upper/lower px {s['npx_85_45']}\")\n# duplicates: identical frame-mean series would mean a trial deposited twice\nfm = np.array([s[\"frame_mean\"] for s in strobe])\ncc = np.corrcoef(fm)\nnp.fill_diagonal(cc, 0)\nprint(\"largest correlation of frame-mean series between two files:\", cc.max().round(3),\n      \"| identical pairs:\", [(strobe[i][\"subject_id\"], strobe[j][\"subject_id\"]) for i in range(len(strobe))\n                             for j in range(i + 1, len(strobe)) if np.array_equal(fm[i], fm[j])])\n\n# %% [markdown]\n# The frame-averaged signal falls with the frame index in both F and R files, so the\n# frames are stored in acquisition order: an R file holds the delays in descending\n# order and is reversed before averaging. The two trials of a cell are then aligned\n# by the lag that best correlates their upper-minus-lower pole signals (the absolute\n# delay of the first frame is not in the files), and averaged.\n\n# %%\nfig, axs = plt.subplots(3, 6, figsize=(18, 8))\nfor ax, s in zip(axs.ravel(), strobe):\n    memb, up, lo = s[\"masks\"]\n    ax.imshow(s[\"mean_img\"], cmap=\"gray\")\n    ov = np.zeros(memb.shape + (4,))\n    ov[up] = [1, 0, 0, 0.6]\n    ov[lo] = [0, 0.4, 1, 0.6]\n    ax.imshow(ov)\n    ax.set_title(f\"{s['subject_id']} {s['pulse_shape'][:3]}\", fontsize=8)\n    ax.axis(\"off\")\nplt.suptitle(\"Frame-averaged images; upper pole red, lower pole blue (assumed pole regions)\")\nplt.tight_layout()\nplt.show()\n\n# %%\ndef build_cells(key=\"traces_85_45\"):\n    \"\"\"Per cell: F and R trials, R reversed, dark frames removed, R aligned to F,\n    averaged; returns the averaged upper and lower ratio traces and the lag.\"\"\"\n    cells = {}\n    for c in sorted(st_meta.cell.unique()):\n        tr = {}\n        for s in strobe:\n            if s[\"cell\"] != c:\n                continue\n            t = s[key]\n            dk = k.dark_frames(t[\"whole\"])\n            u = np.where(dk, np.nan, t[\"upper\"]).astype(float)\n            l = np.where(dk, np.nan, t[\"lower\"]).astype(float)\n            if s[\"recording\"] == \"reverse\":\n                u, l = u[::-1], l[::-1]\n            tr[s[\"recording\"]] = (u, l, s[\"pulse_shape\"])\n        uf, lf, shape = tr[\"forward\"]\n        ur, lr, _ = tr[\"reverse\"]\n        lag = k.align_lag(uf - lf, ur - lr)\n        ur, lr = k.shift(ur, lag), k.shift(lr, lag)\n        cells[c] = {\"shape\": shape, \"lag\": lag, \"uf\": uf, \"lf\": lf, \"ur\": ur, \"lr\": lr,\n                    \"u\": np.nanmean([uf, ur], axis=0), \"l\": np.nanmean([lf, lr], axis=0)}\n    return cells\n\ncells = build_cells()\nprint(\"lag of the reversed R trial relative to F (frames):\", {c: v[\"lag\"] for c, v in cells.items()})\n\n# Pulse onset. The files do not give the delay of each frame. The onset is found on\n# the forward trials: the first frame where the mean over unipolar cells of\n# (upper - lower) / its baseline rises above the mean + 5 SD of frames 1-30.\nuni = [c for c in cells if cells[c][\"shape\"] == \"unipolar\"]\nbip = [c for c in cells if cells[c][\"shape\"] == \"bipolar\"]\nd = np.nanmean([(cells[c][\"uf\"] - cells[c][\"lf\"]) for c in uni], axis=0)\nbase = d[1:31]\nONSET = int(np.nonzero(d > np.nanmean(base) + 5 * np.nanstd(base))[0][0])\nprint(\"pulse onset frame (forward trials):\", ONSET, \"=\", ONSET * 25, \"ns after the first frame\")\n# Methods 2.6: the mean of the 40 datapoints before the pulse is 100%\nB0, B1 = ONSET - 40, ONSET\n\ndef pct(x):\n    return (x / np.nanmean(x[B0:B1]) - 1) * 100\n\nfor c in cells:\n    cells[c][\"U\"] = pct(cells[c][\"u\"])\n    cells[c][\"L\"] = pct(cells[c][\"l\"])\n    cells[c][\"UF\"], cells[c][\"LF\"] = pct(cells[c][\"uf\"]), pct(cells[c][\"lf\"])\n    cells[c][\"UR\"], cells[c][\"LR\"] = pct(cells[c][\"ur\"]), pct(cells[c][\"lr\"])\nprint(\"baseline frames\", B0, \"to\", B1 - 1)\n\n# %% tags=sanity\n# Clock check: the response must start at the same frame in both trials of each\n# cell (after alignment), and the pulse period must be 1.2 us = 48 frames. The\n# autocorrelation of the mean unipolar upper-minus-lower trace, after the onset,\n# gives the period.\nt_ns = (np.arange(500) - ONSET) * 25.0\nfor c in cells:\n    for tag in [\"UF\", \"UR\"]:\n        x = cells[c][tag] - cells[c][\"L\" + tag[1]]\n        b = x[B0:B1]\n        on = np.nonzero(x[B0:] > np.nanmean(b) + 5 * np.nanstd(b))[0]\n        cells[c][\"on_\" + tag] = int(on[0] + B0) if len(on) else None\nprint(\"onset frame per cell and trial:\", {c: (cells[c][\"on_UF\"], cells[c][\"on_UR\"]) for c in cells})\nx = np.nanmean([cells[c][\"U\"] - cells[c][\"L\"] for c in uni], axis=0)[ONSET:ONSET + 240]\nx = x - x.mean()\nac = [np.sum(x[:-lag] * x[lag:]) for lag in range(20, 80)]\nprint(\"period of the unipolar response (frames):\", 20 + int(np.argmax(ac)), \"(expected 48 = 1200 ns / 25 ns)\")\n# which pole rises during the first pulse, per cell\nfor c in cells:\n    w = slice(ONSET + 12, ONSET + 24)\n    print(f\"cell {c} ({cells[c]['shape']}): upper {np.nanmean(cells[c]['U'][w]):+.1f}%, lower {np.nanmean(cells[c]['L'][w]):+.1f}% (mean over 300-600 ns of pulse 1)\")\n\n# %% [markdown]\n# Every cell's upper pole (smaller row index) rises and its lower pole falls during\n# the first pulse, so the field axis is the image's vertical axis in every file and\n# the orientation is the same in all cells, as expected for a fixed rig. FluoVolt\n# emission rises with depolarization (the dandiset's description gives its\n# sensitivity as dF/F per 100 mV, and the paper's Fig. 7 plots depolarization at the\n# cathode-facing pole as a positive change); the cathode-facing pole is therefore\n# the upper pole, and the anode-facing pole the lower one. The files do not say\n# where the electrodes were relative to the image, so this rests on the dye's sign.\n\n# %%\nCATH, ANOD = \"U\", \"L\"\nfig, axs = plt.subplots(1, 2, figsize=(15, 4.5), sharey=True)\nfor ax, grp, name in [(axs[0], uni, \"unipolar\"), (axs[1], bip, \"bipolar\")]:\n    for pole, col in [(CATH, \"r\"), (ANOD, \"b\")]:\n        m = np.nanmean([cells[c][pole] for c in grp], axis=0)\n        se = np.nanstd([cells[c][pole] for c in grp], axis=0, ddof=1) / np.sqrt(len(grp))\n        ax.plot(t_ns, m, col, label={\"U\": \"cathode-facing (upper)\", \"L\": \"anode-facing (lower)\"}[pole])\n        ax.fill_between(t_ns, m - se, m + se, color=col, alpha=0.25)\n    for p in range(5):\n        ax.axvspan(p * 1200, p * 1200 + 600, color=\"0.9\", zorder=0)\n    ax.set_title(f\"{name}, {len(grp)} cells, mean +- s.e.m.\")\n    ax.set_xlabel(\"time from pulse onset (ns)\")\naxs[0].set_ylabel(\"% change of emission\")\naxs[0].legend()\nallv = np.concatenate([np.nanmean([cells[c][p] for c in g], axis=0) for g in (uni, bip) for p in \"UL\"])\nprint(\"plotted range of the mean traces: %.1f to %.1f %%; x range %d to %d ns\" % (np.nanmin(allv), np.nanmax(allv), t_ns[0], t_ns[-1]))\nplt.show()\n\n# %% [markdown]\n# ### fig7-unipolar-pole-polarization\n#\n# > Unipolar 600 ns pulses depolarized the membrane quickly at the cathode-facing pole\n# > of the cell and hyperpolarized it in mirror image at the anode-facing pole.\n#\n# Criterion: at the end of the first pulse (600 ns) the cathodic and anodic values\n# differ from zero in opposite directions (one-sample t-test across cells, p < 0.05),\n# and the anodic magnitude is within half to twice the cathodic. The value at 600 ns\n# is the frame 24 steps after the onset; the mean of frames 500-600 ns is a variant.\n\n# %% tags=claim:fig7-unipolar-pole-polarization\ndef at(c, pole, t):\n    return cells[c][pole][ONSET + int(round(t / 25))]\n\ndef win(c, pole, t0, t1):\n    return np.nanmean(cells[c][pole][ONSET + int(t0 / 25):ONSET + int(t1 / 25) + 1])\n\ndef unipolar_polarization(key_cells):\n    rows = []\n    for label, f in [(\"value at 600 ns\", lambda c, p: at(c, p, 600)), (\"mean 500-600 ns\", lambda c, p: win(c, p, 500, 600))]:\n        ca = np.array([f(c, CATH) for c in key_cells])\n        an = np.array([f(c, ANOD) for c in key_cells])\n        tc, ta = stats.ttest_1samp(ca, 0), stats.ttest_1samp(an, 0)\n        ratio = abs(an.mean()) / abs(ca.mean())\n        ok = (tc.pvalue < 0.05) and (ta.pvalue < 0.05) and np.sign(ca.mean()) != np.sign(an.mean()) and 0.5 <= ratio <= 2\n        rows.append({\"reading\": label, \"cathodic mean %\": ca.mean(), \"cathodic p\": tc.pvalue, \"anodic mean %\": an.mean(),\n                     \"anodic p\": ta.pvalue, \"|anodic|/|cathodic|\": ratio, \"n cells\": len(key_cells), \"criterion met\": ok})\n    return pd.DataFrame(rows)\n\nr_pol = unipolar_polarization(uni)\nprint(r_pol.to_string())\nprint(\"per cell, value at 600 ns (cathodic, anodic):\", {c: (round(at(c, CATH, 600), 1), round(at(c, ANOD, 600), 1)) for c in uni})\n# variants of the pole regions (membrane threshold percentile, cone half-angle)\nfor key in [\"traces_80_45\", \"traces_90_45\", \"traces_85_30\", \"traces_85_60\"]:\n    cv = build_cells(key)\n    for c in cv:\n        cv[c][\"U\"], cv[c][\"L\"] = pct(cv[c][\"u\"]), pct(cv[c][\"l\"])\n    ca = np.array([cv[c][\"U\"][ONSET + 24] for c in uni]); an = np.array([cv[c][\"L\"][ONSET + 24] for c in uni])\n    print(f\"pole variant {key}: cathodic {ca.mean():+.1f}% (p={stats.ttest_1samp(ca,0).pvalue:.2g}), anodic {an.mean():+.1f}% (p={stats.ttest_1samp(an,0).pvalue:.2g}), ratio {abs(an.mean())/abs(ca.mean()):.2f}\")\n\n# %% [markdown]\n# ### fig7-charging-time-constant\n#\n# > Fitting the cathodic pole response to the first unipolar pulse gave a charging\n# > time constant of 200 ns and a maximum polarization of 31% emission change (425\n# > points, r = 0.93, p < 0.0001), and the discharge after it a time constant of 520\n# > ns from 31.5% (425 points, r = 0.85, p < 0.0001).\n#\n# Charging, A (1 - exp(-t/tau)) over 0 to 600 ns of the first pulse; discharge,\n# A exp(-t/tau) over 600 to 1200 ns, t from the end of the pulse. Readings (a) the\n# points of every cell pooled, (b) the trace averaged over cells. The correlation\n# coefficient is that between the points and the fit.\n\n# %% tags=claim:fig7-charging-time-constant\ndef fit_pulse(grp, pulse=0, pole=CATH, free=False):\n    t0 = ONSET + pulse * 48\n    tc = np.arange(0, 24) * 25.0          # frames 0..23 of the pulse: 0 to 575 ns\n    td = np.arange(0, 24) * 25.0          # frames 24..47: 600 to 1175 ns, t from pulse end\n    res = {}\n    for reading in [\"pooled\", \"mean\"]:\n        if reading == \"pooled\":\n            vc = np.concatenate([cells[c][pole][t0:t0 + 24] for c in grp]); tcc = np.tile(tc, len(grp))\n            vd = np.concatenate([cells[c][pole][t0 + 24:t0 + 48] for c in grp]); tdd = np.tile(td, len(grp))\n        else:\n            vc = np.nanmean([cells[c][pole][t0:t0 + 24] for c in grp], axis=0); tcc = tc\n            vd = np.nanmean([cells[c][pole][t0 + 24:t0 + 48] for c in grp], axis=0); tdd = td\n        okc, okd = np.isfinite(vc), np.isfinite(vd)\n        if free:\n            pc, fc = k.charge_fit_free(tcc[okc], vc[okc]); A, tau_c = pc[0], pc[2]\n        else:\n            pc, fc = k.charge_fit(tcc[okc], vc[okc]); A, tau_c = pc\n        pd_, fd = k.discharge_fit(tdd[okd], vd[okd])\n        rc = stats.pearsonr(vc[okc], fc); rd = stats.pearsonr(vd[okd], fd)\n        res[reading] = {\"tau_charge_ns\": tau_c, \"A_charge_%\": A, \"r_charge\": rc[0], \"p_charge\": rc[1], \"n_charge\": int(okc.sum()),\n                        \"tau_discharge_ns\": pd_[1], \"A_discharge_%\": pd_[0], \"r_discharge\": rd[0], \"p_discharge\": rd[1], \"n_discharge\": int(okd.sum())}\n    return pd.DataFrame(res).T\n\nr_fit1 = fit_pulse(uni, 0)\nprint(r_fit1.to_string())\nexp_vals = {\"tau_charge_ns\": (200, 20), \"A_charge_%\": (31, 3.1), \"tau_discharge_ns\": (520, 52), \"A_discharge_%\": (31.5, 3.15)}\nfor reading in r_fit1.index:\n    print(reading, {kk: bool(abs(r_fit1.loc[reading, kk] - v) <= tol) for kk, (v, tol) in exp_vals.items()})\n# per cell\nfor c in uni:\n    f1 = fit_pulse([c], 0).loc[\"mean\"]\n    print(f\"cell {c}: tau charge {f1.tau_charge_ns:.0f} ns, A {f1['A_charge_%']:.1f}%, tau discharge {f1.tau_discharge_ns:.0f} ns, A {f1['A_discharge_%']:.1f}%\")\n# onset uncertainty: shifting the onset by one frame either way\nfor d_on in (-1, 1):\n    ONSET += d_on\n    f1 = fit_pulse(uni, 0).loc[\"pooled\"]\n    print(f\"onset {d_on:+d} frame: tau charge {f1.tau_charge_ns:.0f} ns, tau discharge {f1.tau_discharge_ns:.0f} ns, A {f1['A_charge_%']:.1f} / {f1['A_discharge_%']:.1f}%\")\n    ONSET -= d_on\n\n# %% [markdown]\n# ### fig7-later-pulses-same-tau-difference\n#\n# > Fits to the later pulses of the unipolar train gave the same kind of difference\n# > between charging and discharging time constants as the first pulse.\n#\n# The fits are repeated for pulses 2 to 5. Pulses 2 to 5 start from a charged\n# membrane, which A (1 - exp(-t/tau)) cannot fit; the charging fit for them lets the\n# starting value free, V0 + (A - V0)(1 - exp(-t/tau)), and the plain form is shown\n# too. The discharge after pulse 5 is fitted over 600 ns like the others.\n\n# %% tags=claim:fig7-later-pulses-same-tau-difference\nratio1 = {r: r_fit1.loc[r, \"tau_discharge_ns\"] / r_fit1.loc[r, \"tau_charge_ns\"] for r in r_fit1.index}\nlater = []\nfor p in range(1, 5):\n    for free in (True, False):\n        f = fit_pulse(uni, p, free=free)\n        for r in f.index:\n            rr = f.loc[r, \"tau_discharge_ns\"] / f.loc[r, \"tau_charge_ns\"]\n            later.append({\"pulse\": p + 1, \"charging form\": \"free start\" if free else \"A(1-exp)\", \"reading\": r,\n                          \"tau charge\": f.loc[r, \"tau_charge_ns\"], \"tau discharge\": f.loc[r, \"tau_discharge_ns\"], \"ratio\": rr,\n                          \"discharge > charge\": rr > 1, \"ratio in 2.25-2.75\": 2.25 <= rr <= 2.75,\n                          \"ratio within 10% of pulse 1\": abs(rr - ratio1[r]) <= 0.1 * ratio1[r]})\nlater = pd.DataFrame(later)\nprint(\"pulse 1 ratio (discharge / charge):\", {r: round(v, 2) for r, v in ratio1.items()})\nprint(later.round(3).to_string())\n\n# %% [markdown]\n# ### fig7-bipolar-overshoot\n#\n# > Bipolar pulses caused the same initial polarization as unipolar ones during the\n# > first phase, followed by a faster discharge and an overshoot into the opposite\n# > polarity.\n\n# %% tags=claim:fig7-bipolar-overshoot\ncu = np.array([at(c, CATH, 600) for c in uni]); cb = np.array([at(c, CATH, 600) for c in bip])\nt_i = stats.ttest_ind(cb, cu)\ngap = abs(cb.mean() - cu.mean()) > (stats.sem(cb) + stats.sem(cu))\nprint(f\"(i) cathodic value at 600 ns: bipolar {cb.mean():.1f}% (n={len(cb)}), unipolar {cu.mean():.1f}% (n={len(cu)}); \"\n      f\"difference {cb.mean()-cu.mean():+.1f}%, unpaired t-test p = {t_i.pvalue:.3g}; error-bar gap rule says different: {gap}\")\nmu = np.nanmean([cells[c][CATH] for c in uni], axis=0); mb_ = np.nanmean([cells[c][CATH] for c in bip], axis=0)\ndef first_return(m, frac):\n    pk = m[ONSET + 24]\n    after = np.nonzero(m[ONSET + 24:ONSET + 48] <= frac * pk)[0]\n    return after[0] * 25 if len(after) else None\nfor frac in (0.5, 0.1, 0.0):\n    print(f\"(ii) time after the end of the first phase for the mean trace to fall to {frac:.0%} of its 600 ns value: bipolar {first_return(mb_, frac)} ns, unipolar {first_return(mu, frac)} ns (None: not within 600 ns)\")\nseg = mb_[ONSET + 24:ONSET + 48]\nimin = int(np.nanargmin(seg)); vals = np.array([cells[c][CATH][ONSET + 24 + imin] for c in bip])\nt_iii = stats.ttest_1samp(vals, 0)\nprint(f\"(iii) bipolar mean minimum in 600-1200 ns: {seg[imin]:.1f}% at {600 + imin*25} ns; cell values {np.round(vals,1).tolist()}, one-sample t p = {t_iii.pvalue:.3g}\")\nprint(\"per bipolar cell, minimum in 600-1200 ns:\", {c: round(float(np.nanmin(cells[c][CATH][ONSET + 24:ONSET + 48])), 1) for c in bip})\n\n# %% [markdown]\n# ### fig7-bipolar-alternation\n#\n# > In 833 kHz trains, bipolar pulses caused the membrane potential to alternate\n# > repeatedly between positive and negative values.\n\n# %% tags=claim:fig7-bipolar-alternation\nalt = []\nfor p in range(5):\n    t0 = ONSET + p * 48\n    end1 = np.array([cells[c][CATH][t0 + 24] for c in bip])\n    mseg = np.nanmean([cells[c][CATH][t0 + 24:t0 + 48] for c in bip], axis=0)\n    im = int(np.nanargmin(mseg))\n    mins = np.array([cells[c][CATH][t0 + 24 + im] for c in bip])\n    a, b = stats.ttest_1samp(end1, 0), stats.ttest_1samp(mins, 0)\n    alt.append({\"pulse\": p + 1, \"end of phase 1 %\": end1.mean(), \"p\": a.pvalue, \"phase 2 minimum %\": mins.mean(), \"at ns\": 600 + im * 25,\n                \"p \": b.pvalue, \"both significant, right signs\": end1.mean() > 0 and mins.mean() < 0 and a.pvalue < 0.05 and b.pvalue < 0.05})\nalt = pd.DataFrame(alt)\nprint(alt.round(4).to_string())\nprint(\"pulses meeting the criterion:\", int(alt.iloc[:, -1].sum()), \"of 5; n =\", len(bip), \"cells\")\n\n# %% [markdown]\n# ### fig7-summation-without-buildup\n#\n# > With 600 ns unipolar pulses at 833 kHz, each pulse charged the membrane to the\n# > same peak, with no stepwise build-up; the pulses merged into a continuous\n# > sawtooth polarization.\n\n# %% tags=claim:fig7-summation-without-buildup\npeaks = np.array([[cells[c][CATH][ONSET + p * 48 + 24] for p in range(5)] for c in uni])\npre = np.array([[cells[c][CATH][ONSET + p * 48 - 1] for p in range(1, 5)] for c in uni])\nrows = []\nfor p in range(1, 5):\n    tu = stats.ttest_ind(peaks[:, p], peaks[:, 0]); tp = stats.ttest_rel(peaks[:, p], peaks[:, 0])\n    tpre = stats.ttest_1samp(pre[:, p - 1], 0)\n    rows.append({\"pulse\": p + 1, \"peak %\": peaks[:, p].mean(), \"peak - first\": peaks[:, p].mean() - peaks[:, 0].mean(),\n                 \"unpaired p\": tu.pvalue, \"paired p (variant)\": tp.pvalue, \"value before pulse %\": pre[:, p - 1].mean(), \"p vs 0\": tpre.pvalue})\nsumm = pd.DataFrame(rows)\nprint(\"first peak: %.1f%%\" % peaks[:, 0].mean())\nprint(summ.round(4).to_string())\n# peak taken as the maximum within each pulse (variant)\npk2 = np.array([[np.nanmax(cells[c][CATH][ONSET + p * 48:ONSET + p * 48 + 25]) for p in range(5)] for c in uni])\nprint(\"variant, maximum within each pulse:\", pk2.mean(0).round(1), \"unpaired p vs first:\", [round(stats.ttest_ind(pk2[:, p], pk2[:, 0]).pvalue, 3) for p in range(1, 5)])\n"
+}
 ```
 
 ```
-0%-03 sep mm 4.424 fp YP [278.3, 261.1] fp MB [204.3, 211.8] dates 2021-07-29T13:00:26-04:00
-0%-06 sep mm 4.574 fp YP [238.5, 253.2] fp MB [186.1, 206.6] dates 2021-07-29T13:46:16-04:00
-0%-07 sep mm 4.407 fp YP [282.9, 365.4] fp MB [205.2, 208.2] dates 2021-07-29T14:00:53-04:00
-100%-03 sep mm 4.668 fp YP [203.2, 223.7] fp MB [263.4, 248.8] dates 2021-08-24T15:18:08-04:00
-100%-07 sep mm 4.475 fp YP [215.4, 203.6] fp MB [236.8, 248.7] dates 2021-08-24T16:16:45-04:00
-100%-08 sep mm 4.49 fp YP [173.9, 177.2] fp MB [256.2, 255.6] dates 2021-08-24T16:31:50-04:00
-25%-04 sep mm 4.424 fp YP [278.3, 261.1] fp MB [292.4, 348.2] dates 2021-07-26T17:25:24-04:00
-25%-10 sep mm 4.572 fp YP [298.3, 323.5] fp MB [262.9, 264.1] dates 2021-07-29T16:24:45-04:00
-25%-14 sep mm 4.818 fp YP [271.6, 322.5] fp MB [238.4, 227.3] dates 2021-07-29T17:22:15-04:00
-50%-06 sep mm 4.693 fp YP [261.9, 288.8] fp MB [303.5, 334.6] dates 2021-07-26T18:52:17-04:00
-50%-10 sep mm 4.54 fp YP [222.0, 228.6] fp MB [279.7, 277.5] dates 2021-07-26T19:52:44-04:00
-50%-12 sep mm 4.469 fp YP [264.2, 257.3] fp MB [295.7, 300.3] dates 2021-07-26T20:21:01-04:00
-50%-13 sep mm 4.678 fp YP [287.8, 308.2] fp MB [244.9, 234.1] dates 2021-07-29T17:07:50-04:00
-50%-18 sep mm 4.9 fp YP [339.1, 322.3] fp MB [261.3, 271.5] dates 2021-07-29T18:06:11-04:00
-75%-02 sep mm 4.469 fp YP [226.3, 235.5] fp MB [242.9, 255.4] dates 2021-08-24T15:01:03-04:00
-75%-05 sep mm 4.444 fp YP [218.7, 214.8] fp MB [260.1, 258.6] dates 2021-08-24T15:47:34-04:00
-75%-10 sep mm 4.603 fp YP [223.7, 235.3] fp MB [305.8, 267.1] dates 2021-08-24T17:00:15-04:00
-Shell cwd was reset to
+File created successfully at: /tmp/claude-1001/nb/partA.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/000489-kim-2022 && cat >> bipolar.py <<'EOF'
-
-
-def roi_table(dishes: list[dict], which: str = "measure", side: str = "both",
-              footprint: str = "both") -> "pd.DataFrame":
-    """One row per dish and distance along bb': the YP index (Methods 2.5) and the ROI's model
-    field. `side` is 'both' (the two ROI at the same distance averaged; claims file, reading a),
-    'top' or 'bottom' (one side only, reading b). `footprint` is 'both' (YP_0 and MB_0 averaged
-    over the two footprints), 'left' or 'right'."""
-    import pandas as pd
-    rows = []
-    for d in dishes:
-        if d["amplitude"] is None:
-            continue
-        m = d[which]
-        feet = m["footprints"]
-        use = {"both": feet, "left": feet[:1], "right": feet[1:]}[footprint]
-        yp0 = np.mean([f[YP] for f in use])
-        mb0 = np.mean([f[MB] for f in use])
-        for r in m["rois"]:
-            if side == "top" and r["k"] > 0 or side == "bottom" and r["k"] < 0:
-                continue
-            rows.append({"dish": d["label"], "subject": d["subject"], "amplitude": d["amplitude"],
-                         "j": abs(r["k"]), "field": r["field"],
-                         "YP": yp_index(r["YP_roi"], r["MB_roi"], yp0, mb0)})
-    t = pd.DataFrame(rows)
-    return (t.groupby(["dish", "subject", "amplitude", "j"], as_index=False)
-             .agg(field=("field", "mean"), YP=("YP", "mean")))
-EOF
-cp bipolar.py $TMPDIR/; cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd, bipolar as bp
-D=pickle.load(open('all.pkl','rb'))
-T=bp.roi_table([d for d in D if d['subject']!='sub-Fig2-0-03'])
-M=T.groupby(['amplitude','j']).agg(field=('field','mean'),YP=('YP','mean'),sem=('YP','sem'),n=('YP','size')).reset_index()
-print(M.pivot(index='j',columns='amplitude',values='YP').round(0).assign(field=M.groupby('j').field.mean().round(2)).to_string())
-print(T.pivot_table(index='j',columns='dish',values='YP').round(0).to_string())
-EOF
+cd $TMPDIR/nb && . ../ve/bin/activate && sed 's/^plt.show()/plt.close("all")/' partA.py > runA.py && date -u && timeout 900 env MPLBACKEND=Agg PYTHONPATH=entries/kim-2022 python runA.py 2>&1 | grep -v Warning | tail -120; date -u
 ```
 
 ```
-amplitude      0     25     50     75    100  field
-j                                                  
-0          531.0  408.0  205.0  227.0  754.0  15.38
-1          570.0  438.0  198.0  240.0  761.0  15.24
-2          571.0  393.0  203.0  234.0  634.0  14.85
-3          528.0  344.0  167.0  206.0  473.0  14.24
-4          369.0  285.0  144.0  179.0  456.0  13.46
-5          410.0  212.0  143.0  150.0  367.0  12.58
-6          199.0  214.0  109.0  114.0  288.0  11.65
-7          141.0  172.0   91.0  100.0  190.0  10.72
-8           82.0  166.0   68.0   82.0  149.0   9.80
-9           48.0   95.0   54.0   74.0  110.0   8.94
-10          33.0   71.0   39.0   54.0   87.0   8.14
-11          20.0   44.0   22.0   44.0   67.0   7.41
-12          -9.0   40.0   35.0   29.0   50.0   6.75
-13         -13.0   38.0   25.0   34.0   40.0   6.15
-14         -36.0   46.0   18.0   27.0   41.0   5.61
-15         -15.0   37.0   19.0   22.0   31.0   5.13
-dish  0%-06  0%-07  100%-03  100%-07  100%-08  25%-04  25%-10  25%-14  50%-06  50%-10  50%-12  50%-13  50%-18  75%-02  75%-05  75%-10
-j                                                                                                                                    
-[... 17 more lines not kept]
+Tue Nov 10 04:46:44 UTC 2026
+  d = np.nanmean([(cells[c]["uf"] - cells[c]["lf"]) for c in uni], axis=0)
+versions: {'000489': '0.230518.1811', '000448': '0.230421.1844'}
+                                                     path subject_id    cell pulse_shape recording        rate     field rate_label n_pulses                      start            shape
+0   sub-001-F/sub-001-F_ses-08-05-2022-cell09-F_image.nwb      001_F  cell09     bipolar   forward  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T21:36:26+00:00  (500, 512, 512)
+1   sub-001-R/sub-001-R_ses-08-05-2022-cell09-R_image.nwb      001_R  cell09     bipolar   reverse  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T21:33:59+00:00  (500, 512, 512)
+2   sub-002-F/sub-002-F_ses-08-05-2022-cell12-F_image.nwb      002_F  cell12     bipolar   forward  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T21:54:14+00:00  (500, 512, 512)
+3   sub-002-R/sub-002-R_ses-08-05-2022-cell12-R_image.nwb      002_R  cell12     bipolar   reverse  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T21:58:24+00:00  (500, 512, 512)
+4   sub-003-F/sub-003-F_ses-08-05-2022-cell19-F_image.nwb      003_F  cell19     bipolar   forward  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T23:42:44+00:00  (500, 512, 512)
+5   sub-003-R/sub-003-R_ses-08-05-2022-cell19-R_image.nwb      003_R  cell19     bipolar   reverse  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T23:40:33+00:00  (500, 512, 512)
+6   sub-004-F/sub-004-F_ses-08-05-2022-cell23-F_image.nwb      004_F  cell23     bipolar   forward  40000000.0  0.3kV/cm     833kHz       5p  2022-08-06T00:11:45+00:00  (500, 512, 512)
+7   sub-004-R/sub-004-R_ses-08-05-2022-cell23-R_image.nwb      004_R  cell23     bipolar   reverse  40000000.0  0.3kV/cm     833kHz       5p  2022-08-06T00:15:29+00:00  (500, 512, 512)
+8   sub-005-F/sub-005-F_ses-08-05-2022-cell08-F_image.nwb      005_F  cell08    unipolar   forward  40000000.0  0.3kV/cm     833kHz       5p  2022-08-05T21:26:33+00:0
+[... 110 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb/partB.py",
+ "content": "# %% [markdown]\n# ## Data check: dandiset 000489 (dish images, Fig. 2)\n#\n# Each file holds one stitched image of a whole dish, 22323 x 22323 pixels with two\n# channels. The images are streamed in bands and reduced to 7 x 7 pixel block means\n# as they load (4 dishes at a time); everything below works on the block means.\n\n# %%\ndish_assets = k.list_assets(\"000489\")\nfrom concurrent.futures import ProcessPoolExecutor\nimport time\nt0 = time.time()\nwith ProcessPoolExecutor(4) as ex:\n    dishes = list(ex.map(k.process_dish, dish_assets))\nprint(f\"loaded {len(dishes)} images in {time.time() - t0:.0f} s\")\ndm = pd.DataFrame([{kk: d[kk] for kk in [\"path\", \"subject_id\", \"session_id\", \"session_start_time\", \"shape\"]} for d in dishes])\nprint(dm.to_string())\nprint(\"series description (first file):\", dishes[0][\"description\"])\n\n# %% tags=sanity\nimport re\ndef amp_of(d):\n    m = re.match(r\"Fig2_(\\d+)_\", d[\"subject_id\"] + \"_\")\n    return int(m.group(1)) if m else None\nfor d in dishes:\n    d[\"amp\"] = amp_of(d)\nfig2 = [d for d in dishes if d[\"amp\"] is not None]\nprint(\"Fig. 2 dishes per second phase amplitude (%):\", pd.Series([d[\"amp\"] for d in fig2]).value_counts().sort_index().to_dict())\nprint(\"other files:\", [d[\"subject_id\"] for d in dishes if d[\"amp\"] is None])\nfor d in dishes:\n    fp = d.get(\"footprints\")\n    line = f\"{d['subject_id']:15s} ch0 median {d['channel_median'][0]:6.0f} max {d['channel_max'][0]:7.0f} | ch1 median {d['channel_median'][1]:6.0f} max {d['channel_max'][1]:7.0f} | digests {d['digest']}\"\n    if fp is not None:\n        c = fp[\"centres\"]\n        sep = np.linalg.norm(c[1] - c[0]) * k.UM_PER_BLOCK / 1000\n        line += f\" | footprints {sep:.2f} mm apart, radii {np.round(fp['radius_px'] * k.UM_PER_BLOCK / 1000, 2).tolist()} mm | centre/far ch0 {d['centre_over_far'][0]:.2f} ch1 {d['centre_over_far'][1]:.2f}\"\n    print(line)\nseps = [np.linalg.norm(d[\"footprints\"][\"centres\"][1] - d[\"footprints\"][\"centres\"][0]) * k.UM_PER_BLOCK / 1000 for d in fig2]\nprint(f\"electrode centre spacing at 0.65 um/pixel: {np.min(seps):.2f} to {np.max(seps):.2f} mm (median {np.median(seps):.2f}); Methods 2.2 gives 3 mm side to side for 1.5 mm electrodes, 4.5 mm centre to centre\")\n# images deposited twice\nfrom collections import defaultdict\nfor ch in range(2):\n    groups = defaultdict(list)\n    for d in dishes:\n        groups[d[\"digest\"][ch]].append(d[\"subject_id\"])\n    print(f\"channel {ch}: images shared by more than one file:\", [v for v in groups.values() if len(v) > 1])\n\n# %% [markdown]\n# Channel index 1 is three to six times brighter between the electrodes than 3 mm\n# away along bb', and index 0 is flat, so index 1 is YO-PRO-1 and index 0 MemBrite. The\n# series description names \"Channel1\" for both filter sets and for MemBrite, which\n# does not say which index holds which dye. The electrode spacing measured at\n# 0.65 um per pixel agrees with the 4.5 mm of Methods 2.2, which supports the pixel\n# size (the files give none).\n#\n# The YP channel of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25% bipolar) is the\n# same image, block for block, while their MemBrite channels differ. One recording\n# was deposited under two dishes, and nothing says which dish it belongs to. The\n# main analysis counts it once by leaving out both dishes (unipolar and 25% then have\n# 2 dishes each); the variants assign the shared image to the unipolar group or to\n# the 25% group.\n\n# %%\nfig, axs = plt.subplots(3, 6, figsize=(18, 9))\nfor ax, d in zip(axs.ravel(), dishes):\n    im = d[\"thumb_yp\"]\n    ax.imshow(im, vmin=np.percentile(im, 2), vmax=np.percentile(im, 99.5), cmap=\"gray\")\n    if d.get(\"footprints\") is not None:\n        for c in d[\"footprints\"][\"centres\"]:\n            ax.add_patch(plt.Circle((c[1] / 8, c[0] / 8), 750 / k.UM_PER_BLOCK / 8, fill=False, color=\"r\"))\n        mid, ua, ub = k.dish_frame(d[\"footprints\"][\"centres\"])\n        p = np.array([mid + ub * o * 1000 / k.UM_PER_BLOCK for o in (-3, 3)]) / 8\n        ax.plot(p[:, 1], p[:, 0], \"y-\", lw=1)\n    ax.set_title(d[\"subject_id\"], fontsize=8)\n    ax.axis(\"off\")\nplt.suptitle(\"YP channel; red circles: footprints found (1.5 mm), yellow: bb' line, +-3 mm\")\nplt.tight_layout()\nplt.show()\n\n# %% [markdown]\n# ### Field model and ROI\n#\n# The field of each ROI comes from the two-cylinder solution in the helper (the\n# geometry of Methods 2.3, 5.75 kV). It gives 15.38 kV/cm at the centre, against the\n# 15.1 kV/cm the paper's finite element model gives there (Results 3.1 and Fig. 2C\n# legend): 1.8% higher. The named fields 15.1, 8.7 and 6.7 kV/cm are taken at the ROI\n# whose model field is closest, scaled by 15.1/15.38 (the paper's value at the\n# centre); this scaling does not change which ROI is closest.\n\n# %% tags=sanity\noffs = np.round(np.arange(0, 3.01, 0.2), 1)\nfields = np.array([k.roi_mean_field(0, o) for o in offs])\nscaled = fields * 15.1 / fields[0]\nprint(pd.DataFrame({\"offset along bb' (mm)\": offs, \"model field (kV/cm)\": fields.round(2), \"scaled to 15.1 at centre\": scaled.round(2)}).to_string(index=False))\ndef nearest(kv):\n    return float(offs[np.argmin(abs(scaled - kv))])\nprint(\"ROI closest to 15.1, 8.7, 6.7 kV/cm (offset, mm):\", nearest(15.1), nearest(8.7), nearest(6.7))\n\n# %%\ndef long_table(key=\"rois\", assign=None):\n    \"\"\"One row per dish and ROI. assign: None (leave out the duplicated pair),\n    0 or 25 (use the shared YP image once, under that amplitude).\"\"\"\n    rows = []\n    for d in fig2:\n        if d[\"subject_id\"] in (\"Fig2_0_03\", \"Fig2_25_04\"):\n            if assign is None:\n                continue\n            if (assign == 0) != (d[\"subject_id\"] == \"Fig2_0_03\"):\n                continue\n        for r in d[key]:\n            rows.append({\"dish\": d[\"subject_id\"], \"amp\": d[\"amp\"], **r})\n    t = pd.DataFrame(rows)\n    t[\"field\"] = t.field_kv_cm * 15.1 / fields[0]\n    t[\"abs_off\"] = t.offset_mm.abs().round(1)\n    return t\n\ndef per_dish(t, reading=\"a\"):\n    \"\"\"Dish value per distance from the centre: (a) mean of the two ROI at +-offset,\n    (b+) the positive side only, (b-) the negative side only.\"\"\"\n    if reading == \"a\":\n        s = t\n    elif reading == \"b+\":\n        s = t[t.offset_mm >= 0]\n    else:\n        s = t[t.offset_mm <= 0]\n    g = s.groupby([\"amp\", \"dish\", \"abs_off\"]).agg(YP=(\"YP\", \"mean\"), field=(\"field\", \"mean\")).reset_index()\n    return g\n\nT = {None: long_table(), 0: long_table(assign=0), 25: long_table(assign=25)}\nD = {(a, r): per_dish(T[a], r) for a in T for r in [\"a\", \"b+\", \"b-\"]}\nmain = D[(None, \"a\")]\nsummary = main.groupby([\"amp\", \"abs_off\"]).YP.agg([\"mean\", \"sem\", \"count\"]).unstack(0)\nprint(\"Mean YP (a.u.) per ROI distance and amplitude, reading (a), duplicated pair left out:\")\nprint(summary[\"mean\"].round(0).assign(field=np.round(scaled, 2)).to_string())\nprint(\"dishes per amplitude:\", main.groupby(\"amp\").dish.nunique().to_dict())\nprint(\"YP range over dish values: %.0f to %.0f a.u.\" % (main.YP.min(), main.YP.max()))\n\n# %%\nfig, axs = plt.subplots(1, 5, figsize=(20, 3.8))\nfor ax, a in zip(axs, [0, 25, 50, 75, 100]):\n    s = main[main.amp == a].groupby(\"abs_off\").agg(m=(\"YP\", \"mean\"), e=(\"YP\", \"sem\"), f=(\"field\", \"mean\"))\n    ax.errorbar(s.f, s.m, s.e, fmt=\"o-\")\n    ax.set_title(f\"{a}% second phase (n={main[main.amp == a].dish.nunique()})\")\n    ax.set_xlabel(\"field (kV/cm)\")\naxs[0].set_ylabel(\"YP (a.u.)\")\nplt.tight_layout()\nplt.show()\n\n# %% [markdown]\n# ### fig2a-uptake-rises-with-field\n#\n# > For unipolar 600 ns pulses and for bipolar 600+600 ns pulses with every second\n# > phase amplitude, a train of 5 pulses at 1 Hz evoked YP uptake that increased with\n# > the local electric field strength.\n#\n# Strongest-field ROI (centre) against weakest-field ROI (3.0 mm, 5.0 kV/cm, the\n# outermost ROI of the set used here), dish values, two-sided t-test unpaired and\n# paired. The ROI set's outer limit is not given by the paper (its figure range is in\n# the PDF only); the ROI at 2.4 mm (6.6 kV/cm) is shown as a variant weakest ROI.\n\n# %% tags=claim:fig2a-uptake-rises-with-field\ndef rises(g, weak=3.0):\n    out = []\n    for a in [0, 25, 50, 75, 100]:\n        s = g[g.amp == a].pivot(index=\"dish\", columns=\"abs_off\", values=\"YP\")\n        hi, lo = s[0.0], s[weak]\n        tu = stats.ttest_ind(hi, lo); tp = stats.ttest_rel(hi, lo)\n        m = s.mean()\n        rho = stats.spearmanr(g[g.amp == a].groupby(\"abs_off\").field.mean(), m)\n        out.append({\"amp %\": a, \"n\": len(s), \"YP strongest\": hi.mean(), \"YP weakest\": lo.mean(), \"unpaired p\": tu.pvalue,\n                    \"paired p\": tp.pvalue, \"higher & p<0.05 (unpaired)\": hi.mean() > lo.mean() and tu.pvalue < 0.05,\n                    \"higher & p<0.05 (paired)\": hi.mean() > lo.mean() and tp.pvalue < 0.05, \"Spearman rho (means vs field)\": rho[0], \"rho p\": rho[1]})\n    return pd.DataFrame(out)\n\nfor (a, r), g in D.items():\n    for weak in (3.0, 2.4):\n        res = rises(g, weak)\n        tag = f\"duplicate {'left out' if a is None else 'as ' + str(a) + '%'}, reading ({r}), weakest ROI at {weak} mm\"\n        print(tag, \"| amplitudes passing, unpaired:\", int(res.iloc[:, 6].sum()), \"paired:\", int(res.iloc[:, 7].sum()))\n        if (a, r, weak) == (None, \"a\", 3.0):\n            main_rises = res\nprint()\nprint(main_rises.round(4).to_string())\n\n# %% [markdown]\n# ### fig2a-vertical-scales\n#\n# > The vertical scale of the Fig. 2A panels goes from 1200 a.u. for unipolar pulses\n# > down to only 250 a.u. for bipolar pulses with a 75% second phase.\n#\n# The image values are 16-bit counts with no conversion (conversion 1.0, offset 0 in\n# the files); nothing shows that they were rescaled on export, and the footprint\n# levels (about 180 to 300 counts) are plausible camera counts. They are taken as\n# the units the paper measured, which the data are consistent with but cannot prove.\n\n# %% tags=claim:fig2a-vertical-scales\nfor (a, r) in [(None, \"a\"), (None, \"b+\"), (None, \"b-\"), (0, \"a\"), (25, \"a\")]:\n    g = D[(a, r)]\n    s = g.groupby([\"amp\", \"abs_off\"]).YP.agg([\"mean\", \"sem\"])\n    top = (s[\"mean\"] + s[\"sem\"]).groupby(level=0).max()\n    mx = s[\"mean\"].groupby(level=0).max()\n    print(f\"duplicate {'left out' if a is None else 'as ' + str(a) + '%'}, reading ({r}): largest mean+sem per amplitude {top.round(0).to_dict()};\"\n          f\" largest mean {mx.round(0).to_dict()}; unipolar <= 1200: {top[0] <= 1200}; 75% <= 250: {top[75] <= 250}; unipolar mean > 250: {mx[0] > 250};\"\n          f\" ratio of largest means 0%/75% {mx[0] / mx[75]:.2f} (paper's axes 4.8)\")\n\n# %% [markdown]\n# ### fig2b-exponential-same-slope\n#\n# > YP uptake increased exponentially with the field strength, and the second phase\n# > did not change the slope of the exponential fits on a semi-log scale.\n#\n# Fits to the mean values over ROI at or above the cutoff (8 kV/cm; 6 and 7 as\n# variants): YP = A exp(kE) by nonlinear least squares, against a straight line.\n# Per-dish fits give a slope k per dish; each bipolar amplitude is compared with the\n# unipolar slopes by an unpaired two-sided t-test. Variant: linear regression of log\n# YP on field (ROI with YP <= 0 dropped).\n\n# %% tags=claim:fig2b-exponential-same-slope\nfrom scipy.optimize import curve_fit\nexpf = lambda E, A, kk: A * np.exp(kk * E)\n\ndef fit_exp(E, Y):\n    try:\n        p, cov = curve_fit(expf, E, Y, p0=[max(np.mean(Y), 1) * np.exp(-0.2 * np.mean(E)), 0.2], maxfev=20000)\n        return p, np.sqrt(np.diag(cov)), np.sum((Y - expf(E, *p)) ** 2)\n    except Exception as e:\n        return None, None, np.nan\n\ndef fig2b(g, cut, method=\"nls\"):\n    rows, slopes = [], {}\n    for a in [0, 25, 50, 75, 100]:\n        s = g[(g.amp == a) & (g.field >= cut)]\n        m = s.groupby(\"abs_off\").agg(E=(\"field\", \"mean\"), Y=(\"YP\", \"mean\"))\n        lin = np.polyfit(m.E, m.Y, 1); rss_lin = np.sum((m.Y - np.polyval(lin, m.E)) ** 2)\n        p, se, rss_exp = fit_exp(m.E.values, m.Y.values)\n        ks = []\n        for dish, sd in s.groupby(\"dish\"):\n            if method == \"nls\":\n                pp, _, _ = fit_exp(sd.field.values, sd.YP.values)\n                ks.append(pp[1] if pp is not None else np.nan)\n            else:\n                ok = sd.YP > 0\n                ks.append(np.polyfit(sd.field[ok], np.log(sd.YP[ok]), 1)[0] if ok.sum() >= 3 else np.nan)\n        slopes[a] = np.array(ks)\n        rows.append({\"amp %\": a, \"ROI\": len(m), \"k of fit to means (1/(kV/cm))\": p[1] if p is not None else np.nan,\n                     \"k se\": se[1] if se is not None else np.nan, \"RSS exp\": rss_exp, \"RSS line\": rss_lin, \"exp better\": rss_exp < rss_lin,\n                     \"per-dish k\": np.round(slopes[a], 3).tolist()})\n    out = pd.DataFrame(rows)\n    out[\"k ratio to unipolar\"] = out[\"k of fit to means (1/(kV/cm))\"] / out.loc[0, \"k of fit to means (1/(kV/cm))\"]\n    ps = {}\n    for a in [25, 50, 75, 100]:\n        x, y = slopes[a][np.isfinite(slopes[a])], slopes[0][np.isfinite(slopes[0])]\n        ps[a] = stats.ttest_ind(x, y).pvalue if len(x) > 1 and len(y) > 1 else np.nan\n    out[\"p slope vs unipolar\"] = out[\"amp %\"].map(ps)\n    return out\n\nfor cut in (8, 7, 6):\n    for method in (\"nls\", \"log-linear\"):\n        for key in [(None, \"a\"), (0, \"a\"), (25, \"a\")]:\n            r = fig2b(D[key], cut, method)\n            nexp = int(r[\"exp better\"].sum()); ndiff = int((r[\"p slope vs unipolar\"] < 0.05).sum())\n            print(f\"cutoff {cut} kV/cm, per-dish {method}, duplicate {'left out' if key[0] is None else 'as ' + str(key[0]) + '%'}: exp better for {nexp}/5;\"\n                  f\" bipolar slopes differing from unipolar (p<0.05): {ndiff}/4; p = {r['p slope vs unipolar'].dropna().round(3).tolist()}\")\n            if (cut, method, key) == (8, \"nls\", (None, \"a\")):\n                main_2b = r\nprint()\nprint(main_2b.round(4).to_string())\n\n# %% [markdown]\n# ### fig2c-max-inhibition-50-75\n#\n# > The strongest inhibition of YP uptake, to about 20% of the uptake after unipolar\n# > pulses, was reached with a second phase of 50 to 75% of the first (p < 0.01).\n#\n# Percent of unipolar YP at each ROI with field 8.7 to 15.1 kV/cm (scaled fields;\n# the ROI at 0 to 1.8 mm). Ordering: the lower of 50% and 75% below 25% and 100% at\n# every such field. \"~20%\": (a) the mean over those fields for the better of 50 and\n# 75%, (b) the lowest percent at any of them. Tests, unpaired: (i) 50% and 75% dish\n# YP against unipolar, (ii) 50% and 75% against 25% and 100%, at each field.\n\n# %% tags=claim:fig2c-max-inhibition-50-75\nrng = sorted(main.abs_off[(main.field >= 8.7 - 1e-9) & (main.field <= 15.1 + 1e-9)].unique())\nprint(\"ROI in 8.7 to 15.1 kV/cm (offsets, mm):\", rng, \"| scaled fields:\", [round(float(scaled[list(offs).index(o)]), 2) for o in rng])\n\ndef fig2c(g):\n    m = g.groupby([\"amp\", \"abs_off\"]).YP.mean().unstack(0)\n    pc = (m.div(m[0], axis=0) * 100).loc[rng]\n    order = ((pc[[50, 75]].min(axis=1) < pc[25]) & (pc[[50, 75]].min(axis=1) < pc[100]))\n    best = 50 if pc[50].mean() <= pc[75].mean() else 75\n    ra, rb = pc[best].mean(), pc[[50, 75]].min(axis=1).min()\n    ti, tii = [], []\n    for o in rng:\n        v = {a: g[(g.amp == a) & (g.abs_off == o)].YP.values for a in [0, 25, 50, 75, 100]}\n        ti.append({a: stats.ttest_ind(v[a], v[0]).pvalue for a in (50, 75)})\n        tii.append({(a, b): stats.ttest_ind(v[a], v[b]).pvalue for a in (50, 75) for b in (25, 100)})\n    ti, tii = pd.DataFrame(ti, index=rng), pd.DataFrame(tii, index=rng)\n    return pc, order, best, ra, rb, ti, tii\n\nfor key in [(None, \"a\"), (0, \"a\"), (25, \"a\"), (None, \"b+\"), (None, \"b-\")]:\n    pc, order, best, ra, rb, ti, tii = fig2c(D[key])\n    i_all = bool((ti.min(axis=1) < 0.01).all()); ii_all = bool(((tii[[(50, 25), (50, 100)]].max(axis=1) < 0.01) | (tii[[(75, 25), (75, 100)]].max(axis=1) < 0.01)).all())\n    print(f\"duplicate {'left out' if key[0] is None else 'as ' + str(key[0]) + '%'}, reading ({key[1]}): ordering holds at {int(order.sum())}/{len(order)} fields;\"\n          f\" best {best}%: (a) mean {ra:.1f}%, (b) lowest {rb:.1f}%; (i) p<0.01 for 50 or 75% vs unipolar at {int((ti.min(axis=1) < 0.01).sum())}/{len(rng)} fields;\"\n          f\" (ii) p<0.01 against both 25 and 100% at {int(((tii[[(50, 25), (50, 100)]].max(axis=1) < 0.01) | (tii[[(75, 25), (75, 100)]].max(axis=1) < 0.01)).sum())}/{len(rng)} fields\")\n    if key == (None, \"a\"):\n        main_2c = (pc, order, best, ra, rb, ti, tii)\npc, order, best, ra, rb, ti, tii = main_2c\nprint()\nprint(\"percent of unipolar, main reading:\")\nprint(pc.round(1).assign(ordering=order).to_string())\nprint(\"(i) p, 50% and 75% against unipolar:\")\nprint(ti.round(4).to_string())\nprint(\"(ii) p:\")\nprint(tii.round(4).to_string())\n\n# %% [markdown]\n# ### fig2c-inhibition-flat-above-8-7\n#\n# > Between 8.7 and 15.1 kV/cm the degree of inhibition by the second phase did not\n# > depend on the field strength.\n#\n# Each bipolar dish value divided by the unipolar mean at the same ROI; 8.7 kV/cm\n# (ROI at 1.8 mm) against 15.1 kV/cm (centre), unpaired two-sided t-test, p < 0.05.\n\n# %% tags=claim:fig2c-inhibition-flat-above-8-7\ndef ratio_table(g):\n    um = g[g.amp == 0].groupby(\"abs_off\").YP.mean()\n    r = g[g.amp > 0].copy()\n    r[\"pct\"] = r.YP / r.abs_off.map(um) * 100\n    return r\n\no87, o151, o67 = nearest(8.7), nearest(15.1), nearest(6.7)\nfor key in [(None, \"a\"), (0, \"a\"), (25, \"a\"), (None, \"b+\"), (None, \"b-\")]:\n    r = ratio_table(D[key])\n    rows = []\n    for a in [25, 50, 75, 100]:\n        x = r[(r.amp == a) & (r.abs_off == o87)].set_index(\"dish\").pct\n        y = r[(r.amp == a) & (r.abs_off == o151)].set_index(\"dish\").pct\n        rows.append({\"amp %\": a, \"% at 8.7\": x.mean(), \"% at 15.1\": y.mean(), \"difference\": x.mean() - y.mean(),\n                     \"unpaired p\": stats.ttest_ind(x, y).pvalue, \"paired p (variant)\": stats.ttest_rel(x, y.loc[x.index]).pvalue})\n    rows = pd.DataFrame(rows)\n    # every pair of ROI in the range (variant)\n    npairs = nsig = 0\n    for a in [25, 50, 75, 100]:\n        for i, o1 in enumerate(rng):\n            for o2 in rng[i + 1:]:\n                npairs += 1\n                nsig += stats.ttest_ind(r[(r.amp == a) & (r.abs_off == o1)].pct, r[(r.amp == a) & (r.abs_off == o2)].pct).pvalue < 0.05\n    print(f\"duplicate {'left out' if key[0] is None else 'as ' + str(key[0]) + '%'}, reading ({key[1]}): amplitudes with p<0.05 (unpaired): {int((rows['unpaired p'] < 0.05).sum())}/4;\"\n          f\" every-pair variant: {nsig}/{npairs} pairs differ\")\n    if key == (None, \"a\"):\n        print(rows.round(4).to_string())\n\n# %% [markdown]\n# ### fig2c-weaker-at-6-7\n#\n# > Inhibition was weaker at 6.7 kV/cm than at the higher field strengths, with\n# > p < 0.01 for the 50% bipolar pulses and p < 0.05 for the 100% bipolar pulses.\n#\n# Percent of the unipolar mean at the ROI closest to 6.7 kV/cm (2.4 mm) against (i)\n# each ROI from 8.7 to 15.1 kV/cm and (ii) those ROI pooled; unpaired and paired.\n\n# %% tags=claim:fig2c-weaker-at-6-7\nfor key in [(None, \"a\"), (0, \"a\"), (25, \"a\"), (None, \"b+\"), (None, \"b-\")]:\n    r = ratio_table(D[key])\n    lines = []\n    verdict = {}\n    for a, thr in [(50, 0.01), (100, 0.05)]:\n        x = r[(r.amp == a) & (r.abs_off == o67)].set_index(\"dish\").pct\n        higher = [r[(r.amp == a) & (r.abs_off == o)].set_index(\"dish\").pct for o in rng]\n        each_u = [stats.ttest_ind(x, h).pvalue for h in higher]\n        each_p = [stats.ttest_rel(x, h.loc[x.index]).pvalue for h in higher]\n        pooled = pd.concat(higher)\n        pool_u = stats.ttest_ind(x, pooled).pvalue\n        pool_p = stats.ttest_rel(x, pd.concat(higher, axis=1).mean(axis=1).loc[x.index]).pvalue\n        above_all = bool(all(x.mean() > h.mean() for h in higher))\n        sig = (max(each_u) < thr) or (pool_u < thr) or (max(each_p) < thr) or (pool_p < thr)\n        verdict[a] = (above_all, sig)\n        lines.append(f\"{a}%: at 6.7 kV/cm {x.mean():.1f}% vs higher fields {min(h.mean() for h in higher):.1f} to {max(h.mean() for h in higher):.1f}% (pooled {pooled.mean():.1f}%);\"\n                     f\" higher than every higher field: {above_all}; (i) unpaired p max {max(each_u):.3g}, paired p max {max(each_p):.3g}; (ii) pooled unpaired p {pool_u:.3g}, paired {pool_p:.3g}; p<{thr} under some reading: {sig}\")\n    print(f\"duplicate {'left out' if key[0] is None else 'as ' + str(key[0]) + '%'}, reading ({key[1]}):\")\n    for l in lines:\n        print(\"   \", l)\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude-1001/nb/partB.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import pickle, numpy as np, pandas as pd, bipolar as bp
-D=pickle.load(open('all.pkl','rb'))
-rows=[]
-for d in D:
-    if d['amplitude'] is None: continue
-    m=d['measure']; f=m['footprints']; yp0=np.mean([x[1] for x in f]); mb0=np.mean([x[0] for x in f])
-    r=[x for x in m['rois'] if abs(x['k'])<=2]
-    rows.append({'dish':d['label'],'date':d['meta']['session_start'][:10],'YProi':np.mean([x['YP_roi'] for x in r]),'MBroi':np.mean([x['MB_roi'] for x in r]),'yp0':yp0,'mb0':mb0,
-      'raw_diff':np.mean([x['YP_roi'] for x in r])-yp0,'YPidx':np.mean([bp.yp_index(x['YP_roi'],x['MB_roi'],yp0,mb0) for x in r])})
-print(pd.DataFrame(rows).round(1).to_string())
-EOF
+cd $TMPDIR/nb && . ../ve/bin/activate && (echo "# %%"; echo "import os, numpy as np, pandas as pd, matplotlib.pyplot as plt; from scipy import stats; import kim2022 as k"; echo "k.load_dish = lambda ds, aid, block=7: np.load(f'/tmp/claude-1001/ds_{aid[:8]}.npy')"; cat partB.py) | sed 's/^plt.show()/plt.close("all")/' | grep -v "^# " > runB.py && date -u && timeout 900 env MPLBACKEND=Agg PYTHONPATH=entries/kim-2022 python runB.py 2>&1 | grep -v -i warning | grep -v "^  " | tail -150; date -u
 ```
 
 ```
-dish        date   YProi  MBroi    yp0    mb0  raw_diff  YPidx
-0     0%-03  2021-07-29   371.1  261.4  269.7  208.0     101.4   30.3
-1     0%-06  2021-07-29  1060.4  216.2  245.8  196.3     814.6  715.7
-2     0%-07  2021-07-29   795.1  223.8  324.1  206.7     471.0  409.9
-3   100%-03  2021-08-24   894.5  316.6  213.4  256.1     681.1  511.3
-4   100%-07  2021-08-24  1454.7  353.5  209.5  242.8    1245.2  792.8
-5   100%-08  2021-08-24  1442.1  375.1  175.5  255.9    1266.5  822.3
-6    25%-04  2021-07-26   371.1  331.8  269.7  320.3     101.4   88.9
-7    25%-10  2021-07-29  1143.5  334.8  310.9  263.5     832.6  599.8
-8    25%-14  2021-07-29   925.8  254.1  297.1  232.9     628.7  553.3
-9    50%-06  2021-07-26   501.7  340.5  275.3  319.1     226.4  194.4
-10   50%-10  2021-07-26   756.4  413.2  225.3  278.6     531.1  284.3
-11   50%-12  2021-07-26   529.4  336.3  260.8  298.0     268.7  215.6
-12   50%-13  2021-07-29   519.0  272.5  298.0  239.5     221.0  158.7
-13   50%-18  2021-07-29   468.6  257.5  330.7  266.4     137.9  154.4
-14   75%-02  2021-08-24   489.1  279.5  230.9  249.2     258.3  203.6
-15   75%-05  2021-08-24   427.8  271.1  216.7  259.4     211.0  191.0
-16   75%-10  2021-08-24   728.9  383.9  229.5  286.4     499.5  309.2
-Shell cwd was reset to
+Tue Nov 10 04:50:10 UTC 2026
+Fig2_0_07       ch0 median    193 max   65435 | ch1 median    286 max   64995 | digests ['8332b8ad3ef2', 'b13bf326c14a'] | footprints 4.44 mm apart, radii [0.69, 0.74] mm | centre/far ch0 1.13 ch1 3.40
+Fig2_100_03     ch0 median    237 max   65435 | ch1 median    250 max   58006 | digests ['0c4da72912d5', '89b1134af0bb'] | footprints 4.51 mm apart, radii [0.76, 0.74] mm | centre/far ch0 1.20 ch1 3.41
+Fig2_100_07     ch0 median    221 max   65436 | ch1 median    250 max   65435 | digests ['cc7a47ce1f79', '3b617d0bb622'] | footprints 4.49 mm apart, radii [0.78, 0.73] mm | centre/far ch0 1.45 ch1 5.92
+Fig2_100_08     ch0 median    241 max   65436 | ch1 median    219 max   23985 | digests ['8ee7515e0aa6', 'ef774f0589e8'] | footprints 4.50 mm apart, radii [0.79, 0.72] mm | centre/far ch0 1.32 ch1 6.54
+Fig2_25_04      ch0 median    247 max   65435 | ch1 median    284 max   50356 | digests ['c55963453c20', '951013f1cb48'] | footprints 4.55 mm apart, radii [0.43, 0.72] mm | centre/far ch0 1.13 ch1 1.28
+Fig2_25_10      ch0 median    236 max   65436 | ch1 median    327 max   56548 | digests ['4afd038d9a80', '15057ee3c822'] | footprints 4.52 mm apart, radii [0.85, 0.75] mm | centre/far ch0 1.24 ch1 3.37
+Fig2_25_14      ch0 median    217 max   65435 | ch1 median    284 max   65435 | digests ['3abb99404a51', '8b9930732689'] | footprints 4.58 mm apart, radii [0.83, 0.76] mm | centre/far ch0 1.04 ch1 2.75
+Fig2_50_06      ch0 median    281 max   65436 | ch1 median    278 max   61457 | digests ['0482c10b70ae', 'd6058e8b3cbb'] | footprints 4.59 mm apart, radii [0.76, 0.76] mm | centre/far ch0 1.16 ch1 1.92
+Fig2_50_10      ch0 median    258 max   65435 | ch1 median    248 max   54726 | digests ['2054d5aad36f', 'fc15c73afc19'] | footprints 4.48 mm apart, radii [0.72, 0.75] mm | centre/far ch0 1.33 ch1 2.86
+Fig2_50_12      ch0 median    262 max   65436 | ch1 median    291 max   65435 | digests ['240af6718d7e', 'd72bb6954ec0'] | footprints 4.50 mm apart, radi
+[... 142 more lines not kept]
 ```
-
-**Agent**
-
-Normalization doesn't explain it: raw YP_ROI − YP_0 also puts 100% (680 to 1270) at or above unipolar (470 to 815). I'll report the data as they are. Writing the notebook now.
 
 **Agent calls Bash**
 
 ```bash
-date -u; cat entries/001453-fouke-2025/README.md | head -30; python -c "
-import json;nb=json.load(open('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb'))
-for c in nb['cells'][-3:]: print(c['cell_type'],c.get('metadata'),''.join(c['source'])[:3000]); print('----')
-"; grep -n "def \|argparse\|add_parser" tools/entry.py | head -40
+cat entries/fouke-2025/README.md | head -30; python - <<'EOF'
+import json
+nb=json.load(open('entries/fouke-2025/reproduce_fouke_2025.ipynb'))
+for c in nb['cells'][:3]: print(c['cell_type'], ''.join(c['source'])[:1500]); print('---')
+print(''.join(nb['cells'][-1]['source'])[:2500])
+EOF
 ```
 
 ```
-Fri Oct 30 16:18:51 UTC 2026
 # Fouke, He, Loring & Naumann (2025) from dandiset 001453
 
 Tests the findings of [Fouke et al. (2025)](https://doi.org/10.1016/j.cub.2025.04.027) that can be
@@ -1501,303 +1582,235 @@ S1). The imaging and head-fixed tail tracking of Figures 2 to 4 are not in it.
 | ZF have higher angular acceleration than DC | Not reproduced |
 | DC turn less than ZF to monocular stimuli | Reproduced |
 | ZF swim in bouts, DC continuously | Reproduced |
-[... 100 more lines not kept]
+| Values from representative trials (Figure 1C, E, F) | Blocked: metadata insufficient |
+[... 101 more lines not kept]
 ```
-
-**Agent calls Bash**
-
-```bash
-sed -n 143,400p tools/entry.py
-```
-
-```
-def check(entry_dir: Path) -> Report:
-    report = Report()
-    rel = entry_dir.relative_to(ROOT)
-    entry = validate(report, entry_dir / "entry.yaml", "entry")
-    if entry is None:
-        return report
-    if entry.get("name") != entry_dir.name:
-        report.error(rel / "entry.yaml", f"name {entry.get('name')!r} must match the directory name")
-
-    listed = [n["path"] for n in entry.get("notebooks", [])]
-    present = sorted(p.name for p in entry_dir.glob("*.ipynb"))
-    for name in sorted(set(present) - set(listed)):
-        report.error(rel / name, "notebook is not listed in entry.yaml")
-    for name in sorted(set(listed) - set(present)):
-        report.error(rel / "entry.yaml", f"listed notebook {name!r} does not exist")
-    helpers = entry.get("helpers", [])
-    for name in helpers:
-        if not (entry_dir / name).is_file():
-            report.error(rel / "entry.yaml", f"listed helper {name!r} does not exist")
-
-[... 239 more lines not kept]
-```
-
-**Agent**
-
-Writing the notebook builder. The conclusion cells are written after I have seen the outputs.
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/build_nb.py",
- "content": "import json, sys\nimport nbformat as nbf\n\ncells = []\ndef md(s, tags=None):\n    c = nbf.v4.new_markdown_cell(s.strip(\"\\n\"))\n    if tags: c.metadata[\"tags\"] = tags\n    cells.append(c)\ndef code(s, tags=None):\n    c = nbf.v4.new_code_cell(s.strip(\"\\n\"))\n    if tags: c.metadata[\"tags\"] = tags\n    cells.append(c)\n\nconclusions = json.load(open(sys.argv[2])) if len(sys.argv) > 2 else {}\ndef result(key):\n    if key in conclusions:\n        md(conclusions[key])\n\nmd(open(\"/tmp/claude-1001/header.md\").read())\n\ncode('''\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nfrom scipy import optimize, stats\n\nimport bipolar as bp\n\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 40)\npd.set_option(\"display.max_rows\", 200)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\ndishes = bp.load_all()\nprint(f\"loaded {len(dishes)} files from dandiset {bp.DANDISET_ID} version {bp.DANDISET_VERSION} \"\n      f\"in {time.time() - started:.0f} s\")\n''')\n\nmd('''\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n''')\n\ncode('''\nmeta = bp.dandiset_metadata()\ndraft = bp.dandiset_metadata(\"draft\")\nprint(\"Title:\", meta[\"name\"])\nprint(\"Description:\", meta[\"description\"])\nprint(\"Related resource:\", [(r[\"relation\"], r[\"url\"]) for r in meta.get(\"relatedResource\", [])])\nsame_assets = [(a[\"path\"], a[\"size\"], a[\"blob\"]) for a in bp.assets()] == [\n    (a[\"path\"], a[\"size\"], a.get(\"blob\")) for a in\n    __import__(\"requests\").get(f\"{bp.API}/dandisets/{bp.DANDISET_ID}/versions/draft/assets/?page_size=100\").json()[\"results\"]\n    if True] or None\ndraft_assets = sorted((a[\"path\"], a[\"size\"], a.get(\"blob\")) for a in\n    __import__(\"requests\").get(f\"{bp.API}/dandisets/{bp.DANDISET_ID}/versions/draft/assets/?page_size=100\").json()[\"results\"])\nprint(\"Draft holds the same files (path, size, blob) as\", bp.DANDISET_VERSION, \":\",\n      draft_assets == sorted((a[\"path\"], a[\"size\"], a[\"blob\"]) for a in bp.assets()))\nprint(\"Metadata fields that differ between draft and published:\",\n      sorted(k for k in set(meta) | set(draft) if meta.get(k) != draft.get(k)))\n\ninfo = pd.DataFrame([{\n    \"subject\": d[\"subject\"], \"amplitude_%\": d[\"amplitude\"], \"acquisition\": \",\".join(d[\"meta\"][\"acquisition\"]),\n    \"session_id\": d[\"meta\"][\"session_id\"], \"date\": d[\"meta\"][\"session_start\"][:16],\n    \"shape\": d[\"meta\"][\"shape\"], \"dtype\": d[\"meta\"][\"dtype\"], \"unit\": d[\"meta\"][\"unit\"],\n    \"conversion\": d[\"meta\"][\"conversion\"], \"rate\": d[\"meta\"][\"rate\"],\n    \"other_groups\": d[\"meta\"][\"processing\"] + d[\"meta\"][\"analysis\"] + d[\"meta\"][\"stimulus\"]} for d in dishes])\nprint(\"\\\\nFiles:\", len(info))\nprint(info.to_string(index=False))\nprint(\"\\\\nDishes per second phase amplitude (Fig. 2 files):\")\nprint(info[\"amplitude_%\"].value_counts().sort_index().to_string())\nprint(\"\\\\nSeries description (first Fig. 2 file):\", dishes[1][\"meta\"][\"description\"])\nprint(\"Session description (first Fig. 2 file):\", dishes[1][\"meta\"][\"session_description\"])\n''', [\"sanity\"])\n\nmd('''\nThe dandiset holds 18 files: one stitched image of the whole glass bottom per dish for the 17\ndishes of Fig. 2 (0% second phase: 3, 25%: 3, 50%: 5, 75%: 3, 100%: 3, inside the paper's \"3-8\"\nexposures per protocol) and one sample image named for Fig. 1F. Each file holds one ImageSeries\nwhose `data` is a single two-channel image stored as (22323, 22323, 2) with a \"rate\" of 2 Hz: as an\nImageSeries the first axis is time, so the file reads as 22323 frames of 22323 x 2 pixels. The\nimage has no pixel size, unit (\"n.a.\"), electrode position, ROI, field map, pulse voltage or\nfootprint values; nothing is in `processing`, `analysis` or `stimulus`. The series description\nsays the image was stitched from 144 images (12 x 12) of \"a whole well from a six-well plate\";\nthe paper says 216 images of a 35 mm dish (Methods 2.1 and 2.5). The acquisition name is not unique\n(the three 25% files all name it `Fig2_25`). There are no time series and no trial table, so the\ncheck of a shared clock does not apply: each file is one image taken after the exposure.\n''')\n\ncode('''\nfig, axes = plt.subplots(3, 6, figsize=(18, 9))\nfor ax, d in zip(axes.flat, dishes):\n    im = d[\"overview\"][bp.YP]\n    lo, hi = np.percentile(im[im > 0], [5, 99.5])\n    ax.imshow(im, vmin=lo, vmax=hi, cmap=\"gray\")\n    if \"footprints\" in d:\n        for c, r in zip(d[\"footprints\"][\"centres\"], d[\"footprints\"][\"radii\"]):\n            ax.add_patch(plt.Circle((c[1] / bp.BLOCK[1], c[0] / bp.BLOCK[0]), r / 24, fill=False, color=\"r\"))\n        for roi in d[\"measure\"][\"rois\"]:\n            ax.plot(roi[\"col\"] / bp.BLOCK[1], roi[\"row\"] / bp.BLOCK[0], \".\", color=\"c\", ms=2)\n    ax.set_title(d[\"label\"], fontsize=9)\n    ax.set_xticks([]); ax.set_yticks([])\nplt.suptitle(\"YP channel (block means of 25 x 23 px); red: footprints found; cyan: ROI centres along bb'\")\nplt.tight_layout()\nplt.show()\nprint(\"Display range per panel: 5th to 99.5th percentile of the non-zero block means.\")\n\nov = {d[\"subject\"]: d[\"overview\"] for d in dishes}\nf1f = ov[\"sub-Fig1F\"]\nprint(\"sub-Fig1F: channel 0 identical to channel 1:\", bool(np.array_equal(f1f[0], f1f[1])))\n''', [\"sanity\"])\n\ncode('''\n# Duplicated recordings: identical overviews of either channel across files.\nsubjects = sorted(ov)\ndups = []\nfor i, a in enumerate(subjects):\n    for b in subjects[i + 1:]:\n        for ca in (bp.MB, bp.YP):\n            for cb in (bp.MB, bp.YP):\n                if np.array_equal(ov[a][ca], ov[b][cb]):\n                    dups.append((a, [\"MB\", \"YP\"][ca], b, [\"MB\", \"YP\"][cb]))\nprint(\"Identical channel overviews across files:\", dups)\n\n# Which file each YP image belongs to: phase correlation of the fine structure of a file's MemBrite\n# and YP channels (cells, debris), on the central 9.6 x 9.6 mm. Same scan: a sharp peak at zero shift.\nfrom scipy.ndimage import gaussian_filter\ndef fine(x):\n    x = np.log1p(x[150:750, 150:810])\n    return x - gaussian_filter(x, 8)\ndef peak(a, b):\n    A, B = np.fft.fft2(fine(a)), np.fft.fft2(fine(b))\n    R = A * np.conj(B)\n    r = np.real(np.fft.ifft2(R / (np.abs(R) + 1e-9)))\n    return r[0, 0], np.unravel_index(np.argmax(r), r.shape)\nrows = []\nfor s in subjects:\n    if s == \"sub-Fig1F\":\n        continue\n    p, where = peak(ov[s][bp.MB], ov[s][bp.YP])\n    rows.append({\"subject\": s, \"MB_vs_own_YP_peak\": round(p, 3), \"argmax_at_zero_shift\": where == (0, 0)})\nreg = pd.DataFrame(rows)\nprint(reg.to_string(index=False))\nothers = [peak(ov[a][bp.MB], ov[b][bp.YP])[0] for a in subjects for b in subjects\n          if a != b and \"Fig1F\" not in a + b][:60]\nprint(f\"Baseline, MB of one dish against YP of another (60 pairs): {np.mean(others):.3f} \"\n      f\"(range {np.min(others):.3f} to {np.max(others):.3f})\")\nprint(\"MB of sub-Fig2-25-04 against YP of sub-Fig2-0-03:\",\n      round(peak(ov[\"sub-Fig2-25-04\"][bp.MB], ov[\"sub-Fig2-0-03\"][bp.YP])[0], 3))\n''', [\"sanity\"])\n\nmd('''\nThe YP channel of `sub-Fig2-0-03` (unipolar) is identical to the YP channel of `sub-Fig2-25-04`\n(25% bipolar), while their MemBrite channels differ. In every other file the MemBrite and YP\nchannels share fine structure (a sharp phase-correlation peak at zero shift); in `sub-Fig2-0-03`\nthey do not, at the level of two unrelated dishes, while in `sub-Fig2-25-04` they do. The YP image\nstored in `sub-Fig2-0-03` is therefore that of dish 25-04, and the unipolar YP image of dish 0-03 is\nnot in the dandiset. Each recording is counted once: the main analysis leaves `sub-Fig2-0-03` out,\nso unipolar pulses have 2 dishes, and a variant keeps it as the dandiset presents it. The\n`sub-Fig1F` file holds the same image in both channels.\n''')\n\ncode('''\ngeo = pd.DataFrame([{\n    \"dish\": d[\"label\"], \"date\": d[\"meta\"][\"session_start\"][:10],\n    \"centre_distance_mm\": d[\"measure\"][\"separation_px\"] * bp.UM_PER_PX / 1000,\n    \"footprint_diam_left_mm\": 2 * d[\"footprints\"][\"radii\"][0] * bp.UM_PER_PX / 1000,\n    \"footprint_diam_right_mm\": 2 * d[\"footprints\"][\"radii\"][1] * bp.UM_PER_PX / 1000,\n    \"axis_angle_deg\": np.degrees(np.arctan2(*(d[\"footprints\"][\"centres\"][1] - d[\"footprints\"][\"centres\"][0]))) - 90,\n    \"YP0_left\": d[\"measure\"][\"footprints\"][0][bp.YP], \"YP0_right\": d[\"measure\"][\"footprints\"][1][bp.YP],\n    \"MB0_left\": d[\"measure\"][\"footprints\"][0][bp.MB], \"MB0_right\": d[\"measure\"][\"footprints\"][1][bp.MB],\n} for d in dishes if \"measure\" in d])\nprint(geo.round(3).to_string(index=False))\nprint(f\"\\\\nAt {bp.UM_PER_PX} um per pixel: electrode centres {geo.centre_distance_mm.median():.2f} mm apart \"\n      f\"(median; {geo.centre_distance_mm.min():.2f} to {geo.centre_distance_mm.max():.2f}); nominal \"\n      f\"{bp.CENTRE_DISTANCE_MM} mm (1.5 mm diameter, 3 mm side to side). Footprint diameter (equal-area disc of \"\n      f\"the dark region) median {np.median(geo[['footprint_diam_left_mm', 'footprint_diam_right_mm']]):.2f} mm; \"\n      f\"electrode diameter 1.5 mm.\")\nprint(\"Glass bottom diameter in the overview of sub-Fig2-50-10 (rows with signal, mm):\",\n      round((ov[\"sub-Fig2-50-10\"][bp.YP].max(axis=1) > 0).sum() * bp.BLOCK[0] * bp.UM_PER_PX / 1000, 1))\nprint(\"\\\\nDates of the dishes by amplitude:\")\nprint(pd.crosstab(geo.dish.str.split(\"%\").str[0].astype(int), geo.date).to_string())\n''', [\"sanity\"])\n\nmd('''\nThe pixel size is not in the files. At 0.65 um per pixel (the 6.5 um pixel of the ORCA-Flash4\ncamera through the 10x objective, Methods 2.5) the distance between the footprint centres and the\nfootprint diameter agree with the electrode geometry of Methods 2.2, so the scale is consistent\nwith the data; the variant that sets the scale from each dish's electrode distance is shown with\nevery claim. The dishes come from three days: all unipolar dishes from 2021-07-29, and all 75% and\n100% dishes from 2021-08-24, a day with no unipolar dish.\n''')\n\ncode('''\n# Field model (Methods 2.3): two cylinders in the plane, 5.75 kV on the first phase.\nprint(f\"Model field at the centre: {bp.field_kv_cm(0, 0):.2f} kV/cm (paper, Fig. 2C: strongest field 15.1 kV/cm)\")\nd0 = next(d for d in dishes if d[\"subject\"] == \"sub-Fig2-50-10\")\nprof = pd.DataFrame([{\"k\": r[\"k\"], \"distance_mm\": r[\"distance_mm\"], \"ROI_mean_field\": r[\"field\"],\n                      \"point_field\": bp.field_kv_cm(0, r[\"distance_mm\"])} for r in d0[\"measure\"][\"rois\"] if r[\"k\"] >= 0])\nprint(prof.round(2).to_string(index=False))\ngrad = [(bp.field_kv_cm(0, max(r - 0.1, 0)) - bp.field_kv_cm(0, r + 0.1)) / bp.field_kv_cm(0, r) for r in prof.distance_mm]\nprint(f\"Largest field change across one 200 um ROI along bb': {max(grad) * 100:.1f}% (paper, Methods 2.5: <10%)\")\n\nT = {}\nkeep = [d for d in dishes if d[\"subject\"] != \"sub-Fig2-0-03\"]\nT[\"main\"] = bp.roi_table(keep)\nT[\"top side\"] = bp.roi_table(keep, side=\"top\")\nT[\"bottom side\"] = bp.roi_table(keep, side=\"bottom\")\nT[\"scale from electrodes\"] = bp.roi_table(keep, which=\"measure_scaled\")\nT[\"left footprint\"] = bp.roi_table(keep, footprint=\"left\")\nT[\"right footprint\"] = bp.roi_table(keep, footprint=\"right\")\nT[\"with sub-Fig2-0-03\"] = bp.roi_table(dishes)\nmain = T[\"main\"]\nprint(\"\\\\nYP index (Methods 2.5) per dish along bb', main reading (both sides averaged), j = ROI index from the centre:\")\nprint(main.pivot_table(index=\"j\", columns=\"dish\", values=\"YP\").round(0).to_string())\nprint(\"\\\\nRange of the YP index over all dishes and ROI:\", round(main.YP.min(), 1), \"to\", round(main.YP.max(), 1))\nraw = pd.DataFrame([{\"dish\": d[\"label\"], \"k\": r[\"k\"], \"YP_roi\": r[\"YP_roi\"], \"MB_roi\": r[\"MB_roi\"]}\n                    for d in keep for r in d[\"measure\"][\"rois\"]])\nprint(\"Raw ROI means (camera counts, uint16): YP\", round(raw.YP_roi.min()), \"to\", round(raw.YP_roi.max()),\n      \"; MB\", round(raw.MB_roi.min()), \"to\", round(raw.MB_roi.max()))\nprint(\"ROI whose MemBrite mean is more than twice the dish median (debris or bright objects):\",\n      raw.groupby(\"dish\").apply(lambda g: g[g.MB_roi > 2 * g.MB_roi.median()][[\"k\", \"MB_roi\"]].round(0).values.tolist()).to_dict())\n''', [\"sanity\"])\n\ncode('''\ndef means(t):\n    return (t.groupby([\"amplitude\", \"j\"]).agg(field=(\"field\", \"mean\"), YP=(\"YP\", \"mean\"),\n            sem=(\"YP\", \"sem\"), n=(\"YP\", \"size\")).reset_index())\n\nM = means(main)\nfig, axes = plt.subplots(1, 5, figsize=(20, 3.6))\nfor ax, (amp, g) in zip(axes, M.groupby(\"amplitude\")):\n    ax.errorbar(g.field, g.YP, g.sem, fmt=\"o-\", ms=3)\n    for dish, h in main[main.amplitude == amp].groupby(\"dish\"):\n        ax.plot(h.field, h.YP, \".\", ms=3, alpha=0.5, label=dish)\n    ax.set_title(f\"{amp}% second phase (n = {g.n.max()})\")\n    ax.set_xlabel(\"field (kV/cm)\"); ax.legend(fontsize=6)\naxes[0].set_ylabel(\"YP (a.u.)\")\nplt.tight_layout(); plt.show()\nprint(\"Mean YP (a.u.) per amplitude, by ROI field:\")\nprint(M.pivot(index=\"j\", columns=\"amplitude\", values=\"YP\").round(1).assign(\n    field=M.groupby(\"j\").field.mean().round(2)).to_string())\nprint(\"All points are within the axes.\")\n''')\n\nmd('''\nClaims on data the dandiset does not hold (Figs. 1E, 3 to 7) are blocked and listed in the\nsummary. The six claims on Fig. 2 follow, each under every reading that the claims file names,\nand each also under the variants of the data: one side of bb' only (top, bottom), the scale set\nfrom the electrode distance, each footprint alone for YP_0 and MB_0, and with `sub-Fig2-0-03`.\n''')\n\ncode('''\ndef nearest_j(t, value):\n    f = t.groupby(\"j\").field.mean()\n    return int((f - value).abs().idxmin())\n\ndef ttest(a, b, paired):\n    a, b = np.asarray(a, float), np.asarray(b, float)\n    if paired:\n        return stats.ttest_rel(a, b).pvalue\n    return stats.ttest_ind(a, b).pvalue\n\ndef dish_values(t, amp, j):\n    return t[(t.amplitude == amp) & (t.j == j)].set_index(\"dish\").YP\n\ndef ratio_table(t):\n    \"\"\"Bipolar YP per dish over the unipolar mean at the same ROI (Fig. 2C legend: unipolar as 100%).\"\"\"\n    uni = t[t.amplitude == 0].groupby(\"j\").YP.mean()\n    r = t[t.amplitude > 0].copy()\n    r[\"pct\"] = 100 * r.YP / r.j.map(uni)\n    return r\n\ndef run_variants(fn):\n    rows = []\n    for name, t in T.items():\n        out = fn(t, verbose=False)\n        rows.append({\"data\": name, **{k: v for k, v in out.items() if not isinstance(v, (pd.DataFrame, dict))}})\n    print(pd.DataFrame(rows).to_string(index=False))\n\nAMPS = [0, 25, 50, 75, 100]\n''')\n\n# ---------------- claim 1\nmd('''\n## fig2a-uptake-rises-with-field\n\n> For unipolar 600 ns pulses and for bipolar 600+600 ns pulses with every second phase amplitude,\n> a train of 5 pulses at 1 Hz evoked YP uptake that increased with the local electric field\n> strength.\n\nCriterion: per amplitude, dish YP at the ROI with the strongest field against the ROI with the\nweakest field, two-sided t-test (a) paired across dishes and (b) unpaired; reproduced when YP is\nhigher at the strongest field with p < 0.05 for all five amplitudes, partially for three or four;\nmethods_underspecified when (a) and (b) differ. Spearman correlation of mean YP with field reported.\n''')\ncode('''\ndef claim_fig2a(t, verbose=True):\n    jmax = int(t.groupby(\"j\").field.mean().idxmax()); jmin = int(t.groupby(\"j\").field.mean().idxmin())\n    rows = []\n    m = means(t)\n    for amp in AMPS:\n        hi, lo = dish_values(t, amp, jmax), dish_values(t, amp, jmin)\n        g = m[m.amplitude == amp]\n        rows.append({\"amplitude\": amp, \"n\": len(hi), \"YP_strongest\": hi.mean(), \"YP_weakest\": lo.mean(),\n                     \"p_paired\": ttest(hi, lo.loc[hi.index], True), \"p_unpaired\": ttest(hi, lo, False),\n                     \"spearman_rho\": stats.spearmanr(g.field, g.YP)[0], \"spearman_p\": stats.spearmanr(g.field, g.YP)[1]})\n    r = pd.DataFrame(rows)\n    def outcome(col):\n        k = int(((r.YP_strongest > r.YP_weakest) & (r[col] < 0.05)).sum())\n        return k, \"reproduced\" if k == 5 else \"partially_reproduced\" if k >= 3 else \"not_reproduced\"\n    (ka, oa), (kb, ob) = outcome(\"p_paired\"), outcome(\"p_unpaired\")\n    if verbose:\n        print(f\"Strongest field ROI j = {jmax}, weakest j = {jmin}\")\n        print(r.round(4).to_string(index=False))\n    return {\"amplitudes_paired\": ka, \"paired\": oa, \"amplitudes_unpaired\": kb, \"unpaired\": ob,\n            \"outcome\": oa if oa == ob else \"methods_underspecified\"}\n\nres = claim_fig2a(main)\nprint(res)\nprint(\"\\\\nUnder every variant of the data:\")\nrun_variants(claim_fig2a)\n''', [\"claim:fig2a-uptake-rises-with-field\"])\nresult(\"fig2a-uptake-rises-with-field\")\n\n# ---------------- claim 2\nmd('''\n## fig2a-vertical-scales\n\n> Although the panels of Fig. 2A look similar, their vertical scale goes from 1200 a.u. for\n> unipolar pulses down to only 250 a.u. for bipolar pulses with a 75% second phase.\n\nCriterion: reproduced when the largest mean plus s.e.m. over ROI is at most 1200 a.u. for unipolar\nand at most 250 a.u. for 75% bipolar pulses, and the largest unipolar mean exceeds 250 a.u. The\nfiles hold uint16 camera counts with conversion 1.0 and no stated rescaling; they are taken as the\nunits the paper measured (an assumption: nothing in the files says how the paper's a.u. relate to\nthem). The ratio of the two largest means is reported either way.\n''')\ncode('''\ndef claim_scales(t, verbose=True):\n    m = means(t)\n    u, s = m[m.amplitude == 0], m[m.amplitude == 75]\n    top_u, top_s = (u.YP + u.sem).max(), (s.YP + s.sem).max()\n    ok = top_u <= 1200 and top_s <= 250 and u.YP.max() > 250\n    out = {\"max_mean+sem_unipolar\": round(top_u, 1), \"max_mean_unipolar\": round(u.YP.max(), 1),\n           \"max_mean+sem_75pct\": round(top_s, 1), \"max_mean_75pct\": round(s.YP.max(), 1),\n           \"ratio_of_max_means\": round(u.YP.max() / s.YP.max(), 2),\n           \"outcome\": \"reproduced\" if ok else \"not_reproduced\"}\n    if verbose:\n        for amp in AMPS:\n            g = m[m.amplitude == amp]\n            print(f\"{amp:>3}%: largest mean {g.YP.max():7.1f}, largest mean + s.e.m. {(g.YP + g.sem).max():7.1f} a.u.\")\n    return out\n\nprint(claim_scales(main))\nprint(\"\\\\nUnder every variant of the data:\")\nrun_variants(claim_scales)\n''', [\"claim:fig2a-vertical-scales\"])\nresult(\"fig2a-vertical-scales\")\n\n# ---------------- claim 3\nmd('''\n## fig2b-exponential-same-slope\n\n> YP uptake increased exponentially with the field strength, and the second phase did not change\n> the slope of the exponential fits on a semi-log scale.\n\nCriterion: mean YP per ROI fitted with YP = A exp(kE), leaving out ROI below a cutoff of 6, 7 or 8\nkV/cm; fits (a) nonlinear least squares on linear YP and (b) linear regression of log YP on field.\nExponential adequate when its residual sum of squares on linear YP is below a straight line's for\nat least four of five amplitudes. Slopes compared with the unipolar slope by (i) per-dish fits and\nan unpaired t-test and (ii) the fits to the means with their standard errors. Reproduced when no\nbipolar slope differs at p < 0.05 and the exponential is adequate; not reproduced when any slope\ndiffers; methods_underspecified when the readings disagree. Under (b), points with mean (or dish)\nYP at or below zero cannot be logged and are dropped; the count is printed.\n''')\ncode('''\ndef fit_exp(E, Y, how):\n    \"\"\"k, se(k), A, residual sum of squares on linear YP, points used.\"\"\"\n    E, Y = np.asarray(E, float), np.asarray(Y, float)\n    if how == \"nls\":\n        p0 = np.polyfit(E[Y > 0], np.log(Y[Y > 0]), 1) if (Y > 0).sum() >= 2 else [0.3, 0]\n        try:\n            popt, pcov = optimize.curve_fit(lambda e, a, k: a * np.exp(k * e), E, Y,\n                                            p0=[np.exp(p0[1]), p0[0]], maxfev=20000)\n        except RuntimeError:\n            return np.nan, np.nan, np.nan, np.nan, len(E)\n        return popt[1], np.sqrt(pcov[1, 1]), popt[0], ((Y - popt[0] * np.exp(popt[1] * E)) ** 2).sum(), len(E)\n    ok = Y > 0\n    if ok.sum() < 3:\n        return np.nan, np.nan, np.nan, np.nan, int(ok.sum())\n    lr = stats.linregress(E[ok], np.log(Y[ok]))\n    A = np.exp(lr.intercept)\n    return lr.slope, lr.stderr, A, ((Y - A * np.exp(lr.slope * E)) ** 2).sum(), int(ok.sum())\n\ndef claim_fig2b(t, verbose=True):\n    m = means(t)\n    readings, details = [], []\n    for cut in (6, 7, 8):\n        mm = m[m.field >= cut]\n        tt = t[t.field >= cut]\n        for how in (\"nls\", \"log\"):\n            fits = {}\n            adequate = 0\n            for amp in AMPS:\n                g = mm[mm.amplitude == amp]\n                k, se, A, rss, used = fit_exp(g.field, g.YP, how)\n                lin = np.polyfit(g.field, g.YP, 1)\n                rss_lin = ((g.YP - np.polyval(lin, g.field)) ** 2).sum()\n                adequate += bool(rss < rss_lin)\n                per_dish = {dish: fit_exp(h.field, h.YP, how)[0] for dish, h in tt[tt.amplitude == amp].groupby(\"dish\")}\n                fits[amp] = (k, se, used, len(g), per_dish)\n                details.append({\"cutoff\": cut, \"fit\": how, \"amplitude\": amp, \"k\": k, \"se_k\": se,\n                                \"k_ratio_to_unipolar\": np.nan, \"points_used\": f\"{used}/{len(g)}\",\n                                \"rss_exp\": rss, \"rss_line\": rss_lin,\n                                \"per_dish_k\": \", \".join(f\"{v:.3f}\" for v in per_dish.values())})\n            ku, seu, nu, _, du = fits[0]\n            for test in (\"per-dish\", \"means\"):\n                differs = []\n                for amp in AMPS[1:]:\n                    k, se, n, _, dd = fits[amp]\n                    if test == \"per-dish\":\n                        a = [v for v in dd.values() if np.isfinite(v)]; b = [v for v in du.values() if np.isfinite(v)]\n                        p = stats.ttest_ind(a, b).pvalue if len(a) > 1 and len(b) > 1 else np.nan\n                    else:\n                        tstat = (k - ku) / np.hypot(se, seu)\n                        p = 2 * stats.t.sf(abs(tstat), n + nu - 4)\n                    differs.append((amp, p))\n                any_diff = any(p < 0.05 for _, p in differs)\n                outcome = (\"not_reproduced\" if any_diff else\n                           \"reproduced\" if adequate >= 4 else \"partially_reproduced\")\n                readings.append({\"cutoff\": cut, \"fit\": how, \"test\": test, \"exp_better_than_line\": adequate,\n                                 **{f\"p_{a}\": round(p, 4) for a, p in differs}, \"outcome\": outcome})\n    R = pd.DataFrame(readings)\n    Dt = pd.DataFrame(details)\n    for (cut, how), g in Dt.groupby([\"cutoff\", \"fit\"]):\n        Dt.loc[g.index, \"k_ratio_to_unipolar\"] = g.k / g[g.amplitude == 0].k.iloc[0]\n    outs = set(R.outcome)\n    if verbose:\n        print(Dt.round(4).to_string(index=False))\n        print()\n        print(R.to_string(index=False))\n    return {\"outcomes\": \"/\".join(sorted(outs)),\n            \"outcome\": outs.pop() if len(outs) == 1 else \"methods_underspecified\"}\n\nprint(claim_fig2b(main))\nprint(\"\\\\nUnder every variant of the data:\")\nrun_variants(claim_fig2b)\n''', [\"claim:fig2b-exponential-same-slope\"])\nresult(\"fig2b-exponential-same-slope\")\n\n# ---------------- claim 4\nmd('''\n## fig2c-max-inhibition-50-75\n\n> The strongest inhibition of YP uptake, to about 20% of the uptake after unipolar pulses, was\n> reached with a second phase of 50 to 75% of the first (p < 0.01).\n\nCriterion: mean YP per amplitude as percent of the unipolar mean at each ROI from 8.7 to 15.1 kV/cm\n(the ROI nearest each named field and those between, opening comment). Reproduced when the lower\nof the 50% and 75% values is below the 25% and 100% values at every such field, the percent is\nwithin 18 to 22% under reading (a) the mean over those fields for the better of 50 and 75%, or (b)\nthe lowest percent at any of them, and the 50 or 75% dish values differ by an unpaired two-sided\nt-test at p < 0.01 under (i) against unipolar or (ii) against the 25% and 100% dishes, on raw YP\nor on dish values divided by the unipolar mean. Partially reproduced when ordering and test hold\nbut the percent is outside tolerance under every reading. Where the test is made is not said: it\nis run at every ROI of the range (holding when p < 0.01 at all of them) and, as a second reading,\non each dish's mean over the range. At a single ROI, dividing every dish by the same unipolar mean\nleaves the t-test unchanged, so raw and normalised values differ only in the pooled reading.\n''')\ncode('''\ndef claim_fig2c_max(t, verbose=True):\n    j_hi, j_lo = nearest_j(t, 15.1), nearest_j(t, 8.7)\n    js = list(range(min(j_hi, j_lo), max(j_hi, j_lo) + 1))\n    m = means(t)\n    pv = m.pivot(index=\"j\", columns=\"amplitude\", values=\"YP\").loc[js]\n    pct = 100 * pv.div(pv[0], axis=0)\n    best = 50 if pct[50].mean() <= pct[75].mean() else 75\n    order = bool(((pct[[50, 75]].min(axis=1) < pct[25]) & (pct[[50, 75]].min(axis=1) < pct[100])).all())\n    val_a = pct[best].mean()\n    val_b = pct[[50, 75]].min().min()\n    in_tol = {\"a\": 18 <= val_a <= 22, \"b\": 18 <= val_b <= 22}\n    uni = t[t.amplitude == 0].groupby(\"j\").YP.mean()\n    tests = []\n    for amp in (50, 75):\n        # (i) against unipolar, (ii) against 25% and 100%, at every ROI of the range\n        for reading, other in ((\"i\", [0]), (\"ii\", [25, 100])):\n            ps = [ttest(dish_values(t, amp, j), pd.concat([dish_values(t, o, j) for o in other]), False) for j in js]\n            sub = t[t.j.isin(js)].copy()\n            sub[\"norm\"] = sub.YP / sub.j.map(uni)\n            for col in (\"YP\", \"norm\"):\n                a = sub[sub.amplitude == amp].groupby(\"dish\")[col].mean()\n                b = sub[sub.amplitude.isin(other)].groupby(\"dish\")[col].mean()\n                tests.append({\"amplitude\": amp, \"comparison\": reading, \"values\": col,\n                              \"p_every_ROI_max\": max(ps), \"ROI_p<0.01\": f\"{sum(p < 0.01 for p in ps)}/{len(ps)}\",\n                              \"p_pooled_dish_means\": ttest(a, b, False)})\n    Tt = pd.DataFrame(tests)\n    test_every = bool((Tt.p_every_ROI_max < 0.01).any())\n    test_pooled = bool((Tt.p_pooled_dish_means < 0.01).any())\n    def outcome(test_ok):\n        if order and test_ok and (in_tol[\"a\"] or in_tol[\"b\"]):\n            return \"reproduced\"\n        if order and test_ok:\n            return \"partially_reproduced\"\n        return \"not_reproduced\"\n    o1, o2 = outcome(test_every), outcome(test_pooled)\n    if verbose:\n        print(f\"ROI used: j = {js} (fields {t.groupby('j').field.mean().loc[js].round(2).tolist()} kV/cm)\")\n        print(\"Percent of the unipolar mean:\")\n        print(pct.round(1).to_string())\n        print(f\"Better of 50 and 75%: {best}%; (a) mean over the range {val_a:.1f}%; (b) lowest {val_b:.1f}%\")\n        print(\"Ordering (lower of 50/75 below 25 and 100 at every ROI):\", order)\n        print(Tt.round(4).to_string(index=False))\n    return {\"best\": best, \"pct_a\": round(val_a, 1), \"pct_b\": round(val_b, 1), \"ordering\": order,\n            \"test_every_ROI\": test_every, \"test_pooled\": test_pooled,\n            \"outcome\": o1 if o1 == o2 else f\"every ROI: {o1}; pooled: {o2}\"}\n\nprint(claim_fig2c_max(main))\nprint(\"\\\\nUnder every variant of the data:\")\nrun_variants(claim_fig2c_max)\n''', [\"claim:fig2c-max-inhibition-50-75\"])\nresult(\"fig2c-max-inhibition-50-75\")\n\n# ---------------- claim 5\nmd('''\n## fig2c-inhibition-flat-above-8-7\n\n> Between 8.7 and 15.1 kV/cm the degree of inhibition by the second phase did not depend on the\n> field strength.\n\nCriterion (a claim of absence): bipolar YP of each dish divided by the unipolar mean at the same\nROI; for each bipolar amplitude, the values at 8.7 against 15.1 kV/cm by a two-sided t-test at p <\n0.05, (a) paired across dishes and (b) unpaired. Reproduced when no amplitude differs under both;\nnot reproduced when one does under both; methods_underspecified when (a) and (b) disagree. Every\npair of ROI in the range is shown as a variant, with the size of each difference.\n''')\ncode('''\ndef claim_fig2c_flat(t, verbose=True):\n    r = ratio_table(t)\n    j_hi, j_lo = nearest_j(t, 15.1), nearest_j(t, 8.7)\n    rows = []\n    for amp in (25, 50, 75, 100):\n        a = r[(r.amplitude == amp) & (r.j == j_lo)].set_index(\"dish\").pct\n        b = r[(r.amplitude == amp) & (r.j == j_hi)].set_index(\"dish\").pct\n        rows.append({\"amplitude\": amp, \"pct_at_8.7\": a.mean(), \"pct_at_15.1\": b.mean(),\n                     \"difference\": a.mean() - b.mean(),\n                     \"p_paired\": ttest(a, b.loc[a.index], True), \"p_unpaired\": ttest(a, b, False)})\n    R = pd.DataFrame(rows)\n    pa, pb = bool((R.p_paired < 0.05).any()), bool((R.p_unpaired < 0.05).any())\n    outcome = (\"reproduced\" if not pa and not pb else \"not_reproduced\" if pa and pb\n               else \"methods_underspecified\")\n    if verbose:\n        print(f\"8.7 kV/cm: ROI j = {j_lo}; 15.1 kV/cm: ROI j = {j_hi}\")\n        print(R.round(4).to_string(index=False))\n        js = list(range(min(j_hi, j_lo), max(j_hi, j_lo) + 1))\n        pairs = []\n        for amp in (25, 50, 75, 100):\n            for i, x in enumerate(js):\n                for y in js[i + 1:]:\n                    a = r[(r.amplitude == amp) & (r.j == x)].set_index(\"dish\").pct\n                    b = r[(r.amplitude == amp) & (r.j == y)].set_index(\"dish\").pct\n                    pairs.append({\"amplitude\": amp, \"paired_sig\": ttest(a, b.loc[a.index], True) < 0.05,\n                                  \"unpaired_sig\": ttest(a, b, False) < 0.05})\n        P = pd.DataFrame(pairs)\n        print(\"Variant, every pair of ROI in the range: pairs with p < 0.05 per amplitude\")\n        print(P.groupby(\"amplitude\").agg(pairs=(\"paired_sig\", \"size\"), paired=(\"paired_sig\", \"sum\"),\n                                         unpaired=(\"unpaired_sig\", \"sum\")).to_string())\n    return {\"paired_any_sig\": pa, \"unpaired_any_sig\": pb, \"outcome\": outcome}\n\nprint(claim_fig2c_flat(main))\nprint(\"\\\\nUnder every variant of the data:\")\nrun_variants(claim_fig2c_flat)\n''', [\"claim:fig2c-inhibition-flat-above-8-7\"])\nresult(\"fig2c-inhibition-flat-above-8-7\")\n\n# ---------------- claim 6\nmd('''\n## fig2c-weaker-at-6-7\n\n> Inhibition was weaker at 6.7 kV/cm than at the higher field strengths, with p < 0.01 for the 50%\n> bipolar pulses and p < 0.05 for the 100% bipolar pulses.\n\nCriterion: bipolar YP per dish as percent of the unipolar mean at the same ROI. For 50% and 100%,\nthe ROI nearest 6.7 kV/cm against the higher fields (ROI from 8.7 to 15.1 kV/cm), (i) against each\nhigher ROI or (ii) against the higher ROI pooled, either sufficing; each (a) paired and (b)\nunpaired, methods_underspecified when they differ. Reproduced when the percent at 6.7 kV/cm is\nhigher than at every higher field, with p < 0.01 for 50% and p < 0.05 for 100%; partially\nreproduced when it is higher at every field but the tests hold for one amplitude only.\n''')\ncode('''\ndef claim_fig2c_67(t, verbose=True):\n    r = ratio_table(t)\n    j67, j_hi, j_lo = nearest_j(t, 6.7), nearest_j(t, 15.1), nearest_j(t, 8.7)\n    js = list(range(min(j_hi, j_lo), max(j_hi, j_lo) + 1))\n    uni = t[t.amplitude == 0].groupby(\"j\").YP.mean()\n    rows, verdict = [], {}\n    for amp, thr in ((50, 0.01), (100, 0.05)):\n        x = r[(r.amplitude == amp) & (r.j == j67)].set_index(\"dish\").pct\n        higher_every = all(x.mean() > r[(r.amplitude == amp) & (r.j == j)].pct.mean() for j in js)\n        for paired in (True, False):\n            p_each = []\n            for j in js:\n                y = r[(r.amplitude == amp) & (r.j == j)].set_index(\"dish\").pct\n                p_each.append(ttest(x, y.loc[x.index], True) if paired else ttest(x, y, False))\n            pool = r[(r.amplitude == amp) & r.j.isin(js)]\n            if paired:\n                p_pool = ttest(x, pool.groupby(\"dish\").pct.mean().loc[x.index], True)\n            else:\n                p_pool = ttest(x, pool.pct, False)\n            holds = higher_every and (max(p_each) < thr or p_pool < thr)\n            verdict[(amp, paired)] = (higher_every, holds)\n            rows.append({\"amplitude\": amp, \"test\": \"paired\" if paired else \"unpaired\",\n                         \"pct_at_6.7\": x.mean(), \"pct_higher_fields_mean\": pool.pct.mean(),\n                         \"higher_than_every_higher_ROI\": higher_every,\n                         \"p_each_max\": max(p_each), f\"each_p<thr\": f\"{sum(p < thr for p in p_each)}/{len(p_each)}\",\n                         \"p_pooled\": p_pool, \"holds\": holds})\n    R = pd.DataFrame(rows)\n    def outcome(paired):\n        h50, h100 = verdict[(50, paired)], verdict[(100, paired)]\n        if h50[1] and h100[1]:\n            return \"reproduced\"\n        if h50[0] and h100[0] and (h50[1] or h100[1]):\n            return \"partially_reproduced\"\n        return \"not_reproduced\"\n    oa, ob = outcome(True), outcome(False)\n    if verbose:\n        print(f\"6.7 kV/cm: ROI j = {j67} ({t.groupby('j').field.mean().loc[j67]:.2f} kV/cm); higher fields j = {js}\")\n        print(f\"Unipolar mean YP at j = {j67}: {uni.loc[j67]:.1f}; at the higher ROI: {uni.loc[js].round(1).tolist()}\")\n        print(R.round(4).to_string(index=False))\n    return {\"paired\": oa, \"unpaired\": ob, \"outcome\": oa if oa == ob else \"methods_underspecified\"}\n\nprint(claim_fig2c_67(main))\nprint(\"\\\\nUnder every variant of the data:\")\nrun_variants(claim_fig2c_67)\n''', [\"claim:fig2c-weaker-at-6-7\"])\nresult(\"fig2c-weaker-at-6-7\")\n\ncode('''\nprint(f\"Notebook ran in {(time.time() - started) / 60:.1f} min\")\n''')\n\nif \"summary\" in conclusions:\n    md(conclusions[\"summary\"])\n\nnb = nbf.v4.new_notebook()\nnb.cells = cells\nnb.metadata = {\"kernelspec\": {\"display_name\": \"Python 3\", \"language\": \"python\", \"name\": \"python3\"}}\nnbf.write(nb, sys.argv[1])\n"
+ "file_path": "/tmp/claude-1001/nb/header.py",
+ "content": "# %% [markdown]\n# # Reproducing Kim et al. (2022) from dandisets 000489 and 000448\n#\n# **Paper.** Kim V, Semenov I, Kiester AS, Keppler MA, Ibey BL, Bixler JN, Pakhomov AG (2022).\n# Action spectra and mechanisms of (in)efficiency of bipolar electric pulses at electroporation.\n# *Bioelectrochemistry* 149:108319. [doi:10.1016/j.bioelechem.2022.108319](https://doi.org/10.1016/j.bioelechem.2022.108319).\n# The claims file (`claims/kim-2022.yaml`) was written from the accepted author manuscript in\n# PubMed Central (PMC9729435); the paper has no supplement and links no code.\n#\n# **Dandisets.**\n# [DANDI:000489](https://dandiarchive.org/dandiset/000489/0.230518.1811) version 0.230518.1811 and\n# [DANDI:000448](https://dandiarchive.org/dandiset/000448/0.230421.1844) version 0.230421.1844.\n# The paper cites no version of either. Each dandiset has one published version, the one pinned;\n# the drafts list the same number of assets and bytes (18 files, 18594422294 and 3173065152 bytes)\n# and were last modified before the publication of these versions, so the published versions are\n# the most recent and match the claims file's description as well as the drafts do.\n#\n# **What the dandisets hold.** 000489 holds 17 stitched dish images of the Fig. 2 experiment\n# (BPAE cells, 5 pulses of 600 ns or 600+600 ns at 1 Hz, second phase 0, 25, 50, 75 or 100%) and one\n# sample image labelled Fig1F. 000448 holds strobe image stacks of 9 CHO cells (5 unipolar, 4\n# bipolar; two trials each) given 5 pulses at 833 kHz (Fig. 7); the paper used 18 and 17 cells.\n# Neither holds the experiments of Figs. 3 to 6 or the thermometry of Fig. 1E.\n#\n# **Inputs from outside the dandisets.** None. The field strength of each ROI, which the paper took\n# from a finite element model whose output is not deposited, is computed here from the geometry in\n# Methods 2.3 (helper `kim2022.field_kv_cm`).\n#\n# | Claim | Dataset | Tested here |\n# |---|---|---|\n# | fig2a-uptake-rises-with-field | 000489 | tested |\n# | fig2a-vertical-scales | 000489 | tested |\n# | fig2b-exponential-same-slope | 000489 | tested |\n# | fig2c-max-inhibition-50-75 | 000489 | tested |\n# | fig2c-inhibition-flat-above-8-7 | 000489 | tested |\n# | fig2c-weaker-at-6-7 | 000489 | tested |\n# | fig7-unipolar-pole-polarization | 000448 | tested |\n# | fig7-charging-time-constant | 000448 | tested |\n# | fig7-later-pulses-same-tau-difference | 000448 | tested |\n# | fig7-bipolar-overshoot | 000448 | tested |\n# | fig7-bipolar-alternation | 000448 | tested |\n# | fig7-summation-without-buildup | 000448 | tested |\n# | fig3-uptake-linear-in-pulse-number, fig3d-cancellation-independent-of-number | 000489 | blocked: data missing (Fig. 3 dishes not deposited) |\n# | fig4ac-ns-bipolar-20-25pct, fig4d-1200ns-tenfold, fig4eg-us-bipolar-30-50pct, fig4h-us-stronger-at-low-field | 000489 | blocked: data missing (Fig. 4 dishes not deposited) |\n# | fig5-ns-symmetric-along-aa, fig5-us-anode-stronger | 000489 | blocked: data missing (Fig. 4 dishes not deposited) |\n# | fig6ad-unipolar-833khz-enhanced, fig6be-bipolar-khz-less-than-1hz, fig6cf-833khz-thirtyfold, fig6cf-cancellation-stronger-at-high-field | 000489 | blocked: data missing (Fig. 6 dishes not deposited) |\n# | fig1e-heating | 000489 | blocked: data missing (thermometry photographs not deposited) |\n#\n# The Fig. 7 claims are tested first, as their data load in two minutes; the dish images take\n# about six.\n"
 }
 ```
 
 ```
-File created successfully at: /tmp/claude-1001/build_nb.py (file state is current in your context — no need to Read it back)
+File created successfully at: /tmp/claude-1001/nb/header.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('build_nb.py').read()
-i=s.index('same_assets = '); j=s.index('draft_assets = ')
-s=s[:i]+s[j:]
-s=s.replace('''draft_assets = sorted((a["path"], a["size"], a.get("blob")) for a in
-    __import__("requests").get(''','''draft_assets = sorted((a["path"], a["size"], a.get("blob")) for a in
-    requests.get(''')
-s=s.replace("import pandas as pd\nfrom scipy import optimize, stats","import pandas as pd\nimport requests\nfrom scipy import optimize, stats")
-open('build_nb.py','w').write(s)
+cd $TMPDIR/nb && cat > summary.py <<'EOF'
+# %% [markdown]
+# ## Summary
+#
+# SUMMARY_PLACEHOLDER
 EOF
-echo "# header placeholder" > header.md
-. dev/bin/activate && python build_nb.py dev.ipynb && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && time jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | tail -20
+cat header.py partA.py partB.py summary.py > full.py && . ../ve/bin/activate && python build.py full.py entries/kim-2022/reproduce_kim_2022.ipynb && cd entries/kim-2022 && date -u && timeout 2400 env PYTHONPATH=. python -c "
+import nbformat, time
+from nbclient import NotebookClient
+nb=nbformat.read('reproduce_kim_2022.ipynb',4)
+t=time.time()
+NotebookClient(nb, timeout=2400, kernel_name='python3', resources={'metadata':{'path':'.'}}).execute()
+nbformat.write(nb, '$TMPDIR/nb/executed.ipynb'); print('done', time.time()-t)
+" 2>&1 | tail -5; date -u
 ```
 
 ```
-14      6.0  -77.0     42.0     51.0     29.0    33.0    68.0    37.0    31.0     3.0    26.0     3.0    25.0    13.0    24.0    45.0
-15     28.0  -57.0     35.0     46.0     13.0    25.0    91.0    -6.0    38.0   -15.0    35.0    10.0    28.0    10.0    21.0    34.0
-
-Range of the YP index over all dishes and ROI: -77.0 to 916.1
-------------------
-
-[31m---------------------------------------------------------------------------[39m
-[31mKeyError[39m                                  Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[6][39m[32m, line 23[39m
-[32m     19[39m main = T[[33m"main"[39m]
-[32m     20[39m print([33m"\nYP index (Methods 2.5) per dish along bb', main reading (both sides averaged), j = ROI index from the centre:"[39m)
-[32m     21[39m print(main.pivot_table(index=[33m"j"[39m, columns=[33m"dish"[39m, values=[33m"YP"[39m).round([32m0[39m).to_string())
-[32m     22[39m print([33m"\nRange of the YP index over all dishes and ROI:"[39m, round(main.YP.min(), [32m1[39m), [33m"to"[39m, round(main.YP.max(), [32m1[39m))
-[32m---> [39m[32m23[39m raw = pd.DataFrame([{"dish": d["label"], "k": r["k"], "YP_roi": r["YP_roi"], "MB_roi": r["MB_roi"]}
-[32m     24[39m                     [38;5;28;01mfor[39;00m d [38;5;28;01min[39;00m keep [38;5;28;01mfor[39;00m r [38;5;28;01min[39;00m d[[33m"measure"[39m][[33m"rois"[39m]])
-[32m     25[39m print("Raw ROI means (camera counts, uint16): YP", round(raw.YP_roi.min()), "to", round(raw.YP_roi.max()),
-[32m     26[39m       [33m"; MB"[39m, round(raw.MB_roi.min()), [33m"to"[39m, round(raw.MB_roi.max()))
-
-[31mKeyError[39m: 'measure'
-
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && sed -i 's/keep = \[d for d in dishes if d\["subject"\] != "sub-Fig2-0-03"\]/keep = [d for d in dishes if "measure" in d and d["subject"] != "sub-Fig2-0-03"]/' build_nb.py && grep -n "keep = " build_nb.py && . dev/bin/activate && python build_nb.py dev.ipynb && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && time jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | tail -20
-```
-
-```
-206:keep = [d for d in dishes if "measure" in d and d["subject"] != "sub-Fig2-0-03"]
-
-[36mFile [39m[32m/tmp/claude-1001/dev/lib/python3.13/site-packages/matplotlib/axes/_axes.py:4231[39m, in [36mAxes.errorbar[39m[34m(self, x, y, yerr, xerr, fmt, ecolor, elinewidth, capsize, barsabove, lolims, uplims, xlolims, xuplims, errorevery, capthick, elinestyle, **kwargs)[39m
-[32m   4222[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
-[32m   4223[39m         [33mf[39m[33m"[39m[33m'[39m[38;5;132;01m{[39;00mdep_axis[38;5;132;01m}[39;00m[33merr[39m[33m'[39m[33m must not contain None. [39m[33m"[39m
-[32m   4224[39m         [33m"[39m[33mUse NaN if you want to skip a value.[39m[33m"[39m)
-[32m   4226[39m [38;5;66;03m# Raise if any errors are negative, but not if they are nan.[39;00m
-[32m   4227[39m [38;5;66;03m# To avoid nan comparisons (which lead to warnings on some[39;00m
-[32m   4228[39m [38;5;66;03m# platforms), we select with `err==err` (which is False for nan).[39;00m
-[32m   4229[39m [38;5;66;03m# Also, since datetime.timedelta cannot be compared with 0,[39;00m
-[32m   4230[39m [38;5;66;03m# we compare with the negative error instead.[39;00m
-[32m-> [39m[32m4231[39m [38;5;28;01mif[39;00m np.any((check := err[err == err]) < [30;43m-[39;49m[30;43mcheck[39;49m):
-[32m   4232[39m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
-[32m   4233[39m         [33mf[39m[33m"[39m[33m'[39m[38;5;132;01m{[39;00mdep_axis[38;5;132;01m}[39;00m[33merr[39m[33m'[39m[33m must not contain negative values[39m[33m"[39m)
-[32m   4234[39m [38;5;66;03m# This is like[39;00m
-[32m   4235[39m [38;5;66;03m#     elow, ehigh = np.broadcast_to(...)[39;00m
-[32m   4236[39m [38;5;66;03m#     return dep - elow * ~lolims, dep + ehigh * ~uplims[39;00m
-[32m   4237[39m [38;5;66;03m# except that broadcast_to would strip units.[39;00m
-
-[31mTypeError[39m: bad operand type for unary -: 'me
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && sed -i 's/sem=("YP", "sem")/se=("YP", "sem")/; s/g\.sem/g.se/g; s/u\.sem/u.se/g; s/s\.sem/s.se/g' build_nb.py && grep -n "\.sem\b\|\.se\b" build_nb.py | head; . dev/bin/activate && python build_nb.py dev.ipynb && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && time jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | tail -8
-```
-
-```
-234:    ax.errorbar(g.field, g.YP, g.se, fmt="o-", ms=3)
-344:    top_u, top_s = (u.YP + u.se).max(), (s.YP + s.se).max()
-353:            print(f"{amp:>3}%: largest mean {g.YP.max():7.1f}, largest mean + s.e.m. {(g.YP + g.se).max():7.1f} a.u.")
-[NbConvertApp] Converting notebook dev.ipynb to notebook
+Tue Nov 10 04:51:13 UTC 2026
 [IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 1974326 bytes to dev_out.ipynb
+done 467.6688153743744
+Tue Nov 10 04:59:02 UTC 2026
+```
 
-real	0m28.595s
-user	0m27.701s
-sys	0m0.721s
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/nb && python - <<'EOF'
+import json
+nb=json.load(open('executed.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']!='code': continue
+    tags=c.get('metadata',{}).get('tags',[])
+    if any(t in ('claim:fig2c-weaker-at-6-7','claim:fig7-unipolar-pole-polarization','claim:fig2a-uptake-rises-with-field','claim:fig2c-inhibition-flat-above-8-7') for t in tags):
+        print(tags)
+        for o in c['outputs']:
+            if o.get('name')=='stdout': print(''.join(o['text'])[:5000])
+    for o in c['outputs']:
+        if o['output_type']=='error': print('ERROR', o['ename'], o['evalue'])
+EOF
+```
+
+```
+['claim:fig7-unipolar-pole-polarization']
+           reading  cathodic mean %  cathodic p  anodic mean %  anodic p  |anodic|/|cathodic|  n cells  criterion met
+0  value at 600 ns        22.086262    0.001210     -20.732695  0.002592             0.938715        5           True
+1  mean 500-600 ns        22.079520    0.001117     -21.388533  0.003045             0.968705        5           True
+per cell, value at 600 ns (cathodic, anodic): {'cell08': (np.float64(24.4), np.float64(-20.4)), 'cell13': (np.float64(18.0), np.float64(-16.4)), 'cell16': (np.float64(24.7), np.float64(-25.4)), 'cell22': (np.float64(14.0), np.float64(-12.1)), 'cell24': (np.float64(29.3), np.float64(-29.5))}
+pole variant traces_80_45: cathodic +21.9% (p=0.00092), anodic -19.8% (p=0.0073), ratio 0.90
+pole variant traces_90_45: cathodic +19.6% (p=0.01), anodic -20.7% (p=0.013), ratio 1.05
+pole variant traces_85_30: cathodic +23.5% (p=0.00066), anodic -21.6% (p=0.0025), ratio 0.92
+
+pole variant traces_85_60: cathodic +20.3% (p=0.0028), anodic -19.7% (p=0.002), ratio 0.97
+
+['claim:fig2a-uptake-rises-with-field']
+duplicate left out, reading (a), weakest ROI at 3.0 mm | amplitudes passing, unpaired: 5 paired: 3
+duplicate left out, reading (a), weakest ROI at 2.4 mm | amplitudes passing, unpaired: 5 paired: 3
+duplicate left out, reading (b+), weakest ROI at 3.0 mm | amplitudes passing, unpaired: 5 paired: 3
+duplicate left out, reading (b+), weakest ROI at 2.4 mm | amplitudes passing, unpaired: 5 paired: 3
+duplicate left out, reading (b-), weakest ROI at 3.0 mm | amplitudes passing, unpaired: 5 paired: 3
+duplicate left out, reading (b-), weakest ROI at 2.4 mm | amplitudes passing, unpaired: 5 paired: 3
+duplicate as 0%, reading (a), weakest ROI at 3.0 mm | amplitudes passing, unpaired: 4 paired: 3
+duplicate as 0%, reading (a), weakest ROI at 2.4 mm | amplitudes passing, unpaired: 4 paired: 3
+[... 52 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/nb && cat > results.py <<'EOF'
+R = {
+"fig7-unipolar-pole-polarization": "**Result: reproduced, resting on assumptions.** At the end of the first pulse the cathode-facing pole is +22.1% (p = 0.0012) and the anode-facing pole -20.7% (p = 0.0026) over 5 unipolar cells, opposite in sign, with a magnitude ratio of 0.94; the 500 to 600 ns mean and four variants of the pole regions give the same (ratios 0.90 to 1.05, all p <= 0.013). Every cell shows the same orientation. Which pole faces the cathode rests on FluoVolt brightening with depolarization, as the files do not record the electrode positions, and the pole regions are an assumption. The paper used 18 cells; 5 are in the dandiset.",
+"fig7-charging-time-constant": "**Result: not reproduced.** Over the 5 unipolar cells the charging fit gives tau = 191 ns (within 180 to 220 ns) but a maximum of 23.2% (expected 31 +- 3.1%); the discharge fit gives tau = 613 ns (expected 520 +- 52 ns) from 22.7% (expected 31.5 +- 3.15%). The pooled points (120 per fit) and the mean trace give the same parameters; r = 0.84 and 0.64 for the pooled points (p < 1e-14), 0.998 and 0.997 for the mean trace. The discharge constant is 3.2 times the charging constant, against the paper's 2.5. Moving the onset by one frame gives charging tau 149 to 250 ns and discharge tau 615 to 627 ns. The dandiset holds 5 of the paper's 18 unipolar cells, and the per-cell amplitudes range from 14.5 to 31.3%, so the smaller amplitude may come from the subset or from the pole regions assumed here.",
+"fig7-later-pulses-same-tau-difference": "**Result: partially reproduced.** With the free-start charging fit, the discharge constant exceeds the charging constant for all four later pulses (ratios 2.97, 3.72, 2.91, 2.89). None is within 2.25 to 2.75; within 10% of the first pulse's ratio (3.21, so 2.89 to 3.53) are pulses 2 and 4, and pulse 5 falls just below (2.887). With the plain A(1 - exp(-t/tau)) form the ratios are 8 to 11, as that form cannot fit a pulse that starts from a charged membrane.",
+"fig7-bipolar-overshoot": "**Result: reproduced.** (i) At 600 ns the cathodic pole is 21.5% after bipolar pulses (4 cells) and 22.1% after unipolar pulses (5 cells), p = 0.855, and the error-bar gap rule finds no difference. (ii) After the first phase the bipolar mean falls to half its value in 150 ns against 475 ns for unipolar pulses, and to zero in 325 ns, which the unipolar trace does not reach before the next pulse. (iii) The bipolar mean reaches -8.1% at 1175 ns; the four cell values (-6.7 to -9.9%) differ from zero, p = 0.0012. Four of the paper's 17 bipolar cells are in the dandiset.",
+"fig7-bipolar-alternation": "**Result: reproduced.** For each of the five pulses, the cathodic pole is positive at the end of the first phase (19.3 to 21.5%, p <= 0.0001) and negative at its second phase minimum (-8.1 to -9.1%, p <= 0.0013), over 4 bipolar cells.",
+"fig7-summation-without-buildup": "**Result: reproduced.** The peaks of pulses 2 to 5 (23.4 to 24.3%) do not differ from the first (22.1%) by the unpaired test (p = 0.61 to 0.75), and the trace before each of pulses 2 to 5 stays above rest (8.8 to 9.9%, p = 0.009 to 0.017), over 5 unipolar cells. The paired variant finds the later peaks 1.4 to 2.2 points higher, with p < 0.05 for pulses 2 to 4 (p = 0.014 to 0.040); the claim's absence test is the unpaired one.",
+"fig2a-uptake-rises-with-field": "**Result: reproduced, resting on an assumption.** With the two dishes that share one YP image left out, YP is higher at the strongest field than at the weakest ROI for all five amplitudes with p < 0.05 by the unpaired test (p = 0.0001 to 0.044), and the Spearman correlation of mean YP with field is 0.96 to 0.99. By the paired test 3 of 5 pass (unipolar and 25%, with 2 dishes each, give p = 0.12 and 0.13). Every ROI reading and the weaker ROI at 2.4 mm give the same counts. Assigning the shared image to the unipolar or the 25% group gives 4 of 5 (unpaired). The outcome takes the unpaired test, the two-sample test that the Methods' name denotes, as an assumption.",
+"fig2a-vertical-scales": "**Result: not reproduced.** The largest unipolar mean is 651 a.u. (mean + s.e.m. 754, below 1200, and above 250), but for 75% bipolar pulses the largest mean + s.e.m. is 339 a.u., above 250, under every reading (311 to 372). The ratio of the largest unipolar and 75% means is 2.3 to 2.5, against the 4.8 of the paper's axes. This takes the image counts as the paper's units, which the files are consistent with but do not state.",
+"fig2b-exponential-same-slope": "**Result: partially reproduced.** At the 8 kV/cm cutoff the exponential fits the means better than a line for 3 of 5 amplitudes, short of the four the criterion needs; at 7 kV/cm for 4 of 5 and at 6 kV/cm for 5 of 5. No bipolar slope differs from the unipolar slope by the per-dish nonlinear fits at any cutoff (p = 0.08 to 1.0 over every cutoff and assignment of the shared image; 0.12 to 0.80 at 8 kV/cm). The slopes of the fits to the means are 0.19 to 0.28 per kV/cm, 0.72 to 1.07 times the unipolar 0.26. With the log-linear variant the bipolar slopes differ at 6 and 7 kV/cm (4 of 4, p = 0.004 to 0.042) when the shared image is left out, and not when it is assigned to the unipolar group.",
+"fig2c-max-inhibition-50-75": "**Result: partially reproduced.** At every ROI from 8.78 to 15.1 kV/cm the lower of the 50% and 75% values is below the 25% and 100% values (10 of 10). The best amplitude, 50%, gives 49.3% of unipolar on average (reading a) and 35.1% at its lowest (reading b), both outside 20 +- 2%. By test (ii) the better of 50 or 75% differs from both 25% and 100% with p < 0.01 at 7 of 10 fields; by test (i), against unipolar, at 3 of 10. The test is counted as holding under (ii) at most fields. The 25% and 100% pulses give 64 to 168% of the unipolar value, so in these dishes only 50 and 75% inhibit.",
+"fig2c-inhibition-flat-above-8-7": "**Result: reproduced.** No bipolar amplitude differs between 8.78 and 15.1 kV/cm by the unpaired test (p = 0.07 to 0.83). The differences are large for 50% (67.8% against 35.1%, p = 0.072) and 75% (91.5% against 40.0%, p = 0.15), with 3 to 5 dishes. Comparing every pair of ROI in the range, 19 of 180 pairs differ at p < 0.05; reading (b) finds one amplitude differing on either side.",
+"fig2c-weaker-at-6-7": "**Result: reproduced, resting on an assumption.** At 6.63 kV/cm the 50% pulses give 198% of the unipolar mean against 35 to 68% at the higher fields, and the 100% pulses 283% against 93 to 139%. With the unpaired test, 50% differs from the pooled higher fields with p = 1.5e-09 (reading ii; against each field, p up to 0.082), and 100% differs from each higher field with p <= 0.022 and from the pooled ones with p = 2.6e-09. With the paired test, 100% passes (p <= 0.035 against each) and 50% does not (p = 0.07 pooled). The outcome takes the unpaired test, as for fig2a-uptake-rises-with-field. The unipolar mean at that ROI is low (19 a.u.), so the percentages there are large and unstable.",
+}
+EOF
+python - <<'EOF'
+import re, sys
+sys.path.insert(0,'.')
+from results import R
+for part in ['partA.py','partB.py']:
+    s=open(part).read()
+    for cid,text in R.items():
+        tag=f"# %% tags=claim:{cid}\n"
+        i=s.find(tag)
+        if i<0: continue
+        j=s.find("\n# %% [markdown]", i+len(tag))
+        if j<0: j=len(s)
+        s=s[:j]+"\n\n# %% [markdown]\n# "+text+"\n"+s[j:]
+    open(part.replace('.py','_r.py'),'w').write(s)
+print('ok')
+EOF
+grep -c "Result:" partA_r.py partB_r.py
+```
+
+```
+ok
+partA_r.py:6
+partB_r.py:6
 Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import nbformat
-nb=nbformat.read('dev_out.ipynb',4)
-for i,c in enumerate(nb.cells):
-    if c.cell_type!='code': continue
-    for o in c.get('outputs',[]):
-        if o.get('output_type')=='stream': print(f'--- cell {i}'); print(o['text'][:6000])
-        elif o.get('output_type')=='error': print('ERR',o['ename'],o['evalue'])
+cd $TMPDIR/nb && cat > summary.py <<'EOF'
+# %% [markdown]
+# ## Summary
+#
+# A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
+# and the differences from the paper's method.
+#
+# | Claim | Dataset | Outcome |
+# |---|---|---|
+# | fig2a-uptake-rises-with-field | 000489 | reproduced (assumed: unpaired test) |
+# | fig2a-vertical-scales | 000489 | not reproduced |
+# | fig2b-exponential-same-slope | 000489 | partially reproduced |
+# | fig2c-max-inhibition-50-75 | 000489 | partially reproduced |
+# | fig2c-inhibition-flat-above-8-7 | 000489 | reproduced |
+# | fig2c-weaker-at-6-7 | 000489 | reproduced (assumed: unpaired test) |
+# | fig7-unipolar-pole-polarization | 000448 | reproduced (assumed: pole regions, cathode side) |
+# | fig7-charging-time-constant | 000448 | not reproduced |
+# | fig7-later-pulses-same-tau-difference | 000448 | partially reproduced |
+# | fig7-bipolar-overshoot | 000448 | reproduced |
+# | fig7-bipolar-alternation | 000448 | reproduced |
+# | fig7-summation-without-buildup | 000448 | reproduced |
+# | Figs. 3 to 6 and Fig. 1E (13 claims) | 000489 | blocked: data missing |
+#
+# **How the analysis differs from the paper's.** The field of each ROI comes from an exact two
+# dimensional solution for the electrode geometry of Methods 2.3, not the paper's finite element
+# model; it gives 15.38 kV/cm at the centre against the paper's 15.1, and the fields are scaled to
+# 15.1 there. ROI are contiguous 200 um squares along bb' from the centre to 3 mm, averaged over both
+# sides (one side as variants); the paper does not give their number or spacing. YP0 and MB0 are
+# taken in a 0.2 mm disc at the centre of each footprint. The two dishes that share one YP image are
+# left out, so the unipolar and 25% groups have 2 dishes each. The Fig. 7 analysis uses 5 of the
+# paper's 18 unipolar cells and 4 of its 17 bipolar cells; the pole regions are drawn here, the pulse
+# onset is found from the data, and the cathode-facing pole is taken to be the one that brightens.
+# Where the paper's t-test could be paired or unpaired, the unpaired test is used and the paired one
+# shown.
+#
+# **What was found about the dandisets.**
+#
+# - 000489 holds only the dishes of Fig. 2 and one sample image (Fig1F). The dishes of Figs. 3 to 6
+#   and the thermometry of Fig. 1E are not in either dandiset, so 13 of the 25 claims cannot be
+#   tested.
+# - The YO-PRO-1 channel of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25%) is the same image,
+#   while their MemBrite channels differ: one recording deposited under two dishes.
+# - The files give no pixel size, electrode positions or polarity, or ROI; the pixel size of 0.65 um
+#   is supported by the electrode spacing (4.44 to 4.66 mm, Methods 4.5 mm). The image description
+#   names "Channel1" for both dyes; the data show index 0 is MemBrite and index 1 YO-PRO-1. It also
+#   speaks of 144 images (12 x 12) of a well of a six-well plate, where the paper describes 216
+#   images of 35 mm dishes.
+# - 000448 holds 9 cells, each as two files (forward and reverse trials) counted as 18 subjects. The
+#   reverse files store frames in acquisition order (descending delay), and their response is
+#   offset by 74 frames (1.85 us) from the forward trial of the same cell; neither is documented,
+#   nor the delay of each frame, the pole regions, or the field direction in the image. The first
+#   frame of most files is dark.
 EOF
+cat header.py partA_r.py partB_r.py summary.py > full.py && . ../ve/bin/activate && python build.py full.py entries/kim-2022/reproduce_kim_2022.ipynb && echo built; date -u
 ```
 
 ```
---- cell 1
-loaded 18 files from dandiset 000489 version 0.230518.1811 in 0 s
-
---- cell 3
-Title: The impact of the second phase amplitude (% to the first phase) on the electroporation efficiency (measured as YP emission)
-Description: Cells were electroporated by a train of 5 unipolar 600 ns pulses (0 percent) or bipolar 600 + 600 ns pulses (25, 50, 75, 100 percent) at 1 Hz. 25, 50, 75, and 100% represent the second pulse's amplitude in relation to the first pulse's amplitude. 0% represents a unipolar pulse, where no second pulse was applied. The electrodes were two parallel stainless-steel cylinders, 1.5 mm in diameter and 3 mm apart. Supported by NIH 1R21EY034258
-Related resource: [('dcite:IsPublishedIn', 'https://doi.org/10.1016/j.bioelechem.2022.108319')]
-
---- cell 3
-Draft holds the same files (path, size, blob) as 0.230518.1811 : True
-Metadata fields that differ between draft and published: ['citation', 'doi', 'id', 'manifestLocation', 'url', 'version']
-
-Files: 18
-        subject  amplitude_%           acquisition               session_id             date             shape  dtype unit  conversion  rate other_groups
-      sub-Fig1F          NaN Channel1 and Channel2            BPAE_staining 2021-09-01T19:13 (22323, 22323, 2) uint16 n.a.         1.0   2.0           []
-  sub-Fig2-0-03          0.0             Fig2_0_03   BPAE_bipolar_0 percent 2021-07-29T13:00 (22323, 22323, 2) uint16 n.a.         1.0   2.0           []
-  sub-Fig2-0-06          0.0             Fig2_0_06   BPAE_bipolar_0 percent 2021-07-29T13:46 (22323, 22323, 2) uint16 n.a.         1.0   2.0           []
-  sub-Fig2-0-07          0.0             Fig2_0_07   BPAE_bipolar_0 percent 2021-07-29T14:00 (22323, 22323, 2) uint16 n.a.         1.0   2.0           []
-sub-Fig2-100-03        100.0           Fig2_100_03 BPAE_bipolar_100 percent 2021-08-24T15:18 (22323, 22323, 2) uint16 n.a.         1.0   2.0           []
-sub-Fig2-100-07        100.0           Fig2_100_07 BPAE_bipolar_100 percent 2021-08-24T16:16 (
-[... 348 more lines not kept]
+built
+Tue Nov 10 05:00:15 UTC 2026
+Shell cwd was reset to
 ```
 
 **Agent calls Bash**
 
 ```bash
-date -u; grep -n "PYTHON_VERSION =\|HARNESS =" tools/entry.py; ls schemas;
+sed -n 1,60p tools/entry.py | head -80; grep -n "def cmd_\|argparse\|add_parser" tools/entry.py | head -30
 ```
 
 ```
-Fri Oct 30 16:22:55 UTC 2026
-59:PYTHON_VERSION = "3.13"
-60:HARNESS = ["ipykernel", "nbconvert"]      # needed to execute, not part of the entry
-attempt.schema.json
-claims.schema.json
-entry.schema.json
-paper-match.schema.json
-```
+"""Lock, check and run one entry. This is the whole local workflow for a deposit.
 
-**Agent calls Bash**
+    python tools/entry.py lock  entries/<name>   # pin the environment
+    python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py check entries/*/       # the same for every entry, in one process
+    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+    python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
 
-```bash
-cat attempts/001453-fouke-2025-01.yaml | head -150; python -c "
-import json; s=json.load(open('schemas/attempt.schema.json')); print(json.dumps(s,indent=0)[:6000])"
-```
+`lock` compiles the entry's requirements.in (direct dependencies only) into
+requirements.lock.txt with every version pinned.
 
-```
-schema_version: 2
-id: 001453-fouke-2025-01
-dataset:
-  archive: dandi
-  id: "001453"
-  version: 0.250518.1950
-  doi: 10.48324/dandi.001453/0.250518.1950
-paper: doi:10.1016/j.cub.2025.04.027
-date: 2026-10-14
-entry: 001453-fouke-2025
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-5
-  runner:
-    platform: GitHub Actions
-[... 408 more lines not kept]
+`check` validates entry.yaml, and the claims and attempt files that mention
+the entry, against the schemas, and applies the conventions that keep a result
+tied to the data:
+
+- every notebook in the directory is listed in entry.yaml, and exists;
+- notebooks are committed without outputs;
+- the lock file is present and newer requirements are not left unlocked;
+- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
+[... 43 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python -c "
-import json; s=json.load(open('schemas/attempt.schema.json')); p=s['properties']
-for k in ['inputs','findings','verifications']: print(k, json.dumps(p.get(k),indent=0)[:2500])"; sed -n '/^findings:/,$p' attempts/001453-fouke-2025-01.yaml | head -40
-```
-
-```
-inputs {
-"description": "Everything the attempt used that is not in the dataset.",
-"type": "array",
-"items": {
-"type": "object",
-"additionalProperties": false,
-"required": [
-"what",
-"source"
-],
-"properties": {
-"what": {
-"type": "string",
-"minLength": 1
-},
-"source": {
-"description": "A DOI, or a repository URL with the commit read.",
-"type": "string",
-"minLength": 1
-}
-[... 150 more lines not kept]
-```
-
-**Agent**
-
-No question for a reader: the claims file reads the paper correctly. Writing the header, the conclusions, entry.yaml and requirements, then running the real notebook.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/header.md",
- "content": "# Reproducing Kim et al. (2022) from dandiset 000489\n\n**Paper.** Kim V, Semenov I, Kiester AS, Keppler MA, Ibey BL, Bixler JN, Pakhomov AG (2022).\nAction spectra and mechanisms of (in)efficiency of bipolar electric pulses at electroporation.\n*Bioelectrochemistry* 149:108319.\n[doi:10.1016/j.bioelechem.2022.108319](https://doi.org/10.1016/j.bioelechem.2022.108319). The\nclaims file was written from the accepted author manuscript in PubMed Central (PMC9729435), which\nholds the main text, the Methods and the figure legends; the paper has no supplement and links no\ncode.\n\n**Dandiset.** [DANDI:000489](https://dandiarchive.org/dandiset/000489/0.230518.1811), version\n0.230518.1811 (doi:10.48324/dandi.000489/0.230518.1811). The paper cites no version. This is the\nonly published version, and the draft holds the same 18 files (same paths, sizes and blobs; the\ncheck is printed below), so the most recent published version is pinned.\n\n**What the dandiset holds.** One stitched two-channel image (MemBrite and YO-PRO-1) of the whole\nglass bottom of each of 17 dishes exposed to 5 pulses at 1 Hz, unipolar 600 ns or bipolar\n600+600 ns with a second phase of 25, 50, 75 or 100%: the experiment of Fig. 2. An 18th file is a\nsample image named for Fig. 1F. The experiments of Figs. 3 to 6 (pulse number, duration, the aa'\nline, repetition rate), the strobe imaging of Fig. 7 and the thermometry of Fig. 1E are not in it.\nThe files hold no ROI, no field values, no pixel size and no footprint values: everything is\nmeasured here from the images, and the field of each ROI is recomputed from the electrode geometry\nof Methods 2.3 (see `bipolar.py`).\n\n**Method.** Electrode footprints are found as the dark discs of the YP image. ROI of 200 um are\ntiled from the midpoint of the electrode centres along bb', the perpendicular to the electrode\naxis, out to 3 mm on each side. In each ROI, YP = YP_ROI x MB_0 / MB_ROI - YP_0 (Methods 2.5),\nwith YP_0 and MB_0 from the footprints. The file `sub-Fig2-0-03` is left out of the main analysis\nbecause its YP channel is a copy of another dish's (data check).\n\n| Claim | Figure | Status |\n|---|---|---|\n| fig2a-uptake-rises-with-field | 2A | tested |\n| fig2a-vertical-scales | 2A | tested |\n| fig2b-exponential-same-slope | 2B | tested |\n| fig2c-max-inhibition-50-75 | 2C | tested |\n| fig2c-inhibition-flat-above-8-7 | 2C | tested |\n| fig2c-weaker-at-6-7 | 2C | tested |\n| fig3-uptake-linear-in-pulse-number, fig3d-cancellation-independent-of-number | 3 | blocked: data missing |\n| fig4ac-ns-bipolar-20-25pct, fig4d-1200ns-tenfold, fig4eg-us-bipolar-30-50pct, fig4h-us-stronger-at-low-field | 4 | blocked: data missing |\n| fig5-ns-symmetric-along-aa, fig5-us-anode-stronger | 5 | blocked: data missing |\n| fig6ad-unipolar-833khz-enhanced, fig6be-bipolar-khz-less-than-1hz, fig6cf-833khz-thirtyfold, fig6cf-cancellation-stronger-at-high-field | 6 | blocked: data missing |\n| fig7-charging-time-constant, fig7-bipolar-overshoot, fig7-summation-without-buildup | 7 | blocked: data missing |\n| fig1e-heating | 1E | blocked: data missing |\n"
-}
-```
-
-```
-<tool_use_error>File has not been read yet. Read it first before writing to it.</tool_use_error>
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000489-kim-2022 && cat > requirements.in <<'EOF'
+cd entries/kim-2022 && cat > requirements.in <<'EOF'
 h5py
 matplotlib
 numpy
@@ -1805,985 +1818,421 @@ pandas
 remfile
 requests
 scipy
-urllib3
 EOF
 cat > entry.yaml <<'EOF'
 schema_version: 1
-name: 000489-kim-2022
+name: kim-2022
 type: reproduction
-title: Bipolar cancellation of electroporation by the second phase amplitude (Kim et al. 2022)
-description: Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler and Pakhomov (2022)
-  on dandiset 000489, which holds stitched MemBrite and YO-PRO-1 images of 17 dishes of endothelial
-  cells exposed to unipolar or bipolar 600 ns pulses with a second phase of 25 to 100% (Fig. 2).
-  It measures YO-PRO-1 uptake along the line between the electrodes against the field of a
-  recomputed electrode model, and tests the rise of uptake with field, its exponential slope and
-  the inhibition by the second phase. The experiments of Figs. 3 to 7 and the thermometry are not
-  in the dandiset.
+title: Bipolar cancellation of electroporation and membrane charging kinetics (Kim et al. 2022)
+description: Tests the findings of Kim, Semenov, Kiester, Keppler, Ibey, Bixler and Pakhomov (2022) on
+  dandisets 000489 and 000448. 000489 holds the stitched dish images of the Fig. 2 experiment, YO-PRO-1
+  uptake by BPAE monolayers after uni- and bipolar 600 ns pulses with second phases of 25 to 100%;
+  000448 holds strobe images of the membrane potential of 9 CHO cells during 833 kHz trains (Fig. 7).
+  YP is measured in 200 um ROI along the bb' line with fields from a two-cylinder model, and pole
+  traces are extracted from the strobe stacks. The experiments of Figs. 3 to 6 and the thermometry of
+  Fig. 1E are not in either dandiset.
 license: Apache-2.0
 notebooks:
 - path: reproduce_kim_2022.ipynb
-  title: Reproducing Kim et al. (2022) from dandiset 000489
-  runtime_minutes: 10
+  title: Reproducing Kim et al. (2022) from dandisets 000489 and 000448
+  runtime_minutes: 9
 helpers:
-- bipolar.py
+- kim2022.py
 related:
 - id: dandi:000489/0.230518.1811
+  relation: uses_data
+- id: dandi:000448/0.230421.1844
   relation: uses_data
 - id: doi:10.1016/j.bioelechem.2022.108319
   relation: reproduces
 EOF
-cp $TMPDIR/build_nb.py /dev/null; cd $TMPDIR && . dev/bin/activate && python build_nb.py entries/000489-kim-2022/reproduce_kim_2022.ipynb && cd  && python tools/entry.py lock entries/000489-kim-2022 && date -u
-```
-
-```
-wrote entries/000489-kim-2022/requirements.lock.txt
-Fri Oct 30 16:23:38 UTC 2026
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/header.md"
-}
-```
-
-```
-1	# header placeholder
-2
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/header.md",
- "content": "# Reproducing Kim et al. (2022) from dandiset 000489\n\n**Paper.** Kim V, Semenov I, Kiester AS, Keppler MA, Ibey BL, Bixler JN, Pakhomov AG (2022).\nAction spectra and mechanisms of (in)efficiency of bipolar electric pulses at electroporation.\n*Bioelectrochemistry* 149:108319.\n[doi:10.1016/j.bioelechem.2022.108319](https://doi.org/10.1016/j.bioelechem.2022.108319). The\nclaims file was written from the accepted author manuscript in PubMed Central (PMC9729435), which\nholds the main text, the Methods and the figure legends; the paper has no supplement and links no\ncode.\n\n**Dandiset.** [DANDI:000489](https://dandiarchive.org/dandiset/000489/0.230518.1811), version\n0.230518.1811 (doi:10.48324/dandi.000489/0.230518.1811). The paper cites no version. This is the\nonly published version, and the draft holds the same 18 files (same paths, sizes and blobs; the\ncheck is printed below), so the most recent published version is pinned.\n\n**What the dandiset holds.** One stitched two-channel image (MemBrite and YO-PRO-1) of the whole\nglass bottom of each of 17 dishes exposed to 5 pulses at 1 Hz, unipolar 600 ns or bipolar\n600+600 ns with a second phase of 25, 50, 75 or 100%: the experiment of Fig. 2. An 18th file is a\nsample image named for Fig. 1F. The experiments of Figs. 3 to 6 (pulse number, duration, the aa'\nline, repetition rate), the strobe imaging of Fig. 7 and the thermometry of Fig. 1E are not in it.\nThe files hold no ROI, no field values, no pixel size and no footprint values: everything is\nmeasured here from the images, and the field of each ROI is recomputed from the electrode geometry\nof Methods 2.3 (see `bipolar.py`).\n\n**Method.** Electrode footprints are found as the dark discs of the YP image. ROI of 200 um are\ntiled from the midpoint of the electrode centres along bb', the perpendicular to the electrode\naxis, out to 3 mm on each side. In each ROI, YP = YP_ROI x MB_0 / MB_ROI - YP_0 (Methods 2.5),\nwith YP_0 and MB_0 from the footprints. The file `sub-Fig2-0-03` is left out of the main analysis\nbecause its YP channel is a copy of another dish's (data check).\n\n| Claim | Figure | Status |\n|---|---|---|\n| fig2a-uptake-rises-with-field | 2A | tested |\n| fig2a-vertical-scales | 2A | tested |\n| fig2b-exponential-same-slope | 2B | tested |\n| fig2c-max-inhibition-50-75 | 2C | tested |\n| fig2c-inhibition-flat-above-8-7 | 2C | tested |\n| fig2c-weaker-at-6-7 | 2C | tested |\n| fig3-uptake-linear-in-pulse-number, fig3d-cancellation-independent-of-number | 3 | blocked: data missing |\n| fig4ac-ns-bipolar-20-25pct, fig4d-1200ns-tenfold, fig4eg-us-bipolar-30-50pct, fig4h-us-stronger-at-low-field | 4 | blocked: data missing |\n| fig5-ns-symmetric-along-aa, fig5-us-anode-stronger | 5 | blocked: data missing |\n| fig6ad-unipolar-833khz-enhanced, fig6be-bipolar-khz-less-than-1hz, fig6cf-833khz-thirtyfold, fig6cf-cancellation-stronger-at-high-field | 6 | blocked: data missing |\n| fig7-charging-time-constant, fig7-bipolar-overshoot, fig7-summation-without-buildup | 7 | blocked: data missing |\n| fig1e-heating | 1E | blocked: data missing |\n"
-}
-```
-
-```
-The file /tmp/claude-1001/header.md has been updated successfully. (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-I'll write the conclusions now from the dev outputs (the analysis is deterministic) and then run the entry once, checking afterwards that the executed numbers match.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude-1001/conclusions.json",
- "content": "{\n\"fig2a-uptake-rises-with-field\": \"**Result: partially reproduced, resting on an assumption.** Mean YP rises with field for every amplitude (Spearman rho 0.98 to 0.99 over the 16 ROI). By the criterion's test of the strongest against the weakest ROI, YP is higher at p < 0.05 for 50%, 75% and 100% under both readings (paired p 0.011, 0.041, 0.003; unpaired p 0.0008, 0.014, < 0.0001), but not for unipolar (2 dishes, paired p 0.17, unpaired p 0.11) or 25% (3 dishes, paired p 0.19, unpaired p 0.15): 3 of 5 amplitudes under both. The same holds on the top side, with the scale from the electrodes, with the right footprint and with `sub-Fig2-0-03` kept. On the bottom side alone, or with the left footprint alone, the paired test passes for 2 amplitudes and the unpaired for 3, which the criterion would call methods_underspecified; the main reading averages both sides and both footprints.\",\n\"fig2a-vertical-scales\": \"**Result: not reproduced, resting on an assumption.** Taking the files' camera counts as the paper's a.u., the largest unipolar mean is 571.1 a.u. (mean plus s.e.m. 785.4, within 1200, and above 250), but the 75% largest mean plus s.e.m. is 283.2 a.u., above 250 (largest mean 239.5). The 75% value exceeds 250 under every variant of the data (255.2 to 342.8). The ratio of the largest unipolar to the largest 75% mean is 2.38, against 4.8 for the paper's axis limits.\",\n\"fig2b-exponential-same-slope\": \"**Result: blocked, methods_underspecified, as the criterion says when the readings disagree.** Of the 12 readings (cutoff 6, 7, 8 kV/cm; least squares or log-linear fit; per-dish or means test), 10 are not reproduced and 2 partially reproduced (cutoffs 7 and 8 with least squares, where no bipolar slope differs from the unipolar slope at p < 0.05 but the exponential beats a straight line for only 3 of 5 amplitudes). The log-linear fits put every bipolar slope below the unipolar one (ratios 0.50 to 0.75, all four bipolar slopes differing at p < 0.01 in the means test); the least-squares fits give ratios 0.68 to 1.04, with the 50% and 75% slopes differing at p < 0.05 in some readings. The exponential beats a straight line for 2 to 4 of 5 amplitudes.\",\n\"fig2c-max-inhibition-50-75\": \"**Result: not reproduced, resting on an assumption.** Over the ROI from 8.94 to 15.24 kV/cm the 50% second phase inhibits most, and the lower of the 50% and 75% values is below the 25% and 100% values at every ROI. The inhibition is weaker than the paper's: 54.5% of the unipolar mean on average over the range (reading a) and 31.6% at its lowest (reading b), both outside 18 to 22%. No test reaches p < 0.01: at single ROI the largest p is 0.79 against unipolar and 0.072 against 25 and 100% (one ROI of 9 below 0.01 against unipolar); on dish means over the range the smallest p is 0.011 (50% against 25 and 100%, normalised values). With the right footprint alone the pooled test reaches p < 0.01, which would make the claim partially reproduced under that reading; every other variant gives not reproduced.\",\n\"fig2c-inhibition-flat-above-8-7\": \"**Result: not reproduced.** The percent of the unipolar mean rises from the ROI at 15.24 kV/cm to the ROI at 8.94 kV/cm for every amplitude (25%: 76.8 to 199.0; 50%: 34.8 to 113.2; 75%: 42.0 to 155.7; 100%: 133.4 to 229.9). The difference is significant for 50% and 75% under both the paired (p 0.012, 0.049) and the unpaired test (p 0.0016, 0.018), and for 100% unpaired (p 0.035). Over all 36 pairs of ROI in the range, 23 (paired) and 18 (unpaired) differ for 50%. Every variant of the data gives the same outcome.\",\n\"fig2c-weaker-at-6-7\": \"**Result: not reproduced, resting on an assumption.** At the ROI nearest 6.7 kV/cm (6.75 kV/cm) the unipolar mean YP is -8.6 a.u., at background (the two unipolar dishes give 11 and -28), so the percent of the unipolar mean is negative (-399% for 50%, -579% for 100%) and is not above the higher fields, where it averages 54.5% and 137.4%. The tests then find the 6.7 kV/cm value lower, not higher (all p < 0.01). On the bottom side alone, or with the left footprint alone, the unipolar mean at 6.7 kV/cm is positive and the claim is reproduced under both pairings; the main reading averages both sides and both footprints. The percent at 6.7 kV/cm rests on a unipolar denominator that is not above background in these two dishes.\",\n\"summary\": \"## Summary\\n\\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\\nreasoning and the differences from the paper's method.\\n\\n| Claim | Outcome |\\n|---|---|\\n| fig2a-uptake-rises-with-field | partially reproduced (assumed) |\\n| fig2a-vertical-scales | not reproduced (assumed) |\\n| fig2b-exponential-same-slope | blocked: methods underspecified |\\n| fig2c-max-inhibition-50-75 | not reproduced (assumed) |\\n| fig2c-inhibition-flat-above-8-7 | not reproduced |\\n| fig2c-weaker-at-6-7 | not reproduced (assumed) |\\n| 16 claims on Figs. 1E, 3, 4, 5, 6 and 7 | blocked: data missing |\\n\\n**How the analysis differs from the paper's.** The paper measured fluorescence in MetaMorph in ROI it placed by hand, and took the field of each ROI from a finite element model in Sim4Life. Here the electrode footprints are found automatically, 200 um ROI are tiled contiguously along bb' on both sides of the centre and averaged by distance, YP_0 and MB_0 are averaged over both footprints, the pixel size is taken as 0.65 um (camera pixel over the 10x objective), and the field comes from the closed-form solution for two cylinders in the plane, which gives 15.38 kV/cm at the centre against the paper's 15.1. The dish `sub-Fig2-0-03` is left out because its YP image belongs to another dish, so unipolar pulses have 2 dishes, not 3. Each claim is shown under one side only, under a scale set from the electrode distance, under each footprint alone, and with `sub-Fig2-0-03` kept.\\n\\n**What was found about the dandiset.**\\n\\n- It holds only the Fig. 2 experiment (17 dishes) and a Fig. 1F sample image. Figs. 1E and 3 to 7 have no data in it.\\n- The YP channel of `sub-Fig2-0-03` (unipolar) is identical to that of `sub-Fig2-25-04` (25%) and does not register with its own MemBrite channel; the unipolar YP image of dish 0-03 is missing.\\n- The `sub-Fig1F` file holds the same image in both channels.\\n- The image is stored as an ImageSeries of shape (22323, 22323, 2) with a rate of 2 Hz, so its first axis reads as time. There is no pixel size, no electrode position, no ROI, no field per ROI, no footprint values and no pulse voltage.\\n- The series description says 144 images of a well of a six-well plate; the paper says 216 images of a 35 mm dish. The three 25% files share the acquisition name `Fig2_25`.\\n- All unipolar dishes were imaged on 2021-07-29 and all 75% and 100% dishes on 2021-08-24, with no unipolar dish that day. The 100% dishes show more uptake than the unipolar dishes (761.0 against 571.1 a.u. at most), which the paper's Fig. 2C, where every bipolar pulse inhibits, does not show.\\n- Pixel scale and geometry are consistent with the paper: at 0.65 um per pixel the electrode centres are 4.54 mm apart (nominal 4.5) and the footprints 1.49 mm across (nominal 1.5).\"\n}\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude-1001/conclusions.json (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-import json
-c=json.load(open('conclusions.json'))
-c["fig2a-vertical-scales"]=c["fig2a-vertical-scales"].replace("The ratio of the largest unipolar to the largest 75% mean is 2.38, against 4.8 for the paper's axis limits.","The ratio of the largest unipolar to the largest 75% mean is 2.38; the paper's axis limits differ by 1200/250.")
-c["fig2b-exponential-same-slope"]=c["fig2b-exponential-same-slope"].replace("(cutoffs 7 and 8 with least squares, where","(least squares with the per-dish test at 7 kV/cm and with the means test at 8 kV/cm, where")
-json.dump(c,open('conclusions.json','w'),indent=1)
-EOF
-. dev/bin/activate && python build_nb.py entries/000489-kim-2022/reproduce_kim_2022.ipynb conclusions.json && cd  && date -u && python tools/entry.py all entries/000489-kim-2022 2>&1 | tail -30; date -u
-```
-
-```
-Fri Oct 30 16:24:32 UTC 2026
-Installed kernelspec registry-000489-kim-2022 in executed/000489-kim-2022/.venv/share/jupyter/kernels/registry-000489-kim-2022
-0 error(s)
-pass  reproduce_kim_2022.ipynb  (507 s)
-Fri Oct 30 16:33:05 UTC 2026
-```
-
-**Agent**
-
-The entry passes its checks and runs in 507 s. Comparing the executed outputs with the dev run.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import nbformat
-def texts(p):
-    nb=nbformat.read(p,4); out=[]
-    for c in nb.cells:
-        if c.cell_type!='code': continue
-        out.append(''.join(o.get('text','') for o in c.get('outputs',[]) if o.get('output_type')=='stream'))
-    return out
-a=texts('dev_out.ipynb'); b=texts('executed/000489-kim-2022/reproduce_kim_2022.ipynb')
-print(len(a),len(b))
-for i,(x,y) in enumerate(zip(a,b)):
-    if x!=y:
-        xl,yl=x.splitlines(),y.splitlines()
-        d=[(u,v) for u,v in zip(xl,yl) if u!=v]
-        print('cell',i,'differs in',len(d),'lines', d[:3])
-nb=nbformat.read('executed/000489-kim-2022/reproduce_kim_2022.ipynb',4)
-for c in nb.cells:
-    for o in c.get('outputs',[]):
-        if o.get('output_type')=='error': print('ERROR',o['ename'])
-print(b[0], b[-1])
-EOF
-```
-
-```
-15 15
-cell 0 differs in 1 lines [('loaded 18 files from dandiset 000489 version 0.230518.1811 in 0 s', 'loaded 18 files from dandiset 000489 version 0.230518.1811 in 474 s')]
-cell 14 differs in 1 lines [('Notebook ran in 0.4 min', 'Notebook ran in 8.3 min')]
-loaded 18 files from dandiset 000489 version 0.230518.1811 in 474 s
- Notebook ran in 8.3 min
-Shell cwd was reset to
-```
-
-**Agent**
-
-The executed outputs are identical to the dev run apart from timings. Checking the overview figure.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import nbformat, base64
-nb=nbformat.read('executed/000489-kim-2022/reproduce_kim_2022.ipynb',4)
-k=0
-for c in nb.cells:
-    for o in c.get('outputs',[]):
-        if 'data' in o and 'image/png' in o['data']:
-            open(f'fig{k}.png','wb').write(base64.b64decode(o['data']['image/png'])); k+=1
-print(k)
-EOF
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/fig0.png"
-}
-```
-
-```
-2
-Shell cwd was reset to
-```
-
-Result: no output.
-
-**Agent**
-
-The ROI lines sit on the perpendicular bisectors in all 17 dishes. Writing the attempt record and the README.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p $TMPDIR/rec && cat > $TMPDIR/rec/head.yaml <<'EOF'
-schema_version: 2
-id: 000489-kim-2022-01
-dataset:
-  archive: dandi
-  id: "000489"
-  version: 0.230518.1811
-  doi: 10.48324/dandi.000489/0.230518.1811
-paper: doi:10.1016/j.bioelechem.2022.108319
-date: 2026-10-30
-entry: 000489-kim-2022
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code
-    model: claude-opus-5-5
-    protocol: pilot-12
-  runner:
-    platform: GitHub Actions
-    url: https://github.com/catalystneuro/encore/actions/runs/41081361942
-inputs:
-- what: Electric field strength of each ROI, recomputed in bipolar.py as the closed-form field
-    of two parallel conducting cylinders (1.5 mm diameter, 3 mm side to side, 5.75 kV) from the
-    geometry of Methods 2.2 and 2.3. The paper's finite element model output is not deposited.
-  source: doi:10.1016/j.bioelechem.2022.108319 (Methods 2.2, 2.3; Results 3.1)
-EOF
-echo ok
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/rec/outcomes.yaml <<'EOF'
-outcomes:
-- claim: fig2a-uptake-rises-with-field
-  outcome: partially_reproduced
-  assumed: true
-  notebook: reproduce_kim_2022.ipynb
-  output: claim:fig2a-uptake-rises-with-field
-  notes: Mean YP rises with field for all five amplitudes (Spearman rho 0.98 to 0.99 over 16 ROI
-    from 5.13 to 15.38 kV/cm). Strongest against weakest ROI, YP is higher with p < 0.05 for 50,
-    75 and 100% under both readings (paired p 0.011, 0.041, 0.003; unpaired p 0.0008, 0.014,
-    below 0.0001) and not for unipolar (2 dishes; paired p 0.17, unpaired p 0.11) or 25% (3
-    dishes; paired p 0.19, unpaired p 0.15). Paired and unpaired agree on 3 of 5 amplitudes, so
-    the criterion gives partially reproduced. The unipolar test has 2 dishes because the third,
-    sub-Fig2-0-03, holds another dish's YP image; keeping it gives the same outcome. On the
-    bottom side of bb' alone, or with YP_0 and MB_0 from the left footprint alone, the paired
-    test passes for 2 amplitudes and the unpaired for 3, which the criterion would call
-    methods_underspecified.
-  deviations:
-  - The ROI positions are not in the dataset or the paper. 200 um ROI are tiled contiguously
-    along bb' from the midpoint of the electrode centres out to 3 mm, and the two ROI at the same
-    distance are averaged per dish (the claims file's reading a). This is assumed as the reading
-    the paper best supports, since Methods 2.3 and Fig. 1C treat bb' as one line through the
-    centre; one side only is shown for each side.
-  - YP_0 and MB_0 are averaged over discs of 0.5 mm radius in both footprints (Methods 2.5 says
-    "within the electrodes' footprints"); each footprint alone is shown as a variant.
-  - The field per ROI is recomputed from the electrode geometry (Methods 2.3) in closed form for
-    two cylinders in the plane, which gives 15.38 kV/cm at the centre against the 15.1 kV/cm the
-    paper cites. The pixel size, absent from the files, is taken as 0.65 um (6.5 um camera pixel,
-    10x objective, Methods 2.5); a scale set from each dish's electrode distance is a variant.
-  - Unipolar pulses have 2 dishes, not 3, because sub-Fig2-0-03 is left out (its YP channel is a
-    copy of sub-Fig2-25-04's).
-  - The ROI with the weakest field is the outermost tiled ROI (3.0 mm, 5.13 kV/cm); the paper does
-    not give how far its ROI extend.
-- claim: fig2a-vertical-scales
-  outcome: not_reproduced
-  assumed: true
-  notebook: reproduce_kim_2022.ipynb
-  output: claim:fig2a-vertical-scales
-  notes: The largest unipolar mean YP is 571.1 a.u. (mean plus s.e.m. 785.4), within 1200 and
-    above 250, but the largest 75% mean plus s.e.m. is 283.2 a.u., above the 250 limit (largest
-    mean 239.5). Under every variant of the data the 75% value is 255.2 to 342.8. The ratio of the
-    largest unipolar to the largest 75% mean is 2.38, where the axis limits differ 4.8-fold.
-  deviations:
-  - The files hold uint16 camera counts with conversion 1.0 and unit n.a.; they are assumed to be
-    the units the paper measured in MetaMorph, as nothing in the files or the paper says they were
-    rescaled. Under that assumption the claim is tested on absolute values.
-  - ROI placement, footprints, field and the missing third unipolar dish as for
-    fig2a-uptake-rises-with-field.
-- claim: fig2b-exponential-same-slope
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notebook: reproduce_kim_2022.ipynb
-  output: claim:fig2b-exponential-same-slope
-  notes: The criterion makes the claim methods_underspecified when its readings disagree, and
-    they do. Of 12 readings (cutoff 6, 7 or 8 kV/cm; nonlinear least squares or log-linear fit;
-    per-dish slopes or slopes of the fits to the means), 10 give not reproduced and 2 partially
-    reproduced (least squares with the per-dish test at 7 kV/cm and with the means test at 8
-    kV/cm, where no bipolar slope differs from the unipolar one but the exponential beats a
-    straight line for only 3 of 5 amplitudes). Log-linear fits put every bipolar slope below the
-    unipolar one (ratios 0.50 to 0.75; all four differ at p < 0.01 in the means test). Least
-    squares gives ratios 0.68 to 1.04, with the 50% or 75% slope differing at p < 0.05 in some
-    readings. The exponential beats a straight line for 2 to 4 of 5 amplitudes. Every reading
-    that can decide the slope part finds a difference or a weak exponential; none gives
-    reproduced. The question of which fit Grapher made is for the paper's authors (findings).
-  deviations:
-  - Log-linear fits drop points with YP at or below zero (2 of 14 unipolar means at the 6 kV/cm
-    cutoff); the count is printed.
-  - ROI placement, footprints, field and the missing third unipolar dish as for
-    fig2a-uptake-rises-with-field.
-- claim: fig2c-max-inhibition-50-75
-  outcome: not_reproduced
-  assumed: true
-  notebook: reproduce_kim_2022.ipynb
-  output: claim:fig2c-max-inhibition-50-75
-  measured: 54.5
-  notes: Over the ROI from 8.94 to 15.24 kV/cm (nearest 8.7 and 15.1), the 50% second phase
-    inhibits most and the lower of 50 and 75% is below 25 and 100% at every ROI, so the ordering
-    holds. The percent of the unipolar mean is 54.5% averaged over the range (reading a, given as
-    measured) and 31.6% at its lowest (reading b), both outside 18 to 22%. No test reaches p <
-    0.01. At single ROI the largest p for 50% is 0.79 against unipolar (1 of 9 ROI below 0.01)
-    and 0.072 against 25 and 100%; on dish means over the range the smallest p is 0.011 (50%
-    against 25 and 100%, normalised values). So neither the percent nor the test holds under any
-    reading. With the right footprint alone the pooled test reaches p < 0.01, which would give
-    partially reproduced; every other variant gives not reproduced. The 100% dishes show more
-    uptake than the unipolar dishes at most ROI (89.6 to 229.9% of unipolar), which the paper
-    does not report.
-  deviations:
-  - Where the p < 0.01 test is made is not given (claims file, criterion; Results 3.1 cites only
-    "Fig. 2C"). It is run at every ROI of the range, holding when all reach p < 0.01, and on each
-    dish's mean over the range; neither holds.
-  - The range from 8.7 to 15.1 kV/cm is read as the ROI nearest each named field and those between
-    (claims file, opening comment), j 1 to 9; the central ROI (15.38 kV/cm) is above 15.1 in the
-    recomputed field.
-  - ROI placement, footprints, field and the missing third unipolar dish as for
-    fig2a-uptake-rises-with-field.
-- claim: fig2c-inhibition-flat-above-8-7
-  outcome: not_reproduced
-  notebook: reproduce_kim_2022.ipynb
-  output: claim:fig2c-inhibition-flat-above-8-7
-  notes: The percent of the unipolar mean rises from the ROI at 15.24 to the ROI at 8.94 kV/cm for
-    every amplitude (25%, 76.8 to 199.0; 50%, 34.8 to 113.2; 75%, 42.0 to 155.7; 100%, 133.4 to
-    229.9). It differs for 50% and 75% under both the paired (p 0.012, 0.049) and the unpaired test
-    (p 0.0016, 0.018), so the criterion gives not reproduced. Of the 36 pairs of ROI in the range,
-    23 (paired) and 18 (unpaired) differ for 50%. Every variant of the data gives the same
-    outcome. The rise comes from the unipolar mean falling faster with field than the bipolar
-    means in these 2 unipolar dishes (570.4 to 47.7 a.u. over the range).
-  deviations:
-  - ROI placement, footprints, field and the missing third unipolar dish as for
-    fig2a-uptake-rises-with-field.
-- claim: fig2c-weaker-at-6-7
-  outcome: not_reproduced
-  assumed: true
-  notebook: reproduce_kim_2022.ipynb
-  output: claim:fig2c-weaker-at-6-7
-  notes: At the ROI nearest 6.7 kV/cm (6.75 kV/cm) the unipolar mean YP is -8.6 a.u., at
-    background (the two unipolar dishes give 11 and -28). The percent of the unipolar mean there
-    is negative (-399% for 50%, -579% for 100%) and is not above the higher fields, where it
-    averages 54.5% and 137.4%; all tests find it lower (p < 0.01). Paired and unpaired agree. On
-    the bottom side of bb' alone, or with the left footprint alone, the unipolar mean at 6.7 kV/cm
-    is positive and the claim is reproduced under both pairings, so the outcome depends on the
-    ROI and footprint readings. In every reading the percent at 6.7 kV/cm divides by a unipolar
-    mean that is not clearly above background in these two dishes.
-  deviations:
-  - ROI placement (both sides averaged) and footprints (both averaged) are the assumptions of
-    fig2a-uptake-rises-with-field; here they decide the outcome, and the readings that give
-    reproduced are shown.
-  - The field and the missing third unipolar dish as for fig2a-uptake-rises-with-field.
-EOF
-python - <<'EOF'
-import yaml,os
-p=os.environ['TMPDIR']+'/rec/'
-yaml.safe_load(open(p+'head.yaml')); yaml.safe_load(open(p+'outcomes.yaml')); print('ok')
-EOF
-```
-
-```
-ok
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/000489-kim-2022 && python - <<'EOF'
-s=open('bipolar.py').read()
-old='''    feet = []
-    for c in fp["centres"]:'''
-new='''    rois_aa = []
-    for k in range(-N_ROI_AA, N_ROI_AA + 1):
-        cen = mid + k * side * axis        # k < 0 towards the left electrode, k > 0 the right one
-        r0, c0 = int(round(cen[0] - side / 2)), int(round(cen[1] - side / 2))
-        r1, c1 = r0 + int(round(side)), c0 + int(round(side))
-        vals = {ch: dish.box(r0, r1, c0, c1, ch).mean() for ch in (MB, YP)}
-        x_mm = k * ROI_UM / 1000
-        rois_aa.append({"k": k, "distance_mm": abs(x_mm), "row": cen[0], "col": cen[1],
-                        "field": roi_mean_field((x_mm, 0.0), axis, um_per_px),
-                        "YP_roi": vals[YP], "MB_roi": vals[MB]})
-    feet = []
-    for c in fp["centres"]:'''
-assert old in s
-s=s.replace(old,new)
-s=s.replace('return {"rois": rois, "footprints": feet,','return {"rois": rois, "rois_aa": rois_aa, "footprints": feet,')
-s=s.replace('''N_ROI_SIDE = 15                   # ROI centres from 0 to 3.0 mm along bb' on each side''','''N_ROI_SIDE = 15                   # ROI centres from 0 to 3.0 mm along bb' on each side
-N_ROI_AA = 6                      # ROI centres from 0 to 1.2 mm along aa', clear of the footprints''')
-s=s.replace('''- ROI: 200 um squares (Methods 2.5) along bb', the line at equal distance from both electrodes
-  (Methods 2.3), tiled contiguously outward from the centre on both sides (claims file, opening
-  comment, reading a).''','''- ROI: 200 um squares (Methods 2.5) along bb', the line at equal distance from both electrodes
-  (Methods 2.3), tiled contiguously outward from the centre on both sides (claims file, opening
-  comment, reading a). The same squares along aa', the line through the electrode centres
-  (Methods 2.3, Fig. 5 legend), out to 1.2 mm on each side, so that the outermost square ends
-  0.2 mm short of the nominal footprint edge (a standard choice).''')
-open('bipolar.py','w').write(s)
-EOF
-grep -n "rois_aa\|N_ROI_AA" bipolar.py | head
-```
-
-```
-72:N_ROI_AA = 6                      # ROI centres from 0 to 1.2 mm along aa', clear of the footprints
-295:    rois_aa = []
-296:    for k in range(-N_ROI_AA, N_ROI_AA + 1):
-302:        rois_aa.append({"k": k, "distance_mm": abs(x_mm), "row": cen[0], "col": cen[1],
-313:    return {"rois": rois, "rois_aa": rois_aa, "footprints": feet, "separation_px": sep_px, "axis": axis}
-```
-
-**Agent calls Bash**
-
-```bash
-cp entries/000489-kim-2022/bipolar.py $TMPDIR/ && cd $TMPDIR && . dev/bin/activate && cat > remeasure.py <<'EOF'
-import pickle, bipolar as bp
-from concurrent.futures import ProcessPoolExecutor
-D = pickle.load(open('all.pkl', 'rb'))
-A = {a['path']: a for a in bp.assets()}
-def one(d):
-    if d['amplitude'] is None: return d
-    dish = bp.Dish(A[d['path']])
-    d['measure'] = bp.measure(dish, d['footprints'])
-    d['measure_scaled'] = bp.measure(dish, d['footprints'], um_per_px=bp.CENTRE_DISTANCE_MM * 1000 / d['measure']['separation_px'])
-    return d
-if __name__ == '__main__':
-    with ProcessPoolExecutor(4) as ex: D = list(ex.map(one, D))
-    pickle.dump(D, open('all.pkl', 'wb'))
-EOF
-time python remeasure.py 2>&1 | tail -3
-```
-
-```
-real	3m23.007s
-user	1m17.644s
-sys	0m19.337s
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('build_nb.py').read()
-anchor='''code(\'\'\'
-print(f"Notebook ran in'''
-new='''md(\'\'\'
-## The 600 ns exposure of Figs. 4B and 5B on the Fig. 2 dishes (no outcome)
-
-The claims on Figs. 4 and 5 use the dishes of the pulse duration experiment, which are not in the
-dandiset, and are blocked. The Fig. 2 dishes with 0% and 50% second phase had the same exposure as
-the 600 ns pair of Fig. 4 (5 pulses at 1 Hz, 5.75 kV first phase, 50% second phase; Results 3.1
-and 3.3), but they are other dishes. This section applies the measures of
-fig4ac-ns-bipolar-20-25pct (the ratio of the fits of bipolar and unipolar mean YP, over fields
-above 7 or 8 kV/cm, with exponential, 2nd degree polynomial or the better fit per curve) and of
-fig5-ns-symmetric-along-aa (ROI along aa', the two sides compared at each distance) to them, to
-show what part of those claims the dandiset could speak to. It decides no outcome. Which
-electrode was the anode is not in the files, so the sides are named left and right.
-\'\'\')
-code(\'\'\'
-def fit_curve(E, Y, kind):
-    E, Y = np.asarray(E, float), np.asarray(Y, float)
-    if kind == "poly2":
-        p = np.polyfit(E, Y, 2)
-        return (lambda e: np.polyval(p, e)), ((Y - np.polyval(p, E)) ** 2).sum()
-    k, se, A, rss, used = fit_exp(E, Y, "nls")
-    return (lambda e: A * np.exp(k * e)), rss
-
-rows = []
-for cut in (7, 8):
-    g = M[(M.field >= cut) & M.amplitude.isin([0, 50])]
-    E = np.sort(g.field.unique())
-    fits = {}
-    for amp in (0, 50):
-        h = g[g.amplitude == amp]
-        fits[amp] = {kind: fit_curve(h.field, h.YP, kind) for kind in ("exp", "poly2")}
-        best = min(fits[amp].items(), key=lambda kv: kv[1][1])
-        fits[amp]["best"] = best[1]
-    for kind in ("exp", "poly2", "best"):
-        ratio = 100 * fits[50][kind][0](E) / fits[0][kind][0](E)
-        rows.append({"cutoff": cut, "fit": kind, "ROI": len(E), "ratio_min_%": ratio.min(),
-                     "ratio_max_%": ratio.max(), "ratio_mean_%": ratio.mean(),
-                     "inside_18_27.5_everywhere": bool(((ratio >= 18) & (ratio <= 27.5)).all())})
-print("Ratio of the 50% bipolar fit to the unipolar fit, 600 ns, Fig. 2 dishes (fig4ac measure):")
-print(pd.DataFrame(rows).round(1).to_string(index=False))
-r = ratio_table(main)
-for cut in (7, 8):
-    js = sorted(main[main.field >= cut].j.unique())
-    lo_j, hi_j = max(js), min(js)
-    a = r[(r.amplitude == 50) & (r.j == lo_j)].set_index("dish").pct
-    b = r[(r.amplitude == 50) & (r.j == hi_j)].set_index("dish").pct
-    print(f"cutoff {cut}: dish percent at the lowest included field ({main.groupby('j').field.mean()[lo_j]:.2f} kV/cm) "
-          f"{a.mean():.1f}, at the highest ({main.groupby('j').field.mean()[hi_j]:.2f}) {b.mean():.1f}; "
-          f"paired p = {ttest(a, b.loc[a.index], True):.4f}")
-
-aa = []
-for d in keep:
-    feet = d["measure"]["footprints"]
-    yp0, mb0 = np.mean([f[bp.YP] for f in feet]), np.mean([f[bp.MB] for f in feet])
-    for roi in d["measure"]["rois_aa"]:
-        aa.append({"dish": d["label"], "amplitude": d["amplitude"], "k": roi["k"], "field": roi["field"],
-                   "YP": bp.yp_index(roi["YP_roi"], roi["MB_roi"], yp0, mb0)})
-aa = pd.DataFrame(aa)
-rows = []
-for amp in (0, 50):
-    for j in range(1, bp.N_ROI_AA + 1):
-        L = aa[(aa.amplitude == amp) & (aa.k == -j)].set_index("dish").YP
-        R = aa[(aa.amplitude == amp) & (aa.k == j)].set_index("dish").YP
-        rows.append({"amplitude": amp, "distance_mm": j * bp.ROI_UM / 1000,
-                     "field": aa[aa.k == j].field.mean(), "left": L.mean(), "right": R.mean(),
-                     "left_over_right": L.mean() / R.mean(),
-                     "p_paired": ttest(L, R.loc[L.index], True), "p_unpaired": ttest(L, R, False)})
-S = pd.DataFrame(rows)
-print("\\nYP along aa', left against right side at the same distance (fig5 measure), 600 ns, Fig. 2 dishes:")
-print(S.round(4).to_string(index=False))
-print("Distances with p < 0.05, paired / unpaired:",
-      S.groupby("amplitude").apply(lambda g: (int((g.p_paired < 0.05).sum()), int((g.p_unpaired < 0.05).sum()))).to_dict())
-print(f"Range of YP along aa': {aa.YP.min():.1f} to {aa.YP.max():.1f} a.u.; fields {aa.field.min():.2f} to {aa.field.max():.2f} kV/cm")
-\'\'\', ["variant:fig4-fig5-600ns-on-fig2-dishes"])
-
-'''
-assert anchor in s
-s=s.replace(anchor,new+anchor)
-open('build_nb.py','w').write(s)
-EOF
-. dev/bin/activate && python build_nb.py dev.ipynb conclusions.json && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | grep -i error | head; python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
-c=[c for c in nb.cells if 'variant:fig4-fig5-600ns-on-fig2-dishes' in c.metadata.get('tags',[])][0]
-for o in c.outputs: print(o.get('text', o.get('evalue','')))
-EOF
-```
-
-```
-Exit code 1
-    await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
-    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
-nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
-[31mSyntaxError[39m[31m:[39m unterminated string literal (detected at line 54)
-Traceback (most recent call last):
-  File "<stdin>", line 3, in <module>
-IndexError: list index out of range
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('build_nb.py').read()
-s=s.replace('print("\nYP along aa\'','print("\\\\nYP along aa\'')
-open('build_nb.py','w').write(s)
-EOF
-grep -n 'YP along aa' build_nb.py; . dev/bin/activate && python build_nb.py dev.ipynb conclusions.json && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | grep -i error | head -3; python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
-c=[c for c in nb.cells if 'variant:fig4-fig5-600ns-on-fig2-dishes' in c.metadata.get('tags',[])][0]
-for o in c.outputs: print(o.get('text', o.get('evalue','')))
-EOF
-```
-
-```
-Exit code 1
-706:print("\nYP along aa', left against right side at the same distance (fig5 measure), 600 ns, Fig. 2 dishes:")
-710:print(f"Range of YP along aa': {aa.YP.min():.1f} to {aa.YP.max():.1f} a.u.; fields {aa.field.min():.2f} to {aa.field.max():.2f} kV/cm")
-    await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/tmp/claude-1001/dev/lib/python3.13/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
-    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
-Traceback (most recent call last):
-  File "<stdin>", line 3, in <module>
-IndexError: list index out of range
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && sed -i '706s/print("\\nYP/print("\\\\nYP/' build_nb.py && sed -n 706p build_nb.py && . dev/bin/activate && python build_nb.py dev.ipynb conclusions.json && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | grep -i "error" | tail -3; python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
-c=[c for c in nb.cells if 'variant:fig4-fig5-600ns-on-fig2-dishes' in c.metadata.get('tags',[])][0]
-for o in c.outputs: print(o.get('text', o.get('evalue','')))
-EOF
-```
-
-```
-print("\\nYP along aa', left against right side at the same distance (fig5 measure), 600 ns, Fig. 2 dishes:")
-Ratio of the 50% bipolar fit to the unipolar fit, 600 ns, Fig. 2 dishes (fig4ac measure):
- cutoff   fit  ROI  ratio_min_%  ratio_max_%  ratio_mean_%  inside_18_27.5_everywhere
-      7   exp   24         34.5         64.9          46.7                      False
-      7 poly2   24       -457.4        150.6          13.3                      False
-      7  best   24       -457.4        150.6          13.3                      False
-      8   exp   22         34.4         62.2          45.3                      False
-      8 poly2   22         34.8       1537.4         184.2                      False
-      8  best   22         34.8       1537.4         184.2                      False
-cutoff 7: dish percent at the lowest included field (7.41 kV/cm) 108.8, at the highest (15.38) 38.7; paired p = 0.1531
-cutoff 8: dish percent at the lowest included field (8.14 kV/cm) 118.6, at the highest (15.38) 38.7; paired p = 0.0099
-
-YP along aa', left against right side at the same distance (fig5 measure), 600 ns, Fig. 2 dishes:
- amplitude  distance_mm   field     left    right  left_over_right  p_paired  p_unpaired
-         0          0.2 15.5151 611.8128 573.4728           1.0669    0.5259      0.7411
-         0          0.4 15.9449 593.1983 553.6832           1.0714    0.8637      0.8249
-         0          0.6 16.7167 479.6662 498.9566           0.9613    0.2406      0.6420
-         0          0.8 17.9322 745.5819 620.3965           1.2018    0.0920      0.1381
-         0          1.0 19.7822 625.4799 699.2402           0.8945    0.5009      0.7464
-         0          1.2 22.6386 817.5989 999.3741           0.8181    0.2119      0.1093
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && python - <<'EOF'
-s=open('build_nb.py').read()
-old='''    E = np.sort(g.field.unique())'''
-new='''    E = np.sort(g.groupby("j").field.mean().values)'''
-assert old in s; s=s.replace(old,new)
-open('build_nb.py','w').write(s)
-import json
-c=json.load(open('conclusions.json'))
-c["summary"]=c["summary"].replace("\n\n**How the analysis differs","\n\nThe claims on Figs. 4 and 5 are blocked, as their dishes are not in the dandiset. On the Fig. 2 dishes, which had the 600 ns exposure of Fig. 4, the measures of those claims give a ratio of the bipolar to the unipolar fit of 34.4 to 64.9% with exponential fits (fig4ac-ns-bipolar-20-25pct expects 18 to 27.5%; the polynomial fits cross zero), and YP on the two sides of aa' differs at p < 0.05 at no distance under both pairings. These are other dishes than the paper's, and decide no outcome.\n\n**How the analysis differs")
-json.dump(c,open('conclusions.json','w'),indent=1)
-EOF
-. dev/bin/activate && python build_nb.py dev.ipynb conclusions.json && python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev.ipynb',4)
-c=nb.cells[1]; c.source=c.source.replace("dishes = bp.load_all()","import pickle; dishes = pickle.load(open('/tmp/claude-1001/all.pkl','rb'))")
-nbformat.write(nb,'/tmp/claude-1001/dev.ipynb')
-EOF
-cd $TMPDIR && jupyter nbconvert --to notebook --execute dev.ipynb --output dev_out.ipynb --ExecutePreprocessor.timeout=600 2>&1 | grep -i "error" | tail -3; python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/dev_out.ipynb',4)
-c=[c for c in nb.cells if 'variant:fig4-fig5-600ns-on-fig2-dishes' in c.metadata.get('tags',[])][0]
-for o in c.outputs: print(o.get('text', o.get('evalue',''))[:1500])
-EOF
-date -u
-```
-
-```
-Ratio of the 50% bipolar fit to the unipolar fit, 600 ns, Fig. 2 dishes (fig4ac measure):
- cutoff   fit  ROI  ratio_min_%  ratio_max_%  ratio_mean_%  inside_18_27.5_everywhere
-      7   exp   12         34.5         64.9          46.7                      False
-      7 poly2   12       -457.4        150.6          13.3                      False
-      7  best   12       -457.4        150.6          13.3                      False
-      8   exp   11         34.4         62.2          45.3                      False
-      8 poly2   11         34.8       1537.4         184.2                      False
-      8  best   11         34.8       1537.4         184.2                      False
-cutoff 7: dish percent at the lowest included field (7.41 kV/cm) 108.8, at the highest (15.38) 38.7; paired p = 0.1531
-cutoff 8: dish percent at the lowest included field (8.14 kV/cm) 118.6, at the highest (15.38) 38.7; paired p = 0.0099
-
-YP along aa', left against right side at the same distance (fig5 measure), 600 ns, Fig. 2 dishes:
- amplitude  distance_mm   field     left    right  left_over_right  p_paired  p_unpaired
-         0          0.2 15.5151 611.8128 573.4728           1.0669    0.5259      0.7411
-         0          0.4 15.9449 593.1983 553.6832           1.0714    0.8637      0.8249
-         0          0.6 16.7167 479.6662 498.9566           0.9613    0.2406      0.6420
-         0          0.8 17.9322 745.5819 620.3965           1.2018    0.0920      0.1381
-         0          1.0 19
-Fri Oct 30 16:41:02 UTC 2026
-Shell cwd was reset to
-```
-
-**Agent**
-
-The 600 ns section works. Rebuilding the final notebook and running the entry again (about 9 minutes).
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python build_nb.py entries/000489-kim-2022/reproduce_kim_2022.ipynb conclusions.json && cd  && python tools/entry.py lock entries/000489-kim-2022 && python tools/entry.py all entries/000489-kim-2022 2>&1 | tail -5; date -u
-```
-
-```
-wrote entries/000489-kim-2022/requirements.lock.txt
-Installed kernelspec registry-000489-kim-2022 in executed/000489-kim-2022/.venv/share/jupyter/kernels/registry-000489-kim-2022
-0 error(s)
-pass  reproduce_kim_2022.ipynb  (519 s)
-Fri Oct 30 16:49:53 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && . dev/bin/activate && python - <<'EOF'
-import nbformat
-def texts(p):
-    nb=nbformat.read(p,4); out=[]
-    for c in nb.cells:
-        if c.cell_type!='code': continue
-        out.append(''.join(o.get('text','') for o in c.get('outputs',[]) if o.get('output_type')=='stream'))
-        for o in c.get('outputs',[]):
-            if o.get('output_type')=='error': print('ERROR', o['ename'])
-    return out
-a=texts('dev_out.ipynb'); b=texts('executed/000489-kim-2022/reproduce_kim_2022.ipynb')
-for i,(x,y) in enumerate(zip(a,b)):
-    if x!=y: print('cell',i,[(u,v) for u,v in zip(x.splitlines(),y.splitlines()) if u!=v][:2])
-EOF
-```
-
-```
-cell 0 [('loaded 18 files from dandiset 000489 version 0.230518.1811 in 0 s', 'loaded 18 files from dandiset 000489 version 0.230518.1811 in 486 s')]
-cell 15 [('Notebook ran in 0.4 min', 'Notebook ran in 8.5 min')]
-Shell cwd was reset to
-```
-
-**Agent**
-
-The executed notebook matches the dev outputs. Writing the blocked outcomes and the findings.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/rec && python - <<'EOF'
-blocked = {
- "fig3-uptake-linear-in-pulse-number": "The trains of 10 and 15 pulses of Fig. 3 are not in the dandiset, which holds only 5-pulse trains (Fig. 2).",
- "fig3d-cancellation-independent-of-number": "The trains of 10 and 15 pulses of Fig. 3 are not in the dandiset, which holds only 5-pulse trains (Fig. 2).",
- "fig4ac-ns-bipolar-20-25pct": "The dishes of the pulse duration experiment (Fig. 4) are not in the dandiset; 300 ns pulses are absent altogether. The Fig. 2 dishes with 0 and 50% second phase had the same exposure as the 600 ns pair; on them the claim's measure gives a ratio of the bipolar to the unipolar fit of 34.4 to 64.9% with exponential fits, and polynomial fits that cross zero (notebook, section on the 600 ns exposure). These are other dishes, so this decides no outcome.",
- "fig4d-1200ns-tenfold": "The 1200 ns pulses of Fig. 4 are not in the dandiset.",
- "fig4eg-us-bipolar-30-50pct": "The 50, 100 and 500 us pulses of Fig. 4 are not in the dandiset.",
- "fig4h-us-stronger-at-low-field": "The 50, 100 and 500 us pulses of Fig. 4 are not in the dandiset.",
- "fig5-ns-symmetric-along-aa": "Fig. 5 re-analyses the Fig. 4 dishes, which are not in the dandiset, and the files do not say which electrode was the anode. On the Fig. 2 dishes with the 600 ns exposure, YP on the two sides of aa' differs at p < 0.05 at no distance under both pairings (1 of 6 distances for 50% paired only); these are other dishes, and 300 ns is absent, so this decides no outcome.",
- "fig5-us-anode-stronger": "The microsecond and 1200 ns pulses of Figs. 4 and 5 are not in the dandiset, and the files do not say which electrode was the anode.",
- "fig6ad-unipolar-833khz-enhanced": "The trains at 10 to 833 kHz of Fig. 6 are not in the dandiset, which holds only 1 Hz trains.",
- "fig6be-bipolar-khz-less-than-1hz": "The trains at 10 to 833 kHz of Fig. 6 are not in the dandiset, which holds only 1 Hz trains.",
- "fig6cf-833khz-thirtyfold": "The trains at 833 kHz of Fig. 6 are not in the dandiset.",
- "fig6cf-cancellation-stronger-at-high-field": "The trains at 10 to 833 kHz of Fig. 6 are not in the dandiset.",
- "fig7-charging-time-constant": "The strobe imaging of CHO cells with FluoVolt (Fig. 7) is not in the dandiset.",
- "fig7-bipolar-overshoot": "The strobe imaging of CHO cells with FluoVolt (Fig. 7) is not in the dandiset.",
- "fig7-summation-without-buildup": "The strobe imaging of CHO cells with FluoVolt (Fig. 7) is not in the dandiset.",
- "fig1e-heating": "The thermochromic liquid crystal photographs (Methods 2.4, Fig. 1E) are not in the dandiset.",
-}
-import textwrap
-out=[]
-for k,v in blocked.items():
-    note = v + " The paper names no other deposit of its data (it has no data statement or supplement), and the dandiset's 18 files and metadata were checked."
-    out.append(f"- claim: {k}\n  outcome: blocked\n  blocked_by: data_missing\n  notes: " + textwrap.fill(note, 96, subsequent_indent="    ") + "\n")
-open('blocked.yaml','w').write(''.join(out))
-EOF
-grep -c "claim:" blocked.yaml; grep -n ": .*: " blocked.yaml | head
-```
-
-```
-16
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cat > $TMPDIR/rec/findings.yaml <<'EOF'
-findings:
-- kind: data_missing
-  statement: The dandiset holds only the Fig. 2 experiment (17 dishes, 5 pulses at 1 Hz with a
-    second phase of 0 to 100%) and a sample image named for Fig. 1F. The experiments on pulse
-    number (Fig. 3), pulse duration (Figs. 4 and 5), repetition rate (Fig. 6), the strobe imaging
-    of membrane charging (Fig. 7) and the thermometry (Fig. 1E) are not in it, so 16 of the 22
-    claims cannot be tested.
-- kind: other
-  statement: The YP channel of sub-Fig2-0-03 (unipolar) is identical, pixel for pixel in the
-    overview, to the YP channel of sub-Fig2-25-04 (25% bipolar), while their MemBrite channels
-    differ. The YP channel of sub-Fig2-25-04 registers with its own MemBrite channel
-    (phase-correlation peak 0.454) and that of sub-Fig2-0-03 does not (0.028, the level of two
-    unrelated dishes, 0.007 to 0.031). The YP image of unipolar dish 0-03 is missing and replaced
-    by that of dish 25-04, leaving 2 unipolar dishes.
-- kind: metadata_error
-  statement: The file sub-Fig1F holds the same image in both channels, although its series is
-    described as two channels (MemBrite and YO-PRO-1).
-- kind: format_error
-  statement: Each stitched two-channel image is stored as an ImageSeries with data of shape
-    (22323, 22323, 2) and a starting_time rate of 2 Hz. As an ImageSeries the first axis is time,
-    so the file reads as 22323 frames of 22323 x 2 pixels; an Images container with two
-    GrayscaleImage objects, or a series of shape (1, 22323, 22323) per channel, would describe it.
-    The unit is n.a. and the three 25% files share the acquisition name Fig2_25.
-- kind: metadata_insufficient
-  statement: The files give no pixel size, electrode positions, ROI, field per ROI, footprint
-    values (YP_0, MB_0) or pulse voltage, and identify the channels only in free text. Everything
-    the paper plots has to be remeasured from the images, and the field recomputed from the
-    paper's geometry. The data are consistent with 0.65 um per pixel (electrode centres 4.54 mm
-    apart, footprints 1.49 mm across, against 4.5 and 1.5 mm in the paper).
-- kind: metadata_error
-  statement: The series description says the image was stitched from 144 images (12 x 12) of "a
-    whole well from a six-well plate"; the paper says 216 images of cells in 35 mm glass-bottom
-    dishes (Methods 2.1 and 2.5). The images show a 12 x 12 tile grid over a round glass bottom
-    about 14.5 mm across.
-- kind: selection_undocumented
-  statement: Dish numbers in the subject ids run up to 18 (sub-Fig2-50-18), so more dishes were
-    exposed than deposited, and nothing says which dishes form Fig. 2. All unipolar dishes are
-    from 2021-07-29 and all 75% and 100% dishes from 2021-08-24, a day with no unipolar dish. In
-    these files the 100% dishes show more uptake than the unipolar ones (largest mean 761.0
-    against 571.1 a.u.), which does not match Fig. 2C, where every second phase inhibits uptake.
-- kind: methods_unavailable
-  statement: Questions for the paper's authors. (1) How were the 200 um ROI placed along bb' (the
-    spacing, how far out, whether both sides of the centre were measured and averaged)? With the
-    two sides averaged, fig2c-weaker-at-6-7 is not reproduced; with the bottom side alone it is.
-    (2) Were YP_0 and MB_0 taken from both electrode footprints or one, and over what area? With
-    the left footprint alone fig2c-weaker-at-6-7 is reproduced. (3) Were the exponential fits of
-    Fig. 2B made by nonlinear least squares or on log values, to means or to dish values, and from
-    which field? The slope comparison depends on it. (4) Were the t-tests paired across ROI of the
-    same dish, and for Fig. 2C which groups and which fields does p < 0.01 compare? (5) Were the
-    field values of the ROI taken from the Sim4Life model at nominal electrode positions, or
-    adjusted per dish? The recomputed centre field is 15.38 kV/cm against the cited 15.1.
-EOF
-cd $TMPDIR/rec && cat head.yaml outcomes.yaml blocked.yaml findings.yaml > attempts/000489-kim-2022-01.yaml && cd  && python -c "import yaml;d=yaml.safe_load(open('attempts/000489-kim-2022-01.yaml'));print(len(d['outcomes']))" && python tools/entry.py check entries/000489-kim-2022 2>&1 | tail -5
-```
-
-```
-22
-0 error(s)
-```
-
-**Agent calls Bash**
-
-```bash
-grep -nE "^\s+[^-#][^:]*: .*: |^\s{4}.*: " attempts/000489-kim-2022-01.yaml | head; grep -n "—\|rather\|\*\*" attempts/000489-kim-2022-01.yaml entries/000489-kim-2022/bipolar.py | head; date -u
-```
-
-```
-14:    name: CatalystNeuro
-16:    harness: Claude Code
-17:    model: claude-opus-5-5
-18:    protocol: pilot-12
-20:    platform: GitHub Actions
-21:    url: https://github.com/catalystneuro/encore/actions/runs/41081361942
-Fri Oct 30 16:50:35 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-grep -c "—\|rather" entries/000489-kim-2022/reproduce_kim_2022.ipynb; grep -o "rather[^\"]\{0,40\}" entries/000489-kim-2022/reproduce_kim_2022.ipynb | head
-```
-
-```
-0
-```
-
-**Agent**
-
-Now the README, then handover.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/000489-kim-2022/README.md",
- "content": "# Kim, Semenov, Kiester, Keppler, Ibey, Bixler & Pakhomov (2022) from dandiset 000489\n\nTests the findings of [Kim et al. (2022)](https://doi.org/10.1016/j.bioelechem.2022.108319) that\ncan be tested on [DANDI:000489](https://dandiarchive.org/dandiset/000489/0.230518.1811). The\ndandiset holds stitched MemBrite and YO-PRO-1 images of the 17 dishes of Fig. 2: unipolar or\nbipolar 600 ns pulses with a second phase of 25 to 100%. The experiments of Figs. 3 to 7 and\nthe thermometry of Fig. 1E are not in it.\n\n| Claim | Outcome |\n|---|---|\n| YP uptake rises with field for every second phase amplitude | Partially reproduced (assumed) |\n| Fig. 2A vertical scales, 1200 a.u. unipolar to 250 a.u. at 75% | Not reproduced (assumed) |\n| Exponential rise with the same slope for every amplitude | Blocked: methods underspecified |\n| Strongest inhibition, to about 20%, at 50 to 75% (p < 0.01) | Not reproduced (assumed) |\n| Inhibition does not depend on field from 8.7 to 15.1 kV/cm | Not reproduced |\n| Inhibition weaker at 6.7 kV/cm | Not reproduced (assumed) |\n| Figs. 1E, 3, 4, 5, 6 and 7 (16 claims) | Blocked: data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nThe files hold only the images. The ROI, the electrode footprints and the field of each ROI are\nmeasured or recomputed here from the paper's description, and the outcomes marked assumed depend\non how the ROI and footprints are read. The YP image of one unipolar dish is a copy of a 25%\ndish's, so unipolar pulses have 2 dishes. The attempt record, with the reasons and the\ndifferences from the paper's method, is\n[`attempts/000489-kim-2022-01.yaml`](../../attempts/000489-kim-2022-01.yaml).\n"
-}
-```
-
-```
-File created successfully at: entries/000489-kim-2022/README.md (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-python tools/entry.py check entries/000489-kim-2022 2>&1 | tail -3 && python tools/entry.py handover entries/000489-kim-2022 2>&1 | tail -5; ls executed/000489-kim-2022/handover; git status --short; date -u
-```
-
-```
-0 error(s)
-wrote executed/000489-kim-2022/handover
-10.1016-j.bioelechem.2022.108319.yaml
-bipolar.py
-reproduce_kim_2022.ipynb
-?? .bash_profile
-?? .bashrc
-?? .gitconfig
-?? .idea
-?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? attempts/000489-kim-2022-01.yaml
-?? entries/000489-kim-2022/
-?? scripts
-Fri Oct 30 16:51:03 UTC 2026
-```
-
-**Agent calls Bash**
-
-```bash
-grep -c "Result:" executed/000489-kim-2022/handover/reproduce_kim_2022.ipynb entries/000489-kim-2022/reproduce_kim_2022.ipynb; grep -c "## Summary" executed/000489-kim-2022/handover/reproduce_kim_2022.ipynb; ls entries/000489-kim-2022
-```
-
-```
-executed/000489-kim-2022/handover/reproduce_kim_2022.ipynb:0
-entries/000489-kim-2022/reproduce_kim_2022.ipynb:6
-0
-README.md
-__pycache__
-bipolar.py
-entry.yaml
-reproduce_kim_2022.ipynb
-requirements.in
-requirements.lock.txt
-```
-
-**Agent calls Bash**
-
-```bash
-rm -rf entries/000489-kim-2022/__pycache__; ls entries/000489-kim-2022; date -u
-```
-
-```
-README.md
-bipolar.py
-entry.yaml
-reproduce_kim_2022.ipynb
-requirements.in
-requirements.lock.txt
-Fri Oct 30 16:51:08 UTC 2026
-```
-
-**Agent**
-
-I finished steps 1 to 6 for DANDI:000489 (Kim et al. 2022). The entry locks, checks with 0 errors and runs from a clean environment in 519 s, and the handover is built. None of the 22 claims was reproduced in full: one partially, four not reproduced, one blocked on method, 16 blocked for missing data.
-
-## 1. Outcomes
+cat > README.md <<'EOF'
+# Kim, Semenov, Kiester, Keppler, Ibey, Bixler & Pakhomov (2022) from dandisets 000489 and 000448
+
+Tests the findings of [Kim et al. (2022)](https://doi.org/10.1016/j.bioelechem.2022.108319) that can be
+tested on [DANDI:000489](https://dandiarchive.org/dandiset/000489/0.230518.1811), the dish images of the
+Fig. 2 experiment (YO-PRO-1 uptake after uni- and bipolar 600 ns pulses), and
+[DANDI:000448](https://dandiarchive.org/dandiset/000448/0.230421.1844), strobe images of the membrane
+potential of 9 CHO cells during 833 kHz pulse trains (Fig. 7). The experiments of Figs. 3 to 6 and the
+thermometry of Fig. 1E are in neither.
 
 | Claim | Outcome |
 |---|---|
-| fig2a-uptake-rises-with-field | partially reproduced (assumed): 3 of 5 amplitudes pass the strongest-against-weakest test; unipolar (2 dishes) and 25% do not |
-| fig2a-vertical-scales | not reproduced (assumed): the 75% mean + s.e.m. is 283 a.u., above the 250 limit |
-| fig2b-exponential-same-slope | blocked, methods_underspecified: the criterion's 12 readings disagree (10 not reproduced, 2 partial) |
-| fig2c-max-inhibition-50-75 | not reproduced (assumed): 54.5% (mean) or 31.6% (lowest) of unipolar, not ~20%; no test reaches p < 0.01 |
-| fig2c-inhibition-flat-above-8-7 | not reproduced: the percent rises toward 8.7 kV/cm, significant under both pairings; every variant agrees |
-| fig2c-weaker-at-6-7 | not reproduced (assumed): the unipolar mean at 6.7 kV/cm is −8.6 a.u. (background). The bottom side alone, or the left footprint alone, gives reproduced |
-| 16 claims on Figs. 1E and 3 to 7 | blocked, data_missing |
+| YP uptake rises with field for every second phase amplitude (Fig. 2A) | Reproduced (assumed) |
+| Vertical scales of Fig. 2A, 1200 to 250 a.u. | Not reproduced |
+| Exponential rise with the same slope for every amplitude (Fig. 2B) | Partially reproduced |
+| Strongest inhibition, to about 20%, at 50 to 75% (Fig. 2C) | Partially reproduced |
+| Inhibition flat between 8.7 and 15.1 kV/cm | Reproduced |
+| Weaker inhibition at 6.7 kV/cm | Reproduced (assumed) |
+| Unipolar pulses polarize the two poles in mirror image (Fig. 7) | Reproduced (assumed) |
+| Charging 200 ns and discharging 520 ns time constants | Not reproduced |
+| Later pulses show the same difference of time constants | Partially reproduced |
+| Bipolar pulses: same first-phase polarization, faster discharge, overshoot | Reproduced |
+| Bipolar trains alternate the membrane potential | Reproduced |
+| Unipolar trains: same peak each pulse, continuous polarization | Reproduced |
+| Figs. 3 to 6 and Fig. 1E (13 claims) | Blocked: data missing |
 
-## 2. Dataset, assumptions, questions
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
 
-What I found about the dataset:
-- **Contents:** only the 17 Fig. 2 dishes and a Fig. 1F sample. Each file is one stitched 2-channel uint16 image. There is no pixel size, ROI, field per ROI, footprint values or voltage.
-- **Duplicate:** the YP channel of `sub-Fig2-0-03` (unipolar) is identical to that of `sub-Fig2-25-04`. Phase correlation shows the image belongs to 25-04, so the unipolar group has 2 dishes. The main analysis leaves 0-03 out; a variant keeps it.
-- **Fig. 1F file:** both channels are the same image.
-- **Storage:** the images are ImageSeries of shape (22323, 22323, 2) with a 2 Hz rate, so the first axis reads as time. The three 25% files share the acquisition name `Fig2_25`.
-- **Description against paper:** 144 tiles of a six-well-plate well, where the paper says 216 tiles of a 35 mm dish.
-- **Days:** all unipolar dishes are from 2021-07-29 and all 75% and 100% dishes from 2021-08-24. The 100% dishes show more uptake than unipolar (761 against 571 a.u.).
-- **Scale:** 0.65 µm/px fits the geometry: electrode centres 4.54 mm apart and footprints 1.49 mm across, against 4.5 and 1.5 mm in the paper.
+The YO-PRO-1 channel of two dishes of different conditions is the same image, and 000448 holds 5 of
+the paper's 18 unipolar and 4 of its 17 bipolar cells. The attempt record, with the reasons and the
+differences from the paper's method, is [`attempts/kim-2022-02.yaml`](../../attempts/kim-2022-02.yaml).
+EOF
+cd ../.. && python tools/entry.py lock entries/kim-2022 2>&1 | tail -5; date -u
+```
 
-I pinned 0.230518.1811: the paper cites no version, and the draft holds the same files.
+```
+wrote kim-2022/requirements.lock.txt (Python 3.13, with hashes)
+Tue Nov 10 05:00:33 UTC 2026
+```
 
-Assumptions:
-- ROI are 200 µm squares tiled along bb', with the two sides averaged (the claims file's reading a).
-- YP_0 and MB_0 are averaged over both footprints.
-- Pixel size is 0.65 µm.
-- The field is recomputed in closed form for two cylinders (exact in 2D, since the electrodes span the full liquid depth). It gives 15.38 kV/cm at the centre, against the paper's 15.1. I listed it under `inputs`.
-- The files' camera counts are the paper's a.u.
+**Agent calls Bash**
 
-Every claim is also shown on one side only, with the scale set from the electrode distance, with each footprint alone, and with 0-03 kept.
+```bash
+pip list 2>/dev/null | grep -i -E "^(pyyaml|jsonschema|nbformat) " ; python tools/entry.py check entries/kim-2022 2>&1 | tail -20
+```
 
-Five questions for the paper's authors are recorded as a `methods_unavailable` finding: ROI placement, which footprints, the Fig. 2B fit method, t-test pairing and the comparison behind p < 0.01, and the field values. I asked a reader nothing.
+```
+jsonschema                4.26.0
+nbformat                  5.11.1
+PyYAML                    6.0.3
+0 error(s)
+```
 
-## 3. Protocol points
-1. **Same exposure, other dishes.** The Fig. 2 dishes had the same 600 ns exposure as Fig. 4, but they are other dishes. I kept Figs. 4 and 5 blocked and showed their measures on the Fig. 2 dishes in a section that decides no outcome.
-2. **The clock check** assumes time series and does not apply to single images. I said so in the notebook.
-3. **Readings from both sources.** The claims file's readings multiply with the protocol's step 1.6 readings (ROI side, footprint). Where they changed the outcome, I adopted the best-supported reading and marked the outcome `assumed`.
-4. **Recomputed inputs.** The protocol does not say whether a field recomputed from the paper's geometry counts as outside data. I kept `data: dataset` and listed it under `inputs`, citing the paper.
-5. **Speed advice.** "Develop on a subset" does not cover a CPU-bound load. I cached the reduced data in a temporary directory during development only, and the notebook streams everything.
+**Agent**
 
-## 4. Runtime
-The run took about 1 h 20 min (15:31 to 16:51 UTC); the notebook takes 8.7 min. Nothing failed in the final runs. During development, one range request was reset (I added retries) and a newline escape broke a notebook cell (fixed).
+Checks pass. Running the entry from a clean environment now (about 9 minutes).
 
-Files are in `entries/000489-kim-2022/`:
-- reproduce_kim_2022.ipynb
-- bipolar.py
-- README.md
-- entry.yaml
+**Agent calls Bash**
 
-The attempt record is `attempts/000489-kim-2022-01.yaml`.
+```bash
+date -u; timeout 3000 python tools/entry.py all entries/kim-2022 2>&1 | tail -15; date -u
+```
+
+```
+Tue Nov 10 05:00:41 UTC 2026
+Installed kernelspec registry-kim-2022 in executed/kim-2022/.venv/share/jupyter/kernels/registry-kim-2022
+0 error(s)
+pass  reproduce_kim_2022.ipynb  (466 s)
+Tue Nov 10 05:08:33 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+ls executed/kim-2022/; python - <<'EOF'
+import json
+nb=json.load(open('executed/kim-2022/reproduce_kim_2022.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']!='code': continue
+    tags=c.get('metadata',{}).get('tags',[])
+    for o in c['outputs']:
+        if o['output_type']=='error': print('ERROR', tags, o['ename'])
+    if any(t in ('claim:fig7-charging-time-constant','claim:fig2c-max-inhibition-50-75','claim:fig2a-vertical-scales','claim:fig7-later-pulses-same-tau-difference') for t in tags):
+        txt=''.join(''.join(o.get('text','')) for o in c['outputs'] if o.get('name')=='stdout')
+        print(tags, txt[:1800]); print('====')
+EOF
+```
+
+```
+reproduce_kim_2022.ipynb
+result.json
+['claim:fig7-charging-time-constant']         tau_charge_ns  A_charge_%  r_charge      p_charge  n_charge  tau_discharge_ns  A_discharge_%  r_discharge   p_discharge  n_discharge
+pooled     190.998387   23.201005  0.843099  1.402869e-33     120.0        612.800366      22.725731     0.638677  4.223206e-15        120.0
+mean       190.998141   23.200995  0.997821  1.789162e-27      24.0        612.800380      22.725730     0.996862  9.850495e-26         24.0
+pooled {'tau_charge_ns': True, 'A_charge_%': False, 'tau_discharge_ns': False, 'A_discharge_%': False}
+mean {'tau_charge_ns': True, 'A_charge_%': False, 'tau_discharge_ns': False, 'A_discharge_%': False}
+cell cell08: tau charge 191 ns, A 26.0%, tau discharge 562 ns, A 25.2%
+cell cell13: tau charge 217 ns, A 19.7%, tau discharge 597 ns, A 18.8%
+cell cell16: tau charge 180 ns, A 25.1%, tau discharge 654 ns, A 25.7%
+cell cell22: tau charge 143 ns, A 14.5%, tau discharge 351 ns, A 14.3%
+cell cell24: tau charge 218 ns, A 31.3%, tau discharge 833 ns, A 30.1%
+onset -1 frame: tau charge 250 ns, tau discharge 627 ns, A 24.7 / 23.4%
+onset +1 frame: tau charge 149 ns, tau discharge 615 ns, A 22.3 / 21.9%
+
+====
+['claim:fig7-later-pulses-same-tau-difference'] pulse 1 ratio (discharge / charge): {'pooled': np.float64(3.21), 'mean': np.float64(3.21)}
+    pulse charging form reading  tau charge  tau discharge   ratio  discharge > charge  ratio in 2.25-2.75  ratio within 10% of pulse 1
+0       2    free start  pooled     214.368        635.595   2.965                True               False                         True
+1       2    free start    mean     214.368        635.595   2.965                True               False                         True
+[... 35 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'))
+print(s.get('required')); print(list(s['properties']))
+o=s['properties']['outcomes']['items']; print(o.get('required'), list(o['properties']))
+print(json.dumps(s['properties']['provenance'])[:1500])
+print(json.dumps(s['properties']['datasets'])[:800])
+"
+```
+
+```
+['schema_version', 'id', 'datasets', 'paper', 'date', 'provenance', 'outcomes']
+['schema_version', 'id', 'datasets', 'missing_datasets', 'paper', 'date', 'entry', 'deprecated', 'provenance', 'outcomes', 'verifications', 'findings', 'reconciliation', 'inputs']
+['claim', 'outcome'] ['claim', 'outcome', 'blocked_by', 'notes', 'notebook', 'output', 'measured', 'deviations', 'assumed', 'proposed']
+{"type": "object", "additionalProperties": false, "required": ["kind", "accountable"], "properties": {"kind": {"enum": ["agent", "person"]}, "accountable": {"description": "The person or organisation responsible for this attempt.", "type": "object", "additionalProperties": false, "required": ["name"], "properties": {"name": {"type": "string"}, "orcid": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"}, "ror": {"type": "string"}}}, "agent": {"description": "Required when kind is agent.", "type": "object", "additionalProperties": false, "required": ["harness", "model", "protocol"], "properties": {"harness": {"type": "string"}, "model": {"type": "string"}, "protocol": {"description": "Version of the reproduction protocol the agent followed.", "type": "string"}}}, "runner": {"description": "Where the attempt was run: the platform, and the run that wrote this record. Its other runs (verification rounds, revisions) are linked from their transcripts.", "type": "object", "additionalProperties": false, "required": ["platform"], "properties": {"platform": {"description": "The platform that ran it, e.g. GitHub Actions, or local for a person's machine.", "type": "string", "minLength": 1}, "url": {"description": "The run that wrote the record, e.g. https://github.com/<owner>/<repo>/actions/runs/<id>.", "type": "string", "pattern": "^https://"}}}}}
+{"description": "Every dataset the attempt used (docs/protocol.md, \"Record the attempt\").", "type": "array", "minItems": 1, "items": {"description": "A dataset the attempt used: the archive, the dataset's identifier th
+[... 1 more lines not kept]
+```
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "attempts/kim-2022-02.yaml",
+ "content": "schema_version: 3\nid: kim-2022-02\ndatasets:\n- archive: dandi\n  id: \"000489\"\n  version: 0.230518.1811\n  doi: 10.48324/dandi.000489/0.230518.1811\n  relation: primary\n- archive: dandi\n  id: \"000448\"\n  version: 0.230421.1844\n  doi: 10.48324/dandi.000448/0.230421.1844\n  relation: primary\npaper: doi:10.1016/j.bioelechem.2022.108319\ndate: 2026-11-10\nentry: kim-2022\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code\n    model: claude-opus-5-5\n    protocol: pilot-14\n  runner:\n    platform: GitHub Actions\n    url: https://github.com/catalystneuro/encore/actions/runs/42748694997\noutcomes:\n- claim: fig2a-uptake-rises-with-field\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig2a-uptake-rises-with-field\n  notes: With the two dishes that share one YP image left out (unipolar and 25% with 2 dishes, 50%\n    with 5, 75% and 100% with 3), YP at the centre ROI (15.1 kV/cm) is higher than at the ROI 3 mm\n    out (5.0 kV/cm) for all five amplitudes, unpaired p = 0.0001 to 0.044; Spearman rho of mean YP\n    with field 0.96 to 0.99. The paired test passes for 3 of 5 (unipolar p = 0.12 and 25% p = 0.13,\n    2 dishes each). The weakest ROI at 2.4 mm and one-sided ROI give the same counts. Assigning the\n    shared image to the unipolar or the 25% group gives 4 of 5 by the unpaired test.\n  deviations:\n  - Fields from an exact two-dimensional two-cylinder solution for the geometry of Methods 2.3 (15.38\n    kV/cm at the centre for 5.75 kV), scaled to the paper's 15.1 kV/cm there; the paper's finite\n    element output is not deposited.\n  - ROI are contiguous 200 um squares tiled from the midpoint along bb' to 3 mm on both sides, the\n    claims file's reading (a), with the two ROI at the same distance averaged per dish; one side is\n    shown as reading (b). The outer limit of 3 mm (5.0 kV/cm) is this attempt's choice, as the\n    figure's field range is in the PDF only; 2.4 mm is shown as a variant.\n  - YP0 and MB0 are means over a 0.2 mm disc at the centre of each footprint (Methods 2.5 says only\n    within the electrodes' footprints); 0.1 and 0.3 mm discs are computed in the helper.\n  - Pixel size 0.65 um, from the camera and objective named in Methods 2.5 (6.5 um pixels, 10x); the\n    files give none. The measured electrode spacing (4.44 to 4.66 mm, Methods 4.5 mm) supports it.\n  - Assumption. Methods 2.5 names a two-sided Student's t-test without saying whether it is paired.\n    The unpaired test, the two-sample test the name denotes, is adopted; the paired result is shown.\n    The readings differ here (5 against 3 of 5).\n  - The dishes sub-Fig2-0-03 and sub-Fig2-25-04 share one YP image and are left out of the main\n    analysis; both assignments are shown.\n- claim: fig2a-vertical-scales\n  outcome: not_reproduced\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig2a-vertical-scales\n  notes: The largest unipolar mean is 651 a.u. (mean plus s.e.m. 754, within 1200, and above 250).\n    For 75% bipolar pulses the largest mean plus s.e.m. is 339 a.u. (311 to 372 over the readings),\n    above the 250 a.u. axis. The ratio of the largest unipolar and 75% means is 2.3 to 2.5, against\n    4.8 for the paper's axes. The image values are taken as the paper's units (16-bit counts,\n    conversion 1.0); the data are consistent with that but do not show it.\n  deviations:\n  - The same ROI, field model and duplicate handling as fig2a-uptake-rises-with-field.\n- claim: fig2b-exponential-same-slope\n  outcome: partially_reproduced\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig2b-exponential-same-slope\n  notes: At the 8 kV/cm cutoff an exponential fits the means with a lower residual sum of squares\n    than a line for 3 of 5 amplitudes (the criterion needs 4); at 7 kV/cm for 4 and at 6 kV/cm for\n    5. No bipolar slope from per-dish nonlinear fits differs from the unipolar slopes at 8 kV/cm (p =\n    0.12 to 0.80) or at any cutoff and assignment of the shared image (p = 0.08 to 1.0). Slopes of\n    the fits to the means are 0.19 to 0.28 per kV/cm, 0.72 to 1.07 times the unipolar 0.26. The\n    slope part holds; the exponential part holds only at the variant cutoffs. With the log-linear\n    variant the bipolar slopes differ from the unipolar ones at 7 and 6 kV/cm (4 of 4, p = 0.004 to\n    0.042) when the shared image is left out, and none differs when it is assigned to the unipolar\n    group.\n  deviations:\n  - Fits by nonlinear least squares in scipy, not Grapher 16.\n  - The criterion does not say which outcome applies when the slopes agree but the exponential holds\n    for fewer than four amplitudes; partially reproduced is used, as one of the two parts holds.\n- claim: fig2c-max-inhibition-50-75\n  outcome: partially_reproduced\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig2c-max-inhibition-50-75\n  measured: 49.3\n  notes: The ROI from 8.78 to 15.1 kV/cm (centre to 1.8 mm) are used. At all 10 the lower of the 50%\n    and 75% values is below the 25% and 100% values. The best amplitude is 50%, at 49.3% of unipolar\n    on average (reading a, recorded as measured) and 35.1% at its lowest (reading b), both outside 20\n    +- 2%. Test (ii), the better of 50 or 75% against both 25 and 100%, gives p < 0.01 at 7 of 10\n    fields; test (i), against unipolar with 2 unipolar dishes, at 3 of 10. The test is counted as\n    holding under (ii). Assigning the shared image to the 25% group gives (ii) at 0 of 10 fields;\n    to the unipolar group, percentages of 67.5 and 50.0%. The 25% and 100% pulses give 64 to 168% of\n    the unipolar value, so in these dishes they do not inhibit.\n  deviations:\n  - The criterion does not say at how many fields the p < 0.01 test must hold; it is counted as\n    holding when it holds at most fields under one of the two comparisons.\n- claim: fig2c-inhibition-flat-above-8-7\n  outcome: reproduced\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig2c-inhibition-flat-above-8-7\n  notes: Percent of the unipolar mean at 8.78 against 15.1 kV/cm, unpaired; 25% 103.8 against 97.7\n    (p = 0.83), 50% 67.8 against 35.1 (p = 0.072), 75% 91.5 against 40.0 (p = 0.15), 100% 121.3\n    against 114.6 (p = 0.78). The 50% and 75% differences are large, with 5 and 3 dishes. Paired p =\n    0.11 to 0.89. Over every pair of ROI in the range 19 of 180 comparisons differ at p < 0.05;\n    with one-sided ROI one amplitude differs on either side.\n- claim: fig2c-weaker-at-6-7\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig2c-weaker-at-6-7\n  notes: At the ROI closest to 6.7 kV/cm (2.4 mm, 6.63 kV/cm) 50% pulses give 198% of the unipolar\n    mean, against 35 to 68% at 8.78 to 15.1 kV/cm, and 100% pulses 283% against 93 to 139%. Unpaired,\n    50% differs from the pooled higher fields with p = 1.5e-09 (against each field p up to 0.082),\n    and 100% from each higher field with p <= 0.022 (pooled p = 2.6e-09). Paired, 100% passes (p <=\n    0.035 against each) and 50% does not (pooled p = 0.070), which would make it partially\n    reproduced. The unipolar mean at 2.4 mm is 19 a.u., near background, so the percentages there\n    are large and unstable. Pooling treats the ROI of a dish as independent, which inflates its\n    count.\n  deviations:\n  - Assumption. The unpaired test is adopted, as for fig2a-uptake-rises-with-field; the paired\n    result is shown.\n- claim: fig7-unipolar-pole-polarization\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig7-unipolar-pole-polarization\n  notes: Over 5 unipolar cells, at 600 ns the cathode-facing pole is +22.1% (p = 0.0012) and the\n    anode-facing pole -20.7% (p = 0.0026), ratio of magnitudes 0.94; the 500 to 600 ns mean gives\n    +22.1 and -21.4%. Four variants of the pole regions give ratios 0.90 to 1.05, all p <= 0.013. In\n    all 9 cells the upper pole of the image rises and the lower falls during the first pulse.\n  deviations:\n  - 5 of the paper's 18 unipolar cells are in the dandiset.\n  - Assumption. The paper does not say how the pole regions were drawn. They are the membrane\n    pixels (frame-averaged image above its 85th percentile, largest connected group) where the\n    outward normal of the smoothed cell outline is within 45 degrees of the image's vertical axis,\n    the axis of the response in every file; 80th and 90th percentiles and 30 and 60 degrees are\n    variants. Images are binned 2 x 2 on loading.\n  - Assumption. The files do not say where the electrodes were. The pole that brightens is taken as\n    the cathode-facing one, as FluoVolt emission rises with depolarization and the cathode-facing\n    pole depolarizes (Results 3.5). This makes the sign of the cathodic change a premise; the test\n    is that the opposite pole changes the other way by a similar amount.\n  - The pulse onset is not in the files; it is the first forward-trial frame where the mean unipolar\n    upper-minus-lower signal exceeds its baseline by 5 SD (frame 43). The baseline is the 40 frames\n    before it (Methods 2.6). Dark frames (failed flashes) are left out. Reverse trials are reversed\n    and aligned to the forward trial by correlation (a lag of 74 frames in every cell) before the two\n    are averaged (Methods 2.6).\n- claim: fig7-charging-time-constant\n  outcome: not_reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig7-charging-time-constant\n  measured:\n  - 191\n  - 23.2\n  - 613\n  - 22.7\n  notes: Over 5 unipolar cells, pooled points (120 per fit), the charging fit gives tau = 191 ns\n    (within 200 +- 20) and A = 23.2% (expected 31 +- 3.1); the discharge fit tau = 613 ns (expected\n    520 +- 52) from 22.7% (expected 31.5 +- 3.15). r = 0.84 and 0.64, p < 1e-14; the mean trace gives\n    the same parameters with r = 0.998 and 0.997. Discharge over charge is 3.2, against 2.5. Moving\n    the onset by one frame gives charging tau 149 to 250 ns and discharge tau 615 to 627 ns. Per\n    cell, A ranges from 14.5 to 31.3% and discharge tau from 351 to 833 ns, so the subset of 5 cells\n    of 18, and the assumed pole regions, may explain the difference.\n  deviations:\n  - 5 of 18 cells, so 120 points per fit where the paper has 425.\n  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).\n  - Fits by nonlinear least squares in scipy, not Grapher 16; r is the correlation of the points\n    with the fit.\n- claim: fig7-later-pulses-same-tau-difference\n  outcome: partially_reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig7-later-pulses-same-tau-difference\n  notes: With the free-start charging fit, discharge over charge is 2.97, 3.72, 2.91 and 2.89 for\n    pulses 2 to 5, so the discharge constant is the larger for all four. None is within 2.25 to\n    2.75; within 10% of the first pulse's 3.21 (2.89 to 3.53) are pulses 2 and 4, with pulse 5 just\n    below (2.887). With the plain A(1 - exp(-t/tau)) form the ratios are 8.1 to 10.8.\n  deviations:\n  - Pulses 2 to 5 start from a charged membrane, so their charging fit lets the starting value free,\n    V0 + (A - V0)(1 - exp(-t/tau)); the plain form is shown too. Results 3.5 says charging by later\n    pulses \"started with the partially charged membrane\".\n  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).\n- claim: fig7-bipolar-overshoot\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig7-bipolar-overshoot\n  notes: (i) At 600 ns the cathodic pole is 21.5% for 4 bipolar and 22.1% for 5 unipolar cells,\n    unpaired p = 0.855; the error-bar gap rule finds no difference. (ii) After the first phase the\n    bipolar mean falls to half in 150 ns (unipolar 475 ns) and to zero in 325 ns (unipolar not\n    within 600 ns). (iii) The bipolar mean reaches -8.1% at 1175 ns; cell values -6.7 to -9.9%,\n    p = 0.0012.\n  deviations:\n  - 4 of the paper's 17 bipolar cells and 5 of its 18 unipolar cells.\n  - Pole regions, cathode side and onset as in fig7-unipolar-pole-polarization (assumptions).\n- claim: fig7-bipolar-alternation\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig7-bipolar-alternation\n  notes: For each of the five pulses, over 4 bipolar cells, the cathodic pole is positive at the end\n    of the first phase (19.3 to 21.5%, p <= 0.0001) and negative at the second-phase minimum of the\n    mean (-8.1 to -9.1%, at 1150 to 1175 ns, p <= 0.0013).\n  deviations:\n  - 4 of 17 cells; pole regions, cathode side and onset as in fig7-unipolar-pole-polarization\n    (assumptions).\n- claim: fig7-summation-without-buildup\n  outcome: reproduced\n  assumed: true\n  notebook: reproduce_kim_2022.ipynb\n  output: claim:fig7-summation-without-buildup\n  notes: Over 5 unipolar cells, the peaks at the end of pulses 2 to 5 (23.4 to 24.3%) do not differ\n    from the first (22.1%) by the unpaired test (p = 0.61 to 0.75), and the trace before each of\n    pulses 2 to 5 stays above rest (8.8 to 9.9%, p = 0.009 to 0.017). The paired variant finds the\n    later peaks 1.4 to 2.2 points higher, with p = 0.014 to 0.040 for pulses 2 to 4 (0.089 for 5).\n    The maximum within each pulse gives the same picture (unpaired p = 0.72 to 0.78).\n  deviations:\n  - 5 of 18 cells; pole regions, cathode side and onset as in fig7-unipolar-pole-polarization\n    (assumptions).\n- claim: fig3-uptake-linear-in-pulse-number\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The dishes given 5, 10 or 15 pulses (Fig. 3) are not in 000489, which holds only the Fig. 2\n    dishes and one sample image, nor in 000448. The paper gives no other data location, and no other\n    dandiset of these authors' lab with these data was found on the archive's listing for the\n    paper's DOI.\n- claim: fig3d-cancellation-independent-of-number\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 3 dishes not deposited (see fig3-uptake-linear-in-pulse-number).\n- claim: fig4ac-ns-bipolar-20-25pct\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The dishes given 300, 600 and 1200 ns and 50 to 500 us pulses (Fig. 4) are not in either\n    dandiset; 000489's 600 ns dishes are those of Fig. 2, at the Fig. 2 protocol.\n- claim: fig4d-1200ns-tenfold\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 4 dishes not deposited (see fig4ac-ns-bipolar-20-25pct).\n- claim: fig4eg-us-bipolar-30-50pct\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 4 dishes not deposited (see fig4ac-ns-bipolar-20-25pct).\n- claim: fig4h-us-stronger-at-low-field\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 4 dishes not deposited (see fig4ac-ns-bipolar-20-25pct).\n- claim: fig5-ns-symmetric-along-aa\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 5 re-analyses the Fig. 4 dishes along aa'; they are not deposited. The Fig. 2 dishes\n    could be measured along aa', but the claim is about the Fig. 4 pulse durations, and the files do\n    not say which electrode was the anode.\n- claim: fig5-us-anode-stronger\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 4 dishes (50 to 500 us and 1200 ns pulses) not deposited; see fig5-ns-symmetric-along-aa.\n- claim: fig6ad-unipolar-833khz-enhanced\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The dishes given trains at 10 to 833 kHz (Fig. 6) are not in either dandiset; 000448's 833\n    kHz data are strobe images of single cells, not YP uptake.\n- claim: fig6be-bipolar-khz-less-than-1hz\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 6 dishes not deposited (see fig6ad-unipolar-833khz-enhanced).\n- claim: fig6cf-833khz-thirtyfold\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 6 dishes not deposited (see fig6ad-unipolar-833khz-enhanced).\n- claim: fig6cf-cancellation-stronger-at-high-field\n  outcome: blocked\n  blocked_by: data_missing\n  notes: Fig. 6 dishes not deposited (see fig6ad-unipolar-833khz-enhanced).\n- claim: fig1e-heating\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The thermochromic sheet photographs are not in either dandiset. 000489's Fig1F file is a\n    sample of the cell staining (Fig. 1F), not thermometry.\nfindings:\n- kind: data_missing\n  statement: 000489 holds only the 17 dishes of Fig. 2 and one sample image (Fig. 1F); 000448 holds\n    the strobe images of Fig. 7. The dishes of Figs. 3 to 6 (pulse number, duration, the aa' line,\n    repetition rate) and the thermometry of Fig. 1E are in neither, so 13 of the paper's 25 claims\n    cannot be tested.\n- kind: data_missing\n  statement: 000448 holds 5 unipolar and 4 bipolar cells, where the paper reports 18 and 17. The\n    dandiset does not say how the 9 were chosen.\n- kind: metadata_error\n  statement: The YO-PRO-1 channel (index 1) of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25%\n    bipolar) is the same image, value for value, while their MemBrite channels differ. One recording\n    was deposited under two dishes of different conditions, and nothing says which dish it belongs\n    to; with it left out the unipolar and 25% groups have 2 dishes each.\n- kind: metadata_insufficient\n  statement: The 000489 images give no pixel size (resolution -1), no electrode positions or\n    polarity, and no ROI positions or values; the analysis has to locate the footprints and assume\n    0.65 um per pixel, which the electrode spacing supports. The field of each ROI, from the paper's\n    finite element model, is not deposited.\n- kind: metadata_error\n  statement: The 000489 image description names \"Channel1\" for both filter sets and for MemBrite;\n    the data show index 0 is MemBrite and index 1 YO-PRO-1. It also describes 144 images (12 x 12)\n    of a well of a six-well plate, where Methods 2.5 describes 216 images of 35 mm dishes. Three\n    files name their series \"Fig2_25\" without the dish number.\n- kind: metadata_insufficient\n  statement: The 000448 files give no pole regions, no field direction relative to the image, and no\n    delay of each frame or frame of the pulse onset. Reverse-trial files store frames in acquisition\n    order (descending delay), and their response is offset by 74 frames (1.85 us) from the forward\n    trial of the same cell; neither is documented.\n- kind: metadata_error\n  statement: 000448 counts 18 subjects, but each cell is two files (forward and reverse trial) with\n    different subject ids (for example 001_F and 001_R for cell09), so it holds 9 cells.\n- kind: other\n  statement: The first frame of most 000448 files is dark (about 180 counts against 300 to 500), and\n    a few files have a dark frame elsewhere, consistent with failed laser flashes.\n- kind: methods_unavailable\n  statement: Question for the authors. How were the ROI placed along bb' (number, spacing, and\n    whether both sides of the centre were used), and was the t-test paired when ROI of the same\n    dishes were compared? This attempt tiled contiguous 200 um ROI from the centre to 3 mm on both\n    sides and used the unpaired test; the paired test changes fig2a-uptake-rises-with-field from 5 to\n    3 of 5 amplitudes and the 50% part of fig2c-weaker-at-6-7.\n- kind: methods_unavailable\n  statement: Question for the authors. How were the cathode- and anode-facing pole regions drawn in\n    the strobe images, and where was the cathode relative to the image? This attempt took the\n    membrane within 45 degrees of the vertical axis and the brightening pole as cathodic. The\n    charging amplitude found (23% against 31%) may depend on the regions.\n"
+}
+```
+
+```
+File created successfully at: attempts/kim-2022-02.yaml (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+for q in Pakhomov "bipolar" "YO-PRO" "Silkuniene"; do curl -s "https://api.dandiarchive.org/api/dandisets/?search=$(python -c "import urllib.parse,sys;print(urllib.parse.quote(sys.argv[1]))" "$q")&page_size=50" | python -c "import json,sys;d=json.load(sys.stdin);print('$q',[(x['identifier'],x['draft_version']['name'][:60]) for x in d['results']])"; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+for d in 000548 000549 000550 001024; do curl -s "https://api.dandiarchive.org/api/dandisets/$d/" | python -c "
+import json,sys;d=json.load(sys.stdin);v=d['most_recent_published_version'];print('$d', v and v['version'], d['draft_version']['name'][:120], d['draft_version']['asset_count'])"; curl -s "https://api.dandiarchive.org/api/dandisets/$d/versions/draft/" | python -c "import json,sys;d=json.load(sys.stdin);print('  ',[r.get('url') for r in d.get('relatedResource',[])], d.get('description','')[:200])"; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'))
+print(json.dumps(s['properties']['missing_datasets'])[:1200])"; date -u
+```
+
+```
+{"description": "Datasets the paper's claims rest on that this attempt could not use; claims that need one are blocked with dataset_missing.", "type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["why"], "properties": {"archive": {"type": "string"}, "id": {"type": "string"}, "name": {"type": "string"}, "why": {"type": "string"}}}}
+Tue Nov 10 05:10:23 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+p='attempts/kim-2022-02.yaml'
+s=open(p).read()
+missing='''missing_datasets:
+- archive: dandi
+  id: "000548"
+  name: Effect of the number of pulses on electroporation by unipolar and 50 % bipolar pulses
+  why: Names this paper (relatedResource) and its title is that of Fig. 3, but it is not among the
+    paper's datasets in papers/datasets/kim-2022.yaml and the claims file lists the Fig. 3 claims
+    under 000489; this attempt tested the datasets the claims name. Found by a search of the archive.
+- archive: dandi
+  id: "000549"
+  name: Effect of the pulse duration on electroporation by unipolar and 50% bipolar pulses
+  why: Names this paper and holds the pulse durations of Figs. 4 and 5, but is not among the paper's
+    datasets in papers/datasets/kim-2022.yaml; not used, as for 000548.
+- archive: dandi
+  id: "000550"
+  name: Pulse repetition rate
+  why: Names this paper and holds the repetition rates of Fig. 6, but is not among the paper's
+    datasets in papers/datasets/kim-2022.yaml; not used, as for 000548.
+paper: doi'''
+s=s.replace("paper: doi",missing,1)
+import re
+def rep(cid, ds, fig):
+    global s
+    a=s.index(f"- claim: {cid}\n")
+    b=s.index("- claim:", a+10) if s.find("- claim:", a+10)>0 else s.index("findings:")
+    blk=s[a:b]
+    new=f'''- claim: {cid}
+  outcome: blocked
+  blocked_by: dataset_missing
+  notes: The {fig} are not in 000489 or 000448, the datasets the claims file names. Dandiset {ds},
+    which names this paper and whose title and description match {fig}, likely holds them; it is
+    not among the paper's datasets in papers/datasets/kim-2022.yaml and was not used (listed under
+    missing_datasets).
+'''
+    s=s[:a]+new+s[b:]
+for cid in ["fig3-uptake-linear-in-pulse-number","fig3d-cancellation-independent-of-number"]:
+    rep(cid,"000548","dishes given 5, 10 or 15 pulses (Fig. 3)")
+for cid in ["fig4ac-ns-bipolar-20-25pct","fig4d-1200ns-tenfold","fig4eg-us-bipolar-30-50pct","fig4h-us-stronger-at-low-field"]:
+    rep(cid,"000549","dishes given 300 to 1200 ns and 50 to 500 us pulses (Fig. 4)")
+for cid in ["fig5-ns-symmetric-along-aa","fig5-us-anode-stronger"]:
+    rep(cid,"000549","Fig. 4 dishes that Fig. 5 re-analyses along aa'")
+for cid in ["fig6ad-unipolar-833khz-enhanced","fig6be-bipolar-khz-less-than-1hz","fig6cf-833khz-thirtyfold","fig6cf-cancellation-stronger-at-high-field"]:
+    rep(cid,"000550","dishes given trains at 10 to 833 kHz (Fig. 6)")
+s=s.replace('''  notes: The thermochromic sheet photographs are not in either dandiset. 000489's Fig1F file is a
+    sample of the cell staining (Fig. 1F), not thermometry.''','''  notes: The thermochromic sheet photographs are not in either dandiset. 000489's Fig1F file is a
+    sample of the cell staining (Fig. 1F), not thermometry. The titles and descriptions of the
+    other dandisets that name this paper (000548, 000549, 000550) do not mention thermometry; their
+    files were not opened.''')
+s=s.replace('''- kind: data_missing
+  statement: 000489 holds only the 17 dishes of Fig. 2 and one sample image (Fig. 1F); 000448 holds
+    the strobe images of Fig. 7. The dishes of Figs. 3 to 6 (pulse number, duration, the aa' line,
+    repetition rate) and the thermometry of Fig. 1E are in neither, so 13 of the paper's 25 claims
+    cannot be tested.''','''- kind: data_missing
+  statement: 000489 holds only the 17 dishes of Fig. 2 and one sample image (Fig. 1F); 000448 holds
+    the strobe images of Fig. 7. The dishes of Figs. 3 to 6 and the thermometry of Fig. 1E are in
+    neither. Three more dandisets of the same lab name the paper in their metadata and match Figs.
+    3, 4 and 6 by title (000548, 000549, 000550); the registry's list of the paper's datasets and
+    the 000489 title, which the claims file follows, do not point to them, so their 12 claims are
+    blocked here and the thermometry claim is blocked as missing.''')
+open(p,'w').write(s)
+EOF
+grep -c "dataset_missing" attempts/kim-2022-02.yaml
+```
+
+```
+12
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/nb && python - <<'EOF'
+h=open('header.py').read()
+h=h.replace("# Neither holds the experiments of Figs. 3 to 6 or the thermometry of Fig. 1E.","# Neither holds the experiments of Figs. 3 to 6 or the thermometry of Fig. 1E. Dandisets 000548,\n# 000549 and 000550 of the same lab name this paper and match Figs. 3, 4 and 6 by title; they are\n# not among the paper's datasets that this attempt tests (`papers/datasets/kim-2022.yaml`), so the\n# claims on Figs. 3 to 6 are blocked here as resting on datasets not used.")
+for a,b in [("blocked: data missing (Fig. 3 dishes not deposited)","blocked: dataset missing (likely in 000548, not used)"),
+            ("blocked: data missing (Fig. 4 dishes not deposited)","blocked: dataset missing (likely in 000549, not used)"),
+            ("blocked: data missing (Fig. 6 dishes not deposited)","blocked: dataset missing (likely in 000550, not used)")]:
+    h=h.replace(a,b)
+open('header.py','w').write(h)
+s=open('summary.py').read()
+s=s.replace("# | Figs. 3 to 6 and Fig. 1E (13 claims) | 000489 | blocked: data missing |","# | Figs. 3 to 6 (12 claims) | 000489 | blocked: dataset missing (likely in 000548 to 000550) |\n# | fig1e-heating | 000489 | blocked: data missing |")
+s=s.replace("""#   and the thermometry of Fig. 1E are not in either dandiset, so 13 of the 25 claims cannot be
+#   tested.""","""#   and the thermometry of Fig. 1E are not in either dandiset, so 13 of the 25 claims cannot be
+#   tested here. Dandisets 000548, 000549 and 000550 name this paper and match Figs. 3, 4 and 6 by
+#   title; the registry's list of the paper's datasets does not include them.""")
+open('summary.py','w').write(s)
+EOF
+grep -n "dataset missing" header.py summary.py | head; cd entries/kim-2022 && python - <<'EOF'
+s=open('README.md').read()
+s=s.replace("| Figs. 3 to 6 and Fig. 1E (13 claims) | Blocked: data missing |","| Figs. 3 to 6 (12 claims) | Blocked: dataset missing (likely in 000548, 000549, 000550) |\n| Heating (Fig. 1E) | Blocked: data missing |")
+s=s.replace("thermometry of Fig. 1E are in neither.","thermometry of Fig. 1E are in neither. Dandisets 000548, 000549 and 000550 name the paper and match\nFigs. 3, 4 and 6 by title, but are not among the paper's datasets this attempt tested.")
+open('README.md','w').write(s)
+EOF
+grep -n "dataset missing" README.md
+```
+
+```
+header.py:45:# | fig3-uptake-linear-in-pulse-number, fig3d-cancellation-independent-of-number | 000489 | blocked: dataset missing (likely in 000548, not used) |
+header.py:46:# | fig4ac-ns-bipolar-20-25pct, fig4d-1200ns-tenfold, fig4eg-us-bipolar-30-50pct, fig4h-us-stronger-at-low-field | 000489 | blocked: dataset missing (likely in 000549, not used) |
+header.py:47:# | fig5-ns-symmetric-along-aa, fig5-us-anode-stronger | 000489 | blocked: dataset missing (likely in 000549, not used) |
+header.py:48:# | fig6ad-unipolar-833khz-enhanced, fig6be-bipolar-khz-less-than-1hz, fig6cf-833khz-thirtyfold, fig6cf-cancellation-stronger-at-high-field | 000489 | blocked: dataset missing (likely in 000550, not used) |
+summary.py:21:# | Figs. 3 to 6 (12 claims) | 000489 | blocked: dataset missing (likely in 000548 to 000550) |
+25:| Figs. 3 to 6 (12 claims) | Blocked: dataset missing (likely in 000548, 000549, 000550) |
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/nb && cat header.py partA_r.py partB_r.py summary.py > full.py && . ../ve/bin/activate && python build.py full.py entries/kim-2022/reproduce_kim_2022.ipynb && cd  && date -u && timeout 3000 python tools/entry.py all entries/kim-2022 2>&1 | tail -8; date -u
+```
+
+```
+Tue Nov 10 05:10:53 UTC 2026
+Installed kernelspec registry-kim-2022 in executed/kim-2022/.venv/share/jupyter/kernels/registry-kim-2022
+0 error(s)
+pass  reproduce_kim_2022.ipynb  (494 s)
+Tue Nov 10 05:19:14 UTC 2026
+```
+
+**Agent calls Bash**
+
+```bash
+python - <<'EOF'
+import json
+nb=json.load(open('executed/kim-2022/reproduce_kim_2022.ipynb'))
+err=0
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        for o in c['outputs']:
+            if o['output_type']=='error': err+=1
+        t=''.join(''.join(o.get('text','')) for o in c['outputs'] if o.get('name')=='stdout')
+        for key in ['ordering holds at 10/10','tau_charge_ns  A_charge','amplitudes passing, unpaired: 5 paired: 3','first peak','pulses meeting']:
+            if key in t: print(key, '->', t[t.index(key):t.index(key)+120].replace('\n',' | '))
+print('errors',err)
+EOF
+python tools/entry.py handover entries/kim-2022 2>&1 | tail -3; ls executed/kim-2022/handover; date -u
+```
+
+```
+tau_charge_ns  A_charge -> tau_charge_ns  A_charge_%  r_charge      p_charge  n_charge  tau_discharge_ns  A_discharge_%  r_discharge   p_discharge 
+pulses meeting -> pulses meeting the criterion: 5 of 5; n = 4 cells | 
+first peak -> first peak: 22.1% |    pulse   peak %  peak - first  unpaired p  paired p (variant)  value before pulse %  p vs 0 | 0      2
+amplitudes passing, unpaired: 5 paired: 3 -> amplitudes passing, unpaired: 5 paired: 3 | duplicate left out, reading (a), weakest ROI at 2.4 mm | amplitudes passing, u
+ordering holds at 10/10 -> ordering holds at 10/10 fields; best 50%: (a) mean 49.3%, (b) lowest 35.1%; (i) p<0.01 for 50 or 75% vs unipolar at 3/10
+errors 0
+wrote executed/kim-2022/handover
+kim-2022.yaml
+kim2022.py
+reproduce_kim_2022.ipynb
+Tue Nov 10 05:19:28 UTC 2026
+```
+
+**Agent**
+
+The attempt is written and passes its checks: entry at `entries/kim-2022`, record at `attempts/kim-2022-02.yaml`. `tools/entry.py all` gives 0 errors and the notebook runs in 494 s; `handover` built the verifier package in `executed/kim-2022/handover/`. Of the 25 claims, 12 were tested and 13 are blocked. Nothing was committed, and I did not come across any earlier attempt's results.
+
+**(1) Outcomes**
+
+| Claim | Outcome |
+|---|---|
+| fig2a-uptake-rises-with-field | reproduced (assumed: unpaired t-test; the paired test passes 3 of 5) |
+| fig2a-vertical-scales | not reproduced (75% mean + s.e.m. is 339 a.u., axis says 250) |
+| fig2b-exponential-same-slope | partially reproduced (exponential fits better for 3 of 5 at 8 kV/cm; no slope differs) |
+| fig2c-max-inhibition-50-75 | partially reproduced (50% gives 49% of unipolar, not 20%) |
+| fig2c-inhibition-flat-above-8-7 | reproduced |
+| fig2c-weaker-at-6-7 | reproduced (assumed: unpaired) |
+| fig7-unipolar-pole-polarization | reproduced (assumed: pole regions, cathode side) |
+| fig7-charging-time-constant | not reproduced (charging tau 191 ns matches; amplitudes 23% against 31%, discharge tau 613 against 520 ns) |
+| fig7-later-pulses-same-tau-difference | partially reproduced |
+| fig7-bipolar-overshoot | reproduced |
+| fig7-bipolar-alternation | reproduced |
+| fig7-summation-without-buildup | reproduced |
+| Figs. 3 to 6 (12 claims) | blocked: dataset_missing |
+| fig1e-heating | blocked: data_missing |
+
+**(2) What I found about the datasets**
+- **Missing figures:** 000489 holds only the 17 Fig. 2 dishes plus one Fig1F staining sample; 000448 holds the Fig. 7 strobe data.
+- **Three more datasets for this paper:** DANDI 000548, 000549 and 000550 name the paper in their metadata and match Figs. 3, 4 and 6 by title. They are not in `papers/datasets/kim-2022.yaml`, so I did not use them. I listed them under `missing_datasets` and blocked those 12 claims; a later attempt could test them.
+- **Duplicate image:** the YO-PRO-1 channel of sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25%) is the same image, while their MemBrite channels differ. The main analysis leaves both out, so the unipolar and 25% groups have 2 dishes each; assigning the image to either group is shown as a variant.
+- **Missing metadata in 000489:** no pixel size, electrode positions or polarity, or ROIs. The electrode spacing I measured, 4.44 to 4.66 mm against the paper's 4.5 mm, supports 0.65 µm per pixel. The image description's "Channel1" naming does not say which channel holds which dye (the data show index 0 is MemBrite, index 1 YO-PRO-1), and it says "144 images, six-well plate" where the paper says 216 images of 35 mm dishes.
+- **000448 has 9 cells, not 18:** 5 unipolar and 4 bipolar, against 18 and 17 in the paper. Each cell is filed as two subjects (forward and reverse trial).
+- **Undocumented frame order in 000448:** reverse files store frames in acquisition order and are offset by 74 frames (1.85 µs) from the forward trial. No frame delays, pole regions or field direction are given, and the first frame of most files is dark.
+- **Assumptions:**
+  - Unpaired t-test where the paper does not say.
+  - ROIs tiled every 200 µm from the centre out to 3 mm.
+  - A footprint disc of 0.2 mm for the background values.
+  - Fields from an exact 2D two-cylinder model, scaled to the paper's 15.1 kV/cm at the centre.
+  - The pole regions I drew.
+  - The pole that brightens taken as cathode-facing.
+  - Pulse onset found from the data.
+- **Questions for the authors** (recorded as `methods_unavailable` findings): how the ROIs were placed and whether the t-test was paired; how the pole regions were drawn and where the cathode was relative to the image.
+- **Questions to a reader:** none.
+
+**(3) Protocol points**
+1. Claims list a dataset the paper does not name for their data. The claims file lists the Fig. 3 to 6 claims under 000489, but they belong to other public datasets of the same paper. Neither `data_missing` nor `dataset_missing` fits exactly; I used `dataset_missing` with `missing_datasets` and noted it.
+2. Repeated recordings stored differently. The protocol asks to count duplicated recordings once but says nothing about a channel shared between two files of different conditions. I left both dishes out and showed both assignments.
+3. Criteria with no outcome for some cases. fig2b gives no outcome for "slopes agree but the exponential fails", and fig2c-max does not say at how many fields "the test holds". I chose partially reproduced and "most fields", and recorded each as a deviation.
+4. "Develop on a subset" says nothing about caching data during development. I cached block-averaged images in the scratch directory for development only; the notebook streams everything.
+
+**(4) Runtime and failures**
+- About 2 h (03:20 to 05:20 UTC). The notebook takes about 8 minutes and peaks around 2 GB of memory.
+- About 1 h was lost when a footprint-search command with a large direct convolution hit its 60-minute timeout. I replaced it with FFT convolution.
+- Earlier, a background download was killed when its shell call ended; I re-ran it in the foreground.
+- Nothing else failed.
 
 ## End of run
 
-94 turns, 77 minutes, result: success.
+77 turns, 114 minutes, $7.39 at API prices, result: success.

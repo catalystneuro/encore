@@ -172,6 +172,15 @@ padding:1px 8px;cursor:pointer}
 .row.drow .id{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
 .row.drow .right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 @media (max-width:640px){.row.drow .right{align-items:flex-start}}
+/* The papers list: the title leads, and every title starts in the same column (list.js, papers) */
+.row.drow.prow{grid-template-columns:1fr max-content}
+@media (max-width:640px){.row.drow.prow{grid-template-columns:1fr}.row.drow.prow .right{flex-direction:row;align-items:center;gap:12px}}
+.row.prow .byline{margin:0 0 2px;font-size:.8rem;color:var(--muted);letter-spacing:.01em}
+.row.prow .byline .sep{margin:0 6px}
+.row.prow .title{font-size:1.02rem;line-height:1.35}
+.row.prow .meta a{text-decoration-thickness:1px;text-underline-offset:2px}
+.verified{font-size:.78rem;color:var(--text2);white-space:nowrap}
+.verified span{color:var(--accent);font-weight:700}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 .pager{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 0;font-size:.9rem}
 .pager .grow{flex:1}
@@ -370,11 +379,13 @@ details.separate>summary:focus-visible{outline:2px solid var(--accent);outline-o
 .panel.attempts .tabpanel>h2,.panel.attempts .tabpanel>.sub{padding:0 20px}
 .panel.attempts .tabpanel>.sub{margin:12px 0 10px}
 .panel.attempts .results{border:0;border-radius:0 0 10px 10px}
-/* Archives in the progress charts: categorical slots in the registry's order of archives (tools/datasets.py),
-   checked for colour-blind separation on the panel in each mode. */
-:root{--archive-1:#2a78d6;--archive-2:#eb6834;--archive-3:#1baf7a;--archive-4:#eda100;--archive-5:#e87ba4;--archive-6:#008300;--archive-7:#6250d6;--archive-8:#e34948}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--archive-1:#3987e5;--archive-2:#d95926;--archive-3:#199e70;--archive-4:#c98500;--archive-5:#d55181;--archive-6:#008300;--archive-7:#9085e9;--archive-8:#e66767}}
-:root[data-theme=dark]{--archive-1:#3987e5;--archive-2:#d95926;--archive-3:#199e70;--archive-4:#c98500;--archive-5:#d55181;--archive-6:#008300;--archive-7:#9085e9;--archive-8:#e66767}
+/* Archives in the progress charts: DANDI (1), CRCNS (2) and the other archives together (3) (build_site.py,
+   OWN_COLOUR). Plum, orange and wine: none is an outcome's green, yellow, blue or gray, so an archive never reads as
+   an outcome in the panel below. Checked with the dataviz validator, all pairs, on the panel in each mode: colour-blind
+   separation at least 16, normal vision at least 18, contrast at least 3:1. */
+:root{--archive-1:#9e68d1;--archive-2:#d75a21;--archive-3:#9a1a5b}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--archive-1:#a278e4;--archive-2:#e16c10;--archive-3:#b8397a}}
+:root[data-theme=dark]{--archive-1:#a278e4;--archive-2:#e16c10;--archive-3:#b8397a}
 /* The progress charts share one panel, with one legend under both, as they stack the same series */
 .progress-charts .grid2{column-gap:40px}
 .progress-legend .legend{justify-content:center;margin:12px 0 0}

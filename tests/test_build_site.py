@@ -741,3 +741,21 @@ def test_the_overview_leads_with_papers():
     assert 'data-metric="papers" aria-pressed="true"' in panel and 'data-metric="datasets" aria-pressed="false"' in panel
     assert ">Papers attempted over time</h2>" in panel and ">Papers attempted, new each day</h2>" in panel
 
+
+def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives():
+    """Three archive colours, none an outcome's: DANDI and CRCNS each have one, every other archive shares the third."""
+    data = site.collect()
+    p = site.progress_data(data)
+    keys = [a["key"] for a in p["archives"]]
+    assert keys[: len([k for k in keys if k in site.OWN_COLOUR])] == [k for k in site.OWN_COLOUR if k in keys]
+    assert all(a["slot"] in (1, 2, 3) for a in p["archives"])
+    present = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    if present - set(site.OWN_COLOUR):
+        other = next(a for a in p["archives"] if a["key"] == "other")
+        assert other["slot"] == 3 and other["label"].startswith("Other archives (")
+    # Every dataset is counted once, in its archive's series or in the other archives'.
+    rows = p["series"]["all"]
+    assert sum(rows["datasets"]) == sum(sum(rows[f"archive:{k}"]) for k in keys)
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    assert "--archive-4" not in css
+

@@ -1350,6 +1350,9 @@ def most_reproduced(attempts: list[dict], n: int = 6) -> list[dict]:
                                          a["key"]))[:n]
 
 
+# The archives with a colour of their own in the progress charts; the rest share one (progress_data).
+OWN_COLOUR = ("dandi", "crcns")
+
 # In the order of the Overview's tiles: papers first, as the papers are the registry's primary index.
 PROGRESS_METRICS = {
     "papers": "Papers attempted",
@@ -1379,10 +1382,16 @@ def progress_data(data: dict) -> dict:
         m = re.fullmatch(r"([a-z]+)-(\d+)", v)
         return (0, m[1], int(m[2])) if m else (1, v, 0)
     protocols = sorted({protocol(a) for a in data["attempts"]}, key=version_order)
-    # Datasets are also counted by their archive, in the registry's order of archives, so that each keeps its colour
-    # (its slot in that order) whichever archives have attempts.
+    # Datasets are also counted by their archive. DANDI and CRCNS have a colour each (slots 1 and 2); every other
+    # archive, with a few datasets each, is counted in one "other archives" series (slot 3), so that the chart
+    # needs three colours, none of them an outcome's. The slot follows the archive, not its rank.
     order = list(ARCHIVES)
-    archives = sorted({split_key(a["key"])[0] for a in data["attempts"]}, key=lambda k: (order.index(k) if k in order else 99, k))
+    present = sorted({split_key(a["key"])[0] for a in data["attempts"]}, key=lambda k: (order.index(k) if k in order else 99, k))
+    archives = [k for k in OWN_COLOUR if k in present]
+    others = [k for k in present if k not in OWN_COLOUR]
+    if others:
+        archives.append("other")
+    group = lambda k: k if k in OWN_COLOUR else "other"
     start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
     end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
     days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
@@ -1401,7 +1410,7 @@ def progress_data(data: dict) -> dict:
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
         for key, day in first_dandiset.items():
             new[day]["datasets"] += 1
-            new[day][f"archive:{split_key(key)[0]}"] += 1
+            new[day][f"archive:{group(split_key(key)[0])}"] += 1
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
@@ -1416,8 +1425,11 @@ def progress_data(data: dict) -> dict:
     return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
             "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()},
             "protocols": protocols,
-            "archives": [{"key": k, "label": ARCHIVES[k]["name"].removeprefix("the ") if k in ARCHIVES else k,
-                          "slot": (order.index(k) if k in order else len(order)) % 8 + 1} for k in archives]}
+            "archives": [{"key": k, "slot": OWN_COLOUR.index(k) + 1 if k in OWN_COLOUR else len(OWN_COLOUR) + 1,
+                          "label": (ARCHIVES[k]["name"].removeprefix("the ") if k != "other" else
+                                    "Other archives (" + ", ".join(ARCHIVES[o]["name"].removeprefix("the ")
+                                                                   if o in ARCHIVES else o for o in others) + ")")}
+                         for k in archives]}
 
 
 def progress_panel(data: dict) -> str:
@@ -1528,11 +1540,22 @@ def page_overview(data: dict) -> str:
                   "papers/?status=attempted"),
     ])
 
-    recent = sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True)[:6]
     paper_for = {q["doi"]: q for q in papers_of(data) if q["attempts"]}
     its = lambda a: paper_for.get(a["paper"].lower())
+
+    def once_a_paper(rows: list[dict], n: int = 6) -> list[dict]:
+        """The first n, a paper once: an attempt on several datasets is a row for each of them here."""
+        seen, out = set(), []
+        for a in rows:
+            key = (its(a) or {}).get("key") or a["id"]
+            if key not in seen:
+                seen.add(key)
+                out.append(a)
+        return out[:n]
+    recent = once_a_paper(sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True))
     recent_html = "".join(attempt_row(a, "", paper=its(a)) for a in recent) or '<p class="empty">No attempts yet.</p>'
-    top_html = ("".join(attempt_row(a, "", share=True, paper=its(a)) for a in most_reproduced(attempts))
+    top_html = ("".join(attempt_row(a, "", share=True, paper=its(a))
+                        for a in once_a_paper(most_reproduced(attempts, n=24)))
                 or '<p class="empty">No verified attempt yet.</p>')
 
     dashboard = progress_panel(data)
