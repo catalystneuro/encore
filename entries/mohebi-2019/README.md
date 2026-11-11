@@ -14,16 +14,16 @@ units are not in it, so the 20 claims on those data are blocked.
 | Pavlovian click responses fall as clicks become predictable | Partially reproduced |
 | Pavlovian cue responses follow reward probability | Partially reproduced |
 | Food-port entry is highest during the 75% cue | Reproduced |
-| No cell changes tonic firing between high- and low-reward blocks | Not reproduced (assumed reading) |
+| No cell changes tonic firing between high- and low-reward blocks | Partially reproduced |
 | Burst rate does not change between blocks | Reproduced |
 | Time spent inactive is very low and does not change | Reproduced |
-| The retrogradely tagged cells resemble the others | Not reproduced (assumed reading) |
+| The retrogradely tagged cells resemble the others | Reproduced (assumed test) |
 | Light-On, Go cue and reward responses in the great majority of cells | Partially reproduced |
 | No firing ramp before Center-In or Food-Port-In | Reproduced |
-| All 25 Light-On responsive cells are better aligned to Light-On | Partially reproduced |
+| All 25 Light-On responsive cells are better aligned to Light-On | Not reproduced |
 | Early-trial firing does not depend on reward rate | Not reproduced |
 | Reward response is stronger at lower reward rate | Reproduced |
-| Negative RPE coding is weak; pause coding in 2 of 29 cells | Reproduced (assumed pause measure) |
+| Negative RPE coding is weak; pause coding in 2 of 29 cells | Partially reproduced |
 | The same holds with other estimates of reward expectation | Partially reproduced |
 | Microdialysis, photometry, in vitro, histology and untagged units (20 claims) | Blocked: data missing |
 

@@ -35,6 +35,18 @@ def max_gap(ts, a, b, edges=True):
     return float(np.max(np.diff(s)))
 
 
+def max_isi_span(ts, a, b):
+    """Longest inter-spike interval that overlaps [a, b], whole: the intervals between consecutive
+    spikes of the train, including the one that starts before `a` and the one that ends after `b`.
+    A third reading of the pause (maximum ISI), which keeps every trial and does not cut the
+    intervals at the window's bounds. NaN for a missing event or a window past the last spike."""
+    if not np.isfinite(a) or b > ts[-1]:
+        return np.nan
+    k0 = max(int(np.searchsorted(ts, a)) - 1, 0)
+    k1 = min(int(np.searchsorted(ts, b, "right")), len(ts) - 1)
+    return float(np.max(np.diff(ts[k0:k1 + 1])))
+
+
 def bandit_pass(u, tr, rng, n_shuffles=10000):
     ts = u["segments"]["RL"]["ts"]
     t_end = max(ts[-1], np.nanmax(tr["SideOut"]), np.nanmax(tr["FoodIn"])) + 5.0
@@ -48,6 +60,7 @@ def bandit_pass(u, tr, rng, n_shuffles=10000):
             out[f"valley_{key}_{name}"] = np.nanmin(vta.aligned(s, si, a, b), 1)
     out["pause_edges"] = np.array([max_gap(ts, e, e + PAUSE_WIN, True) for e in si])
     out["pause_isi"] = np.array([max_gap(ts, e, e + PAUSE_WIN, False) for e in si])
+    out["pause_span"] = np.array([max_isi_span(ts, e, e + PAUSE_WIN) for e in si])
     # mean traces (Hz) around events, all trials and by outcome or latency
     traces = {}
     for ev in ("LightOn", "CenterIn", "Go", "SideIn", "FoodIn"):
@@ -60,6 +73,9 @@ def bandit_pass(u, tr, rng, n_shuffles=10000):
             traces[ev + "_short"] = np.nanmean(m[tr["latency"] < SHORT_LAT], 0)
             traces[ev + "_long"] = np.nanmean(m[tr["latency"] > LONG_LAT], 0)
     out["traces"] = traces
+    # the same mean traces with the SD 4.5 ms kernel (the claims file's primary reading of the
+    # Methods' "variance 20ms"), for reading (a) of fig4e
+    out["traces_sd4"] = {ev: np.nanmean(vta.aligned(s4, tr[ev], *TRACE_WIN), 0) for ev in ("LightOn", "CenterIn")}
     # Light-On response per trial (peak in 0.5 s) for the short/long comparison
     out["lighton_peak"] = np.nanmax(vta.aligned(s20, tr["LightOn"], 0.0, 0.5), 1)
     # reading (b) of "better aligned": time of the per-trial SDF maximum between Light-On and
@@ -93,6 +109,10 @@ def bandit_pass(u, tr, rng, n_shuffles=10000):
         e = tr[ev.split("_")[0]] if sel is None else tr["SideIn"][sel]
         for post in (0.5, 1.0):
             cue[(ev, post)] = vta.cue_response(ts, e, rng, post=post, n_shuffles=n_shuffles)
+    # Light-On on trials with latency over 0.5 s only, so that no Center-In falls in the 0.5 s
+    # window (a check asked for by the verifier)
+    cue[("LightOn_lat_gt_0.5", 0.5)] = vta.cue_response(ts, tr["LightOn"][tr["latency"] > 0.5], rng,
+                                                        post=0.5, n_shuffles=n_shuffles)
     out["cue"] = cue
     return out
 
@@ -107,8 +127,12 @@ def pav_pass(u):
     onset = np.asarray(box["event"])[0]
     click = np.ravel(box["FoodDrop"])
     s20 = vta.sdf(ts, max(ts[-1], np.nanmax(onset) + 10) + 5, vta.SDF_SD)
+    s4 = vta.sdf(ts, max(ts[-1], np.nanmax(onset) + 10) + 5, vta.SDF_SD_VARIANT)
     cue_peak = np.nanmax(vta.aligned(s20, onset, 0.0, PAV_PEAK_WIN), 1)
     click_peak = np.nanmax(vta.aligned(s20, click, 0.0, PAV_PEAK_WIN), 1)
+    cue_peak_sd4 = np.nanmax(vta.aligned(s4, onset, 0.0, PAV_PEAK_WIN), 1)
+    click_peak_sd4 = np.nanmax(vta.aligned(s4, click, 0.0, PAV_PEAK_WIN), 1)
+    del s4
     tones = sorted([f for f in prob if f != 0], key=lambda f: prob[f])  # zero, medium, high
     label = {tones[0]: "zero", tones[1]: "medium", tones[2]: "high", 0.0: "unpredicted"}
     cond = np.array([label[float(t)] for t in tone])
@@ -116,5 +140,6 @@ def pav_pass(u):
     tr_click = {c: np.nanmean(vta.aligned(s20, click[(cond == c) & (food == 1)], -1.0, 1.5), 0)
                 for c in ("unpredicted", "medium", "high")}
     return {"cond": cond, "food": food, "cue_peak": cue_peak, "click_peak": click_peak,
+            "cue_peak_sd4": cue_peak_sd4, "click_peak_sd4": click_peak_sd4,
             "probs": {label[f]: prob[f] for f in prob}, "trace_cue": tr_cue, "trace_click": tr_click,
             "onset": onset, "click": click}

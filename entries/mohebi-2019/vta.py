@@ -58,13 +58,20 @@ Where the parameters come from:
   trials' reward rate at Light-On. With an odd number of blocks the median block is left out
   (`median_block="drop"`), a standard choice; `median_block="low"` puts it with the low blocks, as
   a variant.
+- Circular-shift nulls (`circular_shift_p`): a per-cell test that keeps the serial dependence of
+  both series, for the per-cell tests of tonic firing and early-trial firing, whose 1 min bins and
+  trials are not independent (asked for by the verifier). One series is shifted circularly
+  against the other by every shift from `min_shift` to n - `min_shift` steps; p is two-sided. The
+  minimum shifts (10 bins of 1 min, longer than a block of about 8 min; 20 trials) are standard
+  choices that exclude shifts that leave the series nearly aligned.
 - SALT (`salt`): the stimulus-associated latency test of Kvitsiani et al. 2013 (the paper's
   ref. 55), as in its published `salt.m`: first-spike latency histograms in 10 ms windows with
   1 ms bins, baseline windows taken from the period before each pulse, Jensen-Shannon distances
   between them, and p the fraction of baseline-baseline distances at least as large as the median
   test-baseline distance (claims file, fig2 criterion: the test's published defaults). The
   baseline period is the 400 ms before each pulse, which at 2 Hz stays clear of the previous
-  pulse's 100 ms; this length is a standard choice.
+  pulse's 100 ms; this length is a standard choice. It gives 40 baseline windows and 780 null
+  distances, so the smallest nonzero p is 1/780 = 0.0013 and p < 0.001 means p = 0.
 """
 
 from __future__ import annotations
@@ -377,6 +384,14 @@ def block_split(tr: dict, tau: float, median_block: str = "drop") -> tuple[list,
     if median_block == "low":
         low += [b for b, m in means.items() if m == med]
     return high, low, means
+
+
+def circular_shift_p(x: np.ndarray, y: np.ndarray, stat, min_shift: int) -> tuple[float, float, int]:
+    """Two-sided p of stat(x, y) against stat(roll(x, k), y) for k = min_shift .. n - min_shift.
+    Returns (observed statistic, p, number of shifts)."""
+    obs = stat(x, y)
+    null = np.array([stat(np.roll(x, k), y) for k in range(min_shift, len(x) - min_shift + 1)])
+    return float(obs), float((np.sum(np.abs(null) >= abs(obs)) + 1) / (len(null) + 1)), len(null)
 
 
 # ----------------------------------------------------------------------------- SALT
