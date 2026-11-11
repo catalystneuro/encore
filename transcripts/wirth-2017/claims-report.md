@@ -1,26 +1,24 @@
-I wrote `claims/wirth-2017.yaml`. The quote checker reports 28 claims, 28 quotes, 25 statistical values and 0 problems.
+I stopped before writing any claims, so `claims/wirth-2017.yaml` is unchanged. The protocol (Reader, step 1) and your instructions both say to stop when a supplement the results rest on is missing, and one is.
 
-**Text read**
-- The version of record, PMC5328243 (Europe PMC full text). It includes the Results, Discussion, Methods, and the legends of Figs 1–7 and S1–S7. No PDF was read.
-- **Missing:** the S1 Appendix (supplementary methods A1–A5) and the S2 Appendix are DOCX files and are not under `paper/`. The reference list is also absent, so reference 60, the learning-curve method, is not named.
-- I went ahead anyway, because the core results (Figs 3–7) rest on the main Methods, which are present. Four claims need S1 Appendix and say so: `gaze-anticipates-action`, `gaze-anticipates-landmarks`, `fields-per-cell` and `dimensionality-control`. The last two are flagged as likely `methods_underspecified`: the text read never defines a "field" and does not describe the dimensionality control.
-- **Code:** the paper links no repository. Its Matlab scripts are stored with the dataset on CRCNS, so I did not read them.
+**Text read.** `paper/10.1371-journal.pbio.2001045.txt` is the version of record (PMC5328243, Europe PMC JATS XML). It has the Results, Discussion, Materials and Methods, the legends of Figs 1 to 7 and S1 to S7 Figs, and the movie legends. No PDF was provided, and the paper links no code repository.
 
-**Claims:** 28 in all. Every one has a quote and a criterion, 16 have statistics and 17 have expected values. They cover behaviour (gaze anticipation, learning, probe transfer), cell counts, information content and sparsity by coding space, direction tuning, state-space selectivity, the landmark ANOVAs, path selectivity, the gaze-aligned dynamics and latencies, eccentricity, foveation selectivity, place fields and population maps.
+**What is missing:**
+- **S1 Appendix** (DOCX, sections A1 to A5). It is not under `paper/` (the manifest lists 0 supplements for this paper). The Results rest on it:
+  - **A2** holds the method of the two gaze findings, with their Wilcoxon p < 0.001: gaze anticipates the next joystick action, and gaze anticipates where landmarks will appear. The Results (500 ms) and the S2 Fig legend (300 ms) disagree on the window, and only A2 can settle it.
+  - **A3** holds the recording methods and the cell selection behind the 189 cells. Every neural claim uses those cells.
+  - **A5** is itself a result: the control showing that space dimensionality does not explain the higher information content in the state space (S7 Fig).
+  - **A1** (the gaze density maps) and **A4** (population averages) hold the methods behind the gaze density result and the population-average maps (S5B and S6 Figs).
+- **S2 Appendix** describes the CRCNS files and Matlab scripts. It is not needed for any finding.
+- **The reference list** is cut off in the stored text, so reference 60, the learning-curve method behind the learning and probe-session claims, cannot be identified.
 
-**Details left open, with the readings named**
-- **Trial span:** whether the return path after a correct trial counts as part of it.
-- **Surrogates:** whether the 5 s chunks are permuted in order or each shifted at random.
-- **Binomial chance rate:** 0.05 or 0.025. The paper's own p-values fit 0.05 for state-space selectivity and 0.025 for the direction correlations. Neither rate gives p = 0.37 for the single path-invariant cell.
-- **Point of gaze:** which eye (left, right or the mean), eye calibration, and how bin resolution is stepped in each space.
-- **Unnamed tests and cell sets:** which cells enter, and which test, for centre against periphery, the gaze-aligned rise and the latencies.
-- **Two conflicts within the paper:**
-  - The gaze-before-action window is 500 ms in the Results and 300 ms in the S2 legend.
-  - The path-selectivity offset is 120 ms in the Results while the Methods window starts at onset, and the Methods give 150 ms for landmark selectivity.
-- **Landmarks:** how entry into the field of view and the "most informative landmark" are defined.
-- **Behaviour:** which sessions count for learning, whether the probe test pools the two monkeys, and how trials to criterion are counted after new entries.
-- **Landmark ANOVA:** whether "both factors" excludes cells with an interaction, and how a landmark view at the centre is delimited.
-- **Spatial selectivity:** what "approximately 50%" counts (position-responsive cells or all responsive cells).
-- **Gaze map:** how the area around a landmark is delimited.
+The last check of the existing file already flagged this: "Supplying S1 Appendix would settle them."
 
-**For the author:** the dataset's description says it holds 101 cells, each with a familiar and a new maze, and asks to be cited as doi 10.6080/K0GX48R9. The paper analysed 189 cells, describes only new mazes, and gives its data as doi 10.6080/K0R49NQV. I recorded this in the opening comment and did not try to resolve it.
+**How the existing file falls short of the current protocol** (to fix once S1 Appendix is supplied):
+- It names a single dataset (`dataset: crcns hc-21`) and its claims have no `datasets:` field. The paper is tested on both `crcns-hc-21` and `crcns-hc-12`, and each claim needs to name the ones it rests on.
+- The hc-12 descriptor says that dataset holds the paper's 189 cells, the full set analysed. hc-21 has 101 cells, with a familiar-maze condition the paper does not describe. The opening comment should say this.
+- The four claims that depend on S1 Appendix (the two gaze claims, `dimensionality-control` and `fields-per-cell`) still have methods the paper's text does not fix.
+- The provenance date needs updating.
+
+**Counts:** no claims written. The existing file holds 37 claims (id lines counted); I did not count its quotes, statistics or criteria in this run.
+
+**To unblock:** add S1 Appendix (and ideally the PDF, for reference 60) to the paper store and re-run the reader.

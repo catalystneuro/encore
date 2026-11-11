@@ -1,5 +1,5 @@
 # Claims for Wirth, Baraduc, Plante, Pinede & Duhamel (2017), PLoS Biology 15(2), e2001045,
-# tested on CRCNS hc-21.
+# tested on CRCNS hc-12 and hc-21.
 # Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
 # protocol pilot-14 as stated in docs/protocol.md.
 #
@@ -15,8 +15,10 @@
 # is not named.
 #
 # Code: the paper links no repository. It says some Matlab scripts are hosted with the data on
-# CRCNS (Supporting data; S2 Appendix). These are files of the dataset and were not read. No
-# criterion below takes a method from code.
+# CRCNS (Supporting data; S2 Appendix); the hc-12 descriptor lists them (a scripts folder that
+# plots position, direction and state-space maps, rasters and learning curves). These are files
+# of the dataset and were not read. No criterion below takes a method from code; the author may
+# read them for the map binning left open in Method W, citing the file.
 #
 # Data the paper used (Results; Materials and Methods). Two rhesus macaques, monkey S and
 # monkey K, navigating with a joystick a virtual 3-D star maze of five arms (radius 16 m,
@@ -34,13 +36,17 @@
 # variables are spike times, virtual position and head (camera) direction, eye position, task
 # events, and the state-space coordinates.
 #
-# The archive's descriptor (paper/hc-21.data-description.txt, read for this alone) describes
-# 101 cells from the two monkeys (files "sn" for monkey 1, Snorre, and "ke" for monkey 2,
-# Kevin), each file with a familiar maze ("famallo") and a daily new maze ("newallo"), and the
-# state-space coordinates and transition tags. The paper describes only daily new layouts and
-# names no familiar maze. The figure legends give the underlying data as doi 10.6080/K0R49NQV,
-# while the descriptor asks that hc-21 be cited as doi 10.6080/K0GX48R9. Whether hc-21 holds
-# the paper's cells, and which ones, is the author's to find.
+# Datasets. The paper names one deposit, "the spike and behavior data files hosted on CRCNS
+# (http://dx.doi.org/10.6080/K0R49NQV)" (Supporting data; the figure legends give the same doi).
+# The descriptors under paper/ (read for this alone) give that doi to hc-12: 189 cells from the
+# two monkeys (files "sn" and "ke"), one session per file of about 40 minutes, in a field
+# "newallo" (the daily new maze), with eye positions, camera data, state-space coordinates,
+# transition tags and learning curves. hc-21 has its own doi (10.6080/K0GX48R9, 2018): 101
+# cells, each file with a familiar maze ("famallo") and a daily new maze ("newallo"), and it
+# names a second paper (Baraduc, Duhamel and Wirth, schema cells). The paper describes only
+# daily new layouts and no familiar maze, so its findings rest on hc-12, and every claim lists
+# crcns-hc-12 alone. Whether some hc-21 "newallo" sessions are the paper's sessions is not
+# settled by the paper; the author may test claims on them as a variant.
 #
 # Method shared by the claims (every claim that says "Method W"). Each part is cited.
 #  - Trials. Only successful trials (Results, What is encoded, paragraph 1). Whether the
@@ -83,9 +89,6 @@
 #    p = 0.37) matches the lower tail P(X <= 1) under (a). Each claim names the reading its
 #    numbers fit.
 schema_version: 2
-dataset:
-  archive: crcns
-  id: hc-21
 paper: doi:10.1371/journal.pbio.2001045
 claims:
 - id: gaze-anticipates-action
@@ -100,6 +103,8 @@ claims:
   - test: Wilcoxon test
     p: 0.001
     p_relation: "<"
+  datasets:
+  - crcns-hc-12
   criterion: The analysis is described in S1 Appendix A2, which was not read. The paper's text
     and the S2 Fig legend disagree on the window, 500 ms (Results) or 300 ms (S2A legend). Per
     monkey, the mean horizontal eye position in the window before each left or right joystick
@@ -119,6 +124,8 @@ claims:
   - test: Wilcoxon test
     p: 0.001
     p_relation: "<"
+  datasets:
+  - crcns-hc-12
   criterion: The analysis is in S1 Appendix A2, which was not read; the S2C legend shows the mean
     horizontal eye position during passive returns toward the right against toward the left.
     Per monkey, mean horizontal eye position during returns turning right against left, by a
@@ -139,6 +146,8 @@ claims:
   - quantity: monkey K, mean trials to above-chance performance
     value: 14.8
     tolerance: 2.4
+  datasets:
+  - crcns-hc-12
   criterion: Per session, the first trial at which the lower confidence bound of the probability
     of a correct response exceeds 1/4 (S3B legend; the reward is never at the end of the entry
     arm). The bounds come from the method of the paper's reference 60, which the stored text
@@ -157,6 +166,8 @@ claims:
   - quantity: fraction of sessions with fewer than 10 trials from above chance to upper bound 90%
     value: 0.89
     tolerance: 0.089
+  datasets:
+  - crcns-hc-12
   criterion: With the learning curves of learning-trials, per session the number of trials from
     the first trial with lower bound above 1/4 to the first with upper bound at or above 0.9;
     the fraction of sessions where it is below 10, both monkeys pooled. Sessions as in the
@@ -190,6 +201,8 @@ claims:
     value: 55
     tolerance: 5.5
     unit: percent
+  datasets:
+  - crcns-hc-12
   criterion: Probe sessions are those that start from one or two entries (northeastern and
     southeastern) and later add the others (Results; S3C legend). Per session, percent correct
     over the 5 trials after the new entries are introduced and over the first 5 trials of the
@@ -219,6 +232,8 @@ claims:
   depends_on:
   - learning-trials
   - probe-transfer
+  datasets:
+  - crcns-hc-12
   criterion: How trials to criterion after the new entries are counted is not stated. The
     learning criterion is the lower confidence bound exceeding 1/4 (S3B legend); on the
     session's running learning curve it is usually already met when the new entries come in
@@ -244,6 +259,8 @@ claims:
   - quantity: cells with more than 100 spikes per session
     value: 189
     tolerance: 18.9
+  datasets:
+  - crcns-hc-12
   criterion: Counts of cells, per monkey and in total, and of cells with more than 100 spikes in
     the session (the new maze session, as the paper describes only new layouts). The site
     counts of the Methods (CA3 99, CA1 101, dentate gyrus 8) sum to 208, which matches neither
@@ -262,6 +279,8 @@ claims:
   - quantity: fraction of analysed cells responsive
     value: 0.59
     tolerance: 0.059
+  datasets:
+  - crcns-hc-12
   criterion: Method W. For each cell and each space, normalized IC and its surrogate p-value; a
     cell is responsive when p < 0.01 in at least one space. Every reading of Method W is run.
     Reproduced when the count and fraction are within tolerance under one reading.
@@ -290,11 +309,15 @@ claims:
     tolerance: 8.4
   depends_on:
   - responsive-cells
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Per space, the number of the 189 cells with IC p < 0.01. The chi-squared
     test's layout is not stated; readings (a) a 4 x 2 contingency test of responsive and not
     responsive counts across the four spaces, over the 189 cells; (b) the same over the 111
-    responsive cells; the pairwise tests are the 2 x 2 tables of state space against each other
-    space, Bonferroni over three. Reproduced when the state-space count is within tolerance and
+    responsive cells; (c) a goodness-of-fit test of the four counts against equal counts ("the
+    proportion of cells responsive to each space was significantly unequal"). The pairwise tests
+    are, under (a) and (b), the 2 x 2 tables of state space against each other space and, under
+    (c), the goodness of fit of the two counts against equal counts, Bonferroni over three. Reproduced when the state-space count is within tolerance and
     the largest, and under one reading the overall test gives p < 0.05 and state space against
     point of gaze gives a corrected p < 0.05 with more state-space cells. The other pairwise
     comparisons were not significant in the paper; their p-values are reported.
@@ -306,6 +329,8 @@ claims:
   quote: Most responsive cells carry significant activity in more than one coding space.
   depends_on:
   - responsive-cells
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Among responsive cells, the number with significant IC (p < 0.01) in two or
     more spaces. Reproduced when it exceeds half of the responsive cells.
 - id: direction-center-vs-periphery
@@ -321,11 +346,13 @@ claims:
   - about: sparsity, center against return paths
     p: 0.001
     p_relation: "<"
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Directional maps of each cell from time in the maze center and from time on
     return paths. Which cells enter is open; readings (a) cells with significant direction IC;
     (b) all responsive cells (Fig 3C legend, "the responsive cells"). The test is not named;
     it is taken as a Wilcoxon signed-rank test across cells of the paired normalized values, the
-    test the Results use for the comparisons of Fig 3D to 3F. Reproduced when, under one
+    test the Results use for the comparisons of Fig 3D to 3F, a deviation. Reproduced when, under one
     reading, IC and sparsity are both higher in the center with p < 0.001; partially reproduced
     when both are higher at p < 0.05 or one at p < 0.001.
 - id: direction-tuning-not-maintained
@@ -358,6 +385,8 @@ claims:
   - quantity: cells with significantly high correlation
     value: 3
     tolerance: 0.3
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Per cell, the uncentered correlation of center and return-path directional
     rates over the directional bins valid in both (Methods, Directional correlations); its
     significance from the surrogates, bilateral, at 0.05 per test with 0.025 per tail as the
@@ -379,6 +408,8 @@ claims:
   - test: Wilcoxon
     p: 0.01
     p_relation: "<"
+  datasets:
+  - crcns-hc-12
   criterion: Method W. For each other space, the cells responsive in both it and state space;
     per cell the normalized state-space IC minus the normalized IC in the other space; a
     Wilcoxon signed-rank test across cells. Reproduced when all three differences are positive
@@ -394,6 +425,8 @@ claims:
   statistics:
   - test: Wilcoxon test
     p: 0.006
+  datasets:
+  - crcns-hc-12
   criterion: Method W, as in state-space-ic-higher with normalized sparsity. Reproduced when the
     median difference is positive with p < 0.05.
   depends_on:
@@ -418,6 +451,8 @@ claims:
   - quantity: cells with individually significant sparsity difference
     value: 15
     tolerance: 1.5
+  datasets:
+  - crcns-hc-12
   criterion: Method W, as in state-space-ic-higher with normalized sparsity. The overall part is
     a claim of absence, judged on the paper's Wilcoxon signed-rank test at p < 0.05; the effect
     size is reported. Per cell, the difference is significant when its surrogate p (the
@@ -449,6 +484,8 @@ claims:
   - quantity: cells with individually significant sparsity difference
     value: 18
     tolerance: 1.8
+  datasets:
+  - crcns-hc-12
   criterion: Method W, with the per-cell significance of sparsity-state-vs-position. Reproduced
     when the overall signed-rank test gives p < 0.001 with gaze sparser, the count is within
     tolerance, and the test on those cells is not significant at p < 0.05 (the absence part,
@@ -481,6 +518,8 @@ claims:
   - quantity: cells with significantly low state-space selectivity
     value: 4
     tolerance: 0.4
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Time in the maze center only; per 3.6 degree head-direction bin, firing
     rates in each of the three rotational moves, keeping bins with at least 400 ms in each of at
     least two move types; SSI = sum over bins of (max - min) over sum of (max + min), centered
@@ -518,6 +557,8 @@ claims:
   - quantity: cells with both main effects significant
     value: 15
     tolerance: 1.5
+  datasets:
+  - crcns-hc-12
   criterion: Per responsive cell, firing rate per lap in each of four equal segments of each of
     the four entry paths facing a landmark, RD1 16 to 12 m, RD2 12 to 8 m, RD3 8 to 4 m, RD4 4
     to 0 m from the center (Methods, ANOVA for landmark identity and relative distance); a 4 x 4
@@ -548,6 +589,8 @@ claims:
   - quantity: cells with a significant one-way landmark effect at the center
     value: 12
     tolerance: 1.2
+  datasets:
+  - crcns-hc-12
   criterion: Per responsive cell, firing rate in the maze center while facing each of the four
     landmarks (head direction toward the landmark, one value per visit); one-way ANOVA at alpha
     0.05, binomial chance rate 0.05 (reading (a) of Method W, which gives p = 0.01 for 12 of
@@ -587,6 +630,11 @@ claims:
   - quantity: viewpoint-dependent cells
     value: 12
     tolerance: 1.2
+  - quantity: path-invariant cells
+    value: 1
+    tolerance: 1
+  datasets:
+  - crcns-hc-12
   criterion: For the northwestern and northeastern landmarks, the five trajectories on which the
     landmark enters the field of view; rate from -400 to 500 ms around entry at 10 ms
     resolution. A cell enters when it has significant point-of-gaze IC and the evoked rate
@@ -601,8 +649,9 @@ claims:
     500 ms or (b) its mean. Binomial chance rate 0.05 (Method W, reading (a)); the paper's
     p = 0.37 for one cell equals the lower tail P(X <= 1) at 0.05 and is reported, not judged.
     Reproduced when, under one
-    reading, the counts of 42 and 12 are within tolerance, 12 passes the binomial test at
-    p < 0.001, and the Kolmogorov-Smirnov test gives p < 0.001.
+    reading, the counts of 42 and 12 are within tolerance, the path-invariant count is 0 to 2
+    (a count of 1 cannot carry a 10% tolerance), 12 passes the binomial test at p < 0.001, and
+    the Kolmogorov-Smirnov test gives p < 0.001.
   depends_on:
   - responsive-cells
 - id: gaze-aligned-dynamics
@@ -611,6 +660,8 @@ claims:
   source: Results, Visual exploration and hippocampal activity dynamics, paragraph 1; Fig 7E
   quote: Gaze-aligned activity significantly rose until the saccade to the landmark and peaked
     shortly after.
+  datasets:
+  - crcns-hc-12
   criterion: Per cell, the best-driving landmark (maximal activity; Methods, Latencies); foveation
     is gaze within plus or minus 10 degrees of the landmark in azimuth and elevation for more
     than 100 ms (Methods, Landmark foveation). Population mean rate aligned on the first
@@ -632,6 +683,8 @@ claims:
     when aligned on gaze and right skewed when aligned on landmark onset ( Fig 7F , see Materials
     and Methods ). For a small but nonnegligible proportion of cells, the response latency even
     preceded the landmark's entry in the FOV
+  datasets:
+  - crcns-hc-12
   criterion: Per cell, latency to its best landmark as the first time after alignment when the rate
     exceeds the mean of the -500 to -150 ms baseline plus 2.5 SD for 100 consecutive ms
     (Methods, Latencies), aligned on onset and on foveation. How a latency before entry is found
@@ -649,6 +702,8 @@ claims:
     legend
   quote: Overall, cells showed a modulation of their activity by landmark eccentricity ( Fig 7G ,
     blue line). This modulation was increased by the recent appearance of the landmark (red line).
+  datasets:
+  - crcns-hc-12
   criterion: Population mean rate against eccentricity of the best-driving landmark in four sets
     of epochs, (1) 500 ms after appearance, (2) 500 ms before appearance with eccentricity as
     in a 180 x 180 degree field, (3) after the landmark has been visible 1,000 ms or more, (4)
@@ -674,6 +729,8 @@ claims:
     p_relation: "<"
   - about: path selectivity, foveated against peripheral
     p: 0.036
+  datasets:
+  - crcns-hc-12
   criterion: Per cell, (a) rate in the 500 ms after landmark appearance, leaving out appearances
     with a saccade to the landmark in that period, and (b) rate in the 500 ms after foveation
     (Results, paragraph 2). Landmark selectivity index with N = 4 (Methods, Landmark
@@ -697,6 +754,8 @@ claims:
   - quantity: mean number of position fields per spatially selective cell
     value: 2.7
     tolerance: 0.27
+  datasets:
+  - crcns-hc-12
   criterion: The paper does not define a field in its main text or legends (S5B counts "peaks" of
     cells "displaying a spatial selectivity"); the definition is presumably in S1 Appendix, which
     was not read. Cells are read as those with significant position IC (Method W). No field
@@ -713,6 +772,8 @@ claims:
   - quantity: fraction of cells with spatial selectivity
     value: 0.5
     tolerance: 0.05
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Which fraction is meant is open; readings (a) cells with significant
     position IC among the 189; (b) responsive cells among the 189 (59%, responsive-cells);
     (c) cells with significant position IC among the 111 responsive cells (Fig 3A).
@@ -729,6 +790,8 @@ claims:
   - quantity: maximal excess of mean normalized activity near landmarks over other areas
     value: 0.4
     tolerance: 0.04
+  datasets:
+  - crcns-hc-12
   criterion: Method W. Cells with point-of-gaze IC p < 0.001; each map normalized to its peak and
     averaged (S6 legend). The area around a landmark is not delimited; readings (a) bins within
     plus or minus 10 degrees of the landmark's direction (the foveation zone of the Methods);
@@ -744,6 +807,8 @@ claims:
     paragraph 1; S7 Fig
   quote: This effect cannot be attributed to a modeling bias related to the higher number of
     dimensions in the state space ( S1 Appendix A5 and S7 Fig ).
+  datasets:
+  - crcns-hc-12
   criterion: The control is described in S1 Appendix A5, which was not read; the S7 legend shows
     only that spikes were simulated on the animal's trajectory with a box-shaped place field.
     The method is not available from the text read; the author takes the claim as
@@ -766,3 +831,18 @@ checks:
   - Open. Reference 60 (the learning curve method of learning-trials, learning-to-90 and probe-faster-criterion) is not named in the stored text, as the reference list is absent.
   - Open. landmark-identity-distance. The paper gives p < 0.001 for 14 of 111 interaction cells, but at a chance rate of 0.05 the binomial tail is 0.0013; the chance rate for these counts remains unsettled. The criterion does not judge this test.
   - Open. No claim covers the gaze density result that gaze was attracted to the rewarded path and the landmarks (Results, Animals use direction, paragraph 2; Fig 1H); its method is in S1 Appendix A1, not read. A minor finding, left without a claim.
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Top level. Removed `dataset` (hc-21). The paper is now tested on hc-12 and hc-21 (papers/datasets/wirth-2017.yaml), and the schema says a paper's own claims file leaves `dataset` out; with it, the file was keyed to hc-21 alone and an attempt on both datasets would not find it (tools/entry.py, lookup).
+  - Every claim. Added `datasets` with crcns-hc-12. The paper's Supporting data names one deposit, doi 10.6080/K0R49NQV, which the descriptors give to hc-12 (189 cells, the analysed count, new maze sessions only); hc-21 is a later deposit (doi 10.6080/K0GX48R9) with a familiar maze the paper does not describe.
+  - Header. Rewrote the dataset paragraph on that basis (it had said only that the legend doi and the hc-21 doi differ), and noted that the hc-12 descriptor lists the Matlab scripts the paper mentions.
+  - state-space-most-responsive. Added reading (c), a goodness-of-fit test of the four counts against equal counts, which the paper's words ("the proportion of cells responsive to each space was significantly unequal") allow as well as a contingency table; pairwise tests named for each reading.
+  - path-selectivity. Added the reported count of one path-invariant cell to `expected` (the statement rests on it), with the 0 to 2 band used for small counts in direction-tuning-not-maintained, and to the criterion.
+  - direction-center-vs-periphery. The Wilcoxon signed-rank test is not named by the paper; the criterion now marks it as a deviation.
+  - Checked, no change. The binomial readings in the header recompute as stated (12 of 111 at 0.05 gives 0.0097, 4 of 111 gives 0.81, 3 of 56 at 0.025 gives 0.16, 1 of 42 lower tail at 0.05 gives 0.37).
+  - Open. Whether any hc-21 "newallo" sessions are the paper's sessions is not settled by the paper; no claim rests on hc-21, and testing on it is a variant.
+  - Open. S1 Appendix (A1 to A5) and the S2 Appendix are not under paper/, and reference 60 is not named; the open items of the previous check stand (gaze-anticipates-action, gaze-anticipates-landmarks, fields-per-cell, dimensionality-control, the learning-curve bounds, the chance rate of the landmark-identity-distance binomial tests).
+  - Open. The CRCNS scripts the paper points to were not read (they are files of the dataset); they may settle the map binning of Method W.
