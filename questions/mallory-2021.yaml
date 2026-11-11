@@ -29,3 +29,17 @@ questions:
     the parts. The header now names the three figshare deposits. Statements, quotes and expected
     values are otherwise unchanged.
   answered: 2026-11-10
+- claim: fig7c-head-fixed-model-fit
+  asked: 2026-11-11
+  question: The criterion reads the paper's "bits per spike" as the quantity compute_llh.m returns.
+    That function takes the per-spike log-likelihood increase in nats and multiplies it by log(2)
+    (line 8, log_llh = log(2)*log_llh), which is not a conversion to bits (bits would divide by
+    log 2). Should the criterion compare the paper's 0.05 with the code's quantity, as now, or with
+    the log-likelihood increase in bits per spike?
+  passage: Figure 7c legend and Results ("median 0.05 bits per spike"); Methods, LN model framework
+    ("Model performance for each cell was computed as the increase in log-likelihood of the model
+    compared to the log-likelihood of a mean firing rate model"); compute_llh.m at commit 34b470f of
+    github.com/khardcastle/spline-lnp-model.
+  why: In the code's quantity the median is 0.0513 [0.0215 to 0.1128], within tolerance and with the
+    paper's interquartile range; in bits per spike it is 0.107, outside the tolerance of 0.005, so the
+    reading decides the outcome. The verifier of round 1 reported this as a misreading of the paper.

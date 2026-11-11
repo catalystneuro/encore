@@ -144,6 +144,7 @@ def figshare_session(number: int) -> dict:
            "Eh": get("horizontal_eye_position"), "Ev": get("vertical_eye_position"),
            "B": get("body_position"), "Bs": get("body_speed")}
     out["n_frames"] = len(out["time"])
+    out["fields"] = sorted(g.keys())
     return out
 
 
@@ -327,11 +328,13 @@ def newton(X, y, theta0, tol=DECREMENT_TOL, max_iter=50, X32=None):
     return theta
 
 
-def fit_kfold(X, y, bounds, theta0, tol=DECREMENT_TOL):
+def fit_kfold(X, y, bounds, theta0, tol=DECREMENT_TOL, ys=None):
     """10-fold fits of one model, the rows ordered by fold so that fold k is X[a:b] for
     (a, b) = bounds[k]. Each fold's fit starts from the full-session solution with the training
     Hessian there, and is iterated until the Newton decrement is below `tol`. Returns test llh per
-    fold, the mean fold parameters, and the full-session parameters."""
+    fold, the mean fold parameters, and the full-session parameters. With `ys` (the smoothed spike
+    train in the same row order) it also returns the test fold correlations of `ys` with the model
+    rate (Methods, "Computing contribution to model performance"), as a fourth value."""
     X32 = X.astype(np.float32)
     theta_full = newton(X, y, theta0, tol=tol, X32=X32)
     r = np.exp(X @ theta_full)
@@ -339,6 +342,7 @@ def fit_kfold(X, y, bounds, theta0, tol=DECREMENT_TOL):
     resid = r - y
     Hdata = _hess(X32, r)
     test_fit = np.full(len(bounds), np.nan)
+    test_corr = np.full(len(bounds), np.nan)
     params = np.zeros((len(bounds), p))
     for k, (a, b) in enumerate(bounds):
         Xk, yk = X[a:b], y[a:b]
@@ -363,7 +367,32 @@ def fit_kfold(X, y, bounds, theta0, tol=DECREMENT_TOL):
             theta = newton(X[tr], y[tr], theta, tol=tol, X32=X32[tr])
         params[k] = theta
         test_fit[k] = _llh(np.exp(Xk @ theta), yk)
+        if ys is not None:
+            test_corr[k] = _corr(ys[a:b], np.exp(Xk @ theta))
+    if ys is not None:
+        return test_fit, params.mean(0), theta_full, test_corr
     return test_fit, params.mean(0), theta_full
+
+
+def _corr(a, b):
+    if np.std(a) == 0 or np.std(b) == 0:
+        return np.nan
+    return float(np.corrcoef(a, b)[0, 1])
+
+
+def gausswin(n=20, alpha=2.5):
+    """MATLAB gausswin(n): exp(-(alpha k / ((n - 1) / 2))^2 / 2), k = -(n - 1)/2 to (n - 1)/2,
+    normalized to sum 1 (the scale does not change a correlation)."""
+    k = np.arange(n) - (n - 1) / 2
+    w = np.exp(-0.5 * (alpha * k / ((n - 1) / 2)) ** 2)
+    return w / w.sum()
+
+
+def smooth_spikes(y_time, n=20):
+    """The spike train smoothed with gausswin(20), in time order (Methods, "Computing contribution to
+    model performance": "smoothed with a Gaussian filter using the MATLAB gausswin function, using a
+    20-bin window")."""
+    return np.convolve(y_time, gausswin(n), "same")
 
 
 def signrank_right(a, b):
@@ -389,14 +418,15 @@ def _layout(blocks, variables):
     return out
 
 
-def forward_search(blocks, y, bounds, variables=None):
+def forward_search(blocks, y, bounds, variables=None, ys=None):
     """forward_search_kfold.m. Returns the selected variables (sorted as in `variables`, by default
     VARS), every model's fold fits, the selected model's folds and parameters, and the final P
-    against 0."""
+    against 0. With `ys` (the smoothed spike train, see fit_kfold) every model's fold correlations
+    too (`corrs`), which do not enter the search."""
     names = variables or VARS
     selected = []
     base = np.full(NFOLDS, -5.0)
-    fits = {}
+    fits, corrs = {}, {}
     best_theta = {(): np.array([math.log(max(y.mean(), 1e-6))])}
     sel_fits, sel_param, sel_full = None, None, None
     pvals = []
@@ -414,9 +444,12 @@ def forward_search(blocks, y, bounds, variables=None):
             th0[0] = prev[0]
             for w in selected:
                 th0[lay[w]] = prev[lay_prev[w]]
-            tf, pm, pf = fit_kfold(X, y, bounds, th0)
+            res = fit_kfold(X, y, bounds, th0, ys=ys)
+            tf, pm, pf = res[:3]
             results[v] = (tf, pm, pf, vs)
             fits[tuple(vs)] = tf
+            if ys is not None:
+                corrs[tuple(vs)] = res[3]
         top = max(cand, key=lambda v: np.nanmean(results[v][0]) if np.isfinite(results[v][0]).any() else -np.inf)
         tf, pm, pf, vs = results[top]
         last_top = tf
@@ -434,7 +467,7 @@ def forward_search(blocks, y, bounds, variables=None):
     # forward_search_kfold.m itself tests the last model it tried (`topModel`), which is the rejected
     # larger model when the search stopped on a failed addition; a variant
     final_p_code = signrank_right(last_top, np.zeros(NFOLDS))
-    return {"selected": selected, "encoded": encoded, "final_p": final_p, "fits": fits,
+    return {"selected": selected, "encoded": encoded, "final_p": final_p, "fits": fits, "corrs": corrs,
             "encoded_code": selected if final_p_code < ALPHA else [],
             "sel_fits": sel_fits, "sel_param": sel_param, "sel_full": sel_full, "pvals": pvals}
 
@@ -526,30 +559,40 @@ def analyse_cell(prep, y, with_extras=True):
     the model-derived tuning curves and the half-session refits for stability."""
     blocks = prep["blocks"]
     bounds = prep["bounds"]
-    fs = forward_search(blocks, y, bounds)
+    inv = np.argsort(prep["order"])
+    # the smoothed spike train for the correlation measure of performance (supp9), in fold order
+    ys = smooth_spikes(y[inv])[prep["order"]] if with_extras else None
+    fs = forward_search(blocks, y, bounds, ys=ys)
     out = {"selected": fs["selected"], "encoded": fs["encoded"], "final_p": fs["final_p"],
            "encoded_code": fs["encoded_code"],
            "sel_fits": fs["sel_fits"], "n_spikes": int(y.sum())}
     enc = fs["encoded"]
+    if with_extras and y.sum() > 0:
+        # Supp. Fig. 4, symmetric velocity test for every unit: correlations below and above 0 and
+        # their 500 shuffles (Methods, "Comparison between LN and shuffling-based methods")
+        out["side"] = {v: side_shuffle_full(prep["vals"][v][inv], y[inv], prep["seed"]) for v in ("Ehd", "Evd")}
     if not enc or not with_extras:
         return out
     lay = _layout(blocks, enc)
     full_perf = float(np.nanmean(fs["sel_fits"]))
     out["perf"] = full_perf
     # contribution: reduced models (selected minus one variable), 10 folds, mean performance
-    contrib = {}
+    contrib, contrib_corr = {}, {}
+    sel_corr = fs["corrs"].get(tuple(enc))
     if len(enc) > 1:
         for v in enc:
             red = [w for w in enc if w != v]
             key = tuple(red)
             if key in fs["fits"]:
-                tf = fs["fits"][key]
+                tf, tc = fs["fits"][key], fs["corrs"].get(key)
             else:
                 X = design(blocks, red)
                 th0 = np.concatenate([[fs["sel_full"][0]]] + [fs["sel_full"][lay[w]] for w in red])
-                tf, _, _ = fit_kfold(X, y, bounds, th0)
+                tf, _, _, tc = fit_kfold(X, y, bounds, th0, ys=ys)
             contrib[v] = (fs["sel_fits"], tf)
+            contrib_corr[v] = (sel_corr, tc)
     out["contrib"] = contrib
+    out["contrib_corr"] = contrib_corr
     # tuning curves over the inner range, M = 200 bins
     curves = {}
     for v in enc:
@@ -583,17 +626,30 @@ def analyse_cell(prep, y, with_extras=True):
     # open detail (6), reading b: correlation of firing with velocity below and above 0 against 500
     # circular shifts of the spike train by more than 20 s (Methods, "Comparison between LN and
     # shuffling-based methods")
-    inv = np.argsort(prep["order"])
     for v in ("Ehd", "Evd"):
         if v in enc:
-            out.setdefault("shuffle", {})[v] = side_shuffle(prep["vals"][v][inv], y[inv], prep["seed"])
+            out.setdefault("shuffle", {})[v] = side_percentiles(out["side"][v])
     return out
+
+
+def side_percentiles(full):
+    """(r_neg, lo_neg, hi_neg, r_pos, lo_pos, hi_pos), the 5th and 95th percentiles of the shuffles,
+    from the output of side_shuffle_full."""
+    r_neg, r_pos, sh_neg, sh_pos = full
+    return (r_neg, float(np.nanpercentile(sh_neg, 5)), float(np.nanpercentile(sh_neg, 95)),
+            r_pos, float(np.nanpercentile(sh_pos, 5)), float(np.nanpercentile(sh_pos, 95)))
 
 
 def side_shuffle(x, y, seed, n_shift=500, min_shift=int(20 / DT)):
     """Pearson correlation of spike count with the variable over bins below 0 and above 0, and the
     5th and 95th percentiles of the same correlations under 500 circular shifts of the spike train
     by more than 20 s. Returns (r_neg, lo_neg, hi_neg, r_pos, lo_pos, hi_pos)."""
+    return side_percentiles(side_shuffle_full(x, y, seed, n_shift, min_shift))
+
+
+def side_shuffle_full(x, y, seed, n_shift=500, min_shift=int(20 / DT)):
+    """As side_shuffle, returning (r_neg, r_pos, shuffled r_neg, shuffled r_pos), the shuffled values
+    as arrays of 500, for the pooled test."""
     rng = np.random.default_rng(seed)
     n = len(y)
     shifts = rng.integers(min_shift, n - min_shift, n_shift)
@@ -620,8 +676,8 @@ def side_shuffle(x, y, seed, n_shift=500, min_shift=int(20 / DT)):
         cov = sxy / k - (sx / k) * (sy / k)
         with np.errstate(invalid="ignore", divide="ignore"):
             r = cov / np.sqrt(vx * vy)
-        out += [float(r[0]), float(np.nanpercentile(r[shifts], 5)), float(np.nanpercentile(r[shifts], 95))]
-    return tuple(out)
+        out.append((float(r[0]), r[shifts]))
+    return out[0][0], out[1][0], out[0][1], out[1][1]
 
 
 _WORK = {}
@@ -670,12 +726,14 @@ def curve_features(result: dict, var: str, lims: dict, values: np.ndarray) -> di
     out.update({"slope": slope, "slope_neg": sl_neg, "slope_pos": sl_pos, "x_max": float(x[np.argmax(c)]) if len(x) else np.nan})
     # preference, reading (a): sign of the slope for linear curves, side of the maximum otherwise
     out["pref_a"] = (1 if slope > 0 else -1) if order == 1 else (1 if out["x_max"] > 0 else -1)
-    # reading (b): the side with the steeper rise away from 0 of the lines fitted either side of 0
-    # (the rise towards + is the slope above 0, towards - minus the slope below 0)
+    # reading (b), as the claims file words it: the side with the larger absolute slope of the lines
+    # fitted either side of 0. Variant (r), the round-1 reading: the side with the steeper rise away
+    # from 0 (the rise towards + is the slope above 0, towards - minus the slope below 0)
     if np.isfinite(sl_neg) and np.isfinite(sl_pos):
-        out["pref_b"] = 1 if sl_pos >= -sl_neg else -1
+        out["pref_b"] = 1 if abs(sl_pos) >= abs(sl_neg) else -1
+        out["pref_r"] = 1 if sl_pos >= -sl_neg else -1
     else:
-        out["pref_b"] = out["pref_a"]
+        out["pref_b"] = out["pref_r"] = out["pref_a"]
     if var in ("Ehd", "Evd"):
         # (a): symmetric when the slopes either side of 0 have opposite signs (V or inverted V)
         sym_a = bool(np.isfinite(sl_neg) and np.isfinite(sl_pos) and np.sign(sl_neg) != np.sign(sl_pos))

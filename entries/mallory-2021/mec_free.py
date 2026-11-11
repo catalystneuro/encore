@@ -299,9 +299,13 @@ def curve_features(result, var, lims, values):
     sl_neg, sl_pos = L.side_slopes(x, c) if len(x) > 6 else (np.nan, np.nan)
     x_max = float(x[np.argmax(c)]) if len(x) else np.nan
     pref_a = (1 if slope > 0 else -1) if order == 1 else (1 if x_max > 0 else -1)
-    pref_b = (1 if sl_pos >= -sl_neg else -1) if np.isfinite(sl_neg) and np.isfinite(sl_pos) else pref_a
+    both = np.isfinite(sl_neg) and np.isfinite(sl_pos)
+    pref_b = (1 if abs(sl_pos) >= abs(sl_neg) else -1) if both else pref_a   # the larger absolute slope
+    pref_r = (1 if sl_pos >= -sl_neg else -1) if both else pref_a            # variant: steeper rise away from 0
     return {"order": order, "explored_a": ex_a, "explored_b": ex_b, "slope": slope, "x_max": x_max,
-            "pref_a": pref_a, "pref_b": pref_b, "stability": result.get("stability", {}).get(var, np.nan)}
+            "slope_neg": sl_neg, "slope_pos": sl_pos, "x": x, "curve": c,
+            "pref_a": pref_a, "pref_b": pref_b, "pref_r": pref_r,
+            "stability": result.get("stability", {}).get(var, np.nan)}
 
 
 _WORK = {}
@@ -325,6 +329,28 @@ def analyse_session(prep, Y, processes=4, with_extras=True):
             res = dict(pool.imap_unordered(_worker, range(Y.shape[0])))
     _WORK.clear()
     return [res[i] for i in range(Y.shape[0])]
+
+
+def _worker_all(task):
+    sid, i = task
+    prep, Y = _WORK["sessions"][sid]
+    return task, analyse_cell(prep, Y[i, prep["keep"]][prep["order"]].astype(float), _WORK["extras"])
+
+
+def analyse_all(sessions: dict, processes=4, with_extras=True):
+    """Every cell of every session, {session id: (prep, Y)}, in one pool of forked workers, the
+    largest sessions first so that the workers stay busy. Returns {session id: [result per cell]}."""
+    import multiprocessing as mp
+    from threadpoolctl import threadpool_limits
+    _WORK["sessions"], _WORK["extras"] = sessions, with_extras
+    tasks = sorted(((sid, i) for sid, (p, Y) in sessions.items() for i in range(Y.shape[0])),
+                   key=lambda t: -sessions[t[0]][0]["n_keep"])
+    ctx = mp.get_context("fork")
+    with threadpool_limits(1):
+        with ctx.Pool(processes, initializer=L._init_worker) as pool:
+            res = dict(pool.imap_unordered(_worker_all, tasks))
+    _WORK.clear()
+    return {sid: [res[(sid, i)] for i in range(Y.shape[0])] for sid, (p, Y) in sessions.items()}
 
 
 # ----------------------------------------------------------------------------------------- Dataset 2
