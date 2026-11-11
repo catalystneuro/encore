@@ -693,7 +693,21 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     assert attempted and all((site / p["page"] / "index.html").is_file() for p in attempted)
     page = (site / "papers" / "tingley-2021" / "index.html").read_text()
     assert "A metabolic function of the hippocampal sharp wave-ripple" in page and "tingley-2021-01" in page
-    assert 'href="../../datasets/dandi/000233/#claim-' in page
+    # The paper's page stands on its own: its claims, with their outcomes, tests and notes, are on the page, and no
+    # claim sends the reader to a dataset's page. So are the findings, notebooks, verification and provenance.
+    assert 'id="claim-' in page and "/#claim-" not in page
+    for panel in ("claims", "findings", "notebooks", "verification", "differences", "provenance"):
+        assert f'<section class="tabpanel" id="{panel}">' in page
+    assert '<a href="../../papers/">Papers</a>' in page and 'href="../../datasets/dandi/000233/"' in page
+    # Every attempted paper's page has each claim of its latest attempts, once.
+    import build_site
+    for q in build_site.papers_of(_):
+        if q["attempts"]:
+            text = (site / "papers" / q["key"] / "index.html").read_text()
+            for a in q["attempts"]:
+                assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
+    # And a dataset's page names the paper's page.
+    assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
     # A paper on several datasets lists them all; the Results menu leads to Papers and Datasets.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
@@ -716,6 +730,16 @@ def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
     # Each has its row in the pipeline and in the datasets list, as the tests of both expect of an attempted dataset.
     assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
     assert data["queue_counts"]["with_a_paper"] == len(data["targets"])
+
+
+def test_the_overview_leads_with_papers():
+    """The papers are the primary index: the first tile, and the measure the charts show first."""
+    panel = site.progress_panel(site.collect())
+    assert list(site.PROGRESS_METRICS)[0] == site.PROGRESS_DEFAULT == "papers"
+    first = panel.index('data-metric="papers"')
+    assert first < panel.index('data-metric="datasets"')
+    assert 'data-metric="papers" aria-pressed="true"' in panel and 'data-metric="datasets" aria-pressed="false"' in panel
+    assert ">Papers attempted over time</h2>" in panel and ">Papers attempted, new each day</h2>" in panel
 
 
 def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives():
