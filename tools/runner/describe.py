@@ -434,11 +434,15 @@ def main() -> int:
         lanes = dict(zip(("full", "claims"), map(int, rest or (3, 1))))
         runs, open_ = json_lists(sys.stdin.read()), branches()
         _, listed = main_papers()
-        going = running(runs, open_, lanes)
-        going = {f: v for name, v in going.items() for f in as_folders([name], listed)}
-        print(json.dumps({"full": as_folders(queue(), listed), "claims": as_folders(queue(claims=True), listed),
+        named = running(runs, open_, lanes)
+        going = {f: v for name, v in named.items() for f in as_folders([name], listed)}
+        full, claims = queue(), queue(claims=True)
+        # By dataset, for the dataset pages; and as the runner names them (a paper's key, or the folder of a dataset
+        # not matched yet), for the Pipeline page, which goes by paper.
+        print(json.dumps({"full": as_folders(full, listed), "claims": as_folders(claims, listed),
                           "branches": as_folders(sorted(open_), listed),
-                          "lanes": lanes, "hours": chain_hours(runs), "running": going}))
+                          "lanes": lanes, "hours": chain_hours(runs), "running": going,
+                          "papers": {"full": full, "claims": claims, "branches": sorted(open_), "running": named}}))
     elif command == "published":
         import datasets
         # A paper is published when each of its datasets is; a dataset not yet matched, on its own.

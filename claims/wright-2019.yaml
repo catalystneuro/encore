@@ -1,0 +1,1052 @@
+# Claims for Wright & McDannald (2019), eLife 8:e45013, "Ventrolateral periaqueductal gray neurons
+# prioritize threat probability over fear output", on CRCNS data set pag-1.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol as stated in docs/protocol.md (Reader, version pilot-14).
+#
+# Text read: the version of record, PMC6435320 (open access), from the Europe PMC full-text JATS
+# XML as supplied under paper/ (10.7554-elife.45013.txt): main text, Materials and methods, the
+# legends of Figures 1 to 6 and of all figure supplements (Figure 1, supplements 1 to 6; Figure 2,
+# supplements 1 and 2; Figure 5, supplements 1 and 2), and the example regression input table of
+# the Methods. The paper has no other supplement. No PDF was supplied, so the values printed only
+# inside figures (the R2 and sign-test p-values of Figure 4, the F values of Figure 5, supplement
+# 1, the tuning curves of Figure 5E and 5J) could not be read; the claims on them are judged on
+# the tests the legends name.
+#
+# Code. The paper links one source of code, the lab website ("Med Associates programs used for
+# behavior and MATLAB programs used for behavioral analyses are made freely available at our lab
+# website, http://mcdannaldlab.org/resources"). On 2026-11-10 that address returned 404, and the
+# only Internet Archive capture (2020-10-25) of the page holds no files or links. No code was
+# read. The data set's description says it includes sample MATLAB scripts (a cube-building script,
+# population plots and a sample regression); these are files of the data set and were not read
+# here. Every method below comes from the paper's text.
+#
+# Data the paper used. Six adult male Long Evans rats (of ten implanted; three yielded no units
+# and one had a misplaced electrode), each with a drivable 16-wire bundle aimed at caudal vlPAG
+# (bregma -7.62 to -7.98). 88 recording sessions of fear discrimination, each of 32 trials with a
+# mean ITI of 3.5 min, in randomized order: six danger trials (shock p = 1.00), six uncertainty
+# shock and ten uncertainty omission trials (p = 0.375), ten safety trials (p = 0.00). Cues are
+# 10 s auditory motifs (click, phaser, trumpet, counterbalanced across rats); the foot shock (0.5
+# mA, 0.5 s) starts 2 s after cue offset on danger and uncertainty shock trials. Rats nose poke for
+# food on a VI-60 schedule throughout. 245 single units (Plexon, sorted offline), with spike times,
+# mean waveforms, and the timestamps of cues, shocks and nose pokes. The measured variables are
+# spike times, waveform half duration and amplitude ratio, baseline firing rate, and nose poke
+# rates, from which suppression ratios are computed. The data set, by its description, holds the
+# 245 units of the 88 sessions from these six rats, with per-unit firing, nose poke rates and
+# suppression ratios for the 32 trials, so it is meant to hold every experiment of the paper.
+#
+# Method details fixed by the paper (Materials and methods unless stated).
+# - Suppression ratio = (baseline poke rate - cue poke rate) / (baseline poke rate + cue poke
+#   rate), for the whole 10 s cue (total fear) or one 1 s interval (interval fear), per trial (the
+#   Methods regression table gives one total and one interval ratio per trial).
+# - Uncertainty shock and omission trials are collapsed for all cue-period analyses and split for
+#   the post-cue period ("Population and single-unit firing analyses").
+# - Cue-responsive screen: paired two-tailed t-test across a cue's trials of raw firing rate
+#   (spikes/s) in the 2 s before cue onset against the first 1 s cue interval, for each of the
+#   three cues, p < 0.017; an increase makes an Onset neuron. The remaining neurons are screened
+#   the same way with the last 1 s interval; those in the LFR cluster are the Ramping neurons.
+# - 100 ms firing for population ANOVAs: per neuron and trial type, mean rate in 100 ms bins from
+#   10 s before cue onset to 12 s after cue offset (320 bins), minus the trial type's mean 2 s
+#   pre-cue rate, then Z-scored across all trial types and bins of the neuron.
+# - Interval firing for t-tests, single-unit biases, pairs and regressions: per neuron, the
+#   differential firing in the interval of interest on each of the 32 trials, Z-scored across the
+#   32 trials, separately for each interval (1 s in the cue, 500 ms after it).
+# - Population ANOVAs are repeated measures over neurons (or sessions); the reported degrees of
+#   freedom fix the design, for example F(218, 6104) for cue (3) x bin (110 bins of 100 ms, 1 s
+#   before onset to the end of the 10 s cue) over 29 neurons, and F(132, 1716) for trial type (4)
+#   x bin (45 bins, the 5 s after cue offset without the five 100 ms bins of the shock) over 14.
+#   No sphericity correction is named; the uncorrected tests are the reading the integer degrees
+#   of freedom imply.
+# - Single-unit regression: per neuron and interval, ordinary least squares (MATLAB regress, with
+#   a constant) of interval Z firing over the 32 trials on interval fear, total fear and
+#   probability (1.00, 0.375, 0.00); after the cue, 500 ms intervals and no total fear regressor.
+#   Betas are compared across neurons by ANOVA (regressor x interval), paired two-tailed t-tests,
+#   single-sample t-tests against zero at p < 0.005 (Bonferroni for 10 tests, Figure 5D legend),
+#   sign tests and Pearson correlations.
+#
+# Details the paper leaves open, with the readings each criterion names.
+# 1. The nose poke baseline window of the suppression ratio is not stated. Readings (a) the 2 s
+#    before cue onset, the baseline the paper uses for firing; (b) the 10 s before cue onset, the
+#    length of the cue.
+# 2. A ratio with no pokes in baseline or cue (0/0). Readings (a) set to 0, as the 0.00 entries
+#    of the Methods regression table allow; (b) left out of means.
+# 3. A session's suppression ratio for a cue (Figure 1C, 1D, n = 88). Readings (a) the mean of the
+#    per-trial ratios; (b) the ratio of the session's mean baseline and cue rates.
+# 4. The baseline of the per-trial interval differential firing. Readings (a) the trial's own 2 s
+#    before cue onset; (b) the trial type's mean 2 s baseline, as for the 100 ms bins.
+# 5. The k-means features. The baseline firing rate is not defined (readings (a) the mean rate in
+#    the 2 s pre-cue baselines of all 32 trials; (b) the mean rate over the session); nor is
+#    feature scaling (readings (a) raw values; (b) each feature Z-scored). Initialization is a
+#    standard choice (MATLAB kmeans defaults, several replicates, fixed seed).
+# 6. Sign tests are two-sided unless the reading says otherwise; the paper does not say.
+# 7. Others are named in the claims they bear on (shuffles, sliding windows, nose poke cessation).
+#
+# Inconsistencies within the paper, noted for the author. The danger vs uncertainty first-interval
+# test of the Onset population is p = 9.70x10-5 in the Results and 9.70x10-4 in the Figure 2B
+# legend (t(28) = 4.54 gives about 1e-4). The Ramping first-interval uncertainty vs safety test is
+# p = 0.81 in the Results and 0.82 in the legend. The mean danger suppression ratio is 0.80 in the
+# Results and 0.83 in the Figure 2, supplement 2 legend.
+#
+# All claims use the data set's own recordings (data: dataset, the default).
+schema_version: 2
+paper: doi:10.7554/elife.45013
+claims:
+- id: fig1c-total-suppression
+  statement: Over the 88 recording sessions, suppression ratio over the whole 10 s cue differs by
+    cue, high to danger (0.80), intermediate to uncertainty (0.53) and low to safety (0.03), and
+    each cue pair differs.
+  source: Results, first section, paragraph 2 (after Figure 1 supplements); Figure 1C
+  quote: Across all 88 recording sessions, these six rats showed excellent discriminative fear ...
+    high to danger, intermediate to uncertainty, and low to safety
+  statistics:
+  - about: cue effect, one-way ANOVA over danger, uncertainty and safety
+    test: ANOVA
+    statistic: F(2,174) = 592.00
+    p: 2.32e-78
+  - about: danger against uncertainty
+    test: paired t-test
+    statistic: t(87) = 12.36
+    p: 7.44e-21
+  - about: uncertainty against safety
+    test: paired t-test
+    statistic: t(87) = 20.85
+    p: 3.50e-35
+  expected:
+  - quantity: mean suppression ratio to danger, total cue
+    value: 0.80
+    tolerance: 0.08
+  - quantity: mean suppression ratio to uncertainty, total cue
+    value: 0.53
+    tolerance: 0.053
+  - quantity: mean suppression ratio to safety, total cue
+    value: 0.03
+    tolerance: 0.05
+  criterion: Per session (88, each counted once however many units it holds) and cue, the total
+    cue suppression ratio (Methods, Calculating suppression ratios), uncertainty trials collapsed.
+    Reproduced when, under one reading of details 1 to 3 of the opening comment, all three means
+    are within tolerance, the repeated-measures ANOVA of cue has p < 0.05 and both paired t-tests
+    have p < 0.05 in the reported direction; partially reproduced when the tests hold and a mean
+    is outside tolerance. The safety tolerance is 0.05, not 10%, because 10% of 0.03 is below the
+    printed precision; 0.05 is about the tolerance of the uncertainty value (0.053). The 0.83 for danger in the
+    Figure 2, supplement 2 legend is reported against the same values.
+- id: fig1c-nonlinear-scaling
+  statement: Suppression scales non-linearly with shock probability. Uncertainty's shock
+    probability is closer to safety, but its mean suppression ratio is closer to danger.
+  source: Results, first section, paragraph 2
+  quote: While the foot shock probability associated with uncertainty was closer to safety ... the
+    mean suppression ratio to uncertainty was closer to danger
+  depends_on:
+  - fig1c-total-suppression
+  criterion: From the session means of fig1c-total-suppression. Reproduced when the mean ratio to
+    uncertainty exceeds the midpoint of the danger and safety means, under the reading that
+    claim matched on (under every reading if it matched none).
+- id: fig1d-interval-suppression
+  statement: Suppression ratios in each 1 s cue interval discriminate every cue pair in every
+    interval, with a cue effect and a cue x interval interaction.
+  source: Results, first section, paragraph 3; Figure 1D
+  quote: When the total cue period was divided into 10, 1 s intervals, discrimination was observed
+    in each interval and its pattern showed subtle change over cue presentation
+  statistics:
+  - about: cue effect, cue x interval ANOVA
+    test: ANOVA
+    statistic: F(2,174) = 489.40
+    p: 3.59e-72
+  - about: cue x interval interaction
+    test: ANOVA
+    statistic: F(18,1566) = 6.21
+    p: 5.90e-15
+  - about: danger against uncertainty, each interval
+    test: paired t-test
+    statistic: all t(87) > 3.00
+    p: 0.005
+    p_relation: "<"
+    corrected: Bonferroni for 10 tests
+  - about: uncertainty against safety, each interval
+    test: paired t-test
+    statistic: all t(87) > 7.00
+    p: 0.005
+    p_relation: "<"
+    corrected: Bonferroni for 10 tests
+  criterion: Per session and cue, the suppression ratio of each of the ten 1 s cue intervals
+    (readings of details 1 to 3). Reproduced when the two-way repeated-measures ANOVA has a cue
+    effect and a cue x interval interaction at p < 0.05 and, in all ten intervals, danger exceeds
+    uncertainty and uncertainty exceeds safety by paired t-tests at p < 0.005; partially
+    reproduced when the ANOVA holds and the pairs differ at p < 0.005 in at least eight intervals
+    each.
+- id: fig1s1a-nose-poke-rates
+  statement: Baseline nose poke rates do not differ between trial types, and poking falls from
+    baseline to cue for danger and uncertainty but not for safety.
+  source: Figure 1, figure supplement 1A
+  quote: Baseline nose poke rates did not differ between trial types and rats showed significant
+    reductions in poking to danger and uncertainty, but not safety
+  statistics:
+  - about: baseline against cue, per trial type
+    test: paired samples t-test
+    p: 0.05
+    p_relation: "<"
+  criterion: Per session (88) and trial type (danger, uncertainty shock, uncertainty omission,
+    safety), the mean baseline and cue poke rates (baseline readings of detail 1). Baseline against
+    cue is the paired t-test the legend names, at p < 0.05; reproduced for that part when danger
+    and both uncertainty types fall significantly and safety does not. The paper names no test for
+    baseline across trial types; the reading is a one-way repeated-measures ANOVA over the four
+    types at p < 0.05, with paired t-tests of each pair as a variant. The claim is reproduced when
+    both parts hold.
+- id: fig1s1b-sr-poke-correlation
+  statement: Suppression ratio and cue nose poke rate are significantly correlated across
+    sessions, particularly for danger and uncertainty.
+  source: Figure 1, figure supplement 1B
+  quote: The two measures were significantly correlated, particularly for danger and uncertainty
+  criterion: For each cue, the correlation over the 88 sessions of the total cue suppression ratio
+    and the cue poke rate (readings of details 1 to 3). The legend names no test; Pearson is the
+    correlation the Methods use elsewhere and is the reading here. Open is the unit of the overall
+    statement "significantly correlated" (readings (a) one correlation per cue; (b) one correlation
+    over all 264 cue-session points, with the per-cue ones for "particularly"). Reproduced when,
+    under one reading, the correlation is negative with p < 0.05 for danger and for uncertainty
+    (and over all points under (b)); safety is reported.
+- id: fig1e-two-clusters
+  statement: K-means clustering (k = 2) of all 245 neurons on baseline firing rate, waveform half
+    duration and amplitude ratio splits them on baseline firing rate alone into a low firing rate
+    cluster of 199 and a high firing rate cluster of 46.
+  source: Results, vlPAG neurons are responsive at cue onset or ramp over cue presentation,
+    paragraph 1; Methods, K-means clustering; Figure 1E
+  quote: All neurons separated into one of two clusters purely on the basis of baseline firing rate
+    ... with majority of neurons falling into the low firing rate (LFR) cluster (n = 199) and the
+    remaining in the high firing rate (HFR) cluster (n = 46)
+  statistics:
+  - about: baseline firing rate by cluster
+    test: ANOVA
+    statistic: F(1,243) = 829
+    p: 0.001
+    p_relation: "<"
+  - about: amplitude ratio and duration by cluster
+    test: ANOVA
+    statistic: Fs < 0.2
+    p: 0.6
+    p_relation: ">"
+  expected:
+  - quantity: neurons recorded
+    value: 245
+    tolerance: 24.5
+  - quantity: LFR cluster size
+    value: 199
+    tolerance: 19.9
+  - quantity: HFR cluster size
+    value: 46
+    tolerance: 4.6
+  criterion: Features as the Methods define them (half the time from peak depolarization to the
+    after-hyperpolarization trough of the mean waveform; amplitude ratio (n - p) / (n + p));
+    baseline rate and scaling under the readings of detail 5. Reproduced when, under one reading,
+    both cluster sizes are within tolerance, the one-way ANOVA of baseline rate by cluster has p <
+    0.001 and those of amplitude ratio and duration have p > 0.05; the cluster with the lower
+    centroid rate is the LFR cluster.
+- id: onset-population
+  statement: 29 neurons (from 5 of 6 rats, about 12% of all) increase firing in the first 1 s of
+    danger, uncertainty or safety over the 2 s pre-cue baseline, and all of them are in the LFR
+    cluster. These are the Onset population.
+  source: Results, vlPAG neurons are responsive at cue onset or ramp over cue presentation,
+    paragraph 2; Methods, Identifying cue-responsive vlPAG neurons
+  quote: We identified 29 neurons (obtained from 5/6 rats, ~12% of all neurons recorded) with
+    phasic increases in firing to danger, uncertainty, or safety ... All 29 neurons belonged to the
+    LFR cluster
+  expected:
+  - quantity: Onset neurons
+    value: 29
+    tolerance: 2.9
+  - quantity: rats contributing Onset neurons
+    value: 5
+    tolerance: 0
+  depends_on:
+  - fig1e-two-clusters
+  criterion: The screen of the Methods (paired two-tailed t-test over a cue's trials, raw rate in
+    the 2 s before onset against the first 1 s, each cue, p < 0.017, cue rate higher), uncertainty
+    trials collapsed. Reproduced when the count is within tolerance, the neurons come from five
+    rats, and every one is in the LFR cluster of fig1e-two-clusters (under the reading that claim
+    matched on); partially reproduced when the count holds and one or two fall outside the LFR
+    cluster or the rat count differs.
+- id: ramping-population
+  statement: Of the remaining neurons, 17 increase firing over baseline in the last 1 s of at
+    least one cue; three are in the HFR cluster, and the other 14 (from 4 of 6 rats, about 6%)
+    are the Ramping population.
+  source: Results, vlPAG neurons are responsive at cue onset or ramp over cue presentation,
+    paragraph 2
+  quote: 17 neurons increased firing to at least one cue during the last 1 s cue interval (interval
+    > baseline, p<0.017). Three neurons belonged to the high firing cluster ... The remaining 14
+    neurons (obtained from 4/6 rats, ~6% of all neurons recorded) belonged to the LFR cluster
+  expected:
+  - quantity: late-responsive neurons
+    value: 17
+    tolerance: 1.7
+  - quantity: late-responsive neurons in the HFR cluster
+    value: 3
+    tolerance: 0.3
+  - quantity: Ramping neurons (LFR)
+    value: 14
+    tolerance: 1.4
+  - quantity: rats contributing Ramping neurons
+    value: 4
+    tolerance: 0
+  depends_on:
+  - fig1e-two-clusters
+  - onset-population
+  criterion: The same t-test with the last 1 s cue interval, on the neurons that are not Onset
+    neurons. Reproduced when the three counts are within tolerance and the Ramping neurons come
+    from four rats; partially reproduced when the late-responsive count holds and the split by
+    cluster or rats differs.
+- id: fig2a-onset-anova
+  statement: Onset population firing (100 ms bins, 1 s before to the end of the cue) shows main
+    effects of cue and bin and a cue x bin interaction.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 1;
+    Figure 2A
+  quote: revealed main effects of cue and bin (Fs > 9, ps<0.01, η p 2 > 0.20, op > 0.95) but most
+    critically, a cue x bin interaction (F 218,6104 = 1.94, p<0.01
+  statistics:
+  - about: main effects of cue and bin
+    test: ANOVA
+    statistic: Fs > 9
+    p: 0.01
+    p_relation: "<"
+  - about: cue x bin interaction
+    test: ANOVA
+    statistic: F(218,6104) = 1.94
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - onset-population
+  criterion: Z-scored 100 ms firing as in the Methods, 110 bins from 1 s before onset to cue
+    offset, three cues, repeated-measures ANOVA over the 29 Onset neurons. Reproduced when both
+    main effects and the interaction have p < 0.01.
+- id: fig2b-onset-first-interval
+  statement: In the first 1 s cue interval Onset neurons fire more to danger than to uncertainty;
+    firing to uncertainty is numerically but not significantly above safety, while an ANOVA over
+    the first 5 s of uncertainty and safety shows a cue x bin interaction.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 1;
+    Figure 2B, left
+  quote: Onset neurons showed significantly greater firing to danger compared to uncertainty in the
+    first 1 s cue interval (t 28 = 4.54, p=9.70×10 −5 ). While numerically greater firing to
+    uncertainty over safety failed to reach significance in the first 1 s interval (t 28 = 1.37,
+    p=0.18), ANOVA restricted to uncertainty and safety
+  statistics:
+  - about: danger against uncertainty, first interval
+    test: paired t-test, two-tailed
+    statistic: t(28) = 4.54
+    p: 9.70e-5
+  - about: uncertainty against safety, first interval
+    test: paired t-test, two-tailed
+    statistic: t(28) = 1.37
+    p: 0.18
+  - about: uncertainty and safety, cue x bin, 1 s before onset to 5 s into the cue
+    test: ANOVA
+    statistic: F(59,1652) = 1.50
+    p: 0.01
+  depends_on:
+  - onset-population
+  criterion: Per neuron, mean interval Z firing (Methods, Z-score normalization, second paragraph;
+    readings of detail 4) over each cue's trials in the first 1 s. Reproduced when danger exceeds
+    uncertainty by a paired two-tailed t-test at p < 0.05, uncertainty is above safety in mean
+    with p >= 0.05 (the paper's test, as written), and the repeated-measures ANOVA of the 100 ms
+    data for uncertainty and safety, 60 bins, has a cue x bin interaction at p < 0.05.
+- id: fig2b-onset-last-interval
+  statement: Differential firing of Onset neurons is absent in the last 1 s cue interval, for
+    danger against uncertainty and uncertainty against safety.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 1;
+    Figure 2B, right
+  quote: Differential firing was not observed to danger vs. uncertainty (t 28 = 1.69, p=0.10) or to
+    uncertainty vs. safety (t 28 = 0.60, p=0.55) in the last 1 s cue interval
+  statistics:
+  - about: danger against uncertainty, last interval
+    test: paired t-test, two-tailed
+    statistic: t(28) = 1.69
+    p: 0.10
+  - about: uncertainty against safety, last interval
+    test: paired t-test, two-tailed
+    statistic: t(28) = 0.60
+    p: 0.55
+  depends_on:
+  - onset-population
+  criterion: A claim of absence, judged on the paper's paired two-tailed t-tests at p < 0.05 on the
+    last 1 s interval Z firing. Reproduced when neither pair differs; the effect sizes are given
+    either way.
+- id: fig2c-ramping-anova
+  statement: Ramping population firing (100 ms bins over the cue) shows main effects of cue and
+    bin and a cue x bin interaction, with ramping greatest to danger, intermediate to uncertainty
+    and absent to safety.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 2;
+    Figure 2C
+  quote: Ramping activity was most apparent to danger, intermediate to uncertainty, and absent to
+    safety
+  statistics:
+  - about: main effects of cue and bin
+    test: ANOVA
+    statistic: Fs > 60
+    p: 0.01
+    p_relation: "<"
+  - about: cue x bin interaction
+    test: ANOVA
+    statistic: F(218,2834) = 4.33
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - ramping-population
+  criterion: As fig2a-onset-anova, over the 14 Ramping neurons. Reproduced when both main effects
+    and the interaction have p < 0.01 and the mean Z firing of the last 1 s of the cue orders
+    danger > uncertainty > safety.
+- id: fig2d-ramping-first-interval
+  statement: Ramping neurons show no differential firing in the first 1 s cue interval.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 2;
+    Figure 2D, left
+  quote: Ramping neurons showed no significant differences in firing to danger vs. uncertainty (t
+    13 = 0.62, p=0.55) or uncertainty vs. safety (t 13 = 0.24, p=0.81) in the first 1 s cue
+    interval
+  statistics:
+  - about: danger against uncertainty, first interval
+    test: paired t-test, two-tailed
+    statistic: t(13) = 0.62
+    p: 0.55
+  - about: uncertainty against safety, first interval
+    test: paired t-test, two-tailed
+    statistic: t(13) = 0.24
+    p: 0.81
+  depends_on:
+  - ramping-population
+  criterion: A claim of absence, judged on the paper's paired two-tailed t-tests at p < 0.05 on
+    first 1 s interval Z firing. Reproduced when neither pair differs. The legend prints 0.82 for
+    the second test.
+- id: fig2d-ramping-last-interval
+  statement: In the last 1 s cue interval Ramping neurons fire more to danger than to uncertainty
+    and more to uncertainty than to safety.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 2;
+    Figure 2D, right
+  quote: However, differential firing to danger vs. uncertainty (t 13 = 3.17, p=7.41×10 −3 ), and
+    uncertainty vs. safety (t 13 = 8.26, p=2.00×10 −6 ), was observed in the last 1 s cue interval
+  statistics:
+  - about: danger against uncertainty, last interval
+    test: paired t-test, two-tailed
+    statistic: t(13) = 3.17
+    p: 7.41e-3
+  - about: uncertainty against safety, last interval
+    test: paired t-test, two-tailed
+    statistic: t(13) = 8.26
+    p: 2.00e-6
+  depends_on:
+  - ramping-population
+  criterion: Reproduced when both differences are significant by paired two-tailed t-tests at p <
+    0.05 in the stated direction (readings of detail 4).
+- id: fig2e-departure-times
+  statement: Ramping population firing departs from safety earlier for danger (2.8 s after cue
+    onset at p < 0.05, 5.8 s with Bonferroni correction) than for uncertainty (5.7 s, 6.5 s).
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 3;
+    Methods, Population and single-unit firing analyses, paragraph 2; Figure 2E
+  quote: Ramping activity to danger emerged earlier ( Figure 2E ; 2.8 s following cue onset for
+    p<0.05; 5.8 s for full Bonferroni correction, p<0.00025 [0.05/200]) than ramping activity to
+    uncertainty (5.7 s following cue onset; 6.5 s for full Bonferroni correction)
+  expected:
+  - quantity: danger departure, p < 0.05
+    value: 2.8
+    tolerance: 0.28
+    unit: s
+  - quantity: danger departure, p < 0.00025
+    value: 5.8
+    tolerance: 0.58
+    unit: s
+  - quantity: uncertainty departure, p < 0.05
+    value: 5.7
+    tolerance: 0.57
+    unit: s
+  - quantity: uncertainty departure, p < 0.00025
+    value: 6.5
+    tolerance: 0.65
+    unit: s
+  depends_on:
+  - ramping-population
+  criterion: A 1 s window starting at cue onset and advanced in 100 ms steps across the cue;
+    in each, a paired two-tailed t-test over the 14 Ramping neurons of danger (or uncertainty)
+    against safety firing; departure is the first window with p < 0.05 (or p < 0.00025). Open
+    are the firing measure (readings (a) the mean of the 100 ms Z-scored bins of Figure 2C within
+    the window; (b) the per-trial interval Z transformation of the Methods applied to each
+    window) and the time reported (readings (a) the window's start; (b) its end). The number of
+    windows is also open (0.05/200 implies 100 per comparison, so windows starting up to 9.9 s,
+    the last ones running past cue offset; 91 windows would stay inside the cue); it cannot move
+    the departure times, since the paper fixes both thresholds. Reproduced
+    when, under one reading, all four times are within tolerance; partially reproduced when
+    danger departs before uncertainty at both thresholds and a time is outside tolerance.
+- id: fig2e-rate-no-difference
+  statement: The rate of firing increase from the departure window to the last 1 s window does
+    not differ between danger and uncertainty, so the earlier departure, not a faster rise,
+    separates them.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 3;
+    Figure 2E inset
+  quote: Change in firing rate did not differ between danger and uncertainty ( Figure 2E , Inset)
+  depends_on:
+  - fig2e-departure-times
+  criterion: A claim of absence. Per Ramping neuron and cue, (firing in the last 1 s window minus
+    firing in the cue's departure window at p < 0.05) divided by the time between the two windows
+    (Methods); the paper's test is the paired t-test of the inset legend, at p < 0.05. Reproduced
+    when danger and uncertainty do not differ, under the reading fig2e-departure-times matched on
+    (under every reading if none).
+- id: fig2s1-single-trial
+  statement: The population patterns hold trial by trial. Onset population firing in the first 1
+    s exceeds baseline on every individual trial of every cue, and Ramping population firing in
+    the last 1 s exceeds baseline on danger and uncertainty trials but not safety trials.
+  source: Figure 2, figure supplement 1
+  quote: Note that increased cue firing over baseline tended to be highest on trial 1, but was
+    observed for every individual trial for all cues ... Increased cue firing over baseline was
+    consistently observed on danger and uncertainty trials, but not safety trials
+  depends_on:
+  - onset-population
+  - ramping-population
+  criterion: Per trial position within each trial type (danger 1 to 6, uncertainty shock 1 to 6,
+    uncertainty omission 1 to 10, safety 1 to 10), the population mean raw firing rate (Hz) of the
+    interval against the population mean rate of the 2 s before onset. Reproduced when Onset
+    first-interval firing exceeds baseline at all 32 positions, and Ramping last-interval firing
+    exceeds baseline at all 22 danger and uncertainty positions and at no more than half of the
+    10 safety positions; the paper gives no rule for "not safety trials", and this is the reading
+    named here.
+- id: fig2s2-nose-poke-cessation
+  statement: Onset and Ramping firing is not driven by nose poke cessation. Across neurons,
+    firing to danger (Onset first interval, Ramping last interval) is uncorrelated with firing to
+    the first second of an ITI poke cessation and is consistently greater.
+  source: Figure 2, figure supplement 2; Results, Population biases are evident in vlPAG
+    single-units, paragraph 3
+  quote: Comparison of single-unit firing to danger (Onset, first interval; Ramping, last interval)
+    and nose poke suppression (first interval) revealed no correlation and an overwhelming bias
+    towards greater firing to danger
+  statistics:
+  - about: Onset neurons, correlation
+    test: Pearson correlation
+    statistic: R2 = 0.01
+    p: 0.32
+  - about: Onset neurons, bias to danger
+    test: sign test
+    p: 1.62e-6
+  - about: Ramping neurons, correlation
+    test: Pearson correlation
+    statistic: R2 = 0.08
+    p: 0.10
+  - about: Ramping neurons, bias to danger
+    test: sign test
+    p: 1.22e-4
+  depends_on:
+  - onset-population
+  - ramping-population
+  criterion: Cessation events are ITI periods (no cue) in which a nose poke is followed by at
+    least 2 s without a poke; the interval of the poke is -1 and the first no-poke second +1
+    (legend). Open are the ITI limits (readings (a) any time outside cue, delay and shock
+    periods; (b) excluding also 10 s after each cue offset) and the firing measure (readings (a)
+    raw rate in Hz for danger and for the +1 interval; (b) each as differential firing, danger
+    against its 2 s pre-cue baseline and cessation against the -1 interval). Reproduced when,
+    under one reading, the Pearson correlation across neurons is not significant (p >= 0.05) and a
+    two-sided sign test finds danger greater at p < 0.05, for both populations; partially
+    reproduced when this holds for one.
+- id: fig3-onset-ramping-independent
+  statement: In the four sessions with an Onset and a Ramping neuron recorded together, trial by
+    trial firing of the two is not negatively related; a significant negative beta appears for one
+    interval of one pair only.
+  source: Results, vlPAG neurons show differential firing that is maximal to danger, paragraph 4;
+    Figure 3
+  quote: A significant (p<0.05), negative β was only found for one interval, for one neuron pair
+    (pair 1, interval indicated by +)
+  expected:
+  - quantity: Onset-Ramping pairs recorded in the same session
+    value: 4
+    tolerance: 0
+  depends_on:
+  - onset-population
+  - ramping-population
+  criterion: For each pair and each 1 s cue interval, a regression (with constant) over the 32
+    trials of the Onset neuron's interval Z firing on the Ramping neuron's (Methods, Single-unit,
+    linear regression, last sentences). Reproduced when four pairs are found and at most two of
+    the 40 interval regressions give a negative beta with p < 0.05 (one reported; at a 0.05 level
+    about one is expected by chance); not reproduced when three or more do.
+- id: fig4abc-onset-single-unit-biases
+  statement: In the first 1 s interval, Onset single units' danger and uncertainty firing are
+    correlated and biased to danger; uncertainty and safety firing are correlated but the bias
+    to uncertainty is not significant; danger firing is biased to the first over the last
+    interval, with no correlation between them.
+  source: Results, Population biases are evident in vlPAG single-units, paragraph 1; Figure 4A to
+    4C; Methods, Population and single-unit firing analyses, paragraph 3
+  quote: Danger and uncertainty firing were correlated, and single-units were biased towards greater
+    firing to danger ( Figure 4A ). Uncertainty and safety firing were also correlated; however, the
+    single-unit bias towards greater firing to uncertainty was not significant
+  depends_on:
+  - onset-population
+  criterion: Per Onset neuron, mean interval Z firing per cue (readings of detail 4). Pearson
+    correlation (p < 0.05) and sign test (p < 0.05, two-sided per detail 6) for each panel
+    (Methods, Population and single-unit firing analyses, paragraph 3). Reproduced when A has a
+    correlation with p < 0.05 and a danger bias, B a correlation with p < 0.05 and a sign test
+    with p >= 0.05, and C a first-interval bias and a correlation with p >= 0.05; partially
+    reproduced when two of the three panels hold. The text gives no sign for the correlations;
+    the sign found is reported. The R2 and p values printed in the panels could not be read from
+    the text.
+- id: fig4d-onset-patterns
+  statement: The most common pattern of Onset neurons in the first 1 s interval is danger >
+    uncertainty > safety (14 neurons), the only pattern with more neurons than expected by
+    chance.
+  source: Results, Population biases are evident in vlPAG single-units, paragraph 1; Figure 4D;
+    Methods, Determining observed and expected cue firing patterns
+  quote: Examining relative cue firing for each Onset neuron in the first 1 s interval revealed the
+    most common pattern to be ... danger > uncertainty > safety (n = 14). This was the only pattern
+    to contain more units than would be expected than chance
+  expected:
+  - quantity: Onset neurons with danger > uncertainty > safety
+    value: 14
+    tolerance: 1.4
+  depends_on:
+  - onset-population
+  criterion: Each neuron is placed by the order of its mean interval Z firing to the three cues;
+    the chance distribution comes from 1000 shuffles (Methods, Determining observed and expected
+    cue firing patterns). The Methods name four categories, (d > u > s), (d > s > u), (s > u > d)
+    and (u > d > s), and Figure 4D shows these four; the claim is judged on them, with all six
+    orders shown as a variant. Open are the shuffle (readings (a) the three cue values permuted
+    within each neuron, as "each neurons firing pattern was shuffled" reads most directly; (b)
+    each cue's values permuted across neurons) and "more than expected by chance" (readings (a)
+    above the 95th percentile of the shuffled counts; (b) above the most extreme non-outlier of
+    the box plot, 1.5 interquartile ranges above the 75th percentile, a standard box plot rule the
+    paper does not state). Reproduced when, under one reading, the count is within tolerance, is
+    the largest, and is the only one of the four categories above chance.
+- id: fig4efg-ramping-single-unit-biases
+  statement: In the last 1 s interval, Ramping single units' danger and uncertainty firing are
+    correlated and biased to danger; uncertainty and safety firing are not correlated but are
+    biased to uncertainty; danger firing is biased to the last over the first interval, with no
+    correlation between them.
+  source: Results, Population biases are evident in vlPAG single-units, paragraph 2; Figure 4E to
+    4G
+  quote: A significant correlation between firing to danger and uncertainty was observed, along with
+    a single-unit bias towards greater firing to danger ( Figure 4E ). Only now, there was no
+    correlation between uncertainty and safety firing, but a consistent bias towards greater
+    uncertainty firing
+  depends_on:
+  - ramping-population
+  criterion: As fig4abc-onset-single-unit-biases, on the 14 Ramping neurons and the last 1 s
+    interval. Reproduced when E has a correlation with p < 0.05 and a danger bias, F a correlation
+    with p >= 0.05 and an uncertainty bias, and G a last-interval bias and a correlation with p >=
+    0.05; partially reproduced when two of the three hold. The sign of the E correlation is
+    reported; the text gives none.
+- id: fig4h-ramping-patterns
+  statement: The most common pattern of Ramping neurons in the last 1 s interval is danger >
+    uncertainty > safety (11 neurons), the only pattern above chance.
+  source: Results, Population biases are evident in vlPAG single-units, paragraph 2; Figure 4H
+  quote: The most common firing pattern in the last 1 s interval was ... danger > uncertainty >
+    safety (n = 11). This was the only pattern to contain more units than expected by chance
+  expected:
+  - quantity: Ramping neurons with danger > uncertainty > safety
+    value: 11
+    tolerance: 1.1
+  depends_on:
+  - ramping-population
+  criterion: As fig4d-onset-patterns, on the 14 Ramping neurons and the last 1 s interval, with the
+    same four categories (Figure 4H legend, "reported as in D") and the same readings.
+- id: fig5a-onset-probability-first-interval
+  statement: In the first 1 s cue interval the Onset population's probability beta is positive
+    and significant and exceeds both fear betas, neither of which differs from zero.
+  source: Results, Onset neurons signal threat probability, paragraph 2; Figure 5A
+  quote: The beta coefficient for the probability regressor was positive and significant, exceeding
+    the beta coefficient for either measure of fear output – neither of which differed from zero
+  statistics:
+  - about: probability against total fear
+    test: paired samples t-test
+    statistic: t(28) = 3.75
+    p: 8.01e-4
+  - about: probability against interval fear
+    test: paired samples t-test
+    statistic: t(28) = 4.57
+    p: 8.90e-5
+  depends_on:
+  - onset-population
+  criterion: Single-unit regressions of the Methods on first-interval Z firing (readings of details
+    1, 2 and 4). Reproduced when the probability beta exceeds each fear beta by paired two-tailed
+    t-tests at p < 0.05, the probability beta is above zero by a single-sample t-test at p <
+    0.005, and neither fear beta differs from zero at p < 0.005 (the threshold of the Figure 5D
+    legend, the paper's test for comparisons to zero); the result at 0.05 is shown as a variant.
+- id: fig5bc-onset-beta-bias
+  statement: Onset single-unit betas are positively biased for threat probability but not for
+    total or interval fear.
+  source: Results, Onset neurons signal threat probability, paragraph 2; Figure 5B and 5C
+  quote: Single-unit beta coefficients were positively biased for threat probability, but not for
+    either measure of fear output
+  depends_on:
+  - fig5a-onset-probability-first-interval
+  criterion: First-interval betas of the 29 Onset neurons; the legend's sign test of each
+    regressor against zero, two-sided, p < 0.05. Reproduced when probability is biased positive
+    and neither fear regressor is (p >= 0.05, the paper's test, as written).
+- id: fig5d-onset-all-intervals
+  statement: Over the ten 1 s cue intervals, Onset threat probability signaling is highest in the
+    first interval, persists several seconds and diminishes, while total and interval fear account
+    for firing in no interval; an ANOVA shows a main effect of regressor and a regressor x interval
+    interaction.
+  source: Results, Onset neurons signal threat probability, paragraph 3; Figure 5D
+  quote: Examining the entirety of cue presentation, threat probability signaling was highest in the
+    first interval, persisted several more seconds and diminished ( Figure 5D ). Total fear or
+    interval fear did not account for variance in single-unit firing at any interval
+  statistics:
+  - about: main effect of regressor
+    test: ANOVA
+    statistic: F(2,56) = 7.16
+    p: 0.01
+    p_relation: "<"
+  - about: regressor x interval interaction
+    test: ANOVA
+    statistic: F(18,504) = 2.38
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig5a-onset-probability-first-interval
+  criterion: Betas of the 29 Onset neurons for the three regressors in each of the ten intervals;
+    repeated-measures ANOVA (regressor x interval). Reproduced when both effects have p < 0.01,
+    the mean probability beta is largest in the first interval and above zero (single-sample
+    t-test, p < 0.005) in it and in at least one later interval, and no fear beta differs from
+    zero at p < 0.005 in any interval.
+- id: fig5s1-regressor-combinations
+  statement: Onset neurons prioritize probability whatever the combination of regressors; a fear
+    beta reaches significance only when total fear is the sole regressor, and even then its
+    relation is weaker than that of probability.
+  source: Results, Onset neurons signal threat probability, paragraph 3; Figure 5, figure
+    supplement 1A to 1E
+  quote: In fact, significance for fear output could only be found if total fear was the only
+    regressor used in the analysis ... Even then, the predictive relationship was weaker than that
+    of probability
+  depends_on:
+  - fig5a-onset-probability-first-interval
+  criterion: Regressions as in fig5d-onset-all-intervals with the regressors (A) probability and
+    total fear, (B) probability and interval fear, (C) interval fear, (D) total fear, (E)
+    probability (supplement legend). What counts as "significance for fear output" is open; the
+    supplement legend reports only the main effect of regressor (A, B) and of interval (C to E),
+    and no comparison to zero. Readings (a) single-sample t-tests of the mean beta against zero in
+    each interval at p < 0.005, as in the Figure 5D legend; (b) the legend's F for the main effect
+    of interval in the single-regressor panels, at p < 0.05. Reproduced when, under one reading, no
+    fear regressor reaches significance in A, B and C, the total fear regressor does in D, and the
+    D beta is below the E beta; and when A and B each show a main effect of regressor with the
+    probability beta above the fear beta ("Identical results were obtained when probability was
+    compared to total fear or interval fear separately", repeated-measures ANOVA, regressor x
+    interval, p < 0.05). "Weaker" is open; readings (a) the mean betas of the first interval; (b)
+    the largest mean beta over intervals.
+- id: fig5e-onset-tuning-curve
+  statement: Varying the probability assigned to uncertainty from 0 to 1 in 0.125 steps, the
+    Onset population's mean probability beta in the first interval peaks at the actual 0.375,
+    with the flanking values next highest and betas falling off toward the extremes.
+  source: Results, Onset neurons signal threat probability, paragraph 4; Methods, Threat
+    probability tuning curve; Figure 5E
+  quote: The beta coefficient resulting from regression using the actual shock probability
+    (uncertainty = 0.375), was the 'peak' of the tuning curve. The probabilities with the next
+    highest beta coefficients were those flanking 0.375
+  expected:
+  - quantity: uncertainty assignment at the peak of the Onset tuning curve
+    value: 0.375
+    tolerance: 0
+  depends_on:
+  - fig5a-onset-probability-first-interval
+  criterion: Nine regressions per neuron with all three regressors, danger 1.00 and safety 0.00,
+    uncertainty 0 to 1 in steps of 0.125; mean probability beta over the 29 neurons per
+    assignment. Reproduced when the largest mean is at 0.375 and the next two are at 0.25 and
+    0.5; partially reproduced when the peak is at 0.375 and the order of the next two differs.
+    The tolerance is 0 because the assignments are a grid of 0.125.
+- id: fig5s2-binary-regressor
+  statement: Onset firing is better captured by the actual shock probability (uncertainty 0.375)
+    than by a binary regressor equating uncertainty with safety, in the first interval and
+    across the cue.
+  source: Figure 5, figure supplement 2; Results, Onset neurons signal threat probability,
+    paragraph 5
+  quote: The activity of vlPAG single-units was better captured by the regressor that reflected the
+    actual foot shock probability (uncertainty = 0.375) over a regressor that equated uncertainty
+    to safety (uncertainty = 0.000)
+  statistics:
+  - about: analysis x regressor x interval, all ten intervals
+    test: ANOVA
+    statistic: F(18,504) = 2.51
+    p: 5.89e-4
+  - about: analysis x regressor, first interval
+    test: ANOVA
+    statistic: F(2,56) = 7.80
+    p: 1.03e-3
+  depends_on:
+  - fig5d-onset-all-intervals
+  criterion: A second set of regressions with the binary regressor (danger 1, uncertainty and
+    safety 0) in place of probability, run separately. Repeated-measures ANOVA on betas with
+    analysis (probability or binary), regressor and interval. Reproduced when both interactions
+    have p < 0.05 and the first-interval mean beta is larger for probability than for binary.
+- id: fig5f-ramping-last-interval
+  statement: In the last 1 s cue interval, Ramping probability and total fear betas both exceed
+    the interval fear beta and do not differ from each other.
+  source: Figure 5F legend (the tests); Results, Ramping neurons prioritize threat probability
+    over fear output, paragraph 1
+  quote: Beta coefficients for probability and total fear were significantly greater than interval
+    fear (probability vs. interval fear, t 13 = 3.61, p=3.20×10 −3 ; total fear vs. interval fear, t
+    13 = 4.68, p=4.34×10 −4 ), but did not differ from one another (t 13 = 1.11, p=0.29)
+  statistics:
+  - about: probability against interval fear
+    test: paired samples t-test
+    statistic: t(13) = 3.61
+    p: 3.20e-3
+  - about: total fear against interval fear
+    test: paired samples t-test
+    statistic: t(13) = 4.68
+    p: 4.34e-4
+  - about: probability against total fear
+    test: paired samples t-test
+    statistic: t(13) = 1.11
+    p: 0.29
+  depends_on:
+  - ramping-population
+  criterion: Last-interval betas of the 14 Ramping neurons. Reproduced when both comparisons with
+    interval fear are significant at p < 0.05 in the stated direction and probability against
+    total fear has p >= 0.05 (the paper's test, as written).
+- id: fig5gh-ramping-beta-bias
+  statement: Ramping single-unit betas in the last interval are biased positive for probability
+    and total fear, which are uncorrelated; they are not biased for interval fear, and the
+    probability and interval fear betas are negatively correlated.
+  source: Results, Ramping neurons prioritize threat probability over fear output, paragraph 1;
+    Figure 5G and 5H
+  quote: Ramping single-units were biased towards positive beta coefficients for probability and
+    total fear ( Figure 5G ), but there was no correlation between these regressors. Ramping
+    single-units were not biased towards positive beta coefficients for interval fear ( Figure 5H
+    ), but signaling of probability and interval fear were negatively correlated
+  depends_on:
+  - fig5f-ramping-last-interval
+  criterion: Sign tests against zero (two-sided, p < 0.05) and Pearson correlations (p < 0.05)
+    across the 14 neurons. Reproduced when probability and total fear are biased positive, their
+    correlation has p >= 0.05, interval fear is not biased (p >= 0.05), and probability and
+    interval fear correlate negatively at p < 0.05; partially reproduced when three of the four
+    hold.
+- id: fig5i-ramping-all-intervals
+  statement: Over all ten cue intervals Ramping neurons prioritize probability (mean beta 0.58,
+    against 0.12 for total fear and -0.03 for interval fear); only the probability beta differs
+    from zero and it exceeds both fear betas, with a main effect of regressor and a regressor x
+    interval interaction.
+  source: Results, Ramping neurons prioritize threat probability over fear output, paragraph 1;
+    Figure 5I
+  quote: Linear regression for all ten intervals revealed that threat probability signaling was
+    prioritized over total fear and interval fear ... Only the beta coefficient for probability
+    differed significantly from zero
+  statistics:
+  - about: main effect of regressor
+    test: ANOVA
+    statistic: F(2,26) = 8.96
+    p: 0.01
+    p_relation: "<"
+  - about: regressor x interval interaction
+    test: ANOVA
+    statistic: F(18,234) = 2.16
+    p: 0.01
+    p_relation: "<"
+  - about: probability beta against zero
+    test: single-sample t-test
+    statistic: t(13) = 4.21
+    p: 1.02e-3
+  - about: probability against total fear
+    test: paired t-test
+    statistic: t(13) = 2.32
+    p: 0.04
+  - about: probability against interval fear
+    test: paired t-test
+    statistic: t(13) = 4.32
+    p: 8.28e-4
+  expected:
+  - quantity: mean probability beta over the ten intervals
+    value: 0.58
+    tolerance: 0.14
+  - quantity: mean total fear beta over the ten intervals
+    value: 0.12
+    tolerance: 0.10
+  - quantity: mean interval fear beta over the ten intervals
+    value: -0.03
+    tolerance: 0.05
+  depends_on:
+  - ramping-population
+  criterion: Per Ramping neuron, the mean of its betas over the ten intervals; tolerances are the
+    reported SEMs. Reproduced when the three means are within tolerance under one reading of
+    details 1, 2 and 4, the ANOVA effects have p < 0.01, the probability mean differs from zero
+    and exceeds both fear means at p < 0.05, and the fear means do not differ from zero at p <
+    0.05; partially reproduced when the tests hold and a mean is outside tolerance.
+- id: fig5s1-ramping-regressor-combinations
+  statement: For Ramping neurons, the prioritization of probability over all ten intervals holds
+    when probability is compared with total fear or interval fear alone, and when each regressor
+    is used in isolation.
+  source: Results, Ramping neurons prioritize threat probability over fear output, paragraph 1;
+    Figure 5, figure supplement 1F to 1J
+  quote: This pattern of results held when probability was separately compared to total fear and
+    interval fear, and when each regressor was considered in isolation
+  depends_on:
+  - fig5i-ramping-all-intervals
+  criterion: Regressions of fig5i-ramping-all-intervals (14 Ramping neurons, ten 1 s cue
+    intervals) with the regressors (F) probability and total fear, (G) probability and interval
+    fear, (H) interval fear, (I) total fear, (J) probability (supplement legend). "This pattern"
+    is the one of fig5i-ramping-all-intervals; per neuron, the mean beta over the ten intervals.
+    Reproduced when, in F and G, the probability mean differs from zero (single-sample t-test, p <
+    0.05), the fear mean does not, the probability mean exceeds the fear mean (paired two-tailed
+    t-test, p < 0.05), and the repeated-measures ANOVA (regressor x interval) has a main effect of
+    regressor at p < 0.05 (the F the legend shows); and when, of H, I and J, only the probability
+    mean (J) differs from zero. The legend's F for the main effect of interval in H to J is
+    reported. Partially reproduced when F and G hold and H to J do not.
+- id: fig5j-ramping-tuning-curve
+  statement: The Ramping population's tuning curve for the last interval is shifted right of the
+    actual probability, peaking at 0.625, consistent with mixed signaling of probability and fear.
+  source: Results, Ramping neurons prioritize threat probability over fear output, paragraph 2;
+    Figure 5J
+  quote: Tuning was shifted right of the actual probability, with a 'peak' at 0.625
+  expected:
+  - quantity: uncertainty assignment at the peak of the Ramping tuning curve
+    value: 0.625
+    tolerance: 0
+  depends_on:
+  - fig5f-ramping-last-interval
+  criterion: As fig5e-onset-tuning-curve, on the 14 Ramping neurons and the last 1 s interval.
+    Reproduced when the largest mean probability beta is at 0.625; partially reproduced when it
+    is at 0.5 or 0.75 (right of 0.375 but not at 0.625).
+- id: fig6ab-post-cue-firing
+  statement: In the 5 s after cue offset (delay, shock, post-shock; the shock itself excluded)
+    Onset neurons show no effects of trial type or bin, while Ramping neurons keep firing to
+    danger and uncertainty through the delay, with a trial x bin interaction, and the two
+    populations differ.
+  source: Results, Ramping neurons signal threat probability through delay until shock receipt,
+    paragraph 1; Figure 6A and 6B
+  quote: ANOVA for normalized firing rate ... revealed no main effects or interactions for Onset
+    neurons (F s <2.3, ps >0.09). By contrast, identical ANOVA revealed main effects of trial and
+    bin (Fs >3, ps <0.01), as well as a trial x bin interaction for Ramping neurons (F 132,1716 =
+    3.14, p<0.01
+  statistics:
+  - about: Onset neurons, all effects
+    test: ANOVA
+    statistic: Fs < 2.3
+    p: 0.09
+    p_relation: ">"
+  - about: Ramping neurons, main effects of trial type and bin
+    test: ANOVA
+    statistic: Fs > 3
+    p: 0.01
+    p_relation: "<"
+  - about: Ramping neurons, trial type x bin
+    test: ANOVA
+    statistic: F(132,1716) = 3.14
+    p: 0.01
+    p_relation: "<"
+  - about: neuron type interactions (trial type, bin, trial type x bin)
+    test: ANOVA
+    statistic: Fs > 2.50
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - onset-population
+  - ramping-population
+  criterion: Z-scored 100 ms firing (Methods) for the four trial types, 45 bins from cue offset to
+    5 s after it without the 0.5 s shock (2.0 to 2.5 s after offset). Reproduced when, for Onset
+    neurons, no effect has p < 0.05 (the paper's test, as written); for Ramping neurons, both main
+    effects and the interaction have p < 0.01; and in the mixed ANOVA with neuron type the three
+    neuron type interactions have p < 0.01. Partially reproduced when two of these three parts
+    hold.
+- id: fig6c-onset-post-cue-regression
+  statement: After cue offset Onset neurons signal neither interval fear nor probability; no
+    effect of regressor or regressor x interval interaction, and no beta differs from zero.
+  source: Results, Ramping neurons signal threat probability through delay until shock receipt,
+    paragraph 2; Figure 6C
+  quote: Onset neurons did not signal interval fear or probability at any time following cue offset
+    ( Figure 6C ). ANOVA revealed no main effect of regressor (F 1,28 = 1.02, p=0.32
+  statistics:
+  - about: main effect of regressor
+    test: ANOVA
+    statistic: F(1,28) = 1.02
+    p: 0.32
+  - about: regressor x interval interaction
+    test: ANOVA
+    statistic: F(8,224) = 0.53
+    p: 0.83
+  depends_on:
+  - onset-population
+  criterion: A claim of absence. Regressions per neuron in the nine 500 ms post-cue intervals (four
+    of the delay, five after the shock) on interval fear (the suppression ratio of that 500 ms
+    interval, readings of details 1 and 2) and probability; repeated-measures ANOVA at p < 0.05
+    and single-sample t-tests against zero at p < 0.005 (the Figure 6D legend). Reproduced when
+    neither ANOVA effect is significant and no beta differs from zero.
+- id: fig6d-ramping-post-cue-regression
+  statement: Ramping neurons signal probability throughout the delay (the first four 500 ms
+    intervals after cue offset), and this signal diminishes after shock delivery, with a
+    regressor x interval interaction.
+  source: Results, Ramping neurons signal threat probability through delay until shock receipt,
+    paragraph 2; Figure 6D
+  quote: By contrast, Ramping neurons signaled probability throughout the delay period ( Figure 6D ,
+    first four intervals), which diminished following shock delivery
+  statistics:
+  - about: regressor x interval interaction
+    test: ANOVA
+    statistic: F(8,104) = 5.20
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - ramping-population
+  criterion: As fig6c-onset-post-cue-regression, on the 14 Ramping neurons. Reproduced when the
+    interaction has p < 0.01, the mean probability beta is above zero at p < 0.005 (single-sample
+    t-test, the legend's threshold) in all four delay intervals, and the mean over the five
+    post-shock intervals is below the mean over the delay; partially reproduced when the
+    interaction holds and the probability beta is significant in one to three delay intervals.
+- id: fig6ef-beta-correlations
+  statement: Probability betas of the delay intervals correlate with those of the post-shock
+    intervals in 13 of 20 comparisons for Onset neurons but 4 of 20 for Ramping neurons, a
+    significant difference (6 and 1 of 20 after Bonferroni correction, also different).
+  source: Results, Ramping neurons signal threat probability through delay until shock receipt,
+    paragraph 3; Figure 6E and 6F
+  quote: Significant between-interval correlations for the probability beta coefficient were
+    observed for 13/20 comparisons in Onset neurons ... significant correlations were found for
+    only 4/20 comparisons in Ramping neurons
+  statistics:
+  - about: proportions at p < 0.05, Onset against Ramping
+    test: chi-square test
+    statistic: χ2 = 8.08
+    p: 4.5e-3
+  - about: proportions at p < 0.01 (Bonferroni, five tests per interval)
+    test: chi-square test
+    statistic: χ2 = 4.22
+    p: 0.039
+  expected:
+  - quantity: significant delay against post-shock correlations, Onset, p < 0.05
+    value: 13
+    tolerance: 1.3
+  - quantity: significant delay against post-shock correlations, Ramping, p < 0.05
+    value: 4
+    tolerance: 0.4
+  - quantity: significant correlations, Onset, p < 0.01
+    value: 6
+    tolerance: 0.6
+  - quantity: significant correlations, Ramping, p < 0.01
+    value: 1
+    tolerance: 0.1
+  depends_on:
+  - fig6c-onset-post-cue-regression
+  - fig6d-ramping-post-cue-regression
+  criterion: For each population, the Pearson correlation across neurons of the probability beta
+    of each of the four delay intervals with each of the five post-shock intervals (20 pairs),
+    significant at p < 0.05 and at p < 0.01. The chi-square test on the 2 x 2 counts is open;
+    readings (a) Pearson chi-square times (N - 1) / N, which gives the reported 8.08 and 4.22 from
+    the reported counts (8.29 x 39/40 and 4.33 x 39/40, worked here); (b) Pearson chi-square
+    without correction; (c) with Yates' correction. Reproduced when, under one reading, the
+    chi-square test has p < 0.05 at both thresholds and the four counts are within tolerance;
+    partially reproduced when Onset has more significant comparisons than Ramping at both
+    thresholds but a count or a test differs.
+- id: fig1s5-hfr-units
+  statement: The three late-responsive neurons of the HFR cluster each fire most to danger in the
+    last 1 s cue interval.
+  source: Figure 1, figure supplement 5
+  quote: Each neuron showed maximal firing to danger in the last 1 s cue interval
+  expected:
+  - quantity: HFR late-responsive neurons
+    value: 3
+    tolerance: 0
+  depends_on:
+  - ramping-population
+  criterion: For each of the three, the mean last-interval firing (raw rate over trials of each
+    cue, and mean interval Z firing as a second reading) is higher for danger than for uncertainty
+    and safety. Reproduced when this holds for all three under one reading.
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4d-onset-patterns, fig4h-ramping-patterns. The criterion judged "the only pattern above chance" over six orders; the Methods (Determining observed and expected cue firing patterns) name four categories and Figure 4D shows four. Now judged on the four, with all six as a variant. Said that the 1.5 interquartile range outlier rule is a standard choice the paper does not state.
+  - fig4abc-onset-single-unit-biases, fig4efg-ramping-single-unit-biases. The criterion required positive correlations; the text says only "correlated". Now requires p < 0.05 and reports the sign. Cited the Methods paragraph for the sign test and Pearson correlation.
+  - fig1s1b-sr-poke-correlation. The legend names no test and does not say whether the overall correlation is per cue or over all points. Said that Pearson is a reading from the Methods, and named both units as readings.
+  - fig5s1-regressor-combinations. The criterion took single-sample t-tests at p < 0.005 as the test of "significance for fear output"; the supplement legend reports only F tests (main effect of regressor in A and B, of interval in C to E). Both are now readings. Added the Results sentence that probability beats each fear regressor when compared separately (main effect of regressor in A and B).
+  - fig5f-ramping-last-interval. The source pointed at the Results paragraph; the quoted t-tests are in the Figure 5F legend only. Source now names the legend first.
+  - fig2e-departure-times. Named the number of sliding windows as open (0.05/200 implies 100 windows per comparison, some running past cue offset); it cannot change the outcome since the thresholds are fixed.
+  - New claim fig5s1-ramping-regressor-combinations. The Results (Ramping neurons prioritize threat probability over fear output, paragraph 1) state that the Ramping pattern holds under the regressor combinations of Figure 5, figure supplement 1F to 1J; no claim covered it.
+  - Open. The quote checker cannot match 9.70e-5 (fig2b-onset-first-interval), 8.90e-5 (fig5a-onset-probability-first-interval) and 3.20e-3 (fig5f-ramping-last-interval); it drops trailing zeros of the mantissa. Each is printed so in the text (Results paragraph and Figure 2B legend; Figure 5A and 5F legends). The Figure 2B legend prints 9.70e-4 for the first, as the opening comment says.
+  - Open. No PDF was supplied, so the values printed only in Figures 4 and 5 and the supplement panels could not be read; claims on them rest on legends and tests named.
+  - Open. The paper's code (lab website) could not be read, per the opening comment; every method comes from the text, and the details left open stay named as readings.
+  - Open. Minor findings without a claim. Figure 1, supplement 1C and 1D (poke rates stable over trials, temporal poke patterns); Figure 1, supplement 4 (waveform similarity within one rat); Figure 1, supplement 5 (HFR units "signaled threat probability", shown only in panels); Figure 2, supplement 2C and 2D (Onset nearly unresponsive and Ramping weakly responsive to poke cessation); the Methods statement that uncertainty shock and omission trials did not differ during the cue.
+  - Checked, unchanged. Every quote, test statistic and p-value against the text; the degrees of freedom of every ANOVA against the stated designs (bins, neurons, regressors); the chi-square reading of fig6ef-beta-correlations (8.29 x 39/40 = 8.08, 4.33 x 39/40 = 4.22); the SEM tolerances of fig5i-ramping-all-intervals.

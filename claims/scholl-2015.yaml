@@ -1,0 +1,706 @@
+# Claims for Scholl, Pattadkal, Dilly, Priebe & Zemelman (2015), Neuron 87:424-436, "Local
+# Integration Accounts for Weak Selectivity of Mouse Neocortical Parvalbumin Interneurons",
+# doi:10.1016/j.neuron.2015.06.030, on CRCNS data set pvc-10 (doi:10.6080/K0GT5K3V).
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-10,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14. The writer did not look at
+# the data set's data or files; only its title and its data descriptor (paper/pvc-10.data-
+# description.txt) were read, to know which experiments it is meant to hold.
+#
+# Text read: the version of record, as text extracted from the PDF under paper/ (main text,
+# figure legends, Experimental Procedures) with the Supplemental Information (legends of
+# Supplementary Figures 1 to 6) in the same file. The extraction prints micrometres as "mm",
+# Greek lambda as "l" and minus signs as a replacement character; quotes copy the text as
+# extracted. Equations in the Methods are garbled in the text; they were read in context.
+#
+# Code: the paper links no code. The Methods say images were analysed with custom MATLAB
+# software, and cite CircStat (Berens, 2009) for the circular-linear correlation.
+#
+# Data the paper used. Six PV-Cre;Ai14 mice (P40-P60, urethane and chlorprothixene anaesthesia)
+# with PV+ interneurons labelled by tdTomato, and two wild-type mice infected with
+# rAAV CaMKIIa-nls-tdTomato (excitatory neurons labelled). V1 binocular zone bulk loaded with
+# OGB-1; two-photon imaging at 30 Hz of a 300 um wide field (256 by 455 pixels), 6 to 15 focal
+# planes 20 to 25 um apart, 150 to 460 um below the pia, green (OGB-1) and red (tdTomato)
+# channels. Cells co-labelled with tdTomato are PV+ (or CaMKIIa+), OGB-1 only cells are PV-.
+# Stimuli: dichoptic square-wave drifting gratings of one orientation (90 or 270 degrees) and
+# spatial frequency (0.02 or 0.03 cpd) per experiment, 1.5 to 2 s, 3 s blank after each; eight
+# binocular phase differences (0 to 315 degrees in 45 degree steps), monocular contralateral and
+# ipsilateral stimulation, and blank (mean luminance) trials, pseudorandom, 6 to 7 repeats per
+# focal plane. Measured variables per cell: dF/F time courses, mean dF/F per condition, ODI,
+# monocularity index (MI = |ODI|), DSI, disparity (phase) preference, and the cell's 3D position.
+# Separate histology (anti-PV immunostaining in 3 mice) gives the co-localization numbers. The
+# data descriptor says the data set holds 6 animals (folders mouse5 to mouse10) from PV-Cre
+# mice; whether it holds the CaMKIIa animals or neuropil patches is the author's to find.
+#
+# Method shared by all claims, from the Experimental Procedures (Data Imaging Analysis).
+# dF/F = (Ft - Fo)/Fo, Fo the gray-screen fluorescence immediately before the stimulus; each
+# condition's response is the mean dF/F in a 0.5 s window centred on the global average peak,
+# found by averaging the responses to all conditions and trials. A cell is visually responsive
+# when at least one monocular and one binocular stimulus give (mean stimulus - mean blank) /
+# (SE stimulus + SE blank) >= 1, and those responses exceed neuropil activity (above its 95%
+# confidence interval). ODI = (Ripsi - Rcontra)/(Rcontra + Ripsi), -1 contralateral only;
+# MI = |ODI|; DSI = |sum_f R_f exp(i f)| / sum_f R_f over the eight binocular phases f.
+# Disparity preference is the angle of that vector (the Methods take it from the cosine fit's
+# phase psi; for eight equally spaced phases the least-squares cosine phase and the vector angle
+# coincide). Open details shared by all claims: the length of the window that gives Fo; whether
+# the global average peak is found per cell or per plane (per cell is the plain reading); how
+# negative responses enter ODI and DSI (as measured, or set to zero); the readings are named
+# where a claim depends on them.
+#
+# Local network analysis (Methods, Local Network Analysis). Within each imaging session (one
+# animal's volume across depths), around each visually responsive cell, local populations of
+# visually responsive PV- cells are drawn from a sphere of radius 50 um and shells 50-75,
+# 75-100, 100-125 and 125-150 um, by 3D distance (x-y converted from pixels to microns, plus
+# depth). Individual cells within 50 um of the image edges are not used; a population needs at
+# least 3 cells. Population ODI is the average ODI of the population's cells; the population
+# disparity vector is (1/n) sum_n DSI_n exp(i psi_n). The relation between individual and
+# population ODI is the major-axis slope of a PCA (Sokal and Rohlf), bootstrapped by resampling
+# cells with replacement: the "mean slope" is the mean of the bootstrap slopes and its SE their
+# standard deviation. Significance compares the true mean slope with slopes from populations
+# whose PV- cell positions are shuffled within the session. Disparity uses the circular
+# correlation printed in the Methods, corr = (1/N) |sum_n exp(i (psi_n - z_n))|, psi the cell's
+# preference and z its population vector angle, minus the same quantity for shuffled positions
+# (shuffle-corrected), SE by bootstrap. Spatial length constants come from fitting
+# y = a exp(-r/lambda) to the values across radii.
+# Open in the local analysis, for every claim that uses it (the readings to run): (1) which axis
+# is which in the major-axis slope; the Supplementary Figure 5 and 6 panels label the vertical
+# axis "Individual ODI" and the horizontal "Population ODI", so (a) individual on population
+# is the main reading and (b) population on individual a variant; (2) which cells enter an ODI
+# analysis, (a) cells passing the visual response criterion as written or (b) cells responsive
+# to monocular stimuli; (3) whether a cell excluded at one radius for having fewer than 3
+# neighbours is dropped at that radius only (a) or from all radii (b); (4) the number of
+# bootstrap resamples and shuffles (not fixed; 1000 each is used as a standard choice, at least
+# enough to resolve p < 0.01); (5) whether the shuffle p-value is one-sided (fraction of
+# shuffled slopes at or above the true one) or two-sided; (6) how the exponential is fitted
+# (unweighted least squares on the mean values at the five radii, or weighted by their SE);
+# (7) the pixel to micron scale, as the text gives 300 um for a field of 256 by 455 pixels,
+# (a) 300 um along each image axis or (b) 300 um along the 455 pixel axis with square pixels;
+# (8) for disparity, whether cells with DSI < 0.1 are left out as individuals only (a) or also
+# from the populations (b); (9) the circular correlation as printed in the Methods (a) or the
+# Batschelet/CircStat circular correlation coefficient the Methods cite (b).
+schema_version: 2
+paper: doi:10.1016/j.neuron.2015.06.030
+claims:
+- id: fig1e-pv-tdtomato-colocalization
+  statement: tdTomato and endogenous PV co-localize broadly in V1 of PV-Cre;Ai14 mice; 1,274 of
+    1,613 PV+ cells expressed tdTomato (79.4% +/- 7.8% SD) and 1,274 of 1,354 tdTomato cells
+    expressed PV (94.3% +/- 3.6% SD), in 3 animals.
+  source: Results, Binocular Integration in PV+ and PV- cells of Mouse V1 Binocular Zone,
+    paragraph 1; Figure 1E
+  quote: "Broad co-localization of tdTomato and endogenous PV in V1 was established using post
+    hoc immunostaining (1,274 of 1,613 PV+ expressed tdTomato: 79.4% ± 7.8% SD; 1,274 of 1,354
+    tdTomato cells expressed PV: 94.3% ± 3.6% SD, n = 3 animals"
+  expected:
+  - quantity: PV+ cells expressing tdTomato
+    value: 79.4
+    tolerance: 7.8
+    unit: percent
+  - quantity: tdTomato cells expressing PV
+    value: 94.3
+    tolerance: 3.6
+    unit: percent
+  criterion: Histology (anti-PV immunostaining of fixed sections, four fields of view in V1,
+    layers 2 to 5, 3 mice; Experimental Procedures, Immunohistochemical Analysis). Tolerances
+    are the paper's SD across animals. The Methods state the two percentages the other way
+    round ("Most (94.3%) PV+ neurons expressed tdTomato, whereas ~80% tdTomato neurons were
+    PV+"), so the readings are (a) the Results' assignment and (b) the Methods' assignment; the
+    claim holds when the two percentages match under either. The data set is described as
+    imaging data; if it holds no histology the claim cannot be tested.
+- id: cell-counts-responsive
+  statement: Across 6 animals 338 PV+ neurons were identified, 115 (34%) visually responsive to
+    monocular and 236 (70%) to binocular stimuli; of 3,982 PV- neurons, 944 (24%) were
+    responsive to monocular and 2,001 (50%) to binocular stimuli.
+  source: Results, Binocular Integration in PV+ and PV- cells of Mouse V1 Binocular Zone,
+    paragraph 3
+  quote: we identified a total of 338 PV+ neurons, of which 115 (34%) were visually responsive
+    for monocular stimuli and 236 (70%) were visually responsive for binocular stimuli. We
+    identified 3,982 tdTomato ... (24%) were visually responsive for monocular stimuli and 2,001
+    (50%) were responsive for binocular stimuli
+  expected:
+  - quantity: PV+ neurons identified
+    value: 338
+    tolerance: 33.8
+  - quantity: PV+ responsive to monocular stimuli
+    value: 115
+    tolerance: 11.5
+  - quantity: PV+ responsive to binocular stimuli
+    value: 236
+    tolerance: 23.6
+  - quantity: PV- neurons identified
+    value: 3982
+    tolerance: 398.2
+  - quantity: PV- responsive to monocular stimuli
+    value: 944
+    tolerance: 94.4
+  - quantity: PV- responsive to binocular stimuli
+    value: 2001
+    tolerance: 200.1
+  criterion: Responsiveness by the Methods' criterion, (mean stimulus - mean blank) / (SE
+    stimulus + SE blank) >= 1 on the 0.5 s window response. The Methods require this for at
+    least one monocular and one binocular stimulus, but the Results count monocular and
+    binocular responsiveness separately and note binocular responses without monocular ones, so
+    the count is read as cells with at least one monocular stimulus passing, and cells with at
+    least one binocular stimulus passing, each counted on its own (counting only cells that meet
+    the joint criterion would make the two counts equal, which the reported numbers rule out).
+    The neuropil requirement (responses above the neuropil's
+    95% confidence interval) is applied where neuropil traces are available and the result
+    without it is shown; the paper does not define the neuropil region for this test. The
+    counts hold when all six values are within tolerance.
+- id: fig3abc-pv-more-binocular-fraction
+  statement: A larger proportion of PV+ cells than PV- cells respond to both eyes (64% against
+    45% with -0.5 < ODI < 0.5).
+  source: Results, Binocular Selectivity in Mouse V1, paragraph 3; Figures 3A to 3C
+  quote: A larger proportion of PV+ cells were activated by monocular stimulation of either eye
+    than were PV ... cells (64% and 45%, respectively,
+  expected:
+  - quantity: PV+ fraction with -0.5 < ODI < 0.5
+    value: 64
+    tolerance: 6.4
+    unit: percent
+  - quantity: PV- fraction with -0.5 < ODI < 0.5
+    value: 45
+    tolerance: 4.5
+    unit: percent
+  criterion: ODI from the Methods for each visually responsive cell. The denominator is not
+    given; the readings are (a) all visually responsive cells with an ODI and (b) cells
+    responsive to monocular stimuli (115 PV+, 944 PV-, claim cell-counts-responsive). Holds
+    when both fractions are within tolerance under one reading.
+  depends_on:
+  - cell-counts-responsive
+- id: fig3c-contralateral-bias
+  statement: Both PV+ and PV- populations are biased toward the contralateral eye.
+  source: Results, Binocular Selectivity in Mouse V1, paragraph 3; Figures 3A to 3C
+  quote: but both populations exhibited a bias for the contralateral eye (Figures 3A–3C)
+  criterion: The paper reports no test; the figure marks the median ODI (Figure 3 legend,
+    "Arrows indicate median value"), and ODI = -1 is contralateral only. Reproduced when the
+    median ODI is below 0 in both populations, among the cells of claim
+    fig3abc-pv-more-binocular-fraction under the same readings.
+  depends_on:
+  - fig3abc-pv-more-binocular-fraction
+- id: fig3-pv-lower-monocularity
+  statement: PV+ interneurons are significantly more binocular than PV- neurons (MI median 0.36,
+    mean 0.41 +/- 0.29 SD, against median 0.57, mean 0.58 +/- 0.32 SD; p = 0.01, Mann-Whitney).
+  source: Results, Binocular Selectivity in Mouse V1, paragraph 3; Figures 3A to 3C
+  quote: "PV+ interneurons were significantly more binocular than PV ... neurons (MI PV+: median
+    = 0.36, mean = 0.41 ± 0.29 SD; MI PV ... median = 0.57, mean = 0.58 ± 0.32 SD; p = 0.01,
+    Mann-Whitney test)"
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.01
+  expected:
+  - quantity: PV+ median MI
+    value: 0.36
+    tolerance: 0.036
+  - quantity: PV+ mean MI
+    value: 0.41
+    tolerance: 0.041
+  - quantity: PV- median MI
+    value: 0.57
+    tolerance: 0.057
+  - quantity: PV- mean MI
+    value: 0.58
+    tolerance: 0.058
+  criterion: MI = |ODI| (Methods) over the cells of claim fig3abc-pv-more-binocular-fraction,
+    under the same readings. The stated SDs describe the spread of cells, not the uncertainty of
+    the means, so 10% of each value is the tolerance. Reproduced when a two-sided Mann-Whitney
+    test of PV+ against PV- MI gives p <= 0.01 (the reported value, within rounding) with PV+
+    lower, and the four values are within tolerance; partially reproduced when the test holds
+    at p < 0.05 with PV+ lower but values fall outside tolerance.
+  depends_on:
+  - fig3abc-pv-more-binocular-fraction
+- id: mi-per-animal
+  statement: The monocularity difference holds animal by animal; across the 6 animals the mean
+    PV- MI is 0.58 +/- 0.04 SD and the mean PV+ MI 0.43 +/- 0.08 SD.
+  source: Results, Binocular Selectivity in Mouse V1, paragraph 3
+  quote: or analyzed separately for each animal (mean ... MI = 0.58 ± 0.04 SD, mean PV+ MI =
+    0.43 ± 0.08 SD, n = 6)
+  expected:
+  - quantity: mean over animals of the per-animal mean PV- MI
+    value: 0.58
+    tolerance: 0.058
+  - quantity: mean over animals of the per-animal mean PV+ MI
+    value: 0.43
+    tolerance: 0.043
+  criterion: Per animal, the mean MI of its PV+ and of its PV- cells (cells as in claim
+    fig3-pv-lower-monocularity); then the mean and SD over the 6 animals. 10% tolerance, as the
+    SDs are spreads over animals. Reproduced when both means are within tolerance and the PV+
+    mean is below the PV- mean; the number of animals in which PV+ MI is below PV- MI is
+    reported.
+  depends_on:
+  - fig3-pv-lower-monocularity
+- id: fig3def-pv-weaker-disparity-selectivity
+  statement: PV+ interneurons have weaker disparity selectivity than PV- neurons (DSI median
+    0.09, mean 0.12 +/- 0.10 SD, against median 0.26, mean 0.26 +/- 0.17 SD; p = 0.0001,
+    Mann-Whitney).
+  source: Results, Binocular Selectivity in Mouse V1, paragraph 4; Figures 3D to 3F
+  quote: "The pronounced binocularity of PV+ interneurons was coupled with weak binocular
+    disparity selectivity (Figures 3D–3F; PV ... DSI: median = 0.26, mean = 0.26 ± 0.17 SD; PV+
+    DSI: median = 0.09, mean = 0.12 ± 0.10 SD; p = 0.0001, Mann-Whitney test)"
+  statistics:
+  - test: Mann-Whitney test
+    p: 0.0001
+  expected:
+  - quantity: PV- median DSI
+    value: 0.26
+    tolerance: 0.026
+  - quantity: PV- mean DSI
+    value: 0.26
+    tolerance: 0.026
+  - quantity: PV+ median DSI
+    value: 0.09
+    tolerance: 0.009
+  - quantity: PV+ mean DSI
+    value: 0.12
+    tolerance: 0.012
+  criterion: DSI from the Methods (normalized vector strength over the eight binocular phases)
+    for visually responsive cells. Which cells enter is not stated; the readings are (a) cells
+    passing the joint visual response criterion, (b) cells responsive to binocular stimuli (236
+    PV+, 2,001 PV-). Negative responses are read (a) as measured and (b) set to zero, as the
+    vector strength assumes non-negative responses. 10% tolerance, as the SDs are spreads of
+    cells. Reproduced when a two-sided Mann-Whitney test gives p <= 0.0001 with PV+ lower and
+    the four values are within tolerance under one reading; partially reproduced when the test
+    holds at p < 0.05 with PV+ lower but values fall outside tolerance.
+  depends_on:
+  - cell-counts-responsive
+- id: mi-dsi-relation
+  statement: Monocularity and disparity selectivity are unrelated in PV+ neurons (mean slope
+    0.04 +/- 0.02 SE, bootstrapped PCA); in PV- neurons there is a weak positive relation (mean
+    slope 0.16 +/- 0.03 SE) that accounts for little variance (r2 = 0.08).
+  source: Results, Binocular Selectivity in Mouse V1, paragraph 5
+  quote: found no relationship between these measures in PV+ neurons (mean slope = 0.04 ± 0.02
+    SE, Bootstrapped PCA). There is a weak correlation in PV ... neurons (mean slope = 0.16 ±
+    0.03 SE ... and the slope accounts for little variance (r2 = 0.08)
+  expected:
+  - quantity: PV+ mean bootstrapped major-axis slope, MI and DSI
+    value: 0.04
+    tolerance: 0.02
+  - quantity: PV- mean bootstrapped major-axis slope, MI and DSI
+    value: 0.16
+    tolerance: 0.03
+  - quantity: PV- r2
+    value: 0.08
+    tolerance: 0.008
+  criterion: Bootstrapped major-axis PCA slope (Methods) of DSI and MI, cells as in claim
+    fig3def-pv-weaker-disparity-selectivity among those with an MI. Tolerances on slopes are
+    the paper's SE. The paper names no test or threshold for "no relationship" and calls a
+    slope of 0.04 +/- 0.02 none, so the claim is judged on the values. Open, (a) DSI on MI
+    (the order of the sentence, "comparing monocularity and disparity selectivity", with
+    monocular cells having greater DSI for a positive slope) or (b) MI on DSI; r2 is read as the
+    squared Pearson correlation of MI and DSI. Reproduced when, under one reading, the PV+ and
+    PV- slopes and the PV- r2 are within tolerance; partially reproduced when the PV+ slope is
+    within tolerance and the PV- slope is positive and larger, but values fall outside.
+  depends_on:
+  - fig3-pv-lower-monocularity
+  - fig3def-pv-weaker-disparity-selectivity
+- id: pv-larger-dff-low-dsi
+  statement: Among cells with comparable weak disparity selectivity (DSI < 0.1), PV+
+    interneurons have larger responses than PV- neurons (median dF/F over all binocular stimuli
+    6.2% against 4.3%; to the best binocular stimulus 8.7% against 6.6%; both p < 0.001,
+    Mann-Whitney), so tdTomato contamination does not weaken their signals.
+  source: Results, Potential Signal Contamination of PV+ Cell Calcium Responses, paragraph 1
+  quote: "PV+ interneurons exhibited greater response amplitudes than PV ... neurons (all
+    binocular stimuli: PV+ median DF/F = 6.2%, PV ... median DF/F = 4.3%, p < 0.001,
+    Mann-Whitney test; best binocular stimulus: PV+ median DF/F = 8.7%, PV ... median DF/F =
+    6.6%, p < 0.001, Mann-Whitney test)"
+  statistics:
+  - about: all binocular stimuli, PV+ against PV-
+    test: Mann-Whitney test
+    p: 0.001
+    p_relation: "<"
+  - about: best binocular stimulus, PV+ against PV-
+    test: Mann-Whitney test
+    p: 0.001
+    p_relation: "<"
+  expected:
+  - quantity: PV+ median dF/F, all binocular stimuli
+    value: 6.2
+    tolerance: 0.62
+    unit: percent
+  - quantity: PV- median dF/F, all binocular stimuli
+    value: 4.3
+    tolerance: 0.43
+    unit: percent
+  - quantity: PV+ median dF/F, best binocular stimulus
+    value: 8.7
+    tolerance: 0.87
+    unit: percent
+  - quantity: PV- median dF/F, best binocular stimulus
+    value: 6.6
+    tolerance: 0.66
+    unit: percent
+  criterion: Visually responsive cells with DSI < 0.1, responses as in the Methods (mean dF/F
+    in the 0.5 s window). "All binocular stimuli" is read as (a) each cell's mean over the
+    eight binocular conditions, then the median over cells, or (b) all cell-by-condition
+    responses pooled; "best" is each cell's largest binocular condition mean. Reproduced when,
+    under one reading, both two-sided Mann-Whitney tests give p < 0.001 with PV+ larger and the
+    four medians are within tolerance; partially reproduced when both tests hold with PV+
+    larger but medians fall outside tolerance.
+  depends_on:
+  - fig3def-pv-weaker-disparity-selectivity
+- id: figs3-pv-distinct-from-neuropil
+  statement: PV+ cells show ocular dominance and disparity tuning distinct from nearby neuropil,
+    and 28% of PV+ cells have no evoked activity while nearby neuropil is active, so neuropil
+    does not drive the PV+ selectivity.
+  source: Results, Potential Signal Contamination of PV+ Cell Calcium Responses, paragraph 1;
+    Supplementary Figure 3
+  quote: PV+ cells with low and high tdTomato expression exhibited distinct ocular dominance and
+    disparity tuning compared to nearby patches of neuropil (Figures S3A and S3B). We also
+    observed a large fraction of PV+ cells with no evoked activity (28%) relative to nearby
+    patches of active neuropil (Figure S3C).
+  expected:
+  - quantity: PV+ cells with no evoked activity while nearby neuropil is active
+    value: 28
+    tolerance: 2.8
+    unit: percent
+  criterion: Figures S3A and S3B are single examples, with no population measure, and are not
+    tested beyond being shown. For the 28%, the Methods do not define the neuropil patches used
+    here or "no evoked activity"; the readings are (a) the fraction of all identified PV+ cells
+    that fail the visual response criterion for every stimulus in planes whose neuropil passes
+    it, (b) the fraction of all PV+ cells that fail the criterion (338 cells, claim
+    cell-counts-responsive). Neuropil patches as in Supplementary Figure 5A (cell-sized regions
+    with only out-of-focus OGB-1 fluorescence, drawn to exclude neurons and astrocytes) where
+    the data set holds them. Holds when the fraction is within tolerance under one reading.
+  depends_on:
+  - cell-counts-responsive
+- id: fig4ag-salt-and-pepper
+  statement: Mouse V1 has no functional organization for ocular dominance or disparity
+    preference; response similarity is unrelated to distance between cells (MI, bootstrapped
+    PCA slope 0.01, p = 1; disparity, circular-linear correlation 0, p = 1, cells with DSI >
+    0.1).
+  source: Results, A Functional Organization of Binocularity, paragraph 1; Figures 4A and 4G
+  quote: "we measured the correlation between distance and binocular response similarity,
+    finding no relationship (monocularity [MI]: Bootstrapped PCA slope = 0.01, p = 1; disparity:
+    circular-linear correlation = 0, p = 1, for cells with DSI > 0.1)"
+  statistics:
+  - about: MI similarity against distance
+    test: Bootstrapped PCA
+    statistic: slope = 0.01
+    p: 1
+  - about: disparity preference difference against distance
+    test: circular-linear correlation
+    statistic: r = 0
+    p: 1
+  criterion: A claim of absence, judged at p < 0.05 (the paper reports p = 1 and states no
+    threshold for this test; 0.05 is a standard choice). Pairs of visually responsive cells within
+    an imaging session, 3D distance in microns. Disparity, from the Methods, the difference in
+    disparity preference of each pair against its distance, circular-linear correlation
+    (CircStat circ_corrcl), cells with DSI > 0.1; reproduced when p >= 0.05. MI, the Methods
+    do not define the similarity measure or the slope's p-value; the readings are (a) the
+    absolute MI difference of each pair against distance and (b) the MI of each cell against
+    the mean MI of cells at each distance; the p-value is read as (i) from the bootstrap
+    distribution of the slope (two-sided, against zero) or (ii) against slopes from cell
+    positions shuffled within the session, the only significance test for PCA slopes the
+    Methods describe; reproduced when p >= 0.05 under the reading run. The slope and
+    correlation values are reported either way.
+- id: fig4d-pv-od-matches-local-50um
+  statement: PV+ interneuron ocular dominance closely matches the average ocular dominance of
+    local PV- cells within 50 um (mean slope 0.78 +/- 0.25 SE, n = 86, bootstrapped PCA).
+  source: Results, A Functional Organization of Binocularity, paragraph 3; Figures 4C and 4D
+  quote: PV+ interneuron ocular dominance closely matched the local aggregate ocular dominance
+    within 50 mm, both for individual example cells (Figure 4C) and across our population (mean
+    slope = 0.78 ± 0.25 SE, n = 86, Bootstrapped PCA; Figure 4D, left)
+  expected:
+  - quantity: PV+ mean bootstrapped major-axis slope, individual against 50 um population ODI
+    value: 0.78
+    tolerance: 0.25
+  - quantity: PV+ cells in the 50 um analysis
+    value: 86
+    tolerance: 8.6
+  criterion: Local network analysis as in the opening comment (50 um sphere of visually
+    responsive PV- cells, at least 3 cells, individual cells at least 50 um from the image
+    edges), with each open reading run. Tolerance on the slope is the paper's SE. Reproduced
+    when the slope and the cell count are within tolerance under one reading and the slope
+    exceeds the shuffled slopes at p < 0.01 (claim fig4f-pv-od-spatial-decay).
+  depends_on:
+  - fig3abc-pv-more-binocular-fraction
+- id: fig4f-pv-od-spatial-decay
+  statement: The match between PV+ ocular dominance and the local population average decreases
+    with distance and is significant against shuffled populations only for the nearest
+    populations (50 and 75 um, p < 0.01).
+  source: Results, A Functional Organization of Binocularity, paragraph 3; Figures 4D and 4F
+  quote: As we increased the distance separating PV+ cells and neighboring populations, the
+    similarity between individual ODI and the population average systematically decreased
+    (Figures 4D and 4F). This relationship was only significant for the nearest PV ...
+    populations (50–75 mm, ... p < 0.01), in comparison to measurements from shuffled
+    populations of PV
+  statistics:
+  - about: PV+ mean PCA slope against shuffled populations, 50 and 75 um
+    test: comparison with slopes from shuffled PV- cell positions
+    p: 0.01
+    p_relation: "<"
+  criterion: Mean bootstrapped PCA slopes of PV+ individual against population ODI at the five
+    radii (50 um sphere; 75, 100, 125, 150 um shells), significance against slopes from PV- cell
+    positions shuffled within each session (Methods). Reproduced when, under one reading, the
+    slopes at 50 and 75 um are significant at p < 0.01, the slopes at 100, 125 and 150 um are
+    not significant at p < 0.01, and the 50 um slope is the largest; partially reproduced when
+    only the 50 um slope is significant or the pattern holds at p < 0.05 only.
+  depends_on:
+  - fig4d-pv-od-matches-local-50um
+- id: fig4f-od-length-constant
+  statement: An exponential fit to the PV+ ocular dominance slopes across radii gives a spatial
+    length constant of 71.4 um (r2 = 0.80).
+  source: Results, A Functional Organization of Binocularity, paragraph 3; Figure 4F
+  quote: we then extracted a spatial length constant (l) describing the functional relationship
+    of PV+ interneurons within the local network, yielding l of 71.4 mm (r2 = 0.80)
+  expected:
+  - quantity: lambda, ocular dominance
+    value: 71.4
+    tolerance: 7.14
+    unit: um
+  - quantity: r2 of the exponential fit
+    value: 0.8
+    tolerance: 0.08
+  criterion: y = a exp(-r/lambda) fitted to the PV+ mean PCA slopes of claim
+    fig4f-pv-od-spatial-decay against r = 50, 75, 100, 125, 150 um (Methods), each open reading
+    run, including the fit's weighting. The Discussion prints the same constant as 71.5 um,
+    inside the tolerance. Holds when lambda and r2 are within tolerance under one reading.
+  depends_on:
+  - fig4f-pv-od-spatial-decay
+- id: fig4ef-pvminus-od-unrelated
+  statement: Individual PV- ODI and local population averages are generally unrelated; there is
+    a weak but significant relation within 50 um (mean slope 0.10 +/- 0.02, n = 717, p < 0.01),
+    and none at other distances (p > 0.5), with no spatial dependence.
+  source: Results, A Functional Organization of Binocularity, paragraph 5; Figures 4E and 4F
+  quote: In contrast to PV+ interneurons, the individual ODI of PV ... neurons and local
+    population averages were generally unrelated (Figure 4E). A weak, but significant,
+    relationship was evident for neighbors with 50 mm (mean slope = 0.10 ± 0.02, n = 717,
+    Bootstrapped PCA, p < 0.01). Across all other distances, the ODI of ... neurons showed no
+    significant relationship with population aggregates and no spatial dependence (p > 0.5)
+  statistics:
+  - about: PV- slope at 50 um against shuffled populations
+    test: Bootstrapped PCA, against shuffled populations
+    p: 0.01
+    p_relation: "<"
+    n: 717 PV- neurons
+  - about: PV- slopes at 75 to 150 um
+    test: Bootstrapped PCA, against shuffled populations
+    p: 0.5
+    p_relation: ">"
+  expected:
+  - quantity: PV- mean bootstrapped major-axis slope at 50 um
+    value: 0.1
+    tolerance: 0.02
+  - quantity: PV- cells in the 50 um analysis
+    value: 717
+    tolerance: 71.7
+  criterion: The same local analysis as claim fig4d-pv-od-matches-local-50um with PV- cells as
+    individuals; the cell itself is left out of its own population (not stated; a cell cannot be
+    its own neighbour). Reproduced when the 50 um slope and count are within tolerance with the
+    slope significant at p < 0.01, and at 75 to 150 um no slope is significant at p < 0.01 (the
+    paper's absence, judged on its shuffle test at the threshold the paper uses for it);
+    partially reproduced when the absence holds
+    at the larger radii but the 50 um values are outside tolerance or not significant.
+  depends_on:
+  - fig4d-pv-od-matches-local-50um
+- id: figs6ab-pvminus-pv-like-od
+  statement: PV- cells with ODI similar to PV+ neurons (-0.5 < ODI < 0) show no spatial
+    dependence of ocular dominance, indistinguishable from shuffled populations (p > 0.10).
+  source: Results, A Functional Organization of Binocularity, paragraph 5; Supplementary Figures
+    S6A and S6B
+  quote: cells with a similar ODI as PV+ neurons ( ... 0.5 < ODI < 0) did not reveal a spatial
+    dependence (Figures S6A and S6B), and these measurements were indistinguishable from
+    shuffled populations (p > 0.10).
+  statistics:
+  - test: comparison with shuffled populations
+    p: 0.1
+    p_relation: ">"
+  criterion: A claim of absence. The analysis of claim fig4ef-pvminus-od-unrelated with
+    individual PV- cells restricted to -0.5 < ODI < 0. The Results restrict the individual cells
+    ("Limiting our analysis to PV- cells"); the legend ("These data include only PV- neurons
+    with similar eye preference") leaves open whether the populations are restricted too, so
+    the readings are (a) populations unrestricted and (b) populations restricted to the same
+    range. Reproduced when at no radius the mean PCA slope
+    differs from the shuffled slopes at p < 0.10, the paper's threshold; not reproduced when
+    any does. Slopes are reported at all radii.
+  depends_on:
+  - fig4ef-pvminus-od-unrelated
+- id: figs4-same-plane-control
+  statement: PV+ interneurons still match population ocular dominance at small radii when
+    neighbours in the same focal plane are excluded, and PV+ cells also show a distance-dependent
+    relation with populations drawn from their own focal plane only.
+  source: Results, A Functional Organization of Binocularity, paragraph 4; Supplementary Figures
+    S4A and S4B
+  quote: Under this constraint, PV+ interneurons still strongly matched population averages for
+    smaller radii (Figure S4A). PV+ interneurons within the same focal plane also exhibited a
+    distance-dependent relationship with population averages (Figure S4B).
+  criterion: The analysis of claim fig4f-pv-od-spatial-decay with populations limited to cells
+    outside the individual cell's focal plane (A) or inside it (B). No numbers or tests are
+    given; significance is read as in claim fig4f-pv-od-spatial-decay (shuffle, p < 0.01). "Smaller
+    radii" is read as (a) 50 um or (b) 50 and 75 um. Reproduced when in (A) the slope is
+    significant at the smaller radii under one reading and in (B) the slopes decrease from
+    50 um to 150 um with the 50 um slope significant; partially reproduced when one of the two
+    holds.
+  depends_on:
+  - fig4f-pv-od-spatial-decay
+- id: figs5-neuropil-no-relation
+  statement: Neuropil patches show no relation to local population averages, for ocular
+    dominance or disparity preference (n = 480 patches).
+  source: Results, A Functional Organization of Binocularity, paragraph 4; Supplementary Figure 5
+  quote: Here we found no relationship between individual neuropil patches and local population
+    averages (n = 480 patches, Figures S5B–S5E).
+  expected:
+  - quantity: neuropil patches
+    value: 480
+    tolerance: 48
+  criterion: A claim of absence. The local analyses of claims fig4f-pv-od-spatial-decay and
+    fig4k-pv-disparity-length-constant with neuropil patches (cell-sized regions with only
+    out-of-focus OGB-1 fluorescence; Supplementary Figure 5A) as individuals; disparity for
+    patches with DSI > 0.1 (S5D legend). The paper names no threshold for this absence; the
+    shuffle test at p < 0.01 used for PV+ cells is applied. Reproduced when no radius gives a
+    significant slope or shuffle-corrected correlation; not reproduced when any does. The paper
+    shows one animal in S5B and S5D; whether the 480 patches span more animals is not stated.
+  depends_on:
+  - fig4f-pv-od-spatial-decay
+  - fig4k-pv-disparity-length-constant
+- id: fig5-camkii-responsive
+  statement: In AAV-infected mice, CaMKIIa+ excitatory neurons gave robust calcium responses to
+    monocular (n = 285) and binocular (n = 306) stimuli.
+  source: Results, A Functional Organization of Binocularity, paragraph 6; Figure 5D
+  quote: Individual excitatory neurons exhibited robust calcium responses to monocular (n = 285)
+    and binocular (n = 306) visual stimuli
+  expected:
+  - quantity: CaMKIIa+ neurons responsive to monocular stimuli
+    value: 285
+    tolerance: 28.5
+  - quantity: CaMKIIa+ neurons responsive to binocular stimuli
+    value: 306
+    tolerance: 30.6
+  criterion: Counts under the readings of claim cell-counts-responsive, among tdTomato+ cells
+    of the 2 rAAV CaMKIIa-nls-tdTomato animals. Holds when both counts are within tolerance
+    under one reading.
+- id: fig5e-camkii-od-unrelated
+  statement: The ocular dominance of individual CaMKIIa+ excitatory neurons does not reflect the
+    local population average even at 50 um (mean PCA slope 0.01 +/- 0.07 SE, n = 50).
+  source: Results, A Functional Organization of Binocularity, paragraph 6; Figure 5E
+  quote: neurons, the ocular dominance of individual excitatory neurons did not reflect the
+    population average even at the shortest distance measured (radius = 50 mm; mean PCA slope =
+    0.01 ± 0.07 SE, n = 50; Figure 5E)
+  expected:
+  - quantity: CaMKIIa+ mean bootstrapped major-axis slope at 50 um
+    value: 0.01
+    tolerance: 0.07
+  - quantity: CaMKIIa+ cells in the 50 um analysis
+    value: 50
+    tolerance: 5
+  criterion: The local analysis of claim fig4d-pv-od-matches-local-50um with CaMKIIa+ cells as
+    individuals and populations of both tdTomato+ and tdTomato- visually responsive cells
+    (Results, paragraph 6). Tolerance on the slope is the paper's SE. Reproduced when the slope
+    is within tolerance and does not differ from the shuffled slopes at p < 0.01 at any radius
+    (Figure 5E shows all radii); the count is reported.
+  depends_on:
+  - fig5-camkii-responsive
+- id: fig4i-pv-disparity-matches-local
+  statement: Despite their weak selectivity, PV+ interneurons' disparity preferences are similar
+    to those of nearby populations, significantly correlated with the 50 um population vector
+    angle (shuffle-corrected r = 0.19 +/- 0.07 SE, n = 63).
+  source: Results, A Functional Organization of Binocularity, paragraph 7; Figures 4H and 4I
+  quote: Despite the weak disparity selectivity of PV+ interneurons, their individual angular
+    biases are similar to that of nearby populations (Figure 4I). ... PV+ interneuron disparity
+    preference was significantly correlated with populations composed of the nearest neighbors
+    (radius = 50 mm; r = 0.19 ± 0.07 SE, n = 63).
+  expected:
+  - quantity: PV+ shuffle-corrected circular correlation at 50 um
+    value: 0.19
+    tolerance: 0.07
+  - quantity: PV+ cells in the 50 um disparity analysis
+    value: 63
+    tolerance: 6.3
+  criterion: Individual PV+ cells with DSI >= 0.1; population vector (1/n) sum DSI_n
+    exp(i psi_n) of visually responsive PV- cells in the 50 um sphere; circular correlation of
+    individual preference and population angle, minus its value for PV- positions shuffled
+    within the session (Methods), SE by bootstrap. Open readings (8) and (9) of the opening
+    comment are run. The test behind "significantly" is not stated; the readings are (a) the
+    true correlation against the shuffled distribution at p < 0.05 and (b) the shuffle-corrected
+    value more than 1.96 bootstrap SE above zero. Reproduced when, under one reading, the value
+    and count are within tolerance and the correlation is significant.
+  depends_on:
+  - fig3def-pv-weaker-disparity-selectivity
+- id: fig4k-pv-disparity-length-constant
+  statement: PV+ disparity preference shows a spatial dependence in its correlation with
+    population vector angles; an exponential fit gives a length constant of 78.7 um (r2 = 0.63),
+    similar to that for ocular dominance.
+  source: Results, A Functional Organization of Binocularity, paragraph 7; Figure 4K
+  quote: The exponential fit to these data resulted in a similar l as for ODI (l = 78.7 mm),
+    albeit capturing less variance (r2 = 0.63).
+  expected:
+  - quantity: lambda, disparity preference
+    value: 78.7
+    tolerance: 7.87
+    unit: um
+  - quantity: r2 of the exponential fit
+    value: 0.63
+    tolerance: 0.063
+  criterion: The shuffle-corrected circular correlations of claim
+    fig4i-pv-disparity-matches-local at the five radii, fitted with y = a exp(-r/lambda)
+    (Methods), each open reading run. Holds when lambda and r2 are within tolerance under one
+    reading and the correlation decreases from 50 um to 150 um.
+  depends_on:
+  - fig4i-pv-disparity-matches-local
+- id: fig4jk-pvminus-disparity-weak
+  statement: PV- neurons' disparity preferences show little relation to population biases; the
+    shuffle-corrected circular correlation is significant only for the nearest neighbours
+    (50 um, r = 0.05 +/- 0.02, n = 1,090).
+  source: Results, A Functional Organization of Binocularity, paragraph 8; Figures 4J and 4K
+  quote: neurons, we found little relationship between population biases and the disparity
+    preference of individual cells (Figures 4J and 4K). A shuffled-corrected circular-correlation
+    was only significant for the nearest neighboring neurons (radius = 50 mm; r = 0.05 ± 0.02, n =
+    1,090).
+  expected:
+  - quantity: PV- shuffle-corrected circular correlation at 50 um
+    value: 0.05
+    tolerance: 0.02
+  - quantity: PV- cells in the 50 um disparity analysis
+    value: 1090
+    tolerance: 109
+  criterion: The analysis of claim fig4i-pv-disparity-matches-local with PV- cells (DSI >= 0.1)
+    as individuals, the cell left out of its own population, under the same readings of
+    significance. Reproduced when the 50 um value and count are within tolerance, the 50 um
+    correlation is significant and none at 75 to 150 um is; partially reproduced when only the
+    pattern of significance or only the values hold.
+  depends_on:
+  - fig4i-pv-disparity-matches-local
+- id: figs6cd-pvminus-pv-like-disparity
+  statement: The lack of relation between PV- disparity preference and local populations is more
+    evident for PV- cells with disparity tuning comparable to PV+ interneurons (0.1 < DSI < 0.2).
+  source: Results, A Functional Organization of Binocularity, paragraph 8; Supplementary Figures
+    S6C and S6D
+  quote: neurons and local populations was more evident when restricting our analysis to cells
+    with disparity tuning comparable to PV+ interneurons (0.1 < DSI < 0.2; Figures S6C and S6D).
+  criterion: A claim of absence. The analysis of claim fig4jk-pvminus-disparity-weak with
+    individual PV- cells restricted to 0.1 < DSI < 0.2; as in claim figs6ab-pvminus-pv-like-od,
+    the populations are read (a) unrestricted and (b) restricted to the same range, as the
+    legend leaves this open. The paper gives no test or threshold
+    for this panel; the significance readings of claim fig4i-pv-disparity-matches-local are
+    applied at p < 0.05. Reproduced when no radius gives a significant shuffle-corrected
+    correlation; not reproduced when any does. Values at all radii are reported.
+  depends_on:
+  - fig4jk-pvminus-disparity-weak
+- id: fig5f-camkii-disparity-unrelated
+  statement: The disparity preference of individual CaMKIIa+ excitatory neurons does not reflect
+    nearby population averages and shows no significant spatial relationship.
+  source: Results, A Functional Organization of Binocularity, paragraph 8; Figure 5F
+  quote: neurons, the disparity preference of individual excitatoryneurons expressing CaMKIIa
+    also did notreflectnearby population averages and exhibited no significant spatial
+    relationship (Figure 5F).
+  criterion: A claim of absence. The analysis of claim fig4i-pv-disparity-matches-local with
+    CaMKIIa+ cells (DSI >= 0.1) as individuals and populations of tdTomato+ and tdTomato- cells.
+    No test or threshold is given for this panel; the significance readings of claim
+    fig4i-pv-disparity-matches-local are applied at p < 0.05. Reproduced when no radius gives a
+    significant shuffle-corrected correlation; not reproduced when any does. Values and counts
+    at all radii are reported.
+  depends_on:
+  - fig5-camkii-responsive
+  - fig4i-pv-disparity-matches-local
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Sources in Results, A Functional Organization of Binocularity, renumbered. The writer counted page breaks as paragraph breaks, but "From these data (Figure 4F)" continues paragraph 3 on the same printed line and "OD. Here, surrounding populations" finishes a sentence begun on the previous page. fig4f-od-length-constant 4 to 3; figs4-same-plane-control and figs5-neuropil-no-relation 5 to 4; fig4ef-pvminus-od-unrelated and figs6ab-pvminus-pv-like-od 6 to 5; fig5-camkii-responsive and fig5e-camkii-od-unrelated 7 to 6 (and the fig5e criterion's "paragraph 8" to 6); fig4i-pv-disparity-matches-local and fig4k-pv-disparity-length-constant 9 to 7; fig4jk-pvminus-disparity-weak, figs6cd-pvminus-pv-like-disparity and fig5f-camkii-disparity-unrelated 10 to 8.
+  - cell-counts-responsive, reading (b) (counts among cells meeting the joint criterion) removed. Under it the monocular and binocular counts are the same cells, so it cannot give the different counts the paper reports (115 against 236, 944 against 2,001).
+  - fig4ef-pvminus-od-unrelated, the absence at 75 to 150 um is now judged at p < 0.01 in place of p < 0.05. The 0.05 came from no part of the paper; the paper's shuffle test of PCA slopes is reported at p < 0.01 (Results paragraphs 3 and 5) and the protocol judges an absence at the paper's threshold.
+  - fig4ag-salt-and-pepper, the p < 0.05 threshold is now marked as a standard choice, since the paper reports p = 1 and states no threshold. A reading (ii) for the MI slope's p-value was added, the within-session position shuffle, which is the only significance test for PCA slopes in the Methods (Local Network Analysis).
+  - figs6ab-pvminus-pv-like-od and figs6cd-pvminus-pv-like-disparity, the restriction of the populations to the same ODI or DSI range is now named as open with both readings. The Results restrict the individual cells, but the Supplementary Figure 6 legends ("These data include only PV- neurons ...") do not say whether the populations are restricted too. The writer had taken unrestricted as settled.
+  - Open, not settled. The paragraph numbers in Results, Binocular Selectivity in Mouse V1 (3, 4, 5) and the break before "PV+ interneuronsalso exhibited spatialdependence" (paragraph 7 here) cannot be confirmed from the extracted text, as no PDF rendering tool was available. The sources still locate each passage by its figure panels.
+  - Open, not settled. The significance threshold for the shuffle-corrected circular correlation (fig4i-pv-disparity-matches-local, fig4jk-pvminus-disparity-weak, figs6cd-pvminus-pv-like-disparity, fig5f-camkii-disparity-unrelated) is not given in the paper; p < 0.05 is kept as a standard choice, with p < 0.01 (the paper's threshold for the PCA slope shuffle test) as the stricter alternative.
+  - Open, not settled. Whether the counts in fig5-camkii-responsive (285, 306) are tdTomato+ cells only (the plain reading of "Individual excitatory neurons") is not confirmed elsewhere in the paper. The 50 um analysis keeps only 50 of them (16%), against 36% for PV+ and PV- cells.
