@@ -1,0 +1,473 @@
+schema_version: 3
+id: niknam-2019-01
+datasets:
+- archive: crcns
+  id: mt-3
+  version: unversioned
+  doi: 10.6080/K0FB514J
+  relation: primary
+paper: doi:10.1371/journal.pcbi.1007275
+date: '2026-11-11'
+entry: niknam-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42964393998
+inputs:
+- what: RF, FF and ST probe of each neuron (probe_list of assets/data/main_lists.mat); the file's other,
+    undocumented tables (nuron_list, nsglm_list, twobm_list, gauss_list, aggat_list) are shown for reference
+    and decide no outcome. The repository's copies of the neuron files are compared with the CRCNS files.
+  source: https://github.com/nnategh/SFA-Models at commit 1438dde9dd3207348ec0df1e5c4dd2a7b014e68e
+outcomes:
+- claim: probe-locations-link
+  outcome: reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:probe-locations-link
+  notes: All 41 files match a probe_list row by session and channel, and all 41 rows have a file. The
+    RF recomputed by D1 with onsets is the listed RF for 38 neurons and a neighbour for the other 3 (41
+    of 41; also 41 with every-ms presentations). FF minus RF offsets are (-3, 0) for 26 neurons, (-2,
+    0) for 1 and (2, 0) for 14, giving 27 leftward and 14 rightward neurons. The neuron files in the code
+    repository are identical to the CRCNS files in all four variables.
+- claim: methods-neuron-counts
+  outcome: reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:methods-neuron-counts
+  measured:
+  - 41
+  - 11
+  - 27
+  - 14
+  notes: 41 neurons in 11 sessions (first 8 digits of the file name); by the sign of the listed FF minus
+    RF offset, 27 neurons from 9 sessions are leftward and 14 from 2 sessions (20151214, 20151215) rightward,
+    and each session has one direction. Per-session counts match the data descriptor. The 49 isolated
+    units cannot be checked; the 8 discarded are not in the data set, as the descriptor says.
+  deviations:
+  - Saccade direction is not in the data set; it is read from the code's probe_list, as the criterion
+    says.
+- claim: fig1b-saccadic-suppression
+  outcome: reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig1b-saccadic-suppression
+  measured:
+  - 8
+  - 2.235
+  - 1.239
+  notes: Under O1 b with onsets, 8 neurons are significant, and their normalized RF response over 50-75
+    ms falls from 2.235 +- 0.291 to 1.239 +- 0.183 (O4 a); the O4 b peaks are 2.541 and 1.530. All three
+    numbers are within tolerance. The unpaired variant (c) gives 9 neurons, 2.291 to 1.297. With every-ms
+    presentations (O2 ii) the condition reading gives 4 neurons (1.714 to 1.063) and the unpaired one
+    12 (1.887 to 1.215). The 8 neurons come from 5 sessions; per-neuron p values are 0.0002 to 0.043.
+    The code's undocumented nuron_list also marks 8 suppressed neurons, and 35 of 41 neurons agree with
+    it on this classification.
+  deviations: &id001
+  - Pairing by trial (O1 a) gives no pairs in any neuron, because no trial shows the same probe in both
+    the fixation and the perisaccadic window; the outcome rests on pairing by condition (O1 b), the other
+    reading the criterion lets decide.
+  - Presentations are the first ms of each run of a probe code (O2 i); runs of 14 or 21 ms count once.
+    Windows are taken inclusive at 1 ms, as get_mean_resp.m indexes t:t+window, a standard choice. Saccade
+    onset is sample tsaccade in MATLAB's 1-based indexing, as select_bases.m reads it (tsaccade(i) + times).
+- claim: fig1c-ff-remapping
+  outcome: not_reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig1c-ff-remapping
+  measured:
+  - 8
+  - 0.792
+  - 1.609
+  notes: 'Under O1 b with onsets 8 neurons show FF-remapping (paper 23), with the normalized late FF response
+    rising from 0.792 +- 0.037 to 1.609 +- 0.111 (paper 0.90 to 1.30); the rise is there but none of the
+    three numbers is within tolerance, so the partial rule (direction and one number) is not met. Variants:
+    unpaired with onsets 10 neurons (0.825 to 1.637); condition with every-ms presentations 9 (0.820 to
+    1.586); unpaired with every-ms presentations 17 (0.888 to 1.427, fixation value within tolerance).
+    The code''s nuron_list marks 23 FF neurons; 26 of 41 neurons agree with it under O1 b. The FF probe
+    is taken from probe_list. The difference may come from how the paper paired or pooled presentations,
+    which the Methods do not say.'
+  deviations: *id001
+- claim: fig1d-st-remapping
+  outcome: not_reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig1d-st-remapping
+  measured:
+  - 11
+  - 0.749
+  - 1.629
+  notes: 'Under O1 b with onsets 11 neurons show ST-remapping (paper 37), rising from 0.749 +- 0.046 to
+    1.629 +- 0.112 (paper 0.83 to 1.35); no number within tolerance. Variants: unpaired with onsets 24
+    neurons (0.781 to 1.439), condition with every-ms presentations 9, unpaired with every-ms presentations
+    31 (0.823 to 1.369, both values within tolerance, count outside). The code''s nuron_list marks 37
+    ST neurons; the unpaired every-ms variant finds 31 of them, the O1 b reading 11. The ST probe is taken
+    from probe_list, whose selection used the same perisaccadic increase.'
+  deviations: *id001
+- claim: fig1e-ff-and-st-remapping
+  outcome: not_reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig1e-ff-and-st-remapping
+  measured:
+  - 6
+  - 0.777
+  - 1.68
+  - 0.75
+  - 1.789
+  notes: Under O1 b with onsets 6 neurons show both effects (paper 22); FF 0.777 to 1.680 and ST 0.750
+    to 1.789, both rising, none of the five numbers within tolerance (the partial rule needs two). The
+    unpaired every-ms variant gives 17 neurons with 3 of 5 numbers within tolerance (FF 0.888 to 1.427,
+    ST 0.779 to 1.496). The code's nuron_list has 22 neurons with both.
+  deviations: *id001
+- claim: fig1-remapping-longer-latency
+  outcome: reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig1-remapping-longer-latency
+  notes: The smoothed (FWHM 13 ms) neuron-averaged fixation RF response of all 41 neurons peaks at 62
+    ms; the perisaccadic FF response of the FF-remapping neurons peaks at 108 ms and the ST response of
+    the ST-remapping neurons at 99 ms under O1 b with onsets. Every reading with neurons gives RF 59-62
+    ms, FF 103-108 ms and ST 96-128 ms. The selected populations are smaller than the paper's (8 and 11
+    neurons). Single-neuron peaks are spread (FF 12 to 150 ms, ST 0 to 150 ms).
+  deviations:
+  - Pairing by trial (O1 a) gives no pairs in any neuron, because no trial shows the same probe in both
+    the fixation and the perisaccadic window; the outcome rests on pairing by condition (O1 b), the other
+    reading the criterion lets decide.
+  - Presentations are the first ms of each run of a probe code (O2 i); runs of 14 or 21 ms count once.
+    Windows are taken inclusive at 1 ms, as get_mean_resp.m indexes t:t+window, a standard choice. Saccade
+    onset is sample tsaccade in MATLAB's 1-based indexing, as select_bases.m reads it (tsaccade(i) + times).
+  - The measure (peak latency of the smoothed population response) is the criterion's; the paper states
+    the latencies from its figure.
+- claim: fig1-example-neurons
+  outcome: partially_reproduced
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig1-example-neurons
+  notes: 'With onsets, three of four examples are matched on both values and a significant D2 test: FF
+    example 2015071702 (7.83 to 18.96 spk/s, p 0.0166), ST example 2015092707 (23.61 to 64.64, p 0.0059),
+    example with both 2015051115 (FF 15.76 to 39.10, p 0.0006; ST 16.05 to 36.17, p 0.0004). Perisaccadic
+    means equal the paper''s to the second decimal for 64.64, 39.10 and 36.17, so these are likely the
+    paper''s neurons. No neuron matches the RF example; 2015092709 has the paper''s perisaccadic 40.49
+    +- 12.64 but a fixation rate of 56.94 +- 2.71 against 60.89 +- 2.82, and p 0.486 under O1 b. With
+    every-ms presentations (variant) 2015083106 matches the RF example. The paper''s p < 0.001 holds here
+    only for the example with both effects. The fixation rates differ slightly from the paper''s in every
+    example (for example 7.83 against 7.90), which points to a fixation set slightly different from -500
+    to -100 ms.'
+  deviations:
+  - Pairing by trial (O1 a) gives no pairs in any neuron, because no trial shows the same probe in both
+    the fixation and the perisaccadic window; the outcome rests on pairing by condition (O1 b), the other
+    reading the criterion lets decide.
+  - Presentations are the first ms of each run of a probe code (O2 i); runs of 14 or 21 ms count once.
+    Windows are taken inclusive at 1 ms, as get_mean_resp.m indexes t:t+window, a standard choice. Saccade
+    onset is sample tsaccade in MATLAB's 1-based indexing, as select_bases.m reads it (tsaccade(i) + times).
+  - Rates are mean spike counts per ms over the window times 1000, SE across presentations (the criterion's
+    measure).
+- claim: fig3-example-trial-predictions
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) and the F-model. The notebook ports the parameter selection
+    of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600
+    single-parameter fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for
+    41 neurons; a fully batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over
+    the 60 minute notebook limit and the time left in the run. Not run beyond that benchmark; no model
+    was fitted.'
+- claim: fig5a-n-model-no-perisaccadic-gain
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the N-model, which the paper describes only as the model of ref [48] (Methods, Model evaluation,
+    "as detailed in [48]") and the Results paragraph on Fig 4. The reference list is not in the text read,
+    the code repository holds no N-model, and main_lists.mat has only its per-neuron classification (nsglm_list).
+    The claims file (O8) blocks the claim when ref [48] cannot be identified. Fitting any such model for
+    41 neurons would also meet the cost of the S-model claims. Asked of the paper's authors in the findings.
+- claim: fig5a-s-model-perisaccadic-better
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4). The notebook ports the parameter selection of select_bases.m
+    and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
+    fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully
+    batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook
+    limit and the time left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig5a-f-model-perisaccadic-better
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) and the F-model fitted to its kernels. The notebook
+    ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
+    parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit in this port, about
+    1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about
+    7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the run. Not run beyond
+    that benchmark; no model was fitted.'
+- claim: fig5a-s-f-beat-n-model
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4), the F-model and the N-model (ref [48], which the text
+    read does not identify and the code does not hold). The notebook ports the parameter selection of
+    select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600
+    single-parameter fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for
+    41 neurons; a fully batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over
+    the 60 minute notebook limit and the time left in the run. Not run beyond that benchmark; no model
+    was fitted.'
+- claim: fig5b-st-remapping-better-than-n
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4), the F- and A-models (ten fits each), 1000 simulated
+    sequences per model and the N-model. The notebook ports the parameter selection of select_bases.m
+    and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
+    fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully
+    batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook
+    limit and the time left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig5b-ff-remapping-a-model-only
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4), the F- and A-models (ten fits each), 1000 simulated
+    sequences per model and the N-model. The notebook ports the parameter selection of select_bases.m
+    and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
+    fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully
+    batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook
+    limit and the time left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig5b-suppression-no-difference
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4), the F- and A-models (ten fits each), 1000 simulated
+    sequences per model and the N-model. The notebook ports the parameter selection of select_bases.m
+    and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
+    fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully
+    batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook
+    limit and the time left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig5c-f-higher-ratio-than-s
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) and the F-model. The notebook ports the parameter selection
+    of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600
+    single-parameter fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for
+    41 neurons; a fully batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over
+    the 60 minute notebook limit and the time left in the run. Not run beyond that benchmark; no model
+    was fitted.'
+- claim: fig5c-source-contributions
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4), the F-model and seven partial F-models. The notebook
+    ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
+    parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit in this port, about
+    1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about
+    7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the run. Not run beyond
+    that benchmark; no model was fitted.'
+- claim: fig5c-percent-changes
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4), the F-model and seven partial F-models. The notebook
+    ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
+    parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit in this port, about
+    1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about
+    7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the run. Not run beyond
+    that benchmark; no model was fitted.'
+- claim: fig6a-model-saccadic-suppression
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated
+    sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron
+    and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to
+    7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig6b-model-ff-remapping
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated
+    sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron
+    and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to
+    7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig6c-model-st-remapping
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated
+    sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron
+    and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to
+    7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig6d-model-ff-and-st-remapping
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated
+    sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron
+    and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to
+    7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig6-example-neuron-predictions
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated
+    sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron
+    and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to
+    7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig7-prevalence-maps-correlate
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the A-model predictions. The notebook
+    ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
+    parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit in this port, about
+    1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about
+    7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the run. Not run beyond
+    that benchmark; no model was fitted.'
+- claim: fig7-experimental-maps-lower
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, and the A-model predictions. The notebook
+    ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
+    parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit in this port, about
+    1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about
+    7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the run. Not run beyond
+    that benchmark; no model was fitted.'
+- claim: fig8c-example-neuron-detectability
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, the A-model, and an ROC analysis over 1000
+    simulated sequences. The notebook ports the parameter selection of select_bases.m and times it on
+    one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron,
+    6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig8d-equal-detectability-at-55ms
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, the A-model, and an ROC analysis over 1000
+    simulated sequences. The notebook ports the parameter selection of select_bases.m and times it on
+    one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron,
+    6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig8e-example-neuron-time-course
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times, the A-model, and an ROC analysis over 1000
+    simulated sequences. The notebook ports the parameter selection of select_bases.m and times it on
+    one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron,
+    6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
+    only nonzero samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time
+    left in the run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig8e-population-ff-detectability
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times and the A-model of every FF-remapping neuron.
+    The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe:
+    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit
+    in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero
+    samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the
+    run. Not run beyond that benchmark; no model was fitted.'
+- claim: fig8e-population-st-detectability
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) ten times and the A-model of every ST-remapping neuron.
+    The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe:
+    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit
+    in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero
+    samples needs about 7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the
+    run. Not run beyond that benchmark; no model was fitted.'
+- claim: figs4-f-model-share-of-s-model
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) and the F-model. The notebook ports the parameter selection
+    of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600
+    single-parameter fits per neuron, 6 to 7 ms per fit in this port, about 1,000 hours on 4 CPUs for
+    41 neurons; a fully batched port evaluating only nonzero samples needs about 7 hours on 4 CPUs, over
+    the 60 minute notebook limit and the time left in the run. Not run beyond that benchmark; no model
+    was fitted.'
+- claim: figs5-spike-history-no-effect
+  outcome: blocked
+  blocked_by: too_large
+  notebook: reproduce_niknam_2019.ipynb
+  output: claim:fig5a-s-model-perisaccadic-better
+  notes: 'Needs the S-model fitted per neuron (D4) and simulated spike history. The notebook ports the
+    parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
+    parameters and 58,125,600 single-parameter fits per neuron, 6 to 7 ms per fit in this port, about
+    1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about
+    7 hours on 4 CPUs, over the 60 minute notebook limit and the time left in the run. Not run beyond
+    that benchmark; no model was fitted.'
+- claim: figs1-rf-centres
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Converting grid positions to dva needs each session's grid position and probe spacing. The files
+    hold only probe codes on the 9 x 9 grid, the data descriptor gives no geometry, the code repository
+    has none (get_info.m gives only the 9 x 9 size), and the paper gives only the ranges of grid extent
+    and spacing (Methods, paragraph 1).
+findings:
+- kind: metadata_insufficient
+  statement: The data set does not give the saccade direction of each session, each neuron's RF, FF and
+    ST probe, the position and spacing of the probe grid in each session, or which of the two monkeys
+    each session comes from. The probes are only in main_lists.mat of the paper's code repository, and
+    the grid geometry is nowhere, so the RF centres of S1 Fig cannot be computed.
+- kind: metadata_error
+  statement: The paper and the descriptor say each probe lasted 7 ms with exactly one probe on screen
+    at each time. In the files 91.5% of probe runs last 7 ms, 5.6% last 6 ms and others 14 or 21 ms, and
+    the sequences contain gaps of 10 to 21 ms with no probe (code 0). The arrays are 3000 ms long with
+    probes until 1468 to 2371 ms, while the paper gives trials of 2100 to 2300 ms.
+- kind: methods_unavailable
+  statement: 'The Methods test each effect with a one-sided Wilcoxon signed-rank test but do not say what
+    is paired. Pairing by trial is impossible in these data, as no trial shows the same probe in both
+    windows; pairing by condition gives 8 suppressed, 8 FF-remapping and 11 ST-remapping neurons against
+    the paper''s 8, 23 and 37. An unpaired test on every millisecond a probe is on gives 12, 17 and 31.
+    Question for the authors: which presentations, pairs and test produced the classification of Figure
+    1 (and the nuron_list of main_lists.mat)? The example neurons'' fixation rates also differ slightly
+    from the paper''s (RF example 56.94 against 60.89 spk/s, with an equal perisaccadic value), so the
+    fixation set used for Figure 1 may differ from -500 to -100 ms.'
+- kind: metadata_insufficient
+  statement: main_lists.mat in the code repository holds five 41 x 6 tables besides probe_list (nuron_list,
+    nsglm_list, twobm_list, gauss_list, aggat_list) that no code reads and nothing documents. Their column
+    sums match the paper's counts (nuron_list 8, 23, 23 and 37; aggat_list and nuron_list together 7,
+    18, 20 and 24, against the paper's 7, 20 and 24 for the A-model), so they appear to be the per-neuron
+    classifications of Figures 1, 5 and 6.
+- kind: methods_unavailable
+  statement: 'The N-model of Figure 5 is described only by reference [48], and the code repository holds
+    no code for it, nor for the Wilcoxon and McNemar tests, the partial F-models, the prevalence maps
+    or the detectability analysis. Question for the authors: which publication and code define the N-model
+    as fitted here?'
