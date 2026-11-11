@@ -1,0 +1,5 @@
+I judged the one paper as **partial**, and the match file passes validation.
+
+**doi:10.1038/s41586-020-2728-4** (Kennedy et al. 2020, "Stimulus-specific hypothalamic encoding of a persistent defensive state")
+- **What decided it:** a figure legend in the paper (Extended Data 7) describes its imaging cohort as "across three days of imaging, from the n=5 microendoscopic imaging mice". The archive has the same thing: 15 files, mice M1 to M5 with session1 to session3 each, holding "GCaMP traces, behavioural annotation (timing of behaviour)". So the findings from the single-cell imaging in Figs 2 to 4 and their Extended Data can be tested on this dataset.
+- **Why not primary:** the paper also rests on fiber photometry, optogenetic silencing, rat exposure behaviour assays, and slice and extracellular electrophysiology. None of those are in the dataset. The paper's data statement says only that data are "available from the corresponding author upon reasonable request". It names no other dataset, so I left `data_in` empty.

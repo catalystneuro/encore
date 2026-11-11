@@ -1,0 +1,530 @@
+# Claims for Wakhloo, Slatton & Chung (2026), "Neural population geometry and optimal coding of
+# tasks with shared latent structure", Nat Neurosci, doi:10.1038/s41593-025-02183-y, tested on
+# DANDI:000978, which the paper reuses.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.1038-s41593-025-02183-y.txt, the version of record (published 4 February
+# 2026) from the publisher's HTML. It holds the main text, the figure legends of Figs. 1 to 7,
+# the Methods, and the Data and Code availability statements. No PDF was supplied, so no figure
+# was seen. The Supplementary Information (sections 1 to 8, Supplementary Figs. 1 to 12,
+# Supplementary Tables 1 and 2) is NOT in the text read. The findings below are each stated in
+# the main text or the Methods, with their tests; what the supplement would add (the proofs of
+# Eqs. 1 and 2, the per-term values and P values of Supplementary Table 2, the plots of
+# Supplementary Figs. 3 and 12) is named in the claims that need it.
+#
+# Code read. github.com/awakhloo/population_geometry_optimal_coding at commit 9674a6c
+# (2025-10-23). It holds the MLP, macaque, DeepLabCut and rat analyses. For the rat data
+# (code/process_rats.py, code/rat_utils.py, code/utils.py, code/fit-GLMs-rat.py,
+# code/run-pfc-hp-analysis-rats.py, figures/Fig-readout-with-learning-hp-pfc.ipynb,
+# figures/SM-svm-comparison-fig.ipynb) it fixes the pipeline the Methods leave open, and its
+# results/rat_stats.csv, written by the figure notebook for the supplementary table, gives the
+# mixed-model coefficients and P values. Its printed outputs give R2 = 0.477 (CA1) and 0.510
+# (PFC) for the behaviour against readout error correlation.
+#
+# Data the paper used.
+# - Rats (Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+#   learning; Fig. 7; Methods, Spatial representations in rat PFC and CA1). Data of Tang, Shin
+#   and Jadhav (2023), deposited as DANDI:000978 "Single day W-track learning" (version
+#   0.240511.0307 cited). N = 8 rats learned a continuous alternation task in a W-maze over
+#   eight sessions of about 20 minutes each, on one day. Position from a head LED at 30 fps;
+#   multi-tetrode recordings in dorsal CA1 and medial PFC, spike-sorted units. Measured
+#   variables used are unit spike times and each unit's area (CA1 or PFC), x and y position and
+#   speed, and per trial its start and stop times, whether it was correct, and its trajectory
+#   type (inbound or outbound). The code reads one NWB file per rat (subjects KL8, ER1, JS34,
+#   JS14, JS17, JS21, JS15) and two for ZT2, whose sessions it joins.
+# - Macaque V4 and IT multi-unit data (Majaj et al. 2015) via Brain-Score, outside the dataset.
+# - DeepLabCut "parenting mouse" benchmark frames, outside the dataset.
+# - Random and trained MLPs and Gaussian models, simulated; no recorded data.
+#
+# The rat pipeline, shared by every rat claim (Methods, Rat data processing and Readout
+# analysis; the code where the Methods are silent, as cited).
+# - Sessions are the epochs of each file that hold trials, in order, the first eight
+#   (process_rats.py, rat_utils.get_trl_dat; the notebook uses sessions 1 to 8).
+# - Spikes binned at 500 ms. Position interpolated to bin centres by Nadaraya-Watson smoothing
+#   with a Gaussian kernel, bandwidth 0.05 s (code); x and y velocity from position
+#   differences, smoothed the same way with bandwidth 0.7 s (code).
+# - Only bins with speed of at least 4 cm/s (Methods). The readout code takes speed as the
+#   norm of the smoothed x and y velocity (rat_utils.process_dat); the GLM code takes the
+#   dataset's own speed column (rat_utils.get_all_lat).
+# - Units of the area kept when their mean rate in that session, over the kept bins, exceeds
+#   0.1 Hz (Methods; code). Each unit centred on its session mean and divided by its session
+#   standard deviation plus 0.02 Hz (0.01 counts per bin in the code).
+# - Latents are x and y position and x and y velocity (d = 4), z-scored within the session.
+# - Per random subset, a random set of units (Methods say 19 PFC and 24 CA1 units; the code
+#   uses 19 for both areas, so 19 for CA1 is a variant) and a random set of 500 bins. Psi, Phi
+#   and Omega are the covariances of the jointly centred units and latents of those 500 bins;
+#   dimension, correlation, SNF and SSF are Eqs. 6 to 9 and the theoretical error is Eq. 5
+#   with p = 300 (utils.get_geometry, utils.theory_part). The empirical error is the Hebbian
+#   readout of Eq. 3 trained on 300 of the 500 bins and tested on the other 200, averaged over
+#   500 Gaussian task vectors, keeping those whose labels have an absolute mean below 0.25
+#   (utils.emp_error). Every value is the mean over 500 subsets (Methods; code).
+# - The task-relevant dimension (Fig. 7h) is the participation ratio of the z-scored
+#   predictions of per-unit Poisson GLMs (Eq. 13), with isotropic Gaussian position bases
+#   separate for inbound and outbound trajectories and one-dimensional Gaussian velocity
+#   bases, centres from bins holding more than 20 time bins over all of a rat's sessions;
+#   l2 penalty by 10-fold cross-validation over 10 values (Methods). The code fixes the grid
+#   (alpha 10^-0.5 to 10^2, log spaced) and the chosen basis (position bin 10, velocity bin 3,
+#   position variance 100, velocity variance 40); units with cross-validated D2 of 0 or less
+#   are set to a constant; the participation ratio is taken on random sets of 19 units, 500
+#   times (rat_utils.format_glm_results).
+# - Behavioural error per session is 1 minus the fraction of that session's trials marked
+#   correct (run-pfc-hp-analysis-rats.py; the notebook).
+# - Session values are averaged over rats for the figure; error bars are s.e.m. over N = 8
+#   rats (Fig. 7 legend).
+schema_version: 2
+paper: doi:10.1038/s41593-025-02183-y
+claims:
+- id: eq1-generalization-error-formula
+  statement: Under a Gaussian approximation, the task-averaged generalization error of a
+    Hebbian linear readout is a strictly decreasing function of four geometric terms of the
+    population activity (neural-latent correlation c, signal-signal factorization f,
+    signal-noise factorization s and the participation ratio of the responses) and of the
+    number of training samples p (Eq. 1).
+  source: Results, Geometric measures govern generalization of linear readouts, paragraph 3;
+    Methods, Decomposition of generalization error across tasks
+  quote: we prove that, under a certain Gaussian approximation, the error E g is given by ...
+    where we have written the generalization error as a strictly decreasing function of four
+    geometric terms as well as the number of samples in the training dataset, p
+  criterion: A theoretical result, proved in Supplementary Information section 1, which is not
+    in the text read; DANDI:000978 cannot test it. It is used by the rat claims through Eqs. 5
+    to 9 of the Methods, and its fit to recorded data is tested in fig7f-theory-vs-empirical.
+- id: eq1-sample-dependence
+  statement: The error contributions of the neural dimension and the neural-latent correlation
+    vanish as the number of training samples grows, while the contributions of the two
+    factorization terms are an irreducible error independent of the sample size.
+  source: Results, Geometric measures govern generalization of linear readouts, paragraph 4
+  quote: the contribution to the error of the neural dimension and neural–latent correlation
+    decays to zero with the number of training samples ... the error stemming from the SSF and
+    SNF represents an ‘irreducible error’ that does not depend on the number of training
+    samples
+  criterion: A property of Eq. 1, read from its form (the 1/p term and the 1/f + 1/s term);
+    not a finding on recorded data, and DANDI:000978 cannot test it.
+- id: fig3bc-mlp-theory-tracks-error
+  statement: In random and trained multilayer perceptrons fed Gaussian latents, the
+    theoretical error of Eq. 1 closely tracks the empirical Hebbian readout error across
+    layers, and the trained network reaches a lower error in its later layers.
+  source: Figure 3b,c and legend; Results, Geometry of multitask learning in multilayer
+    perceptrons, paragraph 2
+  quote: Theoretical predictions closely track empirical errors, and the trained network
+    achieves a lower error in later layers
+  criterion: A simulation (Methods, MLP experiments; code/run_mlp_exps.py), not a finding on
+    recorded data; DANDI:000978 cannot test it.
+- id: fig3dg-mlp-geometry-tradeoff
+  statement: In the trained MLP, each ReLU raises the neural dimension at the cost of the
+    correlation, each linear layer raises the correlation while the dimension falls, and SSF
+    and SNF increase monotonically through the penultimate layer; the random network does not
+    show this pattern.
+  source: Figure 3d-g and legend; Results, Geometry of multitask learning in multilayer
+    perceptrons, paragraph 2
+  quote: the neural dimension spikes each time the nonlinearity is applied, at the cost of the
+    total correlation ... both the SSF and SNF terms monotonically increase through the
+    penultimate layer of the network. Notably, this pattern is not present in the random
+    network
+  criterion: A simulation (Methods, MLP experiments), not a finding on recorded data;
+    DANDI:000978 cannot test it.
+- id: fig4bf-pose-network-geometry
+  statement: Across the layers of a DeepLabCut ResNet50 pose estimation network, with the 24
+    marker coordinates of an adult mouse as latents, the dimension increases, the
+    neural-latent correlation decays, SSF and SNF improve monotonically and the multitask
+    error decreases.
+  source: Figure 4b-f legend; Results, Disentangling in deep pose estimation networks,
+    paragraph 2
+  quote: The total dimensionality of the DCNN’s intermediate representations increases across
+    layers ... The total correlation between the latents and the network’s internal
+    representations decays across layers ... Both SSF and SNF improve monotonically across
+    layers ... Multitask error decreases across layers
+  data: elsewhere
+  where: DeepLabCut parenting mouse benchmark dataset (github.com/DeepLabCut/DeepLabCut), with
+    a network trained as in Methods, Analysis of pose estimation network
+  criterion: Not in DANDI:000978. Values are means over 20 random projections to n = 100 at
+    each of 33 representations, with p = 150 (Fig. 4 legend; Methods).
+- id: fig4g-pose-theory-r2
+  statement: For the pose estimation network, the theoretical error is biased but linearly
+    explains practically all the variance of the empirical multitask error across layers (R2
+    = 0.988).
+  source: Figure 4g; Results, Disentangling in deep pose estimation networks, paragraph 2
+  quote: the analytical prediction for E g still linearly explains practically all of the
+    variance in the empirically computed multitask error ( R 2 = 0.988)
+  data: elsewhere
+  where: DeepLabCut parenting mouse benchmark dataset (github.com/DeepLabCut/DeepLabCut)
+  expected:
+  - quantity: R2 of empirical against theoretical multitask error across layers
+    value: 0.988
+    tolerance: 0.0988
+- id: fig5d-macaque-theory-and-ventral-stream
+  statement: For macaque V4 and IT responses and raw pixels, Eq. 1 accurately predicts the
+    Hebbian readout error, best for the neural responses, and the error improves through the
+    ventral stream.
+  source: Figure 5d; Results, Predicting readout performance of macaque visual representations,
+    paragraph 1
+  quote: We find that our formula accurately predicts the generalization error, particularly
+    for the neural response readouts (Fig. 5d ). Furthermore, we find that generalization error
+    improves through the ventral stream
+  data: elsewhere
+  where: Majaj et al. 2015 V4 and IT data via Brain-Score (github.com/brain-score/vision)
+- id: fig5e-macaque-dimension-correlation
+  statement: The dimension is lower in V4 than in IT or the pixels, and the neural-latent
+    correlation increases from the pixels to the visual areas.
+  source: Figure 5e-h legend; Results, Predicting readout performance of macaque visual
+    representations, paragraph 2
+  quote: we find that the dimension is lower in V4 than in either IT or the pixel data 24 (Fig.
+    5e ) and that the correlation increases from the pixels to the visual areas
+  statistics:
+  - test: two-sided paired t-test across object categories
+    p: 0.01
+    p_relation: "<"
+    corrected: FDR
+    n: 8 object categories
+  data: elsewhere
+  where: Majaj et al. 2015 V4 and IT data via Brain-Score (github.com/brain-score/vision)
+  criterion: Not in DANDI:000978. Which pairs carry asterisks is shown only in Fig. 5e-h and
+    Supplementary Table 1, neither of which was read.
+- id: fig5h-macaque-snf-it
+  statement: The most marked factorization trend is an increase of the signal-noise
+    factorization in IT, so that latent-unrelated variability overlaps less with the coding
+    directions in IT than in V4 or the pixels.
+  source: Figure 5e-h legend; Results, Predicting readout performance of macaque visual
+    representations, paragraph 2
+  quote: Turning to the factorization measures, the most dramatic trend is the increase in SNF
+    in IT
+  statistics:
+  - test: two-sided paired t-test across object categories
+    p: 0.01
+    p_relation: "<"
+    corrected: FDR
+    n: 8 object categories
+  data: elsewhere
+  where: Majaj et al. 2015 V4 and IT data via Brain-Score (github.com/brain-score/vision)
+- id: optimal-code-disentangled
+  statement: The representation that minimizes the error disentangles the latents; with
+    uncorrelated latents, distinct latents lie along orthogonal neural directions, and with
+    correlated latents the principal components of the latents map onto those of the neural
+    activity.
+  source: Results, Optimal representation of latent variables, paragraph 2; Methods, Optimal
+    codes
+  quote: We show analytically that the optimal representation disentangles latent variables
+  criterion: A theoretical result (proof in Supplementary Information section 4, not in the
+    text read); DANDI:000978 cannot test it.
+- id: eq2-optimal-spectrum-flattens
+  statement: The optimal code's covariance has eigenvalues psi_i proportional to omega_i / (2 p
+    omega_i + pi sum_k omega_k) (Eq. 2), so its spectrum flattens as the number of training
+    samples grows, giving more variance to less informative latents.
+  source: Results, Optimal representation of latent variables, paragraph 3; Figure 6b; Methods,
+    Optimal codes
+  quote: we show that the optimal code’s covariance matrix has at least d non-zero eigenvalues
+    that are given by ... We can see that, as p grows, the spectrum becomes increasingly flat,
+    reflecting the expansion strategy
+  criterion: A theoretical result checked by numerical optimization (Fig. 6b;
+    figures/Fig-optimal-embedding.ipynb); DANDI:000978 cannot test it.
+- id: fig6ce-optimal-early-low-dim-high-corr
+  statement: Early in learning (small p), optimal codes have a higher neural-latent
+    correlation and a lower dimension and SSF than late in learning.
+  source: Figure 6c-e legend; Results, Optimal representation of latent variables, paragraph 3
+  quote: Early in training, optimal representations have a higher neural–latent correlation
+    and a lower dimension and SSF than they do late in training
+  criterion: A theoretical prediction, not a finding on recorded data; DANDI:000978 cannot test
+    it. Its counterpart in the rat data is late-trends-match-optimal.
+- id: svc-hebbian-correlation
+  statement: Across every analysis of the paper, the Hebbian readout error is strongly
+    correlated with the empirical error of a linear support vector classifier trained on the
+    same tasks, particularly in the brain data.
+  source: Discussion, paragraph 3; Supplementary Fig. 3 (not in the text read)
+  quote: Across every analysis reported in this paper, we found a strong correlation between
+    SVC and Hebbian errors, particularly in the brain data
+  criterion: Only the PFC and CA1 parts are tested on DANDI:000978. As in
+    figures/SM-svm-comparison-fig.ipynb, per area, the squared Pearson correlation over the 64
+    rat and session values (means over the 500 subsets of the shared pipeline) between the
+    theoretical Hebbian error (Eq. 5) and the error of a linear SVC (scikit-learn LinearSVC,
+    one per task, on the same 300 training and 200 test bins, utils.emp_error). The notebook
+    loads an older results file (abstraction/results/<area>_results_nu_dt_0.5.npy) and does not
+    cut it to sessions 1 to 8; the 64 values of the shared pipeline are used here. The empirical
+    Hebbian error in place of the theoretical one is a variant. The paper sets no bound for
+    "strong", and the Supplementary Fig. 3 values were not read. The readings are (a) a
+    positive Pearson correlation with p < 0.05 in each area; (b) r2 of at least 0.5 in each
+    area, a conventional bound named here as one. Reproduced when a reading holds in both
+    areas; partially reproduced when it holds in one.
+- id: fig7d-behavioral-error-learning
+  statement: Behavioural error on the continuous alternation task decreases quickly over the
+    first few sessions and largely plateaus after session four.
+  source: Figure 7d legend; Results, Geometry of spatial representations in prefrontal cortex
+    and CA1 during learning, paragraph 2
+  quote: Behavioral error on the continuous alternation task and neural readout error quickly
+    decrease over the first few sessions ... After session four, both behavioral and readout
+    error largely plateau
+  criterion: Behavioural error per rat and session as in the shared pipeline, averaged over the
+    8 rats. The paper gives no test, so the reading used here is named as one. Reproduced when
+    the mean error at session 4 is below that at session 1, and the absolute change from
+    session 4 to session 8 is smaller than the drop from session 1 to session 4. The per-rat
+    values and a linear mixed-effects slope over sessions 1 to 4 (random intercept per rat, as
+    the paper's models) are shown as well.
+- id: fig7e-readout-error-learning
+  statement: The task-averaged neural readout error for position and velocity, in PFC and in
+    CA1, decreases over learning, quickly over the first few sessions, then largely plateaus
+    after session four.
+  source: Figure 7e legend; Results, Geometry of spatial representations in prefrontal cortex
+    and CA1 during learning, paragraphs 1 and 2
+  quote: These readout errors decrease over learning (Fig. 7e,f )
+  criterion: Readout error per rat and session from the shared pipeline. The text does not say
+    whether Fig. 7e shows the theoretical or the empirical error; the figure notebook plots
+    the theoretical error (Eq. 5, p = 300), the main reading, and the empirical Hebbian error
+    is the second reading. Per area, the mean over rats. Reproduced in an area when, under a
+    reading, the mean error at session 4 is below that at session 1 and at session 8 is below
+    that at session 1, and the absolute change from session 4 to 8 is smaller than the drop
+    from session 1 to 4 (a reading named here; the paper gives no test). Reproduced when it
+    holds in both areas, partially in one. The 19-unit CA1 subsets of the code are a variant.
+- id: figs12c-behavior-readout-r2
+  statement: Single-session readout errors correlate with behavioural task error, with R2 =
+    0.48 in CA1 and 0.51 in PFC.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 1; Figure 7d,e legend; Supplementary Fig. 12c (not read)
+  quote: are correlated with single-session behavioral task performance ( R 2 = 0.48 (CA1) and
+    R 2 = 0.51 (PFC); Supplementary Fig. 12c )
+  expected:
+  - quantity: R2 of behavioural error against readout error over rat sessions, CA1
+    value: 0.48
+    tolerance: 0.048
+  - quantity: R2 of behavioural error against readout error over rat sessions, PFC
+    value: 0.51
+    tolerance: 0.051
+  criterion: As in the figure notebook, per area, the squared Pearson correlation over the 64
+    rat and session points (8 rats, sessions 1 to 8) between behavioural error and the
+    theoretical readout error (Eq. 5), each the mean over the 500 subsets. The empirical
+    Hebbian error is a second reading. The Fig. 7 legend gives 0.49 for CA1, the Results 0.48;
+    the code printed 0.477, and both values are within the tolerance of either. The 19-unit
+    CA1 subsets of the code are a variant of the Methods' 24. Reproduced when both values are
+    within tolerance under a reading.
+- id: fig7f-theory-vs-empirical
+  statement: The theoretical readout error of Eq. 1 agrees well overall with the empirical
+    Hebbian readout error over rat sessions in PFC and CA1, with a small bias at low error
+    values.
+  source: Figure 7f legend
+  quote: Empirical generalization error versus our estimate from equation ( 1 ). Although there
+    is a small bias for low error values, we find a good agreement overall
+  criterion: Per area, the 64 rat and session pairs of empirical and theoretical error (means
+    over the 500 subsets). The paper gives no measure of agreement; the reading used here is
+    named as one. Reproduced in an area when the Pearson correlation is positive with p < 0.05
+    and r is at least 0.9. Reproduced when it holds in both areas, partially in one. The
+    legend allows a bias, so the size of the difference is reported and not judged; the
+    paper's own results files (results/PFC_results_nu_dt_0.5_ns_500_P_300.npy and the CA1
+    file, commit 9674a6c) give r = 0.98 (PFC) and 0.96 (CA1), with theory above the empirical
+    error by a mean of 0.034 and 0.028 (11.6% and 9.0% of the mean empirical error), the gap
+    largest in the lowest-error quarter. The correlation, the mean signed and absolute
+    differences and the difference for the lowest-error quarter of the points are reported.
+- id: fig7g-total-dimension-drops-early
+  statement: The total neural dimension in PFC and CA1 drops over the first four sessions.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Figure 7g; Methods, Generalized linear model analysis, paragraph 1
+  quote: Interestingly, we find that although the total neural dimension drops over these
+    initial sessions (Fig. 7g )
+  criterion: Total dimension (participation ratio of Psi, Eq. 7) per rat and session from the
+    shared pipeline, mean over rats. "These initial sessions" are sessions 1 to 4 (the
+    preceding sentence and the Methods). Reproduced in an area when the mean at session 4 is
+    below the mean at session 1; reproduced when it holds in both areas, partially in one. The
+    sign of a linear mixed-effects slope over sessions 1 to 4 is shown as well.
+- id: fig7h-task-dimension-increases
+  statement: The dimension of the subspace holding task-relevant variability, estimated from
+    Poisson GLMs, increases over learning, including over the first four sessions in which the
+    total dimension falls.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Figure 7h; Methods, Generalized linear model analysis, paragraph 1
+  quote: the dimension of the subspace containing task-relevant information (that is, the
+    dimension of the ‘signal subspace’) increases monotonically over learning, even during
+    those initial four sessions (Fig. 7h )
+  criterion: Task-relevant dimension per rat and session from the GLM part of the shared
+    pipeline, mean over rats. Reproduced in an area when the mean rises from session 1 to
+    session 4 and from session 1 to session 8. "Monotonically" can be read as (a) the rises
+    just named; (b) no fall between consecutive sessions of the mean over rats; the outcome
+    under each is reported, and the claim is judged on (a), the statistical support being the
+    linear mixed model of mixed-linear-ssf-task-dim. Reproduced when it holds in both areas,
+    partially in one.
+- id: fig7hk-measures-increase-early
+  statement: Over the first four sessions, nearly every geometric measure (task-relevant
+    dimension, SSF, neural-latent correlation and SNF) increases in PFC and CA1.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Figure 7h-k
+  quote: Over the first four sessions, both behavioral and neural readout error rapidly
+    improve (Fig. 7d,e ). During this time, nearly every geometric measure increases (Fig. 7h–k
+    )
+  depends_on:
+  - fig7h-task-dimension-increases
+  criterion: The four measures of Fig. 7h-k per rat and session from the shared pipeline, mean
+    over rats. A measure increases when its mean at session 4 is above that at session 1.
+    "Nearly every" is read as at least three of the four in each area (the paper names no
+    exception). Reproduced when that holds in both areas, partially in one.
+- id: fig7-late-reversal
+  statement: After session four, several early trends reverse; the total dimension begins to
+    increase while the neural-latent correlation drops.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Figure 7g and 7j
+  quote: At this point, several of these initial trends reverse; in particular, the total
+    dimension begins to increase, whereas the correlation drops
+  criterion: Total dimension and correlation per rat and session from the shared pipeline,
+    mean over rats. The paper does not say how a trend after session four is judged; the
+    readings are (a) the mean at session 8 against the mean at session 4; (b) the sign of the
+    slope of a linear mixed-effects model (random intercept per rat) over sessions 4 to 8.
+    Reproduced in an area when, under a reading, total dimension rises and correlation falls;
+    reproduced when it holds in both areas, partially in one. The statistical test the paper
+    gives for this reversal is claim mixed-quadratic-dim-corr-snf.
+- id: mixed-quadratic-dim-corr-snf
+  statement: Quadratic mixed-effects models of total dimension, neural-latent correlation and
+    SNF over sessions have significant linear and quadratic terms in both PFC and CA1 (P <
+    10^-5), with the quadratic term opposite in sign to the linear term, so the effect of
+    learning on these measures is non-monotonic.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Methods, Readout analysis, last paragraph; Supplementary Table 2
+    (not read)
+  quote: We found strong, significant effects for both the linear and quadratic terms in PFC
+    and CA1 for the total dimension, correlation and SNF ( P < 10 −5 ; Supplementary Table 2 ).
+    In each case, the sign of the quadratic term was the opposite of the linear term
+  statistics:
+  - test: quadratic regression with mixed-effect intercepts, linear and quadratic terms
+    p: 0.00001
+    p_relation: "<"
+    n: 8 rats, 8 sessions, per area and measure
+  criterion: For each area and measure, the per rat and session values (means over the 500
+    subsets) fit as y_it = beta_i + gamma t + eta t^2 (Methods) with statsmodels mixedlm, a
+    random intercept per rat, REML and Wald P values, as in the figure notebook. The code
+    codes session as t = 0 to 7; t = 1 to 8, which changes gamma and its P value, is a
+    variant. Whether the P < 10^-5 bound is on raw P values or on the Benjamini-Hochberg
+    adjusted values of the notebook (over the 24 P values of all models) is not said; both are
+    readings. Reproduced when, under a reading, all 12 P values (2 areas, 3 measures, 2 terms)
+    are below 10^-5 and gamma and eta have opposite signs in all six models; partially
+    reproduced when all are below 0.05 with opposite signs but some are not below 10^-5. The
+    code's results/rat_stats.csv (all twelve below 10^-5) is shown for comparison.
+- id: mixed-quadratic-ssf-not-nonmonotonic
+  statement: The quadratic mixed-effects model gives no evidence for a non-monotonic trend in
+    SSF in either PFC or CA1 (P > 0.05).
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Supplementary Table 2 (not read)
+  quote: We did not find evidence for a non-monotonic trend in the SSF in either region ( P >
+    0.05)
+  statistics:
+  - test: quadratic regression with mixed-effect intercepts, quadratic term
+    p: 0.05
+    p_relation: ">"
+    n: 8 rats, 8 sessions, per area
+  criterion: A claim of absence, judged on the paper's test, the quadratic term (eta) of the
+    model of mixed-quadratic-dim-corr-snf fit to SSF, at the 0.05 level. Reproduced when its
+    raw P value exceeds 0.05 in both areas; not reproduced when it is below 0.05 in either.
+    The size of eta and its adjusted P value are reported either way.
+- id: mixed-quadratic-task-dim
+  statement: The quadratic mixed-effects model has weaker but significant effects for the
+    task-relevant dimension (P < 0.01), though it fits this quantity comparatively poorly in
+    PFC.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Supplementary Fig. 12 and Table 2 (not read)
+  quote: Although we did find weaker significant effects of the quadratic model for the
+    task-relevant dimension ( P < 0.01), the model was a comparatively poorer fit to this
+    quantity in PFC
+  statistics:
+  - test: quadratic regression with mixed-effect intercepts
+    p: 0.01
+    p_relation: "<"
+    n: 8 rats, 8 sessions, per area
+  depends_on:
+  - fig7h-task-dimension-increases
+  criterion: The model of mixed-quadratic-dim-corr-snf fit to the task-relevant dimension.
+    Reproduced when, in both areas, the linear and quadratic terms have P < 0.01, raw or
+    Benjamini-Hochberg adjusted as in that claim. The poorer fit in PFC is shown in
+    Supplementary Fig. 12, not read; it is not judged here.
+- id: mixed-linear-ssf-task-dim
+  statement: Linear mixed-effects models show significant monotonic effects of learning on SSF
+    (P < 10^-3) and on the task-relevant dimension (P < 10^-5) in both PFC and CA1.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 2; Supplementary Table 2 (not read)
+  quote: which demonstrated significant, monotonic effects of learning on the SSF and
+    task-relevant dimension across both regions ( P < 10 −3 SSF and P < 10 −5 task dimension;
+    Supplementary Table 2 )
+  statistics:
+  - about: SSF, linear term
+    test: linear regression with mixed-effect intercepts
+    p: 0.001
+    p_relation: "<"
+    n: 8 rats, 8 sessions, per area
+  - about: task-relevant dimension, linear term
+    test: linear regression with mixed-effect intercepts
+    p: 0.00001
+    p_relation: "<"
+    n: 8 rats, 8 sessions, per area
+  depends_on:
+  - fig7h-task-dimension-increases
+  criterion: Per area, y_it = beta_i + gamma t, statsmodels mixedlm with a random intercept per
+    rat, as fit_lin_mixed in the figure notebook (t = 0 to 7; the session coding does not
+    change gamma here). Reproduced when, in both areas, gamma is positive for SSF with P <
+    10^-3 and positive for the task-relevant dimension with P < 10^-5, on raw or adjusted P
+    values as in mixed-quadratic-dim-corr-snf; partially reproduced when the signs hold with
+    P < 0.05 but a bound is missed.
+- id: late-trends-match-optimal
+  statement: Once behavioural and readout errors plateau at session four, the dimensionality
+    measures and SSF increase while the neural-latent correlation decreases, as predicted for
+    optimal representations late in learning.
+  source: Results, Geometry of spatial representations in prefrontal cortex and CA1 during
+    learning, paragraph 3; Discussion, paragraph 5
+  quote: Once the readout and behavioral errors begin to plateau at session four, we find that
+    the ensuing trends are consistent with our predictions for optimal representations ... the
+    dimensionality measures and SSF increase over learning, whereas the neural–latent
+    correlation decreases
+  depends_on:
+  - fig7d-behavioral-error-learning
+  - fig7h-task-dimension-increases
+  criterion: Total dimension, task-relevant dimension, SSF and correlation per rat and session
+    from the shared pipeline, mean over rats, from session 4 to session 8, with the two
+    readings of fig7-late-reversal (session 8 against session 4; the sign of a linear
+    mixed-effects slope over sessions 4 to 8). Reproduced in an area when, under a reading,
+    both dimension measures and SSF rise and the correlation falls; reproduced when it holds
+    in both areas, partially in one.
+- id: glm-cross-validated-d2
+  statement: The Poisson GLMs reach an average cross-validated population D2 of 0.29 in PFC and
+    0.25 in CA1, with a standard deviation across rats of the session-averaged D2 of 0.022 in
+    PFC and 0.1 in CA1.
+  source: Methods, Generalized linear model analysis, paragraph 2
+  quote: The average cross-validated population D 2 across all sessions and rats was 0.29 in PFC
+    and 0.25 in CA1, and the standard deviation of the session-averaged population D 2 across
+    rats was 0.022 in PFC and 0.1 in CA1
+  expected:
+  - quantity: mean cross-validated population D2, PFC
+    value: 0.29
+    tolerance: 0.029
+  - quantity: mean cross-validated population D2, CA1
+    value: 0.25
+    tolerance: 0.025
+  - quantity: standard deviation across rats of session-averaged D2, PFC
+    value: 0.022
+    tolerance: 0.0022
+  - quantity: standard deviation across rats of session-averaged D2, CA1
+    value: 0.1
+    tolerance: 0.01
+  criterion: GLMs as in the shared pipeline with the code's chosen basis. A session's
+    population D2 is the mean over its units of each unit's best mean 10-fold
+    cross-validated D2 (rat_utils.format_glm_results, test_scores); the mean is over the 64
+    rat and session values. The code does not compute the standard deviation; the readings are
+    the population (ddof 0) and the sample (ddof 1) standard deviation over the 8 rats of each
+    rat's mean over sessions. Whether units later replaced by the null model are counted with
+    their own negative D2 (as test_scores does) or with 0 is a further pair of readings.
+    Reproduced when all four values are within tolerance under one combination of readings.
+    The cross-validation folds are random and the GLM fit may differ slightly from the
+    paper's; the seed is a standard choice.
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig3bc-mlp-theory-tracks-error, statement "at every layer" changed to "across layers"; the
+    Fig. 3b,c legend and the Results say only that theory closely tracks the empirical errors.
+  - svc-hebbian-correlation, criterion now says that figures/SM-svm-comparison-fig.ipynb loads an
+    older results file and uses all its sessions, so the 64 values of the shared pipeline are a
+    choice; checked against the code at commit 9674a6c.
+  - Checked against the code at commit 9674a6c, no change needed. 19 units for both areas
+    (run-pfc-hp-analysis-rats.py), behavioural error as 1 minus fraction correct and R2 0.477 and
+    0.510 (figure notebook), Fig. 7 panels g to k as total dimension, task dimension, SSF,
+    correlation and SNF (notebook layout, so Fig. 7j is the correlation), session coded 0 to 7,
+    Benjamini-Hochberg over 24 P values, and results/rat_stats.csv agreeing with every P bound of
+    the four mixed-model claims.
+  - Open, the Supplementary Information (Supplementary Figs. 3 and 12, Supplementary Tables 1 and
+    2) is not in the text read; the values the rat claims would match there are taken from the
+    code's results/rat_stats.csv and printed outputs.
+  - Open, the paper gives no measure for "plateau" (fig7d, fig7e), "good agreement" (fig7f) or
+    "strong correlation" (svc); the bounds used are the reader's, named as readings in each
+    criterion.
