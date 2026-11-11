@@ -164,6 +164,15 @@ def test_every_claim_needs_one_outcome(repo):
     assert any("claim 'fig1' has more than one outcome" in e for e in found)
 
 
+def test_claims_read_again_after_an_attempt_are_the_next_attempts_to_test(repo):
+    """A dataset added to a paper has its claims read again, and they reach main ahead of the repeat attempt."""
+    check = {"date": "2099-01-01", "kind": "agent", "ready": True}
+    claims = {**CLAIMS, "claims": CLAIMS["claims"] + [{"id": "fig2", "statement": "S.", "source": "Figure 2"}],
+              "checks": (CLAIMS.get("checks") or []) + [check]}
+    (repo / "claims" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert not any("claim 'fig2' has no outcome" in e for e in errors(repo))
+
+
 def test_the_dandiset_version_must_be_pinned(repo):
     entry = {**ENTRY, "related": [{"id": "dandi:000001", "relation": "uses_data"}, ENTRY["related"][1]]}
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump(entry))
@@ -338,3 +347,30 @@ def test_only_the_latest_attempt_must_match_the_entrys_version(repo):
     assert errors(repo) == []
     (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**earlier, "id": "demo-02"}))
     assert any("differs from" in e for e in errors(repo))
+
+
+def test_an_entry_runs_on_its_own_python_version(repo):
+    entry_dir = repo / "entries" / "demo"
+    # Before the field, the version the lock was compiled for; with none, the registry's default.
+    assert tool.python_of(entry_dir) == tool.PYTHON_VERSION
+    (entry_dir / "requirements.lock.txt").write_text(
+        "#    uv pip compile --python-version 3.12 requirements.in -o requirements.lock.txt\nnumpy==2.0.0\n")
+    assert tool.python_of(entry_dir) == "3.12"
+    tool.set_python(entry_dir, "3.14")
+    assert tool.python_of(entry_dir) == "3.14" and 'python: "3.14"' in (entry_dir / "entry.yaml").read_text()
+    # A lock compiled for another version than entry.yaml names is an error.
+    assert any("locked for Python 3.12" in e for e in errors(repo))
+
+
+def test_claim_outputs_are_compared_cell_by_cell(tmp_path):
+    nb = notebook("print(1)", outputs=True)
+    nbformat.write(nb, tmp_path / "a.ipynb")
+    assert tool.tagged_outputs(tmp_path / "a.ipynb") == {"claim:fig1": "1\n"}
+
+
+def test_the_colab_copy_sets_itself_up_only_on_colab():
+    import colab
+    code = colab.SETUP.format(branch="colab", repo="catalystneuro/encore", name="demo")
+    compile(code, "setup", "exec")
+    assert 'if "google.colab" in sys.modules:' in code and "entries/demo" in code
+    exec(code, {})   # outside Colab: nothing happens
