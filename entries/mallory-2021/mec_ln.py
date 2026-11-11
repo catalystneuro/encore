@@ -567,6 +567,9 @@ def analyse_cell(prep, y, with_extras=True):
            "encoded_code": fs["encoded_code"],
            "sel_fits": fs["sel_fits"], "n_spikes": int(y.sum())}
     enc = fs["encoded"]
+    if not with_extras:
+        # the selected model's full-session parameters, from which Supp. Fig. 12 simulates spikes
+        out["sel_full"] = fs["sel_full"]
     if with_extras and y.sum() > 0:
         # Supp. Fig. 4, symmetric velocity test for every unit: correlations below and above 0 and
         # their 500 shuffles (Methods, "Comparison between LN and shuffling-based methods")
