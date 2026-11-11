@@ -806,3 +806,37 @@ def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):
         assert ids and all(f'id="claim-{i}"' in page for i in ids), q["key"]
         assert "Not attempted yet" in page and "No attempt on this paper yet" not in page
 
+
+def test_a_finding_is_about_the_data_or_the_paper_and_shown_where_it_belongs(built):
+    data, out = built
+    # By its kind unless the record says: the paper for these three kinds.
+    assert site.ABOUT_PAPER == {"methods_unavailable", "code_mismatch", "paper_inconsistency"}
+    seen_notes = 0
+    for dandiset, attempts in site.current_attempts(data).items():
+        dataset_page = (out / site.page_of(dandiset) / "index.html").read_text()
+        for a in attempts:
+            assert all(f["about"] == "data" for f in a["findings"])
+            assert all(f["about"] == "paper" for f in a["paper_notes"])
+            if a.get("deprecated"):
+                continue
+            paper_page = _paper_page(data, out, a)
+            for f in a["paper_notes"]:
+                seen_notes += 1
+                assert site.e(f["statement"]) in paper_page and site.e(f["statement"]) not in dataset_page
+            for f in a["findings"]:
+                assert site.e(f["statement"]) in dataset_page and site.e(f["statement"]) not in paper_page
+    assert seen_notes
+
+
+def test_a_finding_that_names_its_datasets_is_on_those_datasets_only():
+    import jsonschema, json
+    schema = json.loads((REPO / "schemas" / "attempt.schema.json").read_text())["properties"]["findings"]
+    ok = [{"kind": "other", "statement": "S.", "about": "data", "datasets": ["000001"]}]
+    jsonschema.validate(ok, schema)
+    for bad in ([{"kind": "other", "statement": "S.", "about": "both"}], [{"kind": "other", "statement": "S.", "datasets": []}]):
+        try:
+            jsonschema.validate(bad, schema)
+        except jsonschema.ValidationError:
+            continue
+        raise AssertionError(bad)
+

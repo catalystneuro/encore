@@ -493,15 +493,26 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   verification round, with its `reason` (see "Hand over for verification").
 - **`inputs`**: everything used that is not in the dataset, each with where
   it came from (a DOI, or a repository at a commit).
-- **`findings`**: what the attempt found about the dataset, whatever the
-  outcomes. These are for the data owner and the archive. The kinds are
-  `metadata_error`, `data_missing`, `identifier_missing`,
-  `selection_undocumented`, `methods_unavailable`, `format_error` (files that
-  break their own format, such as unsorted spike times), `code_mismatch`
-  (published code that disagrees with the paper or the data),
-  `paper_inconsistency` (the paper disagrees with itself),
-  `metadata_insufficient` (a variable without a description or a needed
-  mapping) and `other`.
+- **`findings`**: what the attempt found, whatever the outcomes. Each is
+  about one of two things, and is shown where it belongs:
+  - **the data** (`about: data`): the dataset's files or metadata. Something
+    is wrong, missing, undocumented or mislabelled, or differs from what the
+    paper says the files hold. These are for the data owner and the archive,
+    on the dataset's page. A mismatch between the files and the paper is about
+    the data: it is what a user of the dataset needs to know.
+  - **the paper** (`about: paper`): the paper, its methods or its published
+    code, with nothing wrong in the files. These are on the paper's page.
+
+  The kinds are `metadata_error`, `data_missing`, `identifier_missing`,
+  `format_error` (files that break their own format, such as unsorted spike
+  times) and `metadata_insufficient` (a variable without a description or a
+  needed mapping), which are about the data; `methods_unavailable`,
+  `code_mismatch` (published code that disagrees with the paper or the data)
+  and `paper_inconsistency` (the paper disagrees with itself), which are
+  about the paper; and `selection_undocumented` and `other`, which can be
+  either, so give `about` for these two. In an attempt on several datasets,
+  give each finding about the data its `datasets` (their folders, as in the
+  claims file).
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
