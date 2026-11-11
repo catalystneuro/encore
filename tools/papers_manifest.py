@@ -51,10 +51,26 @@ def target_papers() -> dict[str, list[str]]:
     papers: dict[str, list[str]] = {}
     for t in datasets.targets():
         papers[t["folder"]] = [clean_doi(p["doi"]) for p in t.get("papers") or []]
+    # The paper a dataset's claims were read from, which the paper store holds under the dataset's folder: a paper's
+    # own claims file (claims/<paper>.yaml) for each of its datasets, and one from before the cutover to
+    # paper-first records (claims/<paper>/<folder>.yaml) for its folder's.
+    import paper_records
+    for path in sorted((ROOT / "claims").glob("*.yaml")):
+        data = yaml.safe_load(path.read_text()) or {}
+        if data.get("paper"):
+            for d in paper_records.datasets_of(path.stem):
+                papers.setdefault(d["folder"], []).append(clean_doi(data["paper"]))
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = yaml.safe_load(path.read_text()) or {}
         if data.get("paper"):
-            papers.setdefault(path.parent.name, []).append(clean_doi(data["paper"]))
+            papers.setdefault(path.stem, []).append(clean_doi(data["paper"]))
+    # A paper listed for datasets (papers/datasets/<key>.yaml; one that reuses a dataset, say) that none of its
+    # datasets' lists has: under its first dataset's folder, where a text supplied for it is stored.
+    for body in paper_records.listed().values():
+        doi = clean_doi(str(body.get("paper") or ""))
+        folders = [d["folder"] for d in body.get("datasets") or []]
+        if doi and folders and not any(doi in papers.get(f, []) for f in folders):
+            papers.setdefault(folders[0], []).append(doi)
     for d, fix in triage.items():
         drop = {clean_doi(x) for x in fix.get("not_papers", {})}
         papers[d] = [p for p in papers.get(d, []) if p not in drop] + [clean_doi(x) for x in fix.get("papers", {})]

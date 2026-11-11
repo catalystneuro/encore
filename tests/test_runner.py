@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -44,14 +45,31 @@ def test_only_published_datasets_are_taken():
     assert describe.published({"archive": "crcns"})
 
 
-def test_a_dataset_whose_latest_attempt_is_deprecated_is_open_again(monkeypatch):
-    records = ["000001-demo-2020-01.yaml", "000001-demo-2020-02.yaml", "000002-demo-2021-01.yaml"]
-    deprecated = {"attempts/000001-demo-2020-01.yaml", "attempts/000002-demo-2021-01.yaml"}
-    monkeypatch.setattr(describe, "main_yaml", lambda path: {"deprecated": {"date": "2026-10-21"}} if path in deprecated else {})
-    # 000001 has a newer attempt that stands; 000002's only attempt is deprecated.
-    assert not describe.latest_deprecated("000001", records)
-    assert describe.latest_deprecated("000002", records)
-    assert not describe.latest_deprecated("000003", records)
+def test_the_queue_is_of_papers(monkeypatch):
+    t = lambda id_: {"archive": "dandi", "id": id_, "key": f"dandi:{id_}", "folder": id_, "published_version": "1",
+                     "papers": [{"doi": "10.1038/x", "preprint": False}]}
+    # 000001 and 000002 hold one paper's data; 000003 another's; 000004 is not matched yet; 000005's paper has
+    # its only attempt deprecated.
+    monkeypatch.setattr(describe, "main_targets", lambda: [t(f"00000{i}") for i in range(1, 6)])
+    monkeypatch.setattr(describe, "main_papers", lambda: (
+        {"dandi:000001": "a-2020", "dandi:000002": "a-2020", "dandi:000003": "b-2021", "dandi:000005": "c-2022"},
+        {"a-2020": ["dandi:000001", "dandi:000002"], "b-2021": ["dandi:000003"], "c-2022": ["dandi:000005"],
+         "r-2024": ["dandi:000003"]}))
+    attempts = {"a-2020": [{"id": "a-2020-01", "deprecated": False, "datasets": {"dandi:000001"}}],
+                "b-2021": [{"id": "b-2021-01", "deprecated": False, "datasets": {"dandi:000003"}}],
+                "c-2022": [{"id": "c-2022-01", "deprecated": True, "datasets": {"dandi:000005"}}]}
+    monkeypatch.setattr(describe, "main_attempts", lambda: attempts)
+    monkeypatch.setattr(describe, "branches", lambda: set())
+    monkeypatch.setattr(describe, "matched_on_main", lambda: {"000001", "000002", "000003", "000005"})
+    monkeypatch.setattr(describe, "main_yaml", lambda path: {"papers": [{"key": "r-2024"}]} if path == "targets/reuse.yaml" else {})
+    # a-2020 is open, once, for its untested dataset; b-2021 is done; the unmatched dataset goes by its folder;
+    # c-2022 is open again; the reuse paper comes last.
+    assert describe.queue() == ["a-2020", "000004", "c-2022", "r-2024"]
+    # Once a-2020's attempt has used both datasets it is done, and a paper with a branch is taken.
+    attempts["a-2020"].append({"id": "a-2020-02", "deprecated": False, "datasets": {"dandi:000001", "dandi:000002"}})
+    monkeypatch.setattr(describe, "branches", lambda: {"c-2022"})
+    assert describe.queue() == ["000004", "r-2024"]
+    assert describe.as_folders(["a-2020", "000004"], describe.main_papers()[1]) == ["000001", "000002", "000004"]
 
 
 def test_a_target_with_a_journal_paper_has_a_publication():
@@ -94,3 +112,61 @@ def test_a_running_chain_has_left_what_the_rest_of_a_chain_usually_takes():
     # The one full lane is taken, so a chain only reading claims is the claims runner's; with no finished
     # claims chain to go by, it has no estimate. A dataset with no open branch is left out.
     assert going["000003"] == {"kind": "claims", "hours": None} and "000004" not in going
+
+
+def _git(cwd, *args):
+    import subprocess
+    return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.org", *args], cwd=cwd, check=True,
+                          capture_output=True, text=True).stdout
+
+
+def _finish_sandbox(tmp_path, branch_change, main_change):
+    """An origin with main and attempt/x, a clone of it, and chain.sh's merge_main run in the clone."""
+    import subprocess
+    origin, clone = tmp_path / "origin.git", tmp_path / "clone"
+    _git(tmp_path, "init", "-q", "--bare", "-b", "main", str(origin))
+    _git(tmp_path, "clone", "-q", str(origin), str(clone))
+    (clone / "claims").mkdir()
+    (clone / "README.md").write_text("registry\n")
+    _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "start"); _git(clone, "push", "-q", "origin", "HEAD:main")
+    _git(clone, "checkout", "-q", "-b", "attempt/x")
+    for name, text in branch_change.items():
+        (clone / name).parent.mkdir(exist_ok=True); (clone / name).write_text(text)
+    _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "attempt"); _git(clone, "push", "-q", "origin", "attempt/x")
+    _git(clone, "checkout", "-q", "main")
+    for name, text in main_change.items():
+        (clone / name).parent.mkdir(exist_ok=True); (clone / name).write_text(text)
+    _git(clone, "add", "-A"); _git(clone, "commit", "-q", "-m", "main moves"); _git(clone, "push", "-q", "origin", "main")
+    # The clone's own checkout is left on another branch, as the runner's is, and must not be touched.
+    _git(clone, "checkout", "-q", "-b", "elsewhere")
+    chain = (REPO / "tools" / "runner" / "chain.sh").read_text()
+    body = chain[chain.index("drop_work(){"):chain.index('log "finishing"')]
+    script = ('set -uo pipefail\nd=x\nwork=$(mktemp -d)\nnotify(){ :; }\n'
+              'fetch(){ git fetch -q origin main "attempt/$d"; }\n' + body + 'merge_main; rc=$?\n'
+              'echo "rc=$rc"; [ $rc = 0 ] && git -C "$work" log -1 --format=%s; drop_work\n')
+    out = subprocess.run(["bash", "-c", script], cwd=clone, capture_output=True, text=True,
+                         env={**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.org",
+                              "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.org"}).stdout
+    _git(clone, "fetch", "-q", "origin")
+    return out, clone
+
+
+def test_finishing_merges_main_in_a_worktree_and_leaves_the_clone_alone(tmp_path):
+    out, clone = _finish_sandbox(tmp_path, {"entries/x.txt": "entry\n"}, {"docs/other.md": "another attempt\n"})
+    assert "rc=0" in out
+    files = _git(clone, "ls-tree", "-r", "--name-only", "origin/attempt/x").split()
+    assert "entries/x.txt" in files and "docs/other.md" in files       # main is merged in, and pushed
+    assert _git(clone, "rev-parse", "--abbrev-ref", "HEAD").strip() == "elsewhere"   # the clone's checkout is as it was
+    assert len(_git(clone, "worktree", "list").strip().splitlines()) == 1            # and the worktree is gone
+
+
+def test_finishing_keeps_the_branchs_claims_file_and_stops_on_any_other_conflict(tmp_path):
+    # Main has the checked claims already (the checkpoint); the branch's file is the same or later, and is kept.
+    (tmp_path / "a").mkdir()
+    out, clone = _finish_sandbox(tmp_path / "a", {"claims/x.yaml": "claims: later\n"}, {"claims/x.yaml": "claims: checkpoint\n"})
+    assert "rc=0" in out and _git(clone, "show", "origin/attempt/x:claims/x.yaml") == "claims: later\n"
+    (tmp_path / "b").mkdir()
+    out, clone = _finish_sandbox(tmp_path / "b", {"README.md": "branch\n"}, {"README.md": "main\n"})
+    assert "rc=1" in out
+    assert _git(clone, "show", "origin/attempt/x:README.md") == "branch\n"          # nothing was pushed
+

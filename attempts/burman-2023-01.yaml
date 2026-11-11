@@ -1,0 +1,975 @@
+schema_version: 3
+id: burman-2023-01
+datasets:
+- archive: dandi
+  id: "000458"
+  version: 0.230317.0039
+  doi: 10.48324/dandi.000458/0.230317.0039
+  relation: reuses
+paper: doi:10.1016/j.neuron.2023.08.005
+date: '2026-11-10'
+entry: burman-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/42760152737
+inputs:
+- what: 'The paper''s Neuropixels analysis code, burman_et_al_2023_neuropixel_data_analysis.py: the list
+    of 17 sessions and the method details the claims file takes from it (stop_time, the area and waveform
+    selection, the evoked rate of reading F2, entropy and synchrony). No data. It is also fetched at this
+    revision and run unmodified on the loaded data (npx.run_gist), as a check of npx.'
+  source: https://gist.github.com/paulbrodersen/a77bcf5e06ae27fa96923cb313a02ccf at revision 43a13d89441b7f56e835e84fa5811d9567917daf
+- what: The paper's network simulation, burman_et_al_2023_neuronal_network_simulation.py, transcribed
+    in network.py and run 20 times to generate the data of the four model claims (data elsewhere). It
+    is also fetched at this revision and run unmodified on a small run (network.run_gist), as a check
+    of the transcription.
+  source: https://gist.github.com/paulbrodersen/2ce61e4e57c7659b727d30e3e1e0128f at revision f6a05661c10051560aa381e334099efd8521617b
+outcomes:
+- claim: dataset-sessions-link
+  outcome: reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:dataset-sessions-link
+  notes: All 17 files the gist lists are in version 0.230317.0039, each with spike_times, location and
+    waveform_duration in its units table, stimulus_type, behavioral_epoch, is_valid, estim_target_region
+    and stop_time in its trials table, and awake and isoflurane electrical trials. They hold 16 subjects
+    (sub-569073 twice, one MOs and one SSp session). Unit ids equal row numbers in every file, so the
+    gist's keying of units by row and lookup by id select the same units. The version holds seven more
+    files, six with EEG only and sub-599017 with units and SSp stimulation, which the gist does not read.
+    The clock check covers all 17 files. In 33 of 34 file and condition pairs, spikes 2 to 12 ms after the
+    pulse exceed those of the same window 1.5 s before and after it (1.5 to 39 times, Wilcoxon p below
+    0.001); the exception is the awake trials of sub-569069_ses-20210312 (1.55 against 1.45 spikes per
+    trial, p = 0.59), whose isoflurane trials, on the same file clock, pass (2.2 times, p = 2e-12).
+- claim: fig4c-sample
+  outcome: partially_reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4c-sample
+  measured:
+  - 721
+  - 144
+  - 17
+  - 16
+  - 37
+  - 7
+  - 95
+  notes: Under A1F1, 865 regular spiking units of the stimulated areas are selected (the paper's 662 +
+    203), 721 kept and 144 excluded (143 below 0.1 Hz, 1 above 200 Hz), from 17 recordings in 16 mice,
+    a median of 37 per recording (7 to 95). Kept is within 662 +- 66.2 and excluded is outside 203 +-
+    20.3, so by the criterion the claim is partially reproduced (the total is the paper's). Under the
+    gist's rate (A1F2 and A2F2) every number is the paper's exactly, 662 kept, 203 excluded (143 below
+    0.1 Hz, 61 above 200 Hz), median 34, range 1 to 93. The gist's rate is the summed spike latency over
+    trials times 10 ms, a median 4.50 times the count rate, so its 200 Hz bound drops units whose spike-count
+    rate exceeds about 45 Hz (kept units reach 54.2 Hz). The gist itself, run unmodified on the loaded
+    data, gives the same values as npx for all 865 units and, with the Methods' exclusion applied to its
+    rate column, 662 kept and 203 excluded. Whether the claim should be judged under the gist's rate is
+    asked of a reader (questions/burman-2023.yaml).
+  deviations:
+  - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
+    under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
+    holds fully only under that variant.
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: fig4d-synchrony-lower-awake
+  outcome: partially_reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4d-synchrony-lower-awake
+  measured:
+  - 0.3188
+  - 0.3862
+  notes: Under A1F1 (721 units) synchrony is 0.3188 +- 0.0046 awake against 0.3862 +- 0.0067 under isoflurane,
+    paired t = -12.49, p = 1.45e-32. Direction and test hold; the awake mean is just below 0.325 +- 0.005
+    and the isoflurane mean is inside its tolerance. Awake is lower in 489 of 721 units and in 15 of 17
+    recordings. Under the gist's rate (A1F2, A2F2, 662 units) the means are 0.3253 and 0.3928, the paper's
+    (p = 3.12e-29). With the population restricted to kept units, A1F1 gives 0.3225 against 0.3876 and
+    A1F2 gives 0.3686 against 0.4333, further from the paper, which supports the gist's population of
+    all selected units (N6). Timed from start_time, 0.3073 against 0.3720. The gist itself, run unmodified,
+    gives 0.3253 and 0.3928 for its 662 kept units. Whether the claim should be judged under the gist's
+    rate is asked of a reader (questions/burman-2023.yaml). The criterion's partial case (only the total
+    within 10%) does not literally cover this result, where the kept count is within tolerance too and
+    the excluded count is not; partial is the reading closest to it, and the gap is asked of a reader.
+  deviations:
+  - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
+    under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
+    holds fully only under that variant.
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: fig4d-entropy-higher-awake
+  outcome: partially_reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4d-entropy-higher-awake
+  measured:
+  - 1.3887
+  - 1.1502
+  notes: Under A1F1 entropy is 1.3887 +- 0.0182 awake against 1.1502 +- 0.0205 nats under isoflurane over
+    656 units with a value in both conditions (65 left out with fewer than two spikes in a condition),
+    paired t = 12.02, p = 3.28e-30. Direction and test hold; both means are outside tolerance. Awake is
+    higher in 15 of 17 recordings. Under the gist's rate (A1F2, A2F2) the means are 1.3474 and 1.1106
+    over 597 units, the paper's values; taking each condition's mean over its own defined units gives
+    1.324 and 1.104 there, so the paper's means are over units defined in both conditions, though it gives
+    n = 662. The gist itself, run unmodified, gives 1.3474 and 1.1106 over the 597 such units. Whether
+    the claim should be judged under the gist's rate is asked of a reader (questions/burman-2023.yaml).
+  deviations:
+  - Judged under the Methods reading A1F1, as the claims file requires. The paper's numbers come out exactly
+    under the gist's rate (A1F2, A2F2), which sums spike latencies where a count is expected; this claim
+    holds fully only under that variant.
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: fig4-rate-higher-awake
+  outcome: reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:fig4-rate-higher-awake
+  notes: Under A1F1 the evoked spike-count rate is 14.00 +- 0.66 Hz awake against 7.59 +- 0.47 Hz under
+    isoflurane over 721 units, paired t = 12.36, p = 5.75e-32; higher awake in 539
+    of 721 units and 15 of 17 recordings. Every reading gives the same direction (gist rate 45.05 against
+    24.29). The paper reports no value or test for this in the text read; the test is the claims file's.
+  deviations:
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+- claim: figs6-rate-regressed
+  outcome: reproduced
+  notebook: reproduce_burman_2023.ipynb
+  output: claim:figs6-rate-regressed
+  notes: Under A1F1, with the evoked rate regressed out, the awake difference keeps its sign with p below
+    1e-10 in all six tests. Synchrony R1 -0.0593 (p = 3.3e-26), R2 -0.0619 (p = 1.5e-13), R3 -0.0625 (p
+    = 2.8e-24); entropy R1 0.171 (p = 7.1e-17), R2 0.179 (p = 4.2e-11), R3 0.210 (p = 1.1e-20). Every
+    other reading gives the same. By recording (R2), the coefficient has the expected sign in 15 of 17
+    for each measure. The regression of Figure S6 is in a legend not read; as all three readings the criterion
+    names agree, the outcome does not depend on which it is.
+  deviations:
+  - Trials of all stimulus currents and depths of a session are pooled and times are taken from stop_time,
+    as the claims file (N3) gives from the gist; the Methods say only "following an electrical stimulus".
+    Timing from start_time, the pulse onset 0.4 ms earlier, is run as a variant under A1F1, with 734
+    units kept and 131 excluded, and synchrony, entropy, the rate test and the regressions keep their
+    direction.
+  - The Methods' waveform cut (>= 0.4 ms) and the gist's (> 0.4 ms) select the same units, as no unit
+    has a duration of exactly 0.4 ms; readings A1 and A2 also select the same 865 units, as the SSp sessions
+    hold only SSp-ll and SSp-tr units.
+  - The regression method is open (Figure S6 legend not in the text read); the three readings of the criterion
+    were all run and agree.
+- claim: fig4f-model-hyperpolarizing-less-activity
+  outcome: reproduced
+  notebook: network_model.ipynb
+  output: claim:fig4f-model-hyperpolarizing-less-activity
+  notes: Over the 16,000 excitatory neurons of 20 runs, the peri-stimulus rate is 8.785 +- 0.020 Hz with
+    hyperpolarizing E_GABA against 19.468 +- 0.026 Hz with shunting E_GABA, paired t = 446.42 (p underflows
+    to 0); lower in all 20 runs. No neuron is without a spike. The spike-time parts of the statement are
+    judged in fig4h-model-synchrony and fig4h-model-entropy, where the direction holds.
+  deviations: &id001
+  - Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the
+    paper's model; this cannot change the model, only the sample.
+  - The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit
+    in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on
+    that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check).
+- claim: fig4h-model-synchrony
+  outcome: partially_reproduced
+  notebook: network_model.ipynb
+  output: claim:fig4h-model-synchrony
+  measured:
+  - 0.7833
+  - 0.8789
+  notes: Synchrony 0.7833 +- 0.0005 shunting against 0.8789 +- 0.0006 hyperpolarizing over 16,000 neurons,
+    paired t = -134.60 (p underflows to 0, below 0.001), lower with shunting in all 20 runs. The shunting
+    mean is within 0.784 +- 0.001; the hyperpolarizing mean is 0.0011 below 0.880, so the criterion gives
+    partially reproduced. Per-run hyperpolarizing means span 0.8661 to 0.8909, so the tolerance (the paper's
+    SEM over pooled neurons) is narrower than the spread between seeds, and the paper's seeds are not
+    known. The standard error of a 20-run mean from that spread is 0.0013 hyperpolarizing (0.0006 shunting),
+    and the hyperpolarizing mean is 1.6 of these from 0.881 (the shunting mean 1.3 from 0.784). Whether
+    the tolerance should allow for the spread between seeds is asked of a reader (questions/burman-2023.yaml).
+  deviations: *id001
+- claim: fig4h-model-entropy
+  outcome: partially_reproduced
+  notebook: network_model.ipynb
+  output: claim:fig4h-model-entropy
+  measured:
+  - 0.4516
+  - 0.2014
+  notes: Entropy 0.4516 +- 0.0020 shunting against 0.2014 +- 0.0019 nats hyperpolarizing over 16,000 neurons,
+    paired t = 93.09 (p underflows to 0, below 0.001), higher with shunting in all 20 runs. The shunting
+    mean is within 0.451 +- 0.002; the hyperpolarizing mean is 0.0024 above 0.199, so the criterion gives
+    partially reproduced. Per-run hyperpolarizing means span 0.1798 to 0.2217, wider than the tolerance.
+    The standard error of a 20-run mean from that spread is 0.0023 hyperpolarizing (0.0014 shunting), and
+    the hyperpolarizing mean is 1.9 of these from 0.197 (the shunting mean 0.4 from 0.451). Whether the
+    tolerance should allow for the spread between seeds is asked of a reader (questions/burman-2023.yaml).
+  deviations: *id001
+- claim: figs7-model-decoding
+  outcome: reproduced
+  notebook: network_model.ipynb
+  output: claim:figs7-model-decoding
+  notes: Mean decoding accuracy 0.9848 shunting against 0.9315 hyperpolarizing (chance 0.01). D1, paired
+    t test of the 20 per-run accuracies, t = 16.42, p = 1.11e-12 in this execution; D2, shunting higher
+    in 20 of 20 runs. The spike counts the classifier uses are small integers, and in 0.80 to 0.81 of
+    the test trials under shunting and 0.90 to 0.92 under hyperpolarizing the fifth-nearest training
+    trial is at the same distance as the sixth, so the accuracy depends on how ties are broken, which
+    differs between runners. Executions on different runners, with the same per-run rate, entropy and
+    synchrony, printed t = 16.92, p = 6.52e-13 (the first execution and the one verifier round 2 read)
+    and t = 16.42, p = 1.11e-12 (the round-1 revision and this one). With tied neighbours chosen by five
+    other random orders of the training trials, a run's accuracy moves by at most 0.0020 (shunting) and
+    0.0045 (hyperpolarizing), D1 gives t = 16.35 to 17.22 (p at most 1.20e-12) and D2 holds in 20 of 20
+    runs each time, so the outcome does not depend on the tie-breaking.
+  deviations:
+  - Seeds are fixed (1 to 20, one per run) where the gist sets none, so the runs are other draws of the
+    paper's model; this cannot change the model, only the sample.
+  - The stimulus is held as one periodic 2,500 ms set instead of the gist's 4 GB whole-run array, to fit
+    in memory; a small run with both gives identical spike trains, and the gist itself run unmodified on
+    that small run gives the same spikes and the same per-neuron rate, entropy and synchrony (data check).
+  - The cross-validation shuffle is seeded with the run's seed (the gist sets none). The seeds fix the
+    spikes and the folds but not the accuracy exactly, as the classifier's ties between equally distant
+    trials are broken differently on different runners; the notebook shows D1 and D2 under five other
+    tie-breaking orders, and all give the same outcome.
+- claim: figs4-intrinsic-properties
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The claim rests on the paper's NEURON model of an L2/3 pyramidal neuron and a Matlab analysis
+    of its simulated ramps (github.com/richardjburman/burman-et-al-2022---Awake-EGABAAR at commit a404c3e,
+    hoc files and NEURON_Egaba_Analysis.m). The model is public and the Methods ("Simulating measurements
+    of synaptic EGABAAR", Table 2) give its membrane properties per state, the synapses, the E_GABA values
+    (-85 to -35 mV in 5 mV steps) and the ramp protocol, so the ramp estimates could be simulated under
+    the anesthetized and awake properties. What is open is what they would be compared with. The measure
+    Figure S4 shows and the comparison behind "could not be explained" are in the Figure S4 legend, which
+    was not in the text read, and the claims file gives no criterion; a choice such as the estimation
+    error under each state's properties against the measured difference of Figure 2H would be arbitrary.
+    So the claim is blocked as methods_underspecified and was not simulated (a further obstacle, the
+    analysis is Matlab, and NEURON is not in the entry's environment). The question is for the paper's
+    authors (findings, methods_unavailable). Neither part uses the dandiset.
+- claim: fig1b-perforation-rs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig1h-vu-egaba
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig1i-vu-rmp
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig1j-vu-df
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: figs2-ramp-equals-step
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: figs3-egaba-unrelated-amplitude-rs
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: rm-awake-lower
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2c-vm-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2d-subthreshold-fluctuation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2f-response-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2h-egaba-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2i-rmp-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2j-df-depolarized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2j-awake-df-zero
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig2k-conductance-same
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: figs5-within-anesthetized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: rm-nbqx-higher
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3c-nbqx-vm
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3d-nbqx-fluctuation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3e-nbqx-polarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3g-nbqx-egaba
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3h-nbqx-rmp
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3i-nbqx-df
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+- claim: fig3j-nbqx-conductance-same
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the paper's in vivo gramicidin perforated patch recordings of L2/3 pyramidal neurons in
+    V1. DANDI:000458 holds only the Allen Institute Neuropixels and EEG recordings, and the paper deposits
+    the patch data nowhere ("available on request to the lead contact"). A search of the DANDI archive
+    for gramicidin, Akerman, Burman and EGABA found no dandiset.
+findings:
+- kind: code_mismatch
+  statement: The paper's analysis code computes the evoked firing rate used for the exclusion (below 0.1
+    Hz or above 200 Hz) as the sum of the spikes' latencies in ms (np.sum of spike_times) over trials
+    times 10 ms, where the Methods describe an average evoked firing rate. With this rate the dataset
+    gives the paper's sample exactly (662 kept, 203 excluded, median 34 per recording, 1 to 93) and its
+    Figure 4D means (synchrony 0.325 and 0.393, entropy 1.347 and 1.111); with the spike-count rate it
+    gives 721 kept and 144 excluded. The 200 Hz bound thus acted on spike-count rates near 45 Hz.
+- kind: selection_undocumented
+  statement: Version 0.230317.0039 holds 18 files with units and electrical stimulation awake and under
+    isoflurane; the paper uses 17. sub-599017_ses-20220210 (943 units, SSp stimulation, 718 awake and
+    720 isoflurane valid trials) is not in the paper's code list, and the paper does not say why. Six
+    further files hold EEG only, with no units.
+- kind: data_missing
+  statement: The paper's gramicidin perforated patch recordings (Figures 1 to 3, S1 to S5), which carry
+    most of its findings, are not in DANDI:000458 nor in any other dandiset found; the paper offers them
+    on request. 24 of its claims cannot be tested.
+- kind: code_mismatch
+  statement: The Methods select regular spiking units with a waveform duration of 0.4 ms or more, the
+    code more than 0.4 ms, and the Methods name the areas SSp-ll, SSp-tr and MOs where the code takes
+    every unit whose location begins with the stimulated region. Neither difference changes the units
+    selected in this dataset.
+- kind: methods_unavailable
+  statement: For the multi-compartment model of Figure S4 (figs4-intrinsic-properties), which measure of
+    the simulated ramp estimates of synaptic E_GABAAR, under the anesthetized and awake membrane properties
+    of Table 2, is compared with what, and what result shows that the membrane properties "could not
+    explain" the measured difference? The Methods give the model and protocol; the comparison is only in
+    the Figure S4 legend, not in the text this attempt read.
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: The first executed notebooks (reproduce_burman_2023.ipynb and network_model.ipynb) with the
+    conclusion cells and the summaries removed, the helper modules npx.py and network.py and the claims
+    file, with the paper's full text (PMC11913778). The verifier queried the archive through the DANDI
+    API and tested npx.measures, npx.histogram and read_session on a synthetic two-unit, three-trial
+    session. It had no attempt record and could not see the two gists.
+  results:
+  - claim: dataset-sessions-link
+    agrees: true
+    outcome: reproduced
+    reason: All 17 gist sessions are assets of 0.230317.0039, each has every units and trials field,
+      and each has both epochs; 16 subjects. The clock check uses off-pulse windows on only 2 of 17
+      files and relies on the evoked-count contrast for the other 15 (B5).
+    response: The shifted-window check now runs on all 17 files (read_session counts the shifted windows
+      as it streams the spike trains) with a Wilcoxon test per file and condition; 33 of 34 pairs pass
+      at p below 0.001, and the one that does not (sub-569069 awake) is named in the notebook and the
+      notes. Outcome unchanged.
+  - claim: fig4c-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under A1F1, the Methods reading, 721 are kept (inside 662 +- 66.2) but 144 excluded (outside
+      203 +- 20.3); under A1F2 every number matches the paper exactly (662/203, median 34, 1 to 93),
+      strong evidence that the paper's numbers were made with the gist's summed-latency rate. The
+      partial outcome reflects a bug in the paper's own code, not the data, and should be recorded as
+      a deviation (B1, a point about the claims file). The verifier could not see the gist, so could
+      not confirm that npx's F2 denominator and trial order match it.
+    response: The gist is now run unmodified on the loaded data (npx.run_gist, a sanity cell); it gives
+      the same rate, entropy and synchrony as npx for all 865 units, and 662 kept and 203 excluded. The
+      deviation and the code_mismatch finding were already recorded. The question whether the claim
+      should be judged under the gist's rate is added to questions/burman-2023.yaml for a reader. Outcome
+      unchanged.
+  - claim: fig4d-synchrony-lower-awake
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under A1F1 awake 0.3188 is just outside 0.320 to 0.330 and isoflurane 0.3862 is inside; awake
+      is lower, p = 1.45e-32. A1F2 matches exactly (0.3253 / 0.3928). As for fig4c-sample, this reflects
+      the paper's code (B1).
+    response: The gist run unmodified gives 0.3253 and 0.3928; the question is in questions/burman-2023.yaml.
+      The variant table's p values, which printed as 0.00e+00 because they were rounded before formatting
+      (B4), are now formatted first. Outcome unchanged.
+  - claim: fig4d-entropy-higher-awake
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under A1F1 awake 1.3887 and isoflurane 1.1502 are both outside tolerance; awake is higher,
+      p = 3.3e-30, n = 656. A1F2 matches exactly (1.3474 / 1.1106). As for fig4c-sample (B1).
+    response: The gist run unmodified gives 1.3474 and 1.1106; the question is in questions/burman-2023.yaml.
+      Outcome unchanged.
+  - claim: fig4-rate-higher-awake
+    agrees: true
+    outcome: reproduced
+    reason: Under A1F1, 14.0 Hz awake against 7.59 Hz isoflurane, paired t = 12.4, p far below 0.05;
+      holds under every reading, and 15 of 17 recordings go the same way. The p values print as 0.00e+00
+      because they are rounded before formatting (B4).
+    response: The p values are now formatted before rounding (A1F1 p = 5.75e-32), in the notebook and
+      the notes. Outcome unchanged.
+  - claim: figs6-rate-regressed
+    agrees: true
+    outcome: reproduced
+    reason: Under A1F1 synchrony is negative and entropy positive under R1, R2 and R3, all p < 1e-10,
+      and the same under every variant. The Figure S6 legend was not available, so it could not see
+      which regression the paper used.
+    response: No change.
+  - claim: fig4f-model-hyperpolarizing-less-activity
+    agrees: true
+    outcome: reproduced
+    reason: 8.785 Hz hyperpolarizing against 19.468 Hz shunting, paired p about 0; lower in 20 of 20 runs.
+      network.py is checked only against its own whole-run-stimulus mode, not against the gist, and that
+      Brian 2 rereads eta from the mutated namespace is supported only indirectly by the summed weights.
+    response: The gist is now run unmodified on the small run with the same seed (network.run_gist, a
+      sanity cell); it gives the same 19,093 excitatory spikes and the same per-neuron rate, entropy and
+      synchrony for all 800 neurons. Each full run now records eta from the plastic synapses' compiled
+      code after each run, 0.1 for balancing and 0 for the test in all 20. Outcome unchanged.
+  - claim: fig4h-model-synchrony
+    agrees: true
+    outcome: partially_reproduced
+    reason: Shunting 0.7833 is inside tolerance; hyperpolarizing 0.8789 is outside (0.880 to 0.882);
+      shunting is lower, p about 0, in 20 of 20 runs. The tolerance, the paper's SEM over 16,000 pooled
+      neurons, is too tight for runs with different seeds; the run-to-run SE of a 20-run mean is 0.0013,
+      and the miss is 1.6 of these, so the partial outcome comes from the criterion, not the model (B2,
+      a point about the claims file).
+    response: The notebook now prints the run-to-run SE of the 20-run mean and each mean's distance from
+      the paper's value in units of it (hyperpolarizing 0.0013, 1.6 SE). The question whether the
+      tolerance should allow for seed noise is added to questions/burman-2023.yaml. Outcome unchanged.
+  - claim: fig4h-model-entropy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Shunting 0.4516 is inside tolerance; hyperpolarizing 0.2014 is outside (0.195 to 0.199);
+      shunting is higher, p about 0, in 20 of 20 runs. The run-to-run SE is 0.0023 and the miss is 1.9
+      of these, seed noise (B2).
+    response: As for fig4h-model-synchrony (hyperpolarizing SE 0.0023, 1.9 SE); the question is in
+      questions/burman-2023.yaml. Outcome unchanged.
+  - claim: figs7-model-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Accuracy 0.985 shunting against 0.932 hyperpolarizing. D1 p = 1.1e-12; D2 higher in 20 of
+      20 runs. Chance is 0.01 (100 patterns). The Figure S7 legend was not available to see the paper's
+      test.
+    response: The notes gave t = 16.92 and p = 6.52e-13, which did not match the notebook; they now give
+      the printed t = 16.42, p = 1.11e-12. Outcome unchanged.
+  - claim: figs4-intrinsic-properties
+    agrees: true
+    outcome: blocked
+    reason: The measure and test are only in the Figure S4 legend, which was not supplied. The notebook
+      gives the reason as other; methods_underspecified fits better. The NEURON model (commit a404c3e)
+      is linked, so a qualitative partial test may have been possible, and the notebook neither attempts
+      nor argues against simulating ramp E_GABA estimates under anesthetized and awake membrane
+      properties (B3).
+    response: blocked_by changed from other to methods_underspecified. The notebook header and the notes
+      now say that the model and its parameters are public and why it is not simulated (the comparison
+      that would judge it is only in the unread legend, and the claims file gives no criterion), and a
+      methods_unavailable finding asks the paper's authors.
+  - claim: fig1b-perforation-rs
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig1h-vu-egaba
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig1i-vu-rmp
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig1j-vu-df
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: figs2-ramp-equals-step
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: figs3-egaba-unrelated-amplitude-rs
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: rm-awake-lower
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2c-vm-depolarized
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2d-subthreshold-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2f-response-polarity
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2h-egaba-depolarized
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2i-rmp-depolarized
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2j-df-depolarized
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2j-awake-df-zero
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig2k-conductance-same
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: figs5-within-anesthetized
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: rm-nbqx-higher
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3c-nbqx-vm
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3d-nbqx-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3e-nbqx-polarity
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3g-nbqx-egaba
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3h-nbqx-rmp
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3i-nbqx-df
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+  - claim: fig3j-nbqx-conductance-same
+    agrees: true
+    outcome: blocked
+    reason: The version has 24 assets, all behavior+ecephys NWB files holding Units, ElectricalSeries, LFP
+      and behavior, with no intracellular recordings; a DANDI search for Burman, Akerman and gramicidin
+      returns no dandiset. No part can be tested (data_missing).
+    response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2, the full executed notebooks after the round-1 revision (reproduce_burman_2023.ipynb
+    and network_model.ipynb, with conclusions and summaries), the helper modules npx.py and network.py,
+    the claims file, the attempt record and the README, with the paper's full text. It could not see
+    questions/burman-2023.yaml.
+  results:
+  - claim: dataset-sessions-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced. The Summary of the main notebook (cell 37) overstates the clocks: "their labels and
+      clocks pass the checks above" is too strong, as main cell 8 passes 33 of 34 pairs and sub-569069 awake
+      fails (ratio 1.07, p = 0.591); main cell 9 and the attempt notes state this correctly. The README''s
+      "About two minutes" for the main notebook does not match: cell 4 took 196 s to load, and cell 35 prints
+      3.5 min.'
+    response: The Summary now says the clocks pass in 33 of 34 file and condition pairs and names sub-569069
+      awake, with its ratio and p. The README now gives 2.5 to 3.5 minutes (2.5 in this execution, 3.5 in
+      the one reviewed). Outcome unchanged.
+  - claim: fig4c-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Partially reproduced under A1F1, with the A1F2 exact match recorded as a deviation. A small gap
+      in the claims file: A1F1 keeps 721, inside 662 +- 66.2, and excludes 144, outside 203 +- 20.3; the criterion''s
+      partial case, "only the total (865) is within 10%", does not literally cover this, as the kept count
+      is within tolerance too, but partial is still the sensible reading. The deviation says timing from start_time
+      "is shown as a variant and keeps the direction", but the start_time variant is run only for synchrony
+      and entropy, and no kept or excluded counts are printed for it. The Summary''s "with means a little
+      off under the Methods'' rate" also covers this claim, which is about counts, not means: 144 excluded
+      against 203. Whether the claim should be judged under the gist''s rate is pending with a reader; until
+      it is answered the partial outcome stands.'
+    response: A start_time section in the main notebook now prints the sample under A1F1 with times from start_time
+      (734 kept, 131 excluded, median 37, 8 to 96), and the deviation says what it shows. The Summary now
+      names the excluded count (144 against 203) as well as the means. The gap in the criterion is noted in
+      the outcome's notes and added to questions/burman-2023.yaml for a reader; the claim is unchanged. Outcome
+      unchanged.
+  - claim: fig4d-synchrony-lower-awake
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced under A1F1, with the A1F2 exact match recorded as a deviation. Whether the
+      claim should be judged under the gist's rate is pending with a reader; until it is answered the partial
+      outcome stands.
+    response: The start_time deviation now says what the variant run shows under A1F1 (kept and excluded counts,
+      and that every measure keeps its direction). Outcome unchanged.
+  - claim: fig4d-entropy-higher-awake
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced under A1F1, with the A1F2 exact match recorded as a deviation. Whether the
+      claim should be judged under the gist's rate is pending with a reader; until it is answered the partial
+      outcome stands.
+    response: The start_time deviation now says what the variant run shows under A1F1 (kept and excluded counts,
+      and that every measure keeps its direction). Outcome unchanged.
+  - claim: fig4-rate-higher-awake
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. The deviation says timing from start_time "is shown as a variant and keeps the direction",
+      but the start_time variant is run only for synchrony and entropy; no rate test is printed for it.
+    response: The start_time section now prints the paired rate test under A1F1 with times from start_time
+      (14.9 against 8.14 Hz, p = 9.58e-35), and the deviation says what it shows. Outcome unchanged.
+  - claim: figs6-rate-regressed
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced. The deviation says timing from start_time "is shown as a variant and keeps the direction",
+      but no regression is printed for start_time. The Figure S6 legend is still unavailable; the outcome
+      does not depend on it, since every reading agrees.
+    response: The start_time section now prints R1, R2 and R3 under A1F1 with times from start_time; synchrony
+      stays lower and entropy higher awake, all p below 1e-11. Outcome unchanged.
+  - claim: fig4f-model-hyperpolarizing-less-activity
+    agrees: true
+    outcome: reproduced
+    reason: 'Reproduced. The README''s "about 20 minutes" for the model notebook does not match: model cell
+      6 prints "20 runs in 40.6 min", and cell 19 prints a total run time of 43.0 min.'
+    response: The README now gives about 17 minutes (17.0 in this execution) and 43 minutes on a slower runner,
+      and entry.yaml gives 17. Outcome unchanged.
+  - claim: fig4h-model-synchrony
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. The README's "hyperpolarizing means 0.001 to 0.002 outside tolerances" does
+      not match model cells 11 and 14, which give misses of 0.0011 and 0.0024. Whether the fig4h tolerances
+      should allow for differences between seeds is pending with a reader; until it is answered the two partial
+      model outcomes stand.
+    response: The README now gives the misses as 0.0011 and 0.0024. Outcome unchanged.
+  - claim: fig4h-model-entropy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Partially reproduced. The README's "hyperpolarizing means 0.001 to 0.002 outside tolerances" does
+      not match model cells 11 and 14, which give misses of 0.0011 and 0.0024. Whether the fig4h tolerances
+      should allow for differences between seeds is pending with a reader; until it is answered the two partial
+      model outcomes stand.
+    response: The README now gives the misses as 0.0011 and 0.0024. Outcome unchanged.
+  - claim: figs7-model-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, and this holds even with the corrected statistic. Model cell 20 and the attempt notes
+      say "D1 paired t = 16.42, p = 1.11e-12", but model cell 19 prints t = 16.92, p = 6.52e-13, which the
+      printed per-run accuracies give; 16.42 matches the earlier run, not this one. So the accuracies differ
+      between executions, though the cross-validation is seeded and the other model numbers repeat exactly,
+      which does not fit the deviation's implication that the seeding makes the run deterministic. The reason
+      should be explained, or the deviation's wording changed.
+    response: The cause is ties. The classifier's inputs are small integer spike counts, and in 0.80 to 0.92
+      of the test trials the fifth-nearest training trial is as near as the sixth, so the five neighbours
+      depend on how ties are broken, which differs between runners (a full run of seed 1 on this runner gives
+      0.9840 and 0.9424 from the same spikes that gave 0.9820 and 0.9437 in the execution reviewed). Executions
+      on different runners printed t = 16.92 and t = 16.42; this one printed t = 16.42, p = 1.11e-12, which
+      cell 20 and the notes now give, with the other value named. network.decoding_ties now gives the share
+      of tied trials and the accuracy under five other training orders; D1 gives t = 16.35 to 17.22 and D2
+      holds in 20 of 20 runs each time. The deviation now says that the seeds fix the spikes and folds but
+      not the tie-breaking. Outcome unchanged.
+  - claim: figs4-intrinsic-properties
+    agrees: true
+    outcome: blocked
+    reason: Blocked, methods_underspecified. The legends of Figures S4, S6 and S7 are still unavailable; the
+      block on figs4 depends on them.
+    response: No change.
+  - claim: fig1b-perforation-rs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig1h-vu-egaba
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig1i-vu-rmp
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig1j-vu-df
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: figs2-ramp-equals-step
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: figs3-egaba-unrelated-amplitude-rs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: rm-awake-lower
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2c-vm-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2d-subthreshold-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2f-response-polarity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2h-egaba-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2i-rmp-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2j-df-depolarized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2j-awake-df-zero
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig2k-conductance-same
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: figs5-within-anesthetized
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: rm-nbqx-higher
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3c-nbqx-vm
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3d-nbqx-fluctuation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3e-nbqx-polarity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3g-nbqx-egaba
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3h-nbqx-rmp
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3i-nbqx-df
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.
+  - claim: fig3j-nbqx-conductance-same
+    agrees: true
+    outcome: blocked
+    reason: Agrees with all 35 outcomes; the 24 patch-clamp claims are blocked, data_missing.
+    response: No change.

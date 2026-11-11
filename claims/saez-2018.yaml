@@ -1,0 +1,779 @@
+# Claims for Saez, Lin, Stolk, Chang, Parvizi, Schalk, Knight & Hsu (2018), Current Biology
+# 28:2889-2899, on CRCNS ofc-3.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-11,
+# protocol pilot-14 as stated in docs/protocol.md. The writer did not look at the dataset's data or
+# files; only its description on crcns.org (paper/ofc-3.data-description.txt) was read, for which
+# experiments it holds.
+#
+# Text read: the version of record, as a text extraction of the publisher's PDF (PyMuPDF), with the
+# PDF: main text, figure legends, STAR Methods (pages e1 to e3) and the Supplemental Information
+# (Figures S1 to S7, Tables S1 and S2). The extraction garbles some symbols (minus signs, "~" and
+# the exponents of "p < 10^-5" and "p < 10^-6" print as a replacement glyph; the formulas of Table
+# S1 are garbled); they were read from context and from the PDF, and quotes are cut around them.
+#
+# Code read: none. The paper links no code; it says analysis was done "in MATLAB and R using
+# custom scripts" (STAR Methods, ECoG Recording).
+#
+# Data the paper used. 10 adult patients (4 female) with intractable epilepsy, implanted with
+# subdural grids or strips at UCSF (2), Stanford (2), UC Irvine (5) and Albany (1). 210 OFC
+# electrodes recorded, 192 artifact-free and confirmed in OFC kept (per patient 5, 6, 52, 5, 61,
+# 7, 11, 10, 19 and 16 for s01 to s10, Table S2). One session of 200 rounds per patient (plus
+# practice). Each round: fixation cross (t = 0), game presentation at 750 ms showing a gamble
+# prize ($10 to $30 in $5 steps) and a number 0 to 10; up to 2 s to choose the safe bet ($10) or
+# the gamble (left/right side randomized); outcome reveal 550 ms after the button press, a second
+# number, the gamble winning when it is greater than the first; new round 1 s after reveal.
+# Timeouts (9.98% of trials) excluded. The outcome is revealed whether or not the patient
+# gambled. 10 healthy comparison participants (UC Berkeley undergraduates) played the same task;
+# the paper does not say whether their data were deposited.
+# Signals: ECoG at 1 kHz after downsampling, common average reference, 1 Hz high-pass; HFA is the
+# 70-200 Hz band (two-way zero-phase FIR band-pass) and its analytic amplitude (Hilbert
+# transform); broadband field potential (FP) power is used for comparison. Epochs are locked to
+# game presentation (game epoch) and to the button press or reward (buttonpress epoch; outcome is
+# a fixed 550 ms after the press). The dataset description lists HFA epochs ([-1, 2] s around
+# game presentation and around the button press, raw and window averaged), the behavior files
+# with event times, choices and outcomes, the gamble parameters per trial, and per-subject files
+# of "the behavioral regressors used for analysis" (sXX_behav_globals.mat). It lists no broadband
+# signal and no electrode coordinates or Brodmann labels; whether the data hold them is the
+# author's to find.
+#
+# Method details fixed by the paper and used below (STAR Methods, ECoG analysis and behavioral
+# regression, and Behavioral Analysis):
+# - Dependent variable: HFA analytic amplitude, epoched with a 200-ms baseline "to remove any
+#   pre-stimulus differences in baseline amplitude", averaged in 200-ms windows stepped by 50 ms.
+# - Per electrode, regressor and window, a separate linear regression of trial HFA on one
+#   regressor; %EV is its R2 (in percent). Game and buttonpress epochs are analysed separately.
+# - Encoding (task-active) electrode for a regressor: p < 0.05 in 5 or more consecutive windows
+#   at any point in the epochs. The Behavioral Analysis section says "over 5 consecutive
+#   windows"; the ECoG analysis section and Figure S6 legend say 5 or more, which is used.
+# - Chance: labels shuffled against HFA 1,000 times per regressor and electrode.
+# - Duration of encoding: the longest stretch in which all time points have p < 0.05.
+# - Regressors (Table S1; Results, Economic Choice Behavior, paragraph 3): win probability p, risk
+#   (variance of the gamble), chosen value (p times prize for a gamble, $10 for the safe bet),
+#   gamble (1 gamble, 0 safe bet), win index (1 for gamble wins), loss index (1 for gamble losses),
+#   RPE (reward obtained minus chosen value), regret (reward obtained minus the maximum reward
+#   possible given the outcome, from -20 to 0). Past regressors are the same quantities from 1 to 5
+#   trials back (t-1 to t-5). Defined on all trials except timeouts.
+# - Stepwise regression: per electrode and regressor, sum of F statistics over the longest stretch
+#   of consecutive windows with p < 0.05; 10,000 label shuffles give a permutation p, Bonferroni
+#   corrected over 192 electrodes; surviving regressors enter forward selection by ANOVA at p <
+#   0.05, starting from the one with the highest peak %EV.
+# Details the paper leaves open, used by several claims, with the readings it allows:
+# - Baseline. Which 200 ms (the 200 ms before the locking event, or before game presentation for
+#   both epochs) and how removed (subtracted, or divided). Readings (a) subtract the mean of the
+#   200 ms before each epoch's event; (b) subtract the mean of the 200 ms before game
+#   presentation, for both epochs. Whether the dataset's HFA is already baseline corrected is
+#   the author's to find.
+# - Win probability. Table S1 and the Behavioral Analysis worked example give 0.8 for a shown 2,
+#   so p = (10 - n)/10 for a shown number n; the Behavioral task paragraph says a shown 2 "had a
+#   win probability of 20%". The first is used (it agrees with the rule that a greater second
+#   number wins and the example); the second is a variant.
+# - Risk. Table S1 gives E{(V - E(V))^2}, the variance of the gamble. Readings (a) p(1-p)x^2 with
+#   x the prize; (b) p(1-p). Both peak at p = 0.5 as the paper says.
+# - Offer value. The Results say "offer value (win probability)" and Figure 3 lists offer value in
+#   place of win probability, so offer value is read as win probability; the gamble's expected
+#   value p times x (Figure S2A) is a variant.
+# - Past regressors across timeouts. Readings (a) the regressor of the round before, with rounds
+#   whose previous round was a timeout (and round 1) dropped; (b) the regressor of the last
+#   non-timeout round.
+# The per-subject regressor files the dataset description lists may settle the regressor
+# readings; where they do, the author follows them and says so.
+schema_version: 2
+paper: doi:10.1016/j.cub.2018.07.045
+claims:
+- id: methods-electrode-trial-counts
+  statement: Of 210 OFC electrodes recorded in 10 patients, 192 were artifact-free and included;
+    each patient played 200 rounds, and timeouts, 9.98% of all trials, were excluded.
+  source: STAR Methods, ECoG Recording, and Behavioral task; Table S2, last row
+  quote: Out of 210 OFC electrodes, 192 were artifact-free and included in subsequent analyses
+  expected:
+  - quantity: OFC electrodes included
+    value: 192
+    tolerance: 0
+    unit: electrodes
+  - quantity: patients
+    value: 10
+    tolerance: 0
+    unit: patients
+  - quantity: timeout trials, percent of all trials
+    value: 9.98
+    tolerance: 0.998
+    unit: percent
+  criterion: Exact counts for electrodes and patients (the per-patient electrode counts of Table
+    S2 are 5, 6, 52, 5, 61, 7, 11, 10, 19 and 16 for s01 to s10, which the author compares as
+    well). The timeout percentage is the number of timeout trials over all trials of the 10
+    patients. The paper's denominator is not stated; 9.98% of 2,000 is not a whole number of
+    trials, so it is read as all trials recorded (2,000 when each patient played 200 rounds).
+- id: behavior-risk-neutral
+  statement: Patients were approximately risk neutral, choosing the gamble only slightly more often
+    than a risk-neutral baseline model, on 55.9% (plus or minus 8.5%) of trials.
+  source: Results, Economic Choice Behavior in Neurosurgical Patients, paragraph 4
+  quote: we found that subjects were approximately risk neutral, choosing to gamble only slightly
+    more often than a risk neutral baseline model (55.9% ± 8.5% of risky choices)
+  expected:
+  - quantity: percent of non-timeout trials on which the gamble was chosen
+    value: 55.9
+    tolerance: 8.5
+    unit: percent
+  criterion: The tolerance is the stated spread, which the paper does not name (SD or SEM). The
+    paper does not say how the percentage is formed. Readings (a) the mean over the 10 patients
+    of each patient's percentage of gamble choices among non-timeout trials; (b) the pooled
+    percentage over all non-timeout trials. The risk neutral baseline model is not defined; the
+    share of gamble choices a risk-neutral chooser would make (gamble when p times x exceeds $10,
+    ties split) is reported for comparison.
+- id: fig1c-choice-win-probability
+  statement: The proportion of risky choices increased with win probability, well captured by a
+    logit model (p < 0.001, random effects logit analysis).
+  source: Results, Economic Choice Behavior in Neurosurgical Patients, paragraph 4; Figure 1C
+  quote: The proportion of risky choices increased as the offer value (win probability) increased,
+    which was well captured by a logit model of decision under risk (p < 0.001; random effects
+    logit analysis; Figure 1C)
+  statistics:
+  - test: random effects logit analysis
+    p: 0.001
+    p_relation: "<"
+    n: 10 patients
+  criterion: A logistic regression of gamble choice (1 gamble, 0 safe bet; timeouts excluded) on
+    win probability with patient as random effect. The random-effects structure is not stated;
+    readings (a) random intercept per patient; (b) random intercept and slope per patient.
+    Reproduced when, under one reading, the slope is positive with p < 0.001.
+- id: figs2a-choice-gamble-ev
+  statement: Patients' choices were sensitive to the expected value of the gamble (prize times win
+    probability), with gamble choices more frequent at higher gamble expected value.
+  source: Figure S2A legend
+  quote: Patients' choices were sensitive to the expected value of the gamble (i.e., the gamble
+    prize times the win probability), with gamble choices more prevalent for higher gamble
+    expected value
+  criterion: The paper shows this in a figure and reports no test. The test is borrowed from
+    fig1c-choice-win-probability (the paper's test of choice against win probability) and the
+    0.05 level is a standard choice, neither from the paper. A logistic regression of gamble
+    choice on gamble expected value (p times x) with patient as random effect, readings (a)
+    random intercept; (b) random intercept and slope. Reproduced when, under one reading, the
+    slope is positive with p < 0.05. The proportions of gamble choices per expected-value level
+    are reported.
+- id: fig1c-patients-like-controls
+  statement: The patients' choices were comparable to those of 10 healthy comparison participants
+    (all p > 0.2).
+  source: Figure 1C legend; Results, Economic Choice Behavior in Neurosurgical Patients, paragraph 4
+  quote: Subjects' choices were significantly affected by likelihood of winning the gamble ... and
+    were comparable to those of healthy participants (gray line; all p > 0.2)
+  statistics:
+  - test: not named
+    p: 0.2
+    p_relation: ">"
+    n: 10 patients and 10 healthy participants
+  criterion: A claim of absence. The paper does not name the test behind "all p > 0.2"; the plural
+    and Figure 1C suggest one comparison per win-probability level. Readings the legend and the
+    Results (Figures 1C and S1) allow, neither fixed by them, (a) per shown number, a two-sample t test of the proportion of gamble choices, patients
+    against controls; a variant (b) compares the slopes of per-subject logit fits (Figure S1B).
+    Reproduced when no comparison has p < 0.05 (the paper's 0.2 is reported against the result);
+    not reproduced when one does. Needs the healthy participants' choices, which the paper does
+    not say were deposited.
+- id: figs2b-rt-conflict
+  statement: Reaction times were longer in high-conflict trials (win probability 40 to 60%) than in
+    low-conflict trials (below 30% or above 70%), in patients and in healthy subjects (both p <
+    0.001, t test), with comparable effect sizes.
+  source: Figure S2B legend
+  quote: Patients and healthy subjects took longer to react in high-conflict trials (both p<0.001,
+    t-test), and the effect size was comparable between both groups
+  statistics:
+  - about: patients, high against low conflict
+    test: t test
+    p: 0.001
+    p_relation: "<"
+  - about: healthy subjects, high against low conflict
+    test: t test
+    p: 0.001
+    p_relation: "<"
+  criterion: Reaction time is the button press time minus the game presentation time (the trial
+    start plus 750 ms, STAR Methods, Behavioral task; or the photodiode-derived presentation time
+    if the data give one). The unit and form of the t test are not stated; readings (a) a
+    two-sample t test over pooled trials; (b) a paired t test over the 10 subjects' mean RTs.
+    Reproduced for patients when, under one reading, high-conflict RTs are longer with p < 0.001.
+    The healthy-subject part needs data the paper does not say were deposited. The paper gives no
+    measure or test for "comparable" effect sizes; the effect size (Cohen's d, a standard choice)
+    is reported for each group and that part is not judged.
+- id: regressors-past-current-uncorrelated
+  statement: Past and current regressors were nearly uncorrelated (mean R2 2.1%, maximum R2 3.7%).
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraph 1
+  quote: past and current regressors were uncorrelated (mean R2 = 2.1%; max R2 = 3.7%)
+  expected:
+  - quantity: mean R2 between past and current regressors
+    value: 2.1
+    tolerance: 0.21
+    unit: percent
+  - quantity: maximum R2 between past and current regressors
+    value: 3.7
+    tolerance: 0.37
+    unit: percent
+  criterion: R2 is the squared Pearson correlation over non-timeout trials, within each patient.
+    Which pairs are meant is not stated; readings (a) each regressor with its own t-1 version (8
+    pairs); (b) every current regressor with every t-1 regressor (64 pairs); (c) as (b) with
+    t-1 to t-5. Also open whether R2 is averaged over patients or computed on trials pooled over
+    patients. Reproduced when both values are within tolerance under one reading.
+- id: figs6a-regressor-collinearity
+  statement: Regressors were weakly correlated between and within categories (mean R2 0.15, all R2
+    below 0.6).
+  source: Figure S6A legend
+  quote: Regressors were weakly correlated between and within categories (mean R2=0.15, all R2<0.6)
+  expected:
+  - quantity: mean R2 over pairs of regressors
+    value: 0.15
+    tolerance: 0.015
+  criterion: R2 is the squared Pearson correlation over non-timeout trials for all pairs of the
+    regressors used. Open which set ("all pairs of regressors used in the study"); readings (a)
+    the 8 current regressors; (b) the 8 current and 8 t-1 regressors; and whether pairs are
+    pooled over patients or averaged. Reproduced when, under one reading, the mean is within
+    tolerance and no pair reaches R2 0.6.
+- id: fig3-present-encoding
+  statement: OFC HFA encodes the choice regressors (risk, gamble choice, offer value, chosen value),
+    time locked to game presentation, and the outcome regressors (gamble win, gamble loss, RPE,
+    regret), time locked to outcome reveal, with average %EV above chance and a rise in the
+    number of encoding electrodes.
+  source: Results, OFC HFA Reflects Choice- and Outcome-Related Valuation Signals, paragraphs 2 and
+    3; Figure 3A to 3D; Table S2
+  quote: we found robust evidence within the HFA band for multiple valuation components related to
+    choice (risk, gamble choice, offer value, and expected value of chosen option ... and outcome
+    (gamble win, gamble loss, RPE, and regret) processing
+  expected:
+  - quantity: risk encoding electrodes (Table S2, sum over patients)
+    value: 50
+    tolerance: 5
+    unit: electrodes
+  - quantity: gamble encoding electrodes
+    value: 34
+    tolerance: 3.4
+    unit: electrodes
+  - quantity: offer value encoding electrodes
+    value: 31
+    tolerance: 3.1
+    unit: electrodes
+  - quantity: chosen value encoding electrodes
+    value: 26
+    tolerance: 2.6
+    unit: electrodes
+  - quantity: win index encoding electrodes
+    value: 45
+    tolerance: 4.5
+    unit: electrodes
+  - quantity: loss index encoding electrodes
+    value: 33
+    tolerance: 3.3
+    unit: electrodes
+  - quantity: RPE encoding electrodes
+    value: 28
+    tolerance: 2.8
+    unit: electrodes
+  - quantity: regret encoding electrodes
+    value: 35
+    tolerance: 3.5
+    unit: electrodes
+  criterion: Encoding electrodes as in the opening comment (p < 0.05 in 5 or more consecutive
+    windows, game or buttonpress epoch). The expected counts are the column sums of Table S2,
+    which the paper does not print; their mean proportion over all 16 current and past regressors
+    is 20.9%, the HFA value of hfa-more-than-fp, so Table S2 is read as this selection. Chance
+    for each regressor is the share of electrodes classified as encoding under the 1,000 label
+    shuffles (STAR Methods), and the chance %EV is the mean %EV of the electrodes so selected
+    under shuffles. The paper gives the shuffles but no level for "above chance"; the 95th
+    percentile of the shuffled count is a standard choice. The per-window share of encoding
+    electrodes (Figure 3 bars) is not defined; readings (a) among the electrodes encoding the
+    regressor, the share with p < 0.05 in that window; (b) the share of all 192 electrodes with
+    p < 0.05 in that window. Reproduced when all eight counts are within tolerance, every regressor's
+    count exceeds the 95th percentile of its shuffled count, the peak of the mean %EV of choice
+    regressors falls after game presentation in the game epoch and that of the outcome
+    regressors after outcome reveal (button press plus 550 ms), and under one reading the
+    per-window share of encoding electrodes peaks in the same post-event period as the mean
+    %EV; partially reproduced when all of this holds but some counts are outside tolerance.
+- id: fig3-latency-duration-similar
+  statement: The delays of choice encoding after game presentation and of outcome encoding after
+    outcome reveal did not differ (512.5 plus or minus 59 ms against 287 plus or minus 114.33 ms,
+    p = 0.14, t test), nor did their transient durations (612.15 plus or minus 132.9 ms against
+    712.5 plus or minus 112.5 ms, p = 0.58).
+  source: Results, OFC HFA Reflects Choice- and Outcome-Related Valuation Signals, paragraph 3
+  quote: The delays after the presentation of external information, game presentation and outcome
+    reveal, respectively, were not statistically different (512.5 ± 59 ms and 287 ± 114.33 ms; p
+    = 0.14; t test), with transient activation profiles of comparable duration (612.15 ± 132.9 ms
+    and 712.5 ± 112.5 ms, respectively; p = 0.58; t test)
+  statistics:
+  - about: delay, choice against outcome
+    test: t test
+    p: 0.14
+  - about: duration, choice against outcome
+    test: t test
+    p: 0.58
+  expected:
+  - quantity: delay of choice encoding after game presentation
+    value: 512.5
+    tolerance: 59
+    unit: ms
+  - quantity: delay of outcome encoding after outcome reveal
+    value: 287
+    tolerance: 114.33
+    unit: ms
+  - quantity: duration of choice encoding profile
+    value: 612.15
+    tolerance: 132.9
+    unit: ms
+  - quantity: duration of outcome encoding profile
+    value: 712.5
+    tolerance: 112.5
+    unit: ms
+  criterion: A claim of absence, judged by two-sample t tests at p < 0.05; tolerances are the stated
+    spreads. The paper does not define delay or duration here, nor the units of the t test. The
+    spreads and Figure 3B and 3D suggest one value per regressor (4 against 4). Readings (a) per
+    regressor, the delay is the time of the peak of the mean %EV of its encoding electrodes after
+    the event, and the duration is the time that mean profile stays above its shuffled chance
+    level; (b) per regressor, the delay is the first window centre after the event at which the
+    share of encoding electrodes exceeds chance, and the duration as in (a); (c) per electrode
+    and regressor, the delay to the start of the longest significant stretch and its length.
+    Reading (c) is the measure of fig5-past-sustained, whose current durations (799.6 and 706.9
+    ms, with SEMs near 35 ms) differ from the ones here, so (a) and (b) are better supported.
+    Reproduced when both t tests give p > 0.05 under the reading used; the values are compared
+    with the expected ones under each reading.
+- id: hfa-more-than-fp
+  statement: Across all regressors the proportion of encoding electrodes was greater with HFA than
+    with broadband field potentials (mean 20.9% against 3.3%, p < 10^-5, t test), and greater in
+    every instance.
+  source: Results, OFC HFA Reflects Choice- and Outcome-Related Valuation Signals, paragraph 4;
+    Figure S4A
+  quote: Across all regressors, the proportion of encoding electrodes identified using HFA was
+    significantly greater than using FP (mean HFA = 20.9% versus FP = 3.3%
+  statistics:
+  - test: t test
+    p: 0.00001
+    p_relation: "<"
+    n: not stated; read as 16 regressors (8 current, 8 t-1)
+  expected:
+  - quantity: mean proportion of encoding electrodes, HFA
+    value: 20.9
+    tolerance: 2.09
+    unit: percent
+  - quantity: mean proportion of encoding electrodes, broadband FP
+    value: 3.3
+    tolerance: 0.33
+    unit: percent
+  criterion: For FP the same selection as for HFA, with broadband power in place of HFA (STAR
+    Methods). The 20.9% is the mean over the 16 current and t-1 regressors of the Table S2
+    proportions, so the t test is over 16 regressors; readings (a) paired; (b) two-sample.
+    Reproduced when both means are within tolerance, the HFA proportion is higher for every
+    regressor, and p < 10^-5 under one reading. Needs the broadband signal, which the dataset
+    description does not list.
+- id: figs4b-power-at-buttonpress
+  statement: Broadband power modulation across OFC was maximal at the button press and weak at the
+    time of maximal HFA outcome encoding (about 750 ms after outcome reveal), so HFA encoding is
+    distinct in time from broadband modulation.
+  source: Results, OFC HFA Reflects Choice- and Outcome-Related Valuation Signals, paragraph 4;
+    Figure S4B
+  quote: ERP modulation is maximal at the time of button press, and thus does not align in time
+    with maximal encoding of outcome information
+  criterion: The average broadband response over the 192 electrodes, locked to the button press,
+    against the mean %EV of the outcome regressors over their encoding electrodes. Whether the
+    "ERP" is the trial-averaged voltage or its power is open; readings (a) the mean absolute
+    trial-averaged voltage; (b) mean broadband power (the Results say "power modulation", the
+    Figure S4B legend "ERP"). The paper gives no window for "at the time of button press"; 200
+    ms is a standard choice. Reproduced when, under one reading, the maximum of the broadband
+    response lies within 200 ms of the button press and the peak of outcome %EV lies about 750
+    ms after outcome reveal (1,300 ms after the press), within the expected tolerance. Needs the
+    broadband signal.
+  expected:
+  - quantity: peak of the mean %EV of outcome regressors after outcome reveal
+    value: 750
+    tolerance: 75
+    unit: ms
+- id: fig4-past-encoding
+  statement: HFA encodes characteristics of the preceding trial; past choice and outcome features
+    are widely represented across OFC except past risk, dissociable from current signals.
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraphs 1
+    and 2; Figure 4A to 4D; Table S2
+  quote: features were widely represented across the OFC, with the exception of past
+    risk, and were dissociable from current choice and outcome signals
+  expected:
+  - quantity: past risk encoding electrodes (Table S2, sum over patients)
+    value: 17
+    tolerance: 1.7
+    unit: electrodes
+  - quantity: past gamble encoding electrodes
+    value: 43
+    tolerance: 4.3
+    unit: electrodes
+  - quantity: past win probability encoding electrodes
+    value: 46
+    tolerance: 4.6
+    unit: electrodes
+  - quantity: past chosen value encoding electrodes
+    value: 35
+    tolerance: 3.5
+    unit: electrodes
+  - quantity: past win index encoding electrodes
+    value: 49
+    tolerance: 4.9
+    unit: electrodes
+  - quantity: past loss index encoding electrodes
+    value: 56
+    tolerance: 5.6
+    unit: electrodes
+  - quantity: past RPE encoding electrodes
+    value: 50
+    tolerance: 5
+    unit: electrodes
+  - quantity: past regret encoding electrodes
+    value: 64
+    tolerance: 6.4
+    unit: electrodes
+  depends_on:
+  - fig3-present-encoding
+  criterion: The t-1 regressors, with the selection and chance of fig3-present-encoding (the 95th
+    percentile a standard choice), in both epochs. Reproduced when all eight counts are within
+    tolerance, each of the seven past regressors other than risk has a count above the 95th
+    percentile of its shuffled count, and past risk has the lowest count of the eight; partially
+    reproduced when the last two hold but some counts are outside tolerance. The paper does not define
+    "dissociable" here beyond Figures 4 and 5; that part is tested by fig5-past-sustained.
+- id: fig5-past-sustained
+  statement: Past-trial signals were sustained; the longest continuous stretch of significant
+    encoding was longer for past outcome (1,341.37 plus or minus 49.63 ms) and past choice
+    (1,169.15 plus or minus 61.2 ms) than for current choice (799.6 plus or minus 36.94 ms) and
+    current outcome (706.9 plus or minus 30.56 ms), all p < 10^-6, t test.
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraph 2;
+    Figure 5A and 5B
+  quote: both past outcome (average duration = 1,341.37 ± 49.63 ms) and past choice (1,169.15 ±
+    61.2 ms) showed significantly more sustained activation than current choice and outcome
+    signals (799.6 ± 36.94 and 706.9 ± 30.56 ms, respectively; all
+  statistics:
+  - about: each past group against each current group
+    test: t test
+    p: 0.000001
+    p_relation: "<"
+    n: electrode and regressor pairs with encoding, per group
+  expected:
+  - quantity: mean encoding duration, past outcome
+    value: 1341.37
+    tolerance: 49.63
+    unit: ms
+  - quantity: mean encoding duration, past choice
+    value: 1169.15
+    tolerance: 61.2
+    unit: ms
+  - quantity: mean encoding duration, current choice
+    value: 799.6
+    tolerance: 36.94
+    unit: ms
+  - quantity: mean encoding duration, current outcome
+    value: 706.9
+    tolerance: 30.56
+    unit: ms
+  depends_on:
+  - fig3-present-encoding
+  - fig4-past-encoding
+  criterion: Duration is the longest stretch in which all windows have p < 0.05 (STAR Methods),
+    for every encoding electrode and regressor pair in each group; groups as in the Figure 5
+    legend (choice is risk, gamble, offer value, chosen value; outcome is win, loss, RPE, regret;
+    past risk included). Tolerances are the SEMs the legend states; as SEMs are tight, a
+    secondary 10% band is reported. Open details, with readings. Stretch length (a) number of
+    windows times 50 ms; (b) that plus the 150 ms the 200-ms window adds; (c) from the first
+    window start to the last window end. Epoch (a) the longest stretch over both epochs, each
+    taken separately; (b) choice and past regressors in the game epoch and outcome regressors in
+    the buttonpress epoch. Reproduced when, under one reading, both past means exceed both
+    current means with two-sample t tests at p < 10^-6 for all four comparisons; partially
+    reproduced when all four are longer with p < 0.01 (the Figure 5 legend's level). The values
+    are compared with the expected ones under each reading.
+- id: behavior-past-no-effect
+  statement: None of the past trial characteristics significantly affected risk taking (all p >
+    0.15, random effects logistic regression).
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraph 3
+  quote: Random effects logistic regression showed that none of the past trial characteristics
+    significantly affected risk-taking
+  statistics:
+  - test: random effects logistic regression
+    p: 0.15
+    p_relation: ">"
+    n: 10 patients
+  criterion: A claim of absence. Gamble choice regressed on each t-1 regressor with patient as
+    random effect (random intercept). Whether the past regressors enter one at a time or together,
+    and whether current win probability is in the model, is not stated; readings (a) one past
+    regressor at a time with current win probability as covariate; (b) one at a time alone.
+    Reproduced when no past regressor has p < 0.05 under reading (a), with (b) shown as a variant
+    and the paper's 0.15 compared; not reproduced when one does. Effect sizes are reported.
+- id: fig6-past-short-lived
+  statement: Encoding of past information was limited to the immediately preceding trial; the
+    proportion of electrodes encoding choices and outcomes 2 to 5 trials back was significantly
+    lower than for the current and previous trials (p < 0.01, t test), with no evidence of
+    encoding from earlier rounds.
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraph 3;
+    Figure 6A and 6B
+  quote: Strikingly, we found no evidence for encoding of information from earlier rounds
+  statistics:
+  - test: t test
+    p: 0.01
+    p_relation: "<"
+  depends_on:
+  - fig3-present-encoding
+  - fig4-past-encoding
+  criterion: The proportion of encoding electrodes (selection of fig3-present-encoding) for each of
+    the 8 regressors at lags t, t-1 and t-2 to t-5 (Behavioral Analysis). The unit of the t test
+    is not stated; readings (a) per regressor proportions, t-2 to t-5 pooled against t and
+    against t-1 (two-sample); (b) per lag means over regressors, t-2 to t-5 against t and t-1.
+    "No evidence" is judged against the Null regressor line of Figure 6B, which the paper does
+    not define; read as the shuffled chance proportion of fig3-present-encoding, with its 95th
+    percentile as a standard choice. Reproduced when, under one reading, t-2 to t-5 are lower
+    than both t and t-1 with p < 0.01 and, at each lag t-2 to t-5, the mean proportion over the 8
+    regressors does not exceed the 95th percentile of chance; the per-regressor proportions
+    against chance are reported (Figure 6B).
+- id: figs5d-sharp-boundary
+  statement: The distribution of encoding significance at the peak %EV shows a sharp boundary
+    between t-1 and t-2 but not between t and t-1 (one-sided Kolmogorov-Smirnov tests).
+  source: Figure S5C and S5D legends
+  quote: Summary statistical results for ECDFs in (C) highlighting the sharp temporal boundary in
+    encoding extent between t-1 and t-2, but not t and t-1
+  criterion: For each regressor and lag, the -log10 p of each electrode's linear regression at its
+    peak %EV window; ECDFs compared with one-sided Kolmogorov-Smirnov tests, t-1 greater than t
+    and t-2 greater than t-1, as the legend states. The direction "t-2>t-1" is read as the ECDF
+    of t-2 lying above that of t-1, so that t-2 has smaller -log10 p (weaker encoding), the only
+    reading under which a significant result is the boundary the legend describes (the
+    one-sided "larger" tail of a two-sample KS test on ECDFs); "t-1>t" likewise. The paper prints no p values; the threshold is open, 0.05 is used as
+    a standard choice. Reproduced when the t-1 against t-2 comparison is significant and the t
+    against t-1 comparison is not, for a majority of the 8 regressors, or for the pooled
+    regressors.
+- id: mixed-effects-robust
+  statement: In nested mixed-effects models with patient and electrode as random effects, all
+    regressors were significant (all p < 10^-4, Bonferroni corrected).
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraph 4;
+    STAR Methods, Stepwise regression, paragraph 3
+  quote: We found that all of our regressors were significantly active
+  statistics:
+  - test: nested mixed-effects model
+    p: 0.0001
+    p_relation: "<"
+    corrected: Bonferroni
+  criterion: Concatenated HFA of all electrodes as dependent variable, round-by-round regressors as
+    fixed effects, electrode nested in patient as random effects (STAR Methods). Open, with
+    readings. Time point (a) the HFA in each window, one model per window, with a regressor
+    counted significant in any window after correction over windows and regressors; (b) the HFA
+    averaged over the epoch's post-event windows. Regressors (a) one model per regressor; (b) all
+    current and t-1 regressors together. Electrodes (a) all 192; (b) encoding electrodes only.
+    The paper does not say what the Bonferroni correction is over; read as over the regressors
+    tested (16), and over windows as well under time point (a). Reproduced when, under one reading, every regressor has
+    corrected p < 10^-4.
+- id: figs6b-stepwise-similar
+  statement: Stepwise regression with model selection gave proportions of encoding electrodes per
+    regressor similar to those of the 5-consecutive-window selection.
+  source: Results, Dissociable OFC Encoding of Past Choice and Outcome Information, paragraph 4;
+    Figure S6B
+  quote: The proportion of electrodes encoding each reward-related computational component as
+    estimated by selecting electrodes with ≥5 consecutive encoding windows and stepwise regression
+    followed by model selection were similar
+  depends_on:
+  - fig3-present-encoding
+  - fig4-past-encoding
+  criterion: Stepwise procedure as in the opening comment (STAR Methods, Stepwise regression). The
+    paper gives no measure of "similar"; readings (a) the Spearman correlation across the 16
+    regressors of the two proportions is positive with p < 0.05; (b) every regressor's two
+    proportions differ by less than 10 percentage points. Reproduced when both hold, partially
+    when one does.
+- id: figs3a-risk-all-trials
+  statement: The risk regressor over all trials explains slightly more HFA variance than risk
+    restricted to gamble trials, so risk is encoded whatever the subsequent choice.
+  source: Figure S3A legend
+  quote: The regressor including all trials explains a slightly higher proportion of variance in
+    HFA (%EV), suggesting that risk is encoded regardless of subsequent patient choice
+  depends_on:
+  - fig3-present-encoding
+  criterion: Mean %EV time course of risk over risk-encoding electrodes, all non-timeout trials
+    against gamble trials only, game epoch. Open whether electrodes are those selected with all
+    trials or selected separately; the first is used as the one the legend implies ("compared
+    the %EV of risk encoding"). Reproduced when the all-trial peak mean %EV is at least as high as
+    the gamble-only peak.
+- id: figs3b-no-motor-encoding
+  statement: The direction of the response (left or right option) is not reflected in OFC HFA.
+  source: Figure S3B legend; Results, OFC HFA Reflects Choice- and Outcome-Related Valuation
+    Signals, paragraph 3; Discussion, paragraph beginning "Finally, although ECoG is not affected"
+  quote: Regressors encoding direction of choice (left/right options) are not reflected in OFC HFA
+  criterion: A claim of absence, judged with the paper's selection (p < 0.05 in 5 or more
+    consecutive windows) for a left or right response regressor in both epochs. Reproduced when
+    the proportion of electrodes so classified does not exceed the 95th percentile of its
+    shuffled chance proportion; not reproduced when it does. The proportion and the peak mean %EV
+    are reported.
+- id: anatomy-brodmann-counts
+  statement: Most electrodes lay in putative Brodmann area 11 (53 of 192), 13 (40) and 14 (67).
+  source: Results, Anatomical Distribution of Present and Past Valuation Signals, paragraph 1
+  quote: The majority of electrodes in our sample were located in putative BA 11 (n = 53 out of
+    192 total), 13 (n = 40/192), and 14 (n = 67/192)
+  expected:
+  - quantity: electrodes in BA 11
+    value: 53
+    tolerance: 0
+    unit: electrodes
+  - quantity: electrodes in BA 13
+    value: 40
+    tolerance: 0
+    unit: electrodes
+  - quantity: electrodes in BA 14
+    value: 67
+    tolerance: 0
+    unit: electrodes
+  criterion: Exact counts when the data carry the paper's area labels. When only coordinates are
+    available, the atlas assignment (JuBrain and AAL with visual confirmation from surgical
+    notes, STAR Methods) cannot be repeated exactly; counts within 10% are then partially
+    reproduced. Needs electrode locations, which the dataset description does not list.
+- id: fig7-all-areas-similar
+  statement: Electrodes encoding each signal type (present and past choice and outcome) were found
+    in all three areas (BA 11, 13 and 14), in similar proportions across areas.
+  source: Results, Anatomical Distribution of Present and Past Valuation Signals, paragraph 1;
+    Figure 7B to 7E; Figure S7A
+  quote: there was strong evidence for the presence of electrodes capturing each type of signal
+    (present and past choice and outcome) across all three areas
+  depends_on:
+  - anatomy-brodmann-counts
+  - fig3-present-encoding
+  - fig4-past-encoding
+  - figs6b-stepwise-similar
+  criterion: Electrodes encoding any regressor of a group (choice, outcome, past choice, past
+    outcome). The selection behind Figure 7B to 7E is not stated; readings (a) the
+    5-consecutive-window selection, as in Table S2's "any" rows; (b) the stepwise selection,
+    which the Results use for the groups of Figure 7F. The paper names no test for "similar"; a
+    chi-square test of encoding against area per group is borrowed from the paper's test of the
+    overlap of groups (Figure S7), with 0.05 a standard choice. Reproduced when each group has encoding electrodes in all three areas
+    and no group's chi-square test has p < 0.05. Needs electrode locations.
+- id: no-anatomical-gradient
+  statement: There was no consistent evidence for differential encoding of individual valuation
+    components across BA 11, 13 and 14, nor along fronto-posterior or medio-lateral gradients.
+  source: Results, Anatomical Distribution of Present and Past Valuation Signals, paragraph 2;
+    STAR Methods, Anatomical reconstructions; Discussion, paragraph beginning "As electrode
+    locations were based"
+  quote: We found no consistent evidence for differential encoding of individual valuation
+    components across OFC subregions (BA 11/13/14), or across anatomical gradients
+    (fronto-posterior or medio-lateral; STAR Methods)
+  depends_on:
+  - anatomy-brodmann-counts
+  - fig3-present-encoding
+  criterion: A claim of absence, with the paper's tests (STAR Methods, Anatomical
+    reconstructions). For every electrode and regressor, the %EV at the window of the peak of the
+    regressor's mean %EV profile over encoding electrodes; per regressor, Kolmogorov-Smirnov
+    tests of these values between areas, and correlations with the x and y coordinates
+    (referenced to the anterior commissure). The paper gives no threshold, correlation type or
+    meaning of "consistent"; readings (a) p < 0.05 with Bonferroni over regressors and tests;
+    (b) p < 0.05 uncorrected, with "consistent" meaning the same area or direction for most
+    regressors of a group. The correlation is read as (a) Pearson or (b) Spearman. Reproduced when no
+    regressor is significant under (a) and no consistent pattern appears under (b), with either
+    correlation; the significant tests are listed either way. Needs electrode locations.
+- id: tables2-patients-coverage
+  statement: All signals were present in at least 6 of the 10 patients (mean 7.41 plus or minus
+    0.4).
+  source: Results, Anatomical Distribution of Present and Past Valuation Signals, paragraph 2;
+    Table S2
+  quote: We found that all signals were present in at least 6 of the 10 patients in our sample
+    (mean = 7.41 ± 0.4; Table S2)
+  expected:
+  - quantity: mean number of patients with at least one encoding electrode per regressor
+    value: 7.41
+    tolerance: 0.4
+    unit: patients
+  depends_on:
+  - fig3-present-encoding
+  - fig4-past-encoding
+  criterion: Per regressor, the number of patients with at least one encoding electrode (selection
+    of fig3-present-encoding). The paper's own Table S2 does not give 7.41 by the plain reading;
+    counted from it, the 16 regressors give 7.75 patients on average and past risk is present in
+    only 5. Readings (a) the 16 current and t-1 regressors; (b) the 15 without past risk, which
+    the Results treat as the exception; (c) the four group rows ("any choice" and so on).
+    Reproduced when, under one reading, every regressor is present in at least 6 patients and the
+    mean is within tolerance; partially reproduced when the result matches Table S2 counted the
+    same way but not 7.41.
+- id: fig7f-multiplexing
+  statement: Most electrodes (132 of 192, 68.7%) encoded at least two of the four signal types
+    (choice, outcome, past choice, past outcome) and 30 of 192 (15.6%) encoded all four.
+  source: Results, Anatomical Distribution of Present and Past Valuation Signals, paragraph 3;
+    Figure 7F
+  quote: We observed significant overlap in electrode sets, with most electrodes (n = 132/192;
+    68.7%) encoding at least two types of signals and 15.6% of electrodes (n = 30/192) encoding
+    all four
+  expected:
+  - quantity: electrodes encoding at least two signal types
+    value: 132
+    tolerance: 13.2
+    unit: electrodes
+  - quantity: electrodes encoding all four signal types
+    value: 30
+    tolerance: 3
+    unit: electrodes
+  depends_on:
+  - figs6b-stepwise-similar
+  criterion: The Results say these sets come from the stepwise regression results, with an
+    electrode in a group when any regressor of the group survives model selection. Table S2's
+    selection (167 task-active electrodes) is a variant. Reproduced when both counts are within
+    tolerance under the stepwise reading; partially reproduced when they are within tolerance
+    only under the variant.
+- id: figs7-present-past-overlap
+  statement: Electrodes encoding both present and t-1 information were overrepresented, for choice
+    (39 of 120, 32.5%, against an expected 31, p < 0.05) and for outcome (43 of 120, 35.8%,
+    against an expected 34, p < 0.01), chi-square tests; many electrodes still encoded only
+    present or only past information.
+  source: Results, Anatomical Distribution of Present and Past Valuation Signals, paragraph 3;
+    Figure S7 legend
+  quote: We found an overrepresentation of electrodes that encoded both t+t-1 regressors both in
+    the case of choice (39/120 or 32.5%, vs. an expected 31/120 or 25.8% under assumption of
+    independence, p<0.05, chi-square test) and outcome information (n=43/120, or 35.8% vs. an
+    expected 34/120 or 28.5% under assumption of independence, p<0.01, chi-square test)
+  statistics:
+  - about: choice, present and past
+    test: chi-square test
+    p: 0.05
+    p_relation: "<"
+  - about: outcome, present and past
+    test: chi-square test
+    p: 0.01
+    p_relation: "<"
+  expected:
+  - quantity: electrodes encoding both present and past choice
+    value: 39
+    tolerance: 3.9
+    unit: electrodes
+  - quantity: electrodes encoding both present and past outcome
+    value: 43
+    tolerance: 4.3
+    unit: electrodes
+  depends_on:
+  - fig7f-multiplexing
+  criterion: A 2 by 2 chi-square test of independence of present and t-1 encoding, per signal
+    class, with the expected count under independence. The denominator 120 is not explained and
+    is not 192 nor the 160 electrodes in BA 11, 13 and 14; readings (a) the electrodes encoding
+    any choice or outcome regressor (current or t-1) under the stepwise selection; (b) the same
+    under the 5-consecutive-window selection; (c) all 192, the counts compared as proportions. Set membership
+    as in fig7f-multiplexing. Reproduced when, under one reading, both observed counts are within
+    tolerance and exceed the counts expected under independence with the stated p levels.
+- id: fig2-example-electrodes
+  statement: Example electrodes show risk encoding with an inverted U relation between win
+    probability and HFA at peak encoding, and regret encoding with a linear drop of HFA with
+    regret.
+  source: Figure 2D to 2G legends
+  quote: The relationship follows an inverted u shape with win probabilities as would be expected
+    for risk encoding
+  criterion: The paper does not identify the example electrodes. Among risk-encoding electrodes,
+    the HFA at each electrode's peak %EV window against win probability; among regret-encoding
+    electrodes, against regret. The paper names no test; the quadratic and linear fits at p <
+    0.05 are standard choices. Reproduced when at least one risk electrode shows a significant
+    negative quadratic term in win probability (p < 0.05) and at least one regret electrode a
+    significant linear slope; the shares of encoding electrodes that do are reported.
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - methods-electrode-trial-counts, timeout tolerance 1.0 set to 0.998, 10% of the value, as no reason was given for another; criterion notes that 9.98% of 2,000 is not a whole number, so the denominator is read as all trials recorded.
+  - behavior-risk-neutral, statement adds that patients gambled only slightly more often than a risk-neutral baseline model, as the quoted sentence says.
+  - figs2a-choice-gamble-ev, criterion says the test is borrowed from fig1c and the 0.05 level is a standard choice, since the paper reports no test; random-effects readings aligned with fig1c.
+  - fig1c-patients-like-controls, "Reading fixed from the legend" replaced, since the legend fixes no test; both readings are named as allowed, not fixed.
+  - figs2b-rt-conflict, criterion now says how the statement's "comparable effect sizes" is handled (reported, not judged; the paper gives no measure).
+  - fig3-present-encoding, "at least six of the eight counts within tolerance" was not from the paper; reproduced now needs all eight, with fewer giving partial; the 95th percentile of chance named as a standard choice; the statement's rise in the number of encoding electrodes (Figure 3 bars) was untested, now tested with two readings of the per-window share.
+  - fig3-latency-duration-similar, criterion notes that reading (c) is the measure of fig5-past-sustained, whose current durations differ from the ones here, so (a) and (b) are better supported.
+  - hfa-more-than-fp, n "16 regressors" is a reading, not stated by the paper, now said so; quote extended to "3.3%".
+  - figs4b-power-at-buttonpress, the outcome-peak condition "at least 400 ms after the press" was not from the paper (it allows a peak before outcome reveal); replaced by the paper's ~750 ms after reveal, added as an expected value with 10% tolerance; 200-ms window named as a standard choice; power against ERP wording of Results and legend noted.
+  - fig4-past-encoding, same change as fig3-present-encoding for the six-of-eight rule and the 95th percentile.
+  - fig6-past-short-lived, "more than one regressor in five" was a made-up threshold; replaced by the mean over regressors at each lag against the 95th percentile of chance, named as a standard choice.
+  - figs5d-sharp-boundary, direction of the one-sided KS tests reversed; reading "t-2>t-1" as t-2 stochastically larger would make a significant result mean more encoding at t-2, the opposite of the boundary the legend describes; it is now read as the ECDF of t-2 lying above that of t-1.
+  - mixed-effects-robust, "Bonferroni over the 16 regressors" was stated as fixed though the paper does not say, and conflicted with the windows reading; now named as a reading.
+  - figs3b-no-motor-encoding, Discussion source was paragraph 9, which does not mention movement; now the paragraph beginning "Finally, although ECoG is not affected".
+  - no-anatomical-gradient, Discussion source was paragraph 7, which does not mention gradients; now the paragraph beginning "As electrode locations were based".
+  - fig7-all-areas-similar, the selection behind Figure 7B to 7E is not stated; stepwise selection (used for Figure 7F) added as a reading, with depends_on figs6b-stepwise-similar; chi-square test named as borrowed and 0.05 as a standard choice.
+  - fig2-example-electrodes, criterion says the quadratic and linear tests are standard choices, the paper naming none.
+  - Checker flags 1e-06 (fig5-past-sustained) and 0.0001 (mixed-effects-robust) as not found; the text prints "p < 10�6" and "p < 10�4" with the minus sign garbled, so both values are the paper's.
+  - Open, not settled from the text. Discussion paragraphs were cited by their first words because the PDF could not be rendered to count paragraphs across page breaks. Table S2 is internally inconsistent (s06 "any choice" is 4 while every s06 choice row is 0), and its patient counts give 7.75 and not the paper's 7.41 (claim tables2-patients-coverage names readings). The Behavioral task paragraph gives 20% win probability for a shown 2 against 80% in Table S1 and the worked example (opening comment).

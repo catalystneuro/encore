@@ -13,8 +13,10 @@
       return row;
     });
   });
-  var state = { subset: "all", metric: "datasets" };
   var root = document.querySelector(".progress");
+  // The measure shown first is the tile the page marks pressed (build_site.py, PROGRESS_DEFAULT).
+  var pressed = root.querySelector('.tile.metric[aria-pressed="true"]');
+  var state = { subset: "all", metric: pressed ? pressed.dataset.metric : "papers" };
   var line = document.getElementById("progress-line"), cols = document.getElementById("progress-outcomes");
   var outcomeKeys = Object.keys(P.outcomes), protocols = P.protocols || [], archives = P.archives || [];
   // Two measures are stacked: claims by outcome, and attempts by the protocol version they followed, shaded in
