@@ -24,9 +24,9 @@ receptive-field maps, the per-session coarse mapping and the waveforms are not i
 | Additive against multiplicative (Figure S5) | Reproduced |
 | Tuning model terms (Figure 5B, 5C) | Partially reproduced |
 | Fit quality | Not reproduced |
-| Terms covary (Figure 5) | Reproduced |
+| Terms covary (Figure 5) | Reproduced, resting on the assumed even/odd selection |
 | Negative multiplicative terms (Figure 5) | Partially reproduced |
-| Simulated discriminability (Figure 5D, 5E) | Reproduced |
+| Simulated discriminability (Figure 5D, 5E) | Reproduced, resting on the assumed even/odd selection |
 | Tuning correlations, near and spacing (Figure 6C, 6D) | Partially reproduced |
 | Tuning correlations, configuration (Figure 6E) | Reproduced |
 | Well-isolated units (Figure 6) | Blocked: data missing |

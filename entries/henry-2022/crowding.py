@@ -232,9 +232,22 @@ def choose_C(X, y, inner, rng):
     return CS[int(np.flatnonzero(acc == acc.max())[0])]
 
 
+def fit_nonzero(X, y, C):
+    """The decoder at C, or, if it has no nonzero coefficient, at the smallest larger C of `CS`
+    that has one (a variant that never keeps an all-zero decoder; the last C is kept if none has)."""
+    model = _fit(X, y, C)
+    for c in CS[CS > C]:
+        if np.any(model[0] != 0):
+            break
+        model = _fit(X, y, c)
+    return model
+
+
 def decode(X, y, rng, outer=10, inner=10, diag=None):
     """Mean over outer folds of the held-out fraction correct of an L1 logistic decoder. If `diag`
-    is a list, (chosen C, number of nonzero coefficients) of each outer fold is appended to it."""
+    is a list, (chosen C, number of nonzero coefficients, held-out accuracy of `fit_nonzero` at the
+    chosen C) of each outer fold is appended to it; the variant uses no random numbers, so the
+    folds and the main result are the same with and without it."""
     f = _folds(y, outer, rng)
     accs = []
     for j in range(outer):
@@ -244,7 +257,9 @@ def decode(X, y, rng, outer=10, inner=10, diag=None):
         model = _fit(Xtr, y[tr], C)
         accs.append(np.mean(_predict(model, Xte) == y[te]))
         if diag is not None:
-            diag.append((C, int(np.sum(model[0] != 0))))
+            nz = int(np.sum(model[0] != 0))
+            alt = accs[-1] if nz else np.mean(_predict(fit_nonzero(Xtr, y[tr], C), Xte) == y[te])
+            diag.append((C, nz, float(alt)))
     return float(np.mean(accs))
 
 
