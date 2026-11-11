@@ -3,6 +3,7 @@
     python tools/paper_records.py key DATASET_OR_PAPER   # the paper key: a key as is, a DOI, or a matched dataset's paper
     python tools/paper_records.py datasets PAPER         # the paper's dataset folders, one a line
     python tools/paper_records.py claims PAPER           # the paper's claims file (claims/<key>.yaml)
+    python tools/paper_records.py doi PAPER              # the paper's DOI
     python tools/paper_records.py adopt DATASET          # after its paper match: list the dataset for its paper,
                                                          # giving the paper a key if it has none; prints the key
 
@@ -236,6 +237,8 @@ def main() -> int:
             print(d["folder"])
     elif command == "adopt":
         print(adopt(rest[0]))
+    elif command == "doi":
+        print(doi_of(resolve(rest[0])))
     elif command == "claims":
         print(claims_file(resolve(rest[0])).relative_to(ROOT).as_posix())
     else:

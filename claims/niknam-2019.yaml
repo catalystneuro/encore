@@ -1,0 +1,1309 @@
+# Claims for Niknam, Akbarian, Clark, Zamani, Noudoost & Nategh (2019), "Characterizing and
+# dissociating multiple time-varying modulatory computations influencing neuronal activity",
+# PLoS Comput Biol, doi:10.1371/journal.pcbi.1007275, tested on CRCNS:mt-3.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-11, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read. paper/10.1371-journal.pcbi.1007275.txt, the version of record (PMC6759185, open
+# access, Europe PMC full-text XML flattened). It holds the abstract, Introduction, Results,
+# Discussion, Methods, the legends of Figures 1 to 8, the legends of S1 to S6 Fig and S1 to S3
+# Movie, and the Data Availability statement. No PDF was supplied, so no figure could be read.
+# The supplement figures themselves are not in the text, only their legends; the numbers the
+# results rest on are in the Results text and the legends, so the supplement's absence does not
+# block a claim. Lost in extraction: every displayed equation (Eqs 1 to 14, including the
+# parameter-selection threshold, Eq 10; the classification measures of the dichotomous analysis;
+# the prevalence-map indicator m(t, tau); the maximum-detectability definition) and the whole
+# reference list, so ref [48] (the N-model), ref [49] (the McNemar mid-P test) and ref [73]
+# (Chen et al., algorithm 2) are known only by number.
+#
+# Code. https://github.com/nnategh/SFA-Models, commit 1438dde9dd3207348ec0df1e5c4dd2a7b014e68e
+# (2019-12-20), linked in Methods (A-model framework) and Data Availability. MATLAB. It holds
+# the S-model fit (lib/models/smodel.m; parameter selection in lib/make/select_bases.m and
+# decide_bases.m; coordinate-ascent fit in lib/make/fit_model.m; condition-wise
+# train/validation/test split in lib/load/load_trials.m), the F-model fit
+# (lib/models/fmodel.m), the A-model average (lib/models/amodel.m), Delta LL per spike
+# (lib/get/get_dll.m), mean stimulus-aligned responses (lib/get/get_mean_resp.m) and plots. Its
+# README restates the Methods. It holds no code for the N-model, the Wilcoxon tests, the
+# McNemar test, the classification measures, the partial F-models, the robust regression, the
+# prevalence maps, the ROC detectability analysis or the synthetic neurons. It also holds
+# assets/data/*.mat (copies of the neuron files; not opened) and assets/data/main_lists.mat,
+# whose probe_list fmodel.m reads as each neuron's RF, FF and ST probe (columns 3-4, 5-6,
+# 7-8). Settings the code fixes where the Methods are silent: kernels span -540 to +540 ms from
+# saccade and delays 1 to 150 ms (get_info.m); trials are split by condition, 35% of conditions
+# for test, then 35% training and 30% validation (load_trials.m); the parameter-selection
+# threshold is |mean - control mean| >= 1.5 control SD (make_profile.m, README Eq 10); r_max is
+# fixed at 1000 spk/s and b0 = f^-1 of the mean rate over bins with a probe on screen
+# (select_bases.m make_params, phi.m); F-model delay bins as in get_info.m lags; bounds for
+# t >= 100 ms tie the RF Gaussian centre to the RF probe with spread at most 1 (fmodel.m); the
+# F-kernel is smoothed with a 10-point moving average over delay (fmodel.m). Where the code
+# and Methods disagree, the Methods are the main reading and the code a variant: get_fr0.m
+# uses as NULL model the S-model's offset and post-spike kernels without stimulus kernels, the
+# Methods a constant average rate; amodel.m averages kernels, the Methods average the
+# Gaussian parameters; get_info.m sets num_folds = 1, the Methods fit ten S-models;
+# get_mean_resp.m takes every ms a probe is on, the Methods take stimulus onset.
+#
+# Data the paper used (Methods, Experimental paradigm and data acquisition). Two adult male
+# rhesus monkeys; 41 single MT neurons (of 49 isolated; 8 dropped for no probe response), 11
+# sessions, saccades leftward in 9 sessions (27 neurons) and rightward in 2 (14 neurons).
+# Visually guided saccade task, fixation point at centre, saccade target 10 deg horizontal,
+# fixation 600-750 ms before the go cue. Throughout each trial (2100-2300 ms) white 0.5 deg
+# probes flashed for 7 ms each, one at a time, on a 9 x 9 grid, in a pseudorandom order (a
+# "condition") of 81 probes. Variables per neuron, per the dataset's description: stimcode
+# (trial x ms, probe index 0-81), conds (condition per trial), resp (trial x ms spikes, 1 ms
+# bins) and tsaccade (saccade onset per trial, ms). The grid geometry in dva, the saccade
+# direction and the ST position on the grid are not among the variables the description lists;
+# the RF, FF and ST probes are in the code repository's main_lists.mat (see O3).
+#
+# Shared definitions, cited, used by the criteria below.
+# D1 Locations (Methods, Receptive field, future field, and saccade target location
+#    estimation). RF is the probe with the highest firing rate for stimuli shown -500 to -100
+#    ms from saccade, counted 50-75 ms after probe onset. FF is the RF probe shifted by the
+#    rounded saccade vector. ST is, of the 4 x 4 probes around the target and excluding the FF
+#    and its neighbours, the probe with the largest late (80-150 ms) increase for stimuli at
+#    -50 to 0 ms against fixation.
+# D2 Recorded effects (Methods, Statistical analysis of perisaccadic responses). Suppression is
+#    a decrease in spike count 50-75 ms after an RF probe shown -30 to 0 ms from saccade onset,
+#    against the same probe shown -500 to -100 ms. FF and ST remapping are increases in spike
+#    count 80-150 ms after an FF or ST probe shown -50 to 0 ms, against -500 to -100 ms. Test
+#    one-sided Wilcoxon signed-rank, p < 0.05, uncorrected, on spike counts.
+# D3 Normalized responses (same section, paragraph 2). The response is the average
+#    stimulus-aligned spike train 0-150 ms after onset; each neuron's perisaccadic and fixation
+#    responses are divided by the mean of their two means over 0-150 ms, then averaged over
+#    neurons; SE across neurons. Plots smooth with a Gaussian of FWHM 13 ms.
+# D4 Models (Methods, S-model, F-model and A-model frameworks; code above). S-model, Eq 1 with
+#    a sigmoid, 1 ms bins, B-spline bases with the knots stated in Methods, parameter
+#    selection over 100 random 65% subsets against shuffled responses, block coordinate
+#    ascent on training data while validation likelihood rises, test 35% withheld. F-model
+#    fitted to the S-kernels per time and delay bin with the bounds stated in Methods,
+#    fixation kernel from -400 to -300 ms. A-model from ten S-model and F-model fits on random
+#    65% subsets with Gaussian parameters and c averaged. "Model" from Fig 6 on is the A-model
+#    (Results, "From now on").
+# D5 Delta LL per spike (Methods, Model evaluation). Point-process log-likelihood of the test
+#    spikes with true spike history, minus that of a NULL model, divided by the spike count, in
+#    bits. Perisaccadic spikes are those 0 to 150 ms after saccade onset, fixation spikes those
+#    450 to 0 ms before.
+# D6 Model-predicted effects (Methods, Statistical analysis of model predictions). 1000
+#    stimulus sequences given to each fitted model with simulated spike history (ref [73],
+#    algorithm 2; the code's make_result.m make_resp draws spikes from the rate step by step);
+#    effects defined with the windows of D2 on the predicted rate, tested with a one-sided
+#    Wilcoxon rank-sum test, p < 0.05; normalized as D3 on predicted rates.
+#
+# Open details, with the readings the text allows (each criterion names the ones it uses).
+# O1 Pairing for the signed-rank test of D2. The Methods name a paired test but not the pairs.
+#    (a) per trial, mean count over the trial's presentations in the perisaccadic window
+#    against its mean over presentations in the fixation window, trials with both; (b) per
+#    condition, the same pooled over the trials of each condition; (c) unpaired, all
+#    presentations, one-sided rank-sum, the test the Methods use for model predictions. The
+#    Methods name the signed-rank test for recorded responses, so (c) is a variant that is
+#    shown but does not decide an outcome; "one reading of O1" below means (a) or (b).
+# O2 What counts as a presentation. (i) the onset ms of each 7 ms probe (Methods, "stimulus
+#    onset"); (ii) every ms the probe is on, as get_mean_resp.m does. (i) is the main reading.
+# O3 RF, FF and ST probes. (a) probe_list in main_lists.mat of the code repository; (b)
+#    recomputed by D1, possible for RF from the dataset alone, for FF and ST only with the
+#    saccade vector and target position on the grid. (a) is the main reading; claim
+#    probe-locations-link checks it.
+# O4 The value reported for a subpopulation's normalized response. (a) mean over the effect's
+#    window (50-75 ms or 80-150 ms after onset) of the normalized response, averaged over
+#    neurons, the reading Fig 6's text states ("over the early response window"); (b) the
+#    value at the peak, within that window, of the neuron-averaged curve smoothed as D3.
+# O5 The NULL model of D5. (a) constant at the neuron's mean rate over all trials (r0 of the
+#    S-model framework); (b) constant at the mean rate of the evaluated test trials; (c) the
+#    code's get_fr0.m (offset and post-spike kernels without stimulus kernels), a variant.
+#    Whether D5 is pooled over all test trials of a neuron or averaged per trial is settled
+#    by get_dll.m: pooled.
+# O6 The sequences of D6, "the same as those for the experimental paradigm". (a) the
+#    recorded conditions resampled, each with a recorded saccade time; (b) new pseudorandom
+#    81-probe sequences of 7 ms probes, saccade at a recorded time drawn at random.
+# O7 Nulling a source in the partial F-models (Methods, The perisaccadic to fixation
+#    performance ratio analysis, paragraph 2). (a) for each time and delay bin, the Gaussian's
+#    parameters taken from a randomly drawn time between -400 and -300 ms at the same delay
+#    bin; (b) one randomly drawn fixation time per model, used for all times.
+# O8 The N-model (ref [48]). This paper does not describe its fitting beyond Fig 4 and the
+#    Results paragraph on it, the code holds none, and the reference list is missing from the
+#    text read. The author takes it from ref [48] if it can be identified (the Introduction
+#    calls it the nonstationary generalized linear model, NSGLM, of the same group); if not,
+#    claims that need it are blocked.
+schema_version: 2
+paper: doi:10.1371/journal.pcbi.1007275
+claims:
+- id: probe-locations-link
+  kind: link
+  statement: The RF, FF and ST probe of each neuron listed in the code repository's
+    main_lists.mat correspond to the dataset's neurons, and the RF probe recomputed from the
+    dataset by the Methods' definition matches the listed one.
+  source: Methods, Receptive field, future field, and saccade target location estimation; code
+    lib/models/fmodel.m (get_centers) at commit 1438dde
+  data: with_labels
+  criterion: >-
+    Neurons are matched by session and channel (file name, and probe_list columns 1 and 2, as
+    fmodel.m reads them). The link holds (reproduced) when all 41 analysed neurons are listed
+    and, for at least 37 of them (90%), the probe with the highest mean spike count 50-75 ms
+    after onset of probes shown -500 to -100 ms from saccade (D1, onset reading O2 i) is the
+    listed RF probe or one of its eight neighbours; partially reproduced for 29 to 36; not
+    reproduced below 29. For each neuron the FF minus RF offset is reported, with its sign
+    taken as the saccade direction, against the paper's 27 leftward and 14 rightward neurons.
+- id: methods-neuron-counts
+  statement: Of 49 well-isolated MT neurons, 41 responded to the probes and were analysed;
+    they come from 11 sessions, 27 neurons from 9 sessions with leftward saccades and 14 from 2
+    sessions with rightward saccades.
+  source: Methods, Experimental paradigm and data acquisition, paragraph 1
+  quote: >-
+    In total, data were recorded from 41 MT neurons during 11 recording sessions. In 9
+    recording sessions, the saccades were made to the left (27 of 41 neurons), and in 2
+    recording sessions, the saccades were made to the right (14 of 41 neurons).
+  data: with_labels
+  depends_on:
+  - probe-locations-link
+  expected:
+  - quantity: neurons analysed
+    value: 41
+    tolerance: 0
+  - quantity: sessions
+    value: 11
+    tolerance: 0
+  - quantity: neurons with leftward saccades
+    value: 27
+    tolerance: 0
+  - quantity: neurons with rightward saccades
+    value: 14
+    tolerance: 0
+  criterion: >-
+    Counts are exact, so no tolerance. Sessions are the first 8 digits of the file name
+    (dataset description). Saccade direction is not a variable of the dataset; it is read as
+    the sign of the horizontal FF minus RF offset from probe_list (O3 a), with the grid's
+    orientation taken from the code's ind2sub([9,9]) indexing. Reproduced when all four
+    counts match.
+- id: fig1b-saccadic-suppression
+  statement: Eight neurons show significant saccadic suppression; for them the average
+    normalized response to an RF probe drops from 2.53 to 1.51 when the probe appears just
+    before the saccade.
+  source: Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1B
+  quote: >-
+    For the subpopulation of neurons with significant saccadic suppression (see Methods ),
+    the average normalized response dropped from 2.53 ± 0.37 to 1.51 ± 0.29 (mean ± SE).
+  data: with_labels
+  depends_on:
+  - probe-locations-link
+  expected:
+  - quantity: neurons with significant saccadic suppression
+    value: 8
+    tolerance: 0.8
+  - quantity: normalized RF response during fixation, suppressed neurons
+    value: 2.53
+    tolerance: 0.37
+  - quantity: normalized RF response perisaccadic, suppressed neurons
+    value: 1.51
+    tolerance: 0.29
+  criterion: >-
+    Neurons classified by D2 (suppression) with RF from O3 a. The count is taken under each
+    pairing of O1 (a, b, c) and each presentation reading of O2 (i main, ii variant). The
+    normalized values follow D3 and O4 (a main, b variant), on the neurons the same reading
+    selects. Tolerances are the paper's SE for the normalized values and 10% for the count.
+    Reproduced when, under one reading of O1 with O2 i, the count and both values are within
+    tolerance and the perisaccadic value is below the fixation value; partially reproduced
+    when the direction and one of the three numbers hold.
+- id: fig1c-ff-remapping
+  statement: Twenty-three neurons show significant FF-remapping; for them the average
+    normalized response to an FF probe rises from 0.90 during fixation to 1.30 just before
+    the saccade.
+  source: Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1C
+  quote: >-
+    For the subpopulation of neurons with significant FF-remapping, the average normalized
+    response to FF stimuli increased from 0.90 ± 0.03 to 1.30 ± 0.08 (mean ± SE).
+  data: with_labels
+  depends_on:
+  - probe-locations-link
+  expected:
+  - quantity: neurons with significant FF-remapping
+    value: 23
+    tolerance: 2.3
+  - quantity: normalized FF response during fixation, remapping neurons
+    value: 0.9
+    tolerance: 0.03
+  - quantity: normalized FF response perisaccadic, remapping neurons
+    value: 1.3
+    tolerance: 0.08
+  criterion: >-
+    As fig1b-saccadic-suppression, with the FF-remapping test of D2 (FF probe, -50 to 0 ms,
+    late window 80-150 ms) and O4 on the late window. Reproduced when, under one reading of
+    O1 with O2 i, the count and both values are within tolerance with the perisaccadic value
+    above the fixation value; partially reproduced when the direction and one of the three
+    numbers hold.
+- id: fig1d-st-remapping
+  statement: Thirty-seven neurons show significant ST-remapping; for them the average
+    normalized late response to a probe near the saccade target rises from 0.83 during
+    fixation to 1.35 just before the saccade.
+  source: Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1D
+  quote: >-
+    For the subpopulation of neurons with significant ST-remapping, the average normalized ST
+    response increased from 0.83 ± 0.03 to 1.35 ± 0.06 (mean ± SE).
+  data: with_labels
+  depends_on:
+  - probe-locations-link
+  expected:
+  - quantity: neurons with significant ST-remapping
+    value: 37
+    tolerance: 3.7
+  - quantity: normalized ST response during fixation, remapping neurons
+    value: 0.83
+    tolerance: 0.03
+  - quantity: normalized ST response perisaccadic, remapping neurons
+    value: 1.35
+    tolerance: 0.06
+  criterion: >-
+    As fig1c-ff-remapping, with the ST probe. The ST probe is itself chosen by D1 as the probe
+    with the largest perisaccadic late increase, so the test is on the probe that selection
+    picked; this is the paper's procedure. Same rule for reproduced and partially reproduced.
+- id: fig1e-ff-and-st-remapping
+  statement: Twenty-two neurons show both FF- and ST-remapping; for them the normalized FF
+    response rises from 0.90 to 1.32 and the normalized ST response from 0.80 to 1.46.
+  source: Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1E
+  quote: >-
+    For the subpopulation of neurons with significant FF- and ST-remapping, the average
+    normalized FF response increased from 0.90 ± 0.03 to 1.32 ± 0.08 (mean ± SE), and the
+    average normalized ST response increased from 0.80 ± 0.03 to 1.46 ± 0.08 (mean ± SE).
+  data: with_labels
+  depends_on:
+  - fig1c-ff-remapping
+  - fig1d-st-remapping
+  expected:
+  - quantity: neurons with both FF- and ST-remapping
+    value: 22
+    tolerance: 2.2
+  - quantity: normalized FF response during fixation, both effects
+    value: 0.9
+    tolerance: 0.03
+  - quantity: normalized FF response perisaccadic, both effects
+    value: 1.32
+    tolerance: 0.08
+  - quantity: normalized ST response during fixation, both effects
+    value: 0.8
+    tolerance: 0.03
+  - quantity: normalized ST response perisaccadic, both effects
+    value: 1.46
+    tolerance: 0.08
+  criterion: >-
+    The neurons significant in both fig1c-ff-remapping and fig1d-st-remapping under the same
+    reading. Reproduced when, under one reading of O1 with O2 i, the count and all four values
+    are within tolerance with both increases; partially reproduced when both increases hold
+    and at least two of the five numbers are within tolerance.
+- id: fig1-remapping-longer-latency
+  statement: Perisaccadic FF and ST responses come at a longer latency (80-150 ms after the
+    probe) than RF responses (50-75 ms).
+  source: Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1C and 1D
+  quote: >-
+    Note that the perisaccadic FF response occurs at longer latency than RF responses
+    (neurons responding 50–75 ms after stimulus onset for the RF, vs. 80–150 ms after stimulus
+    onset for the FF).
+  data: with_labels
+  depends_on:
+  - fig1c-ff-remapping
+  - fig1d-st-remapping
+  criterion: >-
+    The paper states this from the plotted responses of Fig 1, which cannot be read here; no
+    measure is named. Measure fixed from D3, the plotted quantity. For each subpopulation,
+    the neuron-averaged normalized response 0-150 ms after onset, smoothed with a Gaussian of
+    FWHM 13 ms (D3): the latency of the peak of the fixation RF response over all 41 neurons,
+    and of the perisaccadic FF response (FF-remapping neurons) and ST response (ST-remapping
+    neurons). Reproduced when the RF peak lies within 50-75 ms and both remapped peaks within
+    80-150 ms; partially reproduced when the remapped peaks are later than the RF peak but one
+    lies outside its stated range.
+- id: fig1-example-neurons
+  statement: In example neurons the RF response falls from 60.89 to 40.49 spk/s before the
+    saccade; the late FF response rises from 7.90 to 18.42 spk/s; the late ST response rises
+    from 23.80 to 64.64 spk/s; and in a neuron with both effects FF rises from 15.83 to 39.10
+    and ST from 16.15 to 36.17 spk/s, each with p < 0.001.
+  source: Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1B to 1E,
+    left panels
+  quote: >-
+    For the example neuron, the average response to an RF stimulus dropped from 60.89 ± 2.82
+    (mean ± SE) spk/s during fixation to 40.49 ± 12.64 (mean ± SE) spk/s when the stimulus
+    appeared just prior to saccade onset (example neuron, p < 0.001).
+  statistics:
+  - about: each of the five example-neuron comparisons
+    test: Wilcoxon one-sided signed-rank test (Methods, Statistical analysis of perisaccadic
+      responses)
+    p: 0.001
+    p_relation: "<"
+  data: with_labels
+  depends_on:
+  - probe-locations-link
+  expected:
+  - quantity: example neuron, RF response during fixation
+    value: 60.89
+    tolerance: 2.82
+    unit: spk/s
+  - quantity: example neuron, RF response perisaccadic
+    value: 40.49
+    tolerance: 12.64
+    unit: spk/s
+  - quantity: example neuron, late FF response during fixation
+    value: 7.9
+    tolerance: 1.02
+    unit: spk/s
+  - quantity: example neuron, late FF response perisaccadic
+    value: 18.42
+    tolerance: 3.56
+    unit: spk/s
+  - quantity: example neuron, late ST response during fixation
+    value: 23.8
+    tolerance: 1.77
+    unit: spk/s
+  - quantity: example neuron, late ST response perisaccadic
+    value: 64.64
+    tolerance: 7.91
+    unit: spk/s
+  - quantity: example neuron with both effects, late FF response during fixation
+    value: 15.83
+    tolerance: 0.91
+    unit: spk/s
+  - quantity: example neuron with both effects, late FF response perisaccadic
+    value: 39.1
+    tolerance: 5.14
+    unit: spk/s
+  - quantity: example neuron with both effects, late ST response during fixation
+    value: 16.15
+    tolerance: 0.94
+    unit: spk/s
+  - quantity: example neuron with both effects, late ST response perisaccadic
+    value: 36.17
+    tolerance: 4.49
+    unit: spk/s
+  criterion: >-
+    The paper does not identify the example neurons. Rates are mean spike counts per second
+    over the effect's window (50-75 ms for RF, 80-150 ms "late" for FF and ST) after
+    presentations in the windows of D2, SE across presentations, presentations by O2 (i main,
+    ii variant). The other quotes of the paragraph give the FF, ST and both-effects values.
+    For each of the four examples, every neuron among the 41 is searched. Reproduced when,
+    for each example, at least one neuron has both values within tolerance and a significant
+    change by D2 under one reading of O1; partially reproduced when this holds for two or
+    three of the four examples. The matching neurons are named.
+- id: fig3-example-trial-predictions
+  statement: In example test trials of three neurons the S- and F-models follow the recorded
+    firing rate, with Delta LL per spike up to 1.12 bits/spk for the S-model and 0.81 for the
+    F-model in the best trials, and 0.19 to 0.46 (S) and 0.05 to 0.41 (F) in median trials.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 1; Figure 3
+  quote: >-
+    The trials on the left show examples of high prediction accuracy (from top to bottom, Δ
+    LL / spk = 1.12, 0.80, and 0.63 bits/spk for the S-model; and Δ LL / spk = 0.81, 0.47,
+    and 0.55 bits/spk for the F-model)
+  criterion: >-
+    Illustrative. The paper does not identify the neurons or trials, and the test split is
+    random (load_trials.m), so the values cannot be matched. Not judged on its own; the
+    claims on Fig 5A test prediction accuracy over the population. The author reports, for
+    each neuron, the best and median per-trial Delta LL per spike (D5) over its test trials
+    for the S- and F-models, for comparison only.
+- id: fig5a-n-model-no-perisaccadic-gain
+  statement: The N-model predicts perisaccadic spikes no better than fixation spikes (0.13
+    against 0.12 bits/spk, p = 0.26).
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 3; Figure 5A
+  quote: >-
+    The N-model is no better at predicting the spike times during the perisaccadic period
+    compared to the fixation period (Δ LL / spk = 0.12 ± 0.02 (mean ± SE) bits/spk during
+    fixation vs. 0.13 ± 0.02 (mean ± SE) bits/spk during saccade, p-value = 0.26).
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.26
+    n: 41 neurons
+  expected:
+  - quantity: N-model Delta LL per spike, fixation
+    value: 0.12
+    tolerance: 0.02
+    unit: bits/spk
+  - quantity: N-model Delta LL per spike, perisaccadic
+    value: 0.13
+    tolerance: 0.02
+    unit: bits/spk
+  criterion: >-
+    Needs the N-model (O8). Delta LL per spike by D5 with NULL model O5 (a main; b, c
+    variants), on test trials, per neuron. A claim of absence, judged on the paper's test, a
+    Wilcoxon signed-rank test over 41 neurons at p < 0.05 (Results paragraph 3, "In all
+    comparisons"): reproduced when it does not find perisaccadic above fixation, not
+    reproduced when it does. The paper does not say whether the test is one- or two-sided;
+    two-sided is used as the standard choice and the one-sided p (perisaccadic above
+    fixation) is shown. The means and the effect size are reported either way.
+- id: fig5a-s-model-perisaccadic-better
+  statement: The S-model predicts perisaccadic spikes better than fixation spikes (0.30
+    against 0.24 bits/spk, p < 0.001).
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 3; Figure 5A
+  quote: >-
+    For the S-model, the prediction accuracy increases in the perisaccadic period (Δ LL / spk
+    = 0.24 ± 0.02 (mean ± SE) bits/spk during fixation vs. 0.30 ± 0.02 (mean ± SE) bits/spk
+    during saccade, p-value < 0.001).
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 41 neurons
+  expected:
+  - quantity: S-model Delta LL per spike, fixation
+    value: 0.24
+    tolerance: 0.02
+    unit: bits/spk
+  - quantity: S-model Delta LL per spike, perisaccadic
+    value: 0.3
+    tolerance: 0.02
+    unit: bits/spk
+  criterion: >-
+    One S-model per neuron fitted by D4 (code settings as listed in the opening comment),
+    evaluated on its withheld test trials with true spike history (Methods, Model
+    evaluation), D5 with NULL model O5 (a main; b, c variants). Reproduced when, under one
+    reading of O5, both means are within tolerance and a Wilcoxon signed-rank test over the 41
+    neurons gives perisaccadic above fixation at p < 0.05; partially reproduced when the test
+    holds but a mean is outside tolerance. Because the split and parameter selection are
+    random, the author reports the spread over at least three random splits if run time
+    allows.
+- id: fig5a-f-model-perisaccadic-better
+  statement: The F-model also predicts perisaccadic spikes better than fixation spikes (0.18
+    against 0.14 bits/spk, p = 0.003).
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 3; Figure 5A
+  quote: >-
+    The F-model, despite being based on an approximation of the S-model, also shows greater
+    prediction accuracy during the perisaccadic period compared to fixation (Δ LL / spk =
+    0.14 ± 0.01 (mean ± SE) bits/spk during fixation vs. 0.18 ± 0.02 (mean ± SE) bits/spk
+    during saccade, p-value = 0.003).
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.003
+    n: 41 neurons
+  depends_on:
+  - fig5a-s-model-perisaccadic-better
+  - probe-locations-link
+  data: with_labels
+  expected:
+  - quantity: F-model Delta LL per spike, fixation
+    value: 0.14
+    tolerance: 0.01
+    unit: bits/spk
+  - quantity: F-model Delta LL per spike, perisaccadic
+    value: 0.18
+    tolerance: 0.02
+    unit: bits/spk
+  criterion: >-
+    The F-model of D4 built from the same S-model fit (centres from O3 a, as fmodel.m), with
+    the S-model's post-spike and offset kernels (Results, Fig 4 paragraph), on the same test
+    trials. Same rule as fig5a-s-model-perisaccadic-better.
+- id: fig5a-s-f-beat-n-model
+  statement: Both the S- and F-models outperform the N-model in the fixation and perisaccadic
+    periods.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 3; Figure 5A
+  quote: >-
+    Both the S-, and F-models outperform the N-model during both the fixation (S-model vs.
+    N-model: p-value < 0.001; F-model vs. N-model: p-value = 0.001) and perisaccadic (S-model
+    vs. N-model: p-value < 0.001; F-model vs. N-model: p-value < 0.001) periods.
+  statistics:
+  - about: S- against N-model, fixation
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 41 neurons
+  - about: F- against N-model, fixation
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    n: 41 neurons
+  - about: S- against N-model, perisaccadic
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 41 neurons
+  - about: F- against N-model, perisaccadic
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 41 neurons
+  depends_on:
+  - fig5a-n-model-no-perisaccadic-gain
+  - fig5a-s-model-perisaccadic-better
+  - fig5a-f-model-perisaccadic-better
+  data: with_labels
+  criterion: >-
+    Needs the N-model (O8). Per-neuron Delta LL per spike of these claims, compared by a
+    Wilcoxon signed-rank test over 41 neurons. Reproduced when all four comparisons show the
+    S- or F-model higher at p < 0.05; partially reproduced for two or three.
+- id: fig5b-st-remapping-better-than-n
+  statement: The S-, F- and A-models all reproduce which neurons show ST-remapping
+    significantly better than the N-model.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 4; Figure 5B
+  quote: >-
+    The S-, F-, and A-models all significantly outperform the N-model in terms of reproducing
+    the ST-remapping effect (S-model vs. N-model: p = 0.004, F-model vs. N-model: p = 0.006,
+    and F-model vs. N-model: p = 0.006).
+  statistics:
+  - about: S- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.004
+    n: 41 neurons
+  - about: F- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.006
+    n: 41 neurons
+  - about: third comparison, printed "F-model vs. N-model", read as the A-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.006
+    n: 41 neurons
+  data: with_labels
+  depends_on:
+  - fig1d-st-remapping
+  criterion: >-
+    Needs the N-model (O8). Per neuron, the recorded classification of D2 (all trials, O1 and
+    O2 readings as in fig1d-st-remapping) against the model classification of D6 (sequences
+    O6 a main, b variant), each model fitted as D4. A model is correct for a neuron when the
+    two agree (Methods, Dichotomous analysis). The one-tailed mid-P McNemar test on the
+    discordant neurons between each model and the N-model (ref [49]; the standard mid-P
+    binomial form). The text prints "F-model vs. N-model" twice; the third value is read as
+    the A-model, the only model the sentence names that it otherwise lacks. Reproduced when
+    all three models beat the N-model at p < 0.05; partially reproduced for one or two. The
+    four measures of Fig 5B (sensitivity, accuracy, the geometric mean of sensitivity and
+    precision, F-measure with alpha 1/2) are reported for each model.
+- id: fig5b-ff-remapping-a-model-only
+  statement: For FF-remapping only the A-model reproduces the classification of neurons
+    significantly better than the N-model; the S- and F-models do not.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 4; Figure 5B
+  quote: >-
+    For the FF-remapping effect, the A-model significantly outperforms the N-model (p =
+    0.048); the S- and F- models did not significantly outperform the N-model (S-model vs.
+    N-model: p = 0.17, and F-model vs. N-model: p = 0.08).
+  statistics:
+  - about: A- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.048
+    n: 41 neurons
+  - about: S- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.17
+    n: 41 neurons
+  - about: F- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.08
+    n: 41 neurons
+  data: with_labels
+  depends_on:
+  - fig1c-ff-remapping
+  criterion: >-
+    As fig5b-st-remapping-better-than-n, for FF-remapping. The S- and F-model parts are
+    claims of absence judged on the same test at p < 0.05. Reproduced when the A-model beats
+    the N-model at p < 0.05 and the S- and F-models do not; partially reproduced when two of
+    the three outcomes match.
+- id: fig5b-suppression-no-difference
+  statement: No model differs significantly from the N-model in reproducing saccadic
+    suppression, suggesting that a global gain change suffices for it.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 4; Figure 5B
+  quote: >-
+    Finally, we did not find any significant difference between the S-, F-, and A-models and
+    N-model in terms of reproducing the saccadic suppression effect
+  statistics:
+  - about: S- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.38
+    n: 41 neurons
+  - about: F- against N-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.17
+    n: 41 neurons
+  - about: third comparison, printed "F-model vs. N-model", read as the A-model
+    test: one-tailed mid P-value McNemar test
+    p: 0.11
+    n: 41 neurons
+  data: with_labels
+  depends_on:
+  - fig1b-saccadic-suppression
+  criterion: >-
+    A claim of absence on the paper's test, the one-tailed mid-P McNemar test at p < 0.05, as
+    fig5b-st-remapping-better-than-n for saccadic suppression. Reproduced when none of the
+    three models beats the N-model; not reproduced when any does. The p-values and the
+    discordant counts are reported either way.
+- id: fig5c-f-higher-ratio-than-s
+  statement: The F-model has a higher perisaccadic to fixation performance ratio than the
+    S-model (median 1.51 against 1.33, p = 0.003), so it better reproduces perisaccadic
+    changes specifically.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 5
+  quote: >-
+    The S-model has a lower perisaccadic to fixation ratio compared to the F-model (1.33 ±
+    0.99 (median ± SE) for the S-model vs. 1.51 ± 0.25 (median ± SE) for the F-model,
+    Wilcoxon signed‐rank p‐value = 0.003)
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 0.003
+  data: with_labels
+  depends_on:
+  - fig5a-f-model-perisaccadic-better
+  expected:
+  - quantity: S-model perisaccadic to fixation ratio, median
+    value: 1.33
+    tolerance: 0.99
+  - quantity: F-model perisaccadic to fixation ratio, median
+    value: 1.51
+    tolerance: 0.25
+  criterion: >-
+    Per neuron, the ratio of perisaccadic to fixation Delta LL per spike (D5, O5 a main) over
+    the test trials with a probe at the RF, FF or ST location during -50 to 0 ms from saccade
+    (Methods, The perisaccadic to fixation performance ratio analysis, paragraph 1). The SE of
+    a median is not defined in the paper; it is not used beyond the tolerance. Reproduced
+    when both medians are within tolerance and a two-sided Wilcoxon signed-rank test on the
+    per-neuron ratios gives F above S at p < 0.05; partially reproduced when the test holds
+    but a median is outside tolerance. The paper does not state the sidedness; two-sided is a
+    standard choice and the one-sided p is shown. How a neuron with a fixation Delta LL per
+    spike at or below zero enters the ratio is not stated; such neurons are counted and the
+    test is shown with and without them.
+- id: fig5c-source-contributions
+  statement: The F-model's perisaccadic to fixation ratio (1.35) falls to 0.28 without any
+    source; adding the FF source alone restores most of it (0.95), more than RF (0.53) or ST
+    (0.48), and removing FF lowers it most (0.72, against 1.20 without RF and 1.27 without ST).
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 5; Figure 5C, top; S6 Fig
+  quote: >-
+    The F-model which incorporates all three sources has the highest perisaccadic to fixation
+    performance ratio (1.35 ± 0.09), and eliminating any individual source decreases the
+    perisaccadic to fixation performance ratio (-RF: 1.20 ± 0.11, -FF: 0.72 ± 0.08, -ST: 1.27
+    ± 0.11).
+  data: with_labels
+  depends_on:
+  - fig5a-f-model-perisaccadic-better
+  expected:
+  - quantity: no-source ratio
+    value: 0.28
+    tolerance: 0.08
+  - quantity: +RF ratio
+    value: 0.53
+    tolerance: 0.09
+  - quantity: +FF ratio
+    value: 0.95
+    tolerance: 0.14
+  - quantity: +ST ratio
+    value: 0.48
+    tolerance: 0.09
+  - quantity: F-model ratio
+    value: 1.35
+    tolerance: 0.09
+  - quantity: -RF ratio
+    value: 1.2
+    tolerance: 0.11
+  - quantity: -FF ratio
+    value: 0.72
+    tolerance: 0.08
+  - quantity: -ST ratio
+    value: 1.27
+    tolerance: 0.11
+  criterion: >-
+    Partial F-models by nulling Gaussians as O7 (a main, b variant). For each model, the
+    slope of a zero-intercept robust regression of perisaccadic on fixation Delta LL per spike
+    over the 41 neurons (MATLAB fitlm, RobustOpts 'fair', S6 Fig legend; an equivalent
+    iteratively reweighted least-squares fit with the fair weight and its default tuning
+    constant 1.4 is acceptable), with the trials of fig5c-f-higher-ratio-than-s; tolerances
+    are the paper's slope SE. Reproduced when, under one reading of O7, the ordering holds
+    (no-source lowest, F-model highest, +FF the highest single source, -FF the lowest
+    single-source removal) and at least six of the eight slopes are within tolerance;
+    partially reproduced when the ordering holds with fewer values in tolerance.
+- id: fig5c-percent-changes
+  statement: Adding the RF, FF or ST source raises the ratio by 23.38%, 62.65% and 18.89% of
+    the F-model's total gain over the no-source model, and removing them lowers it by 14.79%,
+    59.38% and 7.87%.
+  source: Results, The time-varying encoding models accurately predict single trial spike
+    response modulations across saccades, paragraph 5; Figure 5C, bottom
+  quote: >-
+    As seen, adding the RF, FF, or ST source improves the perisaccadic to fixation ratio by
+    23.38%, 62.65%, and 18.89%, respectively, and eliminating the RF, FF, or ST source
+    decreases the ratio by 14.79%, 59.38%, and 7.87%, respectively.
+  data: with_labels
+  depends_on:
+  - fig5c-source-contributions
+  expected:
+  - quantity: increase with RF only
+    value: 23.38
+    tolerance: 2.34
+    unit: "%"
+  - quantity: increase with FF only
+    value: 62.65
+    tolerance: 6.27
+    unit: "%"
+  - quantity: increase with ST only
+    value: 18.89
+    tolerance: 1.89
+    unit: "%"
+  - quantity: decrease without RF
+    value: 14.79
+    tolerance: 1.48
+    unit: "%"
+  - quantity: decrease without FF
+    value: 59.38
+    tolerance: 5.94
+    unit: "%"
+  - quantity: decrease without ST
+    value: 7.87
+    tolerance: 0.79
+    unit: "%"
+  criterion: >-
+    From the slopes of fig5c-source-contributions, by the formulas of Methods, The
+    perisaccadic to fixation performance ratio analysis, paragraph 4 (increase = (+X minus
+    no-source) over (F minus no-source); decrease = (-X minus F) over (no-source minus F)),
+    tolerance 10%. Reproduced when FF has the largest increase and the largest decrease and
+    at least four of the six values are within tolerance; partially reproduced when the FF
+    ordering holds with fewer.
+- id: fig6a-model-saccadic-suppression
+  statement: The model reproduces saccadic suppression in 7 of the 8 suppressed neurons; for
+    them the recorded normalized early response drops from 2.48 to 1.38 and the predicted one
+    from 1.59 to 1.06.
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 2; Figure 6A
+  quote: >-
+    For this subpopulation, the average normalized response over the early response window
+    dropped from 2.48 ± 0.42 to 1.38 ± 0.30 (mean ± SE), and the average predicted firing
+    rate over the same response window decreased from 1.59 ± 0.16 to 1.06 ± 0.09 (mean ±
+    SE).
+  data: with_labels
+  depends_on:
+  - fig1b-saccadic-suppression
+  expected:
+  - quantity: neurons with suppression in both response and A-model
+    value: 7
+    tolerance: 0.7
+  - quantity: recorded normalized early response, fixation
+    value: 2.48
+    tolerance: 0.42
+  - quantity: recorded normalized early response, perisaccadic
+    value: 1.38
+    tolerance: 0.3
+  - quantity: predicted normalized early response, fixation
+    value: 1.59
+    tolerance: 0.16
+  - quantity: predicted normalized early response, perisaccadic
+    value: 1.06
+    tolerance: 0.09
+  criterion: >-
+    A-model per neuron (D4; ten fits on 65% subsets, Gaussian parameters averaged; the
+    code's kernel average as a variant). Model classification by D6 (O6 a main, b variant),
+    recorded classification by D2 under the reading that reproduced fig1b-saccadic-suppression.
+    Recorded values by D3 and O4 a (early window); predicted values normalized the same way
+    on predicted rates (Methods, Statistical analysis of model predictions, paragraph 2).
+    Reproduced when the count and at least three of the four values are within tolerance,
+    with decreases in both recorded and predicted values; partially reproduced when both
+    decreases hold and the count is at least half of the recorded suppressed neurons.
+- id: fig6b-model-ff-remapping
+  statement: The model reproduces FF-remapping in 20 of the 23 remapping neurons; for them the
+    recorded normalized late FF response rises from 0.89 to 1.36 and the predicted one from
+    0.93 to 1.19.
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 2; Figure 6B
+  quote: >-
+    For this subpopulation, the average normalized response over the late response window
+    increased from 0.89 ± 0.03 to 1.36 ± 0.08 (mean ± SE), and the average normalized
+    predicted firing rate over the same response window increased from 0.93 ± 0.02 to 1.19 ±
+    0.04 (mean ± SE).
+  data: with_labels
+  depends_on:
+  - fig1c-ff-remapping
+  expected:
+  - quantity: neurons with FF-remapping in both response and A-model
+    value: 20
+    tolerance: 2
+  - quantity: recorded normalized late FF response, fixation
+    value: 0.89
+    tolerance: 0.03
+  - quantity: recorded normalized late FF response, perisaccadic
+    value: 1.36
+    tolerance: 0.08
+  - quantity: predicted normalized late FF response, fixation
+    value: 0.93
+    tolerance: 0.02
+  - quantity: predicted normalized late FF response, perisaccadic
+    value: 1.19
+    tolerance: 0.04
+  criterion: >-
+    As fig6a-model-saccadic-suppression, for FF-remapping with the late window. Same rule,
+    with increases in place of decreases.
+- id: fig6c-model-st-remapping
+  statement: The model reproduces ST-remapping in 24 of the 37 remapping neurons; for them the
+    recorded normalized late ST response rises from 0.79 to 1.48 and the predicted one from
+    0.92 to 1.19.
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 2; Figure 6C
+  quote: >-
+    For this subpopulation, the average normalized response over the late response window
+    increased from 0.79 ± 0.03 to 1.48 ± 0.07 (mean ± SE), and the average normalized
+    predicted firing rate over the same response window increased from 0.92 ± 0.02 to 1.19 ±
+    0.04 (mean ± SE).
+  data: with_labels
+  depends_on:
+  - fig1d-st-remapping
+  expected:
+  - quantity: neurons with ST-remapping in both response and A-model
+    value: 24
+    tolerance: 2.4
+  - quantity: recorded normalized late ST response, fixation
+    value: 0.79
+    tolerance: 0.03
+  - quantity: recorded normalized late ST response, perisaccadic
+    value: 1.48
+    tolerance: 0.07
+  - quantity: predicted normalized late ST response, fixation
+    value: 0.92
+    tolerance: 0.02
+  - quantity: predicted normalized late ST response, perisaccadic
+    value: 1.19
+    tolerance: 0.04
+  criterion: >-
+    As fig6b-model-ff-remapping, for the ST probe. Same rule.
+- id: fig6d-model-ff-and-st-remapping
+  statement: The model reproduces both remapping effects in 17 of the 22 neurons that show
+    both; for them recorded FF and ST responses rise from 0.88 to 1.43 and 0.78 to 1.56, and
+    predicted ones from 0.92 to 1.22 and 0.91 to 1.23.
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 2; Figure 6D
+  quote: >-
+    For this subpopulation, the average normalized response to FF and ST stimuli over the
+    late response window increased from 0.88 ± 0.03 to 1.43 ± 0.09 (mean ± SE) and from 0.78
+    ± 0.04 to 1.56 ± 0.09 (mean ± SE) respectively, and the average predicted firing rate in
+    response to FF and ST stimuli over the same response window increased from 0.92 ± 0.02 to
+    1.22 ± 0.05 (mean ± SE) and from 0.91 ± 0.02 to 1.23 ± 0.06 (mean ± SE) respectively.
+  data: with_labels
+  depends_on:
+  - fig1e-ff-and-st-remapping
+  - fig6b-model-ff-remapping
+  - fig6c-model-st-remapping
+  expected:
+  - quantity: neurons with both effects in both response and A-model
+    value: 17
+    tolerance: 1.7
+  - quantity: recorded normalized late FF response, fixation
+    value: 0.88
+    tolerance: 0.03
+  - quantity: recorded normalized late FF response, perisaccadic
+    value: 1.43
+    tolerance: 0.09
+  - quantity: recorded normalized late ST response, fixation
+    value: 0.78
+    tolerance: 0.04
+  - quantity: recorded normalized late ST response, perisaccadic
+    value: 1.56
+    tolerance: 0.09
+  - quantity: predicted normalized late FF response, fixation
+    value: 0.92
+    tolerance: 0.02
+  - quantity: predicted normalized late FF response, perisaccadic
+    value: 1.22
+    tolerance: 0.05
+  - quantity: predicted normalized late ST response, fixation
+    value: 0.91
+    tolerance: 0.02
+  - quantity: predicted normalized late ST response, perisaccadic
+    value: 1.23
+    tolerance: 0.06
+  criterion: >-
+    Neurons with both effects in both the response and the model, by the readings of
+    fig6b-model-ff-remapping and fig6c-model-st-remapping. Reproduced when the count and at
+    least six of the eight values are within tolerance, with all four increases; partially
+    reproduced when all increases hold with fewer values in tolerance.
+- id: fig6-example-neuron-predictions
+  statement: For the example neurons of Fig 1 the model-predicted rates show the same
+    effects; the early RF rate falls from 22.69 to 15.72 spk/s, the late FF rate rises from
+    8.01 to 11.64, the late ST rate from 24.53 to 47.24, and in the neuron with both effects
+    FF from 17.39 to 32.12 and ST from 15.85 to 33.11 spk/s.
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 2; Figure 6A to 6D, top panels
+  quote: >-
+    For this neuron, the average model-predicted firing rate over the early response window
+    (50–75 ms after stimulus onset) in response to an RF stimulus dropped from 22.69 ± 0.78
+    (mean ± SE) spk/s during fixation to 15.72 ± 1.72 (mean ± SE) spk/s when the stimulus
+    appeared just prior to saccade onset (example neuron, p < 0.001).
+  statistics:
+  - about: each of the five example-neuron comparisons
+    test: one-sided Wilcoxon rank-sum test (Methods, Statistical analysis of model predictions)
+    p: 0.001
+    p_relation: "<"
+  data: with_labels
+  depends_on:
+  - fig1-example-neurons
+  expected:
+  - quantity: example neuron, predicted early RF rate, fixation
+    value: 22.69
+    tolerance: 0.78
+    unit: spk/s
+  - quantity: example neuron, predicted early RF rate, perisaccadic
+    value: 15.72
+    tolerance: 1.72
+    unit: spk/s
+  - quantity: example neuron, predicted late FF rate, fixation
+    value: 8.01
+    tolerance: 0.06
+    unit: spk/s
+  - quantity: example neuron, predicted late FF rate, perisaccadic
+    value: 11.64
+    tolerance: 0.36
+    unit: spk/s
+  - quantity: example neuron, predicted late ST rate, fixation
+    value: 24.53
+    tolerance: 0.39
+    unit: spk/s
+  - quantity: example neuron, predicted late ST rate, perisaccadic
+    value: 47.24
+    tolerance: 2.25
+    unit: spk/s
+  - quantity: example neuron with both effects, predicted late FF rate, fixation
+    value: 17.39
+    tolerance: 0.38
+    unit: spk/s
+  - quantity: example neuron with both effects, predicted late FF rate, perisaccadic
+    value: 32.12
+    tolerance: 2.5
+    unit: spk/s
+  - quantity: example neuron with both effects, predicted late ST rate, fixation
+    value: 15.85
+    tolerance: 0.36
+    unit: spk/s
+  - quantity: example neuron with both effects, predicted late ST rate, perisaccadic
+    value: 33.11
+    tolerance: 1.98
+    unit: spk/s
+  criterion: >-
+    On the neurons fig1-example-neurons matched, the A-model's predicted rates (D6, O6 a
+    main), SE across presentations. The paper's SE for model predictions depends on its
+    random sequences and fits; the direction and a significant one-sided rank-sum test are
+    the main test. Reproduced when, for each matched example, the change has the paper's
+    direction with p < 0.05 and at least one of its two values is within tolerance; partially
+    reproduced when the direction and the test hold for all examples but values do not; not
+    testable when fig1-example-neurons matched no neuron.
+- id: fig7-prevalence-maps-correlate
+  statement: The model-predicted maps of how many neurons show each effect, over time from
+    saccade and from stimulus onset, correlate with the recorded maps (r = 0.65 for
+    suppression, 0.60 for FF-remapping, 0.62 for ST-remapping, each p < 0.001).
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 3; Figure 7
+  quote: >-
+    Strong correlations between the experimental and model-predicted values confirmed the
+    model ability to replicate the timing and frequency of occurrence of effects across the
+    population (saccadic suppression, r = 0.65, p < 0.001; FF-remapping, r = 0.60, p < 0.001;
+    and ST-remapping = 0.62, p < 0.001; Pearson product-moment correlation).
+  statistics:
+  - about: saccadic suppression
+    test: Pearson product-moment correlation
+    statistic: r = 0.65
+    p: 0.001
+    p_relation: "<"
+  - about: FF-remapping
+    test: Pearson product-moment correlation
+    statistic: r = 0.60
+    p: 0.001
+    p_relation: "<"
+  - about: ST-remapping
+    test: Pearson product-moment correlation
+    statistic: r = 0.62
+    p: 0.001
+    p_relation: "<"
+  data: with_labels
+  depends_on:
+  - fig6a-model-saccadic-suppression
+  - fig6b-model-ff-remapping
+  - fig6c-model-st-remapping
+  expected:
+  - quantity: r, saccadic suppression maps
+    value: 0.65
+    tolerance: 0.065
+  - quantity: r, FF-remapping maps
+    value: 0.6
+    tolerance: 0.06
+  - quantity: r, ST-remapping maps
+    value: 0.62
+    tolerance: 0.062
+  criterion: >-
+    Methods, Prevalence of the perisaccadic effects. For each neuron with the effect in both
+    response and model (from the fig6 claims), and each time t from saccade and latency tau,
+    m(t, tau) is 1 when rates at latency tau after probes at the effect's location shown at t
+    differ from rates at tau after the same probe shown -500 to -100 ms, in the effect's
+    direction, by a one-sided Wilcoxon rank-sum test at p < 0.05 (the indicator equation is
+    lost; this is the reading of its text), else 0; the map is the percentage of neurons
+    with 1. Recorded rates are spike trains smoothed with a Gaussian of FWHM 33 ms; model rates
+    the A-model's predicted rates (D6). Open, with readings. The grid of t and tau, (a) 1 ms
+    steps, (b) 7 ms steps (one probe duration); the pixels correlated, (a) all t of the model
+    span (-540 to 540 ms, get_info.m) and tau 1 to 150 ms, (b) t from -50 to 150 ms (the
+    perisaccadic stimulus and spike windows of Methods, Model evaluation) and tau 1 to 150 ms.
+    Pearson r across pixels. Reproduced when, under one combination of readings, all three
+    r are within tolerance and p < 0.001; partially reproduced when all three are positive
+    with p < 0.001 but one or more is outside tolerance.
+- id: fig7-experimental-maps-lower
+  statement: The recorded prevalence maps have lower values than the model-predicted maps,
+    because smoothed recorded rates are more variable and fewer comparisons reach
+    significance.
+  source: Results, The model captures the spatial and temporal characteristics of the
+    perisaccadic effects, paragraph 3; Figure 7A and 7B
+  quote: >-
+    This high variability means that fewer effects reach statistical significance, as
+    reflected in the low values of the experimental maps in comparison with the
+    model-predicted ones.
+  data: with_labels
+  depends_on:
+  - fig7-prevalence-maps-correlate
+  criterion: >-
+    On the maps of fig7-prevalence-maps-correlate, under the reading it reproduced with (or
+    reading a when none did). Reproduced when, for each of the three effects, the mean over
+    pixels of the recorded map is below that of the model map; partially reproduced for two
+    of the three.
+- id: fig8c-example-neuron-detectability
+  statement: In an example neuron, detectability of RF probes at ~60 ms latency is lost ~60 ms
+    after the saccade; at about the same time FF and ST probes become detectable at ~100 ms
+    latency, and from ~100 ms after the saccade the new RF (former FF) is detected at ~60 ms
+    latency.
+  source: Results, The model produces predictions about the time course and contribution of
+    perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 4;
+    Figure 8C
+  quote: >-
+    The neuron can detect stimuli presented in the RF location with a latency of ~60 ms; it
+    loses its ability to detect stimuli in the original RF location after the saccade (~60 ms
+    after saccade onset).
+  data: with_labels
+  depends_on:
+  - fig6b-model-ff-remapping
+  - fig6c-model-st-remapping
+  criterion: >-
+    The example neuron is not identified. Detectability by Methods, Spatiotemporal
+    detectability analysis. 1000 sequences to the A-model (O6 a main), simulated history
+    (ref [73]); for each probe, time t and latency tau, the AUC between predicted rates at t
+    after a probe at that location at t - tau and the same rates paired with trial-shuffled
+    stimuli; significance by a two-sample t-test of the AUC against 100 AUCs between two
+    shuffled distributions, p < 1e-9. Candidates are the neurons with both FF- and
+    ST-remapping in response and model; the paper does not say the example is one of them,
+    so this is an assumption (the example shows FF and ST detection), and the other neurons
+    of the 41 are searched as a variant and reported. Reproduced when at least one candidate shows, by
+    significant detectability with peak at latency over 50 ms: RF peak latency 50-75 ms
+    before the saccade, RF detectability ending between 30 and 100 ms after saccade onset, FF
+    and ST peak latencies of 80 to 130 ms around that time, and FF detected at 50-75 ms
+    latency from about 100 ms after the saccade. Partially reproduced when a candidate shows
+    the RF loss and the long-latency FF or ST detection but not all four. The tolerance on
+    the "~" times (plus or minus about 30 ms) is fixed here and is a reading of "~".
+- id: fig8d-equal-detectability-at-55ms
+  statement: For the example neuron 55 ms after the saccade, FF and ST probes reach peak
+    detectability at longer latencies than the RF probe but with nearly equal peak values.
+  source: Results, The model produces predictions about the time course and contribution of
+    perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 4;
+    Figure 8D
+  quote: >-
+    As seen, peak detectability at the FF and ST locations occurs at longer latencies than
+    peak detectability for the RF location; however, peak detectability values for the FF
+    and ST locations are nearly equal to the original RF.
+  data: with_labels
+  depends_on:
+  - fig8c-example-neuron-detectability
+  criterion: >-
+    On the neuron fig8c-example-neuron-detectability matched, at t = 55 ms after saccade
+    onset (Figure 8C legend), the latency and AUC at peak over tau for the RF, FF and ST
+    probes. "Nearly equal" is not quantified in the paper; read here as FF and ST peak AUC
+    within 10% of the RF peak AUC above chance (AUC minus 0.5). Reproduced when both FF and ST
+    peak later than RF and both are nearly equal by that reading; partially reproduced when
+    the latency order holds only. Not testable when no neuron matched.
+- id: fig8e-example-neuron-time-course
+  statement: The example neuron detects FF probes at ~90 ms latency from ~65 ms before the
+    saccade, loses them 25 ms later, detects them again from ~13 ms after the saccade for ~60
+    ms, and detects ST probes at ~130 ms latency from 66 to 130 ms after the saccade.
+  source: Results, The model produces predictions about the time course and contribution of
+    perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 5;
+    Figure 8E, left
+  quote: >-
+    Next, ~65 ms before the saccade, the neuron can also detect stimuli presented at the FF
+    location ~90 ms earlier (blue circles). This ability to detect FF stimuli disappears 25
+    ms later, then reemerges ~13 ms after the saccade (with a latency of ~80–100 ms) and
+    persists for ~60 ms.
+  data: with_labels
+  depends_on:
+  - fig8c-example-neuron-detectability
+  criterion: >-
+    On the neuron fig8c-example-neuron-detectability matched, the maximum significant
+    detectability over tau (only peaks at tau over 50 ms) and its latency at each t, smoothed
+    over t with a 7 ms moving average (Methods, Spatiotemporal detectability analysis,
+    paragraph 2), for the RF, FF and the probe closest to the ST. Reproduced when the FF and ST
+    epochs and latencies quoted match within about 30 ms (the reading of "~" of
+    fig8c-example-neuron-detectability); partially reproduced when the post-saccadic FF
+    epoch and the ST epoch match but the presaccadic FF epoch does not. Not testable when no
+    neuron matched.
+- id: fig8e-population-ff-detectability
+  statement: A synthetic neuron built from the FF-remapping subpopulation detects FF probes at
+    60-90 ms latency from ~50 ms before to ~60 ms after the saccade, after which the FF latency
+    returns to ~60 ms, the FF having become the new RF.
+  source: Results, The model produces predictions about the time course and contribution of
+    perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 6;
+    Figure 8E, middle
+  quote: >-
+    From ~50 ms before to ~60 ms after a saccade, the population can detect FF stimuli with
+    latencies of ~60–90 ms, indicating that the neural population is detecting stimuli
+    appearing in the FF ~140 to ~0 ms before the saccade.
+  data: with_labels
+  depends_on:
+  - fig6b-model-ff-remapping
+  criterion: >-
+    Methods, Spatiotemporal detectability analysis, paragraph 4. The A-model Gaussian
+    parameters and c of the neurons with FF-remapping in both response and model, in units
+    of probe spacing (the code's parameters are already in grid units, fmodel.m), averaged.
+    The Methods say only that the variables were normalized by the probe distance; how the
+    centres of neurons with different RF and FF probes are aligned before averaging is not
+    stated. The centres are taken relative to each neuron's FF probe, an assumption;
+    averaging absolute grid positions would mix neurons whose FF lies at different probes. a synthetic neuron with only
+    the FF Gaussian (RF and ST amplitudes zero), detectability as
+    fig8c-example-neuron-detectability with significance p < 1e-7. Which fixation kernel,
+    post-spike and offset kernels, b0 and r_max the synthetic neuron uses is not stated.
+    Readings, (a) the averages of those of the same neurons, (b) the fixation kernel set to
+    zero and the rest averaged. Reproduced when, under one reading, significant FF
+    detectability at 55 to 100 ms latency spans from 20 to 80 ms before to 30 to 90 ms after
+    the saccade, and the latency is 50-75 ms after that; partially reproduced when the
+    long-latency epoch holds and the return to short latency does not.
+- id: fig8e-population-st-detectability
+  statement: A synthetic neuron built from the ST-remapping subpopulation detects ST probes at
+    long latencies (~100-120 ms) from 45 ms before to 15 ms after the saccade and again from 74
+    to 114 ms after it.
+  source: Results, The model produces predictions about the time course and contribution of
+    perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 6;
+    Figure 8E, right
+  quote: >-
+    Similar to the FF-remapping effect, the population can detect ST stimuli at longer
+    latencies (~100–120 ms) from 45 before to 15 ms after a saccade and from 74 to 114 ms
+    after a saccade.
+  data: with_labels
+  depends_on:
+  - fig6c-model-st-remapping
+  criterion: >-
+    As fig8e-population-ff-detectability, with the ST Gaussian only, for the neurons with
+    ST-remapping in both response and model. Reproduced when, under one reading, significant
+    ST detectability at 90 to 130 ms latency occurs in two epochs within about 30 ms of
+    -45 to 15 ms and 74 to 114 ms from saccade onset; partially reproduced when one of the two
+    epochs matches.
+- id: figs4-f-model-share-of-s-model
+  statement: The F-model reaches about 60% of the S-model's performance in Delta LL per spike.
+  source: S4 Fig legend
+  quote: >-
+    The F-model, despite being based on an approximation of the S-model, has a performance of
+    the order of ~60% of the performance of the S-model, in terms of Δ LL / spk (see Fig 5A
+    ).
+  depends_on:
+  - fig5a-s-model-perisaccadic-better
+  - fig5a-f-model-perisaccadic-better
+  data: with_labels
+  expected:
+    quantity: F-model Delta LL per spike as a share of the S-model's
+    value: 60
+    tolerance: 6
+    unit: "%"
+  criterion: >-
+    The ratio of the mean F-model to the mean S-model Delta LL per spike over the 41 neurons
+    from the fig5a claims. Which period is meant is not stated; readings, (a) fixation, (b)
+    perisaccadic, (c) the two pooled. Reproduced when one reading is within tolerance.
+- id: figs5-spike-history-no-effect
+  statement: Using simulated or no spike history in place of the true history does not
+    change the S-model's performance significantly in either period, and the S-model with
+    either still predicts perisaccadic spikes better than fixation spikes.
+  source: S5 Fig legend, panels B and C
+  quote: >-
+    There is no significant difference between the results obtained from the true-history
+    model, the simulated-history model, and the no-history model.
+  statistics:
+  - about: true against no history, fixation (0.24 against 0.23 bits/spk)
+    test: Wilcoxon signed-rank test
+    p: 0.98
+    n: 41 neurons
+  - about: true against no history, perisaccadic (0.30 against 0.30 bits/spk)
+    test: Wilcoxon signed-rank test
+    p: 0.87
+    n: 41 neurons
+  - about: true against simulated history, fixation (0.24 against 0.23 bits/spk)
+    test: Wilcoxon signed-rank test
+    p: 0.48
+    n: 41 neurons
+  - about: true against simulated history, perisaccadic (0.30 against 0.29 bits/spk)
+    test: Wilcoxon signed-rank test
+    p: 0.99
+    n: 41 neurons
+  - about: no history, perisaccadic against fixation
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 41 neurons
+  - about: simulated history, perisaccadic against fixation
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    n: 41 neurons
+  depends_on:
+  - fig5a-s-model-perisaccadic-better
+  expected:
+  - quantity: no-history S-model Delta LL per spike, fixation
+    value: 0.23
+    tolerance: 0.02
+    unit: bits/spk
+  - quantity: no-history S-model Delta LL per spike, perisaccadic
+    value: 0.3
+    tolerance: 0.02
+    unit: bits/spk
+  - quantity: simulated-history S-model Delta LL per spike, fixation
+    value: 0.23
+    tolerance: 0.02
+    unit: bits/spk
+  - quantity: simulated-history S-model Delta LL per spike, perisaccadic
+    value: 0.29
+    tolerance: 0.02
+    unit: bits/spk
+  criterion: >-
+    The fitted S-model of fig5a-s-model-perisaccadic-better evaluated on the same test
+    trials with the history term removed (no history) or with history simulated by drawing
+    spikes from the model rate step by step (ref [73], algorithm 2; the code's make_result.m
+    make_resp), D5 and O5 as in that claim. The no-difference parts are claims of absence on
+    the paper's test, a Wilcoxon signed-rank test over 41 neurons at p < 0.05. Reproduced when
+    none of the four true-against-other tests is significant and both perisaccadic-against-
+    fixation tests are significant with perisaccadic higher; not reproduced when any of the
+    four finds a difference. The means are reported against the expected values.
+- id: figs1-rf-centres
+  statement: In leftward-saccade sessions the RF centres lie on average 5.81 dva right and
+    5.23 dva below fixation; in rightward-saccade sessions 6.49 dva left and 7.44 dva below.
+  source: S1 Fig legend, panel B
+  quote: >-
+    In the sessions where the saccades were made to the left, the average center of the
+    receptive fields was 5.81 ± 3.63 (mean ± SD) dva rightward, and 5.23 ± 2.08 (mean ± SD)
+    dva downward.
+  data: with_inputs
+  expected:
+  - quantity: RF centre, leftward sessions, horizontal (rightward)
+    value: 5.81
+    tolerance: 0.58
+    unit: dva
+  - quantity: RF centre, leftward sessions, vertical (downward)
+    value: 5.23
+    tolerance: 0.52
+    unit: dva
+  - quantity: RF centre, rightward sessions, horizontal (leftward)
+    value: 6.49
+    tolerance: 0.65
+    unit: dva
+  - quantity: RF centre, rightward sessions, vertical (downward)
+    value: 7.44
+    tolerance: 0.74
+    unit: dva
+  criterion: >-
+    RF maps from responses to each probe shown 700 to 140 ms before saccade, 50-70 ms after
+    onset, interpolated by a factor of 1000, centre of the contour at 95% of the maximum (S1
+    Fig legend; centre taken as the centroid of the region above 95%, a standard choice).
+    Converting grid positions to dva needs each session's grid position and spacing, which
+    the dataset's description does not list; they are outside inputs (the paper gives only
+    their ranges, Methods paragraph 1). The SDs given are spreads across neurons, not
+    uncertainties of the mean, so the tolerance is 10%. Reproduced when all four values are
+    within tolerance; blocked when the grid geometry cannot be found.
+checks:
+- date: 2026-11-11
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1c-ff-remapping. The statement said the FF response comes "at a longer latency than the RF response" and called the 0.90 to 1.30 values the "late" response; the quoted sentence says neither, and its criterion does not test latency, which fig1-remapping-longer-latency holds. Removed both.
+  - O1 (opening comment), and through it fig1b to fig1e, fig1-example-neurons and the fig5b and fig6 claims. Reading (c), an unpaired rank-sum test, is not the test the Methods name for recorded responses (one-sided signed-rank). It is now a variant that is shown and does not decide an outcome.
+  - fig5a-n-model-no-perisaccadic-gain. The criterion called the paper's test two-sided; the paper gives only "the Wilcoxon signed-rank test". Now says sidedness is not stated, uses two-sided as a standard choice and shows the one-sided p.
+  - fig5c-f-higher-ratio-than-s. Same for sidedness. Added that the paper does not say how neurons with fixation Delta LL per spike at or below zero enter the per-neuron ratio; both ways are shown.
+  - fig8c-example-neuron-detectability. Restricting the candidates to neurons with both remapping effects in response and model is not in the paper; marked as an assumption, with all 41 neurons as a reported variant.
+  - fig8e-population-ff-detectability (and fig8e-population-st-detectability, which follows it). Centres taken relative to the FF probe are not in the Methods, which say only that the variables were normalized by the probe distance; marked as an assumption.
+  - Checked, unchanged. Every quoted number, SE used as tolerance, p-value and count against the Results, Methods and legends; the percent changes of fig5c-percent-changes agree with the slopes by the Methods formulas to rounding. The code settings in the opening comment (get_info.m times, delays, lags, num_folds and splits; load_trials.m condition-wise split; make_profile.m sigma 1.5; select_bases.m r_max 1000 and b0; fmodel.m probe_list columns, bounds for t >= 100 ms and 10-point smoothing; get_fr0.m and get_dll.m NULL model and pooling; amodel.m kernel averaging) were confirmed at commit 1438dde.
+  - Open. fig1-remapping-longer-latency rests on a measure the paper does not name (peak latency of the smoothed population curve); the 50-75 and 80-150 ms ranges may simply be the Methods' analysis windows, so the claim mostly tests the windows chosen.
+  - Open. The paper says the F-model "performs as well as the S-model" in reproducing the perisaccadic effects (Fig 5B) but gives no test of F against S; there is no claim for it, and the fig5b claims report the four measures per model for comparison.
+  - Open. The N-model claims depend on ref [48], which the text read does not list (O8).
+  - Open. Which subpopulation the example neurons of Figs 1, 6 and 8 belong to is not stated; their claims search all neurons and are weak tests.
