@@ -1,0 +1,549 @@
+schema_version: 3
+id: mcguire-2016-01
+datasets:
+- archive: crcns
+  id: ssc-4
+  version: unversioned
+  doi: 10.6080/K06D5QXN
+  relation: primary
+paper: doi:10.1371/journal.pbio.1002549
+date: 2026-11-11
+entry: mcguire-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43061505476
+inputs:
+- what: S1 Data of the paper (XLSX), sheets "Fig 2" (per-rat right-choice fractions of all eight
+    rats, used as variants) and "Fig 3" (per-session percent correct and per-rat d-prime of the
+    FSFS-SFFS rats, used for fig3-fsfs-sffs-intensity-only). Streamed from PLOS, MD5
+    78f680d6b80ca361f25e2b5c6b8e8f78 when read.
+  source: doi:10.1371/journal.pbio.1002549.s001
+- what: S2 Data of the paper (XLSX), sheets "Fig S2" (per-rat moving and fixed-panel
+    discrimination, shown as a variant for the blocked fig2d-fixed-panel-impairs) and "Fig S6"
+    (per-frame mean and SEM of head and whisker tracking by choice, used for
+    s6-head-position-choice). Streamed from PLOS, MD5 2cc739cf12afcaeaa5cad2831b470a12 when read.
+  source: doi:10.1371/journal.pbio.1002549.s002
+outcomes:
+- claim: fig2ab-fms-smf-not-discriminated
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig2ab-fms-smf-not-discriminated
+  notes: The data set holds five of the eight rats (18FB, 18Ri, 18Ro, 62BS, 107St). In all five,
+    FFF draws more right choices than SSS (0.537 to 0.698 against 0.234 to 0.390) and FMS and SMF
+    lie between, and FMS against SMF is not significant at 0.00625 (smallest p 0.10 by the z test
+    and 0.11 by the continuity-corrected chi-square, 62BS). Both trial readings select the same
+    14186 trials. Rat 62SC, the one the paper finds discriminating, is not in the data set, so
+    that part cannot be tested; the criterion caps the outcome at partial for fewer than eight
+    rats. The data set's per-rat means over sessions equal the S1 Data values for four rats and
+    differ by up to 0.026 for 18FB.
+  deviations:
+  - Five of eight rats; the three behaviour-only rats are not deposited.
+- claim: training-days
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:training-days
+  measured:
+  - 14.8
+  - 11
+  - 20
+  notes: Distinct recording dates per rat are 11 (18FB), 12 (18Ri, 107St), 19 (18Ro) and 20 (62BS);
+    mean 14.8, s.d. 4.3. The mean and the maximum are within tolerance, the minimum (11) is not
+    within 0.8 of 8. The data set holds only the recording days of the five recorded rats, and the
+    shortest-trained rats may be among the three not deposited.
+  deviations:
+  - Five of eight rats, and only days with a deposited recording session.
+- claim: fig2c-choice-follows-mean-speed
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig2c-choice-follows-mean-speed
+  notes: For each of the five rats relative right choice orders FFF above FMS and SMF above SSS
+    (reading a), and the Pearson correlation with Table 1 mean speed is 0.967 to 0.998 (reading
+    b), under both trial readings. The S1 Data means of all eight rats give the same (r 0.967 to
+    0.995).
+  deviations:
+  - Five of eight rats in the data set; all eight shown from S1 Data as a variant.
+- claim: fig2d-fixed-panel-impairs
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_mcguire_2016.ipynb
+  notes: The data set holds only the four normal sequences (StimNumber 1 to 4, including the trials
+    with irregular StimName strings, which map one to one to them); no fixed-panel session is
+    deposited. The paper's S2 Data holds the per-rat summary of S2B Fig; as a variant, fixed-panel
+    discrimination is lower in all six rats there, paired t p = 0.0120 with the rat at 0 kept and
+    0.0308 without it. Whether the claim should be tested on S2 Data is asked of a reader
+    (questions/mcguire-2016.yaml).
+- claim: dprime-fff-sss-range
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:dprime-fff-sss-range
+  measured:
+  - 0.45
+  - 1.09
+  notes: Per-rat d-prime over pooled sessions (reading a) is 0.45 (18FB) to 1.09 (18Ro), and the
+    mean of per-session values (reading b) 0.46 to 1.23. The lowest value is within tolerance of
+    0.5; the highest is below 1.35 under both readings. Of the three rats not deposited, two have
+    the highest d-prime by the S1 Data means (62SS 1.32, 107Si 1.17).
+  deviations:
+  - Five of eight rats.
+  - Rates of 0 or 1 in a session are moved by half a trial before the z transform, a standard
+    choice.
+- claim: fig3-fsfs-sffs-intensity-only
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig3-fsfs-sffs-intensity-only
+  measured:
+  - 69.98
+  - 69.17
+  - 51.74
+  - 53.02
+  - 1.004
+  - 0.130
+  notes: From the per-session values of S1 Data, 58B is 69.98 +- 1.47% correct (13 sessions) and
+    60W 69.17 +- 1.57% (15) with different intensities, and 51.74 +- 0.81% (22) and 53.02 +- 0.82%
+    (21) with the same intensity, with same-intensity sessions up to day 56 and 52. D-prime as the
+    mean of the two rats (reading a) is 1.004 and 0.130; per rat 1.061 and 0.947, 0.168 and 0.093
+    (reading b, outside tolerance for single rats). All six values are within tolerance under
+    reading a.
+- claim: units-recorded
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:units-recorded
+  measured:
+  - 330
+  - 176
+  - 80
+  - 5
+  - 4.12
+  - 12
+  notes: 330 single units (257 RS, 73 FS) and 176 multi-unit clusters, 506 in all, over 80 sessions
+    in five rats; 4.12 single units per session, 0 to 12. Each value is within its tolerance, but
+    the total is 33 above the paper's 473. The descriptor says units in columns A1 and B2 are to
+    be dropped using MapPosition, which the file lacks; leaving out the fifth electrode of 18FB and
+    18Ri gives 459, not 473.
+- claim: baseline-rates
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:baseline-rates
+  measured:
+  - 5.93
+  - 11.40
+  - 7.59
+  - 30.18
+  notes: Layer means of the 25-ms baseline over completed trials are 5.93 (L2/3) to 11.40 Hz (L5a)
+    for RS single units and 7.59 (L2/3) to 30.18 Hz (L5b) for FS. The RS maximum is above 11 Hz;
+    the other bounds are within tolerance. Multi-units are higher than RS in 5 of 5 layers and
+    higher than both RS and FS in 4 of 5. With all trials the RS maximum is 11.49 Hz.
+  deviations:
+  - All 506 deposited units, not the paper's 473.
+- claim: temporal-modulation-count
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:temporal-modulation-count
+  measured:
+  - 310
+  - 61.3
+  notes: With 0 to 180 ms after nose poke entry (reading a) 310 of 506 units (61.3%) are modulated;
+    with 0 to 180 ms after onset (reading b) 261 (51.6%). The two statistics the criterion names
+    give the same p-value under uniform permutation, so they are one reading. The data set's
+    stored p-values also mark 310 units, but they agree with reading a unit by unit for 73.1%,
+    and they were computed over -50 to 300 ms (TempSig.Params); that window gives 363 units here,
+    agreeing on 81.6%. Units modulated by reading a are used by every claim that depends on this
+    one.
+  deviations:
+  - 506 units in the denominator, not 473.
+  - Spikes are permuted uniformly within the window on each trial (the criterion's standard
+    choice), drawn as a multinomial over the pooled bins, which is the same null.
+- claim: modulated-higher-baseline
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:modulated-higher-baseline
+  notes: Modulated RS single units have the higher baseline in 5 of 5 layers (for example L4 10.13
+    against 6.08 Hz, L6 11.10 against 3.00 Hz). The fraction modulated is 0.51 to 0.68 across
+    layers, chi-square p = 0.105. Columns cannot be tested, as the column map is missing.
+- claim: fig4d-evoked-modulation-by-layer
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig4d-evoked-modulation-by-layer
+  measured:
+  - 16.06
+  - 15.29
+  - 7.65
+  - 16.56
+  - 8.20
+  notes: No combination of the criterion's readings puts all five layers within tolerance. The
+    closest, the absolute peak averaged over impulses (A, b, ii), gives 16.06, 15.29, 7.65, 16.56
+    and 8.20 Hz, 4 of 5 within tolerance (L5a outside); measured gives it. The signed peak over
+    pooled impulses (A, a, i) gives 9.17, 11.71, -1.85, 10.42 and -0.33 Hz, and the 5 to 35 ms mean
+    (B) 1.4 to 7.8 Hz. L5a and L6 are the two lowest layers under every combination. Units per
+    layer 27 to 77. With the stored temporal-modulation p-values the values are similar.
+  deviations:
+  - The 10-ms boxcar is centred, a standard choice.
+- claim: latency-by-layer
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:latency-by-layer
+  measured:
+  - 15.0
+  - 16.5
+  - 15.0
+  - 17.0
+  - 17.0
+  notes: Peak latencies are 14 to 20 ms in every layer, longer than the paper's 9.8 to 16.1 ms; at
+    most one layer is within tolerance under any reading. The ordering (L4, L5a and L5b below L2/3
+    and L6) holds for the medians under both tests and for the mean under the two-sided test, not
+    for the mean under the one-sided test. Measured gives the one-sided medians in the claim's
+    order (L4, L5a, L5b, L2/3, L6). 18 to 50 impulse-responsive units per layer. The paper's
+    latency definition (time of the maximum after onset, 10-ms smoothing) may differ from the one
+    used here in a way the text does not show; this is asked of the authors (findings).
+  deviations:
+  - The impulse t test compares, per trial, the 5 to 35 ms rate with the 0 to 10 ms rate, averaged
+    over the trial's three impulses, across trials (Methods, Stimulus-evoked responses, "by t
+    test").
+- claim: fig4d-gradual-decrease
+  outcome: not_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig4d-gradual-decrease
+  notes: The population rate of modulated units falls in every layer, L5a included. The slope from
+    -25 to 180 ms is -0.88 Hz per 100 ms in L5a (p below 0.001) and -1.09 to -2.43 in the other
+    layers (reading a), and the last 30 ms are below the baseline in all five layers, by 1.65 Hz in
+    L5a (reading b). The claim requires no decrease in L5a.
+- claim: fig6-regression-significant
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig6-regression-significant
+  measured: 194
+  notes: 194 of the 310 modulated units have a regression at p < 0.05/36 in at least one window
+    (207 among the units the stored p-values mark). With rates per trial in place of summed counts,
+    189. The fit reproduces the data set's stored R2 and p for every unit to numerical precision.
+  deviations:
+  - The regressor is the data set's stored integrated speed (Xval), the stimulus record the
+    criterion allows; the dependent variable is the spike count summed over completed trials, as
+    the stored inputs show.
+- claim: fig6e-unit-classes
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig6e-unit-classes
+  measured:
+  - 160
+  - 48
+  - 51
+  - 51
+  - 51.6
+  - 42.9
+  notes: Classing all modulated units by their highest-R2 window (reading a, 55 ms Slow) gives 160
+    Fast, 48 Medium, 51 Slow Positive and 51 Slow Negative; with 55 ms Medium 160, 50, 50, 50.
+    Slow Negative is above its limit of 48.4 in both; the other counts, the Fast share (51.6%) and
+    the share with 5 to 10 ms windows (42.9%) are within tolerance. 93% of Fast units have
+    positive slopes and 69% of Medium units negative. Reading b (significant units only) gives
+    119, 26, 23 and 26. The data set's own labels give 160, 53, 51 and 46, all within tolerance;
+    over units modulated in both, this attempt's classes agree with them for 99.6%.
+- claim: fig6fg-laminar-classes
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig6fg-laminar-classes
+  measured:
+  - 69.2
+  - 50.7
+  - 26.5
+  - 18.3
+  - 33.3
+  - 54.4
+  notes: Under reading a, 4 of 6 values are within tolerance (L6 Fast 26.5% and L2/3 with L4 Slow
+    18.3% outside) and Fast falls and Slow rises from superficial to deep. Separately, L2/3 is 59.3%
+    Fast and L4 72.7%. The data set's labels give 74.0, 49.6, 23.2, 13.0, 31.9 and 56.5%, all
+    within tolerance.
+- claim: fig7c-fast-impulse-velocity
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig7c-fast-impulse-velocity
+  notes: Over 160 Fast units the net evoked rate is 9.59 Hz for F, 8.73 for M and 7.42 for S
+    impulses (SEM 0.77 to 0.88); paired t F against S, t = 4.48, p = 1.4e-05. The data set's
+    labels give 9.99, 8.54 and 7.77 Hz. In 18Ri M is above F and in 107St S above M.
+- claim: fig7c-fast-sequence-rate
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig7c-fast-sequence-rate
+  notes: With the 0 to 10 ms baseline (reading b) Fast units give FFF 4.62, FMS 2.09, SMF 2.85 and
+    SSS 1.59 Hz above baseline, FMS against SMF p = 0.31. With the 25-ms baseline (reading a) the
+    order is the same but FMS and SMF differ at p = 0.046 (difference 0.95 Hz). The claim holds
+    under reading b.
+- claim: fig7-fff-adaptation
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig7-fff-adaptation
+  measured:
+  - 0.794
+  - 0.800
+  notes: The impulse t test selects 34 of 63 Fast RS single units as F-responsive, not 61. Over
+    them the ratio of population means (reading b) is 0.794 (2/1) and 0.800 (3/1) with the 25-ms
+    baseline, and 0.79 to 0.83 under the other selections and baselines, within tolerance. The
+    per-unit ratio against 1 is significant for 2/1 (p = 0.026) but not for 3/1 (p = 0.644), and
+    the paired tests are not significant (p 0.119 to 0.185). The mean of per-unit ratios is
+    unstable where pulse 1 is near 0 (with the 10-ms baseline it is of order 1e13). With all 63
+    Fast RS units, a count close to the paper's 61, the ratios of means are 0.70 and 0.77 and the
+    paired test gives p = 0.039 for 2/1 and 0.141 for 3/1.
+  deviations:
+  - Per-unit ratios are taken only where the pulse 1 response is above 0 (28 of 34 units).
+- claim: fig7-sss-no-adaptation
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig7-sss-no-adaptation
+  measured:
+  - 0.883
+  - 0.881
+  notes: In SSS the ratios of population means are 0.883 and 0.881 (one-sided selection, 25-ms
+    baseline) and 0.85 to 0.88 under the other selections, within tolerance; no test differs from
+    1 or pulse 1 (all p above 0.2). The mean of per-unit ratios is 1.34 and 1.66 with the 25-ms
+    baseline (3/1 outside tolerance) and 0.84 and 0.76 with the 10-ms baseline.
+- claim: s4-fms-middle-pulse
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:s4-fms-middle-pulse
+  notes: In the 34 selected units the pulse 2 response is 1.60 Hz lower in FMS than in SMF with the
+    25-ms baseline (paired t p = 0.259) and 0.20 Hz lower with the 10-ms one (p = 0.913). With all
+    63 Fast RS units it is 1.60 Hz lower, p = 0.087.
+- claim: fig7de-medium-suppressed
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig7de-medium-suppressed
+  notes: The 48 Medium units do not distinguish F from S impulses (p = 0.637) or FFF from SSS
+    (p = 0.428 and 0.468), but impulses do not suppress them; net evoked rates are +0.05 (F), -0.30
+    (M) and -0.36 Hz (S), none different from 0 (p above 0.6). Their sequence rates are 1.5 to 4.1
+    Hz below the pre-stimulus baseline, which the gradual decline of all layers can explain. With
+    the data set's labels (53 units) all three impulse values are negative (-0.27 to -0.52 Hz,
+    none significant), which would meet the criterion.
+  deviations:
+  - Classes are this attempt's (reading a of fig6e-unit-classes, 55 ms Slow), adopted because the
+    paper's four counts sum to all 305 modulated units and the Figure 6D legend puts Fast and
+    Medium below 55 ms. The outcome rests on this choice; the data set's labels are shown as a
+    variant.
+- claim: fig8a-slow-positive-no-sequence-difference
+  outcome: partially_reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig8a-slow-positive-no-sequence-difference
+  notes: The 51 Slow Positive units respond to F (1.46 Hz, p = 0.0016) and M impulses (2.82 Hz,
+    p = 0.00018) but also to S impulses (1.23 Hz, p = 0.027), which the claim says they do not.
+    Their sequence rates do not differ (repeated-measures ANOVA p = 0.087 and 0.430 for the two
+    baselines). Responses grow over the pulses (-0.76, 1.87 and 5.57 Hz above the 25-ms baseline
+    for pulses 1 to 3). The data set's labels give the same pattern (S p = 0.021).
+- claim: fig8b-slow-negative-no-impulse-response
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig8b-slow-negative-no-impulse-response
+  notes: In 51 Slow Negative units no impulse kind gives a significant increase (t = 1.88, -0.96
+    and 0.89 for F, M and S), and the population rate falls by 5.49 Hz per 100 ms over 0 to 180
+    ms. The data set's labels give the same.
+- claim: fig8d-slow-positive-right-choice-l5
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig8d-slow-positive-right-choice-l5
+  notes: L5b Slow Positive units (15) fire more on right-choice trials, by 6.32 Hz (p = 0.0045,
+    reading a) and 7.24 Hz (p = 0.0008, reading b); L2/3, L4 and L6 show no significant bias. In
+    L5a (6 units) the bias is 4.27 Hz, p = 0.117 and 0.121, not significant. With the data set's
+    labels (7 L5a units) L5a reaches p = 0.049 under reading a, where the criterion would be met.
+    The printed p-values here (0.0045, 0.0008) are not the paper's (0.022, 9.5e-4, 7.5e-5). Fast
+    and Medium units, a variant, show right-choice bias in L4 (p = 0.018) and L5b (p = 0.024)
+    under reading a.
+  deviations:
+  - Classes are this attempt's, as for fig7de-medium-suppressed; the outcome rests on that
+    choice, as the data set's labels give the claim under reading a.
+- claim: fig8d-fast-medium-no-choice-bias
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig8d-fast-medium-no-choice-bias
+  notes: In 56 L4 Fast units, with 5-ms bins (reading b) no bin from 0 to 150 ms differs between
+    right- and left-choice trials. With 10-ms windows stepped by 1 ms (reading a), steps at 5 to 9
+    ms reach p < 0.05, a brief run that does not last to the end of the sequence. The largest
+    right-left difference is 2.6 to 2.7 Hz.
+- claim: fig8e-choice-divergence-125ms
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:fig8e-choice-divergence-125ms
+  measured:
+  - 122
+  - 153
+  - 193.0
+  notes: In 21 L5 Slow Positive units, with 10-ms windows (reading a), right and left differ without
+    a break from 122 ms to 150 ms; with 5-ms bins (reading b) the run from 125 ms lasts to 140 ms
+    and breaks before 150. Over the 2355 trials of these units' sessions, withdrawal is at 153 ms
+    at the earliest (1st percentile 157.5) and 193.0 ms on average. All three values are within
+    tolerance under reading a and the minimum. Asking the run to last to 160 ms finds none under
+    reading a.
+  deviations:
+  - The end of the third impulse is taken as 150 ms, the end of the paper's 0 to 150 ms sequence
+    window; the third impulse ends at about 117 to 149 ms across sequences (onset plus the Table 1
+    duration). The outcome rests on this choice (140 and 150 ms give 122, 160 ms gives no run).
+  - Each unit's PSTH per choice is the mean of its per-sequence PSTHs; the 10-ms window is centred,
+    a standard choice.
+- claim: s5-slow-positive-no-integration
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:s5-slow-positive-no-integration
+  notes: With the 25-ms baseline (reading a), the pulse 3 response of the 21 L5 Slow Positive units
+    does not differ across sequences on right-choice (ANOVA p = 0.052) or left-choice trials
+    (p = 0.324), and it does not correlate with sequence mean speed or with the mean speed of
+    pulses 2 and 3 or of pulses 1 and 2 (all p of 0.08 or more). Pulses 1 and 2 evoke 1.04 Hz on
+    right-choice and -0.36 Hz on left-choice trials. With the 10-ms baseline the left-choice
+    correlation with pulses 2 and 3 reaches p = 0.03. With the data set's labels the right-choice
+    ANOVA is significant with the 25-ms baseline (p = 0.016).
+  deviations:
+  - Impulse mean speed is twice the Table 1 peak amplitude over the Table 1 duration (a ramp out
+    and back), in place of the S1 Fig profiles; with four sequences only the ordering matters.
+  - Classes are this attempt's, as for fig7de-medium-suppressed; the data set's labels give a
+    significant ANOVA under the 25-ms baseline, so the outcome rests on the choice.
+- claim: s6-head-position-choice
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:s6-head-position-choice
+  measured: 0.595
+  notes: From S2 Data, head x position differs between right- and left-choice trials at every frame
+    from 100.8 ms (p = 0.037) to 151.2 ms, by 0.595 mm at 126 ms (right minus left -0.595), with
+    both t tests. Head angle, both whisker tip coordinates and head y differ at no frame.
+  deviations:
+  - The tests are computed from the per-frame means and SEMs, with 22 left- and 21 right-choice
+    trials, as S2 Data holds no single trials.
+- claim: s7-no-fs-l5-slow-positive
+  outcome: reproduced
+  notebook: reproduce_mcguire_2016.ipynb
+  output: claim:s7-no-fs-l5-slow-positive
+  notes: Every class holds RS, FS and multi-units (Fast 63, 26, 71; Medium 23, 7, 18; Slow Positive
+    30, 8, 13; Slow Negative 25, 2, 24). The FS fraction is 0.157 in Slow Positive and 0.039 in
+    Slow Negative against 0.162 in Fast. The 21 L5 Slow Positive units are 15 RS and 6 multi-units.
+- claim: fig9b-stimulus-decoder-fast-medium
+  outcome: reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9b-stimulus-decoder-fast-medium
+  measured:
+  - 84.1
+  - 74.9
+  - 84.4
+  - 82.1
+  notes: With C = 1 (reading a, 300 repeats) 208 Fast and Medium units decode the sequence at 84.1%,
+    74.9% for FMS and 84.4% for FFF; FMS and SMF at 82.1% under reading A (97.6% under reading B).
+    The largest confusion is FMS with FFF (19%), not FMS with SMF. With C by cross-validation
+    (reading b, 5 repeats), 76.0% overall and 62.2% for FMS. The data set's labels give 87.1%.
+  deviations:
+  - 100 pseudo-trials per sequence per repeat, and a split stratified by sequence, standard
+    choices.
+- claim: fig9c-best-units-short-windows
+  outcome: reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9c-best-units-short-windows
+  notes: Mean single-unit accuracy is 32.7% for 5-ms units (69), 31.5% for 10-ms units (64) and 27.2
+    to 30.9% for longer windows; 17 of the 21 top-ranked units have 5 or 10 ms windows.
+- claim: fig9b-stimulus-decoder-slow-chance
+  outcome: reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9b-stimulus-decoder-slow-chance
+  measured: 30.1
+  notes: 102 Slow units decode the sequence at 30.1% (C = 1, 300 repeats), within tolerance of 32%,
+    and not above chance by the fraction of repeats (p = 0.213, reading a). The binomial test of
+    120,000 pooled pseudo-trials (reading b) is significant, as any excess is with that many draws.
+    With C by cross-validation, 28.9%, significant by both tests over 5 repeats. The data set's
+    labels give 33.1% (p = 0.020 by reading a).
+- claim: fig9d-single-bin-decoder
+  outcome: reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9d-single-bin-decoder
+  measured: 39.4
+  notes: With one 0 to 150 ms bin the Fast/Medium decoder is 39.4% (within tolerance of 43%) and the
+    Slow decoder 26.5%, 3.6 points below its 10-ms accuracy. With C by cross-validation, 28.9% and
+    24.9%.
+- claim: fig9e-temporal-pattern-decoding
+  outcome: reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9e-temporal-pattern-decoding
+  measured: 79.4
+  notes: Rate-normalized trains give 79.4%; time-scrambled trains 28.9%, not above chance by the
+    fraction of repeats (p = 0.367) and below 32%. With C by cross-validation, 72.1% and 28.3%.
+  deviations:
+  - Scrambling redistributes each trial's spikes uniformly over 0 to 150 ms, once per run, a
+    standard choice.
+- claim: fig9f-choice-decoder
+  outcome: not_reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9f-choice-decoder
+  measured:
+  - 80.1
+  - 91.7
+  notes: The Slow choice decoder predicts choice at 80.1% from the 150-ms bin and 91.7% from the
+    100 ms before withdrawal (equal draws, mean over sequences; 80.1 to 92.0% under the other
+    readings), and at 74.6% and 79.2% with C by cross-validation, all above 71.5%. The Fast/Medium
+    decoder predicts choice at 67.1% and 79.0% (63.8% and 66.9% with cross-validation), not within
+    45 to 55%. Trained without balancing the two choices, both decoders fall to 50 to 54%, Slow
+    included. No reading gives Slow at 65% with Fast/Medium near chance. The pseudo-population sums
+    about 100 independent units, which can raise accuracy well above that of single units
+    (L5b Slow Positive units average 59.8% alone).
+  deviations:
+  - Training weights the two choices equally (an assumption, as the Methods give chance as 50%
+    and an unweighted fit predicts one side for every trial); the unweighted fit is shown and does
+    not give the claim either.
+  - Cross-validated C (reading b) run with 10 repeats.
+- claim: fig9g-l5b-slow-positive-best-choice
+  outcome: reproduced
+  notebook: decoders.ipynb
+  output: claim:fig9g-l5b-slow-positive-best-choice
+  notes: L5b Slow Positive units have the highest mean single-unit choice accuracy, 59.8% balanced
+    accuracy over 15 units (next L5a Slow Positive 56.4%, L5b Slow Negative 55.4%), and 5 of the 11
+    top-ranked Slow units are L5b Slow Positive, the largest group but not more than half.
+  deviations:
+  - Single-unit accuracy is balanced accuracy on the unit's own test trials, a standard choice so
+    that chance is 50%.
+findings:
+- kind: metadata_error
+  statement: The data descriptor gives the column of each electrode as AllRats(expt).MapPosition
+    and says units in columns A1 and B2 must not be used in stimulus analyses, but AllRats.mat has
+    no MapPosition field. No field gives the recorded column.
+- kind: selection_undocumented
+  statement: AllRats.mat holds 506 units (330 single, 176 multi-unit) where the paper reports 473
+    (306 single, 167 multi-unit). The extra units are probably those in columns A1 and B2, but
+    without the column map they cannot be identified, so every unit analysis here uses all 506.
+- kind: data_missing
+  statement: The data set holds only the five recorded rats. The fixed-panel control sessions and
+    the behaviour of rats 62SC, 107Si and 62SS (Figure 2) are not deposited; the paper's S1 and S2
+    Data give only per-rat and per-session summaries.
+- kind: methods_unavailable
+  statement: Question for the authors. The stored temporal-modulation p-values (TempSig) were
+    computed over -50 to 300 ms in 10-ms bins (TempSig.Params), while the Methods give 0 to 180 ms
+    after nose poke entry, and the Methods do not name the statistic compared with permuted
+    spikes. Permuting spikes uniformly and comparing the PSTH variance gives 310 modulated units
+    over the Methods' window, the same count as the stored values, but the two agree for only 73%
+    of units (82% with the stored window). Which window and statistic were used for the paper's 305?
+- kind: methods_unavailable
+  statement: Question for the authors. Which test selected the 61 Fast RS single units "with
+    significant response to F impulses"? A paired t test across trials of the 5 to 35 ms rate
+    against the 0 to 10 ms rate selects 34 of 63 Fast RS units; the paper's 61 is close to all of
+    them.
+- kind: methods_unavailable
+  statement: Question for the authors. How was the choice decoder's 65% obtained? With per-unit
+    logistic functions summed over a pseudo-population, as the Methods describe, Slow units give 80
+    to 92% when the two choices are weighted equally in training and about 51% when they are not,
+    and Fast/Medium units 67 to 79%. Were the choices balanced, how many units entered each
+    prediction, and were test trials drawn within each rat?
+- kind: methods_unavailable
+  statement: Question for the authors. How were the peak latency and the evoked modulation of
+    Figure 4D computed (smoothing window placement, pooling of impulses and sequences)? From the
+    10-ms smoothed 1-ms PSTH the latencies are 14 to 20 ms in every layer, against 9.8 to 16.1 ms
+    in the paper.
+- kind: other
+  statement: The stored regression inputs (StimReg Yval) equal the spike counts summed over
+    completed trials (Complete equal to 1) for all 506 units, while the descriptor says the paper
+    used trials with nose poke duration over 250 ms, a set that also holds 129 trials without a
+    choice. The stored regression results are reproduced exactly from the spikes and the stored
+    regressor.
+- kind: other
+  statement: For rat 18FB the per-rat right-choice fractions computed from the data set's sessions
+    differ by up to 0.026 from the S1 Data values of Figure 2B, while for the other four rats they
+    are equal, so S1 Data and the data set hold different sessions for 18FB.
