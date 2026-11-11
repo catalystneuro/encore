@@ -1,7 +1,7 @@
 # McGuire et al. (2016) on CRCNS ssc-4
 
 Tests the claims in `claims/mcguire-2016.yaml` on the CRCNS data set ssc-4 (doi:10.6080/K06D5QXN),
-the file `AllRats.mat`, streamed from the public CRCNS bucket and pinned by its MD5 sum. Two claims
+the file `AllRats.mat`, streamed from the public CRCNS bucket and pinned by its MD5 sum. Three claims
 use the paper's supporting data (S1 and S2 Data).
 
 - `reproduce_mcguire_2016.ipynb`: data checks, behaviour, units, regression classes and the

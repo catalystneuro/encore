@@ -22,12 +22,13 @@ provenance:
     url: https://github.com/catalystneuro/encore/actions/runs/43061505476
 inputs:
 - what: S1 Data of the paper (XLSX), sheets "Fig 2" (per-rat right-choice fractions of all eight
-    rats, used as variants) and "Fig 3" (per-session percent correct and per-rat d-prime of the
+    rats, used as variants; per-rat d-prime of Figure 2D, a variant for fig2d-fixed-panel-impairs)
+    and "Fig 3" (per-session percent correct and per-rat d-prime of the
     FSFS-SFFS rats, used for fig3-fsfs-sffs-intensity-only). Streamed from PLOS, MD5
     78f680d6b80ca361f25e2b5c6b8e8f78 when read.
   source: doi:10.1371/journal.pbio.1002549.s001
 - what: S2 Data of the paper (XLSX), sheets "Fig S2" (per-rat moving and fixed-panel
-    discrimination, shown as a variant for the blocked fig2d-fixed-panel-impairs) and "Fig S6"
+    discrimination, used for fig2d-fixed-panel-impairs) and "Fig S6"
     (per-frame mean and SEM of head and whisker tracking by choice, used for
     s6-head-position-choice). Streamed from PLOS, MD5 2cc739cf12afcaeaa5cad2831b470a12 when read.
   source: doi:10.1371/journal.pbio.1002549.s002
@@ -71,15 +72,26 @@ outcomes:
   deviations:
   - Five of eight rats in the data set; all eight shown from S1 Data as a variant.
 - claim: fig2d-fixed-panel-impairs
-  outcome: blocked
-  blocked_by: data_missing
+  outcome: reproduced
   notebook: reproduce_mcguire_2016.ipynb
-  notes: The data set holds only the four normal sequences (StimNumber 1 to 4, including the trials
-    with irregular StimName strings, which map one to one to them); no fixed-panel session is
-    deposited. The paper's S2 Data holds the per-rat summary of S2B Fig; as a variant, fixed-panel
-    discrimination is lower in all six rats there, paired t p = 0.0120 with the rat at 0 kept and
-    0.0308 without it. Whether the claim should be tested on S2 Data is asked of a reader
-    (questions/mcguire-2016.yaml).
+  output: claim:fig2d-fixed-panel-impairs
+  notes: Tested on S2 Data after a reader's answer to this attempt's question. The first run had the
+    claim as data from the data set and recorded it as blocked (data_missing), since the data set
+    holds only the four normal sequences and no fixed-panel session; the reader changed the claim to
+    data elsewhere, on the per-rat S2B Fig values in S2 Data, and to a lower fixed-panel value in at
+    least five of six rats. On those values fixed-panel discrimination (FFF minus SSS right-choice
+    fraction) is lower than moving-panel discrimination in all six rats, by 0.067 (18Ri) to 0.374
+    (107SI). The paired t test gives p = 0.0120 with the rat at 0 kept (reading ii, the paper's
+    0.012), mean change -0.169 (95% CI -0.282 to -0.056), and p = 0.0308 without it (reading i),
+    mean change -0.174 (-0.322 to -0.026), so the criterion holds under both readings. The Figure 2D
+    d-prime from S1 Data is lower in all six rats too (p = 0.0051 and 0.0176). The moving-panel
+    values of S2B differ from the Figure 2B means and from the data set's mean and last session for
+    the six rats with the control, so they summarise sessions the data set does not hold. The
+    statement's "all but one" (one rat not significantly impaired) cannot be tested from per-rat
+    summaries; the lowest change is 18Ri's (0.067, d-prime 1.02 to 0.78).
+  deviations:
+  - The per-rat values of S2B Fig are taken from S2 Data as deposited; the single trials are not
+    public, so the paper's computation of each value is not repeated.
 - claim: dprime-fff-sss-range
   outcome: partially_reproduced
   notebook: reproduce_mcguire_2016.ipynb
@@ -543,6 +555,11 @@ findings:
     used trials with nose poke duration over 250 ms, a set that also holds 129 trials without a
     choice. The stored regression results are reproduced exactly from the spikes and the stored
     regressor.
+- kind: paper_inconsistency
+  statement: In S1 Data the Figure 2A sheet is labelled "Rat 107ST", but its values are those of 107Si
+    in the same file and in S2 Data. Its mean FFF fraction over 13 days is 0.7485, the Figure 2B mean
+    of 107Si (0.7485, 107ST 0.5856), and its fixed-panel FFF minus SSS (0.0991, d-prime 0.277) equals
+    107SI in S2B Fig and 107Si in Figure 2D. The example rat of Figure 2A appears to be 107Si.
 - kind: other
   statement: For rat 18FB the per-rat right-choice fractions computed from the data set's sessions
     differ by up to 0.026 from the S1 Data values of Figure 2B, while for the other four rats they
