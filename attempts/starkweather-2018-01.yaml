@@ -216,8 +216,10 @@ outcomes:
     all within one neuron); the negative share rises from 0.10 to 0.53 and Fisher two-sided p = 0.0405,
     the paper's 0.041, while the paper's printed counts give 0.0367. With the neuron's mean baseline or
     none, saline has 3 significant negative slopes and p = 0.239, so the claim does not hold under those
-    readings, and the outcome rests on the trial-by-trial reading. That reading follows the Methods'
-    wording and is the only one that recovers the paper's printed counts and Fisher p values. Keeping
+    readings, and the outcome rests on the trial-by-trial reading. The Methods' wording fits either
+    reading. Trial by trial is the only reading that recovers the printed counts 29, 12 and 24 (task
+    2 signs) and 16, 0, 16 and 2 (task 1), and both Fisher p values, though here it gives 8
+    significant negative SalB slopes where the paper prints 9. Keeping
     the untyped trials or counting the doubly deposited units once gives the same counts and p. Asked of
     the paper's authors (findings).
   deviations:
@@ -316,7 +318,11 @@ outcomes:
   deviations:
   - >-
     The paper's MATLAB code is run as a line-by-line Python port (belief_td.py), as MATLAB cannot be
-    installed in the entry's locked environment; MATLAB's random streams are replaced by numpy's.
+    installed in the entry's locked environment; MATLAB's random streams are replaced by numpy's. No
+    MATLAB or Octave run was available to compare traces with. The author compared blur_matrix,
+    blur_vector, matrices, observations and the tonic, phasic and omission indexing of simulate line
+    by line with blur_matrices_inputWeberFraction.m, blur_vector.m, the four SimulateOdor*.m files and
+    Organize_for_Plotting.m, and found no difference.
   - >-
     "Around the expected reward time" is taken as the 5 sub-states (1 s) from it, the span of the data's
     omission window (Methods, Data analysis); the minimum near that time is also printed.
@@ -338,7 +344,8 @@ outcomes:
     Reading (a), Weber fraction 0.5 to 1.5 per simulation; task 1 post-reward slope +0.011 against
     -0.114 intact; pre-reward slopes +0.005 and +0.040 against -0.030 and -0.094; 50 of 50 task 2
     slopes positive; omission minima -0.110 and -0.090 against -0.313 and -0.186 intact. Reading (b),
-    0.56, gives the same, and every part holds in 5 of 5 further seeds under each reading. The dips are
+    0.56, also meets every part, with a task 1 slope of -0.015 and 49 of 50 task 2 slopes positive,
+    and every part holds in 5 of 5 further seeds under each reading. The dips are
     reduced, not removed. Over the 50 simulations the mean omission RPE in the 1 s from the usual reward
     time is -0.073 (SE 0.014, t(49) = -5.05, p = 6.6e-06) for odor B and -0.032 (SE 0.016, p = 0.045) for
     odor C, 40% and 25% of the intact dips (-0.181 and -0.131); reading (b) gives -0.077 (p = 0.00015)
@@ -410,7 +417,10 @@ verifications:
     The first executed notebook with the conclusion cells and the summary removed, the helper modules
     vta.py and belief_td.py and the claims file, with the paper's full text. The verifier read the
     archive's S3 listing, tested _count, auroc, isi_anova and slopes on synthetic inputs, and compared
-    belief_td.py with the MATLAB code at d667730. It had no attempt record.
+    belief_td.py with the MATLAB code at d667730. It had no attempt record. The synthetic checks all
+    came out as expected (_count has a half-open window and gives NaN for a NaN start; auroc gives 1.0
+    and 0.5 on separable and identical inputs; isi_anova recovers a slope of -2.00 with df (8, 32) for
+    5 neurons; slopes recovers about -2 under every baseline reading).
   results:
   - claim: fig2-kord-suppresses-mpfc
     agrees: true
@@ -497,7 +507,12 @@ verifications:
   - claim: fig4a-task1-saline-post-decrease
     agrees: true
     outcome: reproduced
-    reason: F(8,328) = 12.61, p = 8.4e-16, slope -2.21, 42 neurons. Paper F = 12.6, p = 9.1e-16.
+    reason: >-
+      F(8,328) = 12.61, p = 8.4e-16, slope -2.21, 42 neurons. Paper F = 12.6, p = 9.1e-16. The 40-min
+      reading takes the session's first spike as recording onset. That is a stand-in, but both readings
+      give the same conclusions. It could not check that the 21 trials with no trial type are the paper's
+      exclusions; a per-group count of these trials, with each one's effect on that group's ANOVA, would
+      have shown whether leaving them out matters.
     response: >-
       No change. The verifier could not check that leaving out the 21 untyped trials does not matter; the
       data check now gives their count per group and the Figure 4 ANOVAs with them kept as odor A trials
@@ -649,3 +664,235 @@ verifications:
       each condition (odor B -0.073, SE 0.014, p = 6.6e-06; odor C -0.032, p = 0.045; 25 to 43% of the
       intact dips), and the conclusion and notes say that "abolishes" holds only in the criterion's
       weaker sense. Outcome unchanged, as tested on the criterion as written.
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the first revision, with its conclusions and summary, the
+    helper modules, the claims file, this attempt record and the README, with the paper's full text.
+    It checked the sentences of the conclusions, the record and the README against the printed outputs,
+    and the round-1 reasons recorded here against its round-1 report.
+  results:
+  - claim: fig2-kord-suppresses-mpfc
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Cell 3 now prints the zip's contents, 173 members, the 172 neuron .mat files and data/. Every file
+      holds only odor_onsets, reward_onsets, spiketimes and trial_type, so there are no mPFC units.
+    response: No change.
+  - claim: figs1e-kord-abolishes-late-activity
+    agrees: true
+    outcome: blocked
+    reason: Same reason, no mPFC units.
+    response: No change.
+  - claim: figs6ce-kord-task1-animal
+    agrees: true
+    outcome: blocked
+    reason: Same reason, no mPFC units.
+    response: No change.
+  - claim: fig3g-anticipatory-licking
+    agrees: true
+    outcome: blocked
+    reason: The zip holds only the neuron files, with four variables each, so there are no licks.
+    response: No change.
+  - claim: figs3-task1-licks-more-sooner
+    agrees: true
+    outcome: blocked
+    reason: No licks.
+    response: No change.
+  - claim: figs3-salb-spares-licking
+    agrees: true
+    outcome: blocked
+    reason: No licks.
+    response: No change.
+  - claim: figs4-cell-types-unchanged
+    agrees: true
+    outcome: blocked
+    reason: No unidentified VTA neurons; the zip holds only the 172 neuron files.
+    response: No change.
+  - claim: figs5b-task2-salb-below-free-water
+    agrees: true
+    outcome: blocked
+    reason: Cell 84 shows 0 reward onsets outside odor A to C rewarded trials, so there are no free-water deliveries.
+    response: No change.
+  - claim: figs5c-odorbc-normalized
+    agrees: true
+    outcome: blocked
+    reason: Same reason, no free-water deliveries.
+    response: No change.
+  - claim: anova-slopes-task-drug
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No free-water deliveries. The partial ANOVAs in cell 87 are correctly labelled as deviations that
+      decide no outcome.
+    response: No change.
+  - claim: anova-time-task-drug-interaction
+    agrees: true
+    outcome: blocked
+    reason: >-
+      No free-water deliveries. The partial ANOVAs in cell 87 are correctly labelled as deviations that
+      decide no outcome.
+    response: No change.
+  - claim: figs6-salb-without-kord
+    agrees: true
+    outcome: blocked
+    reason: No no-KORD neurons in the zip.
+    response: No change.
+  - claim: fig4a-task1-saline-post-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Meets its criterion on the printed numbers. The untyped trials (C3) are shown in cell 11 and the
+      file-untyped-kept slope variant to change nothing; the 40-minute reading (B7) is unchanged, but both
+      readings give the same outcomes.
+    response: >-
+      No change of outcome. The round-1 record now also gives the verifier's B7 and C3 points under this
+      claim, and its synthetic checks under reviewed, which it found missing from the reasons. The
+      verifier also found that the Summary's "most F and p values to two digits" holds for F only (p
+      values such as 8.4e-16 against 9.1e-16 here differ in the second digit), and that the README's
+      "about five minutes" and "7.9 MB zip" are not printed (cell 90 prints 189 s). The Summary now says
+      most F values agree to two digits and the p values to their order of magnitude, about half to two
+      digits; the README gives the runtime printed by this run (267 s) and no zip size.
+  - claim: fig4b-task2-saline-post-increase
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig4b-odorc-below-latest-odora
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig4ab-saline-pre-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig4c-task1-salb-post-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig4d-task2-salb-flat
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig4cd-salb-pre-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig5f-task2-slope-signs
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers, and holds under every baseline reading (cell 41).
+    response: No change.
+  - claim: fig5e-task1-significant-slopes-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Rests on trial-by-trial baseline subtraction, which is stated in the deviations, the conclusions,
+      the Summary and the README and put to the authors as a finding. It is reasonable: only this reading
+      recovers 29/12/24 and 16/0/16/2, and it gives Fisher p = 0.487 and 0.0405 against the paper's 0.49
+      and 0.041. Under the mean or no-baseline reading the SalB count of 18 is outside tolerance.
+    response: >-
+      No change of outcome. The deviation already limits its reason to the listed counts and the Fisher
+      p values.
+  - claim: fig5f-task2-significant-slopes-shift
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Rests on trial-by-trial baseline subtraction, a reasonable assumption for the reasons given under
+      fig5e-task1-significant-slopes-unchanged; under the mean or no-baseline reading it fails (p = 0.239,
+      saline has 3 significant negative slopes), so it stays open until the authors answer the baseline
+      question. The notes say the reading is "the only one that recovers the paper's printed counts and
+      Fisher p values", but in this claim the data give 8 significant negative SalB slopes against the
+      printed 9; cell 48 limits the statement to the listed counts, the notes do not. "That reading
+      follows the Methods' wording" is not supported: the Methods say only that responses "were
+      baseline-subtracted, with baseline taken 0-1 s prior to odor onset", which fits either reading, as
+      the record's own methods_unavailable finding says. The verifier withdraws the same phrase from its
+      round-1 report; the match to the printed counts is the actual reason.
+    response: >-
+      The notes and the conclusion (cell 48) no longer say the reading follows the Methods' wording; they
+      say the Methods fit either reading, limit the claim of recovery to the listed counts and the two
+      Fisher p values, and state that this claim gives 8 where the paper prints 9. Outcome unchanged,
+      still marked assumed.
+  - claim: fig4e-task2-slope-distribution-shift
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers, and holds under every reading (cell 50).
+    response: No change.
+  - claim: fig5e-task1-slope-distribution-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers, and holds under every reading (cell 53).
+    response: No change.
+  - claim: fig5f-task2-slope-variance-up
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers, and holds under every reading (cell 56).
+    response: No change.
+  - claim: fig5e-task1-slope-variance-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers, and holds under every reading (cell 60).
+    response: No change.
+  - claim: fig6ab-odorc-above-odorb
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig6cd-omission-dips-intact
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: figs5d-omission-unchanged-by-salb
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers.
+    response: No change.
+  - claim: fig7cd-model-intact
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Meets its criterion on the printed numbers. The Python port is not checked against a MATLAB run;
+      blur_matrix, blur_vector and the tonic and phasic indexing in simulate are still not checked line
+      by line. This is lower risk for fig7cd and fig7fgh, which hold in 5 of 5 seeds.
+    response: >-
+      No MATLAB or Octave is available, so no trace comparison. The author compared blur_matrix,
+      blur_vector, matrices, observations and the tonic, phasic and omission indexing of simulate line by
+      line with blur_matrices_inputWeberFraction.m, blur_vector.m, the four SimulateOdor*.m files and
+      Organize_for_Plotting.m at d667730, and found no difference: the kernel and its normalization by
+      the row sum, the hazard and transition rows, the rows 1 to 29 used for the reward observation in the
+      odor A simulations and all 30 for B and C, the geometric ITI (MATLAB's geornd counts from 0), the
+      six leading zeros before the noise, the tonic, bridge and phasic positions, and the omission window
+      from cue - 5 to cue + 24. The deviation of this claim says so. This check is the author's, not an
+      independent one. No change of outcome.
+  - claim: fig7fgh-model-belief-impaired
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion on the printed numbers; holds in 5 of 5 seeds.
+    response: See fig7cd-model-intact for the line-by-line check of the port. No change.
+  - claim: fig7ijk-model-timing-impaired
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Reproduced is correct for the criterion as written, but the claims file is weaker than the paper.
+      The paper says omission responses "were abolished (Figure 7K)", and the Figure 7 legend says the
+      timing-impaired model, unlike the intact one, does not "display reward omission responses at the
+      time of expected reward". The criterion only asks that the dip is not deeper than the intact run's
+      minimum. Cell 81 shows a remaining dip clearly below zero, odor B -0.073 (p = 6.6e-06) and odor C
+      -0.032 (p = 0.045) under reading (a), 25 to 43% of the intact dips. Judged against the paper's own
+      words, this part does not reproduce; the reader's answer could change this outcome. The size of
+      the remaining dip depends on the blurred transition matrix, so the unchecked port matters most
+      here. Separately, cell 82 and the notes say "Reading (b), 0.56 for all, gives the same", but under
+      (b) 49 of 50 task 2 slopes are positive, not 50 of 50, and the task 1 slope is -0.015, not
+      positive; the criterion still holds, so only the wording is off.
+    response: >-
+      Cell 82 and the notes now give reading (b)'s own numbers (task 1 slope -0.015, 49 of 50 task 2
+      slopes positive). The question to a reader in questions/starkweather-2018.yaml now also quotes the
+      Figure 7 legend. blur_matrix was compared line by line with the MATLAB (see fig7cd-model-intact).
+      Outcome unchanged, as tested on the criterion as written.

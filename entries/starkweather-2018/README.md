@@ -20,8 +20,8 @@ mPFC recordings and other VTA neurons the paper also analyses are not in it.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/starkweather-2018-01.yaml`](../../attempts/starkweather-2018-01.yaml).
 
-- `reproduce_starkweather_2018.ipynb`: the analysis. It takes about five minutes; the data are one
-  7.9 MB zip, and most of the time is the model.
+- `reproduce_starkweather_2018.ipynb`: the analysis. The last run took 267 s (printed at its end);
+  the data are one zip, and most of the time is the model.
 - `vta.py`: loading the zip from the CRCNS bucket, the trial table and the response measures of the
   paper's Methods. Other notebooks on this data set can import it.
 - `belief_td.py`: a Python port of the paper's belief state TD model code (commit d667730).
