@@ -1,0 +1,595 @@
+schema_version: 3
+id: drieu-2018-01
+datasets:
+- archive: crcns
+  id: hc-18
+  version: unversioned
+  doi: 10.6080/K0Z899MM
+  relation: primary
+paper: doi:10.1126/science.aat2952
+date: '2026-11-11'
+entry: drieu-2018
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43013322876
+outcomes:
+- claim: figs1-travel-similar
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs1-travel-similar
+  measured:
+  - 45.6
+  - 47.34
+  - 45.41
+  - 37.4
+  - 29.4
+  - 31.2
+  - 9.21
+  - 6.42
+  - 7.63
+  notes: Velocity and laps hold, travel duration does not. Mean train velocity over samples above 5 cm/s
+    (reading b) is 45.6, 47.3 and 45.4 cm/s, all within tolerance, RM-ANOVA P = 0.487; over all samples
+    (reading a) 42.2, 47.3 and 43.4 cm/s, two of three outside tolerance, P = 0.193. Laps 37.4, 29.4 and
+    31.2, all within tolerance, P = 0.053. Travel duration from the events file 9.21, 6.42 and 7.63 min
+    (Passive 1 outside tolerance), P = 0.023; time moving 8.26, 6.41 and 7.14 min, all within tolerance,
+    P = 0.045. The duration ANOVA finds an effect under both readings, so the claim of absence fails for
+    duration. Measured values are velocity reading (b), laps and the events-file duration.
+  deviations:
+  - Velocity from head position smoothed by a Gaussian of 30 samples, as LinearVelocity(x,30) in the scripts
+    of code.zip.
+  - Laps as completed turns of the unwrapped linear position; the paper does not say how laps were counted.
+  - Time moving (v > 5 cm/s, periods of at least 10 s) is shown as a variant of duration; the paper does
+    not define travel duration.
+  - The paper's LinearizeTrainTrack is not in code.zip. Positions are mapped to their angle around the
+    track centre and then to arc length along the median path, an assumption; the measured perimeter is
+    656 to 706 cm, and slopes use the paper's 6 m.
+- claim: figs2b-place-cell-count
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs2b-place-cell-count
+  notes: Totals over rats are 207, 203 and 228 place cells (Passive 1, Active, Passive 2) under field
+    reading (a) and 183, 195 and 207 under reading (b), against 94, 150 and 135; none is within tolerance.
+    RM-ANOVA of per-rat counts P = 0.055 (a) and 0.128 (b). Passive 1 is lowest only under (b). With the
+    settings of BatchPlaceFields.m (kernel 5 bins, minimum 10 bins, fields over 3/4 of the track dropped,
+    at least 50 or 30 spikes) the totals are 61, 104 and 100, with Passive 1 lowest, P = 0.092. Well-isolated
+    pyramidal cells number 43, 25, 83, 31 and 103 per rat.
+  deviations:
+  - Pyramidal cells by k-means on the z-scored width, trough-to-peak duration and Active firing rate (Methods);
+    DiscriminateUnits.m clusters on the two durations only. The two agree on 604 of 685 units, with rat
+    292 the exception (85 against 19 pyramidal).
+  - Mean waveforms from each unit's first 800 spikes among the first 80 MB of its group's .spk file (memory
+    bound); every unit reached 800 spikes by median.
+  - Clusters 0 and 1 (Klusters artefact and noise) are not units.
+  - Firing curves with a Gaussian of s.d. 4.5 cm (Methods); BatchPlaceFields.m smooths with 5 bins (12
+    cm), shown as the code variant.
+  - Other fields of a cell are runs above 30% of its peak whose own peak reaches the minimum peak rate;
+    the Methods define only the field holding the peak.
+- claim: fig1c-field-size-similar
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig1c-field-size-similar
+  notes: 'Under the adopted reading (fields of at least 10 bins, field holding the peak) Kruskal-Wallis
+    P = 0.070, medians 139, 170 and 134 cm, n 183, 195 and 207. Under the other readings it differs. No
+    minimum size: P = 0.0065 (peak field), P < 10^-4 (every field). Minimum 10 bins, every field: P =
+    0.0017. Code settings, peak field: P = 0.53. Fields are large here (medians 108 to 235 cm); the paper''s
+    Fig. 1C sizes are not in the claims file.'
+  deviations:
+  - Assumed, as the reading the paper best supports, the minimum field size of 10 bins that BatchPlaceFields.m
+    sets (minSize = 10); the Methods give no minimum, and the claims file lists this as reading (b). Reading
+    the Methods as having no minimum gives a significant difference. A question for the authors is in
+    the findings.
+  - The field holding the peak is the field the Methods define (contiguous bins containing the location
+    of maximal firing rate).
+  assumed: true
+- claim: fig1c-peak-rate-lower-passive1
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig1c-peak-rate-lower-passive1
+  notes: 'Median peak rates 2.81, 3.95 and 3.00 Hz under field reading (b); Kruskal-Wallis P = 1.5 x 10^-4;
+    rank-sum Passive 1 against Active P = 4.4 x 10^-5, 1.3 x 10^-4 after Bonferroni, below 0.001/3. Reading
+    (a): 2.51, 3.82, 2.78 Hz, Bonferroni P = 1.7 x 10^-6. Passive 1 is lower in every rat.'
+- claim: figs2c-track-coverage
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs2c-track-coverage
+  notes: Pooled over rats, place fields cover 100% of the 250 bins in every condition under readings (a)
+    and (b), and in each rat separately. With the code settings rat 242 reaches 99.6% and 96.8% in the
+    passive conditions.
+  deviations:
+  - The 95% threshold is the claims file's choice; coverage reaches 100%, the literal reading of entire.
+- claim: fig1d-no-remapping-p1-active
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig1d-no-remapping-p1-active
+  notes: 'Rayleigh P = 1.2 x 10^-4 and V-test P = 1.1 x 10^-5 with fields of 10 bins or more and cells
+    with a field in both conditions (mean angle 0.9 deg), both within the legend''s bounds. The bootstrap
+    reaches its bound under no reading: P = 0.014 with the linear correlogram and 0.088 with the circular
+    one for those cells (observed mean shift 0.77, shuffled mean 0.92); with cells with a field in either
+    condition P = 0.28 to 0.996. Without a minimum field size P = 0.21 and 0.50.'
+  deviations:
+  - Assumed the reading with fields of 10 bins or more (as for fig1c-field-size-similar) and cells with
+    a field in both conditions, under which the bootstrap is significant at 0.05; the readings disagree
+    on the bootstrap.
+  - A cell with a field in one condition only takes the other condition's field size for the proportional
+    shift.
+  assumed: true
+- claim: fig1e-no-remapping-active-p2
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig1e-no-remapping-active-p2
+  notes: 'With fields of 10 bins or more, cells with a field in both conditions and the linear correlogram,
+    no shuffled mean of 2000 is at or below the observed one (P = 0), Rayleigh P = 1.6 x 10^-6 and V-test
+    P = 1.5 x 10^-7 (mean angle -0.9 deg): all three below 0.001, but not below the legend''s 10^-9 and
+    10^-10. The circular correlogram gives P = 0.001. Other readings: bootstrap P = 0.011 to 0.96.'
+  deviations:
+  - Assumed the reading with fields of 10 bins or more and cells with fields in both conditions, as for
+    fig1d-no-remapping-p1-active.
+  assumed: true
+- claim: figs2d-stability-p1-p2
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs2d-stability-p1-p2
+  notes: With fields of 10 bins or more, cells in both conditions and the linear correlogram, bootstrap
+    P = 0.016 and V-test P = 0.0016, within the criterion; the circular correlogram gives bootstrap P
+    = 0.935. The Rayleigh test, judged as the paper's test of absence, finds non-uniformity under every
+    reading (P = 0.0039 to 0.011, R = 0.14 to 0.17), so that part does not hold.
+  deviations:
+  - Assumed the same reading as fig1d-no-remapping-p1-active.
+  assumed: true
+- claim: fig2b-theta-frequency-unchanged
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig2b-theta-frequency-unchanged
+  notes: Theta frequency 6.8 to 7.1 Hz in every condition; RM-ANOVA P = 0.41 (all samples, either LFP
+    reading) and P = 0.13 or 0.41 (moving samples). The paper gives P > 0.90. The 2-s spectra resolve
+    0.5 Hz, so most rats have the same mode in all conditions, which makes the test weak.
+  deviations:
+  - The paper's channel lists (SessionsReactivations1-Channels.batch) are not in the data set. LFP reading
+    (a), the pyramidal-layer channel with the largest theta power, is used for theta cycles and phase;
+    pyramidal-layer channels are taken as the first channel of each spike group with at least one well-isolated
+    pyramidal cell.
+  - Spectra are multitaper (time-bandwidth 3, 5 tapers, a standard choice) over 2-s windows; the paper
+    gives no window.
+- claim: fig2b-theta-power-reduced
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig2b-theta-power-reduced
+  notes: Active has the highest normalized theta power under every reading, but the ANOVA reaches 0.05
+    only with the mean of the pyramidal-layer channels (moving samples P = 0.036, all samples P = 0.052)
+    or with one value per 2-s window (two-way ANOVA, condition P = 0.0017; rank-sum Active against Passive
+    1 P = 4.7 x 10^-7, against Passive 2 P = 8.1 x 10^-16). With the single largest-theta channel per
+    rat P = 0.18 and 0.29. No paired post hoc test reaches 0.05/3. Power in 12-20 Hz, read as the first
+    harmonic, does not differ (P = 0.49 to 0.77).
+  deviations:
+  - Assumed that reading (b) of the LFP (mean of pyramidal-layer channels) or the per-window reading is
+    admissible; with the largest-theta channel the effect is not significant.
+  - The paper's channel lists (SessionsReactivations1-Channels.batch) are not in the data set. LFP reading
+    (a), the pyramidal-layer channel with the largest theta power, is used for theta cycles and phase;
+    pyramidal-layer channels are taken as the first channel of each spike group with at least one well-isolated
+    pyramidal cell.
+  assumed: true
+- claim: fig2b-theta-asymmetry-reduced
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig2b-theta-asymmetry-reduced
+  notes: 'Median log(dt2/dt1) is -0.104, -0.187 and -0.094 (LFP reading a), closer to 0 in both passive
+    conditions; Kruskal-Wallis P = 3.8 x 10^-22 on 11569, 9330 and 9374 cycles; rank-sum Active against
+    Passive 1 and Passive 2 P = 6.5 x 10^-17 and 2.2 x 10^-18 after Bonferroni. LFP reading (b): -0.131,
+    -0.311, -0.158, P = 2.2 x 10^-78. Rat 272 has no Active effect (-0.094, -0.041, -0.071). The paper''s
+    P < 10^-84 is not reached; the criterion asks for 10^-10.'
+  deviations:
+  - Theta cycles without the amplitude criterion of BatchTheta.m, which the Methods do not mention.
+  - Cycle start and end are the 1-40 Hz peaks nearest the theta-band peaks; the trough is the 1-40 Hz
+    minimum between them.
+- claim: fig2cd-spike-bursts-slower
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig2cd-spike-bursts-slower
+  notes: 'The spectral mode of place-cell spike trains in theta-cycle units sits at 1.000 cycle^-1 in
+    all conditions: medians 0.9999, 1.0003 and 1.0000 (phase reading a), Kruskal-Wallis P = 0.62; reading
+    (b) 1.0000, 1.0006, 1.0002, P = 0.024, Active against Passive 1 P = 0.0061 and against Passive 2 P
+    = 0.41. Active is above both, but by less than 0.001 cycle^-1, and only one difference is significant.'
+  deviations:
+  - One multitaper spectrum (time-bandwidth 3, 5 tapers, a standard choice) per cell over its whole travel
+    session; the paper computes spectrograms and does not give their windows. A spectrum over the whole
+    session is dominated by phase locking at exactly 1 cycle^-1; windowed spectrograms may not be. A question
+    for the authors is in the findings.
+- claim: figs4b-proportions-oscillating-precessing
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs4b-proportions-oscillating-precessing
+  measured:
+  - 0.488
+  - 0.581
+  - 0.5
+  - 0.053
+  - 0.192
+  - 0.105
+  notes: 'Phase reading (a). Oscillating faster than theta 101/207 = 0.488, 118/203 = 0.581 and 114/228
+    = 0.500 (Passive 1 outside tolerance); binomial tests Active against Passive 1 P = 0.058 and against
+    Passive 2 P = 0.091. Significant negative precession 11/207 = 0.053, 39/203 = 0.192 and 24/228 = 0.105,
+    all outside tolerance, with Active higher than Passive 1 (P = 1.7 x 10^-5) and Passive 2 (P = 0.011).
+    Reading (b): oscillating 0.512, 0.631, 0.570 (P = 0.015 and 0.20); precessing 0.068, 0.177, 0.070
+    (P = 7 x 10^-4 both). The precession part holds in direction; the oscillation part does not reach
+    P < 0.05 for both comparisons under either reading.'
+  deviations:
+  - The denominators are this attempt's place cells (207, 203, 228), not the paper's (94, 150, 135).
+  - Significant precession is a significant regression (p < 0.05) with a negative slope; cells with at
+    least 10 in-field spikes, a standard minimum.
+- claim: fig2f-phase-precession-degraded
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:fig2f-phase-precession-degraded
+  notes: 'Phase reading (a): median slopes -0.37, -0.82 and -0.30 rad per field (161, 174, 176 cells),
+    Active most negative; KS Active against Passive 2 P = 0.0055, against Passive 1 P = 0.066. One comparison
+    holds. Reading (b): medians 0.006, -0.47, -0.37; KS P = 0.12 and 0.63.'
+  deviations:
+  - Assumed phase reading (a), linear interpolation between 1-40 Hz peaks and troughs, which the Methods
+    support (peak and trough times on the 1-40 Hz LFP were used to assess theta asymmetry and spike phase
+    precession). The two readings differ in outcome.
+  - Slopes searched within +/-2 pi rad per field, a standard range.
+  assumed: true
+- claim: figs4de-precession-range-similar
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs4de-precession-range-similar
+  notes: 'Phase reading (a), 11, 39 and 24 significantly precessing cells: range medians 180, 183 and
+    138 deg per field, Kruskal-Wallis P = 0.116; slopes P = 0.116; KS Active against Passive 2 P = 0.043,
+    so one test finds a difference. Reading (b), 14, 36 and 16 cells: every test P > 0.05 (0.19 to 0.63).'
+  deviations:
+  - Assumed phase reading (a), as for fig2f-phase-precession-degraded.
+  - Range read, as the claims file assumes, as slope times one field; its Kruskal-Wallis is then that
+    of the absolute slopes.
+  assumed: true
+- claim: figs11-sleep-sessions-similar
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_travel_sleep.ipynb
+  output: claim:figs11-sleep-sessions-similar
+  notes: 'SWS duration 35.8, 37.2, 37.7 and 33.6 min (baseline and the three post-travel sessions), RM-ANOVA
+    P = 0.96. Candidate events 2004, 1819 and 1610 per session (P = 0.69), 49.4, 49.0 and 47.4 per min
+    of SWS (P = 0.63); ripples 54.3, 57.2 and 55.0 per min of SWS (P = 0.57). The KS tests of event peak
+    minus nearest ripple peak find a difference: after Passive 1 against after Active P = 0.011 (D = 0.028,
+    n about 6000 each) with the SWS threshold, and after Passive 1 against after Passive 2 P = 0.025 with
+    the whole-session threshold. About 26 to 52% of events lie within 0.1 s of a ripple peak.'
+  deviations:
+  - SWS by k-means with 5 clusters (SWSDetection.m's default) on the z-scored theta/delta ratio of 5-s
+    windows; the window is an assumption on FMAToolbox's MTSpectrogram default. Windows with saturated
+    samples are left out, as SWSDetection.m drops them.
+  - Ripple peak threshold 3 s.d. for every rat (Methods); BatchFindRipples.m uses 4 for rat 272.
+  - The event-to-ripple timing is the event's peak minus the nearest ripple peak within 0.5 s; the paper
+    does not define the measure.
+- claim: fig3b-average-theta-reconstruction
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig3b-average-theta-reconstruction
+  measured:
+  - 0.178
+  - 0.245
+  - 0.205
+  - 23.0
+  - 46.1
+  - 17.3
+  notes: 'Trajectory scores of the averaged reconstruction are 0.178, 0.245 and 0.205, all within tolerance;
+    slopes 23.0, 46.1 and 17.3 cm/cycle against 6, 48 and 21: Active within tolerance, both passive outside.
+    Active has the highest score and slope.'
+  deviations:
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - The slope in cm/cycle is the best line's displacement per window times 6 windows.
+- claim: figs5b-per-rat-reconstruction
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:figs5b-per-rat-reconstruction
+  notes: 'RM-ANOVA over rats: trajectory score P = 0.0075, quadrant score P = 0.028, slope P = 0.079;
+    Active has the highest mean of all three (score 0.250 against 0.178 and 0.205; slope 47.8 against
+    19.0 and 19.6 cm/cycle). Rat 272 shows no Active sequence (slope -23 cm/cycle).'
+  deviations:
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+- claim: fig3c-theta-scores-above-chance
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig3c-theta-scores-above-chance
+  notes: Median normalized scores 0.49, 0.64 and 0.65 on 7937, 7155 and 6487 cycles, each above 0 (signed-rank
+    P < 10^-200); Kruskal-Wallis P = 4.2 x 10^-25. Post hoc, Passive 1 is below Active and Passive 2 (Bonferroni
+    P = 1.8 x 10^-19 and 8.8 x 10^-19) and Active does not differ from Passive 2 (P = 1).
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - Theta windows split each cycle by the unwrapped Hilbert phase of the 6-10 Hz LFP, as FindSubcycles
+    on the .tuw phase in BatchSequenceReconstructNewProto.m; cycles with at least 3 spikes, 3 cells and
+    3 windows with spikes.
+- claim: fig3c-proportion-significant-theta
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig3c-proportion-significant-theta
+  measured:
+  - 6.93
+  - 11.39
+  - 9.9
+  - 14.3
+  - 17.88
+  - 18.07
+  notes: Significant with positive slope 6.93%, 11.39% and 9.90% (Passive 1 and Active outside tolerance,
+    Passive 2 within); without the slope rule 14.30%, 17.88% and 18.07% (Passive 1 within). All exceed
+    the shuffled control (about 2.5% and 5%; Monte Carlo P < 0.005). Active exceeds Passive 1 (P = 1.4
+    x 10^-21) but exceeds Passive 2 only at P = 0.0048, not 0.001, so the criterion's tests do not hold.
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+- claim: fig3d-theta-slopes-steeper-active
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig3d-theta-slopes-steeper-active
+  notes: 'Slopes of significant sequences, reading (a) of the conversion: signed medians 0.0, 2.25 and
+    0.36 m/s; KS Active against Passive 1 P = 1.4 x 10^-17 and against Passive 2 P = 3.6 x 10^-12, but
+    Passive 1 against Passive 2 P = 0.019. Absolute slopes: KS P = 5.6 x 10^-6 and 2.6 x 10^-4, passive
+    pair P = 0.62. Reading (b) gives the same. Under either reading part of the criterion fails.'
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+- claim: fig3e-joint-score-slope-theta
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig3e-joint-score-slope-theta
+  notes: Summed positive z-proportion in the high-value region (score above 0.401, the 95th percentile
+    of shuffled scores, slope above 3 m/s) is 39.7, 303.8 and 123.4 on the 0.05 by 3 m/s grid, and largest
+    in Active on the half and double grids too. 0.25%, 8.82% and 2.99% of events fall in the region; Active
+    exceeds both (binomial P = 1.6 x 10^-147 and 3.7 x 10^-46).
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Z-proportions against 200 shuffled matrices, one per shuffle index, not 5000.
+  - The high-value region and the grid are the claims file's choices; the paper defines neither.
+  assumed: true
+- claim: fig3f-quadrant-scores
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig3f-quadrant-scores
+  notes: Median quadrant scores 0.0037, 0.0442 and 0.0122; Kruskal-Wallis P = 2.7 x 10^-47; Active above
+    Passive 1 and Passive 2 (Bonferroni P = 5.7 x 10^-46 and 5.3 x 10^-23); Passive 2 above Passive 1
+    (P = 0.0013). Rat 272 has no Active effect.
+  deviations:
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - Quadrants on +/-62 bins (1.5 m) and the four middle phase windows, as BatchSequenceQuadrants.m (windows
+    2 to 5 of 6).
+- claim: figs9-control-decoding-quality
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:figs9-control-decoding-quality
+  measured:
+  - 0.414
+  - 0.537
+  - 0.434
+  notes: After restriction the median 500-ms decoding error equals Active's in each rat; pooled mean errors
+    are 0.414, 0.537 and 0.434 m, outside the expected 0.80 m. On the kept cycles (4823, 7155, 5368) significant
+    slopes still differ (KS Active against Passive 1 P = 7.5 x 10^-11, against Passive 2 P = 6.3 x 10^-10),
+    quadrant scores too (Kruskal-Wallis P = 2.0 x 10^-37, Active highest), but normalized scores still
+    differ (Kruskal-Wallis P = 9.1 x 10^-15), where the paper finds no difference.
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - Highest-error bins dropped first, the criterion's reading; bins are 500 ms of moving travel; a cycle
+    is kept when it starts in a kept bin.
+- claim: fig4b-replay-scores-vs-baseline
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig4b-replay-scores-vs-baseline
+  notes: Median score relative to baseline 0.028 after Passive 1, 0.274 after Active and -0.055 after
+    Passive 2 (6029, 5911, 5325 events). After Active it is above 0 (signed-rank P = 6 x 10^-223); after
+    Passive 1 it is also above 0 (P = 8 x 10^-20), and after Passive 2 below (P = 0.019). Kruskal-Wallis
+    P = 8 x 10^-117. The improvement is selective to Active, not shared by Passive 2.
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - Candidate events with mean and s.d. over SWS bins, as BatchCandidateEvents.m; events shorter than
+    60 ms dropped; at least 3 cells and 3 windows with spikes (BatchReplayReconstructNewProto.m).
+- claim: fig4c-replay-slopes-steeper-active
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig4c-replay-slopes-steeper-active
+  notes: 'Significant events: median absolute slopes 2.8, 5.7 and 5.1 m/s, Kruskal-Wallis P = 3.9 x 10^-5;
+    KS (signed) after Active against after Passive 1 P = 3.1 x 10^-5 and against after Passive 2 P = 8.1
+    x 10^-4; the passive pair differs (P = 0.030). The Active effect holds at 0.001. All events: medians
+    24.8, 23.0 and 24.6 m/s, Kruskal-Wallis P = 0.14.'
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - Assumed significant events, which fig. S13 (cited in the claim's source) shows; with all events there
+    is no effect.
+  assumed: true
+- claim: fig4d-joint-score-slope-replay
+  outcome: reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig4d-joint-score-slope-replay
+  notes: Summed positive z-proportion in the high-value region (score above 0.507, |slope| above 3 m/s)
+    is 76.1, 328.6 and 127.8 after Passive 1, Active and Passive 2 on the 0.05 by 3 m/s grid, largest
+    after Active on all three grids. 0.61%, 11.08% and 3.25% of events are in the region; after Active
+    exceeds both (P = 2.8 x 10^-132 and 1.1 x 10^-56). Proportion ratios to baseline 1.66, 2.38 and 1.19.
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - The high-value region and the grid are the claims file's choices; the paper defines neither.
+  assumed: true
+- claim: fig4e-replay-proportion-vs-baseline
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig4e-replay-proportion-vs-baseline
+  notes: 'Significant events (reading a) 13.27%, 15.94% and 12.66% after Passive 1, Active and Passive
+    2, against 12.59%, 12.61% and 14.17% in baseline sleep decoded with the same models: ratios 1.05,
+    1.26 and 0.89; after Passive 1 no difference (P = 0.27), after Active higher (P = 4.4 x 10^-7), after
+    Passive 2 lower (P = 0.021). Reading (b): 1.09, 1.38 and 0.86, P = 0.24, 1.5 x 10^-6 and 0.040. Passive
+    2 is not increased.'
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+- claim: fig4f-forward-replay-after-active
+  outcome: partially_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:fig4f-forward-replay-after-active
+  notes: Among significant events, forward proportions are 0.486, 0.546 and 0.463 after Passive 1, Active
+    and Passive 2. After Active forward exceeds reverse (514 against 397, against 0.5 P = 0.0051), weaker
+    than the criterion's P < 0.001; after the passive travels no difference (P = 0.44 and 0.054). Against
+    baseline's forward proportion (reading b) after Active P = 0.068.
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+  - Forward is a positive slope, as the train always moved forward.
+- claim: figs12-ripple-restricted
+  outcome: not_reproduced
+  notebook: reproduce_drieu_2018_decoding.ipynb
+  output: claim:figs12-ripple-restricted
+  notes: 'Events overlapping a ripple (14690 of 33927 decoded): scores relative to baseline 0.031, 0.402
+    and -0.054 (after Passive 1 above 0, P = 7 x 10^-13; after Passive 2 not, P = 0.089; Kruskal-Wallis
+    P = 2 x 10^-88); significant-event slopes Kruskal-Wallis P = 0.0044 and KS after Active against after
+    Passive 1 P = 0.007, not the legend''s 10^-27 and 10^-5; proportions after Active higher than baseline
+    (P = 9.6 x 10^-6), after Passive 2 not (P = 0.61); forward proportion after Active 0.532, P = 0.16.
+    Events with their peak in a ripple give the same pattern. None of the four criteria holds on the restricted
+    events.'
+  deviations:
+  - Decoding uses 200 shuffles per event where the paper uses 5000 (Methods, Assessing trajectories);
+    5000 would take about 10 hours here. 200 resolve Monte Carlo p to 0.005, below the 0.05 that makes
+    an event significant, and give each event's normalized score from 200 values.
+  - Position bins of 2.4 cm (250 bins), as the claims file's Common methods give; the scripts' ReconstructPosition
+    default of 200 bins was not run. d = 45 cm is 19 bins. Lines are every start bin and every integer
+    total displacement below the track length.
+  - Place cells for decoding are those of field reading (a) of the claims file (no minimum field size);
+    the per-condition counts are 207, 203 and 228, more than the paper's 94, 150 and 135 (see figs2b-place-cell-count).
+- claim: fig3g-theta-self-consistency
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run. The criterion compares every pair of theta sequences within a condition against a surrogate
+    of shuffled spike order: 1.7 x 10^7 pairs here, with one pair and 1000 surrogates taking 0.034 s,
+    about 160 hours on 4 cores with the theta-replay pairs of fig4g (timed in the decoding notebook).
+    The paper''s script_BatchBiasMatrixCosines.m is in code.zip.'
+- claim: fig4g-theta-replay-correlation-active
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run, for the cost given under fig3g-theta-self-consistency: 5.0 x 10^7 theta-replay pairs.'
+- claim: figs7-control-cell-count
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run for lack of time in this run: the control decodes 30 random cell subsets per rat in
+    Active and Passive 2, up to 300 cycles each (about 90,000 cycle decodings with shuffles, about 15
+    min more at 200 shuffles), on top of a decoding notebook that already takes 37 min of the 60-min limit
+    and a run stopped at five hours. The method can be run; a later attempt can add it in a notebook of
+    its own.'
+- claim: figs8-control-firing-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run for lack of time in this run: the control re-decodes every Active and Passive 2 theta
+    cycle with downsampled spikes (about 14,000 cycles, about 5 min more), on top of a decoding notebook
+    that already takes 37 min of the 60-min limit and a run stopped at five hours. The method can be run;
+    a later attempt can add it in a notebook of its own.'
+- claim: figs10-control-lap-variability
+  outcome: blocked
+  blocked_by: too_large
+  notes: 'Not run for lack of time in this run: the control retrains the decoder on every lap and re-decodes
+    every theta cycle (about 22,000 cycles, about 8 min more), on top of a decoding notebook that already
+    takes 37 min of the 60-min limit and a run stopped at five hours. The method can be run; a later attempt
+    can add it in a notebook of its own.'
+findings:
+- kind: metadata_insufficient
+  statement: The LFP channels the analyses used are not in the data set. The scripts in code.zip take
+    them from batch files (SessionsReactivations1-Channels.batch) that are not included, and the xml files
+    do not mark the pyramidal-layer or theta channels. This attempt chose them from the data.
+- kind: metadata_insufficient
+  statement: The place cells, theta cycles and candidate events the scripts load (the BatchPlaceCells_20170104
+    database, the .tcy.evt and .tuw.evt files, LinearizeTrainTrack, ReconstructPosition2, FindReplayScore)
+    are not in the data set or code.zip, so the selections cannot be compared with the paper's. The place-cell
+    counts obtained here (207, 203 and 228 under the Methods' definition) differ from the paper's 94,
+    150 and 135.
+- kind: code_mismatch
+  statement: DiscriminateUnits.m clusters units on waveform width and trough-to-peak duration only, while
+    the Methods add the firing rate; and its rate exclusion of putative pyramidal cells above 5 Hz never
+    applies, because it tests strcmp(rate,'on') on the numeric rate array instead of the ratelim option.
+    ClusterIsolation.m stores each L-ratio at a counter that is not advanced for skipped clusters, so
+    after a skipped cluster the L-ratios are assigned to the wrong units.
+- kind: code_mismatch
+  statement: BatchPlaceFields.m smooths firing curves with 5 bins (12 cm), drops fields wider than 3/4
+    of the track and requires 50 or 30 spikes, none of which the Methods state (they give a 4.5 cm kernel
+    and no size limit); the place-cell counts change from 207, 203 and 228 to 61, 104 and 100.
+- kind: methods_unavailable
+  statement: 'Questions for the authors. (1) Field size limits: is a field required to span at least 10
+    bins and at most 3/4 of the track, as BatchPlaceFields.m sets, and is the kernel 4.5 cm or 5 bins?
+    The field-size comparison (Fig. 1C) and the remapping bootstrap (Fig. 1D, 1E, S2D) depend on it. (2)
+    Theta burst frequency (Fig. 2D): what spectrogram windows were used on the spike trains in theta-cycle
+    units? A spectrum over a whole session peaks at exactly 1 cycle^-1. (3) Which LFP channel was used
+    for theta power (Fig. 2B)? With the largest-theta channel per rat the power difference is not significant.
+    (4) Was the FMAToolbox MTSpectrogram window for SWS detection its default, and how many k-means clusters
+    were used?'
+- kind: other
+  statement: The head-tracking LED is lost for 40.6% of samples in rat 292 and 22.8% in rat 314 (under
+    1% in the other rats), almost all during sleep. The track perimeter traced by the head is 656 to 706
+    cm with the scripts' pixel sizes, against the 6 m track length the paper uses.
+- kind: other
+  statement: Rats 292 and 314 were recorded at 20 kHz, though the data descriptor does not say so; the
+    others at 32552 Hz. The LFP of rat 272 saturates (|x| at 32767) in about 1% of sleep samples.
