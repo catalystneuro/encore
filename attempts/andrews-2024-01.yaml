@@ -66,15 +66,14 @@ outcomes:
   notes: The patch-clamp recordings are not in the dandiset, which holds only HD-MEA voltage, and the
     paper does not say they are deposited elsewhere.
 - claim: simulation-dampening
-  outcome: blocked
-  blocked_by: not_runnable
+  outcome: reproduced
   notes: The model needs NEST 3.4 with a neuron compiled by NESTML 5 (Simulation/environment.yml at
     commit 6865bf6, printed in the notebook). PyPI has no NEST 3.4 (its releases are
     3.9.0.post0.dev14 and 3.10.0), and with NEST 3.10.0 and NESTML 5.3.0, the newest 5.x, the
     script's first step, generate_nest_target on the published model, fails (module 'nest.ll_api'
-    has no attribute 'sli_func'). This was the verified outcome. In the final revision, as the
-    round-2 verifier asked, NEST 3.4 is taken from conda-forge in a throwaway environment made with
-    micromamba 2.10.0, with NESTML 5.3.0 and the other packages of the environment file. The model
+    has no attribute 'sli_func'). The outcome verified in round 2 was blocked (not_runnable) on
+    that basis. In the final revision, as the round-2 verifier asked, NEST 3.4 is taken from
+    conda-forge in a throwaway environment made with micromamba 2.10.0, with NESTML 5.3.0 and the other packages of the environment file. The model
     then fails to build twice, first because odetoolbox, unpinned in the environment file, resolves
     to a release NESTML 5.3.0 cannot call (analysis() got an unexpected keyword argument
     'simplify_expression'), and with odetoolbox 2.5 at cmake, because the conda-forge nest-config
@@ -86,8 +85,10 @@ outcomes:
     37 and 4 ms, (b) the number of events 10, 10, 10 and 4, and (c) the spikes in events 52,366,
     17,594, 4,086 and 441. Readings (a) and (c) meet the criterion and (b) does not. With seeds 21,
     23 and 24 (a check, the script has one seed), (a) and (c) are at most 0.70 of their value at 0
-    at every fraction; with seed 22 the network spends 1 ms above threshold at fraction 0, so there
-    is nothing to dampen. The outcome stays blocked as verified, and reproduced is proposed.
+    at every fraction. Seed 22 does not meet the criterion under any reading; the network spends
+    1 ms above threshold at fraction 0, and at 0.50 the event duration is the same and the spikes in
+    events are 103 against 101 at 0. The verdict uses the script's seed. Reproduced was proposed in the final
+    revision and the round-3 verifier agreed.
   deviations:
   - The model is run in an environment built from conda-forge with micromamba, outside the entry's
     locked pip environment, in a throwaway directory. Besides the environment file's packages it
@@ -101,16 +102,6 @@ outcomes:
     and the script are not changed.
   - The script is run once as published (seed 20), and its sim() again with seeds 21 to 24, a check
     the paper does not make.
-  proposed:
-    outcome: reproduced
-    reason: With NEST 3.4 from conda-forge and NESTML 5.3.0, the published model builds once
-      odetoolbox is set to 2.5 and nest-config is given the compiler, and Simulation/simulation.py
-      runs unchanged. At its seed, the total duration of seizure-like events (runs of 1 ms bins above
-      the script's threshold of 100 spikes) is 278 ms at opsin fraction 0 and 124, 37 and 4 ms at
-      0.10, 0.25 and 0.50, and the spikes in them 52,366 against 17,594, 4,086 and 441, so readings
-      (a) and (c) of the criterion are lower at 0.25 or less and at 0.50 than at 0; the number of
-      events, reading (b), is lower only at 0.50. The criterion needs one reading. Seeds 21, 23 and 24
-      agree on (a) and (c), and seed 22 has no events to dampen.
 - claim: fig3a-spontaneous-reduction
   outcome: blocked
   blocked_by: data_missing
@@ -764,3 +755,34 @@ verifications:
       cell 6 (no condition labels) and cells 14 and 17 (light events); nothing seen would unblock
       it.'
     response: 'No change.'
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The proposed change of outcome for simulation-dampening and the analysis behind it
+    (cells 27 to 30 of the executed notebook of the final revision), with the script at commit 6865bf6
+    read by the verifier.
+  results:
+  - claim: simulation-dampening
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 28 builds NEST 3.4 from conda-forge, as the published environment.yml asks, with NESTML
+      5.3.0, and prints every build step with its exit code. Both changes, odetoolbox pinned to 2.5
+      and nest-config patched to name the compiler, are to the environment, not the model or the
+      script, and are listed as deviations; odetoolbox is unpinned in the published file and its newest
+      release cannot be called by NESTML 5.3.0, so pinning it is forced, not a choice made to reach the
+      result. Cell 29 runs simulation.py unchanged (1000 granule and 12 basket cells, seed 20), and
+      the event measure of cell 30 uses the script''s opto_threshold of 100, which matches its
+      closed-loop test and the Methods. At seed 20, total event duration (278, 124, 37, 4 ms) and spikes
+      in events (52,366, 17,594, 4,086, 441) both meet the criterion; the number of events (10, 10,
+      10, 4) does not. The criterion''s "under one reading" allows the verdict to rest on (a) and (c),
+      and the paper''s "length and intensity of seizure-like events" corresponds to them. Points that
+      do not change the outcome: with seeds 21, 23 and 24 the number of events often rises under
+      light, up to 4.5 times the value at 0, a weak point of the claims file''s criterion; seed 22 does
+      not meet the criterion under any reading at fraction 0.50 (duration ratio 1.0, 103 against 101
+      spikes), and the record should say this plainly; the README gives about 35 minutes for the
+      notebook and 4.4 for the model where cells 33 and 29 print 46.5 and 5.6.'
+    response: 'The outcome is set to reproduced and the proposal removed. The notes and the notebook''s
+      result cell now say that seed 22 meets the criterion under no reading, with its numbers, and that
+      the verdict uses the script''s seed. The README and the entry give the run times the notebook
+      prints (about 50 and 6 minutes; 48.4 and 5.9 in the last run). The weakness of reading (b) is in the claims file''s criterion, which this attempt does
+      not change.'
