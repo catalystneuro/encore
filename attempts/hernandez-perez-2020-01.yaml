@@ -327,8 +327,9 @@ outcomes:
     2.62 under all 24 readings, as the asymmetry-related delay here is about twice the paper's. The
     residual is below the total in every rat under 18 of the 24 readings (paired signed-rank p =
     0.031 there, 0.0625 under the others). With half of Delay_Asym removed (the variant of
-    fig7-asymmetry-delay) the residual is 6.8 to 9.2 ms/mm, within tolerance; the outcome is that of
-    the Methods' formula.
+    fig7-asymmetry-delay) the residual is 7.86 to 9.20 ms/mm under the `counts` readings, within
+    tolerance (6.99 to 12.23), and 6.80 to 7.49 with no amplitude restriction, two of which (6.80
+    and 6.81) are below it; the outcome is that of the Methods' formula.
 - claim: fig8c-relative-delay-flat
   outcome: not_reproduced
   assumed: true
@@ -397,9 +398,11 @@ outcomes:
     reverse of the paper's 0.02 against 0.14. No combination of |r| or r2 meets every part (0 of 64,
     the centred and Hilbert variants included). With the centred period the order is the paper's
     (|r| 0.025 to 0.057 against 0.050 to 0.087 under `counts`) but the test does not find the
-    difference (p = 0.156 to 0.438); with the Hilbert frequency |r| is 0.029 to 0.060 against 0.043
-    to 0.070, and the test finds the difference under one `counts` combination. The absolute
-    delay's |r| is well below the paper's 0.14 under both variants.
+    difference with |r| (p = 0.156 to 0.438); with r2 it does under one `counts` combination (O3 c,
+    O7 b; T+ = 20, p = 0.0625), where the absolute delay's median r2 is 0.005. With the Hilbert
+    frequency |r| is 0.029 to 0.060 against 0.043 to 0.070, and the test finds the difference under
+    one `counts` combination. The absolute delay's |r| is well below the paper's 0.14 under both
+    variants.
   deviations:
   - >-
     Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it.
@@ -464,8 +467,10 @@ findings:
     slope? Here the relation of per-cycle delay to frequency changes sign between the next-peak and
     previous-peak periods and largely disappears with a period that does not use the reference
     peak's time, which suggests the relation is dominated by timing noise shared by the two
-    measures. With a frequency from the Hilbert phase the absolute delay falls with frequency, as
-    the paper reports.
+    measures. With a frequency from the Hilbert phase the median slope of the absolute delay on
+    frequency is negative under every reading, the paper's direction, but the signed-rank test finds
+    the fall in only one of the four `counts` readings (p = 0.094 under the main reading) and in all
+    four with no amplitude restriction.
 - kind: methods_unavailable
   statement: >-
     Question for the authors. How were cycles matched across channels for the asymmetry-related delay
@@ -736,3 +741,184 @@ verifications:
       Outcome kept, marked as resting on the period definition; the notes add that with the Hilbert
       frequency the relative delay does not change and the absolute delay falls under the main
       reading (p = 0.094), the predicted direction.
+- date: '2026-11-11'
+  kind: agent
+  by: >-
+    Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary,
+    the helper module, the attempt record and the README, with the claims file and the paper. Report
+    in transcripts/hernandez-perez-2020/verifier-2-report.md. Its outcomes agree with the record on
+    23 of 24 claims.
+  results:
+  - claim: fig2d-phase-shift-rate
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, 12 of 12 combinations pass.
+    response: No change.
+  - claim: fig2d-linear-fit
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18.
+    response: No change.
+  - claim: fig2a-all-rats
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 21, ventral lags are 16 to 40 ms with the all-channel artefact mask.
+    response: No change.
+  - claim: fig2e-phase-locking-high
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The assumption is stated and reasonable. It is fragile, the claim passes only under O3 c, and
+      only at thresholds of 200 to 400 (cells 11, 24). The `counts` unit reading remains open and only
+      the authors can resolve it; if the integer files are Intan counts, the paper's 400 µV threshold
+      leaves no epochs at all.
+    response: No change; the dependence on the unit reading and the threshold is already stated.
+  - claim: fig2e-phase-locking-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The assumption is stated. The slope is within tolerance under O3 c only at 400 (cell 11).
+    response: No change; already stated.
+  - claim: fig2c-coherence
+    agrees: true
+    outcome: reproduced
+    reason: Cell 30.
+    response: No change.
+  - claim: fig2f-coherence-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 33.
+    response: No change.
+  - claim: fig2g-power-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Cell 36.
+    response: No change.
+  - claim: fig3-along-not-across-layers
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, which it confirmed against the archive.
+    response: No change.
+  - claim: fig4d-mua-phase-shift
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, which it confirmed against the archive.
+    response: No change.
+  - claim: fig4d-mua-matches-lfp
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, which it confirmed against the archive.
+    response: No change.
+  - claim: fig5c-rise-decay-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Under the claims file's log10 it still reads it as not reproduced, since the criterion defines
+      only "reproduced" and both values are far outside tolerance (cell 39, -0.171 and -0.049). The
+      record states its disagreement correctly, and the author's reason ("effect present but
+      weaker", from the protocol) is defensible. The natural-log question has gone to a reader;
+      under ln, 5 of 12 combinations pass.
+    response: >-
+      Kept partially reproduced, as verified in round 1 by this record's reasoning, with the
+      disagreement recorded again. The reader's answer on the natural log is pending in
+      questions/hernandez-perez-2020.yaml.
+  - claim: fig5c-peak-trough-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Cell 42.
+    response: No change.
+  - claim: fig5-dorsal-sawtooth
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 45, p = 0.0625 under all three zero treatments, at the boundary.
+    response: No change.
+  - claim: fig5-ventral-rise-not-peak
+    agrees: true
+    outcome: reproduced
+    reason: Cell 48.
+    response: No change.
+  - claim: fig6b-delay-by-phase
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 51, the rising phase is longer than the peak in 4 of 6 rats.
+    response: No change.
+  - claim: fig6c-delay-phase-slope
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The assumption is stated. Under `none` the claim would be not reproduced.
+    response: No change.
+  - claim: fig6b-hilbert-between-limits
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The assumption is stated. Under `none` the claim fails.
+    response: No change.
+  - claim: fig7-asymmetry-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      The assumption is stated. The two `none` passes (5.66, 5.69) drop the theta-epoch restriction
+      the Methods require. The cell 60 check requires T_a == 21, which is stricter than "values
+      positive"; this does not change the outcome, because 6.07 is outside tolerance in any case.
+    response: >-
+      The check now requires the median over rats to be positive, as the criterion says, in place of
+      T+ = 21. The count is unchanged (2 of 8, the two `none` combinations).
+  - claim: fig7-residual-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 63, 0 of 24. Cell 64, the record's notes and the Summary say that with half of Delay_Asym
+      removed the residual is 6.8 to 9.2 ms/mm, within 9.61 +/- 2.62, but the tolerance runs from
+      6.99 to 12.23 and the `none` readings give 6.80 and 6.81, outside it; the statement holds under
+      `counts` only (7.86 to 9.20). The Summary's "brings fig7-residual-delay within tolerance" needs
+      the same qualification.
+    response: >-
+      Corrected in cell 64, the record's notes and the Summary: 7.86 to 9.20 under `counts`, within
+      6.99 to 12.23, and 6.80 to 7.49 with no amplitude restriction, two of which are below it.
+  - claim: fig8c-relative-delay-flat
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Stated, with the shared-timing caveat. The Figure 8 period definition remains open; the sign
+      flips between periods, and the not_reproduced outcomes are correctly framed as not evidence
+      against the mechanism.
+    response: No change.
+  - claim: fig8d-absolute-delay-slope
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Stated, with the shared-timing caveat. The Summary and the record's Figure 8 author question say
+      that with a frequency from the Hilbert phase the absolute delay falls with frequency "as the
+      paper finds". Cell 69 shows p = 0.094 under the main reading; under `counts` only 1 of 4
+      combinations has p of at most 0.0625, and four of the five significant combinations are `none`.
+      The median slope is negative under every combination, but the test finds the fall only without
+      the theta-epoch restriction. Cells 71 and 76 state this correctly.
+    response: >-
+      The Summary and the author question now say that the median slope is negative under every
+      reading, and that the test finds the fall in one of the four `counts` readings (p = 0.094 under
+      the main reading) and in all four without the amplitude restriction.
+  - claim: fig8-correlation-strength
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Stated, with the shared-timing caveat. Cell 73 says that under `counts` the test finds the
+      difference in no centred combination, but under r2 counts/c/b/centred gives T+ = 20, p = 0.0625,
+      which meets the criterion's level; the code's check demands T+ = 21, stricter than the
+      criterion. This does not change the outcome (0 of 64), as the absolute median is 0.005 against
+      0.14.
+    response: >-
+      Cell 73 and the record's notes now give the r2 centred combination (T+ = 20, p = 0.0625, median
+      r2 0.005). The check now requires the absolute delay's median to be the larger, as the criterion
+      says, in place of T+ = 21; the count is unchanged at 0 of 64.
+  - claim: fig8-coupled-oscillators
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      This is the criterion's "otherwise" case.
+    response: No change.
