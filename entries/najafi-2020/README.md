@@ -8,11 +8,12 @@ and the trial tables. Fluorescence traces, raw movies and histology are not in i
 
 | Claims | Outcome |
 |---|---|
-| Data description, psychometric curve, single-neuron selectivity without and with matched activity, decoders of equal accuracy, mixed populations, decoder weights, stability, same-preference and inhibitory noise correlations, pseudo populations (11) | Reproduced (3 on an assumption) |
-| Activity difference between types, selectivity magnitude and wider window, correct-error correlation, incorrect-trial decoding, decoder time course, learning in parallel, equal trials, pseudo populations in learning, correlations in learning (10) | Partially reproduced |
-| Example session counts, fraction selective with mouse 2 also differing, learning correlations of accuracy and onset, threefold increase of selective neurons (5) | Not reproduced |
-| Trial history (no ITI), fluorescence decoding, licking, neuropil, histology (5) | Blocked: data or metadata missing |
-| Previous choice and stimulus, outcome decoding, temporal dynamics, the three circuit models (6), decoder angles (1) | Blocked: not reached in the run's time, or too large |
+| Data description, psychometric curve, selectivity with matched activity, decoders of equal accuracy, mixed populations, stability, same-preference correlations (7) | Reproduced |
+| Selectivity magnitude, decoder weights through the trial, correlations in learning (3) | Partially reproduced |
+| Activity difference between types, example session counts, fraction selective, wider window, correct-error correlation, decoder time course, incorrect-trial decoding, learning accuracy and onset, learning in parallel, equal trials, running, pseudo populations in learning, threefold increase of selective neurons (14) | Not reproduced |
+| Selectivity time course, inhibitory correlations, pseudo populations (3) | Blocked: the readings the criterion names disagree |
+| Trial history (no ITI), fluorescence decoding, neuropil, histology (4) | Blocked: data missing |
+| Previous choice and stimulus, outcome decoding, temporal dynamics, the three circuit models (6), decoder angles (1) | Blocked: not run in the time, or too large |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -24,6 +25,7 @@ method, is [`attempts/najafi-2020-01.yaml`](../../attempts/najafi-2020-01.yaml).
 - `01_single_neurons_correlations.ipynb`: data checks, behaviour, single-neuron ROC and noise
   correlations, about 30 minutes, most of it streaming.
 - `02_decoders.ipynb`: choice decoders in every session at the bin before the choice, about 40 minutes.
-- `03_learning_decoders.ipynb`: decoder time courses and the learning analysis, about 45 minutes.
+- `03_learning_decoders.ipynb`: decoder time courses, per-bin weights and the learning analysis, about 50 minutes.
+- `04_time_course_per_bin_C.ipynb`: the decoder time course for mice 2 and 3 with C chosen at every bin, about 20 minutes.
 - `najafi.py`: streaming and loading, the ROC, decoder, correlation and learning measures. Other
   notebooks on this dandiset can import it.

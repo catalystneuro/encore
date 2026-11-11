@@ -15,8 +15,10 @@ Where the parameters come from:
   svm_excInh_trainDecoder_eachFrame.py).
 - Trials: the file's trial_is_good flag and a correct or incorrect response
   (claims file, opening comment, code setTrs2rmv.m / set_outcomes_allResp.m).
-  That trial_is_good encodes the code's exclusions is an assumption the
-  notebook checks against the trial outcomes.
+  The notebook shows that trial_is_good is exactly "response correct or
+  incorrect", and the trial table has no column for helped trials or for the
+  first trials of a session, so the code's other exclusions cannot be applied
+  (a deviation). 16 Hz trials have no known choice side (see read_trials).
 - ROC: AUC of high-rate against low-rate choice (the side labels are not in
   the files; AUC deviation from 0.5 does not depend on which choice is called
   left), 50 label shuffles, a neuron selective when the normal density ratio
@@ -88,8 +90,14 @@ def read_trials(f):
     high = df.trial_type.eq("High-rate")
     corr = df.trial_response.eq("correct")
     inc = df.trial_response.eq("incorrect")
+    # 16 Hz trials are rewarded on a random side (STAR Methods, "Behavioral task") and all carry
+    # trial_type "High-rate", so the side licked cannot be recovered from the outcome; their choice is
+    # left unknown. Some files store measured, non-integer rates; a rate within 0.005 Hz of 16 counts
+    # as 16 Hz (a standard choice: one trial in those files).
+    df["at16"] = (df.trial_pulse_rate.astype(float) - 16).abs() < 0.005
     # choice: 1 = the high-rate side, 0 = the low-rate side
     df["choice"] = np.where(corr, high.astype(float), np.where(inc, (~high).astype(float), np.nan))
+    df.loc[df.at16, "choice"] = np.nan
     df["outcome"] = np.where(corr, 1.0, np.where(inc, 0.0, np.nan))
     df["use"] = df.trial_is_good & df.choice.notna()
     return df
@@ -113,7 +121,11 @@ def read_aligned(f, name):
     ev = int(round(-st / dt))
     rois = first["rois"][:]
     X = np.stack([grp[k]["data"][:].astype(np.float32) for k in keys])
-    return X, ev, dt, rois
+    # the event frame is taken from the first trial; the largest difference of any trial's
+    # starting_time (and frame interval) from the first trial's is returned so the notebook can check it
+    dev = max(max(abs(float(grp[k]["starting_time"][()]) - st),
+                  abs(float(grp[k]["starting_time"].attrs["rate"]) - dt)) for k in keys)
+    return X, ev, dt, rois, dev
 
 
 def bin3(X, ev, lo=None, hi=None):
@@ -158,17 +170,20 @@ def load_session(asset_id, alignments=("dFoF_firstSideTryAl",), behaviour=False,
         out["start"] = _s(f["session_start_time"][()])
         out["imaging_rate"] = float(f["general/optophysiology/ImagingPlane/imaging_rate"][()])
         out["trials"] = read_trials(f)
+        out["trial_columns"] = [_s(c) for c in f["intervals/trials"].attrs["colnames"]]
+        out["ophys_keys"] = sorted(f["processing/Ophys"].keys())
+        out["behaviour_keys"] = {k: sorted(f["processing/Behavior"][k].keys()) for k in f["processing/Behavior"].keys()}
         rois = read_rois(f)
         out["rois_all"] = rois
         out["al"] = {}
         traced = None
         for name in set(alignments) | set(means):
-            X, ev, dt, r = read_aligned(f, name)
+            X, ev, dt, r, dev = read_aligned(f, name)
             if traced is None:
                 traced = r
             else:
                 assert np.array_equal(traced, r)
-            info = {"ev": ev, "dt": dt, "nframes": X.shape[1],
+            info = {"ev": ev, "dt": dt, "nframes": X.shape[1], "start_dev": dev,
                     "nan_trials": np.isnan(X).all(axis=(1, 2)),
                     "max": np.nanmax(X, axis=(0, 1))}
             if name in alignments:
@@ -597,16 +612,18 @@ def decode_session(s, seed, cgrid=CGRID_RUN, nsub=NSUB, nrep=50):
 
 # ---------------------------------------------------------------- learning decoders (all bins)
 
-def timecourse(Z, y, C, rng, nrep=50):
+def timecourse(Z, y, C, rng, nrep=50, return_w=False):
     """Decoders trained and tested at every bin with one C (chosen at bin -1). Z trials x bins x neurons.
-    Returns accuracy and shuffled-label accuracy per repetition and bin (percent)."""
+    Returns accuracy and shuffled-label accuracy per repetition and bin (percent), and with return_w the
+    weights per bin averaged over the repetitions (bins x neurons)."""
     from sklearn.svm import LinearSVC
     import warnings
     from sklearn.exceptions import ConvergenceWarning
     warnings.filterwarnings("ignore", category=ConvergenceWarning)
-    n, nb, _ = Z.shape
+    n, nb, nn = Z.shape
     ntest = max(1, int(round(0.1 * n)))
     acc = np.zeros((nrep, nb)); sh = np.zeros((nrep, nb))
+    W = np.zeros((nb, nn))
     for r in range(nrep):
         perm = rng.permutation(n)
         te, trn = perm[:ntest], perm[ntest:]
@@ -615,7 +632,22 @@ def timecourse(Z, y, C, rng, nrep=50):
             m = LinearSVC(C=C, dual=True, max_iter=1000, tol=1e-4).fit(Z[trn, b], y[trn])
             p = m.predict(Z[te, b])
             acc[r, b] = 100 * np.mean(p == y[te]); sh[r, b] = 100 * np.mean(p == yp)
+            W[b] += m.coef_[0] / nrep
+    if return_w:
+        return acc, sh, W
     return acc, sh
+
+
+def timecourse_perbin(Z, y, rng, bins, nrep=50, cgrid=None):
+    """The paper's decoder at each of the given bins (indices into Z's bin axis), with C chosen at that bin
+    by svm_cv (claims file, opening comment: C chosen separately per bin, 50 splits). Returns mean accuracy
+    and mean shuffled accuracy per bin (percent)."""
+    cgrid = CGRID_RUN if cgrid is None else cgrid
+    acc, sh = [], []
+    for b in bins:
+        r = svm_cv(Z[:, b], y, rng, nrep=nrep, cgrid=cgrid)
+        acc.append(r["acc"]); sh.append(r["acc_sh"])
+    return np.array(acc), np.array(sh)
 
 
 def onset(acc, sh, ks, alpha=0.05, run=5):
@@ -670,8 +702,11 @@ def learn_session(s, seed, n_equal=None, cgrid=CGRID_RUN, nsub=3, nrep=50, learn
     if xy is not None:
         Z = zscore_bins(xy[0]); y = xy[1]
         r = svm_cv(Z[:, ti], y, rng, nrep=nrep, cgrid=cgrid)
-        acc, sh = timecourse(Z, y, r["C"], rng, nrep_tc)
+        acc, sh, W = timecourse(Z, y, r["C"], rng, nrep_tc, return_w=True)
         out["tc_corr"] = (acc.mean(0), sh.mean(0))
+        # fig3df per bin: |w| of the unit-length weight vector of each bin, by cell type
+        Wn = np.abs(W) / np.linalg.norm(W, axis=1, keepdims=True)
+        out["w_bins"] = (Wn[:, E].mean(1), Wn[:, I].mean(1))
     if not learning:
         return out
     tr = s["trials"]
