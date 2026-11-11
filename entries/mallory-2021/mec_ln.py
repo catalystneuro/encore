@@ -376,7 +376,7 @@ def signrank_right(a, b):
 
 
 def design(blocks, variables):
-    cols = [np.ones((blocks[VARS[0]].shape[0], 1))] + [blocks[v] for v in variables]
+    cols = [np.ones((next(iter(blocks.values())).shape[0], 1))] + [blocks[v] for v in variables]
     return np.hstack(cols)
 
 
@@ -389,20 +389,22 @@ def _layout(blocks, variables):
     return out
 
 
-def forward_search(blocks, y, bounds):
-    """forward_search_kfold.m. Returns the selected variables (sorted as in VARS), every model's fold
-    fits, the selected model's folds and parameters, and the final P against 0."""
+def forward_search(blocks, y, bounds, variables=None):
+    """forward_search_kfold.m. Returns the selected variables (sorted as in `variables`, by default
+    VARS), every model's fold fits, the selected model's folds and parameters, and the final P
+    against 0."""
+    names = variables or VARS
     selected = []
     base = np.full(NFOLDS, -5.0)
     fits = {}
     best_theta = {(): np.array([math.log(max(y.mean(), 1e-6))])}
     sel_fits, sel_param, sel_full = None, None, None
     pvals = []
-    while len(selected) < len(VARS):
-        cand = [v for v in VARS if v not in selected]
+    while len(selected) < len(names):
+        cand = [v for v in names if v not in selected]
         results = {}
         for v in cand:
-            vs = [x for x in VARS if x in selected or x == v]
+            vs = [x for x in names if x in selected or x == v]
             X = design(blocks, vs)
             # warm start: previous model's parameters, zeros for the new variable
             prev = best_theta[tuple(selected)]
@@ -706,3 +708,79 @@ def paper_sessions(urls: dict, summaries: dict | None = None) -> tuple[list[str]
                 and m["n_units"] == s["n_cells"] and m.get("n_frames") == s["n_frames"]]
         out.append(cand[0] if len(cand) == 1 else None)
     return out, fsd
+
+
+# ----------------------------------------------------------------------------------------- shuffles, raw curves
+def shuffle_corr(x, y, rng, n_shift=500, min_shift=int(20 / DT)):
+    """Pearson correlation of a variable with the spike count, and the same correlation for 500
+    circular shifts of the spike train by more than 20 s (Methods, "Comparison between LN and
+    shuffling-based methods"). Returns (r, shuffled r)."""
+    n = len(y)
+    xc, yc = x - x.mean(), y - y.mean()
+    den = math.sqrt(float(xc @ xc) * float(yc @ yc))
+    if den == 0:
+        return np.nan, np.full(n_shift, np.nan)
+    c = np.fft.irfft(np.conj(np.fft.rfft(xc)) * np.fft.rfft(yc), n)   # c[s] = sum_t x[t] y[t + s]
+    shifts = rng.integers(min_shift, n - min_shift, n_shift)
+    return float(c[0] / den), c[shifts] / den
+
+
+def rlowess(y, span=7, iters=5):
+    """MATLAB smooth(y, span, 'rlowess'): local linear fits with tricube weights over `span` points,
+    then `iters` robust reweightings with bisquare weights at 6 median absolute deviations (a standard
+    implementation of the Methods' "rlowess function (smoothing over 7 bins)")."""
+    y = np.asarray(y, float)
+    n = len(y)
+    x = np.arange(n, dtype=float)
+    half = span // 2
+    rob = np.ones(n)
+    out = y.copy()
+    for it in range(iters + 1):
+        for i in range(n):
+            a = min(max(0, i - half), max(0, n - span))
+            b = min(n, a + span)
+            xs, ys, rs = x[a:b], y[a:b], rob[a:b]
+            d = np.abs(xs - x[i])
+            dmax = max(d.max(), 1e-12) * 1.0001
+            w = (1 - (d / dmax) ** 3) ** 3 * rs
+            if w.sum() <= 0 or len(xs) < 2:
+                out[i] = y[i]
+                continue
+            W = np.sqrt(w)
+            A = np.stack([np.ones_like(xs), xs - x[i]], 1) * W[:, None]
+            coef, *_ = np.linalg.lstsq(A, ys * W, rcond=None)
+            out[i] = coef[0]
+        if it == iters:
+            break
+        r = y - out
+        mad = np.median(np.abs(r))
+        if mad == 0:
+            break
+        u = r / (6 * mad)
+        rob = np.where(np.abs(u) < 1, (1 - u ** 2) ** 2, 0.0)
+    return out
+
+
+def raw_tuning(values, counts, lo, hi, nbins=20, dt=DT):
+    """Raw tuning curve (Methods, "Raw tuning curves"): spikes over occupancy in 20 bins of the
+    visualizing range, smoothed with rlowess over 7 bins. Bins never visited are left out before
+    smoothing. Returns bin centres and the smoothed rate (spikes/s)."""
+    edges = np.linspace(lo, hi, nbins + 1)
+    m = (values >= lo) & (values <= hi)
+    occ, _ = np.histogram(values[m], edges)
+    spk, _ = np.histogram(values[m], edges, weights=counts[m])
+    centres = (edges[:-1] + edges[1:]) / 2
+    ok = occ > 0
+    rate = spk[ok] / (occ[ok] * dt)
+    return centres[ok], rlowess(rate) if ok.sum() >= 3 else rate
+
+
+def model_raw_corr(grid, curve, centres, raw):
+    """Pearson correlation of the raw tuning curve with the model-derived curve resampled at the raw
+    curve's bin centres (linear interpolation, the claims file's standard choice)."""
+    if len(centres) < 3 or np.std(raw) == 0:
+        return np.nan
+    mod = np.interp(centres, grid, curve)
+    if np.std(mod) == 0:
+        return np.nan
+    return float(np.corrcoef(mod, raw)[0, 1])
