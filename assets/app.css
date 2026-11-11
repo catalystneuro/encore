@@ -32,16 +32,33 @@ nav.top a.tab .n{margin-left:6px;font-size:.76rem;color:var(--muted);font-weight
 button.theme{align-self:center;margin-left:8px;display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:.84rem;
 color:var(--text2);background:none;border:1px solid var(--line);border-radius:3px;padding:3px 10px;cursor:pointer;white-space:nowrap}
 button.theme:hover{background:var(--hover);color:var(--text)}
+/* The tabs are one group (.tabrow): on a wide screen they sit in the bar as before; on a phone the bar is one line
+   (brand and a menu button) and the button opens the tabs, and the theme button, as a list under it (THEME_JS sets nav.top.open). */
+nav.top .tabrow{display:contents}
+button.navtoggle{display:none}
 @media (max-width:640px){
-nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 2px}
-nav.top .brand{flex:1 1 auto;padding:8px 0 0;order:-2}
-button.theme{order:-1;margin:8px 0 0}
-nav.top .wrap::after{content:"";flex-basis:100%;order:-1}
-nav.top a.tab{padding:6px 10px 9px}
-nav.top a.tab:first-of-type{padding-left:0}
+nav.top .wrap{flex-wrap:wrap;height:auto;gap:0 8px;overflow:visible;align-items:center;padding-top:8px;padding-bottom:8px}
+nav.top .brand{padding:0;margin-right:0;order:1}
+nav.top .by{align-self:center;padding:0;margin-right:auto;order:2}
+button.theme{display:none;order:6;margin:4px 0 6px;align-self:flex-start}
+nav.top.open button.theme{display:inline-flex}
+button.navtoggle{order:4;display:inline-flex;align-items:center;justify-content:center;width:36px;height:32px;padding:0;
+  background:none;border:1px solid var(--line);border-radius:3px;color:var(--text);cursor:pointer}
+button.navtoggle span,button.navtoggle span::before,button.navtoggle span::after{display:block;width:16px;height:2px;
+  background:currentColor;border-radius:1px;position:relative;transition:transform .15s,background .15s}
+button.navtoggle span::before,button.navtoggle span::after{content:"";position:absolute;left:0}
+button.navtoggle span::before{top:-5px}button.navtoggle span::after{top:5px}
+nav.top.open button.navtoggle span{background:transparent}
+nav.top.open button.navtoggle span::before{transform:translateY(5px) rotate(45deg)}
+nav.top.open button.navtoggle span::after{transform:translateY(-5px) rotate(-45deg)}
+nav.top .tabrow{order:5;display:none;flex:0 0 100%;flex-direction:column;padding:6px 0 2px;margin-top:8px;border-top:1px solid var(--line)}
+nav.top.open .tabrow{display:flex}
+nav.top .tabrow a.tab{padding:10px 2px;font-size:1rem}
+nav.top .tabrow a.tab[aria-current=page]{box-shadow:inset 3px 0 0 var(--accent);padding-left:12px}
+nav.top a.tab.icon{gap:8px}nav.top a.tab.icon::after{content:"GitHub";font-size:1rem}
 nav.top a.tab .n{display:none}
-html{scroll-padding-top:92px}
-.facets{top:92px}}
+html{scroll-padding-top:60px}
+.facets{top:60px}}
 .demo{background:var(--warning);color:#0b0b0b;font-size:.85rem;font-weight:600;text-align:center;padding:4px}
 
 .eyebrow{font-size:.78rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
