@@ -1,0 +1,768 @@
+# Claims for Bittner, Williamson, Snyder, Litwin-Kumar, Doiron, Chase, Smith & Yu (2017),
+# "Population activity structure of excitatory and inhibitory neurons", PLoS ONE 12(8),
+# e0181773, tested on CRCNS pvc-11.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol as stated in docs/protocol.md.
+#
+# Text read: the version of record, PMC5560553 (open access), from the Europe PMC full-text
+# XML: main text, Materials and methods, figure legends, and the legends of the supplement
+# (S1 to S6 Fig, figures only; the supplement holds no text or tables beyond its legends).
+# No PDF was available, so no figure was read; the claims rest on the text and legends.
+# The Fig 7 legend in the text names panels A to D while the Results cite Fig 7A to 7F; the
+# Results' lettering is used here (A, D for V1; B, E for the clustered network; C, F for the
+# non-clustered network). The Methods ("Fig 6A") and the Discussion ("cf. Fig 6") cite Fig 6
+# for the V1 analysis; Fig 7 is meant.
+#
+# Code read. (1) github.com/sbittner12/litwin-kumar_doiron_cluster_2012 at commit
+# 438289358d0367047cc578dcd519ad0f7948808e: sim.jl and runsim.jl (Julia), the clustered
+# balanced network of Litwin-Kumar & Doiron (2012): 4,000 E and 1,000 I leaky
+# integrate-and-fire neurons, 50 clusters of 80, dt 0.1 ms, biases uniform in 1.1 to 1.2 (E)
+# and 1 to 1.05 (I), T = 2,000 ms, and a stimulus to neurons 1 to 399 in the last 500 ms.
+# Its weights agree with the Methods except the same-cluster E-E weight (code 1.9 x
+# 10/(15 sqrt(800)) = 0.0448; Methods 0.0456). The code holds no non-clustered network, no
+# spike counting and no factor analysis. (2) github.com/adam-neuro/waveformClassification at
+# commit 062762678299198f61e5d8b2042bdccba695d72f (MATLAB): average waveforms from NEV files,
+# a two-Gaussian fit of each average waveform and of its derivative (first 1 ms), and a
+# two-component Gaussian mixture (10 replicates, random starts) on three fitted parameters
+# (coefVals 5, 6 and 7+10, documented as time of the after-hyperpolarization, its width, and
+# rise plus fall rate), trained on units above the 25th percentile of SNR in each file and
+# with mean waveform correlation to the other units above 0.5; the component with the smaller
+# mean of the first parameter is the narrow (fast) class. Its SNR is the waveform's
+# peak-to-trough amplitude over twice the standard deviation of the residuals. The factor
+# analysis code is not linked.
+#
+# Data the paper used. Models: two balanced networks (clustered and non-clustered), spontaneous
+# activity (zero input), spike counts in one-second windows ("trials"), up to 20,000 trials
+# per sampling, with five non-overlapping sets of trials. These simulations are not deposited;
+# the model claims are data elsewhere, to be rerun from the network code. V1: spontaneous
+# activity (gray screen, 20 to 30 min) from Utah arrays in four V1 hemispheres of three
+# anesthetized macaques (sufentanil 6 to 18 ug/kg/hr, vecuronium), sorted off line, kept when
+# the firing rate exceeds 1 spike/s and the SNR exceeds 1.33 (median SNR per array 2.96, 2.75,
+# 2.50 and 2.31), cut into one-second trials (at least 1,200 per array), classified by
+# waveform as broad-spiking (putative E) or narrow-spiking (putative I) at 85% posterior
+# probability, giving 24/39, 41/72, 23/60 and 47/25 broad/narrow neurons per array; 23 of each
+# type, chosen at random, enter the analysis of each array. The recordings are those of Smith &
+# Kohn (2008) and Kelly et al. (2010). CRCNS pvc-11 describes six spontaneous arrays from four
+# monkeys, so the four arrays used are to be identified (claim v1-array-link). The data
+# description lists spike times, channels, the array map and an SNR per unit, and no
+# waveforms; the waveform classification needs average waveforms, which is for the author to
+# check.
+#
+# Method details fixed by the paper, used in every factor analysis (FA) criterion below
+# (Materials and methods, Factor analysis): FA fit by EM; the number of latent dimensions m
+# chosen by maximum cross-validated data likelihood with four folds; FA then refit with that m
+# on all the sampled trials (stated for Fig 4, read as the rule throughout); d_shared is the
+# number of eigenvalues of LL^T needed to explain 95% of shared variance; percent shared
+# variance of neuron k is L_k L_k^T / (L_k L_k^T + Psi_k), averaged over the neurons of a type.
+# Open details, used in every FA criterion: the grid of candidate m (reading used, every m from
+# 0 to n-1, which holds any narrower grid's peak), the EM convergence rule and initialisation
+# (standard choices, cannot change the outcome beyond run-to-run noise), and the assignment of
+# trials to the four folds (contiguous blocks or random; both run).
+#
+# Model simulation details, used in every model claim: the network of sim.jl, without its
+# stimulus (the Discussion says the model activity is spontaneous, zero input), with the
+# Methods' weights (same-cluster J 0.0456; the code's 0.0448 as a variant); the non-clustered
+# network as the Methods give it (p_EE 0.2, J_EE 0.024, the rest unchanged), which the code
+# allows by setting ratiopee and ratioejee to 1. Open: the simulated duration (at least five
+# non-overlapping sets of 20,000 one-second trials for Fig 5C, if its sets do not overlap; one
+# reading uses five sets of 10,000 for Fig 3 and 5B and the same 50,000 trials, overlapping,
+# for 20,000-trial sets), the initial transient discarded (a standard choice of 1 s), the
+# network seed (one network per type, as the paper analysed one representative network).
+schema_version: 2
+paper: doi:10.1371/journal.pone.0181773
+claims:
+- id: v1-array-link
+  kind: link
+  statement: The four V1 arrays the paper analysed can be identified among the spontaneous
+    recordings of CRCNS pvc-11, from four hemispheres of three monkeys, by their kept neurons'
+    median SNRs of 2.96, 2.75, 2.50 and 2.31.
+  source: Materials and methods, Neural recordings, paragraph 2; Data Availability
+  quote: For our analysis, we only used neurons which had average firing rate greater than one
+    spike per second, and signal-to-noise ratio (SNR), computed as the average waveform amplitude
+    divided by the standard deviation across waveforms, greater than 1.33. Median SNR values were
+    2.96, 2.75, 2.50, and 2.31 for each of the four arrays.
+  expected:
+  - quantity: median SNR of kept neurons, first array
+    value: 2.96
+    tolerance: 0.296
+  - quantity: median SNR of kept neurons, second array
+    value: 2.75
+    tolerance: 0.275
+  - quantity: median SNR of kept neurons, third array
+    value: 2.50
+    tolerance: 0.25
+  - quantity: median SNR of kept neurons, fourth array
+    value: 2.31
+    tolerance: 0.231
+  criterion: For each spontaneous array, keep units with mean firing rate over the whole
+    recording above 1 spike/s and SNR above 1.33, and take the median SNR of those kept. The
+    SNR is open between (a) the dataset's SNR field, which its description defines as the
+    Methods do, and (b) the waveform code's getSNR (amplitude over twice the residual standard
+    deviation), when waveforms are available. Reproduced when four arrays, from four
+    hemispheres of three monkeys, match the four medians within tolerance one to one under
+    one reading, and no other set of four does as well; the matched arrays are the ones the V1
+    claims use. When no set matches, the four arrays from three monkeys whose broad/narrow
+    counts (claim v1-classification-counts) come closest are used, as a recorded assumption.
+- id: fig1ab-inhibitory-higher-rates
+  statement: In both model networks the mean firing rate of inhibitory neurons exceeds that of
+    excitatory neurons (clustered 4.1 against 3.2 Hz, non-clustered 2.9 against 2.0 Hz).
+  source: Results, first section, paragraph 2; Figure 1A and 1B legend
+  quote: The average firing rate of inhibitory neurons was greater than that of excitatory neurons
+    in both model networks
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  expected:
+  - quantity: clustered network, excitatory mean rate
+    value: 3.2
+    tolerance: 0.32
+    unit: Hz
+  - quantity: clustered network, inhibitory mean rate
+    value: 4.1
+    tolerance: 0.41
+    unit: Hz
+  - quantity: non-clustered network, excitatory mean rate
+    value: 2.0
+    tolerance: 0.2
+    unit: Hz
+  - quantity: non-clustered network, inhibitory mean rate
+    value: 2.9
+    tolerance: 0.29
+    unit: Hz
+  criterion: Mean over neurons of each neuron's rate over the simulated spontaneous activity,
+    per type and network (Fig 1A and 1B legend). The tolerance is 10% of each mean, as the
+    paper's plus or minus is the spread over neurons, not an uncertainty of the mean.
+    Reproduced when the inhibitory mean exceeds the excitatory mean in both networks and the
+    four means are within tolerance; partially reproduced when the order holds and some means
+    fall outside.
+- id: fig1cd-spike-count-correlations
+  statement: In the clustered network same-cluster excitatory pairs have strongly positive
+    spike count correlations (0.72 on average) while other pair types are near zero, and in the
+    non-clustered network all pair types are near zero, with a wider spread for
+    inhibitory-inhibitory than excitatory-excitatory pairs.
+  source: Figure 1C and 1D legend; Results, first section, paragraph 2
+  quote: Same-cluster excitatory neurons in the clustered network recurrently excite each other,
+    acting similarly to a bistable unit with high and low activity states ( Fig 1E ) resulting in
+    positive noise correlations which have been observed among nearby neurons [ 40 ]. The
+    non-clustered network does not have this property
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  expected:
+  - quantity: clustered, same-cluster EE correlation, mean
+    value: 0.72
+    tolerance: 0.072
+  - quantity: clustered, same-cluster EE correlation, standard deviation
+    value: 0.27
+    tolerance: 0.027
+  - quantity: clustered, out-of-cluster EE correlation, standard deviation
+    value: 0.11
+    tolerance: 0.011
+  - quantity: clustered, EI correlation, standard deviation
+    value: 0.14
+    tolerance: 0.014
+  - quantity: clustered, II correlation, standard deviation
+    value: 0.15
+    tolerance: 0.015
+  - quantity: non-clustered, EE correlation, standard deviation
+    value: 0.11
+    tolerance: 0.011
+  - quantity: non-clustered, EI correlation, standard deviation
+    value: 0.018
+    tolerance: 0.0018
+  - quantity: non-clustered, II correlation, standard deviation
+    value: 0.025
+    tolerance: 0.0025
+  criterion: Pearson correlation of one-second spike counts for every pair of each type (Fig 1C
+    and 1D legend), mean and standard deviation per type. The paper does not say how many
+    trials or which neurons; all neurons and all simulated trials are used. The means printed
+    near zero (-0.0085, 9.0e-4, 4.5e-4, 1.9e-5, 2.1e-4, -7.3e-4) are judged as near zero,
+    absolute value below 0.01, since 10% of such a value is below what a rerun can resolve;
+    this tolerance is set here. The non-clustered EE spread printed as 0.11 conflicts with
+    the 0.011 that the S2 Fig legend gives for the same distribution; both are named as
+    readings, and the claim holds for that entry under either. Reproduced when all values are
+    within tolerance under a reading and the II spread exceeds the EE spread in the
+    non-clustered network; partially reproduced when the same-cluster mean and the near-zero
+    means hold and some spreads do not.
+- id: fig3ab-dim-scaling-neurons
+  statement: With 10,000 trials, the shared dimensionality of the excitatory population
+    saturates with neuron count in the clustered network but not in the non-clustered network,
+    while that of the inhibitory population keeps increasing in both.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 3; Figure 3A and 3B, top
+  quote: The shared dimensionality of the excitatory population saturated with increasing neuron
+    count in the clustered network ( Fig 3A , top, red), but not in the non-clustered network ( Fig
+    3B , top, red) [ 39 ]. In contrast, the shared dimensionality of the inhibitory population
+    continued to increase with neuron count regardless of whether the excitatory population was
+    clustered or not
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  criterion: Sampling as in the Methods (Varying neuron and trial count) and the Fig 3 legend,
+    neurons added 10 at a time from 10 to 150, nested within each of five non-overlapping
+    neuron sets, crossed with five non-overlapping sets of 10,000 trials (25 fits per count),
+    plus 750-neuron samplings that join the five sets. Saturation is not defined. Readings,
+    (a) the mean d_shared increases by less than 10% from 100 to 150 neurons, (b) the mean
+    d_shared at 750 neurons is less than twice that at 150 neurons; continuing increase is
+    the negation of each. Reproduced when, under one reading, clustered E saturates and
+    non-clustered E and both I populations do not.
+- id: fig3ab-750-neuron-values
+  statement: For 750-neuron samplings with 10,000 trials, the clustered network's excitatory
+    population has a shared dimensionality of 23.95 and 91.43% shared variance and its
+    inhibitory population 246.7 and 79.56%; the non-clustered network's excitatory population
+    has 139.4 and 20.70% and its inhibitory population 347.2 and 59.74%.
+  source: Figure 3 legend
+  quote: For 750-neuron samplings of the clustered network (10,000 trials), the excitatory
+    population had a shared dimensionality of 23.95 ± 0.05 and percent shared variance of 91.43% ±
+    0.06%, while the inhibitory population had a shared dimensionality of 246.7 ± 2.5 and a
+    percent shared variance of 79.56% ± 0.22%. For 750-neuron samplings of the non-clustered
+    network (10,000 trials), the excitatory population had a shared dimensionality of 139.4 ± 3.8
+    and percent shared variance of 20.70% ± 0.43%, while the inhibitory population had a shared
+    dimensionality of 347.2 ± 4.2 and a percent shared variance of 59.74% ± 0.47%
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig3ab-dim-scaling-neurons
+  expected:
+  - quantity: clustered E, d_shared, 750 neurons
+    value: 23.95
+    tolerance: 0.05
+  - quantity: clustered E, percent shared variance, 750 neurons
+    value: 91.43
+    tolerance: 0.06
+    unit: '%'
+  - quantity: clustered I, d_shared, 750 neurons
+    value: 246.7
+    tolerance: 2.5
+  - quantity: clustered I, percent shared variance, 750 neurons
+    value: 79.56
+    tolerance: 0.22
+    unit: '%'
+  - quantity: non-clustered E, d_shared, 750 neurons
+    value: 139.4
+    tolerance: 3.8
+  - quantity: non-clustered E, percent shared variance, 750 neurons
+    value: 20.70
+    tolerance: 0.43
+    unit: '%'
+  - quantity: non-clustered I, d_shared, 750 neurons
+    value: 347.2
+    tolerance: 4.2
+  - quantity: non-clustered I, percent shared variance, 750 neurons
+    value: 59.74
+    tolerance: 0.47
+    unit: '%'
+  criterion: The five 150-neuron sets of each type joined into one 750-neuron sampling, fit on
+    each of the five 10,000-trial sets (Fig 3 legend). The tolerances are the paper's
+    plus-or-minus, read as the standard error over the five trial sets (the legend's error
+    bars are standard errors); they describe one simulated network, so a rerun with another
+    network seed is reported against both these tolerances and 10% of each value. Reproduced
+    when all eight values are within the paper's tolerances; partially reproduced when they
+    are within 10% and the orderings (clustered E below I in d_shared and above in percent
+    shared variance; non-clustered E below I in both) hold.
+- id: fig3ab-psv-type-order
+  statement: The excitatory population has greater percent shared variance than the inhibitory
+    population in the clustered network, and the reverse holds in the non-clustered network.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 4; Figure 3A and 3B, bottom
+  quote: We found that the excitatory population had greater percent shared variance than the
+    inhibitory population in the clustered network ( Fig 3A , bottom) ... Conversely, in the
+    non-clustered network, the inhibitory population had greater percent shared variance than the
+    excitatory population
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig3ab-dim-scaling-neurons
+  criterion: From the samplings of fig3ab-dim-scaling-neurons. Reproduced when the mean percent
+    shared variance of E exceeds that of I at every neuron count from 20 to 150 in the
+    clustered network, and I exceeds E at every such count in the non-clustered network;
+    partially reproduced when the order holds at 100 and 150 neurons only.
+- id: fig3ab-inh-psv-grows
+  statement: The percent shared variance of inhibitory neurons increases with neuron count in
+    both networks, while that of excitatory neurons saturates.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 4; Figure 3A and 3B, bottom
+  quote: we observed that the percent shared variance of the inhibitory neurons increased with
+    neuron count for both networks ( Fig 3A and 3B , bottom, blue), in contrast to that of
+    excitatory neurons which saturated with increasing neuron count
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig3ab-dim-scaling-neurons
+  criterion: From the samplings of fig3ab-dim-scaling-neurons. Readings for saturation as in
+    that claim, applied to percent shared variance, (a) an increase of less than 10% (relative)
+    from 100 to 150 neurons, (b) the 750-neuron value within 10% (relative) of the 150-neuron
+    value. Reproduced when, under one reading, both I populations increase and both E
+    populations saturate.
+- id: fig3cd-trial-saturation
+  statement: With 100 neurons, shared dimensionality and percent shared variance saturate with
+    trial count for both types in both networks; in the clustered network the excitatory
+    population saturates at fewer trials than the inhibitory one, and in the non-clustered
+    network the reverse.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 5; Figure 3C and 3D
+  quote: In the clustered network, the shared dimensionality and percent shared variance of the
+    excitatory population ( Fig 3C , red) saturated at fewer trials than the inhibitory population
+    ( Fig 3C , blue) ... In the non-clustered network, we saw the opposite trend
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  criterion: 100 neurons per type, trials increased in nested steps within five
+    non-overlapping trial sets, crossed with five non-overlapping neuron sets (Methods, Varying
+    neuron and trial count). The trial grid is not given and no figure was read; the grid
+    used is 100, 200, 500, 1,000, 2,000, 5,000 and 10,000 trials (and 20,000 when the
+    simulation allows), a standard choice. The point of saturation is not defined; readings,
+    the smallest trial count at which the mean reaches (a) 90% or (b) 95% of its value at the
+    largest trial count. Reproduced when, under one reading, for both d_shared and percent
+    shared variance, clustered E saturates at fewer trials than clustered I and non-clustered
+    I at fewer than non-clustered E; partially reproduced when this holds for one of the two
+    measures.
+- id: fig3cd-clustering-raises-psv
+  statement: Both excitatory and inhibitory neurons have greater percent shared variance in the
+    clustered than in the non-clustered network, although connections involving inhibitory
+    neurons are the same in the two.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 6; Figure 3C and 3D, bottom
+  quote: we expected excitatory neurons to have greater percent shared variance in the clustered
+    than in the non-clustered network (compare red curves in Fig 3C and 3D , bottom).
+    Interestingly, we found that this was also true for the inhibitory neurons
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig3cd-trial-saturation
+  criterion: From the samplings of fig3cd-trial-saturation. Reproduced when, at 10,000 trials
+    and 100 neurons, the mean percent shared variance of each type is higher in the clustered
+    network than in the non-clustered one.
+- id: s3-100ms-window
+  statement: All the trends of Fig 3 hold with 100 ms spike count windows.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 6; S3 Fig legend
+  quote: All the trends observed in Fig 3 with one second spike count windows remained true with
+    100 ms spike count windows
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig3ab-dim-scaling-neurons
+  - fig3ab-psv-type-order
+  - fig3ab-inh-psv-grows
+  - fig3cd-trial-saturation
+  - fig3cd-clustering-raises-psv
+  criterion: Spike counts in the first 100 ms of each one-second trial, the same neurons and
+    trials (S3 Fig legend), and the criteria of the five claims listed under depends_on, each
+    under the reading that it was judged on there. Reproduced when all five hold; partially
+    reproduced when three or four do.
+- id: s2-psv-vs-correlation-width
+  statement: In simulated spike counts with zero-mean correlation distributions, percent shared
+    variance increases with the width (standard deviation) of the correlation distribution.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 4; S2 Fig legend
+  quote: We found that percent shared variance indeed increases with the variance of the spike
+    count correlation distribution
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun; the means and variances come from the non-clustered network)
+  criterion: As the S2 Fig legend describes, correlations drawn from a normal distribution with
+    mean 0 and a chosen standard deviation, placed at random in a symmetric matrix, means and
+    variances matched to 100 randomly sampled inhibitory neurons of the non-clustered network,
+    100,000 counts for 100 neurons by the method of the paper's ref 44 (Macke et al. 2009,
+    which the attempt has to name and pin), five sets of 20,000 trials. The widths tested are
+    not given; the grid used is 0.005 to 0.04 in steps of 0.005, including 0.011 and 0.025.
+    Reproduced when the mean percent shared variance rises monotonically over the grid, or
+    with at most one step down smaller than its standard error; it is reported at 0.011 and
+    0.025.
+- id: fig4a-mode-structure
+  statement: In the clustered network the dominant modes of the excitatory population give
+    same-cluster neurons similar values, describing co-variation between clusters, while the
+    modes of the non-clustered excitatory population and of both inhibitory populations show no
+    obvious structure.
+  source: Results, Excitatory clustering affects modes of shared activity in both the excitatory
+    and inhibitory populations, paragraph 1; Figure 4A
+  quote: Same-cluster neurons had similar values within each mode for the excitatory population of
+    the clustered network, indicating that the dominant modes describe co-varying activity between
+    clusters. In contrast, the excitatory population of the non-clustered network ( Fig 4A ,
+    top-right) and both inhibitory populations ( Fig 4A , bottom) did not exhibit any obvious
+    structure
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  criterion: 100-neuron samplings of each type, FA with the cross-validated m on all 10,000
+    trials (Methods, Factor analysis), the ten leading eigenvectors of LL^T. The paper judges
+    by eye; the measure set here is the fraction of the variance of each eigenvector's entries
+    explained by cluster membership (a one-way ANOVA R squared over clusters with at least two
+    sampled neurons), averaged over the ten modes. Reproduced when this fraction for clustered
+    E exceeds that of a shuffle of cluster labels (1,000 shuffles) at p < 0.05. For the other
+    populations, which have no clusters, the claim of no structure is not tested; their
+    heatmaps are shown.
+- id: fig4b-top-five-modes
+  statement: The five most dominant modes explain more shared variance in the clustered than the
+    non-clustered network, for excitatory (64.5% against 31.2%) and for inhibitory populations
+    (54.3% against 20.1%).
+  source: Results, Excitatory clustering affects modes of shared activity in both the excitatory
+    and inhibitory populations, paragraph 2; Figure 4B
+  quote: The five most dominant modes of shared activity explained 64.5% ± 1.5% of shared variance
+    in the clustered network and 31.2% ± 0.8% of shared variance in the non-clustered network ...
+    For inhibitory populations, the five most dominant modes of shared activity explained 54.3% ±
+    0.4% of shared variance in the clustered network and only 20.1% ± 0.2% of shared variance in
+    the non-clustered network
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  expected:
+  - quantity: clustered E, shared variance in top five modes
+    value: 64.5
+    tolerance: 1.5
+    unit: '%'
+  - quantity: non-clustered E, shared variance in top five modes
+    value: 31.2
+    tolerance: 0.8
+    unit: '%'
+  - quantity: clustered I, shared variance in top five modes
+    value: 54.3
+    tolerance: 0.4
+    unit: '%'
+  - quantity: non-clustered I, shared variance in top five modes
+    value: 20.1
+    tolerance: 0.2
+    unit: '%'
+  criterion: 100-neuron samplings, five non-overlapping neuron sets by five non-overlapping sets
+    of 10,000 trials (Fig 4B legend), FA with the cross-validated m on each, the sum of the five
+    largest eigenvalues of LL^T over their total. Tolerances are the paper's standard errors.
+    Reproduced when the four values are within them; partially reproduced when they are within
+    10% and the clustered value exceeds the non-clustered one for each type.
+- id: fig5b-dim-rises-with-inhibitory-fraction
+  statement: In 100-neuron samplings with 10,000 trials, shared dimensionality increases as
+    excitatory neurons are replaced by inhibitory ones, in both networks.
+  source: Results, Ratio of excitatory to inhibitory neurons affects population activity
+    structure of mixed-type samplings, paragraph 2; Figure 5B, top
+  quote: As we replaced excitatory neurons with inhibitory neurons ( Fig 5 , moving left to right
+    along the horizontal axis), shared dimensionality increased from the only-excitatory neuron
+    sampling to the only-inhibitory neuron sampling for the clustered and non-clustered networks
+    with 10,000 trials
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  criterion: Ratios 0:100 to 100:0 in steps of 10, excitatory neurons replacing inhibitory ones
+    10 at a time and kept as added, 25 repeats over five non-overlapping sets of 100 E and 100
+    I neurons and five non-overlapping trial sets (Methods, Mixed neuron type sampling).
+    Reproduced when, in each network, the mean d_shared at 0:100 (all inhibitory) exceeds that
+    at 100:0 and the Spearman correlation of the eleven means with the inhibitory fraction is
+    positive.
+- id: fig5b-psv-by-ratio
+  statement: As inhibitory neurons replace excitatory ones, the percent shared variance of
+    excitatory neurons decreases in the clustered network and increases in the non-clustered
+    network, while that of inhibitory neurons stays mostly unchanged in both.
+  source: Results, Ratio of excitatory to inhibitory neurons affects population activity
+    structure of mixed-type samplings, paragraph 3; Figure 5B, bottom
+  quote: In the clustered network, we found that as we replaced excitatory neurons with inhibitory
+    neurons, the percent shared variance for excitatory neurons decreased ( Fig 5B , bottom, dashed
+    red) ... In contrast, the percent shared variance of excitatory neurons in the non-clustered
+    network ( Fig 5B , bottom, solid red) increased as more inhibitory neurons were sampled ... The
+    percent shared variance of inhibitory neurons in both networks was mostly independent of
+    neuron type sampling ratio
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig5b-dim-rises-with-inhibitory-fraction
+  criterion: From the samplings of fig5b-dim-rises-with-inhibitory-fraction, percent shared
+    variance averaged over the E neurons (ratios 100:0 to 10:90) and over the I neurons
+    (ratios 90:10 to 0:100). Reproduced when the E value at 10:90 is below that at 100:0 in
+    the clustered network and above it in the non-clustered network, with Spearman
+    correlations of the matching sign over the ratios, and the I value varies by less than 10%
+    (relative) of its mean across ratios in both networks. "Mostly independent" has no
+    threshold in the paper; 10% is set here, and the range is reported.
+- id: fig5ac-trial-dependence
+  statement: With 1,200 trials the non-clustered network shows small shared dimensionality and
+    percent shared variance at all ratios; with 20,000 trials its dimensionality curve is
+    flatter than with 10,000; the clustered network's trends do not change from 10,000 to
+    20,000 trials, and with 1,200 trials its dimensionality for inhibitory-dominated ratios
+    drops.
+  source: Results, Ratio of excitatory to inhibitory neurons affects population activity
+    structure of mixed-type samplings, paragraphs 4 and 5; Figure 5A and 5C
+  quote: With 1,200 trials, the non-clustered network shared dimensionality ( Fig 5A , top, solid),
+    as well as the percent shared variance of excitatory ( Fig 5A , bottom, solid red) and
+    inhibitory ( Fig 5A , bottom, solid blue) neurons, were small for all ratios. With 20,000
+    trials, the non-clustered dimensionality was flatter than with 10,000 trials ... However, with
+    only 1,200 trials instead of 10,000 trials, the shared dimensionality for inhibitory neuron
+    dominated ratios dropped
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig5b-dim-rises-with-inhibitory-fraction
+  - fig5b-psv-by-ratio
+  criterion: The sampling of fig5b-dim-rises-with-inhibitory-fraction with 1,200 and 20,000
+    trials. Whether the five 20,000-trial sets overlap is open (see the opening comment).
+    "Small" is read as below 20% of the clustered network's value at the same ratio and trial
+    count; "flatter" as a smaller range (maximum minus minimum) of the mean d_shared over
+    ratios; "did not change" as the signs of the fig5b trends being the same at 20,000
+    trials; "dropped" as lower mean d_shared at 1,200 than at 10,000 trials for the ratios
+    30:70 to 0:100. Each of these readings is set here, as the paper gives none. Reproduced
+    when the four parts hold; partially reproduced when two or three do.
+- id: fig6-blind-sampling
+  statement: For 100-neuron, 10,000-trial samplings blind to neuron type, the clustered network
+    has a shared dimensionality of 20.3 and percent shared variance of 85.8%, and the
+    non-clustered network 43.1 and 23.7%.
+  source: Results, Neuron-type information reduces uncertainty of population activity metrics,
+    paragraph 2; Figure 6B and 6C
+  quote: The clustered network exhibited shared dimensionality of 20.3 ± 1.8 ( Fig 6B , dashed,
+    black, mean ± standard deviation) and percent shared variance of 85.8% ± 1.4% ( Fig 6C ,
+    dashed, black). The non-clustered network exhibited shared dimensionality of 43.1 ± 8.2 ( Fig
+    6B , solid, black) and percent shared variance of 23.7% ± 5.3%
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  expected:
+  - quantity: clustered, blind sampling, mean d_shared
+    value: 20.3
+    tolerance: 2.03
+  - quantity: clustered, blind sampling, mean percent shared variance
+    value: 85.8
+    tolerance: 8.58
+    unit: '%'
+  - quantity: non-clustered, blind sampling, mean d_shared
+    value: 43.1
+    tolerance: 4.31
+  - quantity: non-clustered, blind sampling, mean percent shared variance
+    value: 23.7
+    tolerance: 2.37
+    unit: '%'
+  criterion: 100 neurons drawn at random from all 5,000 without regard to type, 10,000 trials;
+    percent shared variance averaged over all sampled neurons. The number of random samplings
+    and the trial sets are not given; readings, (a) 100 samplings each on one of the five
+    10,000-trial sets in turn, (b) 25 samplings, five per trial set. Tolerances are 10% of
+    each mean, as the plus-or-minus is the spread over samplings. Reproduced when the four
+    means are within tolerance under one reading.
+- id: fig6-type-control-reduces-spread
+  statement: Controlling neuron type composition (80 E, 20 I) lowers the standard deviation of
+    shared dimensionality in the non-clustered network from 8.2 to 6.8 and of percent shared
+    variance from 2.3 to 1.0 (clustered) and 5.2 to 4.5 (non-clustered), while the clustered
+    network's dimensionality spread stays at 2.0.
+  source: Results, Neuron-type information reduces uncertainty of population activity metrics,
+    paragraph 3; Figure 6B and 6C
+  quote: If neurons are randomly sampled from the network, the standard deviation is 8.2 ( Fig 6B ,
+    solid, black). However, if the neuron type composition is known and controlled for (in this
+    case, 80 E and 20 I), the standard deviation decreases to 6.8 ( Fig 6B , solid, green).
+    Similarly, the percent shared variance of the clustered and non-clustered networks decreases
+    when neuron type composition is controlled from 2.3 to 1.0 ( Fig 6C , dashed) and from 5.2 to
+    4.5 ( Fig 6C , solid), respectively. When sampling neurons randomly from the clustered network,
+    the standard deviation of shared dimensionality is 2.0 ( Fig 6B , dashed, black), which is the
+    same as when neuron type ratio is controlled
+  data: elsewhere
+  where: GitHub sbittner12/litwin-kumar_doiron_cluster_2012 at commit 438289358d0367047cc578dcd519ad0f7948808e
+    (network code, rerun)
+  depends_on:
+  - fig6-blind-sampling
+  expected:
+  - quantity: non-clustered, d_shared standard deviation, blind
+    value: 8.2
+    tolerance: 0.82
+  - quantity: non-clustered, d_shared standard deviation, 80 E and 20 I
+    value: 6.8
+    tolerance: 0.68
+  - quantity: clustered, percent shared variance standard deviation, blind
+    value: 2.3
+    tolerance: 0.23
+  - quantity: clustered, percent shared variance standard deviation, 80 E and 20 I
+    value: 1.0
+    tolerance: 0.1
+  - quantity: non-clustered, percent shared variance standard deviation, blind
+    value: 5.2
+    tolerance: 0.52
+  - quantity: non-clustered, percent shared variance standard deviation, 80 E and 20 I
+    value: 4.5
+    tolerance: 0.45
+  - quantity: clustered, d_shared standard deviation, blind and 80 E and 20 I
+    value: 2.0
+    tolerance: 0.2
+  criterion: The blind samplings of fig6-blind-sampling against samplings of exactly 80 E and 20
+    I, under the same readings. The paper's blind spreads differ between its two paragraphs
+    (clustered d_shared 1.8 and 2.0, clustered percent shared variance 1.4 and 2.3,
+    non-clustered percent shared variance 5.3 and 5.2); both printed values are readings of
+    the blind spread, and a value holds when it is within 10% of either. Reproduced when every
+    controlled spread is below its blind spread except clustered d_shared, which is within 10%
+    of it; partially reproduced when the reductions hold and some values are out of tolerance.
+- id: v1-classification-counts
+  statement: Waveform classification at 85% posterior probability gives 24 broad- and 39
+    narrow-spiking neurons, 41 and 72, 23 and 60, and 47 and 25 on the four arrays.
+  source: Materials and methods, Neuron type classification; Results, V1 recordings show similar
+    population activity structure as the clustered network, paragraph 1
+  quote: This resulted in the following distributions of classified neuron types for the four
+    arrays ... 24 broad-spiking and 39 narrow-spiking, 41 broad-spiking and 72 narrow-spiking, 23
+    broad-spiking and 60 narrow-spiking, and 47 broad-spiking and 25 narrow-spiking neurons
+  depends_on:
+  - v1-array-link
+  expected:
+  - quantity: array 1, broad-spiking count
+    value: 24
+    tolerance: 2.4
+  - quantity: array 1, narrow-spiking count
+    value: 39
+    tolerance: 3.9
+  - quantity: array 2, broad-spiking count
+    value: 41
+    tolerance: 4.1
+  - quantity: array 2, narrow-spiking count
+    value: 72
+    tolerance: 7.2
+  - quantity: array 3, broad-spiking count
+    value: 23
+    tolerance: 2.3
+  - quantity: array 3, narrow-spiking count
+    value: 60
+    tolerance: 6.0
+  - quantity: array 4, broad-spiking count
+    value: 47
+    tolerance: 4.7
+  - quantity: array 4, narrow-spiking count
+    value: 25
+    tolerance: 2.5
+  criterion: Following the waveformClassification code, which settles what the Methods leave
+    open, average waveforms, two-Gaussian fits of the waveform and its derivative, a
+    two-component Gaussian mixture on fitted parameters 5, 6 and 7+10 (read as the Methods'
+    time of peak, duration of hyperpolarization and rate of repolarization), 10 replicates;
+    narrow is the component with the smaller mean of the first parameter; kept at posterior
+    above 0.85. Units first pass rate above 1 spike/s and SNR above 1.33 (Neural recordings).
+    Open, with readings, (a) training on the top 75% by SNR within each array (the code) or
+    pooled over the four arrays (the Methods' "across all recording sessions"); (b) the code's
+    shape-correlation exclusion at 0.5, or the Methods' exclusion of the four waveforms with a
+    pre-depolarization rise found by inspection, read as the units with a positive deflection
+    above 0.2 of the normalized amplitude before the trough; (c) the SNR readings of
+    v1-array-link. The mixture's random starts are a seed, a standard choice. The arrays are
+    matched by v1-array-link. Reproduced when all eight counts are within tolerance under one
+    reading; partially reproduced when every array has at least 23 neurons of each type and
+    the narrow-spiking majority on three arrays and broad on one hold. Needs average waveforms;
+    if the dataset holds none, the claim is blocked as data missing.
+- id: v1-fig7a-dim-with-neurons
+  statement: In V1 the shared dimensionality of both broad- and narrow-spiking populations
+    increases with neuron count (up to 23 neurons, 1,200 trials), as in the clustered network.
+  source: Results, V1 recordings show similar population activity structure as the clustered
+    network, paragraph 2; Figure 7A, top
+  quote: The shared dimensionality of the broad-spiking population (red) and narrow-spiking
+    population (blue) increased with increasing neuron count ( Fig 7A , top)
+  depends_on:
+  - v1-classification-counts
+  criterion: Per array, 23 neurons of each type chosen at random from the classified neurons;
+    for each neuron count, as many non-overlapping samples of the 23 as possible, FA on each
+    with 1,200 trials, averaged, then mean and standard error over the four arrays (Methods,
+    Varying neuron and trial count; Fig 7 legend). Open, with readings, the neuron-count grid
+    (no figure read; used, 2 to 23 in steps of 1, and a coarser 5, 10, 15, 20, 23) and which
+    1,200 trials (the first 1,200 one-second epochs, or 1,200 drawn at random). Reproduced
+    when, for both types, the four-array mean d_shared at 23 neurons exceeds that at the
+    smallest count and the Spearman correlation of the means with neuron count is positive.
+- id: v1-fig7a-psv-plateau
+  statement: In V1 the percent shared variance of both broad- and narrow-spiking populations
+    first increases with neuron count and then plateaus.
+  source: Results, V1 recordings show similar population activity structure as the clustered
+    network, paragraph 2; Figure 7A, bottom
+  quote: The percent shared variance of the broad-spiking and narrow-spiking populations initially
+    increased with neuron count, then plateaued
+  depends_on:
+  - v1-fig7a-dim-with-neurons
+  criterion: From the samplings of v1-fig7a-dim-with-neurons. Plateau is not defined;
+    readings, the four-array mean at the largest count is within (a) 10% or (b) one standard
+    error over arrays of its value at the midpoint count (11 or 12, or 10 on the coarse grid),
+    while the value at the midpoint exceeds that at the smallest count. Reproduced when this
+    holds for both types under one reading; partially reproduced for one type.
+- id: v1-fig7d-trial-plateau
+  statement: In V1, with 23 neurons, the shared dimensionality of both populations increases and
+    plateaus with trial count, and their percent shared variance plateaus.
+  source: Results, V1 recordings show similar population activity structure as the clustered
+    network, paragraph 3; Figure 7D
+  quote: The shared dimensionality of both neuron types in the V1 recordings ( Fig 7D , top), as
+    well as the clustered network ( Fig 7E , top), increased and eventually plateaued with
+    increasing trial count. Similarly the percent shared variance of both populations plateaued
+    with increasing trial count in both the V1 recordings
+  depends_on:
+  - v1-classification-counts
+  criterion: Per array, the 23 neurons of each type; trials increased up to 1,200, with as many
+    non-overlapping trial samples as possible at each count (Methods, Varying neuron and trial
+    count). The trial grid is open (used, 100, 200, 300, 400, 600 and 1,200, and in steps of
+    100). Readings for plateau as in v1-fig7a-psv-plateau, comparing 1,200 with 600 trials.
+    Reproduced when d_shared rises from 100 to 600 trials and plateaus, and percent shared
+    variance plateaus, for both types under one reading; partially reproduced when this holds
+    for three of the four curves.
+- id: v1-no-excitatory-psv-advantage
+  statement: Unlike the clustered network, where excitatory neurons have higher percent shared
+    variance than inhibitory ones, V1 broad-spiking neurons do not show higher percent shared
+    variance than narrow-spiking neurons.
+  source: Results, V1 recordings show similar population activity structure as the clustered
+    network, paragraph 4; Figure 7A, 7B, 7D and 7E, bottom
+  quote: whereas the excitatory neurons showed higher percent shared variance than inhibitory
+    neurons in the clustered network ( Fig 7B and 7E , bottom), this was not seen in the V1
+    recordings
+  depends_on:
+  - v1-fig7a-dim-with-neurons
+  - v1-fig7d-trial-plateau
+  criterion: A claim of absence for which the paper reports no test; it compares the curves by
+    eye with standard error bars over four arrays. The rule set here, as the paper's figure
+    implies, is that the broad-spiking four-array mean is not above the narrow-spiking mean by
+    more than the larger of the two standard errors, at 23 neurons and 1,200 trials and at each
+    count of the neuron and trial sweeps. Reproduced when that holds at 23 neurons and 1,200
+    trials and at most counts; not reproduced when broad exceeds narrow by more than that at 23
+    neurons and 1,200 trials. The difference and its sign per array are given either way.
+- id: v1-resembles-clustered-network
+  statement: With 23 neurons of each type and 1,200 trials, V1 population activity structure
+    resembles that of the clustered network, while the non-clustered network shows nearly zero
+    shared dimensionality and percent shared variance for both types.
+  source: Results, V1 recordings show similar population activity structure as the clustered
+    network, paragraphs 2 to 4; Figure 7B, 7C, 7E and 7F; Discussion, paragraph 1
+  quote: The V1 recordings had similar population activity structure to the corresponding
+    populations in the clustered network when compared with 23 neurons of each type and 1,200
+    trials sampled ... In contrast, the non-clustered network was different from both the V1
+    recordings and clustered network in that it showed nearly zero shared dimensionality and
+    percent shared variance for both neuron types
+  data: with_inputs
+  depends_on:
+  - v1-fig7a-dim-with-neurons
+  - v1-fig7a-psv-plateau
+  - v1-fig7d-trial-plateau
+  criterion: The networks sampled with the V1 numbers, 23 neurons per type and up to 1,200
+    trials, four non-overlapping samplings (Fig 7 legend), the same grids as the V1 claims.
+    Reproduced when (a) the clustered network's d_shared rises with neuron count for both types
+    (the rule of v1-fig7a-dim-with-neurons), (b) its d_shared and percent shared variance rise
+    and plateau with trial count (v1-fig7d-trial-plateau), and (c) the non-clustered network's
+    mean d_shared is below 1 and its percent shared variance below 5% at 23 neurons and 1,200
+    trials for both types. "Nearly zero" has no threshold in the paper; the thresholds in (c)
+    are set here and the values are reported. Partially reproduced when (c) holds and one of
+    (a) and (b) fails.
+- id: s6-v1-dominant-mode-same-sign
+  statement: In V1 the dominant mode of shared activity of both broad- and narrow-spiking
+    populations describes the population rising and falling together, nearly all entries having
+    the same sign, unlike the dominant modes of the clustered network.
+  source: Results, V1 recordings show similar population activity structure as the clustered
+    network, paragraph 4; S6 Fig
+  quote: the mode that explained the largest amount of shared variance (referred to as the
+    "dominant mode") in the V1 recordings described the population increasing and decreasing its
+    activity together ( S6 Fig , left column of heatmaps have nearly all elements of the same sign)
+  depends_on:
+  - v1-classification-counts
+  criterion: Per array and type, FA on the 23 neurons with all 1,200 trials and the
+    cross-validated m, the eigenvector of LL^T with the largest eigenvalue. The S6 Fig legend
+    does not say which arrays it shows; all four are used. "Nearly all" is open; readings,
+    (a) at least 20 of 23 entries and (b) at least 18 of 23 share the sign of the majority.
+    Reproduced when, under one reading, this holds for both types on at least three of the
+    four arrays. The clustered network's dominant modes (fig4a-mode-structure) are reported
+    by the same count, without a criterion, as the paper does not quantify them.
+- id: s1-autocorrelation-to-one-second
+  statement: Neurons in both model networks and in V1 show non-zero autocorrelation at lags
+    from zero to one second.
+  source: Results, Excitatory and inhibitory populations of balanced networks have different
+    activity structure, paragraph 2; S1 Fig
+  quote: we found that neurons in both model networks and the in vivo recordings exhibited
+    non-zero autocorrelation at lags throughout the range of zero to one second
+  depends_on:
+  - v1-classification-counts
+  data: with_inputs
+  criterion: Spike counts in 10 ms bins, autocorrelation per neuron normalized to one at zero
+    lag, averaged over neurons of each type (S1 Fig legend). For V1 the neurons are open,
+    readings (a) the 23 analysed per type and array, (b) all classified neurons; the
+    networks use all neurons of each type. Non-zero is read as the mean autocorrelation above
+    zero at every lag from 10 ms to 1 s, the reading set here. Reproduced when this holds for
+    both V1 types and for both types of both networks under one reading; partially reproduced
+    when it holds for V1 only.
