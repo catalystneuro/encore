@@ -20,7 +20,13 @@ Where each parameter comes from:
   choice that cannot change a result beyond one bin.
 - Test: one-sided Wilcoxon signed-rank on spike counts (D2). The pairs are open (claims
   file O1): ``pairing='trial'`` (a), ``'condition'`` (b), or ``'unpaired'`` (c, a
-  one-sided rank-sum on all presentations, a variant).
+  one-sided rank-sum on all presentations, a variant). ``timebin_test`` adds a pairing
+  outside O1, raised by the verifier: the mean count in each 1 ms bin of the response
+  window, perisaccadic against fixation, paired by bin (Methods: "comparing the
+  perisaccadic and fixation spike counts (during the same stimulus-aligned window)"). Its
+  smoothed form pairs the curves smoothed as for plots, which the Methods exclude ("all
+  statistical analyses were performed on spike counts ... (not estimates of firing
+  rate)"); both are variants and decide no outcome.
 - Presentations (O2): ``mode='onset'`` (i) takes the first ms of each run of a probe code;
   ``mode='every'`` (ii) takes every ms the probe is on, as ``get_mean_resp.m``.
 - Normalized response (D3): mean stimulus-aligned spike train 0-150 ms after onset, as a
@@ -177,6 +183,19 @@ def effect_test(d, probe, peri, resp_win, direction, pairing="trial", mode="onse
         out["p"] = 1.0 if len(keys) else np.nan
     else:
         out["p"] = stats.wilcoxon(a, b, alternative=direction).pvalue
+    return out
+
+
+def timebin_test(d, probe, peri, resp_win, direction, mode="onset", smooth=False):
+    """Variant pairing: mean count per 1 ms bin of resp_win, perisaccadic against fixation,
+    one-sided signed-rank over the bins (smooth=True: the FWHM 13 ms curves of D3)."""
+    F, P = mean_trains(d, probe, peri, mode)
+    f, p = F.mean(0), P.mean(0)
+    if smooth:
+        f, p = gauss_smooth(f), gauss_smooth(p)
+    f, p = f[resp_win[0] : resp_win[1] + 1], p[resp_win[0] : resp_win[1] + 1]
+    out = {"n": len(f), "n_fix": len(F), "n_peri": len(P), "mean_fix": f.mean() / 1000, "mean_peri": p.mean() / 1000}
+    out["p"] = 1.0 if np.all(p == f) else stats.wilcoxon(p, f, alternative=direction).pvalue
     return out
 
 
