@@ -31,7 +31,8 @@ Where the parameters come from (claim ids are those of claims/henry-2022.yaml):
   seeded.
 - Threshold elevation: cumulative normal adjusted for chance, P(x) = Phi(x / sigma) for x >= 0,
   crowded prediction Phi(Phi^-1(p_alone) / k), binomial likelihood, k by maximum likelihood on a
-  grid (`K_GRID`, 0.2 to 20, log spaced; a standard choice), STAR Methods paragraph 4 and the
+  grid (`K_GRID`, 0.2 to 20, log spaced; a standard choice; `K_GRID_WIDE`, 0.2 to 1000, shows
+  which estimates the upper bound censors), STAR Methods paragraph 4 and the
   Figure S2 legend, as the claims file reads them.
 - Noise correlations: trials with both responses within 3 SD of their means, per stimulus, then
   averaged (STAR Methods, paragraph 5).
@@ -63,6 +64,7 @@ FILES = {"separation": "data/HenryKohn2022_distractorseparation.mat",
 SPACINGS = (1.32, 1.64, 2.04, 2.56)
 CS = np.logspace(-2, 2, 13)
 K_GRID = np.exp(np.linspace(np.log(0.2), np.log(20), 1201))
+K_GRID_WIDE = np.exp(np.linspace(np.log(0.2), np.log(1000), 2201))
 EPS = 1e-3
 
 
@@ -230,15 +232,19 @@ def choose_C(X, y, inner, rng):
     return CS[int(np.flatnonzero(acc == acc.max())[0])]
 
 
-def decode(X, y, rng, outer=10, inner=10):
-    """Mean over outer folds of the held-out fraction correct of an L1 logistic decoder."""
+def decode(X, y, rng, outer=10, inner=10, diag=None):
+    """Mean over outer folds of the held-out fraction correct of an L1 logistic decoder. If `diag`
+    is a list, (chosen C, number of nonzero coefficients) of each outer fold is appended to it."""
     f = _folds(y, outer, rng)
     accs = []
     for j in range(outer):
         tr, te = f != j, f == j
         C = choose_C(X[tr], y[tr], inner, rng)
         Xtr, Xte = _zscore(X[tr], X[te])
-        accs.append(np.mean(_predict(_fit(Xtr, y[tr], C), Xte) == y[te]))
+        model = _fit(Xtr, y[tr], C)
+        accs.append(np.mean(_predict(model, Xte) == y[te]))
+        if diag is not None:
+            diag.append((C, int(np.sum(model[0] != 0))))
     return float(np.mean(accs))
 
 
@@ -274,10 +280,10 @@ def pair_trials(pop, kind, sep, a, b):
 
 # --- threshold elevation ---------------------------------------------------------------------------
 
-def k_loglik(pa, pc, n):
-    """Log-likelihood over K_GRID of crowded performances pc given target-alone pa, n trials."""
+def k_loglik(pa, pc, n, grid=K_GRID):
+    """Log-likelihood over `grid` of crowded performances pc given target-alone pa, n trials."""
     za = stats.norm.ppf(pa)
-    pred = stats.norm.cdf(za[None, :] / K_GRID[:, None])
+    pred = stats.norm.cdf(za[None, :] / grid[:, None])
     pred = np.clip(pred, 1e-9, 1 - 1e-9)
     s = pc * n
     return np.sum(s[None, :] * np.log(pred) + (n - s)[None, :] * np.log(1 - pred), 1)
@@ -287,12 +293,12 @@ def usable(pa):
     return (pa > 0.5) & (pa < 1)
 
 
-def fit_k(pa, pc, n):
+def fit_k(pa, pc, n, grid=K_GRID):
     pa, pc, n = map(lambda v: np.asarray(v, float), (pa, pc, n))
     ok = usable(pa)
     if ok.sum() == 0:
         return np.nan
-    return float(K_GRID[np.argmax(k_loglik(pa[ok], pc[ok], n[ok]))])
+    return float(grid[np.argmax(k_loglik(pa[ok], pc[ok], n[ok], grid))])
 
 
 def boot_k(pa, pc, n, rng, n_boot=1000):
@@ -450,6 +456,22 @@ def even_odd_reliability(pop, kind="alone", sep=None, config=None):
         od.append(r[:, 1::2].mean(1))
     ev, od = np.stack(ev, 1), np.stack(od, 1)
     return rowcorr(ev, od)
+
+
+def random_split_reliability(pop, rng, n_split=20):
+    """As `even_odd_reliability`, with the presentations of each target orientation split into two
+    random halves instead of even and odd ones, averaged over `n_split` splits (does not depend on
+    the stored order; 20 splits is a standard choice)."""
+    rs = []
+    for _ in range(n_split):
+        ev, od = [], []
+        for r in responses(pop, "alone"):
+            perm = rng.permutation(r.shape[1])
+            h = r.shape[1] // 2
+            ev.append(r[:, perm[:h]].mean(1))
+            od.append(r[:, perm[h:]].mean(1))
+        rs.append(rowcorr(np.stack(ev, 1), np.stack(od, 1)))
+    return np.nanmean(np.stack(rs), 0)
 
 
 def rowcorr(a, b):
