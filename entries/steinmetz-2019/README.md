@@ -22,7 +22,7 @@ passive replay of the task stimuli.
 | jPECC: no lag between frontal cortex and midbrain | Not reproduced |
 | Kernel model: variance explained is small; vision localized; contralateral preference in midbrain (3) | Reproduced |
 | Kernel model: action encoded in all regions | Partially reproduced |
-| Kernel model: choice-neuron counts, focality, shuffle false positives, opposed activity, ccCP restriction (5) | Not reproduced (a change to reproduced is proposed for the shuffle false positives) |
+| Kernel model: choice-neuron counts, focality, shuffle false positives, opposed activity, ccCP restriction (5) | Not reproduced (a change to reproduced was proposed for the shuffle false positives and not agreed by the verifier) |
 | Decoding from kernel-model residuals (2) | Blocked: not written in this attempt |
 | Histology alignment error | Blocked: data missing |
 
@@ -32,8 +32,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/steinmetz-2019-01.yaml`](../../attempts/steinmetz-2019-01.yaml).
 
-- `reproduce_steinmetz_2019.ipynb`: the analysis. It took 1,658 s (about 28 minutes) in the last run,
-  527 s of it loading the 39 files.
+- `reproduce_steinmetz_2019.ipynb`: the analysis. It took 2,084 s (about 35 minutes) in the last run,
+  650 s of it loading the 39 files.
 - `steinmetz.py`: loading the files (trials, wheel movements, passive events, spikes binned around
   events), the trial and neuron definitions of the claims file, the six responsiveness tests, the
   combined-conditions choice probability, jPECC and the kernel model (design, the basis of the code's

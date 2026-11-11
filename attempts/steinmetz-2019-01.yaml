@@ -583,7 +583,9 @@ outcomes:
     main fits (2 of 5 within tolerance, mean 0.22%). Under the code's reading of the fits the first shuffle
     gives 6 of 3,142, 0.19%, within tolerance, and the five shuffles 0.06% to 0.48% (3 of 5 within tolerance,
     mean 0.25%). One shuffle varies more than the criterion's tolerance, so the outcome turns on the shuffle
-    drawn.
+    drawn. Pooled over the five shuffles under the main fits, 31 of 14,267 neurons pass, 0.217%. A change
+    to reproduced, from the mean over five shuffles, was proposed; the verifier of round 3 did not agree,
+    and the outcome stays not reproduced under the criterion's single shuffle.
   deviations:
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
@@ -609,7 +611,14 @@ outcomes:
       estimate of the test's false-positive rate, is 0.22% under the main fits and 0.25% under the code's
       reading, both within 0.33 ± 0.17%. The first shuffle under the code's reading, which follows regFullPipeline.m
       and glmnet more closely, is also within tolerance (0.19%). The proposed outcome rests on the assumption
-      that the mean over shuffles estimates the rate the claim states.
+      that the mean over shuffles estimates the rate the claim states. The verifier of round 3 did not
+      agree and kept not_reproduced. The criterion is written for one shuffle, as in the paper, and its
+      tolerance was sized for the spread of one shuffle, so the mean of five changes the criterion; the
+      averaging was chosen after the first shuffle failed; at this attempt's lower rate the spread of single
+      counts is about what Poisson noise predicts; and even over five shuffles the result is not clearly
+      a reproduction (2 of 5 single shuffles within tolerance under the main fits, pooled 31 of 14,267
+      neurons, 0.217%, Poisson 95% interval about 0.15% to 0.31%, which spans the lower bound of 0.16%
+      and does not include 0.33%). A criterion with more than one shuffle is a change to the claims file.
 - claim: fig4b-choice-regions
   outcome: not_reproduced
   notebook: reproduce_steinmetz_2019.ipynb
@@ -1427,3 +1436,29 @@ verifications:
     outcome: blocked
     reason: Agree.
     response: No change.
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3, the one proposed change of outcome (ed5h-choice-shuffle-fpr, to reproduced) and the
+    analysis behind it in the full executed notebook of the second revision (cells 118 to 120 and 127
+    to 131), with the claims file, the attempt record and the paper.
+  results:
+  - claim: ed5h-choice-shuffle-fpr
+    agrees: false
+    outcome: not_reproduced
+    reason: 'Keep the verified outcome. The numbers come from the data and there is no sign of cherry-picking,
+      but the criterion is written for one shuffle, as in the paper (Methods, "Estimation of false positive
+      rate"), and the tolerance was already sized for the spread of a single shuffle, so using the mean
+      of five shuffles changes the criterion. The change was made after seeing the result: the averaging
+      came only after the first shuffle had failed, and the fallback (0.19%) uses a variant reading, while
+      the main fits give 0.14%. At this attempt''s lower rate the 1-to-12 range of single counts is about
+      what Poisson noise predicts. Even taking five shuffles, the result is not clearly a reproduction:
+      2 of 5 single shuffles within tolerance under the main fits, pooled 31 of 14,317 neurons, 0.217%,
+      Poisson 95% interval about 0.15% to 0.31%, which spans the 0.16% lower bound and does not include
+      0.33%. Caution still open: only 2,886 neurons enter the nested tests under the main fits (3,199 under
+      the code''s reading) against about 4,240; the lower rate may come from this attempt''s model.'
+    response: 'The outcome stays not_reproduced. The proposal is left under proposed with the verifier''s
+      view added to its reason; the notes, the notebook''s conclusions and summary and the entry README
+      now say that round 3 did not agree. A criterion naming more than one shuffle would be a change to
+      the claims file, for a reader. The pooled count is 31 of 14,267 neurons (cell 130: 2,871, 2,863,
+      2,837, 2,846 and 2,850 enter), not 14,317; the rate is 0.217% either way.'
