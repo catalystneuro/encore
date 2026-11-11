@@ -226,7 +226,7 @@ def test_findings_are_reached_from_the_dandisets_list(built):
 
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
     counts = {key: {"done": 3, "waiting": 1} if key == "paper" else {"todo": 2, "none": 2}
-              for key, _ in site.PIPELINE_STEPS}
+              for key, _ in site.PAPER_STEPS}
     chart = site.pipeline_chart(counts, 4)
     assert chart.count('class="frow"') == len(site.CHART_STEPS)
     assert 'class="seg st-done" style="width:75.00%"' in chart and 'class="seg st-waiting" style="width:25.00%"' in chart
@@ -555,9 +555,14 @@ def test_datasets_are_named_by_archive_and_id():
 def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipeline(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
+    targets = {t["key"] for t in data["targets"]}
     for key in site.claims_only(data):
-        row = next(r for r in rows if r["key"] == key)
-        assert row["page"] == site.page_of(key)
+        # The pipeline lists the archives' targets. A dataset only a reuse paper names (targets/reuse.yaml) can be
+        # outside them: it has its page, and no row.
+        row = next((r for r in rows if r["key"] == key), None)
+        assert (row is not None) == (key in targets)
+        if row:
+            assert row["page"] == site.page_of(key)
         page = (out / site.page_of(key) / "index.html").read_text()
         claims = [c for f in data["claim_files"][key] for c in f["claims"]]
         assert all(f'id="claim-{c["id"]}"' in page for c in claims)
@@ -571,7 +576,7 @@ def test_a_dataset_waiting_on_a_person_links_its_issue():
     assert row["issue"] == data["issues"][label]
     page = site.page_pipeline(data)
     assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
-    assert "has stopped on" in page and "1 dataset</a>" in page
+    assert "has stopped on" in page and "1 paper</a>" in page
 
 
 def test_the_queue_estimates_fill_the_lanes_in_order():
@@ -606,7 +611,55 @@ def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
     assert ">1 for an attempt</td>" in page and ">about 4 hours</td>" in page and ">branch open</td>" in page
     assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
     assert "2 chains are running now" in page
-    assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+    assert "1 paper waits for an attempt on 3 lanes, at about 4.0 hours each" in page
+
+
+def test_the_pipeline_page_goes_by_paper(built):
+    data, out = built
+    rows = site.paper_pipeline_rows(data)
+    steps = [key for key, _ in site.PAPER_STEPS]
+    assert steps[0] == "match"
+    states = {"done", "waiting", "todo", "deprecated", "none"}
+    assert all(set(r["state"]) == set(steps) and {v[0] for v in r["state"].values()} <= states for r in rows)
+    # Each listed paper once, whatever the number of its datasets, and every target under some paper.
+    listed = [r["paper"] for r in rows if r["paper"]]
+    assert sorted(listed) == sorted(site.paper_records.listed())
+    shown = {d["key"] for r in rows for d in r["datasets"]}
+    assert {t["key"] for t in data["targets"]} <= shown
+    several = next(r for r in rows if r["paper"] and len(site.paper_records.listed()[r["paper"]]["datasets"]) > 1)
+    assert len([r for r in rows if r["paper"] == several["paper"]]) == 1
+    # A listed paper's match is made; a target no paper is listed for has it still to do (or has none).
+    assert all(r["state"]["match"][0] in ("done", "todo", "waiting") for r in rows if r["paper"])
+    assert all(r["state"]["match"][0] != "done" for r in rows if not r["paper"])
+    page = (out / "pipeline" / "index.html").read_text()
+    assert "Papers at each step" in page and ">Paper match</button>" in page and ">Datasets</button>" in page
+    assert page.count("<tr data-match=") == len(rows)
+
+
+def test_a_paper_is_attempted_when_each_of_its_datasets_has_been_used():
+    data = site.collect()
+    rows = {r["paper"]: r for r in site.paper_pipeline_rows(data) if r["paper"]}
+    current = site.current_attempts(data)
+    for key, body in site.paper_records.listed().items():
+        doi = site.paper_records.doi_of(key)
+        need = [d["key"] for d in body["datasets"] if d.get("available", True)]
+        used = {k for k in need for a in current.get(k, []) if a["paper"].lower() == doi and not a.get("deprecated")}
+        state = rows[key]["state"]["attempt"]
+        if state[0] == "done":
+            assert used == set(need)
+        elif state[0] == "todo" and used:
+            assert state[1] == f"{len(used)} of {len(need)} datasets"
+
+
+def test_the_queue_by_paper_places_a_paper_once():
+    data = site.collect()
+    paper = next(r for r in site.paper_pipeline_rows(data) if r["paper"] and len(r["datasets"]) > 1)
+    data["queue"] = {"full": [site.dir_of(d["key"]) for d in paper["datasets"]], "claims": [], "branches": [],
+                     "lanes": {"full": 1, "claims": 1}, "hours": {"full": 4.0, "claims": 0.25},
+                     "papers": {"full": [paper["paper"]], "claims": [], "branches": [], "running": {}}}
+    row = next(r for r in site.paper_pipeline_rows(data) if r["paper"] == paper["paper"])
+    assert row["queue"]["place"] == 1
+    assert "1 paper waits for an attempt on 1 lane" in site.page_pipeline(data)
 
 
 def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
@@ -646,3 +699,39 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
     nav = (site / "index.html").read_text()
     assert 'class="menu"' in nav and 'href="papers/"' in nav and 'href="datasets/"' in nav
+
+
+def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
+    """DANDI:000978 names no paper, so no archive list has it; wakhloo-2026 reuses it (targets/reuse.yaml)."""
+    data = site.collect()
+    archive = {t["key"] for t in site.all_targets()}
+    outside = [t for t in data["targets"] if t["key"] not in archive]
+    assert outside and all(t.get("reuse_only") and t["match"] == "matched" for t in outside)
+    for t in outside:
+        # Its paper is one of those listed for it (several papers can reuse one dataset).
+        papers = {site.paper_records.doi_of(key) for key, body in site.paper_records.listed().items()
+                  if t["key"] in {d["key"] for d in body["datasets"]}}
+        assert t["paper"] in papers and t["name"] != t["label"]
+        assert isinstance(t["size_gb"], float) and isinstance(t["files"], int)
+    # Each has its row in the pipeline and in the datasets list, as the tests of both expect of an attempted dataset.
+    assert {t["key"] for t in outside} <= {r["key"] for r in site.pipeline_rows(data)}
+    assert data["queue_counts"]["with_a_paper"] == len(data["targets"])
+
+
+def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives():
+    """Three archive colours, none an outcome's: DANDI and CRCNS each have one, every other archive shares the third."""
+    data = site.collect()
+    p = site.progress_data(data)
+    keys = [a["key"] for a in p["archives"]]
+    assert keys[: len([k for k in keys if k in site.OWN_COLOUR])] == [k for k in site.OWN_COLOUR if k in keys]
+    assert all(a["slot"] in (1, 2, 3) for a in p["archives"])
+    present = {site.split_key(a["key"])[0] for a in data["attempts"]}
+    if present - set(site.OWN_COLOUR):
+        other = next(a for a in p["archives"] if a["key"] == "other")
+        assert other["slot"] == 3 and other["label"].startswith("Other archives (")
+    # Every dataset is counted once, in its archive's series or in the other archives'.
+    rows = p["series"]["all"]
+    assert sum(rows["datasets"]) == sum(sum(rows[f"archive:{k}"]) for k in keys)
+    css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
+    assert "--archive-4" not in css
+

@@ -1,0 +1,524 @@
+# Claims for Martinez-Conde, McCamy, Troncoso, Otero-Millan & Macknik (2019), PLoS ONE 14(3)
+# e0210941, tested on CRCNS pvc-12.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"),
+# 2026-11-10, protocol pilot-14 as stated in docs/protocol.md.
+#
+# Text read: the version of record, PMC6438452 (open access), from the Europe PMC full text XML
+# (paper/10.1371-journal.pone.0210941.txt): main text, Materials and methods, figure legends,
+# Table 1, and the legends of the supporting information (S1 to S4 Fig, S1 and S2 Table). The
+# supplementary files themselves are not in the text. S1 Table (exact p-values of Fig 4B) and
+# S2 Table (the t-tests of Fig 7C, with confidence intervals and t-statistics) are missing, so
+# the claims record only the bounds and statements the main text gives. The reference list is
+# not in the text either, so reference [3] (the DOG model output of Fig 7D) cannot be named
+# beyond its number. The paper links no analysis code; none was read.
+#
+# Data the paper used (Materials and methods; Results, paragraphs 1 to 4). Two adult rhesus
+# monkeys (Macaca mulatta, one male, one female; monkey J and monkey A). 118 V1 single units
+# recorded (102 from J, 16 from A), 60 discarded before analysis, 58 analysed. Each neuron was
+# tested in one to three conditions during a guided-viewing task (fixation cross jumping over a
+# grid, 2x2 DVA window). Conditions, with the corner-fold aligned to the neuron's preferred
+# orientation: Square and Edge (25 neurons; folds P180 (flat gradient) and S90, plus the Edge),
+# Star (30 neurons; fold S52), Corners (28 neurons; fold S40). Display 640 x 480 display units
+# (DU), 16 DU per DVA. Measured variables: spike times registered to gaze position 60 ms
+# earlier, giving per neuron and condition a spike count map, an eye time map, and a spike
+# rate map (count divided by eye time, then smoothed with a 16 DU, STD 7 DU Gaussian; Fig 3B
+# legend), and the stimulus image. Absolute baseline is the mean rate in four (Square and Edge,
+# Star) or two (Corners) 16 x 16 DU 0% luminance squares; the spike rate difference map is the
+# spike rate map minus that baseline (Methods, Spike rate and spike rate difference map). The
+# archive describes pvc-12 as V1 single-neuron recordings from two monkeys viewing the
+# Vasarely-based illusions, organised by experiment (CORNERS, STAR, EDGE-COMPARE), which
+# correspond to Corners, Star and Square and Edge.
+#
+# Method shared by the claims below, from the Methods and legends. Midpoint fold response is
+# the mean of the spike rate map in an 8 x 8 DU square centred on the fold's 50% luminance
+# point (Results, Strength of neuronal responses, paragraph 1; Fig 2 legend). For the Square
+# (S90) and the Star (S52) the two symmetric midpoints are averaged (Methods, Corners,
+# paragraph 2). P180 is the 50% luminance line of the rectangle, 48 DU from the Edge (Methods,
+# Square and edge). Spike rate difference is midpoint response minus absolute baseline.
+# Population values are mean and SEM over neurons. Open throughout, and named in the criteria
+# that need it, is whether the Corners S40 response is one fold midpoint or the average of the
+# two S40 folds (the text states averaging for Square and Star only).
+schema_version: 2
+paper: doi:10.1371/journal.pone.0210941
+claims:
+- id: neuron-counts
+  statement: Of 118 V1 neurons recorded from two monkeys (102 from monkey J, 16 from monkey A),
+    60 were discarded for technical problems and 58 analysed; 7 were tested in all three
+    conditions, 11 in two and 40 in one, giving 25 neurons for Square and Edge, 30 for Star and
+    28 for Corners.
+  source: Results, paragraphs 1 and 3 to 5
+  quote: Thus, we present data from 58 neurons total. ... we were able to test all three conditions
+    in 7 neurons, two conditions in 11 neurons, and a single condition in 40 neurons out of the 58.
+  expected:
+  - quantity: neurons analysed
+    value: 58
+    tolerance: 0
+  - quantity: neurons tested in Square and Edge
+    value: 25
+    tolerance: 0
+  - quantity: neurons tested in Star
+    value: 30
+    tolerance: 0
+  - quantity: neurons tested in Corners
+    value: 28
+    tolerance: 0
+  - quantity: neurons tested in all three conditions
+    value: 7
+    tolerance: 0
+  - quantity: neurons tested in two conditions
+    value: 11
+    tolerance: 0
+  - quantity: neurons tested in one condition
+    value: 40
+    tolerance: 0
+  criterion: Counts of neurons are exact, so the tolerance is zero. Neurons are identified by
+    their neuron code across conditions. Reproduced when every count matches; partially
+    reproduced when the per-condition counts match but the overlap counts do not, or the
+    reverse. The 118 recorded and 102 and 16 per monkey are reported where the data say, but
+    the 60 discarded neurons are not expected in a dataset of analysed neurons.
+- id: spikes-per-condition
+  statement: Each experimental condition required at least 10,000 spikes, and the mean number of
+    spikes per condition was 35,998 (STD 25,981).
+  source: Methods, Guided-viewing task, paragraph 2
+  quote: The minimum number of spikes required to complete each experimental condition was 10,000
+    (the mean and STD of number of spikes per condition was 35,998 ± 25,981).
+  expected:
+  - quantity: mean spikes per neuron and condition
+    value: 35998
+    tolerance: 3600
+  - quantity: STD of spikes per neuron and condition
+    value: 25981
+    tolerance: 2598
+  criterion: The number of spikes in a neuron and condition is the total of its spike count map
+    (Fig 3B legend). Reproduced when every neuron and condition has at least 10,000 spikes and
+    the mean and STD are within tolerance (10% of each). Open is whether the STD is the sample
+    or population STD; both are reported (the difference is negligible at these n). Also open
+    is which spikes are counted, since the paper does not say; readings (a) the total of the
+    spike count map; (b) all spikes recorded in the condition, including those with gaze off
+    the map or outside fixation. If the
+    dataset holds only the analysed neurons and the paper's count covers the same set, the
+    comparison is direct; otherwise the difference in set is reported.
+- id: s4-baseline-no-difference
+  statement: Absolute baseline activity did not differ significantly across the three visual
+    stimuli (Square and Edge, Star, Corners).
+  source: Results, Strength of neuronal responses to corner-folds varies parametrically with
+    fold angle, paragraph 1; S4 Fig
+  quote: Importantly, we found no significant differences in absolute baseline activity across the
+    different visual stimuli presented ( S4 Fig ).
+  criterion: A claim of absence. Absolute baseline per neuron and condition is the mean of the
+    spike rate map in the four (Square and Edge, Star) or two (Corners) 16 x 16 DU 0% luminance
+    squares (Methods, Visual stimuli). The paper does not name the test or threshold. Readings,
+    each at alpha 0.05 (the alpha the paper states for Fig 6); (a) pairwise Wilcoxon rank sum
+    tests between the three conditions corrected with Benjamini and Hochberg, the test of Fig
+    4B; (b) a Kruskal-Wallis test across the three conditions; (c) a one-way ANOVA. Reproduced
+    when the readings find no difference; not reproduced when they find one. If they disagree,
+    the author adopts reading (a) as the paper's own test elsewhere, as an assumption. The
+    medians and quartiles of each condition (the S4 Fig box plots) are reported either way.
+- id: fig4a-above-baseline
+  statement: For every fold (P180, S90, S52, S40), most neurons' midpoint fold responses lie
+    above their absolute baseline activity, and the mass center of each fold's points lies
+    above the line of unit slope, with the mass center's distance from that line increasing as
+    the fold angle decreases.
+  source: Figure 4A legend; Results, Strength of neuronal responses, paragraph 1
+  quote: For all folds, most data points and all mass centers fall above the line, indicating a
+    predominance of elevation of midpoint fold response above absolute baseline activity.
+  criterion: Per neuron and fold, midpoint fold response against absolute baseline (Methods;
+    Fig 4A legend), with P180 and S90 from Square and Edge (N = 25), S52 from Star (N = 30), S40
+    from Corners (N = 28). Reproduced when, for each fold, more than half of the neurons have
+    response above baseline, the mass center lies above the unit line, and the vertical
+    distance of the mass center from the line is ordered P180 < S90 < S52 < S40. The legend
+    says the distance indicates the average spike rate difference but the axes are
+    logarithmic, so the mass center is open; readings (a) the mean of the raw values, whose
+    vertical distance is the mean spike rate difference; (b) the mean of the log values,
+    whose distance is a log ratio. The Corners midpoint is open as in the opening comment.
+- id: fig4b-spike-rate-difference
+  statement: The mean spike rate difference at the fold midpoint decreases with increasing fold
+    angle, from S40 (25.60 spikes/s) through S52 (18.10) and S90 (10.69) to P180 (4.87).
+  source: Figure 4B; Table 1, Midpoint column
+  quote: The distances in Fig 4B show the clear trend of diminished spike rate difference with
+    increasing corner angle.
+  expected:
+  - quantity: midpoint spike rate difference, S40 (Corners)
+    value: 25.60
+    tolerance: 4.18
+    unit: spikes/s
+  - quantity: midpoint spike rate difference, S52 (Star)
+    value: 18.10
+    tolerance: 2.39
+    unit: spikes/s
+  - quantity: midpoint spike rate difference, S90 (Square)
+    value: 10.69
+    tolerance: 1.94
+    unit: spikes/s
+  - quantity: midpoint spike rate difference, P180
+    value: 4.87
+    tolerance: 1.15
+    unit: spikes/s
+  criterion: Values are mean over neurons of the midpoint spike rate difference (Table 1,
+    mean ± SEM); the tolerance is the paper's SEM. Reproduced when the four means are ordered
+    S40 > S52 > S90 > P180 and each is within tolerance; partially reproduced when the order
+    holds but a value is outside tolerance. The Corners midpoint is open; readings (a) the
+    average of the two S40 fold midpoints, as for Square and Star; (b) the single S40 fold
+    midpoint at the ROI centre. Whether the spike rate map is the smoothed one is fixed by the
+    Fig 3B legend (smoothed after dividing by eye time); the unsmoothed map is shown as a
+    variant.
+- id: fig4b-pairwise-significance
+  statement: The midpoint spike rate difference for S40 is significantly larger than for S90
+    and for P180, and that for S52 is significantly larger than for P180.
+  source: Results, Strength of neuronal responses, paragraph 1; Figure 4B legend
+  quote: The spike rate difference for S40° was significantly larger than that for fold S90° and
+    P180°, and the spike rate difference for S52° was significantly larger than that for P180°.
+  statistics:
+  - about: S40 against S90, S40 against P180, S52 against P180
+    test: Wilcoxon rank sum test
+    p: 0.05
+    p_relation: "<"
+    corrected: Benjamini and Hochberg
+    n: 25 neurons (P180, S90), 30 (S52), 28 (S40)
+  depends_on:
+  - fig4b-spike-rate-difference
+  criterion: Wilcoxon rank sum tests on per-neuron midpoint spike rate differences, corrected
+    with Benjamini and Hochberg, at p < 0.05 (Fig 4B legend). Reproduced when the three named
+    pairs are significant in the stated direction. The family of comparisons is open (exact
+    p-values are in S1 Table, which is missing); readings (a) all six pairs of the four folds;
+    (b) the three pairs named. The other pairs (S40 against S52, S52 against S90, S90 against
+    P180) are reported; the text does not claim them either way. The Corners midpoint is open
+    as in fig4b-spike-rate-difference. The rank sum test is applied to P180 against S90 though
+    the neurons are the same, as the paper writes it.
+- id: fig5-average-maps
+  statement: The population-average spike rate difference maps show neural activity increasing
+    as the corner angle decreases.
+  source: Figure 5; Results, Strength of neuronal responses, paragraph 2
+  quote: The maps also show that neural activity increased with decreasing corner angles.
+  criterion: Average over neurons of the spike rate difference maps, aligned in each condition's
+    ROI (Methods, Spike rate and spike rate difference map; Fig 5 legend). The paper gives no
+    measure for the maps beyond the midpoints marked by arrows; the reading taken is the value
+    of the average map in the 8 x 8 DU midpoint squares of each fold, and as a variant the mean
+    of the average map over the ten fold blocks of the Table 1 method. Both are assumptions;
+    since the map average is linear, the midpoint reading gives the means of
+    fig4b-spike-rate-difference and is not an independent test. Reproduced when the
+    order is S40 > S52 > S90 > P180 under the midpoint reading.
+- id: table1-edge
+  statement: Along the Edge, the spike rate difference over the ten 10% luminance blocks has a
+    mean minimum of 7.98, maximum 33.13, mean 20.44 and median 20.77 spikes/s, and 22.01 at the
+    Edge midpoint.
+  source: Table 1, row Square & Edge, Edge
+  inferred: Numbers from Table 1; no sentence states them. The text says only that they are
+    summarized in Table 1 (Results, Responses averaged along the entire fold, paragraph 1).
+  expected:
+  - quantity: Edge minimum block
+    value: 7.98
+    tolerance: 1.60
+    unit: spikes/s
+  - quantity: Edge maximum block
+    value: 33.13
+    tolerance: 5.11
+    unit: spikes/s
+  - quantity: Edge mean of blocks
+    value: 20.44
+    tolerance: 3.33
+    unit: spikes/s
+  - quantity: Edge median of blocks
+    value: 20.77
+    tolerance: 3.48
+    unit: spikes/s
+  - quantity: Edge midpoint
+    value: 22.01
+    tolerance: 3.41
+    unit: spikes/s
+  criterion: The Edge is segmented into ten non-overlapping blocks along its luminance gradient
+    from 0% to 100%, each 8 DU wide and 15 DU long (0.94 DVA per 10% luminance), and the mean
+    spike rate difference in each block is taken (Results, Responses averaged along the entire
+    fold, paragraph 1). The tolerance is the paper's SEM. Open is the order of summary; readings
+    (a) per neuron the minimum, maximum, mean and median over its ten blocks, then the mean
+    over neurons (the "mean ± SEM" of the legend suggests this); (b) the summaries over the
+    ten blocks of the population-average profile. The Edge midpoint is the 8 x 8 DU square at
+    50% luminance on the Edge. Reproduced when, under one reading, all five values are within
+    tolerance; partially reproduced when at least three are.
+- id: table1-p180
+  statement: Along P180, the spike rate difference over the ten blocks has a mean minimum of
+    0.18, maximum 10.28, mean 4.55 and median 4.03 spikes/s, and 4.87 at the midpoint.
+  source: Table 1, row Square & Edge, P180
+  inferred: Numbers from Table 1; no sentence states them.
+  expected:
+  - quantity: P180 minimum block
+    value: 0.18
+    tolerance: 1.01
+    unit: spikes/s
+  - quantity: P180 maximum block
+    value: 10.28
+    tolerance: 1.53
+    unit: spikes/s
+  - quantity: P180 mean of blocks
+    value: 4.55
+    tolerance: 1.12
+    unit: spikes/s
+  - quantity: P180 median of blocks
+    value: 4.03
+    tolerance: 1.06
+    unit: spikes/s
+  - quantity: P180 midpoint
+    value: 4.87
+    tolerance: 1.15
+    unit: spikes/s
+  criterion: As table1-edge, with blocks 15 DU long and 8 DU wide along the P180 gradient, the
+    line through the P180 midpoint 48 DU from the Edge running across the rectangle's
+    luminance lines (Methods, Square and edge; Results, Responses averaged along the entire
+    fold). Same readings and rule as table1-edge.
+- id: table1-s90
+  statement: Along the S90 fold of the Square, the spike rate difference over the ten blocks has
+    a mean minimum of 4.36, maximum 14.61, mean 9.22 and median 9.31 spikes/s, and 10.69 at the
+    midpoint.
+  source: Table 1, row Square & Edge, S90
+  inferred: Numbers from Table 1; no sentence states them.
+  expected:
+  - quantity: S90 minimum block
+    value: 4.36
+    tolerance: 1.07
+    unit: spikes/s
+  - quantity: S90 maximum block
+    value: 14.61
+    tolerance: 2.48
+    unit: spikes/s
+  - quantity: S90 mean of blocks
+    value: 9.22
+    tolerance: 1.61
+    unit: spikes/s
+  - quantity: S90 median of blocks
+    value: 9.31
+    tolerance: 1.62
+    unit: spikes/s
+  - quantity: S90 midpoint
+    value: 10.69
+    tolerance: 1.94
+    unit: spikes/s
+  criterion: As table1-edge, with blocks 7 DU long and 8 DU wide along the Square's diagonal
+    from the centre (100%) to the corner (0%) (Results, Responses averaged along the entire
+    fold). The Square has two symmetric half-diagonals on the aligned fold; the text states
+    averaging of the two only for the midpoint, so open for the blocks; readings (i) the two
+    halves averaged block by block; (ii) each half taken as its own ten blocks, then
+    summarised. Readings (a) and (b) of table1-edge apply to each. Rule as table1-edge.
+- id: table1-s52
+  statement: Along the S52 fold of the Star, the spike rate difference over the ten blocks has a
+    mean minimum of 6.26, maximum 25.39, mean 15.66 and median 15.93 spikes/s, and 18.10 at the
+    midpoint.
+  source: Table 1, row Star, S52
+  inferred: Numbers from Table 1; no sentence states them.
+  expected:
+  - quantity: S52 minimum block
+    value: 6.26
+    tolerance: 1.33
+    unit: spikes/s
+  - quantity: S52 maximum block
+    value: 25.39
+    tolerance: 3.52
+    unit: spikes/s
+  - quantity: S52 mean of blocks
+    value: 15.66
+    tolerance: 2.23
+    unit: spikes/s
+  - quantity: S52 median of blocks
+    value: 15.93
+    tolerance: 2.36
+    unit: spikes/s
+  - quantity: S52 midpoint
+    value: 18.10
+    tolerance: 2.39
+    unit: spikes/s
+  criterion: As table1-edge, with blocks 15 DU long and 8 DU wide along the aligned diagonal of
+    the Star from the centre (100%) to the outer vertex (0%). The two opposite folds of the
+    aligned diagonal give readings (i) and (ii) as in table1-s90. Rule as table1-edge.
+- id: table1-s40
+  statement: Along the S40 fold of Corners, the spike rate difference over the ten blocks has a
+    mean minimum of 9.33, maximum 35.11, mean 22.81 and median 22.83 spikes/s, and 25.60 at the
+    midpoint.
+  source: Table 1, row Corners, S40
+  inferred: Numbers from Table 1; no sentence states them.
+  expected:
+  - quantity: S40 minimum block
+    value: 9.33
+    tolerance: 1.69
+    unit: spikes/s
+  - quantity: S40 maximum block
+    value: 35.11
+    tolerance: 4.17
+    unit: spikes/s
+  - quantity: S40 mean of blocks
+    value: 22.81
+    tolerance: 3.11
+    unit: spikes/s
+  - quantity: S40 median of blocks
+    value: 22.83
+    tolerance: 3.48
+    unit: spikes/s
+  - quantity: S40 midpoint
+    value: 25.60
+    tolerance: 4.18
+    unit: spikes/s
+  criterion: As table1-edge, with blocks 10 DU long and 8 DU wide along the S40 fold from 0% to
+    100% luminance (16% per DVA; Methods, Corners). The Corners pattern has two S40 folds, so
+    readings (i) the two folds averaged block by block; (ii) the fold at the ROI centre alone.
+    Rule as table1-edge.
+- id: fig6-midpoint-representative
+  statement: For each fold and the Edge, the spike rate difference at the midpoint does not
+    differ significantly from the mean or the median spike rate difference along the fold or
+    Edge, so the midpoint response represents the whole fold.
+  source: Results, Responses averaged along the entire fold are comparable to those at fold
+    midpoint, paragraph 1; Figure 6
+  quote: We found that the spike rate difference at the corner-fold midpoint was not significantly
+    different from the mean and median spike rate difference along the corner-fold or Edge
+    (Wilcoxon rank sum test, α = 0.05; Fig 6 )
+  statistics:
+  - test: Wilcoxon rank sum test
+    p: 0.05
+    p_relation: ">"
+    n: 25 neurons (Edge, P180, S90), 30 (S52), 28 (S40)
+  depends_on:
+  - table1-edge
+  - table1-p180
+  - table1-s90
+  - table1-s52
+  - table1-s40
+  criterion: A claim of absence, judged on the paper's test. For each of Edge, P180, S90, S52
+    and S40, a Wilcoxon rank sum test of the per-neuron midpoint spike rate differences against
+    the per-neuron means of the ten blocks, and another against the per-neuron medians, at
+    alpha 0.05 with no correction (none is stated). Reproduced when none of the ten tests is
+    significant; not reproduced when any is. The median difference and p-value of each are
+    reported. Block and midpoint readings are those of the Table 1 claims; a signed rank test
+    (the values are paired) is shown as a variant.
+- id: fig7a-rms-contrast-fit
+  statement: Local RMS contrast along the Edge rises from 0.61 to 0.943 with luminance and is fit
+    by an exponential model, f(l) = -0.34 exp(-0.05 l) + 0.95, with R2 = 0.9983.
+  source: Results, Neuron responses to corner-folds vs. different contrasts along edge,
+    paragraph 1; Figure 7A
+  quote: This resulted in smooth contrasts ranging from 0.61 to 0.943. In order to acquire neural
+    responses to the Edge at equally spaced RMS contrast intervals, we fit the RMS contrast with
+    an exponential model ( R 2 = 0.9983; Fig 7A ).
+  expected:
+  - quantity: lowest local RMS contrast along the Edge
+    value: 0.61
+    tolerance: 0.061
+  - quantity: highest local RMS contrast along the Edge
+    value: 0.943
+    tolerance: 0.094
+  - quantity: fit amplitude a
+    value: -0.34
+    tolerance: 0.034
+  - quantity: fit rate b
+    value: 0.05
+    tolerance: 0.005
+  - quantity: fit offset c
+    value: 0.95
+    tolerance: 0.095
+  - quantity: R2 of the fit
+    value: 0.9983
+    tolerance: 0.0017
+  criterion: Computed from the Square and Edge stimulus image. Local RMS contrast in a 16 x 16
+    DU square centred on the Edge, moved from 0% to 100% luminance in 1.5% steps (Results,
+    paragraph 1 of the section), fit with f(l) = a exp(-b l) + c by Levenberg-Marquardt with
+    least absolute residuals (Methods, Edge RMS contrast model). The R2 tolerance is set so the
+    fit must exceed 0.9966, since 10% of a value near 1 is not informative. The definition of
+    RMS contrast is open (reference [21] is not in the text read); readings (a) the standard
+    deviation of pixel luminance divided by its mean; (b) the standard deviation of luminance
+    normalised to 0 to 1. Reproduced when, under one reading, all values are within
+    tolerance.
+- id: fig7c-fold-edge-equivalence
+  statement: Neural responses to P180 are roughly equivalent to those to a 50% contrast Edge,
+    while responses to S40 are close to those to a 90% contrast Edge, so sharper corners
+    produce responses equivalent to higher contrasts along a straight edge.
+  source: Results, Neuron responses to corner-folds vs. different contrasts along edge,
+    paragraph 3; Figure 7C
+  quote: Fig 7C shows that neural responses to P180° are roughly equivalent to neural responses to
+    a 50% contrast Edge, while neural responses to S40° are close to neural responses to a 90%
+    contrast Edge.
+  depends_on:
+  - fig4b-spike-rate-difference
+  - fig7a-rms-contrast-fit
+  criterion: Edge responses are the mean spike rate difference in a 16 x 16 DU square centred on
+    the Edge at the luminance points that correspond, by the inverse of the exponential fit,
+    to ten RMS contrasts from 0.610 to 0.943 in steps of 0.037 (Results, paragraph 1 of the
+    section; the paper's fitted parameters, with a refit as variant). Fold responses are the
+    midpoint means of fig4b-spike-rate-difference. The scale of "contrast" in percent is open;
+    readings (a) Edge luminance level in percent, at the 10% luminance intervals of Fig 7B;
+    (b) RMS contrast times 100, at the ten RMS levels (S2 Table is described by RMS contrast,
+    but 50 lies below its range, so under (b) P180 is matched when it is nearest the lowest
+    level). Reproduced when, under one reading, the Edge level whose mean response is nearest
+    the P180 mean lies within one step of 50% and that nearest the S40 mean within one step of
+    90%. The one-step margin for "roughly equivalent" and "close", and the rule for P180 under
+    (b), are assumptions; the paper gives no margin.
+- id: fig7c-fold-edge-significance
+  statement: Responses to P180 are significantly lower than responses to a 94% contrast Edge,
+    and responses to S40 are significantly higher than responses to an Edge of less than 68%
+    contrast.
+  source: Results, Neuron responses to corner-folds vs. different contrasts along edge,
+    paragraph 3; S2 Table
+  quote: In addition, the neural responses to P180° are significantly lower than the responses to
+    a 94% contrast Edge, and the neural responses to S40° are significantly higher than the
+    responses to an Edge of less than 68% contrast (two sample t -test corrected; S2 Table ).
+  depends_on:
+  - fig7c-fold-edge-equivalence
+  criterion: Two-sample t-tests of per-neuron fold midpoint spike rate differences against
+    per-neuron Edge responses at each of the ten RMS contrast levels (S2 Table legend), as the
+    paper writes it though P180 and Edge come from the same neurons. S2 Table is missing, so
+    the correction, its family and the alpha are open; readings (a) Benjamini and Hochberg, as
+    in Fig 4B, over all fold and contrast pairs (40 tests); (b) the same over the ten levels
+    per fold; (c) Bonferroni over each of these families; alpha 0.05 in all, the paper's
+    alpha elsewhere. Reproduced when, under one reading, P180 is significantly lower than the
+    Edge at 0.943 and S40 is significantly higher than the Edge at 0.610 and 0.647 (the levels
+    below 0.68). Which other levels are significant, including 0.684, is reported.
+- id: fig7d-nonlinear
+  statement: The relationship between corner angle and V1 spike rate difference is parametric
+    but apparently not linear; the paper says it cannot be certain of this, given the few angles
+    tested.
+  source: Figure 7D; Discussion, paragraph 3
+  quote: In contrast with the previous perceptual data, however, we did not find a linear
+    relationship between corner sharpness and the strength of the neural response.
+  depends_on:
+  - fig4b-spike-rate-difference
+  criterion: The paper reports no test, and itself says it cannot be certain of the
+    non-linearity (Discussion, paragraph 5), so the measure is open. Reading taken, a straight
+    line fitted by least squares to the four midpoint means against fold angle (40, 52, 90,
+    180 degrees), judged non-linear when at least one mean lies off the line by more than its
+    SEM (this rule is an assumption, not the paper's); variant, the slopes between successive angles (40 to 52, 52 to 90, 90 to 180) compared
+    with each other, judged non-linear when they differ by more than their propagated SEMs.
+    Reproduced when the monotonic order of fig4b-spike-rate-difference holds and the reading
+    finds the relation non-linear; the variant is reported.
+- id: fig7d-dog-similar
+  statement: The V1 responses as a function of fold angle follow a trend remarkably similar to
+    the output of the difference-of-Gaussians center-surround model of reference [3].
+  source: Figure 7D; Results, Center-surround model vs. V1 neuron responses, paragraph 4
+  quote: The two response trends are remarkably similar, suggesting that a) there is little
+    transformation in the neural responses to corner-folds from the retinal/LGN to area V1
+  data: with_inputs
+  depends_on:
+  - fig4b-spike-rate-difference
+  criterion: Needs the DOG model output of reference [3] (named only by number in the text read;
+    its parameters match primate LGN center-surround fields, Results, paragraph 2 of the
+    section), outside data the dataset does not hold. The paper gives no measure of
+    similarity, so it is open; reading taken, the DOG output at the four angles and the neural
+    midpoint means have the same rank order over angle and a Pearson correlation above 0.9.
+    This threshold is an assumption named here. Not testable without the DOG output.
+- id: s3-latency-peak
+  statement: Midpoint responses to corner-folds, computed for retina-to-V1 latencies from 1 to
+    2400 ms, peak around 60 ms across the visual stimuli.
+  source: Methods, Conduction latency; S3 Fig legend
+  quote: Peak responses occurred around 60 ms across visual stimuli
+  criterion: Midpoint spike rate differences recomputed with spikes assigned to the gaze position
+    at each latency of 1, 15, 30, 60, 150, 300, 600, 1200 and 2400 ms (Methods, Conduction
+    latency). Needs spike times and eye positions; if the dataset holds only maps made at 60
+    ms, the claim cannot be tested. Reproduced when, for every fold, the mean response is
+    largest at 30, 60 or 150 ms (the neighbours of 60 on the paper's grid, for "around").
+checks:
+- date: 2026-11-10
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig7d-nonlinear. The statement said "not linear"; the abstract and Introduction say "apparently non-linear" and the Discussion (paragraph 5) says the authors cannot be certain. Added both. Said that the SEM rule of the reading is an assumption.
+  - spikes-per-condition. The criterion fixed the spike count as the total of the spike count map; the paper does not say which spikes the 35,998 counts. Named the readings (map total, all spikes recorded in the condition).
+  - fig7c-fold-edge-equivalence. Said that the one-step margin and the rule for P180 under the RMS reading are assumptions, since the paper gives no margin for "roughly equivalent" or "close".
+  - fig5-average-maps. Said that both measures of the maps are assumptions and that the midpoint reading repeats the means of fig4b-spike-rate-difference, so it is not an independent test.
+  - Open, not settled. S1 Table and S2 Table are not in the text read, so the comparison family and correction of Fig 4B and Fig 7C, and their exact p-values, stay open as the criteria name them.
+  - Open, not settled. The test behind the S4 Fig absence claim is not named in the paper; the criterion keeps its three readings with the stated tie rule.
+  - Open, not settled. Whether the Corners S40 midpoint averages the two S40 folds is not stated; the readings stay as written.
+  - Open, not settled. The RMS contrast definition (reference [21]) is not in the text read. Reading (b), the SD of luminance normalised to 0 to 1, cannot exceed 0.5 and so cannot give the paper's 0.61 to 0.943; it is kept as a reading but is unlikely.

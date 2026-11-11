@@ -112,20 +112,26 @@
     return `<span title="${n.toLocaleString()} files">${text} file${n === 1 ? '' : 's'}</span>`;
   };
   const tags = (list) => (list || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(' ');
+  // In the papers list most attempts are verified, so a verified one gets a quiet mark (its tier on hover) and only
+  // the exception, an attempt not yet verified, is spelled out.
+  const check = (r) => !r.tier ? ''
+    : r.tier === 'runs' ? '<span class="tier pending">Not yet verified</span>'
+    : `<span class="verified" title="${esc(label('tier', r.tier))}"><span aria-hidden="true">✓</span> Verified</span>`;
 
   const render = {
     papers(r) {
       const href = r.page ? root + r.page : `https://doi.org/${r.doi}`;
       const right = r.status === 'attempted'
-        ? `${tier(r)}<span class="small muted">${esc(r.date)}</span>`
+        ? `${check(r)}<span class="small muted">${esc(r.date)}</span>`
         : `<span class="tag">${esc(label('status', r.status))}</span>`;
       const ds = r.datasets.map((d) => d.page ? `<a href="${root + d.page}">${esc(d.label)}</a>` : esc(d.label)).join(', ');
       const reuse = r.relation.length === 1 && r.relation[0] === 'reuses' ? ' <span class="tag">Reused data</span>' : '';
       const missing = r.missing ? ` <span class="tag warn" title="Datasets the paper rests on that the attempt could not use">${r.missing} dataset${r.missing === 1 ? '' : 's'} missing</span>` : '';
-      return `<div class="row drow">
-        <div class="id"><a href="${href}">${esc(r.byline)}</a></div>
-        <div><p class="title"><a href="${href}">${esc(r.title)}</a></p>
-          <div class="meta"><span class="muted">${esc(r.journal)}</span> · ${ds}${reuse}${missing}
+      // The title is the row's link; the byline and journal sit above it, so that every title starts in one column.
+      return `<div class="row drow prow">
+        <div><p class="byline">${esc(r.byline)}<span class="sep" aria-hidden="true">·</span>${esc(r.journal)}</p>
+          <p class="title"><a href="${href}">${esc(r.title)}</a></p>
+          <div class="meta">${ds}${reuse}${missing}
             <a href="https://doi.org/${esc(r.doi)}">doi</a></div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;

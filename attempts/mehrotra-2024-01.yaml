@@ -1,0 +1,907 @@
+schema_version: 3
+id: mehrotra-2024-01
+datasets:
+- archive: dandi
+  id: "000987"
+  version: 0.261003.2342
+  doi: 10.48324/dandi.000987/0.261003.2342
+  relation: primary
+paper: doi:10.1016/j.cub.2024.05.048
+date: 2026-10-31
+entry: mehrotra-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-13
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/41254360058
+inputs:
+- what: The paper's postsubiculum recordings (units, EX flags, waveform positions, sleep states, epochs,
+    tracking and LFP of the 16 sessions the paper used), for the claims with data elsewhere.
+  source: DANDI:000939 version 0.261016.2310, doi 10.48324/dandi.000939/0.261016.2310
+- what: The paper's analysis code, read for the methods, and its DOWN and UP event files for the 16 PoSub
+    sessions (Analysis/OutputFiles/*.evt.py.dow and *.evt.py.upp), which select the sessions and give
+    the study's DOWN and UP states.
+  source: https://github.com/PeyracheLab/MehrotraLevenstein_2023 at commit 4ee34f34793c147ac08bf5fffe44ff03d17f8e35
+- what: The rat frontal cortex recordings of Watson et al. 2016 for fig5e-fc-pmr-onset. From each of the
+    27 archives, streamed, only the members <session>_SStable.mat (spike times), <session>_CellIDs.mat
+    (EX units, EAll) and <session>_UPDOWNINtervals.mat (UP, DOWN, ON and OFF intervals) are read.
+  source: CRCNS fcx-1, unversioned, https://crcnsarchive.s3-us-west-2.amazonaws.com/fcx-1/live/ (MD5 sums
+    of the 27 archives printed in reproduce_mehrotra_2024.ipynb)
+- what: Examined only, to decide the block of figs2g-adn-synchronous. The asset list and the units table
+    of the Peyrache et al. 2015 recordings.
+  source: DANDI:000056 version 0.250624.0430, doi 10.48324/dandi.000056/0.250624.0430
+outcomes:
+- claim: rsc-dataset
+  outcome: not_reproduced
+  notebook: reproduce_mehrotra_2024.ipynb
+  output: claim:rsc-dataset
+  measured:
+  - 638
+  - 14
+  - 3
+  notes: The dandiset holds 14 sessions from 3 mice (A7801 4 sessions, A7802 2, A7803 8), as stated, and
+    638 sorted units, 68 more than 570 (1.119 times), outside the 10% band of 513 to 627, so the criterion's
+    partial outcome does not apply either. No unit selection of the Methods gives 570 (606 units with
+    at least 0.5 Hz in wake, 412 below 10 Hz, 380 both). Exactly 570 units cross half their mean rate
+    within 155 ms of DU and enter the Figure 5F test (fig5f-rsc-pmr-onset), so the paper's "570 units
+    were recorded", repeated in the dandiset description, appears to count those units. The count per
+    session ranges from 31 to 71, as the description says. No session is deposited twice.
+  deviations:
+  - The wake epochs of the files are taken as the open field exploration for the rate selections, which
+    are shown only to explain the count.
+- claim: fig5f-rsc-pmr-onset
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mehrotra_2024.ipynb
+  output: claim:fig5f-rsc-pmr-onset
+  measured:
+  - -0.275
+  - 570
+  notes: Reading (a), all sorted units with the stored UP states, gives 570 entering units and Kendall
+    tau = -0.2748 (p = 8.1e-21; paper -0.28, p = 6.76e-21), within the tolerance of 0.028. Re-detected
+    UP states (detectDOWNs_RSC.py procedure, 95% to 99% of DOWN states matched within 10 ms) give -0.274
+    with 568 units; UP states starting inside the sleep epochs give -0.281 with 574 units. Tau is negative
+    with p < 0.05 in each of the 14 sessions (-0.567 to -0.323) and in each mouse (-0.417, -0.369, -0.334).
+    Onset thresholds of 0.3 to 0.7 give -0.259 to -0.238. Reading (b) cannot be run as written because
+    the files hold no waveforms; its rate half (wake rate below 10 Hz, with or without the 0.5 Hz floor)
+    gives -0.342 to -0.329 (p below 1e-18), negative and significant but outside the tolerance. The statement's
+    link to PoSub ("as in PoSub") is tested by fig5c-posub-pmr-onset.
+  deviations:
+  - Which units enter is open (criterion readings a and b). Reading (b), putative EX units by trough-to-peak
+    above 0.35 ms and open field rate below 10 Hz, cannot be applied, as the units carry no waveform;
+    only its rate half was run. The outcome rests on reading (a), all sorted units, as Figure5F.py does;
+    the count of entering units (570) equals the n of the Figure 5F legend, which supports it.
+  - pynapple 0.11.4 replaces the unpinned pynapple version of the paper's code (a standard choice the
+    criterion allows); compute_eventcorrelogram takes the same arguments.
+- claim: fig5c-posub-pmr-onset
+  outcome: reproduced
+  assumed: true
+  notebook: posub_000939.ipynb
+  output: claim:fig5c-posub-pmr-onset
+  measured: -0.177
+  notes: On DANDI:000939, the 16 sessions hold 1,657 units and 1,097 EX units, the paper's counts, and
+    1,096 EX units enter, as in the Figure 5C legend. With the paper's event files, and the states of
+    A3708-200317b re-detected, tau = -0.177 (p = 3.7e-17), within 0.019 of -0.19. Without A3708-200317b
+    tau is -0.195 (1,049 units). With the event file of A3708-200317b as it is, tau is -0.126 (p = 2.0e-9),
+    outside the tolerance; with all states re-detected (an approximation of detectDOWNs_PoSub.py without
+    its accelerometer step), -0.077. Tau is negative in all 16 sessions, with p < 0.05 in 7. No unit with
+    an onset of 75 ms or more (46 units) has a PMR above 1.5 (largest 1.32), against 39% of the 198 units
+    with an onset below 25 ms, as the statement says. The DOWN starts re-detected from the spikes and
+    those of the 15 other event files cross-correlate with a sharp peak at -2.5 to -17.5 ms (25 to 67
+    times the flanks), so no event file is offset by tens of ms.
+  deviations:
+  - The DOWN and UP states are the paper's event files (Analysis/OutputFiles, commit 4ee34f3), which the
+    criterion names. The event file of A3708-200317b does not share the clock of that session's NWB spikes
+    (population rate inside its DOWN states 454.7 Hz, the same as for intervals shifted by 0.5 s; no shift
+    from -6,000 to +6,000 s brings it below 309 Hz), so its states were re-detected from the spikes with
+    the procedure of detectDOWNs_RSC.py on the file's NREM within the home cage epochs, UP states restricted
+    to NREM as detectDOWNs_PoSub.py does. The outcome rests on this replacement; with the event file as
+    it is, tau is outside the tolerance.
+  - EX units are the file's is_excitatory flag; the code also requires a gd flag the files do not hold.
+    The counts (1,097 EX, 1,096 entering) match the paper's.
+  - NREM is the file's sleep_states NREM within the home cage epochs, as detectDOWNs_PoSub.py intersects
+    the sleep scoring with the sleep epochs; it is used only for the re-detection of A3708-200317b.
+- claim: fig5d-isomap-pmr
+  outcome: reproduced
+  notebook: posub_000939.ipynb
+  output: claim:fig5d-isomap-pmr
+  measured: 0.865
+  notes: On the PETHs of the 1,096 units of fig5c-posub-pmr-onset, sklearn Isomap (2 components, 50 neighbours)
+    gives a first dimension correlated with PMR with abs R = 0.865 (p printed as 0) over -250 to +250
+    ms, the Methods window, within 0.088 of 0.88; over the code's 0 to 155 ms window abs R = 0.875. The
+    second dimension correlates with UP onset delay (R = -0.535 and -0.562).
+  deviations:
+  - Uses the units and PETHs of fig5c-posub-pmr-onset, so it shares its replacement of the states of A3708-200317b.
+- claim: fig1e-delay-range
+  outcome: reproduced
+  notebook: posub_000939.ipynb
+  output: claim:fig1e-delay-range
+  measured:
+  - 5
+  - 100
+  notes: Under reading (b), the 1st and 99th percentiles of the 1,096 pooled UP onset delays are 5 and
+    100 ms, the paper's range. Under reading (a), the 0.5th and 99.5th percentiles are 0 and 110 ms, the
+    lower bound outside 4.5 to 5.5 ms. The delays lie on the 5 ms grid of the PETH, and the percentile
+    method (linear, lower, higher, nearest) changes neither reading. The measured values are reading (b),
+    the one that matches.
+  deviations:
+  - The paper does not define "99th percentile range"; the criterion names two readings, and only (b),
+    1st to 99th percentile, matches.
+- claim: fig1g-dv-sequence-du
+  outcome: reproduced
+  assumed: true
+  notebook: posub_000939.ipynb
+  output: claim:fig1g-dv-sequence-du
+  notes: 'Per session, the Kendall tau of UP onset delay against position is negative in 15 of 16 sessions
+    (median -0.309) and differs from 0 (one-sample Wilcoxon W = 1, p = 6.1e-5, the paper''s values); the
+    UD tau does not (W = 38, p = 0.13, the paper''s values); DU and UD differ (Mann-Whitney U = 51, p
+    = 0.0039; paper U = 52, p = 0.005). With the event file of A3708-200317b as it is (UD tau undefined
+    there, 15 sessions) or without that session, the UD tau differs from 0 (W = 25, p = 0.048) and the
+    claim would hold only in part; with all states re-detected it holds (UD p = 0.13, U p = 0.048). The
+    result is fragile: the UD part rests on the re-detected states of the one session whose event file
+    fails the clock check.'
+  deviations:
+  - The states of A3708-200317b are re-detected, as for fig5c-posub-pmr-onset; the UD part of the outcome
+    rests on this.
+  - Position is the rel_y of the unit's peak electrode (12.5 um steps), larger toward dorsal. The rel_y
+    column is described only as "xy coordinate in electrode group"; the direction is from the probe description
+    in the file ("Channels sorted top to bottom of shank"; electrode 0 has the largest rel_y in every
+    session), and Figure1H.py also puts larger depth values dorsal.
+  - The UD timing follows Figure1G.py (last bin above 0.5 between -150 and -5 ms of the PETH around DOWN
+    starts, for units that also cross after +5 ms), with pynapple's correlogram in place of the code's
+    crossCorr.
+- claim: fig1h-ventral-down-longer
+  outcome: reproduced
+  notebook: posub_000939.ipynb
+  output: claim:fig1h-ventral-down-longer
+  notes: Ventral DOWN states are longer than dorsal ones with all units (median 107.5 against 97.5 ms,
+    longer in 12 of 16 sessions, equal in 2; Wilcoxon W = 12, p = 0.011; paper W = 9, p = 0.01) and with
+    EX units only (117.5 against 102.5 ms; W = 3, p = 0.0019). Both readings agree.
+  deviations:
+  - The code's reading uses all units with a gd flag; the files hold no gd flag, so all units are used.
+  - DOWN and UP states as for fig5c-posub-pmr-onset (A3708-200317b re-detected).
+- claim: fig1b-no-dv-tuning-gradient
+  outcome: reproduced
+  assumed: true
+  notebook: posub_000939.ipynb
+  output: claim:fig1b-no-dv-tuning-gradient
+  notes: 'Over 1,097 EX cells in the square arena, speed score (tau = 0.029, p = 0.15) and AHV score (tau
+    = 0.035, p = 0.081) do not vary with position; resultant vector length (tau = 0.061, p = 0.0026) and
+    peak rate (tau = 0.077, p = 0.00014) increase toward larger rel_y, close to the paper''s (0.063, p
+    = 0.002; 0.075, p = 0.0002). HD information in bits per spike does not vary with position (tau = 0.034,
+    p = 0.099); in bits per second, the formula as printed, it does (tau = 0.082, p = 5.1e-5), which would
+    make the claim not reproduced. Figure 1B supports bits per spike: in the paper''s PDF its axis of log10(HD
+    info) runs from -2 to 1 with most cells between -0.5 and 0.5 and none beyond about 0.5; in bits per
+    spike the median of log10 is 0.12 and the 99th percentile 0.46 (5 of 1,097 cells off the axis), in
+    bits per second the median is 0.54, the 99th percentile 1.08, and 31 cells lie beyond 1. Figures 1B
+    and S1D to S1F plot position from 0 (dorsal) to -0.8 mm (ventral), the direction of rel_y here, so
+    resultant vector length and peak rate have the paper''s positive sign; the three measures that do not
+    vary have the opposite sign to the paper''s (0.034, 0.029, 0.035 against -0.03, -0.03, -0.02), not
+    significant here or in the paper, and no direction of the axis matches all five signs. Whether the criterion''s "measures as the Methods define them" fixes the printed formula, in bits
+    per second, is asked of a reader in questions/mehrotra-2024.yaml; the outcome is tested on the claims
+    file as it is.'
+  deviations:
+  - HD information is taken in bits per spike. The Methods print the formula without division by the mean
+    rate (bits per second) but use HD information in bits per spike to select cells for Isomap ("exceeding
+    0.2 bins/spike", Methods, Isomap Projection and Decoding, citing Duszkiewicz et al.; "bins" is read
+    as a misprint for bits), and the range of Figure 1B (log10 HD info from -2 to 1, no cell beyond about
+    0.5) fits bits per spike and not bits per second; the outcome rests on this reading.
+  - Resultant vector length and peak rate are not defined in the Methods; the standard definitions from
+    the 1 degree tuning curve are used. Spikes are counted in the 100 Hz tracking frames.
+  - 'Larger rel_y is dorsal: the probe description in the file says "Channels sorted top to bottom of
+    shank", and electrode 0 has the largest rel_y in all 16 sessions.'
+  - 'The paper''s tau is read with dorsal positive, as rel_y here: Figures 1B and S1D to S1F (read from
+    the paper''s PDF) plot "D-V pos. (mm)" from 0 at the top to -0.8 at the bottom. "Positively correlated"
+    in the criterion is read in that direction; with ventral positive every tau changes sign (printed),
+    and resultant vector length and peak rate would be negatively correlated.'
+- claim: figs1j-dorsal-ventral-same-hd
+  outcome: reproduced
+  notebook: posub_000939.ipynb
+  output: claim:figs1j-dorsal-ventral-same-hd
+  notes: Under all four readings (halves by equal-width depth bins or by the median; mean or median absolute
+    difference), the z-scored dorsal-ventral decoded angular difference does not differ from the depth
+    shuffles (W = 40, p = 0.46; W = 31, p = 0.19 over 14 sessions; W = 59, p = 0.98; W = 56, p = 0.82
+    over 15 sessions). The paper reports W = 38, p = 0.13 over 16. Sessions with fewer than 10 bins with
+    5 HD cells spiking in each half are left out (A3709-200601 and A3713-200909a with equal-width halves).
+  deviations:
+  - The Bayesian decoder is reimplemented in matrix form (Poisson likelihood, uniform prior, as pynapple's
+    decode_1d), with tuning curves in 60 bins from the square arena; the paper gives the bin size of the
+    decoding (50 ms) but not the tuning curve bins (a standard choice).
+  - HD cells are the file's is_head_direction flag. A session needs 10 kept bins to enter (a standard
+    choice to avoid empty sessions).
+- claim: figs1i-du-more-stable
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: posub_000939.ipynb
+  output: claim:figs1i-du-more-stable
+  notes: DU delays are more stable across halves than UD timings under three readings (first and second
+    half with Kendall, 12 of 16 sessions, W = 16, p = 0.0052; odd and even DOWN states with Pearson, 13
+    of 16, W = 19, p = 0.0092, or Kendall, 16 of 16, W = 0, p = 3.1e-5) and not under the fourth (first
+    and second half with Pearson, 8 of 16, W = 52, p = 0.43). The criterion blocks the claim when the
+    readings disagree. The paper has no code or Methods text for Figure S1I; what is open is how the session
+    is halved and which correlation is used, and the question is recorded for the paper's authors. For
+    each half the spikes are counted in all UP states (so that with odd and even halves the UP state before
+    each DOWN start is kept) and divided by the rate in the half's UP states.
+- claim: figs1kl-not-firing-rate
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: posub_000939.ipynb
+  output: claim:figs1kl-not-firing-rate
+  notes: With z-scored predictors and signed coefficients the claim holds (position larger in 15 of 16,
+    W = 9, p = 0.0010; position against 0 W = 0, p = 3.1e-5; paper W = 19, p = 0.009 and W = 0, p = 3.052e-5).
+    With z-scored predictors and absolute coefficients the first test fails (12 of 16, W = 32, p = 0.065),
+    and with raw predictors, whose coefficients per um and per Hz are on different scales, it fails too
+    (0 of 16 and 9 of 16). The criterion blocks the claim when the readings disagree. The paper has no
+    code or Methods text for Figure S1L; the question is recorded for the paper's authors.
+- claim: fig2f-gamma-travels
+  outcome: not_reproduced
+  notebook: posub_lfp_000939.ipynb
+  output: claim:fig2f-gamma-travels
+  notes: 'No reading gives both parts of the claim. Main reading, the 13 sessions whose LFP is shown to
+    share the clock of the spikes: aligned to DU (the Methods), the time of maximal slope of high gamma
+    power depends on channel position (median tau -0.742 to -0.659; one-sample Wilcoxon W = 7 to 9, p
+    = 0.0046 to 0.0081; paper W = 21, p = 0.013), but so does the time of maximal negative slope before
+    the DOWN start (median tau -0.810 to -0.749, W = 0, p = 2.4e-4; paper p = 1), so the drop is not synchronous
+    by this measure. Aligned to the delta peak (Figure 2D legend), the rise does not depend on position
+    (p = 0.27 to 1.0). With the UD window written in the criterion (0 to 150 ms after the DOWN start)
+    the delays are constant in 12 of 13 sessions and the UD test cannot be run. On all 16 sessions the
+    picture is the same (DU p = 0.0017 to 0.0034; UD p = 3.1e-5 to 1.2e-4; delta peak DU p = 0.39 to 0.60).
+    The delta-peak readings rest on 0.37 to 4.76 peaks per minute of NREM, so they are noisy. In A3708-200317b
+    high gamma power rises neither after the re-detected DU (1.045 against 1.048 shifted) nor after the
+    UP starts of its event file (0.997 against 0.998), so its LFP fits neither stream.'
+  deviations:
+  - The paper has no code for Figure 2. The readings of the criterion were all run (power as the absolute
+    Hilbert transform or the square; DU or delta-peak alignment; two windows). For the UD measure the
+    mirror window, -150 to 0 ms, was added, because the window as written lies after the drop.
+  - The delta channel is the middle channel of the probe (a standard choice; the Methods name none) and
+    faulty channels are left out. The LFP is downsampled by taking every second sample; filters run forward
+    and backward within each NREM interval.
+  - 'A3705-200306, A3708-200317b and A3711-200810b are left out of the main reading: their high gamma
+    power rises after DU by no more than after the same times shifted by 0.5 s (rise over the shifted
+    control 0.02 or less, against 0.053 to 0.357 in the other sessions), so their LFP is not shown to
+    share the clock of the spikes. All 16 sessions are run as a variant.'
+  - The criterion blocks the claim when readings disagree; here every reading fails it, on different parts,
+    so the outcome is not reproduced.
+- claim: figs2d-lfp-spike-agree
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: posub_lfp_000939.ipynb
+  output: claim:figs2d-lfp-spike-agree
+  notes: On the 13 sessions whose LFP clock is shown, the per-session unit and LFP coefficients correlate
+    positively with p < 0.05 under 7 of 8 LFP readings (R = 0.567 to 0.788), within 0.062 of 0.62 with
+    p < 0.05 under three (R = 0.623, 0.567, 0.653, all delta-peak readings), and not under the eighth
+    (square, delta peak, -250 to 250 ms, R = 0.553, p = 0.0502). On all 16 sessions 6 of 8 reach p < 0.05
+    (R = 0.506 to 0.761), one within the tolerance (R = 0.590, p = 0.016), and the two absolute-Hilbert
+    delta-peak readings do not (R = 0.412, p = 0.13; R = 0.462, p = 0.071). The criterion blocks the claim
+    when the readings disagree on significance. The open LFP details are those of fig2f-gamma-travels.
+  deviations:
+  - The main reading leaves out the three sessions whose LFP is not shown to share the clock of the spikes,
+    as for fig2f-gamma-travels; all 16 are run as a variant.
+- claim: figs2e-speed-similar
+  outcome: not_reproduced
+  assumed: true
+  notebook: posub_lfp_000939.ipynb
+  output: claim:figs2e-speed-similar
+  measured:
+  - 6.97
+  - 38.91
+  notes: 13 sessions have a significant unit delay-depth correlation, as in the paper. With speed as the
+    slope of depth on delay, units give 6.97 +/- 4.38 mm/s (paper 6.72 +/- 4.08). On the 13 sessions whose
+    LFP clock is shown, the LFP gives 15.96 to 39.50 mm/s under the eight readings of fig2f-gamma-travels
+    (paper 9.89 +/- 5.51, none within it), different from the units under 7 of 8 readings (Mann-Whitney
+    p = 3.2e-5 to 0.017) and not under one (absolute Hilbert, delta peak, 0 to 150 ms, 7 sessions, p =
+    0.097). On all 16 sessions the LFP gives 17.87 to 40.96 mm/s, different under all 8 (p = 1.6e-5 to
+    0.028). With speed as the inverse slope of delay on depth, units give 37.3 +/- 18.0 mm/s, far from
+    the paper's, and no difference under 6 of 8 readings. The measured LFP value is the first reading
+    (absolute Hilbert, DU, 0 to 150 ms, 12 sessions). Depth is rel_y in mm.
+  deviations:
+  - The outcome rests on the speed definition, the slope of depth on delay, which reproduces the paper's
+    unit speeds; the inverse-slope reading does not.
+  - The LFP side carries the open details of fig2f-gamma-travels, and fig2f-gamma-travels, on which this
+    claim depends, is not reproduced.
+  - The main reading leaves out the three sessions whose LFP is not shown to share the clock of the spikes,
+    as for fig2f-gamma-travels.
+- claim: fig1j-down-resets-hd
+  outcome: not_reproduced
+  notebook: posub_ring_000939.ipynb
+  output: claim:fig1j-down-resets-hd
+  notes: 'Over 6,510 UP states of 16 sessions (up to 600 long UP states projected per session), the first
+    above-threshold angle after DU is nearly unrelated to the last above-threshold angle before UD: the
+    mean resultant length of the differences is 0.020, against 0.078 for the 99th percentile of 1,000
+    shuffles of the angle at UD. Under the criterion''s test one of 20 bins lies outside the shuffles''
+    minimum to maximum, a deficit at -0.47 rad (294 UP states, shuffle range 300 to 422), while the bin
+    at zero difference is inside (409, range 368 to 491); so the outcome is not reproduced. With 10 bins
+    one bin lies outside, with 36 two; with the mean angle of the last 150 ms before UD (5,043 UP states)
+    two bins with 20 bins, one with 10 and none with 36. With this procedure a shuffle lies outside the
+    range of the others in at least one of 20 bins 3.3% of the time. On the 14 sessions whose wake ring
+    follows head direction (R >= 0.5; A3706-200313 0.114, A3730-210323b 0.328) two bins lie outside (resultant
+    length 0.032). The outcome is fragile: with the rings fitted on two other random draws, one bin lies
+    outside with seeds 3000 + k and none with seeds 2000 + k (resultant length 0.020 to 0.030 over the
+    three draws, against shuffle 99th percentiles of 0.070 to 0.078), so the test fails by one bin in two
+    of three draws. A run repeats exactly (the ring of A3701-191119 fitted twice with the same generator
+    is identical). The absence of a relation holds in size; the envelope test fails by one bin. The wake
+    ring follows head direction with R = 0.627 to 0.936 in the other 14 sessions, and the first threshold
+    crossing after DU comes at a median of 35 to 75 ms per session (the Methods give 35 ms as the mode).'
+  deviations:
+  - 'The ring follows makeRing.py (commit 4ee34f3): HD cells by the file''s is_head_direction flag (the
+    code also needs a gd flag the files lack; the Methods'' filter of 0.2 "bins/spike" (read as bits per spike) is not in the code),
+    wake bins of 0.2 s above 2 cm/s, NREM steps of 10 ms with a 50 ms window around UP states longer than
+    0.5 s, square-root rates, Isomap with 2 components and 200 neighbours, the centre at the projection
+    of an empty bin, and a radius threshold of one third of the mean wake radius.'
+  - For run time, the random half of the wake bins is capped at 2,500 bins and at most 600 long UP states
+    per session are projected, drawn with a fixed generator per session (a standard choice). Two other
+    draws (seeds 2000 + k and 3000 + k) are run to show the dependence on it.
+  - Isomap uses the dense eigen solver in place of the default ARPACK, which starts from an unseeded random
+    vector, so that the ring can come out rotated or reflected differently in each run (a standard choice that
+    makes a run repeat). Each ring is oriented so that its angle increases with head direction in wake
+    (7 of 16 reflected), as the solver's reflection is arbitrary and a reflection negates the angle differences;
+    with the rings as the solver returns them one bin lies outside too.
+  - The angle at UD is taken before the start of the DOWN state that ends at the UP state's start; the
+    first post-DU angle is searched 0 to 150 ms after DU. Angle differences are pooled over sessions and
+    the angle at UD is shuffled within each session.
+- claim: fig1k-hd-stable-at-onset
+  outcome: not_reproduced
+  assumed: true
+  notebook: posub_ring_000939.ipynb
+  output: claim:fig1k-hd-stable-at-onset
+  notes: With the steps below the radius threshold left out, the diffusion coefficient during the traveling
+    UP state is lower than in the control interval in 10 of 16 sessions (median 0.373 against 0.439 per
+    s), and the two-sided Mann-Whitney test finds no difference (U = 98, p = 0.27; paper U = 54, p = 0.006).
+    With the circular variance as 2 ln(1/R) it is lower in 12 of 16 (U = 87, p = 0.13); with per-UP-state
+    slopes averaged, in 6 of 16 (p = 0.25); on the 14 sessions whose ring follows head direction, in 8
+    of 14 (U = 83, p = 0.51). With the rings of two other random draws it is not significant either (p
+    = 0.10 and 0.21). Keeping the steps below the threshold gives 12 of 16, U = 76, p = 0.052 in the main
+    draw and p = 0.025 and 0.044 in the other two, near the paper's result, so the outcome rests on leaving
+    them out.
+  deviations:
+  - The ring and UP states are those of fig1j-down-resets-hd.
+  - 'Assumed: steps below the radius threshold are left out of the cumulative circular variance. The Methods
+    use the threshold "for computing angular direction" and start the slope at 35 ms because the threshold
+    crossing varies between UP states, which implies that angles below the threshold are not used. Keeping
+    them gives p = 0.052, 0.025 and 0.044 over three draws of the ring. The variance is averaged over a session''s UP states and
+    the slope taken from 35 to 150 ms (185 to 300 ms for the control); averaging per-UP-state slopes is
+    shown too.'
+  - The circular variance is 1 - R, scipy.stats.circvar since SciPy 1.8; the older 2 ln(1/R) is shown
+    too, as the paper does not give its SciPy version.
+- claim: figs2g-adn-synchronous
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The ADN recordings come from Peyrache et al. 2015, for which the paper names no archive. The
+    paper's code names 9 ADN sessions (event files Mouse12-120806 to Mouse32-140822). DANDI:000056 (Peyrache
+    et al. 2015, version 0.250624.0430) holds 8 of them (not Mouse32-140822), but its units table has
+    only spike times (no location, shank or electrode), and its electrode locations read "unknown", so
+    the ADN units cannot be told from the PoSub units recorded with them. CRCNS th-1 was not examined
+    within the run. The PoSub half is available (fig1g-dv-sequence-du).
+- claim: fig5e-fc-pmr-onset
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_mehrotra_2024.ipynb
+  output: claim:fig5e-fc-pmr-onset
+  measured: -0.221
+  notes: With the EX units of the data set (CellIDs EAll) and its UP states (UPDOWNINtervals UPInts),
+    986 of 995 EX units over 27 sessions in 11 rats enter, and Kendall tau between UP onset delay and
+    PMR is -0.221 (p = 2.3e-20; paper -0.22, p = 5e-21, n = 950 from 25 sessions), within the tolerance
+    of 0.022. Without the two sessions with the fewest UP states (25 sessions, 965 units) tau is -0.221.
+    With the spike-based ON intervals tau is -0.162 (p = 5.0e-11), outside the tolerance; with all units
+    and UPInts -0.236. Tau is negative in 8 of the 10 rats where it is defined (p < 0.05 in 5) and in
+    21 of 27 sessions (p < 0.05 in 10). The DOWN and OFF intervals hold 0 to 15.6 Hz of population rate,
+    against 5.8 to 182.6 Hz when shifted by 0.5 s. The 27 archives (88.9 GB) were streamed eight at a
+    time and read in 965 s in the final run; in 18 the wide-band .eeg came before the members needed.
+  deviations:
+  - 'Figure5E.py reads buzcode files (SlowWaves events, CellClass, spikes cellinfo) that CRCNS fcx-1 does
+    not hold. The data set''s own files stand in for them: UPInts of UPDOWNINtervals.mat for the SlowWaves
+    UP states and EAll of CellIDs.mat for the CellClass EX units. The outcome rests on UPInts; the spike-based
+    ON intervals give a tau outside the tolerance.'
+  - All 27 sessions are used; the paper used 25 (its dataset_DM.list is not in the code repository). The
+    three sessions named by date (20140526_277um, 20140527_421um, 20140528_565um) are taken as one rat,
+    which gives the paper's 11 rats.
+  - The PETH, PMR and onset delay are those of fig5f-rsc-pmr-onset (Figure5F.py and Figure5E.py are the
+    same procedure), with pynapple 0.11.4.
+- claim: fig3-other-gradients-fail
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The model code (Model/Figure3.m, FigureS3b.m to FigureS3d.m, commit 4ee34f3) is MATLAB, which
+    cannot be installed in the locked Python environment; neither MATLAB nor Octave is available on the
+    runner. A port of the model to Python was not attempted.
+- claim: fig3f-ih-gradient
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: As fig3-other-gradients-fail; Model/Figure3.m and FigureS3f.m are MATLAB.
+- claim: fig4d-sag-gradient
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The ex vivo whole-cell recordings are not in dandiset 000987, which holds only extracellular
+    recordings, nor in the paper's code repository; the paper's data availability statement names only
+    the RSC dataset as deposited.
+- claim: figs4-no-other-gradients
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4d-sag-gradient; the ex vivo recordings are not deposited.
+findings:
+- kind: metadata_error
+  statement: The dandiset description says the 14 recordings hold 570 isolated units, as the paper's Methods
+    do, but the files hold 638 units (31 to 71 per session). 570 is the number of units whose DOWN-to-UP
+    PETH crosses half the mean rate within 155 ms, the units entering the paper's Figure 5F.
+- kind: data_missing
+  statement: The dandiset description lists LFP in each file, but no file holds LFP or any other electrical
+    series; only spike times, epochs, sleep scoring, DOWN and UP states and tracking.
+- kind: metadata_insufficient
+  statement: Units carry no waveform, cell type, channel or depth, and the electrode table gives x, y
+    and z as 0 for every channel, so the putative excitatory rule of the Methods (trough-to-peak and rate)
+    cannot be applied and units cannot be placed on the probe.
+- kind: metadata_error
+  statement: session_start_time is 2024-05-09 (the upload day) in every file, while the identifiers carry
+    the recording dates (A7801-210225 and so on, 2021).
+- kind: metadata_error
+  statement: In 9 of 14 sessions part of the SWS (NREM) epochs lies outside the sleep epochs; in A7803-210730
+    one SWS interval, 7,680 to 9,565 s, covers two whole wake (arena) epochs.
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure 5F. Which units enter the RSC test? All 638 sorted
+    units give the legend's n of 570 entering units and tau = -0.275; the Methods say only EX units were
+    analysed, which the deposited files cannot reproduce (no waveforms). This attempt assumed all units.
+- kind: code_mismatch
+  statement: In the paper's code (commit 4ee34f3), the DOWN and UP event file of PoSub session A3708-200317b
+    does not fit the spikes of that session in DANDI:000939 (version 0.261016.2310); the population rate
+    inside its DOWN states (454.7 Hz) equals that of shifted intervals (455.8 Hz), and no shift within
+    6,000 s fits. The other 15 event files fit (0.0 to 136.7 Hz inside DOWN states).
+- kind: metadata_error
+  statement: In DANDI:000939 (version 0.261016.2310) the NREM epochs of sleep_states lie partly outside
+    the home cage epochs in the paper's sessions, and in A3711-200810b, A3717-201021 and A3723-201115
+    they run 3,508 to 5,092 s past the last spike of the recording.
+- kind: other
+  statement: In DANDI:000939 the LFP of A3705-200306 covers 11,168 s and that of A3711-200810b 9,499 s,
+    while their spikes run to 16,199 s and 12,177 s; both LFPs have starting_time 0 and rate 1,250 Hz.
+    In these two sessions and A3708-200317b high gamma power does not rise after the DOWN-to-UP transitions
+    of the spikes (by 0.02 or less over shifted times, against 0.053 to 0.357 elsewhere), which suggests
+    that their LFP and spikes do not share a clock. In A3708-200317b the LFP fits neither the spikes nor
+    the session's event file in the paper's code (power after / before the event file's UP starts 0.997,
+    0.998 when shifted by 0.5 s); only 1,488 of the event file's 6,187 UP starts lie in the file's NREM
+    within the home cage.
+- kind: metadata_insufficient
+  statement: In DANDI:000939 the electrode table gives x, y and z as NaN, and its rel_y column is described
+    only as "xy coordinate in electrode group"; which way it runs is said only in the probe description
+    ("Channels sorted top to bottom of shank", electrode 0 with the largest rel_y).
+- kind: selection_undocumented
+  statement: DANDI:000939 holds 31 mice; the paper used 16 sessions, and which ones is recorded only by
+    the event files in the paper's code repository.
+- kind: metadata_insufficient
+  statement: DANDI:000056, which holds 8 of the 9 ADN sessions the paper's code names, gives no location,
+    shank or electrode for its units, so ADN units cannot be selected.
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure 1B. Is HD information in bits per spike or bits
+    per second? The formula printed in the Methods gives bits per second, which correlates with depth
+    here (tau = 0.082, p = 5.1e-5); bits per spike, the unit used for the Isomap cell selection, does
+    not (p = 0.099). This attempt assumed bits per spike.
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure S1I. How is a session halved (first and second
+    half, or alternating DOWN states), and which correlation is used? Three of four readings find DU more
+    stable than UD; first and second half with Pearson's R does not (p = 0.40).
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure S1L. Were the predictors (DV position and NREM
+    firing rate) standardized, and are the coefficients compared signed or in absolute value? Only standardized
+    predictors with signed coefficients reproduce both tests.
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure 2 and S2D. How is high gamma power taken from
+    the filtered LFP, is the UP onset delay measured from DU or from the delta peak, in which window is
+    the maximal slope searched, and how is the UD timing measured on the LFP? Aligned to DU the rise travels
+    but the drop before the DOWN start does too; aligned to the delta peak neither does.
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure S2E. Is the speed the slope of depth on delay
+    or the inverse of the slope of delay on depth? The first gives the paper's unit speeds (6.97 against
+    6.72 mm/s) and was assumed.
+- kind: selection_undocumented
+  statement: The paper's Figure 5E uses 25 sessions of CRCNS fcx-1, which holds 27; which 25 is recorded
+    only in a list (dataset_DM.list) that the code repository does not hold.
+- kind: code_mismatch
+  statement: Figure5E.py (commit 4ee34f3) reads buzcode files of the frontal cortex data (SlowWaves events,
+    CellClass and spikes cellinfo) that CRCNS fcx-1 does not hold; the data set gives spike times, cell
+    classes and UP and DOWN states in other files (SStable, CellIDs, UPDOWNINtervals).
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure 5E. Are the SlowWaves UP states of the code the
+    UPInts of the data set's UPDOWNINtervals.mat, or the spike-based ON intervals, and which 25 sessions
+    were used? UPInts give tau = -0.221 over 27 sessions, ON intervals -0.162. This attempt assumed UPInts.
+- kind: methods_unavailable
+  statement: Question for the paper's authors on Figure 1K. Are the time steps whose ring radius is below
+    the threshold left out of the cumulative circular variance, and is the variance averaged over UP states
+    before the slope is taken? Leaving them out gives no difference between the traveling and control
+    intervals (p = 0.27 over 16 sessions, and 0.10 and 0.21 with the rings of two other random draws);
+    keeping them gives p = 0.052, 0.025 and 0.044, near the paper's result. This attempt
+    assumed they are left out.
+- kind: other
+  statement: In DANDI:000939 the Isomap ring of the HD cells (makeRing.py) does not follow head direction
+    in wake in A3706-200313 and A3730-210323b (mean resultant length of ring angle against head direction
+    0.114 and 0.328, against 0.627 to 0.936 in the other 14 sessions).
+verifications:
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1. The executed notebooks of commit 2cbcfb2 (reproduce_mehrotra_2024.ipynb, posub_000939.ipynb,
+    posub_lfp_000939.ipynb) with the conclusion cells and the summaries removed, the helper module and
+    the claims file, with the paper. Problems it marked as not affecting a conclusion were also answered:
+    problem 10 (the NREM epochs past the last spike lie outside the home cage epochs, now printed and
+    discussed in the posub data check), problem 11 (the header tables now say which notebook tests each
+    claim) and problem 12 (see fig5e-fc-pmr-onset).'
+  results:
+  - claim: rsc-dataset
+    agrees: true
+    outcome: not_reproduced
+    reason: Sessions 14 and mice 3 match, but the files hold 638 units (main cell 9), 11.9% above 570,
+      outside the 10% band. Exactly 570 units enter the Fig 5F test (cell 11), so the paper's "570 recorded"
+      is probably the analysed count. The archive description copies 570, but its "31-71 per recording"
+      matches the files.
+    response: No change.
+  - claim: fig5f-rsc-pmr-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'Reading (a): tau = -0.2748, p = 8.1e-21, n = 570, within 0.028 of -0.28 (cell 11). Reading
+      (b) could only be run on its rate half: tau -0.33 to -0.34, p < 1e-18. All 14 sessions are negative
+      with p < 0.05 (cell 12). Problem 8: the trough-to-peak half of the EX rule cannot be applied; the
+      RSC units table holds only electrode_group, group, id, location and spike_times, and every subset
+      tested is strongly negative.'
+    response: No change.
+  - claim: fig5c-posub-pmr-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'tau = -0.1772, p = 3.7e-17, n = 1,096, within 0.019 (posub cell 9). With A3708 dropped -0.1945;
+      with the event files used as they are -0.126, outside tolerance. Problem 4: the event-file clock
+      was checked only coarsely; re-detection matches only 5-11% of the file''s DOWN states in A3701,
+      A3710 and A3716, the fine offset scan was run only for A3708, and a constant offset of tens of ms
+      would pass the coarse check but shift every delay in a session.'
+    response: 'Added the cross-correlogram it asked for: re-detected against file DOWN starts in 5 ms
+      bins over +/- 0.5 s, per session. Every session but A3708-200317b has a sharp peak at -2.5 to -17.5
+      ms (25 to 67 times the flanks; -12.5 ms in A3701 and A3710, -17.5 ms in A3716, which explains their
+      low match within 10 ms), so no file is offset by tens of ms. Also added the identity check of A3708
+      it asked for (session_id 200317b, the only asset of the mouse, recording 13,658 s covering the event
+      file''s 940 to 11,719 s; the event file fits the spikes of none of the 16 sessions). Outcome unchanged.'
+  - claim: fig5d-isomap-pmr
+    agrees: true
+    outcome: reproduced
+    reason: abs R = 0.865 under the Methods window and 0.875 under the code's window, p about 0 (posub
+      cell 11).
+    response: No change.
+  - claim: fig1e-delay-range
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), 1st to 99th percentile, exactly 5 to 100 ms; reading (a) 0 to 110 ms (posub cell
+      13).
+    response: No change.
+  - claim: fig1g-dv-sequence-du
+    agrees: true
+    outcome: reproduced
+    reason: 'Main: DU W = 1, p = 6.1e-5; UD W = 38, p = 0.13; U = 51, p = 0.004, almost exactly the paper
+      (posub cell 15). Problem 3: fragile; with the A3708 event file as it is, or the session dropped,
+      UD gives p = 0.048 and the criterion fails; the pass relies on states re-detected with the RSC procedure
+      for that one session, justified by the failed clock check, but it should be reported as fragile.
+      Problem 6: the depth convention is assumed from probe convention and Figure1H.py; no file metadata
+      was checked; reversed, fig1g would show ventral units first.'
+    response: 'The conclusion and notes now call the result fragile and say why. The depth convention
+      is now read from the file: the probe description says "Channels sorted top to bottom of shank" and
+      electrode 0 has the largest rel_y in all 16 sessions, so larger rel_y is dorsal (posub data check).
+      Outcome unchanged, still resting on the A3708 re-detection.'
+  - claim: fig1h-ventral-down-longer
+    agrees: true
+    outcome: reproduced
+    reason: 'Ventral is longer with all units (W = 12, p = 0.011) and with EX units only (W = 3, p = 0.0019)
+      (posub cell 21). Problem 6 applies: if the depth convention were reversed, dorsal DOWN states would
+      be longer.'
+    response: The depth convention is now shown from the file's probe description (see fig1g-dv-sequence-du).
+      No other change.
+  - claim: fig1b-no-dv-tuning-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: 'HD information as the Methods formula gives it (bits/s) varies with depth, tau = 0.082, p
+      = 5e-5; speed, AHV, RVL and peak rate behave as claimed (posub cell 23). The bits/spike variant
+      is not significant (p = 0.099), so the outcome turns on the unit. Problem 5: the paper itself filters
+      cells by HD information in bits/spike and cites Duszkiewicz et al. for it; under bits/spike all
+      five correlations come out as the paper reports them; the claims file does not name this as an open
+      detail, a gap in the claims file, not a coding error. It could not check bits/spike against the
+      paper''s figures.'
+    response: 'Outcome kept as reproduced, resting on the assumption, and the disagreement recorded. Added
+      the check against the figure: Figure 1B plots log10(HD info) on an axis from -2 to 1 with most cells
+      near 0; in bits per spike the median of log10 is 0.12 and the 99th percentile 0.46 (5 of 1,097 cells
+      off the axis), in bits per second the median is 0.54 and 31 cells lie beyond 1. The figure thus
+      plots bits per spike, the unit the Methods also use, which supports the assumption; the question
+      stays recorded for the paper''s authors. Since the verifier read the criterion''s "as the Methods
+      define them" as the printed formula, a question is added for a reader (questions/mehrotra-2024.yaml).'
+  - claim: figs1j-dorsal-ventral-same-hd
+    agrees: true
+    outcome: reproduced
+    reason: All 4 readings give p >= 0.05 (0.19 to 0.98) on 14-15 sessions; 1-2 sessions had fewer than
+      10 usable bins (posub cell 25).
+    response: No change.
+  - claim: figs1i-du-more-stable
+    agrees: true
+    outcome: blocked
+    reason: 'The readings disagree: first/second-half Pearson gives W = 51, p = 0.40, while the other
+      three give p < 0.05 (posub cell 17). Problem 1: with odd/even halves the UD PETH keeps only spikes
+      from the same-parity UP states; the UP state before each DOWN start belongs to the other half, so
+      the pre-event part is empty or depleted, which explains two NaN sessions and low UD correlations
+      under odd/even, biasing that reading towards DU more stable.'
+    response: 'Fixed: for each half the spikes around its DOWN starts are now counted in all UP states
+      and divided by the rate in the half''s own UP states. All 16 sessions now enter the odd/even readings;
+      they still find DU more stable (Pearson W = 19, p = 0.0092; Kendall W = 0, p = 3.1e-5), and first/second-half
+      Pearson still does not (W = 52, p = 0.43). Outcome unchanged.'
+  - claim: figs1kl-not-firing-rate
+    agrees: true
+    outcome: blocked
+    reason: 'Only z-scored with signed comparison holds; z-scored with absolute comparison gives p = 0.065
+      for position against rate; both raw readings fail (posub cell 19). Problem 7: the raw reading compares
+      coefficients in different units, not a meaningful comparison, and position was oriented ventral
+      = positive, which decides the signed reading; the outcome stays blocked either way.'
+    response: No change.
+  - claim: fig2f-gamma-travels
+    agrees: false
+    outcome: blocked
+    reason: 'DU-aligned readings: DU differs from 0, but UD also differs (p about 6e-5) wherever it can
+      be tested. Delta-peak readings: DU does not differ (p 0.39 to 0.60). No reading meets the full criterion
+      (lfp cell 7); it gives blocked, methods_underspecified. Problem 2: in A3705 and A3711 the LFP is
+      shorter than the spike record and there is no gamma rise after DU (ratio 1.000 and 1.007, equal
+      to the shifted control), A3708 the same; all three are still used, and their DU delays span the
+      whole search window. Problem 9: the delta-peak readings yield only 0.37-4.76 peaks per minute and
+      are noisy.'
+    response: 'Added what it asked for: the LFP starting_time and rate (0 and 1,250 Hz in every session)
+      and the per-session rise against its shifted control; the three sessions whose rise does not exceed
+      the control by more than 0.02 are now left out of the main reading, with all 16 as a variant. The
+      result is the same on 13 sessions (DU p = 0.0046 to 0.0081; UD p = 2.4e-4; delta-peak DU p = 0.27
+      to 1.0). Outcome kept as not reproduced, and the disagreement recorded: every reading of the criterion
+      fails it, on different parts, and the outcome is the one all readings give. The notes now say that
+      the delta-peak readings rest on few peaks.'
+  - claim: figs2d-lfp-spike-agree
+    agrees: true
+    outcome: blocked
+    reason: '6 of 8 readings are positive with p < 0.05; the two abs-Hilbert delta-peak readings are not
+      (p 0.13, 0.07). Only one reading is within tolerance, R = 0.59 (lfp cell 10). Problem 2: the three
+      sessions without a gamma rise after DU change the R values.'
+    response: 'Rerun without the three sessions, as it asked: 7 of 8 readings are positive with p < 0.05
+      and three within the tolerance, and the eighth has R = 0.553, p = 0.0502, so the readings still
+      disagree. Outcome unchanged.'
+  - claim: figs2e-speed-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Spike speed matches the paper only as the slope of depth on delay (6.97 against 6.72 mm/s).
+      Under that definition all 8 LFP readings differ (p <= 0.028), and no LFP mean falls within 9.89
+      +/- 5.51 under any of the 16 readings (lfp cell 12). It inherits the LFP problems in 2 and 9.
+    response: 'Rerun without the three sessions: under the assumed definition 7 of 8 LFP readings differ
+      from the units (p = 3.2e-5 to 0.017), one does not (p = 0.097, 7 sessions), and no LFP mean is within
+      9.89 +/- 5.51. Outcome unchanged; measured LFP value updated to 38.91.'
+  - claim: fig5e-fc-pmr-onset
+    agrees: false
+    outcome: blocked
+    reason: 'Blocked (too_large), not established. The 66 min estimate assumes reading all 27 archives
+      one after another from a single stream (main cell 15). It asked for the tar member order in one
+      archive and a timing of parallel streams. Problem 12: load_fcx_session would use UPDOWNINtervals,
+      whereas the criterion says SlowWaves events (as Figure5E.py); a deviation if fig5e were run.'
+    response: Changed to reproduced, resting on an assumption. Eight parallel streams reach about 230
+      MB/s together, and the notebook now reads all 27 archives in 831 s (corrected in round 2 from 691 s, which the executed copy did not print; the .eeg came before the members
+      needed in 18). With UPInts for the SlowWaves UP states and EAll for the EX units, tau = -0.221 (p
+      = 2.3e-20, 986 EX units, 27 sessions), within 0.022 of -0.22. The use of UPDOWNINtervals is recorded
+      as a deviation and an assumption, with the ON intervals (tau -0.162) as a second reading, and a
+      question for the paper's authors.
+  - claim: figs2g-adn-synchronous
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (metadata_insufficient), confirmed: in DANDI:000056 the units table is only id and
+      spike_times, electrode-group locations are unknown, and Mouse32-140822 is absent. Only the PoSub
+      half could be computed.'
+    response: No change.
+  - claim: fig1j-down-resets-hd
+    agrees: false
+    outcome: blocked
+    reason: 'The block is not supported by the archive: DANDI:000939 holds spikes, HD, wake epochs and
+      UP states, and makeRing.py exists in the code. The claim could be tested.'
+    response: 'Tested in a new notebook, posub_ring_000939.ipynb, with the ring of makeRing.py. Outcome
+      changed to not reproduced: the angle differences are nearly uniform (resultant length 0.020, shuffle
+      99th percentile 0.078), but one of 20 bins lies outside the shuffle range (chance rate of that event
+      3.5% with this procedure), and the criterion decides; on the 14 sessions whose ring follows head
+      direction no bin lies outside.'
+  - claim: fig1k-hd-stable-at-onset
+    agrees: false
+    outcome: blocked
+    reason: Same data as fig1j; the claim is testable.
+    response: 'Tested in posub_ring_000939.ipynb. Outcome changed to not reproduced, resting on an assumption:
+      with below-threshold steps left out, as the Methods imply, U = 98, p = 0.27; keeping them gives
+      p = 0.040 (corrected in round 2: the numbers first written here, U = 99, p = 0.28 and p = 0.027,
+      were not those of the executed copy). The question is recorded for the paper''s authors.'
+  - claim: fig3-other-gradients-fail
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): MATLAB model, no data.'
+    response: No change; the record keeps not_runnable, as the model's software cannot be installed in
+      the locked environment.
+  - claim: fig3f-ih-gradient
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (other): MATLAB model, no data.'
+    response: No change, as for fig3-other-gradients-fail.
+  - claim: fig4d-sag-gradient
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked (data_missing): ex vivo data not deposited; a DANDI search for "Peyrache" finds only
+      000056, 000939, 000987, 001676 and 001699.'
+    response: No change.
+  - claim: figs4-no-other-gradients
+    agrees: true
+    outcome: blocked
+    reason: As fig4d.
+    response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebooks of commit 34bae66 (reproduce_mehrotra_2024.ipynb, posub_000939.ipynb,
+    posub_lfp_000939.ipynb, posub_ring_000939.ipynb) with their conclusions and summaries, the helper module,
+    the claims file and this record, with the paper. Its text corrections without an outcome change were
+    also made: the 691 s of fig5e (main cell 20), the threshold range of fig5f (main cell 15, now -0.259
+    to -0.238), and the agreement wording of the posub Summary (the 15 event files share the clock of the
+    spikes by the cross-correlogram peak, while in A3701, A3710 and A3716 only 423 to 769 file DOWN starts
+    lie within 10 ms of a re-detected one). The optional check it suggested for A3708-200317b was added
+    (posub_lfp_000939.ipynb): the LFP rises after neither the re-detected DU (1.045 against 1.048 shifted)
+    nor the event file''s UP starts (0.997 against 0.998), so the LFP fits neither stream.'
+  results:
+  - claim: rsc-dataset
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the record.
+    response: No change.
+  - claim: fig5f-rsc-pmr-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'All units enter (reading a). Stated, and supported by exactly 570 units entering.'
+    response: No change to the outcome; the threshold range in the result is now -0.259 to -0.238, as printed.
+  - claim: fig5c-posub-pmr-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'The states of A3708-200317b are re-detected. Stated, and reasonable: the file fails the clock
+      check against every session (posub cell 8).'
+    response: 'No change to the outcome. The posub Summary now says that the other 15 event files share
+      the clock of the spikes by the cross-correlogram peak (-2.5 to -17.5 ms), and that in A3701, A3710
+      and A3716 only 423 to 769 file DOWN starts lie within 10 ms of a re-detected one. The optional check
+      of A3708 against its LFP was added: the LFP fits neither the spikes nor the event file.'
+  - claim: fig5d-isomap-pmr
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the record.
+    response: No change.
+  - claim: fig1e-delay-range
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the record.
+    response: No change.
+  - claim: fig1g-dv-sequence-du
+    agrees: true
+    outcome: reproduced
+    reason: 'The A3708 replacement. Stated and called fragile. Both fig1g and, through A3708, fig5c still
+      rest on the re-detected A3708 states; this is stated and does not need to change.'
+    response: No change. The A3708 LFP check (see fig5c-posub-pmr-onset) does not tell which of the spikes
+      or the event file is off, as the LFP fits neither.
+  - claim: fig1h-ventral-down-longer
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the record.
+    response: No change.
+  - claim: fig1b-no-dv-tuning-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion fixes "the measures as the Methods define them". The printed formula gives bits
+      per second, and under it the claim fails (tau = 0.082, p = 5.1e-5, posub cell 34). The bits-per-spike
+      assumption is stated and plausible; its p = 0.099 and |tau| = 0.034 sit close to the paper''s -0.03
+      and p = 0.13. The claims file does not name the unit as open, a gap the author has correctly sent
+      to a reader. New point: the record leaves the direction of the depth axis unstated; the paper''s
+      three non-significant measures are negative and the two significant ones positive, while in the
+      notebook all five are positive with dorsal as positive, so no single axis direction matches all five
+      signs, and the "positively correlated" part rests on reading the paper''s axis as dorsal-positive;
+      the opposite direction is said to be reported but is not printed. The quotation "0.2 bits/spike"
+      misquotes the paper''s "0.2 bins/spike", and the Figure 1B axis range (-2 to 1, most cells near 0)
+      is not supported by the materials it had (the text has no axis labels, and it could not render the
+      PDF).'
+    response: 'Outcome kept as reproduced, resting on the assumption, and the disagreement recorded; the
+      question to a reader stays in questions/mehrotra-2024.yaml. The quotation now reads "0.2 bins/spike",
+      with "bins" said to be read as a misprint for bits. The figures were rendered from the paper''s PDF
+      and read: Figure 1B plots log10(HD info) from -2 to 1 with most cells between -0.5 and 0.5 and none
+      beyond about 0.5, and Figures 1B and S1D to S1F plot "D-V pos. (mm)" from 0 at the top (dorsal) to
+      -0.8 at the bottom (ventral), so the paper''s axis is dorsal positive, as rel_y here. The tau with
+      ventral positive is now printed (each sign changed). The axis direction is recorded as a deviation,
+      and the notes say that the three measures that do not vary have the opposite sign to the paper''s,
+      not significant in either, and that no direction matches all five signs.'
+  - claim: figs1j-dorsal-ventral-same-hd
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the record.
+    response: No change.
+  - claim: figs1i-du-more-stable
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, methods_underspecified).
+    response: No change.
+  - claim: figs1kl-not-firing-rate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, methods_underspecified).
+    response: No change.
+  - claim: fig2f-gamma-travels
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Changed from round 1. Every reading fails the criterion, so the readings agree on the outcome
+      and "blocked when the readings disagree" does not apply. The DU-aligned readings fail because UD also
+      depends on position (W = 0, p = 2.4e-4). The delta-peak readings fail on DU (p >= 0.27).'
+    response: No change to the outcome; the notes add the A3708 LFP check.
+  - claim: figs2d-lfp-spike-agree
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, methods_underspecified).
+    response: No change.
+  - claim: figs2e-speed-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Speed is the slope of depth on delay. Stated, and reasonable: it gives the paper''s unit speeds.'
+    response: No change.
+  - claim: fig1j-down-resets-hd
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, as the criterion''s test. One of 20 bins lies outside the shuffle range; it is a deficit
+      at -0.47 rad, not an excess at zero difference. The test''s own chance rate is 3.5%, and the effect
+      is null in size (resultant length 0.020 against a shuffle 99th percentile of 0.078). The outcome hangs
+      on one bin of a subsampled ring. Isomap''s ARPACK solver is not seeded, and the wake bins and UP states
+      are subsampled; a re-run could flip it. To settle it, two executions with identical printed output,
+      or fig1j and fig1k over several seeds.'
+    response: 'Both were added. Isomap now uses the dense eigen solver, and a second fit of the ring of
+      A3701-191119 with the same generator is identical (largest difference 0). As the solver''s reflection
+      of a ring is arbitrary and negates the angle differences, each ring is oriented to follow head direction
+      in wake (7 of 16 reflected); with the rings as the solver returns them one bin lies outside too. In
+      the re-run one of 20 bins still lies outside (a deficit at -0.47 rad, 294 against 300 to 422; chance
+      rate 3.3%). Over three draws of the ring (seeds 1000 + k, 2000 + k, 3000 + k) one bin lies outside
+      in two and none in one, so the outcome is kept as not reproduced, as the criterion''s test on the
+      main draw gives it, and the notes call it fragile. On the 14 sessions whose ring follows head direction
+      two bins now lie outside (none before).'
+  - claim: fig1k-hd-stable-at-onset
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Steps below the radius threshold are left out. Stated and decisive (kept, p = 0.040). Reasonable
+      given the Methods wording ("threshold for computing angular direction"). The conclusion numbers (U
+      = 99, p = 0.28; 14 sessions p = 0.54; kept U = 69, p = 0.027) do not match ring cell 9 (traveling
+      median 0.373, U = 98.0, p = 0.266; 14 sessions U = 83, p = 0.505; kept U = 73, p = 0.040), nor do
+      the ring Summary, the main Summary, the record''s notes, deviations, Figure 1K finding and verification
+      response; the ring results differ between runs, or the text was not updated after the re-run.'
+    response: 'Text corrected everywhere to the re-run, which with the dense solver repeats: traveling lower
+      in 10 of 16 (median 0.373 against 0.439), U = 98, p = 0.27; 14 sessions U = 83, p = 0.51; steps kept
+      12 of 16, U = 76, p = 0.052. Over the two other draws of the ring, p = 0.10 and 0.21 with the steps
+      left out, and 0.025 and 0.044 with them kept. Outcome unchanged; it does not depend on the draw.'
+  - claim: figs2g-adn-synchronous
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, metadata_insufficient).
+    response: No change.
+  - claim: fig5e-fc-pmr-onset
+    agrees: true
+    outcome: reproduced
+    reason: 'UPInts stand in for SlowWaves, all 27 sessions are used, and the dated sessions are taken as
+      one rat. All stated and reasonable. ONInts give -0.162, outside tolerance, so the first assumption
+      decides. Main cell 20 says "All 27 archives were read in 691 s" while cell 17 prints "loaded 27 sessions
+      in 831 s"; the notes and the verification response repeat 691 s.'
+    response: The result no longer quotes a time and points to the printed one; the notes give the 965
+      s of this run and the round-1 response the 831 s of the copy it reviewed. Outcome unchanged.
+  - claim: fig3-other-gradients-fail
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, not_runnable).
+    response: No change.
+  - claim: fig3f-ih-gradient
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, not_runnable).
+    response: No change.
+  - claim: fig4d-sag-gradient
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, data_missing).
+    response: No change.
+  - claim: figs4-no-other-gradients
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the record (blocked, data_missing).
+    response: No change.
