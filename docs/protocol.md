@@ -377,7 +377,10 @@ module.
   (say what and why), or a standard choice for a detail that cannot change a
   result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
-  Aim for under ten minutes; CI fails a notebook over sixty. If the analysis
+  Aim for under ten minutes, and keep every notebook under sixty in your own
+  run. The verifier's re-run and the pull request's checks allow eighty, as a
+  download from the archive can be slower there; that margin is not for
+  using. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
 - **Keep it within memory.** The runner has 16 GB of memory and 4 CPUs, shared
   with the agent itself. Read a large file as a stream (decompress and iterate
