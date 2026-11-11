@@ -186,15 +186,17 @@ outcomes:
   output: claim:fig2efgh-tonic-firing-indifferent-to-reward-rate
   notes: 'Blocks split per session at the median of block-mean reward rate (high blocks have a mean reward rate
     2.10 rewards higher on the integrator''s scale). The two readings disagree. Reading (b), rank-sum of block-mean
-    rates: 2 of 27 cells differ at p < 0.05 with the median block dropped, 0 with it put low; with 2 or 3 blocks
-    a side, 6 of the 27 cells cannot reach p < 0.05 even with complete separation, so this reading has little power.
+    rates: 2 of 27 cells differ at p < 0.05 with the median block dropped, 0 with it put low (binomial p = 0.394
+    for 2 of 27). The 6 cells with 2 blocks a side cannot reach p < 0.05 even with complete separation (smallest
+    p 0.121), and the 6 with 3 a side only just can (0.0495), so this reading has little power; 2 of the 21 cells
+    that can reach p < 0.05 do.
     Reading (a), rank-sum of 1 min bin rates: 18 of 27 cells differ (19 with the median block put low), against
     1.35 expected (binomial p = 1.2e-17); regressing bin rates on block type and time in session, 16 of 27; against
     circular shifts of the bins'' high/low labels, which keep the bins'' serial dependence, 9 of 27 (7 with the
     median block put low; binomial p = 4.0e-6). Across cells firing is higher in high-reward blocks by a median
     0.50 Hz (range -0.63 to 1.38 Hz; signed-rank p = 0.0006). Tonic firing changes little, about 0.5 Hz on a mean
-    near 7.7 Hz, as the paper describes, but individual cells change under every test with the power to detect it,
-    where the claim says none did. The question of the test is put to the authors (findings).'
+    near 7.7 Hz, as the paper describes, but individual cells change under the tests on 1 min bins, where the
+    claim says none did; reading (b) finds no more cells than chance, with little power. The question of the test is put to the authors (findings).'
   deviations:
   - The test of Fig. 2f is in the unread legend; the claims file names two readings, both run. Reading (a) is also
     run against circular shifts of the high/low labels of the 1 min bins (shifts of 10 or more bins), because the
@@ -374,9 +376,10 @@ outcomes:
     the window, 2 and 2, which drops 50 of 3695 trials (38 in one cell). Only the last matches the paper''s 2/29.
     Under every reading fewer cells code negative RPE by the pause than code positive RPE by the peak (21 before,
     17 after correction). The valley part cannot be tested: the minimum of the 20 ms spike density is under 0.5
-    Hz on all 3695 unrewarded trials and the same on every trial in 21 (1 to 3 s window) and 27 (0 to 2 s) of the
-    29 cells, and in all 29 with the SD 4.5 ms kernel, so no valley correlation can be significant and the comparison
-    with the peak holds by construction. The authors'' Fig5_replicate.m computes neither the valley nor the pause.
+    Hz on 3694 of 3695 unrewarded trials in the 1 to 3 s window (the largest 0.91 Hz) and on all 3695 in the 0 to
+    2 s window, and the same on every trial in 21 (1 to 3 s) and 27 (0 to 2 s) of the 29 cells, and in all 29 with
+    the SD 4.5 ms kernel. A valley correlation is defined only for 8 and 2 cells, none of them significant, and the
+    comparison with the peak holds by construction. The authors'' Fig5_replicate.m computes neither the valley nor the pause.
     Population pause by tercile 0.49, 0.52, 0.55 s (Friedman p = 9.7e-5, bounds reading). Measured is the bounds
     reading before correction.'
   deviations:
@@ -392,7 +395,9 @@ outcomes:
   notebook: reproduce_mohebi_2019.ipynb
   output: claim:ed8-other-reward-expectation-estimates
   notes: 'Alpha per session by the most negative correlation with log latency (0.01 to 1; it reaches 1 in 2 sessions
-    for the actor-critic and 4 for Q-learning, and 0.01 in 1 for Q-learning, where the latency fit is weak). Rewards
+    for the actor-critic and 4 for Q-learning, and 0.01 in 1 for Q-learning; the fit is weak under both models
+    in IM-1003_170404 and IM-1037_180112, r -0.165 and -0.035 for the actor-critic, -0.167 and 0.016 for Q-learning,
+    and good in the other two Q-learning sessions at 1.00, r -0.346 and -0.402). Rewards
     in the last 10 trials: tercile means 38.7, 31.7, 29.0 Hz, median r -0.321, 20 cells negative and 0 positive
     (18 after correction); actor-critic V: 38.5, 31.2, 28.5 Hz, median r -0.312, 23 and 0 (17); Q-learning Q_left
     + Q_right: 38.2, 29.8, 30.1 Hz, median r -0.215 (Wilcoxon p = 1.1e-8), 16 and 0 (12). The fig5a criteria hold
@@ -442,8 +447,8 @@ findings:
     minus Light-On by more than 5 ms (in IM-657_160613 the last trial repeats the previous trial's value). ReactionTime
     also differs from Center-Out minus Go cue by up to 273 ms in 3 sessions.
 - kind: format_error
-  statement: Spike times are not in ascending order in at least one segment of 13 of the 29 units (inversions of
-    under 1 ms, for example 2399.4926 after 2399.4930 s in IM657160613t11a).
+  statement: Spike times are not in ascending order in at least one segment of 11 of the 29 units (inversions of
+    at most 0.7 ms, for example 2399.4923 s after 2399.4926 s in the RL segment of IM657160613t11a).
 - kind: paper_inconsistency
   statement: The Methods give the tagged cells per rat as IM657 1, IM1002 3, IM1003 15 and IM1037 9, which sums
     to 28, while the text says 27 VTA-l cells. The data hold 8 IM1037 cells (27 in all). Extended Data Fig. 5b gives
@@ -756,3 +761,227 @@ verifications:
     outcome: blocked
     reason: No untagged units.
     response: Outcome kept; no change needed.
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and summary, the helper modules, the README, the
+    attempt record and the claims file, with the paper. The verifier agreed with all 37 outcomes, found all round-1 points
+    resolved and no place where the claims file misreads the paper, so no question was added for a reader. It asked for
+    wording fixes in the fig2efgh, fig5ab, ed8 and fig4ac (README) conclusions, and found that the units with out-of-order
+    spike times are 11, not 13, and that the record's example inversion was not printed. The notebook now prints the
+    units with out-of-order spike times (11 of 29) with the first inversion of each segment, and the cell count, the
+    example (2399.4923 s after 2399.4926 s) and the largest inversion (0.7 ms) are corrected in the notebook, Summary
+    and finding. No outcome changed and none is proposed. Report in transcripts/mohebi-2019/verifier-2-report.md.
+  results:
+  - claim: fig1b-latency-scales-with-reward-rate
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed1b-latency-depends-on-recent-outcomes
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig1cd-nac-core-dopamine-reward-rate
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig1ce-ventral-prelimbic-dopamine-reward-rate
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed1-behavior-similar-across-subregions
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2-tagged-dopamine-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2d-dopamine-firing-rates
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2d-dopamine-lower-rate-than-other-vta
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2d-dopamine-longer-waveforms
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2d-non-dopamine-cluster
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed5-pavlovian-dopamine-click-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed5-pavlovian-dopamine-cue-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed5a-pavlovian-behavior
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2efgh-tonic-firing-indifferent-to-reward-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed. Reading (a) finds 18 of 27 cells significant, and 9 of 27 when the high/low labels are shifted circularly.
+      Reading (b) finds 2 of 27, or 0 of 27 with the median block put low. Across cells, firing is 0.50 Hz higher in
+      high blocks (signed-rank p = 0.0006). The sentence 'individual cells do change under every test with the power
+      to detect it' holds for the tests on 1 min bins, not for reading (b), which can reach p <= 0.05 for 21 cells and
+      finds 2 of 27 (binomial p = 0.394). With the median block dropped, the 6 cells that cannot reach p < 0.05 are the
+      six with 2 blocks a side (minimum p 0.121); the cells with 3 a side can just reach it (minimum p 0.0495).
+    response: Outcome kept. The notebook now prints the smallest possible p by numbers of blocks and how many of the
+      21 cells that can reach p < 0.05 do (2, none with the median block put low). The conclusion and notes now say the
+      cells change under the tests on 1 min bins, that reading (b) finds no more cells than chance, and that the 6 cells
+      with 2 blocks a side cannot reach p < 0.05 while the 6 with 3 a side only just can.
+  - claim: fig2fh-non-dopamine-no-tonic-change
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig2i-burst-rate-no-change
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig2i-no-inactive-states
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: ed3-ctb-retrograde-labelling
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: retro-tagged-cells-resemble-others
+    agrees: true
+    outcome: reproduced
+    reason: The assumption is stated and reasonable. With 5 or 6 blocks a side, reading (b) could reach p = 0.009 and
+      0.004, so it has power for these cells, and it finds no change (p = 0.076 and 0.75). Reading (a) against circular
+      shifts also finds no change (p = 0.27 and 0.85). Setting aside the plain rank-sum of 1 min bins is justified, because
+      it treats serially dependent bins as independent.
+    response: No change needed.
+  - claim: fig3a-dlight-specific
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed5-dlight-pavlovian-responses
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig3cd-dlight-reward-rate-minutes
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig3fh-dlight-tracks-state-value
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig3g-dlight-lag
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig4ac-dopamine-cue-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: The assumption is stated and reasonable. The outcome does depend on it. With the 1 s window, 13 of 27 cells
+      (48%) respond to Light-On, which is not more than half, so that reading would give not_reproduced. The record's
+      deviation is accurate. The README row reads Partially reproduced without the (assumed window) marker that the Summary
+      table and the record carry. The Light-On window overlapping Center-In is settled; using only trials with latency
+      over 0.5 s gives 11 of 27 cells.
+    response: Outcome kept. The README row now reads Partially reproduced (assumed window).
+  - claim: fig4bc-dlight-cue-responses
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig4a-no-dopamine-firing-ramp-before-approach
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig4ef-dlight-ramps-before-approach
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig4e-light-on-alignment
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig5a-early-trial-firing-not-reward-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed, following the criterion's Pearson count (8 and 6 of 29 cells). Under the circular-shift variant,
+      the window before Center-In still exceeds chance, 2 of 29 cells, binomial p = 0.034, so the outcome would hold
+      under that variant too.
+    response: No change needed.
+  - claim: fig5a-positive-rpe-reward-cue
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 37 outcomes.
+    response: No change needed.
+  - claim: fig5ab-weak-negative-rpe
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed, for the reasons now written into the record. ''No valley correlation can be significant'' is not
+      what the output shows: the valley varies across trials in 8 of 29 cells (1 to 3 s window) and 2 of 29 (0 to 2 s),
+      so for those cells a correlation is defined; the output shows that none is significant, not that none can be. ''Under
+      0.5 Hz on all 3695 unrewarded trials'' rests on a printed 100.0%, which is rounded to one decimal.'
+    response: Outcome kept. The notebook now prints the count of trials with a valley under 0.5 Hz (3694 of 3695 in the
+      1 to 3 s window, largest 0.91 Hz; 3695 of 3695 in the 0 to 2 s window) and the number of cells with a defined valley
+      correlation (8 and 2) and of those significant (0). The conclusion and notes now state these numbers and that the
+      comparison with the peak holds by construction.
+  - claim: ed8-other-reward-expectation-estimates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agreed, for the reasons now written into the record. ''Where the latency fit is weak'' is not supported
+      for every session at the edge of the alpha grid: two of the four Q-learning sessions at alpha = 1.00 fit well,
+      IM-1002_170127 (r -0.346) and IM-1078_180827 (r -0.402). The phrase comes from my round-1 item 9, which was wrong
+      on this point; the alpha edge is 2 sessions for the actor-critic and 4 for Q-learning.'
+    response: Outcome kept. The conclusion and notes now name the two edge sessions where the fit is weak under both
+      models (IM-1003_170404 and IM-1037_180112) and the two Q-learning sessions at 1.00 that fit well.
+  - claim: fig5cd-dlight-positive-not-negative-rpe
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: fig5cd-dlight-early-trial-value
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed7-dlight-470-not-405
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.
+  - claim: ed7-non-dopamine-movement-activity
+    agrees: true
+    outcome: blocked
+    reason: Agreed. The data set holds only the 29 tagged dopamine cells; nothing else the paper used is deposited.
+    response: No change needed.

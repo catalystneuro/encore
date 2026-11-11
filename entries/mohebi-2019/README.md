@@ -18,7 +18,7 @@ units are not in it, so the 20 claims on those data are blocked.
 | Burst rate does not change between blocks | Reproduced |
 | Time spent inactive is very low and does not change | Reproduced |
 | The retrogradely tagged cells resemble the others | Reproduced (assumed test) |
-| Light-On, Go cue and reward responses in the great majority of cells | Partially reproduced |
+| Light-On, Go cue and reward responses in the great majority of cells | Partially reproduced (assumed window) |
 | No firing ramp before Center-In or Food-Port-In | Reproduced |
 | All 25 Light-On responsive cells are better aligned to Light-On | Not reproduced |
 | Early-trial firing does not depend on reward rate | Not reproduced |

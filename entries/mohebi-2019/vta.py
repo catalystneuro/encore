@@ -165,8 +165,14 @@ def load_units(port_status: bool = False) -> list[dict]:
                 rex["port_win"] = np.ravel(ps["Win"][()])
                 if port_status:
                     rex["port"] = np.asarray(ps["value"][::30, :]).T  # trials x 1 kHz samples
+            d = np.diff(ts.astype(float))
             segs[t] = {"ts": np.sort(ts.astype(float)), "boxts": box if isinstance(box, dict) else {}, "rex": rex,
-                       "ts_sorted": bool(np.all(np.diff(ts) >= 0))}
+                       "ts_sorted": bool(np.all(d >= 0)),
+                       # number of descending steps, the largest, and the first as (earlier, later) spike time
+                       "n_inversions": int(np.sum(d < 0)),
+                       "max_inversion": float(-d.min()) if len(d) and d.min() < 0 else 0.0,
+                       "first_inversion": (tuple(float(x) for x in ts[np.argmax(d < 0):np.argmax(d < 0) + 2])
+                                           if np.any(d < 0) else None)}
         u["segments"] = segs
         units.append(u)
     h.close()
