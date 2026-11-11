@@ -793,3 +793,12 @@ def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives()
     css = (site.ROOT / "tools" / "site_assets" / "app.css").read_text()
     assert "--archive-4" not in css
 
+
+def test_the_response_form_is_linked_from_paper_pages_only(built):
+    _, out = built
+    assert "Respond to this attempt" in (out / "papers" / "tingley-2021" / "index.html").read_text()
+    assert "Respond to this attempt" not in (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    rs = site.responses_by_dataset([_response("A. Author", ["author-confirmed"])])
+    html = site.responses_block({"responses": rs}, "crcns:stc-1", None, form=False)
+    assert "A. Author" in html and "template=author-response.yml" not in html
+

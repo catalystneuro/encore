@@ -2125,9 +2125,10 @@ def responses_by_dataset(issues: list[dict]) -> dict:
     return out
 
 
-def responses_block(data: dict, dandiset: str | list[str], attempt: dict | None) -> str:
+def responses_block(data: dict, dandiset: str | list[str], attempt: dict | None, form: bool = True) -> str:
     """The confirmed author responses to the dataset's attempts, and how many await confirmation. Given several
-    datasets (a paper's page), the responses to any of them, each once; the form is filled in for the first."""
+    datasets (a paper's page), the responses to any of them, each once; the form is filled in for the first. Without
+    `form` (a dataset's page), no link to the form: responses are made from the paper's page."""
     keys = [dandiset] if isinstance(dandiset, str) else list(dandiset)
     dandiset = keys[0]
     seen, rs = set(), []
@@ -2148,8 +2149,9 @@ def responses_block(data: dict, dandiset: str | list[str], attempt: dict | None)
     wait = (f'<p class="sub small">{waiting} response{"s" if waiting != 1 else ""} from someone who says they are an author '
             f'await{"" if waiting != 1 else "s"} confirmation.</p>') if waiting else ""
     return (f'<div class="author-responses"><h2>Responses from the paper&rsquo;s authors</h2>'
-            f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">{link}: authors can say whether the '
-            f'outcomes are right (<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>).</p></div>')
+            f'{"<ul>" + items + "</ul>" if items else ""}{wait}<p class="sub small">'
+            + (f'{link}: authors can say whether the outcomes are right ' if form else '')
+            + f'(<a href="{REPO_URL}/blob/main/docs/author-responses.md">how responses are handled</a>).</p></div>')
 
 
 def summary_block(atts: list[dict]) -> str:
@@ -2449,11 +2451,13 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                     for q in papers_of(data) if q["doi"] in papers_here and q["attempts"]]
         actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>']
     actions += [f'<a href="{root}#caution">How to read outcomes</a>']
-    # The author response form, filled in for the attempt shown (docs/author-responses.md): on a paper's page, its
-    # latest attempt, on the first dataset it used.
-    responding = atts[-1] if paper else attempt or (atts[0] if len(atts) == 1 else None)
-    respond_on = ((responding or {}).get("datasets") or [dandiset])[0] if paper else dandiset
-    actions += [f'<a href="{e(respond_link(respond_on, responding))}">Respond to this attempt</a>']
+    # The author response form, filled in for the paper's latest attempt on the first dataset it used
+    # (docs/author-responses.md). Only on a paper's page: the papers are the primary index, and a response is to
+    # the paper's attempt.
+    if paper:
+        responding = atts[-1]
+        actions += [f'<a href="{e(respond_link(((responding.get("datasets") or [dandiset])[0]), responding))}">'
+                    'Respond to this attempt</a>']
 
     tags = ""
     if paper:
@@ -2577,7 +2581,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
   {summary_block(atts)}
-  {responses_block(data, about, None) if paper else responses_block(data, dandiset, attempt)}
+  {responses_block(data, about, None) if paper else responses_block(data, dandiset, attempt, form=False)}
   <p class="sub small" style="margin-top:8px">Tested on {tested_on}</p>
   {superseded}
   <p class="actions">{" ".join(actions)}</p>

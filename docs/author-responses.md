@@ -2,14 +2,14 @@
 
 An author of a paper can respond to an attempt on its data with the issue form
 [Respond to an attempt](https://github.com/catalystneuro/encore/issues/new?template=author-response.yml).
-Each dataset's page links to the form, filled in for that dataset and its attempt. The form's issues carry the
+Each paper's page links to the form, filled in for the paper's latest attempt and the first dataset it used. The form's issues carry the
 label `author-response`.
 
 ## What a maintainer does with one
 
 1. **Confirm the author.** Check that the ORCID iD (or, without one, an email from the author's institution)
    belongs to one of the paper's authors. Then add the label `author-confirmed`. Only confirmed responses are
-   shown on the dataset's page; the page counts the others as awaiting confirmation. A response from someone who
+   shown on the paper's page and on the dataset's page; the page counts the others as awaiting confirmation. A response from someone who
    is not an author (a dataset's maintainer, say) is shown once it has the label `confirmed`, as a response, not as
    an author's.
 2. **Act on it**, by what the author says:
@@ -23,5 +23,5 @@ label `author-response`.
      issue `disputed` until the new attempt has merged.
    - **The dataset differs from what the paper used:** this is a finding about the data. Open an issue on the
      conversion, or tell the archive, and link it here.
-3. **Keep it public.** The response stays on the dataset's page after the issue is closed: it is part of the
+3. **Keep it public.** The response stays on the paper's and the dataset's pages after the issue is closed: it is part of the
    attempt's record.
