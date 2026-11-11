@@ -60,7 +60,10 @@ here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
 # A paper's key, or a dataset's folder name (000147 for DANDI, <archive>-<id> otherwise), names the chain's files
 # and branch; a dataset's name is replaced by its paper's once the paper match lists it for one.
-if [[ "$1" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*-[0-9]{4}(-[a-z0-9]+)?$ ]] && ! python "$here/describe.py" folder "$1" >/dev/null 2>&1; then
+# A paper is one main lists (papers/datasets/<key>.yaml); the dataset parser would take "holdgraf-2016" for archive
+# "holdgraf", so it cannot tell them apart.
+git fetch -q origin main 2>/dev/null || true
+if git cat-file -e "origin/main:papers/datasets/$1.yaml" 2>/dev/null; then
   d=$1; is_paper=1
 else
   d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: neither a paper nor a dataset"; exit 1; }
@@ -94,7 +97,7 @@ done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" 
 # The names the chain's runs were committed under: its own, and for a paper, its datasets' folder names, under which
 # an attempt that began before the cutover to paper-first records committed its runs.
 names(){ { echo "$d"; [ -z "$is_paper" ] || git show "origin/main:papers/datasets/$d.yaml" 2>/dev/null \
-  | python -c "import sys,yaml; sys.path.insert(0,'$here/../'); import datasets; [print(datasets.folder(datasets.key_of(x['archive'], str(x['id'])))) for x in (yaml.safe_load(sys.stdin) or {}).get('datasets') or []]" 2>/dev/null; } \
+  | python -c "import sys,yaml; sys.path.insert(0,'$REGISTRY_ROOT/tools'); import datasets; [print(datasets.folder(datasets.key_of(x['archive'], str(x['id'])))) for x in (yaml.safe_load(sys.stdin) or {}).get('datasets') or []]" 2>/dev/null; } \
   | paste -sd '|' -; }
 is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in paper-match|claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
@@ -374,17 +377,24 @@ if [ -z "$pr" ]; then
     --body "$(python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
 fi
 log "pull request $pr"
+# The checks waited for are those of the commit just pushed, asked for by that commit. GitHub can take minutes to
+# start them when its runners are busy; until then the pull request still shows the checks of the commit before,
+# finished. On 2026-11-10 wakhloo-2026 was stopped that way, at once, on the failure its push had been made to
+# fix. The entry check (check.yml, job "check") must be among them: the dashboard's preview alone, which can
+# start first, is not the checks.
+head=$(git rev-parse HEAD)
 while true; do
   # GitHub runs no checks on a pull request that conflicts with main, so waiting for them would never end.
   if [ "$(gh pr view "$pr" --json mergeable --jq .mergeable 2>/dev/null)" = CONFLICTING ]; then
     last_why="$pr conflicts with main; merge main into attempt/$d, resolve the conflict, and start the chain again"
     end "$d STOPPED: the pull request conflicts with main ($pr)"; exit 1
   fi
-  s=$(gh pr checks "$pr" --json bucket 2>/dev/null) || { sleep 60; continue; }
-  echo "$s" | jq -e 'length>0 and all(.bucket!="pending")' >/dev/null && break
+  s=$(gh api "repos/{owner}/{repo}/commits/$head/check-runs?per_page=100" \
+        --jq '[.check_runs[] | {name, status, conclusion}]' 2>/dev/null) || { sleep 60; continue; }
+  echo "$s" | jq -e 'any(.name=="check") and all(.status=="completed")' >/dev/null && break
   sleep 60
 done
-if echo "$s" | jq -e 'all(.bucket=="pass" or .bucket=="skipping")' >/dev/null; then
+if echo "$s" | jq -e 'all(.conclusion=="success" or .conclusion=="skipped" or .conclusion=="neutral")' >/dev/null; then
   gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
   end "$d STOPPED: merging $pr failed"; exit 1
 fi

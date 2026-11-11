@@ -1,0 +1,1599 @@
+# Claims for Kim, Atencio & Schreiner (2020), Nature Communications 11, 1102,
+# doi:10.1038/s41467-020-14835-7, tested on CRCNS data set ac-5.
+# Written by an agent (model "claude-opus-5-5", Claude Code, runner "GitHub Actions"), 2026-11-09,
+# protocol as stated in docs/protocol.md (Reader), version pilot-14.
+#
+# Text read: the version of record (PMC7046699, open access, Europe PMC JATS XML flattened), with
+# its Results, figure legends, Tables 1 and 2, Methods, and the Supplementary Information
+# (41467_2020_14835_MOESM1_ESM.pdf, Supplementary Figures 1 to 3 and their legends), as supplied
+# under paper/. The PDF was not opened; the tables read cleanly in the text.
+#
+# Code. The paper links no code repository; its Data availability statement points only to the
+# CRCNS data set (doi 10.6080/K07H1GSS). The data set's description says it holds a "codes" folder
+# with the Matlab analysis scripts and stimulus files. Those are files of the data set, so the
+# reader did not open them, and no method below is taken from them. Several details named open
+# below (marked D1 to D17) may be settled by that code.
+#
+# Data the paper used. Female C57BL/6 mice (Charles River), 4 to 11 weeks old, anesthetized with
+# ketamine and xylazine. In vivo blind whole-cell recordings from the right primary auditory cortex
+# (A1), about 300 to 500 um deep (about layer 4), low-pass filtered at 5 kHz and sampled at 10 kHz;
+# no current injection, no junction potential correction; recordings with rest above -50 mV
+# excluded. Stimuli to the left ear by a free-field speaker. (1) Pure tones: 45 log-spaced
+# frequencies from 4 to 40 kHz by 8 levels from 0 to 70 dB SPL in 10 dB steps (360 tones), 50 ms
+# each with 250 ms deadtime, one presentation in random order. (2) Dynamic moving ripple (DMR):
+# 0.5 to 40 kHz, 10 min, 316 carriers, temporal modulation up to 40 cyc/s, spectral modulation up
+# to 4 cyc/oct, 40 dB modulation depth, mean level 54 dB SPL (38 and 69 dB SPL as well for
+# Supplementary Fig. 3). Current clamp, 66 neurons from 41 mice with tones; 40 of them also with
+# the DMR. Voltage clamp (cesium, QX-314), 31 neurons from 24 mice with the DMR, excitatory
+# currents at about -80 mV (n = 27, the Fig. 7a legend says -70 mV for its example) and inhibitory
+# currents at about 0 mV (n = 12), both in 8. Supplementary Fig. 2 uses repeated DMR recordings of
+# 2 neurons (13 STRF pairs); Supplementary Fig. 3 uses 5 neurons at three DMR levels. Measured
+# variables: membrane potential (current clamp) and membrane current (voltage clamp), with the
+# stimulus trigger. The data set's description says it holds these current-clamp (tones and DMR)
+# and voltage-clamp (excitation and inhibition DMR) recordings, raw and processed, with only a
+# representative example for Supplementary Figs. 2 and 3.
+#
+# Methods fixed by the paper (Methods, Data analysis, unless stated). Tone responses (PSPs) are
+# those with onset latency 5 to 50 ms and amplitude above 4 x the s.d. of baseline segments; TRFs
+# come from a single presentation of the tone set. The normalized-driven ratio (NDR) is the number
+# of spikes over the number of PSPs within the TRF region, one spike counted per tone when spikes
+# burst. The characteristic frequency (CF) is the frequency with a response at the lowest level.
+# Bandwidth30 is the TRF bandwidth 30 dB above the minimum threshold level (threshold 0 dB SPL in
+# 63 neurons, 10 dB SPL in 3, Methods, Stimuli). DMR events are detected with Nathanael Yoder's
+# peakfinder (local maxima from first and second derivatives, amplitude difference to nearby
+# minima about 3 mV in current clamp, about 20 to 40 pA in voltage clamp). In current clamp,
+# spikes are the high-amplitude peaks; the remaining PSP peaks above 4 x s.d. of unresponsive
+# baseline segments are split into large and small PSPs at the trough of a bimodal amplitude
+# histogram, or at about 50% of the non-spiking PSPs (the median) when it is unimodal (Results,
+# Spectrotemporal receptive fields, paragraphs 2 and 3). Voltage-clamp events are peaks above
+# 3 x s.d. of baseline, all in one STRF per current (Results, DMR-evoked currents). "All events"
+# STRFs pool every event of a recording (Fig. 3 legend). STRFs are event-triggered averages of the
+# DMR envelope; significant pixels are those at p < 0.05 against the pixels of STRFs from event
+# trains circularly shifted at regular intervals of N/niter bins. The best frequency (BF) is the
+# frequency of the strongest STRF response; for double-peaked STRFs the peak closest to the TRF CF
+# is used in Fig. 5 (Results, Frequency selectivity, paragraph 1). The RTF is the 2-D Fourier
+# transform of the STRF; the temporal and spectral modulation transfer functions are the RTF summed
+# over spectral and temporal modulation; bTMF and bSMF are their peaks for bandpass functions and
+# the mean of zero and the 3 dB cutoff for lowpass ones (ref. 19). Nonlinearity: projections z of
+# the stimulus segment preceding each event onto the STRF give P(z|event); projections of many
+# random segments give P(z), with mean mu and s.d. sigma; x = (z - mu)/sigma; P(event|x) =
+# P(event) P(x|event)/P(x); it is fitted by an expansive power-law function with a threshold
+# (theta) and a transition (sigma), in s.d. units (Results, STRF nonlinearities). Feature
+# selectivity index (FSI) = (Arand - A)/Arand, from the areas under the cumulative distributions of
+# the similarity index between the STRF and the stimulus preceding each event (A) and preceding
+# random times (Arand) (ref. 19). STRF reliability is the correlation coefficient between two
+# STRFs. Harmonic ratio = higher over lower peak frequency; percent error = |mean ratio -
+# theoretical ratio|/theoretical ratio x 100%. Q = best frequency / bandwidth. Table 1 tests are
+# two-tailed paired t-tests over neurons, Table 2 tests two-tailed unpaired t-tests.
+#
+# Details the paper leaves open (each claim names those it rests on). Where a detail cannot change
+# an outcome, a standard choice is named; where it can, the readings are listed, and the claim's
+# outcome is the one they all give.
+# D1 How spikes are told from PSPs among the detected peaks in current clamp. The paper says only
+#    that spikes form the high-amplitude group of the peak-amplitude histogram (Fig. 2a, b, top
+#    right). Readings (a) a per-neuron cut at the gap between the PSP and spike groups of that
+#    histogram; (b) an action potential criterion on the trace (rate of rise or overshoot).
+# D2 The reference of PSP amplitudes ("all the events used the same absolute baseline").
+#    Readings (a) peak membrane potential minus the neuron's resting potential; (b) peakfinder's
+#    amplitude above the neighbouring minimum.
+# D3 The "unresponsive baseline segments" whose s.d. sets the 4 x s.d. (current clamp) and 3 x
+#    s.d. (voltage clamp) cut. Readings (a) stretches of the recording without stimulus; (b)
+#    stretches during the DMR without detected events. For tones, the baseline is read as the
+#    trace before each tone onset, a standard choice.
+# D4 How a PSP amplitude histogram is judged bimodal. No test is named. Readings (a) the histogram
+#    has two maxima separated by a trough (the Results' wording); (b) Hartigan's dip test, p < 0.05.
+# D5 STRF delay window and binning are not stated; a standard window (0 to 200 ms before the
+#    event) at the DMR envelope's own resolution is used, a standard choice.
+# D6 The number of circular shifts (niter) is not stated; at least 100 is used, a standard choice.
+# D7 Which recordings "showed significant STRF subfields". Readings (a) at least one significant
+#    positive pixel (p < 0.05); (b) a contiguous significant positive region of more than one pixel.
+# D8 STRF bandwidth is not defined. Readings (a) the spectral extent, in octaves, of the
+#    significant positive subfield, a total bandwidth spanning both peaks and the gap between them
+#    (as the Fig. 3a example, peaks 0.70 octaves apart at 12.3 and 20.0 kHz with a 0.98-octave
+#    bandwidth, implies); (b) the width of the frequency profile of the significant STRF (positive
+#    values summed over delay) above half its maximum. Single bands (Table 1) are each peak's own
+#    extent; how 31 single bands arise from 30 neurons is not said, readings (a) every peak that
+#    can be matched across the three event types, (b) one peak per neuron, the one closest to CF.
+# D9 Double-peaked STRFs are not defined. Readings (a) two separate significant positive subfields
+#    along frequency; (b) two maxima of the frequency profile separated by a dip below half of the
+#    smaller maximum.
+# D10 STRF latency and duration are not defined. Latency readings (a) the delay of the STRF
+#    maximum (the "peak latency" of Supplementary Fig. 3b, Results); (b) the shortest delay of a
+#    significant positive pixel. Duration readings (a) the delay extent of the significant positive
+#    subfield at BF; (b) the width of the delay profile above half its maximum.
+# D11 RTF details. Readings for the STRF transformed (a) the significant STRF; (b) the full STRF.
+#    Bandpass readings (a) the transfer function's maximum is away from zero modulation; (b) its
+#    value at zero is more than 3 dB below the maximum. Positive and negative temporal modulations
+#    are folded together, a standard choice (ref. 19).
+# D12 Nonlinearity details. The fitted function is named, not printed; its form is in refs. 19, 28
+#    and 29, which were not supplied. Readings for the STRF used in projections (a) the significant
+#    STRF; (b) the full STRF. The number of random segments and the x bins are standard choices.
+# D13 FSI details beyond ref. 19 (the similarity index as the correlation coefficient between the
+#    STRF and the stimulus segment; the number of random segments) are standard choices; the STRF
+#    used follows the readings of D12.
+# D14 Resting membrane potential is not defined. Readings (a) the median membrane potential over
+#    the tone recording; (b) the mean over the pre-tone baselines.
+# D15 TRF details. TRF region readings (a) the set of responsive tones; (b) the tones inside the
+#    V-shaped outline above the threshold curve. Bandwidth30 readings (a) log2 of the highest over
+#    the lowest responsive frequency at the threshold level + 30 dB; (b) the contiguous responsive
+#    range around CF at that level. Spike bandwidth30 uses tones that evoked a spike. Q30 and Q
+#    readings (a) bandwidth in kHz, the usual Q; (b) bandwidth in octaves.
+# D16 The PSP amplitude and kinetics of Fig. 1 ("maximum PSP amplitude", rise and decay).
+#    Readings (a) the largest tone-evoked PSP of each neuron; (b) the mean over its responsive
+#    tones. Kinetics are measured on PSPs without spikes, a standard choice.
+# D17 How the "power fit" Pearson r of Fig. 6f, g is computed. Readings (a) Pearson r on the raw
+#    values; (b) Pearson r on log values, the linear form of a power law.
+#
+# Tolerances. Where the paper gives mean +- s.d., the tolerance is the s.d., the paper's stated
+# spread (protocol, Reader, step 3); otherwise 10% of the value. Counts of recorded neurons are
+# given tolerance 0, as the data set holds them or does not; counts that come out of an analysis
+# (how many neurons pass a test) get 10%.
+schema_version: 2
+paper: doi:10.1038/s41467-020-14835-7
+claims:
+- id: cc-cohort-counts
+  statement: Current-clamp recordings with pure tones were made in 66 neurons from 41 mice, and 40
+    of these neurons were also recorded with the DMR stimulus.
+  source: Figure 1c legend; Figure 5a legend
+  quote: c Histogram of resting membrane potentials ( n = 66 neurons from 41 mice)
+  expected:
+  - quantity: current-clamp neurons with tones
+    value: 66
+    tolerance: 0
+  - quantity: mice, current clamp
+    value: 41
+    tolerance: 0
+  - quantity: current-clamp neurons with both tones and DMR
+    value: 40
+    tolerance: 0
+  criterion: Counted from the recordings. Reproduced when 66 tone recordings and 40 paired DMR
+    recordings are found; the number of mice is reported where the data identify animals.
+- id: vc-cohort-counts
+  statement: Voltage-clamp DMR recordings were made in 31 neurons from 24 mice, with 27 excitatory
+    and 12 inhibitory recordings, both components in 8 neurons.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 1; Figure 7e legend
+  quote: We recorded successfully 31 neurons in voltage-clamp mode and obtained 27 excitatory DMR
+    responses and 12 inhibitory traces with eight neurons yielding both components
+  expected:
+  - quantity: voltage-clamp neurons
+    value: 31
+    tolerance: 0
+  - quantity: excitatory recordings
+    value: 27
+    tolerance: 0
+  - quantity: inhibitory recordings
+    value: 12
+    tolerance: 0
+  - quantity: neurons with both
+    value: 8
+    tolerance: 0
+  - quantity: mice, voltage clamp
+    value: 24
+    tolerance: 0
+- id: fig1-psp-amplitude-kinetics
+  statement: For pure tones the maximum PSP amplitude was 16.3 +- 4.8 mV, the 10 to 90% rise time
+    30 +- 17 ms and the 90 to 10% decay time 86 +- 20 ms (mean +- s.d., n = 66).
+  source: Results, Tonal receptive fields, paragraph 1
+  quote: For pure tones the maximum PSP amplitude was 16.3 ± 4.8 mV (mean ± s.d., n = 66) (PSP rise
+    time (10 − 90% ... 30 ± 17 ms (mean ± s.d., n = 66); PSP decay time (90 − 10% ... 86 ± 20 ms
+  expected:
+  - quantity: maximum PSP amplitude, mean over neurons
+    value: 16.3
+    tolerance: 4.8
+    unit: mV
+  - quantity: PSP rise time 10-90%, mean
+    value: 30
+    tolerance: 17
+    unit: ms
+  - quantity: PSP decay time 90-10%, mean
+    value: 86
+    tolerance: 20
+    unit: ms
+  criterion: Tone responses are PSPs with onset 5 to 50 ms after tone onset and amplitude above 4 x
+    the s.d. of the pre-tone baseline (Methods, Data analysis; baseline per D3). One value per
+    neuron over the 66 neurons, then the mean. Rests on D16 (which PSP) and D14 (the baseline from
+    which amplitude is taken, readings as there). Reproduced when the three means fall within
+    tolerance under one reading.
+- id: fig1c-resting-potential-range
+  statement: Resting membrane potentials of the 66 neurons ranged from -85 to -59 mV.
+  source: Results, Tonal receptive fields, paragraph 1; Figure 1c
+  quote: The range of encountered resting membrane potentials (−85 to −59 mV) was consistent with
+    previous observations
+  expected:
+  - quantity: most negative resting potential
+    value: -85
+    tolerance: 8.5
+    unit: mV
+  - quantity: least negative resting potential
+    value: -59
+    tolerance: 5.9
+    unit: mV
+  criterion: Resting potential per neuron as in D14, not corrected for junction potential (Methods,
+    In vivo whole-cell recording). Reproduced when, under one reading, the minimum and maximum over
+    the 66 neurons fall within the range widened by 10% of each bound.
+- id: fig1d-ndr-distribution
+  statement: The distribution of normalized-driven ratios resembles an exponential decay, with many
+    neurons near 0 and very few near 1; 31 of the 66 neurons have a ratio of at least 0.3.
+  source: Results, Tonal receptive fields, paragraph 1; Figure 1d, f legends
+  quote: The distribution of normalized-driven ratios resembled an exponential decay with a larger
+    number of neurons near 0 and very few near 1
+  expected:
+  - quantity: neurons with normalized-driven ratio >= 0.3
+    value: 31
+    tolerance: 3.1
+  criterion: NDR per neuron = spikes over PSPs within the TRF region, one spike per tone in bursts
+    (Methods, Data analysis); rests on D1 (spike detection on the tone traces), D3 and D15 (TRF
+    region). In bins of 0.1, a standard plotting choice, reproduced when, under one reading, the
+    count of neurons is highest in the bin nearest 0, the bins above 0.7 hold fewer than 10% of the
+    neurons, and the count at or above 0.3 is within tolerance.
+- id: fig1e-ndr-vs-rest-weak
+  statement: Normalized-driven ratios and resting membrane potentials were weakly and not
+    significantly correlated, more depolarized neurons tending to produce more spikes.
+  source: Results, Tonal receptive fields, paragraph 1; Figure 1e
+  quote: Normalized-driven ratios and resting membrane potentials were weakly correlated ( n = 66;
+    Pearson’s r = 0.18, p = 0.15) with more depolarized membrane potentials tending to produce more
+    spikes
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.18
+    p: 0.15
+    n: 66 neurons
+  expected:
+  - quantity: Pearson r, NDR against resting potential
+    value: 0.18
+    tolerance: 0.018
+  depends_on:
+  - fig1d-ndr-distribution
+  - fig1c-resting-potential-range
+  criterion: Pearson r over the 66 neurons (Results). Reproduced when, under one reading of D14 and
+    D15, r is within tolerance and the two-tailed p exceeds 0.05; partially reproduced when r is
+    positive and below 0.3 with p > 0.05 but outside tolerance; not reproduced when r is negative
+    or p < 0.05.
+- id: fig1fgh-trf-bandwidth-narrowing
+  statement: In the 31 neurons with normalized-driven ratio of at least 0.3, the tonal PSP
+    bandwidth30 was 1.38 +- 0.33 octaves and the spike bandwidth30 1.16 +- 0.34 octaves, spikes
+    being significantly narrower (paired t-test), with a median spike/PSP ratio of about 0.9, about
+    16% narrower.
+  source: Results, Tonal receptive fields, paragraph 1; Figure 1f, g, h and legend
+  quote: The average bandwidth30 from tonal PSPs with normalized-driven ratio ≥0.3 was 1.38 ± 0.33
+    octaves ... The corresponding bandwidth30 from spiking TRFs with normalized-driven ratio ≥0.3
+    was 1.16 ± 0.34 octaves ... confirmed a narrowing of spiking versus PSP bandwidth with a median
+    ratio ((bandwidth (spike))/(bandwidth (PSP))) = 0.9 (Fig. 1h , right; two-tailed paired
+    Student’s t -test, p = 5 × 10 −7 )
+  statistics:
+  - about: PSP against spike bandwidth30, as in the Results
+    test: two-tailed paired Student's t-test
+    p: 5.0e-7
+    n: 31 neurons with normalized-driven ratio >= 0.3
+  - about: PSP against spike bandwidth30, as in the Figure 1h legend
+    test: two-tailed paired Student's t-test
+    p: 1.0e-6
+    n: 31 neurons with normalized-driven ratio >= 0.3
+  expected:
+  - quantity: PSP bandwidth30, mean
+    value: 1.38
+    tolerance: 0.33
+    unit: octaves
+  - quantity: spike bandwidth30, mean
+    value: 1.16
+    tolerance: 0.34
+    unit: octaves
+  - quantity: median ratio spike/PSP bandwidth30 (0.89 in the legend, 0.9 in the text)
+    value: 0.89
+    tolerance: 0.089
+  depends_on:
+  - fig1d-ndr-distribution
+  criterion: Neurons with NDR >= 0.3; bandwidth30 per D15, for PSP tones and for spiking tones, at
+    the threshold level + 30 dB (Methods, Stimuli). Reproduced when, under one reading, both means
+    and the median ratio are within tolerance and the paired t-test gives p < 0.05 with spikes
+    narrower; partially reproduced when the test holds with the values outside tolerance.
+- id: fig2-psp-histogram-modality
+  statement: Non-spiking PSP peak amplitude distributions were bimodal in 60% (24/40) and unimodal
+    in 40% (16/40) of the neurons recorded with the DMR.
+  source: Results, Spectrotemporal receptive fields, paragraph 2; Figure 2a, b
+  quote: PSP peak amplitude distributions for non-spiking events were either bimodal ... or
+    unimodal in 60% ( n = 24/40) and 40% ( n = 16/40) of the recorded neurons, respectively
+  expected:
+  - quantity: neurons with bimodal PSP amplitude histograms
+    value: 24
+    tolerance: 2.4
+  - quantity: neurons with unimodal PSP amplitude histograms
+    value: 16
+    tolerance: 1.6
+  criterion: Peaks by peakfinder (about 3 mV to nearby minima), spikes removed (D1), events below 4 x
+    s.d. of baseline removed (D3), amplitudes per D2. Bimodality per D4. Reproduced when both counts
+    are within tolerance under one reading.
+- id: fig2-strf-significance-groups
+  statement: Of the 40 DMR neurons, 75% (30/40) had significant STRF subfields for spikes, large PSPs
+    and small PSPs, and 25% (10/40) lacked significant spike STRF subfields but had significant PSP
+    STRF subfields.
+  source: Results, Spectrotemporal receptive fields, paragraph 3; Figure 2a, b
+  quote: Most neurons (75%, n = 30/40) showed significant STRF subfields for spiking, large PSP, and
+    small PSP events ... A second group (25%, n = 10/40) lacked significant spike-based STRF
+    subfields but showed significant PSP-based STRF subfields
+  expected:
+  - quantity: neurons with significant STRFs for all three event types
+    value: 30
+    tolerance: 3
+  - quantity: neurons with significant PSP but not spike STRFs
+    value: 10
+    tolerance: 1
+  depends_on:
+  - fig2-psp-histogram-modality
+  criterion: Events split into spikes (D1), large and small PSPs at the histogram trough or the
+    median (Results, paragraph 2; D2 to D4). STRFs by event-triggered averaging (D5); significant
+    pixels at p < 0.05 against circularly shifted event trains (Methods; D6). Significance per D7.
+    Reproduced when both counts are within tolerance under one reading.
+- id: fig2-psp-amplitude-ranges
+  statement: In the 30 neurons with significant STRFs for all event types, the mean amplitudes of
+    large PSPs ranged from 13.8 to 28.8 mV and of small PSPs from 7.2 to 11.5 mV, two ranges that do
+    not overlap.
+  source: Results, Spectrotemporal receptive fields, paragraph 3
+  quote: For these neurons, the mean amplitudes from large PSPs ranged from 13.8 to 28.8 mV and the
+    mean amplitudes from small PSPs were between 7.2 and 11.5 mV. The two amplitude ranges did not
+    overlap.
+  expected:
+  - quantity: lowest per-neuron mean large-PSP amplitude
+    value: 13.8
+    tolerance: 1.38
+    unit: mV
+  - quantity: highest per-neuron mean large-PSP amplitude
+    value: 28.8
+    tolerance: 2.88
+    unit: mV
+  - quantity: lowest per-neuron mean small-PSP amplitude
+    value: 7.2
+    tolerance: 0.72
+    unit: mV
+  - quantity: highest per-neuron mean small-PSP amplitude
+    value: 11.5
+    tolerance: 1.15
+    unit: mV
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: Per neuron, the mean amplitude of its large and of its small PSPs (amplitude per D2).
+    Reproduced when, under one reading, the four bounds are within the ranges widened by 10% of each
+    bound and the highest small-PSP mean is below the lowest large-PSP mean.
+- id: supfig2-strf-reliability
+  statement: STRFs from repeated DMR presentations were correlated, with Pearson r from 0.30 to 0.76
+    for spikes, 0.67 to 0.88 for large PSPs and 0.55 to 0.83 for small PSPs over 13 pairs from 2
+    neurons, each distribution shifted from 0.
+  source: Supplementary Figure 2b legend
+  quote: The similarity between STRFs was assessed using the Pearson correlation coefficient, which
+    ranged from 0.30 to 0.76 for spikes (left), from 0.67 to 0.88 for large PSPs (middle), and from
+    0.55 to 0.83 for small PSPs (right). Each distribution was shifted away from 0 (two-tailed
+    paired Student’s t-test, p = 8 × 10−9 for spikes, p = 7 × 10−14 for large PSPs, and p = 2 ×
+    10−12 for small PSPs)
+  statistics:
+  - about: spike STRF correlations against 0
+    test: two-tailed paired Student's t-test
+    p: 8.0e-9
+    n: 13 STRF pairs from 2 neurons
+  - about: large-PSP STRF correlations against 0
+    test: two-tailed paired Student's t-test
+    p: 7.0e-14
+    n: 13 STRF pairs from 2 neurons
+  - about: small-PSP STRF correlations against 0
+    test: two-tailed paired Student's t-test
+    p: 2.0e-12
+    n: 13 STRF pairs from 2 neurons
+  expected:
+  - quantity: spike STRF correlation, lowest
+    value: 0.30
+    tolerance: 0.03
+  - quantity: spike STRF correlation, highest
+    value: 0.76
+    tolerance: 0.076
+  - quantity: large-PSP STRF correlation, lowest
+    value: 0.67
+    tolerance: 0.067
+  - quantity: large-PSP STRF correlation, highest
+    value: 0.88
+    tolerance: 0.088
+  - quantity: small-PSP STRF correlation, lowest
+    value: 0.55
+    tolerance: 0.055
+  - quantity: small-PSP STRF correlation, highest
+    value: 0.83
+    tolerance: 0.083
+  criterion: Pairs are all pairs of repeated recordings of a neuron (3 recordings give 3 pairs, 5
+    give 10; Supplementary Fig. 2 legend). Pearson r between the two STRFs of a pair over all
+    pixels; whether the STRFs are the full or the significant ones is not said, readings (a) full,
+    (b) significant. The paper's "paired" test against 0 is read as a one-sample two-tailed t-test
+    of the 13 values against 0. Reproduced when, under one reading, the ranges are within the
+    widened bounds and each test gives p < 0.05. If the data set holds fewer repeats than 13 pairs,
+    the pairs present are reported.
+- id: supfig2-psp-more-reliable-than-spikes
+  statement: STRF test-retest correlations for large and small PSPs were usually high and
+    significantly exceeded those for spike STRFs.
+  source: Results, Response reliability over extended recording durations is high; Supplementary
+    Figure 2b
+  quote: Correlations between the resulting STRFs for both large and small PSPs were usually high and
+    significantly exceeded those for spike STRFs
+  depends_on:
+  - supfig2-strf-reliability
+  criterion: The paper names no test for this comparison. Readings (a) a two-tailed paired t-test
+    over the 13 pairs, the test the legend uses; (b) a Wilcoxon signed-rank test over the 13 pairs.
+    Reproduced when, under the readings, both large-PSP and small-PSP correlations exceed spike
+    correlations at p < 0.05.
+- id: supfig3-intensity-invariance
+  statement: Across DMR mean levels of 38, 54 and 69 dB SPL in five neurons, all-event STRFs showed no
+    difference in best frequency, latency or bandwidth.
+  source: Results, Different mean DMR intensities have only minor effects on STRF; Supplementary
+    Figure 3b legend
+  quote: From STRFs for all events, there was no between-group difference in best frequencies
+    (one-way ANOVA, p = 0.95), the average latencies (one-way ANOVA, p = 0.83), and STRF bandwidths
+    (one-way ANOVA, p = 0.56) with different intensities
+  statistics:
+  - about: best frequency across the three levels
+    test: one-way ANOVA
+    p: 0.95
+    n: 5 neurons, three levels
+  - about: latency across the three levels
+    test: one-way ANOVA
+    p: 0.83
+    n: 5 neurons, three levels
+  - about: bandwidth across the three levels
+    test: one-way ANOVA
+    p: 0.56
+    n: 5 neurons, three levels
+  criterion: A claim of absence. All-event STRFs at each level; BF as in the Methods, latency per
+    D10 (reading (a), "peak latency", is the Results' term), bandwidth per D8. One-way ANOVA across
+    the three levels for each measure, as the legend names it. Reproduced when none reaches p < 0.05;
+    not reproduced when any does; the level means are reported either way. If the data set holds
+    only the representative neuron, the test cannot be run on five neurons and that is reported.
+- id: fig3d-double-peaked-counts
+  statement: Half of the 40 neurons (20/40) had double-peaked STRFs for at least one event type;
+    double peaks were found in 18/40 PSP STRFs and in only 7/40 (17.5%) spike STRFs, about 61% fewer,
+    and in 14/40 small-PSP STRFs.
+  source: Results, Double-peaked STRFs with harmonic frequency relationships are more common for PSPs;
+    Figure 3d; Results, DMR-evoked currents, paragraph 1
+  quote: Among all recorded neurons, 50% (Fig. 3f ; n = 20/40) showed single-peaked STRFs while 50%
+    (Fig. 3f ; n = 20/40) had double-peaked responses in either the spiking or the subthreshold
+    STRFs ... Double-peaked responses in spike STRFs were less common (Fig. 3d ; n = 7/40; 17.5%)
+  expected:
+  - quantity: neurons with a double-peaked STRF of any event type
+    value: 20
+    tolerance: 2
+  - quantity: neurons with a double-peaked PSP STRF
+    value: 18
+    tolerance: 1.8
+  - quantity: neurons with a double-peaked spike STRF
+    value: 7
+    tolerance: 0.7
+  - quantity: neurons with a double-peaked small-PSP STRF
+    value: 14
+    tolerance: 1.4
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: Double peaks per D9 on significant STRFs (D7) of spikes, large PSPs, small PSPs and all
+    events, over the 40 neurons. The 20/40 is given both as double peaks "in either the spiking or
+    the subthreshold STRFs" and as "double-peaked STRFs for all events, n = 20/40" (same paragraph),
+    and Fig. 3e takes its 20 ratios from all-event STRFs; readings for that count (a) neurons with a
+    double-peaked STRF of any event type, (b) neurons with a double-peaked all-event STRF.
+    Reproduced when, under one reading, the counts are within tolerance and spike STRFs are
+    double-peaked in fewer neurons than PSP STRFs.
+- id: fig3e-harmonic-ratios
+  statement: Peak frequency ratios of the 20 double-peaked all-event STRFs fell within 4.5% of five
+    whole-number ratios (1.25, 1.33, 1.5, 1.67, 2), from 5/4 to 2/1, with 1.67 the most common
+    (6/20).
+  source: Results, Double-peaked STRFs, paragraph 1; Figure 3e
+  quote: The observed frequency ratios ( n = 20) of doubled-peaked STRFs obtained for all event types
+    were assigned to the closest of five whole-number ratio categories ... The actual ratios fell
+    within 4.5% of these categories ... A ratio of 1.67 (i.e., 5/3) was most prevalent (Fig. 3e ; n =
+    6/20)
+  expected:
+  - quantity: ratios in the 1.67 category
+    value: 6
+    tolerance: 0.6
+  - quantity: largest percent error of a category mean
+    value: 4.5
+    tolerance: 0.45
+    unit: percent
+  depends_on:
+  - fig3d-double-peaked-counts
+  criterion: Ratio = higher over lower peak frequency of the all-event STRF (Fig. 3e legend); each
+    assigned to the nearest of the five categories; percent error per category from its mean ratio
+    (Methods). Reproduced when 1.67 is the most common category, its count is within tolerance, and
+    every category mean is within 4.95% (4.5% plus 10%) of its whole-number ratio.
+- id: fig3f-bandwidth-single-vs-double
+  statement: All-event STRF bandwidths had a median of 0.28 octaves in single-peaked and 0.96 octaves
+    in double-peaked neurons.
+  source: Figure 3f legend
+  quote: The median bandwidth values, the middle line between hinges, were 0.28 for single-peaked
+    neurons and 0.96 for double-peaked neurons
+  expected:
+  - quantity: median all-event bandwidth, single-peaked neurons
+    value: 0.28
+    tolerance: 0.028
+    unit: octaves
+  - quantity: median all-event bandwidth, double-peaked neurons
+    value: 0.96
+    tolerance: 0.096
+    unit: octaves
+  depends_on:
+  - fig3d-double-peaked-counts
+  criterion: Bandwidth per D8 (total bandwidth for double peaks), all-event STRFs, neurons grouped
+    as in fig3d-double-peaked-counts (20 and 20). Reproduced when both medians are within tolerance
+    under one reading.
+- id: fig4c-btmf-small-psp-higher
+  statement: Best temporal modulation frequencies were 6.35 +- 4.50 Hz for spikes, 8.39 +- 4.69 Hz
+    for large PSPs and 12.60 +- 4.26 Hz for small PSPs, significantly higher for small PSPs than for
+    spikes and for large PSPs.
+  source: Results, STRF modulation properties, paragraph 1; Figure 4c; Table 1
+  quote: The bTMFs were significantly higher for small PSPs compared to spikes (Fig. 4c ; Table 1 ; Δ
+    (difference) = 6.25 ± 5.43 Hz, mean ± s.d., n = 30/40) and to large PSPs (Δ = 4.21 ± 5.34 Hz,
+    mean ± s.d., n = 30/40)
+  statistics:
+  - about: small PSPs against spikes
+    test: two-tailed paired Student's t-test
+    p: 7.0e-7
+    n: 30 neurons
+  - about: small PSPs against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0002
+    n: 30 neurons
+  expected:
+  - quantity: bTMF spikes, mean
+    value: 6.35
+    tolerance: 4.50
+    unit: Hz
+  - quantity: bTMF large PSPs, mean
+    value: 8.39
+    tolerance: 4.69
+    unit: Hz
+  - quantity: bTMF small PSPs, mean
+    value: 12.60
+    tolerance: 4.26
+    unit: Hz
+  - quantity: bTMF difference small PSPs minus spikes, mean
+    value: 6.25
+    tolerance: 5.43
+    unit: Hz
+  - quantity: bTMF difference small minus large PSPs, mean
+    value: 4.21
+    tolerance: 5.34
+    unit: Hz
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: The 30 neurons with significant STRFs for all three types; bTMF from the RTF per the
+    Methods and D11. Reproduced when, under one reading, the means are within tolerance and both
+    paired t-tests give p < 0.05 with small PSPs higher; partially reproduced when the tests hold
+    with values outside tolerance.
+- id: fig4d-bsmf-small-psp-higher
+  statement: Best spectral modulation frequencies were 0.93 +- 0.68 cyc/oct for spikes, 0.78 +- 0.53
+    for large PSPs and 1.36 +- 0.70 for small PSPs, significantly different between small PSPs and
+    spikes and between small and large PSPs.
+  source: Results, STRF modulation properties, paragraph 1; Figure 4d; Table 1
+  quote: best spectral modulation frequencies (bSMFs) were statistically different between small
+    PSPs and spikes (Fig. 4d ; Table 1 ; Δ = 0.44 ± 0.89 cyc/oct, mean ± s.d., n = 30/40) and between
+    small PSPs and large PSPs (Δ = 0.58 ± 0.95 cyc/oct, mean ± s.d., n = 30/40)
+  statistics:
+  - about: small PSPs against spikes
+    test: two-tailed paired Student's t-test
+    p: 0.0120
+    n: 30 neurons
+  - about: small PSPs against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0021
+    n: 30 neurons
+  expected:
+  - quantity: bSMF spikes, mean
+    value: 0.93
+    tolerance: 0.68
+    unit: cyc/oct
+  - quantity: bSMF large PSPs, mean
+    value: 0.78
+    tolerance: 0.53
+    unit: cyc/oct
+  - quantity: bSMF small PSPs, mean
+    value: 1.36
+    tolerance: 0.70
+    unit: cyc/oct
+  - quantity: bSMF difference small PSPs minus spikes, mean
+    value: 0.44
+    tolerance: 0.89
+    unit: cyc/oct
+  - quantity: bSMF difference small minus large PSPs, mean
+    value: 0.58
+    tolerance: 0.95
+    unit: cyc/oct
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: As fig4c-btmf-small-psp-higher, for bSMF. Reproduced when, under one reading of D11, the
+    means are within tolerance and both paired t-tests give p < 0.05 with small PSPs higher;
+    partially reproduced when the tests hold with values outside tolerance. The Discussion
+    (paragraph 1, observation 2) says large and small PSP STRFs differed "not in spectral
+    preferences", against the Results and Table 1 (p = 0.0021); the claim follows the Results and
+    Table 1.
+- id: tab1-modulation-large-psp-like-spikes
+  statement: The modulation preferences of large non-spiking PSPs are similar to those of spikes, with
+    no significant difference in bTMF or bSMF.
+  source: Results, STRF modulation properties, paragraph 2; Table 1
+  quote: However, the modulation preferences of large non-spiking events are similar to the spiking
+    output.
+  statistics:
+  - about: bTMF, spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0542
+    n: 30 neurons
+  - about: bSMF, spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.3574
+    n: 30 neurons
+  depends_on:
+  - fig4c-btmf-small-psp-higher
+  - fig4d-bsmf-small-psp-higher
+  criterion: A claim of absence, judged on Table 1's two-tailed paired t-tests at p < 0.05 over the
+    30 neurons. Reproduced when neither bTMF nor bSMF differs between spikes and large PSPs; not
+    reproduced when either does; the mean differences are reported either way.
+- id: fig4b-bsmf-btmf-correlation
+  statement: Correlations between bSMF and bTMF were weak or moderate, significant only for large
+    PSPs (spikes r = 0.28, large PSPs r = 0.53, small PSPs r = -0.19).
+  source: Figure 4b legend
+  quote: There were weak or moderate correlations (spikes ... Pearson’s r = 0.28, p = 0.13; large PSPs
+    ... Pearson’s r = 0.53, p = 0.003; small PSPs ... Pearson’s r = −0.19, p = 0.31)
+  statistics:
+  - about: spikes
+    test: Pearson correlation
+    statistic: r = 0.28
+    p: 0.13
+    n: 30 neurons
+  - about: large PSPs
+    test: Pearson correlation
+    statistic: r = 0.53
+    p: 0.003
+    n: 30 neurons
+  - about: small PSPs
+    test: Pearson correlation
+    statistic: r = -0.19
+    p: 0.31
+    n: 30 neurons
+  expected:
+  - quantity: Pearson r, large PSPs
+    value: 0.53
+    tolerance: 0.053
+  depends_on:
+  - fig4c-btmf-small-psp-higher
+  - fig4d-bsmf-small-psp-higher
+  criterion: Pearson r of bSMF against bTMF per event type over the 30 neurons. Reproduced when the
+    large-PSP r is within tolerance with p < 0.05 and the spike and small-PSP correlations have
+    p > 0.05; the three r values are reported.
+- id: fig5a-cf-bf-correlation
+  statement: TRF characteristic frequencies and all-event STRF best frequencies were well correlated
+    (r = 0.73, n = 40).
+  source: Results, Frequency selectivity differences between TRFs and STRFs, paragraph 1; Figure 5a
+    legend
+  quote: Relationship between TRF characteristic frequencies and STRF best frequencies derived from
+    all events ( n = 40/66 neurons with paired recordings for both, pure tones and DMR stimuli;
+    Pearson’s r = 0.73, p = 10 −7 )
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.73
+    p: 1.0e-7
+    n: 40 neurons
+  expected:
+  - quantity: Pearson r, CF against all-event BF
+    value: 0.73
+    tolerance: 0.073
+  criterion: CF from the TRF (Methods); BF the frequency of the strongest response in the all-event
+    STRF, for double peaks the one closest to CF (Results). Whether r is on kHz or log frequency is
+    not said; readings (a) kHz, (b) log2 frequency. Reproduced when, under one reading, r is within
+    tolerance with p < 0.05.
+- id: fig5b-bf-same-across-events
+  statement: Best frequencies of spike STRFs closely matched those of large and small PSP STRFs, with
+    no between-group difference.
+  source: Results, Frequency selectivity differences between TRFs and STRFs, paragraph 1; Figure 5b
+  quote: Best frequencies from spike-based STRFs were closely matched to STRF-derived estimates for
+    both large and small PSPs (Fig. 5b ; n = 30/40) with no between-group difference (one-way ANOVA,
+    p = 0.99)
+  statistics:
+  - test: one-way ANOVA
+    p: 0.99
+    n: 30 neurons, three event types
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: A claim of absence, judged on the paper's one-way ANOVA of BF across spikes, large and
+    small PSPs (30 neurons each). The frequency scale is not said; readings (a) kHz, (b) log2
+    frequency, both run. Reproduced when the ANOVA gives p >= 0.05; not reproduced when it gives
+    p < 0.05; the median absolute BF difference between spike and PSP STRFs, in octaves, is reported.
+- id: fig5c-bandwidth-relationships
+  statement: Spike STRFs with a single band were commonly sharply tuned below about 0.5 octaves
+    (20/30); in 13/20 (large PSPs) and 15/20 (small PSPs) of these the PSP bandwidths were also below
+    0.5 octaves; 9/30 (large) and 6/30 (small) PSP STRFs had total bandwidths above 0.5 octaves
+    largely from secondary peaks; 8/30 spike STRFs wider than 0.6 octaves had PSP STRFs of similar
+    bandwidth; one double-peaked spike STRF had single-peaked PSP STRFs below 0.5 octaves.
+  source: Results, Frequency selectivity differences between TRFs and STRFs, paragraph 2; Figure 5c
+  quote: spike-based STRFs with a single frequency band ... commonly were sharply tuned with
+    bandwidths below ~0.5 octaves ( n = 20/30; 67%). The PSP-based bandwidths of 65% ( n = 13/20,
+    large PSPs) and 75% ( n = 15/20, small PSPs) of these neurons were also below ~0.5 octave
+  expected:
+  - quantity: single-band spike STRFs below 0.5 octaves
+    value: 20
+    tolerance: 2
+  - quantity: of these, large-PSP STRFs below 0.5 octaves
+    value: 13
+    tolerance: 1.3
+  - quantity: of these, small-PSP STRFs below 0.5 octaves
+    value: 15
+    tolerance: 1.5
+  - quantity: large-PSP STRFs above 0.5 octaves with a narrow spike STRF
+    value: 9
+    tolerance: 0.9
+  - quantity: small-PSP STRFs above 0.5 octaves with a narrow spike STRF
+    value: 6
+    tolerance: 0.6
+  - quantity: spike STRFs with total bandwidth above 0.6 octaves
+    value: 8
+    tolerance: 0.8
+  depends_on:
+  - fig3d-double-peaked-counts
+  criterion: Total bandwidths per D8, 30 neurons. The counts do not add up within the 20 narrow spike
+    STRFs (20 - 13 = 7, not 9), so each count is judged alone; for (ii) the readings are (a) PSP
+    above 0.5 octaves among the 20 narrow single-band spike STRFs, (b) PSP above 0.5 octaves with a
+    spike STRF below 0.6 octaves, among all 30. Reproduced when, under one reading, at least five of
+    the six counts are within tolerance; partially reproduced for three or four.
+- id: tab1-single-band-small-psp-narrower
+  statement: Individual-peak STRF bandwidths were 0.32 +- 0.12 octaves for spikes, 0.28 +- 0.11 for
+    large PSPs and 0.25 +- 0.07 for small PSPs; spike and large-PSP bandwidths did not differ, small
+    PSPs were slightly narrower (about 20%), significantly so against spikes.
+  source: Results, Frequency selectivity differences between TRFs and STRFs, paragraph 3; Table 1
+  quote: Contrasting individual frequency peaks from spike-based STRFs to their corresponding
+    bandwidths of large PSPs were not statistically different while the bandwidths derived from small
+    PSPs were slightly narrower than for both spike- and large-PSP based STRF peaks (one-way ANOVA, p
+    = 0.05)
+  statistics:
+  - about: three event types, as in the Results
+    test: one-way ANOVA
+    p: 0.05
+  - about: spikes against small PSPs, Table 1
+    test: two-tailed paired Student's t-test
+    p: 0.0016
+    n: 31 bands
+  - about: large against small PSPs, Table 1
+    test: two-tailed paired Student's t-test
+    p: 0.0562
+    n: 31 bands
+  - about: spikes against large PSPs, Table 1
+    test: two-tailed paired Student's t-test
+    p: 0.1127
+    n: 31 bands
+  expected:
+  - quantity: single-band bandwidth spikes, mean
+    value: 0.32
+    tolerance: 0.12
+    unit: octaves
+  - quantity: single-band bandwidth large PSPs, mean
+    value: 0.28
+    tolerance: 0.11
+    unit: octaves
+  - quantity: single-band bandwidth small PSPs, mean
+    value: 0.25
+    tolerance: 0.07
+    unit: octaves
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: Bandwidth of each individual peak per D8, bands chosen per D8's readings for n = 31.
+    Reproduced when, under one reading, the means are within tolerance, small PSPs are narrower than
+    spikes at p < 0.05 (paired t-test), and spikes and large PSPs do not differ at p < 0.05.
+    Partially reproduced when small PSPs are narrowest with p >= 0.05 against spikes.
+- id: tab1-total-bandwidth-no-difference
+  statement: Total STRF bandwidths (all bands) did not differ between spikes (0.50 +- 0.32 octaves),
+    large PSPs (0.57 +- 0.33) and small PSPs (0.50 +- 0.32).
+  source: Table 1, Bandwidth [all bands]
+  inferred: Read from Table 1, whose all-band bandwidth p-values are 0.3758, 0.9926 and 0.1391; no
+    sentence states it.
+  statistics:
+  - about: spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.3758
+    n: 30 neurons
+  - about: spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.9926
+    n: 30 neurons
+  - about: large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.1391
+    n: 30 neurons
+  expected:
+  - quantity: total bandwidth spikes, mean
+    value: 0.50
+    tolerance: 0.32
+    unit: octaves
+  - quantity: total bandwidth large PSPs, mean
+    value: 0.57
+    tolerance: 0.33
+    unit: octaves
+  - quantity: total bandwidth small PSPs, mean
+    value: 0.50
+    tolerance: 0.32
+    unit: octaves
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: A claim of absence, judged on Table 1's paired t-tests at p < 0.05 over the 30 neurons,
+    total bandwidth per D8. Reproduced when no pair differs; not reproduced when any does; the means
+    are compared with the expected values and reported.
+- id: tab1-latency-duration
+  statement: STRF latencies were 42.7 +- 11.1 ms (spikes), 48.7 +- 11.8 ms (large PSPs) and 45.2 +-
+    8.2 ms (small PSPs), large PSPs significantly later than spikes and small PSPs; durations were
+    43.0 +- 24.1, 43.6 +- 18.8 and 34.5 +- 10.3 ms, small PSPs significantly shorter than spikes and
+    large PSPs.
+  source: Table 1, Latency and Duration
+  inferred: Read from Table 1; the Results do not discuss STRF latency or duration.
+  statistics:
+  - about: latency, spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0229
+    n: 30 neurons
+  - about: latency, spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.1874
+    n: 30 neurons
+  - about: latency, large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0451
+    n: 30 neurons
+  - about: duration, spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.8959
+    n: 30 neurons
+  - about: duration, spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0489
+    n: 30 neurons
+  - about: duration, large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0175
+    n: 30 neurons
+  expected:
+  - quantity: latency spikes, mean
+    value: 42.7
+    tolerance: 11.1
+    unit: ms
+  - quantity: latency large PSPs, mean
+    value: 48.7
+    tolerance: 11.8
+    unit: ms
+  - quantity: latency small PSPs, mean
+    value: 45.2
+    tolerance: 8.2
+    unit: ms
+  - quantity: duration spikes, mean
+    value: 43.0
+    tolerance: 24.1
+    unit: ms
+  - quantity: duration large PSPs, mean
+    value: 43.6
+    tolerance: 18.8
+    unit: ms
+  - quantity: duration small PSPs, mean
+    value: 34.5
+    tolerance: 10.3
+    unit: ms
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: Latency and duration per D10, 30 neurons. Reproduced when, under one reading, the six
+    means are within tolerance and the four significant pairs of Table 1 (latency spikes vs large,
+    large vs small; duration spikes vs small, large vs small) give p < 0.05 in the same direction;
+    partially reproduced when the means hold and two or three of the four tests do.
+- id: tab1-event-rate-no-difference
+  statement: STRF event rates did not differ between spikes (1.31 +- 0.92 Hz), large PSPs (1.73 +-
+    0.72 Hz) and small PSPs (1.52 +- 0.56 Hz).
+  source: Table 1, Event rate
+  inferred: Read from Table 1, whose event-rate p-values are 0.0849, 0.2966 and 0.2122.
+  statistics:
+  - about: spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0849
+    n: 30 neurons
+  - about: spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.2966
+    n: 30 neurons
+  - about: large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.2122
+    n: 30 neurons
+  expected:
+  - quantity: event rate spikes, mean
+    value: 1.31
+    tolerance: 0.92
+    unit: Hz
+  - quantity: event rate large PSPs, mean
+    value: 1.73
+    tolerance: 0.72
+    unit: Hz
+  - quantity: event rate small PSPs, mean
+    value: 1.52
+    tolerance: 0.56
+    unit: Hz
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: A claim of absence, judged on Table 1's paired t-tests at p < 0.05. The paper does not
+    define event rate; it is read as events of the type over the DMR duration (10 min, Methods,
+    Stimuli), a standard choice. Reproduced when no pair differs;
+    not reproduced when any does; means reported against the expected values.
+- id: tab1-fsi-spikes-higher-than-large
+  statement: Feature selectivity index was 0.15 +- 0.08 for spikes, 0.12 +- 0.03 for large PSPs and
+    0.15 +- 0.04 for small PSPs; spikes and small PSPs were significantly higher than large PSPs,
+    and spikes did not differ from small PSPs.
+  source: Results, STRF nonlinearities, paragraph 4; Table 1; Discussion, paragraph 5
+  quote: The average feature selectivity index value for spiking events was significantly higher than
+    for large PSPs (Table 1 )
+  statistics:
+  - about: spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0338
+    n: 30 neurons
+  - about: spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.7493
+    n: 30 neurons
+  - about: large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0018
+    n: 30 neurons
+  expected:
+  - quantity: FSI spikes, mean
+    value: 0.15
+    tolerance: 0.08
+  - quantity: FSI large PSPs, mean
+    value: 0.12
+    tolerance: 0.03
+  - quantity: FSI small PSPs, mean
+    value: 0.15
+    tolerance: 0.04
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: FSI per the Methods and D13. Reproduced when, under one reading, the means are within
+    tolerance, spikes and small PSPs exceed large PSPs at p < 0.05 (paired t-test), and spikes and
+    small PSPs do not differ at p < 0.05; partially reproduced when spikes exceed large PSPs and one
+    other condition fails.
+- id: fig6b-tab1-threshold-spikes-higher
+  statement: Nonlinearity thresholds were significantly higher for spikes (0.61 +- 0.87 s.d.) than
+    for large (-0.57 +- 0.87) and small PSPs (-0.55 +- 0.74), which did not differ.
+  source: Results, STRF nonlinearities, paragraph 3; Figure 6b; Table 1
+  quote: The thresholds of spike nonlinearities were significantly higher than for PSPs (Fig. 6b ;
+    Table 1 )
+  statistics:
+  - about: spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 7.0e-6
+    n: 30 neurons
+  - about: spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 4.0e-6
+    n: 30 neurons
+  - about: large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.9214
+    n: 30 neurons
+  expected:
+  - quantity: threshold spikes, mean
+    value: 0.61
+    tolerance: 0.87
+    unit: s.d.
+  - quantity: threshold large PSPs, mean
+    value: -0.57
+    tolerance: 0.87
+    unit: s.d.
+  - quantity: threshold small PSPs, mean
+    value: -0.55
+    tolerance: 0.74
+    unit: s.d.
+  depends_on:
+  - fig2-strf-significance-groups
+  criterion: Nonlinearity and fit per the Methods and D12; the fit's form must come from ref. 19,
+    which the paper cites but does not print. Reproduced when, under one reading, the means are
+    within tolerance and spikes exceed both PSP types at p < 0.05 (paired t-test); partially
+    reproduced when the tests hold with values outside tolerance. If no fit form can be taken from
+    the paper's sources, the claim is blocked as methods underspecified.
+- id: fig6c-tab1-transition-spikes-lower
+  statement: Nonlinearity transitions were smaller for spikes (1.25 +- 0.48 s.d.) than for large
+    (1.93 +- 0.67) and small PSPs (1.59 +- 0.27), and smaller for small than for large PSPs.
+  source: Results, STRF nonlinearities, paragraph 3; Figure 6c; Table 1
+  quote: Additionally, the transition measure for spike nonlinearities is smaller than for either PSP
+    type (Fig. 6c ; Table 1 )
+  statistics:
+  - about: spikes against large PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0002
+    n: 30 neurons
+  - about: spikes against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0025
+    n: 30 neurons
+  - about: large against small PSPs
+    test: two-tailed paired Student's t-test
+    p: 0.0188
+    n: 30 neurons
+  expected:
+  - quantity: transition spikes, mean
+    value: 1.25
+    tolerance: 0.48
+    unit: s.d.
+  - quantity: transition large PSPs, mean
+    value: 1.93
+    tolerance: 0.67
+    unit: s.d.
+  - quantity: transition small PSPs, mean
+    value: 1.59
+    tolerance: 0.27
+    unit: s.d.
+  depends_on:
+  - fig6b-tab1-threshold-spikes-higher
+  criterion: As fig6b-tab1-threshold-spikes-higher, for the transition. Reproduced when, under one
+    reading, the means are within tolerance and spikes are below both PSP types at p < 0.05;
+    partially reproduced when the tests hold with values outside tolerance.
+- id: fig6bc-no-correlation-psp-spike-nonlinearity
+  statement: Neither nonlinearity thresholds nor transitions were correlated between PSPs and spikes
+    of the same neurons.
+  source: Results, STRF nonlinearities, paragraph 5; Figure 6b, c legends
+  quote: Neither the nonlinearity thresholds nor the transition values were correlated between PSPs
+    and spiking events
+  statistics:
+  - about: threshold, small PSPs against spikes
+    test: Pearson correlation
+    statistic: r = 0.024
+    p: 0.9
+    n: 30 neurons
+  - about: threshold, large PSPs against spikes
+    test: Pearson correlation
+    statistic: r = 0.075
+    p: 0.7
+    n: 30 neurons
+  - about: transition, small PSPs against spikes
+    test: Pearson correlation
+    statistic: r = -0.007
+    p: 0.97
+    n: 30 neurons
+  - about: transition, large PSPs against spikes
+    test: Pearson correlation
+    statistic: r = -0.078
+    p: 0.68
+    n: 30 neurons
+  depends_on:
+  - fig6b-tab1-threshold-spikes-higher
+  - fig6c-tab1-transition-spikes-lower
+  criterion: A claim of absence, judged on the paper's Pearson correlations across the 30 neurons at
+    p < 0.05. Reproduced when none of the four is significant; not reproduced when any is; the r
+    values are reported.
+- id: fig6d-spike-threshold-transition-covary
+  statement: For spikes, nonlinearity threshold and transition covaried negatively (r = -0.64), with
+    only weak, non-significant correlations for large or small PSPs.
+  source: Results, STRF nonlinearities, paragraph 3; Figure 6d
+  quote: For spikes, nonlinearity threshold and transition covaried (Fig. 6d ; Pearson’s r = −0.64, p
+    = 0.0001) with only weak correlations for either large or small PSPs, not reaching statistical
+    significance
+  statistics:
+  - about: spikes
+    test: Pearson correlation
+    statistic: r = -0.64
+    p: 0.0001
+    n: 30 neurons
+  expected:
+  - quantity: Pearson r, spike threshold against transition
+    value: -0.64
+    tolerance: 0.064
+  depends_on:
+  - fig6b-tab1-threshold-spikes-higher
+  criterion: Pearson r across the 30 neurons per event type. Reproduced when the spike r is within
+    tolerance with p < 0.05 and both PSP correlations have p >= 0.05; partially reproduced when the
+    spike correlation is negative and significant but outside tolerance, or one PSP correlation is
+    significant.
+- id: fig6efg-fsi-relationships
+  statement: Feature selectivity index rose with nonlinearity threshold and fell with transition and
+    with event rate, clearly for spikes (r = 0.68, -0.67, -0.63) and more weakly for PSPs.
+  source: Results, STRF nonlinearities, paragraph 4; Figure 6e, f, g legends
+  quote: High feature selectivity index values predict high nonlinearity thresholds, low transitions,
+    and low firing rates. These relationships are clearly expressed for the spiking events (Fig. 6e
+    −g). PSPs indicate similar relationships although the correlations were weaker or not
+    significant.
+  statistics:
+  - about: threshold against FSI, spikes (linear fit)
+    test: Pearson correlation
+    statistic: r = 0.68
+    p: 2.0e-5
+    n: 30 neurons
+  - about: threshold against FSI, large PSPs
+    test: Pearson correlation
+    statistic: r = 0.39
+    p: 0.0294
+    n: 30 neurons
+  - about: threshold against FSI, small PSPs
+    test: Pearson correlation
+    statistic: r = 0.30
+    p: 0.1045
+    n: 30 neurons
+  - about: transition against FSI, spikes (power fit)
+    test: Pearson correlation
+    statistic: r = -0.67
+    p: 4.0e-5
+    n: 30 neurons
+  - about: transition against FSI, large PSPs (power fit)
+    test: Pearson correlation
+    statistic: r = -0.50
+    p: 0.0045
+    n: 30 neurons
+  - about: transition against FSI, small PSPs (power fit)
+    test: Pearson correlation
+    statistic: r = -0.54
+    p: 0.0019
+    n: 30 neurons
+  - about: event rate against FSI, spikes (power fit)
+    test: Pearson correlation
+    statistic: r = -0.63
+    p: 0.0002
+    n: 30 neurons
+  expected:
+  - quantity: Pearson r, threshold against FSI, spikes
+    value: 0.68
+    tolerance: 0.068
+  - quantity: Pearson r, transition against FSI, spikes
+    value: -0.67
+    tolerance: 0.067
+  - quantity: Pearson r, event rate against FSI, spikes
+    value: -0.63
+    tolerance: 0.063
+  depends_on:
+  - fig6b-tab1-threshold-spikes-higher
+  - fig6c-tab1-transition-spikes-lower
+  - tab1-fsi-spikes-higher-than-large
+  criterion: Pearson r across the 30 neurons; for the power fits per D17. Reproduced when, under one
+    reading, the three spike r values are within tolerance with p < 0.05, and the PSP correlations
+    have the same signs as for spikes, each no stronger than the spike one of its panel. Partially
+    reproduced when the spike correlations have the right signs and p < 0.05 but one is outside
+    tolerance.
+- id: fig5df-strf-narrower-than-trf
+  statement: STRF bandwidths were substantially narrower than TRF bandwidths; PSP-based TRF
+    bandwidth30s exceeded total STRF bandwidths by about 1 octave for all three event types (0.99 +-
+    0.45, 0.92 +- 0.44 and 0.99 +- 0.44 octaves for spikes, large and small PSPs), with no group
+    difference.
+  source: Results, Frequency selectivity differences between TRFs and STRFs, paragraph 4; Figure 5d,
+    f legends
+  quote: PSP-based TRF bandwidths were on average ~1 octave wider than total STRF bandwidths for all
+    three STRF event types with no significant group differences (Fig. 5f ; one-way ANOVA, p = 0.81)
+  statistics:
+  - about: delta bandwidth across the three event types
+    test: one-way ANOVA
+    p: 0.81
+    n: 30 neurons, three event types
+  expected:
+  - quantity: delta bandwidth (PSP TRF bandwidth30 minus STRF bandwidth), spikes, mean
+    value: 0.99
+    tolerance: 0.45
+    unit: octaves
+  - quantity: delta bandwidth, large PSPs, mean
+    value: 0.92
+    tolerance: 0.44
+    unit: octaves
+  - quantity: delta bandwidth, small PSPs, mean
+    value: 0.99
+    tolerance: 0.44
+    unit: octaves
+  - quantity: median delta bandwidth, spikes
+    value: 1.02
+    tolerance: 0.102
+    unit: octaves
+  - quantity: median delta bandwidth, large PSPs
+    value: 1.01
+    tolerance: 0.101
+    unit: octaves
+  - quantity: median delta bandwidth, small PSPs
+    value: 0.91
+    tolerance: 0.091
+    unit: octaves
+  depends_on:
+  - fig1fgh-trf-bandwidth-narrowing
+  - tab1-total-bandwidth-no-difference
+  criterion: For the 30 neurons, PSP TRF bandwidth30 (D15; all 30, whatever their NDR) minus total
+    STRF bandwidth (D8, 54 dB SPL DMR, Methods, Stimuli) per event type. Reproduced when, under one
+    reading, the three means are within tolerance and positive, and the one-way ANOVA across event
+    types gives p >= 0.05; the medians are reported against their 10% tolerance. Partially
+    reproduced when the means are positive and within tolerance but the ANOVA differs.
+- id: fig5e-q-strf-higher
+  statement: Q factors of all-event STRFs were significantly higher than TRF Q30 values for PSP TRFs
+    (n = 40) and for spike TRFs (n = 15 with NDR of at least 0.3).
+  source: Results, Frequency selectivity differences between TRFs and STRFs, paragraph 4; Figure 5e
+    legend
+  quote: Q factors ((best frequency)/bandwidth), another estimate of sharpness of frequency tuning,
+    showed corresponding differences with STRF Q values from all events significantly higher than
+    TRF Q30 values for PSP TRFs and spike TRFs (Fig. 5e )
+  statistics:
+  - about: PSP TRF Q30 against all-event STRF Q
+    test: two-tailed paired Student's t-test
+    p: 1.0e-9
+    n: 40 neurons
+  - about: spike TRF Q30 against all-event STRF Q
+    test: two-tailed paired Student's t-test
+    p: 0.0025
+    n: 15 neurons with NDR >= 0.3
+  expected:
+  - quantity: paired neurons with NDR >= 0.3
+    value: 15
+    tolerance: 1.5
+  depends_on:
+  - fig5a-cf-bf-correlation
+  - fig1fgh-trf-bandwidth-narrowing
+  criterion: STRF Q = BF / all-event STRF bandwidth (Results, "(best frequency)/bandwidth"). The
+    paper defines no TRF best frequency; Q30 readings (a) CF / TRF bandwidth30, the usual Q30; (b)
+    the frequency of the largest response at the threshold + 30 dB level / TRF bandwidth30.
+    Bandwidth units per D15, bandwidths per D8 and D15. Reproduced when, under one reading, STRF Q exceeds both TRF Q30s
+    at p < 0.05 (paired t-test), and the count of paired neurons with NDR >= 0.3 is within tolerance.
+- id: fig7-current-amplitude-unimodal
+  statement: Peak current amplitude distributions (events above 3 x s.d. of baseline) were unimodal for
+    EPSCs and IPSCs.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 1; Figure 7a, b
+  quote: The amplitude distributions of peak currents (>3 × s.d. above baseline) were unimodal for
+    excitatory postsynaptic currents (EPSCs) and inhibitory postsynaptic currents (IPSCs)
+  depends_on:
+  - vc-cohort-counts
+  criterion: Peaks by peakfinder (about 20 to 40 pA to nearby minima), above 3 x s.d. of baseline
+    (D3). Unimodality per D4 (the converse of bimodality). Reproduced when, under the readings, at
+    least 90% of the 39 current recordings are unimodal; partially reproduced for 75% to 90%.
+- id: fig7c-ei-bf-matched
+  statement: In the eight neurons with both currents, excitatory and inhibitory STRF best frequencies
+    were closely matched.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 1; Figure 7c
+  quote: For the eight paired recordings, excitatory and inhibitory best frequencies were closely
+    matched (Fig. 7c )
+  depends_on:
+  - vc-cohort-counts
+  criterion: BF of the EPSC and IPSC STRFs (Methods). The paper gives no measure of "closely
+    matched". Readings (a) a positive Pearson correlation with p < 0.05 over the 8 pairs, the measure
+    the paper uses for CF and BF (Fig. 5a); (b) a median absolute E-I BF difference below 0.32
+    octaves, the mean single-band spike STRF bandwidth (Table 1), so that the peaks fall in each
+    other's band. Reproduced when both readings hold; partially reproduced when one does.
+- id: fig7d-current-double-peaks
+  statement: Double-peaked STRFs were seen in 35% (11/31) of the current recordings (9/27 excitatory,
+    5/12 inhibitory), similar to small PSPs and about twice the rate for spikes.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 1; Figure 7d
+    legend
+  quote: Double–peaked STRFs were observed in 35% (Fig. 7d ; n = 11/31) of the current traces, a
+    similar proportion as for small PSPs (Fig. 3d ; n = 14/40), and about twice as high as for spiking
+    STRFs (Fig. 3d ; n = 7/40)
+  expected:
+  - quantity: voltage-clamp neurons with a double-peaked STRF
+    value: 11
+    tolerance: 1.1
+  - quantity: double-peaked excitatory STRFs
+    value: 9
+    tolerance: 0.9
+  - quantity: double-peaked inhibitory STRFs
+    value: 5
+    tolerance: 0.5
+  depends_on:
+  - fig3d-double-peaked-counts
+  - vc-cohort-counts
+  criterion: Double peaks per D9 on the significant EPSC and IPSC STRFs. The Results call 11/31 a
+    share "of the current traces", but 31 is the number of neurons and the traces number 39 (27 +
+    12), with 9 + 5 = 14 double-peaked (Fig. 7d legend). Readings for the 11 (a) neurons with a
+    double-peaked EPSC or IPSC STRF, out of 31; (b) double-peaked traces, out of 39, where 14 is
+    expected and 11 cannot be matched. Reproduced when, under one reading, the three counts are within
+    tolerance.
+- id: fig7e-tab2-inhibition-broader
+  statement: Inhibitory STRF bandwidths (0.89 +- 0.34 octaves) exceeded excitatory ones (0.65 +- 0.30)
+    by about 27%, and exceeded current-clamp all-event bandwidths (0.64 +- 0.37), while excitatory
+    and current-clamp bandwidths did not differ.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 2; Figure 7e;
+    Table 2
+  quote: The inhibitory bandwidth exceeded the excitatory bandwidth by ~27% (Fig. 7e ; Table 2 )
+  statistics:
+  - about: excitation against inhibition
+    test: two-tailed unpaired Student's t-test
+    p: 0.0496
+    n: 27 excitatory and 12 inhibitory recordings
+  - about: excitation against current-clamp all events
+    test: two-tailed unpaired Student's t-test
+    p: 0.8738
+    n: 27 excitatory recordings and 40 current-clamp neurons
+  - about: inhibition against current-clamp all events
+    test: two-tailed unpaired Student's t-test
+    p: 0.0399
+    n: 12 inhibitory recordings and 40 current-clamp neurons
+  expected:
+  - quantity: excitatory STRF bandwidth, mean
+    value: 0.65
+    tolerance: 0.30
+    unit: octaves
+  - quantity: inhibitory STRF bandwidth, mean
+    value: 0.89
+    tolerance: 0.34
+    unit: octaves
+  - quantity: current-clamp all-event STRF bandwidth, mean
+    value: 0.64
+    tolerance: 0.37
+    unit: octaves
+  depends_on:
+  - vc-cohort-counts
+  criterion: Total bandwidth per D8 for all 27 EPSC and 12 IPSC STRFs and the 40 current-clamp
+    all-event STRFs (Table 2, note b). Reproduced when, under one reading, the means are within
+    tolerance and inhibition exceeds excitation at p < 0.05 (unpaired t-test); partially reproduced
+    when inhibition is broader with p >= 0.05.
+- id: fig7f-tab2-ipsc-bsmf-lower
+  statement: IPSC STRFs had lower bSMFs (0.25 +- 0.21 cyc/oct) than EPSC STRFs (0.62 +- 0.47) and than
+    spikes, large and small PSPs; EPSC bSMFs were lower than small PSPs.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 2; Figure 7f;
+    Table 2
+  quote: These spectral tuning differences were also reflected in the RTFs by showing lower bSMFs of
+    IPSC versus EPSC STRFs (Fig. 7f ). Compared to bSMFs for both spikes and large PSPs, EPSC, and
+    IPSC spectral modulations were lower, especially for the IPSCs.
+  statistics:
+  - about: excitation against inhibition
+    test: two-tailed unpaired Student's t-test
+    p: 0.0013
+    n: 27 excitatory and 12 inhibitory recordings
+  - about: excitation against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.0527
+  - about: excitation against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.2453
+  - about: excitation against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 1.0e-5
+  - about: inhibition against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 1.0e-5
+  - about: inhibition against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 3.0e-5
+  - about: inhibition against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 1.0e-9
+  expected:
+  - quantity: bSMF excitation, mean
+    value: 0.62
+    tolerance: 0.47
+    unit: cyc/oct
+  - quantity: bSMF inhibition, mean
+    value: 0.25
+    tolerance: 0.21
+    unit: cyc/oct
+  depends_on:
+  - fig4d-bsmf-small-psp-higher
+  - vc-cohort-counts
+  criterion: bSMF per the Methods and D11. Current-clamp values from the 30 neurons of
+    fig4d-bsmf-small-psp-higher. Reproduced when, under one reading, both means are within tolerance,
+    inhibition is below excitation and below all three current-clamp types at p < 0.05, and
+    excitation is below small PSPs at p < 0.05. The excitation against spike and large-PSP
+    comparisons are not significant in Table 2, so the Results' "lower" for EPSCs is judged by the
+    means only and reported.
+- id: tab2-btmf-currents-higher-than-spikes
+  statement: Temporal modulation tuning of EPSCs (11.2 +- 6.0 Hz) and IPSCs (12.0 +- 6.9 Hz) was
+    closely matched and significantly higher than bTMFs for spikes.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 3; Table 2
+  quote: Temporal modulation tuning of EPSCs and IPSCs was closely matched (Table 2 ). These values
+    were significantly higher than bTMFs for spikes (Table 2 )
+  statistics:
+  - about: excitation against inhibition
+    test: two-tailed unpaired Student's t-test
+    p: 0.7132
+    n: 27 excitatory and 12 inhibitory recordings
+  - about: excitation against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.0013
+  - about: inhibition against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.0190
+  expected:
+  - quantity: bTMF excitation, mean
+    value: 11.2
+    tolerance: 6.0
+    unit: Hz
+  - quantity: bTMF inhibition, mean
+    value: 12.0
+    tolerance: 6.9
+    unit: Hz
+  depends_on:
+  - fig4c-btmf-small-psp-higher
+  - vc-cohort-counts
+  criterion: bTMF per the Methods and D11. Reproduced when, under one reading, both means are within
+    tolerance, EPSC and IPSC bTMFs do not differ (p >= 0.05) and both exceed spike bTMFs at p < 0.05
+    (unpaired t-tests).
+- id: tab2-event-rate-excitation-higher
+  statement: EPSC event rates (3.72 +- 0.74 Hz) were much higher than IPSC event rates (1.06 +- 0.61
+    Hz).
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 4; Table 2
+  quote: Higher nonlinearity transition values combined with low, generally negative thresholds for
+    the EPSCs result in a soft, noisy rectification, low stimulus selectivity and, consequently, more
+    random events and higher rates of excitatory synaptic inputs
+  statistics:
+  - test: two-tailed unpaired Student's t-test
+    p: 8.0e-12
+    n: 27 excitatory and 12 inhibitory recordings
+  expected:
+  - quantity: event rate excitation, mean
+    value: 3.72
+    tolerance: 0.74
+    unit: Hz
+  - quantity: event rate inhibition, mean
+    value: 1.06
+    tolerance: 0.61
+    unit: Hz
+  depends_on:
+  - vc-cohort-counts
+  criterion: Events above 3 x s.d. of baseline (D3) over the DMR duration (event rate is not defined
+    in the paper; this is a standard choice). Reproduced when, under one
+    reading, both means are within tolerance and excitation exceeds inhibition at p < 0.05.
+- id: tab2-nonlinearity-ei
+  statement: EPSC nonlinearities had low thresholds (-1.14 +- 0.87 s.d.) and high transitions (2.21 +-
+    0.49), IPSC ones high thresholds (1.26 +- 0.70) and low transitions (1.03 +- 0.31); EPSC
+    thresholds were below spikes and PSPs and IPSC thresholds above them; EPSC transitions exceeded
+    spikes and small PSPs, IPSC transitions were similar to spikes and below PSPs.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 4; Figure 7g;
+    Table 2
+  quote: Thresholds for EPSCs were significantly below spikes and PSPs whereas IPSC threshold were
+    well above those found for spikes and PSPs. Transition values for EPSCs were higher than those for
+    spikes and PSPs whereas IPSC transition values were similar to those of spiking events but lower
+    than those for PSPs.
+  statistics:
+  - about: threshold, excitation against inhibition
+    test: two-tailed unpaired Student's t-test
+    p: 8.0e-9
+    n: 27 excitatory and 12 inhibitory recordings
+  - about: threshold, excitation against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 4.0e-10
+  - about: threshold, excitation against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.0175
+  - about: threshold, excitation against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.0089
+  - about: threshold, inhibition against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.0190
+  - about: threshold, inhibition against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 1.0e-7
+  - about: threshold, inhibition against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 2.0e-7
+  - about: transition, excitation against inhibition
+    test: two-tailed unpaired Student's t-test
+    p: 2.0e-10
+  - about: transition, excitation against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 9.0e-10
+  - about: transition, excitation against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.0813
+  - about: transition, excitation against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 1.0e-6
+  - about: transition, inhibition against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.0828
+  - about: transition, inhibition against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 6.0e-7
+  - about: transition, inhibition against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 3.0e-5
+  expected:
+  - quantity: threshold excitation, mean
+    value: -1.14
+    tolerance: 0.87
+    unit: s.d.
+  - quantity: threshold inhibition, mean
+    value: 1.26
+    tolerance: 0.70
+    unit: s.d.
+  - quantity: transition excitation, mean
+    value: 2.21
+    tolerance: 0.49
+    unit: s.d.
+  - quantity: transition inhibition, mean
+    value: 1.03
+    tolerance: 0.31
+    unit: s.d.
+  depends_on:
+  - fig6b-tab1-threshold-spikes-higher
+  - fig6c-tab1-transition-spikes-lower
+  - vc-cohort-counts
+  criterion: Nonlinearity and fit as in fig6b-tab1-threshold-spikes-higher (D12). Reproduced when,
+    under one reading, the four means are within tolerance and the twelve comparisons that Table 2
+    marks significant (all seven for threshold; for transition E-I, E-spikes, E-small PSPs, I-large
+    PSPs, I-small PSPs) give p < 0.05 in the same direction; partially reproduced when the E-I
+    differences in threshold and transition hold with p < 0.05 and at least eight of the other ten
+    do. The Results' "higher than ... PSPs" for EPSC transitions is not significant against large
+    PSPs in Table 2 (p = 0.0813) and is judged by Table 2.
+- id: tab2-fsi-ei
+  statement: Feature selectivity indexes were slightly higher for IPSCs (0.13 +- 0.05) than for EPSCs
+    (0.09 +- 0.03); IPSC values did not differ from spikes and PSPs, while EPSC values were smaller
+    than those of spikes and PSPs.
+  source: Results, DMR-evoked excitatory and inhibitory synaptic currents, paragraph 4; Figure 7h;
+    Table 2
+  quote: Feature selectivity index values were slightly higher for inhibitory inputs compared to
+    excitatory inputs in accordance with the higher nonlinearity thresholds (Table 2 ). Feature
+    selectivity indexes for IPSCs were not different to those of spikes and PSPs while feature
+    selectivity indexes of EPSCs were smaller than those obtained for spikes and PSPs.
+  statistics:
+  - about: excitation against inhibition
+    test: two-tailed unpaired Student's t-test
+    p: 0.0242
+    n: 27 excitatory and 12 inhibitory recordings
+  - about: excitation against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.0003
+  - about: excitation against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.0096
+  - about: excitation against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 6.0e-8
+  - about: inhibition against spikes
+    test: two-tailed unpaired Student's t-test
+    p: 0.2126
+  - about: inhibition against large PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.3817
+  - about: inhibition against small PSPs
+    test: two-tailed unpaired Student's t-test
+    p: 0.1950
+  expected:
+  - quantity: FSI excitation, mean
+    value: 0.09
+    tolerance: 0.03
+  - quantity: FSI inhibition, mean
+    value: 0.13
+    tolerance: 0.05
+  depends_on:
+  - tab1-fsi-spikes-higher-than-large
+  - vc-cohort-counts
+  criterion: FSI per the Methods and D13. Reproduced when, under one reading, both means are within
+    tolerance, IPSCs exceed EPSCs at p < 0.05, EPSCs are below spikes, large and small PSPs at
+    p < 0.05, and IPSCs differ from none of the three at p < 0.05 (unpaired t-tests). The absence
+    part is judged on these tests as written.
+- id: tab2-latency-duration-ei-no-difference
+  statement: STRF latency (35.2 +- 10.9 against 43.5 +- 14.8 ms) and duration (41.5 +- 16.9 against
+    45.6 +- 29.0 ms) did not differ between excitation and inhibition.
+  source: Table 2, Latency and Duration
+  inferred: Read from Table 2, whose latency and duration p-values are 0.0971 and 0.6591.
+  statistics:
+  - about: latency
+    test: two-tailed unpaired Student's t-test
+    p: 0.0971
+    n: 27 excitatory and 12 inhibitory recordings
+  - about: duration
+    test: two-tailed unpaired Student's t-test
+    p: 0.6591
+    n: 27 excitatory and 12 inhibitory recordings
+  expected:
+  - quantity: latency excitation, mean
+    value: 35.2
+    tolerance: 10.9
+    unit: ms
+  - quantity: latency inhibition, mean
+    value: 43.5
+    tolerance: 14.8
+    unit: ms
+  - quantity: duration excitation, mean
+    value: 41.5
+    tolerance: 16.9
+    unit: ms
+  - quantity: duration inhibition, mean
+    value: 45.6
+    tolerance: 29.0
+    unit: ms
+  depends_on:
+  - vc-cohort-counts
+  criterion: A claim of absence, judged on Table 2's unpaired t-tests at p < 0.05, latency and
+    duration per D10. Reproduced when neither differs; not reproduced when either does; the means
+    are reported against the expected values.
+checks:
+- date: 2026-11-09
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - tab2-nonlinearity-ei, criterion. Table 2 marks twelve comparisons significant (seven for threshold, five for transition), not eleven; the count is corrected, the comparisons named, and the partial rule made eight of the other ten (it was seven of nine, one of them not existing).
+  - fig3d-double-peaked-counts, criterion. The paper gives the 20/40 both as double peaks in spiking or subthreshold STRFs and as double-peaked all-event STRFs (Results, Double-peaked STRFs, paragraph 1; Fig. 3e legend); both readings are now named.
+  - fig7d-current-double-peaks, criterion. The Results call 11/31 a share of current traces, but 31 is the neuron count and the 39 traces hold 9 + 5 = 14 double-peaked STRFs (Fig. 7d legend); the readings (neurons, traces) are now named.
+  - fig5e-q-strf-higher, criterion. The paper defines Q as best frequency over bandwidth and gives no TRF best frequency; using CF for Q30 is a reading, now named with its alternative.
+  - tab1-event-rate-no-difference and tab2-event-rate-excitation-higher, criteria. The paper does not define event rate; events over the DMR duration is now marked as a standard choice.
+  - fig4d-bsmf-small-psp-higher, criterion. Noted that the Discussion (paragraph 1, observation 2) says large and small PSPs did not differ in spectral preference, against the Results and Table 1; the claim follows the Results and Table 1.
+  - Open. Some grading bounds are the reader's, as the paper gives no number for its words. fig1d-ndr-distribution ("very few near 1" read as under 10% of neurons above 0.7), fig1e-ndr-vs-rest-weak (partial when r below 0.3), fig7-current-amplitude-unimodal (90% and 75% of recordings unimodal), fig5c-bandwidth-relationships (five or three of six counts). They do not change what is measured, only how a near miss is graded.
+  - Open. The data set's "codes" folder (Matlab analysis scripts) was not read, as it is part of the data set; it may settle D1 to D17, in particular the STRF bandwidth (D8), double-peak rule (D9) and the nonlinearity fit form (D12).
