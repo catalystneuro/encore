@@ -27,16 +27,19 @@ in it.
 | Phase-specific shifts bracket the Hilbert shift | Reproduced (assumed) |
 | Delay due to asymmetry, 3.56 ms/mm | Not reproduced (assumed) |
 | Residual delay of 9.61 ms/mm after removing asymmetry | Not reproduced |
-| Relative delay does not change with theta frequency | Not reproduced |
-| Absolute delay falls with theta frequency, -3.12 ms/Hz | Not reproduced |
-| Absolute delay varies more with frequency than relative delay | Not reproduced |
-| The residual shifts behave as coupled oscillators | Partially reproduced |
+| Relative delay does not change with theta frequency | Not reproduced (assumed) |
+| Absolute delay falls with theta frequency, -3.12 ms/Hz | Not reproduced (assumed) |
+| Absolute delay varies more with frequency than relative delay | Not reproduced (assumed) |
+| The residual shifts behave as coupled oscillators | Partially reproduced (assumed) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The files state no unit, and two of the six are on a scale about five times smaller than the
 others, so the paper's 400 µV theta threshold selects nothing in them as stored. "Assumed" marks
-outcomes that rest on applying the threshold on one scale for all rats. The attempt record, with
+outcomes that rest on applying the threshold on one scale for all rats (400 µV only if the
+integer files are in µV), and, for Figure 8, on the claims file's definition of a cycle's period,
+which shares timing with the per-cycle delay. The notebook shows a threshold sweep and Figure 8
+variants that do not share that timing. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/hernandez-perez-2020-01.yaml`](../../attempts/hernandez-perez-2020-01.yaml).

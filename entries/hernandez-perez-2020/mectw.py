@@ -100,6 +100,10 @@ class Rat:
       "counts" : rats whose values are not integers are taken to be in uV and divided by the
                  Intan step of 0.195 uV, so all rats are in ADC counts, then 400 is applied;
       "none"   : no theta-amplitude restriction (all artefact-free data).
+    Under "counts" the 400 is applied to the integer files' values as stored: it is 400 uV if those
+    files are in uV, and 78 uV if they are Intan counts. "counts:<thr>" applies thr instead of 400
+    on the same scale (threshold sweep; "counts:2051" is 400 uV with the integer files read as
+    Intan counts).
     """
 
     def __init__(self, rat, x):
@@ -114,9 +118,10 @@ class Rat:
         self.phase = np.angle(an)
         self.amp = np.abs(an)
         self.broad = bandpass(self.x, 1, 25)  # Methods, Theta phase estimation (waveform method)
+        self._ep = {}
 
     def scale(self, unit):
-        if unit == "counts" and not self.isint:
+        if unit.startswith("counts") and not self.isint:
             return 1.0 / INTAN_UV_PER_BIT
         return 1.0
 
@@ -124,8 +129,12 @@ class Rat:
         """Per-channel theta epochs, (channels, samples)."""
         if unit == "none":
             return self.keep.copy()
-        a = self.amp * self.scale(unit)
-        return np.array([theta_epochs(a[c], self.keep[c], thr) for c in range(self.nch)])
+        if ":" in unit:
+            thr = float(unit.split(":")[1])
+        if (unit, thr) not in self._ep:
+            a = self.amp * self.scale(unit)
+            self._ep[(unit, thr)] = np.array([theta_epochs(a[c], self.keep[c], thr) for c in range(self.nch)])
+        return self._ep[(unit, thr)].copy()
 
     def masks(self, unit, chan_reading):
         """Mask for the pair (0, j), for each j, under O3: "a" each channel's own epochs, pairwise
@@ -169,6 +178,23 @@ def signrank(v):
     tplus = r[v > 0].sum()
     p = stats.wilcoxon(v, method="exact").pvalue
     return tplus, p
+
+
+def signrank_zeros(v, zero_method):
+    """Exact two-sided signed-rank p by enumerating the signs of the non-zero values, with zeros
+    ranked among all values: "pratt" drops the zeros' ranks, "zsplit" gives each zero half its rank
+    to T+. Returns (T+, p). Shows how a zero changes the test (fig5-dorsal-sawtooth)."""
+    v = np.asarray(v, float)
+    r = stats.rankdata(np.abs(v))
+    nz = v != 0
+    fixed = 0.5 * r[~nz].sum() if zero_method == "zsplit" else 0.0
+    rn = r[nz]
+    tplus = fixed + rn[v[nz] > 0].sum()
+    signs = np.array(np.meshgrid(*[[0, 1]] * rn.size)).reshape(rn.size, -1).T
+    T = fixed + signs @ rn
+    centre = fixed + rn.sum() / 2
+    p = np.mean(np.abs(T - centre) >= abs(tplus - centre) - 1e-9)
+    return tplus, min(1.0, p)
 
 
 def boot_ci(v, rng, nboot=500, stat=np.median):
@@ -358,8 +384,8 @@ def robustfit_slopes(x, Y, tune=4.685, maxit=50, tol=1e-6):
         new = np.column_stack([b0, b1])
         d = np.abs(new - beta).max(1)
         newly = (d <= tol * np.maximum(np.abs(new).max(1), np.abs(beta).max(1)))
+        beta = np.where(conv[:, None], beta, new)  # rows converged earlier keep their estimate
         conv |= newly & ok
-        beta = np.where(conv[:, None], beta, new)
         if conv.all():
             break
     return beta[:, 1], conv & np.isfinite(beta[:, 1])
@@ -475,6 +501,7 @@ def delays(R, cyc, unit, chr_):
         s, ok = robustfit_slopes(R.pos, O)
         out[ph] = s[ok]
         out[ph + "_dropped"] = int((~ok).sum())
+        out[ph + "_all"], out[ph + "_ok"] = s, ok  # per reference cycle, for fig8 variants
     # asymmetry-related delay
     refp = c0["peak"][sel]
     A = np.zeros((refp.size, R.nch))
@@ -491,6 +518,16 @@ def delays(R, cyc, unit, chr_):
     sr, okr = robustfit_slopes(R.pos, offs["peak"] - A)
     out["resid_cycle"] = sr
     out["resid_ok"] = okr
+    sh, okh = robustfit_slopes(R.pos, offs["peak"] - A / 2)  # variant: half the asymmetry delay
+    out["resid_half_cycle"] = sh[okh]
     out["period"] = c0["period"][sel]
     out["prev_period"] = c0["prev_period"][sel]
+    # variant frequency that does not use the extrema's times: mean instantaneous frequency of the
+    # dorsal-most channel's 6-12 Hz Hilbert phase over a fixed 250 ms window centred on the
+    # reference peak (a window of two 8 Hz cycles; standard choice)
+    dph = np.diff(np.unwrap(R.phase[0])) * FS / (2 * np.pi)
+    cs = np.concatenate([[0.0], np.cumsum(dph)])
+    a = np.clip(refp - 62, 0, dph.size)
+    b = np.clip(refp + 63, 0, dph.size)
+    out["hilbert_freq"] = (cs[b] - cs[a]) / np.maximum(b - a, 1)
     return out
