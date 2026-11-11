@@ -1,101 +1,128 @@
-I wrote the notes in `docs/pilot-notes/000489-kim-2022-01.md` and changed no other file. The other untracked files at the repository root (`.bashrc`, `.vscode`, `scripts` and others) were not created by me. Here is the subsection:
+# kim-2022, Kim et al. 2022 (second attempt)
 
-# 000489, Kim et al. 2022
+Six claims reproduced, three partially, three not reproduced and 13 blocked,
+12 as `dataset_missing` and one as `data_missing`; all 12 tested outcomes rest
+on an assumption. The first verification round agreed with 23 of the 25
+outcomes and the second with all 25, so there was no third round. This is the
+second attempt on the paper and the first under pilot-14, which files records
+by paper: the earlier attempt, `kim-2022-01`, tested 000489 alone under
+pilot-12, and this one also uses 000448, now among the paper's datasets in the
+registry, pinning versions 0.230518.1811 and 0.230421.1844. The claims file was
+written again for the paper, with 25 claims against 22. The paper, Kim,
+Semenov, Kiester, Keppler, Ibey, Bixler and Pakhomov, exposes monolayers of
+bovine pulmonary artery endothelial cells to unipolar and bipolar pulses from
+two needle electrodes, measures YO-PRO-1 (YP) uptake against the field strength
+along the line bb' between them, and reports how far a second phase of opposite
+polarity cancels electroporation as its amplitude, the pulse number, duration
+and repetition rate change, with strobe imaging of membrane charging at the
+poles of CHO cells loaded with FluoVolt. The claims were written from the
+accepted author manuscript in PubMed Central (PMC9729435); the paper has no
+supplement and links no code or data deposit. The six claims on Fig. 2 were
+tested on 000489 and the six on Fig. 7 on 000448. The 12 claims on Figs. 3 to 6
+are blocked because their dishes are not in either dandiset; 000548, 000549 and
+000550 name the paper and match those figures by title, but they are not among
+the paper's datasets in the registry and were listed under `missing_datasets`.
+`fig1e-heating` is blocked as the thermometry is in neither. On Fig. 2,
+`fig2a-uptake-rises-with-field` is reproduced under the unpaired t-test (5 of 5
+amplitudes, p = 0.0001 to 0.044; the paired test passes 3 of 5), and
+`fig2c-inhibition-flat-above-8-7` is reproduced with ROI on both sides of the
+centre, though with one side only it would not be.
+`fig2b-exponential-same-slope` is partially reproduced, as the exponential
+beats a line for 3 of 5 amplitudes and no slope differs; `fig2c-weaker-at-6-7`
+is partially reproduced, as 100% pulses pass and 50% pulses give p = 0.049
+against the p < 0.01 required. `fig2a-vertical-scales` is not reproduced (the
+largest 75% mean plus s.e.m. is 339 a.u., above the 250 a.u. axis), and
+`fig2c-max-inhibition-50-75` is not reproduced, as the 50% second phase leaves
+49.3% of the unipolar mean against 20 +- 2% and the p < 0.01 test holds at
+most at 7 of 10 fields. On Fig. 7, the mirror-image polarization of the two
+poles (+22.1% and -20.7% at 600 ns), the bipolar overshoot, the alternation in
+833 kHz trains and the summation without build-up are reproduced;
+`fig7-charging-time-constant` is not reproduced, as the charging tau of 191 ns
+matches but the amplitude of 23.2% (expected 31 +- 3.1) and the discharge tau
+of 613 ns (expected 520 +- 52) do not; and
+`fig7-later-pulses-same-tau-difference` is partially reproduced. Round 1
+disagreed on `fig2b-exponential-same-slope`, which it held not reproduced, and
+on `fig2c-weaker-at-6-7`, first recorded as reproduced, where 50% passed only
+by pooling every dish and ROI value as independent; the author moved
+`fig2c-weaker-at-6-7` to partially reproduced with one value per dish, moved
+`fig2c-max-inhibition-50-75` from partially to not reproduced by requiring the
+test at every field, and kept the fig2b outcome, recording the disagreement,
+as the criterion names no outcome when the slopes agree and the exponential
+fails. Round 2 agreed with all 25; on its points the record now says that the
+criterion's literal pooling would make `fig2c-weaker-at-6-7` reproduced and
+that the 100% pass rests on a unipolar mean of 19 a.u. from 2 dishes, and a
+pole-region variant leaving out membrane that faces a neighbouring cell was
+added, which changes no outcome. The author asked a reader no questions, so
+the answer and author-answers runs changed nothing. The author's run took
+about 2 h (03:20 to 05:20 UTC); about 1 h was lost when a footprint search by
+direct convolution hit its 60-minute timeout and was replaced by FFT
+convolution, and a background download was killed when its shell call ended
+and was run again in the foreground. The notebook ran in 494 s at first, 798 s
+after round 1, 755 s after round 2 and 514 s in the reconcile run. The
+reconciliation with `kim-2022-01` was blind; it traces the Fig. 2 changes of
+outcome to the rewritten claims file (the unpaired test, one Fig. 2B reading)
+and to differences in method (0.2 mm footprint discs against 0.5 mm, the high
+field ROI), and the Fig. 7 outcomes to the change of protocol. `tools/entry.py
+check` still reports 3 errors, as the earlier record has no outcomes for the
+three Fig. 7 claims added to the claims file.
 
-No claim reproduced, one partially, four not reproduced and 17 blocked, and
-the second verification round agreed with all 22 outcomes. It pins version
-0.230518.1811; the paper cites no version, and the draft holds the same files.
-The paper, Kim, Semenov, Kiester, Keppler, Ibey, Bixler and Pakhomov, exposes
-monolayers of bovine pulmonary artery endothelial cells to trains of unipolar
-and bipolar nanosecond and microsecond pulses from two needle electrodes,
-measures YO-PRO-1 (YP) uptake against the field strength along a line between
-them, and reports how much a second phase of opposite polarity cancels
-electroporation as its amplitude, the pulse number, duration and repetition
-rate change, with strobe imaging of membrane charging in CHO cells. The claims
-were written from the accepted author manuscript in PubMed Central
-(PMC9729435); the paper links no code and no data deposit. Only the six claims
-on Figure 2 were analysed, as the dandiset holds only that experiment, and
-four outcomes rest on assumptions: the ROI positions, the footprints for YP_0
-and MB_0, a pixel size of 0.65 um, camera counts taken as the paper's units and
-the field per ROI, recomputed in closed form for two cylinders from the
-geometry of Methods 2.3, which gives 15.38 kV/cm at the centre against the
-paper's 15.1. `fig2a-uptake-rises-with-field` is partially reproduced: mean YP
-rises with field for all five amplitudes (Spearman rho 0.98 to 0.99), and the
-strongest ROI exceeds the weakest at p < 0.05 for 50, 75 and 100% but not for
-unipolar (2 dishes) or 25%. `fig2a-vertical-scales` is not reproduced, as the
-largest 75% mean plus s.e.m. is 283.2 a.u., above the 250 limit;
-`fig2b-exponential-same-slope` is not reproduced, as none of 12 readings meets
-both parts of the criterion; `fig2c-max-inhibition-50-75` is not reproduced,
-as the 50% second phase leaves 54.5% of the unipolar mean averaged over the
-range and 31.6% at its lowest, against about 20%, with p < 0.01 reached in only
-one of 36 per-ROI tests; and `fig2c-inhibition-flat-above-8-7` is not
-reproduced under every variant, as the percent of unipolar rises towards 8.94
-kV/cm for every amplitude. `fig2c-weaker-at-6-7` is blocked as `other`, as the
-unipolar mean at 6.75 kV/cm is -8.6 a.u. (s.e.m. 19.6), at background, so the
-ratio measures nothing; with the bottom side alone or the left footprint alone
-it is reproduced. The 15 claims on Figures 3 to 7 are blocked as `other`, as
-their data are in dandisets 000548, 000549, 000550 and 000448, which name the
-paper but which the claims file does not name as sources, and `fig1e-heating`
-is blocked as `data_missing`. The author's first run gave one partially
-reproduced, four not reproduced, one blocked as `methods_underspecified` and
-16 as `data_missing`. The author asked a reader no questions, so the answer run
-and the following author run changed nothing. Round 1 agreed with 20 of 22
-outcomes; it found that the fig2b reading labelled partially reproduced, a
-category the criterion does not define, was the only source of the
-disagreement, and that fig2c-weaker divided by a unipolar mean at background,
-and the author moved fig2b to not reproduced and fig2c-weaker to blocked. Its
-points also led to the sibling dandisets being named in each blocked claim, a
-per-ROI p-value table and two more placements of the fig2c-max test, a check
-that 000548 holds the missing unipolar image, variants with the field scaled
-to 15.1 kV/cm and with the weakest ROI at 2.0 and 2.4 mm, and the removal of an
-invalid variant that counted a 25% image as unipolar. Round 2 agreed with all
-22, so there was no third round; it found sentences the outputs did not fully
-support, among them largest p values given for 50% alone and polynomial fits
-said to cross zero at both cutoffs, which were corrected, and noted that the
-Figure 2C outcomes still rest on 2 unipolar dishes. The author's run took
-about 1 h 20 min (15:31 to 16:51 UTC) and nothing failed in the final runs;
-during development a range request was reset, and retries were added, and a
-newline escape broke a notebook cell. The notebook ran in 519 s at first, in
-10.7 min after round 1 and in 559 s in the last run.
+000489 holds only the 17 dishes of Fig. 2 and one sample image named for Fig.
+1F, and 000448 the strobe images of Fig. 7; the dishes of Figs. 3 to 6 and the
+thermometry of Fig. 1E are in neither, and the registry's list of the paper's
+datasets and the 000489 title, which the claims file follows, do not point to
+000548, 000549 and 000550. 000448 holds 5 unipolar and 4 bipolar cells, where
+the paper reports 18 and 17, without saying how the 9 were chosen, and it counts
+18 subjects because each cell's forward and reverse trials have different
+subject ids (for example 001_F and 001_R for cell09). The YO-PRO-1 channel of
+sub-Fig2-0-03 (unipolar) and sub-Fig2-25-04 (25% bipolar) is the same image,
+value for value, while their MemBrite channels differ and the two files give
+session dates of 2021-07-29 and 2021-07-26; with it left out the unipolar and
+25% groups have 2 dishes each. Dish numbers run up to 18 while 17 dishes are
+deposited, and nothing says which dishes were left out or why; all unipolar
+dishes are from 2021-07-29 and all 75% and 100% dishes from 2021-08-24, and the
+100% dishes take up more YP than the unipolar ones (largest mean 750.5 against
+650.8 a.u.; higher at 9 of 11 ROI within 2 mm of the centre), where Fig. 2C
+shows every second phase inhibiting uptake. The 000489 images give no pixel
+size (resolution -1), electrode positions or polarity, ROI positions or values,
+or field per ROI, so 0.65 um per pixel was assumed, which the electrode spacing
+supports (4.44 to 4.66 mm against 4.5 mm in Methods), and the field was
+recomputed for two cylinders and scaled to the paper's 15.1 kV/cm at the
+centre. The 000448 files give no pole regions, field direction or delay of each
+frame, and the reverse-trial files store frames in acquisition order with a
+response offset of 74 frames (1.85 us) from the forward trial (75 for cell24),
+neither documented; the darkest frame is the first in 10 of 18 files, and 5
+files have frames below half their median frame mean, consistent with failed
+laser flashes. The series description of the Fig. 2 files names "Channel1" for
+both filter sets and describes 144 images (12 x 12) of a well of a six-well
+plate, where Methods 2.5 describes 216 images of 35 mm dishes, and three files
+share the series name Fig2_25. Each 000489 file stores its stitched
+two-channel image as one ImageSeries of shape (22323, 22323, 2) at 2.0 Hz with
+unit n.a., so it reads as 22323 frames of 22323 x 2 pixels, and the two
+channels of sub-Fig1F are the same image. Two questions are put to the
+paper's authors: how the ROI were placed along bb' and whether the t-test was
+paired, and how the pole regions were drawn, where the cathode was relative to
+the image and whether the poles of a group of cells were taken on its outline
+or on each cell.
 
-The dandiset holds only the Figure 2 experiment (17 dishes, 5 pulses at 1 Hz
-with a second phase of 0 to 100%) and a sample image named for Figure 1F, so
-16 of the 22 claims cannot be tested on it; those of Figures 3 to 7 are in
-000548, 000549, 000550 and 000448, but nothing in 000489's metadata or files
-points to them, and 000448 holds 9 cells (5 unipolar, 4 bipolar) against the
-paper's 18 unipolar and 17 bipolar. The YP channel of the unipolar dish
-sub-Fig2-0-03 is identical to that of the 25% dish sub-Fig2-25-04, while their
-MemBrite channels differ; it registers with 25-04's MemBrite channel (peak
-0.454) and not with its own (0.028), so the unipolar group has 2 dishes, and
-000548 holds the true image as sub-Fig3-Uni5-03 (peak 0.301), which was not
-measured as it is outside this dandiset. The files give no pixel size,
-electrode positions, ROI, field per ROI, footprint values or pulse voltage, and
-name the channels only in free text; the data are consistent with 0.65 um per
-pixel (electrode centres 4.54 mm apart, footprints 1.49 mm across, against 4.5
-and 1.5 mm in the paper). Each stitched two-channel image is stored as an
-ImageSeries of shape (22323, 22323, 2) at 2 Hz, so it reads as 22323 frames of
-22323 x 2 pixels, the unit is n.a. and the three 25% files share the
-acquisition name Fig2_25. The file sub-Fig1F holds the same image in both
-channels. The series description gives 144 tiles of a well of a six-well
-plate, where the paper gives 216 tiles of 35 mm glass-bottom dishes, and the
-images show a 12 x 12 tile grid over a round glass bottom about 14.5 mm across.
-Dish numbers run up to 18, so more dishes were exposed than deposited, and
-nothing says which form Figure 2; all unipolar dishes are from 2021-07-29 and
-all 75% and 100% dishes from 2021-08-24, and the 100% dishes show more uptake
-than the unipolar ones (largest mean 761.0 against 571.1 a.u.), which does not
-match Figure 2C. Five questions are put to the paper's authors: how the ROI
-were placed along bb', which footprints and areas gave YP_0 and MB_0, how the
-exponential fits of Figure 2B were made, whether the t-tests were paired and
-what the p < 0.01 of Figure 2C compares, and whether the ROI fields came from
-the model at nominal electrode positions or were adjusted per dish.
+The author's points on the protocol: the claims file lists the Fig. 3 to 6
+claims under 000489 although other public datasets of the paper hold them, and
+neither `data_missing` nor `dataset_missing` fits exactly; the protocol says to
+count duplicated recordings once but not what to do with a channel shared by
+two files of different conditions; some criteria give no outcome for some
+cases, such as fig2b when the slopes agree and the exponential fails, or
+fig2c-max, which does not say at how many fields the test must hold; and the
+advice to develop on a subset says nothing about caching data during
+development.
 
-The author's points on the protocol: the Figure 2 dishes had the same 600 ns
-exposure as Figure 4 but are other dishes, so Figures 4 and 5 stayed blocked
-and their measures were shown in a section that decides no outcome; the clock
-check assumes time series and does not apply to single images; the claims
-file's readings multiply with the step 1.6 readings, and where they changed the
-outcome the best-supported reading was adopted and marked assumed; the
-protocol does not say whether a field recomputed from the paper's geometry is
-outside data, and it was listed under `inputs`; and the advice to develop on a
-subset does not cover a CPU-bound load, so reduced data were cached during
-development only.
+---
+
+Summary (`summaries/kim-2022-02.md`, 118 words):
+
+In this data the paper's membrane charging results mostly held up, its results on how a second phase cancels electroporation held only in part, and its findings on pulse number, duration and repetition rate could not be tested, as those dishes are in other dandisets. Strobe imaging reproduced the mirror-image polarization of the cell poles, the bipolar overshoot and alternation, and summation without build-up, but not the fitted charging amplitude or discharge time constant, possibly because few of the paper's cells were deposited. Uptake rose with field and its inhibition was flat at high fields, but a 50% second phase left 49.3% of unipolar uptake, not about 20%. The exponential rise and weaker low-field inhibition held in part.
+
+---
+
+Notes on the run:
+- Four of the five most recently added notes have since been renamed or removed. I matched the shape of `shi-2013-01.md`, the one still there, and of the earlier `kim-2022-01.md`.
+- The `catalystneuro` field is empty for both dandisets, so the second paragraph does not open with the conversion sentence.
+- I wrote only the two new files. `git status` also lists some untracked files that I did not create or touch: dotfiles, `.idea`, `.vscode` and `scripts`.
