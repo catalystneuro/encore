@@ -120,6 +120,9 @@ FINDING_KINDS = {
     "paper_inconsistency": "Paper inconsistent",
     "other": "Other",
 }
+# What a finding is about when its record does not say (schemas/attempt.schema.json, `about`): the paper for these
+# kinds, the data for the others. A finding about the data belongs to its dataset, one about the paper to the paper.
+ABOUT_PAPER = {"methods_unavailable", "code_mismatch", "paper_inconsistency"}
 STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted",
           "no_match": "No matching paper"}
 VERIFICATION_TIER = {"agent": "agent_verified", "person": "human_verified",
@@ -320,8 +323,13 @@ def collect(executed: Path | None = None) -> dict:
                 "where": known.get(o["claim"], {}).get("where"),
                 "proposed": o.get("proposed"),
             } for o in a["outcomes"]],
+            # Every finding of the record, numbered as the record has them (a reconciliation names them by number);
+            # split after reconcile() into those about the data (`findings`) and about the paper (`paper_notes`).
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"]), "found": f.get("found"),
-                          "status": None} for f in a.get("findings") or []],
+                          "status": None, "n": n,
+                          "about": f.get("about") or ("paper" if f["kind"] in ABOUT_PAPER else "data"),
+                          "datasets": [str(x) for x in f.get("datasets") or []]}
+                         for n, f in enumerate(a.get("findings") or [], 1)],
             "reconciliation": a.get("reconciliation"),
             "verifications": [{
                 "date": str(v["date"]), "kind": v["kind"], "by": squash(v.get("by")),
@@ -335,6 +343,14 @@ def collect(executed: Path | None = None) -> dict:
         })
 
     reconcile(attempts)
+    # Findings about the data belong to a dataset: `findings` is from here on those about this row's dataset (a record
+    # is a row for each dataset it used; a finding that names its datasets is on those rows only). Those about the
+    # paper are `paper_notes`, for the paper's page.
+    for a in attempts:
+        every = a["findings"]
+        a["paper_notes"] = [f for f in every if f["about"] == "paper"]
+        a["findings"] = [f for f in every if f["about"] == "data"
+                         and (not f["datasets"] or dir_of(a["key"]) in f["datasets"])]
     attempted = {a["key"] for a in attempts}
     targets = []
     fixes = paper_match.triage()
@@ -2614,7 +2630,18 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                        f'for method details the claims file did not give.</p>'
                        f'<ul class="questions">{question_items}</ul></section>') if questions else ""
 
+    # What the attempts found about the paper itself (its methods, its code, its own consistency): on its page.
+    notes = [f for a in atts for f in a.get("paper_notes") or []] if paper else []
+    notes_panel = (f'<section class="tabpanel" id="notes"><h2>Notes on the paper</h2>'
+                   f'<p class="sub small" style="margin-top:12px">What the attempts found about the paper itself: a '
+                   f'method or rule it does not give, a place where it disagrees with itself, published code that '
+                   f'does something else. What they found about the data is on each dataset&rsquo;s page.</p>'
+                   f'<ul class="findings">' + "".join(
+                       f'<li><span><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span></span>'
+                       f'<span>{finding_tags(f)}{e(f["statement"])}</span></li>' for f in notes)
+                   + '</ul></section>') if notes else ""
     tab_defs = [("claims", "Claims", n),
+                *([("notes", "Notes on the paper", len(notes))] if notes else []),
                 *([] if paper else [("findings", "Findings about the data", len(all_findings))]),
                 *([("questions", "Questions", len(questions))] if questions else []),
                 ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
@@ -2682,6 +2709,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
     <div class="subtabs" id="claim-filter" role="group" aria-label="Show claims by outcome"></div>
     {claims_html}
     <nav class="pager" id="claim-pager" aria-label="Pages of claims"></nav></section>
+  {notes_panel}
   {findings_panel}
   {questions_panel}
   <section class="tabpanel" id="notebooks"><h2>Notebooks</h2>
