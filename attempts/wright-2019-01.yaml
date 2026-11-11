@@ -131,8 +131,11 @@ outcomes:
     With the mean rate in the 2 s before onset and raw features (reading a, a), k-means gives 197
     LFR and 48 HFR neurons. The baseline rate differs by cluster (F(1,243) = 835, p = 1.4e-80;
     paper 829), and half duration (p = 0.97) and amplitude ratio (p = 0.51) do not. Z-scored
-    features give 198 and 47 (also within tolerance). The session-mean rate gives 194 and 51, with
-    HFR outside tolerance.
+    features give 198 and 47 (also within tolerance). The session rate gives 194 and 51, with HFR
+    outside tolerance. The files hold spikes only from 20 s before each onset to 31 to 34 s after
+    it, so after verification round 1 the session rate is taken over the windows from 20 s before
+    to 30 s after onset (the earlier run divided by the span of the train, about a third of the
+    rate); the cluster sizes under that reading are unchanged.
   deviations:
   - >-
     The Methods define the waveform features in words. The peaks are picked as described in pag.py
@@ -150,6 +153,8 @@ outcomes:
     1), all in the LFR cluster under every clustering reading. Rounding the baseline rate down, as
     the data set's cubeScript.m does, would give 31 from 6 rats. One Onset neuron
     (dr02092716epr38aSPK04a) shares 66% of its spikes with another unit of its session (findings).
+    The Onset neurons' half durations (0.038 to 0.200 ms) and amplitude ratios (0.13 to 1.00) are
+    printed for comparison with Figure 1, figure supplement 4, which gives them only in a figure.
 - claim: ramping-population
   outcome: reproduced
   notebook: reproduce_wright_2019.ipynb
@@ -239,7 +244,8 @@ outcomes:
     Onset first-interval firing exceeds the population baseline at all 32 trial positions (smallest
     margin 5.3 spikes/s). Ramping last-interval firing exceeds it at all 22 danger and uncertainty
     positions and at 6 of the 10 safety positions, where the criterion's reading allows at most 5.
-    Four of the six safety margins are below 3.4 spikes/s and two are 9.0 and 10.6.
+    Four of the six safety margins are below 3.4 spikes/s and two are 9.0 and 10.6. The notebook
+    now prints the criterion's verdict (not met in full).
   deviations:
   - The paper gives no rule for "not safety trials"; the criterion's reading (at most half) is used.
 - claim: fig2s2-nose-poke-cessation
@@ -267,7 +273,11 @@ outcomes:
     two Onset neurons with one Ramping neuron), against four pairs in four sessions in the paper.
     None of the 30 interval regressions gives a negative beta at p < 0.05 (betas -0.33 to 0.42),
     under both Z readings. The independence holds for the pairs found, and the pair count does not
-    match. The criterion names neither case, so the outcome is partial.
+    match. The criterion names neither case, so the outcome is partial. Nine units outside the
+    populations have screen p from 0.025 to 0.046 and would each add a pair if they passed (five
+    late-responsive LFR units in a session with an Onset neuron, four onset-responsive units in a
+    session with a Ramping neuron), so the fourth pair may differ from these by a small change in
+    the screen.
 - claim: fig4abc-onset-single-unit-biases
   outcome: reproduced
   notebook: reproduce_wright_2019.ipynb
@@ -276,8 +286,11 @@ outcomes:
     A: r = -0.47, p = 0.010, danger greater in 22 of 29 (p = 0.008). B: r = -0.55, p = 0.002,
     uncertainty greater in 17 of 29 (p = 0.46). C: first greater in 22 of 29 (p = 0.008), r = 0.34,
     p = 0.070. The type baseline gives the same outcome. Both significant correlations are negative.
-    Interval Z firing has mean zero over each neuron's 32 trials, so a neuron's cue means trade off.
-    The text gives no sign.
+    Interval Z firing has mean zero over each neuron's 32 trials (6 D + 16 U + 10 S = 0), so a
+    neuron's cue means trade off. With each neuron's trials shuffled (2000 times), A gives a median
+    r of -0.49 (95% range -0.73 to -0.15) and B -0.68 (-0.84 to -0.43); the observed -0.47 and -0.55
+    lie within them. The criterion's correlations are present, but no stronger than the Z-scoring
+    gives without a relation between cues. The text gives no sign.
 - claim: fig4d-onset-patterns
   outcome: reproduced
   notebook: reproduce_wright_2019.ipynb
@@ -298,7 +311,8 @@ outcomes:
     E: danger greater in 12 of 14 (p = 0.013), but the correlation is not significant (r = -0.45,
     p = 0.11; type baseline p = 0.17). F: r = -0.46, p = 0.094, uncertainty greater in 14 of 14
     (p = 1.2e-4). G: last greater in 12 of 14 (p = 0.013), r = 0.28, p = 0.33. Two of three panels
-    hold.
+    hold. With trials shuffled within neuron, E gives a median r of -0.49 (95% range -0.80 to 0.01)
+    and F -0.70 (-0.89 to -0.25); the observed -0.45 and -0.46 lie within them.
 - claim: fig4h-ramping-patterns
   outcome: reproduced
   notebook: reproduce_wright_2019.ipynb
@@ -564,7 +578,9 @@ outcomes:
     Onset trial F(3,84) = 2.23, p = 0.091; bin p = 0.14; interaction p = 0.91 (paper Fs < 2.3,
     ps > 0.09). Ramping trial F(3,39) = 14.14, bin F(44,572) = 7.11, trial x bin F(132,1716) = 3.14
     (paper 3.14), all p < 1e-5. In the mixed ANOVA the neuron type interactions are F(3,123) = 5.70
-    (p = 0.0011), F(44,1804) = 4.17 and F(132,5412) = 2.56, all p < 0.01.
+    (p = 0.0011), F(44,1804) = 4.17 and F(132,5412) = 2.56, all p < 0.01. On synthetic data every
+    F of the helper's mixed ANOVA, including A x B and A x B x G, equals that of sums of squares by
+    model comparison.
   deviations:
   - >-
     The mixed ANOVA uses sums of squares with weighted means for the unequal groups (29 and 14), a
@@ -623,7 +639,9 @@ outcomes:
     0/0 set to 0, left out or set to 1, 18 readings with detail 4. The earlier run used 2 s and
     20 s with 0/0 = 1 beside the claims file's same-window readings (2 s or 10 s for both
     ratios); those are shown as former readings and no longer count. Earlier one reading
-    differed in outcome, now two; the outcome and the assumption are unchanged.
+    differed in outcome, now two; the outcome and the assumption are unchanged. The outcome is
+    partial only through the criterion's partial branch (3 > 0 and 1 > 0); the reported counts are
+    missed by a factor of about four under every reading.
   deviations:
   - >-
     The readings differ in outcome. The outcome is under the primary reading (2 s and 20 s, 0/0
@@ -637,6 +655,290 @@ outcomes:
   notes: >-
     Each of the three fires most to danger in the last interval: raw 141.5, 89.3 and 89.8 spikes/s
     against at most 120.9, 64.7 and 81.5, and likewise by interval Z.
+verifications:
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module pag.py and the claims file, with the paper's full text. The verifier tested rm_anova, mixed_anova,
+    ols, sign_test, suppression, counts and waveform_features on synthetic inputs. It did not query the
+    archive, since no claim is blocked.
+  results:
+  - claim: fig1c-total-suppression
+    agrees: true
+    outcome: reproduced
+    reason: With 20 s total-fear baseline, 0/0 = 1 and trial mean (cell 18), means are 0.799 / 0.531 /
+      0.030 and F(2,174) = 595, t = 12.3 and 21.0. The paper reports 0.80 / 0.53 / 0.03, F = 592, t =
+      12.36 and 20.85. All 8 amended readings pass. Under C, the Methods-table match is shown for one
+      unit only; showing that the same windows also reproduce a second paper value, such as the danger
+      mean of 0.83, would strengthen the primary reading.
+    response: 'No change. Cell 18 already prints the danger mean under every reading: 0.768 to 0.799,
+      all within tolerance of 0.83 but none at 0.83; the primary reading gives the closest value (0.799).
+      No further paper value was found that tests the windows on a second unit.'
+  - claim: fig1c-nonlinear-scaling
+    agrees: true
+    outcome: reproduced
+    reason: Uncertainty is above the danger/safety midpoint under every amended reading (cell 20; 0.531
+      vs 0.415 on the primary reading).
+    response: No change.
+  - claim: fig1d-interval-suppression
+    agrees: true
+    outcome: reproduced
+    reason: 'Primary reading (2 s, 0/0 = 1): cue F = 493, interaction F(18,1566) = 6.15, and both pairs
+      significant in 10/10 intervals (cell 22). The paper reports 489.4 and 6.21. The 0/0 = 0 and NaN
+      readings drop to 8-9/10.'
+    response: No change; the outcome stays marked as resting on the 0/0 rule.
+  - claim: fig1s1a-nose-poke-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Danger and both uncertainty types fall and safety does not, in every window (cell 24). Baselines
+      do not differ only with the 10 s window (p = 0.066). With the 20 s window that the Methods table
+      supports, they differ: F(3,261) = 3.47, p = 0.017. Problem 2 (affects a conclusion): baseline equality
+      holds only with the 10 s window; the notebook''s own data check (cell 13) favours the 20 s total-fear
+      window, and there baselines differ. Taking the null under the one window that passes amounts to
+      choosing a reading.'
+    response: The outcome already rests on the 20 s window and is partially reproduced, as the verifier
+      gives it; the 10 s result is shown only as the other reading. No change.
+  - claim: fig1s1b-sr-poke-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Danger and uncertainty r are about -0.70 with p < 1e-12, and the pooled r is -0.785, under
+      all amended readings (cell 26).
+    response: No change.
+  - claim: fig1e-two-clusters
+    agrees: true
+    outcome: reproduced
+    reason: 'Pre-cue baseline reading: 197/48 raw or 198/47 scaled, rate F = 835 (p < 0.001), duration
+      and amplitude-ratio p = 0.97 and 0.51 (cell 28). The session-rate reading gives HFR 51, outside
+      tolerance. Problem 6 (does not affect a conclusion): pre-cue rates run about 3x the session rates,
+      which suggests the spike trains have gaps, so spikes divided by span is not a session rate; this
+      was never checked. Problem 9 (does not affect a conclusion): polarity and the choice of peak and
+      trough are the author''s own reading, and half durations were not compared with the per-neuron values
+      in Fig. 1, supplement 4.'
+    response: 'Checked: spikes are stored only from 20 s before each onset to 31 to 34 s after it, with
+      gaps of about 141 s (data check, new finding). The session rate of reading b is now taken over the
+      windows from 20 s before to 30 s after onset; it gives the same 194 and 51, with mean rates close
+      to the pre-cue ones. The Onset neurons'' waveform features are now printed (onset-population). Outcome
+      unchanged.'
+  - claim: onset-population
+    agrees: true
+    outcome: reproduced
+    reason: 29 neurons from 5 rats, all 29 in the LFR cluster under every clustering reading (cell 30).
+    response: Added the Onset neurons' baseline rate, half duration and amplitude ratio for comparison
+      with Figure 1, figure supplement 4. No change of outcome.
+  - claim: ramping-population
+    agrees: true
+    outcome: reproduced
+    reason: 17 late-responsive, 3 HFR, 14 Ramping from 4 rats (cell 32).
+    response: No change.
+  - claim: fig2a-onset-anova
+    agrees: true
+    outcome: reproduced
+    reason: Cue F(2,56) = 8.64, p = 5e-4; bin p about 1e-197; cue x bin F(218,6104) = 1.89, p = 1.6e-13
+      (cell 36). Cue F is just under the paper's "Fs > 9", which the criterion does not test.
+    response: No change.
+  - claim: fig2b-onset-first-interval
+    agrees: true
+    outcome: reproduced
+    reason: D vs U t(28) = 5.05, p = 2.4e-5. U > S in mean, with p = 0.185. 60-bin cue x bin p = 0.024
+      (cell 38).
+    response: No change.
+  - claim: fig2b-onset-last-interval
+    agrees: true
+    outcome: reproduced
+    reason: D vs U p = 0.062 and U vs S p = 0.57 (cell 40). D vs U is close to the threshold.
+    response: No change.
+  - claim: fig2c-ramping-anova
+    agrees: true
+    outcome: reproduced
+    reason: All effects p < 1e-7, interaction F(218,2834) = 4.29. Last-second Z orders D 1.93 > U 1.20
+      > S -0.10 (cell 42).
+    response: No change.
+  - claim: fig2d-ramping-first-interval
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.67 and 0.63 (cell 44).
+    response: No change.
+  - claim: fig2d-ramping-last-interval
+    agrees: true
+    outcome: reproduced
+    reason: t(13) = 3.14, p = 0.008 and t = 8.09, p = 2e-6 (cell 46). The paper reports 3.17 and 8.26.
+    response: No change.
+  - claim: fig2e-departure-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Danger departs before uncertainty at both thresholds under all readings. No reading puts
+      all four times within tolerance: the danger Bonferroni time is 4.5-4.7 s against 5.8 +- 0.58 (cell
+      48).'
+    response: No change.
+  - claim: fig2e-rate-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: 'No reading matched for departure times, so all were checked: p = 0.84 and 0.63 (cell 50).'
+    response: No change.
+  - claim: fig2s1-single-trial
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Onset is above baseline at 32/32 positions and Ramping at 22/22 danger and uncertainty positions.
+      Ramping is also above baseline at 6/10 safety positions, against the criterion''s limit of 5 (cell
+      52). Problem 4 (affects a conclusion): two of them by 9-11 spikes/s; the claims file''s <=5 rule
+      fails, and the notebook prints the numbers but no outcome.'
+    response: The cell now prints the criterion's verdict (not met in full). Outcome unchanged, partially
+      reproduced as the verifier gives it.
+  - claim: fig2s2-nose-poke-cessation
+    agrees: true
+    outcome: reproduced
+    reason: 'Holds with the differential measure under both ITI readings (cell 54). Onset r = -0.02, sign
+      26/29, p = 1.5e-5. Ramping r = 0.48, p = 0.08, sign 14/14, p = 1.2e-4. With raw rates, r about 0.8
+      and p < 0.001. Problem 8 (does not affect a conclusion): it passes under one reading of an open
+      detail, the differential measure; the other reading fails, and the claims file allows choosing a
+      reading.'
+    response: No change.
+  - claim: fig3-onset-ramping-independent
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Only 3 Onset-Ramping same-session pairs, against 4 with tolerance 0. Of 30 regressions, none
+      has a negative beta at p < 0.05 (cell 56). Problem 3 (affects a conclusion): the notebook does not
+      show screen p-values for neurons near the 0.017 threshold, so it cannot be seen whether a fourth
+      pair is a borderline unit.'
+    response: Added a table of every unit with screen p from 0.017 to 0.05, with its session's Onset and
+      Ramping counts. Nine such units (p 0.025 to 0.046) would each add a pair, so a fourth pair can come
+      from a borderline unit; which one the paper counted cannot be told. Outcome unchanged.
+  - claim: fig4abc-onset-single-unit-biases
+    agrees: true
+    outcome: reproduced
+    reason: 'A: r = -0.47, p = 0.010, sign p = 0.008. B: r = -0.55, p = 0.002, sign p = 0.46. C: bias
+      p = 0.008, r p = 0.07 (cell 58). Problem 5 (does not affect a conclusion): Z-scoring across the
+      32 trials forces 6 D + 16 U + 10 S = 0 for every neuron, which alone pushes cross-neuron D-U and
+      U-S correlations negative, and all four printed r values are negative; the notebook reports them
+      without comment. The paper''s trendlines probably come from this procedure too.'
+    response: 'Added a null with each neuron''s trials shuffled: the constraint alone gives median r -0.49
+      (A) and -0.68 (B), and the observed values lie within the 95% ranges. The conclusion, the notes
+      and a new finding say so. The criterion asks only for p < 0.05, which holds, so the outcome is unchanged.'
+  - claim: fig4d-onset-patterns
+    agrees: true
+    outcome: reproduced
+    reason: 'D>U>S = 14, the largest. Under the within-neuron shuffle it is the only one of the four categories
+      above chance, by both rules (cell 60). The across-neuron shuffle flags S>U>D instead. Problem 8
+      (does not affect a conclusion): it passes under the within-neuron shuffle; the other reading fails,
+      and the chosen reading is the more literal one.'
+    response: No change.
+  - claim: fig4efg-ramping-single-unit-biases
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Panel E fails (r = -0.45, p = 0.11). F holds (r p = 0.09, sign 14/14) and G holds (cell 62).
+      Problem 5: panel E failing may come from the Z-score constraint as well.'
+    response: 'The same shuffle null is shown: median r -0.49 for E and -0.70 for F, with the observed
+      values inside the 95% ranges. Outcome unchanged.'
+  - claim: fig4h-ramping-patterns
+    agrees: true
+    outcome: reproduced
+    reason: D>U>S = 12, within 11 +- 1.1, the largest, and the only category above chance under the within-neuron
+      shuffle (cell 64).
+    response: No change.
+  - claim: fig1s5-hfr-units
+    agrees: true
+    outcome: reproduced
+    reason: All three HFR neurons fire most to danger, by raw rate and by Z (cell 66).
+    response: No change.
+  - claim: fig5a-onset-probability-first-interval
+    agrees: true
+    outcome: reproduced
+    reason: P vs total fear t = 3.74, P vs interval fear t = 4.55; P against 0 p = 6e-5; fear betas p
+      >= 0.58 (cell 70). The paper reports 3.75 and 4.57. Holds under 18/18 readings.
+    response: No change.
+  - claim: fig5bc-onset-beta-bias
+    agrees: true
+    outcome: reproduced
+    reason: 'Primary reading: P 22/29 positive, p = 0.008; fear p >= 0.46 (cell 72). Holds under 17/18
+      readings.'
+    response: No change.
+  - claim: fig5d-onset-all-intervals
+    agrees: true
+    outcome: reproduced
+    reason: 'Primary reading: F(2,56) = 7.16, interaction F(18,504) = 2.35 (p = 0.0014), peak in interval
+      1, P significant in 4 intervals, smallest fear p = 0.156 (cell 74). The paper reports 7.16 and 2.38.
+      Holds under only 7/18 readings (problem 7, does not affect a conclusion: each outcome rests on the
+      primary reading, which the Methods table pins down; I judge the primary reading justified).'
+    response: No change; the outcome stays marked as resting on the primary reading.
+  - claim: fig5s1-regressor-combinations
+    agrees: true
+    outcome: reproduced
+    reason: Primary reading holds under both significance readings and both "weaker" readings (cell 76).
+      Holds under 9/18 readings, and fails under every type-mean baseline reading (problem 7, judged justified).
+    response: No change.
+  - claim: fig5e-onset-tuning-curve
+    agrees: true
+    outcome: reproduced
+    reason: Peak at 0.375, then 0.25 and 0.5 (cell 78).
+    response: No change.
+  - claim: fig5s2-binary-regressor
+    agrees: true
+    outcome: reproduced
+    reason: 3-way F(18,504) = 2.49, p = 6e-4; first-interval F(2,56) = 7.75, p = 0.001; probability 0.863
+      vs binary 0.675 (cell 80). The paper reports 2.51 and 7.80.
+    response: No change.
+  - claim: fig5f-ramping-last-interval
+    agrees: true
+    outcome: reproduced
+    reason: t = 3.62, 4.62 and 1.14 (p = 0.28) (cell 82). The paper reports 3.61, 4.68 and 1.11.
+    response: No change.
+  - claim: fig5gh-ramping-beta-bias
+    agrees: true
+    outcome: reproduced
+    reason: All 4 parts hold on the primary reading (cell 84). Holds under 9/18 readings (problem 7, judged
+      justified).
+    response: No change.
+  - claim: fig5i-ramping-all-intervals
+    agrees: true
+    outcome: reproduced
+    reason: 'Means 0.577 / 0.120 / -0.026 with SEMs 0.136 / 0.100 / 0.050 (paper 0.58 / 0.12 / -0.03 with
+      0.14 / 0.10 / 0.05). F(2,26) = 9.14 and F(18,234) = 2.19 (cell 86). Problem 7: it holds under only
+      7/18 readings, though its primary reading reproduces the paper''s means almost exactly.'
+    response: No change.
+  - claim: fig5s1-ramping-regressor-combinations
+    agrees: true
+    outcome: partially_reproduced
+    reason: F and G hold. Total fear on its own (I) differs from zero (p = 0.0067) under all 18 readings,
+      so the H-J part fails (cell 88).
+    response: No change.
+  - claim: fig5j-ramping-tuning-curve
+    agrees: true
+    outcome: reproduced
+    reason: Peak at 0.625 under 18/18 readings (cell 90).
+    response: No change.
+  - claim: fig6ab-post-cue-firing
+    agrees: true
+    outcome: reproduced
+    reason: 'Onset: all p >= 0.09. Ramping: interaction F(132,1716) = 3.14, the paper''s value. Mixed
+      ANOVA neuron-type interactions all p <= 0.0011 (cell 92). Problem 10 (does not affect a conclusion):
+      mixed_anova matches pingouin for G, A, A x G, B and B x G; its A x B and A x B x G terms were not
+      checked against a reference.'
+    response: 'Added a check on synthetic data with unequal groups: every F of mixed_anova, including
+      A x B and A x B x G, equals that of sums of squares by model comparison. Outcome unchanged.'
+  - claim: fig6c-onset-post-cue-regression
+    agrees: true
+    outcome: reproduced
+    reason: Regressor p = 0.48, interaction p = 0.77, smallest p against zero = 0.077 (cell 94).
+    response: No change.
+  - claim: fig6d-ramping-post-cue-regression
+    agrees: true
+    outcome: reproduced
+    reason: Interaction F(8,104) = 7.00, P significant in 4/4 delay intervals, post-shock mean below delay
+      mean (cell 96).
+    response: No change.
+  - claim: fig6ef-beta-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Counts are Onset 3/20 and Ramping 0/20 at p < 0.05 (paper 13 and 4), and 1/20 and 0/20 at
+      p < 0.01 (paper 6 and 1). The chi-square tests are not significant (cell 98). This is "partial"
+      only because the criterion''s partial branch needs Onset > Ramping, which 3 > 0 meets. On the main
+      quantity it is not reproduced. Problem 1 (affects a conclusion): the reported counts are missed
+      by a factor of 4 under every reading, so I would read this claim as close to not reproduced.'
+    response: 'Kept partially reproduced: the criterion names this case as partial (Onset more than Ramping
+      at both thresholds while a count differs), and the criterion decides the outcome. The conclusion
+      and the notes now say that the outcome is partial only through that branch and that the counts are
+      missed by a factor of about four under every reading.'
 findings:
 - kind: metadata_error
   statement: >-
@@ -674,6 +976,18 @@ findings:
     the paper's counts (29 and 14), only three pairs share a session, in two sessions. The paper's
     lists of Onset and Ramping units (Figure 1, figure supplements 4 and 6) are in figures only,
     and the data set does not mark which units the paper placed in each population.
+- kind: metadata_insufficient
+  statement: >-
+    The spike trains in the data set's files hold spikes only from 20 s before each cue onset to 31
+    to 34 s after it (34 of 12,261,110 spikes fall outside), with gaps of about 141 s between
+    trials. The data description does not say so. A rate over the span of a unit's spike train is
+    therefore about a third of its firing rate, and the files cannot give a whole-session rate.
+- kind: other
+  statement: >-
+    Interval Z firing (Methods, Z-score normalization) has mean zero over each neuron's 32 trials,
+    so its cue means satisfy 6 D + 16 U + 10 S = 0. Cross-neuron correlations of the cue means, as
+    in Figure 4A, 4B, 4E and 4F, are then negative even with the trial labels shuffled (median r
+    -0.49 to -0.70), and the observed correlations (-0.45 to -0.55) lie within the shuffled range.
 - kind: methods_unavailable
   statement: >-
     The shuffle behind the chance levels of Figure 4D and 4H is not defined beyond "each neurons

@@ -214,37 +214,48 @@ def waveform_features(wave: np.ndarray, fs: float = 32 / 0.0008):
 
 CUE_GROUPS = {"D": ["D"], "U": ["US", "UO"], "S": ["S"]}   # uncertainty collapsed in the cue
 SCREEN_P = 0.017   # Methods: p < 0.017, Bonferroni for three cues
+# the part of each trial every unit's spike train holds, s from onset (data check of the notebook)
+STORED_S = (-20.0, 30.0)
 
 
-def screen(u: dict, a: float, b: float, floor_baseline: bool = False) -> bool:
-    """Paired two-tailed t-test over a cue's trials of the raw rate (spikes/s) in the 2 s before
-    onset against the interval (a, b]; True when any cue gives p < 0.017 with the cue higher.
-    floor_baseline rounds the baseline rate down, as the data set's cubeScript.m does (variant).
-    A cue whose differences are all zero has no test and counts as not responsive."""
+def screen_p(u: dict, a: float, b: float, floor_baseline: bool = False) -> dict:
+    """The screen's paired two-tailed t-test per cue, {cue: (t, p)}, over the cue's trials of the
+    raw rate (spikes/s) in the 2 s before onset against the interval (a, b] (Methods, Identifying
+    cue-responsive vlPAG neurons). floor_baseline rounds the baseline rate down, as the data set's
+    cubeScript.m does (variant). A cue whose differences are all zero has no test: (nan, nan)."""
     from scipy import stats
     base = interval_rate(u, -2.0, 0.0)
     if floor_baseline:
         base = np.floor(base)
     r = interval_rate(u, a, b)
-    for ts in CUE_GROUPS.values():
+    out = {}
+    for c, ts in CUE_GROUPS.items():
         m = np.isin(u["types"], ts)
         if np.all(r[m] == base[m]):
+            out[c] = (np.nan, np.nan)
             continue
         t, p = stats.ttest_rel(r[m], base[m])
-        if p < SCREEN_P and t > 0:
-            return True
-    return False
+        out[c] = (float(t), float(p))
+    return out
+
+
+def screen(u: dict, a: float, b: float, floor_baseline: bool = False) -> bool:
+    """True when any cue of screen_p gives p < 0.017 with the cue higher than baseline."""
+    return any(p < SCREEN_P and t > 0 for t, p in screen_p(u, a, b, floor_baseline).values())
 
 
 def cluster_features(units, baseline: str = "pre-cue"):
     """Baseline rate (spikes/s), half duration (ms) and amplitude ratio for every unit.
 
     baseline "pre-cue": mean rate in the 2 s before onset over the 32 trials (reading a of
-    detail 5); "session": spikes over the span of the unit's spike train (reading b)."""
+    detail 5); "session": the mean rate over the recorded part of the session (reading b). The
+    files hold spikes only from 20 s before each onset to 31 to 34 s after it (data check), so
+    the session rate is taken over the 32 windows STORED_S around the onsets, the part of the
+    session every unit holds."""
     if baseline == "pre-cue":
         b = np.array([interval_rate(u, -2.0, 0.0).mean() for u in units])
     else:
-        b = np.array([len(u["spikes"]) / (u["spikes"][-1] - u["spikes"][0]) for u in units])
+        b = np.array([interval_rate(u, *STORED_S).mean() for u in units])
     w = np.array([waveform_features(u["wave"]) for u in units])
     return np.c_[b, w]
 
