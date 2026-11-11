@@ -589,7 +589,7 @@ def zscores(counts, idx, lo):
 
 # ---------------------------------------------------------------------------
 # Kernel regression, full model (claims definition K; Methods, Kernel regression; code
-# kernelFitBasic.m, regFullPipeline.m). Used for fig3c-variance-explained only.
+# kernelFitBasic.m, regFullPipeline.m).
 # ---------------------------------------------------------------------------
 K_VIS_LAGS = 90        # -0.05 to 0.4 s from stimulus onset in 5 ms bins (claims K)
 K_MOVE_LAGS = 55       # -0.25 to 0.025 s from movement onset (claims K)
@@ -752,6 +752,78 @@ def enet_predict_all(Z, Y, k, lam=0.5, alpha=0.5):
     n = len(Z)
     B = enet_paths(Zs.T @ Zs / n, Zs.T @ (Y - ym) / n, lam, alpha, k, kmin=k)[-1]
     return ym + Zs @ B
+
+
+# --- The code's reading of the fits (a variant; regFullPipeline.m, kernelRegFitOne.m,
+# determineResidualsWithout.m, predictResidualsWith.m at 9a0bea8). Four details differ from
+# the functions above: (1) glmnet is fitted once on all the basis columns (A*b, 200 for the
+# full model) and the prediction with nc components keeps the first nc fitted coefficients
+# (teA*(b(:,1:nc)*fitK(:,1:nc)')); (2) the prediction has no intercept; (3) VE is
+# 1 - var(y - prediction) / var(y) over the evaluation samples, 0 when var(y) <= 1e-3;
+# (4) glmnet standardizes the response: it fits y / ys with lambda / ys (glmnet5dp.f, elnetu:
+# "vlam=ulam/ys"), which on the scale of y is the L1 term lam * alpha and the ridge term
+# lam * (1 - alpha) / ys, ys the s.d. of the training response.
+
+def enet_joint(G, c, l1, l2, tol=1e-5, max_iter=1000):
+    """Elastic net on all p standardized predictors at once by coordinate descent on the
+    Gram matrix G (p, p) and products c (p, m); l2 may differ per response (shape (m,))."""
+    p, m = c.shape
+    b = np.zeros((p, m))
+    for _ in range(max_iter):
+        delta = 0.0
+        for j in range(p):
+            r = c[j] - G[j] @ b + G[j, j] * b[j]
+            new = np.sign(r) * np.maximum(np.abs(r) - l1, 0) / (G[j, j] + l2)
+            delta = max(delta, float(np.max(np.abs(new - b[j]))))
+            b[j] = new
+        if delta < tol:
+            break
+    return b
+
+
+def glmnet_code(Z, Y, lam=0.5, alpha=0.5):
+    """glmnet with its defaults (predictors and response standardized internally) at a
+    fixed lambda; returns the coefficients on the columns of Z (p, m), without intercept."""
+    mu, sd = Z.mean(axis=0), Z.std(axis=0)
+    sd[sd == 0] = 1.0
+    Zs = (Z - mu) / sd
+    y = Y - Y.mean(axis=0)
+    ys = y.std(axis=0)
+    ys[ys == 0] = 1.0
+    n = len(Z)
+    B = enet_joint(Zs.T @ Zs / n, Zs.T @ y / n, lam * alpha, lam * (1 - alpha) / ys)
+    return B / sd[:, None]
+
+
+def ve_code(Z, Y, trial, ev, rng, kmax, kfold):
+    """Cross-validated VE as the code computes it, for 1 to kmax components of Z (samples,
+    columns; all columns are fitted). Returns (best VE per unit, its k)."""
+    folds = np.array_split(rng.permutation(np.unique(trial)), kfold)
+    kmax = min(kmax, Z.shape[1])
+    pred = np.zeros((kmax, int(ev.sum()), Y.shape[1]))
+    evi = np.cumsum(ev) - 1
+    for f in folds:
+        te = np.isin(trial, f)
+        B = glmnet_code(Z[~te], Y[~te])
+        m = te & ev
+        Zt = Z[m]
+        acc = np.zeros((m.sum(), Y.shape[1]))
+        for k in range(kmax):
+            acc += Zt[:, k:k + 1] * B[k][None, :]
+            pred[k, evi[m]] = acc
+    ye = Y[ev]
+    v = ye.var(axis=0)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        ve = np.array([1 - (ye - pred[k]).var(axis=0) / v for k in range(kmax)])
+    ve[:, v <= 1e-3] = 0
+    return ve.max(axis=0), ve.argmax(axis=0) + 1
+
+
+def resid_code(Z, Y, k=75):
+    """Residuals of the fit on the first k columns of Z, on all samples, as
+    determineResidualsWithout.m: y minus the prediction without intercept."""
+    Zk = Z[:, :k]
+    return Y - Zk @ glmnet_code(Zk, Y)
 
 
 def nested_eval_mask(trial, tc, mt):

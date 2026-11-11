@@ -269,17 +269,19 @@ outcomes:
   output: claim:fig5b-miss-more-than-passive
   measured: 36
   notes: More neurons are activated on matched Miss than passive trials under Z1 with finite z, pooled
-    4.82% against 3.24% (Figs. 3 to 5 set) and 3.30% against 2.51% (neurons N), with Miss above passive
-    in 30 and 29 of 42 regions. Under Z2 with finite z both fractions are near zero (0.05% and 0.04%)
-    and the excess is positive in 3 regions. The infinite-z readings carry no information (21% of neurons
-    counted without baseline spikes). The matched-contrast selection keeps 36 sessions with at least 10
-    trials per group (38 if counted over the three groups), not the 34 the criterion requires, and the
-    criterion gives no partial outcome; the first run recorded partially_reproduced. The dropped sessions
-    are Lederberg 2017-12-05, 2017-12-06 and 2017-12-07, with 0 to 4 NoGo trials at each contralateral
-    contrast (0, 5 and 6 matched trials per group). Among the kept sessions the fewest matched trials
-    are 10 (Lederberg 2017-12-10) and 14 (Lederberg 2017-12-11, Tatum 2017-12-06), so no threshold from
-    10 to 14 gives 34 either. All 39 sessions have at least 12 Left, Right and NoGo trials of definition
-    T.
+    4.82% against 3.24% (Figs. 3 to 5 set) and 3.30% against 2.52% (every neuron of the 42 regions at
+    0.1 Hz or more, the criterion's reading b; neurons N, now a variant, 3.30% against 2.51%), with Miss
+    above passive in 30 and 29 of 42 regions. Under Z2 with finite z both fractions are near zero (0.05%
+    and 0.04%) and the excess is positive in 3 or 4 regions. The infinite-z readings carry no information
+    (21% of neurons counted without baseline spikes). The matched-contrast selection keeps 36 sessions
+    with at least 10 trials per group (38 if counted over the three groups), not the 34 the criterion
+    requires, and the criterion gives no partial outcome; the first run recorded partially_reproduced.
+    The dropped sessions are Lederberg 2017-12-05, 2017-12-06 and 2017-12-07, with 0 to 4 NoGo trials
+    at each contralateral contrast (0, 5 and 6 matched trials per group). Among the kept sessions the
+    fewest matched trials are 10 (Lederberg 2017-12-10) and 14 (Lederberg 2017-12-11, Tatum 2017-12-06),
+    so no threshold from 10 to 14 gives 34 either. All 39 sessions have at least 12 Left, Right and NoGo
+    trials of definition T. Whether the session count should decide a claim about activation is asked
+    of a reader (questions/steinmetz-2019.yaml); the claim is tested as the claims file has it.
   deviations:
   - The infinite z of neurons without baseline spikes is treated both ways, as in fig2fg.
   - The Methods say "When fewer than 10 such trials could be found, the session was excluded" without
@@ -421,11 +423,12 @@ outcomes:
     VIS leads Midbrain near 0.1 s under trials reading b at one point, 0.08 s (mean 0.098, p = 0.003 with
     baseline a; 0.074, p = 0.025 with baseline b); under trials reading a no point is significant. The
     criterion asks for one reading, so the claim is reproduced, on a single time point at the edge of
-    the window. With five other fold seeds the point stays significant in 5 of 5 under baseline a and
-    3 of 5 under baseline b. The per-bin variant still finds no VIS-Midbrain point. With Bonferroni correction
-    over the points of each range (16 before movement, 5 near 0.1 s), the claim holds under baseline a
-    with trials b (one point in each) and under no other reading; under baseline b the VIS-Frontal lead
-    before movement has no corrected point.
+    the window. With five other fold seeds some point from 0.08 to 0.12 s is significant and positive
+    in 5 of 5 seeds under baseline a and 3 of 5 under baseline b; the 0.08 s point itself is significant
+    in 3 of 5 under each baseline. The per-bin variant still finds no VIS-Midbrain point. With Bonferroni
+    correction over the points of each range (16 before movement, 5 near 0.1 s), the claim holds under
+    baseline a with trials b (one point in each) and under no other reading; under baseline b the VIS-Frontal
+    lead before movement has no corrected point.
   deviations:
   - The asymmetry index follows the Methods' diagonal slice, from (t-50, t+50) ms to (t+50, t-50) ms (Methods,
     jPECC analysis); the claims file's wording ("from (t, t) to 50 ms of lead") can be read as a slice
@@ -457,20 +460,27 @@ outcomes:
   notebook: reproduce_steinmetz_2019.ipynb
   output: claim:fig3c-variance-explained
   notes: Tested in the revision after verification round 1 (the first run blocked it on a timing of scikit-learn
-    fits). The full model of kernel test K, fitted for the 13,852 neurons of the Figs. 3 to 5 set in under
-    3 minutes, gives a median cross-validated VE of 0.12% over the 13,835 neurons with a VE (quartiles
-    -0.14% and 1.46%; 17 dropped for zero variance in the evaluation samples), and 0.30% with a basis
-    from each session's own neurons; 5.7% of neurons exceed 10%. The two example neurons are given only
-    by region and raster and cannot be identified, so the claim is judged on the median, as the criterion
-    says. 2,886 neurons reach the 2% VE of the nested tests, against about 4,240 in the claims file, so
-    the model here explains less than the paper's; the median is far below 10% either way.
+    fits). The full model of kernel test K, fitted for the 13,852 neurons of the Figs. 3 to 5 set in 160
+    s, gives a median cross-validated VE of 0.12% over the 13,835 neurons with a VE (quartiles -0.14%
+    and 1.46%; 17 dropped for zero variance in the evaluation samples), and 0.30% with a basis from each
+    session's own neurons; 5.7% of neurons exceed 10%. The two example neurons are given only by region
+    and raster and cannot be identified, so the claim is judged on the median, as the criterion says.
+    2,886 neurons reach the 2% VE of the nested tests, against about 4,240 in the claims file, so the
+    model here explains less than the paper's; the median is far below 10% either way. Under the code's
+    reading of the fits (a variant) the median is 0.33% and 3,199 neurons reach 2%, which closes part
+    of the gap to the paper's count; the outcome is the same.
   deviations:
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
   - A basis per session (ordinary reduced-rank regression) is a variant and gives the same outcome.
   - Spike counts are binned at 5 ms around stimulus onset only, and Vision kernels are assigned to the
     nearest of the three contrasts.
@@ -479,19 +489,27 @@ outcomes:
   notebook: reproduce_steinmetz_2019.ipynb
   output: claim:fig3d-vision-localized
   assumed: true
-  notes: 860 of the 2,886 nested-test neurons require the Contralateral Vision kernels; 50.7% of them
+  notes: '860 of the 2,886 nested-test neurons require the Contralateral Vision kernels; 50.7% of them
     lie in the VIS areas, LGd, LP, LD and SCs. With fractions over the nested-test neurons, the five highest
     are VISp (80.2%), SCs (79.2%), VISl, VISrl and VISpm, all in the visual set, and each of MOs, ACA,
     PL, CP, GPe, SNr, SCm, MRN, APN and ZI has at least one (GPe 3, the fewest), so all three conditions
     hold. With fractions over the Figs. 3 to 5 set, CP enters the five highest and the claim fails, so
-    the outcome rests on the denominator.
+    the outcome rests on the denominator. The code''s reading of the fits gives the same: 816 neurons,
+    the five highest over the nested-test neurons VISrl, VISp, SCs, VISl and VISpm, and CP among the five
+    highest over the Figs. 3 to 5 set. The notebook now states one reading, the nested-test neurons, as
+    the denominator of fig3d, fig3e and ed4f, with the Figs. 3 to 5 set a variant.'
   deviations:
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
   - 'Assumption. The fraction of a region''s neurons requiring a kernel is taken over the neurons entering
     the nested tests (full-model VE of at least 2%), the reading of the Fig. 3d legend''s "neurons passing
     analysis criteria": the legend leaves regions with fewer than 5 such neurons empty, and no region
@@ -500,17 +518,23 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_steinmetz_2019.ipynb
   output: claim:fig3e-action-global
-  notes: 1,000 neurons require the Action kernel and 89.9% of them do not require the Choice kernel. They
-    are found in 40 of the 41 regions with at least 5 nested-test neurons (VISrl has none of 5), and in
-    41 of 42 with the Figs. 3 to 5 set as denominator; at least 90% of regions, the criterion's partial
-    outcome, under both.
+  notes: '1,000 neurons require the Action kernel and 89.9% of them do not require the Choice kernel.
+    They are found in 40 of the 41 regions with at least 5 nested-test neurons (VISrl has none of 5),
+    and in 41 of 42 with the Figs. 3 to 5 set as denominator; at least 90% of regions, the criterion''s
+    partial outcome, under both. The code''s reading of the fits gives the same: Action neurons in 41
+    of 42 regions (VISrl none), 90.0% without Choice.'
   deviations:
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
   - 'As fig3d-vision-localized: The fraction of a region''s neurons requiring a kernel is taken over the
     neurons entering the nested tests (full-model VE of at least 2%), the reading of the Fig. 3d legend''s
     "neurons passing analysis criteria": the legend leaves regions with fewer than 5 such neurons empty,
@@ -523,18 +547,26 @@ outcomes:
   - 0.092
   - 0.045
   - 0.029
-  notes: 'Over the nested-test neurons the focality index is 0.092 (Choice), 0.045 (Contralateral Vision)
+  notes: Over the nested-test neurons the focality index is 0.092 (Choice), 0.045 (Contralateral Vision)
     and 0.029 (Action), against 0.079, 0.069 and 0.040 ± 10%; over the Figs. 3 to 5 set 0.094, 0.062 and
-    0.038, only the Action value within tolerance. The ordering holds: Vision is more focal than Action
-    under every reading but sessions resampled (B2) over the Figs. 3 to 5 set, and Choice more focal than
-    Action only with neurons resampled within region (B1) over the Figs. 3 to 5 set.'
+    0.038, only the Action value within tolerance. The point estimates are ordered as the paper's under
+    every reading (Choice and Vision above Action). The difference of Vision from Action is significant
+    under every reading but sessions resampled (B2) over the Figs. 3 to 5 set, and that of Choice from
+    Action only with neurons resampled within region (B1) over the Figs. 3 to 5 set. Under the code's
+    reading of the fits the values are 0.082, 0.052 and 0.030 over the nested-test neurons and 0.091,
+    0.066 and 0.038 over the Figs. 3 to 5 set, again not all within tolerance.
   deviations:
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
   - 'As fig3d-vision-localized: The fraction of a region''s neurons requiring a kernel is taken over the
     neurons entering the nested tests (full-model VE of at least 2%), the reading of the Fig. 3d legend''s
     "neurons passing analysis criteria": the legend leaves regions with fewer than 5 such neurons empty,
@@ -547,14 +579,37 @@ outcomes:
   notes: With the Left and Right labels permuted within each session and the whole test rerun (full model,
     new basis, nested Choice test), 2,871 neurons enter the nested test and 4 pass, 0.14%, below 0.33
     ± 0.17% (lower bound 0.16%). With the true labels 111 of 2,886 pass (3.85%). One shuffle, as in the
-    paper.
-  deviations: &id001
+    paper. With four other shuffles (seeds 971 to 974), single shuffles give 0.04% to 0.42% under the
+    main fits (2 of 5 within tolerance, mean 0.22%). Under the code's reading of the fits the first shuffle
+    gives 6 of 3,142, 0.19%, within tolerance, and the five shuffles 0.06% to 0.48% (3 of 5 within tolerance,
+    mean 0.25%). One shuffle varies more than the criterion's tolerance, so the outcome turns on the shuffle
+    drawn.
+  deviations:
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
+  - 'For the proposed outcome (an assumption). The false-positive rate is estimated as the mean over five
+    shuffles, not one: single shuffles spread from 0.04% to 0.48%, more widely than the criterion''s tolerance
+    (0.16% to 0.50%), and the claim states the rate of the test. The paper ran one shuffle (Methods, Estimation
+    of false positive rate).'
+  proposed:
+    outcome: reproduced
+    reason: The analysis behind it is in the notebook, in the section after ed7c. The verified outcome
+      rests on one shuffle (0.14%). Four more shuffles show that one shuffle spreads from 0.04% to 0.42%
+      under the main fits and from 0.06% to 0.48% under the code's reading of the fits, more than the
+      tolerance, so a single shuffle cannot decide the outcome. The mean over five shuffles, the better
+      estimate of the test's false-positive rate, is 0.22% under the main fits and 0.25% under the code's
+      reading, both within 0.33 ± 0.17%. The first shuffle under the code's reading, which follows regFullPipeline.m
+      and glmnet more closely, is also within tolerance (0.19%). The proposed outcome rests on the assumption
+      that the mean over shuffles estimates the rate the claim states.
 - claim: fig4b-choice-regions
   outcome: not_reproduced
   notebook: reproduce_steinmetz_2019.ipynb
@@ -567,17 +622,30 @@ outcomes:
     has LD (2) and PO (2), and the fraction is below 5%. But the midbrain has 48 (expected 54 ± 5.4) and
     the forebrain 39 (48 ± 4.8), and VISp has 1, where the criterion requires none; the 0.33% false-positive
     rate predicts 0.83 among its 252 nested-test neurons. Since the regions do not all hold, the outcome
-    is not partial.
-  deviations: *id001
+    is not partial. Under the code's reading of the fits (3,199 neurons enter) the counts are again 48
+    and 39, with 1 in VISp.
+  deviations:
+  - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
+    (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
+    0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
 - claim: fig4c-choice-timing
   outcome: blocked
   blocked_by: other
   notes: 'Not run in this attempt: the decoding from residuals of the kernel model without a kernel (the
     code''s determineResidualsWithout), with an L1-regularized logistic regression under the criterion''s
-    readings, was not implemented within the run''s time. The kernel model itself now runs within the
-    notebook (fig3c and the nested tests of fig3d, fig3e and fig4b), so size is not the obstacle; the
-    first run blocked it as too_large on a timing of scikit-learn fits. It also depends on fig4b-choice-regions,
-    now tested (not reproduced).'
+    readings, was not written. Neither the data nor the time limit stopped it: the data are in the files,
+    the kernel model runs in the notebook, and the whole notebook ran in 1,658 s. In the second revision
+    no outcome may change, and a change that needs an analysis not yet run waits for a new attempt (docs/protocol.md,
+    Hand over for verification), so the claim stays blocked. It also depends on fig4b-choice-regions,
+    tested (not reproduced).'
 - claim: fig4f-contralateral-preference
   outcome: reproduced
   notebook: reproduce_steinmetz_2019.ipynb
@@ -588,14 +656,20 @@ outcomes:
   notes: Of 48 midbrain and 39 forebrain choice-selective neurons, all midbrain neurons prefer contralateral
     choices and 38.5% of forebrain neurons prefer ipsilateral ones (98 ± 9.8% and 40 ± 4.0% expected),
     Fisher's exact p = 9.6e-7, under both readings of the model activity (kernels at lag 0; the model's
-    prediction at movement onset). The counts are those of fig4b, lower than the paper's.
-  deviations: &id002
+    prediction at movement onset). The counts are those of fig4b, lower than the paper's. Under the code's
+    reading of the fits, 100% and 43.6% (p = 1.0e-7), also within tolerance.
+  deviations: &id001
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
   - Each choice-selective neuron's full model, with the number of components chosen in fig3c, is refitted
     on all its samples to give its kernels and predictions.
 - claim: fig4fg-opposed-activity
@@ -608,8 +682,9 @@ outcomes:
   notes: 'Suppression below baseline for the non-preferred choice: 27.1% of midbrain and 5.1% of forebrain
     choice-selective neurons under reading a (Fisher''s p = 0.009), 20.8% and 2.6% under reading b (p
     = 0.020), against 54 ± 5.4% and 21 ± 2.1% with p < 1e-3. The direction of the difference holds; the
-    percentages and the test do not.'
-  deviations: *id002
+    percentages and the test do not. Under the code''s reading of the fits, 20.8% against 10.3% (p = 0.24)
+    or 33.3% against 7.7% (p = 0.004): the same outcome.'
+  deviations: *id001
 - claim: ed7c-choice-probability-restricted
   outcome: not_reproduced
   notebook: reproduce_steinmetz_2019.ipynb
@@ -622,24 +697,31 @@ outcomes:
     VIS area and no hippocampal region is marked above chance; SNr (basal ganglia) is marked in both windows
     and MRN (midbrain), LD and VPL in window a; but no frontal region is marked in either window (PL 4.5%,
     MOs 4.4% in window a), so the regional pattern fails. Of the 15 MOs choice-selective neurons of fig4b,
-    1 (6.7%) is in the excluded sessions, against 20.8 ± 2.1%.
+    1 (6.7%) is in the excluded sessions, against 20.8 ± 2.1%. Under the code's reading of the fits, 0
+    of 16 MOs choice-selective neurons are in the excluded sessions.
   deviations:
   - Frontal cortex for the regional pattern is MOs, MOp, PL, ACA, ORB and ILA, the frontal areas among
     the 42; the criterion does not list them.
   - 'The kernel model follows definition K of the claims file: the basis of code reducedRankRegression/CanonCor2all.m
     (read for this revision, github.com/nsteinme/steinmetz-et-al-2019 at 9a0bea8), elastic net with alpha
     0.5 and lambda 0.5 on components standardized as glmnet''s defaults do, solved by coordinate descent
-    on the Gram matrix (checked against scikit-learn''s ElasticNet while preparing; glmnet itself was
-    not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886 against about 4,240),
-    which lowers the counts of kernel-requiring neurons.'
+    on the Gram matrix (checked against scikit-learn''s ElasticNet in the notebook, largest difference
+    3e-6; glmnet itself was not run). Fewer neurons pass the full model''s 2% VE than in the paper (2,886
+    against about 4,240), which lowers the counts of kernel-requiring neurons. Four details of the code''s
+    fits (regFullPipeline.m, kernelRegFitOne.m, determineResidualsWithout.m, predictResidualsWith.m) differ
+    from the main fits and are run as a variant, the code''s reading: one glmnet fit on all basis columns,
+    truncated to 1 to 50 (or 18) components; no intercept in the prediction; VE as 1 - var(residual)/var(response);
+    and glmnet''s standardization of the response, which divides the ridge term by the response''s s.d.
+    (glmnet5dp.f, elnetu, vlam=ulam/ys). Under it 3,199 neurons pass the 2% VE.'
 - claim: ed5g-ipsilateral-vision-rare
   outcome: blocked
   blocked_by: other
   notes: 'Not run in this attempt: the decoding from residuals of the kernel model without a kernel (the
     code''s determineResidualsWithout), with an L1-regularized logistic regression under the criterion''s
-    readings, was not implemented within the run''s time. The kernel model itself now runs within the
-    notebook (fig3c and the nested tests of fig3d, fig3e and fig4b), so size is not the obstacle; the
-    first run blocked it as too_large on a timing of scikit-learn fits.'
+    readings, was not written. Neither the data nor the time limit stopped it: the data are in the files,
+    the kernel model runs in the notebook, and the whole notebook ran in 1,658 s. In the second revision
+    no outcome may change, and a change that needs an analysis not yet run waits for a new attempt (docs/protocol.md,
+    Hand over for verification), so the claim stays blocked.'
 - claim: histology-alignment-error
   outcome: blocked
   blocked_by: data_missing
@@ -706,7 +788,9 @@ findings:
   statement: 'The kernel model of the paper''s code runs on the dandiset: with the basis of CanonCor2all.m
     and the elastic net of the Methods, 2,886 of 13,852 task-responsive neurons pass the 2% cross-validated
     VE of the nested tests, against about 4,240 in the paper, so counts of kernel-requiring neurons come
-    out lower than the paper''s.'
+    out lower than the paper''s. Following four details of the code''s fits (one glmnet fit on all basis
+    columns, truncated; no intercept; VE from the variance of the residuals; glmnet''s scaling of the
+    ridge term) raises the count to 3,199; the rest of the gap is unexplained.'
 verifications:
 - date: '2026-11-10'
   kind: agent
@@ -716,9 +800,7 @@ verifications:
     verifier checked the blocked claims against the archive's file list and metadata through the DANDI
     API, checked the helper's reference tables against the supplement's Word file, and tested the helpers
     on synthetic inputs (zscores, combined_cp, causal_smooth, matched_contrast, classify_trials, asymmetry
-    and jpecc). Problem 14 (the clock check of Tatum_2017-12-09 not followed up) is answered in the data
-    check, which now shows that session's detect probability around the wheel movements (16.9% of units,
-    chance 5%) and its response on contralateral Go trials.
+    and jpecc).
   results:
   - claim: fig1c-easy-performance
     agrees: true
@@ -769,8 +851,11 @@ verifications:
     outcome: reproduced
     reason: 'Reading b: 29,283 neurons, 750.8 ± 38.0 per session, 22,434 or 22,273 localized. 39 sessions,
       10 mice, 92 probes, 9,538 engaged trials (cell 23).'
-    response: No change of outcome. With region labels as given (problem 11) 20,544 neurons lie in the
-      42 regions, also within tolerance; added to the notes.
+    response: 'No change of outcome. With region labels as given (problem 11) 20,544 neurons lie in the
+      42 regions, also within tolerance; added to the notes. Problem 14 (the clock of Tatum_2017-12-09,
+      not tied to a claim, recorded here with the data check): the data check now shows that session''s
+      detect probability around the wheel movements (16.9% of units, chance 5%) and its response on contralateral
+      Go trials, consistent with a shared clock.'
   - claim: edtable1-region-counts
     agrees: true
     outcome: reproduced
@@ -933,7 +1018,7 @@ verifications:
     response: 'Corrected: 25 points are tested, the Bonferroni variant divides by 25, and the text says
       why the point at 0 s has no index. Outcome unchanged.'
   - claim: fig3c-variance-explained
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: 'The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
@@ -942,9 +1027,11 @@ verifications:
       at 2.8 h).'
     response: 'Now tested: the full model runs for all 13,852 neurons in under 3 minutes with a coordinate-descent
       solver on the Gram matrix and the basis of the code''s CanonCor2all.m (read for this revision).
-      Median VE 0.12%, below 10%: reproduced. The example neurons cannot be identified.'
+      Median VE 0.12%, below 10%: reproduced. The example neurons cannot be identified. Corrected in the
+      second revision: agrees was recorded as true, but the reason questions the block (the verifier of
+      round 2 pointed this out).'
   - claim: fig3d-vision-localized
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
@@ -952,43 +1039,50 @@ verifications:
       (problem 2).
     response: 'Now tested with the nested test of the Contralateral Vision kernels: reproduced, resting
       on the reading of the denominator (neurons entering the nested tests); with the Figs. 3 to 5 set
-      as denominator the claim fails.'
+      as denominator the claim fails. Corrected in the second revision: agrees was recorded as true, but
+      the reason questions the block (the verifier of round 2 pointed this out).'
   - claim: fig3e-action-global
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
     response: 'Now tested with the nested tests: partially reproduced (Action neurons in 40 of 41 regions,
-      VISrl having none; 89.9% need no Choice kernel).'
+      VISrl having none; 89.9% need no Choice kernel). Corrected in the second revision: agrees was recorded
+      as true, but the reason questions the block (the verifier of round 2 pointed this out).'
   - claim: ed4f-focality
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
-    response: 'Now tested: not reproduced (0.092, 0.045, 0.029 against 0.079, 0.069, 0.040).'
+    response: 'Now tested: not reproduced (0.092, 0.045, 0.029 against 0.079, 0.069, 0.040). Corrected
+      in the second revision: agrees was recorded as true, but the reason questions the block (the verifier
+      of round 2 pointed this out).'
   - claim: ed5h-choice-shuffle-fpr
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
     response: 'Now tested with one shuffle and the whole test rerun: 4 of 2,871 neurons (0.14%), below
-      the tolerance; not reproduced.'
+      the tolerance; not reproduced. Corrected in the second revision: agrees was recorded as true, but
+      the reason questions the block (the verifier of round 2 pointed this out).'
   - claim: fig4b-choice-regions
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
-    response: 'Now tested: 48 midbrain and 39 forebrain choice-selective neurons, and 1 in VISp; not reproduced.'
+    response: 'Now tested: 48 midbrain and 39 forebrain choice-selective neurons, and 1 in VISp; not reproduced.
+      Corrected in the second revision: agrees was recorded as true, but the reason questions the block
+      (the verifier of round 2 pointed this out).'
   - claim: fig4c-choice-timing
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: 'The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
@@ -997,26 +1091,31 @@ verifications:
     response: 'The limit is now cited (docs/protocol.md, CI fails a notebook over 60 minutes). The kernel
       model now runs, so size is not the obstacle; the decoding from residuals was not implemented in
       this run, so the claim stays blocked (blocked_by other). The population counts were not checked:
-      they are those of choice-selective regions of the decoding analysis.'
+      they are those of choice-selective regions of the decoding analysis. Corrected in the second revision:
+      agrees was recorded as true, but the reason questions the block (the verifier of round 2 pointed
+      this out).'
   - claim: fig4f-contralateral-preference
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
     response: 'Now tested: 100% of midbrain and 38.5% ipsilateral of forebrain choice-selective neurons,
-      p = 9.6e-7; reproduced.'
+      p = 9.6e-7; reproduced. Corrected in the second revision: agrees was recorded as true, but the reason
+      questions the block (the verifier of round 2 pointed this out).'
   - claim: fig4fg-opposed-activity
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
-    response: 'Now tested: 27.1% against 5.1% suppressed (reading a), against 54% and 21%; not reproduced.'
+    response: 'Now tested: 27.1% against 5.1% suppressed (reading a), against 54% and 21%; not reproduced.
+      Corrected in the second revision: agrees was recorded as true, but the reason questions the block
+      (the verifier of round 2 pointed this out).'
   - claim: ed7c-choice-probability-restricted
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: 'The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
@@ -1025,19 +1124,306 @@ verifications:
       need only `combined_cp` on Left against Right trials, which the helper already has. Only the 20.8%
       MOs share in ed7c needs fig4b.'
     response: 'The ccCP part is now run (6 sessions excluded, as the paper says, but no frontal region
-      marked) and, with fig4b now tested, the MOs share (1 of 15, 6.7%, against 20.8%): not reproduced.'
+      marked) and, with fig4b now tested, the MOs share (1 of 15, 6.7%, against 20.8%): not reproduced.
+      Corrected in the second revision: agrees was recorded as true, but the reason questions the block
+      (the verifier of round 2 pointed this out).'
   - claim: ed5g-ipsilateral-vision-rare
-    agrees: true
+    agrees: false
     outcome: blocked
     reason: The data needed are all in the files. The block rests on an extrapolated cost of 4.6 core-hours
       (1.1 h on 4 cores) against a "1 h" limit that I cannot find in my materials (cell 70). The time
       estimate comes from one neuron in one session, using a per-session basis and not the pooled one
       (problem 2).
-    response: The limit is now cited. The kernel model now runs, so size is not the obstacle; the decoding
-      from residuals was not implemented in this run, so the claim stays blocked (blocked_by other).
+    response: 'The limit is now cited. The kernel model now runs, so size is not the obstacle; the decoding
+      from residuals was not implemented in this run, so the claim stays blocked (blocked_by other). Corrected
+      in the second revision: agrees was recorded as true, but the reason questions the block (the verifier
+      of round 2 pointed this out).'
   - claim: histology-alignment-error
     agrees: true
     outcome: blocked
     reason: 'Confirmed on the archive API: 39 NWB files with ephys, behaviour and pupil data, and no histology
       or DiI spot data.'
+    response: No change.
+- date: '2026-11-10'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision with its conclusions and summary, the helper
+    module, the claims file and the attempt record, with the paper's full text.
+  results:
+  - claim: fig1c-easy-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig1c-low-contrast-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig1c-competing-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig1d-reaction-time-difficulty
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: ed1q-wheel-choice-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: early-response-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: passive-no-movement
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: recording-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change. The round-1 response to problem 14 is moved here from the description of what
+      round 1 reviewed.
+  - claim: edtable1-region-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. The assumption is stated and reasonable: finer labels are mapped to their parent region
+      in the Allen hierarchy. Labels as given are run as a variant: edtable1 drops to 33 of 42 regions
+      (partial) and supptable2 to 25 of 39 sessions.'
+    response: No change.
+  - claim: supptable2-sessions
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. The assumption is stated and reasonable: finer labels are mapped to their parent region
+      in the Allen hierarchy. Labels as given are run as a variant: edtable1 drops to 33 of 42 regions
+      (partial) and supptable2 to 25 of 39 sessions.'
+    response: No change.
+  - claim: task-modulated-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: suppfig2-rate-amplitude
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The criteria give no partial outcome.
+    response: No change.
+  - claim: fig2de-activity-order
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig2fg-miss-restricted
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree. The criteria give no partial outcome. Condition (iii) fails by more once the two Miss
+      sets are matched (cell 49).
+    response: No change.
+  - claim: fig5b-miss-more-than-passive
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree. The criteria give no partial outcome. fig5b fails only because 36 sessions are kept,
+      not the required 34 (cell 52). The claims file may misread the paper: the criterion makes a claim
+      about activation fail on a session count (34) taken from the Methods. The analysis departs from
+      the claims file: for neuron reading b the claims file asks for all neurons of the 42 regions at
+      0.1 Hz or more, and the notebook uses neurons N (cell 52); this does not change the outcome. The
+      paper''s 34 sessions cannot be identified; the question is with the authors.'
+    response: Reading b now uses every neuron of the 42 regions at 0.1 Hz or more, as the criterion says
+      (3.30% against 2.52%, 29 of 42 regions), with neurons N a variant; outcome unchanged. The possible
+      misreading (a session count deciding a claim about activation) is put to a reader in questions/steinmetz-2019.yaml;
+      the claim is unchanged.
+  - claim: fig5c-prestimulus-task-vs-passive
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: ed6b-prestimulus-order
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig5d-go-miss-matches-task-passive
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment. The neuron set is still with a reader; it no longer changes
+      either outcome.
+    response: No change.
+  - claim: ed7f-detect-probability-engagement
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment. The neuron set is still with a reader; it no longer changes
+      either outcome.
+    response: No change.
+  - claim: fig5f-engagement-index
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig5e-engagement-predicts-go
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: ed9i-engagement-beyond-arousal
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: ed9cf-engagement-controls
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: ed9k-engagement-vector-specific
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: suppfig3-nonresponsive-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: ed7b-detect-probability-widespread
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig4d-jpecc-vis-leads
+    agrees: true
+    outcome: reproduced
+    reason: Agree, but weakly. The VIS-Midbrain lead rests on a single point at 0.08 s, under trials reading
+      b only. With Bonferroni correction it survives only with baseline a and trials b (cell 95). Cell
+      96 and the notes say that point stays significant in 5 of 5 and 3 of 5 seeds, but the seed table
+      counts any significant point from 0.08 to 0.12 s, not the 0.08 s point.
+    response: 'The seed table now also prints the p-value of the 0.08 s point: it is significant in 3
+      of 5 seeds under each baseline, while some point of 0.08 to 0.12 s is significant in 5 of 5 (baseline
+      a) and 3 of 5 (baseline b). Cell 96 and the notes now say so. Outcome unchanged.'
+  - claim: fig4d-jpecc-no-lag-frontal-midbrain
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree, with no further comment.
+    response: No change.
+  - claim: fig3c-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The record's "fitted in under 3 minutes" is not printed (cell 101 prints 213 s), and
+      the solver's check against scikit-learn is not shown in the notebook.
+    response: The notes now give the printed time (160 s in this run). A cell after the fit checks both
+      solvers against scikit-learn's ElasticNet (largest difference 3e-6). The code's reading of the fits
+      is run as a variant (median 0.33%); outcome unchanged.
+  - claim: fig3d-vision-localized
+    agrees: true
+    outcome: reproduced
+    reason: 'Agree. The assumption is stated and plausible: under the Figs. 3 to 5 set the legend''s rule
+      of fewer than 5 would exclude no region, which argues for the nested-test neurons as the denominator.
+      But the outcome flips with this choice, VISrl gets into the top five on 3 of 5 neurons, and the
+      method text in cells 105, 108 and 114 calls the Figs. 3 to 5 set the denominator while the code
+      and cells 107, 110 and 116 use the nested-test neurons. The analysis should state one reading and
+      keep to it.'
+    response: The method text of fig3d, fig3e and ed4f now states the nested-test neurons as the denominator,
+      the reading adopted, with the Figs. 3 to 5 set a variant, as the code computes. The outcome stays
+      reproduced, resting on that assumption; the question is with the authors. Under the code's reading
+      of the fits the outcome depends on the denominator in the same way.
+  - claim: fig3e-action-global
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, with no further comment (partially reproduced).
+    response: No change of outcome; the method text now names the nested-test neurons as the denominator,
+      as the code does, and the code's reading of the fits gives the same outcome (41 of 42 regions).
+  - claim: ed4f-focality
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the criteria, with two cautions. The model lets only 2,886 neurons into the nested
+      tests, against about 4,240 in the claims file, so every count of kernel-requiring neurons is lower
+      and these failures may come from this attempt and not the paper; the record says so. The shortfall
+      is unexplained, and the solver's check against scikit-learn or glmnet is not shown. The record's
+      ed4f notes say Vision is more focal than Action under every reading but B2; in cell 115 the point
+      estimate is higher under every reading, and only the significance fails under B2.
+    response: 'The solver check is now shown. Four details of the code''s fits were found that the main
+      fits do not follow and are run as a variant: 3,199 neurons enter the nested tests, so part of the
+      shortfall is explained and part is not. Under it ed4f is again not reproduced. The notes now say
+      that the point estimates are ordered as the paper''s under every reading and that the significance
+      fails under B2.'
+  - claim: ed5h-choice-shuffle-fpr
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree under the criteria, with two cautions. The model lets only 2,886 neurons into the nested
+      tests, against about 4,240 in the claims file, so every count of kernel-requiring neurons is lower
+      and these failures may come from this attempt and not the paper; the record says so. The shortfall
+      is unexplained, and the solver''s check against scikit-learn or glmnet is not shown. ed5h turns
+      on one neuron in one shuffle with one seed: 4 of 2,871 passed; the lower bound of 0.16% needs 5
+      (cell 118).'
+    response: 'The solver check is now shown. Four details of the code''s fits were found that the main
+      fits do not follow and are run as a variant: 3,199 neurons enter the nested tests, so part of the
+      shortfall is explained and part is not. ed5h is now run with four more shuffles under both fits:
+      single shuffles give 0.04% to 0.48%, and the means over five shuffles are 0.22% and 0.25%, within
+      tolerance. The verified outcome is kept; a change to reproduced is proposed under proposed, with
+      the analysis in the notebook after ed7c.'
+  - claim: fig4b-choice-regions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the criteria, with two cautions. The model lets only 2,886 neurons into the nested
+      tests, against about 4,240 in the claims file, so every count of kernel-requiring neurons is lower
+      and these failures may come from this attempt and not the paper; the record says so. The shortfall
+      is unexplained, and the solver's check against scikit-learn or glmnet is not shown.
+    response: 'The solver check is now shown. Four details of the code''s fits were found that the main
+      fits do not follow and are run as a variant: 3,199 neurons enter the nested tests, so part of the
+      shortfall is explained and part is not. Under it fig4b is again not reproduced (48 and 39, VISp
+      1).'
+  - claim: fig4c-choice-timing
+    agrees: true
+    outcome: blocked
+    reason: 'Agree they are untested. But the obstacle is neither the data nor the size: the whole notebook
+      ran in 1,234 s (cell 127), well under the 60-minute limit. The decoding was simply not written.
+      The record says this honestly.'
+    response: 'Not written in this revision either: no outcome may change in round 2, and a change that
+      needs an analysis not yet run waits for a new attempt (docs/protocol.md). The notes now say that
+      neither the data nor time stopped it.'
+  - claim: fig4f-contralateral-preference
+    agrees: true
+    outcome: reproduced
+    reason: Agree, with no further comment.
+    response: No change; the code's reading of the fits gives the same outcome (100% and 43.6%).
+  - claim: fig4fg-opposed-activity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the criteria, with two cautions. The model lets only 2,886 neurons into the nested
+      tests, against about 4,240 in the claims file, so every count of kernel-requiring neurons is lower
+      and these failures may come from this attempt and not the paper; the record says so. The shortfall
+      is unexplained, and the solver's check against scikit-learn or glmnet is not shown.
+    response: 'The solver check is now shown. Four details of the code''s fits were found that the main
+      fits do not follow and are run as a variant: 3,199 neurons enter the nested tests, so part of the
+      shortfall is explained and part is not. Under it fig4fg is again not reproduced.'
+  - claim: ed7c-choice-probability-restricted
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the criteria, with two cautions. The model lets only 2,886 neurons into the nested
+      tests, against about 4,240 in the claims file, so every count of kernel-requiring neurons is lower
+      and these failures may come from this attempt and not the paper; the record says so. The shortfall
+      is unexplained, and the solver's check against scikit-learn or glmnet is not shown. This bears on
+      ed7c through the MOs share.
+    response: 'The solver check is now shown. Four details of the code''s fits were found that the main
+      fits do not follow and are run as a variant: 3,199 neurons enter the nested tests, so part of the
+      shortfall is explained and part is not. Under it the MOs share is 0 of 16; ed7c is again not reproduced.'
+  - claim: ed5g-ipsilateral-vision-rare
+    agrees: true
+    outcome: blocked
+    reason: 'Agree they are untested. But the obstacle is neither the data nor the size: the whole notebook
+      ran in 1,234 s (cell 127), well under the 60-minute limit. The decoding was simply not written.
+      The record says this honestly.'
+    response: 'Not written in this revision either: no outcome may change in round 2, and a change that
+      needs an analysis not yet run waits for a new attempt (docs/protocol.md). The notes now say that
+      neither the data nor time stopped it.'
+  - claim: histology-alignment-error
+    agrees: true
+    outcome: blocked
+    reason: Agree.
     response: No change.
