@@ -1,0 +1,924 @@
+schema_version: 3
+id: hernandez-perez-2020-01
+datasets:
+- archive: crcns
+  id: hc-27
+  version: unversioned
+  doi: 10.6080/K0C53J2R
+  relation: primary
+paper: doi:10.7554/elife.52289
+date: 2026-11-11
+entry: hernandez-perez-2020
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43059911172
+outcomes:
+- claim: fig2d-phase-shift-rate
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2d-phase-shift-rate
+  measured: 27.32
+  notes: >-
+    Under the main reading (units `counts`, each channel's own theta epochs, least-squares slope
+    with intercept, mean over rats) the per-rat slopes are 17.1, 22.6, 21.7, 38.0, 31.5 and 33.0
+    deg/mm, mean 27.32 (SEM 3.27), median 27.04, all positive (ventral sites lag), signed-rank T+ =
+    21 of 21, p = 0.031. All 12 combinations of the unit (`counts`, `none`), O3 and O6 readings that
+    can be run meet the criterion (means 25.6 to 27.7), so the outcome does not rest on the unit
+    reading. Under `file` rats 2 and 3 have no theta epoch, and no test over six rats can be made.
+  deviations:
+  - >-
+    Positions are 0.566 mm times the channel index (O1 a), the nominal spacing of Methods, Electrode
+    array construction; the data set gives no positions, so the measured spacing of the one array
+    with merged shanks (O1 b) cannot be used.
+  - >-
+    Every channel in each file is used (O2 a). The data set's author proof (docs/MEC-TW_authorProof.pdf,
+    Figure 1, figure supplement 1) marks 6, 5, 6, 5, 6 and 5 electrode tips at the key recording for
+    rats 1 to 6 (read by eye), the channel counts of the files, and labels the electrodes outside
+    the MEC "unused", so reading O2 b selects the same channels.
+  - >-
+    The files state no unit. The 400 µV threshold of Methods, Data inclusion criteria, is applied on
+    the scale of the integer files, with the non-integer files (rats 2 and 3) divided by 0.195 µV
+    per bit (`counts`); this is 400 µV if the integer files are in µV and about 78 µV if they are
+    Intan counts. `none` (no amplitude restriction) is shown and gives the same outcome.
+- claim: fig2d-linear-fit
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2d-linear-fit
+  measured: 0.778
+  notes: >-
+    Pooled r2 of offset on distance over all rats' electrodes, dorsal-most (0, 0) included (reading
+    a), is 0.778 under the main reading and 0.765 to 0.778 under every unit and O3 reading. Without
+    the dorsal-most points (b) it is 0.66 to 0.68, and the median of per-rat r2 (c) is 0.95; neither
+    is within 0.7627 +/- 0.0763.
+  deviations:
+  - Offsets, positions and channels as in fig2d-phase-shift-rate.
+- claim: fig2a-all-rats
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2a-all-rats
+  notes: >-
+    All six per-rat Hilbert slopes are positive (17.1 to 38.0 deg/mm). In the cycle-triggered
+    average of the raw LFP, triggered on the dorsal-most channel's waveform peaks in its theta epochs,
+    the ventral-most channel's peak lags the dorsal-most's by 16, 18, 18, 40, 38 and 34 ms
+    (triggers kept where the whole window is artefact-free on every channel).
+  deviations:
+  - >-
+    The lag of each channel's average is its local maximum above the average's mean nearest the
+    trigger, within +/-124 ms (a standard choice; the paper shows the averages without a rule).
+- claim: fig2e-phase-locking-high
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2e-phase-locking-high
+  measured: 0.946
+  notes: >-
+    With the dorsal-most channel's theta epochs (O3 c) the median over rats of the per-rat median MRL
+    against the dorsal-most electrode is 0.946 (reading a) and over all pairs 0.936 (b), inside 0.85
+    to 0.95. With each channel's own epochs (O3 a) or all channels' (b) the readings give 0.959 to
+    0.971, above the range; with no amplitude restriction 0.78 to 0.81, below it. The outcome depends
+    on which epochs are used, which the paper does not say (question for the authors under
+    findings). In the threshold sweep on the common scale the O3 c value is 0.87, 0.92, 0.95 and
+    0.97 at 200, 300, 400 and 600, inside the range for 200 to 400; at 800 and above some rat has
+    no epoch, and at 400 µV with the integer files read as Intan counts (2051) no rat has one.
+  deviations:
+  - >-
+    Assumed, the `counts` unit reading (see fig2d-phase-shift-rate), the reading under which the
+    paper's 400 µV restriction can be applied to all six rats; without the restriction the claim
+    fails.
+- claim: fig2e-phase-locking-decrease
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2e-phase-locking-decrease
+  measured: -0.0675
+  notes: >-
+    Phase locking falls with distance in all six rats under every reading (T+ = 0, p = 0.031). With
+    the dorsal-most channel's epochs (O3 c) the mean slope is -0.0675 per mm and the median -0.0619
+    (dorsal-most value included), within -0.067 +/- 0.011. With each channel's own epochs the slope
+    is shallower (mean -0.039, median -0.030); with no amplitude restriction steeper (-0.13 to
+    -0.14). In the threshold sweep the O3 c mean slope is -0.113, -0.086, -0.067 and -0.048 at 200,
+    300, 400 and 600; only 400 is within tolerance under O3 c.
+  deviations:
+  - Assumed, the `counts` unit reading, as for fig2e-phase-locking-high; without the amplitude
+    restriction the slope is outside the tolerance.
+- claim: fig2c-coherence
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2c-coherence
+  measured: 0.677
+  notes: >-
+    Over all pairs the median over rats of the per-rat median coherence is 0.677 with 1 s windows
+    (window a) and 0.690 with cohere's default (b), inside 0.66 to 0.81. Against the dorsal-most
+    electrode only it is 0.605 to 0.621, below the range (bootstrap CI 0.50 to 0.75). Coherence uses
+    artefact-free data and does not depend on the unit reading.
+  deviations:
+  - >-
+    Coherence is computed from Hann-windowed segments lying wholly inside the artefact-free data,
+    so that removed stretches are not joined.
+- claim: fig2f-coherence-decrease
+  outcome: not_reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2f-coherence-decrease
+  measured: 0.211
+  notes: >-
+    Coherence with the dorsal-most electrode falls with distance in all six rats (T+ = 0, p =
+    0.031), but at 0.211 to 0.220 per mm (mean; median 0.222 to 0.224), about three times the
+    paper's 0.067 +/- 0.018, under every window and mask reading. Per-rat slopes -0.10 to -0.30.
+- claim: fig2g-power-no-change
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig2g-power-no-change
+  notes: >-
+    The signed-rank test of the six per-rat slopes of relative theta power on distance does not find
+    a change under any of the 12 unit, epoch and power-measure readings (p = 0.094 to 0.219); raw
+    power gives p = 0.156 to 0.313. Under the main reading the median slope of relative power is
+    -0.098 per mm (Welch; 95% CI -0.221 to 0.037) and -0.107 (Hilbert); the paper's median is +0.73
+    AU/mm [-0.08 to 0.93]. The test does not find the effect, so the claim of absence holds; the
+    median slope here has the other sign from the paper's.
+- claim: fig3-along-not-across-layers
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The laminar array (up to six stereotrodes per shank, Figure 3A) is not in the data set. Each
+    rat's file holds 5 or 6 channels in one dorsal-ventral order, with no electrode geometry, so the
+    displacements along and across the layers cannot be formed. The archive's file list holds the
+    six LFP files, two MATLAB scripts and the documentation only.
+- claim: fig4d-mua-phase-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The multi-unit band is 600-3000 Hz (Methods, Analysis of multiunit spiking activity); the files
+    are sampled at 500 Hz and hold nothing above 250 Hz, and they hold one recording per rat, the
+    key LFP recording, not the later layer II recordings. No other file in the archive holds them.
+- claim: fig4d-mua-matches-lfp
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Depends on fig4d-mua-phase-shift, whose multi-unit recordings are not in the data set.
+- claim: fig5c-rise-decay-gradient
+  outcome: partially_reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig5c-rise-decay-gradient
+  measured:
+  - -0.171
+  - -0.049
+  notes: >-
+    Dorsal sites are more asymmetric than ventral ones in every rat under the main reading (T+ = 21
+    for ventral minus dorsal, p = 0.031; p = 0.031 or 0.0625 under the other readings), but the
+    dorsal median is -0.171 against -0.43 +/- 0.14 and the ventral-most -0.049 against -0.11 +/-
+    0.02, and no reading brings both within tolerance (dorsal -0.136 to -0.176). The gradient is
+    present but weaker. The two site readings (ventral-most, nearest 2.8 mm) are the same channel in
+    every rat with 0.566 mm spacing. A synthetic check in the notebook shows the index is measured
+    correctly for a wave inside the 1-25 Hz band. The criterion defines only reproduced; the outcome
+    is partially reproduced because the direction and the test hold and the values do not. With
+    the natural log (the Figure 5A legend says "log", the Methods log10) the main reading gives
+    -0.393 and -0.112, both within tolerance, and 5 of 12 combinations meet every part; whether the
+    criterion should allow it is asked of a reader (questions/hernandez-perez-2020.yaml), and the
+    outcome is that of the claims file's log10. The threshold sweep gives a dorsal median of -0.14
+    to -0.18 at every threshold that can be run.
+  deviations:
+  - >-
+    Extrema of the 1-25 Hz signal (O7 a) are local maxima and minima at least 83 ms from the last of
+    their type, made to alternate; a cycle is valid when its peak-to-peak period is 83 to 250 ms
+    (Methods, Theta phase estimation). Reading O7 b (zero crossings of the 6-12 Hz signal) is shown
+    and gives the same outcome.
+- claim: fig5c-peak-trough-gradient
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig5c-peak-trough-gradient
+  measured:
+  - 0.110
+  - -0.038
+  notes: >-
+    Dorsal median 0.110 (within 0.21 +/- 0.21), ventral-most -0.038 (within -0.10 +/- 0.11), lower
+    in every rat (T+ = 0, p = 0.031). All 12 readings meet every part, and with the natural log
+    (variant, see fig5c-rise-decay-gradient) all 12 still do (main 0.253 and -0.088).
+  deviations:
+  - >-
+    Peak duration is from the rising midpoint before a peak to the falling midpoint after it, trough
+    duration from that falling midpoint to the next rising midpoint (Figure 5A legend).
+- claim: fig5-dorsal-sawtooth
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig5-dorsal-sawtooth
+  notes: >-
+    On the dorsal-most channel the rise/decay index is negative in all six rats (T+ = 0, p = 0.031)
+    under every reading. The peak/trough index is positive in five rats and exactly 0 in rat 1; the
+    signed-rank test drops the zero, as Wilcoxon's test and MATLAB's signrank do, giving T+ = 15 of
+    15, p = 0.0625, at the criterion's level (O5). Under three readings rat 1's value is -0.02 and
+    T+ = 20 of 21, p = 0.0625. The outcome is at the boundary whichever way the zero is treated:
+    Pratt's treatment gives T+ = 20, exact p = 0.0625, and splitting the zero T+ = 20.5, exact p =
+    0.0625; no treatment can give less with five non-zero values.
+- claim: fig5-ventral-rise-not-peak
+  outcome: reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig5-ventral-rise-not-peak
+  notes: >-
+    At the channel nearest 2.8 mm (the ventral-most in every rat, 2.83 mm with six channels and 2.26
+    mm with five) the rise/decay index is negative in all six rats (T+ = 0, p = 0.031 under the main
+    reading, at most 0.0625 under every reading) and the peak/trough test does not find a
+    difference (T+ = 4, p = 0.219, median -0.038; p = 0.156 to 0.625 under the other readings).
+  deviations:
+  - >-
+    With five channels the nearest channel to 2.8 mm is at 2.26 mm, as the positions are nominal
+    (O1 a).
+- claim: fig6b-delay-by-phase
+  outcome: partially_reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig6b-delay-by-phase
+  measured:
+  - 5.86
+  - 11.82
+  notes: >-
+    Under the main reading the falling-phase delay is 5.86 ms/mm (within 5.47 +/- 3.23) and the peak
+    delay 11.82 ms/mm (within 12.00 +/- 5.48); the falling phase is the shortest of the four; the
+    peak is longer than the falling phase in all six rats (T+ = 21, p = 0.031). The rising phase,
+    12.53 ms/mm, not the peak, is the longest, under all eight readings (with no amplitude
+    restriction 10.43 against 9.36). Per rat under the main reading the falling phase is the
+    shortest in all six, and the rising phase is longer than the peak in four (rats 1, 3, 5 and 6;
+    the peak is the longest in rats 2 and 4). Every part holds except "longest for the peak". The criterion
+    defines reproduced (all parts) and partially reproduced (values and order hold, test fails);
+    this case, where one part of the order fails, is recorded as partially reproduced because the
+    claim holds in part. Reference cycles per rat 678, 3467, 964, 659, 2601 and 1082 (all
+    channels' epochs; 815 to 6286 with the dorsal-most's), against the paper's 3500 to 5000;
+    regressions that did not converge, dropped, 0 to 212 per rat over the four phases.
+  deviations:
+  - >-
+    Reference cycles are the dorsal-most channel's valid cycles inside the theta epochs of all
+    channels (O3 b; reading a coincides with b at the event times) or of the dorsal-most (c). The
+    robust regression is MATLAB robustfit's bisquare with its default tuning, written out in the
+    helper (Methods, Conduction delays of specific theta phases); the dorsal-most point (0, 0) is in
+    each regression.
+- claim: fig6c-delay-phase-slope
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig6c-delay-phase-slope
+  measured:
+  - 0.0208
+  - 0.668
+  notes: >-
+    Under the main reading the pooled slope of rat-mean-subtracted delay on reference phase is 0.0208
+    (ms/mm)/deg and the median per-rat slope 0.0194, inside 0.017 to 0.025; the pooled R2 is 0.668
+    (0.668 to 0.695 under the `counts` readings), outside 0.82 +/- 0.082. With no amplitude
+    restriction the slope is 0.013 to 0.014, below the range. The slope holds and the linear fit is
+    weaker than the paper's, so the claim holds in part.
+  deviations:
+  - Assumed, the `counts` unit reading; without the amplitude restriction the slope is outside the
+    range and the claim is not reproduced.
+- claim: fig6b-hilbert-between-limits
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig6b-hilbert-between-limits
+  measured:
+  - 16.86
+  - 34.06
+  notes: >-
+    Converted at 360/125 deg/ms the falling-phase shift is 16.86 deg/mm (within 15.38 +/- 9.68) and
+    the peak shift 34.06 (within 34.56 +/- 16.78), and the Hilbert shift, 27.32 deg/mm, lies between
+    them, under all four `counts` readings. Reading b, the median of the converted per-cycle delays
+    of all rats pooled, gives 18.33 and 32.39 under the main reading and also meets every part under
+    all four `counts` readings. With no amplitude restriction the peak shift is 23.5 to 27.0, below
+    the Hilbert shift of 27.7, under both readings.
+  deviations:
+  - Assumed, the `counts` unit reading; without the amplitude restriction the claim fails.
+- claim: fig7-asymmetry-delay
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig7-asymmetry-delay
+  measured: 6.07
+  notes: >-
+    Under the main reading the asymmetry-related delay is 6.07 ms/mm (reading a; 6.56 under b),
+    outside 3.56 +/- 2.33, positive in five of six rats (rat 3 -1.64; T+ = 20, p = 0.0625). With the
+    dorsal-most channel's epochs it is 6.70 to 7.02 (a), positive in all six (p = 0.031). With no
+    amplitude restriction two combinations are within tolerance (5.66 and 5.69, p = 0.031).
+    Exchanging i and j in the formula gives the negatives. A synthetic wave with equal waveforms on
+    all channels gives 0. In the threshold sweep the value is 6.0 to 7.6 ms/mm at every threshold
+    where it can be computed. Half of Delay_Asym, a variant that is not the Methods' formula (a peak
+    displaced by a change of rise and decay at a fixed period moves by half the change in their
+    difference), gives 2.8 to 3.5 ms/mm, within tolerance; the outcome is that of the formula.
+  deviations:
+  - >-
+    The cycle of channel j is the one whose peak is nearest the reference peak; D_rise is the time
+    from the trough before the peak to the peak and D_fall from the peak to the next trough (Methods,
+    Asymmetry analysis and Asymmetry-corrected data; the paper does not say how cycles are matched
+    across channels).
+  - Assumed, the `counts` unit reading; without the amplitude restriction the claim is reproduced
+    under two combinations.
+- claim: fig7-residual-delay
+  outcome: not_reproduced
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig7-residual-delay
+  measured:
+  - 11.83
+  - 5.24
+  notes: >-
+    The total delay is within 12.98 +/- 5.23 ms/mm under every reading (8.7 to 11.8; 11.83 under the
+    main reading), but the residual is 2.0 to 5.2 ms/mm (5.24 under the main reading), below 9.61 +/-
+    2.62 under all 24 readings, as the asymmetry-related delay here is about twice the paper's. The
+    residual is below the total in every rat under 18 of the 24 readings (paired signed-rank p =
+    0.031 there, 0.0625 under the others). With half of Delay_Asym removed (the variant of
+    fig7-asymmetry-delay) the residual is 7.86 to 9.20 ms/mm under the `counts` readings, within
+    tolerance (6.99 to 12.23), and 6.80 to 7.49 with no amplitude restriction, two of which (6.80
+    and 6.81) are below it; the outcome is that of the Methods' formula.
+- claim: fig8c-relative-delay-flat
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig8c-relative-delay-flat
+  notes: >-
+    With the period from the reference peak to the next peak (the criterion's reading) the relative
+    delay rises with frequency in all six rats, median slope 2.16 %/Hz (95% CI 1.61 to 2.52), T+ =
+    21, p = 0.031; with the period from the previous peak it falls in all six (median -1.28 %/Hz,
+    p = 0.031). The test finds a relation under both, and under both unit readings. A centred
+    period (half the interval from the previous to the next peak, this attempt's variant, which does
+    not use the reference peak's time) gives no relation under the `counts` readings (p = 0.44 to
+    0.69): the relation the criterion's readings find comes largely from timing noise shared by the
+    per-cycle delay and the period. A second variant, the frequency from the dorsal-most channel's
+    Hilbert phase over a fixed 250 ms window centred on the reference peak, also finds no relation
+    under three of the four `counts` combinations (main median -0.43 %/Hz, p = 0.156). The outcome
+    says that the paper's result is not found with the claims file's period; it is not evidence
+    against the paper's mechanism. Reference cycles per rat 664, 3463, 945, 657, 2528 and 1082.
+  deviations:
+  - >-
+    The per-cycle absolute delay is the robust slope of (peak offset minus Delay_Asym) on position,
+    the corrected delay of fig7-residual-delay reading a (Methods, Comparison to coupled-oscillators
+    and fixed-delay models).
+  - >-
+    Assumed, the claims file's period (reference peak to next peak, previous peak shown), which the
+    paper does not define. The per-cycle delay and this period share the reference peak's time, and
+    the relation changes sign between the next-peak and previous-peak periods, so the outcome rests
+    on the definition (question for the authors under findings).
+- claim: fig8d-absolute-delay-slope
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig8d-absolute-delay-slope
+  measured: 2.06
+  notes: >-
+    With the period to the next peak the absolute delay rises with frequency in all six rats, median
+    slope +2.06 ms/mm per Hz (95% CI 1.28 to 2.76), p = 0.031; times the span of the array +5.16 ms
+    per Hz. The sign is opposite to the paper's -3.12. With the period from the previous peak, shown
+    as the criterion of fig8c-relative-delay-flat asks, the slope is negative in all rats, and with
+    no amplitude restriction it is -3.13 and -3.12 ms/mm per Hz under two combinations, within
+    tolerance; with the centred variant it is -0.84 (p = 0.0625) under the main reading. Per rat
+    under the main reading, the uncorrected peak delay falls with frequency under the next-peak
+    period (median -2.07, all six rats) and the trough delay, whose time is not the reference
+    peak's, falls under the next-peak, centred and Hilbert frequencies (-0.74, -1.15, -1.85): the
+    asymmetry correction, which subtracts the reference cycle's decay minus rise, shares timing with
+    the period and turns the corrected slope positive. With the Hilbert frequency (a variant that
+    uses no extrema times) the corrected delay falls with frequency, -0.89 ms/mm per Hz under the
+    main reading (p = 0.094) and -0.40 to -1.35 under the eight combinations (p = 0.031 under five);
+    over the span with no amplitude restriction it is -3.00 and -2.93 ms per Hz, within tolerance.
+    The direction of the paper's finding appears when the frequency does not share timing with the
+    delay.
+  deviations:
+  - >-
+    Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it.
+- claim: fig8-correlation-strength
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig8-correlation-strength
+  measured:
+  - 0.260
+  - 0.207
+  notes: >-
+    Under the main reading the median |r| with frequency is 0.260 for the relative delay and 0.207
+    for the absolute delay; the relative delay is the more strongly related (T+ = 0, p = 0.031), the
+    reverse of the paper's 0.02 against 0.14. No combination of |r| or r2 meets every part (0 of 64,
+    the centred and Hilbert variants included). With the centred period the order is the paper's
+    (|r| 0.025 to 0.057 against 0.050 to 0.087 under `counts`) but the test does not find the
+    difference with |r| (p = 0.156 to 0.438); with r2 it does under one `counts` combination (O3 c,
+    O7 b; T+ = 20, p = 0.0625), where the absolute delay's median r2 is 0.005. With the Hilbert
+    frequency |r| is 0.029 to 0.060 against 0.043 to 0.070, and the test finds the difference under
+    one `counts` combination. The absolute delay's |r| is well below the paper's 0.14 under both
+    variants.
+  deviations:
+  - >-
+    Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it.
+- claim: fig8-coupled-oscillators
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_hernandez_perez_2020.ipynb
+  output: claim:fig8-coupled-oscillators
+  notes: >-
+    Neither fig8c-relative-delay-flat nor fig8d-absolute-delay-slope is reproduced: under the
+    criterion's reading both the relative delay (2.16 %/Hz) and the absolute delay (2.06 ms/mm per
+    Hz) rise with frequency, both p = 0.031. This is not the fixed-delay pattern, as the absolute
+    delay changes, so the criterion's "partially reproduced otherwise" applies, although neither of
+    the coupled-oscillator predictions holds here. With the Hilbert frequency (variant) the relative
+    delay does not change (p = 0.156) and the absolute delay falls (median -0.89 ms/mm per Hz, p =
+    0.094) under the main reading, the direction the coupled-oscillator account predicts.
+  deviations:
+  - >-
+    Assumed, the claims file's period, as for fig8c-relative-delay-flat; the outcome rests on it.
+findings:
+- kind: metadata_insufficient
+  statement: >-
+    The files state no unit for the LFP. Rats 1, 4, 5 and 6 hold integers (step 1, rat 5 reaching
+    32767, the int16 limit), consistent with ADC counts; rats 2 and 3 hold non-integers whose spread
+    is about five times smaller, consistent with µV at the Intan step of 0.195 µV. The paper's 400 µV
+    theta threshold, applied to the values as stored, selects no theta epoch in rats 2 and 3, and
+    with the integer files converted from Intan counts to µV it selects none in any rat (median
+    theta amplitudes 52 to 201 µV), so the paper's epoch selection cannot be repeated without
+    knowing the scale of each file.
+- kind: data_missing
+  statement: >-
+    The data set holds only the 500 Hz LFP of one recording per rat. The 30 kHz broadband, the layer
+    II multi-unit recordings of Figure 4 and the laminar array's sites of Figure 3 are not in it, so
+    three of the paper's findings cannot be tested.
+- kind: metadata_insufficient
+  statement: >-
+    No electrode positions or spacings are given per rat. Which electrodes were used is shown only in
+    a figure of the data set's author proof (Figure 1, figure supplement 1), whose tip markers match
+    the files' channel counts but are not labelled by channel. The paper says one array had merged
+    shanks with a measured spacing not reported. Distances here are the nominal 0.566 mm per
+    channel.
+- kind: other
+  statement: >-
+    The recordings last 20.1 to 33.5 min (rat 5 33.5 min), where the paper describes 25-min trials.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. In what unit is each file of hc-27, and was the 400 µV theta-amplitude
+    threshold applied on the same scale in all six rats? Applying it to the values as stored leaves
+    rats 2 and 3 without theta epochs; this attempt divided their values by 0.195 µV per bit
+    (assumed). Several outcomes (phase locking, the phase-specific delays and the asymmetry-related
+    delay) change with this choice.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. Were the phase locking and its slope (Figure 2E) computed on each
+    channel's own high-theta epochs, on the dorsal-most channel's, or on times all channels share?
+    The median phase locking is 0.946 with the dorsal-most channel's epochs and 0.96 to 0.97 with the
+    others, and the slope -0.068 against -0.03 to -0.04 per mm.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. For Figure 8, how was a cycle's period defined (from the reference peak
+    to the next, from the previous, or otherwise), and was the absolute delay the per-cycle robust
+    slope? Here the relation of per-cycle delay to frequency changes sign between the next-peak and
+    previous-peak periods and largely disappears with a period that does not use the reference
+    peak's time, which suggests the relation is dominated by timing noise shared by the two
+    measures. With a frequency from the Hilbert phase the median slope of the absolute delay on
+    frequency is negative under every reading, the paper's direction, but the signed-rank test finds
+    the fall in only one of the four `counts` readings (p = 0.094 under the main reading) and in all
+    four with no amplitude restriction.
+- kind: methods_unavailable
+  statement: >-
+    Question for the authors. How were cycles matched across channels for the asymmetry-related delay
+    (Methods, Asymmetry-corrected data), and how were the waveform extrema chosen when local maxima
+    and minima did not alternate? This attempt matched the cycle with the nearest peak and kept the
+    more extreme of two extrema of a kind in a row.
+- kind: paper_inconsistency
+  statement: >-
+    Several tests are printed as "rank sum [max]" with values (a maximum of 21 for n = 6, p = 0.03 at
+    0 or 21) that are those of a signed-rank test, and the multi-unit test is printed as "rank sum
+    [max]=21 [21], p = 0.03, n=3", which no rank test of three values can give (maximum 6, smallest
+    p 0.25). The coherence slope is printed as positive (0.067/mm) with a statistic of 21 of 21 while
+    the text says coherence decreased.
+verifications:
+- date: '2026-11-11'
+  kind: agent
+  by: >-
+    Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 1. The handover of the author-answers run (the executed notebook with the conclusion cells
+    and the summary removed), the helper module and the claims file, with the paper. The verifier
+    checked the archive listing and tested artefact_mask, theta_epochs, signrank, extrema and
+    robustfit_slopes on synthetic inputs. Report in
+    transcripts/hernandez-perez-2020/verifier-1-report.md. Its outcomes agree with the record on 23
+    of 24 claims.
+  results:
+  - claim: fig2d-phase-shift-rate
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 11, main reading, mean 27.32 deg/mm (target 26.36 +/- 2.64). All six slopes are positive,
+      T+ = 21, p = 0.031. All 12 runnable combinations pass.
+    response: >-
+      No change to the outcome. Answering its problem 3, the author proof's Figure 1, figure
+      supplement 1 was read: its tips at the key recording number 6, 5, 6, 5, 6 and 5, the files'
+      channel counts, and electrodes outside the MEC are labelled "unused", so reading O2 b selects
+      the same channels as O2 a; recorded in the header, the data check and the deviation.
+  - claim: fig2d-linear-fit
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 14, reading (a) pooled, r2 = 0.765 to 0.778, inside 0.7627 +/- 0.0763. Readings (b) at
+      0.66 and (c) at 0.95 fall outside.
+    response: No change.
+  - claim: fig2a-all-rats
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 16, 6 of 6 rats have a positive Hilbert slope, and the ventral-most cycle-triggered-average
+      peak follows the dorsal one (18 to 40 ms).
+    response: >-
+      Answering its problem 9, the cycle-triggered average now keeps only triggers whose whole window
+      is artefact-free on every channel (it used the dorsal-most channel's epochs only); the
+      ventral-most lags are 16 to 40 ms. Outcome unchanged.
+  - claim: fig2e-phase-locking-high
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 18, counts, O3 c gives 0.946 (against dorsal) and 0.936 (all pairs), inside 0.85 to 0.95.
+      Borderline, the main reading gives 0.963, which is outside, and none gives 0.79. The counts
+      threshold of 400 counts is about 78 µV if the integer files are Intan ADC counts, not the
+      paper's 400 µV, and none of the paper's numbers was used to check the threshold (problem 2).
+    response: >-
+      Kept, marked as resting on the unit assumption. Added a table of each channel's median theta
+      amplitude on the common scale and in µV under both readings of the integer files, and a
+      threshold sweep (200 to 2051 on the common scale, 2051 being 400 µV with the integer files read
+      as Intan counts) with the reference-cycle counts beside the paper's 3500 to 5000. At 2051 no rat
+      has a theta epoch; no threshold gives the paper's counts in every rat; this measure is inside
+      the range at 200 to 400. The unit reading's text now says the threshold is 400 µV only if the
+      integer files are in µV.
+  - claim: fig2e-phase-locking-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 20, counts, O3 c gives a mean of -0.0675 (median -0.0619; -0.0705 without the dorsal
+      point). All six slopes are negative, p = 0.031. Only O3 c passes; O3 a gives -0.039.
+    response: >-
+      Kept, marked as resting on the unit assumption. The threshold sweep shows the slope within
+      tolerance under O3 c only at 400 (-0.113 to -0.048 from 200 to 600).
+  - claim: fig2c-coherence
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 22, all pairs gives 0.677 to 0.690, inside 0.66 to 0.81. Against the dorsal-most electrode
+      it is 0.61, which is outside.
+    response: No change.
+  - claim: fig2f-coherence-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 24, the slopes are -0.21 to -0.22 per mm, about 3x the 0.067 +/- 0.018 target. Direction
+      and the test (p = 0.031) hold. 0 of 4 combinations pass.
+    response: No change.
+  - claim: fig2g-power-no-change
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 26, relative power gives p > 0.0625 in 12 of 12 combinations (main p = 0.156). The median
+      slope is -0.10/mm with CI [-0.22, 0.04], against the paper's +0.73 AU/mm.
+    response: No change.
+  - claim: fig3-along-not-across-layers
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Confirmed against the archive. The S3 listing and filelist.txt show only
+      RawSignalTravelingWaveRats.zip, holding six 5-to-6-channel, 500 Hz LFP files, plus two scripts
+      and the docs. There is no broadband signal, no laminar site map and no geometry.
+    response: No change.
+  - claim: fig4d-mua-phase-shift
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Confirmed, the data are sampled at 500 Hz, so nothing above 250 Hz exists, and there are no
+      layer II recordings.
+    response: No change.
+  - claim: fig4d-mua-matches-lfp
+    agrees: true
+    outcome: blocked
+    reason: >-
+      Needs the multi-unit slopes, and the dataset does not identify the three multi-unit rats.
+    response: No change.
+  - claim: fig5c-rise-decay-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Cell 28, dorsal -0.17 against -0.43 +/- 0.14, ventral -0.05 against -0.11 +/- 0.02. Direction
+      and test hold (p = 0.031). 0 of 12 combinations pass. The Methods say log10, but the Figure 5A
+      legend says only "log"; multiplying the main-reading medians by ln(10) = 2.303 matches the
+      paper closely (-0.39 and -0.11), and the claims file did not list a natural-log reading. Under
+      that reading the claim would pass (problem 1).
+    response: >-
+      Kept partially reproduced, with the disagreement recorded. The criterion defines only
+      reproduced, and the protocol's partially reproduced is an effect present but weaker; here the
+      gradient and its test hold in every rat and the values are weaker. Added the natural-log
+      variant (main -0.393 and -0.112, both within tolerance; 5 of 12 combinations meet every part)
+      and asked a reader whether the criterion should allow it (questions/hernandez-perez-2020.yaml);
+      the outcome is that of the claims file's log10.
+  - claim: fig5c-peak-trough-gradient
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 30, dorsal 0.11 and ventral -0.04, both within the wide tolerances. Ventral is lower in all
+      rats, p = 0.031. 12 of 12 combinations pass.
+    response: Added the natural-log variant (0.253 and -0.088; 12 of 12 still pass). No change.
+  - claim: fig5-dorsal-sawtooth
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 32, rise/decay T+ = 0, p = 0.031. Peak/trough p = 0.0625 exactly, because rat 1's value is
+      exactly 0 and is dropped (n = 5). This passes, at the boundary. A zsplit or pratt zero treatment
+      could push it above 0.0625; the outcome is fragile (problem 7).
+    response: >-
+      Added exact tests with Pratt's and the split treatment of the zero; both give p = 0.0625 (T+ =
+      20 and 20.5), the same as dropping it. The outcome is at the criterion's boundary under every
+      treatment, as the notes now say. No change.
+  - claim: fig5-ventral-rise-not-peak
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 34, rise/decay T+ = 0, p = 0.031. Peak/trough p = 0.22, so no difference. The channel used
+      is the ventral-most, at 2.26 or 2.83 mm.
+    response: No change.
+  - claim: fig6b-delay-by-phase
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 36, falling phase 5.86 and peak 11.82 ms/mm are both within tolerance, falling is the
+      shortest, and p = 0.031. But the rising phase (12.53) is longer than the peak in every
+      combination (4 of 6 rats in the main reading), so "peak longest" fails. Peak longest was
+      checked only on the across-rat medians (problem 5).
+    response: >-
+      Added a per-rat table of the four phases' delays under the main reading: the falling phase is
+      the shortest in all six rats and the rising phase is longer than the peak in four (rats 1, 3, 5
+      and 6). Answering its problem 8, robustfit_slopes now keeps a row's estimate from the
+      iteration in which it converged; the delays are unchanged at the printed precision. No change
+      to the outcome.
+  - claim: fig6c-delay-phase-slope
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 38, under counts, the slope is in range (pooled 0.0208, per-rat median 0.0194). R2 = 0.67
+      to 0.69 is below 0.82 - 0.082. 0 of 8 combinations meet both parts.
+    response: No change.
+  - claim: fig6b-hilbert-between-limits
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 40, counts, falling 16.9 and peak 34.1 deg/mm, both within tolerance, with the Hilbert
+      value of 27.3 between them. Passes in 4 of 8 combinations. Cell 39 says the two readings
+      coincide because the conversion is a constant factor; that holds for per-rat medians, but
+      reading (b) is a median over pooled per-cycle values, a different statistic. Cell 40 defines hc
+      and never uses it (problem 6).
+    response: >-
+      Reading b is now computed as the median of the pooled per-cycle values (18.33 and 32.39 under
+      the main reading; it meets every part under the same four `counts` combinations), the wrong
+      sentence is removed, and the unused variable is gone; the Hilbert value is stated to be the
+      main reading of fig2d-phase-shift-rate. No change to the outcome.
+  - claim: fig7-asymmetry-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 42, with theta epochs the values are 6.07 to 7.02 ms/mm, above the 5.89 upper bound. The
+      main reading's p = 0.062 (one rat negative). It passes only under none (5.69), which drops the
+      theta-epoch restriction the Methods require. Peak displacement from asymmetry is about half of
+      Delay_Asym, and half of 6.07 is about 3.0; the formula in the paper is explicit, so this is only
+      a hint.
+    response: >-
+      Added the half-delay variant (2.8 to 3.5 ms/mm, within tolerance), shown and not deciding the
+      outcome, since the Methods' formula is the full difference; and the threshold sweep, in which
+      the value is 6.0 to 7.6 at every threshold that can be computed. No change.
+  - claim: fig7-residual-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 44, 0 of 24 combinations pass. The total is within tolerance (9.4 to 11.8), but the
+      residual is 2.0 to 5.2 against 9.61 +/- 2.62.
+    response: >-
+      Added the residual with half of Delay_Asym removed (6.8 to 9.2, within tolerance) as a variant.
+      No change.
+  - claim: fig8c-relative-delay-flat
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 47, with the claims file's period (peak to next peak), the relative slope is significantly
+      positive (+2.16 %/Hz, p = 0.031). Peak to previous peak gives a significant negative slope. Only
+      the author's own centred variant gives no slope. The sign flip points to a shared timing
+      artefact, so the not_reproduced outcome rests on a definition the paper leaves open and is not
+      evidence against the paper's mechanism (problem 4).
+    response: >-
+      Outcome kept, now marked as resting on the claims file's period (assumed), with a deviation and
+      the notes saying it is not evidence against the mechanism. Added a variant with the frequency
+      from the dorsal-most channel's Hilbert phase over a fixed window, which uses no extrema times;
+      it finds no relation under three of four `counts` combinations.
+  - claim: fig8d-absolute-delay-slope
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 48, the main slope is +2.06 (wrong sign, p = 0.031). Only none + prev_period passes
+      (-3.12), and that combination drops the theta epochs. With counts, prev_period gives -2.36, out
+      of tolerance. The outcome rests on a period definition the paper leaves open (problem 4); it
+      asked for the per-rat sensitivity of the slopes to the reference-peak jitter, for example a
+      delay measured from a trough-centred reference.
+    response: >-
+      Outcome kept, marked as resting on the period definition. Added the per-rat table it asked for:
+      slopes of the corrected and uncorrected peak delay and of the trough delay against the
+      next-peak, previous-peak, centred and Hilbert frequencies. The trough delay and the Hilbert
+      frequency give negative slopes (the paper's direction); the asymmetry correction shares timing
+      with the next-peak period and makes the claims file's slope positive.
+  - claim: fig8-correlation-strength
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 49, 0 of 48 combinations pass. The relative-delay |r| of about 0.16 to 0.37 is far above
+      0.02, and under the main reading relative > absolute. Rests on the period definition (problem
+      4).
+    response: >-
+      Outcome kept, marked as resting on the period definition. With the Hilbert variant added, 0 of
+      64 combinations pass; with that variant the order is the paper's but the absolute delay's |r|
+      is far below 0.14.
+  - claim: fig8-coupled-oscillators
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 51, both slopes are significantly positive, so this is neither the coupled-oscillator nor
+      the fixed-delay pattern. The criterion's "otherwise" gives partial, but neither of the paper's
+      predictions holds.
+    response: >-
+      Outcome kept, marked as resting on the period definition; the notes add that with the Hilbert
+      frequency the relative delay does not change and the absolute delay falls under the main
+      reading (p = 0.094), the predicted direction.
+- date: '2026-11-11'
+  kind: agent
+  by: >-
+    Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary,
+    the helper module, the attempt record and the README, with the claims file and the paper. Report
+    in transcripts/hernandez-perez-2020/verifier-2-report.md. Its outcomes agree with the record on
+    23 of 24 claims.
+  results:
+  - claim: fig2d-phase-shift-rate
+    agrees: true
+    outcome: reproduced
+    reason: Cell 14, 12 of 12 combinations pass.
+    response: No change.
+  - claim: fig2d-linear-fit
+    agrees: true
+    outcome: reproduced
+    reason: Cell 18.
+    response: No change.
+  - claim: fig2a-all-rats
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 21, ventral lags are 16 to 40 ms with the all-channel artefact mask.
+    response: No change.
+  - claim: fig2e-phase-locking-high
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The assumption is stated and reasonable. It is fragile, the claim passes only under O3 c, and
+      only at thresholds of 200 to 400 (cells 11, 24). The `counts` unit reading remains open and only
+      the authors can resolve it; if the integer files are Intan counts, the paper's 400 µV threshold
+      leaves no epochs at all.
+    response: No change; the dependence on the unit reading and the threshold is already stated.
+  - claim: fig2e-phase-locking-decrease
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The assumption is stated. The slope is within tolerance under O3 c only at 400 (cell 11).
+    response: No change; already stated.
+  - claim: fig2c-coherence
+    agrees: true
+    outcome: reproduced
+    reason: Cell 30.
+    response: No change.
+  - claim: fig2f-coherence-decrease
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 33.
+    response: No change.
+  - claim: fig2g-power-no-change
+    agrees: true
+    outcome: reproduced
+    reason: Cell 36.
+    response: No change.
+  - claim: fig3-along-not-across-layers
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, which it confirmed against the archive.
+    response: No change.
+  - claim: fig4d-mua-phase-shift
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, which it confirmed against the archive.
+    response: No change.
+  - claim: fig4d-mua-matches-lfp
+    agrees: true
+    outcome: blocked
+    reason: Unchanged since round 1, which it confirmed against the archive.
+    response: No change.
+  - claim: fig5c-rise-decay-gradient
+    agrees: false
+    outcome: not_reproduced
+    reason: >-
+      Under the claims file's log10 it still reads it as not reproduced, since the criterion defines
+      only "reproduced" and both values are far outside tolerance (cell 39, -0.171 and -0.049). The
+      record states its disagreement correctly, and the author's reason ("effect present but
+      weaker", from the protocol) is defensible. The natural-log question has gone to a reader;
+      under ln, 5 of 12 combinations pass.
+    response: >-
+      Kept partially reproduced, as verified in round 1 by this record's reasoning, with the
+      disagreement recorded again. The reader's answer on the natural log is pending in
+      questions/hernandez-perez-2020.yaml.
+  - claim: fig5c-peak-trough-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Cell 42.
+    response: No change.
+  - claim: fig5-dorsal-sawtooth
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      Cell 45, p = 0.0625 under all three zero treatments, at the boundary.
+    response: No change.
+  - claim: fig5-ventral-rise-not-peak
+    agrees: true
+    outcome: reproduced
+    reason: Cell 48.
+    response: No change.
+  - claim: fig6b-delay-by-phase
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      Cell 51, the rising phase is longer than the peak in 4 of 6 rats.
+    response: No change.
+  - claim: fig6c-delay-phase-slope
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      The assumption is stated. Under `none` the claim would be not reproduced.
+    response: No change.
+  - claim: fig6b-hilbert-between-limits
+    agrees: true
+    outcome: reproduced
+    reason: >-
+      The assumption is stated. Under `none` the claim fails.
+    response: No change.
+  - claim: fig7-asymmetry-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      The assumption is stated. The two `none` passes (5.66, 5.69) drop the theta-epoch restriction
+      the Methods require. The cell 60 check requires T_a == 21, which is stricter than "values
+      positive"; this does not change the outcome, because 6.07 is outside tolerance in any case.
+    response: >-
+      The check now requires the median over rats to be positive, as the criterion says, in place of
+      T+ = 21. The count is unchanged (2 of 8, the two `none` combinations).
+  - claim: fig7-residual-delay
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Cell 63, 0 of 24. Cell 64, the record's notes and the Summary say that with half of Delay_Asym
+      removed the residual is 6.8 to 9.2 ms/mm, within 9.61 +/- 2.62, but the tolerance runs from
+      6.99 to 12.23 and the `none` readings give 6.80 and 6.81, outside it; the statement holds under
+      `counts` only (7.86 to 9.20). The Summary's "brings fig7-residual-delay within tolerance" needs
+      the same qualification.
+    response: >-
+      Corrected in cell 64, the record's notes and the Summary: 7.86 to 9.20 under `counts`, within
+      6.99 to 12.23, and 6.80 to 7.49 with no amplitude restriction, two of which are below it.
+  - claim: fig8c-relative-delay-flat
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Stated, with the shared-timing caveat. The Figure 8 period definition remains open; the sign
+      flips between periods, and the not_reproduced outcomes are correctly framed as not evidence
+      against the mechanism.
+    response: No change.
+  - claim: fig8d-absolute-delay-slope
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Stated, with the shared-timing caveat. The Summary and the record's Figure 8 author question say
+      that with a frequency from the Hilbert phase the absolute delay falls with frequency "as the
+      paper finds". Cell 69 shows p = 0.094 under the main reading; under `counts` only 1 of 4
+      combinations has p of at most 0.0625, and four of the five significant combinations are `none`.
+      The median slope is negative under every combination, but the test finds the fall only without
+      the theta-epoch restriction. Cells 71 and 76 state this correctly.
+    response: >-
+      The Summary and the author question now say that the median slope is negative under every
+      reading, and that the test finds the fall in one of the four `counts` readings (p = 0.094 under
+      the main reading) and in all four without the amplitude restriction.
+  - claim: fig8-correlation-strength
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      Stated, with the shared-timing caveat. Cell 73 says that under `counts` the test finds the
+      difference in no centred combination, but under r2 counts/c/b/centred gives T+ = 20, p = 0.0625,
+      which meets the criterion's level; the code's check demands T+ = 21, stricter than the
+      criterion. This does not change the outcome (0 of 64), as the absolute median is 0.005 against
+      0.14.
+    response: >-
+      Cell 73 and the record's notes now give the r2 centred combination (T+ = 20, p = 0.0625, median
+      r2 0.005). The check now requires the absolute delay's median to be the larger, as the criterion
+      says, in place of T+ = 21; the count is unchanged at 0 of 64.
+  - claim: fig8-coupled-oscillators
+    agrees: true
+    outcome: partially_reproduced
+    reason: >-
+      This is the criterion's "otherwise" case.
+    response: No change.
