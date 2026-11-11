@@ -5048,6 +5048,10 @@
     "ready": true,
     "date": "2026-10-23"
    },
+   "crcns:hc-30": {
+    "ready": true,
+    "date": "2026-11-11"
+   },
    "dandi:001262": {
     "ready": true,
     "date": "2026-10-22"
@@ -5403,6 +5407,10 @@
    "dandi:000897": {
     "ready": true,
     "date": "2026-10-23"
+   },
+   "crcns:mt-3": {
+    "ready": true,
+    "date": "2026-11-11"
    },
    "crcns:vim-2": {
     "ready": true,
@@ -10468,6 +10476,10 @@
     "ready": true,
     "date": "2026-10-23"
    },
+   "hazon-2022": {
+    "ready": true,
+    "date": "2026-11-11"
+   },
    "heeringa-2024": {
     "ready": true,
     "date": "2026-10-22"
@@ -10807,6 +10819,10 @@
    "neupane-2024": {
     "ready": true,
     "date": "2026-10-23"
+   },
+   "niknam-2019": {
+    "ready": true,
+    "date": "2026-11-11"
    },
    "nishimoto-2011-reconstructing": {
     "ready": true,
@@ -29069,6 +29085,221 @@
       "source": "Data S2 (NIHMS1997610-supplement-MMC3.xlsx, PMC11265976.1); STAR Methods, Image processing, paragraph on focal glomeruli",
       "quote": "",
       "criterion": "Added by the author (protocol, Author, step 1.4). Ants are matched by number and imaging date (Data S2 a4-1-18-2023 or a4-1-18-23 is dandiset ant4-m1-d18-y2023), trials by odor and the order of the trial numbers, and the ages must agree. Each glomerulus of each ant is placed where the dandiset's per-trial peak fold change (frames 9-14) best correlates with Data S2's over the trials Data S2 holds for it (pattern only, not amplitude). An ant, glomerulus and Data S2 set (the Figure 3C and 3D traces, named with a two-digit year, and the rest) agrees when the per-trial AUC from the dandiset (reading a, ROI radius 8 pixels) correlates with Data S2's at r >= 0.7. The link holds (reproduced) when the ants all match and at least 80% of the triples agree; partially reproduced from 50%; not reproduced below."
+     }
+    ]
+   }
+  ],
+  "crcns:hc-30": [
+   {
+    "path": "claims/hazon-2022.yaml",
+    "paper": "10.1038/s41467-022-31254-y",
+    "check": {
+     "ready": true,
+     "date": "2026-11-11"
+    },
+    "claims": [
+     {
+      "id": "data-sessions-and-neurons",
+      "statement": "The analysed data are 110 sessions from 12 mice with 27,898 neurons (151 to 497 per session, median 235), selected from 239 sessions for more than 150 neurons and 30 running trials in each direction; a subset of 73 sessions from 10 mice with at least 200 neurons is the large-data set.",
+      "source": "Results, paragraph 1; Methods, Data preprocessing for decoding mouse position",
+      "quote": "we tracked the concurrent calcium dynamics of hundreds of CA1 pyramidal neurons in 12 mice (151-497 neurons per session, median 235; a total of 27,898 neurons over 110 sessions) ... we opted to further restrict the selection of sessions to those with at least 200 neurons. We referred to the limited subset of sessions as the \u201clarge-data\u201d sessions (73 sessions from 10 mice)",
+      "criterion": "Trials as in the common method. The working sessions are those with more than 150 neurons and more than 30 valid trials in each direction (code SessManager.m line 95, strict inequalities). The large-data sessions add more than 200 neurons (code SessManager.m line 99); Methods say \"at least 200\", so both 200 or more and more than 200 are readings. Counts of 0 tolerance must match exactly under one reading; the dataset may hold only the 110 working sessions, in which case the 110 count is checked as the number of sessions meeting the rule."
+     },
+     {
+      "id": "single-cell-variability",
+      "statement": "Single-neuron responses vary strongly between visits to the same bin (response variance 0.7263 +/- 0.6117), and the single-cell signal-to-noise ratio, variance between bins over variance within bins, is 0.41 +/- 0.34, pooled over 27,898 neurons.",
+      "source": "Results, paragraph 1; Supplementary Table 1 (last column and footnote ***)",
+      "quote": "Neuronal response fluctuations were, in general, large for different visits to each spatial bin (response variance = 0.7263 + /\u2212 0.6117, variance between bins / variance within bins = single-cell signal-to-noise ratio = 0.41 + /\u2212 0.34, pooled from 27,898 neurons)",
+      "criterion": "Tolerances are 10% of the reported values, as the +/- is the spread over neurons, not an uncertainty of the mean. Tensor from the common method, 110 working sessions, 40 bin and direction classes. Response variability per neuron and class over trials; the text calls it a variance, while the code (supfigs_code/variance_per_neuron.mlx) averages the standard deviation over every session, class and neuron and reports the standard deviation of those values; both the standard deviation (code) and the variance (text) are readings. Single-cell SNR per neuron, as Supplementary Table 1 footnote *** defines it, is the variance over the track of the mean response (signal) over the mean over the track of the trial-by-trial variance; mean and standard deviation over neurons. The code that printed 0.41 was not found; the code's version of this ratio (same live script) uses a stale variable for the within-bin variance and printed 0.8782 +/- 0.9971, so it is not a reading. Readings for the pooling are the 40 classes together (code) and each direction separately, averaged. Reproduced when the two means match under one reading; partially reproduced when one does."
+     },
+     {
+      "id": "suppl-table1-place-field-properties",
+      "statement": "In these data the mean event rate is 0.33 +/- 0.24 Hz, the in-field and out-of-field rates 0.88 +/- 0.72 and 0.034 +/- 0.07 Hz, the maximum rate 1.4 +/- 0.72 Hz, the place-field width at half amplitude 37.8 +/- 48.5 cm, the trial-by-trial variability 1.2 +/- 0.66 and the spatial information 0.24 +/- 0.051 bits per event, similar to electrophysiological reports.",
+      "source": "Supplementary Table 1, row \"Our Data\"; Results, paragraph 1",
+      "quote": "",
+      "criterion": "Means over neurons of the 110 working sessions, tolerances 10% of each mean. From the supplement, trial-by-trial variability is the variance over visits per bin averaged over bins (Table 1 footnote *), spatial information follows the Table 1 footnote ** formula on the probability of an event per bin, and the place-field parameters come from a Gaussian fit to the binned rates (Supplementary Figure 3 legend). Open details, none fixed by the paper or the code read; the readings are those the text allows. Rates are counted (a) from detected events (the nonzero onsets of the dataset's trace), per second of running frames, or (b) per second of the whole session. In-field is (a) within the half-amplitude width of the fitted Gaussian or (b) above half the peak of the binned rate. Width and fits per direction or both directions together. The cells averaged are open too. Supplementary Figure 3 uses all cells for its leftmost column and cells with more than 100 events per 10 min of recording for the rest, and Supplementary Figure 2c and 2d take PF widths from cells with minimal spatial modulation (maximum rate above 20% of the standard deviation of the response on the track, N = 27,793); all cells, and these subsets for the place-field values, are readings. Reproduced when at least five of the seven values are within tolerance under one reading for each; partially reproduced for three or four."
+     },
+     {
+      "id": "fig1d-noise-correlation-by-field-distance",
+      "statement": "Noise correlations between neuron pairs depend on the distance between their place-field peaks, highest for nearby fields, and trial shuffling drastically reduces them.",
+      "source": "Figure 1d and legend; Results, paragraph 2",
+      "quote": "The shuffling procedure drastically reduced noise correlations in the shuffled data ... we found that noise correlations\u2019 dependence on PF distance was similar to previously measured values in other brain regions",
+      "criterion": "As in the code (@Cloud/Cloud.m lines 56 to 63, @Org/load_definitions.m lines 258 to 328 and 397 to 404, final_figures/f1d_noiseCorrByPeakDistance.m). Per session and per bin of each direction, the Pearson correlation over trials between every pair of neurons, from the tensor and from its trial-shuffled copy; averaged over the 20 bins of each direction. Place-field peak is the bin of the largest trial-mean response in that direction; distance is the absolute difference in bins. Mean correlation per distance per session, then mean and 95% interval (1.96 SEM) over the 110 sessions, for each direction; the legend counts 3,941,140 pairs, so the mean and 95% interval over all pairs pooled is also a reading. The code's averaging joins distances d and d+1 in one point (its avg_bins takes both ends); single distances are the main reading and the code's joined bins a variant. \"Similar to other regions\" is read, from the Introduction's limited-range correlations, as larger correlations at short distance. Reproduced when, in both directions, the unshuffled mean correlation at distance 0 exceeds that at distances of 10 bins or more, and the shuffled mean is below the unshuffled one, with non-overlapping intervals, at every distance up to 10 bins; partially reproduced when only one of the two parts holds."
+     },
+     {
+      "id": "noise-correlation-not-physical-distance",
+      "statement": "Pairwise correlations do not depend on the physical distance between the neurons in the field of view, so they are not produced by contamination from nearby cells.",
+      "source": "Results, paragraph 2",
+      "quote": "to test if the correlations were generated through contamination from nearby cells, we confirmed that pairwise correlations were independent of the physical distance of the neurons within the recording field of view",
+      "criterion": "A claim of absence, for which the paper names no test or threshold. The code (neuropil_contamination_argument.m) takes noise residuals (activity minus the class mean, over all 40 classes pooled), their Pearson correlation matrix, the Euclidean distance between cell centroids, and a linear fit of distance on correlation reported by its adjusted R squared. The test used here follows it, per session, over all pairs. The threshold is open; readings are (a) adjusted R squared below 0.05 in every session, (b) a pooled Pearson correlation across all pairs of all sessions with absolute value below 0.1. Reproduced when both hold, not reproduced when neither does, and resting on an assumption otherwise. Needs cell positions; if the dataset has none, the claim cannot be tested."
+     },
+     {
+      "id": "fig2d-rms-error-ensemble-vs-shuffled",
+      "statement": "The RMS decoding error with all neurons is 9.38 +/- 4.06 cm with noise correlations and 5.15 +/- 2.40 cm after trial shuffling (median +/- IQR over 110 sessions), so noise correlations impair position estimates.",
+      "source": "Results, paragraph 3; Figure 2d; Discussion, paragraph 8",
+      "quote": "the root mean square (RMS) error between predicted and recorded mouse positions showed that the effect of noise correlations was detrimental for position estimation across all spatial bins ... 9.38 + /\u22124.06 cm ... 5.15 + /\u22122.40 cm (median + /\u2212 IQR, n = 110 sessions)",
+      "criterion": "Tolerances are 10% of each value, as the IQR is the spread of sessions, not an uncertainty of the median. Decoder, tensor, shuffle and error as in the common method, all neurons and all equalised trials (code supfigs_code/mean_rms_all_sess.mlx, which reads the 'max' neurons and 'max' trials rows). Per session, the mean over 80 repetitions (random trial splits) of the square root of the two-fold MSE; then the median and the full IQR (code iqr) over the 110 working sessions. Reproduced when the two medians are within tolerance and the ensemble median exceeds the shuffled one; partially reproduced when the ordering holds and one median is within tolerance."
+     },
+     {
+      "id": "fig2cd-shuffle-better-in-all-bins",
+      "statement": "Decoding is less accurate with noise correlations than without in every spatial bin; misclassifications are typically one bin and reach up to three bins.",
+      "source": "Figure 2c and 2d; Supplementary Figure 5; Results, paragraph 3",
+      "quote": "The misclassification error for ensemble activity data was worse than the case of ensemble activity without noise correlations. This effect was consistent across all spatial bins (Fig. 2c & Suppl. Fig. 5 ). The misclassification errors were typical of the order of one but could reach up to three spatial bins",
+      "criterion": "Decoding as in fig2d-rms-error-ensemble-vs-shuffled, all neurons. Per session, the confusion matrix of the 40 classes over the test folds of all repetitions, and the RMS error per true bin. Fig. 2d averages per-bin RMS over 110 sessions with 95% intervals; per bin is read as (a) the 20 positions with both directions together (Fig. 2d's x axis), or (b) the 40 bin and direction classes. Reproduced when, under one reading, the session-averaged RMS error is larger for the ensemble than for the shuffled data in every bin, and in the session of Fig. 2c (animal 2022) or in the session average the correct-class fraction is higher for the shuffled data in every class (Suppl. Fig. 5 legend). Partially reproduced when that holds in all but one or two bins. The size of errors is reported (median absolute error of misclassified samples, in bins, and the largest error with at least 1% of the misclassified samples) and not judged."
+     },
+     {
+      "id": "fig2ef-imse-saturates-with-correlations",
+      "statement": "With noise correlations the decoding accuracy (IMSE) approaches a bound as ensembles grow, while without them it keeps increasing; the asymptotic IMSE (I0 N) and the saturation size N are larger for the shuffled data.",
+      "source": "Figure 2e and 2f; Results, paragraphs 4 and 5; Supplementary Figure 7c and 7d",
+      "quote": "The decoding error approached an asymptotic minimum value for ensembles with large numbers of neurons. In contrast, the error decreased without apparent bound for the shuffled data ... The asymptotic IMSE value ( I 0 N ) was significantly larger in the trial-shuffled data than in the ensemble data for all animals",
+      "criterion": "IMSE against ensemble size as in the common method (code PanelGenerator.m lines 42 and 724 to 753). Fit of IMSE(n) = I0 n/(1 + n/N) by unweighted nonlinear least squares to the mean IMSE at every size including n = 1, start point I0 = 1, N = 100, no bounds (createFit_infoSaturation.m), separately for unshuffled and shuffled data, per working session. Two-sided Wilcoxon signed-rank tests of I0 N and of N, unshuffled against shuffled (code PanelGenerator.m lines 803 to 852); the code tests either all 110 sessions (multiballnstick.m) or the 12 per-animal means (ballnstick.m), both readings. Reproduced when, under one reading, both tests give p < 0.001 with shuffled values higher, and the per-animal mean of I0 N is higher for the shuffled data in all 12 animals; partially reproduced when the tests hold but not every animal."
+     },
+     {
+      "id": "suppl7b-initial-slope-lower-with-correlations",
+      "statement": "The initial slope I0 of the IMSE curve differs significantly between unshuffled and shuffled data across all sessions, which the paper attributes to an artifactual sublinear growth of accuracy at small ensemble sizes.",
+      "source": "Supplementary Figure 7b",
+      "quote": "There was a significant difference across all sessions due to a sublinear increase in accuracy for small ensemble sizes (Wilcoxon signed-rank test, P < 0.001)",
+      "criterion": "I0 from the fits of fig2ef-imse-saturates-with-correlations, unshuffled against shuffled, two-sided Wilcoxon signed-rank test over the 110 working sessions (legend, \"across all sessions\"). The legend does not say which is lower, so the claim is the difference. Reproduced when p < 0.001; the sign and the median I0 of each are reported."
+     },
+     {
+      "id": "saturation-ensemble-size",
+      "statement": "Spatial accuracy approaches saturation (fitted slope 5% of I0) at 346 to 1402 neurons across animals, and reaches 95% of the asymptotic IMSE at 1894 to 7671 neurons.",
+      "source": "Results, paragraph 5; Methods, Determining where spatial accuracy approaches saturation",
+      "quote": "Using the geometric mean over each animal, the spatial accuracy reached 5% of its original slope at [346 - 1402] neurons. As another measure of saturation, we computed the ensemble size needed to reach 95% of the asymptotic IMSE, equivalent to 19 N . In that case, the values were [1894\u20137671] neurons",
+      "criterion": "Unshuffled N from the fits of fig2ef-imse-saturates-with-correlations. Geometric mean of N over sessions within each animal, then the range across animals, times (sqrt(20) - 1), which is the 3.47 of Methods, and times 19 (code supfigs_code/aggregated_value_of_N.mlx). Methods do not say which sessions; the code uses the 73 large-data sessions of 10 animals (reading a), and the 110 working sessions of 12 animals are reading b. Tolerance is the range widened by 10% of each bound. Reproduced when, under one reading, the two bounds of the 5% range are within tolerance (the 19 N bounds follow from them and are reported); partially reproduced when one bound is."
+     },
+     {
+      "id": "position-measurement-noise",
+      "statement": "Position tracking noise is small, 0.28 cm on average (0.12 to 1.0 cm across 110 sessions), far below the decoding errors.",
+      "source": "Methods, Estimate of position measurement noise; Results, paragraph 4",
+      "quote": "On average, the scale of the jitter was 0.28 cm, with a range of 0.12\u20131.0 cm across 110 sessions",
+      "criterion": "As Methods describe, with the details of the code (estimate_position_jitter.m). Per valid trial, the frames from the first frame in bin 7 to the last frame in bin 13 (bins in the run's own direction); frames with an even index fit a line of position (cm) on frame index, and the residuals of the odd frames are kept; trials with fewer than 4 fitting frames are skipped; residuals of all trials of a session pooled, robust scale IQR / 1.349. Mean and range over the 110 working sessions. Reproduced when the mean and both range bounds are within tolerance; partially reproduced when the mean is and every session is below 1.1 cm."
+     },
+     {
+      "id": "fig3cd-signal-and-noise-growth",
+      "statement": "The spatial signal grows linearly with ensemble size and does not change with trial shuffling, while the noise along the signal direction keeps growing linearly in the unmodified data but saturates within about 100 neurons in the shuffled data.",
+      "source": "Figure 3c and 3d; Methods, Analyzing signal and noise in the spatial code, paragraph 1",
+      "quote": "This quantity grew linearly with ensemble size and was independent of trial shuffling (Fig. 3b, c ). Similarly, we defined noise \u03c3 2 as the trial-by-trial variance of the neuronal population responses along the signal direction between two adjacent spatial bins (Fig. 3b ). The noise in the unmodified data kept increasing linearly with ensemble size, whereas in the shuffled data, it reached saturation well within the first ~100 neurons",
+      "criterion": "Signal and noise against ensemble size as in the common method, 110 working sessions, unshuffled and shuffled. \"Linear\" and \"saturated\" are judged from the linear fits at 100 neurons or more that the paper uses for slopes, as no test is named. Reproduced when, in the median session, (1) the signal slope from shuffled data is within 10% of that from unshuffled data; (2) the unshuffled noise slope is positive with the line explaining at least 90% of the variance of the subset-averaged noise values over 100 neurons; (3) the shuffled noise slope is below 10% of the unshuffled one. Partially reproduced when two of the three hold. The 10% and 90% margins are standard choices, not the paper's."
+     },
+     {
+      "id": "suppl10-asymptotic-snr-lower-with-correlations",
+      "statement": "Across all mice the asymptotic SNR (signal slope over noise slope) is lower in the unmodified data than in the shuffled data.",
+      "source": "Results, paragraph 7; Supplementary Figure 10b; Supplementary Figure 11a",
+      "quote": "Across all mice, the asymptotic SNR values were consistently lower in the unmodified data than in the shuffled data",
+      "criterion": "Asymptotic SNR per session from the slopes of fig3cd-signal-and-noise-growth, unshuffled and shuffled. Two-sided Wilcoxon signed-rank test over the 110 working sessions. Reproduced when p < 0.001 with shuffled values higher and the per-animal median higher for the shuffled data in all 12 animals; partially reproduced when the test holds but not every animal."
+     },
+     {
+      "id": "fig3f-signal-slope-beginning-vs-end",
+      "statement": "The asymptotic signal slope differs between the beginning and the end of runs, decreasing over the run as the legend states.",
+      "source": "Figure 3f legend",
+      "quote": "Signal slope decreases significantly between the beginning and end of runs ( p = 2 \u00d7 10 \u221218 , one-tailed Wilcoxon signed-rank test, n = 110 sessions)",
+      "criterion": "Per session and per adjacent bin pair, the signal slope fitted at 100 neurons or more (common method; code supfigs_code/signal_noise_analysis_by_bin.mlx, calculate_slopes_bins). The beginning is the first bin pair of rightward runs and the last of leftward runs (the start of each run), the end the opposite pairs, both directions concatenated, 2 x 110 paired values (code). Pooling both directions (code) and rightward runs only (the legend shows rightward runs) are readings. The direction of the effect is open. The legend says the slope decreases; the code's test, which printed p = 2.19e-18, is signrank(begin, end, tail left), a test that the slope is lower at the beginning, so it increases over the run. Reproduced when, under one reading, the one-tailed test in the legend's direction (beginning greater) gives p < 0.001; the test in the code's direction is reported as a variant, and an outcome that holds only in the code's direction is recorded as resting on that reading."
+     },
+     {
+      "id": "fig3g-noise-slope-decreases-over-run",
+      "statement": "The asymptotic noise slope decreases monotonically and significantly from the beginning to the end of runs.",
+      "source": "Figure 3g legend",
+      "quote": "Asymptotic noise slope displayed monotonic and significant decreases over the run ( p = 8 \u00d7 10 \u221210 , one-tailed Wilcoxon sign rank test, pooling left and right runs, n = 110 sessions)",
+      "criterion": "As in fig3f-signal-slope-beginning-vs-end, with the unshuffled noise slope, both directions pooled (legend and code), one-tailed signrank(begin, end, tail right), that is beginning greater (code printed 7.73e-10). The legend says n = 110 sessions, while Methods restrict Fig. 3g and the following figures to the 73 large-data sessions; 110 sessions is the main reading and 73 a variant. Reproduced when p < 0.001 in that direction. The median noise slope over sessions per bin pair, along the run, is reported; \"monotonic\" is not tested, as the paper gives no test for it."
+     },
+     {
+      "id": "fig3h-snr-higher-at-run-end",
+      "statement": "The asymptotic SNR (signal slope over noise slope) is significantly higher at the end of runs than at their start.",
+      "source": "Figure 3h legend; Results, paragraph 7",
+      "quote": "The asymptotic SNR (signal-slope / noise-slope) was significantly higher at the end of the run than at its initiation ( p = 2 \u00d7 10 \u221229 , one-tailed Wilcoxon sign rank test, n = 110 sessions)",
+      "criterion": "As in fig3f-signal-slope-beginning-vs-end, with the asymptotic SNR per bin pair, one-tailed signrank(begin, end, tail left), beginning lower (code printed 2.37e-29); pooled directions (code) and rightward runs only are readings. Sessions as in fig3g-noise-slope-decreases-over-run, 110 (legend) with 73 (Methods) as a variant. Reproduced when p < 0.001 in that direction under one reading."
+     },
+     {
+      "id": "fig4a-snr-along-noise-pcs-peaks-at-6",
+      "statement": "Along the eigenvectors of the noise covariance, each component's SNR contribution rises to a maximum at the sixth component, and the first six carry only a small part of the total, so spatial information is spread over many dimensions.",
+      "source": "Figure 4a and legend; Results, paragraph 8; Supplementary Figure 12",
+      "quote": "We found that each noise component\u2019s contribution to the SNR increased until it reached its maximum at the sixth largest component ... The first six components only accounted for a small proportion of the neuronal ensemble\u2019s total information",
+      "criterion": "73 large-data sessions. As in the code (@Cloud/eigen_snr_crossval.m, @Org/eigen_snr_crossval_aggregation.m). For each of the 38 adjacent bin pairs, 100 random half splits of trials; principal components of the noise covariance of the first bin on the training half (up to T/2 - 1 components); on the test half, per component, (difference of the two bins' mean projections)^2 over the mean of their projection variances. Mean over sessions per component, mean over splits, median over bin pairs. Tolerance 0 because the index is an integer and 10% of 6 is below 1; a peak at 5 or 7 is partially reproduced. The share of the first six in the sum over all computed components is reported; \"small\" is read as below one half, from the legend's \"small percentage of the area under the curve\"."
+     },
+     {
+      "id": "fig4b-correlations-increase-noise-signal-overlap",
+      "statement": "Noise correlations increase the overlap (squared cosine) between the noise principal directions and the signal direction compared with shuffled data.",
+      "source": "Figure 4b and legend; Results, paragraph 9; Supplementary Figure 15",
+      "quote": "We used the area between the two curves (gray) to quantify how noise correlations increased the overlap between the noise modes and the signal direction",
+      "criterion": "Per large-data session and bin pair, cos^2 between the unit signal direction and each noise covariance eigenvector, unshuffled and shuffled (code @Cloud/Cloud.m; Methods, Definitions, \"the overlap\"); the total overlap change is the sum over components of the unshuffled minus the shuffled cos^2 (code area_between in @Org/load_definitions.m line 90), averaged over bin pairs. Which components are summed is open. The legend and the code use all available components; Methods say up to the sixth; both are readings. The eigenvectors are those of the noise covariance matrix (Methods, legend; code Cloud.m with use_corr false, as load_from_clouds.m calls it); those of the noise correlation matrix (Supplementary Table 2, row 2) are a variant. Reproduced when, under one reading, the change is positive in the median session and in every one of the 10 animals' means; partially reproduced when positive in the median session only."
+     },
+     {
+      "id": "fig4c-overlap-predicts-asymptotic-snr",
+      "statement": "Across animals, the increase in noise and signal overlap caused by noise correlations is inversely correlated with the asymptotic SNR (r squared 0.50, p = 0.014), so the geometry of the noise predicts where information saturates.",
+      "source": "Results, paragraph 9; Figure 4c legend",
+      "quote": "We found that the average change in total overlap between noise and signal direction was inversely correlated with the asymptotic SNR slope (i.e., Fig. 3e & Suppl. Fig. 10b ) across animals (Fig. 4c , r 2 = 0.50, p = 0.014), confirming the intuition",
+      "criterion": "Overlap change per session from fig4b-correlations-increase-noise-signal-overlap, unshuffled asymptotic SNR per session from suppl10-asymptotic-snr-lower-with-correlations; both averaged within each of the 10 animals; Pearson correlation (code fig3_on_events.mlx, correlogram('cos2_area','asymp_snr'), which printed adjusted R squared 0.498, r = -0.744, p = 0.0136). The legend's \"Pearson's corr. = 0.81\" does not match r squared 0.50 and is not used. Readings are the r squared as adjusted (code) or plain, the components summed as in fig4b-correlations-increase-noise-signal-overlap, and the y variable as the unshuffled asymptotic SNR (code, Results) or the asymptotic SNR ratio (Supplementary Table 2, row 2, aggregated r = -0.74, p = 0.015). Reproduced when, under one reading, r is negative, p < 0.05 and r squared is within tolerance; partially reproduced when r is negative with p < 0.05."
+     },
+     {
+      "id": "fig5f-pf-width-variance-vs-nsv",
+      "statement": "Across animals, the broader the distribution of place-field widths, the smaller the normalized signal variance (NSV) (Pearson r = -0.65, r squared 0.36, p = 0.039).",
+      "source": "Figure 5f legend; Results, paragraph 11",
+      "quote": "f Correlation between animal\u2019s PF width and NSV. The broader the width distribution, the narrower the NSV values per animal. Pearson\u2019s corr. = \u22120.65, r 2 = 0.36, p val = 0.039",
+      "criterion": "Large-data sessions. NSV per bin pair is the variance over neurons of the squared elements of the unit signal direction (difference of the two bins' trial-mean responses, all neurons; Methods, Definition of the NSV; code @Org/load_definitions.m line 43), averaged over the 38 bin pairs per session. PF width spread per session is the variance over neurons of the half-width at half maximum of each direction's mean tuning curve, in cm (code var_fwhm_cm, load_definitions.m lines 255 and 559 to 611). Both averaged per animal; Pearson correlation (code pf_widths_nsv_correlation.mlx printed r = -0.657, p = 0.0389 on 73 sessions). Reproduced when r is within tolerance with p < 0.05; partially reproduced when r is negative with p < 0.05."
+     },
+     {
+      "id": "fig5hi-nsv-predicts-noise-correlation-effect",
+      "statement": "Across animals, the NSV correlates with the ratio of asymptotic SNR with and without noise correlations (Pearson 0.83, r squared 0.65, p = 0.003); animals with a small NSV lose more information to noise correlations.",
+      "source": "Figure 5h and 5i legends; Results, paragraph 11; Supplementary Table 2, row 1",
+      "quote": "i Correlation between the asymptotic SNR ratio (i.e., ensemble with noise correlations over ensemble shuffled) and averaged NSV (Pearson\u2019s corr. = 0.83, r 2 = 0.65, p val = 0.003)",
+      "criterion": "NSV per session as in fig5f-pf-width-variance-vs-nsv; asymptotic SNR ratio per session is unshuffled over shuffled (legend 5i; code session_properties_dataset.m lines 14 to 16). The Results sentence names the same ratio but says the smaller the NSV the larger the ratio, which fits shuffled over unshuffled, the ratio the Supplementary Table 2 header names; with a positive r 0.83 and Fig. 5h (larger effect for small NSV), unshuffled over shuffled is the main reading. Code filters (Org.m lines 206 to 209) keep sessions with values larger than their confidence interval and ratio below 7 (72 sessions; printed r = 0.831, p = 0.00287); with and without these filters are readings. Reproduced when, under one reading, the across-animal r is within tolerance with p < 0.05 and the across-session r is positive with p < 0.05; partially reproduced when one of the two holds."
+     },
+     {
+      "id": "suppl-table2-nsv-best-predictor",
+      "statement": "Of the variables tested, the NSV explains the effect of noise correlations on the asymptotic SNR best (highest adjusted R squared), and the result does not depend on the number of neurons or trials in a session.",
+      "source": "Results, paragraph 11; Supplementary Table 2; Supplementary Figure 19",
+      "quote": "NSV described the relation between noise correlation and asymptotic SNR ratio better than other variables that parametrized PF shape (see Suppl. Table 2 for comparisons with other quantities). We confirmed that our result does not depend on the number of neurons active or trials performed in a given session",
+      "criterion": "The variables of Supplementary Table 2 as its notes define them (eleven rows, though the note says ten), per session over adjacent bin pairs, against the asymptotic SNR ratio of fig5hi-nsv-predicts-noise-correlation-effect, 73 large-data sessions, excluding points whose confidence interval is larger than the value (table notes). Reproduced when the NSV has the highest adjusted R squared across sessions, and at a fixed ensemble of 200 neurons (code fixed_nsv, load_definitions.m lines 24 and 25, 100 random subsets) the NSV still correlates with the ratio at p < 0.05 across sessions. Partially reproduced when the NSV is among the two highest. The variables whose definition the table leaves unclear (the effective number of modes and the two inverse sums of fourth powers) are computed as their formulas read; if one cannot be computed it is left out and reported."
+     },
+     {
+      "id": "pf-width-variance-not-predictive",
+      "statement": "The variance of place-field widths or amplitudes does not directly correlate with the effect of noise correlations on information saturation.",
+      "source": "Results, paragraph 11; Supplementary Table 2, row \"Var(PF's halfwidths)\"",
+      "quote": "We did not find a direct correlation between the variance of PF amplitudes or widths with the effect of noise correlations on information saturation",
+      "criterion": "A claim of absence, judged on the paper's test, the Pearson correlation of Supplementary Table 2 (73 large-data sessions, and aggregated per animal) between the variance over neurons of PF half-widths and the asymptotic SNR ratio, at p < 0.05. Reproduced when neither the session-level nor the animal-level test reaches p < 0.05; not reproduced when either does. The same test on the variance of PF amplitudes (peak of the trial-mean tuning curve) is shown, as the text names it but the table does not."
+     },
+     {
+      "id": "suppl11b-i0-vs-single-cell-snr",
+      "statement": "Across mice, the initial slope I0 of the IMSE curve correlates with the average single-cell SNR (r squared 0.73, p < 0.01).",
+      "source": "Supplementary Figure 11b; Methods, Analyzing signal and noise in the spatial code, paragraph 4",
+      "quote": "The linear slope coefficients, I0, from the IMSE of decoding, were strongly correlated with the SNR computed across each neuron individually ... The variables were directly correlated across mice (r2=0.73, p < 0.01)",
+      "criterion": "Unshuffled I0 from fig2ef-imse-saturates-with-correlations; single-cell SNR per neuron as Methods define it here, the median over adjacent bin pairs of the squared mean difference divided by the median over bin pairs of the pooled variance, averaged over neurons (main reading). The code (DecodeTensor.single_cell_d_primes2, lines 2298 to 2316) takes the ratio per bin pair and averages it over bin pairs (its comment says it used to be the median); the mean and the median of the per-pair ratio are variants. Per-mouse averages over the large-data sessions; Pearson correlation. Reproduced when r is positive, p < 0.01 and r squared within tolerance; partially reproduced when r is positive with p < 0.05."
+     },
+     {
+      "id": "suppl11c-asymptotic-imse-vs-asymptotic-snr",
+      "statement": "Across mice, the fitted asymptotic IMSE (I0 N) correlates with the asymptotic SNR (r squared 0.88).",
+      "source": "Supplementary Figure 11c",
+      "quote": "The fitted asymptotic IMSE of the decoders (as in Fig. 2f), I0N, correlated with the asymptotic SNR values ... The variables were directly correlated across mice (r2=0.88, p < 4\u30fb10-5)",
+      "criterion": "Unshuffled I0 N from fig2ef-imse-saturates-with-correlations and unshuffled asymptotic SNR from suppl10-asymptotic-snr-lower-with-correlations, large-data sessions, averaged per mouse, Pearson correlation; values on linear and on log scales (Suppl. Fig. 11a uses a log scale) are readings. Reproduced when r is positive, p < 0.001 and r squared is within tolerance under one reading; partially reproduced when r is positive with p < 0.05."
+     },
+     {
+      "id": "suppl8-task-performance-and-accuracy",
+      "statement": "Task performance correlates with the number of trials (r 0.85) and with asymptotic decoding accuracy (r 0.52); the number of trials correlates weakly with accuracy (r 0.34), and a path analysis shows performance predicts accuracy while trial number does not.",
+      "source": "Supplementary Figure 8a to 8d; Methods, Path analysis",
+      "quote": "Performance, computed as the ratio of correct over total trials, correlated with the number of trials done by an animal on a given session, using n = 73 sessions (r2 = 0.71, Pearson-corr = 0.85, pval = 4x10-21)",
+      "criterion": "73 large-data sessions, one value per session. Performance is correct over total runs, where a run is incorrect when slow (below 4 cm/s) or turning back before 5.9 cm from the end (code error_trial_counter.m); number of trials is the total of both directions (code @Org/load_from_clouds.m line 27). Asymptotic accuracy is the unshuffled I0 N of fig2ef-imse-saturates-with-correlations; the code (supfigs_code/sf6_events.mlx) uses log10(I0 N) and printed r = 0.843, 0.402 and 0.559, close to but not equal to the legend, so log10 and linear I0 N are readings. Path analysis as Methods say, a linear model of log asymptotic IMSE on trials and performance (fitlm). Reproduced when, under one reading, the three r values are within tolerance with p < 0.05 and in the path model performance has p < 0.05 and trials p > 0.05; partially reproduced when the signs and significance hold but some r is outside tolerance."
+     },
+     {
+      "id": "suppl6-twenty-bins-near-optimal",
+      "statement": "Twenty spatial bins give close to the smallest decoding error relative to the continuous position (11.75 cm, 95% CI 10.33 to 13.18 cm), similar to 30 bins (11.53 cm).",
+      "source": "Supplementary Figure 6; Methods, Analysis of behavioral data",
+      "quote": "For 20 bins, the RMS error across sessions was 11.75 cm with a 95% CI of [10.33 - 13.18 cm] based on the SEM. For 30 bins, the RMS error was 11.53 cm with a 95% CI of [10.08 - 12.98 cm]",
+      "criterion": "Tolerances are the half-widths of the paper's 95% intervals. Decoder of the common method with all neurons, unshuffled, the number of bins varied, 80 train and test divisions per session; error relative to the continuous position (legend), RMS per session, mean and 1.96 SEM over the 110 sessions. The bin numbers compared and the point of the bin taken as the prediction are open; readings are the bin centre (main) and the mean position of the training samples in the bin. Reproduced when both means are within tolerance and no number of bins tested has a mean RMS more than one SEM below that of 20 bins; the one-SEM margin for \"close to the smallest\" is a standard choice, not the paper's."
+     },
+     {
+      "id": "fig5cd-synthetic-narrow-widths-broader-nsv",
+      "statement": "In synthetic Gaussian place-field populations, a narrow distribution of field widths gives a broader distribution of PF slopes, a higher NSV, than a broad width distribution, up to ten thousand neurons.",
+      "source": "Figure 5a to 5d and legend; Results, paragraph 11; Supplementary Figures 16 and 17",
+      "quote": "Although counterintuitive, the narrower the distribution of PF widths, the broader the distribution of PF slope, quantified by the NSV (Fig. 5c, d )",
+      "criterion": "Synthetic populations of 50 Gaussian place fields with centres uniform over 20 bins, 1000 simulations per width distribution, NSV per adjacent bin pair. The width distribution is open, as the paper gives two. The legend (and Supplementary Figure 16) says uniform half-widths of 0.2 to 1.42 bins (narrow) and 0.8 to 2.0 (broad); Methods say log-normal half-widths with log mean 0 and log variance 0.3 (narrow) and 2 (broad). Both are readings. Amplitudes are open (all 1 is the standard choice). Reproduced when, under both readings, the median NSV over simulations and bins is higher for the narrow distribution, and at 10,000 neurons the mean NSV is still higher for it (Suppl. Fig. 17); resting on an assumption when only one reading gives it."
+     },
+     {
+      "id": "suppl9-fit-recovers-saturation",
+      "statement": "On simulated place cells with information-limiting input noise, the IMSE fit gives consistent saturation estimates N from ensembles of 500 and 2000 neurons.",
+      "source": "Supplementary Figure 9; Results, paragraph 5",
+      "quote": "We validated our method for finding the saturation point; we created artificial data and compared the procedure with populations of 500 and 2000 neurons and found no significant difference in the saturation parameter estimates N",
+      "criterion": "Model from the Supplementary Figure 9 legend. Gaussian place fields with FWHM 30 cm, centres uniform on the track, peak rate 0.05 (per frame), inhomogeneous Poisson firing driven by a 30-minute trajectory corrupted with Gaussian noise of 10 cm SD, decoded on the true position with a Poisson naive Bayes decoder, 16 random subsets and splits per size, IMSE fit as in fig2ef-imse-saturates-with-correlations. The trajectory model, binning and time bin are open; the standard choice is the 20 bins of the main analysis, frames at 20 Hz and back-and-forth runs at constant speed. A claim of absence judged as the legend shows it, by the 95% intervals. It is reproduced when the two fitted N have overlapping 95% intervals, and not reproduced when they do not."
      }
     ]
    }
@@ -49780,6 +50011,256 @@
       "source": "Results, The behaviour of the monkeys, paragraph 3; Extended Data Fig. 5e-g",
       "quote": "we found a significantly tighter clustering of the relative phase distribution of cell\u2013cell cross-correlation in our data, which differs from what is predicted for GCs in rodents",
       "criterion": "Extended Data Fig. 5e-g legend. Per pair of simultaneously recorded periodic neurons (fig3e-xcorr-conserved-iti selection), the lag of the peak of the mean cross-correlation in the navigation epoch, and the same for pairs of model units (fig4d-model-subscalar-variability, landmark model). The paper names no test and no measure of clustering; both are open. Readings, spread taken as the SD of the peak lags or as their interquartile range, each compared between monkey and model pairs by a two-sample test of spread (Levene test, a standard choice). Reproduced when, in both monkeys, the spread is smaller than the model's at p < 0.05 under every reading; partially reproduced in one monkey. The outcome rests on choices the paper does not make, which is recorded as a deviation."
+     }
+    ]
+   }
+  ],
+  "crcns:mt-3": [
+   {
+    "path": "claims/niknam-2019.yaml",
+    "paper": "10.1371/journal.pcbi.1007275",
+    "check": {
+     "ready": true,
+     "date": "2026-11-11"
+    },
+    "claims": [
+     {
+      "id": "probe-locations-link",
+      "statement": "The RF, FF and ST probe of each neuron listed in the code repository's main_lists.mat correspond to the dataset's neurons, and the RF probe recomputed from the dataset by the Methods' definition matches the listed one.",
+      "source": "Methods, Receptive field, future field, and saccade target location estimation; code lib/models/fmodel.m (get_centers) at commit 1438dde",
+      "quote": "",
+      "criterion": "Neurons are matched by session and channel (file name, and probe_list columns 1 and 2, as fmodel.m reads them). The link holds (reproduced) when all 41 analysed neurons are listed and, for at least 37 of them (90%), the probe with the highest mean spike count 50-75 ms after onset of probes shown -500 to -100 ms from saccade (D1, onset reading O2 i) is the listed RF probe or one of its eight neighbours; partially reproduced for 29 to 36; not reproduced below 29. For each neuron the FF minus RF offset is reported, with its sign taken as the saccade direction, against the paper's 27 leftward and 14 rightward neurons."
+     },
+     {
+      "id": "methods-neuron-counts",
+      "statement": "Of 49 well-isolated MT neurons, 41 responded to the probes and were analysed; they come from 11 sessions, 27 neurons from 9 sessions with leftward saccades and 14 from 2 sessions with rightward saccades.",
+      "source": "Methods, Experimental paradigm and data acquisition, paragraph 1",
+      "quote": "In total, data were recorded from 41 MT neurons during 11 recording sessions. In 9 recording sessions, the saccades were made to the left (27 of 41 neurons), and in 2 recording sessions, the saccades were made to the right (14 of 41 neurons).",
+      "criterion": "Counts are exact, so no tolerance. Sessions are the first 8 digits of the file name (dataset description). Saccade direction is not a variable of the dataset; it is read as the sign of the horizontal FF minus RF offset from probe_list (O3 a), with the grid's orientation taken from the code's ind2sub([9,9]) indexing. Reproduced when all four counts match."
+     },
+     {
+      "id": "fig1b-saccadic-suppression",
+      "statement": "Eight neurons show significant saccadic suppression; for them the average normalized response to an RF probe drops from 2.53 to 1.51 when the probe appears just before the saccade.",
+      "source": "Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1B",
+      "quote": "For the subpopulation of neurons with significant saccadic suppression (see Methods ), the average normalized response dropped from 2.53 \u00b1 0.37 to 1.51 \u00b1 0.29 (mean \u00b1 SE).",
+      "criterion": "Neurons classified by D2 (suppression) with RF from O3 a. The count is taken under each pairing of O1 (a, b, c) and each presentation reading of O2 (i main, ii variant). The normalized values follow D3 and O4 (a main, b variant), on the neurons the same reading selects. Tolerances are the paper's SE for the normalized values and 10% for the count. Reproduced when, under one reading of O1 with O2 i, the count and both values are within tolerance and the perisaccadic value is below the fixation value; partially reproduced when the direction and one of the three numbers hold."
+     },
+     {
+      "id": "fig1c-ff-remapping",
+      "statement": "Twenty-three neurons show significant FF-remapping; for them the average normalized response to an FF probe rises from 0.90 during fixation to 1.30 just before the saccade.",
+      "source": "Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1C",
+      "quote": "For the subpopulation of neurons with significant FF-remapping, the average normalized response to FF stimuli increased from 0.90 \u00b1 0.03 to 1.30 \u00b1 0.08 (mean \u00b1 SE).",
+      "criterion": "As fig1b-saccadic-suppression, with the FF-remapping test of D2 (FF probe, -50 to 0 ms, late window 80-150 ms) and O4 on the late window. Reproduced when, under one reading of O1 with O2 i, the count and both values are within tolerance with the perisaccadic value above the fixation value; partially reproduced when the direction and one of the three numbers hold."
+     },
+     {
+      "id": "fig1d-st-remapping",
+      "statement": "Thirty-seven neurons show significant ST-remapping; for them the average normalized late response to a probe near the saccade target rises from 0.83 during fixation to 1.35 just before the saccade.",
+      "source": "Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1D",
+      "quote": "For the subpopulation of neurons with significant ST-remapping, the average normalized ST response increased from 0.83 \u00b1 0.03 to 1.35 \u00b1 0.06 (mean \u00b1 SE).",
+      "criterion": "As fig1c-ff-remapping, with the ST probe. The ST probe is itself chosen by D1 as the probe with the largest perisaccadic late increase, so the test is on the probe that selection picked; this is the paper's procedure. Same rule for reproduced and partially reproduced."
+     },
+     {
+      "id": "fig1e-ff-and-st-remapping",
+      "statement": "Twenty-two neurons show both FF- and ST-remapping; for them the normalized FF response rises from 0.90 to 1.32 and the normalized ST response from 0.80 to 1.46.",
+      "source": "Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1E",
+      "quote": "For the subpopulation of neurons with significant FF- and ST-remapping, the average normalized FF response increased from 0.90 \u00b1 0.03 to 1.32 \u00b1 0.08 (mean \u00b1 SE), and the average normalized ST response increased from 0.80 \u00b1 0.03 to 1.46 \u00b1 0.08 (mean \u00b1 SE).",
+      "criterion": "The neurons significant in both fig1c-ff-remapping and fig1d-st-remapping under the same reading. Reproduced when, under one reading of O1 with O2 i, the count and all four values are within tolerance with both increases; partially reproduced when both increases hold and at least two of the five numbers are within tolerance."
+     },
+     {
+      "id": "fig1-remapping-longer-latency",
+      "statement": "Perisaccadic FF and ST responses come at a longer latency (80-150 ms after the probe) than RF responses (50-75 ms).",
+      "source": "Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1C and 1D",
+      "quote": "Note that the perisaccadic FF response occurs at longer latency than RF responses (neurons responding 50\u201375 ms after stimulus onset for the RF, vs. 80\u2013150 ms after stimulus onset for the FF).",
+      "criterion": "The paper states this from the plotted responses of Fig 1, which cannot be read here; no measure is named. Measure fixed from D3, the plotted quantity. For each subpopulation, the neuron-averaged normalized response 0-150 ms after onset, smoothed with a Gaussian of FWHM 13 ms (D3): the latency of the peak of the fixation RF response over all 41 neurons, and of the perisaccadic FF response (FF-remapping neurons) and ST response (ST-remapping neurons). Reproduced when the RF peak lies within 50-75 ms and both remapped peaks within 80-150 ms; partially reproduced when the remapped peaks are later than the RF peak but one lies outside its stated range."
+     },
+     {
+      "id": "fig1-example-neurons",
+      "statement": "In example neurons the RF response falls from 60.89 to 40.49 spk/s before the saccade; the late FF response rises from 7.90 to 18.42 spk/s; the late ST response rises from 23.80 to 64.64 spk/s; and in a neuron with both effects FF rises from 15.83 to 39.10 and ST from 16.15 to 36.17 spk/s, each with p < 0.001.",
+      "source": "Results, Saccades modulate the responses of MT neurons, paragraph 1; Figure 1B to 1E, left panels",
+      "quote": "For the example neuron, the average response to an RF stimulus dropped from 60.89 \u00b1 2.82 (mean \u00b1 SE) spk/s during fixation to 40.49 \u00b1 12.64 (mean \u00b1 SE) spk/s when the stimulus appeared just prior to saccade onset (example neuron, p < 0.001).",
+      "criterion": "The paper does not identify the example neurons. Rates are mean spike counts per second over the effect's window (50-75 ms for RF, 80-150 ms \"late\" for FF and ST) after presentations in the windows of D2, SE across presentations, presentations by O2 (i main, ii variant). The other quotes of the paragraph give the FF, ST and both-effects values. For each of the four examples, every neuron among the 41 is searched. Reproduced when, for each example, at least one neuron has both values within tolerance and a significant change by D2 under one reading of O1; partially reproduced when this holds for two or three of the four examples. The matching neurons are named."
+     },
+     {
+      "id": "fig3-example-trial-predictions",
+      "statement": "In example test trials of three neurons the S- and F-models follow the recorded firing rate, with Delta LL per spike up to 1.12 bits/spk for the S-model and 0.81 for the F-model in the best trials, and 0.19 to 0.46 (S) and 0.05 to 0.41 (F) in median trials.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 1; Figure 3",
+      "quote": "The trials on the left show examples of high prediction accuracy (from top to bottom, \u0394 LL / spk = 1.12, 0.80, and 0.63 bits/spk for the S-model; and \u0394 LL / spk = 0.81, 0.47, and 0.55 bits/spk for the F-model)",
+      "criterion": "Illustrative. The paper does not identify the neurons or trials, and the test split is random (load_trials.m), so the values cannot be matched. Not judged on its own; the claims on Fig 5A test prediction accuracy over the population. The author reports, for each neuron, the best and median per-trial Delta LL per spike (D5) over its test trials for the S- and F-models, for comparison only."
+     },
+     {
+      "id": "fig5a-n-model-no-perisaccadic-gain",
+      "statement": "The N-model predicts perisaccadic spikes no better than fixation spikes (0.13 against 0.12 bits/spk, p = 0.26).",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 3; Figure 5A",
+      "quote": "The N-model is no better at predicting the spike times during the perisaccadic period compared to the fixation period (\u0394 LL / spk = 0.12 \u00b1 0.02 (mean \u00b1 SE) bits/spk during fixation vs. 0.13 \u00b1 0.02 (mean \u00b1 SE) bits/spk during saccade, p-value = 0.26).",
+      "criterion": "Needs the N-model (O8). Delta LL per spike by D5 with NULL model O5 (a main; b, c variants), on test trials, per neuron. A claim of absence, judged on the paper's test, a Wilcoxon signed-rank test over 41 neurons at p < 0.05 (Results paragraph 3, \"In all comparisons\"): reproduced when it does not find perisaccadic above fixation, not reproduced when it does. The paper does not say whether the test is one- or two-sided; two-sided is used as the standard choice and the one-sided p (perisaccadic above fixation) is shown. The means and the effect size are reported either way."
+     },
+     {
+      "id": "fig5a-s-model-perisaccadic-better",
+      "statement": "The S-model predicts perisaccadic spikes better than fixation spikes (0.30 against 0.24 bits/spk, p < 0.001).",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 3; Figure 5A",
+      "quote": "For the S-model, the prediction accuracy increases in the perisaccadic period (\u0394 LL / spk = 0.24 \u00b1 0.02 (mean \u00b1 SE) bits/spk during fixation vs. 0.30 \u00b1 0.02 (mean \u00b1 SE) bits/spk during saccade, p-value < 0.001).",
+      "criterion": "One S-model per neuron fitted by D4 (code settings as listed in the opening comment), evaluated on its withheld test trials with true spike history (Methods, Model evaluation), D5 with NULL model O5 (a main; b, c variants). Reproduced when, under one reading of O5, both means are within tolerance and a Wilcoxon signed-rank test over the 41 neurons gives perisaccadic above fixation at p < 0.05; partially reproduced when the test holds but a mean is outside tolerance. Because the split and parameter selection are random, the author reports the spread over at least three random splits if run time allows."
+     },
+     {
+      "id": "fig5a-f-model-perisaccadic-better",
+      "statement": "The F-model also predicts perisaccadic spikes better than fixation spikes (0.18 against 0.14 bits/spk, p = 0.003).",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 3; Figure 5A",
+      "quote": "The F-model, despite being based on an approximation of the S-model, also shows greater prediction accuracy during the perisaccadic period compared to fixation (\u0394 LL / spk = 0.14 \u00b1 0.01 (mean \u00b1 SE) bits/spk during fixation vs. 0.18 \u00b1 0.02 (mean \u00b1 SE) bits/spk during saccade, p-value = 0.003).",
+      "criterion": "The F-model of D4 built from the same S-model fit (centres from O3 a, as fmodel.m), with the S-model's post-spike and offset kernels (Results, Fig 4 paragraph), on the same test trials. Same rule as fig5a-s-model-perisaccadic-better."
+     },
+     {
+      "id": "fig5a-s-f-beat-n-model",
+      "statement": "Both the S- and F-models outperform the N-model in the fixation and perisaccadic periods.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 3; Figure 5A",
+      "quote": "Both the S-, and F-models outperform the N-model during both the fixation (S-model vs. N-model: p-value < 0.001; F-model vs. N-model: p-value = 0.001) and perisaccadic (S-model vs. N-model: p-value < 0.001; F-model vs. N-model: p-value < 0.001) periods.",
+      "criterion": "Needs the N-model (O8). Per-neuron Delta LL per spike of these claims, compared by a Wilcoxon signed-rank test over 41 neurons. Reproduced when all four comparisons show the S- or F-model higher at p < 0.05; partially reproduced for two or three."
+     },
+     {
+      "id": "fig5b-st-remapping-better-than-n",
+      "statement": "The S-, F- and A-models all reproduce which neurons show ST-remapping significantly better than the N-model.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 4; Figure 5B",
+      "quote": "The S-, F-, and A-models all significantly outperform the N-model in terms of reproducing the ST-remapping effect (S-model vs. N-model: p = 0.004, F-model vs. N-model: p = 0.006, and F-model vs. N-model: p = 0.006).",
+      "criterion": "Needs the N-model (O8). Per neuron, the recorded classification of D2 (all trials, O1 and O2 readings as in fig1d-st-remapping) against the model classification of D6 (sequences O6 a main, b variant), each model fitted as D4. A model is correct for a neuron when the two agree (Methods, Dichotomous analysis). The one-tailed mid-P McNemar test on the discordant neurons between each model and the N-model (ref [49]; the standard mid-P binomial form). The text prints \"F-model vs. N-model\" twice; the third value is read as the A-model, the only model the sentence names that it otherwise lacks. Reproduced when all three models beat the N-model at p < 0.05; partially reproduced for one or two. The four measures of Fig 5B (sensitivity, accuracy, the geometric mean of sensitivity and precision, F-measure with alpha 1/2) are reported for each model."
+     },
+     {
+      "id": "fig5b-ff-remapping-a-model-only",
+      "statement": "For FF-remapping only the A-model reproduces the classification of neurons significantly better than the N-model; the S- and F-models do not.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 4; Figure 5B",
+      "quote": "For the FF-remapping effect, the A-model significantly outperforms the N-model (p = 0.048); the S- and F- models did not significantly outperform the N-model (S-model vs. N-model: p = 0.17, and F-model vs. N-model: p = 0.08).",
+      "criterion": "As fig5b-st-remapping-better-than-n, for FF-remapping. The S- and F-model parts are claims of absence judged on the same test at p < 0.05. Reproduced when the A-model beats the N-model at p < 0.05 and the S- and F-models do not; partially reproduced when two of the three outcomes match."
+     },
+     {
+      "id": "fig5b-suppression-no-difference",
+      "statement": "No model differs significantly from the N-model in reproducing saccadic suppression, suggesting that a global gain change suffices for it.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 4; Figure 5B",
+      "quote": "Finally, we did not find any significant difference between the S-, F-, and A-models and N-model in terms of reproducing the saccadic suppression effect",
+      "criterion": "A claim of absence on the paper's test, the one-tailed mid-P McNemar test at p < 0.05, as fig5b-st-remapping-better-than-n for saccadic suppression. Reproduced when none of the three models beats the N-model; not reproduced when any does. The p-values and the discordant counts are reported either way."
+     },
+     {
+      "id": "fig5c-f-higher-ratio-than-s",
+      "statement": "The F-model has a higher perisaccadic to fixation performance ratio than the S-model (median 1.51 against 1.33, p = 0.003), so it better reproduces perisaccadic changes specifically.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 5",
+      "quote": "The S-model has a lower perisaccadic to fixation ratio compared to the F-model (1.33 \u00b1 0.99 (median \u00b1 SE) for the S-model vs. 1.51 \u00b1 0.25 (median \u00b1 SE) for the F-model, Wilcoxon signed\u2010rank p\u2010value = 0.003)",
+      "criterion": "Per neuron, the ratio of perisaccadic to fixation Delta LL per spike (D5, O5 a main) over the test trials with a probe at the RF, FF or ST location during -50 to 0 ms from saccade (Methods, The perisaccadic to fixation performance ratio analysis, paragraph 1). The SE of a median is not defined in the paper; it is not used beyond the tolerance. Reproduced when both medians are within tolerance and a two-sided Wilcoxon signed-rank test on the per-neuron ratios gives F above S at p < 0.05; partially reproduced when the test holds but a median is outside tolerance. The paper does not state the sidedness; two-sided is a standard choice and the one-sided p is shown. How a neuron with a fixation Delta LL per spike at or below zero enters the ratio is not stated; such neurons are counted and the test is shown with and without them."
+     },
+     {
+      "id": "fig5c-source-contributions",
+      "statement": "The F-model's perisaccadic to fixation ratio (1.35) falls to 0.28 without any source; adding the FF source alone restores most of it (0.95), more than RF (0.53) or ST (0.48), and removing FF lowers it most (0.72, against 1.20 without RF and 1.27 without ST).",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 5; Figure 5C, top; S6 Fig",
+      "quote": "The F-model which incorporates all three sources has the highest perisaccadic to fixation performance ratio (1.35 \u00b1 0.09), and eliminating any individual source decreases the perisaccadic to fixation performance ratio (-RF: 1.20 \u00b1 0.11, -FF: 0.72 \u00b1 0.08, -ST: 1.27 \u00b1 0.11).",
+      "criterion": "Partial F-models by nulling Gaussians as O7 (a main, b variant). For each model, the slope of a zero-intercept robust regression of perisaccadic on fixation Delta LL per spike over the 41 neurons (MATLAB fitlm, RobustOpts 'fair', S6 Fig legend; an equivalent iteratively reweighted least-squares fit with the fair weight and its default tuning constant 1.4 is acceptable), with the trials of fig5c-f-higher-ratio-than-s; tolerances are the paper's slope SE. Reproduced when, under one reading of O7, the ordering holds (no-source lowest, F-model highest, +FF the highest single source, -FF the lowest single-source removal) and at least six of the eight slopes are within tolerance; partially reproduced when the ordering holds with fewer values in tolerance."
+     },
+     {
+      "id": "fig5c-percent-changes",
+      "statement": "Adding the RF, FF or ST source raises the ratio by 23.38%, 62.65% and 18.89% of the F-model's total gain over the no-source model, and removing them lowers it by 14.79%, 59.38% and 7.87%.",
+      "source": "Results, The time-varying encoding models accurately predict single trial spike response modulations across saccades, paragraph 5; Figure 5C, bottom",
+      "quote": "As seen, adding the RF, FF, or ST source improves the perisaccadic to fixation ratio by 23.38%, 62.65%, and 18.89%, respectively, and eliminating the RF, FF, or ST source decreases the ratio by 14.79%, 59.38%, and 7.87%, respectively.",
+      "criterion": "From the slopes of fig5c-source-contributions, by the formulas of Methods, The perisaccadic to fixation performance ratio analysis, paragraph 4 (increase = (+X minus no-source) over (F minus no-source); decrease = (-X minus F) over (no-source minus F)), tolerance 10%. Reproduced when FF has the largest increase and the largest decrease and at least four of the six values are within tolerance; partially reproduced when the FF ordering holds with fewer."
+     },
+     {
+      "id": "fig6a-model-saccadic-suppression",
+      "statement": "The model reproduces saccadic suppression in 7 of the 8 suppressed neurons; for them the recorded normalized early response drops from 2.48 to 1.38 and the predicted one from 1.59 to 1.06.",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 2; Figure 6A",
+      "quote": "For this subpopulation, the average normalized response over the early response window dropped from 2.48 \u00b1 0.42 to 1.38 \u00b1 0.30 (mean \u00b1 SE), and the average predicted firing rate over the same response window decreased from 1.59 \u00b1 0.16 to 1.06 \u00b1 0.09 (mean \u00b1 SE).",
+      "criterion": "A-model per neuron (D4; ten fits on 65% subsets, Gaussian parameters averaged; the code's kernel average as a variant). Model classification by D6 (O6 a main, b variant), recorded classification by D2 under the reading that reproduced fig1b-saccadic-suppression. Recorded values by D3 and O4 a (early window); predicted values normalized the same way on predicted rates (Methods, Statistical analysis of model predictions, paragraph 2). Reproduced when the count and at least three of the four values are within tolerance, with decreases in both recorded and predicted values; partially reproduced when both decreases hold and the count is at least half of the recorded suppressed neurons."
+     },
+     {
+      "id": "fig6b-model-ff-remapping",
+      "statement": "The model reproduces FF-remapping in 20 of the 23 remapping neurons; for them the recorded normalized late FF response rises from 0.89 to 1.36 and the predicted one from 0.93 to 1.19.",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 2; Figure 6B",
+      "quote": "For this subpopulation, the average normalized response over the late response window increased from 0.89 \u00b1 0.03 to 1.36 \u00b1 0.08 (mean \u00b1 SE), and the average normalized predicted firing rate over the same response window increased from 0.93 \u00b1 0.02 to 1.19 \u00b1 0.04 (mean \u00b1 SE).",
+      "criterion": "As fig6a-model-saccadic-suppression, for FF-remapping with the late window. Same rule, with increases in place of decreases."
+     },
+     {
+      "id": "fig6c-model-st-remapping",
+      "statement": "The model reproduces ST-remapping in 24 of the 37 remapping neurons; for them the recorded normalized late ST response rises from 0.79 to 1.48 and the predicted one from 0.92 to 1.19.",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 2; Figure 6C",
+      "quote": "For this subpopulation, the average normalized response over the late response window increased from 0.79 \u00b1 0.03 to 1.48 \u00b1 0.07 (mean \u00b1 SE), and the average normalized predicted firing rate over the same response window increased from 0.92 \u00b1 0.02 to 1.19 \u00b1 0.04 (mean \u00b1 SE).",
+      "criterion": "As fig6b-model-ff-remapping, for the ST probe. Same rule."
+     },
+     {
+      "id": "fig6d-model-ff-and-st-remapping",
+      "statement": "The model reproduces both remapping effects in 17 of the 22 neurons that show both; for them recorded FF and ST responses rise from 0.88 to 1.43 and 0.78 to 1.56, and predicted ones from 0.92 to 1.22 and 0.91 to 1.23.",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 2; Figure 6D",
+      "quote": "For this subpopulation, the average normalized response to FF and ST stimuli over the late response window increased from 0.88 \u00b1 0.03 to 1.43 \u00b1 0.09 (mean \u00b1 SE) and from 0.78 \u00b1 0.04 to 1.56 \u00b1 0.09 (mean \u00b1 SE) respectively, and the average predicted firing rate in response to FF and ST stimuli over the same response window increased from 0.92 \u00b1 0.02 to 1.22 \u00b1 0.05 (mean \u00b1 SE) and from 0.91 \u00b1 0.02 to 1.23 \u00b1 0.06 (mean \u00b1 SE) respectively.",
+      "criterion": "Neurons with both effects in both the response and the model, by the readings of fig6b-model-ff-remapping and fig6c-model-st-remapping. Reproduced when the count and at least six of the eight values are within tolerance, with all four increases; partially reproduced when all increases hold with fewer values in tolerance."
+     },
+     {
+      "id": "fig6-example-neuron-predictions",
+      "statement": "For the example neurons of Fig 1 the model-predicted rates show the same effects; the early RF rate falls from 22.69 to 15.72 spk/s, the late FF rate rises from 8.01 to 11.64, the late ST rate from 24.53 to 47.24, and in the neuron with both effects FF from 17.39 to 32.12 and ST from 15.85 to 33.11 spk/s.",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 2; Figure 6A to 6D, top panels",
+      "quote": "For this neuron, the average model-predicted firing rate over the early response window (50\u201375 ms after stimulus onset) in response to an RF stimulus dropped from 22.69 \u00b1 0.78 (mean \u00b1 SE) spk/s during fixation to 15.72 \u00b1 1.72 (mean \u00b1 SE) spk/s when the stimulus appeared just prior to saccade onset (example neuron, p < 0.001).",
+      "criterion": "On the neurons fig1-example-neurons matched, the A-model's predicted rates (D6, O6 a main), SE across presentations. The paper's SE for model predictions depends on its random sequences and fits; the direction and a significant one-sided rank-sum test are the main test. Reproduced when, for each matched example, the change has the paper's direction with p < 0.05 and at least one of its two values is within tolerance; partially reproduced when the direction and the test hold for all examples but values do not; not testable when fig1-example-neurons matched no neuron."
+     },
+     {
+      "id": "fig7-prevalence-maps-correlate",
+      "statement": "The model-predicted maps of how many neurons show each effect, over time from saccade and from stimulus onset, correlate with the recorded maps (r = 0.65 for suppression, 0.60 for FF-remapping, 0.62 for ST-remapping, each p < 0.001).",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 3; Figure 7",
+      "quote": "Strong correlations between the experimental and model-predicted values confirmed the model ability to replicate the timing and frequency of occurrence of effects across the population (saccadic suppression, r = 0.65, p < 0.001; FF-remapping, r = 0.60, p < 0.001; and ST-remapping = 0.62, p < 0.001; Pearson product-moment correlation).",
+      "criterion": "Methods, Prevalence of the perisaccadic effects. For each neuron with the effect in both response and model (from the fig6 claims), and each time t from saccade and latency tau, m(t, tau) is 1 when rates at latency tau after probes at the effect's location shown at t differ from rates at tau after the same probe shown -500 to -100 ms, in the effect's direction, by a one-sided Wilcoxon rank-sum test at p < 0.05 (the indicator equation is lost; this is the reading of its text), else 0; the map is the percentage of neurons with 1. Recorded rates are spike trains smoothed with a Gaussian of FWHM 33 ms; model rates the A-model's predicted rates (D6). Open, with readings. The grid of t and tau, (a) 1 ms steps, (b) 7 ms steps (one probe duration); the pixels correlated, (a) all t of the model span (-540 to 540 ms, get_info.m) and tau 1 to 150 ms, (b) t from -50 to 150 ms (the perisaccadic stimulus and spike windows of Methods, Model evaluation) and tau 1 to 150 ms. Pearson r across pixels. Reproduced when, under one combination of readings, all three r are within tolerance and p < 0.001; partially reproduced when all three are positive with p < 0.001 but one or more is outside tolerance."
+     },
+     {
+      "id": "fig7-experimental-maps-lower",
+      "statement": "The recorded prevalence maps have lower values than the model-predicted maps, because smoothed recorded rates are more variable and fewer comparisons reach significance.",
+      "source": "Results, The model captures the spatial and temporal characteristics of the perisaccadic effects, paragraph 3; Figure 7A and 7B",
+      "quote": "This high variability means that fewer effects reach statistical significance, as reflected in the low values of the experimental maps in comparison with the model-predicted ones.",
+      "criterion": "On the maps of fig7-prevalence-maps-correlate, under the reading it reproduced with (or reading a when none did). Reproduced when, for each of the three effects, the mean over pixels of the recorded map is below that of the model map; partially reproduced for two of the three."
+     },
+     {
+      "id": "fig8c-example-neuron-detectability",
+      "statement": "In an example neuron, detectability of RF probes at ~60 ms latency is lost ~60 ms after the saccade; at about the same time FF and ST probes become detectable at ~100 ms latency, and from ~100 ms after the saccade the new RF (former FF) is detected at ~60 ms latency.",
+      "source": "Results, The model produces predictions about the time course and contribution of perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 4; Figure 8C",
+      "quote": "The neuron can detect stimuli presented in the RF location with a latency of ~60 ms; it loses its ability to detect stimuli in the original RF location after the saccade (~60 ms after saccade onset).",
+      "criterion": "The example neuron is not identified. Detectability by Methods, Spatiotemporal detectability analysis. 1000 sequences to the A-model (O6 a main), simulated history (ref [73]); for each probe, time t and latency tau, the AUC between predicted rates at t after a probe at that location at t - tau and the same rates paired with trial-shuffled stimuli; significance by a two-sample t-test of the AUC against 100 AUCs between two shuffled distributions, p < 1e-9. Candidates are the neurons with both FF- and ST-remapping in response and model; the paper does not say the example is one of them, so this is an assumption (the example shows FF and ST detection), and the other neurons of the 41 are searched as a variant and reported. Reproduced when at least one candidate shows, by significant detectability with peak at latency over 50 ms: RF peak latency 50-75 ms before the saccade, RF detectability ending between 30 and 100 ms after saccade onset, FF and ST peak latencies of 80 to 130 ms around that time, and FF detected at 50-75 ms latency from about 100 ms after the saccade. Partially reproduced when a candidate shows the RF loss and the long-latency FF or ST detection but not all four. The tolerance on the \"~\" times (plus or minus about 30 ms) is fixed here and is a reading of \"~\"."
+     },
+     {
+      "id": "fig8d-equal-detectability-at-55ms",
+      "statement": "For the example neuron 55 ms after the saccade, FF and ST probes reach peak detectability at longer latencies than the RF probe but with nearly equal peak values.",
+      "source": "Results, The model produces predictions about the time course and contribution of perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 4; Figure 8D",
+      "quote": "As seen, peak detectability at the FF and ST locations occurs at longer latencies than peak detectability for the RF location; however, peak detectability values for the FF and ST locations are nearly equal to the original RF.",
+      "criterion": "On the neuron fig8c-example-neuron-detectability matched, at t = 55 ms after saccade onset (Figure 8C legend), the latency and AUC at peak over tau for the RF, FF and ST probes. \"Nearly equal\" is not quantified in the paper; read here as FF and ST peak AUC within 10% of the RF peak AUC above chance (AUC minus 0.5). Reproduced when both FF and ST peak later than RF and both are nearly equal by that reading; partially reproduced when the latency order holds only. Not testable when no neuron matched."
+     },
+     {
+      "id": "fig8e-example-neuron-time-course",
+      "statement": "The example neuron detects FF probes at ~90 ms latency from ~65 ms before the saccade, loses them 25 ms later, detects them again from ~13 ms after the saccade for ~60 ms, and detects ST probes at ~130 ms latency from 66 to 130 ms after the saccade.",
+      "source": "Results, The model produces predictions about the time course and contribution of perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 5; Figure 8E, left",
+      "quote": "Next, ~65 ms before the saccade, the neuron can also detect stimuli presented at the FF location ~90 ms earlier (blue circles). This ability to detect FF stimuli disappears 25 ms later, then reemerges ~13 ms after the saccade (with a latency of ~80\u2013100 ms) and persists for ~60 ms.",
+      "criterion": "On the neuron fig8c-example-neuron-detectability matched, the maximum significant detectability over tau (only peaks at tau over 50 ms) and its latency at each t, smoothed over t with a 7 ms moving average (Methods, Spatiotemporal detectability analysis, paragraph 2), for the RF, FF and the probe closest to the ST. Reproduced when the FF and ST epochs and latencies quoted match within about 30 ms (the reading of \"~\" of fig8c-example-neuron-detectability); partially reproduced when the post-saccadic FF epoch and the ST epoch match but the presaccadic FF epoch does not. Not testable when no neuron matched."
+     },
+     {
+      "id": "fig8e-population-ff-detectability",
+      "statement": "A synthetic neuron built from the FF-remapping subpopulation detects FF probes at 60-90 ms latency from ~50 ms before to ~60 ms after the saccade, after which the FF latency returns to ~60 ms, the FF having become the new RF.",
+      "source": "Results, The model produces predictions about the time course and contribution of perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 6; Figure 8E, middle",
+      "quote": "From ~50 ms before to ~60 ms after a saccade, the population can detect FF stimuli with latencies of ~60\u201390 ms, indicating that the neural population is detecting stimuli appearing in the FF ~140 to ~0 ms before the saccade.",
+      "criterion": "Methods, Spatiotemporal detectability analysis, paragraph 4. The A-model Gaussian parameters and c of the neurons with FF-remapping in both response and model, in units of probe spacing (the code's parameters are already in grid units, fmodel.m), averaged. The Methods say only that the variables were normalized by the probe distance; how the centres of neurons with different RF and FF probes are aligned before averaging is not stated. The centres are taken relative to each neuron's FF probe, an assumption; averaging absolute grid positions would mix neurons whose FF lies at different probes. a synthetic neuron with only the FF Gaussian (RF and ST amplitudes zero), detectability as fig8c-example-neuron-detectability with significance p < 1e-7. Which fixation kernel, post-spike and offset kernels, b0 and r_max the synthetic neuron uses is not stated. Readings, (a) the averages of those of the same neurons, (b) the fixation kernel set to zero and the rest averaged. Reproduced when, under one reading, significant FF detectability at 55 to 100 ms latency spans from 20 to 80 ms before to 30 to 90 ms after the saccade, and the latency is 50-75 ms after that; partially reproduced when the long-latency epoch holds and the return to short latency does not."
+     },
+     {
+      "id": "fig8e-population-st-detectability",
+      "statement": "A synthetic neuron built from the ST-remapping subpopulation detects ST probes at long latencies (~100-120 ms) from 45 ms before to 15 ms after the saccade and again from 74 to 114 ms after it.",
+      "source": "Results, The model produces predictions about the time course and contribution of perisaccadic modulatory sources to the neuron's instantaneous firing rate, paragraph 6; Figure 8E, right",
+      "quote": "Similar to the FF-remapping effect, the population can detect ST stimuli at longer latencies (~100\u2013120 ms) from 45 before to 15 ms after a saccade and from 74 to 114 ms after a saccade.",
+      "criterion": "As fig8e-population-ff-detectability, with the ST Gaussian only, for the neurons with ST-remapping in both response and model. Reproduced when, under one reading, significant ST detectability at 90 to 130 ms latency occurs in two epochs within about 30 ms of -45 to 15 ms and 74 to 114 ms from saccade onset; partially reproduced when one of the two epochs matches."
+     },
+     {
+      "id": "figs4-f-model-share-of-s-model",
+      "statement": "The F-model reaches about 60% of the S-model's performance in Delta LL per spike.",
+      "source": "S4 Fig legend",
+      "quote": "The F-model, despite being based on an approximation of the S-model, has a performance of the order of ~60% of the performance of the S-model, in terms of \u0394 LL / spk (see Fig 5A ).",
+      "criterion": "The ratio of the mean F-model to the mean S-model Delta LL per spike over the 41 neurons from the fig5a claims. Which period is meant is not stated; readings, (a) fixation, (b) perisaccadic, (c) the two pooled. Reproduced when one reading is within tolerance."
+     },
+     {
+      "id": "figs5-spike-history-no-effect",
+      "statement": "Using simulated or no spike history in place of the true history does not change the S-model's performance significantly in either period, and the S-model with either still predicts perisaccadic spikes better than fixation spikes.",
+      "source": "S5 Fig legend, panels B and C",
+      "quote": "There is no significant difference between the results obtained from the true-history model, the simulated-history model, and the no-history model.",
+      "criterion": "The fitted S-model of fig5a-s-model-perisaccadic-better evaluated on the same test trials with the history term removed (no history) or with history simulated by drawing spikes from the model rate step by step (ref [73], algorithm 2; the code's make_result.m make_resp), D5 and O5 as in that claim. The no-difference parts are claims of absence on the paper's test, a Wilcoxon signed-rank test over 41 neurons at p < 0.05. Reproduced when none of the four true-against-other tests is significant and both perisaccadic-against- fixation tests are significant with perisaccadic higher; not reproduced when any of the four finds a difference. The means are reported against the expected values."
+     },
+     {
+      "id": "figs1-rf-centres",
+      "statement": "In leftward-saccade sessions the RF centres lie on average 5.81 dva right and 5.23 dva below fixation; in rightward-saccade sessions 6.49 dva left and 7.44 dva below.",
+      "source": "S1 Fig legend, panel B",
+      "quote": "In the sessions where the saccades were made to the left, the average center of the receptive fields was 5.81 \u00b1 3.63 (mean \u00b1 SD) dva rightward, and 5.23 \u00b1 2.08 (mean \u00b1 SD) dva downward.",
+      "criterion": "RF maps from responses to each probe shown 700 to 140 ms before saccade, 50-70 ms after onset, interpolated by a factor of 1000, centre of the contour at 95% of the maximum (S1 Fig legend; centre taken as the centroid of the region above 95%, a standard choice). Converting grid positions to dva needs each session's grid position and spacing, which the dataset's description does not list; they are outside inputs (the paper gives only their ranges, Methods paragraph 1). The SDs given are spreads across neurons, not uncertainties of the mean, so the tolerance is 10%. Reproduced when all four values are within tolerance; blocked when the grid geometry cannot be found."
      }
     ]
    }
@@ -89674,6 +90155,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "crcns:hc-30": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:001262": [
    "answer-report.md",
    "answer.md",
@@ -91486,6 +91973,12 @@
    "verifier-2.md",
    "verifier-3-report.md",
    "verifier-3.md"
+  ],
+  "crcns:mt-3": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
   ],
   "crcns:mt-2": [
    "claims-check-report.md",
@@ -93931,6 +94424,7 @@
   "dandi:001528": "hadjas-2025",
   "dandi:000467": "hart-2023",
   "dandi:000773": "hart-2024",
+  "crcns:hc-30": "hazon-2022",
   "dandi:001262": "heeringa-2024",
   "crcns:v4-2": "henry-2022",
   "dandi:000774": "hickman-2026",
@@ -94023,6 +94517,7 @@
   "dandi:001357": "namima-2025",
   "dandi:001535": "natraj-2025",
   "dandi:000897": "neupane-2024",
+  "crcns:mt-3": "niknam-2019",
   "crcns:mt-2": "nishimoto-2011",
   "crcns:vim-2": "nishimoto-2011-reconstructing",
   "figshare:26877211": "ocagli-2024",
@@ -94155,7 +94650,7 @@
   "dandi:001193": "zhu-2022",
   "dandi:001177": "zhuang-2025"
  },
- "generated": "2026-11-11T01:18:27+00:00",
+ "generated": "2026-11-11T01:21:13+00:00",
  "queue_generated": "2026-11-05T14:39:45+00:00",
  "queue_counts": {
   "public_dandisets": 672,
@@ -369136,6 +369631,7 @@
    "crcns-hc-27",
    "crcns-hc-29",
    "crcns-hc-30",
+   "crcns-mt-3",
    "crcns-ofc-3",
    "crcns-pag-1",
    "crcns-pfc-7",
@@ -369184,7 +369680,6 @@
    "000115"
   ],
   "claims": [
-   "crcns-hc-30",
    "crcns-hc-27",
    "crcns-hc-12",
    "crcns-cb-1",
@@ -369270,7 +369765,6 @@
    "crcns-hc-2",
    "crcns-hc-3",
    "000016",
-   "crcns-mt-3",
    "crcns-am-3",
    "000727",
    "000686",
@@ -369319,19 +369813,19 @@
    },
    "000053": {
     "kind": "full",
-    "hours": 1.4580557647222223
+    "hours": 1.4110959383333335
    },
    "000017": {
     "kind": "full",
-    "hours": 0.35527798694444446
+    "hours": 0.3083181605555555
    },
    "001777": {
     "kind": "full",
-    "hours": 2.6863890980555554
+    "hours": 2.6394292716666667
    },
    "000016": {
     "kind": "full",
-    "hours": 2.1552779869444447
+    "hours": 2.1083181605555557
    }
   },
   "papers": {
@@ -369357,6 +369851,7 @@
     "crcns-hc-27",
     "wirtshafter-2020",
     "hazon-2022",
+    "niknam-2019",
     "saez-2018",
     "wright-2019",
     "hunt-2018",
@@ -369414,7 +369909,6 @@
     "gillespie-2024"
    ],
    "claims": [
-    "hazon-2022",
     "crcns-hc-27",
     "crcns-hc-12",
     "crcns-cb-1",
@@ -369498,7 +369992,6 @@
     "martini-2017",
     "mizuseki-2009",
     "najafi-2020",
-    "niknam-2019",
     "okubo-2015",
     "okuno-2025",
     "pakhomov-2023",
@@ -369529,19 +370022,19 @@
     },
     "mallory-2021": {
      "kind": "full",
-     "hours": 1.4580557647222223
+     "hours": 1.4110959383333335
     },
     "steinmetz-2019": {
      "kind": "full",
-     "hours": 0.35527798694444446
+     "hours": 0.3083181605555555
     },
     "simmons-2026": {
      "kind": "full",
-     "hours": 2.6863890980555554
+     "hours": 2.6394292716666667
     },
     "najafi-2020": {
      "kind": "full",
-     "hours": 2.1552779869444447
+     "hours": 2.1083181605555557
     }
    }
   }
