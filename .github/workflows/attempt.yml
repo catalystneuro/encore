@@ -184,7 +184,10 @@ jobs:
         run: |
           set -euo pipefail
           entry=$(python tools/agent_run.py entry "$ROLE" "$FOLDER")
-          python tools/entry.py run "entries/$entry"
+          # The author keeps each notebook under 60 minutes (docs/protocol.md); a re-run is allowed 80, so that a
+          # slower download from the archive than in the author's run does not stop the attempt (drieu-2018,
+          # 2026-11-10: a 45-minute notebook stopped at 60 here).
+          python tools/entry.py run "entries/$entry" --max-minutes 80 --timeout 4800
           python tools/entry.py handover "entries/$entry"
           python tools/agent_run.py package "$ROLE" "$FOLDER" "$RUNNER_TEMP/work"
           cd "$RUNNER_TEMP" && find "$GITHUB_WORKSPACE" -mindepth 1 -delete
