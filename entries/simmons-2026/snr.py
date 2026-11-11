@@ -15,9 +15,12 @@ Where each parameter comes from:
   polarity with the larger extreme, and a 4 ms dead time (the action currents have a
   second lobe 2 to 3 ms after the first, which a shorter dead time counts twice). The
   8 is a choice made here:
-  in the recordings the amplitudes of threshold crossings fall into noise events under
+  in most recordings the amplitudes of threshold crossings fall into noise events under
   about 8 noise units and action currents above about 10 (shown in the notebook's data
-  check). The notebook gives every rate result at 6 and 12 as well.
+  check), but in some files many crossings lie between 8 and 10, so there is no clean
+  gap at 8 in every file. The notebook gives every rate result at 6 and 12 as well, and
+  every cell's rates at the three thresholds side by side. The amplitude of each
+  crossing (`spike_amplitudes`) is kept to show where a recording runs down.
 - Rate per episode: spike count over the episode length (claims file, M1; code part 1).
   A cell's rate in a condition is the median of its episode rates (claims file, M1).
   Gap-free files are cut into 6-s episodes, the sweep length of the episodic files; a
@@ -303,8 +306,16 @@ def detect_spikes(x, k=K_THRESH, polarity=None):
     return np.asarray(keep, dtype=np.int64), polarity, noise
 
 
+def spike_amplitudes(y, idx):
+    """Peak (pA) of the high-passed current, on the spike polarity, in the 2 ms after each
+    threshold crossing."""
+    n = int(0.002 * FS)
+    return np.array([y[i:i + n].max() for i in idx], dtype=np.float32)
+
+
 def file_spikes(asset_id, ks=THRESHOLDS):
-    """Spike times (s) of every sweep at several thresholds; gap-free files give one sweep.
+    """Spike times (s) and amplitudes (pA) of every sweep at several thresholds; gap-free
+    files give one sweep.
 
     The polarity is fixed per file from its first sweep, so that a sweep without spikes
     does not flip it.
@@ -315,17 +326,21 @@ def file_spikes(asset_id, ks=THRESHOLDS):
             acq = f["acquisition"]
             keys = sorted(acq)
             out = {"asset_id": asset_id, "n_sweeps": len(keys), "spikes": {k: [] for k in ks},
-                   "noise": [], "sweep_s": None, "t0": []}
+                   "amps": {k: [] for k in ks}, "noise": [], "sweep_s": None, "t0": []}
             pol = None
             for key in keys:
                 x = acq[key]["data"][:]
                 out["sweep_s"] = len(x) / FS
                 out["t0"].append(float(acq[key]["starting_time"][()]))
+                y = None
                 for k in ks:
                     idx, p, noise = detect_spikes(x, k, pol)
                     if pol is None:
                         pol = p
+                    if y is None:
+                        y = pol * signal.sosfiltfilt(_SOS, np.asarray(x, dtype=np.float64))
                     out["spikes"][k].append(idx / FS)
+                    out["amps"][k].append(spike_amplitudes(y, idx))
                 out["noise"].append(noise)
             out["polarity"] = pol
             return out
@@ -352,6 +367,34 @@ def episode_rates(sp, k=K_THRESH, window=None):
     a, b = window if window else (0.0, sp["sweep_s"])
     rates = np.array([np.sum((t >= a) & (t < b)) / (b - a) for t in sp["spikes"][k]])
     return rates, np.asarray(sp["t0"])
+
+
+def episode_amplitudes(sp, k=6.0):
+    """Median amplitude (pA) of the threshold crossings in each episode, cut as in
+    `episode_rates` (NaN for an episode without crossings)."""
+    med = lambda a: float(np.median(a)) if len(a) else np.nan
+    if sp["n_sweeps"] == 1 and sp["sweep_s"] > 60:
+        t, a = sp["spikes"][k][0], sp["amps"][k][0]
+        n = int(sp["sweep_s"] // EPISODE_S)
+        return np.array([med(a[(t >= i * EPISODE_S) & (t < (i + 1) * EPISODE_S)]) for i in range(n)])
+    return np.array([med(a) for a in sp["amps"][k]])
+
+
+def failed_cells(rate_tables):
+    """Cells whose rate in a condition falls under a quarter of their rate in the condition
+    before it (drug1 against ctrl, drug2 against drug1), in any of the given rate tables.
+
+    No drug in the paper is reported to change SNr rate by more than about 50%, and in
+    the cells this finds the action currents shrink to the noise before the rate falls
+    (shown in the notebook), so these are taken as recordings that failed (loss of the
+    cell-attached seal or of the cell). The quarter is a choice made here; the outcomes
+    are given with and without these cells."""
+    bad = {}
+    for x in rate_tables:
+        for _, c in x.iterrows():
+            if c["drug1"] < 0.25 * c["ctrl"] or c["drug2"] < 0.25 * c["drug1"]:
+                bad.setdefault(c["cell"], c["experiment"])
+    return bad
 
 
 def condition_rate(sp_list, offsets, reading, drug=False, k=K_THRESH, window=None, explicit=None):
