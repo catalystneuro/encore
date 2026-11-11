@@ -93,8 +93,34 @@ jobs:
           DRYAD_CLIENT_SECRET: ${{ secrets.DRYAD_CLIENT_SECRET }}
         run: python tools/stage_files.py --all
 
+      # A clean run of the entry as it is, made before by this job or by a verifier's run (attempt.yml, where this
+      # is explained), is reused: the same key and the same paths as there.
+      - name: What a run of the entry's notebooks reads
+        id: entry
+        run: |
+          rm -rf "executed/${{ matrix.entry }}"
+          echo "hash=$(python tools/entry.py hash "entries/${{ matrix.entry }}")" >> "$GITHUB_OUTPUT"
+
+      - name: The executed copies of a clean run of this entry as it is, if there was one
+        id: cache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            executed/${{ matrix.entry }}
+            !executed/${{ matrix.entry }}/.venv
+          key: clean-run-${{ matrix.entry }}-${{ steps.entry.outputs.hash }}
+
       - name: Execute the entry's notebooks
-        run: python tools/entry.py run "entries/${{ matrix.entry }}" --output-dir "$RUNNER_TEMP/executed" --max-minutes 80 --timeout 4800
+        run: python tools/entry.py run "entries/${{ matrix.entry }}" --max-minutes 80 --timeout 4800
+
+      - name: Keep the executed copies for the next clean run of this entry
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            executed/${{ matrix.entry }}
+            !executed/${{ matrix.entry }}/.venv
+          key: clean-run-${{ matrix.entry }}-${{ steps.entry.outputs.hash }}
 
       - name: Keep the executed notebooks
         if: always()
@@ -102,8 +128,8 @@ jobs:
         with:
           name: executed-${{ matrix.entry }}
           path: |
-            ${{ runner.temp }}/executed/*.ipynb
-            ${{ runner.temp }}/executed/result.json
+            executed/${{ matrix.entry }}/*.ipynb
+            executed/${{ matrix.entry }}/result.json
 
   publish:
     # Keep the executed notebooks of this run, rendered to HTML, on the

@@ -440,6 +440,14 @@ python tools/entry.py all  entries/<name>    # check, then run from a clean envi
 `executed/<name>/` and confirm the conclusions still match the numbers: counts
 near a threshold can move when a random split changes.
 
+`run` keeps a stamp of what it ran from beside the executed copies in
+`executed/<name>/`. When nothing it reads has changed since (the entry's files,
+which name its Python and its datasets' versions), `run` and `all` reuse those
+copies, say so, and execute nothing; `--fresh` executes all the same. A run of
+yours starts with the executed copies of the entry as it is, when a run of it
+was kept, so a session that changes nothing in the entry need not run it
+again. Any edit to the entry makes the next `run` a real one.
+
 ### 5. Record the attempt
 
 Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
