@@ -20,7 +20,8 @@ repository (https://github.com/nnategh/SFA-Models at commit 1438dde).
 | RF centres in degrees (Figure S1) | Blocked: metadata insufficient |
 
 The remapping counts depend on what the paper's signed-rank test pairs, which the Methods do not
-say; whether the claims file should include a pairing over time bins is asked of a reader in
+say; whether the claims file should include a pairing over time bins, and whether the example
+neurons should be held to the paper's p < 0.001, are asked of a reader in
 [`questions/niknam-2019.yaml`](../../questions/niknam-2019.yaml).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the

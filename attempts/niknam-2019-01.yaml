@@ -204,10 +204,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) and the F-model. The notebook ports the parameter selection of
     select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
-    fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched
-    port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run
-    (timings vary between machines). That is over the 60 minute notebook limit and the five hours of an author run,
-    for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs
+    for the selection step of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author
+    run. A fully batched port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on
+    4 CPUs) for one selection per neuron, before the full S-model fit and the other models the claim needs. Not
+    run beyond that benchmark; no model was fitted.'
 - claim: fig5a-n-model-no-perisaccadic-gain
   outcome: blocked
   blocked_by: methods_underspecified
@@ -215,7 +216,12 @@ outcomes:
     "as detailed in [48]") and the Results paragraph on Fig 4. The reference list is not in the text read, the code
     repository holds no N-model, and main_lists.mat has only its per-neuron classification (nsglm_list). The claims
     file (O8) blocks the claim when ref [48] cannot be identified. Fitting any such model for 41 neurons would also
-    meet the cost of the S-model claims. Asked of the paper's authors in the findings.
+    meet the cost of the S-model claims. After the round-2 verification, ref [48] was identified from the version
+    of record's reference list as Akbarian et al. (2018), IEEE Trans Biomed Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687
+    (open as PMC5796416). That paper describes the N-model (stimulus, gain, offset and post-spike kernels on raised-cosine
+    bases, fitted by coordinate descent with cross-validated ridge and L1 penalties) but gives no code. This attempt
+    did not implement it, so the claim stays blocked as verified; a later attempt can test it with the N-model taken
+    from that paper, as O8 says.
 - claim: fig5a-s-model-perisaccadic-better
   outcome: blocked
   blocked_by: too_large
@@ -223,10 +229,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4). The notebook ports the parameter selection of select_bases.m
     and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits
-    per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port
-    evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings
-    vary between machines). That is over the 60 minute notebook limit and the five hours of an author run, for the
-    selection step alone. Not run beyond that benchmark; no model was fitted.'
+    per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for
+    the selection step of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author
+    run. A fully batched port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on
+    4 CPUs) for one selection per neuron, before the full S-model fit and the other models the claim needs. Not
+    run beyond that benchmark; no model was fitted.'
 - claim: fig5a-f-model-perisaccadic-better
   outcome: blocked
   blocked_by: too_large
@@ -234,24 +241,26 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) and the F-model fitted to its kernels. The notebook ports the
     parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters
-    and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs
-    for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the
-    runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit and
-    the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt,
+    345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit
+    and the five hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5
+    CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other
+    models the claim needs. Not run beyond that benchmark; no model was fitted.'
 - claim: fig5a-s-f-beat-n-model
   outcome: blocked
   blocked_by: too_large
   notebook: reproduce_niknam_2019.ipynb
   output: claim:fig5a-s-model-perisaccadic-better
-  notes: 'Needs the S-model fitted per neuron (D4), the F-model and the N-model (ref [48], which the text read does
-    not identify and the code does not hold). The notebook ports the parameter selection of select_bases.m and times
-    it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron,
-    about 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating
-    only nonzero samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between
-    machines). That is over the 60 minute notebook limit and the five hours of an author run, for the selection
-    step alone. Not run beyond that benchmark; no model was fitted. The claim also needs the N-model, which the
-    paper defines only through ref [48] (O8) and the code does not hold, so it would stay blocked as methods_underspecified
-    with any compute budget.'
+  notes: 'Needs the S-model fitted per neuron (D4), the F-model and the N-model (ref [48]). The notebook ports the
+    parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters
+    and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt,
+    345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit
+    and the five hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5
+    CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other
+    models the claim needs. Not run beyond that benchmark; no model was fitted. The claim also needs the N-model,
+    which the paper defines only through ref [48] (O8). Ref [48] was identified in the round-2 revision as Akbarian
+    et al. (2018), IEEE Trans Biomed Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687 (open as PMC5796416); no code
+    for it is published, and this attempt did not implement it.'
 - claim: fig5b-st-remapping-better-than-n
   outcome: blocked
   blocked_by: too_large
@@ -259,13 +268,16 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4), the F- and A-models (ten fits each), 1000 simulated sequences
     per model and the N-model. The notebook ports the parameter selection of select_bases.m and times it on one
-    neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, about 7
-    ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero
-    samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between machines).
-    That is over the 60 minute notebook limit and the five hours of an author run, for the selection step alone.
-    Not run beyond that benchmark; no model was fitted. The claim also needs the N-model, which the paper defines
-    only through ref [48] (O8) and the code does not hold, so it would stay blocked as methods_underspecified with
-    any compute budget.'
+    neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron. The port
+    took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step
+    of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author run. A fully batched
+    port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection
+    per neuron, before the full S-model fit and the other models the claim needs. The A-model fits the S-model ten
+    times per neuron (Methods, A-model, "fitting the S-model ten times as explained earlier"), which multiplies
+    that bound by ten, 29 to 69 hours on 4 CPUs. Not run beyond that benchmark; no model was fitted. The claim also
+    needs the N-model, which the paper defines only through ref [48] (O8). Ref [48] was identified in the round-2
+    revision as Akbarian et al. (2018), IEEE Trans Biomed Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687 (open
+    as PMC5796416); no code for it is published, and this attempt did not implement it.'
 - claim: fig5b-ff-remapping-a-model-only
   outcome: blocked
   blocked_by: too_large
@@ -273,13 +285,16 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4), the F- and A-models (ten fits each), 1000 simulated sequences
     per model and the N-model. The notebook ports the parameter selection of select_bases.m and times it on one
-    neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, about 7
-    ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero
-    samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between machines).
-    That is over the 60 minute notebook limit and the five hours of an author run, for the selection step alone.
-    Not run beyond that benchmark; no model was fitted. The claim also needs the N-model, which the paper defines
-    only through ref [48] (O8) and the code does not hold, so it would stay blocked as methods_underspecified with
-    any compute budget.'
+    neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron. The port
+    took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step
+    of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author run. A fully batched
+    port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection
+    per neuron, before the full S-model fit and the other models the claim needs. The A-model fits the S-model ten
+    times per neuron (Methods, A-model, "fitting the S-model ten times as explained earlier"), which multiplies
+    that bound by ten, 29 to 69 hours on 4 CPUs. Not run beyond that benchmark; no model was fitted. The claim also
+    needs the N-model, which the paper defines only through ref [48] (O8). Ref [48] was identified in the round-2
+    revision as Akbarian et al. (2018), IEEE Trans Biomed Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687 (open
+    as PMC5796416); no code for it is published, and this attempt did not implement it.'
 - claim: fig5b-suppression-no-difference
   outcome: blocked
   blocked_by: too_large
@@ -287,13 +302,16 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4), the F- and A-models (ten fits each), 1000 simulated sequences
     per model and the N-model. The notebook ports the parameter selection of select_bases.m and times it on one
-    neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, about 7
-    ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero
-    samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between machines).
-    That is over the 60 minute notebook limit and the five hours of an author run, for the selection step alone.
-    Not run beyond that benchmark; no model was fitted. The claim also needs the N-model, which the paper defines
-    only through ref [48] (O8) and the code does not hold, so it would stay blocked as methods_underspecified with
-    any compute budget.'
+    neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron. The port
+    took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step
+    of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author run. A fully batched
+    port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection
+    per neuron, before the full S-model fit and the other models the claim needs. The A-model fits the S-model ten
+    times per neuron (Methods, A-model, "fitting the S-model ten times as explained earlier"), which multiplies
+    that bound by ten, 29 to 69 hours on 4 CPUs. Not run beyond that benchmark; no model was fitted. The claim also
+    needs the N-model, which the paper defines only through ref [48] (O8). Ref [48] was identified in the round-2
+    revision as Akbarian et al. (2018), IEEE Trans Biomed Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687 (open
+    as PMC5796416); no code for it is published, and this attempt did not implement it.'
 - claim: fig5c-f-higher-ratio-than-s
   outcome: blocked
   blocked_by: too_large
@@ -301,10 +319,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) and the F-model. The notebook ports the parameter selection of
     select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
-    fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched
-    port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run
-    (timings vary between machines). That is over the 60 minute notebook limit and the five hours of an author run,
-    for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs
+    for the selection step of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author
+    run. A fully batched port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on
+    4 CPUs) for one selection per neuron, before the full S-model fit and the other models the claim needs. Not
+    run beyond that benchmark; no model was fitted.'
 - claim: fig5c-source-contributions
   outcome: blocked
   blocked_by: too_large
@@ -312,10 +331,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4), the F-model and seven partial F-models. The notebook ports the
     parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters
-    and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs
-    for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the
-    runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit and
-    the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt,
+    345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit
+    and the five hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5
+    CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other
+    models the claim needs. Not run beyond that benchmark; no model was fitted.'
 - claim: fig5c-percent-changes
   outcome: blocked
   blocked_by: too_large
@@ -323,10 +343,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4), the F-model and seven partial F-models. The notebook ports the
     parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters
-    and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs
-    for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the
-    runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit and
-    the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt,
+    345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit
+    and the five hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5
+    CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other
+    models the claim needs. Not run beyond that benchmark; no model was fitted.'
 - claim: fig6a-model-saccadic-suppression
   outcome: blocked
   blocked_by: too_large
@@ -334,11 +355,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated sequences.
     The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: fig6b-model-ff-remapping
   outcome: blocked
   blocked_by: too_large
@@ -346,11 +369,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated sequences.
     The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: fig6c-model-st-remapping
   outcome: blocked
   blocked_by: too_large
@@ -358,11 +383,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated sequences.
     The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: fig6d-model-ff-and-st-remapping
   outcome: blocked
   blocked_by: too_large
@@ -370,11 +397,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated sequences.
     The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: fig6-example-neuron-predictions
   outcome: blocked
   blocked_by: too_large
@@ -382,11 +411,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the F- and A-models, with 1000 simulated sequences.
     The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: fig7-prevalence-maps-correlate
   outcome: blocked
   blocked_by: too_large
@@ -394,10 +425,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the A-model predictions. The notebook ports the
     parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters
-    and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs
-    for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the
-    runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit and
-    the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt,
+    345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit
+    and the five hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5
+    CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other
+    models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting the S-model
+    ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs. Not run beyond
+    that benchmark; no model was fitted.'
 - claim: fig7-experimental-maps-lower
   outcome: blocked
   blocked_by: too_large
@@ -405,10 +439,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, and the A-model predictions. The notebook ports the
     parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters
-    and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs
-    for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the
-    runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit and
-    the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt,
+    345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit
+    and the five hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5
+    CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other
+    models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting the S-model
+    ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs. Not run beyond
+    that benchmark; no model was fitted.'
 - claim: fig8c-example-neuron-detectability
   outcome: blocked
   blocked_by: too_large
@@ -416,11 +453,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, the A-model, and an ROC analysis over 1000 simulated
     sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe:
-    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this
-    port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs
-    about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between machines). That is over
-    the 60 minute notebook limit and the five hours of an author run, for the selection step alone. Not run beyond
-    that benchmark; no model was fitted.'
+    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7
+    ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons,
+    far over the 60 minute notebook limit and the five hours of an author run. A fully batched port, not written
+    here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron,
+    before the full S-model fit and the other models the claim needs. The A-model fits the S-model ten times per
+    neuron (Methods, A-model, "fitting the S-model ten times as explained earlier"), which multiplies that bound
+    by ten, 29 to 69 hours on 4 CPUs. Not run beyond that benchmark; no model was fitted.'
 - claim: fig8d-equal-detectability-at-55ms
   outcome: blocked
   blocked_by: too_large
@@ -428,11 +467,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, the A-model, and an ROC analysis over 1000 simulated
     sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe:
-    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this
-    port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs
-    about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between machines). That is over
-    the 60 minute notebook limit and the five hours of an author run, for the selection step alone. Not run beyond
-    that benchmark; no model was fitted.'
+    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7
+    ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons,
+    far over the 60 minute notebook limit and the five hours of an author run. A fully batched port, not written
+    here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron,
+    before the full S-model fit and the other models the claim needs. The A-model fits the S-model ten times per
+    neuron (Methods, A-model, "fitting the S-model ten times as explained earlier"), which multiplies that bound
+    by ten, 29 to 69 hours on 4 CPUs. Not run beyond that benchmark; no model was fitted.'
 - claim: fig8e-example-neuron-time-course
   outcome: blocked
   blocked_by: too_large
@@ -440,11 +481,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times, the A-model, and an ROC analysis over 1000 simulated
     sequences. The notebook ports the parameter selection of select_bases.m and times it on one neuron and probe:
-    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this
-    port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs
-    about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run (timings vary between machines). That is over
-    the 60 minute notebook limit and the five hours of an author run, for the selection step alone. Not run beyond
-    that benchmark; no model was fitted.'
+    290,628 stimulus-basis parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7
+    ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons,
+    far over the 60 minute notebook limit and the five hours of an author run. A fully batched port, not written
+    here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron,
+    before the full S-model fit and the other models the claim needs. The A-model fits the S-model ten times per
+    neuron (Methods, A-model, "fitting the S-model ten times as explained earlier"), which multiplies that bound
+    by ten, 29 to 69 hours on 4 CPUs. Not run beyond that benchmark; no model was fitted.'
 - claim: fig8e-population-ff-detectability
   outcome: blocked
   blocked_by: too_large
@@ -452,11 +495,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times and the A-model of every FF-remapping neuron. The notebook
     ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: fig8e-population-st-detectability
   outcome: blocked
   blocked_by: too_large
@@ -464,11 +509,13 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) ten times and the A-model of every ST-remapping neuron. The notebook
     ports the parameter selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis
-    parameters and 58,125,600 single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours
-    on 4 CPUs for 41 neurons; a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours
-    on the runner''s 4 CPUs, in this run (timings vary between machines). That is over the 60 minute notebook limit
-    and the five hours of an author run, for the selection step alone. Not run beyond that benchmark; no model was
-    fitted.'
+    parameters and 58,125,600 single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs
+    of this attempt, 345 to 1,040 hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute
+    notebook limit and the five hours of an author run. A fully batched port, not written here, would need at least
+    11.5 to 27.5 CPU hours (2.9 to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit
+    and the other models the claim needs. The A-model fits the S-model ten times per neuron (Methods, A-model, "fitting
+    the S-model ten times as explained earlier"), which multiplies that bound by ten, 29 to 69 hours on 4 CPUs.
+    Not run beyond that benchmark; no model was fitted.'
 - claim: figs4-f-model-share-of-s-model
   outcome: blocked
   blocked_by: too_large
@@ -476,10 +523,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) and the F-model. The notebook ports the parameter selection of
     select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600 single-parameter
-    fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons; a fully batched
-    port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs, in this run
-    (timings vary between machines). That is over the 60 minute notebook limit and the five hours of an author run,
-    for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040 hours on 4 CPUs
+    for the selection step of the 41 neurons, far over the 60 minute notebook limit and the five hours of an author
+    run. A fully batched port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9 to 6.9 hours on
+    4 CPUs) for one selection per neuron, before the full S-model fit and the other models the claim needs. Not
+    run beyond that benchmark; no model was fitted.'
 - claim: figs5-spike-history-no-effect
   outcome: blocked
   blocked_by: too_large
@@ -487,10 +535,11 @@ outcomes:
   output: claim:fig5a-s-model-perisaccadic-better
   notes: 'Needs the S-model fitted per neuron (D4) and simulated spike history. The notebook ports the parameter
     selection of select_bases.m and times it on one neuron and probe: 290,628 stimulus-basis parameters and 58,125,600
-    single-parameter fits per neuron, about 7 ms per fit in this port, about 1,000 hours on 4 CPUs for 41 neurons;
-    a fully batched port evaluating only nonzero samples needs about 28 CPU hours, 7 hours on the runner''s 4 CPUs,
-    in this run (timings vary between machines). That is over the 60 minute notebook limit and the five hours of
-    an author run, for the selection step alone. Not run beyond that benchmark; no model was fitted.'
+    single-parameter fits per neuron. The port took 2.2 to 6.7 ms per fit in the runs of this attempt, 345 to 1,040
+    hours on 4 CPUs for the selection step of the 41 neurons, far over the 60 minute notebook limit and the five
+    hours of an author run. A fully batched port, not written here, would need at least 11.5 to 27.5 CPU hours (2.9
+    to 6.9 hours on 4 CPUs) for one selection per neuron, before the full S-model fit and the other models the claim
+    needs. Not run beyond that benchmark; no model was fitted.'
 - claim: figs1-rf-centres
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -507,11 +556,12 @@ findings:
 - kind: metadata_error
   statement: The paper and the descriptor say each probe lasted 7 ms with exactly one probe on screen at each time,
     and that "In each condition, a complete sequence of 81 probe stimuli was presented throughout the length of
-    a trial." In the files 91.5% of probe runs last 7 ms, 5.6% last 6 ms and others 14 or 21 ms, and the sequences
-    contain gaps of 10 to 21 ms with no probe (code 0). The probe order holds 75 codes in session 20150511 and 80
-    in 20150927 and 20150929. In every session but 20150717 the order restarts from its first probe 35 to 296 ms
-    after saccade onset in most trials, so each probe is shown 2 to 4 times per trial. The arrays are 3000 ms long
-    with probes until 1468 to 2371 ms, while the paper gives trials of 2100 to 2300 ms.
+    a trial." In the files 91.5% of probe runs last 7 ms, 5.6% last 6 ms, most others 14 or 21 ms and a few 8 to
+    28 ms, and the sequences contain gaps of 7 to 28 ms with no probe (code 0), nearly all of 10, 11, 20 or 21 ms.
+    The probe order holds 75 codes in session 20150511 and 80 in 20150927 and 20150929. In every session but 20150717
+    the order restarts from its first probe 35 to 296 ms after saccade onset in most trials, so each probe is shown
+    2 to 4 times per trial. The arrays are 3000 ms long with probes until 1468 to 2371 ms, while the paper gives
+    trials of 2100 to 2300 ms.
 - kind: methods_unavailable
   statement: 'The Methods test each effect with a one-sided Wilcoxon signed-rank test but do not say what is paired.
     Pairing by trial is impossible in these data, as no trial shows the same probe in both windows; pairing by condition
@@ -529,9 +579,10 @@ findings:
     counts (nuron_list 8, 23, 23 and 37; aggat_list and nuron_list together 7, 18, 20 and 24, against the paper's
     7, 20 and 24 for the A-model), so they appear to be the per-neuron classifications of Figures 1, 5 and 6.
 - kind: methods_unavailable
-  statement: 'The N-model of Figure 5 is described only by reference [48], and the code repository holds no code
+  statement: 'The N-model of Figure 5 is described only by reference [48], Akbarian et al. (2018), IEEE Trans Biomed
+    Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687 (open as PMC5796416), and the code repository holds no code
     for it, nor for the Wilcoxon and McNemar tests, the partial F-models, the prevalence maps or the detectability
-    analysis. Question for the authors: which publication and code define the N-model as fitted here?'
+    analysis. Question for the authors: is there code for the N-model as fitted here?'
 verifications:
 - date: '2026-11-11'
   kind: agent
@@ -634,9 +685,9 @@ verifications:
       to -440 ms, end -160 to -40 ms). The SEs of the matched examples agree with the paper''s within 0.01, but
       no window matches all three means (closest -495 to -100 ms, within 0.054 spk/s), and the RF candidate 2015092709
       reaches 53.87 to 59.68, never 60.89. The fixation set is not identified; this is added to the methods_unavailable
-      finding. The notebook also shifts the saccade index by one ms either way: the perisaccadic values then move away from
-      the paper''s (40.49 becomes 44.87 or 33.94) and the fixation values change by 0.11 spk/s at most, so the index
-      is kept.'
+      finding. The notebook also shifts the saccade index by one ms either way: the perisaccadic values then move
+      away from the paper''s (40.49 becomes 44.87 or 33.94) and the fixation values change by 0.11 spk/s at most,
+      so the index is kept.'
   - claim: fig3-example-trial-predictions
     agrees: true
     outcome: blocked
@@ -969,4 +1020,468 @@ verifications:
       bucket listing (mt-3/live/) and filelist.txt hold only data.zip, the descriptor (pdf and docx), example_scripts.zip
       and checksums.md5; DemoScript.m plots the grid in probe units only. No grid position or spacing exists anywhere
       in the archive, so figs1 cannot be tested even in part.
+    response: No change.
+- date: '2026-11-11'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook of the round-1 revision (commit efe8fb23), with the conclusion
+    cells and the summary, the README, the attempt record, the helper module, the claims file and the paper, with
+    the round-1 report. In reply, besides the per-claim responses: the probe timing in the summary and the metadata_error
+    finding now gives the rare runs of 8 to 28 ms and the gaps of 7 to 28 ms that cell 4 prints. The docx descriptor
+    was not compared, which the verifier says bears on no conclusion.'
+  results:
+  - claim: probe-locations-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 9: 41/41 files matched to a probe_list row, 0 rows without a file. The recomputed RF is the listed
+      probe for 38 neurons and the listed probe or a neighbour for 41 (threshold 37). FF minus RF gives 27 left
+      and 14 right.'
+    response: No change.
+  - claim: methods-neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 12: 41 neurons, 11 sessions, 27 leftward neurons in 9 sessions, 14 rightward in 2.'
+    response: No change.
+  - claim: fig1b-saccadic-suppression
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 18, (b, i): count 8, 2.235 and 1.239, all within tolerance. Both values sit near the lower edge
+      of tolerance. 5 of the 8 neurons are in nuron_list (cell 40: 35/41 agree).'
+    response: No change.
+  - claim: fig1c-ff-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under the claims file. Cell 21: 8 neurons, 0.792 to 1.609. 0 of 3 numbers in tolerance. These
+      remain not_reproduced only under O1 as written; the reader''s answer to the pairing question could change
+      them. The variant that comes closest, a signed-rank test over the bins of the smoothed curves, treats 71 smoothed
+      and autocorrelated bins as independent pairs, which is why several of its p values are about 1e-13 (cell 40).
+      So that variant is excluded by the Methods ("not estimates of firing rate") and is also anti-conservative.
+      The question should say so.'
+    response: No change of outcome. The question in questions/niknam-2019.yaml now says that the smoothed-bin pairing
+      is anti-conservative, with its p values of about 1e-13, as a second reason besides the Methods' exclusion.
+  - claim: fig1d-st-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under the claims file. Cell 24: 11 neurons, 0.749 to 1.629. 0 of 3 numbers in tolerance. These
+      remain not_reproduced only under O1 as written; the reader''s answer to the pairing question could change
+      them. The variant that comes closest, a signed-rank test over the bins of the smoothed curves, treats 71 smoothed
+      and autocorrelated bins as independent pairs, which is why several of its p values are about 1e-13 (cell 40).
+      So that variant is excluded by the Methods ("not estimates of firing rate") and is also anti-conservative.
+      The question should say so.'
+    response: No change of outcome. The question in questions/niknam-2019.yaml now says that the smoothed-bin pairing
+      is anti-conservative, with its p values of about 1e-13, as a second reason besides the Methods' exclusion.
+  - claim: fig1e-ff-and-st-remapping
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees under the claims file. Cell 27: 6 neurons, 0 of 5 numbers in tolerance. These remain not_reproduced
+      only under O1 as written; the reader''s answer to the pairing question could change them. The variant that
+      comes closest, a signed-rank test over the bins of the smoothed curves, treats 71 smoothed and autocorrelated
+      bins as independent pairs, which is why several of its p values are about 1e-13 (cell 40). So that variant
+      is excluded by the Methods ("not estimates of firing rate") and is also anti-conservative. The question should
+      say so.'
+    response: No change of outcome. The question in questions/niknam-2019.yaml now says that the smoothed-bin pairing
+      is anti-conservative, with its p values of about 1e-13, as a second reason besides the Methods' exclusion.
+  - claim: fig1-remapping-longer-latency
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: RF peak 62 ms; FF peak 108 ms and ST peak 99 ms. The record says plainly that only the RF
+      peak does not depend on how the neurons were selected.'
+    response: No change.
+  - claim: fig1-example-neurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees under the claims file. Cell 33: three of four examples match on values with D2 p < 0.05. The
+      statement and the statistics block give p < 0.001 for each example, but the criterion only asks for a significant
+      change by D2, which means p < 0.05. Under (b) only the example with both effects reaches p < 0.001 (0.00063
+      and 0.00037; the FF example is 0.017, the ST example 0.0059). If the criterion used the paper''s p, 1 of 4
+      examples would match, and the outcome would be not_reproduced. This is a claims-file point that decides between
+      partially_reproduced and not_reproduced. The paper''s fixation set is still not identified, which leaves the
+      RF example unmatched under onsets (closest neuron 56.94 against 60.89).'
+    response: No change of outcome. The point is added to questions/niknam-2019.yaml as a question for a reader
+      (should the criterion require p < 0.001 for each example), with the counts above; the README names it. The
+      fixation set was not investigated further.
+  - claim: fig3-example-trial-predictions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig5a-n-model-no-perisaccadic-gain
+    agrees: true
+    outcome: blocked
+    reason: O8. The other four N-model claims need the N-model according to the claims file, and their notes say
+      so. The paper's reference list is public in the version of record, and O8 asks for ref [48] to be identified
+      if possible; the attempt did not try, but this cannot change any outcome, because the four too_large N-model
+      claims would still be blocked by cost.
+    response: No change of outcome. Ref [48] was identified from the version of record (Europe PMC full text of
+      PMC6759185) as Akbarian et al. (2018), IEEE Trans Biomed Eng 65(2):241-253, doi:10.1109/TBME.2017.2762687,
+      open as PMC5796416. It describes the N-model but gives no code, and this attempt did not implement it, so
+      the claim stays blocked as verified; the notes, the methods_unavailable finding, cell 0, cell 37 and the summary
+      say so. Testing it with the N-model from that paper needs an analysis not run here and waits for a new attempt.
+  - claim: fig5a-s-model-perisaccadic-better
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig5a-f-model-perisaccadic-better
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig5a-s-f-beat-n-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those. The notes of this N-model
+      claim say it also needs the N-model.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite. Ref [48] is now identified as Akbarian et al. (2018), IEEE Trans Biomed Eng, doi:10.1109/TBME.2017.2762687;
+      the notes say so, and that this attempt did not implement the N-model.
+  - claim: fig5b-st-remapping-better-than-n
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those. The notes of this N-model
+      claim say it also needs the N-model.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite. Ref [48] is now identified as Akbarian et al. (2018), IEEE Trans Biomed Eng, doi:10.1109/TBME.2017.2762687;
+      the notes say so, and that this attempt did not implement the N-model.
+  - claim: fig5b-ff-remapping-a-model-only
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those. The notes of this N-model
+      claim say it also needs the N-model.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite. Ref [48] is now identified as Akbarian et al. (2018), IEEE Trans Biomed Eng, doi:10.1109/TBME.2017.2762687;
+      the notes say so, and that this attempt did not implement the N-model.
+  - claim: fig5b-suppression-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those. The notes of this N-model
+      claim say it also needs the N-model.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite. Ref [48] is now identified as Akbarian et al. (2018), IEEE Trans Biomed Eng, doi:10.1109/TBME.2017.2762687;
+      the notes say so, and that this attempt did not implement the N-model.
+  - claim: fig5c-f-higher-ratio-than-s
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig5c-source-contributions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig5c-percent-changes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig6a-model-saccadic-suppression
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig6b-model-ff-remapping
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig6c-model-st-remapping
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig6d-model-ff-and-st-remapping
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig6-example-neuron-predictions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig7-prevalence-maps-correlate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig7-experimental-maps-lower
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig8c-example-neuron-detectability
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig8d-equal-detectability-at-55ms
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig8e-example-neuron-time-course
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig8e-population-ff-detectability
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: fig8e-population-st-detectability
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: figs4-f-model-share-of-s-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: figs5-spike-history-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome but not with the stated numbers. Cell 37 says about 7 ms per fit, about 1,000
+      hours on 4 CPUs, and about 28 CPU hours, 7 hours on 4 CPUs, for a fully batched port; cell 36 prints 2.2 ms
+      per fit, 1,380 CPU hours (345 hours on 4 CPUs) and a batched lower bound of 11.5 CPU hours (2.9 hours on 4
+      CPUs). The bound has moved between runs (13, then 28, now 11.5 CPU-h), and this run's is under five hours,
+      so the argument should rest on the as-ported cost plus the steps after the selection (full fit, ten A-model
+      fits, simulations). As ported, the selection step needs 345 h on 4 CPUs before those.
+    response: No change of outcome. Cell 37, cell 0 and the notes now give the range over the runs of this attempt
+      (2.2 to 6.7 ms per fit, 345 to 1,040 hours on 4 CPUs as ported; batched lower bound 11.5 to 27.5 CPU hours,
+      2.9 to 6.9 hours on 4 CPUs) and rest the argument on the as-ported cost, with the batched bound described
+      as a port not written here and as a bound for one selection only. Cell 36 now also prints the bound for the
+      ten S-model fits of the A-model (Methods, A-model), 29 to 69 hours on 4 CPUs across runs, which the notes
+      of the A-model claims cite.
+  - claim: figs1-rf-centres
+    agrees: true
+    outcome: blocked
+    reason: No grid geometry exists anywhere in the archive.
     response: No change.
