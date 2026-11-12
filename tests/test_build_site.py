@@ -923,7 +923,22 @@ def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_th
     for orcid, author in index.items():
         page = (out / "authors" / orcid / "index.html").read_text()
         assert f'href="https://orcid.org/{orcid}"' in page and site.e(author["name"]) in page
-        papers = theirs[orcid]
+        papers = theirs.get(orcid, [])
+        # Their datasets: every dataset in the registry that names the iD among its contributors, with their roles.
+        sets = [(k["key"], c.get("roles") or []) for k in data["targets"]
+                for c in site.contributors_of(data, k["key"]) if c.get("orcid") == orcid]
+        assert [(d["key"], d["roles"]) for d in author["datasets"]] == sorted(sets)
+        assert papers or sets
+        assert rows[orcid]["n_datasets"] == len(sets)
+        assert rows[orcid]["as"] == [k for k, on in (("author", papers), ("contributor", sets)) if on]
+        for key, roles in sets:
+            assert site.e(site.dataset_label(key)) in page and site.e(", ".join(roles)) in page
+        assert ('data-panel="datasets"' in page) == bool(sets) and ('data-panel="papers"' in page) == bool(papers or not sets)
+        # The outcomes of their papers' claims, summed.
+        counted = {r["id"]: r["counts"] for r in json.loads((out / "data" / "papers.json").read_text())} if orcid == next(iter(index)) else None
+        if counted is not None:
+            total = sum(n for q in papers for n in (counted[q["key"]] or {}).values())
+            assert (f"Outcomes of the {total:,} claims tested across" in page) == bool(total)
         assert {q["key"] for q in author["papers"]} == {q["key"] for q in papers}
         for q in papers:
             assert site.e(q["title"]) in page
@@ -946,6 +961,15 @@ def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_th
             long += 1
             assert f"and {len(people) - site.AUTHORS_SHOWN} more authors</summary>" in page
     assert linked and plain and long
+    # A dataset's page names its contributors; each with an ORCID iD opens their page.
+    page = (out / "datasets" / "dandi" / "000003" / "index.html").read_text()
+    people = site.contributors_of(data, "dandi:000003")
+    assert people and all(site.e(c["name"]) in page for c in people)
+    assert any(f'<a href="../../../authors/{c["orcid"]}/"' in page for c in people if c.get("orcid"))
+    # Someone who is only a contributor of datasets has a page too, with the Datasets tab alone.
+    only = next(a for a in index.values() if a["datasets"] and not a["papers"])
+    theirs_page = (out / "authors" / only["orcid"] / "index.html").read_text()
+    assert 'data-panel="datasets"' in theirs_page and 'data-panel="papers"' not in theirs_page
     sitemap = (out / "sitemap.xml").read_text()
     assert "authors/</loc>" in sitemap and f"authors/{next(iter(index))}/</loc>" in sitemap
     assert 'href="authors/"' in (out / "index.html").read_text()
@@ -962,3 +986,20 @@ def test_the_authors_file_has_each_person_once_a_paper():
         ids = [a["orcid"] for a in listed if a["orcid"]]
         assert len(ids) == len(set(ids)), doi
         assert all(a["name"] and (a["orcid"] is None or authors.ORCID.fullmatch(a["orcid"])) for a in listed), doi
+
+
+def test_the_contributors_file_names_people_given_name_first_with_roles_in_words():
+    import contributors
+    assert contributors.given_first("Buzsáki, György") == "György Buzsáki" and contributors.given_first("IBL") == "IBL"
+    assert contributors.role("dcite:ContactPerson") == "Contact person" and contributors.role("Creator") == "Creator"
+    people = [{"name": "A B", "orcid": "0000-0001-0000-0001", "roles": ["Author"]},
+              {"name": "A B", "orcid": "0000-0001-0000-0001", "roles": ["Author", "Data curator"]},
+              {"name": "C D", "orcid": None, "roles": ["Creator"]}]
+    assert contributors.once(people) == [{"name": "A B", "orcid": "0000-0001-0000-0001", "roles": ["Author", "Data curator"]},
+                                         {"name": "C D", "orcid": None, "roles": ["Creator"]}]
+    known = site.load_yaml(site.ROOT / "targets" / "contributors.yaml")["datasets"]
+    for key, listed in known.items():
+        ids = [p["orcid"] for p in listed if p["orcid"]]
+        assert len(ids) == len(set(ids)), key
+        assert all(p["name"] and "," not in p["name"] and (p["orcid"] is None or contributors.ORCID.fullmatch(p["orcid"]))
+                   for p in listed), key

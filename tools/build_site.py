@@ -435,6 +435,9 @@ def collect(executed: Path | None = None) -> dict:
         # Each paper's authors in order, with their ORCID iDs (papers/authors.yaml, tools/authors.py).
         "authors": ((load_yaml(ROOT / "papers" / "authors.yaml") or {}).get("papers", {})
                     if (ROOT / "papers" / "authors.yaml").is_file() else {}),
+        # The people each dataset names as its contributors, with ORCID iDs and roles (targets/contributors.yaml).
+        "contributors": ((load_yaml(ROOT / "targets" / "contributors.yaml") or {}).get("datasets", {})
+                         if (ROOT / "targets" / "contributors.yaml").is_file() else {}),
         "transcripts": {**transcripts, **archived},
         "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -1070,55 +1073,105 @@ def authors_of(data: dict, doi: str) -> list[dict]:
     return (data.get("authors") or {}).get(key) or []
 
 
+def contributors_of(data: dict, key: str) -> list[dict]:
+    """The people a dataset names as its contributors (targets/contributors.yaml): name, ORCID iD or none, roles."""
+    return (data.get("contributors") or {}).get(key) or []
+
+
 def author_index(data: dict) -> dict[str, dict]:
-    """Every author with an ORCID iD, by iD: the name (the one most of their papers print) and their papers in the
-    registry (papers_of), newest first. An author without an iD has no entry: a name alone does not say who it is."""
+    """Everyone with an ORCID iD who is an author of a paper in the registry or a contributor of one of its
+    datasets, by iD: the name (the one most of their records print), their papers (papers_of), newest first, and
+    their datasets, each with their roles on it. A person without an iD has no entry: a name alone does not say
+    who it is."""
     if id(data) in _AUTHORS:
         return _AUTHORS[id(data)]
     names: dict = {}
     out: dict = {}
+
+    def entry(person):
+        names.setdefault(person["orcid"], Counter())[person["name"]] += 1
+        return out.setdefault(person["orcid"], {"orcid": person["orcid"], "papers": [], "datasets": []})
     for q in papers_of(data):
         for a in authors_of(data, q["doi"]):
             if a.get("orcid"):
-                names.setdefault(a["orcid"], Counter())[a["name"]] += 1
-                out.setdefault(a["orcid"], {"orcid": a["orcid"], "papers": []})["papers"].append(q)
-    for orcid, entry in out.items():
-        entry["name"] = sorted(names[orcid].items(), key=lambda kv: (-kv[1], -len(kv[0]), kv[0]))[0][0]
-        entry["papers"].sort(key=lambda q: (q["key"].rsplit("-", 1)[-1], q["key"]), reverse=True)
+                entry(a)["papers"].append(q)
+    for t in data["targets"]:
+        for c in contributors_of(data, t["key"]):
+            if c.get("orcid"):
+                entry(c)["datasets"].append({"key": t["key"], "roles": c.get("roles") or []})
+    for orcid, found in out.items():
+        found["name"] = sorted(names[orcid].items(), key=lambda kv: (-kv[1], -len(kv[0]), kv[0]))[0][0]
+        found["papers"].sort(key=lambda q: (q["key"].rsplit("-", 1)[-1], q["key"]), reverse=True)
+        found["datasets"].sort(key=lambda d: d["key"])
     _AUTHORS.clear()
     _AUTHORS[id(data)] = out
     return out
 
 
-def authors_html(data: dict, doi: str, root: str) -> str:
-    """A paper's authors for its page: each with an ORCID iD opens the author's page; the names past the first
-    AUTHORS_SHOWN open on request."""
-    people = authors_of(data, doi)
+def people_html(data: dict, people: list[dict], root: str, noun: str = "authors") -> str:
+    """People under a title, in order: each with an ORCID iD opens their page (their roles, when they have any, on
+    hover); the names past the first AUTHORS_SHOWN open on request."""
     if not people:
         return ""
     known = author_index(data)
-    names = [f'<a href="{root}authors/{e(a["orcid"])}/">{e(a["name"])}</a>' if a.get("orcid") in known else e(a["name"])
-             for a in people]
+
+    def one(a):
+        title = f' title="{e(", ".join(a["roles"]))}"' if a.get("roles") else ""
+        return (f'<a href="{root}authors/{e(a["orcid"])}/"{title}>{e(a["name"])}</a>' if a.get("orcid") in known
+                else f'<span{title}>{e(a["name"])}</span>' if title else e(a["name"]))
+    names = [one(a) for a in people]
     if len(names) <= AUTHORS_SHOWN + 2:
         return f'<p class="authors">{", ".join(names)}</p>'
     rest = len(names) - AUTHORS_SHOWN
     return (f'<div class="authors"><p>{", ".join(names[:AUTHORS_SHOWN])},</p><details><summary>and {rest} more '
-            f'authors</summary><p>{", ".join(names[AUTHORS_SHOWN:])}</p></details></div>')
+            f'{noun}</summary><p>{", ".join(names[AUTHORS_SHOWN:])}</p></details></div>')
+
+
+def authors_html(data: dict, doi: str, root: str) -> str:
+    """A paper's authors for its page."""
+    return people_html(data, authors_of(data, doi), root)
 
 
 def author_rows(data: dict) -> list[dict]:
-    """The authors list's rows: every author with an ORCID iD and their papers in the registry."""
+    """The authors list's rows: everyone with an ORCID iD, their papers and their datasets in the registry."""
     out = []
     for orcid, a in author_index(data).items():
         attempted = [q for q in a["papers"] if q["attempts"]]
         out.append({
             "id": orcid, "name": a["name"], "family": a["name"].split()[-1] + ", " + " ".join(a["name"].split()[:-1]),
             "page": f"authors/{orcid}/", "n_papers": len(a["papers"]), "n_attempted": len(attempted),
+            "n_datasets": len(a["datasets"]),
             "attempted": "yes" if attempted else "no",
+            "as": [k for k, on in (("author", a["papers"]), ("contributor", a["datasets"])) if on],
             "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
                         else None, "doi": q["doi"]} for q in a["papers"]],
+            "datasets": [dataset_label(d["key"]) for d in a["datasets"]],
         })
-    return sorted(out, key=lambda r: (-r["n_papers"], r["family"].lower()))
+    return sorted(out, key=lambda r: (-r["n_papers"], -r["n_datasets"], r["family"].lower()))
+
+
+def dataset_card(data: dict, key: str, root: str, note: str = "") -> str:
+    """A dataset as a row, as the datasets list has it: its identifier, its name (which opens its page, or the
+    archive when no attempt has used it), `note`, the version tested and its open findings about the data."""
+    r = next((x for x in rows_cache(data)["datasets"] if x["id"] == key), None)
+    if r is None:
+        return ""
+    href = root + r["page"] if r.get("page") else r["url"]
+    tested = bool(r.get("page")) and r["status"] == "attempted"
+    kinds = " ".join(f'<span class="tag">{e(FINDING_KINDS.get(k, k))}<span class="c">{n}</span></span>'
+                     for k, n in (r.get("found_counts") or {}).items())
+    n = r.get("findings") or 0
+    meta = " ".join(f"<span>{x}</span>" for x in (
+        [note] if note else []) + ([f'Tested on {e("; ".join(r["versions"]))}'] if tested and r.get("versions") else [])
+        + [human_size(r["size_gb"])])
+    right = (f'<span class="open{"" if n else " none"}"><strong>{n}</strong> open finding{"" if n == 1 else "s"}</span>'
+             f'<span class="small muted">{e(r.get("date") or "")}</span>' if tested
+             else '<span class="small muted">Not yet tested</span>')
+    return (f'<div class="row drow"><div class="id"><a href="{e(href)}">{e(r["label"])}</a></div>'
+            f'<div><p class="title"><a href="{e(href)}">{e(r["name"] or r["paper_title"] or r["label"])}</a></p>'
+            f'<div class="meta">{meta}</div>'
+            + (f'<div class="meta kinds" style="margin-top:6px">{kinds}</div>' if kinds else "")
+            + f'</div><div class="right">{right}</div></div>')
 
 
 def paper_card(data: dict, q: dict, root: str, note: str = "", under: str = "") -> str:
@@ -1140,29 +1193,54 @@ def paper_card(data: dict, q: dict, root: str, note: str = "", under: str = "") 
 
 
 def page_author(data: dict, author: dict) -> str:
-    """An author's page, by ORCID iD: every paper in the registry they are an author of."""
+    """A person's page, by ORCID iD: the papers in the registry they are an author of, with the outcomes of those
+    papers' claims summed, and the datasets they are a contributor of."""
     root = "../../"
     orcid, name = author["orcid"], author["name"]
-    cards = "".join(paper_card(data, q, root, note=e(journal_name(q["doi"]) or "")) for q in author["papers"])
-    n, tried = len(author["papers"]), sum(1 for q in author["papers"] if q["attempts"])
+    papers, sets = author["papers"], author["datasets"]
+    cards = "".join(paper_card(data, q, root, note=e(journal_name(q["doi"]) or "")) for q in papers)
+    set_cards = "".join(dataset_card(data, d["key"], root, note=e(", ".join(d["roles"]))) for d in sets)
+    n, tried, m = len(papers), sum(1 for q in papers if q["live"]), len(sets)
+    # The outcomes of every claim tested across their papers, as one bar.
+    rows_ = {r["id"]: r for r in rows_cache(data)["papers"]}
+    total = {k: sum((rows_.get(q["key"], {}).get("counts") or {}).get(k, 0) for q in papers) for k in OUTCOMES}
+    n_claims = sum(total.values())
+    summed = (f'<div class="summary">{bar(total, f"Outcomes of {n_claims} claims", "bar mini")}{legend(total, compact=True)}</div>'
+              f'<p class="sub small" style="margin-top:6px">Outcomes of the {n_claims:,} claims tested across '
+              f'{tried} attempted paper{"" if tried == 1 else "s"}, on the data in their datasets. {CAUTION} '
+              f'It may be a failure of the attempt.</p>') if n_claims else ""
+    said = " · ".join(x for x in (f'{n} paper{"" if n == 1 else "s"}, {tried} attempted' if n else "",
+                                  f'{m} dataset{"" if m == 1 else "s"}' if m else "") if x)
+    tabs = [("papers", "Papers", n), ("datasets", "Datasets", m)]
+    tabs = [t for t in tabs if t[2]] or tabs[:1]
+    tab_buttons = "".join(f'<button type="button" role="tab" data-panel="{k}" aria-selected="false">{label} '
+                          f'<span class="count">{c}</span></button>' for k, label, c in tabs)
+    panels = {
+        "papers": f'''<section class="tabpanel" id="papers"><h2>Papers</h2>
+    <p class="sub small" style="margin-top:12px">Every paper in the registry that names this ORCID iD among its
+    authors, as OpenAlex records them. An outcome says what one attempt could reproduce from the paper&rsquo;s open
+    data.</p>
+    <div class="results" style="margin-top:12px">{cards or '<p class="empty">None.</p>'}</div></section>''',
+        "datasets": f'''<section class="tabpanel" id="datasets"><h2>Datasets</h2>
+    <p class="sub small" style="margin-top:12px">Every dataset in the registry that names this ORCID iD among its
+    contributors, with their roles as the dataset gives them, and what attempts found about its data.</p>
+    <div class="results" style="margin-top:12px">{set_cards}</div></section>''',
+    }
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}authors/">Authors</a> / {e(name)}</p>
   <div class="dhead"><h1>{e(name)}</h1></div>
-  <p class="sub">ORCID iD <a href="https://orcid.org/{e(orcid)}" rel="noopener">{e(orcid)}</a> ·
-  {n} paper{"" if n == 1 else "s"} in the registry, {tried} attempted</p>
+  <p class="sub">ORCID iD <a href="https://orcid.org/{e(orcid)}" rel="noopener">{e(orcid)}</a> · {said} in the registry</p>
+  {summed}
 </header>
 <main>
-  <section class="panel"><h2>Papers <span class="count">{n}</span></h2>
-    <p class="sub small" style="margin-top:12px">Every paper in the registry that names this ORCID iD among its
-    authors, as OpenAlex records them. An outcome says what one attempt could reproduce from the paper&rsquo;s open
-    data; a failure to reproduce may be a failure of the attempt.</p>
-    <div class="results" style="margin-top:12px">{cards}</div></section>
+  <div class="tabs" role="tablist">{tab_buttons}</div>
+  {"".join(panels[k] for k, _, _ in tabs)}
 </main>'''
     structured = {"@context": "https://schema.org", "@type": "Person", "name": name,
                   "identifier": f"https://orcid.org/{orcid}", "sameAs": f"https://orcid.org/{orcid}"}
-    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, path=f"authors/{orcid}/",
-                 description=f"Papers by {name} (ORCID {orcid}) in the Encore registry, and what attempts to "
-                             f"reproduce them from their open data found.", structured=structured)
+    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, TABS_JS, path=f"authors/{orcid}/",
+                 description=f"Papers and datasets of {name} (ORCID {orcid}) in the Encore registry, and what "
+                             f"attempts to reproduce the papers from their open data found.", structured=structured)
 
 
 def paper_of(data: dict, attempt: dict) -> dict | None:
@@ -2156,12 +2234,14 @@ LISTS = {
 # The authors list: everyone with an ORCID iD among the authors of a paper in the registry.
 LISTS["authors"] = {
     "title": "Authors", "noun": "authors", "data": "data/authors.json",
-    "intro": "Everyone with an ORCID iD among the authors of a paper in the registry. Each opens a page with all of "
-             "their papers here. Authors are found by ORCID iD, as OpenAlex records them: a name alone does not say "
-             "who it is, so an author without an iD is named on the paper&rsquo;s page and has no page here.",
-    "facets": [("attempted", "Papers")],
-    "sorts": [("-n_papers", "Most papers"), ("family", "Family name"), ("name", "Given name"),
-              ("-n_attempted", "Most papers attempted")],
+    "intro": "Everyone with an ORCID iD among the authors of a paper in the registry or the contributors of one of "
+             "its datasets. Each opens a page with all of their papers and datasets here. People are found by ORCID "
+             "iD, as OpenAlex records it for a paper and the archive for a dataset: a name alone does not say who "
+             "it is, so a person without an iD is named on the paper&rsquo;s or the dataset&rsquo;s page and has "
+             "no page here.",
+    "facets": [("as", "In the registry as"), ("attempted", "Papers")],
+    "sorts": [("-n_papers", "Most papers"), ("-n_datasets", "Most datasets"), ("family", "Family name"),
+              ("name", "Given name"), ("-n_attempted", "Most papers attempted")],
     "csv": None,
 }
 
@@ -2186,6 +2266,7 @@ def page_list(data: dict, kind: str) -> str:
             "found": {**FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
             "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
+            "as": {"author": "An author of a paper", "contributor": "A contributor of a dataset"},
             "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
@@ -2546,6 +2627,7 @@ def page_dataset(data: dict, key: str) -> str:
   <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
   <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
   <p class="sub">{e(name)}</p>
+  {people_html(data, contributors_of(data, key), root, noun="contributors")}
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   {f'<p class="sub small" style="margin-top:8px">Tested on dataset {"; ".join(versions)}</p>' if versions else ""}
   <p class="actions">{" ".join(actions)}</p>

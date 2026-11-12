@@ -155,14 +155,17 @@
         <div class="right"><span class="open${n ? '' : ' none'}"><strong>${n}</strong> open finding${n === 1 ? '' : 's'}</span>
           <span class="small muted">${esc(r.date)}</span></div></div>`;
     },
-    // An author with an ORCID iD: the name opens their page; their papers here, each opening its own.
+    // A person with an ORCID iD: the name opens their page; their papers here, each opening its own, and how
+    // many of the registry's datasets name them.
     authors(r) {
       const papers = r.papers.map((q) => q.page ? `<a href="${root + q.page}">${esc(q.byline)}</a>`
         : `<a href="https://doi.org/${esc(q.doi)}">${esc(q.byline)}</a>`).join(', ');
+      const count = (n, noun) => n ? `${n} ${noun}${n === 1 ? '' : 's'}` : '';
+      const sets = r.n_datasets ? `<div class="meta"><span class="muted">${esc(r.datasets.slice(0, 8).join(', '))}${r.n_datasets > 8 ? `, and ${r.n_datasets - 8} more` : ''}</span></div>` : '';
       return `<div class="row drow prow">
         <div><p class="title"><a href="${root + r.page}">${esc(r.name)}</a></p>
-          <div class="meta"><span>${papers}</span></div></div>
-        <div class="right"><span class="small">${r.n_papers} paper${r.n_papers === 1 ? '' : 's'}</span>
+          ${papers ? `<div class="meta"><span>${papers}</span></div>` : ''}${sets}</div>
+        <div class="right"><span class="small">${[count(r.n_papers, 'paper'), count(r.n_datasets, 'dataset')].filter(Boolean).join(' · ')}</span>
           <span class="small muted">${esc(r.id)}</span></div></div>`;
     },
   }[cfg.kind];
