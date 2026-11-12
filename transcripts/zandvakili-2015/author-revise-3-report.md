@@ -1,15 +1,13 @@
-Round 3 is applied and recorded. One outcome changed, and no proposals are left open.
+The round-3 update was already in place, so I didn't edit anything. The previous run (commit 637332d, "author-revise-3 (success)") had made every change this step asks for, and I checked them against the verifier's round-3 report.
 
-**Outcome changed:** `fig5b-intra-areal-zero-lag` went from `partially_reproduced` to `not_reproduced`. The verifier agreed with the proposal. Under the assumed Wilcoxon signed-rank test, V1-V1 offsets differ from zero (p = 0.016), and the criterion has no partial outcome. I removed `proposed` from that claim and kept `assumed: true`.
+**Changed outcome:**
+- **`fig5b-intra-areal-zero-lag`** went from partially reproduced to **not reproduced** and is still marked as resting on an assumption (`assumed: true`). The verifier agreed with the proposed change. The assumption is that the paper used the Wilcoxon signed-rank test. Under that test, V1-V1 pairs differ from zero (p = 0.016), and the claims file defines no partial outcome.
+  - `proposed` has been removed from the record.
+  - The claim's notes, the notebook's result cell (cell 22) and summary table, and the entry README all now say not reproduced.
+  - Round 3 is recorded under `verifications` with a single result for this claim: the verifier agrees, gives not_reproduced, its reason is in its own words, and the response is filled in.
 
-**Proposals still standing:** none. This was the only one, so no other outcome was touched.
+**Proposals still standing:** none. This was the only proposal, and no other outcome changed.
 
-**Edits made:**
-- **Notebook:** the result cell (cell 22) and the summary table now say not reproduced, with the history of the outcome.
-- **Entry README:** the table row now says not reproduced, resting on an assumption.
-- **Attempt notes:** this claim's notes in `attempts/zandvakili-2015-01.yaml` now say not reproduced, and that round 3 agreed.
-- **Round 3:** recorded under `verifications` with one result for this claim. It says the verifier agreed and would give `not_reproduced`, gives its reason in its own words, and my response.
+**Checks:** `python tools/entry.py all entries/zandvakili-2015` reports 0 errors and the notebook passes. The tool reused the copy executed at 23:28 UTC because nothing the notebook reads has changed, so the notebook was not run again.
 
-**Checks:** `python tools/entry.py all entries/zandvakili-2015` passed with 0 errors. The notebook ran in 1565 s, and its numbers for this claim match the record. The run took about 26 minutes, a little over the 23 the entry and README give; I left those as they were.
-
-Nothing is committed. `tools/site_assets/list.js` was already modified before this run, and I left it alone.
+The working tree also has an edit to `tools/site_assets/list.js` and some untracked environment files. None of them come from this run, and I left them as they were. Nothing was committed.
