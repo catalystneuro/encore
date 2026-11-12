@@ -288,30 +288,56 @@ outcomes:
     (Spearman, 0.379 to 0.392) give lower values. Per-animal Pearson r is 0.36 to 0.55. The data set's
     fields give r 0.446, p 8.8e-14.
 - claim: fig4b-single-field-proportion
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_rich_2014.ipynb
   output: claim:fig4b-single-field-proportion
   measured:
   - 4.51
   - 10.97
-  notes: With the P-a fit under X-a the single-field proportion stays inside 4.5 to 11% from 133 to 750 m
-    (a factor of 5.7 in size; 4.51 to 10.97% there) and is 16.5% at 48 m; X-b gives 195 to 866 m (factor
-    4.4). The criterion asks for a factor of 10. The printed parameters give factors of 5.5 and 4.3, so
-    the paper's own fit would not meet the criterion either. The factor of 10 is asked of a reader
-    (questions/rich-2014.yaml).
+  notes: With the P-a fit under X-a the single-field proportion stays inside 4.5 to 11% from 133 to 750 m,
+    a factor of 5.66 in size (4.51 to 10.97% there), above the 5.0 the criterion asks; X-b gives 195 to
+    866 m, a factor of 4.44, above 3.9. P-b gives 5.75 and 4.49, the data set's fields 5.59 and 4.39, and
+    the printed parameters 5.53 and 4.34. At 48 m the proportion is 16.5% (X-a), so the band holds for
+    environments of about 130 to 750 m, not for the track itself. What the answer changed. The question
+    (questions/rich-2014.yaml) asked whether the criterion's factor of 10 came from the paper; the reader
+    found it did not and amended the criterion to the width the printed parameters give, less 10% (5.0
+    under X-a, 3.9 under X-b). The analysis is unchanged; under the earlier factor of 10 the outcome was
+    not reproduced, and under the amended one it is reproduced.
 - claim: fig4c-active-subsets
   outcome: not_reproduced
+  assumed: true
   notebook: reproduce_rich_2014.ipynb
   output: claim:fig4c-active-subsets
-  notes: For pairs of environments both larger than 10 m, the mean proportion of cells in different
-    states is 0.269 (logarithmic sizes) and 0.251 (linear) for the gamma-Poisson model against 0.371 and
-    0.301 for the fitted equal-rate model (P-a fit), so the criterion fails under both spacings. With
-    twice the fitted rate the equal-rate value is 0.153 and 0.098, and 0.043 and 0.036 for pairs over 20
-    m, consistent with the Fig. S18 legend's near-zero high-rate condition. With half the rate it is
-    0.499 and 0.482. The comparison the criterion uses is asked of a reader (questions/rich-2014.yaml).
+  notes: The share of all pairs of different environments with an exclusive-OR proportion above the
+    level, gamma-Poisson against the fitted equal rate (P-a fit), is 0.825 against 0.834 (K-a, 0.1) and
+    0.662 against 0.701 (K-b, 0.2) with logarithmic sizes (G-a), lower under both levels, and 0.999
+    against 0.980 and 0.948 against 0.830 with linear sizes (G-b), higher under both. P-b and the data
+    set's fields give the same signs, and over 10 further seeds the difference stays within -0.054 to
+    -0.006 under G-a and 0.018 to 0.156 under G-b. The readings disagree, so G-a is assumed (see
+    deviations) and the outcome under it is not reproduced; under G-b it would be reproduced. Reported,
+    not judged. The expected share of cells active at 50 m is 0.669 (gamma-Poisson) and 0.961 (fitted
+    equal rate). The mean exclusive-OR proportion over pairs both larger than 10 m is 0.269 against
+    0.371 (G-a) and 0.251 against 0.301 (G-b). With twice the fitted rate it is 0.153 and 0.098, and 0.043
+    and 0.036 for pairs over 20 m, near zero as the Fig. S18 legend says of its high rate; the share above
+    0.2 is then 0.781 (G-a) and 0.458 (G-b). What the answer changed. The question
+    (questions/rich-2014.yaml) asked whether the mean over pairs larger than 10 m against the fitted equal
+    rate was a reading of Fig. 4C. The reader kept the fitted equal rate as the comparison and replaced
+    the measure with the share of pairs above a level (K-a 0.1, K-b 0.2) under both spacings. Under the
+    earlier criterion the outcome was not reproduced under both spacings; under the amended one the
+    spacings disagree, and the outcome, not reproduced, now rests on the assumed spacing. The spacing of
+    the sizes is a question for the paper's authors (see findings).
   deviations:
   - The equal-rate model uses the observed mean count per cell (3.126 per 48 m under P-a); the half and
     twice variants are those the criterion names, as Fig. S18's rates are not given.
+  - Assumed logarithmic spacing (G-a) of the 300 environment sizes, as G-a and G-b give different
+    outcomes. The Methods give only "300 independent environments ranging in size from 0.1 m to 50 m"
+    (Active subset simulation). The range spans nearly three orders of magnitude, its lower end 0.1 m is
+    the natural start of a logarithmic grid, the main text describes recruitment "over spatial scales
+    spanning several orders of magnitude" (main text, on Fig. 3C), and the Fig. S18 legend compares
+    conditions on "small environments", of which a linear grid holds few (6 of 300 below 1 m, against 111
+    for G-a).
+  - The levels K-a 0.1 and K-b 0.2 are the criterion's standard choices; the same sign holds at both
+    under each spacing.
 - claim: figs5-silent-cells-low-rate
   outcome: partially_reproduced
   notebook: reproduce_rich_2014.ipynb
@@ -390,3 +416,11 @@ findings:
   statement: Question for the paper's authors. How were the corners of Fig. S10B defined (which vertices
     of the track model, and what change of direction counts as a corner)? The panel was tested with
     corners at 45 and 90 degrees of a reconstructed centreline, which give the same result.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the 300 environment sizes from 0.1 to 50 m of
+    the active subset simulation (Fig. 4C, Methods, Active subset simulation) spaced, logarithmically or
+    linearly, and what proportion of cells counts as distinguishing two environments? With the fitted
+    parameters the gamma-Poisson model distinguishes a larger share of pairs than the fitted equal rate
+    with linear spacing (0.948 against 0.830 above 0.2) and a smaller one with logarithmic spacing (0.662
+    against 0.701), so the outcome of fig4c-active-subsets rests on the spacing; logarithmic spacing was
+    assumed.
