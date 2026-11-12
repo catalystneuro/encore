@@ -357,6 +357,11 @@ def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it
                     dataset = (out / site.page_of(x["key"]) / "index.html").read_text()
                     assert f'Attempt <a href="../../../{site.attempt_path(data, a)}">{a["id"]}</a> on {site.version_text(x)}' in dataset
     assert replaced and several
+    # The attempts behind a paper's results are closed until asked for, under a bar that counts them.
+    semenov = (out / "papers" / "semenov-2026" / "index.html").read_text()
+    assert '<details class="panel timeline-panel"><summary><h2>Attempts <span class="count">7</span></h2>' in semenov
+    assert '<span class="muted small">7 current</span></summary>' in semenov and "timeline-panel\" open" not in semenov
+    assert "1 current, 1 replaced</span></summary>" in (out / "papers" / "kim-2022" / "index.html").read_text()
     # An attempt on two datasets names both, each with its version.
     kim = (out / "papers" / "kim-2022" / "index.html").read_text()
     assert "DANDI:000489</a> version" in kim and "DANDI:000448</a> version" in kim

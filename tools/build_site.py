@@ -2294,9 +2294,13 @@ def attempts_timeline(data: dict, dandiset: str, root: str, shown: list[dict], p
              "replaces the one before it on that dataset; the paper&rsquo;s page shows the current ones." if paper else
              "Each attempt tests the paper again, usually on a newer version of the dataset or a newer protocol, and "
              "reports which earlier findings are fixed. The latest attempt on each paper is the current one.")
-    return (f'<div class="panel timeline-panel"><h2>Attempts{"" if paper else " over time"} '
-            f'<span class="count">{len(all_atts)}</span></h2>'
-            f'<p class="sub small" style="margin-top:6px">{intro}</p><ol class="timeline">{items}</ol></div>')
+    # Closed until asked for: the page is about the paper's results, and the attempts behind them are detail. The
+    # bar says how many there are, and how many of them a later attempt replaced.
+    n_replaced = sum(1 for a in all_atts if a["id"] not in current_ids)
+    said = f'{len(all_atts) - n_replaced} current' + (f', {n_replaced} replaced' if n_replaced else "")
+    return (f'<details class="panel timeline-panel"><summary><h2>Attempts{"" if paper else " over time"} '
+            f'<span class="count">{len(all_atts)}</span></h2><span class="muted small">{said}</span></summary>'
+            f'<p class="sub small" style="margin-top:10px">{intro}</p><ol class="timeline">{items}</ol></details>')
 
 
 def finding_tags(f: dict) -> str:
