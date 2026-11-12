@@ -21,71 +21,92 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/encore/actions/runs/43153520832
 inputs:
-- what: Method details only (no data). The Fig. 5 turn filters, predictor smoothing, frame matching,
-    file selection by path and model family, ported to plumes.py and checked to give the code's own
-    numbers on the same files; the Fig. 1 cue definitions and the Fig. 2 feature definitions and
-    intensity transform. From src/gradient_motion_panels/summary_tables.py, centerline_models.py,
-    plume_fields.py, metadata/published_panel_params.json and metadata/figures_1_3.json.
-  source: https://github.com/emonetlab/GradientMotionMultiplePlumes at commit
-    effc7b0317f6d3b62136c2a07bcba3e80e778575
+- what: Method details only (no data). The Fig. 5 turn filters, predictor smoothing, frame matching, file
+    selection by path and model family, ported to plumes.py and checked to give the code's own numbers
+    on the same files; the Fig. 1 cue definitions and the Fig. 2 feature definitions and intensity transform.
+    From src/gradient_motion_panels/summary_tables.py, centerline_models.py, plume_fields.py, metadata/published_panel_params.json
+    and metadata/figures_1_3.json.
+  source: https://github.com/emonetlab/GradientMotionMultiplePlumes at commit effc7b0317f6d3b62136c2a07bcba3e80e778575
+- what: The code's published Fig. 5E and 5F tables (fig5e_cue_beta_*_plume.csv, fig5f_s5_model_comparison_*_plume.csv),
+    the claims file's expected values, read only to show which files and readings they come from; no data.
+  source: https://github.com/emonetlab/GradientMotionMultiplePlumes at commit effc7b0317f6d3b62136c2a07bcba3e80e778575,
+    data/published_panel_tables/
 outcomes:
 - claim: fig1eh-snapshot-organization
   outcome: blocked
   blocked_by: other
-  notes: Depends on fig1il-zscore-reliability and figs1-antisymmetry-index, which are blocked
-    because the smooth plume cannot be read (see fig1il-zscore-reliability). The complex plume
-    window is in the dandiset, but the code's published complex snapshot (frame 2900) lies outside
-    it.
+  notes: Depends on fig1il-zscore-reliability and figs1-antisymmetry-index, which are blocked because
+    the smooth plume cannot be read (see fig1il-zscore-reliability). The complex plume window is in the
+    dandiset, but the code's published complex snapshot (frame 2900) lies outside it.
 - claim: fig1il-zscore-reliability
   outcome: blocked
   blocked_by: other
-  notes: Needs the smooth plume movie, which is not in the dandiset. It is public on Dryad
-    (doi:10.5061/dryad.g27mq71, file 10302017_10cms_bounded_2.h5, version 1863), but Dryad answers
-    401 to downloads without an API token, and the file was not staged for this run (docs/archives.md,
-    Dryad). The paper's Yale Dataverse deposit (doi:10.60600/YU/590UBV) holds behavior tables only.
-    The complex plume half could be computed from the dandiset's window but cannot decide a
-    comparison between plumes, so it was not run.
+  notes: Needs the smooth plume movie, which is not in the dandiset. It is public on Dryad (doi:10.5061/dryad.g27mq71,
+    file 10302017_10cms_bounded_2.h5, version 1863), but Dryad answers 401 to downloads without an API
+    token, and the file was not staged for this run (docs/archives.md, Dryad). The paper's Yale Dataverse
+    deposit (doi:10.60600/YU/590UBV) holds behavior tables only. The complex plume half could be computed
+    from the dandiset's window but cannot decide a comparison between plumes, so it was not run.
 - claim: figs1-antisymmetry-index
   outcome: blocked
   blocked_by: other
-  notes: Needs the smooth plume (see fig1il-zscore-reliability). The freestream and complex windows
-    are in the dandiset (three freestream movies of 8.1 to 8.4 GB each, about 5.5 min each to stream);
-    the criterion places the smooth index against the 10 cm/s one, so the claim cannot be decided
-    without it, and the other parts were not run.
+  notes: Needs the smooth plume (see fig1il-zscore-reliability); the criterion places the smooth index
+    below the 10 cm/s one. The other parts were computed (notebook, Parts of the blocked Fig. S1 claims).
+    From the dandiset's deposited freestream maps (mean vertical gradient and motion cue), with Otsu masks
+    (bias 55) and centerlines (row of maximum mean intensity at the source, rows 488, 491, 492) from every
+    25th frame of each window, the index log2(s_motion / s_gradient) is -2.93, -1.53 and +0.04 at 5, 10
+    and 20 cm/s; from the complex window it is 4.40 (centerline 590) or 4.26 (row 563), under both bias
+    readings and with the intensities rescaled between their 1st and 99th percentiles. So the index rises
+    with wind speed and the complex index is above every freestream one. s_gradient is 11.7, 16.2 and
+    16.3 and s_motion 1.5, 5.6 and 16.8. The deposited maps scale with the one-pixel cues computed from
+    the windows by about the same factor for the gradient (0.17) and motion (0.20 to 0.22), so their ratio
+    is on the scale of the complex window's cues.
+  notebook: reproduce_brudner_2026.ipynb
 - claim: figs1-temporal-statistics
   outcome: blocked
   blocked_by: other
-  notes: Needs the smooth plume (see fig1il-zscore-reliability); the criterion compares the smooth
-    medians with the 5 and 10 cm/s ones. The freestream and complex parts were not run.
+  notes: Needs the smooth plume (see fig1il-zscore-reliability); the criterion compares the smooth medians
+    with the 5 and 10 cm/s ones. The other parts were computed. From the dandiset's deposited Fig. S1
+    points (1000 per plume) the median frequency is 0.08, 0.40 and 1.08 Hz and the median intermittency
+    0.784, 0.609 and 0.433 at 5, 10 and 20 cm/s; from the complex window, each pixel binarized at 40%
+    of its maximum within the Otsu mask, the median frequency is 2.08 Hz (bias subtracted) or 2.28 Hz
+    (percentage) and the intermittency 0.173 or 0.201. So the complex plume has the highest median frequency
+    of the four, and the 20 cm/s plume has a higher frequency and lower intermittency than the 5 cm/s
+    plume.
+  notebook: reproduce_brudner_2026.ipynb
 - claim: figs1fg-resolution-robustness
   outcome: not_reproduced
   notebook: reproduce_brudner_2026.ipynb
   output: claim:figs1fg-resolution-robustness
-  notes: On the dandiset's complex window (1500 frames), the time-averaged gradient map of sensor
-    pairs 6, 9 and 12 pixels apart correlates with the 3-pixel map at r = 0.817, 0.703 and 0.613
-    (0.816, 0.702, 0.610 in the Otsu mask), against about 0.89 at 12 pixels in Fig. S1F and the
-    criterion's 0.8. The motion maps against the 3-pixel, 1-frame map fall to r = 0.731 to 0.745 at a
-    4-frame delay for the widened -(dI/dy)(dI/dt) cue and 0.729 to 0.820 for the two-sensor
-    correlator, against r near 1 in Fig. S1G, so the motion part fails under both definitions. The
-    r at 8 and 15 frames is below the 4-frame value at every spacing (0.52 to 0.56 and 0.35 to 0.37
-    for the first cue). With the mean map smoothed by a Gaussian of SD 1.5 pixels (a variant, not
-    the code's unsmoothed maps), the gradient r is 0.968, 0.911 and 0.809.
+  notes: 'On the dandiset''s complex window (1500 frames), the time-averaged gradient map of sensor pairs
+    6, 9 and 12 pixels apart correlates with the 3-pixel map at r = 0.817, 0.703 and 0.613 (0.816, 0.702,
+    0.610 in the Otsu mask), against about 0.89 at 12 pixels in Fig. S1F and the criterion''s 0.8; with
+    every frame smoothed by a Gaussian of SD 1.5 pixels (a variant) the gradient r is 0.968, 0.911 and
+    0.809. The motion maps against the 3-pixel, 1-frame map of the same reading fail under all six readings
+    (three cue forms, frames as stored or smoothed): at a 4-frame delay r is 0.729 to 0.820 as stored
+    and 0.780 to 0.855 smoothed, below 0.8 at 3 pixels in every reading (the lowest r over delays 1 to
+    4 is 0.729 to 0.784), against r near 1 in Fig. S1G. The r at 8 and 15 frames is below the 4-frame
+    value at every spacing in every reading. The centered form of the Fig. 1 cue and the two-sensor correlator
+    give the same correlations to three decimals; the backward form gives 0.731 to 0.745 at 4 frames as
+    stored.'
   deviations:
-  - The motion cue for a sensor spacing and a delay is not defined in the paper or its code. Two
-    definitions were run, the Fig. 1 cue -(dI/dy)(dI/dt) with the spacing and the delay widened
-    (Fig. S1 column iv is that cue) and the correlator A(t - tau) B(t) - A(t) B(t - tau) of the SI's
-    motion feature; both fail the criterion.
-  - Maps use every 4th column (432 of 1728), a standard choice that cannot change the result, since
-    the cues are crosswind and columns are computed independently; Pearson r is over all those
-    pixels, and over the Otsu mask as a variant.
-  - Sensor pairs are aligned on the row between them (rows y - floor(d/2) and y + ceil(d/2)), and
-    6 rows are cropped at each edge so maps of every spacing share their pixels.
+  - The motion cue for a sensor spacing and a delay is not defined in the paper or its code. Three forms
+    were run, the Fig. 1 cue -(dI/dy)(dI/dt) with centered differences and the spacing and the delay widened
+    (Fig. S1 column iv is that cue), the same with a backward difference in time, and the correlator A(t
+    - tau) B(t) - A(t) B(t - tau) of the SI's motion feature; all fail the criterion.
+  - Whether the Fig. S1F-G maps are of smoothed frames is not stated; each map is computed from the frames
+    as stored and from frames smoothed by the antennae's Gaussian (SD 1.5 pixels), as the code smooths
+    its Fig. 1 cue panels. The motion part fails under both.
+  - Maps use every 4th column (432 of 1728), a standard choice that cannot change the result, since the
+    cues are crosswind and columns are computed independently; Pearson r is over all those pixels, and
+    over the Otsu mask as a variant.
+  - Sensor pairs are aligned on the row between them (rows y - floor(d/2) and y + ceil(d/2)), and 6 rows
+    are cropped at each edge so maps of every spacing share their pixels.
 - claim: fig2b-smooth-auc
   outcome: blocked
   blocked_by: other
-  notes: The claim's data are elsewhere (Dryad, doi:10.5061/dryad.g27mq71). Dryad answers 401 to
-    downloads without an API token and the file was not staged for this run, so it could not be
-    read; the Yale Dataverse deposit holds no plume movie.
+  notes: The claim's data are elsewhere (Dryad, doi:10.5061/dryad.g27mq71). Dryad answers 401 to downloads
+    without an API token and the file was not staged for this run, so it could not be read; the Yale Dataverse
+    deposit holds no plume movie.
 - claim: fig2c-complex-auc
   outcome: partially_reproduced
   assumed: true
@@ -93,41 +114,44 @@ outcomes:
   output: claim:fig2c-complex-auc
   measured:
   - 0.603
-  - 0.560
+  - 0.56
   - 0.5
-  notes: Means over 10 repeats, region mean intensity above 5, mirror-balanced samples (the reading
-    recorded under measured). Motion AUC 0.603 (SD 0.006) against 0.618 +/- 0.005, gradient 0.560
-    against 0.537 +/- 0.012, sum 0.500 (SD 0). Over the six readings (two regions, three samplings)
-    the motion AUC is 0.601 to 0.604 and the gradient AUC 0.552 to 0.566, so motion exceeds the
-    gradient under every reading and neither value is within tolerance under any. The sum AUC is
-    0.500 under the mirror-balanced sampling and 0.630 to 0.665 under the two samplings the claims
-    file names, as the deposited plume is not symmetric about row 590 (the share of locations on
-    the right of the centerline is 0.484 and 0.488). Under those two samplings the criterion's sum
-    condition fails, which would make the outcome not reproduced; under the mirror-balanced one the
-    ordering and the sum hold and the values do not, which is partially reproduced.
+  notes: Means over 10 repeats, region mean intensity above 5, mirror-balanced samples split at random
+    (the reading recorded under measured). Motion AUC 0.603 (SD 0.006) against 0.618 +/- 0.005, gradient
+    0.560 against 0.537 +/- 0.012, sum 0.500 (SD 0). Over the eight readings (two regions, four samplings)
+    the motion AUC is 0.600 to 0.603 and the gradient AUC 0.553 to 0.561, so motion exceeds the gradient
+    under every reading and neither value is within tolerance under any; with the centerline at row 571
+    (the row of maximum mean intensity at the source) they are 0.598 and 0.564. The sum AUC is 0.500 under
+    both mirror-balanced samplings and 0.620 to 0.663 under the two samplings the claims file names, as
+    the deposited plume is not symmetric about row 590. Under those two the criterion's sum condition
+    fails, which would make the outcome not reproduced; under the mirror-balanced ones the ordering and
+    the sum hold and the values do not, which is partially reproduced. Splitting the mirror-balanced samples
+    by location, so that no test window is a training window, gives the same AUCs (motion 0.601, gradient
+    0.561, region mean above 5).
   deviations:
   - Assumed that the samples are balanced by mirroring each sample (antennae swapped, label flipped).
-    The paper does not say how samples are drawn or balanced. Its Fig. 2B-C and the code's
-    published table give a sum AUC of exactly 0.5 with SD 0 over 100 repeats and a sum weight of
-    0.000 "as expected" (Results, Plume-Specific Features Predict Centerline Direction, paragraph
-    3), which only a sample symmetric under the mirror gives; on the deposited plume the samplings
-    the claims file names give a sum AUC of 0.63 to 0.67. The two named samplings are shown.
-  - 10 repeats per reading, not the paper's 100; each repeat draws 1000 new locations and 2,400,000
-    training and 600,000 test samples, as the SI (Plume movies, Logistic regression models).
-  - The two antennae are at rows r and r + 3 of column c, the label is whether r + 1.5 is above row
-    590 (SI, centerline of the complex plume), and frames are filtered by a Gaussian of SD 1.5
-    pixels before sampling (SI). Which antenna is left is a convention that changes no AUC.
-  - The Otsu region is the mask of figs1-antisymmetry-index with the bias of 48 subtracted from the
-    Otsu threshold (0.841 of pixels); the region of mean intensity above 5 covers 0.890.
-  - The complex window is used as stored (0 to 255). Its provenance names a preprocessing run
-    "bgsub_gauss3_fullslice_p001_p99", which may differ from the movie the paper analysed.
+    The paper does not say how samples are drawn or balanced. Its Fig. 2B-C and the code's published table
+    give a sum AUC of exactly 0.5 with SD 0 over 100 repeats and a sum weight of 0.000 'as expected' (Results,
+    Plume-Specific Features Predict Centerline Direction, paragraph 3), which only a sample symmetric
+    under the mirror gives; on the deposited plume the samplings the claims file names give a sum AUC
+    of 0.62 to 0.66. The two named samplings are shown, and the mirror-balanced one is run with the windows
+    split at random and by location.
+  - 10 repeats per reading, not the paper's 100; each repeat draws 1000 new locations and 2,400,000 training
+    and 600,000 test samples, as the SI (Plume movies, Logistic regression models).
+  - The two antennae are at rows r and r + 3 of column c, the label is whether r + 1.5 is above row 590
+    (SI, centerline of the complex plume), and frames are filtered by a Gaussian of SD 1.5 pixels before
+    sampling (SI). Which antenna is left is a convention that changes no AUC. Row 571 is run as a variant.
+  - The Otsu region is the mask of figs1-antisymmetry-index with the bias of 48 subtracted from the Otsu
+    threshold (0.841 of pixels); the region of mean intensity above 5 covers 0.890.
+  - The complex window is used as stored (0 to 255). Its provenance names a preprocessing run 'bgsub_gauss3_fullslice_p001_p99',
+    which may differ from the movie the paper analysed; this cannot be undone here.
 - claim: figs2c-one-frame-delay
   outcome: blocked
   blocked_by: other
-  notes: Needs both plumes; the smooth plume cannot be read (see fig2b-smooth-auc). The complex part
-    was run (notebook, under fig2e). With mirror-balanced samples over 10 repeats, the motion AUC is
-    0.6033 (SD 0.0053) at a 1-frame delay, falls steadily to 0.5383 at 4 and 0.5054 at 15 frames, no
-    delay exceeds delay 1, and delay 15 is below it by more than the SD, so the complex part holds.
+  notes: Needs both plumes; the smooth plume cannot be read (see fig2b-smooth-auc). The complex part was
+    run (notebook, under fig2e). With mirror-balanced samples split by location over 10 repeats, the motion
+    AUC is 0.6012 (SD 0.0075) at a 1-frame delay, falls steadily to 0.5369 at 4 and 0.5047 at 15 frames,
+    no delay exceeds delay 1, and delay 15 is below it by more than the SD, so the complex part holds.
 - claim: fig2d-smooth-weights
   outcome: blocked
   blocked_by: other
@@ -137,27 +161,27 @@ outcomes:
   notebook: reproduce_brudner_2026.ipynb
   output: claim:fig2e-complex-weights
   measured:
-  - 0.424
+  - 0.426
   - 0.262
   - 0.614
-  notes: Means over 10 repeats, region mean intensity above 5, mirror-balanced samples (recorded
-    under measured). |motion| 0.424 against 0.403 +/- 0.034 (within), |gradient| 0.262 against
-    0.098 +/- 0.041 (outside), sum 0.000, combined AUC 0.614 against 0.612 +/- 0.061 (within). Over
-    the six readings |motion| is 0.415 to 0.424 and |gradient| 0.234 to 0.271, so the ordering
-    holds under every reading and the gradient weight is outside tolerance under every reading;
-    |sum| is below 0.01 only under the mirror-balanced sampling (0.225 to 0.332 otherwise). Every
-    reading gives partially reproduced (ordering only), so the outcome does not rest on the
-    sampling assumption of fig2c-complex-auc.
+  notes: Means over 10 repeats, region mean intensity above 5, mirror-balanced samples split at random
+    (recorded under measured). |motion| 0.426 against 0.403 +/- 0.034 (within), |gradient| 0.262 against
+    0.098 +/- 0.041 (outside), sum 0.000, combined AUC 0.614 against 0.612 +/- 0.061 (within). Over the
+    eight readings |motion| is 0.414 to 0.430 and |gradient| 0.231 to 0.281, so the ordering holds under
+    every reading and the gradient weight is outside tolerance under every reading (0.276 with the centerline
+    at row 571); |sum| is below 0.01 only under the mirror-balanced samplings (0.22 to 0.34 otherwise).
+    Every reading gives partially reproduced (ordering only), so the outcome does not rest on the sampling
+    assumption of fig2c-complex-auc.
   deviations:
-  - As fig2c-complex-auc (10 repeats, sampling readings, antenna geometry, regions).
-  - Weights are those of the standardized features of one unpenalized logistic model on the three
-    features (code, centerline_models.py), compared in absolute value as the claims file says.
+  - As fig2c-complex-auc (10 repeats, sampling readings, antenna geometry, regions, centerline variant).
+  - Weights are those of the standardized features of one unpenalized logistic model on the three features
+    (code, centerline_models.py), compared in absolute value as the claims file says.
 - claim: fig3bc-mnm-filters
   outcome: blocked
   blocked_by: other
-  notes: The claim compares networks trained in the smooth and the complex plume; the smooth plume
-    cannot be read (see fig1il-zscore-reliability). Training was not attempted for the complex plume
-    alone; 500 epochs over 2,400,000 samples on 4 CPUs would not fit the run either.
+  notes: The claim compares networks trained in the smooth and the complex plume; the smooth plume cannot
+    be read (see fig1il-zscore-reliability). Training was not attempted for the complex plume alone; 500
+    epochs over 2,400,000 samples on 4 CPUs would not fit the run either.
 - claim: fig3d-mnm-gradient-response
   outcome: blocked
   blocked_by: other
@@ -173,8 +197,8 @@ outcomes:
 - claim: fig4ef-agent-success
   outcome: blocked
   blocked_by: other
-  notes: Depends on fig3ij-dnm-specialization, blocked (smooth plume not readable). The paper's code
-    holds no agent simulation either.
+  notes: Depends on fig3ij-dnm-specialization, blocked (smooth plume not readable). The paper's code holds
+    no agent simulation either.
 - claim: discussion-ten-percent-gain
   outcome: blocked
   blocked_by: other
@@ -182,10 +206,9 @@ outcomes:
 - claim: figs4-threshold-robustness
   outcome: blocked
   blocked_by: other
-  notes: Depends on fig4ef-agent-success and fig2d-smooth-weights, blocked (smooth plume not
-    readable).
+  notes: Depends on fig4ef-agent-success and fig2d-smooth-weights, blocked (smooth plume not readable).
 - claim: fig5e-cue-betas
-  outcome: reproduced
+  outcome: not_reproduced
   assumed: true
   notebook: reproduce_brudner_2026.ipynb
   output: claim:fig5e-cue-betas
@@ -194,95 +217,104 @@ outcomes:
   - -0.0107
   - -0.0119
   - -0.0124
-  notes: Measured values are under the code's readings, as the criterion compares them (files' turn
-    start, 15 mm margin, no z-scoring, complex smoke-2a files, heading 150 to 210 in the complex
-    plume; 2949 and 1002 turns kept, the code's own counts on these files). There the smooth
-    coefficients are within tolerance (gradient -0.1114, p 0.0008; motion -0.0107, p 0.35) and the
-    complex ones are not (motion -0.0119, p 0.15, against +0.0441 +/- 0.0159; gradient -0.0124, p
-    0.036, against +0.0185 +/- 0.0161). The criterion's significance pattern depends on the reading.
-    Under the adopted one (SI onset, smoke-2a, predictors as stored or z-scored over all frames,
-    either heading window and either margin) it holds; smooth gradient p below 0.0001 and motion p
-    0.22 (2848 turns, 1011 trajectories), complex motion p 0.0051 (160 to 200, 685 turns) or 0.0057
-    (150 to 210, 996 turns) and gradient p 0.14 or 0.26. It fails with the files' turn start (complex
-    motion p 0.12 to 0.95), with per-trajectory z-scoring (complex motion p 0.10 and 0.20 with the
-    SI onset; smooth gradient p 0.25 with the files' start), and with the smoke-1a and smoke-2a
-    files together (no reading passes); the smoke-1a files alone pass in 10 of 24 readings. The
-    statement's direction is not tested by the criterion; the complex motion coefficient is
-    negative under the adopted reading (-0.028 and -0.024 as stored), opposite in sign to the
-    published +0.044 and to Fig. 5E, while the smooth gradient coefficient has the published sign.
+  notes: 'Measured values are under the code''s readings, as the criterion compares them (files'' turn
+    start, 15 mm margin, no z-scoring, complex smoke-2a files, heading 150 to 210 in the complex plume;
+    2949 and 1002 turns). There the smooth coefficients are within tolerance (gradient -0.1114, p 0.0008;
+    motion -0.0107, p 0.35) and the complex ones are not (motion -0.0119, p 0.15, against +0.0441 +/-
+    0.0159; gradient -0.0124, p 0.036, against +0.0185 +/- 0.0161). The significance pattern is tested
+    under the criterion''s onset (the SI''s 20% rule, computed from the files'' dtheta in the turn''s
+    direction) with the smoke-1a files as the complex plume (assumed). There it fails under every reading
+    (0 of 24): the complex motion coefficient has p 0.046 at 160 to 200 degrees and 0.090 at 150 to 210
+    (as stored or pooled; 295 and 409 turns), and with per-trajectory z-scoring (complex motion p 0.0046
+    and 0.013) the smooth motion coefficient becomes significant (p 0.0079). The smooth part holds under
+    the other z-scorings (gradient p below 0.0001, motion p 0.23; 2846 turns, 1011 trajectories). With
+    the code''s smoke-2a files the criterion holds in 16 of 24 readings (as stored or pooled) and fails
+    per trajectory (complex motion p 0.098 and 0.20), with a negative motion coefficient (-0.028 and -0.024)
+    opposite to the published one; both sets together pass none. Within each set the motion coefficient
+    has the same sign in flipped and unflipped trials (smoke-1a +0.049 and +0.020, smoke-2a -0.028 and
+    -0.030). With the dataset''s turn start, the smoke-1a files pass at 160 to 200 as stored or pooled
+    (complex motion p 0.0059, gradient p 0.28; smooth gradient p 0.0008, motion p 0.35) and fail at 150
+    to 210 and per trajectory; this reading is within 0.1 SE of the code''s published complex coefficients
+    and within 0.001 per turn of its four log-likelihoods. Whether the dataset''s turn start is the SI''s
+    onset is asked of a reader (questions/brudner-2026.yaml).'
   deviations:
-  - Assumed the SI's turn onset (the time rotational speed crosses 20% of the peak on the rising
-    edge; SI, Behavioral Analysis), as the claims file asks when the dataset's turn start is defined
-    otherwise. The files' events start a median of 4 frames after that onset (every 6th file,
-    15841 turns); the code uses the files' start. The peak is searched between the event's start
-    and stop, a standard choice.
-  - Assumed the code's complex files (paths with "smoke-2a"; code summary_tables.py DEFAULT_PLUMES).
-    The paper does not say which complex-plume behavior files it analysed; the dandiset has two sets
-    recorded on the same days and vials, smoke-1a and smoke-2a, and the Yale Dataverse deposit files
-    both as complex plume. Both alternatives are shown.
-  - Z-scoring (SI, Behavioral Analysis, which the code does not do) run as none, over all frames of
-    the plume group (same p-values) and per trajectory; the adopted reading uses the first two, as
-    the SI does not say per trajectory.
-  - The predictor is read at the last frame at or before onset minus 50 ms within one frame, after
-    rounding the target time to 10 decimals, exactly as the code's merge_asof does.
-  - The criterion's other readings (heading window, margin, alpha of 0.05 or 0.01 for not
-    significant) do not change the result under the adopted reading.
+  - Assumed that the smoke-1a files are the paper's complex plume. The paper does not say which complex-plume
+    behavior files it analysed; the dandiset's description says the smoke_1a_orig plume 'was analyzed
+    throughout the paper', and the session descriptions of the smoke-1a files name that movie (smoke_1a),
+    those of the smoke-2a files another (smoke_2a). The code selects smoke-2a (metadata/published_panel_params.json);
+    its published tables are matched by smoke-1a, not smoke-2a. Both alternatives and both sets together
+    are shown.
+  - Onset is the SI's (the time the rotation in the turn's direction crosses 20% of its peak on the rising
+    edge; SI, Behavioral Analysis), as the criterion asks when the dataset's turn start is defined otherwise.
+    The files' events start a median of 4 frames after that onset (every 6th file, 15841 turns). The peak
+    is searched between the event's start and stop, a standard choice. The first version of this attempt
+    followed |dtheta|, whose run went on into rotation the other way in 0.2% of turns; the rule now follows
+    the signed rotation. The files' turn start, which the code uses, is shown as a variant.
+  - Z-scoring (SI, Behavioral Analysis, which the code does not do) run as none, over all frames of the
+    plume group (same p-values) and per trajectory, the claims file's three readings.
+  - The predictor is read at the last frame at or before onset minus 50 ms within one frame, after rounding
+    the target time to 10 decimals, exactly as the code's merge_asof does. Heading is read at that frame
+    and position at the event start (turn_x, turn_y), as the code does.
+  - The criterion's other readings (heading window, margin, alpha of 0.05 or 0.01 for not significant)
+    are all run; the margin removes no kept turn, as the position filter lies inside it.
 - claim: fig5f-cue-dominance
-  outcome: reproduced
+  outcome: partially_reproduced
   assumed: true
   notebook: reproduce_brudner_2026.ipynb
   output: claim:fig5f-cue-dominance
   measured:
-  - 0.935
-  - -0.715
-  notes: Under the adopted reading of fig5e-cue-betas (SI onset, smoke-2a files) with the code's
-    complex heading window (150 to 210) and the predictors as stored or z-scored over all frames,
-    either margin, the smooth dominance is 0.935 and the complex -0.715, both within tolerance
-    (0.946 +/- 0.095 and -0.662 +/- 0.066). With the SI's window (160 to 200) the complex value is
-    -0.579, negative but outside tolerance. With the files' turn start the complex dominance is
-    positive (0.388 under the code's readings, 0.400 with 160 to 200), so the signs fail; under the
-    code's readings the smooth value is 0.879, within tolerance. Per-trajectory z-scoring gives
-    smooth 0.504 or -0.542. With smoke-2a, the signs hold in 10 of 24 paired readings and both
-    values are within tolerance in 4 (all SI onset, 150 to 210). The complex log-likelihoods behind
-    the adopted value differ little (full minus base 0.0055 per turn, gradient minus motion -0.0039).
+  - 0.937
+  - -0.492
+  notes: Measured under the readings of fig5e-cue-betas (SI onset, smoke-1a files, heading 160 to 200,
+    as stored; the first reading the criterion lists). The smooth dominance is 0.937 (within 0.946 +/-
+    0.095) and the complex -0.492 (outside -0.662 +/- 0.066). With smoke-1a and the SI onset the signs
+    hold in 4 of 6 readings (160 to 200 under every z-scoring, 150 to 210 per trajectory; the margin changes
+    nothing) and the two values are never both within tolerance (per trajectory smooth 0.518 and complex
+    -0.716; at 150 to 210 as stored the complex value is +0.114). Both are within tolerance with the smoke-2a
+    files at 150 to 210 as stored or pooled (0.937 and -0.717), and with the dataset's turn start and
+    the smoke-1a files at 160 to 200 (0.879 and -0.701), the reading nearest the code's published tables.
+    Under the code's readings (smoke-2a, turn start) the complex value is +0.388. The complex log-likelihoods
+    differ little (full minus base 0.011 per turn with smoke-1a at 160 to 200).
   deviations:
-  - The assumptions of fig5e-cue-betas (SI onset, smoke-2a files), on which this outcome rests.
-  - The code's four models (VARIANT_FORMULAS) with trajectory-clustered SE; LL is the mean per turn.
-    Smooth and complex readings are paired by onset, margin and z-scoring.
+  - The assumption of fig5e-cue-betas (smoke-1a files) and its onset, on which this outcome rests.
+  - The code's four models (VARIANT_FORMULAS) with trajectory-clustered SE; LL is the mean per turn. Smooth
+    and complex readings are paired by onset, margin and z-scoring.
 - claim: methods-intensity-right-bias
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The files code turn direction as +1 or -1, the sign of the rotational velocity at the
-    event's peak (all 15841 turns checked), and describe it only as "Turn direction label". The
-    heading is atan2(-vy, vx) (92.5% of moving frames within 30 degrees), so +1 turns are
-    counterclockwise in the (x, -y) frame, but whether that is left or right depends on how the
-    camera viewed the arena, which the files do not state; nor do they say where the projector mount
-    is. The intensity coefficient was estimated (fig5e cell). In the smooth plume it favours the -1
-    direction strongly (-0.0497 as stored, p below 0.0001, adopted reading; -0.0506 under the code's
-    readings); in the complex plume (smoke-2a) it is near 0 (-0.0001, p 0.95). If -1 is a right
-    turn, the claim would hold in the smooth plume and not be contradicted in the complex one.
+  notes: The files code turn direction as +1 or -1, the sign of the rotational velocity at the event's
+    peak (all 15841 turns checked), and describe it only as 'Turn direction label'. The heading is atan2(-vy,
+    vx) (92.5% of moving frames within 30 degrees), so +1 turns are counterclockwise in the (x, -y) frame,
+    but whether that is left or right depends on how the camera viewed the arena, which the files do not
+    state; nor do they say where the projector mount is. The intensity coefficient of the full model (heading
+    160 to 200) favours the -1 direction in the smooth plume (-0.0497, p below 0.0001, SI onset; -0.0506
+    with the turn start; also per trajectory) and is not significant in the complex plume (smoke-1a +0.0058,
+    p 0.27; smoke-2a -0.0001, p 0.95; every onset and z-scoring p above 0.26). So the criterion holds
+    under every reading if -1 is a right turn and fails under every reading if +1 is a right turn.
 - claim: figs5c-turn-angles
   outcome: reproduced
   assumed: true
   notebook: reproduce_brudner_2026.ipynb
   output: claim:figs5c-turn-angles
   measured:
-  - -35.0
-  - 35.9
-  notes: All detected turns of both plumes pooled (smooth and smoke-2a, 86450 turns), the integral
-    of rotational velocity over the turn bounded by the 20% crossings of its peak, gives medians of
-    -35.0 and +35.9 degrees (with both complex sets -35.0 and +35.8; kept turns -33.1 and +36.6), all
-    within tolerance of -34.2 +/- 3.42 and +33.8 +/- 3.38. Over the files' events (start to stop,
-    5 to 9 frames) the medians are -21.2 and +21.8 (heading change) and -20.8 and +21.3 (integral),
-    outside tolerance, and likewise for the kept turns (-19.9 and +21.5; -19.8 and +20.9). By group,
-    over the SI-bounded turn, smooth -34.1 and +35.2, smoke-2a -37.6 and +37.7, smoke-1a -35.1 and
-    +35.1.
+  - -34.3
+  - 35.2
+  notes: All detected turns of both plumes pooled (smooth and smoke-1a, 80445 turns), the integral of
+    rotational velocity over the turn bounded by the 20% crossings of its peak in the turn's direction,
+    gives medians of -34.3 and +35.2 degrees (with smoke-2a -35.0 and +35.9; with both complex sets -35.0
+    and +35.8; kept turns -32.7 and +36.2), all within tolerance of -34.2 +/- 3.42 and +33.8 +/- 3.38.
+    Over the files' events (start to stop, 5 to 9 frames) the medians are -19.6 to -21.4 and +20.7 to
+    +22.0 under both displacements and every turn set, outside tolerance. By group, over the SI-bounded
+    turn, smooth -34.1 and +35.2, smoke-1a -35.1 and +35.1, smoke-2a -37.6 and +37.7. The first version's
+    run of |dtheta| gives the same medians.
   deviations:
-  - Assumed the turn runs from the SI's onset (20% of the peak on the rising edge; SI, Behavioral
-    Analysis) to the 20% crossing on the falling edge, the end the paper does not state. The claims
-    file's readings integrate over the event; the files' events start after the paper's onset (a
-    median of 4 frames), so the paper's turn is taken as the event, bounded as the SI defines its
-    onset. Over the files' events neither displacement is within tolerance.
+  - Assumed the turn runs from the SI's onset (20% of the peak on the rising edge; SI, Behavioral Analysis)
+    to the 20% crossing on the falling edge of the rotation in the turn's direction, the end the paper
+    does not state. The claims file's readings integrate over the event; the files' events start after
+    the paper's onset (a median of 4 frames), so the paper's turn is taken as the event, bounded as the
+    SI defines its onset. Over the files' events neither displacement is within tolerance.
+  - The complex files are smoke-1a, as assumed for fig5e-cue-betas; smoke-2a and both sets are shown and
+    give the same outcome.
 - claim: figs5fh-smoothing-agent
   outcome: blocked
   blocked_by: other
@@ -290,56 +322,263 @@ outcomes:
     the paper's code holds no agent simulation.
 findings:
 - kind: code_mismatch
-  statement: The paper's code (summary_tables.py at commit effc7b0), run on the complex-plume behavior
-    files it selects at the version it names (paths with "smoke-2a", 0.260630.1657), gives a Fig. 5E
-    motion coefficient of -0.0119 (p 0.15) and gradient coefficient of -0.0124 (p 0.036), and a Fig.
-    5F cue dominance of +0.388, where its published tables give +0.0441 (p 0.0055), +0.0185 (p 0.25)
-    and -0.662. A port of the code, checked to give the code's output on these files, was used;
-    the code itself was also run once in preparation on the same data with the same result. The smooth
-    files give values close to the published ones (gradient -0.1114 against -0.1181).
+  statement: The code's published Fig. 5E and 5F tables (data/published_panel_tables at commit effc7b0)
+    are matched by the smoke-1a behavior files with the dataset's turn start and the SI's heading window
+    of 160 to 200 degrees (complex coefficients within 0.1 SE, all four log-likelihoods within 0.001 per
+    turn), and not by what the code's metadata/published_panel_params.json names, the smoke-2a files with
+    150 to 210 degrees. Those give a Fig. 5E motion coefficient of -0.0119 (p 0.15) and gradient coefficient
+    of -0.0124 (p 0.036), and a Fig. 5F cue dominance of +0.388, where the tables give +0.0441 (p 0.0055),
+    +0.0185 (p 0.25) and -0.662. A port of the code, checked to give the code's output on these files,
+    was used.
 - kind: metadata_insufficient
-  statement: The complex-plume behavior files come in two sets, "smoke-1a" (24 files) and "smoke-2a"
-    (24), recorded on the same days and vials, with different signal distributions (99th percentile
-    of the intensity 171 and 252). Nothing in the files or the dandiset says what distinguishes them
-    or which is the complex plume of the paper; the paper describes one complex plume (smoke_1a_orig),
-    the code uses smoke-2a only, and the Yale Dataverse deposit lists both as complex plume.
+  statement: The complex-plume behavior files come in two sets, 'smoke-1a' (24 files) and 'smoke-2a' (24),
+    recorded on the same days and vials, each with 12 flipped and 12 unflipped projections, whose session
+    descriptions name two different movies (smoke_1a and smoke_2a) and whose signals differ (99th percentile
+    of the intensity 171 and 252; the turn-direction coefficient of motion is positive in one set and
+    negative in the other, in both projection flips). Nothing in the files or the dandiset says what smoke_2a
+    is; the dandiset's description says the deposited smoke_1a_orig plume was analysed throughout the
+    paper, the code selects smoke-2a only, and the Yale Dataverse deposit lists both as complex plume.
 - kind: metadata_insufficient
-  statement: The turn_events table gives direction as +1 or -1 ("Turn direction label") without
-    saying which is left or right, and the heading is described as in "standardized arena
-    coordinates" but is atan2(-vy, vx), so y is reversed relative to the heading. Left and right
-    turns cannot be named, which the paper's rightward bias towards the projector needs.
+  statement: The turn_events table gives direction as +1 or -1 ("Turn direction label") without saying
+    which is left or right, and the heading is described as in "standardized arena coordinates" but is
+    atan2(-vy, vx), so y is reversed relative to the heading. Left and right turns cannot be named, which
+    the paper's rightward bias towards the projector needs.
 - kind: metadata_insufficient
-  statement: The turn events are not described. Their start comes a median of 4 frames (about 67
-    ms) after the turn onset the SI defines (20% of the peak rotational speed on the rising edge)
-    and they last 5 to 9 frames, so turn displacements over the events (median about 21 degrees)
-    are smaller than the paper's 34 degrees, which the turns bounded by the 20% crossings give.
+  statement: The turn events are not described. Their start comes a median of 4 frames (about 67 ms) after
+    the turn onset the SI defines (20% of the peak rotational speed on the rising edge) and they last
+    5 to 9 frames, so turn displacements over the events (median about 21 degrees) are smaller than the
+    paper's 34 degrees, which the turns bounded by the 20% crossings give.
 - kind: metadata_insufficient
-  statement: The odor signals in the behavior files cannot be aligned with the deposited complex
-    plume window. No file gives the movie frame shown at a trajectory frame or the trial's start in
-    the movie, and a scan of lags between `signal` and the window found no consistent peak.
+  statement: The odor signals in the behavior files cannot be aligned with the deposited complex plume
+    window. No file gives the movie frame shown at a trajectory frame or the trial's start in the movie,
+    and a scan of lags between `signal` and the window found no consistent peak.
 - kind: metadata_insufficient
-  statement: odor_velocity (the motion cue) is NaN on 95 to 98% of frames, which its description
-    ("estimated from frame-to-frame correlation of antenna-segment odor profiles") does not explain;
-    the paper's code holds the last value through the gaps.
+  statement: odor_velocity (the motion cue) is NaN on 95 to 98% of frames, which its description ("estimated
+    from frame-to-frame correlation of antenna-segment odor profiles") does not explain; the paper's code
+    holds the last value through the gaps.
 - kind: metadata_error
-  statement: Four smooth-plume files (sessions 2023811 ...4b490d04 and ...ba163898, 2023822
-    ...93542ebb and ...e5c9250e) hold 10 frames with y of 768 to 814 mm, in an arena 170 mm wide.
+  statement: Four smooth-plume files (sessions 2023811 ...4b490d04 and ...ba163898, 2023822 ...93542ebb
+    and ...e5c9250e) hold 10 frames with y of 768 to 814 mm, in an arena 170 mm wide.
 - kind: metadata_insufficient
-  statement: 205 of 7235 trajectories have no position at all (every x and y NaN) and are stored at
-    full length, with nothing to say why; in 47 files some trajectories carry timestamps and others a
-    starting time and rate.
+  statement: 205 of 7235 trajectories have no position at all (every x and y NaN) and are stored at full
+    length, with nothing to say why; in 47 files some trajectories carry timestamps and others a starting
+    time and rate.
 - kind: data_missing
-  statement: The smooth plume movie, used by 15 of the paper's 22 claims (Figs. 1 to 4, S1 to S4 and
-    S5F-H), is not in the dandiset. The description points to Dryad (doi:10.5061/dryad.g27mq71),
-    whose downloads need an API token; the paper's own rescaled version is in neither the dandiset
-    nor its Yale Dataverse deposit.
+  statement: The smooth plume movie, used by 15 of the paper's 22 claims (Figs. 1 to 4, S1 to S4 and S5F-H),
+    is not in the dandiset. The description points to Dryad (doi:10.5061/dryad.g27mq71), whose downloads
+    need an API token; the paper's own rescaled version is in neither the dandiset nor its Yale Dataverse
+    deposit.
 - kind: methods_unavailable
-  statement: Questions for the paper's authors. (1) Which complex-plume behavior files are the
-    complex plume of Fig. 5, smoke-1a, smoke-2a or both, and what distinguishes them? (2) Fig. 5E-F
-    take cues 50 ms before turn onset, defined in the SI as the 20% crossing of the peak, while the
-    code uses the deposited event start, which is later; which was used for the figure? With the SI
-    onset the complex motion coefficient is significant but negative here. (3) How were the Fig. 2
-    and 3 samples balanced; were they mirrored (antennae swapped, label flipped), as the sum AUC of
-    exactly 0.5 suggests? (4) Where does a turn end for the displacement of Fig. S5C? (5) How is the
-    motion cue of Fig. S1G defined for a sensor spacing and a delay, and were the maps of Fig. S1F-G
-    smoothed? (6) Were the Fig. 5 predictors z-scored over all frames or per trajectory?
+  statement: Questions for the paper's authors. (1) Which complex-plume behavior files are the complex
+    plume of Fig. 5, smoke-1a, smoke-2a or both, what is the smoke_2a movie, and why does the code name
+    smoke-2a and 150 to 210 degrees when its published tables match smoke-1a and 160 to 200? (2) Fig.
+    5E-F take cues 50 ms before turn onset, defined in the SI as the 20% crossing of the peak, while the
+    code uses the deposited event start, which is later than that crossing on the files' dtheta; which
+    was used, and on what turn speed? (3) How were the Fig. 2 and 3 samples balanced; were they mirrored
+    (antennae swapped, label flipped), as the sum AUC of exactly 0.5 suggests? (4) Where does a turn end
+    for the displacement of Fig. S5C? (5) How is the motion cue of Fig. S1G defined for a sensor spacing
+    and a delay, and were the maps of Fig. S1F-G smoothed? (6) Were the Fig. 5 predictors z-scored over
+    all frames or per trajectory?
+verifications:
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the author run, the executed notebook with the conclusions and summary
+    removed, the helper module and the claims file; the verifier also read the paper under paper/ and
+    the archive's file list and dandiset description.
+  results:
+  - claim: fig5e-cue-betas
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion counts a claim as reproduced only if every reading gives that result; here
+      the result depends on the reading. With the SI onset and smoke-2a, both plumes pass with stored
+      or pooled z-scored signals; per-trajectory z-scoring fails both plumes. Under the code''s readings
+      the complex coefficients have the wrong sign and are out of tolerance. The choice of complex file
+      set is doubtful: the archive''s dandiset description says smoke_1a_orig was analyzed throughout
+      the paper, and smoke-1a with the event start and heading 160 to 200 reproduces the published Fig.
+      5E coefficients almost exactly. The onset rule ignores the sign of the rotation and can run into
+      an adjacent opposite-direction turn.'
+    response: Changed to not_reproduced. The smoke-1a files are now the assumed complex plume, citing
+      the dandiset description and the session descriptions (smoke_1a and smoke_2a movies). The onset
+      rule now follows the rotation in the turn's direction; the old rule's run reversed in 0.2% of turns
+      and the results barely moved. Added the fits per projection flip (same sign within each set, so
+      not a flip convention) and a comparison of every reading with the code's published tables read at
+      the pinned commit, which the smoke-1a files with the event start at 160 to 200 match within 0.1
+      SE. With the SI onset and smoke-1a no reading passes; with smoke-2a per-trajectory z-scoring fails.
+      Asked a reader whether the dataset's event start is the SI's onset (questions/brudner-2026.yaml).
+  - claim: fig5f-cue-dominance
+    agrees: false
+    outcome: reproduced
+    reason: 'One reading gives both values within tolerance with the right signs (SI onset, smoke-2a,
+      heading 150 to 210, z none or pooled, 0.935 and -0.715); smoke-1a with the event start and heading
+      160 to 200 also gives 0.879 and -0.701. The result is fragile: under the code''s readings the complex
+      value is +0.388.'
+    response: Changed to partially_reproduced, disagreeing with the verifier. With the smoke-1a files
+      adopted for fig5e (the verifier's problem 1) and the criterion's onset, the signs hold in 4 of 6
+      readings and the two values are never both within tolerance (0.937 and -0.492 at 160 to 200). Both
+      readings the verifier names still give both values within tolerance and are reported; the second
+      uses the event start, which the criterion does not take as the onset, and is the subject of the
+      question to a reader.
+  - claim: figs5c-turn-angles
+    agrees: true
+    outcome: reproduced
+    reason: With the files' event bounds, both readings in the claims file give medians of about +/-21
+      degrees, outside tolerance. Only the notebook's own turn bounds (20% crossings on the rising and
+      falling edges) give -35.0 and +35.9, or -33.1 and +36.6 for the kept turns. That rule has a bug
+      (the onset scan ignores the sign of the rotation).
+    response: Fixed the rule (signed rotation in the turn's direction) and re-ran; the medians are unchanged
+      (-34.3 and +35.2 with smoke-1a, -35.0 and +35.9 with smoke-2a), and the first version's medians
+      are shown beside them. Outcome kept, resting on the stated end of the turn.
+  - claim: fig2c-complex-auc
+    agrees: true
+    outcome: partially_reproduced
+    reason: Motion AUC is above gradient AUC under every reading. Under the two samplings the claims file
+      names, the sum AUC is 0.63 to 0.67, which fails the sum condition; only the added mirror sampling
+      gives a sum AUC of 0.500. The assumption is reasonable, but it is the author's own reading; under
+      the claims file's readings, fig2c is not_reproduced. The values miss under every reading. Draws
+      with replacement put many test windows also in training.
+    response: Outcome kept, with the assumption stated and the not_reproduced result under the claims
+      file's samplings recorded in the notes. Added a mirror-balanced sampling split by location, so no
+      test window is a training window; it gives the same AUCs. Added the centerline at row 571 as a variant
+      (motion 0.598, gradient 0.564).
+  - claim: fig2e-complex-weights
+    agrees: true
+    outcome: partially_reproduced
+    reason: '|motion| (0.415 to 0.424) is larger than |gradient| under every reading. The gradient weight
+      (0.234 to 0.271) is outside 0.098 +/- 0.041 under every reading.'
+    response: No change of outcome; re-run with the added samplings and the row 571 variant, which give
+      the same outcome.
+  - claim: figs1fg-resolution-robustness
+    agrees: true
+    outcome: not_reproduced
+    reason: Gradient r at 12 px is 0.613 without smoothing (0.809 with sigma 1.5 smoothing, a variant).
+      Motion r at a 4-frame delay is 0.73 to 0.82 against the required 0.8 at every spacing. The drop
+      at 8 and 15 frames does hold. The smoothing variant was run for the gradient only, not for motion.
+      The motion cue uses a backward temporal difference, where Fig. 1 uses a centered one.
+    response: Added smoothing of every frame for all maps, and a centered form of the motion cue (now
+      the main form, with the backward one kept). The motion part fails under all six readings (lowest
+      r over delays 1 to 4 of 0.729 to 0.784); the gradient part holds only with smoothing. No change
+      of outcome.
+  - claim: figs2c-one-frame-delay
+    agrees: true
+    outcome: blocked
+    reason: 'The smooth plume was not read. The complex half holds: AUC at tau 1 is 0.603, at tau 15 is
+      0.505, and tau 1 is the highest.'
+    response: No change of outcome; the complex part now uses the mirror-balanced samples split by location
+      (0.601 at tau 1, 0.505 at tau 15).
+  - claim: methods-intensity-right-bias
+    agrees: true
+    outcome: blocked
+    reason: 'The files do not say whether turn direction -1 is left or right. Both conditional outcomes
+      can be stated: the smooth intensity coefficient is -0.050 with p below 1e-4, and complex smoke-2a
+      is not significant, so the claim holds if -1 is a right turn and fails if not. The notebook did
+      not state this.'
+    response: 'Added a cell that evaluates the criterion under both mappings, for both complex sets, both
+      onsets and two z-scorings: it holds under every reading if -1 is a right turn and fails under every
+      reading if +1 is. Stated in the notes; outcome kept blocked.'
+  - claim: fig1eh-snapshot-organization
+    agrees: true
+    outcome: blocked
+    reason: Both need the smooth plume, which is on Dryad and was not staged.
+    response: No change.
+  - claim: fig1il-zscore-reliability
+    agrees: true
+    outcome: blocked
+    reason: Both need the smooth plume, which is on Dryad and was not staged.
+    response: No change.
+  - claim: figs1-antisymmetry-index
+    agrees: true
+    outcome: blocked
+    reason: Blocked only for the smooth comparison. The archive's compact asset holds the mean gradient
+      and motion maps and the exact plotted frequency and intermittency points for 5, 10 and 20 cm/s,
+      and the freestream and complex movies are deposited, so the freestream ordering and the complex-highest
+      parts could be tested; the notebook did not test them.
+    response: Tested those parts (new notebook section) from the deposited maps and points, with masks
+      and centerlines from every 25th frame of each freestream window, and from the complex window; they
+      hold (index -2.93, -1.53, +0.04 at 5, 10, 20 cm/s and 4.40 complex; median frequency 0.08, 0.40,
+      1.08 Hz and 2.08 Hz complex). Outcome kept blocked, as the smooth plume's place cannot be computed.
+  - claim: figs1-temporal-statistics
+    agrees: true
+    outcome: blocked
+    reason: Blocked only for the smooth comparison. The archive's compact asset holds the mean gradient
+      and motion maps and the exact plotted frequency and intermittency points for 5, 10 and 20 cm/s,
+      and the freestream and complex movies are deposited, so the freestream ordering and the complex-highest
+      parts could be tested; the notebook did not test them.
+    response: Tested those parts (new notebook section) from the deposited maps and points, with masks
+      and centerlines from every 25th frame of each freestream window, and from the complex window; they
+      hold (index -2.93, -1.53, +0.04 at 5, 10, 20 cm/s and 4.40 complex; median frequency 0.08, 0.40,
+      1.08 Hz and 2.08 Hz complex). Outcome kept blocked, as the smooth plume's place cannot be computed.
+  - claim: fig2b-smooth-auc
+    agrees: true
+    outcome: blocked
+    reason: Both are smooth-plume only.
+    response: No change.
+  - claim: fig2d-smooth-weights
+    agrees: true
+    outcome: blocked
+    reason: Both are smooth-plume only.
+    response: No change.
+  - claim: fig3bc-mnm-filters
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: fig3d-mnm-gradient-response
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: fig3e-mnm-motion-response
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: fig3ij-dnm-specialization
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: fig4ef-agent-success
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: discussion-ten-percent-gain
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: figs4-threshold-robustness
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.
+  - claim: figs5fh-smoothing-agent
+    agrees: true
+    outcome: blocked
+    reason: Each needs the smooth plume or a network trained on it. Some complex-only parts are testable
+      in principle from the deposited movie (the complex MNM filter and its AUC of 0.517, and complex
+      wind-only against complex-trained agents). The agent code is not in the paper's repository.
+    response: No change. The complex-only parts would need a network trained for 500 epochs on 2,400,000
+      samples and an agent simulation the paper's code does not hold, which this run did not attempt.

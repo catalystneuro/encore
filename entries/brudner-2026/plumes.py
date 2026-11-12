@@ -28,17 +28,20 @@ effc7b0317f6d3b62136c2a07bcba3e80e778575, `src/gradient_motion_panels/summary_ta
   exponential filter (time constant 200 ms, NaN holds the last value), taken at the last frame at
   or before 50 ms before turn onset, within one frame (code `merge_asof`, SI).
 - Turn onset: the dataset's turn start (what the code uses), or the SI's rule, the time the
-  rotational speed crosses 20% of the turn's peak on the rising edge (`onset_20pct`). The search
-  window for the peak, the event's start to stop, is a standard choice.
-- Which complex-plume files: the code selects "smoke-2a" only; the paper does not say, and the
-  Yale Dataverse deposit of the same sessions (doi:10.60600/YU/590UBV) files both "smoke_1a" and
-  "smoke_2a" sessions as complex plume. Both are run (the notebook's readings).
+  rotation in the turn's direction crosses 20% of the turn's peak on the rising edge
+  (`onset_20pct`). The search window for the peak, the event's start to stop, is a standard choice.
+- Which complex-plume files: the paper does not say. The dandiset's description says the
+  smoke_1a_orig plume "was analyzed throughout the paper", and the "smoke-1a" files' session
+  descriptions name that movie, so they are the main reading (an assumption); the code selects
+  "smoke-2a" only; the Yale Dataverse deposit of the same sessions (doi:10.60600/YU/590UBV) files
+  both as complex plume. All are run (the notebook's readings).
 - Logistic regression of turn direction (direction > 0 coded 1, as the code does) on the
   predictors with an intercept, cluster-robust SE grouped by trajectory (statsmodels, code).
   The four models of Fig. 5F and the cue dominance (LL_grad - LL_motion) / (LL_full - LL_base),
   LL per turn, are the code's `VARIANT_FORMULAS`.
 
-Complex-plume movie measures (`complex_movie_pass`) are documented at the function.
+Complex-plume movie measures (`movie_pass1`, `sample_antennas`) and the Fig. S1 measures are
+documented at the functions.
 """
 
 from __future__ import annotations
@@ -235,23 +238,30 @@ def _butter_vx(vx: np.ndarray, fps: float, cutoff: float, order: int) -> np.ndar
     return filtfilt(b, a, arr)
 
 
-def onset_20pct(t: np.ndarray, rot_speed: np.ndarray, start: float, stop: float) -> tuple[float, float, float, int, int]:
+def onset_20pct(t: np.ndarray, dtheta: np.ndarray, start: float, stop: float,
+                signed: bool = True) -> tuple[float, float, float, int, int]:
     """SI turn onset: the time rotational speed crosses 20% of the turn's peak on the rising edge.
 
     The peak is the largest |dtheta| between the event's start and stop (a standard choice); the
     onset is the first frame of the run of frames at or above 20% of the peak that contains the
-    peak. Returns (onset time, peak time, peak speed, first and last index of that run).
+    peak. With `signed` (the rule used), the run is of the rotation in the turn's own direction,
+    sign(dtheta at the peak) x dtheta, so that it stops where the fly rotates the other way; with
+    `signed=False` it is of |dtheta| (the first version of this attempt, which can run into an
+    adjacent turn of the opposite direction; kept only to count how often it did). Returns (onset
+    time, peak time, peak speed, first and last index of that run).
     """
     i0, i1 = np.searchsorted(t, [start - 1e-9, stop + 1e-9])
-    if i1 <= i0 or np.all(np.isnan(rot_speed[i0:i1])):
+    rot = np.abs(dtheta)
+    if i1 <= i0 or np.all(np.isnan(rot[i0:i1])):
         return np.nan, np.nan, np.nan, -1, -1
-    ip = i0 + int(np.nanargmax(rot_speed[i0:i1]))
-    peak = rot_speed[ip]
+    ip = i0 + int(np.nanargmax(rot[i0:i1]))
+    s = np.sign(dtheta[ip]) * dtheta if signed else rot
+    peak = s[ip]
     j = ip
-    while j > 0 and rot_speed[j - 1] >= 0.2 * peak:
+    while j > 0 and s[j - 1] >= 0.2 * peak:
         j -= 1
     e = ip
-    while e < len(t) - 1 and rot_speed[e + 1] >= 0.2 * peak:
+    while e < len(t) - 1 and s[e + 1] >= 0.2 * peak:
         e += 1
     return float(t[j]), float(t[ip]), float(peak), j, e
 
@@ -304,13 +314,13 @@ def turn_table(prepared: pd.DataFrame, turns: pd.DataFrame, onset: str = "rule20
             continue
         t = g.t.to_numpy()
         dth = g.dtheta.to_numpy(float)
-        rot = np.abs(dth)
         theta = g.theta.to_numpy(float)
         x, y, vxs = g.x.to_numpy(float), g.y.to_numpy(float), g.vx_smooth.to_numpy(float)
         P = g[pcols].to_numpy(float)
         fps = 1.0 / np.median(np.diff(t))
         for r in tg.itertuples(index=False):
-            on20, tpk, pk, j0, j1 = onset_20pct(t, rot, r.start_time, r.stop_time)
+            on20, tpk, pk, j0, j1 = onset_20pct(t, dth, r.start_time, r.stop_time)
+            onu, _, _, u0, u1 = onset_20pct(t, dth, r.start_time, r.stop_time, signed=False)
             i_on = np.searchsorted(t, r.start_time - 1e-9)
             i_off = min(np.searchsorted(t, r.stop_time + 1e-9) - 1, len(t) - 1)
             ip = np.searchsorted(t, tpk) if np.isfinite(tpk) else -1
@@ -321,7 +331,11 @@ def turn_table(prepared: pd.DataFrame, turns: pd.DataFrame, onset: str = "rule20
                    "turn_y": r.turn_y,
                    "theta_start": theta[i_on] if i_on < len(t) else np.nan, "theta_stop": theta[i_off],
                    "int_dtheta": float(np.nansum(dth[i_on:i_off + 1]) / fps) if i_off >= i_on else np.nan,
-                   "int_dtheta_20": float(np.nansum(dth[j0:j1 + 1]) / fps) if j0 >= 0 else np.nan}
+                   "int_dtheta_20": float(np.nansum(dth[j0:j1 + 1]) / fps) if j0 >= 0 else np.nan,
+                   "onset20_unsigned": onu,
+                   "int_dtheta_20_unsigned": float(np.nansum(dth[u0:u1 + 1]) / fps) if u0 >= 0 else np.nan,
+                   "unsigned_run_reverses": bool(u0 >= 0 and ip >= 0
+                                                 and np.any(np.sign(dth[u0:u1 + 1]) == -np.sign(dth[ip])))}
             on = r.start_time if onset == "start" else on20
             # the code rounds the target time to 10 decimals, then takes the last frame at or
             # before it within one frame (pandas merge_asof, direction backward, tolerance 1/fps)
@@ -400,27 +414,48 @@ def _pair(frame: np.ndarray, d: int) -> tuple[np.ndarray, np.ndarray]:
     return frame[6 - lo:h - 7 - lo], frame[6 + hi:h - 7 + hi]
 
 
-def movie_pass1(ds, n_frames: int | None = None, col_step: int = 4) -> dict:
+MOTION_FORMS = ("grad_dt", "grad_dt_back", "corr")
+
+
+def movie_pass1(ds, n_frames: int | None = None, col_step: int = 4, sigma: float = 1.5,
+                sample_every: int = 25) -> dict:
     """One streaming pass over the movie (frames are read in blocks of 20).
 
     Returns the per-pixel mean intensity (full resolution); for Fig. S1F-G the time-averaged
     crosswind gradient B - A of sensor pairs `SPACINGS` rows apart, and the time-averaged motion
-    cue of each spacing and delay `DELAYS`, in two forms:
-      - "grad_dt": -(B - A)(t) x (M(t) - M(t - tau)), M = (A + B) / 2, the Fig. 1 cue
-        -(dI/dy)(dI/dt) with the spacing and delay widened (an assumption, see the notebook);
+    cue of each spacing and delay `DELAYS`, in three forms (M = (A + B) / 2):
+      - "grad_dt": -(B - A)(t) x (M(t + tau) - M(t - tau)), the Fig. 1 cue -(dI/dy)(dI/dt) with
+        centered differences (claims file, fig1il-zscore-reliability), the spacing and the delay
+        widened (an assumption, see the notebook);
+      - "grad_dt_back": the same with the backward difference M(t) - M(t - tau), a variant;
       - "corr": A(t - tau) B(t) - A(t) B(t - tau), the two-sensor correlator of the SI's motion
         feature (Logistic regression models), a reading.
+    Each map is computed from the frames as stored and, as a variant, from each frame filtered by
+    a 2-D Gaussian of SD `sigma` pixels (the antennae's filter, SI; keys with "smoothed": True).
     Cue maps keep every `col_step`-th column (a standard choice: the cue is crosswind, so
     columns are independent, and the Pearson r over a quarter of them estimates the whole).
-    Frames are used as stored (0 to 255; no spatial smoothing, as the code's whole-window maps).
+
+    Also, on the same columns, for the Fig. S1 claims: the time averages of the one-pixel
+    centered gradient (I(y + 1) - I(y - 1)) / 2 and motion cue -(dI/dy)(I(t + 1) - I(t - 1)) / 2
+    ("grad1", "motion1", rows 1 to H - 2, frames 1 to n - 2 for motion), the per-pixel maximum
+    ("max"), and a histogram of the intensities of every `sample_every`-th frame (for the 1st and
+    99th percentiles).
     """
+    from scipy.ndimage import gaussian_filter
     n = ds.shape[0] if n_frames is None else n_frames
     h, w = ds.shape[1:]
     total = np.zeros((h, w))
-    grad = {d: 0.0 for d in SPACINGS}
-    mot = {(form, d, tau): 0.0 for form in ("grad_dt", "corr") for d in SPACINGS for tau in DELAYS}
-    nmot = {tau: 0 for tau in DELAYS}
-    hist = []    # last 15 frames, column-subsampled
+    keys = [(form, d, tau, sm) for form in MOTION_FORMS for d in SPACINGS for tau in DELAYS
+            for sm in (False, True)]
+    grad = {(d, sm): 0.0 for d in SPACINGS for sm in (False, True)}
+    mot = {k: 0.0 for k in keys}
+    nmot = {k: 0 for k in keys}
+    hist = {False: [], True: []}     # last 2 x 15 + 1 frames, column-subsampled
+    keep = 2 * max(DELAYS) + 1
+    grad1, motion1, n_m1 = 0.0, 0.0, 0
+    fmax = None
+    edges = np.linspace(0, 256, 2561)
+    counts = np.zeros(len(edges) - 1)
     lo, hi = np.inf, -np.inf
     i = 0
     while i < n:
@@ -429,26 +464,82 @@ def movie_pass1(ds, n_frames: int | None = None, col_step: int = 4) -> dict:
             fr = np.asarray(fr, np.float32)
             total += fr
             lo, hi = min(lo, float(fr.min())), max(hi, float(fr.max()))
-            sub = fr[:, ::col_step]
-            for d in SPACINGS:
-                a, b = _pair(sub, d)
-                grad[d] = grad[d] + (b - a)
-                for tau in DELAYS:
-                    if len(hist) >= tau:
-                        pa, pb = _pair(hist[-tau], d)
-                        mot[("grad_dt", d, tau)] = mot[("grad_dt", d, tau)] - (b - a) * (0.5 * (a + b) - 0.5 * (pa + pb))
-                        mot[("corr", d, tau)] = mot[("corr", d, tau)] + (pa * b - a * pb)
-            for tau in DELAYS:
-                if len(hist) >= tau:
-                    nmot[tau] += 1
-            hist.append(sub)
-            if len(hist) > max(DELAYS):
-                hist.pop(0)
+            if i % sample_every == 0:
+                counts += np.histogram(fr, edges)[0]
+            for sm in (False, True):
+                sub = (gaussian_filter(fr, sigma) if sm else fr)[:, ::col_step]
+                H = hist[sm]
+                H.append(sub)
+                if len(H) > keep:
+                    H.pop(0)
+                if not sm:
+                    fmax = sub.copy() if fmax is None else np.maximum(fmax, sub)
+                    grad1 = grad1 + 0.5 * (sub[2:] - sub[:-2])
+                    if len(H) >= 3:
+                        c, nx, pv = H[-2], H[-1], H[-3]
+                        motion1 = motion1 - 0.5 * (c[2:] - c[:-2]) * 0.5 * (nx[1:-1] - pv[1:-1])
+                        n_m1 += 1
+                for d in SPACINGS:
+                    a, b = _pair(sub, d)
+                    grad[(d, sm)] = grad[(d, sm)] + (b - a)
+                    for tau in DELAYS:
+                        if len(H) > tau:
+                            pa, pb = _pair(H[-1 - tau], d)
+                            mot[("grad_dt_back", d, tau, sm)] = mot[("grad_dt_back", d, tau, sm)] - (b - a) * (0.5 * (a + b) - 0.5 * (pa + pb))
+                            mot[("corr", d, tau, sm)] = mot[("corr", d, tau, sm)] + (pa * b - a * pb)
+                            nmot[("grad_dt_back", d, tau, sm)] += 1
+                            nmot[("corr", d, tau, sm)] += 1
+                        if len(H) > 2 * tau:
+                            ca, cb = _pair(H[-1 - tau], d)
+                            qa, qb = _pair(H[-1 - 2 * tau], d)
+                            mot[("grad_dt", d, tau, sm)] = mot[("grad_dt", d, tau, sm)] - (cb - ca) * (0.5 * (a + b) - 0.5 * (qa + qb))
+                            nmot[("grad_dt", d, tau, sm)] += 1
             i += 1
     return {"mean": total / n, "n_frames": n,
-            "grad": {d: g / n for d, g in grad.items()},
-            "motion": {k: m / nmot[k[2]] for k, m in mot.items()},
-            "col_step": col_step, "frame_min": lo, "frame_max": hi}
+            "grad": {k: g / n for k, g in grad.items()},
+            "motion": {k: m / nmot[k] for k, m in mot.items()},
+            "grad1": grad1 / n, "motion1": motion1 / n_m1, "max": fmax,
+            "hist": (edges, counts), "col_step": col_step, "frame_min": lo, "frame_max": hi}
+
+
+def hist_percentiles(edges: np.ndarray, counts: np.ndarray, qs=(1, 99)) -> list[float]:
+    """Percentiles from a histogram (bin width 0.1 intensity units, a standard choice)."""
+    c = np.cumsum(counts) / counts.sum()
+    return [float(edges[1:][np.searchsorted(c, q / 100.0)]) for q in qs]
+
+
+def antisymmetry(M: np.ndarray, center: int, mask: np.ndarray) -> float:
+    """Score of the SI's cue antisymmetry index (claims file, figs1-antisymmetry-index): the mean
+    of |A| with A(y) = M(y) - M(2 c - y) the antisymmetric component about the centerline row c,
+    over the masked pixels whose mirror row is in the map."""
+    hgt = M.shape[0]
+    y = np.arange(hgt)
+    ym = 2 * center - y
+    ok = (ym >= 0) & (ym < hgt)
+    A = M[y[ok]] - M[ym[ok]]
+    return float(np.nanmean(np.abs(A)[mask[y[ok]]]))
+
+
+def freestream_sample(ds, every: int = 25) -> dict:
+    """Every `every`-th frame triplet (i, i + 1, i + 2) of a freestream window: the mean of the
+    centre frames (for the Otsu mask and the centerline), a histogram of their intensities, and
+    the mean over those triplets of the one-pixel centered gradient and motion cue (to check the
+    scale of the deposited Fig. S1 maps; a subsample, as each window is 8 GB)."""
+    edges = np.linspace(0, 256, 2561)
+    counts = np.zeros(len(edges) - 1)
+    acc, accg, accm, k = 0.0, 0.0, 0.0, 0
+    for i in range(0, ds.shape[0] - 2, every):
+        tr = np.asarray(ds[i:i + 3], np.float64)
+        c = tr[1]
+        acc = acc + c
+        counts += np.histogram(c, edges)[0]
+        gy = np.zeros_like(c)
+        gy[1:-1] = 0.5 * (c[2:] - c[:-2])
+        accg = accg + gy
+        accm = accm - gy * 0.5 * (tr[2] - tr[0])
+        k += 1
+    return {"mean": acc / k, "grad1": accg / k, "motion1": accm / k, "n_triplets": k,
+            "hist": (edges, counts)}
 
 
 def otsu_mask(mean_map: np.ndarray, bias: float, mode: str, radius: int = 9) -> np.ndarray:
@@ -467,22 +558,39 @@ def otsu_mask(mean_map: np.ndarray, bias: float, mode: str, radius: int = 9) -> 
 
 
 def sample_antennas(ds, rows: np.ndarray, cols: np.ndarray, n_frames: int | None = None,
-                    sigma: float = 1.5) -> np.ndarray:
+                    sigma: float = 1.5, max_map: np.ndarray | None = None, col_step: int = 4,
+                    frac: float = 0.4, fps: float = 60.0):
     """Signals at two antennae 3 pixels apart (rows r and r + 3, column c), facing upwind, from
     each frame filtered by a 2-D Gaussian of SD 1.5 pixels (SI, Plume movies). Returns
-    (frames, locations, 2) float32 with antenna 0 at row r, antenna 1 at row r + 3."""
+    (frames, locations, 2) float32 with antenna 0 at row r, antenna 1 at row r + 3.
+
+    With `max_map` (the per-pixel maximum of `movie_pass1`, every `col_step`-th column), the same
+    pass also gives the encounter statistics of Fig. S1 column ii on the frames as stored, each
+    pixel binarized at `frac` of its maximum (SI, Plume movies): frequency (onsets per s) and
+    intermittency (fraction of frames above); then returns (traces, stats)."""
     from scipy.ndimage import gaussian_filter
     n = ds.shape[0] if n_frames is None else n_frames
     out = np.empty((n, len(rows), 2), np.float32)
+    th = None if max_map is None else frac * max_map
+    prev, above_n, onsets = None, 0, 0
     i = 0
     while i < n:
         block = ds[i:min(i + 20, n)]
         for fr in block:
-            g = gaussian_filter(np.asarray(fr, np.float32), sigma)
+            fr = np.asarray(fr, np.float32)
+            g = gaussian_filter(fr, sigma)
             out[i, :, 0] = g[rows, cols]
             out[i, :, 1] = g[rows + 3, cols]
+            if th is not None:
+                a = fr[:, ::col_step] > th
+                above_n = above_n + a
+                if prev is not None:
+                    onsets = onsets + (a & ~prev)
+                prev = a
             i += 1
-    return out
+    if th is None:
+        return out
+    return out, {"frequency": onsets / (n / fps), "intermittency": above_n / n}
 
 
 def window_features(traces: np.ndarray, delays=(1,), history: int = 30, threshold: float = 5.0) -> dict:
@@ -523,27 +631,35 @@ def draw_samples(F: dict, labels: np.ndarray, sampling: str, rng: np.random.Gene
     sampling "random": windows (location, start) drawn uniformly with replacement and split at
     random; "location": 80% of the locations give the training windows, the rest the test
     windows; "mirror": as "random", with each drawn sample paired with its left-right mirror
-    (antennae swapped, so sum is unchanged, gradient and motion change sign, and the label flips).
+    (antennae swapped, so sum is unchanged, gradient and motion change sign, and the label flips);
+    "mirror_location": as "location", each of the two sets mirror-paired in the same way, so that
+    no test window is also a training window.
     Returns X_train, y_train, X_test, y_test (features in the order of `keys`)."""
     nwin, nloc = F["sum"].shape
-    n = n_train + n_test
     sign = np.array([1.0 if k == "sum" else -1.0 for k in keys])
-    if sampling == "location":
+
+    def take(loc, win):
+        return np.column_stack([F[k][win, loc] for k in keys]), labels[loc].astype(int)
+
+    def mirrored(X, y):
+        X, y = np.vstack([X, X * sign]), np.concatenate([y, 1 - y])
+        p = rng.permutation(len(y))
+        return X[p], y[p]
+
+    if sampling in ("location", "mirror_location"):
         perm = rng.permutation(nloc)
         ntr = int(round(0.8 * nloc))
-        loc = np.concatenate([rng.choice(perm[:ntr], n_train), rng.choice(perm[ntr:], n_test)])
-        win = rng.integers(0, nwin, n)
-    else:
-        m = n // 2 if sampling == "mirror" else n
-        loc = rng.integers(0, nloc, m)
-        win = rng.integers(0, nwin, m)
-    X = np.column_stack([F[k][win, loc] for k in keys])
-    y = labels[loc].astype(int)
+        half = 2 if sampling == "mirror_location" else 1
+        Xtr, ytr = take(rng.choice(perm[:ntr], n_train // half), rng.integers(0, nwin, n_train // half))
+        Xte, yte = take(rng.choice(perm[ntr:], n_test // half), rng.integers(0, nwin, n_test // half))
+        if half == 2:
+            (Xtr, ytr), (Xte, yte) = mirrored(Xtr, ytr), mirrored(Xte, yte)
+        return Xtr, ytr, Xte, yte
+    n = n_train + n_test
+    m = n // 2 if sampling == "mirror" else n
+    X, y = take(rng.integers(0, nloc, m), rng.integers(0, nwin, m))
     if sampling == "mirror":
-        X = np.vstack([X, X * sign])
-        y = np.concatenate([y, 1 - y])
-        p = rng.permutation(len(y))
-        X, y = X[p], y[p]
+        X, y = mirrored(X, y)
     return X[:n_train], y[:n_train], X[n_train:], y[n_train:]
 
 
