@@ -1,59 +1,85 @@
-**Round 2 verification: Zandvakili & Kohn (2015) on CRCNS v1v2-1**
+**Verifier report, round 2: Zandvakili & Kohn (2015) on CRCNS v1v2-1**
 
-The claims file has 26 claims, and the attempt record gives an outcome for all 26: 5 reproduced, 6 not_reproduced, 2 partially_reproduced and 13 blocked (7 data_missing, 2 metadata_insufficient, 4 other). My round-1 header said "tests 14 and marks 12 blocked", which was a miscount; the correct split is 13 tested and 13 blocked. I found no place where the claims file misreads the paper.
+The claims file has 26 claims, and the attempt record gives an outcome for each: 5 reproduced, 6 not_reproduced, 2 partially_reproduced and 13 blocked. The notebook tests 13 claims and blocks 13. My round-1 count of "14 tested, 12 blocked" was wrong. I found no new place where the claims file misreads the paper. Its statement that some penetrations targeted middle-layer sites matches Experimental Procedures, Physiology.
 
 **1. Outcomes**
 
-I agree with these:
-- **Reproduced:** fig4c-broad-ccg-peaks, fig6a-coordination-before-v2, fig7a-above-shuffle, fig6-slow-both-sides.
-- **Not reproduced:** fig4c-narrow-peak-sites, fig5-narrow-pairs-rare, fig5b-v1v2-latency, figs3-efficacy, fig7a-threefold, fig6b-not-after-v2.
-- **Partially reproduced:** fig7d-time-course.
-- **Blocked:** all 13, each with the reason given.
+| claim | record | agree? | note |
+|---|---|---|---|
+| fig4c-broad-ccg-peaks | reproduced | yes | 31 of 31 under both readings (cell 11). |
+| fig4c-narrow-peak-sites | not_reproduced | yes | 0.516 against 0.206 ± 0.021 (cell 8). |
+| fig4-narrow-peak-depth | blocked, data_missing | yes | The only fields are spikeRasters, stim, trialId, unitCodes and rfInfo (cell 5). |
+| fig5a-rf-alignment | blocked, metadata_insufficient | yes | |
+| fig5-narrow-pairs-rare | not_reproduced | yes | 0.0105 (cell 15). |
+| fig5b-v1v2-latency | not_reproduced | yes | Median 2.0 ms (cell 18). |
+| fig5b-intra-areal-zero-lag | partially_reproduced (`assumed: true`) | the label yes, the basis no | See below. |
+| figs3-efficacy | not_reproduced | yes | 0.324% and 0.496% (cell 24). |
+| fig6a-coordination-before-v2 | reproduced | yes | 6 of 6 windows under every reading and both p readings (cell 30). |
+| fig7a-threefold | not_reproduced | yes | Only e-b3 with the median summary (2.011) reaches the range, and e-b3 is a stand-in. |
+| fig7a-above-shuffle | reproduced | yes, but fragile | Rests on realization 0. Realization 3 of (a,c) and realization 2 of (a,d) give 4 of 5 windows, which the criterion would call partial (cell 40). The record says this. |
+| fig6b-not-after-v2 | not_reproduced | yes | p-b < 0.05 at 80 ms in every reading (cell 43). |
+| fig6-slow-both-sides | reproduced | yes | |
+| fig7d-time-course | partially_reproduced | yes | The peak is 2.5 to 3.5 ms before the spike in all 10 cells of every method. Under p-b there are significant after-spike epochs at 80 ms, and also at 40 ms in d-b (cell 49). |
+| figs4-partner-not-needed | reproduced | yes, with a caveat | Under e-b2 with p-b, the subset without a partner is above control at 2 of 5 windows. That is not a majority, so this one combination fails the criterion (cell 52). The record gives "2 in e-b2" but does not name it as a combination that fails. It is a stand-in reading, so the outcome holds, consistent with how fig7a treats e-b3. |
+| fig7b, fig7e, fig7c, figs2a, figs2b, figs5 | blocked, data_missing | yes | |
+| rf-sizes | blocked, metadata_insufficient | yes | |
+| fig1, fig3, figs1, fig8 | blocked, other (not attempted) | yes | |
 
-On fig7a-above-shuffle: in 2 of 20 reading-and-window cells, one of five shuffle realizations is above the bound (cell 40). The criterion compares one shuffled value, and the mean of the five passes, so "reproduced" stands.
+**The one assumption (fig5b-intra-areal-zero-lag)** is stated: the paper's test is taken to be the Wilcoxon signed-rank test. It is plausible but cannot be checked, since the paper's p = 0.45 and 0.42 cannot tell the two tests apart.
 
-On fig7d-time-course: the criterion's phrase "for at least four of the five windows" could cover the "no after or distant epoch" condition as well as the peak condition. Read that way, the main, s-b and r-b readings under p-b would be reproduced, since only the 80 ms window fails (cell 49). The record should name this scope reading. The global reading the notebook uses is defensible.
+The outcome does not follow from the assumption. The criterion has only "reproduced when no difference in both areas" and defines no partial outcome. Under the assumed Wilcoxon test, V1-V1 differs (p = 0.016), so the outcome would be not_reproduced. That is the same rule the record now applies to fig5b-v1v2-latency and fig7a-threefold.
 
-I disagree with two:
-- **fig5b-intra-areal-zero-lag (`assumed: true`).** The criterion defines no partial outcome: "Reproduced when the test finds no difference from zero in both areas." Under the assumed Wilcoxon test, V1-V1 gives p = 0.016 (cell 21), so the outcome is not_reproduced; under the sign test it would be reproduced. My round-1 "partially_reproduced" was wrong, and I withdraw it. It is also inconsistent with the record's own grounds for changing fig5b-v1v2-latency and fig7a-threefold ("the criterion defines no partial outcome").
-  - The assumption is stated in the deviations. It is reasonable but weak: MATLAB `signrank` is a plausible default. However, at 1 ms resolution 742 of 2620 V1-V1 lags are exactly zero, so the Wilcoxon test here does not behave as it would on the paper's 0.1 ms lags. The deviation should say so.
-- **figs4-partner-not-needed.** The criterion asks for each subset to be above control "at a majority of windows". Under e-b2 with p-b, the subset without a partner passes at 2 of 5 windows (p-b 0.364, 0.054, 0.064, 0.001, 0.004; cell 52). That reading fails the first condition and so gives not_reproduced. The claims-file header requires readings that give a different outcome to be named, and the record and cell 53 do not name this one. "Reproduced" can stand only with that reading named, noting that e-b2 is one side of an e-b reading that cannot be formed and that e-b3 gives 4 of 5.
+My round-1 basis for partially_reproduced was different: the two readings disagree, with the sign test matching in both areas and Wilcoxon failing for V1-V1. The record says "as the verifier gave it" but gives "one of two areas holds" as the reason. I recommend one of two fixes:
+- Drop the assumption and justify the label by the readings disagreeing.
+- Keep the assumption and record not_reproduced.
 
-**2. Sentences the printed numbers do not support**
-- **README:** "Non-middle-layer, offset-RF, single-unit and V2 relay analyses (seven claims)". Those are six claims (fig7b, fig7e, fig7c, figs2a, figs2b, figs5); fig4-narrow-peak-depth has its own row. With "seven" the table adds up to 27 claims.
-- **README:** "It takes about 27 minutes". Cell 56 prints 1530 s, about 25.5 minutes. This is minor.
-- **Cell 55 (Summary):** "Narrow V1-V2 peaks are found at about half of the sites … so the deposited sessions are a selection the documentation does not describe." The same applies to the `selection_undocumented` finding ("They differ from the paper's sample in a measure the paper reports"). Nothing in the notebook separates sampling from method as the cause: 1 ms bins, the analytic jitter expectation, and the SD of the flank noise at 1 ms. The excess appearing in every session (cell 8) fits either cause. "Consistent with" (cell 16, fig5-narrow-pairs-rare notes) is supported; "so" is not.
-- **Cell 20:** "The two-sided tests do not depend on which unit of a pair comes first as long as the order is fixed." Another fixed order, for example by electrode, flips the sign of a subset of lags and can change both p-values. Only reversing every pair leaves them unchanged.
-- **Cell 35, fig6b and fig7d notes:** "p-a is near its nominal level". 13 of 150 epochs is 8.7% against 5% (about 2 SD above 7.5), and the 5 ms window has 5 of 30. This is mildly liberal at p < 0.05. The conclusion drawn from it does hold: the null gives 0 Bonferroni-significant epochs, against 10 to 19 per window under p-a in the data.
-- **Cell 32:** "1.50 or more" rests on a printed 1.5 (animal 105, 5 ms, cell 31). This is trivial.
+**2. Sentences the numbers do not support**
 
-Every other sentence I checked matches the printed outputs. That covers the "**Result:**" cells 9, 12, 16, 19, 22, 25, 32, 35, 38, 41, 44, 47, 50 and 53, the Summary, the README table and the record's notes and findings.
+- Cell 55, Summary: "Narrow V1-V2 peaks are found at about half of the sites, against a fifth in the paper, so the deposited sessions are a selection the documentation does not describe." The record's selection_undocumented finding says the same: "They differ from the paper's sample in a measure the paper reports."
+  - The numbers show that this attempt's measure differs. They do not show that the cause is the sample and not the method (1 ms bins, no SNR filter, the jitter implementation).
+  - An excess in every session (cell 8) fits either cause.
+  - Cell 16's "consistent with" is acceptable. The causal "so" and "differ from the paper's sample" go further than the data.
+- Cells 35 and 44, the attempt record's notes for fig6b-not-after-v2 and fig7d-time-course, and the bootstrap finding all say p-a is "near its nominal level."
+  - Cell 34 shows 13 of 150 epochs below 0.05 against 7.5 expected. The binomial tail is P ≈ 0.04, ignoring the dependence between epochs. At the 5 ms window it is 5 of 30.
+  - So p-a runs somewhat above its nominal rate at 0.05. At the Bonferroni threshold it gives 0 of 150.
+  - Cell 44 supports calibration with four null p-values (0.98, 0.29, 0.65, 0.10), and four values cannot show it.
+  - A better support is already printed: the largest null |difference| (4.5e-5 at 40 ms, 5.2e-5 at 80 ms) is well below the observed after-spike differences (1.2e-4 and 2.7e-4). No outcome changes, because p-b alone decides fig6b and fig7d.
+- Attempt record, fig6b-not-after-v2 notes: "At 5 to 20 ms the ratios are 1.03 to 1.08 (p-a 0.10 to 0.48)." This holds for the main reading only. In other readings s-b has 0.959 at 10 ms, and d-b has p-a = 0.024 at 20 ms (cell 43). Cell 44 does say "main".
+- README: "Non-middle-layer, offset-RF, single-unit and V2 relay analyses (seven claims)." That row covers 6 claims. fig4-narrow-peak-depth has its own row, so the table adds up to 27 claims.
+- README: "about 27 minutes". Cell 56 prints 1530 s, about 25.5 minutes.
 
-The attempt record gives my round-1 reasons faithfully, close to my own words, with each numbered point attached to the right claim. The `agrees: false` entries correctly mark the three claims where the first record differed from my outcome.
+I checked every other "**Result:**" sentence, the rest of the Summary, and the notes in the record against the printed outputs, and they match. That includes:
+- the per-session and per-animal counts;
+- the shuffle-realization values 2.073e-4 and 2.038e-4 and the SD of about 1e-5;
+- the fig7d epoch lists and the 2.7e-4 against 8.3e-4 comparison;
+- the figs4 ratios;
+- the rf-sizes values;
+- the permutation check (0.0121 against a largest permuted value of 0.0119).
 
-**3. Round-1 points**
+**Round-1 reasons in the record:** all 11 points and section C are carried in my wording and attached to the right claims. The one misstatement is the basis for fig5b-intra described above.
+
+**3. Status of round-1 points**
 
 Resolved:
-- 1: simulations are now blocked as other, not attempted.
-- 2: the null check of p-a and p-b was run.
-- 3: the ordering effect and same-tetrode sensitivity are reported.
-- 4: the 1 ms smear of the epoch is stated.
-- 5: the 3.54 ms smoothing floor and the "2 ms or more" meaning are printed.
-- 6: fig7d and figs4 now run under every reading.
-- 7: the epoch at the spike is counted apart.
-- 8: four more shuffle realizations were run.
-- 9: the own-trial jitter pool is stated.
-- 10: the V1 rfInfo mapping is checked against permutations.
+- 1: the simulation claims are now blocked as other (not attempted).
+- 2: the null check was run. The wording caveat above remains.
+- 3: the ordering and same-tetrode sensitivity are reported.
+- 4: the 1 ms smear is stated.
+- 5: the 3.54 ms smoothing floor and "2 ms or more" are stated.
+- 6: the other readings are run for fig7d and figs4, and the 2000 draws are justified.
+- 7: epochs are now counted as after only when wholly after the spike.
+- 8: shuffle spread is shown.
+- 9: stated, and I accept it.
+- 10: partly. A permutation check was added, with a thin margin (0.0121 against 0.0119). It is for information only.
+- Section C: the fields, calibration, shuffle spread and other-reading requests are met.
 
-Section C requests met: the file fields and sort codes, calibration, the V1 RF mapping, the shuffle spread, and the extra readings.
+Open, and bearing on a conclusion:
+- fig5b-intra-areal-zero-lag: the outcome is inconsistent with its stated assumption and with the criterion. Choose one of the two fixes in section 1.
+- Point 11 and the selection finding: an excess in every session does not separate sampling from method. The Summary and the finding should say the difference may come from either.
+- figs4-partner-not-needed: name e-b2 with p-b as a combination that does not meet the criterion.
 
-Partly resolved: point 11. The excess is now shown per session, but the record treats it as a deposit selection without separating it from method, as in section 2.
-
-Remaining points that bear on a conclusion:
-1. fig5b-intra-areal-zero-lag should be not_reproduced under the assumed test (my round-1 error). The deviation should also mention the zero-lag ties at 1 ms.
-2. figs4-partner-not-needed: e-b2 under p-b fails the criterion's first condition and must be named, or the outcome qualified.
-3. The `selection_undocumented` finding and the Summary attribute the narrow-peak excess to sampling without excluding the method differences.
-4. fig7d-time-course: the criterion's scope ambiguity should be named. It does not change "partially_reproduced" under the global reading.
-5. The README count ("seven" should be "six") needs correcting.
-
-I still read only the text outputs, not the rendered figures.
+Open, not bearing on a conclusion:
+- The "near nominal" wording for p-a.
+- The README claim count and run time.
+- The "main" qualifier in the fig6b notes.
+- I still have not reviewed the rendered figures.
