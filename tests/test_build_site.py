@@ -325,19 +325,46 @@ def test_a_deprecated_attempt_is_marked_on_its_page(built):
                 assert "Deprecated:" in _paper_page(data, out, a)
 
 
-def test_an_earlier_attempt_has_its_own_page_linked_from_its_paper(built):
+def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it_used(built):
     data, out = built
-    pages = 0
-    for dandiset, current in site.current_attempts(data).items():
+    replaced = several = 0
+    for q in site.papers_of(data):
+        current = {a["id"] for a in q["attempts"]}
+        for a in site.paper_attempts(data, q):
+            own = site.attempt_own_path(data, a)
+            assert own == f'papers/{q["key"]}/{a["id"]}/'
+            page = (out / own / "index.html").read_text()
+            if current == {a["id"]}:
+                # The paper's one current attempt is read on the paper's page; its address leads there.
+                assert site.attempt_path(data, a) == f'papers/{q["key"]}/' and f'url=../../../papers/{q["key"]}/"' in page
+                page = (out / "papers" / q["key"] / "index.html").read_text()
+                up = "../../"
+            else:
+                assert site.attempt_path(data, a) == own and f'/ Attempt {a["id"]}</p>' in page
+                assert ("An earlier attempt." in page) == (a["id"] not in current)
+                replaced += a["id"] not in current
+                several += a["id"] in current
+                up = "../../../"
+                for o in a["outcomes"]:
+                    assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
+                # The paper's page leads to each of its attempts.
+                assert f'href="../../{own}"' in (out / "papers" / q["key"] / "index.html").read_text()
+            # An attempt links to every dataset it used, with the version it ran on.
+            for x in site.attempt_sets(data, a):
+                assert f'<a href="{up}{site.page_of(x["key"])}">{x["label"]}</a> {site.version_text(x)}' in page
+                # And the dataset's page links back to the attempt, unless a later one replaced it there.
+                if a["id"] in current:
+                    dataset = (out / site.page_of(x["key"]) / "index.html").read_text()
+                    assert f'Attempt <a href="../../../{site.attempt_path(data, a)}">{a["id"]}</a> on {site.version_text(x)}' in dataset
+    assert replaced and several
+    # An attempt on two datasets names both, each with its version.
+    kim = (out / "papers" / "kim-2022" / "index.html").read_text()
+    assert "DANDI:000489</a> version" in kim and "DANDI:000448</a> version" in kim
+    # Where an earlier attempt's page was, under its dataset, leads to its page under the paper.
+    for dandiset in site.current_attempts(data):
         for a in site.earlier_attempts(data, dandiset):
-            page = (out / site.page_of(dandiset) / a["id"] / "index.html").read_text()
-            assert "An earlier attempt." in page
-            for o in a["outcomes"]:
-                assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
-            paper = _paper_page(data, out, current[-1])
-            if f'{site.page_of(dandiset)}{a["id"]}/"' in paper:
-                pages += 1
-    assert pages
+            old = (out / site.page_of(dandiset) / a["id"] / "index.html").read_text()
+            assert f'url=../../../../{site.attempt_own_path(data, a)}"' in old
 
 
 def test_claims_using_outside_data_are_counted_apart():
@@ -563,7 +590,7 @@ def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
         assert f'url=../../{site.page_of(key)}"' in old
         for a in site.earlier_attempts(data, key):
             moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
-            assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
+            assert f'url=../../../{site.attempt_own_path(data, a)}"' in moved
     assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
 
 
