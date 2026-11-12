@@ -27,7 +27,7 @@ training sessions are not in it.
 | Subclass pair correlations maintained (Figure S6) | Blocked: data missing |
 | No angular velocity tuning | Not reproduced (assumption) |
 | Internally referenced tuning preserved | Not reproduced |
-| Arena-frame registration short-lived (Figure 4C) | Partially reproduced |
+| Arena-frame registration short-lived (Figure 4C) | Not reproduced |
 | Decoding error inhomogeneous (Figure 5A, B) | Partially reproduced |
 | Error minima at 110 and 350 degrees | Reproduced |
 
@@ -36,8 +36,10 @@ reasoning and the differences from the paper's method.
 
 Several files are wrong in ways the notebook shows: the rotating tracks of five sessions (one a
 copy of another session's, four with frames that disagree in timing), one unit's rotating spikes
-(a copy of its stable1 spikes), and the file list's stable2 column for one session. The main
-analyses use the files as deposited; a clean variant leaves these out. The attempt record, with
+(a copy of its stable1 spikes), and the file list's stable2 column for one session. The
+outcomes are decided on the files as deposited, as the paper's counts imply it used them; a clean
+variant leaves these out, and four outcomes (Figures 1C directionality, 2, S2 and 4) change or lose
+their margin without them. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/park-2019-01.yaml`](../../attempts/park-2019-01.yaml).
 

@@ -349,7 +349,9 @@ def decode(lam, counts, nbins=36):
     ll = np.where((L == 0) & (n > 0), -10.0, ll)
     ll = np.where((L == 0) & (n == 0), 0.0, ll)
     tot = ll.sum(axis=1)
-    est = np.argmax(tot, axis=1) * (360 / nbins)  # bin start, as the code's angs 0..350
+    # bin start, as the code's angs 0..350; against window directions that fall anywhere in the
+    # bin this biases the signed error by about -5 degrees (half a bin), kept to follow the code
+    est = np.argmax(tot, axis=1) * (360 / nbins)
     est = est.astype(float)
     est[counts.sum(axis=0) == 0] = np.nan
     return est
@@ -423,8 +425,11 @@ def internal_tuning(t1, d1, ev2, evs, maxint, side="before", norm="sum_offsets")
     takes cell 2 spikes in the window ending at the cell 1 spike (the code), 'after' the window
     starting at it (variant). ``norm``: 'sum_offsets' divides the histogram by the sum of the
     absolute time offsets (the Methods' "divided by the sum of the time offsets", one scale
-    factor per curve), 'occupancy' divides each bin by the count of the same displacement over
-    all tracker samples of the windows (the code's rate_tunes). Spikes and samples without a
+    factor per curve, so the KLD, which is computed on the counts, the preferred bin and the
+    Rayleigh length are those of the raw displacement histogram), 'occupancy' divides each bin by
+    the count of the same displacement over all tracker samples of the windows (the code's
+    rate_tunes), 'none' returns the histogram itself (used with tracker samples in place of cell 2
+    spikes, to give the displacement histogram of head direction alone). Spikes and samples without a
     valid direction are dropped beforehand. Returns (curve, histogram of counts).
     """
     t2, cum2, ct2 = ev2
@@ -438,6 +443,8 @@ def internal_tuning(t1, d1, ev2, evs, maxint, side="before", norm="sum_offsets")
     onehot = np.eye(36)[b1]
     lo, hi = window(t2)
     hist = _shift(onehot.T @ (cum2[hi] - cum2[lo]))
+    if norm == "none":
+        return hist, hist
     if norm == "sum_offsets":
         n = hi - lo
         s = np.sum(np.abs((ct2[hi] - ct2[lo]) - n * t1))
