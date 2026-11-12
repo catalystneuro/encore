@@ -159,7 +159,7 @@ claims:
     those with mean TCR > 1 Hz, shown in Figure 2B. Note that this appears to decrease over time.
   criterion: As in signal_utils.calc_pr_all_days. Per day, TCR counts per 20 ms bin times 50 give
     Hz; a channel is active when its mean over all bins of the session exceeds 1 Hz; the CO
-    session is used on two-session days, the RD session otherwise. Reproduced when a linear fit
+    session is used on two-session days, the day's only session (CO or RD) otherwise. Reproduced when a linear fit
     of the daily count on days since the first day has a negative slope with p < 0.05 (two-sided
     linregress; the paper gives no test, so this is a standard choice). The counts in the first
     and last 30 sessions are reported.
@@ -316,16 +316,17 @@ claims:
     IQR is larger than channel 7's and above the median circular IQR over channels; and both
     channels' mean TCR over the dataset exceeds 1 Hz.
 - id: fig3cd-tuning-stable
-  statement: Per-channel tuning angles and strengths generally appear consistent through the
-    dataset, and in most channels the circular IQR of tuning angle is small, so their tunings did
-    not change much.
+  statement: Per-channel tuning angles generally appear consistent through the dataset; in most
+    channels the circular IQR of tuning angle is small, so their tunings did not change much.
   source: Section 4.2, paragraph 1; Figure 3C, 3D and 3E; Discussion, paragraph 3
   quote: In most channels, the circular IQR of tuning angles was small, suggesting their tunings
     did not change much throughout the dataset.
   depends_on:
   - fig3b-two-channels
-  criterion: Tuning as in fig3b-two-channels. The paper does not fix what a small circular IQR
-    is. The readings are (a) below 45 degrees (one of the eight 45-degree movement sectors of
+  criterion: Tuning as in fig3b-two-channels. Section 4.2 also says strengths appear consistent,
+    while the Figure 3 legend ("with varying tuning strengths") and the Discussion ("while tuning
+    strength varied") say the opposite; the paper is not consistent on strength, so the claim is
+    on tuning angle only. The paper does not fix what a small circular IQR is. The readings are (a) below 45 degrees (one of the eight 45-degree movement sectors of
     Appendix C.3); (b) below 90 degrees. The channels counted are (i) all 96, or (ii) the channels
     active (mean TCR above 1 Hz) over the dataset. Reproduced when, under one pair of readings,
     more than half of the channels have a small circular IQR; the distribution of circular IQRs
@@ -454,8 +455,12 @@ claims:
     of the hold-out SBP and, separately, of the hold-out kinematics, then predicting with that
     day's decoders and scoring against the shuffled kinematics. Because one unnamed session could
     be any of 312, the claim is judged on the median over all sessions (one shuffle each, seed 0).
-    Reproduced when both medians are within tolerance; partially reproduced when both are
-    negative but one or both fall outside it. Shuffling trials as whole units is shown as a
+    What is permuted for the decoders with history (8 bins for RR, 20-bin sequences for the LSTM)
+    is open and could change the values; the readings are (a) the raw 20 ms bins of SBP, permuted
+    before the history windows are built; (b) the decoder input samples (each history window kept
+    whole) and, separately, the kinematic targets. Reproduced when, under one reading, both
+    medians are within tolerance; partially reproduced when both are negative but one or both
+    fall outside it. Shuffling trials as whole units is shown as a
     variant.
 - id: fig5a-multiday-short-term
   statement: Training the LSTM on up to five consecutive past sessions reduces the initial drop in
@@ -512,12 +517,47 @@ claims:
     paper says approximately evenly spaced); an LSTM is trained on the seed day as in
     fig4a-sameday-stable, then for each later session up to 200 days out it is fine-tuned on the
     last 30, 60, 120 or 300 s (1500, 3000, 6000 or 15000 bins) of that session's 300 training
-    trials, with 50, 250, 250 or 500 iterations and learning rate from 2e-4 to 1e-5, the input
-    normalizer refit on those samples and the output normalizer kept, and evaluated on that
-    session's hold-out trials; CO is used on two-session days. R2 is averaged across the 20 seeds
+    trials, with 50, 250, 250 or 500 iterations and learning rate from 2e-4 to 1e-5, the output
+    normalizer kept, and evaluated on that session's hold-out trials; CO is used on two-session
+    days. Input normalization is open. Appendix C.1 says that for Figure 5 the normalization
+    parameters were held at those found on the training day, which for a fine-tuned decoder can
+    mean (i) the seed day, or (ii) the day of the latest fine-tuning, refit on its fine-tuning
+    samples, as continual_learning_lstm.py does (UPDATE_NEURAL_SCALER True); both are run. R2 is averaged across the 20 seeds
     per relative day. The comparison without fine-tuning is open; the readings are (a) the
     single-session curve of fig5a-multiday-short-term and (b) the LSTM curve of
-    fig4d-cross-day-decay at positive offsets. Reproduced when, under one reading, 30 s
+    fig4d-cross-day-decay at positive offsets. Reproduced when, under one pair of readings, 30 s
     fine-tuning has higher mean R2 than the comparison both over relative days 1 to 10 and over
     days 100 to 200, and for 120 s and 300 s the mean R2 over days 100 to 200 exceeds the mean
     day-0 R2 of the seed decoders. Partially reproduced when only one of the two parts holds.
+checks:
+- date: 2026-11-12
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2b-active-channels-decrease, criterion said the RD session is used on single-session days;
+    signal_utils.calc_pr_all_days uses the CO session when present and otherwise the RD one, so
+    a day's only session is used whatever its style.
+  - fig3cd-tuning-stable, statement narrowed to tuning angle; Section 4.2 says strengths appear
+    consistent but the Figure 3 legend and the Discussion say strength varied, and the criterion
+    tested angle only; the inconsistency is named in the criterion.
+  - suppc1-shuffle-baseline, what is shuffled for decoders with time history (raw bins before the
+    history windows, or whole input samples) is not stated in Appendix C.1 and could change the
+    R2; both readings added.
+  - fig5b-finetune, criterion followed the code's refit of input normalization on each fine-tuning
+    day without naming it; Appendix C.1 says normalization for Figure 5 was held at the training
+    day's parameters, which for a fine-tuned decoder may mean the seed day or the latest
+    fine-tuning day; both readings added.
+  - Open, figs2-throughput-improves, the throughput formula is only cited to Nason et al. (the
+    supplement's [1]); the readings named stand, the reference itself was not read.
+  - Open, fig2a-irregular-shifts, fig2d-population-drift, fig2e-trajectories-separable,
+    fig3b-two-channels, fig3d-weak-channels-low-tcr, fig3e-array-tuning, the paper judges these
+    by eye; the decision rules are choices not in the paper, labelled as such, and could be
+    disputed by an author.
+  - Open, figs4-bank-slopes and figs5-active-inactive-slopes, the code for Figures S4 and S5 is not
+    in the repository; what the line is fit to and the SBP unit remain readings.
+  - Open, fig5a-multiday-short-term, the multi-day trainer calls the outside library neuraldecoding,
+    not in the repository; the code variant's details (90/10 split, no noise) were not verified.
+  - Code facts in the other criteria (0.25 SBP scale, x50 TCR, lags 0 to 10, RR without scaler,
+    74-trial test set, 2-SD onset variant, curve_fit initial values, fine-tuning sample counts and
+    iterations) were checked against the repository at the cited commit and hold.
