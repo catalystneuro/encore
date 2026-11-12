@@ -13,7 +13,7 @@ claims cannot be tested, and the paper's simulations were not run.
 | Depth of narrow-peak sites (694 um) | Blocked: data missing |
 | Narrow peaks in 0.3% of V1-V2 pairs | Not reproduced (1.05%) |
 | V1-V2 peaks offset by a median of 2.8 ms, width 3.71 ms | Not reproduced (2.0 ms, 3.89 ms) |
-| V1-V1 and V2-V2 peaks at zero lag | Partially reproduced, resting on an assumption; a change to not reproduced is proposed |
+| V1-V1 and V2-V2 peaks at zero lag | Not reproduced, resting on an assumption (V1-V1 pairs differ from zero, Wilcoxon p = 0.016) |
 | Efficacy, median 0.39% | Not reproduced (0.32%) |
 | V1 divergence higher before middle-layer V2 spikes than in control epochs | Reproduced |
 | About 3-fold higher | Not reproduced (about 1.9-fold) |

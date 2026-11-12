@@ -124,17 +124,8 @@ outcomes:
     bin with the Gaussian of SD 1.5 ms alone gives a width at half height of 3.54 ms, so reading
     (a) has little room below that, and the unsmoothed width of reading (b) is limited by the bin.
 - claim: fig5b-intra-areal-zero-lag
-  outcome: partially_reproduced
+  outcome: not_reproduced
   assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: >-
-      The criterion reproduces the claim only when the test finds no difference from zero in both
-      areas and defines no partial outcome. The readings disagree for V1-V1 pairs, and under the
-      assumed Wilcoxon signed-rank test, which the outcome takes (author step 1.6), V1-V1 offsets
-      differ from zero (p = 0.016, 2620 pairs), so the claim is not reproduced. The verified
-      outcome, partially reproduced, rested on the readings disagreeing, which step 1.6 settles by
-      the assumption.
   notebook: reproduce_zandvakili_2015.ipynb
   output: claim:fig5b-intra-areal-zero-lag
   notes: >-
@@ -143,12 +134,12 @@ outcomes:
     under the Wilcoxon signed-rank test (p = 0.016 with zeros dropped, 0.027 Pratt, 0.028 zeros
     split) and not under the sign test (p = 0.076); mean offset 0.104 ms, 978 positive, 900
     negative, 742 zero. The readings give different outcomes, and the outcome takes the Wilcoxon
-    signed-rank test (see deviations). The outcome was not reproduced before the first
-    verification round and partially reproduced after it, the outcome the verifier gave, on the
-    ground that the two readings disagree. The second verifier pointed out that this does not
-    follow from the assumed test, under which V1-V1 pairs differ and the criterion gives not
-    reproduced. The verified outcome is kept, as the protocol requires from round 2 on, and the
-    change to not reproduced is proposed. The V1-V1 shift follows the order of the unit lists
+    signed-rank test (see deviations), under which V1-V1 pairs differ from zero, so the criterion
+    gives not reproduced. The outcome was not reproduced before the first verification round and
+    partially reproduced after it, the outcome the verifier gave, on the ground that the two
+    readings disagree. The second verifier pointed out that this does not follow from the
+    assumed test; the change back to not reproduced was proposed and the third verification
+    round agreed with it. The V1-V1 shift follows the order of the unit lists
     (the claims file's pair order), so it is an ordering asymmetry, not a lead of one population.
     Without pairs on the same electrode, V1-V1 gives Wilcoxon p = 0.009 and sign test p = 0.063,
     and V2-V2 (108 pairs; 141 of the 249 share a tetrode) Wilcoxon p = 0.030 and sign test p =
@@ -920,3 +911,38 @@ verifications:
     outcome: blocked
     reason: Agreed (metadata_insufficient).
     response: No change.
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: >-
+    Round 3. Only the proposed change of outcome, for fig5b-intra-areal-zero-lag, and the analysis
+    behind it (notebook cells 21 and 22, the record's notes and deviations for the claim), with the
+    claims file and the paper. Report in transcripts/zandvakili-2015/verifier-3-report.md. It found
+    no place where the claims file misreads the paper for this claim, so no question was added for
+    a reader.
+  results:
+  - claim: fig5b-intra-areal-zero-lag
+    agrees: true
+    outcome: not_reproduced
+    reason: >-
+      The numbers come from the data (cell 21), and the result cell and the record's notes give
+      the same values. The assumption that the paper's test is the Wilcoxon signed-rank test is
+      stated in the deviations, was in place before round 2 and gives the less favourable of the
+      two outcomes, so it was not picked to get a match; the paper names no test and its p = 0.45
+      and 0.42 cannot tell the tests apart, so it stays plausible but cannot be checked, hence
+      assumed. The claims file says "Reproduced when the test finds no difference from zero in
+      both areas" and defines no partial outcome. Under the assumed test V1-V1 pairs differ from
+      zero (p = 0.016 < 0.05, and 0.027 and 0.028 under the other treatments of zeros), so the
+      criterion gives not_reproduced, the rule the record applies to fig5b-v1v2-latency and
+      fig7a-threefold. Partially reproduced, its round-1 outcome, rested on the two readings
+      disagreeing, a basis that no longer applies once the record adopts one test as an
+      assumption. Additional context that does not change the outcome. The V1-V1 shift follows
+      the order of the unit lists (mean 0.10 ms), an asymmetry from pair ordering. Without
+      same-electrode pairs V2-V2 also differs (108 pairs; Wilcoxon p = 0.030, sign test p = 0.033),
+      but the claims file uses all pairs. The 1 ms bins, against the paper's 0.1 ms, may
+      contribute to the difference from the paper's p-values.
+    response: >-
+      Outcome changed to not_reproduced and `proposed` removed. The notebook's result cell and
+      summary, the entry README and the record's notes now give not reproduced. The notes already
+      state the ordering asymmetry, the variant without same-electrode pairs and the 1 ms bins
+      (in the deviations).
