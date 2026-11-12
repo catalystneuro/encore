@@ -15,13 +15,13 @@ data set's own fields are shown as a variant.
 | No population bias in location or interval (Fig. 2B, C) | Reproduced |
 | Cells with fewer than six fields uniform (Fig. S6) | Reproduced (assumption) |
 | Field counts overdispersed against equal-rate Poisson | Reproduced |
-| Mean fields per cell per animal (Fig. S7A) | Partially reproduced |
+| Mean fields per cell per animal (Fig. S7A) | Reproduced |
 | Negative binomial r 0.57, p 0.14 | Reproduced |
 | Recruitment about 65% at 48 m | Reproduced |
 | Recruitment follows the Lomax curve (KS 0.05) | Partially reproduced (assumption) |
 | 90% recruitment at about 500 m | Reproduced |
-| Uniform field density (KS 0.03) | Partially reproduced |
-| No influence of track features or speed (Fig. S10) | Not reproduced (assumption) |
+| Uniform field density (KS 0.03) | Reproduced |
+| No influence of track features or speed (Fig. S10) | Not reproduced |
 | Field propensity stationary along the track (Fig. S11) | Reproduced |
 | No change of propensity at section boundaries (Fig. S11) | Not reproduced (assumption) |
 | Field locations uncorrelated between cells (Fig. S12) | Not reproduced |
@@ -40,7 +40,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 "Assumption" marks outcomes that rest on the reading of a "pass" through a field, which the paper
-leaves open; under the other reading those four claims would be reproduced. For Fig. 4C it marks
+leaves open; under the other reading the Fig. S6 claim would be partially reproduced and the other
+two reproduced. For Fig. 4C it marks
 the assumption that the simulated environment sizes are spaced logarithmically; with linear spacing
 that claim would be reproduced. The attempt record,
 with the reasons and the differences from the paper's method, is

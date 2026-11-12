@@ -22,8 +22,13 @@ determination", unless stated; "claims" = the shared method of claims/rich-2014.
   least one spike in at least 50% of passes in that direction (S). Pass readings P-a (a run in
   one direction that crosses the whole field) and P-b (any visit to the field's bins while
   moving in that direction, moving meaning above the maps' 5 cm/s) are those the claims file
-  names. Spikes counted in a pass are those the maps use (speed above 5 cm/s). A run is a stretch of novel-section samples with
-  the same direction of travel, broken at gaps over 1 s (a standard choice).
+  names. Spikes counted in a pass are those the maps use (speed above 5 cm/s). A run is a
+  stretch of novel-section samples with the same direction of travel, broken at gaps over 1 s
+  (a standard choice). Under P-a a field that reaches the end of the positions visited in the
+  epoch's novel section cannot be crossed beyond that end, so an edge of the field within
+  EDGE_CM (20 cm, two smoothing SDs) of either end is taken as reached when the run gets within
+  EDGE_CM of that end (a standard choice; verifier round 1, problem 2). `edge_cm=False` gives
+  the first version, which dropped such fields.
 - Merging: an outbound and an inbound field merge when the overlap is at least 50% of either
   one's extent (S); the location is the peak of the mean of the two maps over the union (S).
 - Open field (RUN3): 1 cm2 bins, Gaussian SD 5 cm, fields of at least 100 contiguous bins
@@ -60,6 +65,7 @@ MIN_WIDTH_CM = 15
 PASS_FRACTION = 0.5
 MERGE_OVERLAP = 0.5
 RUN_GAP_S = 1.0
+EDGE_CM = 20.0
 OF_SMOOTH_CM = 5.0
 OF_MIN_BINS = 100
 
@@ -139,6 +145,12 @@ def load_animals():
             isod=np.array([np.nanmax(np.atleast_1d(s.spAll[c].clustInf.IsoD).astype(float))
                            if np.isfinite(np.atleast_1d(s.spAll[c].clustInf.IsoD).astype(float)).any()
                            else np.nan for c in idx]),
+            # finite L-ratio / isolation distance in each epoch's own cluster info (spEpochSep
+            # columns PRE, RUN1, RUN2, RUN3), counted over the valid units
+            cq_epochs={k: (int(sum(np.isfinite(np.atleast_1d(s.spEpochSep[c, k].clustInf.Lratio).astype(float)).any() for c in idx)),
+                           int(sum(np.isfinite(np.atleast_1d(s.spEpochSep[c, k].clustInf.IsoD).astype(float)).any() for c in idx)))
+                       for k in range(s.spEpochSep.shape[1])},
+            cq_fieldnames=list(s.spEpochSep[idx[0], 1].clustInf._fieldnames),
             numFieldNovel=np.asarray(s.numFieldNovel, float)[valid],
             numField=np.asarray(s.numField, float)[valid],
             st=np.array([float(s.histo[c].st) for c in idx]),
@@ -234,7 +246,22 @@ def directional_maps(a, cell, e):
     return centres, maps, samp
 
 
-def _detect(centres, m, a, samp, sign, pass_rule):
+def _reach_bounds(a, samp, x0, x1, edge_cm=None):
+    """Field edges a P-a pass must reach: an edge within edge_cm of the end of the positions
+    visited in the epoch's novel section is moved to edge_cm from that end."""
+    if edge_cm is False:  # the first version: the field's own edges
+        return x0, x1
+    edge_cm = EDGE_CM if edge_cm is None else edge_cm
+    xs = a["x_nov_cm"][samp]
+    lo, hi = np.nanmin(xs), np.nanmax(xs)
+    y0 = min(max(x0, lo + edge_cm), x1)
+    y1 = max(min(x1, hi - edge_cm), y0)
+    return y0, y1
+
+
+def _detect(centres, m, a, samp, sign, pass_rule, edge_cm=None, keep_all=False):
+    """Fields of one directional map. keep_all=True returns every stretch above 2 Hz with
+    its width and passes and the step that rejects it (`rejected`: width, passes or none)."""
     rate = m["rate"]
     above = np.nan_to_num(rate, nan=0.0) > RATE_HZ
     starts, ends = _runs(above)
@@ -242,12 +269,15 @@ def _detect(centres, m, a, samp, sign, pass_rule):
     passes = _passes(a, samp, sign)
     for s0, e0 in zip(starts, ends):
         if (e0 - s0) * BIN_CM < MIN_WIDTH_CM:
+            if keep_all:
+                fields.append(dict(i0=s0, i1=e0, n_pass=0, n_hit=0, rejected="width"))
             continue
         x0, x1 = centres[s0] - BIN_CM / 2, centres[e0 - 1] + BIN_CM / 2
         n_pass = n_hit = 0
         if pass_rule == "P-a":
+            y0, y1 = _reach_bounds(a, samp, x0, x1, edge_cm)
             visits = [p for p in passes
-                      if np.nanmin(a["x_nov_cm"][p]) <= x0 and np.nanmax(a["x_nov_cm"][p]) >= x1]
+                      if np.nanmin(a["x_nov_cm"][p]) <= y0 and np.nanmax(a["x_nov_cm"][p]) >= y1]
         else:
             visits = []
             for p in passes:
@@ -261,9 +291,10 @@ def _detect(centres, m, a, samp, sign, pass_rule):
             tp0, tp1 = a["t"][p[0]], a["t"][p[-1]] + a["dt"][p[-1]]
             if np.any((st >= tp0) & (st <= tp1) & (sx >= x0) & (sx <= x1)):
                 n_hit += 1
-        if n_pass == 0 or n_hit < PASS_FRACTION * n_pass:
+        bad = n_pass == 0 or n_hit < PASS_FRACTION * n_pass
+        if bad and not keep_all:
             continue
-        fields.append(dict(i0=s0, i1=e0, n_pass=n_pass, n_hit=n_hit))
+        fields.append(dict(i0=s0, i1=e0, n_pass=n_pass, n_hit=n_hit, rejected="passes" if bad else "none"))
     return fields
 
 
@@ -271,8 +302,9 @@ def pass_counts(a, e, sign, x0, x1):
     """Passes through [x0, x1] cm in one direction of epoch e under P-a and P-b."""
     samp = epoch_samples(a, e)
     passes = _passes(a, samp, sign)
+    y0, y1 = _reach_bounds(a, samp, x0, x1)
     n_a = sum(1 for p in passes
-              if np.nanmin(a["x_nov_cm"][p]) <= x0 and np.nanmax(a["x_nov_cm"][p]) >= x1)
+              if np.nanmin(a["x_nov_cm"][p]) <= y0 and np.nanmax(a["x_nov_cm"][p]) >= y1)
     n_b = 0
     for p in passes:
         xp = a["x_nov_cm"][p]
@@ -281,10 +313,23 @@ def pass_counts(a, e, sign, x0, x1):
     return n_a, n_b
 
 
-def cell_epoch_fields(a, cell, e, pass_rule="P-a"):
+def candidate_fields(a, cell, e, pass_rule="P-a", edge_cm=None):
+    """Every stretch above 2 Hz of both directional maps, before the width and pass rules, with
+    the step that rejects it (diagnostic, verifier round 1, problem 3)."""
+    centres, maps, samp = directional_maps(a, cell, e)
+    rows = []
+    for sign in (1, -1):
+        for f in _detect(centres, maps[sign], a, samp, sign, pass_rule, edge_cm, keep_all=True):
+            rows.append(dict(sign=sign, start_cm=centres[f["i0"]] - BIN_CM / 2,
+                             end_cm=centres[f["i1"] - 1] + BIN_CM / 2, n_pass=f["n_pass"],
+                             n_hit=f["n_hit"], rejected=f["rejected"]))
+    return rows
+
+
+def cell_epoch_fields(a, cell, e, pass_rule="P-a", edge_cm=None):
     """Merged fields of one cell in one epoch's novel section."""
     centres, maps, samp = directional_maps(a, cell, e)
-    det = {sign: _detect(centres, maps[sign], a, samp, sign, pass_rule) for sign in (1, -1)}
+    det = {sign: _detect(centres, maps[sign], a, samp, sign, pass_rule, edge_cm) for sign in (1, -1)}
     items = [(sign, f) for sign in (1, -1) for f in det[sign]]
     # union-find over overlapping opposite-direction fields
     parent = list(range(len(items)))
@@ -323,20 +368,24 @@ def cell_epoch_fields(a, cell, e, pass_rule="P-a"):
             size_b = (i1 - i0) * BIN_CM
             rate_b = float(np.nanmean(seg))
         peak = i0 + int(np.nanargmax(seg))
-        out.append(dict(epoch=e, loc_m=centres[peak] / 100, direction=direction,
+        # the field reaches an end of its map: the first or last bin, or a bin dropped for occupancy
+        touches = bool(i0 == 0 or i1 == len(centres) or any(
+            not np.isfinite(maps[s]["rate"][i0 - 1]) or not np.isfinite(maps[s]["rate"][i1])
+            for s in signs))
+        out.append(dict(epoch=e, loc_m=centres[peak] / 100, direction=direction, touches_end=touches,
                         start_cm=centres[i0] - BIN_CM / 2, end_cm=centres[i1 - 1] + BIN_CM / 2,
                         size_cm=(i1 - i0) * BIN_CM, rate=float(np.nanmean(seg)),
                         size_b=size_b, rate_b=rate_b, peak_rate=float(np.nanmax(seg))))
     return out
 
 
-def track_fields(animals, pass_rule="P-a"):
+def track_fields(animals, pass_rule="P-a", edge_cm=None):
     """All novel fields of all cells (F-a), one row per merged field."""
     rows = []
     for ai, a in enumerate(animals):
         for k in range(len(a["cells"])):
             for e in range(4):
-                for f in cell_epoch_fields(a, k, e, pass_rule):
+                for f in cell_epoch_fields(a, k, e, pass_rule, edge_cm):
                     rows.append(dict(animal=a["animal"], ai=ai, cell=k, **f))
     return pd.DataFrame(rows)
 
@@ -506,16 +555,17 @@ def sws_rates(a):
     return np.array(rates), total
 
 
-def run_rate(a, cell, novel_only=True):
+def run_rate(a, cell, novel_only=True, speed=True):
     """RUN1 rate over time with speed above 5 cm/s (Fig. S5 legend); Z-a novel only, Z-b all
-    track time of RUN1 epochs."""
+    track time of RUN1 epochs. speed=False with novel_only=False is a variant: all RUN1 track
+    time, no speed threshold (verifier round 1)."""
     t = a["t"]
     in_ep = np.zeros(len(t), bool)
     for e in range(4):
         idx = epoch_samples(a, e) if novel_only else np.flatnonzero(
             (t >= a["sectInt"][e][0]) & (t <= a["sectInt"][e][1]) & np.isfinite(a["x_cm"]))
         in_ep[idx] = True
-    use = in_ep & (np.abs(a["v"]) > SPEED_CM_S)
+    use = in_ep & (np.abs(a["v"]) > SPEED_CM_S) if speed else in_ep
     sp = a["run1"][cell]
     near = np.clip(np.searchsorted(t, sp), 1, len(t) - 1)
     near = np.where(np.abs(t[near - 1] - sp) < np.abs(t[near] - sp), near - 1, near)
@@ -536,3 +586,43 @@ def cluster_quality(features, noise):
     lratio = np.sum(stats.chi2.sf(dN, df)) / len(X)
     isod = float(np.sort(dN)[len(X) - 1]) if len(N) >= len(X) else np.nan
     return float(lratio), isod
+
+
+def match_dataset_fields(animals, fields, pass_rule="P-a"):
+    """For each of the data set's novel fields (F-b), whether a recomputed field (F-a) of the same
+    cell and epoch overlaps it, and if not the step of the detection that rejects the stretch
+    above 2 Hz in the same place (`rate` when the recomputed map has none). Diagnostic only."""
+    fb = dataset_field_table(animals)
+    rows = []
+    cache = {}
+    for _, r in fb.iterrows():
+        g = fields[(fields.ai == r.ai) & (fields.cell == r.cell) & (fields.epoch == r.epoch)]
+        ov = g[(g.start_cm < r.end_cm) & (g.end_cm > r.start_cm)]
+        if len(ov):
+            rows.append(dict(ai=r.ai, cell=r.cell, epoch=r.epoch, loc_m=r.loc_m, matched=True,
+                             step="matched", shift_cm=100 * float(np.min(np.abs(ov.loc_m - r.loc_m)))))
+            continue
+        key = (r.ai, r.cell, r.epoch)
+        if key not in cache:
+            cache[key] = candidate_fields(animals[r.ai], r.cell, r.epoch, pass_rule)
+        signs = {1: [-1], 2: [1], 3: [1, -1]}[r.direction]  # data set: 1 inbound, 2 outbound
+        cand = [c for c in cache[key] if c["sign"] in signs and c["start_cm"] < r.end_cm
+                and c["end_cm"] > r.start_cm]
+        steps = {c["rejected"] for c in cand}
+        step = "rate" if not cand else ("passes" if "passes" in steps else
+                                         "width" if "width" in steps else "merged or other")
+        rows.append(dict(ai=r.ai, cell=r.cell, epoch=r.epoch, loc_m=r.loc_m, matched=False, step=step,
+                         shift_cm=np.nan))
+    return pd.DataFrame(rows)
+
+
+def track_fields_binned(animals, pass_rule, bin_cm):
+    """track_fields with rate-map bins of bin_cm (variant: the data set's own maps use 1 inch,
+    2.54 cm, where the Methods give 1 cm)."""
+    global BIN_CM
+    old = BIN_CM
+    BIN_CM = bin_cm
+    try:
+        return track_fields(animals, pass_rule)
+    finally:
+        BIN_CM = old
