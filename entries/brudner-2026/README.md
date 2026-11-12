@@ -10,7 +10,7 @@ complex plume movie, and three freestream plume windows. The smooth plume movie 
 |---|---|
 | Fig. 5E, gradient predicts turns in the smooth plume, motion in the complex plume | Not reproduced |
 | Fig. 5F, cue dominance positive (smooth) and negative (complex) | Partially reproduced, resting on assumptions (file set and turn onset) |
-| Fig. S5C, turns of about -34 and +34 degrees | Reproduced, resting on an assumption; a change to not reproduced is proposed |
+| Fig. S5C, turns of about -34 and +34 degrees | Not reproduced |
 | Fig. 2C, motion predicts the centerline side better than the gradient (complex plume) | Partially reproduced, resting on an assumption |
 | Fig. 2E, motion weighted above the gradient (complex plume) | Partially reproduced |
 | Fig. S1F-G, cue maps robust to sensor spacing and delay | Not reproduced |
@@ -27,10 +27,10 @@ every reading (and no file set or onset gives it in every reading): as stored or
 motion cue becomes significant (p 0.0079). Fig. 5F would be reproduced with the files' own turn start
 in place of the SI's onset, which a reader has been asked about. The paper's code names other files
 (smoke-2a), and its published Fig. 5 tables are matched most closely by the smoke-1a files with the
-files' own turn start, and closely by the smoke-1a files with the SI's onset. Fig. S5C is reproduced
-only when the turn is bounded by the 20% crossings of its peak, a bound the paper does not state; over
-the files' turn events, as the claims file reads it, the medians are about 21 degrees, so a change to
-not reproduced is proposed for the next verification round.
+files' own turn start, and closely by the smoke-1a files with the SI's onset. Fig. S5C is not
+reproduced: over the files' turn events, as the claims file reads it, the medians are about 21 degrees.
+They match the paper only when the turn is bounded by the 20% crossings of its peak, a bound the paper
+does not state, and whether the files' events are the paper's turn bounds has been asked of a reader.
 
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/brudner-2026-01.yaml`](../../attempts/brudner-2026-01.yaml).
