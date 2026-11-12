@@ -140,11 +140,19 @@ def test_the_not_found_page_works_at_any_depth_and_is_not_indexed(built):
     assert 'href="/assets/' in text and 'href="/datasets/"' in text
 
 
-def test_every_claim_has_an_anchor_on_its_dandiset_page(built):
+def _paper_page(data, out, attempt):
+    """The page of the paper an attempt is on: claims belong to the paper."""
+    q = next(q for q in site.papers_of(data) if q["doi"] == attempt["paper"].lower() and q["attempts"])
+    return (out / "papers" / q["key"] / "index.html").read_text()
+
+
+def test_every_claim_has_an_anchor_on_its_papers_page_and_none_on_a_datasets(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        page = (out / site.page_of(dandiset) / "index.html").read_text()
+        dataset_page = (out / site.page_of(dandiset) / "index.html").read_text()
+        assert 'id="claim-' not in dataset_page
         for attempt in attempts:
+            page = _paper_page(data, out, attempt)
             for outcome in attempt["outcomes"]:
                 assert f'id="claim-{outcome["claim"]}"' in page
 
@@ -156,13 +164,15 @@ def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
         assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
-def test_a_dandiset_page_lists_every_notebook_of_every_entry_that_uses_it(built):
+def test_a_papers_page_lists_every_notebook_of_every_entry_that_uses_its_datasets(built):
     data, out = built
-    for dandiset in site.current_attempts(data):
-        page = (out / site.page_of(dandiset) / "index.html").read_text()
+    for dandiset, attempts in site.current_attempts(data).items():
+        page = _paper_page(data, out, attempts[-1])
         entries = site.entries_for(data, dandiset)
         assert entries, dandiset
         for entry in entries:
+            if entry["name"] != attempts[-1]["entry"]:
+                continue
             for notebook in entry["notebooks"]:
                 assert notebook["path"] in page
         assert "Open the executed notebook" not in page
@@ -210,7 +220,7 @@ def test_every_page_declares_the_favicon(built):
         assert ((out / href.lstrip("/")) if href.startswith("/") else (page.parent / href)).resolve().is_file(), page
 
 
-def test_findings_are_reached_from_the_dandisets_list(built):
+def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
     data, out = built
     assert not (out / "findings").exists() and not (out / "claims").exists()
     rows = json.loads((out / "data" / "dandisets.json").read_text())
@@ -219,9 +229,11 @@ def test_findings_are_reached_from_the_dandisets_list(built):
         attempts = [a for a in attempts if not a.get("deprecated")]
         assert row["findings"] == sum(len(a["findings"]) for a in attempts)
         assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
-        assert 'id="findings"' in (out / row["page"] / "index.html").read_text()
-    assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
-
+        page = (out / row["page"] / "index.html").read_text()
+        assert "Findings about the data" in page and "Papers tested on this dataset" in page
+        for a in attempts:
+            for f in a["findings"]:
+                assert site.e(f["statement"]) in page
 
 
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
@@ -299,24 +311,25 @@ def test_a_deprecated_attempt_counts_for_nothing():
 def test_a_deprecated_attempt_is_marked_on_its_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        if any(a.get("deprecated") for a in attempts):
-            assert "Deprecated:" in (out / site.page_of(dandiset) / "index.html").read_text()
+        for a in attempts:
+            if a.get("deprecated"):
+                assert "Deprecated:" in _paper_page(data, out, a)
 
 
-
-def test_an_earlier_attempt_has_its_own_page_linked_from_the_dandiset(built):
+def test_an_earlier_attempt_has_its_own_page_linked_from_its_paper(built):
     data, out = built
     pages = 0
-    for dandiset in site.current_attempts(data):
+    for dandiset, current in site.current_attempts(data).items():
         for a in site.earlier_attempts(data, dandiset):
-            pages += 1
-            current = (out / site.page_of(dandiset) / "index.html").read_text()
-            assert f'href="../../../{site.page_of(dandiset)}{a["id"]}/"' in current
             page = (out / site.page_of(dandiset) / a["id"] / "index.html").read_text()
-            assert "An earlier attempt." in page and f'href="../../../../{site.page_of(dandiset)}"' in page
+            assert "An earlier attempt." in page
             for o in a["outcomes"]:
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
+            paper = _paper_page(data, out, current[-1])
+            if f'{site.page_of(dandiset)}{a["id"]}/"' in paper:
+                pages += 1
     assert pages
+
 
 def test_claims_using_outside_data_are_counted_apart():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dataset"},
@@ -331,9 +344,9 @@ def test_claims_using_outside_data_are_counted_apart():
 def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        page = (out / site.page_of(dandiset) / "index.html").read_text()
-        assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
         for attempt in attempts:
+            page = _paper_page(data, out, attempt)
+            assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
             for o in attempt["outcomes"]:
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"><details><summary>' in page
             for nb in attempt["notebooks"]:
@@ -422,7 +435,7 @@ def test_pages_carry_a_description_canonical_link_and_social_card(built):
     assert (out / "assets" / "social-card.png").is_file()
     dandiset = next(iter(site.current_attempts(data)))
     page = (out / site.page_of(dandiset) / "index.html").read_text()
-    assert f'href="{site.SITE_URL}{site.page_of(dandiset)}"' in page and "claims tested" in page
+    assert f'href="{site.SITE_URL}{site.page_of(dandiset)}"' in page and "found about its data" in page
 
 
 def test_the_sitemap_lists_every_dandiset_page(built):
@@ -552,7 +565,7 @@ def test_datasets_are_named_by_archive_and_id():
     assert site.key_of_dir("000003") == "dandi:000003" and site.key_of_dir("ebrains-abc") == "ebrains:abc"
 
 
-def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipeline(built):
+def test_a_dataset_with_claims_and_no_attempt_has_a_page_leading_to_its_papers_claims(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
     targets = {t["key"] for t in data["targets"]}
@@ -564,8 +577,10 @@ def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipelin
         if row:
             assert row["page"] == site.page_of(key)
         page = (out / site.page_of(key) / "index.html").read_text()
-        claims = [c for f in data["claim_files"][key] for c in f["claims"]]
-        assert all(f'id="claim-{c["id"]}"' in page for c in claims)
+        assert 'id="claim-' not in page and "Papers tested on this dataset" in page
+        # Its paper's claims, read: the paper is attempted on its other datasets, or not yet at all.
+        papers = [q for q in site.papers_of(data) if key in q["datasets"] and q["status"] in ("claims", "attempted")]
+        assert papers and any(f'papers/{q["key"]}/"' in page for q in papers)
 
 
 def test_a_dataset_waiting_on_a_person_links_its_issue():
@@ -696,8 +711,10 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     # The paper's page stands on its own: its claims, with their outcomes, tests and notes, are on the page, and no
     # claim sends the reader to a dataset's page. So are the findings, notebooks, verification and provenance.
     assert 'id="claim-' in page and "/#claim-" not in page
-    for panel in ("claims", "findings", "notebooks", "verification", "differences", "provenance"):
+    for panel in ("claims", "notebooks", "verification", "differences", "provenance"):
         assert f'<section class="tabpanel" id="{panel}">' in page
+    # Findings about the data belong to the dataset: the paper's page points to them.
+    assert 'id="findings"' not in page and "about the data, on the page" in page
     assert '<a href="../../papers/">Papers</a>' in page and 'href="../../datasets/dandi/000233/"' in page
     # Every attempted paper's page has each claim of its latest attempts, once.
     import build_site
@@ -776,4 +793,16 @@ def test_the_papers_are_the_one_index_and_find_a_paper_by_its_datasets(built):
     # Every link to the old list's filters now goes to the papers list.
     for page in ("index.html", "datasets/dandi/000233/index.html", "papers/tingley-2021/index.html"):
         assert 'datasets/?' not in (out / page).read_text(), page
+
+
+def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):
+    data, out = built
+    papers = [q for q in site.papers_of(data) if q["status"] == "claims"]
+    assert papers
+    for q in papers:
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        files = [f for k in q["datasets"] for f in data["claim_files"].get(k, []) if f["paper"].lower() == q["doi"]]
+        ids = {c["id"] for f in files for c in f["claims"]}
+        assert ids and all(f'id="claim-{i}"' in page for i in ids), q["key"]
+        assert "Not attempted yet" in page and "No attempt on this paper yet" not in page
 
