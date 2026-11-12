@@ -5,7 +5,7 @@
   "label": "DANDI:001708"
  },
  "page": "datasets/dandi/001708/",
- "generated": "2026-11-12T02:12:10+00:00",
+ "generated": "2026-11-12T03:16:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 28,
@@ -1069,79 +1069,28 @@
      "kind": "metadata_error",
      "statement": "The four NEUTRAL units of 'evoked' files (sub-rat-6, 7, 9 and 15) are named \"NEUT\", while the 32 others are named \"Neutral\". The paper's code selects NEUTRAL units by the exact name \"Neutral\" (Spike2Tools.spiketrain_iterator), so its NEUTRAL analyses leave these four out. This agrees with Figure S3, whose n = 32 Table S11 shows to be the NEUTRAL cells of the 'evoked/ongoing' and 'ongoing' files, but the label is spelt two ways for one class.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The code builds its trial-exclusion event list from an event named \"Keyboard\" (Spike2Tools.get_tail_to_heat_lengths), while its NWB loader renames the dataset's pinch events \"keyboard\" (data_loaders.rename_blocks_to_old_labels). Pinches therefore never truncate a trial window, although the Methods exclude trials truncated by the next event. The paper's trial counts (185, 155, 182, 151; 195, 170, 197, 172) are reproduced exactly only without pinches. With pinches they are 2 to 5% lower.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "The EKG beat series contain 20546 inter-beat intervals under 50 ms (of 1105713), double detections at heart rates of about 400 bpm. They raise the mean heart rate per recording from 392.4 to 397.1 bpm. The 11 'evoked' files of sub-rat-25 to sub-rat-35 hold no EKG series.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The pinch events carry labels that are not described: 'ignore', ' ignore', 'l_hpaw_onset_approx', 'tail_release_post_pinch_slip', ear, tail and paw onsets and releases, some with a leading space. Nothing says which pinches were delivered, or what 'ignore' marks.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "Table S11 gives 35, 18 and 50 animals for the Evoked, Evoked/Ongoing and Ongoing sets. The dataset has 35, 18 and 30 subjects, matching the Methods' 53 and 30 animals, and its Ongoing set has 48 files.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "The text says a Gaussian CDF response fits OFF cells significantly worse than the sigmoid with either recovery model. The fits here, and the paper's own notebook 29, give the linear plus exponential erf model a slightly higher ELPD than the sigmoid model (here, on converged fits, by 0.42, dse 1.79, with pinches and by 0.88, dse 1.76, without).",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. The Methods give the OFF priors as k, k2 ~ N(0, 1); the code places N(0, 1) on log k and log k2. Both reproduce Table S7 here once the chains start at the posterior's main mode. How were the chains started? From the default start, as the code samples, chains of the Methods-prior fit stay in a local mode about 240 log-posterior units lower (r_hat 1.69), and the result then depends on the machine's random stream.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. How were the spectral FWHMs (16.92 and 16.12 s) measured and converted to seconds? The peaks are reproduced exactly, but widths at half height of the per-cell or class-mean spectra give 84 to 106 s. The code's peak_widths call uses the index within the masked band, which measures the width about ten bins from the peak and gives 8 to 10 s. The supplement's rat-level bootstrap gives 58 to 98 s.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors. The Gaussian-process settings differ between the Methods (200 inducing points, p_noise 0.001), the code (100 inducing points, p_noise fixed at 0.01, params.json 10000 iterations) and the saved fits (5000 iterations, noise_prob 0.01). The code's settings at 5000 iterations match the stored per-cell fits (Spearman r 0.95 to 1.00). Which settings produced the reported results? The code's null model also uses a different contamination range (0 to the cell's largest count) from the periodic model's (0 to 200).",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "other",
-     "statement": "Four ON cells in two files (sub-rat-70 ses-1, sub-rat-72 ses-1) have 228.6 and 226.5 s between the preceding heat onset and the start of their 1500 s ongoing segment, under the Methods' stated minimum buffer of 230 s.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "other",
-     "statement": "The code samples the piecewise models from PyMC's default start. For the OFF linear plus exponential model with the Methods' priors, chains started there stay in a local mode whose log posterior is about 240 below the main one, and the fit does not converge; with the code's log-k priors some chains do so on some machines. The paper's numbers are those of the main mode.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The code's null Gaussian process (create_mean_model) takes its uniform contamination over 0 to the cell's largest training count, while the periodic model's runs over 0 to 200, so the pseudo-R2 compares two likelihoods. With the same range for both, the training pseudo-R2 medians rise by about 0.004.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The Methods say the full recording period of every NEUTRAL cell was used for the Gaussian-process fits (Data processing, paragraph 2), but the code's stored fits (combined_data.csv) of the 12 NEUTRAL cells of the ongoing files match fits on the code's 1500 s segments (median relative difference of the null log likelihoods 0.0003) and not fits on their whole recordings (1.28). Which input is used decides whether the training pseudo-R2 differs between classes (Kruskal-Wallis p 0.098 on segments, 0.034 on whole recordings).",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -1189,6 +1138,98 @@
      "agreed": 34,
      "of": 34,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The code builds its trial-exclusion event list from an event named \"Keyboard\" (Spike2Tools.get_tail_to_heat_lengths), while its NWB loader renames the dataset's pinch events \"keyboard\" (data_loaders.rename_blocks_to_old_labels). Pinches therefore never truncate a trial window, although the Methods exclude trials truncated by the next event. The paper's trial counts (185, 155, 182, 151; 195, 170, 197, 172) are reproduced exactly only without pinches. With pinches they are 2 to 5% lower.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "Table S11 gives 35, 18 and 50 animals for the Evoked, Evoked/Ongoing and Ongoing sets. The dataset has 35, 18 and 30 subjects, matching the Methods' 53 and 30 animals, and its Ongoing set has 48 files.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The text says a Gaussian CDF response fits OFF cells significantly worse than the sigmoid with either recovery model. The fits here, and the paper's own notebook 29, give the linear plus exponential erf model a slightly higher ELPD than the sigmoid model (here, on converged fits, by 0.42, dse 1.79, with pinches and by 0.88, dse 1.76, without).",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The Methods give the OFF priors as k, k2 ~ N(0, 1); the code places N(0, 1) on log k and log k2. Both reproduce Table S7 here once the chains start at the posterior's main mode. How were the chains started? From the default start, as the code samples, chains of the Methods-prior fit stay in a local mode about 240 log-posterior units lower (r_hat 1.69), and the result then depends on the machine's random stream.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How were the spectral FWHMs (16.92 and 16.12 s) measured and converted to seconds? The peaks are reproduced exactly, but widths at half height of the per-cell or class-mean spectra give 84 to 106 s. The code's peak_widths call uses the index within the masked band, which measures the width about ten bins from the peak and gives 8 to 10 s. The supplement's rat-level bootstrap gives 58 to 98 s.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The Gaussian-process settings differ between the Methods (200 inducing points, p_noise 0.001), the code (100 inducing points, p_noise fixed at 0.01, params.json 10000 iterations) and the saved fits (5000 iterations, noise_prob 0.01). The code's settings at 5000 iterations match the stored per-cell fits (Spearman r 0.95 to 1.00). Which settings produced the reported results? The code's null model also uses a different contamination range (0 to the cell's largest count) from the periodic model's (0 to 200).",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "Four ON cells in two files (sub-rat-70 ses-1, sub-rat-72 ses-1) have 228.6 and 226.5 s between the preceding heat onset and the start of their 1500 s ongoing segment, under the Methods' stated minimum buffer of 230 s.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "The code samples the piecewise models from PyMC's default start. For the OFF linear plus exponential model with the Methods' priors, chains started there stay in a local mode whose log posterior is about 240 below the main one, and the fit does not converge; with the code's log-k priors some chains do so on some machines. The paper's numbers are those of the main mode.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's null Gaussian process (create_mean_model) takes its uniform contamination over 0 to the cell's largest training count, while the periodic model's runs over 0 to 200, so the pseudo-R2 compares two likelihoods. With the same range for both, the training pseudo-R2 medians rise by about 0.004.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods say the full recording period of every NEUTRAL cell was used for the Gaussian-process fits (Data processing, paragraph 2), but the code's stored fits (combined_data.csv) of the 12 NEUTRAL cells of the ongoing files match fits on the code's 1500 s segments (median relative difference of the null log likelihoods 0.0003) and not fits on their whole recordings (1.28). Which input is used decides whether the training pseudo-R2 differs between classes (Kruskal-Wallis p 0.098 on segments, 0.034 on whole recordings).",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }

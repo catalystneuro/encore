@@ -5,7 +5,7 @@
   "label": "CRCNS:rrf-1"
  },
  "page": "datasets/crcns/rrf-1/",
- "generated": "2026-11-12T02:12:10+00:00",
+ "generated": "2026-11-12T03:16:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 24,
@@ -2002,58 +2002,40 @@
    ],
    "findings": [
     {
-     "kind": "code_mismatch",
-     "statement": "The Methods (Z-score normalization) describe averaging trials per trial type, subtracting that type's 2-s baseline and z-scoring the means across trial types. The paper's code (cubeScriptPR25.m, in the data set) instead floors every rate to an integer Hz, subtracts each trial's own 2-s baseline, and z-scores the single-trial values over all 16 trials and all bins of a unit; the trial-type means of these are what rrfAnalysis.m analyses. The paper's numbers (cluster sizes, Table 1, Table S1, Figure 4 and Figure 5 statistics) are reproduced to the printed digits only with the code's version. Question for the authors: is the code's normalization the one used for all reported results?",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The Methods say k-means clustering was performed 10 times for each cluster number and that Figure 1E shows the mean squared distance between each point and its centroid. rrfAnalysis.m runs kmeans once per cluster number after rng(1), and plots mean(sumd), the mean over clusters of the summed squared distances (sum(sumd) for two clusters). The outcome epochs of the clustering matrix start 13 s after cue onset, 0.5 s after shock offset, which the Methods do not state.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "For k1, k3, k5 and k6 the gray boxes of Figure 6 span 0 to 8 s after shock offset, but the Table S4 means of these clusters are reproduced (to within 0.008) only by the window 0 to 4 s after shock offset; in 0 to 8 s they differ by up to 0.15. The 17.5-s windows of the other four clusters reproduce Table S4 exactly. The paper's code does not draw the boxes; its traces put 0 s at shock offset, and its own post-shock windows are 0 to 2 s and 7.5 to 17.5 s (rrfAnalysis.m 6097, 6135).",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Question for the authors: which interval after shock offset was analysed in Figure 6 (columns i and ii) and Table S4 for k1, k3, k5 and k6? The figure's gray boxes show 0 to 8 s; the table's values fit 0 to 4 s. The answer decides fig6a-k1-shock, which is not reproduced in 0 to 8 s and is in 0 to 4 s, and the k5 omission mean of fig6de.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "selection_undocumented",
-     "statement": "The ANOVAs of Figure 5E and Table S3 have 355 error df, implying 362 units, while the seven clusters hold 364. Removing one k3 unit (four candidates fit equally) and one k5 unit reproduces Table S3's F and p values for those clusters, and Table S3's partial eta squared for k3 fits 17 units; the pooled ANOVA without two such units gives F values near the paper's but not equal. The paper does not say which units were left out or why. Question for the authors: which two units were excluded from these ANOVAs, and on what rule?",
-     "found": null,
-     "status": null
-    },
-    {
      "kind": "metadata_insufficient",
      "statement": "The data set holds no cluster labels and no per-unit electrode location. The labels can be recovered only by re-running the code's k-means (rng(1); kmeans in MATLAB) and its hand-written map from cluster numbers to k1..k8; the bregma level is a per-rat table inside rrfAnalysis.m. The event channels (EVT01 shock, EVT09/11/12 cues by program letter, EVT13 nose poke, EVT14 pause recording) are named only in comments of cubeScriptPR25.m; EVT08, listed there as empty, repeats EVT01 in every file.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The unit files hold spikes only from 20 s before to about 33.5 s after each cue onset: recording was paused between trials (EVT14 comes 31.5 to 33.5 s after each cue onset). The data descriptor does not say so; a user who computes rates over the inter-trial interval would read the gaps as silence.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_error",
      "statement": "The data descriptor says RRFcube.wave holds a mean waveform for each trial type (it holds one 32-sample waveform per unit), that poke.base is the nose poke rate 2 s before the cue (it is the rate over 20 s, as the code computes it), and lists half-duration and amplitude-ratio fields that cube.mat does not contain (rrfAnalysis.m computes them from the waveform).",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "The paper and descriptor give a mean inter-trial interval of 3.5 min; cue onsets in the data are 203 to 265 s apart (mean 3.89 min), which includes the 10-s cue and the trial period.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -2075,6 +2057,53 @@
      "agreed": 30,
      "of": 30,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods (Z-score normalization) describe averaging trials per trial type, subtracting that type's 2-s baseline and z-scoring the means across trial types. The paper's code (cubeScriptPR25.m, in the data set) instead floors every rate to an integer Hz, subtracts each trial's own 2-s baseline, and z-scores the single-trial values over all 16 trials and all bins of a unit; the trial-type means of these are what rrfAnalysis.m analyses. The paper's numbers (cluster sizes, Table 1, Table S1, Figure 4 and Figure 5 statistics) are reproduced to the printed digits only with the code's version. Question for the authors: is the code's normalization the one used for all reported results?",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods say k-means clustering was performed 10 times for each cluster number and that Figure 1E shows the mean squared distance between each point and its centroid. rrfAnalysis.m runs kmeans once per cluster number after rng(1), and plots mean(sumd), the mean over clusters of the summed squared distances (sum(sumd) for two clusters). The outcome epochs of the clustering matrix start 13 s after cue onset, 0.5 s after shock offset, which the Methods do not state.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "For k1, k3, k5 and k6 the gray boxes of Figure 6 span 0 to 8 s after shock offset, but the Table S4 means of these clusters are reproduced (to within 0.008) only by the window 0 to 4 s after shock offset; in 0 to 8 s they differ by up to 0.15. The 17.5-s windows of the other four clusters reproduce Table S4 exactly. The paper's code does not draw the boxes; its traces put 0 s at shock offset, and its own post-shock windows are 0 to 2 s and 7.5 to 17.5 s (rrfAnalysis.m 6097, 6135).",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors: which interval after shock offset was analysed in Figure 6 (columns i and ii) and Table S4 for k1, k3, k5 and k6? The figure's gray boxes show 0 to 8 s; the table's values fit 0 to 4 s. The answer decides fig6a-k1-shock, which is not reproduced in 0 to 8 s and is in 0 to 4 s, and the k5 omission mean of fig6de.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The ANOVAs of Figure 5E and Table S3 have 355 error df, implying 362 units, while the seven clusters hold 364. Removing one k3 unit (four candidates fit equally) and one k5 unit reproduces Table S3's F and p values for those clusters, and Table S3's partial eta squared for k3 fits 17 units; the pooled ANOVA without two such units gives F values near the paper's but not equal. The paper does not say which units were left out or why. Question for the authors: which two units were excluded from these ANOVAs, and on what rule?",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }

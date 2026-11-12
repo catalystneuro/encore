@@ -5,7 +5,7 @@
   "label": "DANDI:002034"
  },
  "page": "datasets/dandi/002034/",
- "generated": "2026-11-12T02:12:10+00:00",
+ "generated": "2026-11-12T03:16:44+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
   "reproduced": 13,
@@ -576,52 +576,31 @@
    ],
    "findings": [
     {
-     "kind": "code_mismatch",
-     "statement": "The code's include list already lacks units 43 and 65 of the legacy numbering (its unit_id runs 1 to 107 without them), and prepare_figure_analysis_tables.m (build_stats) then removes rows 43 and 65 of its own 105-row table again, which drops CiCM101019d unit 1 and Ci_LC_d14_6mm_SC_123107 unit 2. This is why the code's printed output has 61 Ci units and 50 Ci sessions for some analyses against the paper's 63 and 51.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "zscore_tables.m z-scores firing rates per value of the within-session unit index (unit 1, 2 or 3) pooled across all sessions and both monkeys, not per unit as the Figure 3 legend says (z-scored separately for each session/unit). Run here this way, the code's pipeline gives all 12 of the code's printed Figure 3 pooled coefficients to their three decimals; z-scored per unit, 2 of 12. Per unit the conclusions are the same.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "code_mismatch",
-     "statement": "The code measures the evoked pupil over 0 to 800 ms after the beep with a centred 50 sample moving mean, where the Methods give 50 ms windows in 10 ms steps from the beep to 20 ms before the end of fixation; it keeps beep trials more than 400 ms after the trial start and 800 ms before the end of the NaN-padded pupil record, where the Methods ask for 100 ms of baseline, so it keeps trials whose beep falls near or after the end of the trial (those after the end have no evoked pupil and enter no table, but 85 beep rows with the beep 7 to 69 ms before the end do); and it counts fixation-only baseline spikes to the end of the trial, not 20 ms before it. Under the Methods' measures two claims do not reproduce (the Oz range effect of rho = -0.33 and the cross-epoch LLR counts) and a third only in part, while the code reproduces the paper's numbers. On those 85 rows most of the 200 ms evoked rate window lies past the end of the trial, where spikes are mostly not stored, so their evoked rates are likely biased low; without beep trials whose 200 ms window runs past the end, the code reading no longer reproduces row 6 in Ci with raw baselines (p = 0.12, Supplemental Figure 1). Question for the authors: which window and trial rule produced the reported numbers?",
-     "found": null,
-     "status": null
-    },
-    {
      "kind": "metadata_insufficient",
      "statement": "The pupil series (acquisition pupil_value_channel4, unit a.u.) is not described beyond its source variable. Its values are consistent with the Methods' preprocessing having been applied before deposit (per session mean near 0 and SD 0.80 to 0.99, the mean trace across trials within 0.19 of 0, smooth at 1 ms), but the file does not say so. The trial table's trial_time_index has no unit (milliseconds by its range, 4 to 61 min per session), the files do not say what event the trial start marks, spike times are given against artificial trial anchors 100 s apart (spike_time_policy), and every trial is marked correct, so the files appear to hold correct trials only without saying so.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "other",
      "statement": "Beep times run from about 1.0 to 2.8 s after the trial start (5th to 95th percentile; 8.8% of Oz and 4.4% of Ci beeps fall within 1 to 1.5 s), against the Methods' beep after 1 to 1.5 s of fixation; 8 beeps fall before the trial start and 83 after its end. 26% of Oz and 7% of Ci fixation-only trials last under 1 s (shortest 206 ms), against the Methods' fixation of 1 to 5 s. About 39% of spikes are stored in the few seconds before a trial's start (median 0.8 s before it) and under 2% after its end, with the rate falling from 4.4 sp/s in the last 200 ms of a trial to 0.85 sp/s in the 200 ms after it, so on the beep trials with less than 200 ms between the beep and the end (75 of 914 Oz and 96 of 2161 Ci beep trials under the Methods' rule, more under the code's) the 0 to 200 ms evoked rate is counted partly over a period without stored spikes.",
      "found": null,
-     "status": null
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
     },
     {
      "kind": "metadata_insufficient",
      "statement": "The session Cicero_022714_d18_402_FixnStim is named for stimulation, but no file has a stimulation marker column, so whether any of its trials carried microstimulation cannot be told; the code's rule for fixation-only trials (no beep and no stimulation marker) then keeps all of its non-beep trials.",
      "found": null,
-     "status": null
-    },
-    {
-     "kind": "paper_inconsistency",
-     "statement": "The Results name a Wilcoxon rank-sum test for the one-sample hypothesis that the median coefficient is 0; the code runs the signed-rank test (signrank), whose p-values equal the printed ones. The Results also relate the coefficients to the range in each session, while the code takes the range per unit.",
-     "found": null,
-     "status": null
-    },
-    {
-     "kind": "methods_unavailable",
-     "statement": "Three choices that the outcomes here rest on are assumptions, asked of the paper's authors. First, which event does the trial start in the files mark? Every window is taken from it as fixation onset, as the code does, but the files hold no fixation marker, the beep falls a median 2.2 s after the start against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored before it. Second, is the stored pupil trace already z-scored per session, with the mean trace subtracted and smoothed, as the Methods describe? The values are consistent with it, and the pooled Figure 3 coefficients rest on it. Third, which units and sessions did the paper use: its 63 units in 51 Ci sessions, or the 61 in 50 of the code's output? Row 6 in Ci is fragile on this point.",
-     "found": null,
-     "status": null
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
     }
    ],
    "reconciliation": null,
@@ -643,6 +622,53 @@
      "agreed": 17,
      "of": 17,
      "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The code's include list already lacks units 43 and 65 of the legacy numbering (its unit_id runs 1 to 107 without them), and prepare_figure_analysis_tables.m (build_stats) then removes rows 43 and 65 of its own 105-row table again, which drops CiCM101019d unit 1 and Ci_LC_d14_6mm_SC_123107 unit 2. This is why the code's printed output has 61 Ci units and 50 Ci sessions for some analyses against the paper's 63 and 51.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "zscore_tables.m z-scores firing rates per value of the within-session unit index (unit 1, 2 or 3) pooled across all sessions and both monkeys, not per unit as the Figure 3 legend says (z-scored separately for each session/unit). Run here this way, the code's pipeline gives all 12 of the code's printed Figure 3 pooled coefficients to their three decimals; z-scored per unit, 2 of 12. Per unit the conclusions are the same.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code measures the evoked pupil over 0 to 800 ms after the beep with a centred 50 sample moving mean, where the Methods give 50 ms windows in 10 ms steps from the beep to 20 ms before the end of fixation; it keeps beep trials more than 400 ms after the trial start and 800 ms before the end of the NaN-padded pupil record, where the Methods ask for 100 ms of baseline, so it keeps trials whose beep falls near or after the end of the trial (those after the end have no evoked pupil and enter no table, but 85 beep rows with the beep 7 to 69 ms before the end do); and it counts fixation-only baseline spikes to the end of the trial, not 20 ms before it. Under the Methods' measures two claims do not reproduce (the Oz range effect of rho = -0.33 and the cross-epoch LLR counts) and a third only in part, while the code reproduces the paper's numbers. On those 85 rows most of the 200 ms evoked rate window lies past the end of the trial, where spikes are mostly not stored, so their evoked rates are likely biased low; without beep trials whose 200 ms window runs past the end, the code reading no longer reproduces row 6 in Ci with raw baselines (p = 0.12, Supplemental Figure 1). Question for the authors: which window and trial rule produced the reported numbers?",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results name a Wilcoxon rank-sum test for the one-sample hypothesis that the median coefficient is 0; the code runs the signed-rank test (signrank), whose p-values equal the printed ones. The Results also relate the coefficients to the range in each session, while the code takes the range per unit.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Three choices that the outcomes here rest on are assumptions, asked of the paper's authors. First, which event does the trial start in the files mark? Every window is taken from it as fixation onset, as the code does, but the files hold no fixation marker, the beep falls a median 2.2 s after the start against the Methods' 1 to 1.5 s of fixation, and 39% of spikes are stored before it. Second, is the stored pupil trace already z-scored per session, with the mean trace subtracted and smoothed, as the Methods describe? The values are consistent with it, and the pooled Figure 3 coefficients rest on it. Third, which units and sessions did the paper use: its 63 units in 51 Ci sessions, or the 61 in 50 of the code's output? Row 6 in Ci is fragile on this point.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
     }
    ]
   }
