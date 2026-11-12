@@ -1,0 +1,392 @@
+schema_version: 3
+id: rich-2014-01
+datasets:
+- archive: crcns
+  id: hc-31
+  version: unversioned
+  doi: 10.6080/K0BV7DT2
+  relation: primary
+paper: doi:10.1126/science.1255635
+date: 2026-11-12
+entry: rich-2014
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: claude-opus-5-5
+    protocol: pilot-14
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/encore/actions/runs/43124576285
+outcomes:
+- claim: cell-counts
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:cell-counts
+  measured: 253
+  notes: Keeping the units whose ID is at most 2 in every epoch (the readme's rule) leaves 63, 58, 24,
+    57 and 51 cells in ANM00190422, ANM204878, ANM212379, ANM228899 and ANM228900, 253 in all, each
+    equal to the paper's count in the paper's order. The 7 excluded units have ID NaN in every epoch.
+- claim: figs3-cluster-quality
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs3-cluster-quality
+  notes: The L-ratio and isolation distance fields of the cluster metadata (clustInf.Lratio,
+    clustInf.IsoD) are NaN for all 253 units, and the file holds only the spikes assigned to the
+    sorted units, so the other threshold crossings of each tetrode that both measures compare a
+    cluster with are not in the data set; csc_files.tar.gz holds one LFP channel per rat, not the
+    tetrode channels. A proxy computed against the other sorted units of the same tetrode is shown in
+    the notebook (Spearman with the number of fields, rho -0.157 for the L-ratio proxy, 213 units, and
+    0.416 for the isolation distance proxy, 195 units, under F-a/P-a). It is not the paper's measure
+    and decides nothing.
+- claim: fig1-recruitment-by-section
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig1-recruitment-by-section
+  notes: Pooled over animals, cells with an earlier field formed a field in the new section in epochs 2,
+    3 and 4 (28, 53 and 104 under P-a; 31, 55 and 97 under P-b), and cells without an earlier field
+    formed their first (39, 34 and 38 under P-a; 31, 31 and 43 under P-b). Every animal has at least two
+    cells of each kind in every epoch. The data set's fields give 38, 62 and 106, and 37, 31 and 39.
+  deviations:
+  - Fields are recomputed from spikes and position by the Methods (field set F-a); the paper's own
+    detection code is not public. They number 791 (P-a) and 793 (P-b), against 887 in the data set's
+    fieldInfoC, and match 81% of the data set's fields within 15 cm.
+- claim: fig2-individual-poisson
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig2-individual-poisson
+  measured:
+  - 57
+  - 0
+  notes: 57 cells (P-a) and 56 (P-b) have at least six fields, within 61 +/- 6.1 (per animal 16, 10, 3,
+    11 and 17 under P-a). After Benjamini-Hochberg adjustment no cell is significant for locations or
+    intervals under any of E-a, E-b, S-a and S-b. Before adjustment 5 (P-a) and 7 (P-b) location tests
+    and at most 4 interval tests have p < 0.05. The data set's fields give 61 cells and none significant.
+  deviations:
+  - Anderson-Darling p-values come from Monte Carlo null distributions (20000 samples per test) of the
+    A2 statistic, a standard choice; field locations are clipped to 0 to 48 m (the track starts at
+    -0.25 to -0.10 m in the data).
+- claim: fig2bc-population-bias
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig2bc-population-bias
+  notes: For the median field location the KS p is 0.697 (C-a) and 0.827 (C-b) under P-a, 0.532 and
+    0.740 under P-b; for the normalized interval deviation 0.741 and 0.865 under P-a, 0.545 and 0.637
+    under P-b. Observed mean median location 23.80 m against 24.02 m in the null (P-a).
+  deviations:
+  - Each surrogate's interval deviation is normalized by its own mean interval, as the observed one is,
+    the computation the Methods describe for each cell.
+- claim: figs6-few-field-cells-uniform
+  outcome: reproduced
+  assumed: true
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs6-few-field-cells-uniform
+  notes: Under P-a no group of cells with 1 to 5 fields differs from uniform after adjustment (adjusted
+    p 0.417 to 0.857). Under P-b the group with four fields has an adjusted p of 0.038 (22 cells,
+    unadjusted 0.008), which the criterion counts as partially reproduced. The data set's fields give
+    none (smallest adjusted p 0.187). The pass definition is a question for the paper's authors (see
+    findings).
+  deviations:
+  - Assumed reading P-a of a pass (a run in one direction that crosses the whole field), as the
+    readings P-a and P-b give different outcomes. The Methods say "passes through the field", and the
+    data set's own pass counts per field agree with P-a for 0.469 of its 720 single-direction fields
+    against 0.392 for P-b (mean absolute difference 1.40 against 2.25).
+- claim: fig3b-overdispersion
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3b-overdispersion
+  notes: Pooled under P-a the variance is 16.198 against a mean of 3.126, 94 cells have no field against
+    11.1 expected, the index of dispersion gives p 1.4e-141 and the likelihood ratio test p 2.6e-127.
+    Each animal meets all three conditions under both pass readings (largest p 3.6e-10, ANM212379).
+    The data set's fields give the same in every animal.
+- claim: figs7a-mean-fields-per-animal
+  outcome: partially_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs7a-mean-fields-per-animal
+  measured:
+  - 3.053
+  - 3.825
+  - 3.902
+  - 2.125
+  - 2.207
+  notes: Under P-b (given as measured) three of five means are within 10% (ANM00190422 3.825, ANM228900
+    3.902, ANM212379 2.125); ANM228899 3.053 and ANM204878 2.207 are below. Under P-a one is (ANM212379
+    2.083). The data set's own counts give 3.561, 4.190, 4.333, 2.292 and 2.483, all five within
+    tolerance; the recomputed fields are about 10% fewer than the data set's.
+- claim: fig3b-negbin-fit
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3b-negbin-fit
+  measured:
+  - 0.559
+  - 0.152
+  notes: Maximum likelihood fit over all 253 cells, r 0.559 and p 0.152 under P-a, r 0.555 and p 0.150
+    under P-b, both within tolerance; the fitted mean r(1 - p)/p is 3.126 and 3.134. The data set's
+    fields give r 0.565 and p 0.139.
+- claim: fig3c-recruitment-fraction
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3c-recruitment-fraction
+  measured:
+  - 62.8
+  - 43.1
+  - 75.4
+  notes: 62.8% of cells have a novel field under both readings; per animal 43.1 to 75.4% under P-a and
+    P-b, inside 41.4 to 84.7%; the equal-rate Poisson prediction is 95.6%. The data set's fields give
+    65.2% (46.6 to 77.2%).
+- claim: fig3c-lomax-recruitment
+  outcome: partially_reproduced
+  assumed: true
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3c-lomax-recruitment
+  measured: 0.040
+  notes: Under P-a the KS statistic is 0.0396, outside 0.05 +/- 0.005, with p 0.728 (K-a) and 0.476
+    (K-b). Under P-b it is 0.0537 with p 0.380 and 0.122, which the criterion counts as reproduced. The
+    equal-rate Poisson curve lies far above the observed one at 48 m (0.956 against 0.628), KS distance
+    0.336. The data set's fields give 0.0486, p 0.518 and 0.252. The pass definition is a question for
+    the paper's authors (see findings).
+  deviations:
+  - Assumed reading P-a of a pass, as for figs6-few-field-cells-uniform; the readings give different
+    outcomes.
+  - Under K-b each surrogate draws rates from the fitted gamma, Poisson counts over 48 m and uniform
+    field locations, takes the first field and refits the negative binomial.
+- claim: fig3c-extrapolation-500m
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3c-extrapolation-500m
+  measured: 519
+  notes: The fitted Lomax reaches 90% recruitment at 519 m (P-a) and 531 m (P-b), within 500 +/- 50 m.
+    The printed parameters give 436 m and the data set's fields 447 m.
+- claim: fig3d-uniform-density
+  outcome: partially_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3d-uniform-density
+  measured: 0.044
+  notes: The 791 (P-a) and 793 (P-b) field locations do not differ from uniform (p 0.088 and 0.234),
+    but the KS statistic, 0.0442 and 0.0366, is outside 0.03 +/- 0.003. ANM228900 alone differs from
+    uniform (KS 0.138, p 0.001 under P-a). The data set's 887 fields give KS 0.0305, p 0.375.
+- claim: figs10-no-track-or-speed-influence
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs10-no-track-or-speed-influence
+  notes: Under P-a the panel of track angle (A) has 3 of 12 bins outside the shuffle's 95% interval
+    (binomial p 0.020 against 5%), and A has no second reading; panels B (corners by Y-a and Y-b) and C
+    (speed) pass T-a and T-b. Under P-b every panel passes (A has 2 of 12 bins outside, p 0.118), which
+    the criterion counts as reproduced. The data set's fields pass A and B but put 5 of 24 speed bins
+    outside the interval (p 0.006). The pass definition is a question for the paper's authors (see
+    findings).
+  deviations:
+  - Assumed reading P-a of a pass, as for figs6-few-field-cells-uniform; the readings give different
+    outcomes.
+  - The track's scale model is not in the data set. Its centreline is reconstructed from the animal's
+    room position (posMaze) against linear position in 5 cm bins, the heading taken over 20 cm either
+    side, and corners are local maxima of the heading change over 50 cm reaching 45 degrees (Y-a, 33
+    to 37 per track) or 90 degrees (Y-b, 10 to 21). These smoothing spans are standard choices.
+  - Bin widths are the criterion's standard choices (30 degrees, 1 m, 5 cm/s). Panel C uses the mean
+    speed during novel exploration in 5 cm bins of track, over all novel samples.
+- claim: figs11-propensity-stationary
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs11-propensity-stationary
+  measured: 0.666
+  notes: Spearman rho between fields in sections 1 to 3 and in section 4 is 0.666 (P-a) and 0.634
+    (P-b), within 0.67 +/- 0.067; 2000 gamma-Poisson simulations give a median of 0.646 (95% 0.562 to
+    0.723); p is 0.648 (Q-a) and 0.676 (Q-b) under P-a, 0.714 and 0.357 under P-b.
+- claim: figs11-no-boundary-remapping
+  outcome: not_reproduced
+  assumed: true
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs11-no-boundary-remapping
+  measured:
+  - 0.510
+  - 0.384
+  - 0.275
+  - 0.393
+  - 0.290
+  - 0.224
+  notes: Under P-a the boundary of sections 3 and 4 gives rho across 0.510 against rho within 0.384, as
+    the paper (0.50 and 0.38), and p 0.030 to 0.048 under every reading of L and H, below 0.05. The other
+    two boundaries give p 0.156 to 0.900. Under P-b no boundary has p < 0.05 (smallest 0.427), which the
+    criterion counts as reproduced. The data set's fields give p 0.039 and 0.040 (H-a) and 0.066 and
+    0.060 (H-b) at the 3 and 4 boundary. Measured values are P-a with L-a. The pass definition is a
+    question for the paper's authors (see findings).
+  deviations:
+  - Assumed reading P-a of a pass, as for figs6-few-field-cells-uniform; the readings give different
+    outcomes.
+  - Pieces are placed at each animal's own section boundaries from sectExt (3.5, 9.6 and 21.2 m), not
+    at the nominal 3, 10 and 22 m.
+- claim: figs12-pairs-uncorrelated
+  outcome: not_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs12-pairs-uncorrelated
+  notes: Under P-a the mean correlation over 2500 to 2772 pairs is 0.0125, 0.0149, 0.0172 and 0.0269 at
+    48, 24, 12 and 6 bins, above the upper ends of the null's 95% interval (0.0055 to 0.0184), and the
+    two-sample KS test differs at every scale (p at most 0.0012); at 3 bins the mean (0.0216) is inside
+    the interval but the KS test differs. P-b gives the same pattern (means 0.0088 to 0.0307). The
+    effect is small. The data set's fields differ at 48 and 6 bins under both readings and are inside
+    the interval at 24, 12 and 3 bins.
+  deviations:
+  - The pooled null sample for the KS test (U-a) uses the first 200 of the 2000 shuffles of each
+    animal, a standard subsample; U-b uses all 2000.
+- claim: fig3e-memoryless-recruitment
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig3e-memoryless-recruitment
+  notes: No forward or reverse curve differs from the Lomax of the fitted parameters after
+    Benjamini-Hochberg adjustment, under V-a (18 curves) and V-b (10), for P-a (smallest adjusted p
+    0.525) and P-b (0.846). The data set's fields give the same (smallest 0.567).
+- claim: figs14-field-properties
+  outcome: not_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs14-field-properties
+  measured:
+  - 69.9
+  - 43.5
+  - 4.71
+  - 2.23
+  notes: Under every F-a reading at least one Spearman correlation has p < 0.05, field size against
+    location (P-a M-a rho 0.079, p 0.027; P-a M-b 0.103, p 0.004; P-b M-b 0.080, p 0.025) or size
+    against the number of other fields (M-a 0.077, p 0.031). Rate correlations have p 0.053 to 0.741.
+    Field size (65.3 to 72.0 cm, SD 38.3 to 48.2) and mean in-field rate (4.71 to 5.02 Hz) are near the
+    paper's values; the rate SD (2.23 to 2.43 Hz) is above 2 +/- 0.2. The data set's fields give no
+    correlation with p < 0.05 (smallest 0.111), size 65.2 +/- 42.9 cm and rate 5.45 +/- 2.42 Hz.
+    Measured values are P-a with M-a.
+- claim: figs15-higher-threshold
+  outcome: partially_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs15-higher-threshold
+  measured: 38.1
+  notes: Keeping fields above 4.8 Hz, the refitted gamma-Poisson model (r 0.525 to 0.550, p 0.285 to
+    0.310) describes recruitment (KS 0.028 to 0.039, p 0.281 to 0.913 under K-a and K-b, every reading),
+    and the counts stay overdispersed (p below 1e-38). Only 38.1 to 44.0% of the recomputed fields pass
+    the threshold, outside 50 +/- 5%; the data set's fields give 50.7%. The criterion names no outcome
+    for this case; the recruitment part holds and the fraction does not.
+- claim: figs16-anatomy
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs16-anatomy
+  measured:
+  - -0.210
+  - -0.204
+  notes: Under R-a (Pearson) and P-a the pooled correlations of field number with septotemporal and
+    proximodistal position are -0.210 (p 0.00075) and -0.204 (p 0.0011), within tolerance; P-b gives
+    -0.215 and -0.192. One animal (ANM00190422) is significant with the pooled sign on each axis, so N-a
+    holds, and N-b holds too (animals of the opposite sign on both axes). Under R-b (Spearman) the pooled
+    values are -0.30 and -0.25, outside tolerance.
+- claim: fig4a-pre-sleep-rate
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig4a-pre-sleep-rate
+  measured: 0.455
+  notes: Rates in the data set's PRE slow-wave sleep periods (21 to 50 min per rat). Under W-a (Pearson
+    on rates) r is 0.455 with p 2.6e-14 for P-b (given as measured), within 0.45 +/- 0.045 and below
+    1e-13; P-a gives 0.445 with p 1.0e-13, at the bound. W-b (log rates, 0.418 to 0.432) and W-c
+    (Spearman, 0.379 to 0.392) give lower values. Per-animal Pearson r is 0.36 to 0.55. The data set's
+    fields give r 0.446, p 8.8e-14.
+- claim: fig4b-single-field-proportion
+  outcome: not_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig4b-single-field-proportion
+  measured:
+  - 4.51
+  - 10.97
+  notes: With the P-a fit under X-a the single-field proportion stays inside 4.5 to 11% from 133 to 750 m
+    (a factor of 5.7 in size; 4.51 to 10.97% there) and is 16.5% at 48 m; X-b gives 195 to 866 m (factor
+    4.4). The criterion asks for a factor of 10. The printed parameters give factors of 5.5 and 4.3, so
+    the paper's own fit would not meet the criterion either. The factor of 10 is asked of a reader
+    (questions/rich-2014.yaml).
+- claim: fig4c-active-subsets
+  outcome: not_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:fig4c-active-subsets
+  notes: For pairs of environments both larger than 10 m, the mean proportion of cells in different
+    states is 0.269 (logarithmic sizes) and 0.251 (linear) for the gamma-Poisson model against 0.371 and
+    0.301 for the fitted equal-rate model (P-a fit), so the criterion fails under both spacings. With
+    twice the fitted rate the equal-rate value is 0.153 and 0.098, and 0.043 and 0.036 for pairs over 20
+    m, consistent with the Fig. S18 legend's near-zero high-rate condition. With half the rate it is
+    0.499 and 0.482. The comparison the criterion uses is asked of a reader (questions/rich-2014.yaml).
+  deviations:
+  - The equal-rate model uses the observed mean count per cell (3.126 per 48 m under P-a); the half and
+    twice variants are those the criterion names, as Fig. S18's rates are not given.
+- claim: figs5-silent-cells-low-rate
+  outcome: partially_reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs5-silent-cells-low-rate
+  measured:
+  - 0.0178
+  - 0.0374
+  notes: The 94 cells without fields fire less than cells with fields (one-sided Mann-Whitney p below
+    1e-34 under every reading) and rate and field number are tightly correlated (Spearman 0.889 to
+    0.919), but their mean rate, 0.0151 to 0.0259 Hz with SD 0.028 to 0.066 Hz, is outside 0.006 and
+    0.01 +/- 10% under every reading (P-a with Z-a given as measured); 17 of them fire no spike above 5
+    cm/s in the novel sections. The data set's fields give 0.0105 +/- 0.0176 Hz. The criterion names no
+    outcome for this case; the comparison and the correlation hold and the values do not.
+- claim: figs8-silent-cells-form-fields
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs8-silent-cells-form-fields
+  notes: Of the 94 cells without a RUN1 field (P-a), 12 have an open-field field under O-a, 11 under O-b
+    and 10 by the data set's own RUN3 counts; P-b gives 13, 13 and 11. Each animal has at least one.
+  deviations:
+  - Open-field positions are converted with the file's unitsPerCm, which gives an arena of about 100 to
+    119 by 72 to 97 cm against the Methods' ~40 x 100 cm (see findings); the 100 cm2 field threshold
+    depends on this scale.
+- claim: figs17-propensity-across-environments
+  outcome: reproduced
+  notebook: reproduce_rich_2014.ipynb
+  output: claim:figs17-propensity-across-environments
+  measured:
+  - 0.464
+  - 0.234
+  notes: Under P-a, O-a and J-a the within-track median rho is 0.464 (95% 0.384 to 0.537) and the
+    between-environment median 0.234 (0.203 to 0.253), within 0.41 +/- 0.075 and 0.22 +/- 0.015, below
+    the within value and above the shuffle's 95% bound (0.128); the window holds 74 fields. J-b gives
+    0.466 and 0.233. Under O-b the between median is 0.248, outside tolerance; under P-b every reading
+    holds. The data set's fields and RUN3 counts give 0.413 and 0.225.
+findings:
+- kind: data_missing
+  statement: The L-ratio and isolation distance fields of every unit's cluster metadata are NaN, and the
+    data set holds only the spikes of the sorted units (no unclustered threshold crossings and no
+    waveforms; the width and wave fields are empty), so the cluster quality analysis of Fig. S3 cannot
+    be repeated and the waveform criterion for excluding interneurons cannot be checked.
+- kind: data_missing
+  statement: The scale model of the track (its vertices), which the paper uses for the track angle and
+    corners of Fig. S10, is not in the data set; only the animal's room position is, from which the
+    track can be reconstructed approximately.
+- kind: metadata_insufficient
+  statement: The readme gives no units. Linearized and room positions are in inches, open-field
+    positions in camera pixels with a per-animal unitsPerCm, the speed column in inches per microsecond,
+    and spike times in microseconds; the direction column is 180 for outbound travel. The direction code
+    of the fields in fieldInfoC (1 inbound, 2 outbound, 3 both) is not described.
+- kind: metadata_insufficient
+  statement: The region of every unit of ANM228899 is N/A, so the localization of its tetrodes to CA1
+    cannot be checked from the file.
+- kind: other
+  statement: The data set's rate maps and fields (rateMapInfoC, fieldInfoC) use 1 inch bins, where the
+    Methods give 1 cm bins; its field edges and sizes are whole inches (sizes from 15.24 cm).
+- kind: other
+  statement: The section extents in sectExt give sections of about 3.7, 6.1, 11.5 and 26.9 m (track ends
+    3.5, 9.6, 21.2 and 48.0 m), where the Methods give sections of 3, 7, 12 and 26 m (3, 10, 22 and 48
+    m).
+- kind: other
+  statement: With the file's unitsPerCm the open-field positions span about 100 to 119 cm by 72 to 97 cm
+    (1st to 99th percentile), where the Methods describe an oval of about 40 x 100 cm; either the scale
+    or the description is off. One open-field session lasts 9.2 min, against 10 to 25 min in the
+    Methods.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. What counts as a pass through a field in the rule "at
+    least 1 spike in at least 50% of passes through the field" (Methods, Place field determination)? A
+    traversal that crosses the whole field in the direction considered (P-a), or any entry into the
+    field while moving in that direction (P-b)? The data set's own pass counts lie between the two (mean
+    6.03 passes per field against 4.71 and 8.28) and 23% of its fields have a pass starting inside the
+    field. The readings give different outcomes for four claims (figs6-few-field-cells-uniform,
+    fig3c-lomax-recruitment, figs10-no-track-or-speed-influence, figs11-no-boundary-remapping); P-a was
+    assumed.
+- kind: methods_unavailable
+  statement: Question for the paper's authors. How were the corners of Fig. S10B defined (which vertices
+    of the track model, and what change of direction counts as a corner)? The panel was tested with
+    corners at 45 and 90 degrees of a reconstructed centreline, which give the same result.
