@@ -39,7 +39,10 @@ Where each parameter comes from:
   own trial, a standard choice (one trial in 400 changes the pool little).
 - Epochs at 1 ms resolution: a V1 bin at offset d holds V1 spikes d ms before the V2 spike's
   bin (d > 0 before, d < 0 after); bins d = 2 and 3, centred 2 and 3 ms before, make the
-  1.5 to 3.5 ms epoch (claims file, reading e-a).
+  1.5 to 3.5 ms epoch (claims file, reading e-a). With spike times binned at 1 ms for both
+  the V2 spike and the V1 state, the two bins span V1 activity from about 1 to 4 ms before the
+  V2 spike, wider than the paper's 1.5 to 3.5 ms (a deviation forced by the data); a single bin
+  centred 2.5 ms before (reading e-b) cannot be formed.
 """
 
 import io
@@ -78,7 +81,7 @@ def load_session(z, name):
     stim = nd["stim"].ravel().astype(int)
     driven = np.where(stim > 0)[0]
     out = {"name": name, "stim": stim[driven], "trial_id": nd["trialId"].ravel()[driven],
-           "n_rows": len(stim), "row_stim": stim}
+           "n_rows": len(stim), "row_stim": stim, "fields": nd.dtype.names}
     for a, area in enumerate(["V1", "V2"]):
         ev = {"driven": [], "blank": []}
         for kind, rows in [("driven", driven), ("blank", np.where(stim == 0)[0])]:
@@ -396,7 +399,7 @@ def boot_p_indep(spk, ctl):
     return min(1.0, 2 * min(ge, le))
 
 
-def session_divergence(sess, seed, n_extra_realizations=2, offsets=range(-16, 17)):
+def session_divergence(sess, seed, n_extra_realizations=2, offsets=range(-16, 17), n_extra_shuffles=4):
     """Histograms of V1 states around the spikes of every kept V2 unit of one session.
 
     Readings (claims file header): s-a jitter pool and control trials from the same stimulus
@@ -404,14 +407,21 @@ def session_divergence(sess, seed, n_extra_realizations=2, offsets=range(-16, 17
     1 + n_extra_realizations (the mean distribution); shuffled data with trial permutation
     within stimulus (a) or across all trials (b), at spike epochs (c) and control epochs (d).
     Returns a dict of integer histograms over counts 0..N1 of active V1 units:
-      raw[o, e, n, k]          offsets o, e = 0 spike epochs / 1 control epochs (s-a)
+      raw[o, e, n, k]          offsets o, e = 0 spike epochs / 1 control epochs (s-a) /
+                               2 a second, independent set of control epochs (s-a), for the
+                               null check of the bootstrap p-values
       jit[w, o, e, n, k]       the same on jittered V1 data, per jitter window w (s-a, r-a)
-      raw_sb[o4, e, ...], jit_sb[w, o4, e, ...]   s-b, offsets (-3, -2, 2, 3)
-      jit_rb[w, o4, e, ...]    r-b, extra realizations summed (add jit for the mean)
+      raw_sb[o, e, ...], jit_sb[w, o, e, ...]   s-b, all offsets, e = 0 spike / 1 control
+      jit_rb[w, o, e, ...]     r-b, extra realizations summed (add jit for the mean)
       shuf[r, x, e, ...], shuf_jit[r, w5, x, e, ...]  r = within stimulus / all trials,
                                x = 0 raw shuffled, epochs d = 2, 3 summed
+      shuf_x[q, r, e, ...], shuf_jit_x[q, r, w5, e, ...]  n_extra_shuffles further shuffle
+                               realizations, for the spread of the shuffled divergence
+    The second control set and the extra shuffles draw from their own generator (seed + 500),
+    so that the other histograms do not depend on them.
     """
     rng = np.random.default_rng(seed)
+    rng2 = np.random.default_rng(seed + 500)
     k1, k2 = keep_units(sess, "V1"), keep_units(sess, "V2")
     n1, n2 = len(k1), len(k2)
     stim = sess["stim"]
@@ -424,42 +434,53 @@ def session_divergence(sess, seed, n_extra_realizations=2, offsets=range(-16, 17
     vu, vtr, vt = umap[u2[m]], tr2[m], t2[m]
     ctl_a = control_trials(stim, vtr, True, rng)
     ctl_b = control_trials(stim, vtr, False, rng)
+    ctl_a2 = control_trials(stim, vtr, True, rng2)
     offsets = list(offsets)
-    o4 = [-3, -2, 2, 3]
     nw = len(JITTER_WINDOWS)
 
-    def hists(K, offs, ctl):
-        out = np.zeros((len(offs), 2, n2, n1 + 1), np.int64)
+    def hists(K, offs, ctls):
+        """Spike epochs (e = 0) and the epochs of each control set in ctls (e = 1, 2, ...)."""
+        out = np.zeros((len(offs), 1 + len(ctls), n2, n1 + 1), np.int64)
         for i, d in enumerate(offs):
-            out[i, 0] = state_hist(K, vtr, vt, [d], vu, n2, n1)
-            out[i, 1] = state_hist(K, ctl, vt, [d], vu, n2, n1)
+            for e, trials in enumerate([vtr] + list(ctls)):
+                out[i, e] = state_hist(K, trials, vt, [d], vu, n2, n1)
         return out
 
     K = pop_counts(ev1, k1, n_tr)
     res = {"n_v1": n1, "n_v2": n2, "v2_units": k2, "n_spikes": np.bincount(vu, minlength=n2),
-           "offsets": offsets, "o4": o4}
-    res["raw"] = hists(K, offsets, ctl_a)
-    res["raw_sb"] = hists(K, o4, ctl_b)
+           "offsets": offsets}
+    res["raw"] = hists(K, offsets, [ctl_a, ctl_a2])
+    res["raw_sb"] = hists(K, offsets, [ctl_b])
     res["jit"] = np.zeros((nw,) + res["raw"].shape, np.int64)
     res["jit_sb"] = np.zeros((nw,) + res["raw_sb"].shape, np.int64)
     res["jit_rb"] = np.zeros((nw,) + res["raw_sb"].shape, np.int64)
     for w, win in enumerate(JITTER_WINDOWS):
         Kj = pop_counts(jitter_events(ev1, k1, stim, win, True, rng), k1, n_tr)
-        res["jit"][w] = hists(Kj, offsets, ctl_a)
+        res["jit"][w] = hists(Kj, offsets, [ctl_a, ctl_a2])
         Kj = pop_counts(jitter_events(ev1, k1, stim, win, False, rng), k1, n_tr)
-        res["jit_sb"][w] = hists(Kj, o4, ctl_b)
+        res["jit_sb"][w] = hists(Kj, offsets, [ctl_b])
         for _ in range(n_extra_realizations):
             Kj = pop_counts(jitter_events(ev1, k1, stim, win, True, rng), k1, n_tr)
-            res["jit_rb"][w] += hists(Kj, o4, ctl_a)
+            res["jit_rb"][w] += hists(Kj, offsets, [ctl_a])
     w5 = [w for w in JITTER_WINDOWS if w <= 80]
+
+    def shuffled(r_, by_stim, g):
+        ev_s = shuffle_events(ev1, k1, stim, by_stim, g)
+        ctl = ctl_a if by_stim else ctl_b
+        raw_ = hists(pop_counts(ev_s, k1, n_tr), [2, 3], [ctl]).sum(0)
+        jit_ = np.zeros((len(w5),) + raw_.shape, np.int64)
+        for w, win in enumerate(w5):
+            Kj = pop_counts(jitter_events(ev_s, k1, stim, win, by_stim, g), k1, n_tr)
+            jit_[w] = hists(Kj, [2, 3], [ctl]).sum(0)
+        return raw_, jit_
+
     res["shuf"] = np.zeros((2, 2, n2, n1 + 1), np.int64)
     res["shuf_jit"] = np.zeros((2, len(w5), 2, n2, n1 + 1), np.int64)
     for r, by_stim in enumerate([True, False]):
-        ev_s = shuffle_events(ev1, k1, stim, by_stim, rng)
-        ctl = ctl_a if by_stim else ctl_b
-        Ks = pop_counts(ev_s, k1, n_tr)
-        res["shuf"][r] = hists(Ks, [2, 3], ctl).sum(0)
-        for w, win in enumerate(w5):
-            Kj = pop_counts(jitter_events(ev_s, k1, stim, win, by_stim, rng), k1, n_tr)
-            res["shuf_jit"][r, w] = hists(Kj, [2, 3], ctl).sum(0)
+        res["shuf"][r], res["shuf_jit"][r] = shuffled(r, by_stim, rng)
+    res["shuf_x"] = np.zeros((n_extra_shuffles,) + res["shuf"].shape, np.int64)
+    res["shuf_jit_x"] = np.zeros((n_extra_shuffles,) + res["shuf_jit"].shape, np.int64)
+    for q in range(n_extra_shuffles):
+        for r, by_stim in enumerate([True, False]):
+            res["shuf_x"][q, r], res["shuf_jit_x"][q, r] = shuffled(r, by_stim, rng2)
     return res
