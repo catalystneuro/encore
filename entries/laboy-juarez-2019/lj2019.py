@@ -232,19 +232,6 @@ def sparseness(r, axis=-1):
     return np.where(m2 > 0, s, 0.0)
 
 
-def poisson_lrt(counts, groups):
-    """Likelihood ratio test that a Poisson rate is equal across groups (Methods)."""
-    counts = np.asarray(counts, float)
-    labels, g = np.unique(groups, return_inverse=True)
-    S = np.bincount(g, weights=counts)
-    n = np.bincount(g)
-    lam0 = counts.sum() / n.sum()
-    with np.errstate(divide="ignore", invalid="ignore"):
-        term = np.where(S > 0, S * np.log(S / (n * lam0)), 0.0)
-    G = 2 * term.sum()
-    return G, stats.chi2.sf(G, len(labels) - 1)
-
-
 def gaussian_kernels(n, sds):
     """Row-normalised Gaussian smoothing matrices (n x n) for each SD (renormalised at edges)."""
     x = np.arange(n)
@@ -264,50 +251,6 @@ def gaussian_kernels_zeropad(n, sds):
 
 
 SDS = np.round(np.arange(0.5, 30.0 + 1e-9, 0.2), 1)  # Methods, "dt smoothing"
-
-
-def dt_smooth(y, dti, ndt, rng, kernels, reps=50, folds=10):
-    """Cross-validated Gaussian smoothing of a dt tuning curve (Methods, "dt smoothing").
-
-    y: single-trial counts; dti: index of each trial's dt on the 1 ms grid (0..ndt-1).
-    Returns (curve, sd, status), status 'modulated', 'monotonic' (likelihood rises with SD up to
-    the largest) or 'unsmoothed' (unsmoothed likelihood beats every smoothed one); the curve is the
-    mean over dt for the last two.
-
-    A held-out dt with no training trials takes the unit's training mean in the unsmoothed curve
-    (claims file, methods-dt-modulation reading (a)); zero rates are floored at 1e-3 spikes so
-    the log likelihood stays finite (a standard choice; it affects only zero-count bins).
-    """
-    y = np.asarray(y, float)
-    n = len(y)
-    ll_raw = 0.0
-    ll_sm = np.zeros(kernels.shape[0])
-    for _ in range(reps):
-        perm = rng.permutation(n)
-        fold = np.empty(n, int)
-        fold[perm] = np.arange(n) % folds
-        for f in range(folds):
-            tr = fold != f
-            te = ~tr
-            s = np.bincount(dti[tr], weights=y[tr], minlength=ndt)
-            c = np.bincount(dti[tr], minlength=ndt)
-            mtr = y[tr].mean()
-            raw = np.where(c > 0, s / np.maximum(c, 1), mtr)
-            sm = kernels @ raw  # (K, ndt)
-            yt, dt_t = y[te], dti[te]
-            lam = np.maximum(raw[dt_t], 1e-3)
-            ll_raw += np.sum(yt * np.log(lam) - lam)
-            lam = np.maximum(sm[:, dt_t], 1e-3)
-            ll_sm += np.sum(yt * np.log(lam) - lam, axis=1)
-    s = np.bincount(dti, weights=y, minlength=ndt)
-    c = np.bincount(dti, minlength=ndt)
-    raw_all = np.where(c > 0, s / np.maximum(c, 1), y.mean())
-    best = int(np.argmax(ll_sm))
-    if best == len(ll_sm) - 1 and np.all(np.diff(ll_sm) >= 0):
-        return np.full(ndt, y.mean()), np.inf, "monotonic"
-    if ll_raw > ll_sm.max():
-        return np.full(ndt, y.mean()), np.nan, "unsmoothed"
-    return kernels[best] @ raw_all, SDS[best], "modulated"
 
 
 def mahalanobis_p(measured, shuffled):
@@ -332,64 +275,6 @@ def bh(p, q=0.05):
     rej = np.zeros(n, bool)
     rej[o[:k]] = True
     return rej
-
-
-def logistic_prob_table(x_train, y_train, ncls, maxcount, max_iter=1000):
-    """One-versus-all logistic classifiers on one feature (spike count), Methods, "Neural decoders".
-
-    Returns P[count, class], the probability of each class for each count 0..maxcount; with one
-    integer feature the classifier is a function of the count alone.
-    """
-    from sklearn.linear_model import LogisticRegression
-
-    grid = np.arange(maxcount + 1, dtype=float)[:, None]
-    P = np.zeros((maxcount + 1, ncls))
-    for k in range(ncls):
-        yk = (y_train == k).astype(int)
-        if yk.min() == yk.max():
-            P[:, k] = yk.mean()
-            continue
-        m = LogisticRegression(max_iter=max_iter, C=1e6)
-        m.fit(x_train[:, None].astype(float), yk)
-        P[:, k] = m.predict_proba(grid)[:, 1]
-    return P
-
-
-def heldout_probs(x, y, ncls, rng, folds=10):
-    """Probabilities for each trial from the classifier fitted on the other folds (tenfold CV)."""
-    x = np.asarray(x, int)
-    maxc = int(x.max()) if len(x) else 0
-    out = np.zeros((len(x), ncls))
-    perm = rng.permutation(len(x))
-    fold = np.empty(len(x), int)
-    fold[perm] = np.arange(len(x)) % folds
-    for f in range(folds):
-        tr = fold != f
-        P = logistic_prob_table(x[tr], y[tr], ncls, maxc)
-        out[~tr] = P[x[~tr]]
-    return out
-
-
-def ensemble_accuracy(unit_probs, unit_labels, N, n_ens, rng, ncls, per_class=False):
-    """Population decoding (Methods): units sampled with replacement, summed probabilities.
-
-    unit_probs[i]: held-out probability rows of unit i; unit_labels[i]: their true classes.
-    Each ensemble tests one held-out trial per unit per class, drawn independently for each unit
-    (claims file, O6).
-    """
-    idx_by = [[np.where(l == k)[0] for k in range(ncls)] for l in unit_labels]
-    nu = len(unit_probs)
-    correct = np.zeros((n_ens, ncls))
-    for e in range(n_ens):
-        units = rng.integers(0, nu, N)
-        tot = np.zeros((ncls, ncls))
-        for u in units:
-            for k in range(ncls):
-                ii = idx_by[u][k]
-                if len(ii):
-                    tot[k] += unit_probs[u][ii[rng.integers(len(ii))]]
-        correct[e] = np.argmax(tot, axis=1) == np.arange(ncls)
-    return correct if per_class else correct.mean(axis=1)
 
 
 def trial_length(units, rec):
@@ -469,8 +354,25 @@ def single_mask_for(tab, dirs):
     return m
 
 
-def fast_dt_smooth(y, dti, rng, kernels, reps=50, folds=10, ndt=101, floor=1e-3):
-    """Vectorised form of dt_smooth (same method; Methods, "dt smoothing")."""
+def fast_dt_smooth(y, dti, rng, kernels, reps=50, folds=10, ndt=101, floor=1e-3, return_ll=False):
+    """Cross-validated Gaussian smoothing of a dt tuning curve (Methods, "dt smoothing").
+
+    y: single-trial counts; dti: index of each trial's dt on the 1 ms grid (0..ndt-1). Tenfold
+    cross-validation repeated ``reps`` times; the held-out Poisson log likelihood of the unsmoothed
+    training curve and of the curve smoothed with each kernel, summed over folds and repeats.
+    Returns (curve, kernel index, status, raw curve); status is 'monotonic' (the likelihood is
+    largest at the largest kernel), 'unsmoothed' (the unsmoothed likelihood beats every smoothed
+    one) or 'modulated', and the curve is the mean over dt for the first two.
+
+    A held-out dt with no training trials takes the training mean in the unsmoothed curve
+    (claims file, methods-dt-modulation reading (a)); zero rates are floored at 1e-3 spikes so
+    the log likelihood stays finite (a standard choice; it affects only zero-count bins).
+    With ``return_ll`` the likelihoods are also returned, as a dict, under two other ways of
+    scoring held-out trials at a dt without training trials, which the Methods do not settle
+    (an assumption shown as a variant): 'drop', left out of every likelihood, and 'nan_raw', left
+    out of the unsmoothed likelihood only (as a sum that skips the undefined values of the
+    unsmoothed curve would do).
+    """
     y = np.asarray(y, float)
     n = len(y)
     ranks = np.argsort(np.argsort(rng.random((reps, n)), axis=1), axis=1)
@@ -487,18 +389,62 @@ def fast_dt_smooth(y, dti, rng, kernels, reps=50, folds=10, ndt=101, floor=1e-3)
     mtr = S_tr.sum(1, keepdims=True) / N_tr.sum(1, keepdims=True)
     raw = np.where(N_tr > 0, S_tr / np.maximum(N_tr, 1), mtr)  # (F, ndt)
     lam = np.maximum(raw, floor)
-    ll_raw = np.sum(S_te * np.log(lam) - N_te * lam)
+    ll_raw_terms = S_te * np.log(lam) - N_te * lam
+    ll_raw = np.sum(ll_raw_terms)
     K = kernels.shape[0]
     sm = (kernels.reshape(K * ndt, ndt) @ raw.T).reshape(K, ndt, F)  # (K, ndt, F)
     lam = np.maximum(sm, floor)
     ll_sm = (np.log(lam).reshape(K, -1) @ S_te.T.ravel()) - (lam.reshape(K, -1) @ N_te.T.ravel())
+    ll = None
+    if return_ll:
+        has = (N_tr > 0).T.ravel()
+        ll_sm_drop = ((np.log(lam).reshape(K, -1) @ (S_te.T.ravel() * has))
+                      - (lam.reshape(K, -1) @ (N_te.T.ravel() * has)))
+        ll_raw_drop = np.sum(ll_raw_terms[N_tr > 0])
+        ll = dict(sm=ll_sm, raw=ll_raw, sm_drop=ll_sm_drop, raw_drop=ll_raw_drop)
     raw_all = np.where(N_all > 0, S_all / np.maximum(N_all, 1), y.mean())
     best = int(np.argmax(ll_sm))
     if best == K - 1:
-        return np.full(ndt, y.mean()), None, "monotonic", raw_all
+        out = np.full(ndt, y.mean()), None, "monotonic", raw_all
+    elif ll_raw > ll_sm.max():
+        out = np.full(ndt, y.mean()), None, "unsmoothed", raw_all
+    else:
+        out = kernels[best] @ raw_all, best, "modulated", raw_all
+    return out + (ll,) if return_ll else out
+
+
+def dt_status(ll_sm, ll_raw):
+    """Status of a curve from its likelihoods, by the rules of fast_dt_smooth."""
+    if int(np.argmax(ll_sm)) == len(ll_sm) - 1:
+        return "monotonic"
     if ll_raw > ll_sm.max():
-        return np.full(ndt, y.mean()), None, "unsmoothed", raw_all
-    return kernels[best] @ raw_all, best, "modulated", raw_all
+        return "unsmoothed"
+    return "modulated"
+
+
+def permute_within_dt(y, comb, dti, rng):
+    """Counts permuted across combinations within each dt: a null with no combination tuning."""
+    y = np.asarray(y, float)
+    out = y.copy()
+    for j in np.unique(dti):
+        ii = np.where(dti == j)[0]
+        out[ii] = y[rng.permutation(ii)]
+    return out
+
+
+def shuffle_test(y, comb, dti, rng, kernels, n_shuf=5000, ncomb=8):
+    """The whole selectivity test on one response set: smoothing of each combination's curve with
+    its cross-validated kernel, the measured CSI trace, the shuffles and the Mahalanobis p-value
+    (Methods, "dt smoothing" and "Combination selectivity"). Returns (p, distance)."""
+    curves, kidx = np.zeros((ncomb, kernels.shape[1])), []
+    for c in range(ncomb):
+        m = comb == c
+        cv, ki = fast_dt_smooth(y[m], dti[m], rng, kernels)[:2]
+        curves[c] = cv
+        kidx.append(ki)
+    csi = sparseness(curves.T)
+    sh = shuffle_csi(y, comb, dti, kidx, kernels, rng, n_shuf=n_shuf, ncomb=ncomb)
+    return mahalanobis_p(csi, sh)
 
 
 def shuffle_csi(y, comb, dti, kern_idx, kernels, rng, n_shuf=5000, ncomb=8, ndt=101, chunk=500):
