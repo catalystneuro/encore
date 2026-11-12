@@ -39,8 +39,9 @@ Geometry (all in the ``Standard`` frame; vertex coordinates are MATLAB 1-based):
   diagonal; both midpoints are averaged (Methods, "Corners", paragraph 2).
 - Corners S40: the pattern has two 40 degree folds of opposite polarity. The bright one is where
   the corner of the luminance contours points towards lower luminance; the paper analysed "only
-  ... symmetric bright corner-folds" (Methods, "Corners", paragraph 2). The claims file leaves
-  open whether the two S40 folds are averaged, so both readings are computed (``corners_mode``).
+  ... symmetric bright corner-folds" (Methods, "Corners", paragraph 2), and the claims file takes
+  the bright S40 fold alone (its opening comment). The two folds averaged and the dark fold are
+  kept in ``corners_mode`` for reference only.
 - Edge: the short side of the rectangle, collinear with the Square's diagonal, 0% to 100%.
   P180: the line parallel to the Edge, 48 DU into the rectangle, through its 50% luminance line
   (Methods, "Square and edge").
@@ -232,8 +233,8 @@ def load_record(row, with_screen=False):
 def folds(rec, corners_mode="bright"):
     """Fold segments as lists of (P0, P100) in the Standard frame (1-based x, y), per fold name.
 
-    corners_mode: "bright" (the bright S40 fold only), "both" (the two S40 folds, averaged) or
-    "dark" (the dark S40 fold, shown for reference).
+    corners_mode: "bright" (the bright S40 fold only, as the claims file takes it), or, for
+    reference only, "both" (the two S40 folds, averaged) or "dark" (the dark S40 fold).
     """
     p = rec["poly"]
     out = {}

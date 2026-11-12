@@ -29,9 +29,10 @@ stimuli. The files hold 53 neurons; 60 recordings carry the authors' aligned map
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The main assumptions are that the Corners response is taken at the bright of its two 40 degree
-folds, as the Methods say only bright folds were analysed, and where the baseline squares lie,
-which the text does not fix. The attempt record, with the reasons and the differences from the
+The Corners response is taken at the bright of its two 40 degree folds, as the Methods say only
+bright folds were analysed and as the claims file says since a reader amended it in answer to this
+attempt's questions. The main assumption is where the baseline squares lie, which the text does
+not fix. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/martinez-conde-2019-01.yaml`](../../attempts/martinez-conde-2019-01.yaml).
 
 - `reproduce_martinez_conde_2019.ipynb`: the analysis. It takes about five minutes, most of it
