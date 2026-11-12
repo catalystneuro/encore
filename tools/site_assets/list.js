@@ -18,8 +18,13 @@
     return [v === null || v === undefined || v === '' ? '(none)' : String(v)];
   };
 
-  // On a narrow screen the filters sit above the results: start them closed.
-  if (matchMedia('(max-width: 820px)').matches) $('facets').open = false;
+  // On a narrow screen the filters sit above the results, closed under a bar that opens them. On a wide one they
+  // are a column beside the results with no bar, so they must be open: a window that starts narrow and is then
+  // widened (or a phone turned on its side) would otherwise show no filters and nothing to open them with.
+  const narrow = matchMedia('(max-width: 820px)');
+  const fitFilters = () => { $('facets').open = !narrow.matches; };
+  fitFilters();
+  narrow.addEventListener('change', fitFilters);
 
   let rows;
   try {

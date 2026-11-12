@@ -840,3 +840,10 @@ def test_a_finding_that_names_its_datasets_is_on_those_datasets_only():
             continue
         raise AssertionError(bad)
 
+
+
+def test_a_lists_filters_open_again_when_a_narrow_window_is_widened():
+    # Closed under their bar on a narrow screen; a wide screen has no bar, so they are opened whenever it is wide,
+    # not only when the page loads (assets/list.js follows the media query).
+    js = (site.ASSETS / "list.js").read_text()
+    assert "narrow.addEventListener('change', fitFilters)" in js and "$('facets').open = !narrow.matches" in js
