@@ -20,7 +20,7 @@ training sessions are not in it.
 | Stable2 decoded better than rotation (seven ensembles) | Reproduced (assumption) |
 | Four ensembles prefer the room frame, two the arena frame | Reproduced (assumption) |
 | Frame preference anti-correlated with shock zone proximity | Partially reproduced |
-| Frame preference not biased by head direction | Reproduced (assumption; change to not reproduced proposed) |
+| Frame preference not biased by head direction | Not reproduced (assumption) |
 | Head-direction pair correlations maintained | Reproduced |
 | All MEC pair correlations maintained (Figure S4) | Blocked: data missing |
 | Model-based head-direction information (Figure S5) | Blocked: data missing |

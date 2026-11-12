@@ -216,16 +216,8 @@ outcomes:
   - Assumed, distance to a shock zone measured to the centre point of its sector (centre angle and
     mid radius from the tracker header); the paper does not define relative proximity.
 - claim: figs3-no-head-direction-bias
-  outcome: reproduced
+  outcome: not_reproduced
   assumed: true
-  proposed:
-    outcome: not_reproduced
-    reason: The verified outcome rests on n = the sum of the weights, which has no support, as the
-      weights are mean ΔIdir rescaled so that the largest is 1, not frequencies, and their sum (9.2
-      to 26.8 over the 14 tests) is set by that scaling; rescaled to a mean of 1 they sum to the 36
-      bins. Reading (a), n = the number of bins, is the one the claims file checks against the
-      paper (p near 0.35 at r = 0.17). Under it 1121R157 in the room frame gives p = 0.0134, and
-      the criterion, "Reproduced when every test has p ≥ 0.05", has no partial branch.
   notebook: reproduce_park_2019.ipynb
   output: claim:figs3-no-head-direction-bias
   measured: 0.166
@@ -236,15 +228,16 @@ outcomes:
     to 0.264, with 3 or 4 of 14 tests below 0.05 when n is the number of bins and 1 to 3 when n is
     the sum of the weights. The clean variant (12 tests) gives average r 0.154 under the main
     reading, with one test below 0.05 when n is the number of bins and none when n is the sum of
-    the weights. The outcome verified in round 2 rests on reading (b); the second verifier found
-    that choice unsupported, and a change to not reproduced, under reading (a), is proposed.
+    the weights. The outcome rests on reading (a). It was reproduced in round 2 under reading (b);
+    the second verifier found that choice unsupported, the change was proposed, and the third
+    verifier agreed. The failing test would not survive a Bonferroni correction across the 14
+    tests (0.0036), but the criterion does not ask for one.
   deviations:
-  - Assumed, for the verified outcome, the n of the weighted Rayleigh test is the sum of the
-    normalized weights (reading b of the criterion); the paper does not state n. The reason first
-    given, that this is the standard n for grouped data with frequencies as weights (Zar), does
-    not hold, as the weights are rescaled mean ΔIdir, not frequencies, and their sum depends on
-    the scaling. Reading (a), the number of bins, is better supported, and the proposed outcome
-    rests on it.
+  - Assumed, the n of the weighted Rayleigh test is the number of bins (reading a of the
+    criterion); the paper does not state n. Reading (a) is the one the claims file checks against
+    the paper's p. Reading (b), the sum of the normalized weights, was first adopted as the
+    standard n for grouped data with frequencies as weights (Zar); that reason does not hold, as
+    the weights are rescaled mean ΔIdir, not frequencies, and their sum depends on the scaling.
   - Assumed, the Idir reading of 10 degree bins with probabilities from the rotating trial, the
     tuning curves' resolution and the trial whose information is measured.
 - claim: fig3-hd-pair-correlations-preserved
@@ -847,3 +840,30 @@ verifications:
     reason: All round 1 requests are answered (the curve, the null), and the record corrects the
       round 1 error (63.3 was the neighbouring bin, not a minimum).
     response: No change.
+- date: '2026-11-12'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The change proposed after round 2, the only outcome with a proposed entry
+    (figs3-no-head-direction-bias), with the full executed notebook of the second revision, the
+    helper module, the claims file, the attempt record and the paper's full text. It checked cell 57
+    and counted 22 claims in the claims file and 22 outcomes in the record.
+  results:
+  - claim: figs3-no-head-direction-bias
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 57. The criterion names two readings for the n of the weighted Rayleigh test. Under
+      reading (a), n = the number of bins, 1121R157 in the room frame gives r = 0.3434 and
+      p = 0.0134. The criterion says "Reproduced when every test has p ≥ 0.05" and has no partial
+      branch, so the claim is not reproduced. The reason for reading (b) does not hold, as the
+      weights are mean ΔIdir rescaled so the largest is 1, not frequencies, and rescaled to a mean
+      of 1 they sum to 36, the n of reading (a). Under reading (a) at least one test has p < 0.05
+      under every Idir reading (1, 4, 3 and 4 of 14), and the clean variant has one or two of 12,
+      so the outcome does not depend on the Idir reading or on the sessions shown wrong. The
+      failure rests on a single test at p = 0.0134, which would not survive a Bonferroni correction
+      across the 14 tests (0.0036), but the criterion does not ask for one. Possible misreading in
+      the claims file, the paper reports "p > 0.17" and the criterion uses the looser p ≥ 0.05; the
+      claim fails even at the looser threshold, so this does not change the outcome.
+    response: Outcome changed to not_reproduced and the proposed entry removed. The conclusion,
+      notes, deviation, summary and README now give the outcome under reading (a) and mention the
+      Bonferroni point. The threshold point is added to questions/park-2019.yaml for a reader; the
+      claim is unchanged.
