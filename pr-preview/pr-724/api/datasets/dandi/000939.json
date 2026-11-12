@@ -1,0 +1,1101 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000939",
+  "label": "DANDI:000939"
+ },
+ "page": "datasets/dandi/000939/",
+ "generated": "2026-11-12T19:12:31+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 18,
+  "partially_reproduced": 3,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 7,
+  "partially_reproduced": 2,
+  "not_reproduced": 0,
+  "blocked": 3
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "duszkiewicz-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000939",
+    "version": "0.261016.2310",
+    "doi": "10.48324/dandi.000939/0.261016.2310",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:000939"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:000939",
+   "label": "DANDI:000939",
+   "dataset_version": "0.261016.2310",
+   "paper": "10.1038/s41593-024-01588-5",
+   "paper_title": "Local origin of excitatory\u2013inhibitory tuning equivalence in a cortical network",
+   "date": "2026-10-31",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/41228912038"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "duszkiewicz-2024",
+   "entry_title": "Excitatory-inhibitory tuning equivalence in mouse postsubiculum (Duszkiewicz et al. 2024)",
+   "summary": "Most main findings hold in this data. PoSub fast-spiking cells show stable head-direction tuning anchored to landmarks, thalamic disinhibition acts multiplicatively on HD cells and additively on FS cells, and coupling and the ring manifold persist in REM sleep. The Fourier-equivalence findings hold in part: ADN-HD spectra differ in the paper's direction, but the Fig. 3e interaction is not significant under the code's reading, and 47 FS cells peak in component 3 against the paper's 55. The simulation, the model fit and the thalamic tracing could not be tested, because their code or images are not deposited.",
+   "description": "Tests the findings of Duszkiewicz, Orhan, Skromne Carrasco, Brown, Owczarek, Vite, Wood and Peyrache (2024) on dandiset 000939, which holds 31 postsubiculum sessions with spike times, waveforms, head direction, position, sleep states and light pulses. It classifies cells, measures HD information, tuning stability, decoding, Fourier signatures, putative synapses, thalamic gain, GLM coupling and the Isomap ring manifold. Claims that need the ADN, cue rotation, ADN optogenetic and Neuropixel recordings use the paper's figshare item.",
+   "notebooks": [
+    {
+     "path": "reproduce_duszkiewicz_2024.ipynb",
+     "title": "Reproducing Duszkiewicz et al. (2024) from dandiset 000939",
+     "executed": "notebooks/duszkiewicz-2024/reproduce_duszkiewicz_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "cell-classes-counts",
+     "statement": "PoSub units split into 1,835 putative excitatory cells and 427 putative FS cells by firing rate and waveform, and 1,602 excitatory cells (87%) were HD cells with HD information above 0.2 bits per spike; the vertical recordings gave 931 units from 14 mice and the parallel ones 1,999 units from 18 mice.",
+     "source": "Results, High-density recordings in the PoSub of freely moving mice, paragraph 1; Methods, Spike sorting and unit classification, and HD tuning curves and tuning metrics",
+     "quote": "The probe was implanted either vertically ( n = 931 units from 14 mice, range ... or parallel to PoSub cell layers ( n = 1,999 units from 18 mice ... PoSub units were subdivided into putative excitatory cells ( n = 1,835) and putative PoSub-FS cells ( n = 427) based on mean firing rate and waveform shape ... were classified as PoSub-HD cells (>0.2 bits per spike, n = 1602, 87% of excitatory cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Under the Methods' classes there are 1,661 excitatory cells, 430 FS cells and 1,512 HD cells (fraction 0.910), all within tolerance; the code's 0.35 ms cut gives 1,699, 415, 1,532 and 0.902, and the HD threshold as the 99th percentile of the time-reversed information (0.272 bits per spike) 1,481 and 1,501. The 14 vertical sessions hold 931 units, the paper's number. The 17 parallel sessions hold 1,760 units, below the tolerance of 1,999 - 200. The code's list of the paper's 32 PoSub sessions (dataset_All.list) has one session the dandiset lacks, A8603-210602, the Neuropixel recording of figshare Dataset_4, with 239 units; 1,760 + 239 = 1,999, the paper's count. The shortfall is that one session's units, the case the criterion foresees, so the counts reproduce. The dandiset's labels agree with the code's classes for 99.9% of units (excitatory and FS) and 99.7% (HD).",
+     "deviations": [
+      "A negative waveform is read as a finite trough-to-peak in the units table; the code marks positive spikes with NaN, and 177 units have none.",
+      "Speed is computed from the position (Gaussian smoothing of 0.1 s s.d.), as the files hold no speed series; the agreement of the recomputed classes with the dandiset's labels (99.9%) supports it.",
+      "Viable units are those at or above 0.5 Hz (Methods, at least 0.5 Hz; the code's gd uses > 0.5).",
+      "The time-reversed control reverses the HD series over the used span (the tracked epoch, or its half) before the speed mask, as the claims file says; round 1 reversed only the used samples."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2b-excitatory-hd-information",
+     "statement": "Putative excitatory PoSub cells carry more HD information than their time-reversed controls, and HD information across all PoSub cells is bimodal.",
+     "source": "Extended Data Fig. 2b,c",
+     "quote": "Distribution of HD information carried by tuning curves of putative excitatory cells in PoSub ( n = 1835; Wilcoxon signed rank test vs time-reversed control, z = 37.1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Median log10 HD information 0.10 against -1.41 for the time-reversed controls, |z| = 35.3, p = 7e-273, n = 1,661 (paper z = 37.1, n = 1,835); 97 to 100% of excitatory cells per session are above their control. The histogram over viable units has maxima near log10 = -1.67 and 0.19, shown and not judged.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-fs-hd-information",
+     "statement": "The HD information carried by PoSub-FS cell tuning curves is higher than that of their time-reversed controls.",
+     "source": "Results, Tuning of PoSub-FS cells is stable and anchored to landmarks, paragraph 1; Figure 2a",
+     "quote": "at the population level, the quantity of HD information conveyed by PoSub-FS cells was significantly higher than that of the time-reversed control",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Median log10 HD information -1.70 against -2.63, |z| = 17.86, p = 2e-71, n = 430 (paper z = 17.9, n = 427); 419 of 430 FS cells exceed their control. Median HD information of HD cells 1.35 bits per spike, of FS cells 0.02.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-decoding-from-fs",
+     "statement": "The animal's HD can be decoded accurately from PoSub-FS cell spiking with a Bayesian decoder built on their tuning curves, and decoding error falls as more FS cells are used.",
+     "source": "Results, Tuning of PoSub-FS cells is stable and anchored to landmarks, paragraph 1; Figure 2b; Extended Data Fig. 2e",
+     "quote": "The information contained in PoSub-FS cell tuning curves was sufficient to accurately decode the animal's HD from PoSub-FS cell spiking activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Mean over 31 sessions of the FS decoder's median error 36.0 degrees, chance 92.8, both scored against the real HD (signed-rank over sessions p = 1.3e-6); Pearson r between FS cell number and error -0.449, p = 0.011, n = 31. HD-cell decoder 9.9 degrees.",
+     "deviations": [
+      "31 sessions where the paper has 32."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-geometry-independent",
+     "statement": "The tuning of PoSub-FS cells is preserved between the square and triangular arenas, as it is for PoSub-HD cells.",
+     "source": "Results, Tuning of PoSub-FS cells is stable and anchored to landmarks, paragraph 2; Figure 2c; Extended Data Fig. 2j",
+     "quote": "the tuning of PoSub-FS cells was stable within a single exploration epoch (Extended Data Fig. 2h ) and independent of the enclosure geometry (Fig. 2c ), reflecting the properties of canonical PoSub-HD cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "20 sessions with a triangle. FS median r 0.80 against -0.01, |z| = 14.2, p = 1e-45, n = 273 (paper 264, z = 14.0); HD 0.96 against -0.01, |z| = 28.9, p = 4e-184, n = 1,118 (paper 1,013, z = 27.6). The 2 degree smoothing of the code gives the same.",
+     "deviations": [
+      "The control correlates the time-reversed square curve with the time-reversed triangle curve shifted by the same session rotation; the criterion says \"the same for time-reversed curves\" without saying which curves are paired."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2hi-within-epoch-stability",
+     "statement": "Tuning curves of PoSub-FS and PoSub-HD cells computed from the two halves of the square-arena epoch are correlated above their time-reversed controls.",
+     "source": "Extended Data Fig. 2h,i",
+     "quote": "PoSub-FS cell tuning curve correlation across two halves of the square arena epoch",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "FS median r 0.83 against -0.011, |z| = 17.91, p = 1e-71, n = 430; HD 0.97 against -0.011, |z| = 33.7, p = 1e-248, n = 1,512; the same at 2 degree smoothing.",
+     "deviations": [
+      "The halves are halves of the time above 2 cm/s, taken in order; the code's regIntervals(ep, 2) is not described further."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-cue-rotation",
+     "statement": "In a cue rotation task PoSub-FS cell tuning curves follow the rotated distal landmark together with PoSub-HD cells.",
+     "source": "Results, Tuning of PoSub-FS cells is stable and anchored to landmarks, paragraph 2; Figure 2d-f",
+     "quote": "PoSub-FS cell tuning curves followed the rotated distal landmark in concert with PoSub-HD cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Six figshare sessions, 99 FS cells, the paper's number. Under the main exclusion reading 89 of 96 rotations are kept; the median absolute difference between FS and mean HD realignment is 36.2 degrees against 91.8 for the control, |z| = 8.57, p = 1e-17 (paper z = 8.25). The second reading (95 kept), the change condition alone (93) and the code's rule (91) give |z| 8.58 to 8.59.",
+     "deviations": [
+      "Condition (1) of the Methods (\"less than 45 degrees of mean decoder error in the following 200 s epoch\") is read as the change of circular mean error from the 200 s before the rotation to the 200 s after it, as the code computes it; read literally it would exclude every rotation back to the first wall.",
+      "The sigmoid is fitted to the decoder error re-centred on the preceding epoch's mean, from 50 s before to 200 s after each rotation (the code's window), with scipy's curve_fit; the code's second, fine sigmoid fit is not run.",
+      "The control is the FS cells' realignment from curves with the HD time-reversed within each epoch segment, against the real HD cells' mean; the paper does not say what the control reverses.",
+      "Cell classes are the figshare files' own CellTypes.",
+      "The code's angular head velocity is computed here from the head direction in the 50 s before each rotation, as Ahv.mat is not read."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_3.tar.gz (cue rotation, 6 sessions)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-adn-broader",
+     "statement": "ADN-HD cells have broader tuning curves than PoSub-HD cells.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 1; Figure 3c",
+     "quote": "In mice, ADN-HD cells tend to have broader HD tuning curves than PoSub-HD cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "97 ADN-HD cells recomputed from the figshare spike times (the files' CellTypes also give 97, agreement 100%). Median width 62 against 42 degrees for 1,512 PoSub-HD cells, z = 11.58, p = 4e-31 (paper z = 11.4). The figshare data give ADN-HD cells only, so the claim's notes on the dataset side are the PoSub-HD widths of the dandiset.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_5.tar.gz (ADN recordings)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3-ten-components-power",
+     "statement": "Fourier power of tuning curves decays quickly with frequency, and the first ten components hold on average 98% of the total power.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 2",
+     "quote": "Across the cell population, the Fourier power decayed rapidly as a function of frequency. Hence, for clarity, we focused our analysis on the relative power of the first ten Fourier components that contained, on average, 98% of the total power",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Squared-modulus power gives a mean fraction of 0.989 in harmonics 1 to 10 for FS and HD cells pooled, 0.969 for FS and 0.994 for HD, all within 0.98 +- 0.02; mean power falls to 0.10 of the first harmonic's at the fifth. Root-mean-square power gives 0.872, 0.778 and 0.898, none within tolerance. The criterion asks for a population within tolerance under each power reading, so it holds under one of the two. Only the squared modulus satisfies the Parseval check that the Methods report (ratio 1.0000 here).",
+     "deviations": [
+      "The Methods' \"root mean square of the projection values onto the sine and cosine basis\" is read as sqrt((re^2 + im^2) / 2) of the complex coefficient."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-fourier-signatures-differ",
+     "statement": "The average Fourier signatures of PoSub-FS, PoSub-HD and ADN-HD populations differ, with ADN-HD cells having more power at low and less at high components than PoSub-HD and PoSub-FS cells, which are alike.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 3; Figure 3e; Extended Data Fig. 3f",
+     "quote": "the Fourier signature of ADN-HD cells was different from both PoSub-HD and PoSub-FS cells, with higher power at low frequencies and lower power at higher frequencies",
+     "statistics": [
+      {
+       "test": "two-way ANOVA, Fourier component by cell type interaction",
+       "statistic": "F (9,19116) = 2.76",
+       "p": 0.003,
+       "n": "427 PoSub-FS, 1,602 PoSub-HD and 97 ADN-HD cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "The direction holds under both readings and both powers (ADN-HD mean at component 1 0.509 against 0.398 and 0.358; ADN cumulative signature above both at components 1 to 9). With squared-modulus power and cell type as a numeric covariate (the code), the component by cell type interaction gives F(9,18333) = 1.09, p = 0.365 (paper F(9,19116) = 2.76, p = 0.003). Root-mean-square power gives F = 10.68, p = 1e-16, and a categorical cell type gives F(18,18324) = 24.7, p = 5e-82 (squared modulus) and 44.6, p = 2e-155. The test holds under some readings and not under the one that follows the code, so the claim holds in part. A numeric code for three cell types tests a linear trend from FS through PoSub-HD to ADN-HD; FS and ADN-HD both depart from PoSub-HD at component 1 in the same direction, which such a trend does not capture. The PoSub-only ANOVA, a variant, gives F(9,17460) = 11.4, p = 6e-18.",
+     "deviations": [
+      "The repeated-measures interaction is computed as the univariate test of ranova, with the within-subject deviations regressed on the between-subjects term, not with MATLAB.",
+      "1,942 PoSub cells from 31 sessions where the paper has 2,029 from 32."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_5.tar.gz (ADN recordings)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-posub-hd-closer-to-fs",
+     "statement": "Individual PoSub-HD cell Fourier spectra are closer to the average PoSub-FS signature than ADN-HD cell spectra are.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 3; Figure 3f",
+     "quote": "we found that the average Fourier signature of the PoSub-FS cell population was often indistinguishable from the Fourier signatures of individual PoSub-HD cells",
+     "statistics": [
+      {
+       "test": "Mann-Whitney U test",
+       "p": 1e-09,
+       "p_relation": "<",
+       "n": "1,602 PoSub-HD and 97 ADN-HD cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "PoSub-HD spectra are closer to the mean FS spectrum under all four readings. Squared modulus, D_KL(cell||FS) (the Methods' direction), median 0.082 against 0.133, p = 0.008; squared modulus, D_KL(FS||cell) (the code's), p = 1e-7; root mean square, p = 1.8e-9 and 3e-12. p is below 1e-9 under one reading only, which is the criterion's partial outcome.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_5.tar.gz (ADN recordings)",
+     "proposed": null
+    },
+    {
+     "claim": "ed3k-robust-to-controls",
+     "statement": "The smaller distance of PoSub-HD than ADN-HD spectra from the PoSub-FS signature holds after excluding multipeaked HD cells, after excluding noisy clusters, and with a 10 cm/s speed threshold; multipeak scores differ between ADN-HD and PoSub-HD cells.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 3; Extended Data Fig. 3j,k",
+     "quote": "the similarity between PoSub-HD and PoSub-FS cell Fourier signatures on a population level was preserved when the analysis was limited to HD cells with a single receptive field. Additionally, it was preserved when a threshold was applied to keep only the best isolated unit clusters or when a higher velocity threshold was used to compute tuning curves",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "The Fig. 3f test holds under every control and reading, PoSub-HD closer than ADN-HD with p from 0.019 to 5e-22 (multipeak below 0.05, 762 and 69 cells, paper 789 and 69; contamination at most 0.2, 1,399 and 81, paper 1,472 and 83; 10 cm/s, 1,512 and 97). The multipeak scores differ (z = 4.18, p = 3e-5; paper z = 4.25), ADN-HD cells scoring lower (median 0.022 against 0.049), as the paper's counts below 0.05 (69 of 97 ADN-HD, 789 of 1,602 PoSub-HD) imply. The answer to the question in questions/000939.yaml changed the outcome. The statement had ADN-HD scores higher, the reverse of what was found, and the outcome was partially_reproduced; the reader found that the paper gives no direction for this test and amended the claim to say only that the scores differ, with the multipeak test accepted in either direction. The analysis is unchanged; all four tests now meet the criterion.",
+     "deviations": [
+      "The contamination score takes the autocorrelogram bin next to zero (0.5 to 1.5 ms), as the code does (it zeroes the zero bin); the Methods say \"the value at 0.1 ms\".",
+      "The contamination and speed controls are applied to FS cells too when computing the FS mean, as the code's onlyGoodClusters filters FS cells; the 10 cm/s control recomputes all curves."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_5.tar.gz (ADN recordings)",
+     "proposed": null
+    },
+    {
+     "claim": "fig3g-first-three-components",
+     "statement": "Compared with time-reversed controls, the PoSub-FS spectrum has higher power for the first three Fourier components only.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 4; Figure 3g",
+     "quote": "Compared to controls, the spectrum of PoSub-FS cells showed higher power for the first three Fourier components only",
+     "statistics": [
+      {
+       "about": "component by condition interaction, FS against time-reversed control",
+       "test": "two-way ANOVA, Fourier component by cell type interaction",
+       "statistic": "F (9,3834) = 64.1",
+       "p": 4e-110,
+       "n": "427 PoSub-FS cells"
+      },
+      {
+       "about": "first component, FS against control",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "z = 0.65",
+       "p": 8e-10,
+       "corrected": "Bonferroni",
+       "n": "427 PoSub-FS cells"
+      },
+      {
+       "about": "second component, FS against control",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "z = 0.85",
+       "p": 3e-16,
+       "corrected": "Bonferroni",
+       "n": "427 PoSub-FS cells"
+      },
+      {
+       "about": "third component, FS against control",
+       "test": "Wilcoxon signed-rank test",
+       "statistic": "z = 0.46",
+       "p": 4e-05,
+       "corrected": "Bonferroni",
+       "n": "427 PoSub-FS cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Interaction significant under both powers (squared modulus F(9,3861) = 122.9, p = 1e-203; root mean square F = 227.2; paper F(9,3834) = 64.1, p = 4e-110). After Bonferroni correction, squared modulus, components 1 and 2 are above control (p = 4e-28, 8e-20) and component 3 is higher in median (0.114 against 0.093) but p = 0.064; root mean square, components 1 to 4 are above control (component 4, p = 0.003). The set 1, 2 and 3 and no other holds under neither power. Round 1 had component 3 significant (p = 0.028) with squared-modulus power; the change comes from the corrected time-reversed control (the HD series reversed before the speed mask, as the claims file says).",
+     "deviations": [
+      "The time-reversed control reverses the HD series over the tracked epoch before the speed mask (claims file)."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3h-dominant-component",
+     "statement": "Of the 427 PoSub-FS cells, 231, 141 and 55 have their highest power in the first, second and third Fourier component, proportions similar to the relative mean power of those components.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 4; Figure 3h; Extended Data Fig. 4a legend",
+     "quote": "The proportions of recorded PoSub-FS cells with the highest relative power in each of the first three Fourier components were similar to the relative mean power for the population",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "237 and 146 FS cells peak in components 1 and 2, within tolerance; 47 peak in component 3, below 55 - 6. The criterion's reproduced and partial outcomes both need every count within tolerance, so with one count outside it the claim is not reproduced. The proportions (0.551, 0.340, 0.109) are in the order of the renormalized mean powers (0.486, 0.326, 0.187), reading (a), but differ from them by 13%, 4% and 42%, so reading (b) fails, under both power readings. The dandiset has 430 FS cells where the paper has 427.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3g-fs-spectra-heterogeneous",
+     "statement": "Fourier signatures are far more variable among PoSub-FS cells than among HD cells of the same region, so individual FS cells are narrowly tuned in Fourier space.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 5; Extended Data Fig. 3g",
+     "quote": "while the shape of Fourier signatures was largely uniform among HD cells from the same brain region, it was highly variable among PoSub-FS cells",
+     "statistics": [
+      {
+       "about": "cell type effect on distance from own population mean",
+       "test": "one-way ANOVA",
+       "statistic": "F (2,2123) = 169",
+       "p": 5e-69,
+       "n": "427 PoSub-FS, 1,602 PoSub-HD and 97 ADN-HD cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "FS distances from their own population mean exceed PoSub-HD distances under all four readings (z/3 5.78 to 5.97, p x 3 below 1e-66; paper z = 5.71). With the figshare ADN-HD cells, reported and not judged, the one-way ANOVA gives F(2,2036) = 184.3, p = 3e-74 (Euclidean, squared modulus; paper F(2,2123) = 169), FS against ADN z/3 = 3.42 and PoSub-HD against ADN z/3 = 0.48 (paper 3.40 and 0.45).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed3l-fs-phases-independent",
+     "statement": "Phases of the Fourier components are correlated with each other in individual HD cells but random relative to each other in PoSub-FS cells.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 5; Extended Data Fig. 3l",
+     "quote": "In contrast, the Fourier components of individual PoSub-FS cells had random phases relative to each other",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "PoSub-HD rho = 0.322 (p below 1e-15) and 0.087 (p = 1e-4); FS rho = 0.014 (p = 0.77) and 0.005 (p = 0.91); with the code's classes FS p = 0.90 and 0.74.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4a-autocorrelogram-symmetries",
+     "statement": "Tuning curve auto-correlograms of FS cells with the highest power in the second component peak at 180 degrees, and those with the highest power in the third at 120 and 240 degrees, above controls.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 6; Extended Data Fig. 4a",
+     "quote": "Auto-correlograms of tuning curves for cells with maximum power for the second component showed a second maximum at 180\u00b0, reflecting their twofold radial symmetry. For cells with maximum power in the third component, auto-correlograms peaked at 120\u00b0 and 240\u00b0",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Twofold FS cells (146) at 180 degrees, median 0.19 against 0.02, signed-rank p = 3e-13, rank-sum p = 2e-13; threefold cells (47) at 120 degrees, 0.17 against -0.002, p = 2e-4 and 6e-5; at 240 degrees, shown only, 0.18 against -0.02, p = 3e-6.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed4cd-isomap-posub-central",
+     "statement": "In a joint Isomap embedding of tuning curve auto-correlograms, PoSub-HD cells lie nearer the centre of the PoSub-FS distribution than ADN-HD cells.",
+     "source": "Results, Equivalence of PoSub-HD and FS cell tuning in Fourier space, paragraph 6; Extended Data Fig. 4c,d",
+     "quote": "The distribution of PoSub-HD cells occupied the center of the PoSub-FS cell distribution while that of ADN-HD cells was closer to the periphery",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Median distance to the FS centre 2.34 for PoSub-HD against 3.39 for ADN-HD, z = 2.93, p = 0.0034, n = 1,512 and 97 (paper z = 4.26).",
+     "deviations": [
+      "Isomap from scikit-learn, not the MATLAB Dimensionality Reduction Toolbox."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_5.tar.gz (ADN recordings)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4-random-connectivity-simulation",
+     "statement": "In simulation, random linear combinations of HD-tuned inputs preserve the input population's average Fourier spectrum, and the proportions of outputs dominated by the first three components converge to those of PoSub-FS cells when the s.d. of the weights exceeds their mean.",
+     "source": "Results, PoSub-FS cell tuning reveals key circuit properties, paragraphs 1 and 2; Figure 4a-d,g; Extended Data Fig. 5",
+     "quote": "random connectivity preserved the Fourier spectrum of the input population ... This convergence emerged for weight distributions in which the standard deviation (s.d.) exceeded the mean of the weights",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "A result of simulation. The Python simulation code is not in the figshare item (version 3 holds MATLAB code only) nor linked elsewhere in the paper, and the Methods and Supplementary Methods do not give the input tuning widths, the number of inputs or the log-normal weight parameters of each simulated point.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "none deposited; the simulation code (Python, Methods, Data analysis and statistics) is not in figshare doi:10.6084/m9.figshare.24921252 version 3",
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-synaptic-weights-dispersed",
+     "statement": "Putative synaptic weights from PoSub-HD to PoSub-FS cells, estimated from spike train cross-correlograms, are heavy-tailed with an s.d. larger than their mean, in the range where simulations predict the radial symmetries of FS tuning.",
+     "source": "Results, PoSub-FS cell tuning reveals key circuit properties, paragraph 2; Figure 4e,f; Extended Data Fig. 2f,g",
+     "quote": "The distribution was heavy-tailed (Fig. 4f ), with the ratio of s.d. and mean input weight (i.e. coefficient of variation), in the range where in silico simulation predicted the emergence of radial symmetries",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "1,176 connections among 24,498 HD-FS pairs (4.8%), in every session. strZ mean 8.58, s.d. 16.32, CV 1.90, skewness 9.34, median 4.60. Spans of 50 and 25 ms give identical results because the test window (0 to 2 ms) and the baseline kernel never reach either edge, so the span variant tests nothing. strR, a variant, has CV 0.71.",
+     "deviations": [
+      "In cch_conv the window of 41 bins has an odd width, so its centre index is fractional; the two central samples are hollowed here (an assumption that only shifts the baseline slightly)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-model-fit",
+     "statement": "A model fit to the PoSub-FS tuning statistics gives near-Gaussian weights from ADN-HD inputs and heavy-tailed weights from PoSub-HD inputs, so that FS tuning is best explained by flat, high-rate ADN input and HD-modulated, low-rate PoSub input.",
+     "source": "Results, PoSub-FS cell tuning reveals key circuit properties, paragraph 3; Figure 4h; Supplementary Methods, Fourier spectrum simulations, Model fitting",
+     "quote": "established that PoSub-FS cell-like outputs are best explained by flat, high firing rate inputs from ADN-HD cells and low firing rate, HD-modulated inputs from PoSub-HD cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The PyTorch fitting code is not in the figshare item, and the Supplementary Methods do not give the numbers of inputs or the initial values; a reimplementation would rest on choices not in the paper.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "none deposited; the fitting code (PyTorch, Supplementary Methods) is not in figshare doi:10.6084/m9.figshare.24921252 version 3",
+     "proposed": null
+    },
+    {
+     "claim": "ed7-adn-disinhibition",
+     "statement": "Light over ADN in VGAT-Cre mice with ArchT in TRN raises the firing of ADN-HD cells but not of non-HD thalamic cells, without broadening ADN-HD tuning curves.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 2; Extended Data Fig. 7b-d",
+     "quote": "Targeted illumination of ADN (inactivating the inhibitory presynaptic terminals of the TRN neurons) resulted in a net increase of the firing rates of ADN-HD cells but not of untuned neurons (non-HD cells) recorded in the same sessions",
+     "statistics": [
+      {
+       "about": "width of ADN-HD tuning curves, baseline against high gain",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 0.67",
+       "p": 0.5,
+       "n": "52 ADN-HD cells"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Figshare Dataset_6, 10 ADN sessions from 3 mice, 127 cells kept (paper 127), 53 ADN-HD (paper 52) and 74 non-HD (paper 75). ON/OFF ratio 1.54 against 1.06, z = 6.85, p = 8e-12 (paper z = 6.57); non-HD rates do not change (p = 0.13). ADN-HD width 62 against 58 degrees, signed-rank p = 0.61, rank-sum p = 0.80 (paper p = 0.5). The ratio is near 1.5 in each mouse.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_6.tar.gz (optogenetics)",
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-posub-rates-increase",
+     "statement": "Thalamic disinhibition raises the firing rates of PoSub-HD and PoSub-FS cells in ArchT mice; the rise of FS cells is larger than in control-virus mice.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 3; Figure 5b; Extended Data Fig. 7e,f",
+     "quote": "Similarly to the upstream ADN-HD cells, PoSub-HD and PoSub-FS cells increased their firing rates",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Two ArchT mice (A1813, A1815) and three control mice. FS ON/OFF ratio 1.33 against 1.04, z = 5.41, p = 6e-8, n = 33 and 43 (paper z = 4.99, n = 47 and 38); HD 1.46 against 1.00. Both ArchT medians exceed 1 and the control medians, in each ArchT mouse. The HD comparison with control is significant here (z = 7.77, n = 62 and 92), where the paper's is not (z = 1.69, 83 and 89); the criterion does not judge it. With every window moved 2.5 s from the pulses the ArchT ratio is 0.91, and the decoded pulses match the figshare pulse table within 0.1 ms, so the pulse times share the spike clock. Variant with the three figshare ArchT mice added (102 HD, 50 FS ArchT cells, 5 mice), deciding nothing. FS z = 5.60, p = 2e-8, ArchT medians 1.29 (FS) and 1.32 (HD); one figshare mouse (A1804) has medians below 1.",
+     "deviations": [
+      "The dandiset holds 2 of the paper's 5 ArchT mice; the other three are in figshare Dataset_6. The claim is judged on the dandiset, as the claims file gives it data dataset; the five-mouse result is a variant (notebook, after ed8e).",
+      "Light pulses are read from the optogenetic series as four interleaved channels (see findings); they match the figshare Opto_TS.csv tables."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7gj-tuning-preserved",
+     "statement": "Thalamic disinhibition preserves the HD tuning of PoSub-HD and PoSub-FS cells.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 3; Extended Data Fig. 7g-j",
+     "quote": "increased their firing rates (Fig. 5b and Extended Data Fig. 7e,f ) while preserving their HD tuning",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "PoSub-HD width OFF against ON 44 and 46 degrees, signed-rank p = 0.53, n = 62 (paper z = 0.30); rank-sum p = 1.0. FS ON-OFF tuning correlation, ArchT 0.72 against control 0.69, p = 0.68, n = 33 and 43 (paper z = 1.14). These are claims of absence on smaller samples than the paper's (83 and 47); with the three figshare ArchT mice added, a variant, n = 102 and 50, p = 0.24 and 0.95.",
+     "deviations": [
+      "Two of five ArchT mice (see fig5b-posub-rates-increase); the five-mouse result is a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-hd-multiplicative-fs-additive",
+     "statement": "Thalamic gain modulates PoSub-HD cell tuning multiplicatively and PoSub-FS cell tuning additively, so that FS cells receive thalamic input that is uniform across directions.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 4; Figure 5c-e; Extended Data Fig. 8a,b",
+     "quote": "The modulation of PoSub-HD cells was purely multiplicative ... In contrast, modulation of PoSub-FS cell tuning was exclusively additive",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Under readings (a), (b) and (c), HD multiplicative above FS (p 1e-5 to 2e-8), FS additive above HD (5e-7 to 3e-10), HD multiplicative above control (below 3e-7), FS additive above control (below 4e-4), FS multiplicative not different from control (p 0.21 to 0.40). HD additive against control is not different under (a) and (c) (p = 0.19) but is under (b) (p = 0.015), which excludes 31 of 62 HD cells. The criterion asks for every reading. Readings (a) and (c) exclude 0 HD and 0 or 1 FS cells, as the Methods report (1 of 47 FS cells and no other cells); whether reading (b) belongs in the criterion is asked of a reader (questions/000939.yaml). With the three figshare ArchT mice, a variant, the same pattern; all conditions hold under (a) and (c), and HD additive against control gives p = 0.016 under (b).",
+     "deviations": [
+      "Two of five ArchT mice (see fig5b-posub-rates-increase); the five-mouse result is a variant."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8cd-multiplicative-detectable",
+     "statement": "Simulations of noisy gain on real FS tuning curves show that multiplicative gain would be detectable at the FS cells' tuning correlations, and the FS data are best explained by additive gain.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 4; Methods, Gain modulation analysis, simulations; Extended Data Fig. 8c,d",
+     "quote": "These simulations allowed us to establish that multiplicative gain is indeed detectable in tuning curves with correlation values similar to those observed experimentally in PoSub-FS cells and that our experimental results in PoSub-FS cells are best explained by significant additive gain",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "With the noise titrated to the observed correlations (4.25 Hz; no-gain median r 0.731 against the observed 0.730) and the simulated control, the multiplicative simulation gives multiplicative factors above control (p = 0.022) and the additive simulation reproduces the data's pattern (additive p = 8e-5, multiplicative p = 0.13; data p = 3e-4 and 0.27); over 50 seeds all three hold in 80% of runs. Against the recorded control factors the titrated additive simulation also changes the multiplicative factor (p = 0.0008), but the titrated no-gain simulation already differs from the recorded control (multiplicative p = 0.0026, additive p = 0.039), so that comparison cannot tell gain types apart. Variant with the code's fixed noise of 1.8 x 1.8 Hz (simulated r 0.82, above the observed 0.73), which the criterion does not call for, as it titrates the noise. The additive simulation changes the multiplicative factor against the simulated control (p = 0.008), and against the recorded control the multiplicative simulation is not detected (p = 0.80). The outcome was partially_reproduced until round 3, as it counted the fixed-noise readings; round 2 found that they are not readings of the criterion, and round 3 agreed with reproduced. With the three figshare ArchT mice, a variant, the same split (titrated noise 4.00 Hz; simulated control p = 0.019, 3e-7 and 0.38; recorded control, additive simulation multiplicative p = 7e-5).",
+     "deviations": [
+      "The noise is titrated as the Methods and the criterion describe (simulated high-gain curves \"until we obtained a similar distribution of tuning curve correlations to the one observed experimentally\"), on a grid of s.d. matched by the median correlation; the code's fixed s.d. of 1.8 x 1.8 Hz is a variant. The match by median is a choice.",
+      "Simulated factors are compared with the simulated control group (control cells with ON = OFF plus noise, as Figure_GainSimulation.m builds it) and with the recorded control factors, two readings of the criterion's control group."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8e-adn-mixed-gain",
+     "statement": "ADN-HD cells show multiplicative factors like those of PoSub-HD cells and larger additive factors.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 4; Extended Data Fig. 8e,f",
+     "quote": "this high degree of multiplicative modulation largely reflected the modulation of the upstream ADN-HD cells",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Figshare ADN-HD (53) against the dandiset's ArchT PoSub-HD cells (62). Multiplicative 1.26 against 1.30, p = 0.47; additive 0.032 against 0.009, p = 7e-6 (paper z = 0.55 and 5.07). Under reading (b), p = 0.62 and 0.002. The PoSub-HD side holds 2 of 5 ArchT mice.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_6.tar.gz (optogenetics)",
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-coupling-preserved-wake-rem",
+     "statement": "GLM cross-coupling of PoSub-HD pairs, PoSub-FS pairs and PoSub-HD to PoSub-FS pairs is preserved between wakefulness and REM sleep, less for FS pairs than for HD pairs.",
+     "source": "Results, PoSub-FS cells are coupled to the PoSub-HD ring manifold, paragraph 2; Figure 6a-c",
+     "quote": "Similarly, PoSub-FS cell pairs also preserved their coupling across WAKE and REM, albeit to a smaller degree than PoSub-HD cell pairs (Fig. 6a-c , middle). Notably, the coupling of the two cell populations to each other was also preserved across WAKE and REM",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "27 sessions with at least 100 s of REM inside the home-cage epochs (paper 26). With the code's cell selection (HD and FS cells, no rate condition) and pairs with a glmfit warning removed, WAKE against REM coupling gives HD-HD r = 0.641 (34,611 pairs), FS-FS r = 0.364 (2,683, p = 1e-84), HD-FS r = 0.359 (19,602), all positive with p below 1e-80, FS-FS below HD-HD; the pair counts are close to the paper's (34,270, 2,492, 18,992). Spearman 0.762, 0.417 and 0.514. The glmfit mirror flags 1,795 HD-HD pairs (4.9%), 24 HD-FS and no FS-FS; the round-1 rule flags the same pairs. The flagged fits diverge (median |coupling| 2.77 in WAKE, up to 3e73, against 0.28 in kept pairs; the lower REM rate of the pair is below 1 Hz in 32% of them). Keeping them gives a pooled HD-HD Pearson r of 0.000 and a Spearman r of 0.759. The round-1 selection of cells above 1 Hz in both states gives 0.698, 0.380 and 0.425. Fitted at four more lags (-10, -1, 1 and 10 s) in 9 of the 27 sessions, warnings flag 60 more HD-HD pairs of 10,507 (0.6%; 417 at lag 0) and no more FS-FS or HD-FS pairs; removing them moves the HD-HD r of those sessions from 0.638 to 0.647, with FS-FS (0.282) and HD-FS (0.479) unchanged.",
+     "deviations": [
+      "Only lag 0 is fitted for the result, so a pair is removed for warnings at lag 0 (WAKE or REM, either order); the code removes a pair with a warning at any of 201 lags. A check at four more lags in every third session, chosen for time, removes 0.6% more HD-HD pairs and changes their r by 0.009.",
+      "The fits mirror glmfit's iteratively reweighted least squares in Python (start at y + 0.25, weights sqrt(mu), bad-scaling warning when a weight falls below eps^(2/3) of the largest at any iteration, iteration limit 100, convergence at 1e-6 relative change). That this flags the pairs MATLAB's glmfit would is an assumption, and the outcome rests on it for HD-HD pairs.",
+      "Cells as Figure_GLMRemWake.m selects them (ixHd = isHd & isGd, ixFs = isFs & isGd). Round 1 required rates above 1 Hz in WAKE and REM, taken from a sanity-check block of GetGLM_Forward.m after its return statement; it is now a variant.",
+      "REM is the scored REM inside the home-cage epochs; the files' sleep states run past the recording in three sessions and put REM inside an exploration epoch in two (see findings).",
+      "Pairs counted once, unordered; the coupling is the mean of the two ordered fits, as the Methods say."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9d-coupling-follows-tuning",
+     "statement": "The polarity of the GLM coupling within a pair depends on the similarity of the two cells' HD tuning, during both WAKE and REM.",
+     "source": "Results, PoSub-FS cells are coupled to the PoSub-HD ring manifold, paragraph 2; Extended Data Fig. 9d",
+     "quote": "Predictably, the polarity of the cross-coupling coefficient depended on the HD tuning relationship within each cell pair during both WAKE and REM",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "HD-FS r = 0.758 (WAKE) and 0.281 (REM), n = 19,602; FS-FS r = 0.451 and 0.123, n = 2,683; all p below 1e-9. Pairs as in fig6c-coupling-preserved-wake-rem (code's selection, glmfit warnings removed).",
+     "deviations": [
+      "REM inside the home-cage epochs, and the pair selection of fig6c-coupling-preserved-wake-rem."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7b-wake-isomap-tuning",
+     "statement": "HD tuning curves of PoSub-HD and PoSub-FS cells computed from the virtual HD of the WAKE ring manifold are equivalent to those computed from the real HD.",
+     "source": "Results, PoSub-FS cells are coupled to the PoSub-HD ring manifold, paragraph 3; Figure 7a,b; Extended Data Fig. 10e",
+     "quote": "The HD tuning curves of both PoSub-HD and PoSub-FS cells computed using virtual HD values during WAKE were equivalent to those computed using real HD values",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "HD median r 0.94 against -0.002, |z| = 33.7, p = 1e-248, n = 1,512 (paper z = 34.7); FS 0.84 against 0.02, |z| = 17.95, p = 4e-72, n = 430 (paper z = 17.9). Per-session medians 0.77 to 0.98 (HD) and 0.62 to 0.95 (FS).",
+     "deviations": [
+      "Isomap from scikit-learn, fitted on at most 4,000 population vectors per session drawn at random (seeded), with the others placed by its out-of-sample transform; an assumption for time."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed10b-ring-topology",
+     "statement": "Population vectors of PoSub-HD cells lie on a ring during WAKE, farther from the centre of the manifold than shuffled vectors, and the ring has the same radius during REM.",
+     "source": "Extended Data Fig. 10b,d; Figure 7c legend",
+     "quote": "Distance of population vectors to the center of the manifold ( d ) is the same during WAKE and REM",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Shuffled mean distance 0.33 to 0.65 of the real in every session, signed-rank p = 1.2e-6, n = 31 (paper z = 4.79). REM against WAKE in the joint embedding, median 0.98 against 1, p = 0.46, n = 27 (paper z = 0.17).",
+     "deviations": [
+      "The manifold centre is the mean of the first two Isomap dimensions.",
+      "REM inside the home-cage epochs (see findings)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7d-rem-isomap-tuning",
+     "statement": "During REM sleep the HD tuning of PoSub-HD and PoSub-FS cells can be estimated from the virtual HD of the ring manifold alone and matches their WAKE tuning.",
+     "source": "Results, PoSub-FS cells are coupled to the PoSub-HD ring manifold, paragraph 4; Figure 7c,d; Extended Data Fig. 10f",
+     "quote": "Notably, HD tuning of PoSub-FS cells could also be accurately estimated during REM based solely on the virtual HD obtained from the HD ring attractor manifold",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "27 sessions. Reading (i), HD median r 0.86, |z| = 30.4, n = 1,259; FS 0.43, |z| = 11.4, n = 336. Reading (ii), 0.82 and 0.36, |z| = 30.3 and 11.5. All p below 1e-29 (paper z = 29.2 and 10.4, n = 1,148 and 317).",
+     "deviations": [
+      "The control reverses the virtual HD in time within REM.",
+      "REM inside the home-cage epochs (see findings)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1ac-posub-border",
+     "statement": "Along a Neuropixel probe crossing pRSC and PoSub, HD tuning of excitatory cells rises in a step at the functional border between the two regions.",
+     "source": "Results, High-density recordings in the PoSub of freely moving mice, paragraph 1; Figure 1a-c",
+     "quote": "We first established the functional border between PoSub and posterior retrosplenial cortex (pRSC) using a Neuropixel linear electrode array",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_duszkiewicz_2024.ipynb",
+     "notes": "Qualitative, as the criterion says. 134 excitatory cells (the file's own count 137). The running mean HD information is 0.008 to 0.240 bits per spike over the top 1.4 mm and 0.777 to 1.192 from 1.8 mm down, with one crossing of its half-range level, at -1.675 mm; a smaller local maximum of 0.191 at -0.625 mm, and two more of 0.107 and 0.240 at -0.925 and -1.375 mm. The crossing lies at cellDep = -35 um in the file's units. GetCellTypes_PoSub.m carries, commented out, a line that drops units above cellDep = 0 from the PoSub cells for this recording, so the low end is the pRSC side (71 excitatory cells, mean 0.145 bits per spike) and the high end the PoSub side (63 cells, mean 0.905). The files hold no probe geometry; which end is shallower rests on the code's depth - max(depth).",
+     "deviations": [
+      "Depth from CellDepth.mat set to 0 at the largest value, as Figure_SingleRec_NPX.m does with its depth variable (depth - max(depth)); the files hold no probe geometry to confirm the sign."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "figshare doi:10.6084/m9.figshare.24921252 version 3, Dataset_4.tar.gz (Neuropixel session)",
+     "proposed": null
+    },
+    {
+     "claim": "ed6-trn-innervates-adn",
+     "statement": "TRN sends denser inhibitory projections to ADN than to the other rostral thalamic nuclei.",
+     "source": "Results, PoSub-FS cells receive directionally uniform thalamic input, paragraph 2; Extended Data Fig. 6",
+     "quote": "The ADN is strongly innervated by inhibitory afferents from the thalamic reticular nucleus",
+     "statistics": [
+      {
+       "test": "repeated measures ANOVA",
+       "statistic": "F (2,9) = 44.9",
+       "p": 0.0001,
+       "p_relation": "<",
+       "n": "4 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Anatomical tracing images, which are in neither the dandiset nor the figshare item, nor anywhere the paper names. The claims file marks the claim data elsewhere with none deposited, so data_missing, which the protocol and tools/entry.py do not allow for such claims, is not used. The verifier would block it as data_missing.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "none deposited; anatomical images are not in the dandiset or the figshare item",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds 31 of the paper's 32 PoSub sessions, all 14 vertical ones (931 units, the paper's number) and 17 of the 18 parallel ones (1,760 units against 1,999). The missing one is A8603-210602, the Neuropixel recording, which the code's session list (dataset_All.list) and the paper's parallel count include (239 units, 1,760 + 239 = 1,999); it is only in figshare Dataset_4.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Of the five ArchT mice of the PoSub optogenetic experiment the dandiset holds two (A1813, A1815); the other three (A1801, A1804, A1806, six sessions) are only in figshare Dataset_6. The paper's 83 HD and 47 FS ArchT cells cannot be reached from the dandiset (62 and 33 here; 102 and 50 with the figshare mice added).",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "format_error",
+     "statement": "In eight files processing/ogen/optogenetic_stim holds four channels interleaved in one dimension, so its length at the stated 20 kHz is four times the session's (in A1813, 933,367,680 samples against 233,341,920 of the ElectricalSeries, an 11,667 s session); only every fourth sample carries the light, with values 0 and 16368, and the other three channels are 0 throughout. In A1808 it holds one channel of 0 and 1 at the session's length. The light pulses are recoverable, but the series' shape and units (watts) do not describe it. The decoded pulses match the figshare Opto_TS.csv tables within 0.1 ms.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The files hold no speed series, though every analysis restricts tuning curves by speed, and no table of light pulse times; both must be derived. The probe orientation (vertical or parallel) is stated only in the free-text device description.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The sleep states (intervals/sleep_states) of A3711, A3717 and A3723 run to about twice the session's length (to 24,351 s in a 12,177 s session), so that 298, 518 and 223 s of their REM lie after the recording ends; in A1821 (16 s in the square epoch and 41 s in the optogenetic epoch), A3712 (12 s in the square epoch) and A3701 (0.3 s in the triangle epoch) REM intervals lie inside exploration epochs. The REM intervals are the same in version 0.250207.0025, whose 2026 successor says it fixed the indexing of the sleep scoring epochs.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The units' is_excitatory and is_fast_spiking labels follow the code's 0.35 ms trough-to-peak cut (agreement 99.9% with it), not the Methods' 0.4 ms; the column descriptions give no criterion.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-1, run 41392498219; same harness, separate context, did not write the notebook)",
+     "reviewed": "The handover of the author-answers run (commit 046a530fb), the executed notebook with the conclusions and summary removed, the helper module and the claims file. The verifier also read the paper and checked the archive's asset list for the blocked claims.",
+     "agreed": 30,
+     "of": 34,
+     "disagreements": [
+      {
+       "claim": "fig3e-fourier-signatures-differ",
+       "outcome": "partially_reproduced",
+       "reason": "Direction readings (a) and (b) hold under both power readings. The main ANOVA reading (numeric covariate) with the code's squared-modulus power gives F(9,18333) = 1.09, p = 0.365; it is significant only with rms power (p = 1e-16) or the categorical variant. The notebook prints this but has no conclusion text; rm_interaction matches an independent computation, so this is a data result, not a bug."
+      },
+      {
+       "claim": "fig3g-first-three-components",
+       "outcome": "partially_reproduced",
+       "reason": "Interaction p < 1e-160. With squared-modulus power exactly components 1 to 3 are higher than control; with rms power component 4 is also higher (p_bonf = 0.005), which breaks no other."
+      },
+      {
+       "claim": "fig3h-dominant-component",
+       "outcome": "not_reproduced",
+       "reason": "Counts are 237, 146 and 47; the third is outside 55 +- 6. Reading (a) holds; reading (b) fails under both power readings (relative differences 0.42 and 0.55 for component 3). The criterion has no outcome for a count out of tolerance."
+      },
+      {
+       "claim": "ed8cd-multiplicative-detectable",
+       "outcome": "partially_reproduced",
+       "reason": "With the code's noise (1.8 x 1.8), the additive simulation's multiplicative factors also differ (p = 0.008), so it fails. With titrated noise (the Methods) and a simulated control it holds (p = 0.022, 7.5e-5, 0.127), in 80% of 50 seeds. Against the recorded control the additive simulation's multiplicative factors differ (p = 0.0008). The reported main result uses the code's noise level; the Methods specify titrated noise, run as the second block, and the outcome differs between them."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-2, run 41404549909; same harness, separate context, did not write the notebook)",
+     "reviewed": "The author-revise-1 run (commit fa06f2894), the full executed notebook with its conclusions and summary, the helper module, the attempt record, the README and the claims file.",
+     "agreed": 33,
+     "of": 34,
+     "disagreements": [
+      {
+       "claim": "ed8cd-multiplicative-detectable",
+       "outcome": "reproduced",
+       "reason": "I now disagree, and would give reproduced. The criterion itself says the noise is titrated, so the code's fixed 1.8 x 1.8 noise is not a reading the criterion asks for. With titrated noise, the outcome depends only on which control is used. The recorded-control reading fails its own check: the titrated no-gain simulation already differs from the recorded controls (multiplicative p = 0.0026, additive p = 0.039; cell 82), so that comparison cannot tell gain types apart. Against the simulated control, as Figure_GainSimulation.m builds it, the criterion holds: p = 0.022, 7.5e-5 and 0.127. That leaves reproduced, with the caveat that it holds in 80% of 50 seeds. 'The criterion holds under one of the four combinations' counts the fixed code-noise readings, which the criterion does not call for."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-02",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (verifier-3, run 41483808182; same harness, separate context, did not write the notebook)",
+     "reviewed": "The proposed change of outcome of the author-revise-2 run (commit 94fe6c3de), ed8cd-multiplicative-detectable only, with the analysis behind it in the full executed notebook (cells 81 to 83), the attempt record and the claims file.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Is the Fourier power of the Methods (\"root mean square of the projection values onto the sine and cosine basis\") the squared modulus of the coefficient, as the code and the Parseval check imply? The choice decides fig3-ten-components-power (0.989 against 0.872 in harmonics 1 to 10), fig3g (components 1 to 3 against 1 to 4 above control) and the significance of the Fig. 3e interaction.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Fig. 3e's repeated-measures ANOVA enters cell type as a numeric covariate (1, 2, 3) in Figure_Fourier.m. Was that intended? Here it gives p = 0.365, while cell type as a factor gives p = 5e-82.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. The gain analysis excludes ArchT cells that \"did not show ... and did not show\" significant modulation and tuning correlation. Is a cell excluded when both fail or when either fails? The code excludes on the correlation alone; reading \"either\" excludes half of the HD cells here and changes the HD additive comparison with control.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. In the gain simulations (Extended Data Fig. 8c,d), was the noise titrated to the observed correlations, as the Methods say, or fixed at 1.8 x 1.8 Hz, as Figure_GainSimulation.m sets it, and were simulated factors compared with simulated or recorded control cells? The outcome depends on both; the criterion holds only with titrated noise and simulated control cells.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. Which glmfit warnings removed a pair from the GLM analysis, and at how many lags? Figure_GLMRemWake.m removes a pair with any warning at any of 201 lags. Here, at lag 0, 4.9% of HD-HD pairs have fits flagged as ill-conditioned by a mirror of glmfit; keeping them lowers the pooled WAKE-REM Pearson correlation of HD-HD coupling from 0.641 to 0.000.",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors. How was the speed series (Velocity.mat) computed from the tracking, and how were the cue rotation exclusion condition (1) and its control defined? These are not in the Methods or in the deposited code.",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "Figure_Fourier.m computes the KL divergence as D_KL(S || sigma_i), the reverse of the Methods' D_KL(sigma_i || S); with squared-modulus power the PoSub-HD against ADN-HD test gives p = 1e-7 in the code's direction and p = 0.008 in the Methods'.",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "duszkiewicz-2024",
+   "type": "reproduction",
+   "title": "Excitatory-inhibitory tuning equivalence in mouse postsubiculum (Duszkiewicz et al. 2024)",
+   "description": "Tests the findings of Duszkiewicz, Orhan, Skromne Carrasco, Brown, Owczarek, Vite, Wood and Peyrache (2024) on dandiset 000939, which holds 31 postsubiculum sessions with spike times, waveforms, head direction, position, sleep states and light pulses. It classifies cells, measures HD information, tuning stability, decoding, Fourier signatures, putative synapses, thalamic gain, GLM coupling and the Isomap ring manifold. Claims that need the ADN, cue rotation, ADN optogenetic and Neuropixel recordings use the paper's figshare item.",
+   "datasets": [
+    "dandi:000939"
+   ],
+   "papers": [
+    "10.1038/s41593-024-01588-5",
+    "10.6084/m9.figshare.24921252.v3"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_duszkiewicz_2024.ipynb",
+     "title": "Reproducing Duszkiewicz et al. (2024) from dandiset 000939",
+     "executed": "notebooks/duszkiewicz-2024/reproduce_duszkiewicz_2024.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 32,
+   "hashed": false
+  },
+  {
+   "name": "mehrotra-2024",
+   "type": "reproduction",
+   "title": "UP onset sequences in retrosplenial cortex and postsubiculum (Mehrotra, Levenstein et al. 2024)",
+   "description": "Tests the findings of Mehrotra, Levenstein et al. (2024) on dandiset 000987, which holds the paper's retrosplenial cortex recordings (14 sessions, 3 mice), and, counted apart, on the paper's postsubiculum recordings in dandiset 000939. It measures the firing-rate overshoot and the delay with which units enter the UP state after a DOWN state, the dorsoventral sequence of these delays in postsubiculum, the longer ventral DOWN states, the head direction tuning along the probe, and the high gamma LFP at UP onset, the reset of the head direction signal by the DOWN state, and, on the rat frontal cortex data of CRCNS fcx-1, the same delay and overshoot relation. The model and the slice recordings are not tested.",
+   "datasets": [
+    "dandi:000939",
+    "dandi:000987"
+   ],
+   "papers": [
+    "10.1016/j.cub.2024.05.048"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mehrotra_2024.ipynb",
+     "title": "Mehrotra, Levenstein et al. (2024) on dandiset 000987 (retrosplenial cortex)",
+     "executed": null
+    },
+    {
+     "path": "posub_000939.ipynb",
+     "title": "The postsubiculum spike claims, on dandiset 000939",
+     "executed": null
+    },
+    {
+     "path": "posub_lfp_000939.ipynb",
+     "title": "The postsubiculum LFP claims, on dandiset 000939",
+     "executed": null
+    },
+    {
+     "path": "posub_ring_000939.ipynb",
+     "title": "The postsubiculum Isomap ring claims, on dandiset 000939",
+     "executed": null
+    }
+   ],
+   "python": "3.13",
+   "pinned": 54,
+   "hashed": false
+  }
+ ]
+}
