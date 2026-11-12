@@ -51,9 +51,11 @@ Geometry (all in the ``Standard`` frame; vertex coordinates are MATLAB 1-based):
 - Absolute baseline: the mean of the map in four 16 x 16 DU squares at the corners of the
   square circumscribing the Square (side 141.4 DU, its diagonal; the text says 8.84 DVA, which
   is 141.4 DU, and also 138 DU) or the Star's 0% polygon (side 300 DU), and for Corners in two
-  16 x 16 DU squares in the 0% area (Methods, "Visual stimuli"). Where the squares are centred is
-  not stated; the choice is checked against the files' ``BaseActivity`` in the notebook. For
-  Corners the two squares' positions are not given in the text; see ``corners_baseline_centres``.
+  16 x 16 DU squares in the 0% area (Methods, "Visual stimuli"). Whether the squares are centred
+  on the corners or drawn inside them is not stated. The main reading (an assumption) takes, for
+  each stimulus, the placement closest to the files' own ``BaseActivity``: centred for Square and
+  Edge, inside for the Star (``baseline_value``). For Corners the two squares' positions are not
+  given in the text; see ``corners_baseline_centres``.
 - Spike rate difference: response minus absolute baseline (Methods, "Spike rate and spike rate
   difference map").
 
@@ -86,6 +88,7 @@ VERT = {"Corners": "CornersVert", "Star": "DiagVert", "Edge-compare": "SquareVer
 IMG = {"Corners": "CornersImage", "Star": "DiagImage", "Edge-compare": "EdgecompImage"}
 
 _ZIP = None
+PAD = 16  # DU added on each side of the Square and Edge frame for the baseline squares (load_record)
 
 
 def zip_file():
@@ -161,8 +164,9 @@ def register_shift(screen, s, r, t, target, pad=600):
     fb = np.fft.fft2(target - target.mean(), (hh, ww))
     c = np.real(np.fft.ifft2(fa * np.conj(fb)))
     i, j = np.unravel_index(np.argmax(c), c.shape)
-    i = i - hh if i > hh // 2 else i
-    j = j - ww if j > ww // 2 else j
+    # lags run from -(target size - 1) to (big size - 1); larger indices are the negative lags
+    i = i - hh if i >= big.shape[0] else i
+    j = j - ww if j >= big.shape[1] else j
     shift = (-(j - pad), -(i - pad))
     moved = warp(screen, s, r, t, target.shape, shift=shift)
     return shift, float(np.corrcoef(moved.ravel(), target.ravel())[0, 1])
@@ -225,6 +229,20 @@ def load_record(row, with_screen=False):
             best = (s, r, t, err, k)
     rec["transform"] = best
     rec["lum"] = warp(rec["stimulus"], best[0], best[1], best[2], rec["smoothed"].shape, order=1)
+    if folder == "Edge-compare":
+        # The authors' frame is 151 DU wide, so 16 x 16 DU squares centred on the corners of the
+        # 141.4 DU circumscribing square run 5 DU beyond it. For those, the screen maps are moved
+        # into the frame widened by PAD on every side (registered as in the notebook's check).
+        screen_s = _arr(d["smoothed_image"]) * PER_MS_TO_PER_S
+        screen_r = _arr(d["image"]) * PER_MS_TO_PER_S
+        shift, corr = register_shift(screen_s, best[0], best[1], best[2], rec["smoothed"])
+        shape = (rec["smoothed"].shape[0] + 2 * PAD, rec["smoothed"].shape[1] + 2 * PAD)
+        tp = best[2] + np.array([PAD, PAD])
+        on_screen = warp(np.ones_like(screen_s), best[0], best[1], tp, shape, shift=shift)
+        rec["padded"] = {"smoothed": warp(screen_s, best[0], best[1], tp, shape, shift=shift),
+                         "raw": warp(screen_r, best[0], best[1], tp, shape, shift=shift),
+                         "on_screen": on_screen, "corr": corr,
+                         "lum": warp(rec["stimulus"], best[0], best[1], tp, shape, order=1)}
     return rec
 
 
@@ -303,8 +321,10 @@ def box_mean(img, centre, direction, length, width):
     d = np.asarray(direction, float)
     d = d / np.linalg.norm(d)
     n = np.array([-d[1], d[0]])
-    a = np.arange(length) - (length - 1) / 2
-    b = np.arange(width) - (width - 1) / 2
+    # samples 1 DU apart (or slightly more for a non-integer side, such as the 7.07 DU S90 blocks),
+    # placed symmetrically about the centre
+    a = (np.arange(max(1, round(length))) + 0.5) * length / max(1, round(length)) - length / 2
+    b = (np.arange(max(1, round(width))) + 0.5) * width / max(1, round(width)) - width / 2
     aa, bb = np.meshgrid(a, b)
     pts = centre + aa.ravel()[:, None] * d + bb.ravel()[:, None] * n
     return float(ndimage.map_coordinates(img, [pts[:, 1] - 1, pts[:, 0] - 1], order=1).mean())
@@ -330,7 +350,8 @@ def lum_at_fraction(rec, segs, f):
 
 
 def baseline_centres(rec):
-    """Centres of the baseline squares in the Standard frame (Star, Square and Edge)."""
+    """Centres of the baseline squares in the Standard frame (Star, Square and Edge), centred on the
+    corners of the square circumscribing the 0% polygon."""
     p = rec["poly"]
     centre = p[-1].mean(0)
     outer = p[0]
@@ -349,28 +370,50 @@ def baseline_centres_inside(rec):
     return [centre + np.array([sx, sy]) * half for sx in (-1, 1) for sy in (-1, 1)]
 
 
-def corners_baseline_centres(rec):
+CORNERS_PLACES = ("bottom", "bottom, 32 DU in", "sides, 24 DU up")
+
+
+def corners_baseline_centres(rec, place="bottom"):
     """Corners: two 16 x 16 DU squares in the 0% area of the ROI (Methods, "Corners").
 
     The text says only that the two squares are in 0% luminance areas within the ROI, "shown in
     Fig 2C", whose drawing is not in the text read. Assumption: the two bottom corners of the ROI,
-    8 DU in from each side, which are 0% in every file (checked in the notebook) and lie on either
-    side of the folds, as Fig 2C's two squares are described.
+    8 DU in from each side ("bottom"), which are in the darkest (1%) area in every file (checked in
+    the notebook) and lie on either side of the folds. Two other placements in that area are run as
+    readings: the squares 32 DU further in from the sides ("bottom, 32 DU in") and 24 DU further up
+    ("sides, 24 DU up"). The files' BaseActivity matches none of them closely (notebook).
     """
     h, w = rec["smoothed"].shape
-    return [np.array([8.5 + 1, h - 8.5]), np.array([w - 8.5, h - 8.5])]
+    dx = 32 if place == "bottom, 32 DU in" else 0
+    dy = 24 if place == "sides, 24 DU up" else 0
+    return [np.array([8.5 + 1 + dx, h - 8.5 - dy]), np.array([w - 8.5 - dx, h - 8.5 - dy])]
 
 
-def baseline_value(rec, img, reading="centred"):
-    """Absolute baseline (spikes/s) under a reading: "centred", "inside" or "files".
+def baseline_value(rec, map_name="smoothed", reading="matched", corners_place="bottom"):
+    """Absolute baseline (spikes/s) under a reading of where the squares are.
 
-    "files" is the file's own ``BaseActivity`` (NaN where the file has none).
+    "centred": centred on the corners of the circumscribing square (Square and Edge on the widened
+    map, see load_record, averaged over the part of the squares on the screen); "inside": drawn inside those corners; "files": the file's own
+    ``BaseActivity`` (NaN where the file has none); "matched" (the main reading, an assumption):
+    for each stimulus the placement whose values come closest to the files' BaseActivity, which is
+    centred for Square and Edge and inside for the Star (shown in the notebook). Corners uses
+    ``corners_baseline_centres(rec, corners_place)`` under every reading but "files".
     """
     if reading == "files":
         return rec["base_activity"]
     if rec["folder"] == "Corners":
-        return baseline(img, corners_baseline_centres(rec))
-    return baseline(img, baseline_centres(rec) if reading == "centred" else baseline_centres_inside(rec))
+        return baseline(rec[map_name], corners_baseline_centres(rec, corners_place))
+    if reading == "matched":
+        reading = "centred" if rec["folder"] == "Edge-compare" else "inside"
+    if reading == "inside":
+        return baseline(rec[map_name], baseline_centres_inside(rec))
+    if rec["folder"] == "Edge-compare":
+        # mean over the part of each square that is on the screen (off it the map holds no data)
+        cs = [c + PAD for c in baseline_centres(rec)]
+        num = baseline(rec["padded"][map_name], cs)
+        den = baseline(rec["padded"]["on_screen"], cs)
+        return num / den
+    return baseline(rec[map_name], baseline_centres(rec))
 
 
 FOLD_ANGLE = {"P180": 180, "S90": 90, "S52": 52, "S40": 40}
@@ -379,7 +422,8 @@ CONDITION_OF_FOLD = {"Edge": "Square and Edge", "P180": "Square and Edge", "S90"
                      "S52": "Star", "S40": "Corners"}
 
 
-def neuron_table(recs, corners_mode="bright", baseline_reading="centred", map_name="smoothed"):
+def neuron_table(recs, corners_mode="bright", baseline_reading="matched", map_name="smoothed",
+                 corners_place="bottom"):
     """One row per neuron and fold: midpoint response, baseline, spike rate difference and blocks.
 
     ``blocks`` holds the ten block means of the spike rate difference per segment
@@ -391,7 +435,7 @@ def neuron_table(recs, corners_mode="bright", baseline_reading="centred", map_na
         if not r.get("has_standard"):
             continue
         img = r[map_name]
-        base = baseline_value(r, img, baseline_reading)
+        base = baseline_value(r, map_name, baseline_reading, corners_place)
         for fold, segs in folds(r, corners_mode).items():
             rows.append({"code": r["code"], "cell": r["cell"], "monkey": r["monkey"], "fold": fold,
                          "condition": CONDITION_OF_FOLD[fold], "mid": midpoint_response(img, segs),
