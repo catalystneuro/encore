@@ -13,7 +13,7 @@ claims cannot be tested, and the paper's simulations were not run.
 | Depth of narrow-peak sites (694 um) | Blocked: data missing |
 | Narrow peaks in 0.3% of V1-V2 pairs | Not reproduced (1.05%) |
 | V1-V2 peaks offset by a median of 2.8 ms, width 3.71 ms | Not reproduced (2.0 ms, 3.89 ms) |
-| V1-V1 and V2-V2 peaks at zero lag | Partially reproduced, resting on an assumption |
+| V1-V1 and V2-V2 peaks at zero lag | Partially reproduced, resting on an assumption; a change to not reproduced is proposed |
 | Efficacy, median 0.39% | Not reproduced (0.32%) |
 | V1 divergence higher before middle-layer V2 spikes than in control epochs | Reproduced |
 | About 3-fold higher | Not reproduced (about 1.9-fold) |
@@ -23,7 +23,7 @@ claims cannot be tested, and the paper's simulations were not run.
 | Time course peaks a few ms before V2 spikes | Partially reproduced |
 | Elevation with and without a V1 partner | Reproduced |
 | RF alignment and RF sizes | Blocked: metadata insufficient |
-| Non-middle-layer, offset-RF, single-unit and V2 relay analyses (seven claims) | Blocked: data missing |
+| Non-middle-layer, offset-RF, single-unit and V2 relay analyses (six claims) | Blocked: data missing |
 | Simulations (four claims) | Blocked: not attempted |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -33,7 +33,7 @@ The files hold spike times in 1 ms bins, where the paper used 0.1 ms. The attemp
 reasons and the differences from the paper's method, is
 [`attempts/zandvakili-2015-01.yaml`](../../attempts/zandvakili-2015-01.yaml).
 
-- `reproduce_zandvakili_2015.ipynb`: the analysis. It takes about 27 minutes, most of it the
+- `reproduce_zandvakili_2015.ipynb`: the analysis. It takes about 23 minutes, most of it the
   cross-correlograms and the jittered and shuffled V1 populations.
 - `v1v2.py`: loading the sessions from the zip in place, CCGs with shuffle and jitter correction,
   and the divergence of V1 population states around V2 spikes. Other notebooks on this data set
