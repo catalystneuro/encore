@@ -322,6 +322,23 @@ def check(entry_dir: Path) -> Report:
                 report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
+        # A finding is about the data (its dataset's page) or the paper (the paper's page). Its kind says which,
+        # except for these two kinds, which must say; and in an attempt on several datasets a finding about the data
+        # names the datasets it is about (docs/protocol.md, the attempt record).
+        import datasets as archive_datasets
+        used = [archive_datasets.folder(archive_datasets.key_of(d["archive"], str(d["id"])))
+                for d in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else [])]
+        for n, f in enumerate(attempt.get("findings") or [], 1):
+            if f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+                                                                   "paper_inconsistency") else "data")
+            if about == "data" and len(used) > 1 and not f.get("datasets"):
+                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+                                    f"(`datasets:`, from {', '.join(used)})")
+            for d in f.get("datasets") or []:
+                if str(d) not in used:
+                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}
