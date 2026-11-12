@@ -351,7 +351,8 @@ def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it
                 assert f'href="../../{own}"' in (out / "papers" / q["key"] / "index.html").read_text()
             # An attempt links to every dataset it used, with the version it ran on.
             for x in site.attempt_sets(data, a):
-                assert f'<a href="{up}{site.page_of(x["key"])}">{x["label"]}</a> {site.version_text(x)}' in page
+                assert (f'<th scope="row"><a href="{up}{site.page_of(x["key"])}">{x["label"]}</a></th>'
+                        f'<td>{site.version_text(x)}</td>') in page
                 # And the dataset's page links back to the attempt, unless a later one replaced it there.
                 if a["id"] in current:
                     dataset = (out / site.page_of(x["key"]) / "index.html").read_text()
@@ -364,7 +365,10 @@ def test_every_attempt_has_a_page_under_its_paper_naming_the_dataset_versions_it
     assert "1 current, 1 replaced</span></summary>" in (out / "papers" / "kim-2022" / "index.html").read_text()
     # An attempt on two datasets names both, each with its version.
     kim = (out / "papers" / "kim-2022" / "index.html").read_text()
-    assert "DANDI:000489</a> version" in kim and "DANDI:000448</a> version" in kim
+    assert "DANDI:000489</a></th><td>version" in kim and "DANDI:000448</a></th><td>version" in kim
+    # A dataset of the paper that no attempt used is in the table too, and why is on request.
+    assert 'DANDI:000548</a></th><td><span class="muted">not used by an attempt</span>' in kim
+    assert '<details class="sets-why"><summary>3 datasets the attempt could not use, and why</summary>' in kim
     # Where an earlier attempt's page was, under its dataset, leads to its page under the paper.
     for dandiset in site.current_attempts(data):
         for a in site.earlier_attempts(data, dandiset):
@@ -755,7 +759,9 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
     for panel in ("claims", "notebooks", "verification", "differences", "provenance"):
         assert f'<section class="tabpanel" id="{panel}">' in page
     # Findings about the data belong to the dataset: the paper's page points to them.
-    assert 'id="findings"' not in page and "about the data, on the page" in page
+    assert 'id="findings"' not in page and 'datasets/dandi/000233/#findings">' in page
+    # The header has one table of the paper's datasets, each with its version, findings and links, once.
+    assert page.count('<div class="sets">') == 1 and ">Paper</a>" not in page and "JSON (" not in page
     assert '<a href="../../papers/">Papers</a>' in page and 'href="../../datasets/dandi/000233/"' in page
     # Every attempted paper's page has each claim of its latest attempts, once.
     import build_site
