@@ -27,6 +27,10 @@ notebook through a Jupyter kernel installed in that environment, in the entry
 directory. The executed copies
 go to --output-dir (default: executed/<name>/, which git ignores). A notebook
 that takes longer than --max-minutes fails, even if it ran without error.
+A run that passes leaves a stamp beside the executed copies (.clean-run.json):
+a hash of everything the run read (`hash` prints it) and of each executed
+copy. `run` asked again with nothing changed since reuses those copies and says
+so, without executing anything; --fresh executes all the same.
 
 `handover` builds what a verifier is given in its first round
 (docs/protocol.md): the executed notebooks with the conclusions removed (every
@@ -58,6 +62,9 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON_VERSION = "3.13"
 HARNESS = ["ipykernel", "nbconvert"]      # needed to execute, not part of the entry
+STAMP = ".clean-run.json"                 # beside the executed copies: what they were made from (entry_hash)
+RUN_VERSION = 1                           # raise when `run` changes in a way that changes what a run produces
+REUSE_DAYS = 30                           # executed copies older than this are made again
 MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one literal is "embedded data"
 
 EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
@@ -315,6 +322,23 @@ def check(entry_dir: Path) -> Report:
                 report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
+        # A finding is about the data (its dataset's page) or the paper (the paper's page). Its kind says which,
+        # except for these two kinds, which must say; and in an attempt on several datasets a finding about the data
+        # names the datasets it is about (docs/protocol.md, the attempt record).
+        import datasets as archive_datasets
+        used = [archive_datasets.folder(archive_datasets.key_of(d["archive"], str(d["id"])))
+                for d in attempt.get("datasets") or ([attempt["dataset"]] if attempt.get("dataset") else [])]
+        for n, f in enumerate(attempt.get("findings") or [], 1):
+            if f.get("kind") in ("other", "selection_undocumented") and not f.get("about"):
+                report.error(where, f"finding {n} ({f.get('kind')}): say what it is about, `about: data` or `about: paper`")
+            about = f.get("about") or ("paper" if f.get("kind") in ("methods_unavailable", "code_mismatch",
+                                                                   "paper_inconsistency") else "data")
+            if about == "data" and len(used) > 1 and not f.get("datasets"):
+                report.error(where, f"finding {n}: the attempt used {len(used)} datasets; name the ones it is about "
+                                    f"(`datasets:`, from {', '.join(used)})")
+            for d in f.get("datasets") or []:
+                if str(d) not in used:
+                    report.error(where, f"finding {n}: {d} is not a dataset of this attempt ({', '.join(used)})")
         # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
         # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}
@@ -440,7 +464,7 @@ def upgrade_python(entry_dir: Path, version: str, before: Path, output_dir: Path
     entry.yaml and the lock are put back and the differences are printed, for the attempt to record."""
     saved = {f: (entry_dir / f).read_text() for f in ("entry.yaml", "requirements.lock.txt")
              if (entry_dir / f).is_file()}
-    if lock(entry_dir, version) or run(entry_dir, output_dir, timeout, max_minutes):
+    if lock(entry_dir, version) or run(entry_dir, output_dir, timeout, max_minutes, fresh=True):
         for f, text in saved.items():
             (entry_dir / f).write_text(text)
         print(f"error: Python {version} could not lock or run the entry; it stays on {python_of(entry_dir)}",
@@ -468,8 +492,54 @@ def upgrade_python(entry_dir: Path, version: str, before: Path, output_dir: Path
     return 0
 
 
-def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+def file_hash(path: Path) -> str:
+    import hashlib
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def entry_hash(entry_dir: Path) -> str:
+    """A hash of everything a run of the entry's notebooks reads from the repository: every file of the entry (its
+    notebooks, helpers, lock and entry.yaml, which names the Python and the dataset versions), the packages `run`
+    adds, and RUN_VERSION. Two runs from the same hash execute the same code on the same data versions."""
+    import hashlib
+    h = hashlib.sha256(f"run {RUN_VERSION}; harness {' '.join(HARNESS)}; python {python_of(entry_dir)}\n".encode())
+    for path in sorted(p for p in entry_dir.rglob("*") if p.is_file()):
+        rel = path.relative_to(entry_dir)
+        if any(part in ("__pycache__", ".ipynb_checkpoints", ".venv") or part.endswith(".pyc") for part in rel.parts):
+            continue
+        h.update(f"{rel.as_posix()}\0{file_hash(path)}\n".encode())
+    return h.hexdigest()
+
+
+def reusable(entry_dir: Path, output_dir: Path, max_minutes: float) -> dict | None:
+    """The stamp of executed copies that a run now would only make again: made from this hash, each copy still as
+    the run left it, each within the time limit asked for now, and not older than REUSE_DAYS. Else None."""
+    try:
+        stamp = json.loads((output_dir / STAMP).read_text())
+        entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+        if stamp["hash"] != entry_hash(entry_dir) or time.time() - stamp["finished"] > REUSE_DAYS * 86400:
+            return None
+        if [n["path"] for n in entry["notebooks"]] != [r["notebook"] for r in stamp["results"]]:
+            return None
+        for r in stamp["results"]:
+            if not r["ok"] or r["seconds"] > max_minutes * 60 or file_hash(output_dir / r["notebook"]) != r["sha256"]:
+                return None
+        return stamp
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+
+
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float, fresh: bool = False) -> int:
     entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    stamp = None if fresh else reusable(entry_dir, output_dir, max_minutes)
+    if stamp:
+        when = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(stamp["finished"]))
+        for r in stamp["results"]:
+            print(f"pass  {r['notebook']}  ({r['seconds']} s, reused)")
+        print(f"reused the executed copies of {when}: nothing the run reads has changed since (hash "
+              f"{stamp['hash'][:12]}). Nothing was executed and no environment was built; --fresh runs it again.")
+        return 0
+    (output_dir / STAMP).unlink(missing_ok=True)   # whatever is there is no longer what a run left
     output_dir.mkdir(parents=True, exist_ok=True)
     venv = (output_dir / ".venv").resolve()
     python = venv / "bin" / "python"
@@ -507,6 +577,11 @@ def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> 
             print(error, file=sys.stderr)
     (output_dir / "result.json").write_text(json.dumps(
         {"entry": entry["name"], "python": python_of(entry_dir), "results": results}, indent=1) + "\n")
+    if not failed and all((output_dir / r["notebook"]).is_file() for r in results):
+        (output_dir / STAMP).write_text(json.dumps({
+            "entry": entry["name"], "hash": entry_hash(entry_dir), "finished": round(time.time()),
+            "results": [{"notebook": r["notebook"], "ok": True, "seconds": r["seconds"],
+                         "sha256": file_hash(output_dir / r["notebook"])} for r in results]}, indent=1) + "\n")
     return 1 if failed else 0
 
 
@@ -556,13 +631,15 @@ def handover(entry_dir: Path, output_dir: Path) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover", "upgrade-python"])
+    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover", "upgrade-python", "hash"])
     parser.add_argument("entry", type=Path, nargs="+",
                         help="the entry directory, e.g. entries/000582-sargolini-2006; `check` takes several")
     parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
     parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
     parser.add_argument("--max-minutes", type=float, default=60,
                         help="a notebook that takes longer than this fails")
+    parser.add_argument("--fresh", action="store_true",
+                        help="run: execute even when the executed copies were made from the entry as it is now")
     parser.add_argument("--python", help="lock: the Python version to lock for (default: the entry's); "
                                          "upgrade-python: the version to move to")
     parser.add_argument("--before", type=Path, help="upgrade-python: the executed notebooks to compare with "
@@ -590,6 +667,9 @@ def main() -> int:
         parser.error(f"{args.entry} has no entry.yaml")
     output_dir = args.output_dir or ROOT / "executed" / entry_dir.name
 
+    if args.command == "hash":
+        print(entry_hash(entry_dir))
+        return 0
     if args.command == "lock":
         return lock(entry_dir, args.python)
     if args.command == "upgrade-python":
@@ -607,7 +687,7 @@ def main() -> int:
         print(f"{len(report.errors)} error(s)")
         if report.errors or args.command == "check":
             return 1 if report.errors else 0
-    return run(entry_dir, output_dir, args.timeout, args.max_minutes)
+    return run(entry_dir, output_dir, args.timeout, args.max_minutes, args.fresh)
 
 
 if __name__ == "__main__":

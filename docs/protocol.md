@@ -377,7 +377,10 @@ module.
   (say what and why), or a standard choice for a detail that cannot change a
   result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
-  Aim for under ten minutes; CI fails a notebook over sixty. If the analysis
+  Aim for under ten minutes, and keep every notebook under sixty in your own
+  run. The verifier's re-run and the pull request's checks allow eighty, as a
+  download from the archive can be slower there; that margin is not for
+  using. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
 - **Keep it within memory.** The runner has 16 GB of memory and 4 CPUs, shared
   with the agent itself. Read a large file as a stream (decompress and iterate
@@ -437,6 +440,14 @@ python tools/entry.py all  entries/<name>    # check, then run from a clean envi
 `executed/<name>/` and confirm the conclusions still match the numbers: counts
 near a threshold can move when a random split changes.
 
+`run` keeps a stamp of what it ran from beside the executed copies in
+`executed/<name>/`. When nothing it reads has changed since (the entry's files,
+which name its Python and its datasets' versions), `run` and `all` reuse those
+copies, say so, and execute nothing; `--fresh` executes all the same. A run of
+yours starts with the executed copies of the entry as it is, when a run of it
+was kept, so a session that changes nothing in the entry need not run it
+again. Any edit to the entry makes the next `run` a real one.
+
 ### 5. Record the attempt
 
 Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
@@ -482,15 +493,26 @@ Write `attempts/<paper>-<nn>.yaml`, numbered after the paper's earlier attempts.
   verification round, with its `reason` (see "Hand over for verification").
 - **`inputs`**: everything used that is not in the dataset, each with where
   it came from (a DOI, or a repository at a commit).
-- **`findings`**: what the attempt found about the dataset, whatever the
-  outcomes. These are for the data owner and the archive. The kinds are
-  `metadata_error`, `data_missing`, `identifier_missing`,
-  `selection_undocumented`, `methods_unavailable`, `format_error` (files that
-  break their own format, such as unsorted spike times), `code_mismatch`
-  (published code that disagrees with the paper or the data),
-  `paper_inconsistency` (the paper disagrees with itself),
-  `metadata_insufficient` (a variable without a description or a needed
-  mapping) and `other`.
+- **`findings`**: what the attempt found, whatever the outcomes. Each is
+  about one of two things, and is shown where it belongs:
+  - **the data** (`about: data`): the dataset's files or metadata. Something
+    is wrong, missing, undocumented or mislabelled, or differs from what the
+    paper says the files hold. These are for the data owner and the archive,
+    on the dataset's page. A mismatch between the files and the paper is about
+    the data: it is what a user of the dataset needs to know.
+  - **the paper** (`about: paper`): the paper, its methods or its published
+    code, with nothing wrong in the files. These are on the paper's page.
+
+  The kinds are `metadata_error`, `data_missing`, `identifier_missing`,
+  `format_error` (files that break their own format, such as unsorted spike
+  times) and `metadata_insufficient` (a variable without a description or a
+  needed mapping), which are about the data; `methods_unavailable`,
+  `code_mismatch` (published code that disagrees with the paper or the data)
+  and `paper_inconsistency` (the paper disagrees with itself), which are
+  about the paper; and `selection_undocumented` and `other`, which can be
+  either, so give `about` for these two. In an attempt on several datasets,
+  give each finding about the data its `datasets` (their folders, as in the
+  claims file).
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
