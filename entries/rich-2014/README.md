@@ -31,7 +31,7 @@ data set's own fields are shown as a variant.
 | Weak relation to anatomical position (Fig. S16) | Reproduced |
 | PRE sleep rate predicts field number (Fig. 4A) | Reproduced |
 | 5 to 10% single-field cells over a wide range of sizes (Fig. 4B) | Reproduced |
-| Active subsets distinguish environments (Fig. 4C) | Not reproduced (assumption); change to reproduced proposed |
+| Active subsets distinguish environments (Fig. 4C) | Reproduced (assumption) |
 | Silent cells fire very little (Fig. S5) | Partially reproduced |
 | Some silent cells form fields in the open field (Fig. S8) | Reproduced |
 | Propensities correlated across environments (Fig. S17) | Reproduced |
@@ -42,9 +42,8 @@ reasoning and the differences from the paper's method.
 "Assumption" marks outcomes that rest on the reading of a "pass" through a field, which the paper
 leaves open; under the other reading the Fig. S6 claim would be partially reproduced and the other
 two reproduced. For Fig. 4C it marks
-the assumption that the simulated environment sizes are spaced logarithmically. Fig. S18, read in
-the last revision, draws those sizes on linear axes from 0 to 50 m, and with linear spacing that
-claim is reproduced; the change is proposed for a third verification round, as the outcome verified
-in round 2 cannot change before then. The attempt record,
+the assumption that the simulated environment sizes are spaced linearly, as Fig. S18 draws them on
+linear axes from 0 to 50 m; with logarithmic spacing that claim would not be reproduced. The change
+from not reproduced was agreed in the third verification round. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/rich-2014-01.yaml`](../../attempts/rich-2014-01.yaml).
