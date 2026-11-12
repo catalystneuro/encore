@@ -432,6 +432,9 @@ def collect(executed: Path | None = None) -> dict:
         "claim_files": claim_files,
         # Claims belong to a paper (claims/<paper>.yaml): each paper's claims files with every claim, for its page.
         "paper_claims": paper_claims(),
+        # Each paper's authors in order, with their ORCID iDs (papers/authors.yaml, tools/authors.py).
+        "authors": ((load_yaml(ROOT / "papers" / "authors.yaml") or {}).get("papers", {})
+                    if (ROOT / "papers" / "authors.yaml").is_file() else {}),
         "transcripts": {**transcripts, **archived},
         "transcript_dirs": transcript_dirs,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -888,11 +891,26 @@ def notebook_of(attempt: dict, path: str | None) -> dict | None:
 TOP_JOURNALS = 25
 
 
+_JOURNALS: dict = {}
+
+
+def journals_known() -> dict:
+    """The papers of papers/journals.yaml, by DOI: read once for each state of the file (a page of every paper and
+    of every author asks for a journal)."""
+    path = ROOT / "papers" / "journals.yaml"
+    if not path.is_file():
+        return {}
+    stamp = (str(path), path.stat().st_mtime_ns)
+    if stamp not in _JOURNALS:
+        _JOURNALS.clear()
+        _JOURNALS[stamp] = (load_yaml(path) or {}).get("papers", {})
+    return _JOURNALS[stamp]
+
+
 def journals_of(targets: list[dict]) -> dict[str, str]:
     """Each target's journal for the datasets list's filter (papers/journals.yaml, tools/journals.py): one of the
     TOP_JOURNALS journals with the most datasets, "Preprint", "Other journals", or "Not recorded"."""
-    path = ROOT / "papers" / "journals.yaml"
-    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    known = journals_known()
     norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
     raw = {t["key"]: (known.get(norm(t.get("paper"))) or {}).get("journal") for t in targets}
     counts: dict = {}
@@ -971,7 +989,8 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
                 findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
-    return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings}
+    return {"papers": paper_rows(data), "datasets": dandisets, "claims": claims, "findings": findings,
+            "authors": author_rows(data)}
 
 
 _PAPERS: dict = {}
@@ -979,16 +998,14 @@ _PAPERS: dict = {}
 
 def journal_name(doi: str) -> str | None:
     """The paper's journal as papers/journals.yaml names it (tools/journals.py), for its page; None when not recorded."""
-    path = ROOT / "papers" / "journals.yaml"
-    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    known = journals_known()
     return (known.get(re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (doi or "").strip().lower())) or {}).get("journal")
 
 
 def paper_journals(dois: list[str]) -> dict[str, str]:
     """Each paper's journal for the papers list's filter (papers/journals.yaml): one of the TOP_JOURNALS journals with
     the most papers, "Preprint", "Other journals", or "Not recorded"."""
-    path = ROOT / "papers" / "journals.yaml"
-    known = (load_yaml(path) or {}).get("papers", {}) if path.is_file() else {}
+    known = journals_known()
     norm = lambda d: re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (d or "").strip().lower())
     raw = {d: (known.get(norm(d)) or {}).get("journal") for d in dois}
     counts: dict = {}
@@ -1041,6 +1058,111 @@ def papers_of(data: dict) -> list[dict]:
     _PAPERS.clear()
     _PAPERS[id(data)] = out
     return out
+
+
+AUTHORS_SHOWN = 12   # a paper's page names this many authors, and the rest on request
+_AUTHORS: dict = {}
+
+
+def authors_of(data: dict, doi: str) -> list[dict]:
+    """A paper's authors in order (papers/authors.yaml): name, and ORCID iD or none."""
+    key = re.sub(r"^(10\.1101/[\d.]+)v\d+$", r"\1", (doi or "").strip().lower())
+    return (data.get("authors") or {}).get(key) or []
+
+
+def author_index(data: dict) -> dict[str, dict]:
+    """Every author with an ORCID iD, by iD: the name (the one most of their papers print) and their papers in the
+    registry (papers_of), newest first. An author without an iD has no entry: a name alone does not say who it is."""
+    if id(data) in _AUTHORS:
+        return _AUTHORS[id(data)]
+    names: dict = {}
+    out: dict = {}
+    for q in papers_of(data):
+        for a in authors_of(data, q["doi"]):
+            if a.get("orcid"):
+                names.setdefault(a["orcid"], Counter())[a["name"]] += 1
+                out.setdefault(a["orcid"], {"orcid": a["orcid"], "papers": []})["papers"].append(q)
+    for orcid, entry in out.items():
+        entry["name"] = sorted(names[orcid].items(), key=lambda kv: (-kv[1], -len(kv[0]), kv[0]))[0][0]
+        entry["papers"].sort(key=lambda q: (q["key"].rsplit("-", 1)[-1], q["key"]), reverse=True)
+    _AUTHORS.clear()
+    _AUTHORS[id(data)] = out
+    return out
+
+
+def authors_html(data: dict, doi: str, root: str) -> str:
+    """A paper's authors for its page: each with an ORCID iD opens the author's page; the names past the first
+    AUTHORS_SHOWN open on request."""
+    people = authors_of(data, doi)
+    if not people:
+        return ""
+    known = author_index(data)
+    names = [f'<a href="{root}authors/{e(a["orcid"])}/">{e(a["name"])}</a>' if a.get("orcid") in known else e(a["name"])
+             for a in people]
+    if len(names) <= AUTHORS_SHOWN + 2:
+        return f'<p class="authors">{", ".join(names)}</p>'
+    rest = len(names) - AUTHORS_SHOWN
+    return (f'<div class="authors"><p>{", ".join(names[:AUTHORS_SHOWN])},</p><details><summary>and {rest} more '
+            f'authors</summary><p>{", ".join(names[AUTHORS_SHOWN:])}</p></details></div>')
+
+
+def author_rows(data: dict) -> list[dict]:
+    """The authors list's rows: every author with an ORCID iD and their papers in the registry."""
+    out = []
+    for orcid, a in author_index(data).items():
+        attempted = [q for q in a["papers"] if q["attempts"]]
+        out.append({
+            "id": orcid, "name": a["name"], "family": a["name"].split()[-1] + ", " + " ".join(a["name"].split()[:-1]),
+            "page": f"authors/{orcid}/", "n_papers": len(a["papers"]), "n_attempted": len(attempted),
+            "attempted": "yes" if attempted else "no",
+            "papers": [{"byline": q["byline"], "page": f'papers/{q["key"]}/' if q["attempts"] or q["status"] == "claims"
+                        else None, "doi": q["doi"]} for q in a["papers"]],
+        })
+    return sorted(out, key=lambda r: (-r["n_papers"], r["family"].lower()))
+
+
+def paper_card(data: dict, q: dict, root: str, note: str = "", under: str = "") -> str:
+    """A paper as a row: its byline (and `note`) over its title, which opens its page, then its outcomes or where
+    it stands, and `under`; its verification and the date of its latest attempt on the right."""
+    r = next((x for x in rows_cache(data)["papers"] if x["id"] == q["key"]), {})
+    state = ("attempted" if q["attempts"] else "claims read, not yet attempted" if q["status"] == "claims"
+             else "not yet attempted")
+    outcome = (f'<div class="meta" style="margin-top:6px">{bar(r["counts"], "Outcomes", "bar mini")}'
+               + '<span class="small muted">' + e(" · ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in r["counts"].items() if n))
+               + '</span></div>') if r.get("counts") else f'<div class="meta"><span class="muted">{e(state.capitalize())}</span></div>'
+    title = (f'<a href="{root}{e(r["page"])}">{e(q["title"])}</a>' if r.get("page")
+             else f'<a href="https://doi.org/{e(q["doi"])}">{e(q["title"])}</a>')
+    return (f'<div class="row drow prow"><div><p class="byline">{e(q["byline"])}'
+            + (f'<span class="sep" aria-hidden="true">·</span>{note}' if note else "") + '</p>'
+            f'<p class="title">{title}</p>{outcome}{under}</div>'
+            f'<div class="right">{quiet_tier(r["tier"]) if r.get("tier") else ""}'
+            f'<span class="small muted">{e(r.get("date") or "")}</span></div></div>')
+
+
+def page_author(data: dict, author: dict) -> str:
+    """An author's page, by ORCID iD: every paper in the registry they are an author of."""
+    root = "../../"
+    orcid, name = author["orcid"], author["name"]
+    cards = "".join(paper_card(data, q, root, note=e(journal_name(q["doi"]) or "")) for q in author["papers"])
+    n, tried = len(author["papers"]), sum(1 for q in author["papers"] if q["attempts"])
+    body = f'''<header class="page">
+  <p class="crumbs"><a href="{root}authors/">Authors</a> / {e(name)}</p>
+  <div class="dhead"><h1>{e(name)}</h1></div>
+  <p class="sub">ORCID iD <a href="https://orcid.org/{e(orcid)}" rel="noopener">{e(orcid)}</a> ·
+  {n} paper{"" if n == 1 else "s"} in the registry, {tried} attempted</p>
+</header>
+<main>
+  <section class="panel"><h2>Papers <span class="count">{n}</span></h2>
+    <p class="sub small" style="margin-top:12px">Every paper in the registry that names this ORCID iD among its
+    authors, as OpenAlex records them. An outcome says what one attempt could reproduce from the paper&rsquo;s open
+    data; a failure to reproduce may be a failure of the attempt.</p>
+    <div class="results" style="margin-top:12px">{cards}</div></section>
+</main>'''
+    structured = {"@context": "https://schema.org", "@type": "Person", "name": name,
+                  "identifier": f"https://orcid.org/{orcid}", "sameAs": f"https://orcid.org/{orcid}"}
+    return shell(data, f"{name} · {SITE_NAME}", root, "authors", body, path=f"authors/{orcid}/",
+                 description=f"Papers by {name} (ORCID {orcid}) in the Encore registry, and what attempts to "
+                             f"reproduce them from their open data found.", structured=structured)
 
 
 def paper_of(data: dict, attempt: dict) -> dict | None:
@@ -1336,6 +1458,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
     tabs = [("overview", "Overview", root or "./", None), ("papers", "Papers", f"{root}papers/", n_papers),
             ("datasets", "Datasets", f"{root}datasets/", n_datasets),
+            ("authors", "Authors", f"{root}authors/", None),
             ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
@@ -1359,7 +1482,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
   <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a><div class="tabrow" id="tabrow">{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
-  <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
+  <a class="tab ext runs" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a></div>
   <button class="navtoggle" id="navtoggle" type="button" aria-expanded="false" aria-controls="tabrow" aria-label="Menu"><span aria-hidden="true"></span></button>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
@@ -1367,6 +1490,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 {body}
 <footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
+<a href="{REPO_URL}/actions">Agent runs</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
 a judgement of the paper.</footer>
@@ -1994,7 +2118,7 @@ def page_about(data: dict) -> str:
 
 # The site's lists. Only the papers list is a page (INDEX_LISTS): since 2026-11-11 the papers are the one index,
 # and a dataset's page is reached from its papers. The datasets rows are still written as data (data/datasets.json).
-INDEX_LISTS = ("papers", "datasets")
+INDEX_LISTS = ("papers", "datasets", "authors")
 LISTS = {
     "papers": {
         "title": "Papers", "noun": "papers", "data": "data/papers.json",
@@ -2029,6 +2153,19 @@ LISTS = {
 }
 
 
+# The authors list: everyone with an ORCID iD among the authors of a paper in the registry.
+LISTS["authors"] = {
+    "title": "Authors", "noun": "authors", "data": "data/authors.json",
+    "intro": "Everyone with an ORCID iD among the authors of a paper in the registry. Each opens a page with all of "
+             "their papers here. Authors are found by ORCID iD, as OpenAlex records them: a name alone does not say "
+             "who it is, so an author without an iD is named on the paper&rsquo;s page and has no page here.",
+    "facets": [("attempted", "Papers")],
+    "sorts": [("-n_papers", "Most papers"), ("family", "Family name"), ("name", "Given name"),
+              ("-n_attempted", "Most papers attempted")],
+    "csv": None,
+}
+
+
 def page_list(data: dict, kind: str) -> str:
     spec = LISTS[kind]
     outcome_labels = {k: v[0] for k, v in OUTCOMES.items()}
@@ -2048,6 +2185,7 @@ def page_list(data: dict, kind: str) -> str:
             "status": {**STATUS, "claims": "Claims read, not yet attempted"} if kind == "papers" else STATUS,
             "found": {**FINDING_KINDS, "(none)": "None recorded"},
             "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
+            "attempted": {"yes": "Has a paper attempted", "no": "None attempted yet"},
             "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
@@ -2327,7 +2465,6 @@ def page_dataset(data: dict, key: str) -> str:
     atts = [a for a in current_attempts(data).get(key, []) if not a.get("deprecated")]
     papers = [q for q in papers_of(data) if key in q["datasets"]]
     by_doi = {q["doi"]: q for q in papers}
-    rows = {r["id"]: r for r in rows_cache(data)["papers"]}
 
     def found_by(a, f):
         q = by_doi.get(a["paper"].lower())
@@ -2375,27 +2512,15 @@ def page_dataset(data: dict, key: str) -> str:
 
     paper_rows_html = ""
     for q in papers:
-        r = rows.get(q["key"], {})
         rel = next((d.get("relation", "primary") for d in paper_records.datasets_of(q["key"]) if d["key"] == key), "primary")
-        state = ("attempted" if q["attempts"] else "claims read, not yet attempted" if q["status"] == "claims"
-                 else "not yet attempted")
-        outcome = (f'<div class="meta" style="margin-top:6px">{bar(r["counts"], "Outcomes", "bar mini")}'
-                   + '<span class="small muted">' + e(" · ".join(f"{n} {OUTCOMES[k][0].lower()}" for k, n in r["counts"].items() if n))
-                   + '</span></div>') if r.get("counts") else f'<div class="meta"><span class="muted">{e(state.capitalize())}</span></div>'
-        title = (f'<a href="{root}{e(r["page"])}">{e(q["title"])}</a>' if r.get("page") else e(q["title"]))
         # The attempts on the paper that used this dataset, each with the version it ran on.
         mine = [a for a in current_attempts(data).get(key, []) if a["paper"].lower() == q["doi"]]
-        if mine:
-            outcome += ('<div class="meta" style="margin-top:6px"><span class="small">' + "; ".join(
-                f'Attempt <a href="{root}{e(attempt_path(data, a))}">{e(a["id"])}</a> on {version_text(a)}'
-                + (" (set aside, to redo: its findings are not listed here)" if a.get("deprecated") else "")
-                for a in mine) + '</span></div>')
-        paper_rows_html += (f'<div class="row drow prow"><div><p class="byline">{e(q["byline"])}'
-                            f'<span class="sep" aria-hidden="true">·</span>'
-                            f'{"its own data" if rel == "primary" else "reuses the data"}</p>'
-                            f'<p class="title">{title}</p>{outcome}</div>'
-                            f'<div class="right">{quiet_tier(r["tier"]) if r.get("tier") else ""}'
-                            f'<span class="small muted">{e(r.get("date") or "")}</span></div></div>')
+        under = ('<div class="meta" style="margin-top:6px"><span class="small">' + "; ".join(
+            f'Attempt <a href="{root}{e(attempt_path(data, a))}">{e(a["id"])}</a> on {version_text(a)}'
+            + (" (set aside, to redo: its findings are not listed here)" if a.get("deprecated") else "")
+            for a in mine) + '</span></div>') if mine else ""
+        paper_rows_html += paper_card(data, q, root, note="its own data" if rel == "primary" else "reuses the data",
+                                      under=under)
 
     tags = ""
     if target:
@@ -2449,7 +2574,7 @@ def page_paper(data: dict, p: dict) -> str:
         for d in row["datasets"])
     relation = " (data the paper reuses)" if p["relation"] == ["reuses"] else ""
     head = (f'<header class="page"><p class="eyebrow">{e(p["byline"])}{(" · " + e(journal_name(p["doi"]))) if journal_name(p["doi"]) else ""}</p>'
-            f'<h1>{e(p["title"])}</h1>'
+            f'<h1>{e(p["title"])}</h1>{authors_html(data, p["doi"], root)}'
             f'<p class="sub"><a href="https://doi.org/{e(p["doi"])}">doi:{e(p["doi"])}</a> · paper key '
             f'<code>{e(p["key"])}</code></p></header>')
     parts = [f'<section class="panel"><h2>Datasets{relation}</h2><ul class="inline">{datasets_html}</ul></section>']
@@ -2865,6 +2990,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                f'<p class="eyebrow">{e(paper["byline"])}{(" · " + e(journal_name(paper["doi"]))) if journal_name(paper["doi"]) else ""}'
                f'{(" · attempt " + e(one["id"])) if one else ""}</p>'
                f'<div class="dhead"><h1>{e(paper["title"])}</h1>{tier_badge(tier, tier_link)}</div>'
+               f'{authors_html(data, paper["doi"], root)}'
                f'<p class="sub"><a href="https://doi.org/{e(paper["doi"])}">doi:{e(paper["doi"])}</a> · paper key '
                f'<code>{e(paper["key"])}</code></p>'
                f'<p class="sub">{"Data the paper reuses" if paper["relation"] == ["reuses"] else "Datasets"}: {sets}'
@@ -3055,6 +3181,9 @@ def build(data: dict, output: Path) -> None:
             (page / "index.html").write_text(
                 redirect_page(f'papers/{p["key"]}/', "../../../") if attempt_path(data, a) == f'papers/{p["key"]}/'
                 else page_dandiset(data, a["key"], attempt=a, paper=p))
+    for orcid, author in author_index(data).items():
+        (output / "authors" / orcid).mkdir(parents=True, exist_ok=True)
+        (output / "authors" / orcid / "index.html").write_text(page_author(data, author))
     for key in claims_only(data):
         # A dataset whose paper's claims are read and not yet attempted: the dataset's page, whose papers list
         # leads to the claims on the paper's page.
@@ -3132,6 +3261,8 @@ def sitemap(data: dict) -> str:
     pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
     pages += [(f'papers/{p["key"]}/', p["date"] or data["generated"][:10]) for p in papers_of(data)
               if p["attempts"] or p["status"] == "claims"]
+    pages += [(f"authors/{orcid}/", max([q["date"] for q in a["papers"] if q["date"]] or [data["generated"][:10]]))
+              for orcid, a in author_index(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')

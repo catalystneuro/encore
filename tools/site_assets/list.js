@@ -155,6 +155,16 @@
         <div class="right"><span class="open${n ? '' : ' none'}"><strong>${n}</strong> open finding${n === 1 ? '' : 's'}</span>
           <span class="small muted">${esc(r.date)}</span></div></div>`;
     },
+    // An author with an ORCID iD: the name opens their page; their papers here, each opening its own.
+    authors(r) {
+      const papers = r.papers.map((q) => q.page ? `<a href="${root + q.page}">${esc(q.byline)}</a>`
+        : `<a href="https://doi.org/${esc(q.doi)}">${esc(q.byline)}</a>`).join(', ');
+      return `<div class="row drow prow">
+        <div><p class="title"><a href="${root + r.page}">${esc(r.name)}</a></p>
+          <div class="meta"><span>${papers}</span></div></div>
+        <div class="right"><span class="small">${r.n_papers} paper${r.n_papers === 1 ? '' : 's'}</span>
+          <span class="small muted">${esc(r.id)}</span></div></div>`;
+    },
   }[cfg.kind];
 
   // Each facet is a section the reader can open and close (an accordion): the first three start open, and any with a

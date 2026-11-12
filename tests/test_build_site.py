@@ -901,3 +901,59 @@ def test_a_finding_that_names_its_datasets_is_on_those_datasets_only():
             continue
         raise AssertionError(bad)
 
+
+
+def test_a_papers_page_names_its_authors_and_each_with_an_orcid_has_a_page_of_their_papers(built):
+    data, out = built
+    index = site.author_index(data)
+    assert index and (out / "authors" / "index.html").is_file()
+    # Every author with an ORCID iD has a page with all of their papers in the registry.
+    rows = {r["id"]: r for r in json.loads((out / "data" / "authors.json").read_text())}
+    assert set(rows) == set(index)
+    theirs: dict = {}
+    for q in site.papers_of(data):
+        for a in site.authors_of(data, q["doi"]):
+            if a.get("orcid"):
+                theirs.setdefault(a["orcid"], []).append(q)
+    for orcid, author in index.items():
+        page = (out / "authors" / orcid / "index.html").read_text()
+        assert f'href="https://orcid.org/{orcid}"' in page and site.e(author["name"]) in page
+        papers = theirs[orcid]
+        assert {q["key"] for q in author["papers"]} == {q["key"] for q in papers}
+        for q in papers:
+            assert site.e(q["title"]) in page
+            if q["attempts"] or q["status"] == "claims":
+                assert f'href="../../papers/{q["key"]}/"' in page
+        assert rows[orcid]["n_papers"] == len(papers) and rows[orcid]["n_attempted"] == sum(1 for q in papers if q["attempts"])
+    # A paper's page names its authors in order; one with an ORCID iD opens the author's page, one without is a name.
+    linked = plain = long = 0
+    for q in site.papers_of(data):
+        if not (q["attempts"] or q["status"] == "claims"):
+            continue
+        page = (out / "papers" / q["key"] / "index.html").read_text()
+        people = site.authors_of(data, q["doi"])
+        at = 0
+        for a in people:
+            shown = (f'<a href="../../authors/{a["orcid"]}/">{site.e(a["name"])}</a>' if a.get("orcid") else site.e(a["name"]))
+            at = page.index(shown, at)   # raises if a name is missing or out of order
+            linked += bool(a.get("orcid")); plain += not a.get("orcid")
+        if len(people) > site.AUTHORS_SHOWN + 2:
+            long += 1
+            assert f"and {len(people) - site.AUTHORS_SHOWN} more authors</summary>" in page
+    assert linked and plain and long
+    sitemap = (out / "sitemap.xml").read_text()
+    assert "authors/</loc>" in sitemap and f"authors/{next(iter(index))}/</loc>" in sitemap
+    assert 'href="authors/"' in (out / "index.html").read_text()
+
+
+def test_the_authors_file_has_each_person_once_a_paper():
+    import authors
+    people = [{"name": "A B", "orcid": "0000-0001-0000-0001"}, {"name": "C D", "orcid": None},
+              {"name": "E F", "orcid": None}, {"name": "A. B", "orcid": "0000-0001-0000-0001"}]
+    assert [a["name"] for a in authors.once(people)] == ["A B", "C D", "E F"]
+    assert authors.key("10.1101/2020.03.31.018820v2") == "10.1101/2020.03.31.018820"
+    known = site.load_yaml(site.ROOT / "papers" / "authors.yaml")["papers"]
+    for doi, listed in known.items():
+        ids = [a["orcid"] for a in listed if a["orcid"]]
+        assert len(ids) == len(set(ids)), doi
+        assert all(a["name"] and (a["orcid"] is None or authors.ORCID.fullmatch(a["orcid"])) for a in listed), doi
