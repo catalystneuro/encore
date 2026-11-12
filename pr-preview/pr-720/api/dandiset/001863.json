@@ -1,0 +1,1270 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001863",
+  "label": "DANDI:001863"
+ },
+ "page": "datasets/dandi/001863/",
+ "generated": "2026-11-12T09:49:48+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 22,
+  "partially_reproduced": 2,
+  "not_reproduced": 2,
+  "blocked": 9
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "welch-2025-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001863",
+    "version": "0.260806.2109",
+    "doi": "10.48324/dandi.001863/0.260806.2109",
+    "relation": "primary"
+   },
+   "datasets": [
+    "dandi:001863"
+   ],
+   "missing_datasets": [],
+   "key": "dandi:001863",
+   "label": "DANDI:001863",
+   "dataset_version": "0.260806.2109",
+   "paper": "10.1101/2025.07.09.663970",
+   "paper_title": "The impact of a psychedelic drug on olfactory search behavior by mice",
+   "date": "2026-11-05",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-13"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/encore/actions/runs/42057646913"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "welch-2025",
+   "entry_title": "DOI and olfactory search in mice (Welch et al. 2025)",
+   "summary": "In this data, most of the paper's behavioral and sniffing findings held up, but its reward-port findings could not be tested and its speed findings did not reproduce. DOI lowered accuracy, reduced trials completed (mainly in females) and lengthened odor trials. It also raised sniff frequency in every trial period, and head twitches rose toward the odor end of the arena. Lower movement speed on DOI did not reach significance (p = 0.063 within trials, 0.079 in the intertrial interval). The reward-port durations of Figure 2 are blocked because the dataset has no port entries or exits. The tracking has no frame times, and the within-trial speed and head-twitch results depend on the paper's assumed clock.",
+   "description": "Tests the findings of Welch, Gonzales-Hess, Tarvin, Connor and Smear (2025) on dandiset 001863, which holds one DOI and one saline session of the olfactory search task for each of 22 mice, with trial tables, DeepLabCut tracking, thermistor sniff cycles and head-twitch times. It tests accuracy, trial counts and durations, movement speed, sniff frequency, occupancy and the location and timing of head twitches. The reward-port durations of Figure 2 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_welch_2025.ipynb",
+     "title": "Reproducing Welch et al. (2025) from dandiset 001863",
+     "executed": "notebooks/welch-2025/reproduce_welch_2025.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1b-accuracy-lower-doi",
+     "statement": "Mice are less accurate in the olfactory search task in the DOI session than in the saline session, going more often to the incorrect side.",
+     "source": "Results, DOI alters olfactory search behavior, paragraph 2; Figure 1B",
+     "quote": "Indeed, mice more often navigated to the incorrect side of the arena in the DOI condition ( Figure 1B ; Wilcoxon signed rank test, p = 0.024, n = 22)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.024,
+       "n": "22 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "22 mice with paired sessions, the expected 22. Odor-trial accuracy is lower on DOI in 14 of 22 mice (median DOI 90.7 against saline 92.4 percent, median difference -3.2 points), signed-rank V = 57, p = 0.023 (paper 0.024). Omission-trial accuracy, the variant, median difference -5.2 points, p = 0.37. By sex neither group alone is significant (females p = 0.11, males p = 0.13).",
+     "deviations": [
+      "Statistics are computed in Python with R's defaults reproduced (exact signed-rank and rank-sum tests below 50 values without ties, otherwise the normal approximation with continuity correction)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-accuracy-time-bins",
+     "statement": "Over the session, odor-trial accuracy in 5 min bins is higher in the saline condition than the DOI condition after the first 10 min, except in the 30 to 35 min bin, so the effect is spread across the session.",
+     "source": "Results, DOI alters olfactory search behavior, paragraph 2; Figure 1C",
+     "quote": "In odor trials, accuracy was higher in the saline condition after the first 10 min, except for the 30 \u2013 35 min bin ( Figure 1C ; Wilcoxon rank-sum test, p < 0.01 for time points within 10 \u2013 25 min, p = 0.039 for 35 \u2013 40 min)",
+     "statistics": [
+      {
+       "about": "bins 10 to 15, 15 to 20 and 20 to 25 min",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.01,
+       "p_relation": "<"
+      },
+      {
+       "about": "bin 35 to 40 min",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.039
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Mean rolling accuracy per mouse and 5 min bin, rank-sum tests per bin. Saline is higher in every bin. p = 0.0076, 0.0037 and 0.0070 in the 10-15, 15-20 and 20-25 min bins, p = 0.039 in 35-40 (paper 0.039), p = 0.052 in 30-35 (not significant, as stated). The bins the text does not state, 0-5 p = 0.51, 5-10 p = 0.073, 25-30 p = 0.018. 21 or 22 mice per bin and condition. The per-bin fraction correct variant is significant only in 5-10 and 10-15 min. Whether the criterion should also require the 25-30 min bin, which the paper's sentence covers, is asked of a reader in questions/001863.yaml; the bin is higher on saline at p = 0.018, so the outcome would not change.",
+     "deviations": [
+      "Statistics are computed in Python with R's defaults reproduced (exact signed-rank and rank-sum tests below 50 values without ties, otherwise the normal approximation with continuity correction)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-fewer-trials",
+     "statement": "Mice complete fewer trials in the 40 min DOI session than in the saline session.",
+     "source": "Results, DOI alters olfactory search behavior, paragraph 3; Figure 1D",
+     "quote": "Mice completed fewer trials in the DOI condition ( Figure 1D ; Wilcoxon signed rank test, p = 0.011, n = 22)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.011,
+       "n": "22 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Reading (a), odor trials (the code), DOI lower in 16 of 22 mice, median difference -9.5 trials, p = 0.011 (paper 0.011). Reading (b), all trials (the Methods), median difference -8, p = 0.018. Both readings match.",
+     "deviations": [
+      "The Methods count all trials and the code odor trials; both readings were run, as the criterion names, and both match."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-fewer-trials-females-only",
+     "statement": "The drop in trials completed under DOI is driven by females; female mice perform fewer trials on DOI than saline, while male mice show no significant difference.",
+     "source": "Results, DOI alters olfactory search behavior, paragraph 3; Figure 1D",
+     "quote": "This effect was driven by female mice; female mice performed fewer trials on DOI compared to saline ( Figure 1D ; Wilcoxon signed rank test, p = 0.011, n = 12), whereas male mice did not show a significant difference ( Figure 1D ; Wilcoxon signed rank test, p = 0.39, n = 10)",
+     "statistics": [
+      {
+       "about": "females, DOI against saline",
+       "test": "Wilcoxon signed rank test",
+       "p": 0.011,
+       "n": "12 female mice"
+      },
+      {
+       "about": "males, DOI against saline",
+       "test": "Wilcoxon signed rank test",
+       "p": 0.39,
+       "n": "10 male mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Females (12), odor trials median difference -14, p = 0.010 (paper 0.011); all trials -12.5, p = 0.015. Males (10), odor trials p = 0.39 (paper 0.39); all trials p = 0.44. Both readings match.",
+     "deviations": [
+      "Sex is taken from the code's list; the file of the 2182 saline session says female, its DOI session male (the code has male)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-repoke-no-difference",
+     "statement": "Mice poke into the initiation port during the ITI at the same rate in the DOI and saline conditions, showing an equivalent motivation to do the task.",
+     "source": "Results, DOI alters olfactory search behavior, paragraph 3; Figure 1E",
+     "quote": "We found that mice poked into the initiation port, but there was not a significant difference between conditions ( Figure 1E ; Wilcoxon signed rank test, p = 0.27, n = 17)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.27,
+       "n": "17 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "17 later-cohort mice; repoke rate (repokes over trials minus one) median DOI 1.04 against saline 1.05 per ITI, median difference -0.10, signed-rank p = 0.38 (paper 0.27). The test does not find the effect.",
+     "deviations": [
+      "The repoke counts are the trial table's repoke column, which the code reads from the same trial file."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "iti-false-report-no-difference",
+     "statement": "Mice rarely enter a reward port during the ITI after a trial-initiation attempt, and DOI does not make them do so more than saline.",
+     "source": "Results, DOI alters olfactory search behavior, paragraph 4",
+     "quote": "Mice rarely entered the reward port during the ITI after trial initiation attempt (Wilcoxon rank sum test, p = 1)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 1,
+       "n": "17 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "The trial table's false_alarm column (later cohort, 17 mice) gives 3 false reports in 2 of 17 DOI sessions and 3 in 2 of 17 saline sessions, 6 of 3227 ITIs in all. Rank-sum p = 1 under reading (a), counts per session, and (b), per ITI, the paper's p = 1. Rare, as stated (not judged). The Results' variant, reward-port entries in the ITI, cannot be run, as the dandiset has no reward-port events.",
+     "deviations": [
+      "The false_alarm column is taken to be the Methods' false odor report; the files describe it only as \"false alarm\". The Results' reward-port variant was not run (no data)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-correct-port-duration-doi-odor",
+     "statement": "After correct trials, mice stay longer in the reward port on DOI odor trials than on saline odor trials and saline omission trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 1; Figure 2A",
+     "quote": "Reward port duration was increased in the DOI odor trial condition compared to both saline odor and saline odor omission trials ( Figure 2A ; Wilcoxon rank sum test, p < 0.001, n = 17)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni",
+       "n": "17 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2a-supp-no-sex-effect",
+     "statement": "Reward-port duration after correct trials does not depend on sex in either condition.",
+     "source": "Results, DOI impacts speed and timing, paragraph 1; Figure 2A supplemental",
+     "quote": "We did not find a sex effect of condition ( Figure 2A supplemental , p = 1)",
+     "statistics": [
+      {
+       "test": "not named",
+       "p": 1
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-median-port-duration-correct",
+     "statement": "Per mouse, the median reward-port duration after correct trials is longer in the DOI session than in the saline session.",
+     "source": "Results, DOI impacts speed and timing, paragraph 1; Figure 2B",
+     "quote": "When comparing the median duration between conditions, mice in the DOI condition spent longer in the reward port compared to saline ( Figure 2B ; Wilcoxon signed rank test, p = 0.002)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.002,
+       "n": "17 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-supp-odor-trials-longer",
+     "statement": "The longer median reward-port duration under DOI is driven by odor trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 1; Figure 2B supplemental",
+     "quote": "This effect was driven by the odor trial ( Figure 2B supplemental ; Wilcoxon signed rank test, p = 0.001)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.001
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-supp-omission-no-difference",
+     "statement": "After correct omission trials, the median reward-port duration does not differ between DOI and saline.",
+     "source": "Results, DOI impacts speed and timing, paragraph 1",
+     "quote": "as we did not see a difference between median duration after an omission trial (Wilcoxon signed rank test, p = 0.60)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.6
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-incorrect-port-duration",
+     "statement": "After incorrect (unrewarded) trials, mice stay longest in the reward port on DOI odor trials, longer than on DOI omission, saline odor and saline omission trials, and longer on saline odor than saline omission trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 2; Figure 2C",
+     "quote": "We found an increased duration in DOI odor trials compared to DOI odor omission trials ( Figure 2C ; Wilcoxon rank sum test for all comparisons, p < 0.001), saline odor trials (p = 0.030), and saline odor omission trials (p < 0.001). Additionally, there was an increased reward port duration for the saline odor trial compared to the saline odor omission trial (p < 0.001)",
+     "statistics": [
+      {
+       "about": "DOI odor against DOI omission",
+       "test": "Wilcoxon rank sum test",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "DOI odor against saline odor",
+       "test": "Wilcoxon rank sum test",
+       "p": 0.03,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "DOI odor against saline omission",
+       "test": "Wilcoxon rank sum test",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "saline odor against saline omission",
+       "test": "Wilcoxon rank sum test",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-supp-no-sex-difference",
+     "statement": "After incorrect trials, reward-port duration does not differ between the sexes within either condition.",
+     "source": "Results, DOI impacts speed and timing, paragraph 2; Figure 2C supplemental",
+     "quote": "Sex differences within each condition were not significant ( Figure 2C supplemental , Wilcoxon rank sum, p = 1)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum",
+       "p": 1
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-median-incorrect-no-difference",
+     "statement": "Per mouse, the median reward-port duration after incorrect trials does not differ between DOI and saline.",
+     "source": "Results, DOI impacts speed and timing, paragraph 2; Figure 2D",
+     "quote": "When comparing the median duration between conditions, there was no difference between DOI and saline ( Figure 2D ; Wilcoxon signed rank test, p = 0.21)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.21
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-supp-omission-longer",
+     "statement": "After incorrect omission trials, mice stay longer in the reward port in the DOI condition than in the saline condition.",
+     "source": "Results, DOI impacts speed and timing, paragraph 2; Figure 2D supplemental",
+     "quote": "However, after an odor omission trial, mice spent longer in the reward port in the DOI condition ( Figure 2D supplemental , Wilcoxon signed rank test, p = 0.049)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.049
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Blocked because the dandiset holds no reward-port entries or exits. The trial table has start, stop, odor_control, side, outcome and set ITI, and for the later cohort false_alarm and repoke counts; the only event series is the HTR series; acquisition, stimulus and analysis are empty. fig2_cleaned.Rmd reads the durations from pre-computed files (drinking_data_iti_2.txt and drinking_data_incorrect_trials_iti_2.txt) that are not in the code repository either.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-odor-trial-duration-longer",
+     "statement": "Mice take longer to complete odor trials in the DOI condition than in the saline condition.",
+     "source": "Results, DOI impacts speed and timing, paragraph 3; Figure 3A",
+     "quote": "In odor trials, mice took longer to complete a trial in the DOI condition compared to the saline condition ( Figure 3A ; Wilcoxon signed rank test, p < 0.001, n = 22)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "22 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Odor trials last longer on DOI in 21 of 22 mice (median DOI 2.02 against saline 1.81 s, median difference 0.26 s), V = 248, p = 4.8e-06 (paper p < 0.001).",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-omission-duration-no-difference",
+     "statement": "The duration of omission trials does not differ between DOI and saline.",
+     "source": "Results, DOI impacts speed and timing, paragraph 3",
+     "quote": "In contrast, there was no difference in trial duration in omission trials between DOI and saline (Wilcoxon signed rank test, p = 0.26, n = 22)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.26,
+       "n": "22 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Omission-trial duration median difference 0.55 s (DOI 5.37 against 4.74 s), p = 0.32 (paper 0.26). The test does not find the effect.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-iti-duration-no-difference",
+     "statement": "ITI duration does not differ between DOI and saline.",
+     "source": "Results, DOI impacts speed and timing, paragraph 3; Figure 3B",
+     "quote": "However, there was no difference in ITI duration between conditions ( Figure 3B ; Wilcoxon signed rank test, p = 0.19, n = 22)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.19,
+       "n": "22 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Mean ITI (next start minus end) median DOI 19.9 against saline 19.1 s, median difference 1.42 s, longer on DOI in 17 of 22 mice, p = 0.098 (paper 0.19). Not significant at p < 0.05, so the claim of absence holds.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-speed-within-trial-lower",
+     "statement": "DOI lowers movement speed within trials, odor and omission trials pooled, compared with saline.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4; Figure 3C",
+     "quote": "We found that DOI decreased movement speed both within trial ( Figure 3C ; Wilcoxon rank sum test, p = 0.011, pooled trial type)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 0.011
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "With the claims file's method (code clock, signed-rank test) within-trial speed is lower on DOI in 16 of 22 mice, median 6.34 against 6.62 cm/s, median difference -0.63 cm/s, p = 0.063 (paper 0.011); the criterion's p < 0.05 is not met, and it names no partial outcome. The rank-sum test the Results name gives p = 0.51. With the fitted clock, which aligns frames with trials, median difference -0.49 cm/s, p = 0.75 (10 mice with good fits in both sessions p = 0.92). By sex (code clock), males p = 0.027, females p = 0.52. 1125 of 8.3 million frames are above 160 cm/s. The signed-rank p is the same under an exact null distribution counted directly (0.0634). The cleaning follows CleanTracking in fig3_cleaned.Rmd and the Methods' thresholds (likelihood < 0.95 or delta > 8 px interpolated), which interpolate a median 80% of nose frames; the p-value depends on them (likelihood cutoff 0.90 p = 0.013, 0.99 p = 0.13; jump limit 10 px p = 0.043, 6 px p = 0.068).",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-speed-iti-lower",
+     "statement": "DOI lowers movement speed during the ITI compared with saline.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4; Figure 3D",
+     "quote": "and during the ITI ( Figure 3D ; Wilcoxon rank sum test, p = 0.036) compared to saline",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 0.036
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "ITI speed lower on DOI in 15 of 22 mice, median 5.57 against 5.76 cm/s, median difference -0.60 cm/s, p = 0.079 with the claims file's method (paper 0.036); the criterion's p < 0.05 is not met, and it names no partial outcome. Fitted clock p = 0.054 (10 mice with good fits p = 0.084). Rank-sum variant p = 0.57. The direction is as stated. The signed-rank p is the same under an exact null distribution counted directly (0.0794). With the Methods' cleaning thresholds replaced, likelihood cutoff 0.90 gives p = 0.043 and 0.99 p = 0.13; jump limits of 6 to 16 px give 0.079 to 0.092.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3supp-odor-trial-speed-no-difference",
+     "statement": "Within odor trials alone, speed does not differ between DOI and saline sessions.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4; Figure 3 supplemental",
+     "quote": "In odor trials specifically, the speed between DOI and saline sessions were not different ( Figure 3 supplemental ; Wilcoxon rank sum test, p = 0.059)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum test",
+       "p": 0.059
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Odor-trial speed median difference -0.54 cm/s, signed-rank p = 0.19 (paper rank-sum p = 0.059); rank-sum variant p = 0.70; fitted clock p = 0.73. The test does not find the effect.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3supp-doi-iti-slower-than-odor",
+     "statement": "Within the DOI condition, mice move more slowly in the ITI than in odor trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4; Figure 3 supplemental",
+     "quote": "Within the DOI condition, speed was decreased in the ITI compared to an odor trial ( Figure 3 supplemental ; Wilcoxon signed rank test, p < 0.001)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "On DOI the ITI is slower than odor trials in 19 of 22 mice, median 5.57 against 6.53 cm/s, median difference -0.83 cm/s, p = 0.0002 (paper p < 0.001). Fitted clock -3.57 cm/s, p < 0.0001. Rank-sum variant p = 0.16.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3supp-doi-omission-no-difference",
+     "statement": "Within the DOI condition, speed does not differ between odor and omission trials, nor between the ITI and omission trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4",
+     "quote": "However, there was no difference in speed between the odor and odor omission trials in the DOI condition (Wilcoxon rank sum test, p = 0.21), nor the ITI and odor omission trials (Wilcoxon rank sum, p = 0.068)",
+     "statistics": [
+      {
+       "about": "DOI odor against DOI omission",
+       "test": "Wilcoxon rank sum test",
+       "p": 0.21
+      },
+      {
+       "about": "DOI ITI against DOI omission",
+       "test": "Wilcoxon rank sum",
+       "p": 0.068
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "DOI odor against omission trials, median difference 0.58 cm/s, p = 0.31 (paper 0.21), not significant. DOI ITI against omission trials, median difference -0.70 cm/s, ITI slower in 18 of 22 mice, p = 0.0059 (paper 0.068), significant. One of the two comparisons finds an effect. Rank-sum variants p = 0.62 and 0.37. With the fitted clock both are significant (p = 0.0003 and 0.0001).",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3supp-saline-iti-slower",
+     "statement": "In saline sessions, mice move more slowly in the ITI than in odor trials and in omission trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4",
+     "quote": "In comparison, in saline sessions the ITI speed was slower compared to odor (p = 0.002) and odor omission trials (p = 0.017)",
+     "statistics": [
+      {
+       "about": "saline ITI against saline odor",
+       "test": "not named",
+       "p": 0.002
+      },
+      {
+       "about": "saline ITI against saline omission",
+       "test": "not named",
+       "p": 0.017
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "On saline the ITI is slower than odor trials (median difference -0.43 cm/s, 16 of 22 mice, p = 0.025; paper 0.002) and than omission trials (-0.98 cm/s, 18 of 22, p = 0.016; paper 0.017). Fitted clock both p < 0.0001.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3supp-saline-odor-omission-no-difference",
+     "statement": "In saline sessions, speed does not differ between odor and omission trials.",
+     "source": "Results, DOI impacts speed and timing, paragraph 4",
+     "quote": "Speed within the odor and odor omission trials were not different in the saline condition (Wilcoxon rank sum, p = 0.54)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum",
+       "p": 0.54
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "On saline odor against omission trials median difference -0.18 cm/s, p = 0.68 (paper 0.54); rank-sum variant p = 0.86; fitted clock p = 0.29.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "Under the fitted clock speed is scaled by the fitted rate, the frames being that far apart under it."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4abc-sniff-frequency-higher",
+     "statement": "Pooling all sessions with a usable sniff signal, sniff frequency is higher in DOI sessions than in saline sessions.",
+     "source": "Results, DOI increases sniff frequency, paragraph 1; Figure 4A to 4C",
+     "quote": "When all sessions with sniff measurement were combined, sniff frequency was higher in DOI sessions ( Figure 4A \u2013 C ; Fisher-Pitman Permutation test, Z = 24.9, p < 0.001)",
+     "statistics": [
+      {
+       "test": "Fisher-Pitman Permutation test",
+       "statistic": "Z = 24.9",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "14 DOI and 13 saline sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "Sessions with a usable signal 14 DOI and 13 saline, the expected counts, after the code's four faulty sessions are dropped. Pooled sniff frequency higher on DOI under every reading. Reading (a), per-session 5th to 95th percentile and 10 to 1000 ms, 190947 and 153863 sniffs, mean 7.78 against 7.55 Hz, Z = 25.2; reading (b), per condition, Z = 28.4; the code's computation without further exclusion Z = 19.5 (paper Z = 24.9). No permutation of 10000 as extreme under any reading (p < 0.0001).",
+     "deviations": [
+      "The file's sniff cycles are the detections the code reads (sniff_params.mat, rows without exhalation already dropped); whether the Methods' percentile exclusion was applied before export is not known, so readings (a) and (b) of the criterion and the code's computation were all run, and all match.",
+      "The Fisher-Pitman test is computed here (standardised sum of the DOI group, 10000 random permutations) in place of coin::oneway_test; its random permutations differ from R's."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4supp-ks-every-mouse",
+     "statement": "Every mouse with matched DOI and saline sniff sessions has a sniff-frequency distribution shifted higher in the DOI condition.",
+     "source": "Results, DOI increases sniff frequency, paragraph 1; Figure 4 supplemental",
+     "quote": "All mice with a matched DOI and saline session had a higher-shifted distribution sniff rates in the DOI condition ( Figure 4 supplemental ; Kolmogorov-Smirnov test, p < 0.001 for 13 of 13 mice)",
+     "statistics": [
+      {
+       "test": "Kolmogorov-Smirnov test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "13 mice"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "13 mice have matched usable sessions, the expected 13. One-sided KS (DOI stochastically larger), reading (a) 11 of 13 at p < 0.001, with 2209 and 2211 at p = 0.0031 and 0.0063; the code's computation also 11 of 13 (p = 0.0059 and 0.011); reading (b) 13 of 13. All 13 have p < 0.05 under every reading. 11 of 13 is at least two thirds, so partially reproduced under the adopted reading (a). Per-mouse medians are higher on DOI in only 8 of the 13 mice (reading a; lower in 2202, 2204, 2208, 2209 and 2211), so a significant one-sided KS test here does not by itself show the higher-shifted distribution the statement describes.",
+     "deviations": [
+      "Assumed, the 5th to 95th percentile exclusion is applied per session (reading a). The readings give different outcomes (reproduced under b, partially reproduced under a and under the code's computation from the deposited cycles), and the percentile exclusion is a method detail, so the reading the paper best supports is adopted. The Methods place it in the initial MATLAB pre-processing of each recording, before the signals were exported (\"Initial pre-processing of sniff was performed in MATLAB ... Sniffs with duration less than the 5 th percentile and greater than the 95 th percentile were excluded from analysis. Exported sniff signals ... were imported into R\"; Methods, Figure 4), which is a per-session exclusion."
+     ],
+     "assumed": true,
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-sniff-frequency-by-period",
+     "statement": "Mice sniff faster in the DOI condition in odor trials, in omission trials and during the ITI.",
+     "source": "Results, DOI increases sniff frequency, paragraph 1; Figure 4D",
+     "quote": "mice sniffed faster in the DOI condition for each trial type and during the ITI ( Figure 4D ; Fisher-Pitman Permutation test for all trial types; Odor trials: Z = 3.38, p < 0.001; Omission trials: Z = 2.71, p= 0.007; ITI: Z = 18.4, p < 0.001)",
+     "statistics": [
+      {
+       "about": "odor trials",
+       "test": "Fisher-Pitman Permutation test",
+       "statistic": "Z = 3.38",
+       "p": 0.001,
+       "p_relation": "<"
+      },
+      {
+       "about": "omission trials",
+       "test": "Fisher-Pitman Permutation test",
+       "statistic": "Z = 2.71",
+       "p": 0.007
+      },
+      {
+       "about": "ITI",
+       "test": "Fisher-Pitman Permutation test",
+       "statistic": "Z = 18.4",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "DOI faster in all three periods under every reading. Reading (a), odor trials Z = 4.31, omission trials Z = 3.88, ITI Z = 24.2 (paper 3.38, 2.71, 18.4), none of 10000 permutations as extreme. Reading (b) Z = 6.61, 4.00, 26.9; the code's computation Z = 3.72, 2.12 (normal p = 0.034), 18.6. Sniffs are placed in periods by the trial table's clock; the data check found sniffing faster within trials than in the ITI with the true labels in 20 of 27 sessions, more than with labels shifted by 10 s or more.",
+     "deviations": [
+      "For readings (b) and the code's computation the p-value is the normal approximation of the same statistic, to keep the notebook within its time; the resampled p is computed for reading (a)."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-median-sniff-no-difference",
+     "statement": "Per-mouse median sniff frequency does not differ between DOI and saline.",
+     "source": "Results, DOI increases sniff frequency, paragraph 1; Figure 4E",
+     "quote": "We did not observe a difference in median sniff frequencies between conditions ( Figure 4E ; Wilcoxon signed rank test; p = 0.11)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank test",
+       "p": 0.11
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "13 mice with both sessions. Per-mouse median frequency higher on DOI in 8 of 13, median difference 0.53 Hz (a), signed-rank p = 0.11 under (a) and the code's computation (paper 0.11), 0.15 under (b). The test does not find the effect.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ab-occupancy-similar",
+     "statement": "Mice occupy the arena similarly in the DOI and saline conditions; DOI does not make them spend more time in task-irrelevant areas such as the corners or spread more evenly.",
+     "source": "Results, Mice occupy allocentric space similarly but head twitch preferentially in proximity to odor ports, paragraph 1; Figure 5A and 5B",
+     "quote": "Contrary to this prediction, mice showed similar occupancy across DOI and saline conditions ( Figure 5A, B )",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "22 mice. Occupancy entropy (48 px bins) median DOI 7.20 against saline 7.13 bits, p = 0.063; fraction of frames in 5 cm corner squares 0.267 against 0.245, p = 0.25; in 10 cm corner squares 0.850 against 0.862, p = 0.70. No measure differs at p < 0.05. The grand-mean maps correlate with r = 0.919. At the code's 0.0237 cm/px the arena box is 27.5 by 15.6 cm, so 10 cm corners hold 85% of frames and that reading says little; the corners also hold the reward ports.",
+     "deviations": [
+      "The paper reports no test; the measures and corner sizes are the claims file's readings of the paper's prediction.",
+      "Assumed, the arena box for the corners is the 0.5th to 99.5th percentile of all nose positions pooled over sessions (x 22 to 1181, y 14 to 674 px), as the paper gives no arena coordinates; with entropy far from significance in either direction and corner fractions at p = 0.25 and 0.70, a box a few cm larger or smaller is unlikely to change the outcome, but this was not run."
+     ],
+     "assumed": true,
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "htr-event-link",
+     "statement": "The dandiset's unnamed series processing/behavior/task_event_timestamps holds the head-twitch (HTR) times the paper analysed, so the HTR claims can be tested on it with the name taken from the paper's code.",
+     "source": "The paper's code at github.com/Smear-Lab/Olfactory-search-on-psychedelics commit aa80af0a, nwb_conversion/convert_session_to_nwb.py (load_event_timestamps) and analysis/fig5_cleaned.Rmd (chunk \"import htr timestamps\")",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "The series is in all 22 DOI sessions (24 to 204 events, median 147, 3.67 per min) and in 10 saline sessions (14 to 35); in each of the 10 mice with both, the DOI session has more events. The conversion script loads it from the folders fig5_cleaned.Rmd reads as HTR timestamps. The files name it only \"Event times (s) from Time Stamps Task\" with data all 1. The DOI sessions of 2197 and 2204 have only 30 and 24 events.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5supp-htr-within-trial-x-not-y",
+     "statement": "During trials, HTR rate (normalized to occupancy) varies with the X coordinate of the arena but not with the Y coordinate.",
+     "source": "Results, Mice occupy allocentric space similarly but head twitch preferentially in proximity to odor ports, paragraph 2; Figure 5 supplemental A",
+     "quote": "During a trial, HTR rate occurred throughout the arena without spatial predictability on the Y-coordinate ( Figure 5 supplemental ; Permutation test, p = 0.92), but with preference for the X-coordinate ( Figure 5 supplemental ; Permutation test, p = 0.002)",
+     "statistics": [
+      {
+       "about": "Y coordinate",
+       "test": "Permutation test",
+       "p": 0.92
+      },
+      {
+       "about": "X coordinate",
+       "test": "Permutation test",
+       "p": 0.002
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "22 DOI mice, 1848 mouse and bin rows. With the claims file's method (code clock, code timestamps) the within-trial rate correlates with x, r = 0.056, permutation p = 0.0048 (paper 0.002), positive toward the odor and reward ports, and not with y, r = 0.028, p = 0.26 (paper 0.92). Timestamps as stored, x p = 0.0016, y p = 0.92; as frames, x p = 0.0020, y p = 0.86. With the fitted clock only 151 of 3057 HTRs fall within trials and the x correlation vanishes (r = 0.001, p = 0.96; y p = 0.065): the result rests on the code's clock, which the data check found does not align frames with trials.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "The later-cohort timestamps' last field is a frame count at 80 frames/s (it never exceeds 79); the file stores it as hundredths and the code reads it as thousandths. The code's reading is used, as the paper's numbers were computed with it, and the other two are shown; they agree.",
+      "The permutations are drawn with numpy's generator from seed 123, not R's."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5e-htr-combined-x",
+     "statement": "With trial and ITI periods combined, mice head-twitch more often closer to the odor end of the arena, as the X coordinate increases.",
+     "source": "Results, Mice occupy allocentric space similarly but head twitch preferentially in proximity to odor ports, paragraph 2; Figure 5E",
+     "quote": "and when conditions were combined ( Figure 5E ; Permutation test, p < 0.001 for X-coordinates)",
+     "statistics": [
+      {
+       "test": "Permutation test",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "22 mice in the map, the expected 22. With trial and ITI frames combined the rate rises with x, r = 0.149, none of 10000 permutations as extreme (p < 0.0001), under every timestamp reading (r = 0.122 to 0.149); the grand-mean rate rises from 1.97 HTR/min in the first x bin to a peak of 6.76 in the bin at 800 px, and is 5.65 in the last bin (1100 px). It needs no trial clock.",
+     "deviations": [
+      "The later-cohort timestamps' last field is a frame count at 80 frames/s (it never exceeds 79); the file stores it as hundredths and the code reads it as thousandths. The code's reading is used, as the paper's numbers were computed with it, and the other two are shown; they agree."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5supp-htr-iti-x",
+     "statement": "During the ITI, mice head-twitch more often toward the end of the arena past the decision line (as X increases), but not specifically next to the reward ports on the Y coordinate.",
+     "source": "Results, Mice occupy allocentric space similarly but head twitch preferentially in proximity to odor ports, paragraph 2; Figure 5 supplemental B",
+     "quote": "Similarly, during the ITI, we found that mice HTR more frequently closer to the end of the arena after crossing the decision line (as X-coordinate increases), but not immediately next to the reward ports (on the Y-coordinate)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "ITI rates rise with x, r = 0.152, p < 0.0001, and do not vary with y, p = 0.55 (code reading); stored timestamps y p = 0.25, frames y p = 0.080, fitted clock x r = 0.119 p < 0.0001, y p = 0.13.",
+     "deviations": [
+      "The claims file fixes the code's frame clock (frame i at i / 80 s); the data check shows it does not align the tracking with the trial table (median nose displacement over a trial about 0 px), while a per-session linear clock fitted here (about 80.5 frames/s in the later cohort, 72 to 75 in the first) does. The claim is tested with the code's clock and the fitted clock is shown as a variant, a check made here and not the paper's method.",
+      "The later-cohort timestamps' last field is a frame count at 80 frames/s (it never exceeds 79); the file stores it as hundredths and the code reads it as thousandths. The code's reading is used, as the paper's numbers were computed with it, and the other two are shown; they agree."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5f-htr-rate-trial-vs-iti",
+     "statement": "HTR rate does not differ between time within trials and time in the ITI.",
+     "source": "Results, Mice occupy allocentric space similarly but head twitch preferentially in proximity to odor ports, paragraph 2; Figure 5F",
+     "quote": "We normalized HTR rate based on within trial and ITI duration and found no difference in HTR rate based on whether the mouse was in a trial or ITI ( Figure 5F ; Wilcoxon signed rank, p = 1)",
+     "statistics": [
+      {
+       "test": "Wilcoxon signed rank",
+       "p": 1
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "With the code's method (HTR times compared directly with trial times) 22 DOI sessions, median within-trial rate 3.67 against ITI 3.68 HTR/min, signed-rank p = 0.50 (paper p = 1); stored timestamps p = 0.52, frames p = 0.70. With HTR times moved to the trial clock by the fitted clock, within-trial rate 1.38 against ITI 3.88 HTR/min, p < 0.0001 under every timestamp reading (later cohort alone p = 0.0007; sessions with a good fit p = 0.0001): HTRs are rarer within trials, the opposite of the claim. The outcome follows the claims file's method; the finding of no difference does not survive an alignment of the clocks.",
+     "deviations": [
+      "The HTR times are on the video's clock and the trial times on the task's; the code compares them directly. The variant moves the HTR times by the per-session fitted clock (video time x 80 / fitted rate minus offset). For the first cohort, whose manually scored times are in seconds of video, this assumes the video's time base is 80 frames/s, which the files do not state.",
+      "The later-cohort timestamps' last field is a frame count at 80 frames/s (it never exceeds 79); the file stores it as hundredths and the code reads it as thousandths. The code's reading is used, as the paper's numbers were computed with it, and the other two are shown; they agree."
+     ],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5supp-htr-no-sex-difference",
+     "statement": "HTR rate over the 40 min DOI session does not differ between male and female mice.",
+     "source": "Results, Mice occupy allocentric space similarly but head twitch preferentially in proximity to odor ports, paragraph 2; Figure 5 supplemental C",
+     "quote": "Additionally, we did not see a sex difference in HTR rate over the 40 m session ( Figure 5 supplemental ; Wilcoxon rank sum, p = 0.31)",
+     "statistics": [
+      {
+       "test": "Wilcoxon rank sum",
+       "p": 0.31
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_welch_2025.ipynb",
+     "notes": "HTRs per minute over 40 min, females (12) median 3.61, mean 3.33; males (10) median 3.99, mean 3.65; rank-sum with the normal approximation W = 44, p = 0.31 (paper 0.31). It needs no clock.",
+     "deviations": [],
+     "assumed": false,
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The reward-port entries and exits behind Figure 2 (reward-port duration after correct and incorrect trials, nine claims) are not in the dandiset; no event series, column or table holds them, and the code reads them from pre-computed files that are not public.",
+     "found": null,
+     "status": null,
+     "n": 1,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The pose series carry no frame times; their stated rate is an estimate made at conversion (frames over the last trial's end time, 72.7 to 85.3 frames/s), and with it the tracking does not line up with the trial table. A linear clock fitted per session to the nose's movement over trials does (median 80.47 frames/s in the later cohort and 73.71 in the first, offsets of -10.5 to 14.0 s); 30 of 44 sessions have a good fit (the nose moves 100 px or more over a trial, offsets in the two halves of the session within 1 s of each other, and the implied video covers the trials and ends at most 2 min after the last one). The fit is weakest in the two sessions of mouse 2197 (27 and 79 px), and the 71.0 frames/s fit of 2204 DOI would end the video 311 s after the last trial. The HTR times are on the video's frame clock at 80 frames/s (frame t x 80): the nose moves most within 1 s of them in all 22 DOI sessions, against 8 when they are placed by the fitted trial clock.",
+     "found": null,
+     "status": null,
+     "n": 2,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The series processing/behavior/task_event_timestamps is the head-twitch times (by the conversion script's source folders and the paper's code), but the files call it only \"Event times (s) from Time Stamps Task\" with data all 1.",
+     "found": null,
+     "status": null,
+     "n": 4,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In the 27 later-cohort sessions the HTR timestamps came as HH:MM:SS:FF video timecodes whose last field is a frame count at 80 frames/s (never above 79); the conversion stored it as hundredths of a second (FF / 100 against FF / 80), so the stored times are early by up to 0.2 s.",
+     "found": null,
+     "status": null,
+     "n": 5,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The subject sex of the saline session of mouse 2182 (sub-2182_ses-2182-31) is female, while its DOI session and the paper's code give male.",
+     "found": null,
+     "status": null,
+     "n": 7,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The trial columns are described only by their names (odor_control, side, outcome, iti_time, false_alarm, repoke); the codes are not explained. The session notes show side 2 is left and side 1 right in all 34 later-cohort sessions, and the code gives odor_control 0 as an odor trial and 3 as an omission trial.",
+     "found": null,
+     "status": null,
+     "n": 8,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "other",
+     "statement": "In the five first-cohort mice 347 trials have a set ITI of 16 to 25 s, while the Methods give a variable ITI of 1 to 15 s.",
+     "found": null,
+     "status": null,
+     "n": 9,
+     "about": "data",
+     "datasets": []
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The paper's code drops four sniff sessions as faulty (2195 DOI, 2198 DOI, 2198 saline, 2213 saline), without a stated reason; the dandiset keeps them without a flag, though their descriptions show many rows dropped for a missing exhalation (34772 of 35633 in 2198 DOI, 33144 of 34034 in 2198 saline, 2405 of 7577 in 2213 saline). Among the sessions the code keeps, 2200 saline lost 7933 of 14626 rows the same way.",
+     "found": null,
+     "status": null,
+     "n": 10,
+     "about": "data",
+     "datasets": []
+    }
+   ],
+   "reconciliation": null,
+   "verifications": [
+    {
+     "date": "2026-11-05",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The handover of the first run (the executed notebook with the conclusions and summary removed, the helper module and the claims file), with the paper under paper/. Problems not tied to one claim: problem 1 (the clocks; recorded under fig5f and the speed claims), problem 2 (r_signrank with zero differences; fixed, no tested pair has a zero), problem 6 (fitted-clock speed scaled by 80; fixed) and problem 7 (interpolated nose frames; the data check now prints that the interpolated fraction is higher on DOI in 11 of 22 mice, median difference -0.003).",
+     "agreed": 33,
+     "of": 36,
+     "disagreements": [
+      {
+       "claim": "fig3c-speed-within-trial-lower",
+       "outcome": "not_reproduced",
+       "reason": "Cell 42, code clock, the signed-rank test gives p = 0.063 (DOI lower in 16 of 22 mice), above the 0.05 cut; the criterion has no partial outcome. The rank-sum variant gives p = 0.51 and the fitted clock p = 0.82."
+      },
+      {
+       "claim": "fig3d-speed-iti-lower",
+       "outcome": "not_reproduced",
+       "reason": "Cell 44, code clock, signed-rank p = 0.079; rank-sum p = 0.57; fitted clock p = 0.063."
+      },
+      {
+       "claim": "fig4supp-ks-every-mouse",
+       "outcome": "partially_reproduced",
+       "reason": "Cell 60, 13 matched mice. p < 0.001 in 13 of 13 under reading (b), but in 11 of 13 under reading (a) and the code reading (mice 2209 and 2211 have p = 0.003 and 0.006). The criterion has no rule for choosing between readings. In reading (a), 5 of 13 mice have a lower DOI median than saline, yet the one-sided KS test is significant; the code's test does not establish the \"higher-shifted distribution\" the statement describes (problem 3)."
+      }
+     ]
+    },
+    {
+     "date": "2026-11-05",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the round-1 revision, with its conclusions and summary, the helper module, the claims file and the attempt record, with the paper under paper/. Points not tied to one claim: the README said a clock fitted to each session lines the frames up, while cell 8 gives a good fit in only 30 of 44 sessions (the Summary states this caveat, but the README leaves it out); the README now says the fit is good in 30 of 44 sessions. The verifier's round-1 tally was corrected in its own report. Round-1 points 2 to 7 are resolved; problem 1 (the clocks) and R parity remain, and are answered under the claims they bear on.",
+     "agreed": 36,
+     "of": 36,
+     "disagreements": []
+    }
+   ],
+   "paper_notes": [
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's code (fig3_cleaned.Rmd and fig5_cleaned.Rmd) places tracking frame i at i / 80 s and compares HTR video times directly with trial times. On these data that clock does not align frames with trials (median nose displacement over a trial about 0 px against hundreds with a fitted clock). With the fitted clock the within-trial speed difference (Figure 3C) and the within-trial HTR preference for x vanish, and HTRs are about a third as frequent within trials as in the ITI, against the paper's Figure 5F.",
+     "found": null,
+     "status": null,
+     "n": 3,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "fig5_cleaned.Rmd reads the last field of the later cohort's HTR timecodes as thousandths of a second, while it is a frame count at 80 frames/s, making the HTR times early by up to 0.9 s; the outcomes here do not change with the reading.",
+     "found": null,
+     "status": null,
+     "n": 6,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results name the Wilcoxon rank-sum test for the speed comparisons of Figure 3C, 3D and its supplement, while the Methods and the code use the paired signed-rank test; the two give different p-values here (for example 0.51 against 0.063 for Figure 3C).",
+     "found": null,
+     "status": null,
+     "n": 11,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors, on fig5ab-occupancy-similar. The paper tests no difference in occupancy and gives no arena coordinates, so the corners of its prediction are not defined. This attempt took the 0.5th to 99.5th percentile box of all nose positions and corner squares of 5 and 10 cm; which region of the arena did the authors mean by its corners?",
+     "found": null,
+     "status": null,
+     "n": 12,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors, on the speed and HTR claims split by trial period. Were the tracking frames of DLC_tracked_task aligned with the trial summary times by any record of frame times, or only by the 80 frames/s of fig3_cleaned.Rmd? The data here align only with a per-session rate near 80.5 frames/s (72 to 75 in the first cohort) and an offset of a few seconds.",
+     "found": null,
+     "status": null,
+     "n": 13,
+     "about": "paper",
+     "datasets": []
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "Question for the authors, on fig4supp-ks-every-mouse. Was the exclusion of sniffs below the 5th and above the 95th percentile of duration computed per recording, or over all recordings of a condition, and is it already applied in the deposited sniff cycles? The per-mouse KS test gives p < 0.001 in 13 of 13 mice with percentiles over a condition, and in 11 of 13 with percentiles per session or with the deposited cycles as they are (2209 and 2211 at p = 0.003 to 0.011). This attempt assumed per session.",
+     "found": null,
+     "status": null,
+     "n": 14,
+     "about": "paper",
+     "datasets": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "welch-2025",
+   "type": "reproduction",
+   "title": "DOI and olfactory search in mice (Welch et al. 2025)",
+   "description": "Tests the findings of Welch, Gonzales-Hess, Tarvin, Connor and Smear (2025) on dandiset 001863, which holds one DOI and one saline session of the olfactory search task for each of 22 mice, with trial tables, DeepLabCut tracking, thermistor sniff cycles and head-twitch times. It tests accuracy, trial counts and durations, movement speed, sniff frequency, occupancy and the location and timing of head twitches. The reward-port durations of Figure 2 are not in the dandiset.",
+   "datasets": [
+    "dandi:001863"
+   ],
+   "papers": [
+    "10.1101/2025.07.09.663970"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_welch_2025.ipynb",
+     "title": "Reproducing Welch et al. (2025) from dandiset 001863",
+     "executed": "notebooks/welch-2025/reproduce_welch_2025.html"
+    }
+   ],
+   "python": "3.13",
+   "pinned": 102,
+   "hashed": false
+  }
+ ]
+}
