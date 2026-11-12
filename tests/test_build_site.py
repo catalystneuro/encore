@@ -230,10 +230,19 @@ def test_findings_are_on_the_datasets_page_and_counted_in_its_row(built):
         assert row["findings"] == sum(len(a["findings"]) for a in attempts)
         assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
         page = (out / row["page"] / "index.html").read_text()
-        assert "Findings about the data" in page and "Papers tested on this dataset" in page
+        assert "Open findings about the data" in page and "Papers tested on this dataset" in page
         for a in attempts:
             for f in a["findings"]:
                 assert site.e(f["statement"]) in page
+        # The findings are under the version of the dataset they were found on, and the row has what a curator
+        # reads: the versions tested, the open findings by kind, and the papers tested.
+        assert page.count('<h3 class="vhead">') == len({site.version_text(a) for a in attempts})
+        assert all(site.version_text(a) in page for a in attempts)
+        assert sum(row["found_counts"].values()) == row["findings"] and sorted(row["found_counts"]) == row["found"]
+        assert row["versions"] == list(dict.fromkeys(
+            site.version_plain(a) for a in sorted(attempts, key=site.version_order, reverse=True)))
+        assert row["n_tested"] == len({a["paper"].lower() for a in attempts})
+        assert '<a href="../../../datasets/">Datasets</a> / ' in page
 
 
 def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
@@ -555,7 +564,7 @@ def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
         for a in site.earlier_attempts(data, key):
             moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
             assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
-    assert 'url=../papers/"' in (out / "dandisets" / "index.html").read_text()
+    assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
 
 
 def test_datasets_are_named_by_archive_and_id():
@@ -689,7 +698,7 @@ def test_a_reconciled_attempt_marks_its_findings_and_the_fixed_ones():
     site.reconcile([earlier, later])
     assert [f["status"] for f in later["findings"]] == ["still_present", "new"]
     assert later["reconciliation"]["gone"] == [{"status": "fixed", "note": "Age is set.", "statement": "Wrong age.",
-                                                "kind": "metadata_error"}]
+                                                "kind": "metadata_error", "about": "data"}]
     assert later["reconciliation"]["outcomes"][0]["earlier"] == "reproduced"
 
 
@@ -725,11 +734,11 @@ def test_each_attempted_paper_has_a_page_listed_under_results(built):
                 assert all(text.count(f'id="claim-{o["claim"]}"') >= 1 for o in a["outcomes"]), q["key"]
     # And a dataset's page names the paper's page.
     assert 'papers/tingley-2021/">' in (site / "datasets" / "dandi" / "000233" / "index.html").read_text()
-    # A paper on several datasets lists them all; the tab bar leads to the papers, the one index.
+    # A paper on several datasets lists them all; the tab bar leads to the papers and to the datasets.
     semenov = (site / "papers" / "semenov-2026" / "index.html").read_text()
     assert all(f"DANDI:{d}" in semenov for d in ("001515", "001516", "001526"))
     nav = (site / "index.html").read_text()
-    assert 'href="papers/"' in nav and 'href="datasets/"' not in nav and 'class="menu"' not in nav
+    assert 'href="papers/"' in nav and 'href="datasets/"' in nav and 'class="menu"' not in nav
 
 
 def test_a_dataset_only_a_reuse_paper_names_is_a_target_of_the_site():
@@ -777,22 +786,47 @@ def test_the_archive_charts_colour_dandi_and_crcns_and_fold_the_other_archives()
     assert "--archive-4" not in css
 
 
-def test_the_papers_are_the_one_index_and_find_a_paper_by_its_datasets(built):
+def test_the_datasets_list_is_for_curators_and_the_papers_list_finds_a_paper_by_its_datasets(built):
     import json
     data, out = built
-    # The datasets list is gone; its address sends the reader to the papers list, filters and all.
-    old = (out / "datasets" / "index.html").read_text()
-    assert 'url=../papers/"' in old and "location.search" in old
-    assert "datasets/</loc>" not in (out / "sitemap.xml").read_text()
-    # What only the datasets list had is on the papers list: findings and converted-by facets, dataset names.
+    # The datasets list has the datasets an attempt used, by what was found about their data; the old address of
+    # the DANDI list leads to it.
+    page = (out / "datasets" / "index.html").read_text()
+    config = json.loads(page.split('id="list-config">')[1].split("</script>")[0])
+    assert config["only"] == {"status": ["attempted"]} and config["sorts"][0]["key"] == "-findings"
+    assert [f["key"] for f in config["facets"]][:3] == ["archive", "found", "tested"]
+    assert set(config["labels"]["tested"]) >= set(site.VERSION_STATES)
+    assert 'aria-current="page">Datasets' in page
+    assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
+    assert "datasets/</loc>" in (out / "sitemap.xml").read_text()
+    rows = json.loads((out / "data" / "datasets.json").read_text())
+    tested = [r for r in rows if r["status"] == "attempted"]
+    assert tested and all(set(r["tested"]) <= set(site.VERSION_STATES) for r in tested)
+    assert f'<span class="n">{len(tested):,}</span>' in page
+    # The papers list still finds a paper by its datasets, and filters by what was found about them.
     keys = [k for k, _ in site.LISTS["papers"]["facets"]]
     assert "found" in keys and "converted" in keys
     rows = json.loads((out / "data" / "papers.json").read_text())
     named = [r for r in rows if any(d.get("name") for d in r["datasets"])]
     assert named and all({"found", "converted"} <= set(r) for r in rows)
-    # Every link to the old list's filters now goes to the papers list.
-    for page in ("index.html", "datasets/dandi/000233/index.html", "papers/tingley-2021/index.html"):
-        assert 'datasets/?' not in (out / page).read_text(), page
+    # A finding's kind, on any page, opens the datasets with an open finding of that kind.
+    assert 'datasets/?found=' in (out / "datasets" / "dandi" / "000233" / "index.html").read_text()
+    assert 'papers/?found=' not in (out / "index.html").read_text()
+
+
+def test_a_version_is_said_in_words(built):
+    a = {"dataset_version": "0.240101.0000", "dataset": {"doi": "10.48324/dandi.000001/0.240101.0000"}}
+    assert site.version_state(a) == "published" and site.version_plain(a) == "version 0.240101.0000"
+    assert 'href="https://doi.org/10.48324/dandi.000001/0.240101.0000"' in site.version_text(a)
+    for v, state, words in (("draft", "draft", "the unpublished draft"), ("unversioned", "unversioned", "unversioned files"),
+                            (None, "unknown", "a version not recorded")):
+        a = {"dataset_version": v, "dataset": {}}
+        assert site.version_state(a) == state and site.version_plain(a) == words
+        assert "version unversioned" not in site.version_text(a)
+    # Newest version first: a draft after every published version, which are dated.
+    order = [{"dataset_version": v, "date": "2026-01-01", "id": "x"} for v in ("0.240101.0000", "draft", None, "0.230101.0000")]
+    assert [a["dataset_version"] for a in sorted(order, key=site.version_order, reverse=True)] == [
+        "draft", "0.240101.0000", "0.230101.0000", None]
 
 
 def test_a_paper_with_claims_and_no_attempt_shows_its_claims_on_its_page(built):

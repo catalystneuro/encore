@@ -42,6 +42,7 @@ import random
 import re
 import shutil
 import sys
+from collections import Counter
 from pathlib import Path
 
 import yaml
@@ -567,7 +568,8 @@ def reconcile(attempts: list[dict]) -> None:
             "earlier": rec["earlier"], "blind": rec["blind"], "blind_note": squash(rec.get("blind_note")),
             "gone": [{"status": f["status"], "note": squash(f["note"]),
                       "statement": then[f["finding"] - 1]["statement"] if f["finding"] <= len(then) else "",
-                      "kind": then[f["finding"] - 1]["kind"] if f["finding"] <= len(then) else "other"}
+                      "kind": then[f["finding"] - 1]["kind"] if f["finding"] <= len(then) else "other",
+                      "about": then[f["finding"] - 1].get("about", "data") if f["finding"] <= len(then) else "data"}
                      for f in rec["findings"] if f["status"] in ("fixed", "not_checked")],
             "outcomes": [{"claim": o["claim"], "earlier": o["earlier"], "note": squash(o["note"])}
                          for o in rec.get("outcomes") or []],
@@ -937,6 +939,14 @@ def rows(data: dict) -> dict[str, list]:
             "page": page_of(t["key"]) if atts else None, "url": archive_url(t["key"]),
             "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
             "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
+            # For the datasets list, which a curator reads: the open findings by kind (most first), the versions
+            # the attempts ran on, and how many papers were tested on the dataset.
+            "found_counts": dict(Counter(f["kind"] for a in atts or [] if not a.get("deprecated")
+                                         for f in a["findings"]).most_common()),
+            "versions": list(dict.fromkeys(version_plain(a) for a in sorted(
+                atts or [], key=version_order, reverse=True) if not a.get("deprecated"))),
+            "tested": sorted({version_state(a) for a in atts or [] if not a.get("deprecated")}),
+            "n_tested": len({a["paper"].lower() for a in atts or [] if not a.get("deprecated")}),
             "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
             "journal": journal.get(t["key"], "Not recorded"),
@@ -1278,13 +1288,14 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
     n_papers = sum(1 for p in papers_of(data) if p["attempts"])
+    n_datasets = sum(1 for d in r["datasets"] if d["status"] == "attempted")
     tabs = [("overview", "Overview", root or "./", None), ("papers", "Papers", f"{root}papers/", n_papers),
+            ("datasets", "Datasets", f"{root}datasets/", n_datasets),
             ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
     for key, label, href, n in tabs:
-        # A dataset's page is reached from its papers, so the Papers tab is current there too.
-        current = ' aria-current="page"' if key == active or (key == "papers" and active == "datasets") else ""
+        current = ' aria-current="page"' if key == active else ""
         count = f'<span class="n">{n:,}</span>' if n is not None else ""
         nav += f'<a class="tab" href="{href}"{current}>{label}{count}</a>'
     banner = '<div class="demo">Demo data: made-up attempts, for testing the site only</div>' if data["demo"] else ""
@@ -1326,7 +1337,7 @@ var b=document.getElementById('theme'),order=['auto','light','dark'],icon={auto:
 name={auto:'Auto',light:'Light',dark:'Dark'};
 function get(){try{var t=localStorage.getItem('theme');return t==='light'||t==='dark'?t:'auto';}catch(e){return 'auto';}}
 function show(t){b.firstChild.textContent=icon[t];b.lastChild.textContent=name[t];
-b.setAttribute('aria-label','Colour theme: '+name[t].toLowerCase()+'. Change theme');}
+b.setAttribute('aria-label','Colour theme: '+name[t].toLowerCase()+'. Change theme');b.title='Colour theme: '+name[t];}
 b.addEventListener('click',function(){var t=order[(order.indexOf(get())+1)%3];
 try{t==='auto'?localStorage.removeItem('theme'):localStorage.setItem('theme',t);}catch(e){}
 if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;show(t);});
@@ -1546,11 +1557,11 @@ def page_overview(data: dict) -> str:
     n_papers = sum(1 for q in papers_of(data) if q["attempts"])
     tiles = [
         (f"{n_papers:,}", "papers attempted", "papers/?status=attempted"),
-        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "papers/?status=attempted"),
+        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "datasets/"),
         (f"{n_claims:,}", "claims attempted", "papers/?status=attempted"),
         (f"{verified:,}", "datasets independently verified",
          "papers/?tier=agent_verified,human_verified,author_endorsed"),
-        (f'{len(r["findings"]):,}', "findings about the data", "papers/?status=attempted"),
+        (f'{len(r["findings"]):,}', "findings about the data", "datasets/"),
     ]
     tile_html = "".join(f'<a class="tile" href="{href}"><div class="n">{n}</div><div class="l">{e(label)}</div></a>'
                         for n, label, href in tiles)
@@ -1595,8 +1606,8 @@ def page_overview(data: dict) -> str:
         breakdown("Why claims could not be tested",
                   ordered(blocked, BLOCKED_BY, lambda k: f"papers/?blocked_by={k}"),
                   "papers/?has=blocked"),
-        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"papers/?found={k}"),
-                  "papers/?status=attempted"),
+        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"datasets/?found={k}"),
+                  "datasets/"),
         breakdown("Verification of attempted datasets",
                   ordered(tiers, TIERS, lambda k: f"papers/?status=attempted&tier={k}"),
                   "papers/?status=attempted"),
@@ -1938,7 +1949,7 @@ def page_about(data: dict) -> str:
 
 # The site's lists. Only the papers list is a page (INDEX_LISTS): since 2026-11-11 the papers are the one index,
 # and a dataset's page is reached from its papers. The datasets rows are still written as data (data/datasets.json).
-INDEX_LISTS = ("papers",)
+INDEX_LISTS = ("papers", "datasets")
 LISTS = {
     "papers": {
         "title": "Papers", "noun": "papers", "data": "data/papers.json",
@@ -1954,16 +1965,20 @@ LISTS = {
                   ("-failures", "Most claims not reproduced"), ("-n_datasets", "Most datasets"), ("title", "Title")],
         "csv": None,
     },
+    # The datasets list is for the people who look after the data: a dataset's owner, or a curator of its archive.
+    # It has the datasets an attempt has used (`only`), each with the version tested and the open findings about its
+    # data. The papers list is where a reader looks for results.
     "datasets": {
-        "title": "Datasets", "noun": "datasets", "data": "data/datasets.json",
-        "intro": "Every public dataset whose metadata names a paper, on the DANDI Archive and other archives. Attempted ones open a page with the "
-                 "claims tested, what was found about the data, and the executed notebook.",
-        "facets": [("status", "Status"), ("archive", "Archive"), ("journal", "Journal"), ("has", "Has a claim that is"),
-                   ("blocked_by", "Has a claim blocked by"), ("tier", "Verification"), ("found", "Findings about the data"),
+        "title": "Datasets", "noun": "datasets", "data": "data/datasets.json", "only": {"status": ["attempted"]},
+        "intro": "Every dataset an attempt has used, with the version it was tested on and what the attempts found "
+                 "about the data themselves: a missing identifier, an error in the metadata, a file that does not "
+                 "read. For a dataset&rsquo;s owner and the curators of its archive. Results on a paper&rsquo;s "
+                 "claims are in the <a href=\"../papers/\">papers list</a>.",
+        "facets": [("archive", "Archive"), ("found", "Open findings"), ("tested", "Tested on"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-date", "Most recently attempted"), ("-reproduced", "Most reproduced"), ("id", "Identifier"),
-                  ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
-                  ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("name", "Title"), ("paper_title", "Paper title")],
+        "sorts": [("-findings", "Most open findings"), ("-date", "Most recently tested"), ("id", "Identifier"),
+                  ("-id", "Identifier, newest first"), ("-size_gb", "Largest"), ("size_gb", "Smallest"),
+                  ("name", "Title")],
         "csv": None,
     },
 }
@@ -1974,6 +1989,7 @@ def page_list(data: dict, kind: str) -> str:
     outcome_labels = {k: v[0] for k, v in OUTCOMES.items()}
     config = {
         "kind": kind, "root": "../", "data": spec["data"], "noun": spec["noun"], "csv": spec["csv"],
+        "only": spec.get("only"),
         "facets": [{"key": k, "label": label} for k, label in spec["facets"]],
         "sorts": [{"key": k, "label": label} for k, label in spec["sorts"]],
         "outcomes": {k: list(v) for k, v in OUTCOMES.items()},
@@ -1986,6 +2002,7 @@ def page_list(data: dict, kind: str) -> str:
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
             "status": {**STATUS, "claims": "Claims read, not yet attempted"} if kind == "papers" else STATUS,
             "found": {**FINDING_KINDS, "(none)": "None recorded"},
+            "tested": {**VERSION_STATES, "(none)": "Attempt set aside, to redo"},
             "relation": {"primary": "Its own data", "reuses": "Reused data"},
             "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
@@ -2018,7 +2035,7 @@ def page_list(data: dict, kind: str) -> str:
     scripts = (f'<script type="application/json" id="list-config">{json.dumps(config)}</script>'
                f'<script src="../{asset("list.js")}"></script>')
     return shell(data, f'{spec["title"]} · {SITE_NAME}', "../", kind, body, scripts, path=f"{kind}/",
-                 description=spec["intro"])
+                 description=html.unescape(re.sub(r"<[^>]+>", "", spec["intro"])))
 
 
 CLAIMS_JS = """<script>(function(){
@@ -2129,11 +2146,36 @@ def earlier_attempts(data: dict, dandiset: str) -> list[dict]:
                   key=lambda a: (a["date"], a["id"]))
 
 
+VERSION_STATES = {"published": "A published version", "draft": "An unpublished draft",
+                  "unversioned": "Unversioned files", "unknown": "Version not recorded"}
+
+
+def version_state(a: dict) -> str:
+    """What kind of version of its dataset an attempt ran on: a key of VERSION_STATES."""
+    v = a["dataset_version"]
+    return "unknown" if not v else v if v in ("draft", "unversioned") else "published"
+
+
+def version_order(a: dict) -> tuple:
+    """Sorts attempts by the version of the dataset they ran on, oldest first: a draft is newer than any published
+    version (DANDI's are dated, so they sort as text), and attempts on one version go by their date."""
+    return ({"draft": 2, "published": 1}.get(version_state(a), 0), str(a["dataset_version"] or ""), a["date"], a["id"])
+
+
+def version_plain(a: dict) -> str:
+    """The dataset version an attempt ran on, in words, for a list's row."""
+    v = a["dataset_version"]
+    return {"unknown": "a version not recorded", "draft": "the unpublished draft",
+            "unversioned": "unversioned files"}.get(version_state(a)) or f"version {v}"
+
+
 def version_text(a: dict) -> str:
     """The dataset version an attempt ran on, linked to its DOI when it has one; a draft says so."""
     v = a["dataset_version"]
     if not v:
         return "version not recorded"
+    if v == "unversioned":
+        return "unversioned files (the archive keeps no versions)"
     if v == "draft":
         modified = a["dataset"].get("modified")
         return "unpublished draft" + (f" (modified {e(str(modified)[:10])})" if modified else "")
@@ -2203,10 +2245,10 @@ def finding_tags(f: dict) -> str:
 
 
 def findings_list(findings: list[dict], root: str, note=None) -> str:
-    """Findings about the data as a list, each with its kind (a link to the papers whose attempts found that kind)
-    and, given `note`, a line under it (which attempt found it)."""
+    """Findings about the data as a list, each with its kind (a link to the datasets with an open finding of that
+    kind) and, given `note`, a line under it (which attempt found it)."""
     return "".join(
-        f'<li><span><a class="kind" href="{root}papers/?found={e(f["kind"])}">'
+        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}'
         + (f'<br><span class="muted small">{note(f)}</span>' if note else "") + '</span></li>'
         for f in findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
@@ -2231,8 +2273,35 @@ def page_dataset(data: dict, key: str) -> str:
                 + (f'; that attempt also used {e(", ".join(dataset_label(k) for k in others))}, and its findings are '
                    'not yet said to be about one dataset or another' if others else ""))
     findings = [(f, a) for a in atts for f in a["findings"]]
-    findings_html = "".join(findings_list([f], root, note=lambda _f, a=a: found_by(a)) for f, a in findings) \
-        if findings else findings_list([], root)
+    # Open findings under the version of the dataset they were found on, the newest version first: a finding on
+    # an older version has not been checked on a newer one unless a later attempt on the same paper says so.
+    by_version: dict = {}
+    for a in sorted(atts, key=version_order, reverse=True):
+        by_version.setdefault(version_text(a), []).append(a)
+    findings_html = ""
+    for i, (version, group) in enumerate(by_version.items()):
+        n = sum(len(a["findings"]) for a in group)
+        dates = sorted({a["date"] for a in group})
+        when = dates[0] if len(dates) == 1 else f"{dates[0]} to {dates[-1]}"
+        older = ("" if i == 0 else ' <span class="tag" title="A newer version was tested too; these findings were '
+                 'not checked on it">an older version</span>')
+        findings_html += (f'<h3 class="vhead">Dataset {version}{older}<span class="muted small"> · tested {e(when)} · '
+                          f'{n} open finding{"" if n == 1 else "s"}</span></h3><ul class="findings">'
+                          + ("".join(findings_list([f], root, note=lambda _f, a=a: found_by(a))
+                                     for a in group for f in a["findings"]) or findings_list([], root)) + "</ul>")
+    if not atts:
+        findings_html = f'<ul class="findings">{findings_list([], root)}</ul>'
+    # Findings of an earlier attempt that a repeat attempt found fixed, on the version it ran on.
+    fixed = [(g, a) for a in atts for g in (a.get("reconciliation") or {}).get("gone", [])
+             if g["status"] == "fixed" and g.get("about", "data") == "data"]
+    fixed_html = ""
+    if fixed:
+        fixed_html = (f'<section class="panel"><h2>Fixed since an earlier attempt <span class="count">{len(fixed)}</span></h2>'
+                      '<ul class="findings">' + "".join(
+                          f'<li><span>{e(FINDING_KINDS.get(g["kind"], g["kind"]))}</span><span>'
+                          f'<span class="tag status-fixed">Fixed</span>{e(g["statement"])}'
+                          f'<br><span class="muted small">{e(g["note"])} Found fixed on dataset {version_text(a)} by '
+                          f'{e(a["id"])}, {e(a["date"])}.</span></span></li>' for g, a in fixed) + "</ul></section>")
 
     paper_rows_html = ""
     for q in papers:
@@ -2268,7 +2337,7 @@ def page_dataset(data: dict, key: str) -> str:
         actions.append(f'<a href="{root}api/{page_of(key).rstrip("/")}.json">JSON</a>')
     name = (target or {}).get("name") or dataset_label(key)
     body = f'''<header class="page">
-  <p class="crumbs"><a href="{root}papers/">Papers</a> / {e(dataset_label(key))}</p>
+  <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
   <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
   <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
@@ -2276,10 +2345,12 @@ def page_dataset(data: dict, key: str) -> str:
   <p class="actions">{" ".join(actions)}</p>
 </header>
 <main>
-  <section class="panel"><h2>Findings about the data <span class="count">{len(findings)}</span></h2>
+  <section class="panel" id="findings"><h2>Open findings about the data <span class="count">{len(findings)}</span></h2>
     <p class="sub small" style="margin-top:12px">What the attempts that used this dataset found about the data
-    themselves, for its owner and the archive. The claims and their outcomes are on each paper&rsquo;s page.</p>
-    <ul class="findings">{findings_html}</ul></section>
+    themselves, for its owner and the archive, under the version of the dataset each was found on. The claims and
+    their outcomes are on each paper&rsquo;s page.</p>
+    {findings_html}</section>
+  {fixed_html}
   <section class="panel"><h2>Papers tested on this dataset <span class="count">{len(papers)}</span></h2>
     <div class="results" style="margin-top:12px">{paper_rows_html or '<p class="empty">None yet.</p>'}</div></section>
 </main>'''
@@ -2432,7 +2503,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None, paper:
                      'checked the earlier finding">found on prompt</span>')
         return tags
     findings_html = "".join(
-        f'<li><span><a class="kind" href="{root}papers/?found={e(f["kind"])}">'
+        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{finding_tags(f)}{e(f["statement"])}</span></li>'
         for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
     for a in atts:
@@ -2791,7 +2862,7 @@ def page_claims(data: dict, key: str) -> str:
                f'<a href="{root}pipeline/">Pipeline</a>')
     name = (target or {}).get("name") or dataset_label(key)
     body = f'''<header class="page">
-  <p class="crumbs"><a href="{root}papers/">Papers</a> / {e(dataset_label(key))}</p>
+  <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
   <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
   <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
@@ -2824,8 +2895,7 @@ def build(data: dict, output: Path) -> None:
     (output / "data" / "pipeline.json").write_text(json.dumps(pipeline_rows(data), separators=(",", ":")) + "\n")
     for kind in LISTS:
         (output / kind).mkdir(exist_ok=True)
-        (output / kind / "index.html").write_text(page_list(data, kind) if kind in INDEX_LISTS
-                                                  else redirect_page("papers/", "../"))
+        (output / kind / "index.html").write_text(page_list(data, kind))
         (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
     for key, attempts in current_attempts(data).items():
         page = output / page_of(key)
@@ -2865,7 +2935,7 @@ def build(data: dict, output: Path) -> None:
         page.mkdir(parents=True, exist_ok=True)
         (page / "index.html").write_text(page_dataset(data, key))
     renamed_redirects(data, output)
-    (output / "dandisets" / "index.html").write_text(redirect_page("papers/", "../"))
+    (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     (output / "sitemap.xml").write_text(sitemap(data))
