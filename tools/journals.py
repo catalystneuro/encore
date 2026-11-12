@@ -74,6 +74,9 @@ def main() -> int:
     import build_site
     shown = {t.get("paper") for t in build_site.collect()["targets"]}
     named = {p.get("doi") for t in datasets.targets() for p in (t.get("papers") or [])}
+    # And every paper listed for datasets (papers/datasets/): a paper that reuses a dataset is named by no target.
+    import paper_records
+    named |= {paper_records.doi_of(k) for k in paper_records.listed()}
     known = {key(k): v for k, v in known.items()}
     dois = sorted({key(d) for d in shown | named if d})
     todo = [d for d in dois if d not in known]

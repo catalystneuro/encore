@@ -28,6 +28,8 @@
     $('results').innerHTML = '<p class="empty">The data could not be loaded.</p>';
     return;
   }
+  // A list of part of the file: `only` names the values a row must have ({status: ['attempted']}).
+  if (cfg.only) rows = rows.filter((r) => Object.entries(cfg.only).every(([k, allowed]) => allowed.includes(r[k])));
   rows.forEach((r) => { r._text = JSON.stringify(r).toLowerCase(); });
 
   // --- state <-> URL ---------------------------------------------------------
@@ -131,25 +133,27 @@
       return `<div class="row drow prow">
         <div><p class="byline">${esc(r.byline)}<span class="sep" aria-hidden="true">·</span>${esc(r.journal)}</p>
           <p class="title"><a href="${href}">${esc(r.title)}</a></p>
-          <div class="meta">${ds}${reuse}${missing}
+          <div class="meta"><span>${ds}</span>${reuse}${missing}
             <a href="https://doi.org/${esc(r.doi)}">doi</a></div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;
     },
+    // For a dataset's owner or a curator: the version tested and the open findings about the data, by kind.
     datasets(r) {
       const href = r.page ? root + r.page : r.url;
-      const right = r.status === 'attempted'
-        ? `${tier(r)}<span class="small muted">${esc(r.date)}</span>`
-        : `<span class="tag">${esc(label('status', r.status))}</span>`;
+      const n = r.findings || 0;
+      const kinds = Object.entries(r.found_counts || {}).map(([k, c]) =>
+        `<a class="tag" href="${href}#findings">${esc(label('found', k))}<span class="c">${c}</span></a>`).join(' ');
+      const versions = (r.versions || []).join('; ');
       return `<div class="row drow">
         <div class="id"><a href="${href}">${esc(r.label)}</a></div>
         <div><p class="title"><a href="${href}">${esc(r.name || r.paper_title)}</a></p>
-          <div class="meta">${tags(r.technique)} ${tags(r.species)}
-            ${size(r.size_gb)} ${files(r.files)}
-            <a href="https://doi.org/${esc(r.paper)}" title="${esc(r.paper_title || r.paper)}">Paper</a>
-            ${r.page ? `<a href="${root + r.page}#findings">Findings (${r.findings})</a>` : ''}</div>
-          ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}${elsewhere(r)}</div>` : ''}</div>
-        <div class="right">${right}</div></div>`;
+          <div class="meta">${versions ? `<span>Tested on ${esc(versions)}</span>` : ''}
+            <span>${r.n_tested} paper${r.n_tested === 1 ? '' : 's'} tested</span>
+            ${size(r.size_gb)} ${files(r.files)}</div>
+          ${kinds ? `<div class="meta kinds" style="margin-top:6px">${kinds}</div>` : ''}</div>
+        <div class="right"><span class="open${n ? '' : ' none'}"><strong>${n}</strong> open finding${n === 1 ? '' : 's'}</span>
+          <span class="small muted">${esc(r.date)}</span></div></div>`;
     },
   }[cfg.kind];
 
