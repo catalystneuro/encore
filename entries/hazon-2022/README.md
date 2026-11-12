@@ -5,7 +5,8 @@ Tests the findings of [Hazon et al. (2022)](https://doi.org/10.1038/s41467-022-3
 of the paper's 110 working sessions (12 mice, 27,898 CA1 neurons). The helper `hc30.py` streams
 the one data file and rebuilds the paper's event trace, trials, activity tensor, trial shuffle,
 decoders and signal and noise measures, citing the paper or its code for each choice. A third
-notebook repeats the IMSE fits with the paper's 80 neuron subsets for 16 sessions.
+notebook repeats the IMSE fits with the paper's 80 neuron subsets for 16 sessions, and with 40
+for one more, and fits N with other decoder settings on 9 sessions.
 
 | Claim | Outcome |
 |---|---|

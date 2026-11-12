@@ -167,18 +167,21 @@ def to_dataset(T, d):
 
 
 class OvOLinearSVM:
-    """One-vs-one linear SVMs with voting over the 40 classes.
+    """One-vs-one linear SVMs over the 40 classes.
 
     [claims] common method: fitcecoc one-vs-one of linear SVMs (templateLinear, lasso, Lambda
     0, SpaRSA). [assumed] Implemented with libsvm (scikit-learn SVC, linear kernel on a
     precomputed Gram matrix), L2-regularized hinge loss with C = 1 (libsvm's default; the
-    code's unregularized fit has no exact equivalent here), and majority voting (MATLAB's
-    default is loss-weighted decoding). The MATLAB solver is not available here; C = 0.1 and
-    10 are shown as variants in the decoding notebook.
+    code's unregularized fit has no exact equivalent here), and majority voting. MATLAB's
+    default, loss-weighted decoding with the hinge loss max(0, 1 - m s) / 2 averaged over the
+    39 learners of each class (fitcecoc documentation, 'Decoding' and 'BinaryLoss'), is
+    available as decoding="lossweighted" and is shown as a variant in the fit-check notebook,
+    as are C = 0.1 and 10 there and in the decoding notebook.
     """
 
-    def __init__(self, C=1.0):
+    def __init__(self, C=1.0, decoding="vote"):
         self.C = C
+        self.decoding = decoding
 
     def fit(self, X, y):
         from sklearn.svm import SVC
@@ -189,10 +192,20 @@ class OvOLinearSVM:
         return self
 
     def predict(self, X):
-        return self.m.predict(X @ self.Xtr.T)
+        K = X @ self.Xtr.T
+        if self.decoding == "vote":
+            return self.m.predict(K)
+        # one-vs-one learners in scikit-learn's order (i, j), i < j; a positive score is class i
+        s = self.m.decision_function(K)
+        cl = self.m.classes_
+        i, j = np.triu_indices(len(cl), 1)
+        loss = np.zeros((X.shape[0], len(cl)))
+        np.add.at(loss.T, i, np.maximum(0, 1 - s.T) / 2)
+        np.add.at(loss.T, j, np.maximum(0, 1 + s.T) / 2)
+        return cl[np.argmin(loss, axis=1)]
 
 
-def decode_once(T, d, rng, shuffled, C=1.0, return_pred=False):
+def decode_once(T, d, rng, shuffled, C=1.0, return_pred=False, decoding="vote"):
     """Two-fold decoding of one random trial split ([claims] common method, code decode_all).
 
     Returns the two-fold MSE in cm^2 (bin error times 5.9 cm, squared, averaged over the two
@@ -208,7 +221,7 @@ def decode_once(T, d, rng, shuffled, C=1.0, return_pred=False):
     for a, b in ((0, 1), (1, 0)):
         Xa, ya = halves[a]
         Xb, yb = halves[b]
-        p = OvOLinearSVM(C).fit(Xa, ya).predict(Xb)
+        p = OvOLinearSVM(C, decoding).fit(Xa, ya).predict(Xb)
         err = (yb // 2 - p // 2) * BIN_CM
         mses.append(np.mean(err ** 2))
         ys.append(yb)
@@ -485,7 +498,7 @@ def overlap_measures(T, d, rng):
 
 # ---- decoding jobs ----
 
-def decode_full(T, d, seed, reps, C=1.0):
+def decode_full(T, d, seed, reps, C=1.0, decoding="vote"):
     """All neurons, all equalised trials ([claims] fig2d criterion; code mean_rms_all_sess.mlx
     reads the 'max' neurons and 'max' trials rows): per repetition a new random trial split,
     unshuffled and shuffled two-fold decoding. Returns per-repetition MSE (cm^2) of each, the
@@ -496,13 +509,14 @@ def decode_full(T, d, seed, reps, C=1.0):
     for _ in range(reps):
         idx = equalize_trials(d, rng)
         for tag, sh in (("u", False), ("s", True)):
-            mse, y, p = decode_once(T[:, :, idx], d[idx], rng, sh, C=C, return_pred=True)
+            mse, y, p = decode_once(T[:, :, idx], d[idx], rng, sh, C=C, return_pred=True,
+                                    decoding=decoding)
             out[f"mse_{tag}"].append(mse)
             np.add.at(out[f"conf_{tag}"], (y, p), 1)
     return out
 
 
-def decode_series(T, d, seed, sizes, reps, C=1.0, shuffled=True):
+def decode_series(T, d, seed, sizes, reps, C=1.0, shuffled=True, decoding="vote"):
     """IMSE against ensemble size ([claims] common method, code decode_series): for each size,
     `reps` random neuron subsets, each with new equalised trials and split; IMSE = 1/MSE per
     subset (MSE in cm^2), averaged over subsets. Returns arrays (sizes,) for unshuffled and
@@ -517,9 +531,9 @@ def decode_series(T, d, seed, sizes, reps, C=1.0, shuffled=True):
             idx = equalize_trials(d, rng)
             sub = rng.choice(N, n, replace=False)
             Tc = T[sub][:, :, idx]
-            a.append(1 / decode_once(Tc, d[idx], rng, False, C=C))
+            a.append(1 / decode_once(Tc, d[idx], rng, False, C=C, decoding=decoding))
             if shuffled:
-                b.append(1 / decode_once(Tc, d[idx], rng, True, C=C))
+                b.append(1 / decode_once(Tc, d[idx], rng, True, C=C, decoding=decoding))
         iu.append(np.mean(a))
         is_.append(np.mean(b) if shuffled else np.nan)
     return np.array(iu), (np.array(is_) if shuffled else None)
